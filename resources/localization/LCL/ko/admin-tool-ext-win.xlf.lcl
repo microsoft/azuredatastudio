@@ -15,7 +15,7 @@
     <Disp Icon="Expand" Expand="true" Disp="true" LocTbl="false" />
     <Item ItemId=";Xliff Resources" ItemType="0" PsrId="308" Leaf="false">
       <Disp Icon="Str" Disp="true" LocTbl="false" />
-      <Item ItemId=";extensions/admin-tool-ext-win/out/main.adminToolExtWin.launchingDialogStatus" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/admin-tool-ext-win/dist/main.adminToolExtWin.launchingDialogStatus" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Launching dialog...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -24,7 +24,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/admin-tool-ext-win/out/main.adminToolExtWin.noConnectionContextForGsw" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/admin-tool-ext-win/dist/main.adminToolExtWin.noConnectionContextForGsw" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No ConnectionContext provided for handleLaunchSsmsMinPropertiesDialogCommand]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -33,7 +33,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/admin-tool-ext-win/out/main.adminToolExtWin.noConnectionContextForProp" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/admin-tool-ext-win/dist/main.adminToolExtWin.noConnectionContextForProp" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No ConnectionContext provided for handleLaunchSsmsMinPropertiesDialogCommand]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -42,7 +42,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/admin-tool-ext-win/out/main.adminToolExtWin.noConnectionProfile" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/admin-tool-ext-win/dist/main.adminToolExtWin.noConnectionProfile" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No connectionProfile provided from connectionContext : {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -51,7 +51,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/admin-tool-ext-win/out/main.adminToolExtWin.noOENode" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/admin-tool-ext-win/dist/main.adminToolExtWin.noOENode" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Could not determine Object Explorer node from connectionContext : {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -60,7 +60,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/admin-tool-ext-win/out/main.adminToolExtWin.ssmsMinError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/admin-tool-ext-win/dist/main.adminToolExtWin.ssmsMinError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error calling SsmsMin with args '{0}' - {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">

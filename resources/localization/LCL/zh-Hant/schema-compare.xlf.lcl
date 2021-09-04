@@ -15,7 +15,19 @@
     <Disp Icon="Expand" Expand="true" Disp="true" LocTbl="false" />
     <Item ItemId=";Xliff Resources" ItemType="0" PsrId="308" Leaf="false">
       <Disp Icon="Str" Disp="true" LocTbl="false" />
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Aggregates" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";@extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.AllowUnsafeRowLevelSecurityDataMoveme" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) nt" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[Do not block data motion on a table which has Row Level Security if this property is set to true. Default is false.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[若此屬性設定為 True，請勿封鎖具有資料列層級安全性之資料表的資料移動 (data motion)。預設為 False。]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Aggregates" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Aggregates]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -24,7 +36,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.AllowDropBlockingAssemblies" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.AllowDropBlockingAssemblies" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Allow Drop Blocking Assemblies]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -33,7 +45,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.AllowIncompatiblePlatform" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.AllowIncompatiblePlatform" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Allow Incompatible Platform]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -42,7 +54,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.AllowUnsafeRowLevelSecurityDataMovement" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.AllowUnsafeRowLevelSecurityDataMovement" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Allow Unsafe Row Level Security Data Movement]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -51,7 +63,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.ApplicationRoles" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.ApplicationRoles" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Application Roles]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -60,7 +72,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Assemblies" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Assemblies" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Assemblies]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -69,7 +81,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.AssemblyFiles" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.AssemblyFiles" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Assembly Files]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -78,7 +90,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.AsymmetricKeys" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.AsymmetricKeys" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Asymmetric Keys]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -87,7 +99,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Audits" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Audits" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Audits]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -96,7 +108,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.BackupDatabaseBeforeChanges" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.BackupDatabaseBeforeChanges" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Backup Database Before Changes]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -105,7 +117,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.BlockOnPossibleDataLoss" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.BlockOnPossibleDataLoss" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Block On Possible Data Loss]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -114,7 +126,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.BlockWhenDriftDetected" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.BlockWhenDriftDetected" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Block When Drift Detected]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -123,7 +135,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.BrokerPriorities" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.BrokerPriorities" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Broker Priorities]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -132,7 +144,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Certificates" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Certificates" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Certificates]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -141,7 +153,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.ClrUserDefinedTypes" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.ClrUserDefinedTypes" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Clr User Defined Types]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -150,7 +162,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.ColumnEncryptionKeys" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.ColumnEncryptionKeys" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Column Encryption Keys]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -159,7 +171,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.ColumnMasterKeys" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.ColumnMasterKeys" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Column Master Keys]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -168,7 +180,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.CommentOutSetVarDeclarations" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.CommentOutSetVarDeclarations" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Comment Out Set Var Declarations]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -177,7 +189,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.CompareUsingTargetCollation" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.CompareUsingTargetCollation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Compare Using Target Collation]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -186,7 +198,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Contracts" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Contracts" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Contracts]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -195,7 +207,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.CreateNewDatabase" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.CreateNewDatabase" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Create New Database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -204,7 +216,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Credentials" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Credentials" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Credentials]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -213,7 +225,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.CryptographicProviders" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.CryptographicProviders" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cryptographic Providers]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -222,7 +234,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.DatabaseAuditSpecifications" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.DatabaseAuditSpecifications" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Database Audit Specifications]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -231,7 +243,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.DatabaseEncryptionKeys" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.DatabaseEncryptionKeys" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Database Encryption Keys]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -240,7 +252,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.DatabaseOptions" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.DatabaseOptions" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Database Options]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -249,7 +261,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.DatabaseRoles" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.DatabaseRoles" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Database Roles]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -258,7 +270,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.DatabaseScopedCredentials" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.DatabaseScopedCredentials" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Database Scoped Credentials]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -267,7 +279,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.DatabaseTriggers" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.DatabaseTriggers" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Database Triggers]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -276,7 +288,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Defaults" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Defaults" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Defaults]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -285,7 +297,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.DeployDatabaseInSingleUserMode" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.DeployDatabaseInSingleUserMode" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Deploy Database In Single User Mode]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -294,7 +306,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.AllowDropBlockingAssemblies" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.AllowDropBlockingAssemblies" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[This property is used by SqlClr deployment to cause any blocking assemblies to be dropped as part of the deployment plan. By default, any blocking/referencing assemblies will block an assembly update if the referencing assembly needs to be dropped.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -303,7 +315,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.AllowIncompatiblePlatform" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.AllowIncompatiblePlatform" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether to attempt the action despite incompatible SQL Server platforms.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -312,16 +324,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.AllowUnsafeRowLevelSecurityDataMovement" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Do not block data motion on a table which has Row Level Security if this property is set to true. Default is false.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[若此屬性設定為 True，請勿封鎖具有資料列層級安全性之資料表的資料移動 (data motion)。預設為 False。]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.BackupDatabaseBeforeChanges" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.BackupDatabaseBeforeChanges" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Backups the database before deploying any changes.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -330,7 +333,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.BlockOnPossibleDataLoss" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.BlockOnPossibleDataLoss" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies that the publish episode should be terminated if there is a possibility of data loss resulting from the publish operation.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -339,7 +342,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.BlockWhenDriftDetected" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.BlockWhenDriftDetected" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether to block updating a database whose schema no longer matches its registration or is unregistered.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -348,7 +351,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.CommentOutSetVarDeclarations" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.CommentOutSetVarDeclarations" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether the declaration of SETVAR variables should be commented out in the generated publish script. You might choose to do this if you plan to specify the values on the command line when you publish by using a tool such as SQLCMD.EXE.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -357,7 +360,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.CompareUsingTargetCollation" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.CompareUsingTargetCollation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[This setting dictates how the database's collation is handled during deployment; by default the target database's collation will be updated if it does not match the collation specified by the source.  When this option is set, the target database's (or server's) collation should be used.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -366,7 +369,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.CreateNewDatabase" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.CreateNewDatabase" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether the target database should be updated or whether it should be dropped and re-created when you publish to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -375,7 +378,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.DeployDatabaseInSingleUserMode" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.DeployDatabaseInSingleUserMode" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[If true, the database is set to Single User Mode before deploying.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -384,7 +387,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.DisableAndReenableDdlTriggers" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.DisableAndReenableDdlTriggers" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether Data Definition Language (DDL) triggers are disabled at the beginning of the publish process and re-enabled at the end of the publish action.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -393,7 +396,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.DoNotAlterChangeDataCaptureObjects" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.DoNotAlterChangeDataCaptureObjects" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[If true, Change Data Capture objects are not altered.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -402,7 +405,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.DoNotAlterReplicatedObjects" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.DoNotAlterReplicatedObjects" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether objects that are replicated are identified during verification.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -411,7 +414,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.DropConstraintsNotInSource" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.DropConstraintsNotInSource" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether constraints that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -420,7 +423,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.DropDmlTriggersNotInSource" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.DropDmlTriggersNotInSource" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether DML triggers that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -429,7 +432,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.DropExtendedPropertiesNotInSource" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.DropExtendedPropertiesNotInSource" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether extended properties that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -438,7 +441,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.DropIndexesNotInSource" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.DropIndexesNotInSource" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether indexes that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -447,7 +450,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.DropObjectsNotInSource" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.DropObjectsNotInSource" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether objects that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.  This value takes precedence over DropExtendedProperties.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -456,7 +459,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.DropPermissionsNotInSource" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.DropPermissionsNotInSource" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether permissions that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish updates to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -465,7 +468,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.DropRoleMembersNotInSource" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.DropRoleMembersNotInSource" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether role members that are not defined in the database snapshot (.dacpac) file will be dropped from the target database when you publish updates to a database.</]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -474,7 +477,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.DropStatisticsNotInSource" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.DropStatisticsNotInSource" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether statistics that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -483,7 +486,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.GenerateSmartDefaults" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.GenerateSmartDefaults" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Automatically provides a default value when updating a table that contains data with a column that does not allow null values.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -492,7 +495,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.IgnoreAnsiNulls" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.IgnoreAnsiNulls" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether differences in the ANSI NULLS setting should be ignored or updated when you publish to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -501,7 +504,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.IgnoreAuthorizer" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.IgnoreAuthorizer" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether differences in the Authorizer should be ignored or updated when you publish to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -510,7 +513,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.IgnoreColumnCollation" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.IgnoreColumnCollation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether differences in the column collations should be ignored or updated when you publish to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -519,7 +522,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.IgnoreColumnOrder" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.IgnoreColumnOrder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether differences in table column order should be ignored or updated when you publish to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -528,7 +531,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.IgnoreComments" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.IgnoreComments" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether differences in the comments should be ignored or updated when you publish to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -537,7 +540,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.IgnoreCryptographicProviderFilePath" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.IgnoreCryptographicProviderFilePath" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether differences in the file path for the cryptographic provider should be ignored or updated when you publish to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -546,7 +549,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.IgnoreDdlTriggerOrder" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.IgnoreDdlTriggerOrder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether differences in the order of Data Definition Language (DDL) triggers should be ignored or updated when you publish to a database or server.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -555,7 +558,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.IgnoreDdlTriggerState" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.IgnoreDdlTriggerState" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether differences in the enabled or disabled state of Data Definition Language (DDL) triggers should be ignored or updated when you publish to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -564,7 +567,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.IgnoreDefaultSchema" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.IgnoreDefaultSchema" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether differences in the default schema should be ignored or updated when you publish to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -573,7 +576,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.IgnoreDmlTriggerOrder" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.IgnoreDmlTriggerOrder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether differences in the order of Data Manipulation Language (DML) triggers should be ignored or updated when you publish to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -582,7 +585,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.IgnoreDmlTriggerState" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.IgnoreDmlTriggerState" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether differences in the enabled or disabled state of DML triggers should be ignored or updated when you publish to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -591,7 +594,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.IgnoreExtendedProperties" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.IgnoreExtendedProperties" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether extended properties should be ignored.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -600,7 +603,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.IgnoreFileAndLogFilePath" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.IgnoreFileAndLogFilePath" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether differences in the paths for files and log files should be ignored or updated when you publish to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -609,7 +612,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.IgnoreFileSize" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.IgnoreFileSize" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether differences in the file sizes should be ignored or whether a warning should be issued when you publish to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -618,7 +621,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.IgnoreFilegroupPlacement" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.IgnoreFilegroupPlacement" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether differences in the placement of objects in FILEGROUPs should be ignored or updated when you publish to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -627,7 +630,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.IgnoreFillFactor" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.IgnoreFillFactor" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether differences in the fill factor for index storage should be ignored or whether a warning should be issued when you publish to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -636,7 +639,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.IgnoreFullTextCatalogFilePath" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.IgnoreFullTextCatalogFilePath" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether differences in the file path for the full-text catalog should be ignored or whether a warning should be issued when you publish to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -645,7 +648,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.IgnoreIdentitySeed" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.IgnoreIdentitySeed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether differences in the seed for an identity column should be ignored or updated when you publish updates to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -654,7 +657,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.IgnoreIncrement" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.IgnoreIncrement" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether differences in the increment for an identity column should be ignored or updated when you publish to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -663,7 +666,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.IgnoreIndexOptions" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.IgnoreIndexOptions" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether differences in the index options should be ignored or updated when you publish to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -672,7 +675,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.IgnoreIndexPadding" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.IgnoreIndexPadding" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether differences in the index padding should be ignored or updated when you publish to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -681,7 +684,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.IgnoreKeywordCasing" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.IgnoreKeywordCasing" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether differences in the casing of keywords should be ignored or updated when you publish to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -690,7 +693,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.IgnoreLockHintsOnIndexes" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.IgnoreLockHintsOnIndexes" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether differences in the lock hints on indexes should be ignored or updated when you publish to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -699,7 +702,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.IgnoreLoginSids" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.IgnoreLoginSids" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether differences in the security identification number (SID) should be ignored or updated when you publish to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -708,7 +711,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.IgnoreNotForReplication" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.IgnoreNotForReplication" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether the not for replication settings should be ignored or updated when you publish to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -717,7 +720,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.IgnoreObjectPlacementOnPartitionScheme" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.IgnoreObjectPlacementOnPartitionScheme" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether an object's placement on a partition scheme should be ignored or updated when you publish to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -726,7 +729,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.IgnorePartitionSchemes" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.IgnorePartitionSchemes" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether differences in partition schemes and functions should be ignored or updated when you publish to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -735,7 +738,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.IgnorePermissions" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.IgnorePermissions" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether permissions should be ignored.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -744,7 +747,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.IgnoreQuotedIdentifiers" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.IgnoreQuotedIdentifiers" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether differences in the quoted identifiers setting should be ignored or updated when you publish to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -753,7 +756,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.IgnoreRoleMembership" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.IgnoreRoleMembership" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether differences in the role membership of logins should be ignored or updated when you publish to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -762,7 +765,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.IgnoreRouteLifetime" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.IgnoreRouteLifetime" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether differences in the amount of time that SQL Server retains the route in the routing table should be ignored or updated when you publish to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -771,7 +774,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.IgnoreSemicolonBetweenStatements" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.IgnoreSemicolonBetweenStatements" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether differences in the semi-colons between T-SQL statements will be ignored or updated when you publish to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -780,7 +783,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.IgnoreTableOptions" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.IgnoreTableOptions" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether differences in the table options will be ignored or updated when you publish to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -789,7 +792,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.IgnoreUserSettingsObjects" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.IgnoreUserSettingsObjects" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether differences in the user settings objects will be ignored or updated when you publish to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -798,7 +801,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.IgnoreWhitespace" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.IgnoreWhitespace" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether differences in white space will be ignored or updated when you publish to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -807,7 +810,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.IgnoreWithNocheckOnCheckConstraints" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.IgnoreWithNocheckOnCheckConstraints" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether differences in the value of the WITH NOCHECK clause for check constraints will be ignored or updated when you publish to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -816,7 +819,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.IgnoreWithNocheckOnForeignKeys" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.IgnoreWithNocheckOnForeignKeys" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether differences in the value of the WITH NOCHECK clause for foreign keys will be ignored or updated when you publish to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -825,7 +828,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.IncludeCompositeObjects" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.IncludeCompositeObjects" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Include all composite elements as part of a single publish operation.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -834,7 +837,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.IncludeTransactionalScripts" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.IncludeTransactionalScripts" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether transactional statements should be used where possible when you publish to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -843,7 +846,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.NoAlterStatementsToChangeClrTypes" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.NoAlterStatementsToChangeClrTypes" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies that publish should always drop and re-create an assembly if there is a difference instead of issuing an ALTER ASSEMBLY statement]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -852,7 +855,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.PopulateFilesOnFileGroups" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.PopulateFilesOnFileGroups" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether a new file is also created when a new FileGroup is created in the target database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -861,7 +864,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.RegisterDataTierApplication" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.RegisterDataTierApplication" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether the schema is registered with the database server.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -870,7 +873,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.RunDeploymentPlanExecutors" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.RunDeploymentPlanExecutors" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether DeploymentPlanExecutor contributors should be run when other operations are executed.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -879,7 +882,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.ScriptDatabaseCollation" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.ScriptDatabaseCollation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether differences in the database collation should be ignored or updated when you publish to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -888,7 +891,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.ScriptDatabaseCompatibility" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.ScriptDatabaseCompatibility" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether differences in the database compatibility should be ignored or updated when you publish to a database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -897,7 +900,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.ScriptDatabaseOptions" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.ScriptDatabaseOptions" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether target database properties should be set or updated as part of the publish action.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -906,7 +909,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.ScriptDeployStateChecks" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.ScriptDeployStateChecks" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether statements are generated in the publish script to verify that the database name and server name match the names specified in the database project.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -915,7 +918,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.ScriptFileSize" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.ScriptFileSize" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Controls whether size is specified when adding a file to a filegroup.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -924,7 +927,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.ScriptNewConstraintValidation" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.ScriptNewConstraintValidation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[At the end of publish all of the constraints will be verified as one set, avoiding data errors caused by a check or foreign key constraint in the middle of publish. If set to False, your constraints will be published without checking the corresponding data.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -933,7 +936,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.ScriptRefreshModule" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.ScriptRefreshModule" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Include refresh statements at the end of the publish script.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -942,7 +945,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.TreatVerificationErrorsAsWarnings" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.TreatVerificationErrorsAsWarnings" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether errors encountered during publish verification should be treated as warnings. The check is performed against the generated deployment plan before the plan is executed against your target database. Plan verification detects problems such as the loss of target-only objects (such as indexes) that must be dropped to make a change. Verification will also detect situations where dependencies (such as a table or view) exist because of a reference to a composite project, but do not exist in the target database. You might choose to do this to get a complete list of all issues, instead of having the publish action stop on the first error.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -951,7 +954,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.UnmodifiableObjectWarnings" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.UnmodifiableObjectWarnings" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether warnings should be generated when differences are found in objects that cannot be modified, for example, if the file size or file paths were different for a file.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -960,7 +963,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.VerifyCollationCompatibility" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.VerifyCollationCompatibility" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether collation compatibility is verified.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -969,7 +972,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Description.VerifyDeployment" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Description.VerifyDeployment" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies whether checks should be performed before publishing that will stop the publish action if issues are present that might block successful publishing. For example, your publish action might stop if you have foreign keys on the target database that do not exist in the database project, and that will cause errors when you publish.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -978,7 +981,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.DisableAndReenableDdlTriggers" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.DisableAndReenableDdlTriggers" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Disable And Reenable Ddl Triggers]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -987,7 +990,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.DoNotAlterChangeDataCaptureObjects" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.DoNotAlterChangeDataCaptureObjects" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Do Not Alter Change Data Capture Objects]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -996,7 +999,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.DoNotAlterReplicatedObjects" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.DoNotAlterReplicatedObjects" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Do Not Alter Replicated Objects]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1005,7 +1008,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.DropConstraintsNotInSource" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.DropConstraintsNotInSource" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Drop Constraints Not In Source]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1014,7 +1017,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.DropDmlTriggersNotInSource" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.DropDmlTriggersNotInSource" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Drop Dml Triggers Not In Source]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1023,7 +1026,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.DropExtendedPropertiesNotInSource" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.DropExtendedPropertiesNotInSource" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Drop Extended Properties Not In Source]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1032,7 +1035,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.DropIndexesNotInSource" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.DropIndexesNotInSource" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Drop Indexes Not In Source]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1041,7 +1044,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.DropObjectsNotInSource" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.DropObjectsNotInSource" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Drop Objects Not In Source]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1050,7 +1053,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.DropPermissionsNotInSource" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.DropPermissionsNotInSource" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Drop Permissions Not In Source]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1059,7 +1062,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.DropRoleMembersNotInSource" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.DropRoleMembersNotInSource" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Drop Role Members Not In Source]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1068,7 +1071,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.DropStatisticsNotInSource" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.DropStatisticsNotInSource" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Drop Statistics Not In Source]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1077,7 +1080,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Endpoints" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Endpoints" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Endpoints]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1086,7 +1089,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.ErrorMessages" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.ErrorMessages" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error Messages]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1095,7 +1098,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.EventNotifications" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.EventNotifications" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Event Notifications]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1104,7 +1107,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.EventSessions" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.EventSessions" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Event Sessions]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1113,7 +1116,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.ExtendedProperties" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.ExtendedProperties" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Extended Properties]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1122,7 +1125,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.ExternalDataSources" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.ExternalDataSources" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[External Data Sources]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1131,7 +1134,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.ExternalFileFormats" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.ExternalFileFormats" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[External File Formats]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1140,7 +1143,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.ExternalStreamingJobs" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.ExternalStreamingJobs" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[External Streaming Jobs]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1149,7 +1152,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.ExternalStreams" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.ExternalStreams" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[External Streams]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1158,7 +1161,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.ExternalTables" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.ExternalTables" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[External Tables]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1167,7 +1170,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.FileTables" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.FileTables" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[File Tables]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1176,7 +1179,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Filegroups" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Filegroups" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Filegroups]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1185,7 +1188,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Files" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Files" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Files]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1194,7 +1197,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.FullTextCatalogs" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.FullTextCatalogs" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Full Text Catalogs]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1203,7 +1206,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.FullTextStoplists" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.FullTextStoplists" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Full Text Stoplists]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1212,7 +1215,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.GeneralOptionsLabel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.GeneralOptionsLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[General Options]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1221,7 +1224,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.GenerateSmartDefaults" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.GenerateSmartDefaults" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Generate SmartDefaults]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1230,7 +1233,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.IgnoreAnsiNulls" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.IgnoreAnsiNulls" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Ignore AnsiNulls]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1239,7 +1242,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.IgnoreAuthorizer" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.IgnoreAuthorizer" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Ignore Authorizer]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1248,7 +1251,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.IgnoreColumnCollation" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.IgnoreColumnCollation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Ignore Column Collation]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1257,7 +1260,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.IgnoreColumnOrder" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.IgnoreColumnOrder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Ignore Column Order]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1266,7 +1269,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.IgnoreComments" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.IgnoreComments" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Ignore Comments]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1275,7 +1278,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.IgnoreCryptographicProviderFilePath" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.IgnoreCryptographicProviderFilePath" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Ignore Cryptographic Provider FilePath]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1284,7 +1287,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.IgnoreDdlTriggerOrder" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.IgnoreDdlTriggerOrder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Ignore Ddl Trigger Order]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1293,7 +1296,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.IgnoreDdlTriggerState" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.IgnoreDdlTriggerState" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Ignore Ddl Trigger State]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1302,7 +1305,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.IgnoreDefaultSchema" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.IgnoreDefaultSchema" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Ignore Default Schema]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1311,7 +1314,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.IgnoreDmlTriggerOrder" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.IgnoreDmlTriggerOrder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Ignore Dml Trigger Order]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1320,7 +1323,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.IgnoreDmlTriggerState" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.IgnoreDmlTriggerState" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Ignore Dml Trigger State]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1329,7 +1332,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.IgnoreExtendedProperties" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.IgnoreExtendedProperties" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Ignore Extended Properties]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1338,7 +1341,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.IgnoreFileAndLogFilePath" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.IgnoreFileAndLogFilePath" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Ignore File And Log File Path]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1347,7 +1350,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.IgnoreFileSize" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.IgnoreFileSize" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Ignore File Size]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1356,7 +1359,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.IgnoreFilegroupPlacement" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.IgnoreFilegroupPlacement" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Ignore Filegroup Placement]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1365,7 +1368,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.IgnoreFillFactor" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.IgnoreFillFactor" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Ignore Fill Factor]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1374,7 +1377,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.IgnoreFullTextCatalogFilePath" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.IgnoreFullTextCatalogFilePath" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Ignore Full Text Catalog FilePath]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1383,7 +1386,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.IgnoreIdentitySeed" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.IgnoreIdentitySeed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Ignore Identity Seed]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1392,7 +1395,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.IgnoreIncrement" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.IgnoreIncrement" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Ignore Increment]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1401,7 +1404,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.IgnoreIndexOptions" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.IgnoreIndexOptions" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Ignore Index Options]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1410,7 +1413,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.IgnoreIndexPadding" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.IgnoreIndexPadding" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Ignore Index Padding]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1419,7 +1422,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.IgnoreKeywordCasing" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.IgnoreKeywordCasing" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Ignore Keyword Casing]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1428,7 +1431,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.IgnoreLockHintsOnIndexes" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.IgnoreLockHintsOnIndexes" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Ignore Lock Hints On Indexes]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1437,7 +1440,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.IgnoreLoginSids" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.IgnoreLoginSids" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Ignore Login Sids]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1446,7 +1449,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.IgnoreNotForReplication" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.IgnoreNotForReplication" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Ignore Not For Replication]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1455,7 +1458,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.IgnoreObjectPlacementOnPartitionScheme" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.IgnoreObjectPlacementOnPartitionScheme" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Ignore Object Placement On Partition Scheme]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1464,7 +1467,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.IgnorePartitionSchemes" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.IgnorePartitionSchemes" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Ignore Partition Schemes]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1473,7 +1476,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.IgnorePermissions" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.IgnorePermissions" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Ignore Permissions]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1482,7 +1485,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.IgnoreQuotedIdentifiers" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.IgnoreQuotedIdentifiers" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Ignore Quoted Identifiers]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1491,7 +1494,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.IgnoreRoleMembership" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.IgnoreRoleMembership" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Ignore Role Membership]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1500,7 +1503,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.IgnoreRouteLifetime" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.IgnoreRouteLifetime" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Ignore Route Lifetime]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1509,7 +1512,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.IgnoreSemicolonBetweenStatements" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.IgnoreSemicolonBetweenStatements" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Ignore Semicolon Between Statements]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1518,7 +1521,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.IgnoreTableOptions" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.IgnoreTableOptions" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Ignore Table Options]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1527,7 +1530,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.IgnoreUserSettingsObjects" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.IgnoreUserSettingsObjects" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Ignore User Settings Objects]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1536,7 +1539,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.IgnoreWhitespace" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.IgnoreWhitespace" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Ignore Whitespace]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1545,7 +1548,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.IgnoreWithNocheckOnCheckConstraints" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.IgnoreWithNocheckOnCheckConstraints" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Ignore With No check On Check Constraints]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1554,7 +1557,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.IgnoreWithNocheckOnForeignKeys" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.IgnoreWithNocheckOnForeignKeys" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Ignore With Nocheck On ForeignKeys]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1563,7 +1566,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.IncludeCompositeObjects" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.IncludeCompositeObjects" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Include Composite Objects]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1572,7 +1575,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.IncludeTransactionalScripts" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.IncludeTransactionalScripts" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Include Transactional Scripts]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1581,7 +1584,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.LinkedServerLogins" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.LinkedServerLogins" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Linked Server Logins]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1590,7 +1593,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.LinkedServers" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.LinkedServers" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Linked Servers]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1599,7 +1602,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Logins" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Logins" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Logins]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1608,7 +1611,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.MasterKeys" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.MasterKeys" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Master Keys]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1617,7 +1620,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.MessageTypes" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.MessageTypes" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Message Types]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1626,7 +1629,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.NoAlterStatementsToChangeClrTypes" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.NoAlterStatementsToChangeClrTypes" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No Alter Statements To Change Clr Types]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1635,7 +1638,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.ObjectTypesOptionsLabel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.ObjectTypesOptionsLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Include Object Types]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1644,7 +1647,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.PartitionFunctions" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.PartitionFunctions" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Partition Functions]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1653,7 +1656,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.PartitionSchemes" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.PartitionSchemes" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Partition Schemes]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1662,7 +1665,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Permissions" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Permissions" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Permissions]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1671,7 +1674,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.PopulateFilesOnFileGroups" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.PopulateFilesOnFileGroups" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Populate Files On File Groups]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1680,7 +1683,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Queues" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Queues" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Queues]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1689,7 +1692,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.RegisterDataTierApplication" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.RegisterDataTierApplication" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Register DataTier Application]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1698,7 +1701,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.RemoteServiceBindings" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.RemoteServiceBindings" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Remote Service Bindings]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1707,7 +1710,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.RoleMembership" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.RoleMembership" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Role Membership]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1716,7 +1719,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Routes" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Routes" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Routes]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1725,7 +1728,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Rules" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Rules" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Rules]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1734,7 +1737,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.RunDeploymentPlanExecutors" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.RunDeploymentPlanExecutors" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Run Deployment Plan Executors]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1743,7 +1746,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.ScalarValuedFunctions" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.ScalarValuedFunctions" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Scalar Valued Functions]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1752,7 +1755,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.SchemaCompareOptionsDialogLabel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.SchemaCompareOptionsDialogLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Schema Compare Options]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1761,7 +1764,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.ScriptDatabaseCollation" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.ScriptDatabaseCollation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Script Database Collation]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1770,7 +1773,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.ScriptDatabaseCompatibility" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.ScriptDatabaseCompatibility" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Script Database Compatibility]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1779,7 +1782,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.ScriptDatabaseOptions" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.ScriptDatabaseOptions" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Script Database Options]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1788,7 +1791,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.ScriptDeployStateChecks" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.ScriptDeployStateChecks" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Script Deploy StateChecks]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1797,7 +1800,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.ScriptFileSize" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.ScriptFileSize" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Script File Size]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1806,7 +1809,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.ScriptNewConstraintValidation" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.ScriptNewConstraintValidation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Script New Constraint Validation]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1815,7 +1818,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.ScriptRefreshModule" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.ScriptRefreshModule" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Script Refresh Module]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1824,7 +1827,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.SearchPropertyLists" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.SearchPropertyLists" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Search Property Lists]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1833,7 +1836,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.SecurityPolicies" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.SecurityPolicies" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Security Policies]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1842,7 +1845,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Sequences" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Sequences" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Sequences]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1851,7 +1854,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.ServerAuditSpecifications" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.ServerAuditSpecifications" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Server Audit Specifications]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1860,7 +1863,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.ServerRoleMembership" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.ServerRoleMembership" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Server Role Membership]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1869,7 +1872,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.ServerRoles" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.ServerRoles" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Server Roles]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1878,7 +1881,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.ServerTriggers" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.ServerTriggers" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Server Triggers]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1887,7 +1890,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Services" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Services" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Services]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1896,7 +1899,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Signatures" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Signatures" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Signatures]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1905,7 +1908,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.StoredProcedures" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.StoredProcedures" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Stored Procedures]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1914,7 +1917,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.SymmetricKeys" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.SymmetricKeys" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Symmetric Keys]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1923,7 +1926,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Synonyms" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Synonyms" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Synonyms]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1932,7 +1935,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.TableValuedFunctions" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.TableValuedFunctions" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Table Valued Functions]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1941,7 +1944,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Tables" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Tables" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Tables]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1950,7 +1953,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.TreatVerificationErrorsAsWarnings" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.TreatVerificationErrorsAsWarnings" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Treat Verification Errors As Warnings]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1959,7 +1962,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.UnmodifiableObjectWarnings" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.UnmodifiableObjectWarnings" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Unmodifiable Object Warnings]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1968,7 +1971,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.UserDefinedDataTypes" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.UserDefinedDataTypes" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[User Defined Data Types]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1977,7 +1980,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.UserDefinedTableTypes" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.UserDefinedTableTypes" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[User Defined Table Types]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1986,7 +1989,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Users" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Users" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Users]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1995,7 +1998,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.VerifyCollationCompatibility" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.VerifyCollationCompatibility" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Verify Collation Compatibility]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2004,7 +2007,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.VerifyDeployment" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.VerifyDeployment" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Verify Deployment]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2013,7 +2016,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.Views" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.Views" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Views]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2022,7 +2025,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompare.XmlSchemaCollections" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompare.XmlSchemaCollections" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Xml Schema Collections]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2031,7 +2034,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.SchemaCompareOptionsDialog.Reset" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.SchemaCompareOptionsDialog.Reset" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Reset]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2040,7 +2043,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.ApplyConfirmation" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.ApplyConfirmation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Are you sure you want to update the target?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2049,7 +2052,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.CompareDetailsTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.CompareDetailsTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Compare Details]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2058,7 +2061,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.GetConnectionString" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.GetConnectionString" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Do you want to connect to {0}?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2067,7 +2070,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.RecompareToRefresh" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.RecompareToRefresh" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Press Compare to refresh the comparison.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2076,7 +2079,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.actionColumn" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.actionColumn" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Action]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2085,7 +2088,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.addAction" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.addAction" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Add]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2094,7 +2097,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.applyButtonDisabledTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.applyButtonDisabledTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Apply is enabled when the target is a database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2103,7 +2106,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.applyButtonEnabledTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.applyButtonEnabledTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Apply changes to target]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2112,7 +2115,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.applyNoChanges" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.applyNoChanges" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No changes to apply]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2121,7 +2124,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.cancelCompareButton" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.cancelCompareButton" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Stop]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2130,7 +2133,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.cancelErrorMessage" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.cancelErrorMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cancel schema compare failed: '{0}']]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2139,7 +2142,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.cannotExcludeMessage" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.cannotExcludeMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cannot exclude {0}. Included dependents exist]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2148,7 +2151,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.cannotExcludeMessageWithDependent" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.cannotExcludeMessageWithDependent" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cannot exclude {0}. Included dependents exist, such as {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2157,7 +2160,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.cannotIncludeMessage" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.cannotIncludeMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cannot include {0}. Excluded dependents exist]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2166,7 +2169,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.cannotIncludeMessageWithDependent" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.cannotIncludeMessageWithDependent" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cannot include {0}. Excluded dependents exist, such as {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2175,7 +2178,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.changeAction" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.changeAction" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Change]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2184,7 +2187,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.compareButton" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.compareButton" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Compare]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2193,7 +2196,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.compareErrorMessage" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.compareErrorMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Schema Compare failed: {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2202,7 +2205,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.dacpacRadioButtonLabel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.dacpacRadioButtonLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Data-tier Application File (.dacpac)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2211,7 +2214,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.databaseButtonLabel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.databaseButtonLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2220,7 +2223,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.deleteAction" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.deleteAction" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Delete]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2229,7 +2232,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.dialogTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.dialogTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Schema Compare]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2238,7 +2241,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.differencesTableTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.differencesTableTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Comparison between Source and Target]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2247,7 +2250,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.generateScriptButton" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.generateScriptButton" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Generate script]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2256,7 +2259,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.generateScriptButtonDisabledTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.generateScriptButtonDisabledTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Generate script is enabled when the target is a database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2265,7 +2268,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.generateScriptEnabledButton" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.generateScriptEnabledButton" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Generate script to deploy changes to target]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2274,7 +2277,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.generateScriptErrorMessage" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.generateScriptErrorMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Generate script failed: '{0}']]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2283,7 +2286,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.generateScriptNoChanges" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.generateScriptNoChanges" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No changes to script]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2292,7 +2295,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.includeColumnName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.includeColumnName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Include]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2301,7 +2304,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.includeExcludeInfoMessage" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.includeExcludeInfoMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Please note that include/exclude operations can take a moment to calculate affected dependencies]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2310,7 +2313,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.noDifferences" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.noDifferences" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No schema differences were found.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2319,7 +2322,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.openFile" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.openFile" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Open]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2328,7 +2331,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.openScmpButton" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.openScmpButton" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Open .scmp file]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2337,7 +2340,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.openScmpButtonTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.openScmpButtonTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Load source, target, and options saved in an .scmp file]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2346,7 +2349,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.openScmpErrorMessage" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.openScmpErrorMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Open scmp failed: '{0}']]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2355,7 +2358,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.optionsButton" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.optionsButton" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Options]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2364,7 +2367,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.radioButtonsLabel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.radioButtonsLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Type]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2373,7 +2376,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.saveFile" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.saveFile" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Save]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2382,7 +2385,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.saveScmpButton" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.saveScmpButton" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Save .scmp file]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2391,7 +2394,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.saveScmpButtonTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.saveScmpButtonTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Save source and target, options, and excluded elements]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2400,7 +2403,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.saveScmpErrorMessage" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.saveScmpErrorMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Save scmp failed: '{0}']]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2409,7 +2412,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.selectConnection" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.selectConnection" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select connection]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2418,7 +2421,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.selectSourceFile" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.selectSourceFile" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select source file]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2427,7 +2430,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.selectTargetFile" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.selectTargetFile" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select target file]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2436,7 +2439,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.sourceButtonTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.sourceButtonTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select Source]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2445,7 +2448,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.sourceNameColumn" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.sourceNameColumn" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Source Name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2454,7 +2457,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.startText" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.startText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[To compare two schemas, first select a source schema and target schema, then press Compare.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2463,7 +2466,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.switchButtonTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.switchButtonTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Switch source and target]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2472,7 +2475,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.switchDirectionButton" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.switchDirectionButton" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Switch direction]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2481,7 +2484,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.targetButtonTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.targetButtonTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select Target]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2490,7 +2493,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.targetNameColumn" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.targetNameColumn" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Target Name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2499,7 +2502,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.typeColumn" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.typeColumn" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Type]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2508,7 +2511,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.updateButton" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.updateButton" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Apply]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2517,7 +2520,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.updateErrorMessage" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.updateErrorMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Schema Compare Apply failed '{0}']]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2526,7 +2529,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompare.waitText" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.waitText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Initializing Comparison. This might take a moment.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2535,7 +2538,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompareDialog.No" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompareDialog.No" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2544,7 +2547,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompareDialog.SourceTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompareDialog.SourceTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Source]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2553,7 +2556,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompareDialog.TargetTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompareDialog.TargetTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Target]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2562,7 +2565,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompareDialog.Yes" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompareDialog.Yes" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Yes]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2571,7 +2574,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompareDialog.cancel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompareDialog.cancel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cancel]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2580,7 +2583,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompareDialog.databaseDropdownTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompareDialog.databaseDropdownTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2589,7 +2592,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompareDialog.defaultUser" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompareDialog.defaultUser" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[default]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2598,7 +2601,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompareDialog.differentSourceMessage" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompareDialog.differentSourceMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[A different source schema has been selected. Compare to see the comparison?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2607,7 +2610,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompareDialog.differentSourceTargetMessage" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompareDialog.differentSourceTargetMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Different source and target schemas have been selected. Compare to see the comparison?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2616,7 +2619,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompareDialog.differentTargetMessage" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompareDialog.differentTargetMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[A different target schema has been selected. Compare to see the comparison?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2625,7 +2628,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompareDialog.fileTextBoxLabel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompareDialog.fileTextBoxLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[File]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2634,7 +2637,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompareDialog.ok" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompareDialog.ok" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[OK]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2643,7 +2646,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompareDialog.serverDropdownTitle" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompareDialog.serverDropdownTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Server]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2652,7 +2655,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompareDialog.sourceDatabaseDropdown" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompareDialog.sourceDatabaseDropdown" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Source Database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2661,7 +2664,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompareDialog.sourceServerDropdown" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompareDialog.sourceServerDropdown" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Source Server]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2670,7 +2673,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompareDialog.sourceTextBox" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompareDialog.sourceTextBox" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Source file]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2679,7 +2682,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompareDialog.targetDatabaseDropdown" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompareDialog.targetDatabaseDropdown" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Target Database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2688,7 +2691,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompareDialog.targetServerDropdown" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompareDialog.targetServerDropdown" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Target Server]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2697,7 +2700,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompareDialog.targetTextBox" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompareDialog.targetTextBox" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Target file]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2706,7 +2709,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/schema-compare/out/localizedConstants.schemaCompareOptions.RecompareMessage" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompareOptions.RecompareMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Options have changed. Recompare to see the comparison?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">

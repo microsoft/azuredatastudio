@@ -833,10 +833,13 @@
       </Item>
       <Item ItemId=";extensions/azurecore/dist/localizedConstants.azurecore.azureArcPostgres" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Arc enabled PostgreSQL Hyperscale]]></Val>
+          <Val><![CDATA[Azure Arc-enabled PostgreSQL Hyperscale]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure Arc 사용 PostgreSQL 하이퍼스케일]]></Val>
+            <Val><![CDATA[Azure Arc가 지원되는 PostgreSQL 하이퍼스케일]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure Arc enabled PostgreSQL Hyperscale]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
