@@ -202,12 +202,18 @@ export class PostgresExtensionsPage extends DashboardPage {
 
 	private refreshExtensionsTable(): void {
 		let extensions = this._postgresModel.config!.spec.engine.extensions;
-		let extensionBasicData = extensions.map(e => {
-			this.extensionNames.push(e.name);
-			return [this.createDropCheckBox(e.name), e.name];
-		});
-
 		let extenesionFinalData: azdata.DeclarativeTableCellValue[][] = [];
+		let extensionBasicData: (string | azdata.CheckBoxComponent | azdata.ImageComponent)[][] = [];
+
+		if (extensions) {
+			extensionBasicData = extensions.map(e => {
+				this.extensionNames.push(e.name);
+				return [this.createDropCheckBox(e.name), e.name];
+			});
+		} else {
+			extensionBasicData = [[this.modelView.modelBuilder.image().component(), loc.noExtensions]];
+		}
+
 		extenesionFinalData = extensionBasicData.map(e => {
 			return e.map((value): azdata.DeclarativeTableCellValue => {
 				return { value: value };
@@ -233,6 +239,7 @@ export class PostgresExtensionsPage extends DashboardPage {
 			checkBox.onChanged(() => {
 				if (checkBox.checked) {
 					this.droppedExtensions.push(name);
+					this.dropExtensionsButton.focus();
 				} else {
 					let index = this.droppedExtensions.indexOf(name, 0);
 					this.droppedExtensions.splice(index, 1);
@@ -277,6 +284,7 @@ export class PostgresExtensionsPage extends DashboardPage {
 			this.extensionsLink.url = `https://www.postgresql.org/docs/${this._postgresModel.engineVersion}/external-extensions.html`;
 			this.extensionNames = [];
 			this.refreshExtensionsTable();
+			this.addExtensionsButton.focus();
 		}
 	}
 }
