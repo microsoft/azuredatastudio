@@ -1,25 +1,9 @@
 {
-	"azdata.displayName": "Azure CLI",
-	"azdata.description": "Support for Azure CLI.",
-	"azdata.config.title": "Azure CLI Configuration",
-	"azdata.config.debug": "Log debug info to the output channel for all executed az commands",
+	"azcli.arc.displayName": "Azure CLI",
+	"azcli.arc.description": "Support for Azure CLI.",
+	"azcli.arc.config.title": "Azure CLI Configuration",
+	"azcli.arc.config.debug": "Log debug info to the output channel for all executed az commands",
 
 	"command.category": "Azure CLI",
-	"azdata.acceptEula.command.name": "Accept Eula",
-	"azdata.install.command.name": "Install",
-	"azdata.update.command.name": "Check for Update",
-	"azdata.category": "Azure CLI",
-
-	"azdata.acceptEula.description": "Choose how acceptance of EULA for the Azure CLI is done",
-	"azdata.acceptEula.prompt.description": "The user will be prompted for acceptance of EULA for the Azure CLI",
-	"azdata.acceptEula.dontPrompt.description": "The user will not be prompted for acceptance of EULA for the Azure CLI",
-
-	"azdata.install.description": "Choose how install of Azure CLI is done",
-	"azdata.install.prompt.description": "The user will be prompted for installation of the Azure CLI",
-	"azdata.install.dontPrompt.description": "The user will not be prompted for installation of the Azure CLI",
-
-	"azdata.update.description": "Choose whether you will be prompted when an update of the Azure CLI is available.",
-	"azdata.requiredUpdate.description": "Choose whether you will be prompted when a required update of the Azure CLI is available.",
-	"azdata.update.prompt.description": "The user will be prompted for update of the Azure CLI",
-	"azdata.update.dontPrompt.description": "The user will not be prompted for update of the Azure CLI"
+	"azcli.arc.category": "Azure CLI"
 }

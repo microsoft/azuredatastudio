@@ -3,19 +3,30 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdataExt from 'azdata-ext';
+import * as azExt from 'az-ext';
 import * as which from 'which';
 import * as loc from '../localizedConstants';
 
-export class NoAzdataError extends Error implements azdataExt.ErrorWithLink {
+export class NoAzureCLIError extends Error implements azExt.ErrorWithLink {
 	constructor() {
-		super(loc.noAzdata);
+		super(loc.noAzureCLI);
 	}
 
 	public get messageWithLink(): string {
-		return loc.noAzdataWithLink;
+		return loc.noAzureCLI;
 	}
 }
+
+export class AzureCLIArcExtError extends Error implements azExt.ErrorWithLink {
+	constructor() {
+		super(loc.arcdataExtensionNotInstalled);
+	}
+
+	public get messageWithLink(): string {
+		return loc.arcdataExtensionNotInstalled;
+	}
+}
+
 /**
  * Searches for the first instance of the specified executable in the PATH environment variable
  * @param exe The executable to search for

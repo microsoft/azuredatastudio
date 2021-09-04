@@ -3,25 +3,24 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IAzdataTool } from '../azdata';
+import { IAzTool } from '../az';
 
-export class AzdataToolService {
-	private _localAzdata: IAzdataTool | undefined;
+export class AzToolService {
+	private _localAz: IAzTool | undefined;
 	constructor() {
 	}
 
 	/**
-	* Gets the localAzdata that was last saved
+	* Gets the localAz that was last saved
 	*/
-	get localAzdata(): IAzdataTool | undefined {
-		return this._localAzdata;
+	get localAz(): IAzTool | undefined {
+		return this._localAz;
 	}
 
 	/**
-	* Sets the localAzdata object to be used for azdata operations
+	* Sets the localAz object to be used for az operations
 	*/
-	set localAzdata(azdata: IAzdataTool | undefined) {
-		this._localAzdata = azdata;
+	set localAz(az: IAzTool | undefined) {
+		this._localAz = az;
 	}
 }
-

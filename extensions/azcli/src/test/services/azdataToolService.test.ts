@@ -4,14 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as should from 'should';
-import { AzdataTool } from '../../azdata';
-import { AzdataToolService } from '../../services/azdataToolService';
+import { AzTool } from '../../az';
+import { AzToolService } from '../../services/azToolService';
 
-describe('azdataToolService', function (): void {
+describe('azToolService', function (): void {
 	it('Tool should be set correctly', async function (): Promise<void> {
-		const service = new AzdataToolService();
-		should(service.localAzdata).be.undefined();
-		service.localAzdata = new AzdataTool('my path', '1.0.0');
+		const service = new AzToolService();
+		should(service.localAz).be.undefined();
+		service.localAz = new AzTool('my path', '1.0.0');
 		should(service).not.be.undefined();
 	});
 });
