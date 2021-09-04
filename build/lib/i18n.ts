@@ -609,7 +609,7 @@ const editorProject: string = 'vscode-editor',
 	setupProject: string = 'vscode-setup';
 
 // {{SQL CARBON EDIT}}
-const sqlopsProject: string = 'sqlops-core';
+const adsProject: string = 'ads-core';
 
 export function getResource(sourceFile: string): Resource {
 	let resource: string;
@@ -636,7 +636,7 @@ export function getResource(sourceFile: string): Resource {
 
 	// {{SQL CARBON EDIT}}
 	else if (/^sql/.test(sourceFile)) {
-		return { name: 'sql', project: sqlopsProject };
+		return { name: 'sql', project: adsProject };
 	}
 
 	throw new Error(`Could not identify the XLF bundle for ${sourceFile}`);

@@ -487,7 +487,7 @@ function processNlsFiles(opts) {
 exports.processNlsFiles = processNlsFiles;
 const editorProject = 'vscode-editor', workbenchProject = 'vscode-workbench', extensionsProject = 'vscode-extensions', setupProject = 'vscode-setup';
 // {{SQL CARBON EDIT}}
-const sqlopsProject = 'sqlops-core';
+const adsProject = 'ads-core';
 function getResource(sourceFile) {
     let resource;
     if (/^vs\/platform/.test(sourceFile)) {
@@ -518,7 +518,7 @@ function getResource(sourceFile) {
     }
     // {{SQL CARBON EDIT}}
     else if (/^sql/.test(sourceFile)) {
-        return { name: 'sql', project: sqlopsProject };
+        return { name: 'sql', project: adsProject };
     }
     throw new Error(`Could not identify the XLF bundle for ${sourceFile}`);
 }
