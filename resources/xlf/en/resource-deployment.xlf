@@ -722,11 +722,6 @@
       <source xml:lang="en">moving kubectl into the install location in the PATH …</source>
     </trans-unit>
   </body></file>
-  <file original="extensions/resource-deployment/dist/ui/notebookWizard/notebookWizardPage" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="wizardPage.ValidationError">
-      <source xml:lang="en">There are some errors on this page, click 'Show Details' to view the errors.</source>
-    </trans-unit>
-  </body></file>
   <file original="extensions/resource-deployment/dist/ui/deploymentInputDialog" source-language="en" datatype="plaintext"><body>
     <trans-unit id="deploymentDialog.OpenNotebook">
       <source xml:lang="en">Open Notebook</source>
@@ -1041,9 +1036,6 @@
     </trans-unit>
     <trans-unit id="deployCluster.AdminPasswordField">
       <source xml:lang="en">Password</source>
-    </trans-unit>
-    <trans-unit id="deployCluster.ValidationError">
-      <source xml:lang="en">There are some errors on this page, click 'Show Details' to view the errors.</source>
     </trans-unit>
   </body></file>
   <file original="extensions/resource-deployment/dist/ui/deployClusterWizard/pages/serviceSettingsPage" source-language="en" datatype="plaintext"><body>

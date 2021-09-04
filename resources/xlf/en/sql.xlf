@@ -2887,6 +2887,9 @@ Error: {1}</source>
     <trans-unit id="notebook.maxRichTextUndoHistory">
       <source xml:lang="en">The maximum number of changes stored in the undo history for the notebook Rich Text editor.</source>
     </trans-unit>
+    <trans-unit id="notebook.useAbsoluteFilePaths">
+      <source xml:lang="en">Use absolute file paths when linking to other notebooks.</source>
+    </trans-unit>
     <trans-unit id="searchConfigurationTitle">
       <source xml:lang="en">Search Notebooks</source>
     </trans-unit>
