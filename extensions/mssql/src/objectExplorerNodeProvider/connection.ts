@@ -8,6 +8,7 @@ import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 import * as constants from '../constants';
+import { getIgnoreSslVerificationConfigSetting } from '../util/auth';
 import { IFileSource, IHdfsOptions, FileSourceFactory } from './fileSources';
 
 export class SqlClusterConnection {
@@ -56,6 +57,7 @@ export class SqlClusterConnection {
 			user: this.user,
 			path: 'gateway/default/webhdfs/v1',
 			requestParams: {
+				rejectUnauthorized: !getIgnoreSslVerificationConfigSetting()
 			}
 		};
 		if (this.isIntegratedAuth()) {

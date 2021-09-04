@@ -961,7 +961,7 @@ export class WebHDFS {
 		this.unlink(path, recursive, callback);
 	}
 
-	public static createClient(opts: IHdfsOptions, requestParams: IRequestParams): WebHDFS {
+	public static createClient(opts: IHdfsOptions): WebHDFS {
 		return new WebHDFS(
 			Object.assign(
 				{
@@ -971,7 +971,7 @@ export class WebHDFS {
 				},
 				opts || {}
 			),
-			requestParams
+			opts.requestParams ?? { }
 		);
 	}
 }
