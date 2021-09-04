@@ -26,6 +26,7 @@ import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { RadioButton } from 'sql/base/browser/ui/radioButton/radioButton';
 import { attachCalloutDialogStyler } from 'sql/workbench/common/styler';
 import * as path from 'vs/base/common/path';
+import { unquoteText } from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/utils';
 
 export interface IImageCalloutDialogOptions {
 	insertTitle?: string,
@@ -199,7 +200,7 @@ export class ImageCalloutDialog extends Modal {
 
 	public insert(): void {
 		this.hide('ok');
-		let imgPath = this._imageUrlInputBox.value;
+		let imgPath = unquoteText(this._imageUrlInputBox.value);
 		let imageName = path.basename(imgPath);
 		this._selectionComplete.resolve({
 			embedImage: this._imageEmbedCheckbox.checked,

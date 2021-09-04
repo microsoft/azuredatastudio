@@ -21,7 +21,7 @@ import { Deferred } from 'sql/base/common/promise';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { attachCalloutDialogStyler } from 'sql/workbench/common/styler';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { escapeLabel, escapeUrl } from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/utils';
+import { escapeLabel, escapeUrl, unquoteText } from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/utils';
 
 export interface ILinkCalloutDialogOptions {
 	insertTitle?: string,
@@ -158,7 +158,7 @@ export class LinkCalloutDialog extends Modal {
 	public insert(): void {
 		this.hide('ok');
 		let escapedLabel = escapeLabel(this._linkTextInputBox.value);
-		let escapedUrl = escapeUrl(this._linkUrlInputBox.value);
+		let escapedUrl = escapeUrl(unquoteText(this._linkUrlInputBox.value));
 
 		if (this._previouslySelectedRange) {
 			// Reset selection to previous state before callout was open
