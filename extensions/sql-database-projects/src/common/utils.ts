@@ -256,14 +256,18 @@ export type IDacFxService = mssql.IDacFxService | vscodeMssql.IDacFxService;
 
 export async function getDacFxService(): Promise<IDacFxService> {
 	if (getAzdataApi()) {
-		let ext = vscode.extensions.getExtension(mssql.extension.name) as vscode.Extension<mssql.IExtension>;
+		const ext = vscode.extensions.getExtension(mssql.extension.name) as vscode.Extension<mssql.IExtension>;
 		const api = await ext.activate();
 		return api.dacFx;
 	} else {
-		let ext = vscode.extensions.getExtension(vscodeMssql.extension.name) as vscode.Extension<vscodeMssql.IExtension>;
-		const api = await ext.activate();
+		const api = await getVscodeMssqlApi();
 		return api.dacFx;
 	}
+}
+
+export async function getVscodeMssqlApi(): Promise<vscodeMssql.IExtension> {
+	const ext = vscode.extensions.getExtension(vscodeMssql.extension.name) as vscode.Extension<vscodeMssql.IExtension>;
+	return ext.activate();
 }
 
 /*
