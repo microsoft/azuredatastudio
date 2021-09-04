@@ -56,7 +56,7 @@
           "light": "./images/migration.svg",
           "dark": "./images/migration.svg"
         },
-        "when": "connectionProvider == 'MSSQL' && !mssql:iscloud",
+        "when": "connectionProvider == 'MSSQL' && !mssql:iscloud  && mssql:engineedition != 8",
         "container": {
           "grid-container": [
             {
