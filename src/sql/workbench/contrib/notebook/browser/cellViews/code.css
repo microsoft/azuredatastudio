@@ -36,10 +36,11 @@ code-component .toolbar .carbon-taskbar {
 }
 
 code-component .toolbar .carbon-taskbar.monaco-toolbar .monaco-action-bar .codicon.action-label {
-	height: 20px;
-	padding-bottom: 10px;
+	height: 25px;
+	width: 25px;
+	padding: 0px;
 	background-size: 20px;
-	width: 40px;
+	background-position: center;
 }
 
 .notebook-cell:not(.active):hover code-component .toolbarIconRun {
