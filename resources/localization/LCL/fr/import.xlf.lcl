@@ -336,17 +336,14 @@
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Téléchargement de {0}]]></Val>
           </Tgt>
-          <Prev Cat="Text">
-            <Val><![CDATA[Done!]]></Val>
-          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/import/out/services/serviceClient.downloadingServiceComplete" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Done downloading {0}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Terminé !]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Téléchargement terminé {0}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Done!]]></Val>
@@ -361,7 +358,7 @@
             <Val><![CDATA[({0} Ko)]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Downloading Service]]></Val>
+            <Val><![CDATA[Done!]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -385,7 +382,7 @@
             <Val><![CDATA[{0} extrait ({1}/{2})]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Failed to start Import service{0}]]></Val>
+            <Val><![CDATA[Downloading Service]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
@@ -393,8 +390,8 @@
       <Item ItemId=";extensions/import/out/services/serviceClient.flatFileImport.serviceStartFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to start {0}: {1}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Le démarrage du service d'importation {0} a échoué]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Échec du démarrage de {0} : {1}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Failed to start Import service{0}]]></Val>
@@ -405,8 +402,8 @@
       <Item ItemId=";extensions/import/out/services/serviceClient.installingService" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Installing {0} Service]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Installation du service]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Installation du service {0}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Installing Service]]></Val>

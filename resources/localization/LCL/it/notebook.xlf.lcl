@@ -186,8 +186,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.contentFolder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Content folder]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Cartella del contenuto (facoltativo)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Cartella del contenuto]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Content folder (Optional)]]></Val>
@@ -1473,6 +1473,9 @@
       <Item ItemId=";extensions/notebook/dist/jupyter/jupyterServerInstallation.dontAskAgain" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Don't Ask Again]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Non chiedere più]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1605,18 +1608,27 @@
       <Item ItemId=";extensions/notebook/dist/jupyter/jupyterServerInstallation.msgPythonVersionUpdatePrompt" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Python {0} is now available in Azure Data Studio. The current Python version (3.6.6) will be out of support in December 2021. Would you like to update to Python {0} now?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Python {0} è ora disponibile in Azure Data Studio. La versione corrente di Python (3.6.6) non sarà supportata da dicembre 2021. Eseguire ora l'aggiornamento a Python {0} ?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/notebook/dist/jupyter/jupyterServerInstallation.msgPythonVersionUpdateWarning" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Python {0} will be installed and will replace Python 3.6.6. Some packages may no longer be compatible with the new version or may need to be reinstalled. A notebook will be created to help you reinstall all pip packages. Would you like to continue with the update now?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Python {0} verrà installato e sostituirà Python 3.6.6. Alcuni pacchetti potrebbero non essere più compatibili con la nuova versione o potrebbero dover essere reinstallati. Verrà creato un notebook che consente di reinstallare tutti i pacchetti pip. Continuare con l'aggiornamento ora?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/notebook/dist/jupyter/jupyterServerInstallation.msgShutdownNotebookSessions" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Active Python notebook sessions will be shutdown in order to update. Would you like to proceed now?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Le sessioni del notebook di Python attive verranno arrestate per l'aggiornamento. Procedere ora?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1815,8 +1827,8 @@
       <Item ItemId=";extensions/notebook/dist/protocol/notebookUriHandler.unsupportedScheme" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cannot open link {0} as only HTTP, HTTPS, and File links are supported]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Non è possibile aprire il collegamento {0} perché sono supportati solo i collegamenti HTTP e HTTPS]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Non è possibile aprire il collegamento {0} perché sono supportati solo i collegamenti HTTP, HTTPS e file]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Cannot open link {0} as only HTTP and HTTPS links are supported]]></Val>
@@ -1980,12 +1992,18 @@
       <Item ItemId=";extensions/notebook/package.notebook.dontPromptPythonUpdate.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Do not show prompt to update Python.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Non visualizzare la richiesta di aggiornamento di Python.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/notebook/package.notebook.jupyterServerShutdownTimeout.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The amount of time (in minutes) to wait before shutting down a server after all notebooks are closed. (Enter 0 to not shutdown)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Tempo di attesa (in minuti) prima dell'arresto di un server dopo la chiusura di tutti i notebook. (Immettere 0 per non arrestare)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

@@ -186,8 +186,8 @@
       <Item ItemId=";extensions/notebook/dist/common/localizedConstants.contentFolder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Content folder]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Dossier de contenu (facultatif)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Dossier de contenu]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Content folder (Optional)]]></Val>
@@ -1827,8 +1827,8 @@
       <Item ItemId=";extensions/notebook/dist/protocol/notebookUriHandler.unsupportedScheme" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cannot open link {0} as only HTTP, HTTPS, and File links are supported]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Impossible d'ouvrir le lien {0}, car seuls les liens HTTP et HTTPS sont pris en charge]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Impossible d'ouvrir le lien {0}, car seuls les liens HTTP, HTTPS et Fichier sont pris en charge]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Cannot open link {0} as only HTTP and HTTPS links are supported]]></Val>

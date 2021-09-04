@@ -162,12 +162,18 @@
       <Item ItemId=";extensions/agent/dist/data/notebookData.notebookData.jobExists" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Job with similar name already exists]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Работа с похожим названием уже существует]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/agent/dist/data/notebookData.notebookData.jobNameRequired" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Notebook name must be provided]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Записные книжки должны быть предоставлены]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -201,18 +207,27 @@
       <Item ItemId=";extensions/agent/dist/data/notebookData.notebookData.saveSucessMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Notebook '{0}' updated successfully]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Записная книжка «{0}» успешно обновлена]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/agent/dist/data/notebookData.notebookData.selectExecutionDatabase" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select execution database]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Выберите базу данных исполнения]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/agent/dist/data/notebookData.notebookData.selectStorageDatabase" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select storage database]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Выберите базу данных хранения]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -228,6 +243,9 @@
       <Item ItemId=";extensions/agent/dist/data/notebookData.notebookData.whenJobCompletes" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[When the notebook completes]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[При заполнении записной книжки]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1692,6 +1710,9 @@
       <Item ItemId=";extensions/agent/dist/dialogs/notebookDialog.notebookDialog.templatePath" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select a notebook to schedule from PC]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Выберите записную книжку для планирования с компьютера]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2130,6 +2151,9 @@
       <Item ItemId=";extensions/agent/dist/mainController.agent.selectValidConnection" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Please select a valid connection]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Выберите допустимое подключение.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2154,6 +2178,9 @@
       <Item ItemId=";extensions/agent/dist/mainController.agent.unsavedFileSchedulingError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The notebook must be saved before being scheduled. Please save and then retry scheduling again.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Перед тем, как начать планировать, записную книжку необходимо сохранить. Сохраните и повторите попытку планирования снова.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
