@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Application } from '../../../../../automation/src';
+import { Application } from '../../../../../automation';
 
 export function setup() {
 	describe('Notebook', () => {
