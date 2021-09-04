@@ -138,12 +138,11 @@ export class NotebookMarkdownRenderer {
 				// mailto uris do not need additional encoding of &, otherwise it would not render properly
 				if (uri.scheme !== 'mailto') {
 					href = href.replace(/&(?!amp;)/g, '&amp;');
-				} else {
-					href = href.replace(/</g, '&lt;')
-						.replace(/>/g, '&gt;')
-						.replace(/"/g, '&quot;')
-						.replace(/'/g, '&#39;');
 				}
+				href = href.replace(/</g, '&lt;')
+					.replace(/>/g, '&gt;')
+					.replace(/"/g, '&quot;')
+					.replace(/'/g, '&#39;');
 				return `<a href=${href} data-href="${href}" title="${title || href}">${text}</a>`;
 			}
 		};
