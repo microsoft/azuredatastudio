@@ -21,6 +21,14 @@
       <source xml:lang="en">Close</source>
     </trans-unit>
   </body></file>
+  <file original="src/sql/base/browser/ui/propertiesContainer/togglePropertiesAction" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="hideProperties">
+      <source xml:lang="en">Hide properties</source>
+    </trans-unit>
+    <trans-unit id="showProperties">
+      <source xml:lang="en">Show Properties</source>
+    </trans-unit>
+  </body></file>
   <file original="src/sql/base/browser/ui/selectBox/selectBox" source-language="en" datatype="plaintext"><body>
     <trans-unit id="alertErrorMessage">
       <source xml:lang="en">Error: {0}</source>
