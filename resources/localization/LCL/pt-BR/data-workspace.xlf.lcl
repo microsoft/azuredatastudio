@@ -374,7 +374,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Target Platform]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Plataforma de destino]]></Val>
+            <Val><![CDATA[Plataforma de Destino]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
