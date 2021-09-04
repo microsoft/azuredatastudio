@@ -11,15 +11,15 @@ import { IconPathHelper, cssStyles } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { PostgresModel } from '../../../models/postgresModel';
 import { AddPGExtensionsDialog } from '../../dialogs/addPGExtensionsDialog';
-import { Deferred } from '../../../common/promise';
 
 export class PostgresExtensionsPage extends DashboardPage {
 
 	private extensionNames: string[] = [];
+	private droppedExtensions: string[] = [];
 	private extensionsTable!: azdata.DeclarativeTableComponent;
 	private extensionsLoading!: azdata.LoadingComponent;
 	private addExtensionsButton!: azdata.ButtonComponent;
-	private _dropExtPromise?: Deferred<void>;
+	private dropExtensionsButton!: azdata.ButtonComponent;
 	private extensionsLink!: azdata.HyperlinkComponent;
 
 	private readonly _azdataApi: azdataExt.IExtension;
@@ -79,23 +79,23 @@ export class PostgresExtensionsPage extends DashboardPage {
 			width: '100%',
 			columns: [
 				{
-					displayName: loc.extensionName,
-					valueType: azdata.DeclarativeDataType.string,
+					displayName: '',
+					valueType: azdata.DeclarativeDataType.component,
+					width: '20px',
 					isReadOnly: true,
-					width: '95%',
 					headerCssStyles: cssStyles.tableHeader,
 					rowCssStyles: cssStyles.tableRow
 				},
 				{
-					displayName: loc.dropText,
-					valueType: azdata.DeclarativeDataType.component,
-					isReadOnly: false,
-					width: '10%',
+					displayName: loc.extensionName,
+					valueType: azdata.DeclarativeDataType.string,
+					isReadOnly: true,
+					width: '100%',
 					headerCssStyles: cssStyles.tableHeader,
 					rowCssStyles: cssStyles.tableRow
 				}
 			],
-			data: []
+			dataValues: []
 		}).component();
 
 		this.extensionsLoading = this.modelView.modelBuilder.loadingComponent()
@@ -128,7 +128,8 @@ export class PostgresExtensionsPage extends DashboardPage {
 				if (extArg) {
 					try {
 						this.addExtensionsButton.enabled = false;
-						let extensionList = this.extensionNames.join() + ',' + extArg;
+						this.dropExtensionsButton.enabled = false;
+						let extensionList = this.extensionNames.length ? this.extensionNames.join() + ',' + extArg : extArg;
 						await vscode.window.withProgress(
 							{
 								location: vscode.ProgressLocation.Notification,
@@ -152,7 +153,7 @@ export class PostgresExtensionsPage extends DashboardPage {
 							}
 						);
 
-						vscode.window.showInformationMessage(loc.extensionsAdded(extensionList));
+						vscode.window.showInformationMessage(loc.extensionsAdded(extArg));
 
 					} catch (error) {
 						vscode.window.showErrorMessage(loc.updateExtensionsFailed(error));
@@ -162,43 +163,20 @@ export class PostgresExtensionsPage extends DashboardPage {
 				}
 			}));
 
-		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems([
-			{ component: this.addExtensionsButton }
-		]).component();
-	}
-
-	private refreshExtensionsTable(): void {
-		let extensions = this._postgresModel.config!.spec.engine.extensions;
-		this.extensionsTable.data = extensions.map(e => {
-
-			this.extensionNames.push(e.name);
-
-			return [e.name, this.createDropButton(e.name)];
-		});
-	}
-
-	/**
-	 * Creates drop button to add to each row of extensions table.
-	 * Allows user to drop individual extension.
-	 * @param name name of postgres extension the drop button will be tied to.
-	 */
-	public createDropButton(name: string): azdata.ButtonComponent {
-		// Can drop individual extensions
-		let button = this.modelView.modelBuilder.button().withProps({
-			iconPath: IconPathHelper.delete,
-			ariaLabel: loc.dropExtension,
-			title: loc.dropExtension,
-			width: '20px',
-			height: '20px',
-			enabled: true
+		// Drop extensions
+		this.dropExtensionsButton = this.modelView.modelBuilder.button().withProps({
+			label: loc.dropExtensions,
+			ariaLabel: loc.addExtensions,
+			iconPath: IconPathHelper.add,
+			enabled: false
 		}).component();
 
 		this.disposables.push(
-			button.onDidClick(async () => {
+			this.dropExtensionsButton.onDidClick(async () => {
 				try {
 					this.addExtensionsButton.enabled = false;
-					button.enabled = false;
-					await this.dropExtension(name);
+					this.dropExtensionsButton.enabled = false;
+					await this.dropExtension();
 
 					try {
 						await this._postgresModel.refresh();
@@ -206,63 +184,91 @@ export class PostgresExtensionsPage extends DashboardPage {
 						vscode.window.showErrorMessage(loc.refreshFailed(error));
 					}
 
-					vscode.window.showInformationMessage(loc.extensionDropped(name));
+					vscode.window.showInformationMessage(loc.extensionsDropped(this.droppedExtensions.join()));
+					this.droppedExtensions = [];
 
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.updateExtensionsFailed(error));
 				} finally {
 					this.addExtensionsButton.enabled = true;
 				}
+			}));
+
+		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems([
+			{ component: this.addExtensionsButton },
+			{ component: this.dropExtensionsButton }
+		]).component();
+	}
+
+	private refreshExtensionsTable(): void {
+		let extensions = this._postgresModel.config!.spec.engine.extensions;
+		let extensionBasicData = extensions.map(e => {
+			this.extensionNames.push(e.name);
+			return [this.createDropCheckBox(e.name), e.name];
+		});
+
+		let extenesionFinalData: azdata.DeclarativeTableCellValue[][] = [];
+		extenesionFinalData = extensionBasicData.map(e => {
+			return e.map((value): azdata.DeclarativeTableCellValue => {
+				return { value: value };
+			});
+		});
+
+		this.extensionsTable.setDataValues(extenesionFinalData);
+	}
+
+	/**
+	 * Creates checkboxes to select which extensions to drop.
+	 * Allows user to drop multiple extension.
+	 * @param name name of postgres extension the checkbox will be tied to.
+	 */
+	public createDropCheckBox(name: string): azdata.CheckBoxComponent {
+		// Can select extensions to drop
+		let checkBox = this.modelView.modelBuilder.checkBox().withProps({
+			ariaLabel: loc.dropExtensions,
+			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
+		}).component();
+
+		this.disposables.push(
+			checkBox.onChanged(() => {
+				if (checkBox.checked) {
+					this.droppedExtensions.push(name);
+				} else {
+					let index = this.droppedExtensions.indexOf(name, 0);
+					this.droppedExtensions.splice(index, 1);
+				}
+				this.dropExtensionsButton.enabled = this.droppedExtensions.length ? true : false;
 			})
 		);
 
-		// Dropping the citus extension is not supported.
-		if (name === 'citus') {
-			button.enabled = false;
-		}
-
-		return button;
+		return checkBox;
 	}
 
 	/**
 	 * Calls edit on postgres extensions with an updated extensions list.
-	 * @param name name of postgres extension to not inlcude when editing list of extensions
 	 */
-	public async dropExtension(name: string): Promise<void> {
-		// Only allow one drop to be happening at a time
-		if (this._dropExtPromise) {
-			vscode.window.showErrorMessage(loc.dropMultipleExtensions);
-			return this._dropExtPromise.promise;
-		}
+	public async dropExtension(): Promise<void> {
+		this.droppedExtensions.forEach(d => {
+			let index = this.droppedExtensions.indexOf(d, 0);
+			this.extensionNames.splice(index, 1);
+		});
 
-		this._dropExtPromise = new Deferred();
-		try {
-			await vscode.window.withProgress(
-				{
-					location: vscode.ProgressLocation.Notification,
-					title: loc.updatingInstance(this._postgresModel.info.name),
-					cancellable: false
-				},
-				async (_progress, _token): Promise<void> => {
-					let index = this.extensionNames.indexOf(name, 0);
-					this.extensionNames.splice(index, 1);
-
-					await this._azdataApi.azdata.arc.postgres.server.edit(
-						this._postgresModel.info.name,
-						{
-							extensions: this.extensionNames.join()
-						},
-						this._postgresModel.controllerModel.azdataAdditionalEnvVars
-					);
-				}
-			);
-			this._dropExtPromise.resolve();
-		} catch (err) {
-			this._dropExtPromise.reject(err);
-			throw err;
-		} finally {
-			this._dropExtPromise = undefined;
-		}
+		await vscode.window.withProgress(
+			{
+				location: vscode.ProgressLocation.Notification,
+				title: loc.updatingInstance(this._postgresModel.info.name),
+				cancellable: false
+			},
+			async (_progress, _token): Promise<void> => {
+				await this._azdataApi.azdata.arc.postgres.server.edit(
+					this._postgresModel.info.name,
+					{
+						extensions: this.extensionNames.join()
+					},
+					this._postgresModel.controllerModel.azdataAdditionalEnvVars
+				);
+			}
+		);
 	}
 
 	private handleConfigUpdated(): void {
