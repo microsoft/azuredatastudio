@@ -238,7 +238,6 @@ describe('File config page', function () {
 				fileConfigPage = new FileConfigPage(mockFlatFileWizard.object, page, mockImportModel.object, view, TypeMoq.It.isAny());
 				pages.set(1, fileConfigPage);
 				await fileConfigPage.start();
-				fileConfigPage.setupNavigationValidator();
 				resolve();
 			});
 			wizard.generateScriptButton.hidden = true;
