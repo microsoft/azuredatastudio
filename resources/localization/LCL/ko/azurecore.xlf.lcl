@@ -78,7 +78,7 @@
           <Str Cat="Text">
             <Val><![CDATA[PostgreSQL Hyperscale – Azure Arc]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[PostgreSQL 하이퍼스케일 – Azure Arc]]></Val>
+              <Val><![CDATA[PostgreSQL 하이퍼스케일 - Azure Arc]]></Val>
             </Tgt>
           </Str>
           <Disp Icon="Str" />
@@ -850,7 +850,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Azure Arc-enabled PostgreSQL Hyperscale]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure Arc가 지원되는 PostgreSQL 하이퍼스케일]]></Val>
+            <Val><![CDATA[Azure Arc 지원 PostgreSQL 하이퍼스케일]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Azure Arc enabled PostgreSQL Hyperscale]]></Val>

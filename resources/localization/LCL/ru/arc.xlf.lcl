@@ -271,6 +271,12 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/arc/dist/localizedConstants.arc.connectionString" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Connection string for {0}]]></Val>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.connectionStrings" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Connection Strings]]></Val>
@@ -2471,7 +2477,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Azure Arc-enabled PostgreSQL Hyperscale terms and conditions]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Условия использования Гипермасштабирования PostgreSQL с поддержкой Azure Arc]]></Val>
+            <Val><![CDATA[Условия использования гипермасштабирования PostgreSQL с поддержкой Azure Arc]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3767,7 +3773,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Deploy PostgreSQL Hyperscale server groups into an Azure Arc environment]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Развертывание групп серверов гипермасштабирования для PostgreSQL в среде Azure Arc]]></Val>
+            <Val><![CDATA[Развертывание групп серверов гипермасштабирования PostgreSQL в среде Azure Arc]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3776,7 +3782,7 @@
         <Str Cat="Text">
           <Val><![CDATA[PostgreSQL Hyperscale server groups - Azure Arc (preview)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Группы серверов гипермасштабирования для PostgreSQL — Azure Arc (предварительная версия)]]></Val>
+            <Val><![CDATA[Группы серверов гипермасштабирования PostgreSQL — Azure Arc (предварительная версия)]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
