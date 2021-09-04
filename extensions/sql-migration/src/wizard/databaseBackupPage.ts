@@ -573,12 +573,14 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					'font-weight': 'bold'
 				}
 			}).component();
-		this._networkShareStorageAccountResourceGroupDropdown = this._view.modelBuilder.dropDown().withProps({
-			ariaLabel: constants.RESOURCE_GROUP,
-			width: WIZARD_INPUT_COMPONENT_WIDTH,
-			editable: true,
-			fireOnTextChange: true,
-		}).component();
+		this._networkShareStorageAccountResourceGroupDropdown = this._view.modelBuilder.dropDown()
+			.withProps({
+				required: true,
+				ariaLabel: constants.RESOURCE_GROUP,
+				width: WIZARD_INPUT_COMPONENT_WIDTH,
+				editable: true,
+				fireOnTextChange: true,
+			}).component();
 		this._disposables.push(this._networkShareStorageAccountResourceGroupDropdown.onValueChanged(async (value) => {
 			const selectedIndex = findDropDownItemIndex(this._networkShareStorageAccountResourceGroupDropdown, value);
 			if (selectedIndex > -1) {
@@ -883,10 +885,10 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 			switch (this.migrationStateModel._databaseBackup.networkContainerType) {
 				case NetworkContainerType.NETWORK_SHARE:
-					if ((<azdata.CategoryValue>this._networkShareStorageAccountResourceGroupDropdown.value).displayName === constants.RESOURCE_GROUP_NOT_FOUND) {
+					if ((<azdata.CategoryValue>this._networkShareStorageAccountResourceGroupDropdown.value)?.displayName === constants.RESOURCE_GROUP_NOT_FOUND) {
 						errors.push(constants.INVALID_RESOURCE_GROUP_ERROR);
 					}
-					if ((<azdata.CategoryValue>this._networkShareContainerStorageAccountDropdown.value).displayName === constants.NO_STORAGE_ACCOUNT_FOUND) {
+					if ((<azdata.CategoryValue>this._networkShareContainerStorageAccountDropdown.value)?.displayName === constants.NO_STORAGE_ACCOUNT_FOUND) {
 						errors.push(constants.INVALID_STORAGE_ACCOUNT_ERROR);
 					}
 					break;
