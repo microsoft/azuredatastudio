@@ -11,7 +11,7 @@
 	"license": "SEE SOURCE EULA LICENSE IN LICENSE.txt",
 	"engines": {
 		"vscode": "*",
-		"azdata": "^1.31.0"
+		"azdata": "^1.32.0"
 	},
 	"icon": "languagepack.png",
 	"categories": [
@@ -215,6 +215,54 @@
 					{
 						"id": "Microsoft.schema-compare",
 						"path": "./translations/extensions/schema-compare.i18n.json"
+					},
+					{
+						"id": "Microsoft.arc",
+						"path": "./translations/extensions/arc.i18n.json"
+					},
+					{
+						"id": "Microsoft.asde-deployment",
+						"path": "./translations/extensions/asde-deployment.i18n.json"
+					},
+					{
+						"id": "Microsoft.azdata",
+						"path": "./translations/extensions/azdata.i18n.json"
+					},
+					{
+						"id": "Microsoft.azurehybridtoolkit",
+						"path": "./translations/extensions/azurehybridtoolkit.i18n.json"
+					},
+					{
+						"id": "Microsoft.data-workspace",
+						"path": "./translations/extensions/data-workspace.i18n.json"
+					},
+					{
+						"id": "Microsoft.kusto",
+						"path": "./translations/extensions/kusto.i18n.json"
+					},
+					{
+						"id": "Microsoft.machine-learning",
+						"path": "./translations/extensions/machine-learning.i18n.json"
+					},
+					{
+						"id": "Microsoft.query-history",
+						"path": "./translations/extensions/query-history.i18n.json"
+					},
+					{
+						"id": "Microsoft.sql-assessment",
+						"path": "./translations/extensions/sql-assessment.i18n.json"
+					},
+					{
+						"id": "Microsoft.sql-database-projects",
+						"path": "./translations/extensions/sql-database-projects.i18n.json"
+					},
+					{
+						"id": "Microsoft.sql-migration",
+						"path": "./translations/extensions/sql-migration.i18n.json"
+					},
+					{
+						"id": "Microsoft.xml-language-features",
+						"path": "./translations/extensions/xml-language-features.i18n.json"
 					}
 				]
 			}

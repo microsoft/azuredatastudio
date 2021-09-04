@@ -259,9 +259,6 @@
 			"resourceDeployment.Kubectl.BackupCurrentBinary": "インストール場所にある既存の kubectl をバックアップしています...",
 			"resourceDeployment.Kubectl.MoveToSystemPath": "kubectl を PATH のインストール場所に移動しています..."
 		},
-		"dist/ui/notebookWizard/notebookWizardPage": {
-			"wizardPage.ValidationError": "このページにはいくつかのエラーがあります。エラーを表示するには、[詳細を表示] をクリックします。"
-		},
 		"dist/ui/deploymentInputDialog": {
 			"deploymentDialog.OpenNotebook": "ノートブックを開く",
 			"deploymentDialog.OkButtonText": "OK",
@@ -376,8 +373,7 @@
 			"deployCluster.SubdomainDescription": "この SQL Server ビッグ データ クラスターで使用する一意の DNS サブドメイン。指定されていない場合は、クラスター名が既定値として使用されます。",
 			"deployCluster.AccountPrefix": "アカウント プレフィックス",
 			"deployCluster.AccountPrefixDescription": "SQL Server ビッグ データ クラスターによって生成される AD アカウントの一意のプレフィックス。指定されていない場合は、サブドメイン名が既定値として使用されます。サブドメインが指定されていない場合は、クラスター名が既定値として使用されます。",
-			"deployCluster.AdminPasswordField": "パスワード",
-			"deployCluster.ValidationError": "このページにはいくつかのエラーがあります。エラーを表示するには、[詳細を表示] をクリックします。"
+			"deployCluster.AdminPasswordField": "パスワード"
 		},
 		"dist/ui/deployClusterWizard/pages/serviceSettingsPage": {
 			"deployCluster.ServiceSettingsPageTitle": "サービスの設定",

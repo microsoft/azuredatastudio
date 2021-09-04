@@ -259,9 +259,6 @@
 			"resourceDeployment.Kubectl.BackupCurrentBinary": "正在备份安装位置中的任何现有 kubectl…",
 			"resourceDeployment.Kubectl.MoveToSystemPath": "正在将 kubectl 移到路径中的安装位置…"
 		},
-		"dist/ui/notebookWizard/notebookWizardPage": {
-			"wizardPage.ValidationError": "此页面上存在一些错误，请单击“显示详细信息”以查看错误。"
-		},
 		"dist/ui/deploymentInputDialog": {
 			"deploymentDialog.OpenNotebook": "打开笔记本",
 			"deploymentDialog.OkButtonText": "确定",
@@ -376,8 +373,7 @@
 			"deployCluster.SubdomainDescription": "用于此 SQL Server 大数据群集的唯一 DNS 子域。如果未提供，则将群集名称用作默认值。",
 			"deployCluster.AccountPrefix": "帐户前缀",
 			"deployCluster.AccountPrefixDescription": "SQL Server 大数据群集将生成的 AD 帐户的唯一前缀。如果未提供，则将子域名用作默认值。如果未提供子域，则将群集名称用作默认值。",
-			"deployCluster.AdminPasswordField": "密码",
-			"deployCluster.ValidationError": "此页面上存在一些错误，请单击“显示详细信息”以查看错误。"
+			"deployCluster.AdminPasswordField": "密码"
 		},
 		"dist/ui/deployClusterWizard/pages/serviceSettingsPage": {
 			"deployCluster.ServiceSettingsPageTitle": "服务设置",

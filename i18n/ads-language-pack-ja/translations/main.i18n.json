@@ -10411,6 +10411,7 @@
 			"notebook.markdownPreviewLineHeight": "ノートブック マークダウン プレビューで使用される行の高さを制御します。この数値はフォント サイズを基準とします。",
 			"notebook.showRenderedNotebookinDiffEditor": "(プレビュー) レンダリングされたノートブックを差分エディターで表示します。",
 			"notebook.maxRichTextUndoHistory": "ノートブックのリッチ テキスト エディターを元に戻す操作の履歴に格納される変更の最大数です。",
+			"notebook.useAbsoluteFilePaths": "Use absolute file paths when linking to other notebooks.",
 			"searchConfigurationTitle": "ノートブックの検索",
 			"exclude": "フルテキスト検索および Quick Open でファイルやフォルダーを除外するための glob パターンを構成します。'#files.exclude#' 設定からすべての glob パターンを継承します。glob パターンの詳細については、[こちら](https://code.visualstudio.com/docs/editor/codebasics#_advanced-search-options) を参照してください。",
 			"exclude.boolean": "ファイル パスの照合基準となる glob パターン。これを true または false に設定すると、パターンがそれぞれ有効/無効になります。",
@@ -10480,7 +10481,7 @@
 			"notebook.findPrevious": "前の文字列を検索"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookEditor": {
-			"notebookEditor.name": "Notebook Editor"
+			"notebookEditor.name": "ノートブック エディター"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet": {
 			"notebookExplorer.searchResults": "検索結果",
@@ -10565,8 +10566,6 @@
 			"profilerStop.stop": "停止",
 			"profiler.clear": "データのクリア",
 			"profiler.clearDataPrompt": "データをクリアしますか?",
-			"profiler.yes": "はい",
-			"profiler.no": "いいえ",
 			"profilerAction.autoscrollOn": "自動スクロール: オン",
 			"profilerAction.autoscrollOff": "自動スクロール: オフ",
 			"profiler.toggleCollapsePanel": "折りたたんだパネルを切り替える",
@@ -10702,7 +10701,7 @@
 			"queryEditor.exportSqlAsNotebook": "ノートブックとしてエクスポート"
 		},
 		"sql/workbench/contrib/query/browser/queryEditor": {
-			"queryEditor.name": "Query Editor"
+			"queryEditor.name": "クエリ エディター"
 		},
 		"sql/workbench/contrib/query/browser/queryResultsView": {
 			"resultsTabTitle": "結果",
@@ -10760,7 +10759,7 @@
 			"queryPlanTitle": "クエリ プラン"
 		},
 		"sql/workbench/contrib/queryPlan/browser/queryPlanEditor": {
-			"queryPlanEditor": "Query Plan Editor"
+			"queryPlanEditor": "クエリ プラン エディター"
 		},
 		"sql/workbench/contrib/queryPlan/browser/topOperations": {
 			"topOperations.operation": "操作",
@@ -11441,6 +11440,13 @@
 			"gettingStarted": "はじめに",
 			"showReleaseNotes": "「はじめに」を表示する",
 			"miGettingStarted": "はじめに(&&S)"
+		},
+		"sql/base/browser/ui/propertiesContainer/togglePropertiesAction": {
+			"hideProperties": "プロパティの非表示",
+			"showProperties": "プロパティの表示"
+		},
+		"sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution": {
+			"deployment.title": "新しい展開..."
 		}
 	}
 }

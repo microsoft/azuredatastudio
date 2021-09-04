@@ -259,9 +259,6 @@
 			"resourceDeployment.Kubectl.BackupCurrentBinary": "Am Installationsspeicherort vorhandenes kubectl wird gesichert…",
 			"resourceDeployment.Kubectl.MoveToSystemPath": "kubectl wird in den Installationspfad in PATH verschoben…"
 		},
-		"dist/ui/notebookWizard/notebookWizardPage": {
-			"wizardPage.ValidationError": "Es liegen Fehler auf dieser Seite vor. Klicken Sie auf \"Details anzeigen\", um diese anzuzeigen."
-		},
 		"dist/ui/deploymentInputDialog": {
 			"deploymentDialog.OpenNotebook": "Notebook öffnen",
 			"deploymentDialog.OkButtonText": "OK",
@@ -376,8 +373,7 @@
 			"deployCluster.SubdomainDescription": "Eine eindeutige DNS-Unterdomäne, die für diesen SQL Server-Big Data-Cluster verwendet werden soll. Wenn keine Angabe vorliegt, wird der Clustername als Standardwert verwendet.",
 			"deployCluster.AccountPrefix": "Kontopräfix",
 			"deployCluster.AccountPrefixDescription": "Ein eindeutiges Präfix für AD-Konten, die vom SQL Server-Big Data-Cluster generiert werden. Wenn keine Angabe vorliegt, wird der Name der Unterdomäne als Standardwert verwendet. Wenn keine Unterdomäne angegeben wird, dient der Clustername als Standardwert.",
-			"deployCluster.AdminPasswordField": "Kennwort",
-			"deployCluster.ValidationError": "Es liegen Fehler auf dieser Seite vor. Klicken Sie auf \"Details anzeigen\", um diese anzuzeigen."
+			"deployCluster.AdminPasswordField": "Kennwort"
 		},
 		"dist/ui/deployClusterWizard/pages/serviceSettingsPage": {
 			"deployCluster.ServiceSettingsPageTitle": "Diensteinstellungen",

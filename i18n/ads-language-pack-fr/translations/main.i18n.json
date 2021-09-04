@@ -10411,6 +10411,7 @@
 			"notebook.markdownPreviewLineHeight": "Contrôle la hauteur de ligne utilisée dans l'aperçu Markdown du notebook. Ce nombre est relatif à la taille de police.",
 			"notebook.showRenderedNotebookinDiffEditor": "(Aperçu) Afficher le bloc-notes rendu dans l’éditeur de différences.",
 			"notebook.maxRichTextUndoHistory": "Nombre maximal de modifications stockées dans l’historique des annulations pour l’éditeur de texte enrichi de bloc-notes.",
+			"notebook.useAbsoluteFilePaths": "Use absolute file paths when linking to other notebooks.",
 			"searchConfigurationTitle": "Rechercher dans les notebooks",
 			"exclude": "Configurez des modèles glob pour exclure des fichiers et des dossiers dans les recherches en texte intégral et le mode Quick Open. Hérite tous les modèles glob du paramètre '#files.exclude#'. Découvrez plus d'informations sur les modèles glob [ici](https://code.visualstudio.com/docs/editor/codebasics#_advanced-search-options).",
 			"exclude.boolean": "Modèle Glob auquel les chemins de fichiers doivent correspondre. Affectez la valeur true ou false pour activer ou désactiver le modèle.",
@@ -10480,7 +10481,7 @@
 			"notebook.findPrevious": "Rechercher la chaîne précédente"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookEditor": {
-			"notebookEditor.name": "Notebook Editor"
+			"notebookEditor.name": "Éditeur de notebook"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet": {
 			"notebookExplorer.searchResults": "Résultats de la recherche",
@@ -10565,8 +10566,6 @@
 			"profilerStop.stop": "Arrêter",
 			"profiler.clear": "Effacer les données",
 			"profiler.clearDataPrompt": "Voulez-vous vraiment effacer les données ?",
-			"profiler.yes": "Oui",
-			"profiler.no": "Non",
 			"profilerAction.autoscrollOn": "Défilement automatique : activé",
 			"profilerAction.autoscrollOff": "Défilement automatique : désactivé",
 			"profiler.toggleCollapsePanel": "Afficher/masquer le panneau réduit",
@@ -10702,7 +10701,7 @@
 			"queryEditor.exportSqlAsNotebook": "Exporter au format Notebook"
 		},
 		"sql/workbench/contrib/query/browser/queryEditor": {
-			"queryEditor.name": "Query Editor"
+			"queryEditor.name": "Éditeur de requêtes"
 		},
 		"sql/workbench/contrib/query/browser/queryResultsView": {
 			"resultsTabTitle": "Résultats",
@@ -10760,7 +10759,7 @@
 			"queryPlanTitle": "Plan de requête"
 		},
 		"sql/workbench/contrib/queryPlan/browser/queryPlanEditor": {
-			"queryPlanEditor": "Query Plan Editor"
+			"queryPlanEditor": "Éditeur du plan de requête"
 		},
 		"sql/workbench/contrib/queryPlan/browser/topOperations": {
 			"topOperations.operation": "Opération",
@@ -11441,6 +11440,13 @@
 			"gettingStarted": "Démarrer",
 			"showReleaseNotes": "Afficher la prise en main",
 			"miGettingStarted": "Pri&&se en main"
+		},
+		"sql/base/browser/ui/propertiesContainer/togglePropertiesAction": {
+			"hideProperties": "Masquer les propriétés",
+			"showProperties": "Afficher les propriétés"
+		},
+		"sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution": {
+			"deployment.title": "Nouveau déploiement..."
 		}
 	}
 }

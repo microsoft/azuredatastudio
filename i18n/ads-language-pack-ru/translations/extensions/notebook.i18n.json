@@ -23,7 +23,7 @@
 			"notebook.collapseBookItems.description": "Сворачивание элементов книги на корневом уровне во вьюлете записных книжек",
 			"notebook.remoteBookDownloadTimeout.description": "Время ожидания скачивания для книг GitHub (в мс)",
 			"notebook.pinnedNotebooks.description": "Записные книжки, закрепленные пользователем для текущей рабочей области",
-			"notebook.allowRoot.description": "Allow Jupyter server to run as root user",
+			"notebook.allowRoot.description": "Разрешить запуск сервера Jupyter от имени привилегированного пользователя",
 			"notebook.command.new": "Создать записную книжку",
 			"notebook.command.open": "Открыть записную книжку",
 			"notebook.analyzeJupyterNotebook": "Анализировать в Notebook",

@@ -23,7 +23,7 @@
 			"notebook.collapseBookItems.description": "Buchelemente auf Stammebene im Notebook-Viewlet reduzieren",
 			"notebook.remoteBookDownloadTimeout.description": "Zeitlimit für Download von GitHub-Büchern in Millisekunden",
 			"notebook.pinnedNotebooks.description": "Notebooks, die vom Benutzer für den aktuellen Arbeitsbereich angeheftet wurden",
-			"notebook.allowRoot.description": "Allow Jupyter server to run as root user",
+			"notebook.allowRoot.description": "Ausführung des Jupyter-Servers als Stammbenutzer zulassen",
 			"notebook.command.new": "Neues Notebook",
 			"notebook.command.open": "Notebook öffnen",
 			"notebook.analyzeJupyterNotebook": "In Notebook analysieren",

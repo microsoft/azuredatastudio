@@ -10411,6 +10411,7 @@
 			"notebook.markdownPreviewLineHeight": "Notebook markdown 미리 보기에서 사용되는 줄 높이를 제어합니다. 해당 숫자는 글꼴 크기에 상대적입니다.",
 			"notebook.showRenderedNotebookinDiffEditor": "(미리 보기) diff 편집기에서 렌더링된 전자 필기장을 표시합니다.",
 			"notebook.maxRichTextUndoHistory": "전자 필기장 서식 있는 텍스트 편집기의 실행 취소 기록에 저장된 최대 변경 내용 수입니다.",
+			"notebook.useAbsoluteFilePaths": "Use absolute file paths when linking to other notebooks.",
 			"searchConfigurationTitle": "Notebook 검색",
 			"exclude": "전체 텍스트 검색 및 빠른 열기에서 glob 패턴을 구성하여 파일 및 폴더를 제외합니다. `#files.exclude#` 설정에서 모든 glob 패턴을 상속합니다. [여기](https://code.visualstudio.com/docs/editor/codebasics#_advanced-search-options)에서 glob 패턴에 대해 자세히 알아보세요.",
 			"exclude.boolean": "파일 경로를 일치시킬 GLOB 패턴입니다. 패턴을 사용하거나 사용하지 않도록 설정하려면 true 또는 false로 설정하세요.",
@@ -10480,7 +10481,7 @@
 			"notebook.findPrevious": "이전 문자열 찾기"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookEditor": {
-			"notebookEditor.name": "Notebook Editor"
+			"notebookEditor.name": "Notebook 편집기"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet": {
 			"notebookExplorer.searchResults": "검색 결과",
@@ -10565,8 +10566,6 @@
 			"profilerStop.stop": "중지",
 			"profiler.clear": "데이터 지우기",
 			"profiler.clearDataPrompt": "데이터를 지우시겠습니까?",
-			"profiler.yes": "예",
-			"profiler.no": "아니요",
 			"profilerAction.autoscrollOn": "자동 스크롤: 켜기",
 			"profilerAction.autoscrollOff": "자동 스크롤: 끄기",
 			"profiler.toggleCollapsePanel": "축소된 패널로 전환",
@@ -10702,7 +10701,7 @@
 			"queryEditor.exportSqlAsNotebook": "Notebook으로 내보내기"
 		},
 		"sql/workbench/contrib/query/browser/queryEditor": {
-			"queryEditor.name": "Query Editor"
+			"queryEditor.name": "쿼리 편집기"
 		},
 		"sql/workbench/contrib/query/browser/queryResultsView": {
 			"resultsTabTitle": "결과",
@@ -10760,7 +10759,7 @@
 			"queryPlanTitle": "쿼리 계획"
 		},
 		"sql/workbench/contrib/queryPlan/browser/queryPlanEditor": {
-			"queryPlanEditor": "Query Plan Editor"
+			"queryPlanEditor": "쿼리 플랜 편집기"
 		},
 		"sql/workbench/contrib/queryPlan/browser/topOperations": {
 			"topOperations.operation": "작업",
@@ -11441,6 +11440,13 @@
 			"gettingStarted": "시작",
 			"showReleaseNotes": "시작 표시",
 			"miGettingStarted": "시작(&S)"
+		},
+		"sql/base/browser/ui/propertiesContainer/togglePropertiesAction": {
+			"hideProperties": "속성 숨기기",
+			"showProperties": "속성 표시"
+		},
+		"sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution": {
+			"deployment.title": "새 배포..."
 		}
 	}
 }

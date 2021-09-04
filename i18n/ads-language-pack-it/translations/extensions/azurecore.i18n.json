@@ -207,7 +207,7 @@
 			"azure.resource.providers.KustoContainerLabel": "Cluster di Esplora dati di Azure"
 		},
 		"dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider": {
-			"azure.resource.providers.AzureMonitorContainerLabel": "Azure Monitor Workspace"
+			"azure.resource.providers.AzureMonitorContainerLabel": "Area di lavoro di log di monitoraggio di Azure"
 		},
 		"dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider": {
 			"azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel": "Server di Database di Azure per PostgreSQL"

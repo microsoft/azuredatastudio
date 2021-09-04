@@ -106,7 +106,7 @@
 			"azurecore.azureArcsqlManagedInstance": "Управляемый экземпляр SQL — Azure Arc",
 			"azurecore.azureArcService": "Служба данных — Azure Arc",
 			"azurecore.sqlServerArc": "SQL Server — Azure Arc",
-			"azurecore.azureArcPostgres": "Гипермасштабирование для PostgreSQL с поддержкой Azure Arc",
+			"azurecore.azureArcPostgres": "Гипермасштабирование PostgreSQL с поддержкой Azure Arc",
 			"azure.unableToOpenAzureLink": "Не удается открыть ссылку, отсутствуют обязательные значения",
 			"azure.azureResourcesGridTitle": "Ресурсы Azure (предварительная версия)",
 			"azurecore.invalidAzureAccount": "Недопустимая учетная запись",
@@ -207,7 +207,7 @@
 			"azure.resource.providers.KustoContainerLabel": "Кластер Azure Data Explorer"
 		},
 		"dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider": {
-			"azure.resource.providers.AzureMonitorContainerLabel": "Azure Monitor Workspace"
+			"azure.resource.providers.AzureMonitorContainerLabel": "Рабочая область журналов Azure Monitor"
 		},
 		"dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider": {
 			"azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel": "Сервер Базы данных Azure для PostgreSQL"
@@ -225,7 +225,7 @@
 			"azure.resource.providers.sqlInstanceArcContainerLabel": "Управляемый экземпляр SQL — Azure Arc"
 		},
 		"dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider": {
-			"azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel": "Гипермасштабирование PostgreSQL — Azure Arc"
+			"azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel": "Гипермасштабирование PostgreSQL — Azure Arc"
 		},
 		"dist/azureResource/tree/connectionDialogTreeProvider": {
 			"azure.resource.tree.treeProvider.loadingLabel": "Идет загрузка…",

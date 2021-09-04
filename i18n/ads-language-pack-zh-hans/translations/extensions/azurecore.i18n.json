@@ -207,7 +207,7 @@
 			"azure.resource.providers.KustoContainerLabel": "Azure 数据资源管理器群集"
 		},
 		"dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider": {
-			"azure.resource.providers.AzureMonitorContainerLabel": "Azure Monitor Workspace"
+			"azure.resource.providers.AzureMonitorContainerLabel": "Azure Monitor 日志工作区"
 		},
 		"dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider": {
 			"azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel": "Azure Database for PostgreSQL 服务器"
@@ -225,7 +225,7 @@
 			"azure.resource.providers.sqlInstanceArcContainerLabel": "SQL 托管实例 - Azure Arc"
 		},
 		"dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider": {
-			"azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel": "超大规模 PostgreSQL – Azure Arc"
+			"azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel": "PostgreSQL 超大规模 – Azure Arc"
 		},
 		"dist/azureResource/tree/connectionDialogTreeProvider": {
 			"azure.resource.tree.treeProvider.loadingLabel": "正在加载…",

@@ -10411,6 +10411,7 @@
 			"notebook.markdownPreviewLineHeight": "Controla la altura de línea utilizada en la vista previa de Markdown del cuaderno. Este número es relativo al tamaño de la fuente.",
 			"notebook.showRenderedNotebookinDiffEditor": "(Vista preliminar) Mostrar el bloc de notas representado en el editor.",
 			"notebook.maxRichTextUndoHistory": "Número máximo de cambios almacenados en el historial de deshacer del editor de texto enriquecido del cuaderno",
+			"notebook.useAbsoluteFilePaths": "Use absolute file paths when linking to other notebooks.",
 			"searchConfigurationTitle": "Búsqueda de cuadernos",
 			"exclude": "Configure patrones globales para excluir archivos y carpetas en búsquedas de texto completo y abrir los patrones de uso rápido. Hereda todos los patrones globales de la configuración \"#files.exclude\". Lea más acerca de los patrones globales [aquí](https://code.visualstudio.com/docs/editor/codebasics-_advanced-search-options).",
 			"exclude.boolean": "El patrón global con el que se harán coincidir las rutas de acceso de los archivos. Establézcalo en true o false para habilitarlo o deshabilitarlo.",
@@ -10480,7 +10481,7 @@
 			"notebook.findPrevious": "Buscar cadena anterior"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookEditor": {
-			"notebookEditor.name": "Notebook Editor"
+			"notebookEditor.name": "Editor de Notebook"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet": {
 			"notebookExplorer.searchResults": "Resultados de la búsqueda",
@@ -10565,8 +10566,6 @@
 			"profilerStop.stop": "Detener",
 			"profiler.clear": "Borrar los datos",
 			"profiler.clearDataPrompt": "¿Está seguro de que quiere borrar los datos?",
-			"profiler.yes": "Sí",
-			"profiler.no": "No",
 			"profilerAction.autoscrollOn": "Desplazamiento automático: activado",
 			"profilerAction.autoscrollOff": "Desplazamiento automático: desactivado",
 			"profiler.toggleCollapsePanel": "Alternar el panel contraído",
@@ -10702,7 +10701,7 @@
 			"queryEditor.exportSqlAsNotebook": "Exportación como cuaderno"
 		},
 		"sql/workbench/contrib/query/browser/queryEditor": {
-			"queryEditor.name": "Query Editor"
+			"queryEditor.name": "Editor de consultas"
 		},
 		"sql/workbench/contrib/query/browser/queryResultsView": {
 			"resultsTabTitle": "Resultados",
@@ -10760,7 +10759,7 @@
 			"queryPlanTitle": "Plan de consulta"
 		},
 		"sql/workbench/contrib/queryPlan/browser/queryPlanEditor": {
-			"queryPlanEditor": "Query Plan Editor"
+			"queryPlanEditor": "Editor de planes de consulta"
 		},
 		"sql/workbench/contrib/queryPlan/browser/topOperations": {
 			"topOperations.operation": "Operación",
@@ -11441,6 +11440,13 @@
 			"gettingStarted": "Introducción",
 			"showReleaseNotes": "Ver introducción",
 			"miGettingStarted": "I&&ntroducción"
+		},
+		"sql/base/browser/ui/propertiesContainer/togglePropertiesAction": {
+			"hideProperties": "Ocultar propiedades",
+			"showProperties": "Mostrar propiedades"
+		},
+		"sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution": {
+			"deployment.title": "Nueva implementación..."
 		}
 	}
 }

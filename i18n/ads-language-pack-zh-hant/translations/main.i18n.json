@@ -10411,6 +10411,7 @@
 			"notebook.markdownPreviewLineHeight": "控制筆記本 Markdown 預覽中使用的行高。此數字相對於字型大小。",
 			"notebook.showRenderedNotebookinDiffEditor": "(預覽) 在 Diff 編輯器中顯示轉譯的筆記本。",
 			"notebook.maxRichTextUndoHistory": "筆記本 RTF 文字編輯器復原歷程記錄中儲存的變更數目上限。",
+			"notebook.useAbsoluteFilePaths": "Use absolute file paths when linking to other notebooks.",
 			"searchConfigurationTitle": "搜尋筆記本",
 			"exclude": "設定 Glob 模式，在全文檢索搜尋中排除檔案與資料夾，並快速開啟。繼承 `#files.exclude#` 設定的所有 Glob 模式。深入了解 Glob 模式 [這裡](https://code.visualstudio.com/docs/editor/codebasics#_advanced-search-options)。",
 			"exclude.boolean": "要符合檔案路徑的 Glob 模式。設為 True 或 False 可啟用或停用模式。",
@@ -10480,7 +10481,7 @@
 			"notebook.findPrevious": "尋找前一個字串"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookEditor": {
-			"notebookEditor.name": "Notebook Editor"
+			"notebookEditor.name": "Notebook 編輯器"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet": {
 			"notebookExplorer.searchResults": "搜尋結果",
@@ -10565,8 +10566,6 @@
 			"profilerStop.stop": "停止",
 			"profiler.clear": "清除資料",
 			"profiler.clearDataPrompt": "確定要清除資料嗎?",
-			"profiler.yes": "是",
-			"profiler.no": "否",
 			"profilerAction.autoscrollOn": "自動捲動: 開啟",
 			"profilerAction.autoscrollOff": "自動捲動: 關閉",
 			"profiler.toggleCollapsePanel": "切換折疊面板",
@@ -10702,7 +10701,7 @@
 			"queryEditor.exportSqlAsNotebook": "匯出為筆記本"
 		},
 		"sql/workbench/contrib/query/browser/queryEditor": {
-			"queryEditor.name": "Query Editor"
+			"queryEditor.name": "查詢編輯器"
 		},
 		"sql/workbench/contrib/query/browser/queryResultsView": {
 			"resultsTabTitle": "結果",
@@ -10760,7 +10759,7 @@
 			"queryPlanTitle": "查詢計劃"
 		},
 		"sql/workbench/contrib/queryPlan/browser/queryPlanEditor": {
-			"queryPlanEditor": "Query Plan Editor"
+			"queryPlanEditor": "查詢計畫編輯器"
 		},
 		"sql/workbench/contrib/queryPlan/browser/topOperations": {
 			"topOperations.operation": "作業",
@@ -11441,6 +11440,13 @@
 			"gettingStarted": "開始",
 			"showReleaseNotes": "顯示入門指南",
 			"miGettingStarted": "開始使用(&&S)"
+		},
+		"sql/base/browser/ui/propertiesContainer/togglePropertiesAction": {
+			"hideProperties": "隱藏屬性",
+			"showProperties": "顯示屬性"
+		},
+		"sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution": {
+			"deployment.title": "新部署…"
 		}
 	}
 }
