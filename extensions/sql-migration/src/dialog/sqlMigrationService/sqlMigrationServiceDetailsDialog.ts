@@ -66,7 +66,8 @@ export class SqlMigrationServiceDetailsDialog {
 			migrationContext.subscription,
 			migrationContext.controller.properties.resourceGroup,
 			migrationContext.controller.location,
-			migrationContext.controller.name
+			migrationContext.controller.name,
+			this.migrationContext.sessionId!
 		));
 		const serviceNodeName = serviceNode.nodes?.map(node => node.nodeName).join(', ')
 			|| constants.SQL_MIGRATION_SERVICE_DETAILS_STATUS_UNAVAILABLE;
@@ -209,7 +210,8 @@ export class SqlMigrationServiceDetailsDialog {
 			migrationContext.controller.properties.resourceGroup,
 			migrationContext.controller.location.toUpperCase(),
 			migrationContext.controller.name,
-			keyName);
+			keyName,
+			migrationContext.sessionId!);
 
 		if (keys?.authKey1 && keyName === AUTH_KEY1) {
 			await this._updateTableCell(this._migrationServiceAuthKeyTable, 0, 1, keys.authKey1, constants.SERVICE_KEY1_LABEL);
@@ -233,7 +235,8 @@ export class SqlMigrationServiceDetailsDialog {
 			migrationContext.subscription,
 			migrationContext.controller.properties.resourceGroup,
 			migrationContext.controller.location.toUpperCase(),
-			migrationContext.controller.name);
+			migrationContext.controller.name,
+			migrationContext.sessionId!);
 
 		const copyKey1Button = view.modelBuilder
 			.button()

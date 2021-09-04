@@ -463,21 +463,24 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 					this.migrationStateModel._targetSubscription,
 					this.migrationStateModel._sqlMigrationService.properties.resourceGroup,
 					this.migrationStateModel._sqlMigrationService.location,
-					this.migrationStateModel._sqlMigrationService.name);
+					this.migrationStateModel._sqlMigrationService.name,
+					this.migrationStateModel._sessionId);
 				this.migrationStateModel._sqlMigrationService = migrationService;
 				const migrationServiceMonitoringStatus = await getSqlMigrationServiceMonitoringData(
 					this.migrationStateModel._azureAccount,
 					this.migrationStateModel._targetSubscription,
 					this.migrationStateModel._sqlMigrationService.properties.resourceGroup,
 					this.migrationStateModel._sqlMigrationService.location,
-					this.migrationStateModel._sqlMigrationService!.name);
+					this.migrationStateModel._sqlMigrationService!.name,
+					this.migrationStateModel._sessionId);
 				this.migrationStateModel._nodeNames = migrationServiceMonitoringStatus.nodes.map(node => node.nodeName);
 				const migrationServiceAuthKeys = await getSqlMigrationServiceAuthKeys(
 					this.migrationStateModel._azureAccount,
 					this.migrationStateModel._targetSubscription,
 					this.migrationStateModel._sqlMigrationService.properties.resourceGroup,
 					this.migrationStateModel._sqlMigrationService.location,
-					this.migrationStateModel._sqlMigrationService!.name
+					this.migrationStateModel._sqlMigrationService!.name,
+					this.migrationStateModel._sessionId
 				);
 
 				this.migrationStateModel._nodeNames = migrationServiceMonitoringStatus.nodes.map((node) => {
