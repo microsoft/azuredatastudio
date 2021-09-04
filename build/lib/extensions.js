@@ -5,6 +5,7 @@
  *--------------------------------------------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.buildExtensionMedia = exports.webpackExtensions = exports.translatePackageJSON = exports.scanBuiltinExtensions = exports.packageMarketplaceExtensionsStream = exports.packageLocalExtensionsStream = exports.fromMarketplace = void 0;
+exports.translatePackageJSON = exports.packageRebuildExtensionsStream = exports.cleanRebuildExtensions = exports.packageExternalExtensionsStream = exports.scanBuiltinExtensions = exports.packageMarketplaceExtensionsStream = exports.packageLocalExtensionsStream = exports.vscodeExternalExtensions = exports.fromMarketplace = exports.fromLocalNormal = exports.fromLocal = void 0;
 const es = require("event-stream");
 const fs = require("fs");
 const cp = require("child_process");
@@ -233,6 +234,12 @@ const externalExtensions = [
     'sql-database-projects',
     'sql-migration'
 ];
+/**
+ * Extensions that are built into ADS but should be packaged externally as well for VS Code.
+ */
+exports.vscodeExternalExtensions = [
+    'data-workspace'
+];
 // extensions that require a rebuild since they have native parts
 const rebuildExtensions = [
     'big-data-cluster',
@@ -349,7 +356,7 @@ function packageExternalExtensionsStream() {
         const extensionName = path.basename(extensionPath);
         return { name: extensionName, path: extensionPath };
     })
-        .filter(({ name }) => externalExtensions.indexOf(name) >= 0);
+        .filter(({ name }) => externalExtensions.indexOf(name) >= 0 || exports.vscodeExternalExtensions.indexOf(name) >= 0);
     const builtExtensions = extenalExtensionDescriptions.map(extension => {
         return fromLocal(extension.path, false)
             .pipe(rename(p => p.dirname = `extensions/${extension.name}/${p.dirname}`));
