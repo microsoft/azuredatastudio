@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import type * as markdownIt from 'markdown-it';
 
@@ -18,20 +18,16 @@ export async function activate(ctx: {
 	link.rel = 'stylesheet';
 	link.classList.add('markdown-style');
 	link.href = styleHref;
+	document.head.append(link);
 
 	const style = document.createElement('style');
+	style.classList.add('markdown-style');
 	style.textContent = `
 		.katex-error {
 			color: var(--vscode-editorError-foreground);
 		}
 	`;
-
-	// Put Everything into a template
-	const styleTemplate = document.createElement('template');
-	styleTemplate.classList.add('markdown-style');
-	styleTemplate.content.appendChild(style);
-	styleTemplate.content.appendChild(link);
-	document.head.appendChild(styleTemplate);
+	document.head.append(style);
 
 	const katex = require('@iktakahiro/markdown-it-katex');
 	markdownItRenderer.extendMarkdownIt((md: markdownIt.MarkdownIt) => {

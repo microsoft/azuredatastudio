@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
 
@@ -9,6 +9,7 @@ const enabledSetting = 'markdown.math.enabled';
 export function activate(context: vscode.ExtensionContext) {
 	function isEnabled(): boolean {
 		const config = vscode.workspace.getConfiguration('markdown');
+		console.log(config.get<boolean>('math.enabled', true));
 		return config.get<boolean>('math.enabled', true);
 	}
 

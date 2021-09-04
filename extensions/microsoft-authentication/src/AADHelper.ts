@@ -593,6 +593,15 @@ export class AzureActiveDirectoryService {
 	}
 
 	private async refreshToken(refreshToken: string, scope: string, sessionId: string): Promise<IToken> {
+		Logger.info('Refreshing token...');
+		const postData = querystring.stringify({
+			refresh_token: refreshToken,
+			client_id: clientId,
+			grant_type: 'refresh_token',
+			scope: scope
+		});
+
+		let result: Response;
 		try {
 			const proxyEndpoints: { [providerId: string]: string } | undefined = await vscode.commands.executeCommand('workbench.getCodeExchangeProxyEndpoints');
 			const endpointUrl = proxyEndpoints?.microsoft || loginEndpointUrl;
@@ -605,7 +614,12 @@ export class AzureActiveDirectoryService {
 				},
 				body: postData
 			});
+		} catch (e) {
+			Logger.error('Refreshing token failed');
+			throw new Error(REFRESH_NETWORK_FAILURE);
+		}
 
+		try {
 			if (result.ok) {
 				const json = await result.json();
 				const token = this.getTokenFromResponse(json, scope, sessionId);
@@ -613,12 +627,12 @@ export class AzureActiveDirectoryService {
 				Logger.info('Token refresh success');
 				return token;
 			} else {
-				Logger.error('Refreshing token failed');
-				throw new Error('Refreshing token failed.');
+				throw new Error('Bad request.');
 			}
 		} catch (e) {
-			Logger.error('Refreshing token failed');
-			throw new Error(REFRESH_NETWORK_FAILURE);
+			vscode.window.showErrorMessage(localize('signOut', "You have been signed out because reading stored authentication information failed."));
+			Logger.error(`Refreshing token failed: ${result.statusText}`);
+			throw new Error('Refreshing token failed');
 		}
 	}
 
