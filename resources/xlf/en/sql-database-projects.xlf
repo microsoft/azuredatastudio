@@ -550,12 +550,6 @@
     <trans-unit id="folderAlreadyExists">
       <source xml:lang="en">A folder with the name '{0}' already exists on disk at this location. Please choose another name.</source>
     </trans-unit>
-    <trans-unit id="fileAlreadyAddedToProject">
-      <source xml:lang="en">A file with the path '{0}' has already been added to the project</source>
-    </trans-unit>
-    <trans-unit id="folderAlreadyAddedToProject">
-      <source xml:lang="en">A folder with the path '{0}' has already been added to the project</source>
-    </trans-unit>
     <trans-unit id="invalidInput">
       <source xml:lang="en">Invalid input: {0}</source>
     </trans-unit>
