@@ -615,6 +615,11 @@
                             {
                               "type": "is_integer",
                               "description": "%should.be.integer%"
+                            },
+                            {
+                              "type": "!=",
+                              "target": "1",
+                              "description": "%worker.node.count.should.not.be.one%"
                             }
                           ],
                           "defaultValue": "2",
