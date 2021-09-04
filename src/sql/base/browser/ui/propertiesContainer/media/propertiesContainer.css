@@ -61,3 +61,7 @@ properties-container .splitter {
 properties-container .columnLayout .splitter {
 	display: none;
 }
+
+properties-container .actionbar-container {
+	justify-content: center;
+}

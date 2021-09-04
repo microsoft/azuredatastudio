@@ -47,6 +47,7 @@ export default class PropertiesContainerComponent extends ComponentBase<azdata.P
 	public override setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		this._propertiesContainer.propertyItems = this.propertyItems;
+		this._propertiesContainer.showToggleButton = this.showToggleButton;
 	}
 
 	public get propertyItems(): PropertyItem[] {
@@ -56,6 +57,10 @@ export default class PropertiesContainerComponent extends ComponentBase<azdata.P
 	public set propertyItems(newValue: azdata.PropertiesContainerItem[]) {
 		this.setPropertyFromUI<azdata.PropertiesContainerItem[]>((props, value) => props.propertyItems = value, newValue);
 		this._propertiesContainer.propertyItems = newValue;
+	}
+
+	public get showToggleButton(): boolean {
+		return this.getPropertyOrDefault<boolean>((props) => props.showToggleButton, false);
 	}
 }
 
