@@ -13,6 +13,9 @@
       <Item ItemId=";extensions/kusto/dist/features.kusto.accountDoesNotExist" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Account does not exist.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[帐户不存在。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -127,6 +130,9 @@
       <Item ItemId=";extensions/kusto/dist/main.kusto.unsupportedPlatform" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Unsupported platform]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[平台不受支持]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -179,7 +185,7 @@
         <Str Cat="Text">
           <Val><![CDATA[$(sync~spin) {0}...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[$(sync~spin) {0}…]]></Val>
+            <Val><![CDATA[$(sync~spin) {0}...]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -250,12 +256,18 @@
       <Item ItemId=";extensions/kusto/package.cloud.serverProperties.diskCacheCapacity" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[% of Cluster data capacity used]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[已使用的群集数据容量百分比]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/kusto/package.cloud.serverProperties.machinesTotal" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Total Machines in the cluster]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[群集中的总计算机数]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -289,6 +301,9 @@
       <Item ItemId=";extensions/kusto/package.kusto.configuration.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[KUSTO configuration]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[KUSTO 配置]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -340,6 +355,9 @@
       <Item ItemId=";extensions/kusto/package.kusto.connectionOptions.authType.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies the method of authenticating with Kusto Server]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[指定使用 Kusto Server 进行身份验证的方法]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -427,6 +445,9 @@
       <Item ItemId=";extensions/kusto/package.kusto.connectionOptions.databaseName.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The name of the initial catalog or database in the data source]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[数据源中的初始目录或数据库的名称。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -442,6 +463,9 @@
       <Item ItemId=";extensions/kusto/package.kusto.connectionOptions.failoverPartner.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The name or network address of the instance of Kusto Server that acts as a failover partner]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[充当故障转移伙伴的 Kusto Server 实例的名称或网络地址]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -475,6 +499,9 @@
       <Item ItemId=";extensions/kusto/package.kusto.connectionOptions.serverName.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Kusto cluster name]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Kusto 群集名称]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -508,6 +535,9 @@
       <Item ItemId=";extensions/kusto/package.kusto.connectionOptions.workstationId.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The name of the workstation connecting to Kusto Server]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[连接到 Kusto Server 的工作站的名称]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
