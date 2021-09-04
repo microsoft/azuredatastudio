@@ -253,7 +253,7 @@ export class FirewallRuleDialog extends Modal {
 		this.viewModel.toSubnetIPRange = IPAddress;
 	}
 
-	/* Overwrite esapce key behavior */
+	/* Overwrite escape key behavior */
 	protected override onClose() {
 		this.cancel();
 	}
