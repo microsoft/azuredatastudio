@@ -909,7 +909,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 							'serverName': this._targetServerInstance.name,
 							'tenantId': this._azureAccount.properties.tenants[0].id,
 							'location': this._targetServerInstance.location,
-							'sqlMigrationServiceId': this._sqlMigrationService.id,
+							'sqlMigrationServiceId': Buffer.from(this._sqlMigrationService.id).toString('base64'),
 							'irRegistered': (this._nodeNames.length > 0).toString()
 						},
 						{
