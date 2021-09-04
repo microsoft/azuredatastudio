@@ -50,7 +50,10 @@ export class KustoTreeDataProvider extends ResourceTreeDataProviderBase<azureRes
 				providerName: 'KUSTO',
 				saveProfile: false,
 				options: {},
-				azureAccount: account.key.accountId
+				azureAccount: account.key.accountId,
+				azureTenantId: databaseServer.tenant,
+				azureResourceId: databaseServer.id,
+				azurePortalEndpoint: account.properties.providerSettings.settings.portalEndpoint
 			},
 			childProvider: 'KUSTO',
 			type: ExtensionNodeType.Server
