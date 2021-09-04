@@ -18,6 +18,10 @@ import { textLinkForeground, textLinkActiveForeground } from 'vs/platform/theme/
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import * as DOM from 'vs/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
+import { domEvent } from 'vs/base/browser/event';
+import { Event } from 'vs/base/common/event';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
 
 @Component({
 	selector: 'modelview-hyperlink',
@@ -37,7 +41,16 @@ export default class HyperlinkComponent extends TitledComponent<azdata.Hyperlink
 	}
 
 	ngAfterViewInit(): void {
-		this._register(DOM.addDisposableListener(this._el.nativeElement, 'click', (e: MouseEvent) => this.onClick(e)));
+		const onClick = domEvent(this._el.nativeElement, 'click');
+		const onEnter = Event.chain(domEvent(this._el.nativeElement, 'keydown'))
+			.map(e => new StandardKeyboardEvent(e))
+			.filter(e => e.keyCode === KeyCode.Enter)
+			.event;
+		const onOpen = Event.any<DOM.EventLike>(onClick, onEnter);
+
+		this._register(onOpen(e => {
+			this.open(e);
+		}));
 		this.baseInit();
 	}
 
@@ -77,7 +90,7 @@ export default class HyperlinkComponent extends TitledComponent<azdata.Hyperlink
 		return this.title || this.url || '';
 	}
 
-	public onClick(e: MouseEvent): void {
+	public open(e: DOM.EventLike): void {
 		this.fireEvent({
 			eventType: ComponentEventType.onDidClick,
 			args: undefined
