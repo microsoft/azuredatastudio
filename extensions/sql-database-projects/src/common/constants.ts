@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vscode-nls';
+import { SqlTargetPlatform } from 'sqldbproj';
 
 const localize = nls.loadMessageBundle();
 
@@ -345,31 +346,28 @@ export const sameDatabaseExampleUsage = 'SELECT * FROM [Schema1].[Table1]';
 export function differentDbSameServerExampleUsage(db: string) { return `SELECT * FROM [${db}].[Schema1].[Table1]`; }
 export function differentDbDifferentServerExampleUsage(server: string, db: string) { return `SELECT * FROM [${server}].[${db}].[Schema1].[Table1]`; }
 
-export const sqlServer2005 = 'SQL Server 2005';
-export const sqlServer2008 = 'SQL Server 2008';
-export const sqlServer2012 = 'SQL Server 2012';
-export const sqlServer2014 = 'SQL Server 2014';
-export const sqlServer2016 = 'SQL Server 2016';
-export const sqlServer2017 = 'SQL Server 2017';
-export const sqlServer2019 = 'SQL Server 2019';
-export const sqlAzure = 'Microsoft Azure SQL Database';
-export const sqlDW = 'Microsoft Azure SQL Data Warehouse';
-
 export const targetPlatformToVersion: Map<string, string> = new Map<string, string>([
-	[sqlServer2005, '90'],
-	[sqlServer2008, '100'],
-	[sqlServer2012, '110'],
-	[sqlServer2014, '120'],
-	[sqlServer2016, '130'],
-	[sqlServer2017, '140'],
-	[sqlServer2019, '150'],
-	[sqlAzure, 'AzureV12'],
-	[sqlDW, 'Dw']
+	[SqlTargetPlatform.sqlServer2005, '90'],
+	[SqlTargetPlatform.sqlServer2008, '100'],
+	[SqlTargetPlatform.sqlServer2012, '110'],
+	[SqlTargetPlatform.sqlServer2014, '120'],
+	[SqlTargetPlatform.sqlServer2016, '130'],
+	[SqlTargetPlatform.sqlServer2017, '140'],
+	[SqlTargetPlatform.sqlServer2019, '150'],
+	[SqlTargetPlatform.sqlAzure, 'AzureV12'],
+	[SqlTargetPlatform.sqlDW, 'Dw']
 ]);
 
 // DW is special since the system dacpac folder has a different name from the target platform
 export const AzureDwFolder = 'AzureDw';
 
+export const defaultDSP = targetPlatformToVersion.get(SqlTargetPlatform.sqlServer2019)!;
+
+/**
+ * Returns the name of the target platform of the version of sql
+ * @param version version of sql
+ * @returns target platform name
+ */
 export function getTargetPlatformFromVersion(version: string): string {
 	return Array.from(targetPlatformToVersion.keys()).filter(k => targetPlatformToVersion.get(k) === version)[0];
 }

@@ -31,6 +31,7 @@ import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialo
 import { IDacpacReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { CreateProjectFromDatabaseDialog } from '../dialogs/createProjectFromDatabaseDialog';
 import { ImportDataModel } from '../models/api/import';
+import { SqlTargetPlatform } from 'sqldbproj';
 
 let testContext: TestContext;
 
@@ -65,6 +66,25 @@ describe('ProjectsController', function (): void {
 
 				should(projFileText).equal(baselines.newProjectFileBaseline);
 			});
+
+			it('Should create new sqlproj file with correct specified target platform', async function (): Promise<void> {
+				const projController = new ProjectsController();
+				const projFileDir = path.join(os.tmpdir(), `TestProject_${new Date().getTime()}`);
+				const projTargetPlatform = SqlTargetPlatform.sqlAzure; // default is SQL Server 2019
+
+				const projFilePath = await projController.createNewProject({
+					newProjName: 'TestProjectName',
+					folderUri: vscode.Uri.file(projFileDir),
+					projectTypeId: constants.emptySqlDatabaseProjectTypeId,
+					projectGuid: 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575',
+					targetPlatform: projTargetPlatform
+				});
+
+				const project = await Project.openProject(projFilePath);
+				const projTargetVersion = project.getProjectTargetVersion();
+				should(constants.getTargetPlatformFromVersion(projTargetVersion)).equal(projTargetPlatform);
+			});
+
 
 			it('Should return silently when no SQL object name provided in prompts', async function (): Promise<void> {
 				for (const name of ['', '    ', undefined]) {
@@ -316,21 +336,21 @@ describe('ProjectsController', function (): void {
 			});
 
 			it('Should change target platform', async function (): Promise<void> {
-				sinon.stub(vscode.window, 'showQuickPick').resolves({ label: constants.sqlAzure });
+				sinon.stub(vscode.window, 'showQuickPick').resolves({ label: SqlTargetPlatform.sqlAzure });
 
 				const projController = new ProjectsController();
 				const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline);
 				const project = await Project.openProject(sqlProjPath);
-				should(project.getProjectTargetVersion()).equal(constants.targetPlatformToVersion.get(constants.sqlServer2019));
+				should(project.getProjectTargetVersion()).equal(constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlServer2019));
 				should(project.databaseReferences.length).equal(1, 'Project should have one database reference to master');
-				should(project.databaseReferences[0].fsUri.fsPath).containEql(constants.targetPlatformToVersion.get(constants.sqlServer2019));
-				should((<SystemDatabaseReferenceProjectEntry>project.databaseReferences[0]).ssdtUri.fsPath).containEql(constants.targetPlatformToVersion.get(constants.sqlServer2019));
+				should(project.databaseReferences[0].fsUri.fsPath).containEql(constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlServer2019));
+				should((<SystemDatabaseReferenceProjectEntry>project.databaseReferences[0]).ssdtUri.fsPath).containEql(constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlServer2019));
 
 				await projController.changeTargetPlatform(project);
-				should(project.getProjectTargetVersion()).equal(constants.targetPlatformToVersion.get(constants.sqlAzure));
+				should(project.getProjectTargetVersion()).equal(constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlAzure));
 				// verify system db reference got updated too
-				should(project.databaseReferences[0].fsUri.fsPath).containEql(constants.targetPlatformToVersion.get(constants.sqlAzure));
-				should((<SystemDatabaseReferenceProjectEntry>project.databaseReferences[0]).ssdtUri.fsPath).containEql(constants.targetPlatformToVersion.get(constants.sqlAzure));
+				should(project.databaseReferences[0].fsUri.fsPath).containEql(constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlAzure));
+				should((<SystemDatabaseReferenceProjectEntry>project.databaseReferences[0]).ssdtUri.fsPath).containEql(constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlAzure));
 			});
 		});
 
