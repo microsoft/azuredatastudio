@@ -74,10 +74,7 @@ import { EditorExtensions } from 'vs/workbench/common/editor';
 import { WORKSPACE_TRUST_EXTENSION_SUPPORT } from 'vs/workbench/services/workspaces/common/workspaceTrust';
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage'; // {{SQL CARBON EDIT}}
 import * as locConstants from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}}
-import { ExtensionsCompletionItemsProvider } from 'vs/workbench/contrib/extensions/browser/extensionsCompletionItemsProvider';
-import { ITASExperimentService } from 'vs/workbench/services/experiment/common/experimentService';
-import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
-import { Event } from 'vs/base/common/event';
+import product from 'vs/platform/product/common/product'; // {{SQL CARBON EDIT}}
 
 // Singletons
 registerSingleton(IExtensionsWorkbenchService, ExtensionsWorkbenchService);
@@ -702,177 +699,149 @@ class ExtensionsContributions extends Disposable implements IWorkbenchContributi
 			}
 		});
 
-		this.registerExtensionAction({
-			id: 'workbench.extensions.action.disableAllWorkspace',
-			title: { value: localize('disableAllWorkspace', "Disable All Installed Extensions for this Workspace"), original: 'Disable All Installed Extensions for this Workspace' },
-			category: ExtensionsLocalizedLabel,
-			menu: {
-				id: MenuId.CommandPalette,
-				when: ContextKeyAndExpr.create([WorkbenchStateContext.notEqualsTo('empty'), ContextKeyOrExpr.create([CONTEXT_HAS_LOCAL_SERVER, CONTEXT_HAS_REMOTE_SERVER, CONTEXT_HAS_WEB_SERVER])])
-			},
-			run: async () => {
-				const extensionsToDisable = this.extensionsWorkbenchService.local.filter(e => !e.isBuiltin && !!e.local && this.extensionEnablementService.isEnabled(e.local) && this.extensionEnablementService.canChangeEnablement(e.local));
-				if (extensionsToDisable.length) {
-					await this.extensionsWorkbenchService.setEnablement(extensionsToDisable, EnablementState.DisabledWorkspace);
-				}
-			}
-		});
+		if (product.quality !== 'saw') { // {{SQL CARBON EDIT}} - Remove items that are not required
 
-		// {{SQL CARBON EDIT}} - extension policy check function
-		const isExtensionInstallationAllowed = (configurationService: IConfigurationService, notificationService: INotificationService): boolean => {
-			const allowAll = configurationService.getValue<string>(ExtensionsPolicyKey) === ExtensionsPolicy.allowAll;
-			if (!allowAll) {
-				notificationService.error(locConstants.extensionsContributionInstallVSIXActionAllowNone);
-			}
-			return allowAll;
-		};
-
-		this.registerExtensionAction({
-			id: SELECT_INSTALL_VSIX_EXTENSION_COMMAND_ID,
-			title: { value: localize('InstallFromVSIX', "Install from VSIX..."), original: 'Install from VSIX...' },
-			category: ExtensionsLocalizedLabel,
-			menu: [{
-				id: MenuId.CommandPalette,
-				when: ContextKeyOrExpr.create([CONTEXT_HAS_LOCAL_SERVER, CONTEXT_HAS_REMOTE_SERVER])
-			}, {
-				id: MenuId.ViewContainerTitle,
-				when: ContextKeyAndExpr.create([ContextKeyEqualsExpr.create('viewContainer', VIEWLET_ID), ContextKeyOrExpr.create([CONTEXT_HAS_LOCAL_SERVER, CONTEXT_HAS_REMOTE_SERVER])]),
-				group: '3_install',
-				order: 1
-			}],
-			run: async (accessor: ServicesAccessor) => {
-				const fileDialogService = accessor.get(IFileDialogService);
-				const commandService = accessor.get(ICommandService);
-
-				// {{SQL CARBON EDIT}} - add policy check
-				const configurationService = accessor.get(IConfigurationService);
-				const notificationService = accessor.get(INotificationService);
-				if (!isExtensionInstallationAllowed(configurationService, notificationService)) {
-					return;
-				}
-
-				const vsixPaths = await fileDialogService.showOpenDialog({
-					title: localize('installFromVSIX', "Install from VSIX"),
-					filters: [{ name: 'VSIX Extensions', extensions: ['vsix'] }],
-					canSelectFiles: true,
-					canSelectMany: true,
-					openLabel: mnemonicButtonLabel(localize({ key: 'installButton', comment: ['&& denotes a mnemonic'] }, "&&Install"))
-				});
-				if (vsixPaths) {
-					await commandService.executeCommand(INSTALL_EXTENSION_FROM_VSIX_COMMAND_ID, vsixPaths);
-				}
-			}
-		});
-
-		this.registerExtensionAction({
-			id: INSTALL_EXTENSION_FROM_VSIX_COMMAND_ID,
-			title: localize('installVSIX', "Install Extension VSIX"),
-			menu: [{
-				id: MenuId.ExplorerContext,
-				group: 'extensions',
-				when: ContextKeyAndExpr.create([ResourceContextKey.Extension.isEqualTo('.vsix'), ContextKeyOrExpr.create([CONTEXT_HAS_LOCAL_SERVER, CONTEXT_HAS_REMOTE_SERVER])]),
-			}],
-			run: async (accessor: ServicesAccessor, resources: URI[] | URI) => {
-				const extensionService = accessor.get(IExtensionService);
-				const extensionsWorkbenchService = accessor.get(IExtensionsWorkbenchService);
-				const hostService = accessor.get(IHostService);
-				const notificationService = accessor.get(INotificationService);
-
-
-				// {{SQL CARBON EDIT}} - added policy check and third party extension confirmation.
-				const storageService = accessor.get(IStorageService);
-				const configurationService = accessor.get(IConfigurationService);
-				if (!isExtensionInstallationAllowed(configurationService, notificationService)) {
-					return;
-				}
-				const extensions = Array.isArray(resources) ? resources : [resources];
-				await Promises.settled(extensions.map(async (vsix) => {
-					if (!storageService.getBoolean(vsix.fsPath, StorageScope.GLOBAL)) {
-						const accept = await new Promise<boolean>(resolve => {
-							notificationService.prompt(
-								Severity.Warning,
-								localize('thirdPartyExtension.vsix', 'This is a third party extension and might involve security risks. Are you sure you want to install this extension?'),
-								[
-									{
-										label: localize('thirdPartExt.yes', 'Yes'),
-										run: () => resolve(true)
-									},
-									{
-										label: localize('thirdPartyExt.no', 'No'),
-										run: () => resolve(false)
-									},
-									{
-										label: localize('thirdPartyExt.dontShowAgain', 'Don\'t Show Again'),
-										isSecondary: true,
-										run: () => {
-											storageService.store(vsix.fsPath, true, StorageScope.GLOBAL, StorageTarget.MACHINE);
-											resolve(true);
-										}
-									}
-								],
-								{ sticky: true }
-							);
-						});
-
-						if (!accept) {
-							return undefined;
-						}
+			this.registerExtensionAction({
+				id: 'workbench.extensions.action.disableAllWorkspace',
+				title: { value: localize('disableAllWorkspace', "Disable All Installed Extensions for this Workspace"), original: 'Disable All Installed Extensions for this Workspace' },
+				category: ExtensionsLocalizedLabel,
+				menu: {
+					id: MenuId.CommandPalette,
+					when: ContextKeyAndExpr.create([WorkbenchStateContext.notEqualsTo('empty'), ContextKeyOrExpr.create([CONTEXT_HAS_LOCAL_SERVER, CONTEXT_HAS_REMOTE_SERVER, CONTEXT_HAS_WEB_SERVER])])
+				},
+				run: async () => {
+					const extensionsToDisable = this.extensionsWorkbenchService.local.filter(e => !e.isBuiltin && !!e.local && this.extensionEnablementService.isEnabled(e.local) && this.extensionEnablementService.canChangeEnablement(e.local));
+					if (extensionsToDisable.length) {
+						await this.extensionsWorkbenchService.setEnablement(extensionsToDisable, EnablementState.DisabledWorkspace);
 					}
-					return await extensionsWorkbenchService.install(vsix);
-				}))
-					.then(async (extensions) => {
-						for (const extension of extensions) {
-							// {{SQL CARBON EDIT}} - Add null check
-							if (extension === undefined) {
-								continue;
-							}
-							const requireReload = !(extension.local && extensionService.canAddExtension(toExtensionDescription(extension.local)));
-							const message = requireReload ? locConstants.extensionsContributionInstallVSIXActionSuccessReload(extension.displayName || extension.name) // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
-								: localize('InstallVSIXAction.success', "Completed installing {0} extension from VSIX.", extension.displayName || extension.name);
-							const actions = requireReload ? [{
-								label: localize('InstallVSIXAction.reloadNow', "Reload Now"),
-								run: () => hostService.reload()
-							}] : [];
-							notificationService.prompt(
-								Severity.Info,
-								message,
-								actions
-							);
-						}
+				}
+			});
+
+			// {{SQL CARBON EDIT}} - extension policy check function
+			const isExtensionInstallationAllowed = (configurationService: IConfigurationService, notificationService: INotificationService): boolean => {
+				const allowAll = configurationService.getValue<string>(ExtensionsPolicyKey) === ExtensionsPolicy.allowAll;
+				if (!allowAll) {
+					notificationService.error(locConstants.extensionsContributionInstallVSIXActionAllowNone);
+				}
+				return allowAll;
+			};
+
+			this.registerExtensionAction({
+				id: SELECT_INSTALL_VSIX_EXTENSION_COMMAND_ID,
+				title: { value: localize('InstallFromVSIX', "Install from VSIX..."), original: 'Install from VSIX...' },
+				category: ExtensionsLocalizedLabel,
+				menu: [{
+					id: MenuId.CommandPalette,
+					when: ContextKeyOrExpr.create([CONTEXT_HAS_LOCAL_SERVER, CONTEXT_HAS_REMOTE_SERVER])
+				}, {
+					id: MenuId.ViewContainerTitle,
+					when: ContextKeyAndExpr.create([ContextKeyEqualsExpr.create('viewContainer', VIEWLET_ID), ContextKeyOrExpr.create([CONTEXT_HAS_LOCAL_SERVER, CONTEXT_HAS_REMOTE_SERVER])]),
+					group: '3_install',
+					order: 1
+				}],
+				run: async (accessor: ServicesAccessor) => {
+					const fileDialogService = accessor.get(IFileDialogService);
+					const commandService = accessor.get(ICommandService);
+
+					// {{SQL CARBON EDIT}} - add policy check
+					const configurationService = accessor.get(IConfigurationService);
+					const notificationService = accessor.get(INotificationService);
+					if (!isExtensionInstallationAllowed(configurationService, notificationService)) {
+						return;
+					}
+
+					const vsixPaths = await fileDialogService.showOpenDialog({
+						title: localize('installFromVSIX', "Install from VSIX"),
+						filters: [{ name: 'VSIX Extensions', extensions: ['vsix'] }],
+						canSelectFiles: true,
+						canSelectMany: true,
+						openLabel: mnemonicButtonLabel(localize({ key: 'installButton', comment: ['&& denotes a mnemonic'] }, "&&Install"))
 					});
-			}
-		});
-
-		this.registerExtensionAction({
-			id: 'workbench.extensions.action.installWebExtensionFromLocation',
-			title: { value: localize('installWebExtensionFromLocation', "Install Web Extension..."), original: 'Install Web Extension...' },
-			category: CATEGORIES.Developer,
-			menu: [{
-				id: MenuId.CommandPalette,
-				when: ContextKeyOrExpr.create([CONTEXT_HAS_WEB_SERVER])
-			}],
-			run: async (accessor: ServicesAccessor) => {
-				const quickInputService = accessor.get(IQuickInputService);
-				const extensionManagementService = accessor.get(IWorkbenchExtensionManagementService);
-
-				const disposables = new DisposableStore();
-				const quickPick = disposables.add(quickInputService.createQuickPick());
-				quickPick.title = localize('installFromLocation', "Install Web Extension from Location");
-				quickPick.customButton = true;
-				quickPick.customLabel = localize('install button', "Install");
-				quickPick.placeholder = localize('installFromLocationPlaceHolder', "Location of the web extension");
-				quickPick.ignoreFocusOut = true;
-				disposables.add(Event.any(quickPick.onDidAccept, quickPick.onDidCustom)(() => {
-					quickPick.hide();
-					if (quickPick.value) {
-						extensionManagementService.installWebExtension(URI.parse(quickPick.value));
+					if (vsixPaths) {
+						await commandService.executeCommand(INSTALL_EXTENSION_FROM_VSIX_COMMAND_ID, vsixPaths);
 					}
-				}));
-				disposables.add(quickPick.onDidHide(() => disposables.dispose()));
-				quickPick.show();
-			}
-		});
+				}
+			});
 
+			this.registerExtensionAction({
+				id: INSTALL_EXTENSION_FROM_VSIX_COMMAND_ID,
+				title: localize('installVSIX', "Install Extension VSIX"),
+				menu: [{
+					id: MenuId.ExplorerContext,
+					group: 'extensions',
+					when: ContextKeyAndExpr.create([ResourceContextKey.Extension.isEqualTo('.vsix'), ContextKeyOrExpr.create([CONTEXT_HAS_LOCAL_SERVER, CONTEXT_HAS_REMOTE_SERVER])]),
+				}],
+				run: async (accessor: ServicesAccessor, resources: URI[] | URI) => {
+					const extensionService = accessor.get(IExtensionService);
+					const extensionsWorkbenchService = accessor.get(IExtensionsWorkbenchService);
+					const hostService = accessor.get(IHostService);
+					const notificationService = accessor.get(INotificationService);
+
+
+					// {{SQL CARBON EDIT}} - added policy check and third party extension confirmation.
+					const storageService = accessor.get(IStorageService);
+					const configurationService = accessor.get(IConfigurationService);
+					if (!isExtensionInstallationAllowed(configurationService, notificationService)) {
+						return;
+					}
+					const extensions = Array.isArray(resources) ? resources : [resources];
+					await Promises.settled(extensions.map(async (vsix) => {
+						if (!storageService.getBoolean(vsix.fsPath, StorageScope.GLOBAL)) {
+							const accept = await new Promise<boolean>(resolve => {
+								notificationService.prompt(
+									Severity.Warning,
+									localize('thirdPartyExtension.vsix', 'This is a third party extension and might involve security risks. Are you sure you want to install this extension?'),
+									[
+										{
+											label: localize('thirdPartExt.yes', 'Yes'),
+											run: () => resolve(true)
+										},
+										{
+											label: localize('thirdPartyExt.no', 'No'),
+											run: () => resolve(false)
+										},
+										{
+											label: localize('thirdPartyExt.dontShowAgain', 'Don\'t Show Again'),
+											isSecondary: true,
+											run: () => {
+												storageService.store(vsix.fsPath, true, StorageScope.GLOBAL, StorageTarget.MACHINE);
+												resolve(true);
+											}
+										}
+									],
+									{ sticky: true }
+								);
+							});
+
+							if (!accept) {
+								return undefined;
+							}
+						}
+						return await extensionsWorkbenchService.install(vsix);
+					}))
+						.then(async (extensions) => {
+							for (const extension of extensions) {
+								// {{SQL CARBON EDIT}} - Add null check
+								if (extension === undefined) {
+									continue;
+								}
+								const requireReload = !(extension.local && extensionService.canAddExtension(toExtensionDescription(extension.local)));
+								const message = requireReload ? locConstants.extensionsContributionInstallVSIXActionSuccessReload(extension.displayName || extension.name) // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+									: localize('InstallVSIXAction.success', "Completed installing {0} extension from VSIX.", extension.displayName || extension.name);
+								const actions = requireReload ? [{
+									label: localize('InstallVSIXAction.reloadNow', "Reload Now"),
+									run: () => hostService.reload()
+								}] : [];
+								notificationService.prompt(
+									Severity.Info,
+									message,
+									actions
+								);
+							}
+						});
+				}
+			});
+		}
 		const extensionsFilterSubMenu = new MenuId('extensionsFilterSubMenu');
 		MenuRegistry.appendMenuItem(MenuId.ViewContainerTitle, <ISubmenuItem>{
 			submenu: extensionsFilterSubMenu,

@@ -103,15 +103,25 @@ import * as locConstants from 'sql/base/common/locConstants'; // {{SQL CARBON ED
 // Menu
 (function registerMenu(): void {
 
-	MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, { // {{SQL CARBON EDIT}} - Add install VSIX menu item
-		group: '5.1_installExtension',
+	if (product.quality !== 'saw') { // {{SQL CARBON EDIT}} - Remove items that are not required
+		MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, { // {{SQL CARBON EDIT}} - Add install VSIX menu item
+			group: '5.1_installExtension',
+			command: {
+				id: SELECT_INSTALL_VSIX_EXTENSION_COMMAND_ID,
+				title: locConstants.desktopContributionMiinstallVsix
+			}
+		});
+	}
+
+	MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, {
+		group: '6_close',
 		command: {
-			id: SELECT_INSTALL_VSIX_EXTENSION_COMMAND_ID,
-			title: locConstants.desktopContributionMiinstallVsix
-		}
+			id: CloseCurrentWindowAction.ID,
+			title: localize({ key: 'miCloseWindow', comment: ['&& denotes a mnemonic'] }, "Clos&&e Window")
+		},
+		order: 4
 	});
 
-	// Quit
 	MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, {
 		group: 'z_Exit',
 		command: {
