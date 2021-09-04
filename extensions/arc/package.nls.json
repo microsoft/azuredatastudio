@@ -154,5 +154,6 @@
 	"requested.memory.less.than.or.equal.to.memory.limit": "Requested memory must be less than or equal to memory limit",
 	"memory.limit.greater.than.or.equal.to.requested.memory": "Memory limit must be greater than or equal to requested memory",
 	"arc.agreement.sql.help.text": "Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. While this service is in preview, it has some feature limitations compared to SQL Managed Instance on Azure. {0}",
-	"arc.agreement.sql.help.text.learn.more": "Learn more"
+	"arc.agreement.sql.help.text.learn.more": "Learn more",
+	"arc.agreement.sql.help.text.learn.more.ariaLabel": "Learn more about Azure Arc enabled Managed Instance"
 }

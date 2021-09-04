@@ -887,6 +887,15 @@ declare module 'azdata' {
 		appendData(data: any[][]): Thenable<void>;
 	}
 
+	export interface LinkArea {
+		/*
+		* Accessibility information used when screen reader interacts with this link.
+		* Generally, a link has no need to set the `role` of the accessibilityInformation;
+		* but it is exposed for situations that may require it.
+		*/
+		accessibilityInformation?: vscode.AccessibilityInformation
+	}
+
 	export interface IconColumnCellValue {
 		/**
 		 * The icon to be displayed.

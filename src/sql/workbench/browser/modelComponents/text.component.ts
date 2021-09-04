@@ -124,6 +124,13 @@ export default class TextComponent extends TitledComponent<azdata.TextComponentP
 				label: link.text,
 				href: link.url
 			}));
+			if (link.accessibilityInformation) {
+				linkElement.el.setAttribute('aria-label', link.accessibilityInformation.label);
+				if (link.accessibilityInformation.role) {
+					linkElement.el.setAttribute('role', link.accessibilityInformation.role);
+				}
+			}
+
 			this._register(attachLinkStyler(linkElement, this.themeService));
 			(<HTMLElement>this.textContainer.nativeElement).appendChild(linkElement.el);
 
