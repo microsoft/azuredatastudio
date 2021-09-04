@@ -56,7 +56,7 @@ export abstract class KeyValue extends vscode.Disposable {
 			alignItems: 'center'
 		}).component();
 
-		const keyComponent = modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const keyComponent = modelBuilder.text().withProps({
 			value: key,
 			CSSStyles: { ...cssStyles.text, 'font-weight': 'bold', 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
@@ -80,7 +80,7 @@ export class TextKeyValue extends KeyValue {
 	constructor(modelBuilder: azdata.ModelBuilder, key: string, value: string) {
 		super(modelBuilder, key, value);
 
-		this.text = modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		this.text = modelBuilder.text().withProps({
 			value: value,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
@@ -101,7 +101,7 @@ export abstract class BaseInputKeyValue extends KeyValue {
 	constructor(modelBuilder: azdata.ModelBuilder, key: string, value: string, multiline: boolean) {
 		super(modelBuilder, key, value);
 
-		this.input = modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+		this.input = modelBuilder.inputBox().withProps({
 			value: value,
 			readOnly: true,
 			multiline: multiline
@@ -110,7 +110,7 @@ export abstract class BaseInputKeyValue extends KeyValue {
 		const inputContainer = modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
 		inputContainer.addItem(this.input);
 
-		const copy = modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		const copy = modelBuilder.button().withProps({
 			iconPath: IconPathHelper.copy,
 			width: '17px',
 			height: '17px',
@@ -153,7 +153,7 @@ export class LinkKeyValue extends KeyValue {
 	constructor(modelBuilder: azdata.ModelBuilder, key: string, value: string, onClick: (e: any) => any) {
 		super(modelBuilder, key, value);
 
-		this.link = modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
+		this.link = modelBuilder.hyperlink().withProps({
 			label: value,
 			url: ''
 		}).component();

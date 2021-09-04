@@ -26,7 +26,7 @@ export class FilePicker {
 	) {
 		const buttonWidth = 80;
 		this.filePathInputBox = modelBuilder.inputBox()
-			.withProperties<azdata.InputBoxProperties>({
+			.withProps({
 				value: initialPath,
 				ariaLabel: ariaLabel,
 				validationErrorMessage: validationErrorMessage,
@@ -43,7 +43,7 @@ export class FilePicker {
 			}).component();
 
 		this.filePickerButton = modelBuilder.button()
-			.withProperties<azdata.ButtonProperties>({
+			.withProps({
 				label: loc.browse,
 				width: buttonWidth,
 				secondary: true
@@ -89,5 +89,5 @@ function createFlexContainer(modelBuilder: azdata.ModelBuilder, items: azdata.Co
 	alignItems = alignItems || (rowLayout ? 'center' : undefined);
 	const itemsStyle = rowLayout ? { CSSStyles: { 'margin-right': '5px', } } : {};
 	const flexLayout: azdata.FlexLayout = { flexFlow: flexFlow, height: height, width: width, alignItems: alignItems };
-	return modelBuilder.flexContainer().withItems(items, itemsStyle).withLayout(flexLayout).withProperties<azdata.ComponentProperties>({ CSSStyles: cssStyles || {} }).component();
+	return modelBuilder.flexContainer().withItems(items, itemsStyle).withLayout(flexLayout).withProps({ CSSStyles: cssStyles || {} }).component();
 }

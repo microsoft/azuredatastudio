@@ -10,7 +10,7 @@ export async function openModelViewDashboard(context: vscode.ExtensionContext): 
 	const dashboard = azdata.window.createModelViewDashboard('Test Dashboard');
 	dashboard.registerTabs(async (view: azdata.ModelView) => {
 		// Tab with toolbar
-		const button = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		const button = view.modelBuilder.button().withProps({
 			label: 'Add databases tab',
 			iconPath: {
 				light: context.asAbsolutePath('images/compare.svg'),
@@ -22,7 +22,7 @@ export async function openModelViewDashboard(context: vscode.ExtensionContext): 
 			orientation: azdata.Orientation.Horizontal
 		}).component();
 
-		const input1 = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({ value: 'input 1' }).component();
+		const input1 = view.modelBuilder.inputBox().withProps({ value: 'input 1' }).component();
 		const homeTab: azdata.DashboardTab = {
 			id: 'home',
 			toolbar: toolbar,
@@ -32,8 +32,8 @@ export async function openModelViewDashboard(context: vscode.ExtensionContext): 
 		};
 
 		// Tab with nested tabbed Panel
-		const addTabButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: 'Add a tab', width: '150px' }).component();
-		const removeTabButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: 'Remove a tab', width: '150px' }).component();
+		const addTabButton = view.modelBuilder.button().withProps({ label: 'Add a tab', width: '150px' }).component();
+		const removeTabButton = view.modelBuilder.button().withProps({ label: 'Remove a tab', width: '150px' }).component();
 		const container = view.modelBuilder.flexContainer().withItems([addTabButton, removeTabButton]).withLayout({ flexFlow: 'column' }).component();
 		const nestedTab1 = {
 			title: 'Tab1',
@@ -45,7 +45,7 @@ export async function openModelViewDashboard(context: vscode.ExtensionContext): 
 			}
 		};
 
-		const input2 = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({ value: 'input 2' }).component();
+		const input2 = view.modelBuilder.inputBox().withProps({ value: 'input 2' }).component();
 		const nestedTab2 = {
 			title: 'Tab2',
 			content: input2,
@@ -56,7 +56,7 @@ export async function openModelViewDashboard(context: vscode.ExtensionContext): 
 			id: 'tab2'
 		};
 
-		const input3 = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({ value: 'input 4' }).component();
+		const input3 = view.modelBuilder.inputBox().withProps({ value: 'input 4' }).component();
 		const nestedTab3 = {
 			title: 'Tab3',
 			content: input3,
@@ -95,7 +95,7 @@ export async function openModelViewDashboard(context: vscode.ExtensionContext): 
 		};
 
 		// Databases tab
-		const databasesText = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({ value: 'This is databases tab', width: '200px' }).component();
+		const databasesText = view.modelBuilder.inputBox().withProps({ value: 'This is databases tab', width: '200px' }).component();
 		const databasesTab: azdata.DashboardTab = {
 			id: 'databases',
 			content: databasesText,

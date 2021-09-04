@@ -54,7 +54,7 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 
 		// Header label
 		const healthStatusHeaderLabel = this.modelView.modelBuilder.text()
-			.withProperties<azdata.TextComponentProperties>({
+			.withProps({
 				value: loc.healthStatusDetails,
 				CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '10px' }
 			})
@@ -72,7 +72,7 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 		healthStatusHeaderContainer.addItem(this.lastUpdatedLabel, { CSSStyles: { 'margin-left': '45px' } });
 
 		this.instanceHealthStatusTable = this.modelView.modelBuilder.declarativeTable()
-			.withProperties<azdata.DeclarativeTableProperties>(
+			.withProps(
 				{
 					columns: [
 						{ // status icon
@@ -168,7 +168,7 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 
 		// Title label
 		const endpointsLabel = this.modelView.modelBuilder.text()
-			.withProperties<azdata.TextComponentProperties>({ value: loc.metricsAndLogs, CSSStyles: { 'margin-block-start': '20px', 'margin-block-end': '0px' } })
+			.withProps({ value: loc.metricsAndLogs, CSSStyles: { 'margin-block-start': '20px', 'margin-block-end': '0px' } })
 			.component();
 		this.rootContainer.addItem(endpointsLabel, { CSSStyles: { 'padding-left': '10px', ...cssStyles.title } });
 
@@ -250,7 +250,7 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 			});
 
 		this.metricsAndLogsRowsTable = this.modelView.modelBuilder.declarativeTable()
-			.withProperties<azdata.DeclarativeTableProperties>(
+			.withProps(
 				{
 					columns: metricsAndLogsColumns,
 					data: this.createMetricsAndLogsRows(),
@@ -299,7 +299,7 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 		if (isNullOrUndefined(instanceStatus.dashboards) || isNullOrUndefined(instanceStatus.dashboards.nodeMetricsUrl)) {
 			row.push(this.modelView.modelBuilder.text().withProps({ value: loc.notAvailable, CSSStyles: { ...cssStyles.text } }).component());
 		} else {
-			row.push(this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
+			row.push(this.modelView.modelBuilder.hyperlink().withProps({
 				label: loc.view,
 				url: instanceStatus.dashboards.nodeMetricsUrl,
 				title: instanceStatus.dashboards.nodeMetricsUrl,
@@ -314,7 +314,7 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 			if (isNullOrUndefined(instanceStatus.dashboards) || isNullOrUndefined(instanceStatus.dashboards.sqlMetricsUrl)) {
 				row.push(this.modelView.modelBuilder.text().withProps({ value: loc.notAvailable, CSSStyles: { ...cssStyles.text } }).component());
 			} else {
-				row.push(this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
+				row.push(this.modelView.modelBuilder.hyperlink().withProps({
 					label: loc.view,
 					url: instanceStatus.dashboards.sqlMetricsUrl,
 					title: instanceStatus.dashboards.sqlMetricsUrl,
@@ -327,7 +327,7 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 		if (isNullOrUndefined(instanceStatus.dashboards) || isNullOrUndefined(instanceStatus.dashboards.logsUrl)) {
 			row.push(this.modelView.modelBuilder.text().withProps({ value: loc.notAvailable, CSSStyles: { ...cssStyles.text } }).component());
 		} else {
-			row.push(this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
+			row.push(this.modelView.modelBuilder.hyperlink().withProps({
 				label: loc.view,
 				url: instanceStatus.dashboards.logsUrl,
 				title: instanceStatus.dashboards.logsUrl,
@@ -340,7 +340,7 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 
 	private createHealthStatusRow(instanceStatus: InstanceStatusModel): any[] {
 		const statusIconCell = this.modelView.modelBuilder.text()
-			.withProperties<azdata.TextComponentProperties>({
+			.withProps({
 				value: getHealthStatusIcon(instanceStatus.healthStatus),
 				ariaRole: 'img',
 				title: getHealthStatusDisplayText(instanceStatus.healthStatus),

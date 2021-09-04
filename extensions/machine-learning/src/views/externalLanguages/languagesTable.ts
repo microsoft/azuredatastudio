@@ -19,7 +19,7 @@ export class LanguagesTable extends LanguageViewBase {
 	constructor(apiWrapper: ApiWrapper, private _modelBuilder: azdata.ModelBuilder, parent: LanguageViewBase) {
 		super(apiWrapper, parent.root, parent);
 		this._table = _modelBuilder.declarativeTable()
-			.withProperties<azdata.DeclarativeTableProperties>(
+			.withProps(
 				{
 					columns: [
 						{ // Name

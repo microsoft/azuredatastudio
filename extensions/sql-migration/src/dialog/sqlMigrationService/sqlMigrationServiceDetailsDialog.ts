@@ -229,7 +229,7 @@ export class SqlMigrationServiceDetailsDialog {
 
 		const copyKey1Button = view.modelBuilder
 			.button()
-			.withProperties<azdata.ComponentWithIconProperties>({
+			.withProps({
 				title: constants.COPY_KEY1,
 				iconPath: IconPathHelper.copy,
 				height: IMAGE_SIZE,
@@ -245,7 +245,7 @@ export class SqlMigrationServiceDetailsDialog {
 
 		const copyKey2Button = view.modelBuilder
 			.button()
-			.withProperties<azdata.ComponentWithIconProperties>({
+			.withProps({
 				title: constants.COPY_KEY2,
 				iconPath: IconPathHelper.copy,
 				height: IMAGE_SIZE,
@@ -261,7 +261,7 @@ export class SqlMigrationServiceDetailsDialog {
 
 		const refreshKey1Button = view.modelBuilder
 			.button()
-			.withProperties<azdata.ComponentWithIconProperties>({
+			.withProps({
 				title: constants.REFRESH_KEY1,
 				iconPath: IconPathHelper.refresh,
 				height: IMAGE_SIZE,
@@ -274,7 +274,7 @@ export class SqlMigrationServiceDetailsDialog {
 
 		const refreshKey2Button = view.modelBuilder
 			.button()
-			.withProperties<azdata.ComponentWithIconProperties>({
+			.withProps({
 				title: constants.REFRESH_KEY2,
 				iconPath: IconPathHelper.refresh,
 				height: IMAGE_SIZE,

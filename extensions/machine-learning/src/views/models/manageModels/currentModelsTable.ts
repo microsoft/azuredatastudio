@@ -152,7 +152,7 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 			);
 		}
 		this._table = modelBuilder.declarativeTable()
-			.withProperties<azdata.DeclarativeTableProperties>(
+			.withProps(
 				{
 					columns: columns,
 					data: [],

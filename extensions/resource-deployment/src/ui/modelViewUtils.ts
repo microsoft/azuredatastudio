@@ -192,7 +192,7 @@ function createInputBoxField({ context, inputBoxType = 'text' }: { context: Fiel
 }
 
 export function createInputBoxInputInfo(view: azdata.ModelView, inputInfo: InputBoxInfo): InputComponentInfo<azdata.InputBoxComponent> {
-	const component = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+	const component = view.modelBuilder.inputBox().withProps({
 		value: inputInfo.defaultValue,
 		ariaLabel: inputInfo.ariaLabel,
 		inputType: inputInfo.type || 'text',
@@ -220,7 +220,7 @@ export function createLabel(view: azdata.ModelView, info: { text: string, descri
 		}
 	}
 
-	const text = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+	const text = view.modelBuilder.text().withProps({
 		value: info.text,
 		description: info.description,
 		requiredIndicator: info.required,
@@ -252,7 +252,7 @@ export function createCheckboxInputInfo(view: azdata.ModelView, info: { initialV
 	};
 }
 export function createCheckbox(view: azdata.ModelView, info: { initialValue: boolean, label: string, required?: boolean }): azdata.CheckBoxComponent {
-	return view.modelBuilder.checkBox().withProperties<azdata.CheckBoxProperties>({
+	return view.modelBuilder.checkBox().withProps({
 		checked: info.initialValue,
 		required: info.required,
 		label: info.label
@@ -260,7 +260,7 @@ export function createCheckbox(view: azdata.ModelView, info: { initialValue: boo
 }
 
 export function createDropdownInputInfo(view: azdata.ModelView, info: { defaultValue?: string | azdata.CategoryValue, values?: string[] | azdata.CategoryValue[], width?: string, editable?: boolean, required?: boolean, label: string }): InputComponentInfo<azdata.DropDownComponent> {
-	const dropdown = view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
+	const dropdown = view.modelBuilder.dropDown().withProps({
 		values: info.values,
 		value: info.defaultValue,
 		width: info.width,
@@ -512,7 +512,7 @@ export function createFlexContainer(view: azdata.ModelView, items: azdata.Compon
 	if (alignItems) {
 		flexLayout.alignItems = alignItems;
 	}
-	return view.modelBuilder.flexContainer().withItems(items, itemsStyle).withLayout(flexLayout).withProperties<azdata.ComponentProperties>({ CSSStyles: cssStyles || {} }).component();
+	return view.modelBuilder.flexContainer().withItems(items, itemsStyle).withLayout(flexLayout).withProps({ CSSStyles: cssStyles || {} }).component();
 }
 
 export function createGroupContainer(view: azdata.ModelView, items: azdata.Component[], layout: azdata.GroupLayout): azdata.GroupContainer {
@@ -771,7 +771,7 @@ function processPasswordField(context: FieldContext): void {
 	if (context.fieldInfo.confirmationRequired) {
 		const passwordNotMatchMessage = getPasswordMismatchMessage(context.fieldInfo.label);
 		const confirmPasswordLabel = createLabel(context.view, { text: context.fieldInfo.confirmationLabel!, required: true, width: context.fieldInfo.labelWidth, cssStyles: context.fieldInfo.labelCSSStyles });
-		const confirmPasswordInput = context.view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+		const confirmPasswordInput = context.view.modelBuilder.inputBox().withProps({
 			ariaLabel: context.fieldInfo.confirmationLabel,
 			inputType: 'password',
 			required: true,

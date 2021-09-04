@@ -30,7 +30,7 @@ export abstract class BdcDashboardPage extends InitializingComponent {
 	protected createToolbarContainer(): azdata.ToolbarContainer {
 		// Refresh button
 		this._refreshButton = this.modelView.modelBuilder.button()
-			.withProperties<azdata.ButtonProperties>({
+			.withProps({
 				label: loc.refresh,
 				iconPath: IconPathHelper.refresh
 			}).component();
@@ -40,7 +40,7 @@ export abstract class BdcDashboardPage extends InitializingComponent {
 		});
 
 		const openTroubleshootNotebookButton = this.modelView.modelBuilder.button()
-			.withProperties<azdata.ButtonProperties>({
+			.withProps({
 				label: loc.troubleshoot,
 				iconPath: IconPathHelper.notebook
 			}).component();

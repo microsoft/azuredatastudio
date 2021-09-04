@@ -246,7 +246,7 @@ export default class MainController implements vscode.Disposable {
 			light: path.join(__dirname, '..', 'media', 'monitor.svg'),
 			dark: path.join(__dirname, '..', 'media', 'monitor_inverse.svg')
 		};
-		let table = view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
+		let table = view.modelBuilder.table().withProps({
 			data: [
 				['1', '2', '2', { enabled: false, checked: false },
 					undefined, // for button/hyperlink column, 'undefined' means to use the default information provided by the column definition
@@ -700,7 +700,7 @@ export default class MainController implements vscode.Disposable {
 						})
 						.withItems([
 							view.modelBuilder.card()
-								.withProperties<azdata.CardProperties>({
+								.withProps({
 									label: 'label1',
 									value: 'value1',
 									actions: [{ label: 'action' }]
@@ -712,7 +712,7 @@ export default class MainController implements vscode.Disposable {
 						.withLayout({ flexFlow: 'column' })
 						.withItems([
 							view.modelBuilder.card()
-								.withProperties<azdata.CardProperties>({
+								.withProps({
 									label: 'label2',
 									value: 'value2',
 									actions: [{ label: 'action' }]

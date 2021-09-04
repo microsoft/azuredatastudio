@@ -88,7 +88,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
-		const workerNodeslink = this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
+		const workerNodeslink = this.modelView.modelBuilder.hyperlink().withProps({
 			label: loc.addingWorkerNodes,
 			url: 'https://docs.microsoft.com/azure/azure-arc/data/scale-up-down-postgresql-hyperscale-server-group-using-cli',
 			CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px' }
@@ -99,7 +99,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
-		const memoryVCoreslink = this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
+		const memoryVCoreslink = this.modelView.modelBuilder.hyperlink().withProps({
 			label: loc.scalingCompute,
 			url: 'https://docs.microsoft.com/azure/azure-arc/data/scale-up-down-postgresql-hyperscale-server-group-using-cli',
 			CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px' }

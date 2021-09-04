@@ -14,7 +14,7 @@ export class SqlAssessmentResultList {
 	}
 
 	private createListComponent(view: azdata.ModelView): azdata.ListBoxComponent {
-		const list = view.modelBuilder.listBox().withProperties<azdata.ListBoxProperties>({
+		const list = view.modelBuilder.listBox().withProps({
 			values: [
 				'Filestream not supported in Azure SQL Managed Instance',
 				'Number of Log files per database something something',

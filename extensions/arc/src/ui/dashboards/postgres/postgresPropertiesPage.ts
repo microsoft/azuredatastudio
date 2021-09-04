@@ -44,7 +44,7 @@ export class PostgresPropertiesPage extends DashboardPage {
 		const content = this.modelView.modelBuilder.divContainer().component();
 		root.addItem(content, { CSSStyles: { 'margin': '20px' } });
 
-		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		content.addItem(this.modelView.modelBuilder.text().withProps({
 			value: loc.properties,
 			CSSStyles: { ...cssStyles.title, 'margin-bottom': '25px' }
 		}).component());
@@ -55,7 +55,7 @@ export class PostgresPropertiesPage extends DashboardPage {
 
 		this.loading = this.modelView.modelBuilder.loadingComponent()
 			.withItem(this.keyValueContainer.container)
-			.withProperties<azdata.LoadingComponentProperties>({
+			.withProps({
 				loading: !this._postgresModel.configLastUpdated && !this._controllerModel.registrationsLastUpdated
 			}).component();
 
@@ -65,7 +65,7 @@ export class PostgresPropertiesPage extends DashboardPage {
 	}
 
 	protected get toolbarContainer(): azdata.ToolbarContainer {
-		const refreshButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		const refreshButton = this.modelView.modelBuilder.button().withProps({
 			label: loc.refresh,
 			iconPath: IconPathHelper.refresh
 		}).component();

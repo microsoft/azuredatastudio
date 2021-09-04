@@ -32,7 +32,7 @@ export class ConfigurePathPage extends BasePage {
 			wizardDescription = localize('configurePython.descriptionWithoutKernel', "Notebook kernels require a Python runtime to be configured and dependencies to be installed.");
 		}
 		let wizardDescriptionLabel = this.view.modelBuilder.text()
-			.withProperties<azdata.TextComponentProperties>({
+			.withProps({
 				value: wizardDescription,
 				CSSStyles: {
 					'padding': '0px',
@@ -41,14 +41,14 @@ export class ConfigurePathPage extends BasePage {
 			}).component();
 
 		this.pythonLocationDropdown = this.view.modelBuilder.dropDown()
-			.withProperties<azdata.DropDownProperties>({
+			.withProps({
 				value: undefined,
 				values: [],
 				width: '400px'
 			}).component();
 		this.pythonDropdownLoader = this.view.modelBuilder.loadingComponent()
 			.withItem(this.pythonLocationDropdown)
-			.withProperties<azdata.LoadingComponentProperties>({
+			.withProps({
 				loading: false
 			})
 			.component();
@@ -78,13 +78,13 @@ export class ConfigurePathPage extends BasePage {
 			}]).component();
 		let selectInstallContainer = this.view.modelBuilder.divContainer()
 			.withItems([selectInstallForm])
-			.withProperties<azdata.DivContainerProperties>({
+			.withProps({
 				clickable: false
 			}).component();
 
 		let allParentItems = [selectInstallContainer];
 		if (this.model.pythonLocation) {
-			let installedPathTextBox = this.view.modelBuilder.inputBox().withProperties<azdata.TextComponentProperties>({
+			let installedPathTextBox = this.view.modelBuilder.inputBox().withProps({
 				value: this.model.pythonLocation,
 				enabled: false,
 				width: '400px'
@@ -105,7 +105,7 @@ export class ConfigurePathPage extends BasePage {
 
 			let editPathContainer = this.view.modelBuilder.divContainer()
 				.withItems([editPathForm])
-				.withProperties<azdata.DivContainerProperties>({
+				.withProps({
 					clickable: false
 				}).component();
 			allParentItems.push(editPathContainer);
@@ -202,7 +202,7 @@ export class ConfigurePathPage extends BasePage {
 	private createInstallRadioButtons(modelBuilder: azdata.ModelBuilder, useExistingPython: boolean): void {
 		let buttonGroup = 'installationType';
 		this.newInstallButton = modelBuilder.radioButton()
-			.withProperties<azdata.RadioButtonProperties>({
+			.withProps({
 				name: buttonGroup,
 				label: localize('configurePython.newInstall', "New Python installation"),
 				checked: !useExistingPython
@@ -216,7 +216,7 @@ export class ConfigurePathPage extends BasePage {
 		});
 
 		this.existingInstallButton = modelBuilder.radioButton()
-			.withProperties<azdata.RadioButtonProperties>({
+			.withProps({
 				name: buttonGroup,
 				label: localize('configurePython.existingInstall', "Use existing Python installation"),
 				checked: useExistingPython

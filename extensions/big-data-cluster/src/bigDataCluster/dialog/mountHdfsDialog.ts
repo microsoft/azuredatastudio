@@ -151,16 +151,16 @@ export class MountHdfsDialog extends HdfsDialogBase<MountHdfsProperties, void> {
 		let pathVal = this.model.props.hdfsPath;
 		pathVal = (!pathVal || pathVal === '/') ? newMountName : (pathVal + newMountName);
 		this.pathInputBox = this.uiModelBuilder.inputBox()
-			.withProperties<azdata.InputBoxProperties>({
+			.withProps({
 				value: pathVal
 			}).component();
 		this.remoteUriInputBox = this.uiModelBuilder.inputBox()
-			.withProperties<azdata.InputBoxProperties>({
+			.withProps({
 				value: this.model.props.remoteUri
 			})
 			.component();
 		this.credentialsInputBox = this.uiModelBuilder.inputBox()
-			.withProperties<azdata.InputBoxProperties>({
+			.withProps({
 				inputType: 'password',
 				value: this.model.props.credentials
 			})
@@ -224,7 +224,7 @@ export class RefreshMountDialog extends HdfsDialogBase<MountHdfsProperties, void
 
 	protected getMainSectionComponents(): (azdata.FormComponentGroup | azdata.FormComponent)[] {
 		this.pathInputBox = this.uiModelBuilder.inputBox()
-			.withProperties<azdata.InputBoxProperties>({
+			.withProps({
 				value: this.model.props.hdfsPath
 			}).component();
 		return [
@@ -305,7 +305,7 @@ export class DeleteMountDialog extends HdfsDialogBase<MountHdfsProperties, void>
 
 	protected getMainSectionComponents(): (azdata.FormComponentGroup | azdata.FormComponent)[] {
 		this.pathInputBox = this.uiModelBuilder.inputBox()
-			.withProperties<azdata.InputBoxProperties>({
+			.withProps({
 				value: this.model.props.hdfsPath
 			}).component();
 		return [

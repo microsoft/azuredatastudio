@@ -45,12 +45,12 @@ export class SqlAssessmentHistoryTab extends SqlAssessmentTab {
 				height: '100%'
 			}).component();
 
-		const title = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const title = view.modelBuilder.text().withProps({
 			value: '',
 			CSSStyles: { 'font-weight': 'bold', 'margin-block-start': '0px', 'margin-block-end': '0px', 'font-size': '20px', 'padding-left': '20px', 'padding-bottom': '20px' }
 		}).component();
 
-		const backLink = view.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
+		const backLink = view.modelBuilder.hyperlink().withProps({
 			label: localize('asmt.history.back', "<< Back"),
 			url: '',
 			CSSStyles: { 'text-decoration': 'none', 'width': '150px' }
@@ -65,7 +65,7 @@ export class SqlAssessmentHistoryTab extends SqlAssessmentTab {
 		const infoPanel = view.modelBuilder.flexContainer()
 			.withLayout({
 				flexFlow: 'row'
-			}).withProperties<azdata.ComponentProperties>({
+			}).withProps({
 				CSSStyles: {
 					'padding-left': '15px'
 				}
@@ -114,7 +114,7 @@ export class SqlAssessmentHistoryTab extends SqlAssessmentTab {
 	private async createHistorySummaryTable(view: azdata.ModelView): Promise<azdata.TableComponent> {
 		const cssHeader = 'no-borders align-with-header';
 		return view.modelBuilder.table()
-			.withProperties<azdata.TableComponentProperties>({
+			.withProps({
 				data: [],
 				columns: [
 					{ value: localize('asmt.history.summaryAsmtDate', "Assessment Date"), headerCssClass: cssHeader, width: 125 },

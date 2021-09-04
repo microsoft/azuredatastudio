@@ -59,33 +59,33 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 		const content = this.modelView.modelBuilder.divContainer().component();
 		root.addItem(content, { CSSStyles: { 'margin': '20px' } });
 
-		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		content.addItem(this.modelView.modelBuilder.text().withProps({
 			value: loc.computeAndStorage,
 			CSSStyles: { ...cssStyles.title }
 		}).component());
 
-		const infoComputeStorage_p1 = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const infoComputeStorage_p1 = this.modelView.modelBuilder.text().withProps({
 			value: loc.miaaComputeAndStorageDescriptionPartOne,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' }
 		}).component();
 
-		const memoryVCoreslink = this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
+		const memoryVCoreslink = this.modelView.modelBuilder.hyperlink().withProps({
 			label: loc.scalingCompute,
 			url: 'https://docs.microsoft.com/azure/azure-arc/data/configure-managed-instance',
 			CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
-		const infoComputeStorage_p4 = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const infoComputeStorage_p4 = this.modelView.modelBuilder.text().withProps({
 			value: loc.computeAndStorageDescriptionPartFour,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
-		const infoComputeStorage_p5 = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const infoComputeStorage_p5 = this.modelView.modelBuilder.text().withProps({
 			value: loc.computeAndStorageDescriptionPartFive,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
-		const infoComputeStorage_p6 = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const infoComputeStorage_p6 = this.modelView.modelBuilder.text().withProps({
 			value: loc.computeAndStorageDescriptionPartSix,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
@@ -112,7 +112,7 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 
 	protected get toolbarContainer(): azdata.ToolbarContainer {
 		// Save Edits
-		this.saveButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		this.saveButton = this.modelView.modelBuilder.button().withProps({
 			label: loc.saveText,
 			iconPath: IconPathHelper.save,
 			enabled: false
@@ -153,7 +153,7 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 			}));
 
 		// Discard
-		this.discardButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		this.discardButton = this.modelView.modelBuilder.button().withProps({
 			label: loc.discardText,
 			iconPath: IconPathHelper.discard,
 			enabled: false
@@ -179,7 +179,7 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 	}
 
 	private initializeConfigurationBoxes() {
-		this.coresLimitBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+		this.coresLimitBox = this.modelView.modelBuilder.inputBox().withProps({
 			readOnly: false,
 			min: 1,
 			inputType: 'number',
@@ -197,7 +197,7 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 			})
 		);
 
-		this.coresRequestBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+		this.coresRequestBox = this.modelView.modelBuilder.inputBox().withProps({
 			readOnly: false,
 			min: 1,
 			inputType: 'number',
@@ -215,7 +215,7 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 			})
 		);
 
-		this.memoryLimitBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+		this.memoryLimitBox = this.modelView.modelBuilder.inputBox().withProps({
 			readOnly: false,
 			min: 2,
 			inputType: 'number',
@@ -233,7 +233,7 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 			})
 		);
 
-		this.memoryRequestBox = this.modelView.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+		this.memoryRequestBox = this.modelView.modelBuilder.inputBox().withProps({
 			readOnly: false,
 			min: 2,
 			inputType: 'number',
@@ -277,7 +277,7 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 			alignItems: 'center'
 		}).component();
 
-		const keyComponent = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const keyComponent = this.modelView.modelBuilder.text().withProps({
 			value: `${key} :`,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();

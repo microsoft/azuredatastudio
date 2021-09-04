@@ -111,13 +111,13 @@ export class ManageAccessDialog {
 		const locationContainer = this.modelBuilder.flexContainer().withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		const locationLabel = this.modelBuilder.text()
-			.withProperties<azdata.TextComponentProperties>({
+			.withProps({
 				value: loc.locationTitle,
 				CSSStyles: { ...cssStyles.titleCss }
 			}).component();
 
 		const pathLabel = this.modelBuilder.text()
-			.withProperties<azdata.TextComponentProperties>({
+			.withProps({
 				value: this.hdfsPath,
 				title: this.hdfsPath,
 				height: locationLabelHeight,
@@ -141,7 +141,7 @@ export class ManageAccessDialog {
 		// = Permissions Title =
 		// =====================
 		const permissionsTitle = this.modelBuilder.text()
-			.withProperties<azdata.TextComponentProperties>({ value: loc.permissionsHeader })
+			.withProps({ value: loc.permissionsHeader })
 			.component();
 		contentContainer.addItem(permissionsTitle, { CSSStyles: { 'margin-top': '15px', ...cssStyles.titleCss } });
 
@@ -158,7 +158,7 @@ export class ManageAccessDialog {
 		// = Sticky =
 		// ==========
 		this.stickyCheckbox = this.modelBuilder.checkBox()
-			.withProperties<azdata.CheckBoxProperties>({
+			.withProps({
 				width: checkboxSize,
 				height: checkboxSize,
 				checked: permissionStatus.stickyBit,
@@ -184,7 +184,7 @@ export class ManageAccessDialog {
 		// ===========================
 
 		const addUserOrGroupTitle = this.modelBuilder.text()
-			.withProperties<azdata.TextComponentProperties>({ value: loc.addUserOrGroupHeader, CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '10px' } })
+			.withProps({ value: loc.addUserOrGroupHeader, CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '10px' } })
 			.component();
 		contentContainer.addItem(addUserOrGroupTitle, { CSSStyles: { 'margin-top': '15px', ...cssStyles.titleCss } });
 
@@ -200,7 +200,7 @@ export class ManageAccessDialog {
 		const addUserOrGroupInputRow = this.modelBuilder.flexContainer().component();
 
 		this.addUserOrGroupInput = this.modelBuilder.inputBox()
-			.withProperties<azdata.InputBoxProperties>({
+			.withProps({
 				inputType: 'text',
 				placeHolder: loc.enterNamePlaceholder,
 				width: 250,
@@ -306,7 +306,7 @@ export class ManageAccessDialog {
 			namedUsersAndGroupsColumns.push(this.createTableColumn('', loc.deleteTitle, permissionsDeleteColumnWidth, azdata.DeclarativeDataType.component));
 
 			const posixPermissionsTable = this.modelBuilder.declarativeTable()
-				.withProperties<azdata.DeclarativeTableProperties>(
+				.withProps(
 					{
 						columns: posixPermissionsColumns,
 						data: posixPermissionData
@@ -321,7 +321,7 @@ export class ManageAccessDialog {
 			});
 
 			const namedUsersAndGroupsTable = this.modelBuilder.declarativeTable()
-				.withProperties<azdata.DeclarativeTableProperties>(
+				.withProps(
 					{
 						columns: namedUsersAndGroupsColumns,
 						data: namedUsersAndGroupsData
@@ -336,7 +336,7 @@ export class ManageAccessDialog {
 	}
 
 	private createRadioButton(modelBuilder: azdata.ModelBuilder, label: string, name: string, aclEntryType: AclType): azdata.RadioButtonComponent {
-		const button = modelBuilder.radioButton().withProperties<azdata.RadioButtonProperties>({ label: label, name: name }).component();
+		const button = modelBuilder.radioButton().withProps({ label: label, name: name }).component();
 		button.onDidClick(() => {
 			this.addUserOrGroupSelectedType = aclEntryType;
 		});
@@ -368,7 +368,7 @@ export class ManageAccessDialog {
 	private createImageComponent(type: AclType | PermissionType): azdata.ImageComponent {
 		const imageProperties = getImageForType(type);
 		return this.modelBuilder.image()
-			.withProperties<azdata.ImageComponentProperties>({
+			.withProps({
 				iconPath: imageProperties.iconPath,
 				width: permissionsTypeIconColumnWidth,
 				height: permissionsRowHeight,
@@ -474,7 +474,7 @@ export class ManageAccessDialog {
 
 		if (includeDelete) {
 			const deleteButton = this.modelBuilder.button()
-				.withProperties<azdata.ButtonProperties>(
+				.withProps(
 					{
 						label: '',
 						title: loc.deleteTitle,
@@ -492,7 +492,7 @@ export class ManageAccessDialog {
 
 	private createInheritDefaultsCheckbox(): azdata.CheckBoxComponent {
 		this.inheritDefaultsCheckbox = this.modelBuilder.checkBox()
-			.withProperties<azdata.CheckBoxProperties>({
+			.withProps({
 				width: checkboxSize,
 				height: checkboxSize,
 				checked: false, // Will be set when we get the model update
@@ -550,7 +550,7 @@ export class ManageAccessDialog {
 
 		// Access
 		const accessSectionHeader = this.modelBuilder.text()
-			.withProperties<azdata.TextComponentProperties>({
+			.withProps({
 				value: loc.accessHeader,
 				ariaHidden: true,
 				CSSStyles: {
@@ -571,7 +571,7 @@ export class ManageAccessDialog {
 
 			// Default
 			const defaultSectionHeader = this.modelBuilder.text()
-				.withProperties<azdata.TextComponentProperties>({
+				.withProps({
 					value: loc.defaultHeader,
 					ariaHidden: true,
 					CSSStyles: {
@@ -623,7 +623,7 @@ export class ManageAccessDialog {
  */
 function createCheckbox(builder: azdata.ModelBuilder, checked: boolean, enabled: boolean, containerWidth: number, containerHeight: number, ariaLabel: string): { container: azdata.FlexContainer, checkbox: azdata.CheckBoxComponent } {
 	const checkbox = builder.checkBox()
-		.withProperties<azdata.CheckBoxProperties>({
+		.withProps({
 			checked: checked,
 			enabled: enabled,
 			height: checkboxSize,

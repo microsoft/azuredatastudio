@@ -122,7 +122,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 				value: loc.discoverPathOrAdditionalInformationText,
 				width: 435
 			};
-			this._toolsTable = view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
+			this._toolsTable = view.modelBuilder.table().withProps({
 				data: [],
 				columns: [toolColumn, descriptionColumn, installStatusColumn, versionColumn, minVersionColumn, installedPathColumn],
 				width: tableWidth,
@@ -131,7 +131,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 
 			const toolsTableWrapper = view.modelBuilder.divContainer().withLayout({ width: tableWidth }).component();
 			toolsTableWrapper.addItem(this._toolsTable, { CSSStyles: { 'border-left': '1px solid silver', 'border-top': '1px solid silver' } });
-			this._toolsLoadingComponent = view.modelBuilder.loadingComponent().withItem(toolsTableWrapper).withProperties<azdata.LoadingComponentProperties>({
+			this._toolsLoadingComponent = view.modelBuilder.loadingComponent().withItem(toolsTableWrapper).withProps({
 				loadingCompletedText: localize('deploymentDialog.loadingRequiredToolsCompleted', "Loading required tools information completed"),
 				loadingText: localize('deploymentDialog.loadingRequiredTools', "Loading required tools information"),
 				showText: true
@@ -205,13 +205,13 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 						if (optionValueFilter) {
 							optionValues = optionValues.filter(optionValue => optionValueFilter.includes(optionValue.name));
 						}
-						const optionLabel = this.view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+						const optionLabel = this.view.modelBuilder.text().withProps({
 							value: option.displayName,
 						}).component();
 						optionLabel.width = '150px';
 
 						const optionSelectedValue = (this.wizard.toolsEulaPagePresets) ? this.wizard.toolsEulaPagePresets[index] : optionValues[0];
-						const optionSelectBox = this.view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
+						const optionSelectBox = this.view.modelBuilder.dropDown().withProps({
 							values: optionValues,
 							value: optionSelectedValue,
 							width: '300px',
@@ -260,11 +260,11 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 
 
 	private createAgreementCheckbox(agreementInfo: AgreementInfo): azdata.FlexContainer {
-		this._agreementCheckBox = this.view.modelBuilder.checkBox().withProperties<azdata.CheckBoxProperties>({
+		this._agreementCheckBox = this.view.modelBuilder.checkBox().withProps({
 			ariaLabel: this.getAgreementDisplayText(agreementInfo),
 			required: true
 		}).component();
-		const text = this.view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const text = this.view.modelBuilder.text().withProps({
 			value: agreementInfo.template,
 			links: agreementInfo.links,
 			requiredIndicator: true

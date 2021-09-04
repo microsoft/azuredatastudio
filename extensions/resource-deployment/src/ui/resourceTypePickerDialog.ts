@@ -48,7 +48,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 				.sort((a: ResourceType, b: ResourceType) => {
 					return (a.displayIndex || Number.MAX_VALUE) - (b.displayIndex || Number.MAX_VALUE);
 				});
-			this._cardGroup = view.modelBuilder.radioCardGroup().withProperties<azdata.RadioCardGroupComponentProperties>({
+			this._cardGroup = view.modelBuilder.radioCardGroup().withProps({
 				cards: this._resourceTypes.map((resourceType) => {
 					return this.createOrGetCard(resourceType);
 				}),

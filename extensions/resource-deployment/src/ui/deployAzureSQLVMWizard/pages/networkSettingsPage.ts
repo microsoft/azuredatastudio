@@ -212,7 +212,7 @@ export class NetworkSettingsPage extends BasePage {
 
 	private async createSubnetDropdown(view: azdata.ModelView) {
 
-		this._newSubnetCheckbox = view.modelBuilder.checkBox().withProperties<azdata.CheckBoxProperties>({
+		this._newSubnetCheckbox = view.modelBuilder.checkBox().withProps({
 			label: constants.NetworkSettingsNewSubnet,
 			checked: false
 		}).component();

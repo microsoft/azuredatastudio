@@ -36,7 +36,7 @@ export class AzureModelsTable extends ModelViewBase implements IDataComponent<Wo
 	 */
 	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.DeclarativeTableComponent {
 		this._table = modelBuilder.declarativeTable()
-			.withProperties<azdata.DeclarativeTableProperties>(
+			.withProps(
 				{
 					columns: [
 						{ // Action

@@ -132,7 +132,7 @@ export class CreateProjectFromDatabaseDialog {
 		const sourceConnectionTextBox = this.createSourceConnectionComponent(view);
 		const selectConnectionButton: azdataType.Component = this.createSelectConnectionButton(view);
 
-		const serverLabel = view.modelBuilder.text().withProperties<azdataType.TextComponentProperties>({
+		const serverLabel = view.modelBuilder.text().withProps({
 			value: constants.server,
 			requiredIndicator: true,
 			width: cssStyles.createProjectFromDatabaseLabelWidth
@@ -156,7 +156,7 @@ export class CreateProjectFromDatabaseDialog {
 			this.tryEnableCreateButton();
 		});
 
-		const databaseLabel = view.modelBuilder.text().withProperties<azdataType.TextComponentProperties>({
+		const databaseLabel = view.modelBuilder.text().withProps({
 			value: constants.databaseNameLabel,
 			requiredIndicator: true,
 			width: cssStyles.createProjectFromDatabaseLabelWidth
@@ -240,7 +240,7 @@ export class CreateProjectFromDatabaseDialog {
 	}
 
 	private createProjectNameRow(view: azdataType.ModelView): azdataType.FlexContainer {
-		this.projectNameTextBox = view.modelBuilder.inputBox().withProperties<azdataType.InputBoxProperties>({
+		this.projectNameTextBox = view.modelBuilder.inputBox().withProps({
 			ariaLabel: constants.projectNamePlaceholderText,
 			placeHolder: constants.projectNamePlaceholderText,
 			required: true,
@@ -253,7 +253,7 @@ export class CreateProjectFromDatabaseDialog {
 			this.tryEnableCreateButton();
 		});
 
-		const projectNameLabel = view.modelBuilder.text().withProperties<azdataType.TextComponentProperties>({
+		const projectNameLabel = view.modelBuilder.text().withProps({
 			value: constants.projectNameLabel,
 			requiredIndicator: true,
 			width: cssStyles.createProjectFromDatabaseLabelWidth
@@ -279,7 +279,7 @@ export class CreateProjectFromDatabaseDialog {
 			this.tryEnableCreateButton();
 		});
 
-		const projectLocationLabel = view.modelBuilder.text().withProperties<azdataType.TextComponentProperties>({
+		const projectLocationLabel = view.modelBuilder.text().withProps({
 			value: constants.projectLocationLabel,
 			requiredIndicator: true,
 			width: cssStyles.createProjectFromDatabaseLabelWidth
@@ -292,7 +292,7 @@ export class CreateProjectFromDatabaseDialog {
 	}
 
 	private createBrowseFolderButton(view: azdataType.ModelView): azdataType.ButtonComponent {
-		const browseFolderButton = view.modelBuilder.button().withProperties<azdataType.ButtonProperties>({
+		const browseFolderButton = view.modelBuilder.button().withProps({
 			ariaLabel: constants.browseButtonText,
 			iconPath: IconPathHelper.folder_blue,
 			height: '18px',
@@ -331,7 +331,7 @@ export class CreateProjectFromDatabaseDialog {
 			this.tryEnableCreateButton();
 		});
 
-		const folderStructureLabel = view.modelBuilder.text().withProperties<azdataType.TextComponentProperties>({
+		const folderStructureLabel = view.modelBuilder.text().withProps({
 			value: constants.folderStructureLabel,
 			requiredIndicator: true,
 			width: cssStyles.createProjectFromDatabaseLabelWidth

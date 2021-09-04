@@ -312,7 +312,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			}
 		}).component();
 
-		this._copy1 = this._view.modelBuilder.button().withProperties<azdata.ComponentWithIconProperties>({
+		this._copy1 = this._view.modelBuilder.button().withProps({
 			title: constants.COPY_KEY1,
 			iconPath: IconPathHelper.copy,
 			ariaLabel: constants.COPY_KEY1,
@@ -323,7 +323,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			vscode.window.showInformationMessage(constants.SERVICE_KEY1_COPIED_HELP);
 		});
 
-		this._copy2 = this._view.modelBuilder.button().withProperties<azdata.ComponentWithIconProperties>({
+		this._copy2 = this._view.modelBuilder.button().withProps({
 			title: constants.COPY_KEY2,
 			iconPath: IconPathHelper.copy,
 			ariaLabel: constants.COPY_KEY2,
@@ -334,13 +334,13 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			vscode.window.showInformationMessage(constants.SERVICE_KEY2_COPIED_HELP);
 		});
 
-		this._refresh1 = this._view.modelBuilder.button().withProperties<azdata.ComponentWithIconProperties>({
+		this._refresh1 = this._view.modelBuilder.button().withProps({
 			title: constants.REFRESH_KEY1,
 			iconPath: IconPathHelper.refresh,
 			ariaLabel: constants.REFRESH_KEY1,
 		}).component();
 
-		this._refresh2 = this._view.modelBuilder.button().withProperties<azdata.ComponentWithIconProperties>({
+		this._refresh2 = this._view.modelBuilder.button().withProps({
 			title: constants.REFRESH_KEY2,
 			iconPath: IconPathHelper.refresh,
 			ariaLabel: constants.REFRESH_KEY2,

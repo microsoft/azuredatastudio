@@ -110,12 +110,12 @@ export class AzureSettingsPage extends BasePage {
 			this.populateAzureSubscriptionsDropdown();
 		});
 
-		this.signInButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		this.signInButton = view.modelBuilder.button().withProps({
 			label: localizedConstants.signIn,
 			width: '100px',
 			secondary: true
 		}).component();
-		this.refreshButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		this.refreshButton = view.modelBuilder.button().withProps({
 			label: localizedConstants.refresh,
 			width: '100px',
 			secondary: true

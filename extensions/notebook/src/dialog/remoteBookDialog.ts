@@ -60,7 +60,7 @@ export class RemoteBookDialog {
 				fireOnTextChange: true,
 			}).component();
 
-			this.searchButton = this.view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+			this.searchButton = this.view.modelBuilder.button().withProps({
 				label: loc.search,
 				title: loc.search,
 				width: '200px',

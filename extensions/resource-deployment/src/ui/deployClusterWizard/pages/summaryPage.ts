@@ -358,7 +358,7 @@ export class SummaryPage extends ResourceTypePage {
 		};
 
 		const storageTableTitle = localize('deployCluster.StorageSettings', "Storage settings");
-		const storageTable = this.view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
+		const storageTable = this.view.modelBuilder.table().withProps({
 			title: storageTableTitle,
 			ariaLabel: storageTableTitle,
 			data: [

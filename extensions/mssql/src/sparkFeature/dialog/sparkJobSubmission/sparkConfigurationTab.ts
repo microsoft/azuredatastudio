@@ -75,7 +75,7 @@ export class SparkConfigurationTab {
 				title: localize('sparkJobSubmission.SparkCluster', "Spark Cluster")
 			}, baseFormItemLayout);
 
-			this._fileSourceDropDown = builder.dropDown().withProperties<azdata.DropDownProperties>({
+			this._fileSourceDropDown = builder.dropDown().withProps({
 				values: [SparkFileSource.Local.toString(), SparkFileSource.HDFS.toString()],
 				value: (this._path) ? SparkFileSource.HDFS.toString() : SparkFileSource.Local.toString()
 			}).component();

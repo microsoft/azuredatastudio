@@ -206,7 +206,7 @@ export class AzureSQLDBSummaryPage extends BasePage {
 	public createSummaryRow(view: azdata.ModelView, title: string, textComponent: azdata.TextComponent): azdata.FlexContainer {
 
 		const labelText = view.modelBuilder.text()
-			.withProperties<azdata.TextComponentProperties>(
+			.withProps(
 				{
 					value: title,
 					width: '250px',

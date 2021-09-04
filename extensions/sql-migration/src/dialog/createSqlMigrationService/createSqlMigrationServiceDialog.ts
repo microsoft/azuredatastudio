@@ -543,7 +543,7 @@ export class CreateSqlMigrationServiceDialog {
 		const location = this._model._targetServerInstance.location;
 		const keys = await getSqlMigrationServiceAuthKeys(this._model._azureAccount, subscription, resourceGroup, location, this._createdMigrationService!.name);
 
-		this._copyKey1Button = this._view.modelBuilder.button().withProperties<azdata.ComponentWithIconProperties>({
+		this._copyKey1Button = this._view.modelBuilder.button().withProps({
 			title: constants.COPY_KEY1,
 			iconPath: IconPathHelper.copy,
 			ariaLabel: constants.COPY_KEY1,
@@ -554,7 +554,7 @@ export class CreateSqlMigrationServiceDialog {
 			vscode.window.showInformationMessage(constants.SERVICE_KEY1_COPIED_HELP);
 		});
 
-		this._copyKey2Button = this._view.modelBuilder.button().withProperties<azdata.ComponentWithIconProperties>({
+		this._copyKey2Button = this._view.modelBuilder.button().withProps({
 			title: constants.COPY_KEY2,
 			iconPath: IconPathHelper.copy,
 			ariaLabel: constants.COPY_KEY2,
@@ -565,7 +565,7 @@ export class CreateSqlMigrationServiceDialog {
 			vscode.window.showInformationMessage(constants.SERVICE_KEY2_COPIED_HELP);
 		});
 
-		this._refreshKey1Button = this._view.modelBuilder.button().withProperties<azdata.ComponentWithIconProperties>({
+		this._refreshKey1Button = this._view.modelBuilder.button().withProps({
 			title: constants.REFRESH_KEY1,
 			iconPath: IconPathHelper.refresh,
 			ariaLabel: constants.REFRESH_KEY1,
@@ -574,7 +574,7 @@ export class CreateSqlMigrationServiceDialog {
 		this._refreshKey1Button.onDidClick((e) => {//TODO: add refresh logic
 		});
 
-		this._refreshKey2Button = this._view.modelBuilder.button().withProperties<azdata.ComponentWithIconProperties>({
+		this._refreshKey2Button = this._view.modelBuilder.button().withProps({
 			title: constants.REFRESH_KEY2,
 			iconPath: IconPathHelper.refresh,
 			ariaLabel: constants.REFRESH_KEY2,

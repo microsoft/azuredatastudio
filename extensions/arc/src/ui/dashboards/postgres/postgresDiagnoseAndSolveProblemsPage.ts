@@ -33,17 +33,17 @@ export class PostgresDiagnoseAndSolveProblemsPage extends DashboardPage {
 		const content = this.modelView.modelBuilder.divContainer().component();
 		root.addItem(content, { CSSStyles: { 'margin': '20px' } });
 
-		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		content.addItem(this.modelView.modelBuilder.text().withProps({
 			value: loc.diagnoseAndSolveProblems,
 			CSSStyles: { ...cssStyles.title, 'margin-bottom': '20px' }
 		}).component());
 
-		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		content.addItem(this.modelView.modelBuilder.text().withProps({
 			value: loc.clickTheTroubleshootButton('Postgres'),
 			CSSStyles: { ...cssStyles.text, 'margin-bottom': '20px' }
 		}).component());
 
-		const troubleshootButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		const troubleshootButton = this.modelView.modelBuilder.button().withProps({
 			iconPath: IconPathHelper.wrench,
 			label: loc.troubleshoot,
 			width: '160px'

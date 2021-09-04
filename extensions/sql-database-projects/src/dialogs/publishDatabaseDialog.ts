@@ -368,7 +368,7 @@ export class PublishDatabaseDialog {
 			width: cssStyles.publishDialogTextboxWidth
 		}).component();
 
-		const profileLabel = view.modelBuilder.text().withProperties<azdataType.TextComponentProperties>({
+		const profileLabel = view.modelBuilder.text().withProps({
 			value: constants.profile,
 			width: cssStyles.publishDialogLabelWidth
 		}).component();
@@ -383,7 +383,7 @@ export class PublishDatabaseDialog {
 		this.targetConnectionTextBox = this.createTargetConnectionComponent(view);
 		const selectConnectionButton: azdataType.Component = this.createSelectConnectionButton(view);
 
-		const serverLabel = view.modelBuilder.text().withProperties<azdataType.TextComponentProperties>({
+		const serverLabel = view.modelBuilder.text().withProps({
 			value: constants.server,
 			requiredIndicator: true,
 			width: cssStyles.publishDialogLabelWidth
@@ -410,7 +410,7 @@ export class PublishDatabaseDialog {
 			this.tryEnableGenerateScriptAndOkButtons();
 		});
 
-		const databaseLabel = view.modelBuilder.text().withProperties<azdataType.TextComponentProperties>({
+		const databaseLabel = view.modelBuilder.text().withProps({
 			value: constants.databaseNameLabel,
 			requiredIndicator: true,
 			width: cssStyles.publishDialogLabelWidth
@@ -424,7 +424,7 @@ export class PublishDatabaseDialog {
 	private createSqlCmdTable(view: azdataType.ModelView): azdataType.DeclarativeTableComponent {
 		this.sqlCmdVars = { ...this.project.sqlCmdVariables };
 
-		const table = view.modelBuilder.declarativeTable().withProperties<azdataType.DeclarativeTableProperties>({
+		const table = view.modelBuilder.declarativeTable().withProps({
 			ariaLabel: constants.sqlCmdTableLabel,
 			dataValues: this.convertSqlCmdVarsToTableFormat(this.sqlCmdVars),
 			columns: [
