@@ -10,6 +10,7 @@ import { DialogPane } from 'sql/workbench/services/dialog/browser/dialogPane';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
+import { getFocusableElements } from 'sql/base/browser/dom';
 
 export interface LayoutRequestParams {
 	modelViewId?: string;
@@ -20,6 +21,7 @@ export interface DialogComponentParams extends IBootstrapParams {
 	validityChangedCallback: (valid: boolean) => void;
 	onLayoutRequested: Event<LayoutRequestParams>;
 	dialogPane: DialogPane;
+	setInitialFocus: boolean;
 }
 
 @Component({
@@ -62,12 +64,20 @@ export class DialogContainer implements AfterViewInit {
 	}
 
 	ngAfterViewInit(): void {
+		const element = <HTMLElement>this._el.nativeElement;
 		this._modelViewContent.onEvent(event => {
 			if (event.isRootComponent && event.eventType === ComponentEventType.validityChanged) {
 				this._params.validityChangedCallback(event.args);
 			}
+
+			// Set focus to the first focusable elements when the content is loaded and the focus is not currently inside the content area
+			if (this._params.setInitialFocus && event.isRootComponent && event.eventType === ComponentEventType.onComponentLoaded && !element.contains(document.activeElement)) {
+				const focusableElements = getFocusableElements(element);
+				if (focusableElements?.length > 0) {
+					focusableElements[0].focus();
+				}
+			}
 		});
-		let element = <HTMLElement>this._el.nativeElement;
 		element.style.height = '100%';
 		element.style.width = '100%';
 	}

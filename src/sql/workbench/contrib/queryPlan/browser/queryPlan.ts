@@ -58,10 +58,6 @@ export class QueryPlanView implements IPanelView {
 		this.container.style.height = dimension.height + 'px';
 	}
 
-	public focus() {
-		this.container.focus();
-	}
-
 	public clear() {
 		if (this.qp) {
 			this.qp.xml = undefined;

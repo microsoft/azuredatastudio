@@ -77,10 +77,6 @@ export class TopOperationsView extends Disposable implements IPanelView {
 		this.table.layout(dimension);
 	}
 
-	public focus(): void {
-		this.table.focus();
-	}
-
 	public clear() {
 		this.dataView.clear();
 	}

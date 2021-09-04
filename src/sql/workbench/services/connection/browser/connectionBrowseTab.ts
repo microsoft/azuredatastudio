@@ -281,10 +281,6 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 		this.treeContainer.style.height = `${treeHeight}px`;
 		this.tree.layout(treeHeight, dimension.width);
 	}
-
-	focus(): void {
-		this.filterInput.focus();
-	}
 }
 
 export interface ITreeItemFromProvider {

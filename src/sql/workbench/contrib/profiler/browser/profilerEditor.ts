@@ -362,8 +362,7 @@ export class ProfilerEditor extends EditorPane {
 			title: nls.localize('text', "Text"),
 			view: {
 				layout: dim => this._editor.layout(dim),
-				render: parent => parent.appendChild(editorContainer),
-				focus: () => this._editor.focus()
+				render: parent => parent.appendChild(editorContainer)
 			},
 			tabSelectedHandler: expandPanel
 		});
@@ -417,8 +416,7 @@ export class ProfilerEditor extends EditorPane {
 			title: nls.localize('details', "Details"),
 			view: {
 				layout: dim => this._detailTable.layout(dim),
-				render: parent => parent.appendChild(detailTableContainer),
-				focus: () => this._detailTable.focus()
+				render: parent => parent.appendChild(detailTableContainer)
 			},
 			tabSelectedHandler: expandPanel
 		});

@@ -21,7 +21,8 @@ export enum ComponentEventType {
 	onComponentCreated,
 	onCellAction,
 	onEnterKeyPressed,
-	onInput
+	onInput,
+	onComponentLoaded
 }
 
 /**

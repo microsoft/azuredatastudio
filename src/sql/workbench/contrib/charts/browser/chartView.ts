@@ -206,9 +206,6 @@ export class ChartView extends Disposable implements IPanelView {
 		}
 	}
 
-	focus(): void {
-	}
-
 	public set queryRunner(runner: QueryRunner) {
 		this._queryRunner = runner;
 		this.fetchData();

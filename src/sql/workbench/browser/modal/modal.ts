@@ -382,12 +382,9 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * Set focusable elements in the modal dialog
 	 */
 	public setInitialFocusedElement() {
-		// Try to find focusable element in dialog pane rather than overall container. _modalBodySection contains items in the pane for a wizard.
-		// This ensures that we are setting the focus on a useful element in the form when possible.
-		const focusableElements = getFocusableElements(this._modalBodySection ?? this._bodyContainer!);
-
-		if (focusableElements && focusableElements.length > 0) {
-			(<HTMLElement>focusableElements[0]).focus();
+		const focusableElements = getFocusableElements(this._modalDialog!);
+		if (focusableElements?.length > 0) {
+			focusableElements[0].focus();
 		}
 	}
 
