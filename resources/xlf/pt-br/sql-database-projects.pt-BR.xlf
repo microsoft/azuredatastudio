@@ -762,8 +762,8 @@
         <target state="translated">Referência circular do projeto {0} para o projeto {1}</target>
       </trans-unit>
       <trans-unit id="mssqlNotFound">
-        <source xml:lang="en">Could not get mssql extension's install location at {0}</source>
-        <target state="translated">Não foi possível obter o local de instalação da extensão mssql em {0}</target>
+        <source xml:lang="en">Could not get SQL Tools Service install location at {0}</source>
+        <target state="translated">Não foi possível obter o local de instalação do Serviço de Ferramentas do SQL em {0}</target>
       </trans-unit>
       <trans-unit id="projBuildFailed">
         <source xml:lang="en">Build failed. Check output pane for more details. {0}</source>

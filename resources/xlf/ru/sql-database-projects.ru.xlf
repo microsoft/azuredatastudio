@@ -762,8 +762,8 @@
         <target state="translated">Циклическая ссылка из проекта {0} на проект {1}</target>
       </trans-unit>
       <trans-unit id="mssqlNotFound">
-        <source xml:lang="en">Could not get mssql extension's install location at {0}</source>
-        <target state="translated">Не удалось получить расположение установки расширения MSSQL на {0}</target>
+        <source xml:lang="en">Could not get SQL Tools Service install location at {0}</source>
+        <target state="translated">Не удалось получить расположение установки службы инструментов SQL Tools в {0}</target>
       </trans-unit>
       <trans-unit id="projBuildFailed">
         <source xml:lang="en">Build failed. Check output pane for more details. {0}</source>

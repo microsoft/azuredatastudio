@@ -32,6 +32,18 @@
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/base/browser/ui/propertiesContainer/togglePropertiesAction" source-language="en" datatype="plaintext" target-language="pt-BR">
+    <body>
+      <trans-unit id="hideProperties">
+        <source xml:lang="en">Hide properties</source>
+        <target state="translated">Ocultar propriedades</target>
+      </trans-unit>
+      <trans-unit id="showProperties">
+        <source xml:lang="en">Show Properties</source>
+        <target state="translated">Mostrar Propriedades</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/base/browser/ui/selectBox/selectBox" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="alertErrorMessage">
@@ -4036,6 +4048,10 @@ Erro: {1}</target>
       <trans-unit id="notebook.maxRichTextUndoHistory">
         <source xml:lang="en">The maximum number of changes stored in the undo history for the notebook Rich Text editor.</source>
         <target state="translated">O número máximo de alterações armazenadas no histórico de desfazer do editor de Rich Text do bloco de anotações.</target>
+      </trans-unit>
+      <trans-unit id="notebook.useAbsoluteFilePaths">
+        <source xml:lang="en">Use absolute file paths when linking to other notebooks.</source>
+        <target state="new">Use absolute file paths when linking to other notebooks.</target>
       </trans-unit>
       <trans-unit id="searchConfigurationTitle">
         <source xml:lang="en">Search Notebooks</source>

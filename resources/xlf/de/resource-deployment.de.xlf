@@ -974,14 +974,6 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/dist/ui/notebookWizard/notebookWizardPage" source-language="en" datatype="plaintext" target-language="de">
-    <body>
-      <trans-unit id="wizardPage.ValidationError">
-        <source xml:lang="en">There are some errors on this page, click 'Show Details' to view the errors.</source>
-        <target state="translated">Es liegen Fehler auf dieser Seite vor. Klicken Sie auf "Details anzeigen", um diese anzuzeigen.</target>
-      </trans-unit>
-    </body>
-  </file>
   <file original="extensions/resource-deployment/dist/ui/deploymentInputDialog" source-language="en" datatype="plaintext" target-language="de">
     <body>
       <trans-unit id="deploymentDialog.OpenNotebook">
@@ -1411,10 +1403,6 @@
       <trans-unit id="deployCluster.AdminPasswordField">
         <source xml:lang="en">Password</source>
         <target state="translated">Kennwort</target>
-      </trans-unit>
-      <trans-unit id="deployCluster.ValidationError">
-        <source xml:lang="en">There are some errors on this page, click 'Show Details' to view the errors.</source>
-        <target state="translated">Es liegen Fehler auf dieser Seite vor. Klicken Sie auf "Details anzeigen", um diese anzuzeigen.</target>
       </trans-unit>
     </body>
   </file>

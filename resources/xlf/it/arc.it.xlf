@@ -642,7 +642,7 @@
       </trans-unit>
       <trans-unit id="arc.pgSqlType">
         <source xml:lang="en">PostgreSQL Hyperscale - Azure Arc</source>
-        <target state="translated">PostgreSQL Hyperscale – Azure Arc</target>
+        <target state="translated">PostgreSQL Hyperscale - Azure Arc</target>
       </trans-unit>
       <trans-unit id="arc.miaaType">
         <source xml:lang="en">SQL managed instance - Azure Arc</source>
@@ -748,13 +748,17 @@
         <source xml:lang="en">Reset Password</source>
         <target state="translated">Reimposta password</target>
       </trans-unit>
-      <trans-unit id="arc.addExtensions">
-        <source xml:lang="en">Add extensions</source>
-        <target state="translated">Aggiungi estensioni</target>
+      <trans-unit id="arc.loadExtensions">
+        <source xml:lang="en">Load extensions</source>
+        <target state="translated">Carica estensioni</target>
       </trans-unit>
-      <trans-unit id="arc.dropExtensions">
-        <source xml:lang="en">Drop extensions</source>
-        <target state="translated">Elimina estensioni</target>
+      <trans-unit id="arc.unloadExtensions">
+        <source xml:lang="en">Unload extensions</source>
+        <target state="translated">Scarica estensioni</target>
+      </trans-unit>
+      <trans-unit id="arc.noExtensions">
+        <source xml:lang="en">No extensions listed in configuration.</source>
+        <target state="translated">Nessuna estensione elencata nella configurazione.</target>
       </trans-unit>
       <trans-unit id="arc.openInAzurePortal">
         <source xml:lang="en">Open in Azure Portal</source>
@@ -867,6 +871,10 @@
       <trans-unit id="arc.serviceEndpoints">
         <source xml:lang="en">Service endpoints</source>
         <target state="translated">Endpoint servizio</target>
+      </trans-unit>
+      <trans-unit id="arc.serviceEndpointsTable">
+        <source xml:lang="en">Service endpoints table</source>
+        <target state="translated">Griglia degli endpoint servizio</target>
       </trans-unit>
       <trans-unit id="arc.databases">
         <source xml:lang="en">Databases</source>
@@ -1202,7 +1210,7 @@
       </trans-unit>
       <trans-unit id="arc.learnAboutPostgresClients">
         <source xml:lang="en">Learn more about Azure PostgreSQL Hyperscale client interfaces</source>
-        <target state="translated">Altre informazioni sulle interfacce client Di Azure PostgreSQL Hyperscale</target>
+        <target state="translated">Altre informazioni sulle interfacce client di Azure PostgreSQL Hyperscale</target>
       </trans-unit>
       <trans-unit id="arc.coordinatorNodeParametersDescription">
         <source xml:lang="en"> These server parameters of the Coordinator node can be set to custom (non-default) values. Search to find parameters.</source>
@@ -1388,6 +1396,14 @@
         <source xml:lang="en">Select a pod in the dropdown below for detailed health information.</source>
         <target state="translated">Selezionare un pod nell'elenco a discesa seguente per informazioni dettagliate sull'integrità.</target>
       </trans-unit>
+      <trans-unit id="arc.podsUsedDescriptionAria">
+        <source xml:lang="en">Select a pod in the dropdown below for detailed health information</source>
+        <target state="translated">Selezionare un pod nell'elenco a discesa seguente per informazioni dettagliate sull'integrità</target>
+      </trans-unit>
+      <trans-unit id="arc.podConditionsTable">
+        <source xml:lang="en">Pod conditions table</source>
+        <target state="translated">Tabella condizioni Pod</target>
+      </trans-unit>
       <trans-unit id="arc.connectToPostgresDescription">
         <source xml:lang="en">A connection to the server is required to show and set database engine settings, which will require the PostgreSQL Extension to be installed.</source>
         <target state="translated">Per visualizzare e impostare le impostazioni del motore di database, è necessaria una connessione al server che richiede l'installazione dell'estensione PostgreSQL.</target>
@@ -1406,7 +1422,7 @@
       </trans-unit>
       <trans-unit id="arc.noPodIssuesDetected">
         <source xml:lang="en">There aren’t any known issues affecting this PostgreSQL Hyperscale instance.</source>
-        <target state="translated">Non ci sono ’ problemi noti che interessano questa istanza di PostgreSQL Hyperscale.</target>
+        <target state="translated">Non ci sono problemi noti che interessano questa istanza di PostgreSQL Hyperscale.</target>
       </trans-unit>
       <trans-unit id="arc.podIssuesDetected">
         <source xml:lang="en">The pods listed below are experiencing issues that may affect performance or availability.</source>
@@ -1496,6 +1512,11 @@
         <source xml:lang="en">Updated {0}</source>
         <target state="translated">È stato completato l'aggiornamento di {0}</target>
       </trans-unit>
+      <trans-unit id="arc.connectionString">
+        <source xml:lang="en">Connection string for {0}</source>
+        <note>{0} is the name of the type of connection string (e.g. Java)</note>
+        <target state="translated">Stringa di connessione per {0}</target>
+      </trans-unit>
       <trans-unit id="arc.copyConnectionStringToClipboard">
         <source xml:lang="en">Copy {0} Connection String to clipboard</source>
         <note>{0} is the name of the type of connection string (e.g. Java)</note>
@@ -1564,7 +1585,7 @@
       </trans-unit>
       <trans-unit id="arc.connectToPGSqlFailed">
         <source xml:lang="en">Could not connect to PostgreSQL Hyperscale - Azure Arc Instance {0}. {1}</source>
-        <target state="translated">Non è stato possibile connettersi a PostgreSQL Hyperscale - Istanza di Azure Arc {0}. {1}</target>
+        <target state="translated">Non è stato possibile connettersi all’istanza di PostgreSQL Hyperscale - Azure Arc {0}. {1}</target>
       </trans-unit>
       <trans-unit id="arc.missingExtension">
         <source xml:lang="en">The {0} extension is required to view engine settings. Do you wish to install it now?</source>

@@ -718,8 +718,8 @@
   <file original="extensions/azurecore/dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="azure.resource.providers.AzureMonitorContainerLabel">
-        <source xml:lang="en">Azure Monitor Workspace</source>
-        <target state="translated">Espace de travail Azure Monitor</target>
+        <source xml:lang="en">Azure Monitor Logs workspace</source>
+        <target state="translated">Espace de travail de journaux Azure Monitor</target>
       </trans-unit>
     </body>
   </file>

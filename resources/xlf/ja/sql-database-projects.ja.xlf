@@ -762,8 +762,8 @@
         <target state="translated">プロジェクト {0} からプロジェクト {1} への循環参照</target>
       </trans-unit>
       <trans-unit id="mssqlNotFound">
-        <source xml:lang="en">Could not get mssql extension's install location at {0}</source>
-        <target state="translated">{0} で mssql 拡張機能のインストール場所を取得できませんでした</target>
+        <source xml:lang="en">Could not get SQL Tools Service install location at {0}</source>
+        <target state="translated">{0} で SQL ツール サービスのインストール場所を取得できませんでした</target>
       </trans-unit>
       <trans-unit id="projBuildFailed">
         <source xml:lang="en">Build failed. Check output pane for more details. {0}</source>

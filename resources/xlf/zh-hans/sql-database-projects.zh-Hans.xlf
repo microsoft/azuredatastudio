@@ -762,8 +762,8 @@
         <target state="translated">从项目 {0} 到项目 {1} 的循环引用</target>
       </trans-unit>
       <trans-unit id="mssqlNotFound">
-        <source xml:lang="en">Could not get mssql extension's install location at {0}</source>
-        <target state="translated">无法在 {0} 获取 mssql 扩展的安装位置</target>
+        <source xml:lang="en">Could not get SQL Tools Service install location at {0}</source>
+        <target state="translated">无法在 {0} 获取 SQL Tools Service 安装位置</target>
       </trans-unit>
       <trans-unit id="projBuildFailed">
         <source xml:lang="en">Build failed. Check output pane for more details. {0}</source>

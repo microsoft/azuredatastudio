@@ -384,7 +384,7 @@
       </trans-unit>
       <trans-unit id="azurecore.azureArcPostgres">
         <source xml:lang="en">Azure Arc-enabled PostgreSQL Hyperscale</source>
-        <target state="translated">Azure Arc가 지원되는 PostgreSQL 하이퍼스케일</target>
+        <target state="translated">Azure Arc 지원 PostgreSQL 하이퍼스케일</target>
       </trans-unit>
       <trans-unit id="azure.unableToOpenAzureLink">
         <source xml:lang="en">Unable to open link, missing required values</source>
@@ -718,8 +718,8 @@
   <file original="extensions/azurecore/dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="azure.resource.providers.AzureMonitorContainerLabel">
-        <source xml:lang="en">Azure Monitor Workspace</source>
-        <target state="translated">Azure Monitor 작업 영역</target>
+        <source xml:lang="en">Azure Monitor Logs workspace</source>
+        <target state="translated">Azure Monitor 로그 작업 영역</target>
       </trans-unit>
     </body>
   </file>
@@ -777,7 +777,7 @@
     <body>
       <trans-unit id="azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel">
         <source xml:lang="en">PostgreSQL Hyperscale – Azure Arc</source>
-        <target state="translated">PostgreSQL 하이퍼스케일 – Azure Arc</target>
+        <target state="translated">PostgreSQL 하이퍼스케일 - Azure Arc</target>
       </trans-unit>
     </body>
   </file>
