@@ -18,7 +18,7 @@ export class BrowserClipboardService implements IClipboardService {
 	) { }
 
 	/**
-	 * Writes the input image as a dataurl to the clipbaord
+	 * Writes the input image as a dataurl to the clipboard
 	 */
 	async writeImageDataUrl(data: string): Promise<void> {
 		// not implemented until web standards catch up
