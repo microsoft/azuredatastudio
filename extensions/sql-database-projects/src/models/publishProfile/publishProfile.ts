@@ -7,10 +7,12 @@ import * as xmldom from 'xmldom';
 import * as constants from '../../common/constants';
 import * as utils from '../../common/utils';
 import * as mssql from '../../../../mssql';
+import * as vscodeMssql from 'vscode-mssql';
 
 import { promises as fs } from 'fs';
 import { Uri } from 'vscode';
 import { SqlConnectionDataSource } from '../dataSources/sqlConnectionStringSource';
+import { IDacFxService } from '../../controllers/projectController';
 
 // only reading db name, connection string, and SQLCMD vars from profile for now
 export interface PublishProfile {
@@ -19,13 +21,13 @@ export interface PublishProfile {
 	connectionId: string;
 	connection: string;
 	sqlCmdVariables: Record<string, string>;
-	options?: mssql.DeploymentOptions;
+	options?: mssql.DeploymentOptions | vscodeMssql.DeploymentOptions;
 }
 
 /**
  * parses the specified file to load publish settings
  */
-export async function load(profileUri: Uri, dacfxService: mssql.IDacFxService): Promise<PublishProfile> {
+export async function load(profileUri: Uri, dacfxService: IDacFxService): Promise<PublishProfile> {
 	const profileText = await fs.readFile(profileUri.fsPath);
 	const profileXmlDoc = new xmldom.DOMParser().parseFromString(profileText.toString());
 
