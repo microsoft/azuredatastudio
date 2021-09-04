@@ -305,7 +305,7 @@ export class Code {
 		// {{SQL CARBON EDIT}} Print out found element
 		const element = await poll(
 			() => this.driver.getElements(windowId, selector).then(els => els.length > 0 ? Promise.resolve(els[0]) : Promise.reject(new Error('Element not found for textContent'))),
-			s => accept!(typeof s === 'string' ? s : ''),
+			s => accept!(typeof s.textContent === 'string' ? s.textContent : ''),
 			`get text content '${selector}'`,
 			retryCount
 		);
