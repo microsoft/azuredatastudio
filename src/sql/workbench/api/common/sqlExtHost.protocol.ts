@@ -430,17 +430,17 @@ export abstract class ExtHostDataProtocolShape {
 	$deleteNotebook(handle: number, ownerUri: string, notebook: azdata.AgentNotebookInfo): Thenable<azdata.ResultStatus> { throw ni(); }
 
 	/**
-	 * Update materialzied Notebook Name
+	 * Update materialized Notebook Name
 	 */
 	$updateNotebookMaterializedName(handle: number, ownerUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, name: string): Thenable<azdata.ResultStatus> { throw ni(); }
 
 	/**
-	 * Update materialzied Notebook Name
+	 * Update materialized Notebook Name
 	 */
 	$deleteMaterializedNotebook(handle: number, ownerUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string): Thenable<azdata.ResultStatus> { throw ni(); }
 
 	/**
-	 * Update materialzied Notebook Pin
+	 * Update materialized Notebook Pin
 	 */
 	$updateNotebookMaterializedPin(handle: number, ownerUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, pin: boolean): Thenable<azdata.ResultStatus> { throw ni(); }
 
