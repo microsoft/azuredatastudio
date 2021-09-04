@@ -3398,7 +3398,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Provide Azure enabled PostgreSQL Hyperscale server group parameters]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Fornece parâmetros de grupo de servidores PostgreSQL Hyperscale habilitados para Azure]]></Val>
+            <Val><![CDATA[Fornece parâmetros de grupo de servidores de Hiperescala PostgreSQL habilitados para Azure]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3740,7 +3740,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Deploy PostgreSQL Hyperscale server groups into an Azure Arc environment]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Implantar grupos de servidores PostgreSQL Hyperscale em um ambiente Azure Arc]]></Val>
+            <Val><![CDATA[Implantar grupos de servidores de Hiperescala PostgreSQL em um ambiente Azure Arc]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3749,7 +3749,7 @@
         <Str Cat="Text">
           <Val><![CDATA[PostgreSQL Hyperscale server groups - Azure Arc (preview)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Grupos de servidores PostgreSQL Hyperscale - Azure Arc (visualização)]]></Val>
+            <Val><![CDATA[Grupos de servidores de Hiperescala do PostgreSQL - Azure Arc (pré-visualização)]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
