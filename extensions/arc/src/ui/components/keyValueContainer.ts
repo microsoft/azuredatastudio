@@ -104,7 +104,8 @@ export abstract class BaseInputKeyValue extends KeyValue {
 		this.input = modelBuilder.inputBox().withProps({
 			value: value,
 			readOnly: true,
-			multiline: multiline
+			multiline: multiline,
+			ariaLabel: loc.connectionString(key)
 		}).component();
 
 		const inputContainer = modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
