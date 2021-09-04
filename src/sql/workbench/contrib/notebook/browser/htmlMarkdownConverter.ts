@@ -7,7 +7,8 @@ import TurndownService = require('turndown');
 import { URI } from 'vs/base/common/uri';
 import * as path from 'vs/base/common/path';
 import * as turndownPluginGfm from 'sql/workbench/contrib/notebook/browser/turndownPluginGfm';
-import { replaceInvalidLinkPath } from 'sql/workbench/contrib/notebook/common/utils';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { findPathRelativeToContent, NotebookLinkHandler } from 'sql/workbench/contrib/notebook/browser/notebookLinkHandler';
 
 // These replacements apply only to text. Here's how it's handled from Turndown:
 // if (node.nodeType === 3) {
@@ -30,10 +31,11 @@ const markdownReplacements = [
 	[/</g, '\\<'], // Added to ensure sample text like <hello> is escaped
 	[/>/g, '\\>'], // Added to ensure sample text like <hello> is escaped
 ];
+
 export class HTMLMarkdownConverter {
 	private turndownService: TurndownService;
 
-	constructor(private notebookUri: URI) {
+	constructor(private notebookUri: URI, @IConfigurationService private configurationService: IConfigurationService,) {
 		this.turndownService = new TurndownService({ 'emDelimiter': '_', 'bulletListMarker': '-', 'headingStyle': 'atx', blankReplacement: blankReplacement });
 		this.setTurndownOptions();
 	}
@@ -132,27 +134,8 @@ export class HTMLMarkdownConverter {
 		this.turndownService.addRule('a', {
 			filter: 'a',
 			replacement: (content, node) => {
-				let href = node.href;
-				let notebookLink: URI | undefined;
-				const isAnchorLinkInFile = (node.attributes.href?.nodeValue.startsWith('#') || href.includes('#')) && href.startsWith('file://');
-				if (isAnchorLinkInFile) {
-					notebookLink = getUriAnchorLink(node, this.notebookUri);
-				} else {
-					//On Windows, if notebook is not trusted then the href attr is removed for all non-web URL links
-					// href contains either a hyperlink or a URI-encoded absolute path. (See resolveUrls method in notebookMarkdown.ts)
-					notebookLink = href ? URI.parse(href) : URI.file(node.title);
-				}
-				const notebookFolder = this.notebookUri ? path.join(path.dirname(this.notebookUri.fsPath), path.sep) : '';
-				if (notebookLink.fsPath !== this.notebookUri.fsPath) {
-					let relativePath = findPathRelativeToContent(notebookFolder, notebookLink);
-					if (relativePath) {
-						return `[${node.innerText}](${relativePath})`;
-					}
-				} else if (notebookLink?.fragment) {
-					// if the anchor link is to a section in the same notebook then just add the fragment
-					return `[${content}](${notebookLink.fragment})`;
-				}
-
+				const linkHandler = new NotebookLinkHandler(this.notebookUri, node, this.configurationService);
+				const href = linkHandler.getLinkUrl();
 				return `[${content}](${href})`;
 			}
 		});
@@ -304,25 +287,6 @@ function isInsideTable(node): boolean {
 	return node.parentNode?.nodeName === 'TH' || node.parentNode?.nodeName === 'TD';
 }
 
-export function findPathRelativeToContent(notebookFolder: string, contentPath: URI | undefined): string {
-	if (notebookFolder) {
-		if (contentPath?.scheme === 'file') {
-			let relativePath = contentPath.fragment ? path.relative(notebookFolder, contentPath.fsPath).concat('#', contentPath.fragment) : path.relative(notebookFolder, contentPath.fsPath);
-			//if path contains whitespaces then it's not identified as a link
-			relativePath = relativePath.replace(/\s/g, '%20');
-			// if relativePath contains improper directory format due to marked js parsing returning an invalid path (ex. ....\) then we need to replace it to ensure the directories are formatted properly (ex. ..\..\)
-			relativePath = replaceInvalidLinkPath(relativePath);
-			if (relativePath.startsWith(path.join('..', path.sep)) || relativePath.startsWith(path.join('.', path.sep))) {
-				return relativePath;
-			} else {
-				// if the relative path does not contain ./ at the beginning, we need to add it so it's recognized as a link
-				return `.${path.join(path.sep, relativePath)}`;
-			}
-		}
-	}
-	return '';
-}
-
 export function addHighlightIfYellowBgExists(node, content: string): string {
 	if (node?.style?.backgroundColor === 'yellow') {
 		return '<mark>' + content + '</mark>';
@@ -330,14 +294,3 @@ export function addHighlightIfYellowBgExists(node, content: string): string {
 	return content;
 }
 
-export function getUriAnchorLink(node, notebookUri: URI): URI {
-	const sectionLinkToAnotherFile = node.href.includes('#') && !node.attributes.href?.nodeValue.startsWith('#');
-	if (sectionLinkToAnotherFile) {
-		let absolutePath = !path.isAbsolute(node.attributes.href?.nodeValue) ? path.resolve(path.dirname(notebookUri.fsPath), node.attributes.href?.nodeValue) : node.attributes.href?.nodeValue;
-		// if section link is different from the current notebook
-		return URI.file(absolutePath);
-	} else {
-		// else build an uri using the current notebookUri
-		return URI.from({ scheme: 'file', path: notebookUri.path, fragment: node.attributes.href?.nodeValue });
-	}
-}

@@ -24,6 +24,7 @@ import { URI } from 'vs/base/common/uri';
 import { escape } from 'vs/base/common/strings';
 import { IImageCalloutDialogOptions, ImageCalloutDialog } from 'sql/workbench/contrib/notebook/browser/calloutDialog/imageCalloutDialog';
 import { TextCellEditModes } from 'sql/workbench/services/notebook/common/contracts';
+import { NotebookLinkHandler } from 'sql/workbench/contrib/notebook/browser/notebookLinkHandler';
 
 export const MARKDOWN_TOOLBAR_SELECTOR: string = 'markdown-toolbar-component';
 const linksRegex = /\[(?<text>.+)\]\((?<url>[^ ]+)(?: "(?<title>.+)")?\)/;
@@ -239,19 +240,11 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 			if (this.cellModel.currentMode !== CellEditModes.WYSIWYG) {
 				needsTransform = false;
 			} else {
-				let linkUrl = linkCalloutResult.insertUnescapedLinkUrl;
-				const isAnchorLink = linkUrl.startsWith('#');
-				if (!isAnchorLink) {
-					const isFile = URI.parse(linkUrl).scheme === 'file';
-					if (isFile && !path.isAbsolute(linkUrl)) {
-						const notebookDirName = path.dirname(this.cellModel?.notebookModel?.notebookUri.fsPath);
-						const relativePath = (linkUrl).replace(/\\/g, path.posix.sep);
-						linkUrl = path.resolve(notebookDirName, relativePath);
-					}
-				}
+				let notebookLink = new NotebookLinkHandler(this.cellModel?.notebookModel?.notebookUri, linkCalloutResult.insertUnescapedLinkUrl, this._configurationService);
+				let linkUrl = notebookLink.getLinkUrl();
 				// Otherwise, re-focus on the output element, and insert the link directly.
 				this.output?.nativeElement?.focus();
-				document.execCommand('insertHTML', false, `<a href="${escape(linkUrl)}">${escape(linkCalloutResult?.insertUnescapedLinkLabel)}</a>`);
+				document.execCommand('insertHTML', false, `<a href="${escape(linkUrl)}" is-absolute=${notebookLink.isAbsolutePath}>${escape(linkCalloutResult?.insertUnescapedLinkLabel)}</a>`);
 				return;
 			}
 		} else if (type === MarkdownButtonType.IMAGE_PREVIEW) {
@@ -356,12 +349,8 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 				return '';
 			}
 			const parentNode = anchorNode.parentNode as HTMLAnchorElement;
-			if (parentNode?.protocol === 'file:') {
-				// Pathname starts with / per https://developer.mozilla.org/en-US/docs/Web/API/HTMLAnchorElement/pathname so trim it off
-				return parentNode.pathname?.slice(1) || '';
-			} else {
-				return parentNode.href || '';
-			}
+			const linkHandler = new NotebookLinkHandler(this.cellModel?.notebookModel?.notebookUri, parentNode, this._configurationService);
+			return linkHandler.getLinkUrl();
 		} else {
 			const editorControl = this.getCellEditorControl();
 			const selection = editorControl?.getSelection();
