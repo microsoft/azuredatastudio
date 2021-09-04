@@ -33,33 +33,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azdata
 	await vscode.commands.executeCommand('setContext', constants.eulaAccepted, eulaAccepted); // set a context key for current value of eulaAccepted state retrieved from memento so that command for accepting eula is available/unavailable in commandPalette appropriately.
 	Logger.log(loc.eulaAcceptedStateOnStartup(eulaAccepted));
 
-	// Don't block on this since we want the extension to finish activating without needing user input
-	const localAzdataDiscovered = checkAndInstallAzdata() // install if not installed and user wants it.
-		.then(async azdataTool => {
-			if (azdataTool !== undefined) {
-				azdataToolService.localAzdata = azdataTool;
-				if (!eulaAccepted) {
-					// Don't block on this since we want extension to finish activating without requiring user actions.
-					// If EULA has not been accepted then we will check again while executing azdata commands.
-					promptForEula(context.globalState)
-						.then(async (userResponse: boolean) => {
-							eulaAccepted = userResponse;
-						})
-						.catch((err) => console.log(err));
-				}
-				try {
-					//update if available and user wants it.
-					if (await checkAndUpdateAzdata(azdataToolService.localAzdata)) { // if an update was performed
-						azdataToolService.localAzdata = await findAzdata(); // find and save the currently installed azdata
-					}
-				} catch (err) {
-					vscode.window.showWarningMessage(loc.updateError(err));
-				}
-			}
-			return azdataTool;
-		});
-
-	const azdataApi = getExtensionApi(context.globalState, azdataToolService, localAzdataDiscovered);
+	const azdataApi = getExtensionApi(context.globalState, azdataToolService, Promise.resolve(undefined));
 
 	// register option source(s)
 	// TODO: Uncomment this once azdata extension is removed
