@@ -12,7 +12,8 @@ import { IMimeComponent } from 'sql/workbench/contrib/notebook/browser/outputs/m
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { MimeModel } from 'sql/workbench/services/notebook/browser/outputs/mimemodel';
 import { getErrorMessage } from 'vs/base/common/errors';
-
+import { getResizesObserver } from 'vs/workbench/contrib/notebook/browser/view/renderers/cellWidgets';
+import * as Plotly from 'plotly.js';
 type ObjectType = object;
 
 interface FigureLayout extends ObjectType {
@@ -26,12 +27,6 @@ interface Figure extends ObjectType {
 	layout: Partial<FigureLayout>;
 }
 
-declare class PlotlyHTMLElement extends HTMLDivElement {
-	data: object;
-	layout: object;
-	newPlot: () => void;
-	redraw: () => void;
-}
 
 @Component({
 	selector: PlotlyOutputComponent.SELECTOR,
@@ -42,7 +37,7 @@ declare class PlotlyHTMLElement extends HTMLDivElement {
 export class PlotlyOutputComponent extends AngularDisposable implements IMimeComponent, OnInit {
 	public static readonly SELECTOR: string = 'plotly-output';
 
-	private static Plotly?: Promise<typeof import('plotly.js-dist-min')>;
+	private static Plotly?: Promise<typeof Plotly>;
 
 	@ViewChild('output', { read: ElementRef }) private output: ElementRef;
 
@@ -50,7 +45,8 @@ export class PlotlyOutputComponent extends AngularDisposable implements IMimeCom
 	private _rendered: boolean = false;
 	private _cellModel: ICellModel;
 	private _bundleOptions: MimeModel.IOptions;
-	private _plotDiv: PlotlyHTMLElement;
+	private _plotDiv: Plotly.PlotlyHTMLElement;
+	private _plotly: typeof Plotly;
 	public errorText: string;
 
 	constructor() {
@@ -83,8 +79,13 @@ export class PlotlyOutputComponent extends AngularDisposable implements IMimeCom
 		}
 		this._plotDiv = this.output.nativeElement;
 		this._plotDiv.style.maxWidth = '700px';
+		this._plotDiv.style.width = '100%';
 		this.renderPlotly();
 		this._initialized = true;
+
+		this._register(getResizesObserver(this._plotDiv, undefined, () => {
+			this.resize();
+		})).startObserving();
 	}
 
 	renderPlotly(): void {
@@ -106,6 +107,7 @@ export class PlotlyOutputComponent extends AngularDisposable implements IMimeCom
 		if (figure) {
 			let config = { responsive: true };
 			PlotlyOutputComponent.Plotly.then(plotly => {
+				this._plotly = plotly;
 				return plotly.newPlot(this._plotDiv, figure.data, figure.layout, config);
 			}).catch(e => this.displayError(e));
 		}
@@ -135,6 +137,10 @@ export class PlotlyOutputComponent extends AngularDisposable implements IMimeCom
 
 	layout(): void {
 		// No need to re-layout for now as Plotly is doing its own resize handling.
+	}
+
+	private resize() {
+		this._plotly.Plots.resize(this._plotDiv);
 	}
 
 	public hasError(): boolean {
