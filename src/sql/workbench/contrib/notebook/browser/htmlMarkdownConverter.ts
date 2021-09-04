@@ -312,7 +312,7 @@ export function findPathRelativeToContent(notebookFolder: string, contentPath: U
 			relativePath = relativePath.replace(/\s/g, '%20');
 			// if relativePath contains improper directory format due to marked js parsing returning an invalid path (ex. ....\) then we need to replace it to ensure the directories are formatted properly (ex. ..\..\)
 			relativePath = replaceInvalidLinkPath(relativePath);
-			if (relativePath.startsWith(path.join('..', path.sep) || path.join('.', path.sep))) {
+			if (relativePath.startsWith(path.join('..', path.sep)) || relativePath.startsWith(path.join('.', path.sep))) {
 				return relativePath;
 			} else {
 				// if the relative path does not contain ./ at the beginning, we need to add it so it's recognized as a link
