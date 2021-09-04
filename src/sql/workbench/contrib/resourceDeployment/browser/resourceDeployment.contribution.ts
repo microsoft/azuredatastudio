@@ -3,7 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { VIEWLET_ID } from 'sql/workbench/contrib/dataExplorer/browser/dataExplorerViewlet';
+import { localize } from 'vs/nls';
+import { MenuId, MenuRegistry } from 'vs/platform/actions/common/actions';
 import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/commands';
+import { ContextKeyEqualsExpr } from 'vs/platform/contextkey/common/contextkey';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 
 // New Resource Deployment
@@ -14,4 +18,14 @@ CommandsRegistry.registerCommand({
 		const commandService = accessor.get(ICommandService);
 		return commandService.executeCommand('azdata.resource.deploy');
 	}
+});
+
+MenuRegistry.appendMenuItem(MenuId.ViewContainerTitle, {
+	group: 'deployment',
+	order: 4,
+	command: {
+		id: 'azdata.resource.deploy',
+		title: localize('deployment.title', "New Deployment...")
+	},
+	when: ContextKeyEqualsExpr.create('viewContainer', VIEWLET_ID)
 });
