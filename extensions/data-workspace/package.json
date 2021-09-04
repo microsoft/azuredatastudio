@@ -119,7 +119,7 @@
       "view/item/context": [
         {
           "command": "projects.manageProject",
-          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project",
+          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project && azdataAvailable",
           "group": "0_projectsFirst@1"
         }
       ]
