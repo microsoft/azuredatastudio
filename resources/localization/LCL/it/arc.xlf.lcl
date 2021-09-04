@@ -10,15 +10,6 @@
     <Disp Icon="Expand" Expand="true" Disp="true" LocTbl="false" />
     <Item ItemId=";Xliff Resources" ItemType="0" PsrId="308" Leaf="false">
       <Disp Icon="Str" Disp="true" LocTbl="false" />
-      <Item ItemId=";extensions/arc/dist/localizedConstants.arc.addExtensions" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Add extensions]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Aggiungi estensioni]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.addingWorkerNodes" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[adding worker nodes]]></Val>
@@ -257,7 +248,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Could not connect to PostgreSQL Hyperscale - Azure Arc Instance {0}. {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Non è stato possibile connettersi a PostgreSQL Hyperscale - Istanza di Azure Arc {0}. {1}]]></Val>
+            <Val><![CDATA[Non è stato possibile connettersi all’istanza di PostgreSQL Hyperscale - Azure Arc {0}. {1}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -703,15 +694,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/arc/dist/localizedConstants.arc.dropExtensions" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Drop extensions]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Elimina estensioni]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.dropMultipleExtensions" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Currently dropping another extension, try again once that is completed.]]></Val>
@@ -1121,7 +1103,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Learn more about Azure PostgreSQL Hyperscale client interfaces]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Altre informazioni sulle interfacce client Di Azure PostgreSQL Hyperscale]]></Val>
+            <Val><![CDATA[Altre informazioni sulle interfacce client di Azure PostgreSQL Hyperscale]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1132,6 +1114,12 @@
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Altre informazioni.]]></Val>
           </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/dist/localizedConstants.arc.loadExtensions" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Load extensions]]></Val>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1364,7 +1352,7 @@
         <Str Cat="Text">
           <Val><![CDATA[There aren’t any known issues affecting this PostgreSQL Hyperscale instance.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Non ci sono ’ problemi noti che interessano questa istanza di PostgreSQL Hyperscale.]]></Val>
+            <Val><![CDATA[Non ci sono problemi noti che interessano questa istanza di PostgreSQL Hyperscale.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1607,7 +1595,7 @@
         <Str Cat="Text">
           <Val><![CDATA[PostgreSQL Hyperscale - Azure Arc]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[PostgreSQL Hyperscale – Azure Arc]]></Val>
+            <Val><![CDATA[PostgreSQL Hyperscale - Azure Arc]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2122,6 +2110,12 @@
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Sconosciuto]]></Val>
           </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/dist/localizedConstants.arc.unloadExtensions" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Unload extensions]]></Val>
         </Str>
         <Disp Icon="Str" />
       </Item>
