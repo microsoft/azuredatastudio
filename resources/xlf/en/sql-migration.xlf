@@ -606,6 +606,15 @@ This may take some time.</source>
     <trans-unit id="sql.migration.summary.target.name">
       <source xml:lang="en">Target Databases:</source>
     </trans-unit>
+    <trans-unit id="sql.migration.database.to.be.migrated">
+      <source xml:lang="en">Database to be migrated</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.count.database.single">
+      <source xml:lang="en">{0} database</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.count.database.multiple">
+      <source xml:lang="en">{0} databases</source>
+    </trans-unit>
     <trans-unit id="sql.migration.quick.pick.placeholder">
       <source xml:lang="en">Select the operation you'd like to perform</source>
     </trans-unit>

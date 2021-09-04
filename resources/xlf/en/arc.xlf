@@ -437,6 +437,9 @@
     <trans-unit id="should.be.integer">
       <source xml:lang="en">Value must be an integer</source>
     </trans-unit>
+    <trans-unit id="worker.node.count.should.not.be.one">
+      <source xml:lang="en">Value of 1 is not supported.</source>
+    </trans-unit>
     <trans-unit id="requested.cores.less.than.or.equal.to.cores.limit">
       <source xml:lang="en">Requested cores must be less than or equal to cores limit</source>
     </trans-unit>
@@ -677,7 +680,10 @@
       <source xml:lang="en">You can configure the number of CPU cores and storage size that will apply to the coordinator node. Adjust the number of CPU cores and memory settings for your server group. To reset the requests and/or limits, pass in empty value.</source>
     </trans-unit>
     <trans-unit id="arc.workerNodeInformation">
-      <source xml:lang="en">It is possible to scale in and out your server group by reducing or increasing the number of worker nodes.</source>
+      <source xml:lang="en">It is possible to scale in and out your server group by reducing or increasing the number of worker nodes. The value must be 0 or greater than 1.</source>
+    </trans-unit>
+    <trans-unit id="arc.workerOneNodeValidationMessage">
+      <source xml:lang="en">Value of 1 is not supported.</source>
     </trans-unit>
     <trans-unit id="arc.vCores">
       <source xml:lang="en">vCores</source>
