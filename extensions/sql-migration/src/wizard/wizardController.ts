@@ -94,11 +94,27 @@ export function createInformationRow(view: azdata.ModelView, label: string, valu
 			})
 		.withItems(
 			[
-				createLabelTextComponent(view, label),
-				createTextCompononent(view, value)
+				createLabelTextComponent(view, label,
+					{
+						'margin': '0px',
+						'width': '300px',
+						'font-size': '13px',
+						'line-height': '24px'
+					}
+				),
+				createTextCompononent(view, value,
+					{
+						'margin': '0px',
+						'width': '300px',
+						'font-size': '13px',
+						'line-height': '24px'
+					}
+				)
 			],
 			{
-				CSSStyles: { 'margin-right': '5px' }
+				CSSStyles: {
+					'margin-right': '5px'
+				}
 			})
 		.component();
 }
@@ -114,13 +130,13 @@ export function createHeadingTextComponent(view: azdata.ModelView, value: string
 
 
 export function createLabelTextComponent(view: azdata.ModelView, value: string, styles: { [key: string]: string; } = { 'width': '300px' }): azdata.TextComponent {
-	const component = createTextCompononent(view, value);
-	component.updateCssStyles(styles);
+	const component = createTextCompononent(view, value, styles);
 	return component;
 }
 
-export function createTextCompononent(view: azdata.ModelView, value: string): azdata.TextComponent {
+export function createTextCompononent(view: azdata.ModelView, value: string, styles: { [key: string]: string; } = { 'width': '300px' }): azdata.TextComponent {
 	return view.modelBuilder.text().withProps({
-		value: value
+		value: value,
+		CSSStyles: styles
 	}).component();
 }
