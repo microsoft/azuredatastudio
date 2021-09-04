@@ -41,6 +41,7 @@
 		"dist/azureResource/utils": {
 			"azure.resource.error": "Erro: {0}",
 			"azure.accounts.getResourceGroups.queryError": "Erro ao buscar os grupos de recursos para a conta {0} ({1}), assinatura {2} ({3}) e locatário {4} : {5}",
+			"azure.accounts.getLocations.queryError": "Erro ao buscar locais para a conta {0} ({1}) assinatura {2} ({3}) locatário {4} : {5}",
 			"azure.accounts.runResourceQuery.errors.invalidQuery": "Consulta inválida",
 			"azure.accounts.getSubscriptions.queryError": "Erro ao buscar as assinaturas para a conta {0}, locatário {1} : {2}",
 			"azure.accounts.getSelectedSubscriptions.queryError": "Erro ao buscar as assinaturas para a conta {0} : {1}"
@@ -105,7 +106,7 @@
 			"azurecore.azureArcsqlManagedInstance": "Instância gerenciada do SQL – Azure Arc",
 			"azurecore.azureArcService": "Serviço de Dados – Azure Arc",
 			"azurecore.sqlServerArc": "SQL Server – Azure Arc",
-			"azurecore.azureArcPostgres": "PostgreSQL de Hiperescala habilitado para o Azure Arc",
+			"azurecore.azureArcPostgres": "Hiperescala de PostgreSQL habilitada para Azure Arc",
 			"azure.unableToOpenAzureLink": "Não é possível abrir o link, os valores necessários estão ausentes",
 			"azure.azureResourcesGridTitle": "Recursos do Azure (Versão Prévia)",
 			"azurecore.invalidAzureAccount": "Conta inválida",
@@ -114,9 +115,9 @@
 		},
 		"dist/account-provider/auths/azureAuth": {
 			"azureAuth.unidentifiedError": "Erro não identificado com a autenticação do Azure",
-			"azure.tenantNotFound": "O locatário especificado com a ID '{0}' não foi encontrado.",
+			"azure.tenantNotFound": "Locatário especificado com ID '{0}' não encontrado.",
 			"azure.noBaseToken": "Ocorreu um erro com a autenticação ou os tokens foram excluídos do sistema. Tente adicionar a sua conta no Azure Data Studio novamente.",
-			"azure.responseError": "Houve uma falha na recuperação do token com um erro. Abra as ferramentas para desenvolvedores para exibir o erro",
+			"azure.responseError": "A recuperação de token falhou com um erro. Abra ferramentas de desenvolvedor para exibir o erro",
 			"azure.accessTokenEmpty": "Nenhum token de acesso retornado do Microsoft OAuth",
 			"azure.noUniqueIdentifier": "O usuário não tinha um identificador exclusivo no AAD",
 			"azureWorkAccountDisplayName": "Conta corporativa ou de estudante",
@@ -141,7 +142,9 @@
 		"dist/azureResource/tree/flatAccountTreeNode": {
 			"azure.resource.tree.accountTreeNode.titleLoading": "{0} – Carregando...",
 			"azure.resource.tree.accountTreeNode.title": "{0} ({1}/{2} assinaturas)",
-			"azure.resource.tree.accountTreeNode.credentialError": "Falha ao obter a credencial para a conta {0}. Acesse a caixa de diálogo Contas e atualize a conta."
+			"azure.resource.tree.accountTreeNode.credentialError": "Falha ao obter a credencial para a conta {0}. Acesse a caixa de diálogo Contas e atualize a conta.",
+			"azure.resource.throttleerror": "Solicitações desta conta foram limitadas. Para tentar novamente, selecione um número menor de assinaturas.",
+			"azure.resource.tree.loadresourceerror": "Ocorreu um erro ao carregar recursos do Azure: {0}"
 		},
 		"dist/azureResource/tree/accountNotSignedInTreeNode": {
 			"azure.resource.tree.accountNotSignedInTreeNode.signInLabel": "Entrar no Azure..."
@@ -202,6 +205,9 @@
 		},
 		"dist/azureResource/providers/kusto/kustoTreeDataProvider": {
 			"azure.resource.providers.KustoContainerLabel": "Cluster do Azure Data Explorer"
+		},
+		"dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider": {
+			"azure.resource.providers.AzureMonitorContainerLabel": "Azure Monitor Workspace"
 		},
 		"dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider": {
 			"azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel": "Servidor do Banco de Dados do Azure para PostgreSQL"

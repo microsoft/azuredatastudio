@@ -41,6 +41,7 @@
 		"dist/azureResource/utils": {
 			"azure.resource.error": "오류: {0}",
 			"azure.accounts.getResourceGroups.queryError": "계정 {0}({1}) 구독 {2}({3}) 테넌트 {4}의 리소스 그룹을 가져오는 동안 오류 발생: {5}",
+			"azure.accounts.getLocations.queryError": "계정 {0}({1}) 구독 {2}({3}) 테넌트 {4}의 위치를 가져오는 동안 오류 발생: {5}",
 			"azure.accounts.runResourceQuery.errors.invalidQuery": "잘못된 쿼리",
 			"azure.accounts.getSubscriptions.queryError": "계정 {0} 테넌트 {1}의 구독을 가져오는 동안 오류 발생: {2}",
 			"azure.accounts.getSelectedSubscriptions.queryError": "{0} 계정의 구독을 가져오는 동안 오류 발생: {1}"
@@ -105,7 +106,7 @@
 			"azurecore.azureArcsqlManagedInstance": "SQL 관리형 인스턴스 - Azure Arc",
 			"azurecore.azureArcService": "Data Service - Azure Arc",
 			"azurecore.sqlServerArc": "SQL Server - Azure Arc",
-			"azurecore.azureArcPostgres": "Azure Arc 사용 PostgreSQL 하이퍼스케일",
+			"azurecore.azureArcPostgres": "Azure Arc가 지원되는 PostgreSQL 하이퍼스케일",
 			"azure.unableToOpenAzureLink": "링크를 열 수 없음, 필요한 값이 없음",
 			"azure.azureResourcesGridTitle": "Azure 리소스(미리 보기)",
 			"azurecore.invalidAzureAccount": "잘못된 계정",
@@ -116,7 +117,7 @@
 			"azureAuth.unidentifiedError": "Azure 인증에서 식별되지 않은 오류 발생",
 			"azure.tenantNotFound": "ID가 '{0}'인 지정된 테넌트를 찾을 수 없습니다.",
 			"azure.noBaseToken": "인증 관련 오류가 발생했거나 토큰이 시스템에서 삭제되었습니다. 계정을 다시 Azure Data Studio에 추가해 보세요.",
-			"azure.responseError": "오류로 인해 토큰 검색에 실패했습니다. 개발자 도구를 열어 오류를 확인합니다.",
+			"azure.responseError": "오류로 인해 토큰 검색에 실패했습니다. 개발자 도구를 열어 오류 확인",
 			"azure.accessTokenEmpty": "Microsoft OAuth에서 반환된 액세스 토큰 없음",
 			"azure.noUniqueIdentifier": "해당 사용자는 AAD 내에 고유 식별자가 없습니다.",
 			"azureWorkAccountDisplayName": "회사 또는 학교 계정",
@@ -141,7 +142,9 @@
 		"dist/azureResource/tree/flatAccountTreeNode": {
 			"azure.resource.tree.accountTreeNode.titleLoading": "{0} - 로드 중...",
 			"azure.resource.tree.accountTreeNode.title": "{0}({1}/{2}개 구독)",
-			"azure.resource.tree.accountTreeNode.credentialError": "{0} 계정의 자격 증명을 가져오지 못했습니다. 계정 대화 상자로 이동하고 계정을 새로 고치세요."
+			"azure.resource.tree.accountTreeNode.credentialError": "{0} 계정의 자격 증명을 가져오지 못했습니다. 계정 대화 상자로 이동하고 계정을 새로 고치세요.",
+			"azure.resource.throttleerror": "이 계정의 요청은 제한되었습니다. 다시 시도하려면 더 적은 수의 구독을 선택하세요.",
+			"azure.resource.tree.loadresourceerror": "Azure 리소스를 로드하는 동안 오류가 발생했습니다. {0}"
 		},
 		"dist/azureResource/tree/accountNotSignedInTreeNode": {
 			"azure.resource.tree.accountNotSignedInTreeNode.signInLabel": "Azure에 로그인..."
@@ -202,6 +205,9 @@
 		},
 		"dist/azureResource/providers/kusto/kustoTreeDataProvider": {
 			"azure.resource.providers.KustoContainerLabel": "Azure 데이터 탐색기 클러스터"
+		},
+		"dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider": {
+			"azure.resource.providers.AzureMonitorContainerLabel": "Azure Monitor Workspace"
 		},
 		"dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider": {
 			"azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel": "Azure Database for PostgreSQL 서버"

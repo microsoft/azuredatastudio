@@ -2,7 +2,7 @@
 	"name": "ads-language-pack-ko",
 	"displayName": "Korean Language Pack for Azure Data Studio",
 	"description": "Language pack extension for Korean",
-	"version": "1.29.0",
+	"version": "1.31.0",
 	"publisher": "Microsoft",
 	"repository": {
 		"type": "git",
@@ -11,7 +11,7 @@
 	"license": "SEE SOURCE EULA LICENSE IN LICENSE.txt",
 	"engines": {
 		"vscode": "*",
-		"azdata": ">=1.29.0"
+		"azdata": "^1.31.0"
 	},
 	"icon": "languagepack.png",
 	"categories": [
@@ -165,12 +165,32 @@
 						"path": "./translations/extensions/yaml.i18n.json"
 					},
 					{
+						"id": "Microsoft.admin-tool-ext-win",
+						"path": "./translations/extensions/admin-tool-ext-win.i18n.json"
+					},
+					{
+						"id": "Microsoft.agent",
+						"path": "./translations/extensions/agent.i18n.json"
+					},
+					{
 						"id": "Microsoft.azurecore",
 						"path": "./translations/extensions/azurecore.i18n.json"
 					},
 					{
 						"id": "Microsoft.big-data-cluster",
 						"path": "./translations/extensions/big-data-cluster.i18n.json"
+					},
+					{
+						"id": "Microsoft.cms",
+						"path": "./translations/extensions/cms.i18n.json"
+					},
+					{
+						"id": "Microsoft.dacpac",
+						"path": "./translations/extensions/dacpac.i18n.json"
+					},
+					{
+						"id": "Microsoft.import",
+						"path": "./translations/extensions/import.i18n.json"
 					},
 					{
 						"id": "Microsoft.sqlservernotebook",
@@ -185,8 +205,16 @@
 						"path": "./translations/extensions/notebook.i18n.json"
 					},
 					{
+						"id": "Microsoft.profiler",
+						"path": "./translations/extensions/profiler.i18n.json"
+					},
+					{
 						"id": "Microsoft.resource-deployment",
 						"path": "./translations/extensions/resource-deployment.i18n.json"
+					},
+					{
+						"id": "Microsoft.schema-compare",
+						"path": "./translations/extensions/schema-compare.i18n.json"
 					}
 				]
 			}

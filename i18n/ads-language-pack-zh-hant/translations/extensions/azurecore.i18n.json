@@ -41,6 +41,7 @@
 		"dist/azureResource/utils": {
 			"azure.resource.error": "錯誤: {0}",
 			"azure.accounts.getResourceGroups.queryError": "擷取帳戶 {0} ({1}) 訂閱 {2} ({3}) 租用戶 {4} 的資源群組時發生錯誤: {5}",
+			"azure.accounts.getLocations.queryError": "擷取帳戶 {0} ({1}) 訂閱 {2} ({3}) 租用戶 {4} 的位置時發生錯誤: {5}",
 			"azure.accounts.runResourceQuery.errors.invalidQuery": "查詢無效",
 			"azure.accounts.getSubscriptions.queryError": "擷取帳戶 {0} 租用戶 {1} 的訂閱時發生錯誤: {2}",
 			"azure.accounts.getSelectedSubscriptions.queryError": "擷取帳戶 {0} 的訂閱時發生錯誤: {1}"
@@ -141,7 +142,9 @@
 		"dist/azureResource/tree/flatAccountTreeNode": {
 			"azure.resource.tree.accountTreeNode.titleLoading": "{0} - 正在載入...",
 			"azure.resource.tree.accountTreeNode.title": "{0} ({1}/{2} 個訂閱)",
-			"azure.resource.tree.accountTreeNode.credentialError": "無法取得帳戶 {0} 的認證。請前往 [帳戶] 對話方塊並重新整理帳戶。"
+			"azure.resource.tree.accountTreeNode.credentialError": "無法取得帳戶 {0} 的認證。請前往 [帳戶] 對話方塊並重新整理帳戶。",
+			"azure.resource.throttleerror": "已節流來自此帳戶的要求。若要重試，請選取較少的訂閱數目。",
+			"azure.resource.tree.loadresourceerror": "載入 Azure 資源時發生錯誤: {0}"
 		},
 		"dist/azureResource/tree/accountNotSignedInTreeNode": {
 			"azure.resource.tree.accountNotSignedInTreeNode.signInLabel": "登入 Azure…"
@@ -202,6 +205,9 @@
 		},
 		"dist/azureResource/providers/kusto/kustoTreeDataProvider": {
 			"azure.resource.providers.KustoContainerLabel": "Azure 資料總管叢集"
+		},
+		"dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider": {
+			"azure.resource.providers.AzureMonitorContainerLabel": "Azure Monitor Workspace"
 		},
 		"dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider": {
 			"azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel": "適用於 PostgreSQL 的 Azure 資料庫伺服器"

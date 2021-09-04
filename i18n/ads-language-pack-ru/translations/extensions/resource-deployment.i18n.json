@@ -103,6 +103,10 @@
 			"azdataEulaNotAccepted": "Продолжение развертывания невозможно. Условия лицензии Azure Data CLI еще не приняты. Примите условия лицензионного соглашения, чтобы включить функции, требующие использования Azure Data CLI.",
 			"azdataEulaDeclined": "Продолжение развертывания невозможно. Условия лицензии Azure Data CLI были отклонены. Вы можете принять условия лицензионного соглашения или отменить эту операцию, нажав кнопку \"Отмена\"",
 			"deploymentDialog.RecheckEulaButton": "Принять лицензионное соглашение и выбрать",
+			"resourceDeployment.extensionRequiredPrompt": "Для развертывания этого ресурса требуется расширение \"{0}\". Хотите ли вы установить его?",
+			"resourceDeployment.install": "Установить",
+			"resourceDeployment.installingExtension": "Установка расширения \"{0}\"...",
+			"resourceDeployment.unknownExtension": "Неизвестное расширение \"{0}\"",
 			"resourceTypePickerDialog.title": "Выбор параметров развертывания",
 			"resourceTypePickerDialog.resourceSearchPlaceholder": "Фильтровать ресурсы…",
 			"resourceTypePickerDialog.tagsListViewTitle": "Категории",
@@ -264,7 +268,6 @@
 			"notebookType": "Тип записной книжки"
 		},
 		"dist/main": {
-			"resourceDeployment.FailedToLoadExtension": "Сбой при загрузке расширения: {0}, обнаружена ошибка в определении типа ресурса в package.json, дополнительные сведения см. в консоли отладки.",
 			"resourceDeployment.UnknownResourceType": "Тип ресурса: {0} не определен"
 		},
 		"dist/services/notebookService": {
@@ -562,8 +565,8 @@
 		},
 		"dist/ui/toolsAndEulaSettingsPage": {
 			"notebookWizard.toolsAndEulaPageTitle": "Предварительные требования к развертыванию",
-			"deploymentDialog.FailedEulaValidation": "Чтобы продолжить, необходимо принять условия лицензионного соглашения (EULA)",
 			"deploymentDialog.FailedToolsInstallation": "Некоторые инструменты еще не обнаружены. Убедитесь, что они установлены, запущены и могут быть обнаружены",
+			"deploymentDialog.FailedEulaValidation": "Чтобы продолжить, необходимо принять условия лицензионного соглашения (EULA)",
 			"deploymentDialog.loadingRequiredToolsCompleted": "Загрузка сведений о необходимых инструментах завершена",
 			"deploymentDialog.loadingRequiredTools": "Загрузка сведений о необходимых инструментах",
 			"resourceDeployment.AgreementTitle": "Принятие условий использования",
@@ -605,18 +608,9 @@
 		"dist/services/tools/azdataTool": {
 			"resourceDeployment.AzdataDescription": "Интерфейс командной строки Azure Data",
 			"resourceDeployment.AzdataDisplayName": "Azure Data CLI",
+			"deploy.azdataExtMissing": "Для развертывания этого ресурса необходимо установить расширение Azure Data CLI. Установите его из коллекции расширений и повторите попытку.",
 			"deployCluster.GetToolVersionErrorInformation": "Ошибка при получении сведений о версии. Дополнительные сведения см. в канале вывода \"{0}\"",
-			"deployCluster.GetToolVersionError": "Ошибка при получении сведений о версии.{0}Получены недопустимые выходные данные, выходные данные команды get version: \"{1}\" ",
-			"resourceDeployment.Azdata.DeletingPreviousAzdata.msi": "удаление ранее скачанного файла Azdata.msi, если он существует…",
-			"resourceDeployment.Azdata.DownloadingAndInstallingAzdata": "скачивание Azdata.msi и установка azdata-cli…",
-			"resourceDeployment.Azdata.DisplayingInstallationLog": "отображение журнала установки…",
-			"resourceDeployment.Azdata.TappingBrewRepository": "получение доступа к репозиторию brew для azdata-cli…",
-			"resourceDeployment.Azdata.UpdatingBrewRepository": "обновление репозитория brew для установки azdata-cli…",
-			"resourceDeployment.Azdata.InstallingAzdata": "установка azdata…",
-			"resourceDeployment.Azdata.AptGetUpdate": "обновление сведений в репозитории…",
-			"resourceDeployment.Azdata.AptGetPackages": "получение пакетов, необходимых для установки azdata…",
-			"resourceDeployment.Azdata.DownloadAndInstallingSigningKey": "скачивание и установка ключа подписывания для azdata…",
-			"resourceDeployment.Azdata.AddingAzdataRepositoryInformation": "добавление в репозиторий сведений для azdata…"
+			"deployCluster.GetToolVersionError": "Ошибка при получении сведений о версии.{0}Получены недопустимые выходные данные, выходные данные команды get version: \"{1}\" "
 		},
 		"dist/services/tools/azdataToolOld": {
 			"resourceDeployment.AzdataDescription": "Интерфейс командной строки Azure Data",

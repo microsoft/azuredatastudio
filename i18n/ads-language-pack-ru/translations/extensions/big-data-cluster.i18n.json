@@ -50,7 +50,7 @@
 			"bdc-data-size-field": "Емкость данных (ГБ)",
 			"bdc-log-size-field": "Емкость для журналов (ГБ)",
 			"bdc-agreement": "Я принимаю {0}, {1} и {2}.",
-			"microsoft-privacy-statement": "Заявление о конфиденциальности Майкрософт",
+			"microsoft-privacy-statement": "Заявление о конфиденциальности корпорации Майкрософт",
 			"bdc-agreement-azdata-eula": "Условия лицензии azdata",
 			"bdc-agreement-bdc-eula": "Условия лицензии SQL Server"
 		},

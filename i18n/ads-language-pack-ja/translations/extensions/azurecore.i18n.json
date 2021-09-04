@@ -41,6 +41,7 @@
 		"dist/azureResource/utils": {
 			"azure.resource.error": "エラー: {0}",
 			"azure.accounts.getResourceGroups.queryError": "アカウント {0} ({1}) サブスクリプション {2} ({3}) テナント {4} のリソース グループの取り込みでエラーが発生しました: {5}",
+			"azure.accounts.getLocations.queryError": "アカウント {0} ({1}) サブスクリプション {2} ({3}) テナント {4} の場所の取り込みでエラーが発生しました: {5}",
 			"azure.accounts.runResourceQuery.errors.invalidQuery": "無効なクエリ",
 			"azure.accounts.getSubscriptions.queryError": "アカウント {0} テナント {1} のサブスクリプションの取り込みでエラーが発生しました: {2}",
 			"azure.accounts.getSelectedSubscriptions.queryError": "アカウント {0} のサブスクリプションの取り込みでエラーが発生しました: {1}"
@@ -141,7 +142,9 @@
 		"dist/azureResource/tree/flatAccountTreeNode": {
 			"azure.resource.tree.accountTreeNode.titleLoading": "{0} - 読み込んでいます...",
 			"azure.resource.tree.accountTreeNode.title": "{0} ({1}/{2} サブスクリプション)",
-			"azure.resource.tree.accountTreeNode.credentialError": "アカウント {0} の資格情報を取得できませんでした。アカウント ダイアログに移動して、アカウントを更新してください。"
+			"azure.resource.tree.accountTreeNode.credentialError": "アカウント {0} の資格情報を取得できませんでした。アカウント ダイアログに移動して、アカウントを更新してください。",
+			"azure.resource.throttleerror": "このアカウントからの要求は抑えられています。再試行するには、より小さいサブスクリプション数を選択してください。",
+			"azure.resource.tree.loadresourceerror": "Azure リソースの読み込み中にエラーが発生しました: {0}"
 		},
 		"dist/azureResource/tree/accountNotSignedInTreeNode": {
 			"azure.resource.tree.accountNotSignedInTreeNode.signInLabel": "Azure にサインイン..."
@@ -202,6 +205,9 @@
 		},
 		"dist/azureResource/providers/kusto/kustoTreeDataProvider": {
 			"azure.resource.providers.KustoContainerLabel": "Azure Data Explorer クラスター"
+		},
+		"dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider": {
+			"azure.resource.providers.AzureMonitorContainerLabel": "Azure Monitor Workspace"
 		},
 		"dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider": {
 			"azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel": "Azure Database for PostgreSQL サーバー"

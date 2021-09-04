@@ -103,6 +103,10 @@
 			"azdataEulaNotAccepted": "La distribuzione non può continuare. Le condizioni di licenza dell'interfaccia della riga di comando di Azure Data non sono ancora state accettate. Accettare il contratto di licenza per abilitare le funzionalità che richiedono l'interfaccia della riga di comando di Azure Data.",
 			"azdataEulaDeclined": "La distribuzione non può continuare. Le condizioni di licenza dell'interfaccia della riga di comando di Azure Data sono state rifiutate. È possibile accettare il contratto di licenza per continuare oppure annullare questa operazione",
 			"deploymentDialog.RecheckEulaButton": "Accetta contratto di licenza e seleziona",
+			"resourceDeployment.extensionRequiredPrompt": "L'estensione \"{0}\" è necessaria per distribuire la risorsa, si vuole installarla subito?",
+			"resourceDeployment.install": "Installare",
+			"resourceDeployment.installingExtension": "Installazione dell'estensione \"{0}\" in corso...",
+			"resourceDeployment.unknownExtension": "Estensione \"{0}\" sconosciuta",
 			"resourceTypePickerDialog.title": "Seleziona le opzioni di distribuzione",
 			"resourceTypePickerDialog.resourceSearchPlaceholder": "Filtra risorse...",
 			"resourceTypePickerDialog.tagsListViewTitle": "Categorie",
@@ -264,7 +268,6 @@
 			"notebookType": "Tipo di notebook"
 		},
 		"dist/main": {
-			"resourceDeployment.FailedToLoadExtension": "Non è stato possibile caricare l'estensione: {0}. È stato rilevato un errore nella definizione dei tipi di risorse nel file package.json. Per dettagli, vedere la console di debug.",
 			"resourceDeployment.UnknownResourceType": "Il tipo di risorsa {0} non è definito"
 		},
 		"dist/services/notebookService": {
@@ -562,8 +565,8 @@
 		},
 		"dist/ui/toolsAndEulaSettingsPage": {
 			"notebookWizard.toolsAndEulaPageTitle": "Prerequisiti di distribuzione",
-			"deploymentDialog.FailedEulaValidation": "Per procedere è necessario accettare le condizioni del contratto di licenza",
 			"deploymentDialog.FailedToolsInstallation": "Alcuni strumenti non sono stati ancora individuati. Assicurarsi che siano installati, in esecuzione e individuabili",
+			"deploymentDialog.FailedEulaValidation": "Per procedere è necessario accettare le condizioni del contratto di licenza",
 			"deploymentDialog.loadingRequiredToolsCompleted": "Caricamento delle informazioni sugli strumenti necessari completato",
 			"deploymentDialog.loadingRequiredTools": "Caricamento delle informazioni sugli strumenti necessari",
 			"resourceDeployment.AgreementTitle": "Accettare le condizioni per l'utilizzo",
@@ -605,18 +608,9 @@
 		"dist/services/tools/azdataTool": {
 			"resourceDeployment.AzdataDescription": "Interfaccia della riga di comando di Azure Data",
 			"resourceDeployment.AzdataDisplayName": "Interfaccia della riga di comando di Azure Data",
+			"deploy.azdataExtMissing": "Per distribuire la risorsa, è necessario installare l'estensione AZURE Data CLI. Installare l'estensione tramite la raccolta estensioni e riprovare.",
 			"deployCluster.GetToolVersionErrorInformation": "Errore durante il recupero delle informazioni sulla versione. Per altri dettagli, vedere il canale di output '{0}'",
-			"deployCluster.GetToolVersionError": "Errore durante il recupero delle informazioni sulla versione.{0}È stato ricevuto un output non valido. Ottenere l'output del comando della versione: '{1}' ",
-			"resourceDeployment.Azdata.DeletingPreviousAzdata.msi": "eliminazione del file Azdata.msi scaricato in precedenza se presente…",
-			"resourceDeployment.Azdata.DownloadingAndInstallingAzdata": "download di Azdata.msi e installazione di azdata-cli…",
-			"resourceDeployment.Azdata.DisplayingInstallationLog": "visualizzazione del log di installazione…",
-			"resourceDeployment.Azdata.TappingBrewRepository": "accesso al repository brew per azdata-cli…",
-			"resourceDeployment.Azdata.UpdatingBrewRepository": "aggiornamento del repository brew per l'installazione di azdata-cli…",
-			"resourceDeployment.Azdata.InstallingAzdata": "installazione di azdata…",
-			"resourceDeployment.Azdata.AptGetUpdate": "aggiornamento delle informazioni sul repository…",
-			"resourceDeployment.Azdata.AptGetPackages": "recupero dei pacchetti necessari per l'installazione di azdata…",
-			"resourceDeployment.Azdata.DownloadAndInstallingSigningKey": "download e installazione della chiave di firma per azdata…",
-			"resourceDeployment.Azdata.AddingAzdataRepositoryInformation": "aggiunta delle informazioni sul repository azdata…"
+			"deployCluster.GetToolVersionError": "Errore durante il recupero delle informazioni sulla versione.{0}È stato ricevuto un output non valido. Ottenere l'output del comando della versione: '{1}' "
 		},
 		"dist/services/tools/azdataToolOld": {
 			"resourceDeployment.AzdataDescription": "Interfaccia della riga di comando di Azure Data",

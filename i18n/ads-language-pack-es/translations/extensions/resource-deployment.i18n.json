@@ -103,6 +103,10 @@
 			"azdataEulaNotAccepted": "La implementación no puede continuar. Aún no se han aceptado los términos de licencia de la CLI de datos de Azure. Acepte el CLUF para habilitar las características que requieren la CLI de datos de Azure.",
 			"azdataEulaDeclined": "La implementación no puede continuar. Se han rechazado los términos de licencia de la CLI de datos de Azure. Puede aceptar el CLUF para continuar o cancelar esta operación.",
 			"deploymentDialog.RecheckEulaButton": "Aceptar CLUF y seleccionar",
+			"resourceDeployment.extensionRequiredPrompt": "Se requiere la extensión \"{0}\" para implementar este recurso, ¿desea instalarla ahora?",
+			"resourceDeployment.install": "Instalar",
+			"resourceDeployment.installingExtension": "Instalando la extensión \"{0}\"...",
+			"resourceDeployment.unknownExtension": "Extensión \"{0}\" desconocida",
 			"resourceTypePickerDialog.title": "Seleccione las opciones de implementación",
 			"resourceTypePickerDialog.resourceSearchPlaceholder": "Filtrar recursos...",
 			"resourceTypePickerDialog.tagsListViewTitle": "Categorías",
@@ -264,7 +268,6 @@
 			"notebookType": "Tipo de cuaderno"
 		},
 		"dist/main": {
-			"resourceDeployment.FailedToLoadExtension": "No se ha podido cargar la extensión {0}. Error detectado en la definición de tipo de recurso en package.json, compruebe la consola de depuración para obtener más información.",
 			"resourceDeployment.UnknownResourceType": "El tipo de recurso {0} no está definido"
 		},
 		"dist/services/notebookService": {
@@ -562,8 +565,8 @@
 		},
 		"dist/ui/toolsAndEulaSettingsPage": {
 			"notebookWizard.toolsAndEulaPageTitle": "Requisitos previos de la implementación",
-			"deploymentDialog.FailedEulaValidation": "Para continuar, debe aceptar los términos del Contrato de licencia para el usuario final (CLUF).",
 			"deploymentDialog.FailedToolsInstallation": "Hay algunas herramientas que no se han detectado. Asegúrese de que estén instaladas, se estén ejecutando y se puedan detectar.",
+			"deploymentDialog.FailedEulaValidation": "Para continuar, debe aceptar los términos del Contrato de licencia para el usuario final (CLUF).",
 			"deploymentDialog.loadingRequiredToolsCompleted": "La carga de la información de las herramientas necesarias se ha completado.",
 			"deploymentDialog.loadingRequiredTools": "Carga de la información de las herramientas necesarias en curso",
 			"resourceDeployment.AgreementTitle": "Aceptación de las condiciones de uso",
@@ -605,18 +608,9 @@
 		"dist/services/tools/azdataTool": {
 			"resourceDeployment.AzdataDescription": "Interfaz de la línea de comandos de datos de Azure",
 			"resourceDeployment.AzdataDisplayName": "CLI de datos de Azure",
+			"deploy.azdataExtMissing": "La extensión CLI de datos de Azure debe estar instalada para implementar este recurso. Instálela a través de la galería de extensiones y vuelva a intentarlo.",
 			"deployCluster.GetToolVersionErrorInformation": "Error al recuperar la información de la versión. Consulte el canal de salida \"{0}\" para obtener más detalles.",
-			"deployCluster.GetToolVersionError": "Error al recuperar la información de la versión. {0}Se ha recibido una salida no válida; salida del comando GET de la versión: \"{1}\". ",
-			"resourceDeployment.Azdata.DeletingPreviousAzdata.msi": "Se está eliminando el archivo Azdata.msi descargado anteriormente, si existe...",
-			"resourceDeployment.Azdata.DownloadingAndInstallingAzdata": "Se está descargando Azdata.msi e instalando azdata-cli...",
-			"resourceDeployment.Azdata.DisplayingInstallationLog": "Se muestra el registro de la instalación...",
-			"resourceDeployment.Azdata.TappingBrewRepository": "Se está accediendo al repositorio de brew para azdata-cli...",
-			"resourceDeployment.Azdata.UpdatingBrewRepository": "Se está actualizando el repositorio de brew para la instalación de azdata-cli...",
-			"resourceDeployment.Azdata.InstallingAzdata": "Se está instalando azdata...",
-			"resourceDeployment.Azdata.AptGetUpdate": "Se está actualizando la información del repositorio...",
-			"resourceDeployment.Azdata.AptGetPackages": "Se están obteniendo los paquetes necesarios para la instalación de azdata...",
-			"resourceDeployment.Azdata.DownloadAndInstallingSigningKey": "Se está descargando e instalando la clave de firma para azdata...",
-			"resourceDeployment.Azdata.AddingAzdataRepositoryInformation": "Se está agregando la información del repositorio de azdata..."
+			"deployCluster.GetToolVersionError": "Error al recuperar la información de la versión. {0}Se ha recibido una salida no válida; salida del comando GET de la versión: \"{1}\". "
 		},
 		"dist/services/tools/azdataToolOld": {
 			"resourceDeployment.AzdataDescription": "Interfaz de la línea de comandos de datos de Azure",

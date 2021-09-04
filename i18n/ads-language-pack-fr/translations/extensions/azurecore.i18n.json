@@ -41,6 +41,7 @@
 		"dist/azureResource/utils": {
 			"azure.resource.error": "Erreur : {0}",
 			"azure.accounts.getResourceGroups.queryError": "Erreur de récupération des groupes de ressources pour le compte {0} ({1}), abonnement {2} ({3}), locataire {4} : {5}",
+			"azure.accounts.getLocations.queryError": "Erreur de récupération des emplacements pour le compte {0} ({1}), abonnement {2} ({3}), locataire {4} : {5}",
 			"azure.accounts.runResourceQuery.errors.invalidQuery": "Requête non valide",
 			"azure.accounts.getSubscriptions.queryError": "Erreur de récupération des abonnements pour le compte {0}, locataire {1} : {2}",
 			"azure.accounts.getSelectedSubscriptions.queryError": "Erreur de récupération des abonnements pour le compte {0} : {1}"
@@ -141,7 +142,9 @@
 		"dist/azureResource/tree/flatAccountTreeNode": {
 			"azure.resource.tree.accountTreeNode.titleLoading": "{0} - Chargement...",
 			"azure.resource.tree.accountTreeNode.title": "{0} (abonnements {1}/{2})",
-			"azure.resource.tree.accountTreeNode.credentialError": "L'obtention des informations d'identification a échoué pour le compte {0}. Accédez à la boîte de dialogue des comptes et actualisez le compte."
+			"azure.resource.tree.accountTreeNode.credentialError": "L'obtention des informations d'identification a échoué pour le compte {0}. Accédez à la boîte de dialogue des comptes et actualisez le compte.",
+			"azure.resource.throttleerror": "Les demandes de ce compte ont été limitées. Pour réessayer, sélectionnez un nombre plus petit d’abonnements.",
+			"azure.resource.tree.loadresourceerror": "Une erreur s’est produite lors du chargement des ressources Azure : {0}"
 		},
 		"dist/azureResource/tree/accountNotSignedInTreeNode": {
 			"azure.resource.tree.accountNotSignedInTreeNode.signInLabel": "Connectez-vous à Azure..."
@@ -202,6 +205,9 @@
 		},
 		"dist/azureResource/providers/kusto/kustoTreeDataProvider": {
 			"azure.resource.providers.KustoContainerLabel": "Cluster Azure Data Explorer"
+		},
+		"dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider": {
+			"azure.resource.providers.AzureMonitorContainerLabel": "Azure Monitor Workspace"
 		},
 		"dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider": {
 			"azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel": "Serveur Azure Database pour PostgreSQL"
