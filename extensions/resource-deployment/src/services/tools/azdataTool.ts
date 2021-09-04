@@ -14,13 +14,12 @@ import { dependencyType, ToolBase } from './toolBase';
 import { SemVerProxy } from './SemVerProxy';
 
 const localize = nls.loadMessageBundle();
-export const AzdataToolName = 'azdata-old';
+export const AzdataToolName = 'azdata';
 const win32InstallationRoot = `${process.env['ProgramFiles(x86)']}\\Microsoft SDKs\\Azdata\\CLI\\wbin`;
 const macInstallationRoot = '/usr/local/bin';
 const debianInstallationRoot = '/usr/local/bin';
 
-// TODO: This is a temporary shim until we can convert the BDC deployment fully over to using the azdata extension
-export class AzdataToolOld extends ToolBase {
+export class AzdataTool extends ToolBase {
 	constructor(platformService: IPlatformService) {
 		super(platformService);
 	}

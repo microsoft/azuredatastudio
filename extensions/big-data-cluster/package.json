@@ -247,7 +247,7 @@
                 "name": "azure-cli"
               },
               {
-                "name": "azdata-old",
+                "name": "azdata",
                 "version": "20.3.4"
               }
             ],
@@ -265,7 +265,7 @@
                 "version": "1.13.0"
               },
               {
-                "name": "azdata-old",
+                "name": "azdata",
                 "version": "20.3.4"
               }
             ],
@@ -283,7 +283,7 @@
                 "version": "1.13.0"
               },
               {
-                "name": "azdata-old",
+                "name": "azdata",
                 "version": "20.3.4"
               }
             ],
@@ -301,7 +301,7 @@
                 "version": "1.13.0"
               },
               {
-                "name": "azdata-old",
+                "name": "azdata",
                 "version": "20.3.4"
               }
             ],
@@ -319,7 +319,7 @@
                 "version": "1.13.0"
               },
               {
-                "name": "azdata-old",
+                "name": "azdata",
                 "version": "20.3.4"
               }
             ],
