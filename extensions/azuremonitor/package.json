@@ -11,7 +11,7 @@
     "vscode": "*",
     "azdata": ">=1.31.0"
   },
-  "main": "./out/extension",
+  "main": "./out/main",
   "repository": {
     "type": "git",
     "url": "https://github.com/Microsoft/azuredatastudio.git"
