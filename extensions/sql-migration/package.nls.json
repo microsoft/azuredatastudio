@@ -6,5 +6,12 @@
 	"migration-dashboard-tasks": "Migration Tasks",
 	"migration-command-category": "Azure SQL Migration",
 	"start-migration-command": "Migrate to Azure SQL",
-	"send-feedback-command": "Feedback"
+	"send-feedback-command": "Feedback",
+	"migration-context-menu-category": "Migration Context Menu",
+	"complete-cutover-menu": "Complete cutover",
+	"database-details-menu": "Database details",
+	"view-target-menu": "Azure SQL Target details",
+	"view-service-menu": "Dataase Migration Service details",
+	"copy-migration-menu": "Copy migration details",
+	"cancel-migration-menu": "Cancel migration"
 }
