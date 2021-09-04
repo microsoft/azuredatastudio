@@ -1093,7 +1093,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Hide properties]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[隱藏內容]]></Val>
+            <Val><![CDATA[隱藏屬性]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

@@ -1318,6 +1318,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.noExtensions" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No extensions listed in configuration.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[In der Konfiguration sind keine Erweiterungen aufgeführt.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
