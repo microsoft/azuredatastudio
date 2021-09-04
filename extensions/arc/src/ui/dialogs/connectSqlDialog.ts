@@ -37,7 +37,7 @@ export abstract class ConnectToSqlDialog extends InitializingComponent {
 			this.serverNameInputBox = this.modelBuilder.inputBox()
 				.withProps({
 					value: connectionProfile?.serverName,
-					enabled: false
+					readOnly: true
 				}).component();
 			this.usernameInputBox = this.modelBuilder.inputBox()
 				.withProps({
