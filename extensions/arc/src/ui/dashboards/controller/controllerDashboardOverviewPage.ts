@@ -68,7 +68,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 
 		this._arcResourcesLoadingComponent = this.modelView.modelBuilder.loadingComponent().component();
 		this._arcResourcesTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
-			data: [],
+			dataValues: [],
 			columns: [
 				{
 					displayName: '',
@@ -224,7 +224,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 		this.controllerProperties.instanceNamespace = config?.metadata.namespace || this.controllerProperties.instanceNamespace;
 		this.refreshDisplayedProperties();
 
-		this._arcResourcesTable.data = this._controllerModel.registrations
+		let registrations: (string | azdata.ImageComponent | azdata.HyperlinkComponent)[][] = this._controllerModel.registrations
 			.filter(r => r.instanceType !== ResourceType.dataControllers)
 			.map(r => {
 				const iconPath = getResourceTypeIcon(r.instanceType ?? '');
@@ -249,6 +249,13 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 
 				return [imageComponent, nameComponent, resourceTypeToDisplayName(r.instanceType), r.state];
 			});
+
+		let registrationsData = registrations.map(r => {
+			return r.map((value): azdata.DeclarativeTableCellValue => {
+				return { value: value };
+			});
+		});
+		this._arcResourcesTable.setDataValues(registrationsData);
 		this._arcResourcesLoadingComponent.loading = !this._controllerModel.registrationsLastUpdated;
 	}
 
