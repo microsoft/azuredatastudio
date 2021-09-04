@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { ImportPage } from '../api/importPage';
 import * as constants from '../../common/constants';
-import * as fs from 'fs';
+import { promises as fs } from 'fs';
 
 export class FileConfigPage extends ImportPage {
 
@@ -207,7 +207,7 @@ export class FileConfigPage extends ImportPage {
 
 			let defaultServerDatabase = this.model.server.options.database;
 
-			let values: any[];
+			let values: azdata.CategoryValue[];
 			try {
 				values = await this.getDatabaseValues();
 			} catch (error) {
@@ -234,9 +234,14 @@ export class FileConfigPage extends ImportPage {
 		this.fileTextBox = this.view.modelBuilder.inputBox().withProps({
 			required: true,
 			validationErrorMessage: constants.invalidFileLocationError
-		}).withValidation((component) => {
+		}).withValidation(async (component) => {
 			if (component.value) {
-				return fs.existsSync(component.value);
+				try {
+					await fs.access(component.value);
+					return true;
+				} catch (e) {
+					return false;
+				}
 			}
 			return false;
 		}).component();

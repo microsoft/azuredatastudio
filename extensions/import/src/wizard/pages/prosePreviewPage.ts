@@ -124,7 +124,7 @@ export class ProsePreviewPage extends ImportPage {
 			this.loading.loading = false;
 		}
 		if (!this.model.newFileSelected || proseResult) {
-			const tempTable = JSON.parse(JSON.stringify(this.model.proseDataPreview));
+			const tempTable = this.model.proseDataPreview;
 			for (let index = 0; index < this.model.transPreviews.length; index++) {
 				for (let index2 = 0; index2 < this.model.proseDataPreview.length; index2++) {
 					tempTable[index2].push(this.model.transPreviews[index][index2]);
