@@ -54,6 +54,10 @@ export function getPackageInfo(packageJson: any): IPackageInfo | undefined {
 let azdataApi: typeof azdataType | undefined = undefined;
 try {
 	azdataApi = require('azdata');
+	if (!azdataApi?.version) {
+		// webpacking makes the require return an empty object instead of throwing an error so make sure we clear the var
+		azdataApi = undefined;
+	}
 } catch {
 	// no-op
 }
