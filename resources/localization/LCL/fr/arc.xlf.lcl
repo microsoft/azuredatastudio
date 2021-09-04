@@ -22,18 +22,27 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.addingWorkerNodes" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[adding worker nodes]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ajout de nœuds Worker]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.arcDeploymentDeprecation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The Arc Deployment extension has been replaced by the Arc extension and has been uninstalled.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[L’extension de déploiement d’Arc a été remplacée par l’extension Arc et a été désinstallée.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.arcResources" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Arc Resources]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ressources Azure Arc]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -58,6 +67,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.backupsStorage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} backups]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0} sauvegardes]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -73,12 +85,18 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.clickTheNewSupportRequestButton" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Click the new support request button to file a support request in the Azure Portal.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Cliquez sur le bouton nouvelle demande de support pour défiler une demande de support dans le Portail Azure.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.clickTheTroubleshootButton" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Click the troubleshoot button to open the Azure Arc {0} troubleshooting notebook.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Cliquez sur le bouton résoudre les problèmes pour ouvrir le bloc-notes résolution des problèmes Azure Arc {0}.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -103,24 +121,36 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.computeAndStorageDescriptionPartFive" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[there are sufficient resources available]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Il y a suffisamment de ressources disponibles]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.computeAndStorageDescriptionPartFour" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Before doing so, you need to ensure]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Avant d’effectuer cette opération, vous devez vous assurer]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.computeAndStorageDescriptionPartSix" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[in your Kubernetes cluster to honor this configuration.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[dans votre cluster Kubernetes pour honorer cette configuration.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.computeAndStorageDescriptionPartThree" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[without downtime and by]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[sans temps d’arrêt et par]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -145,6 +175,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.configurationPerNode" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Configuration (per node)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Configuration (par nœud)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -196,6 +229,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.connectToMSSqlFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Could not connect to SQL managed instance - Azure Arc Instance {0}. {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Impossible de se connecter à l’instance managée SQL : instance Azure Arc {0}. {1}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -208,12 +244,18 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.connectToPGSqlFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Could not connect to PostgreSQL Hyperscale - Azure Arc Instance {0}. {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Impossible de se connecter à PostgreSQL hyperscale : Instance Azure Arc {0}. {1}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.connectToPostgresDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[A connection to the server is required to show and set database engine settings, which will require the PostgreSQL Extension to be installed.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Une connexion au serveur est requise pour afficher et définir les paramètres du moteur de base de données, ce qui nécessite l’installation de l’extension PostgreSQL.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -265,6 +307,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.controllerKubeConfig" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Kube Config File Path]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Chemin du fichier de configuration Kube]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -286,6 +331,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.controllerPassword" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Controller Password]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Mot de passe du contrôleur]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -298,6 +346,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.controllerUrlDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The Controller URL is necessary if there are multiple clusters with the same namespace - this should generally not be necessary.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[L’URL du contrôleur est nécessaire si plusieurs clusters ont le même espace de noms, ce qui n’est généralement pas nécessaire.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -310,6 +361,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.controllerUsername" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Controller Username]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Nom d'utilisateur du contrôleur]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -340,30 +394,45 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.coordinatorMemoryLimit" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Coordinator Node Memory limit (in GB)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Limite de la mémoire du nœud coordinateur (en Go)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.coordinatorMemoryRequest" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Coordinator Node Memory request (in GB)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Demande de mémoire de nœud coordinateur (en Go)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.coordinatorNode" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Coordinator Node]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Nœud coordinateur]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.coordinatorNodeConfigurationInformation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[You can configure the number of CPU cores and storage size that will apply to the coordinator node. Adjust the number of CPU cores and memory settings for your server group. To reset the requests and/or limits, pass in empty value.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Vous pouvez configurer le nombre de cœurs d’UC et la taille de stockage qui s’appliqueront au nœud coordinateur. Ajustez le nombre de cœurs d’UC et de paramètres de mémoire pour votre groupe de serveurs. Pour réinitialiser les demandes et/ou les limites, transmettez une valeur vide.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.coordinatorNodeParameters" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Coordinator Node Parameters]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Paramètres du nœud coordinateur]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -415,12 +484,18 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.couldNotFindAzureResource" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Could not find Azure resource for {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ressource Azure introuvable pour {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.couldNotFindControllerRegistration" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Could not find controller registration.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[L’inscription du contrôleur est introuvable.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -451,6 +526,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.dataStorage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} data]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Données {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -463,6 +541,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.databaseCreationFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to create database {0}. {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Échec de la création de la base de données {0}. {1}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -487,6 +568,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.defaultControllerName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[arc-dc]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[arc-dc]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -562,12 +646,18 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.dropExtensions" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Drop extensions]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Supprimer les extensions]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.dropMultipleExtensions" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Currently dropping another extension, try again once that is completed.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Suppression en cours d’une autre extension, réessayez une fois celle-ci terminée.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -604,12 +694,18 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.errorConnectingToController" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error connecting to controller. {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Erreur lors de la connexion au contrôleur. {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.errorVerifyingPassword" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error encountered while verifying password. {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Une erreur s’est produite lors de la vérification du mot de passe. {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -622,6 +718,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.extensionInstalled" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Extension '{0}' has been installed.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[L'extension « {0} » a été installée.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -670,24 +769,36 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.extensionsDropped" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Extensions '{0}' dropped]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Extensions «{0}» supprimées]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.extensionsFunction" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Some extensions must be loaded into PostgreSQL at startup time before they can be used. These preloaded extensions can be viewed and edited  below.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Certaines extensions doivent être chargées dans PostgreSQL au moment du démarrage avant de pouvoir être utilisées. Ces extensions préchargées peuvent être affichées et modifiées ci-dessous.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.extensionsLearnMore" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Learn more about PostgreSQL extensions.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[En savoir plus sur les extensions PostgreSQL.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.extensionsTableLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Table of preloaded extensions.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Table des extensions préchargées.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

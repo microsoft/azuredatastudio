@@ -1813,6 +1813,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.refreshFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Refresh failed. {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Fehler beim Aktualisieren. {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1855,6 +1858,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.resetFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Reset failed. {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Fehler beim Zurücksetzen. {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2015,7 +2021,7 @@
         <Str Cat="Text">
           <Val><![CDATA[State]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Status]]></Val>
+            <Val><![CDATA[Zustand]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2113,6 +2119,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.updateExtensionsFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Editing extensions failed. {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Fehler beim Bearbeiten von Erweiterungen. {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2191,6 +2200,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.workerCoresRequest" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Worker Nodes CPU request]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[CPU-Anforderung für Workerknoten]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2206,6 +2218,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.workerMemoryRequest" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Worker Nodes Memory request (in GB)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Arbeitsspeicheranforderung für Workerknoten (in GB)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2239,6 +2254,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.workerNodes" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Worker Nodes]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Workerknoten]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2254,6 +2272,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.workerNodesDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Expand your server group and scale your database by adding worker nodes.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Erweitern Sie Ihre Servergruppe und skalieren Sie Ihre Datenbank, indem Sie Workerknoten hinzufügen.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2269,6 +2290,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.workerOneNodeValidationMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Value of 1 is not supported.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Der Wert 1 wird nicht unterstützt.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2302,6 +2326,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.clusterContextNotFound" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cluster Context with name: {0} not found in the Kube config file]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Eiin Clusterkontext mit dem Namen: {0} wurde nicht in der Kube-Konfigurationsdatei gefunden.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2335,12 +2362,18 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.noContextFound" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No 'contexts' found in the config file: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[In der Konfigurationsdatei wurden keine Kontexte gefunden: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.noControllerInfoFound" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Controller Info could not be found with name: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Controllerinformationen mit folgendem Namen wurden nicht gefunden: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2374,12 +2407,18 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.noNameInContext" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No name field was found in a cluster context in the config file: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[In der Konfigurationsdatei wurde kein Namensfeld in einem Clusterkontext gefunden: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.noPasswordFound" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Password could not be retrieved for controller: {0} and user did not provide a password. Please retry later.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Das Kennwort konnte für den Controller nicht abgerufen werden: {0} und der Benutzer hat kein Kennwort angegeben. Versuchen Sie es später noch mal.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2422,12 +2461,18 @@
       <Item ItemId=";extensions/arc/package.arc.agreement.sql.help.text.learn.more.ariaLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Learn more about Azure Arc enabled Managed Instance]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Weitere Informationen zu verwalteten Instanzen mit Azure Arc-Unterstützung]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/package.arc.agreement.sql.terms.conditions" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure SQL managed instance - Azure Arc terms and conditions]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure SQL Managed Instance – Azure Arc Geschäftsbedingungen]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2497,6 +2542,9 @@
       <Item ItemId=";extensions/arc/package.arc.controller" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Target Azure Arc Controller]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ziel-Azure Arc-Controller]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2512,6 +2560,9 @@
       <Item ItemId=";extensions/arc/package.arc.cores-request.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cores Request]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Cores-Anforderung]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2689,18 +2740,27 @@
       <Item ItemId=";extensions/arc/package.arc.data.controller.namespace" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Data controller namespace]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Namespace des Datencontrollers]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/package.arc.data.controller.namespace.validation.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Namespace must consist of lower case alphanumeric characters or '-', start/end with an alphanumeric character, and be 63 characters or fewer in length.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Der Namespace muss aus alphanumerischen Kleinbuchstaben oder "-" bestehen, mit einem alphanumerischen Zeichen beginnen/enden und maximal 63 Zeichen lang sein.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/package.arc.data.controller.new.wizard.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Create Azure Arc data controller]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Arc-Datencontroller erstellen]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2734,6 +2794,9 @@
       <Item ItemId=";extensions/arc/package.arc.data.controller.select.cluster.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select from existing Kubernetes clusters]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Aus vorhandenen Kubernetes-Clustern auswählen]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2821,6 +2884,9 @@
       <Item ItemId=";extensions/arc/package.arc.data.controller.summary.data.controller.namespace" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Data controller namespace]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Namespace des Datencontrollers]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2908,6 +2974,9 @@
       <Item ItemId=";extensions/arc/package.arc.data.controller.summary.terms.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[By clicking 'Script to notebook', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed above; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {0}.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Durch Klicken auf "Skript in Notebook schreiben" (a) stimme ich den mit den oben genannten Marketplace-Angeboten verbundenen rechtlichen Bedingungen und Datenschutzbestimmungen zu, (b) ermächtige ich Microsoft, mir die Gebühren für die Angebote über meine aktuelle Zahlungsmethode und gemäß Fakturierungsintervall für mein Azure-Abonnement in Rechnung zu stellen, und (c) erkläre ich mich damit einverstanden, dass Microsoft meine Kontakt-, Nutzungs- und Transaktionsdaten an die Anbieter der von mir genutzten Produkte oder Dienste für Support-, Abrechnungs- und andere Transaktionsaktivitäten weitergeben darf. Microsoft gewährt keine Rechte für Drittanbieterprodukte oder -dienste. Weitere Informationen finden Sie hier: {0}.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2932,6 +3001,9 @@
       <Item ItemId=";extensions/arc/package.arc.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Support for Azure Arc]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Unterstützung für Azure Arc]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3019,6 +3091,9 @@
       <Item ItemId=";extensions/arc/package.arc.postgres.server.group.coordinator.memory.limit.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The memory limit of the Postgres instance on the coordinator node in GB.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Das Arbeitsspeicherlimit der Postgres-Instanz auf dem Koordinatorknoten in GB.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3088,6 +3163,9 @@
       <Item ItemId=";extensions/arc/package.arc.postgres.server.group.name.validation.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Server group name must consist of lower case alphanumeric characters or '-', start with a letter, end with an alphanumeric character, and be 11 characters or fewer in length.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Der Name der Servergruppe muss aus alphanumerischen Kleinbuchstaben oder "-" bestehen, mit einem Buchstaben beginnen, mit einem alphanumerischen Zeichen enden und höchstens 11 Zeichen lang sein.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3103,12 +3181,18 @@
       <Item ItemId=";extensions/arc/package.arc.postgres.server.group.volume.size.backups.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The size of the storage volume to be used for backups in GB.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Die Größe des Speichervolumens, das für Sicherungen verwendet werden soll, in GB.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/package.arc.postgres.server.group.volume.size.backups.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Volume Size GB (Backups)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Volumegröße GB (Sicherungen)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3133,12 +3217,18 @@
       <Item ItemId=";extensions/arc/package.arc.postgres.server.group.volume.size.logs.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The size of the storage volume to be used for logs in GB.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Die Größe des Speichervolumens, das für Protokolle verwendet werden soll, in GB.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/package.arc.postgres.server.group.volume.size.logs.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Volume Size GB (Logs)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Volumegröße GB (Protokolle)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3163,6 +3253,9 @@
       <Item ItemId=";extensions/arc/package.arc.postgres.server.group.workers.cores.request.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The minimum number of CPU cores that must be available per node to schedule the service. Fractional cores are supported.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Die Mindestanzahl von CPU-Kernen, die pro Knoten zur Planung des Diensts verfügbar sein müssen. Teilkerne werden unterstützt.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3196,6 +3289,9 @@
       <Item ItemId=";extensions/arc/package.arc.postgres.server.group.workers.memory.limit.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The memory limit of the Postgres instance per node in GB.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Das Arbeitsspeicherlimit der Postgres-Instanz pro Knoten in GB.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3220,6 +3316,9 @@
       <Item ItemId=";extensions/arc/package.arc.postgres.server.group.workers.memory.request.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Memory request (GB per node)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Arbeitsspeicheranforderung (GB pro Knoten)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3262,6 +3361,9 @@
       <Item ItemId=";extensions/arc/package.arc.postgres.storage-class.backups.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The storage class to be used for backup persistent volumes]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Die Speicherklasse, die für persistente Volumes für Sicherungen verwendet werden soll.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3277,30 +3379,45 @@
       <Item ItemId=";extensions/arc/package.arc.postgres.storage-class.logs.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The storage class to be used for logs persistent volumes]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Die Speicherklasse, die für persistente Protokollvolumes verwendet werden soll]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/package.arc.postgres.wizard.page1.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Provide Azure enabled PostgreSQL Hyperscale server group parameters]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Bereitstellen von PostgreSQL Hyperscale-Servergruppenparametern mit Azure-Unterstützung]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/package.arc.postgres.wizard.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Deploy an Azure Arc-enabled PostgreSQL Hyperscale server group (Preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[PostgreSQL Hyperscale-Servergruppe mit Azure Arc-Unterstützung bereitstellen (Vorschau)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/package.arc.sql.connection.settings.section.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SQL Connection information]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[SQL-Verbindungsinformationen]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/package.arc.sql.cores-limit.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The cores limit of the managed instance as an integer.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Der Kerngrenzwert der verwalteten Instanz als ganze Zahl.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3325,6 +3442,9 @@
       <Item ItemId=";extensions/arc/package.arc.sql.instance.settings.section.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SQL Instance settings]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[SQL-Instanzeinstellungen]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3349,12 +3469,18 @@
       <Item ItemId=";extensions/arc/package.arc.sql.memory-limit.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The limit of the capacity of the managed instance as an integer.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Der Kapazitätsgrenzwert der verwalteten Instanz als ganze Zahl.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/package.arc.sql.memory-request.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The request for the capacity of the managed instance as an integer amount of memory in GBs.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Die Anforderung für die Kapazität der verwalteten Instanz als ganzzahlige Menge an Arbeitsspeicher in GB.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3388,6 +3514,9 @@
       <Item ItemId=";extensions/arc/package.arc.sql.storage-class.dc.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The storage class to be used for all data and logs persistent volumes for all data controller pods that require them.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Die Speicherklasse, die für alle persistenten Daten- und Protokollvolumes für alle Datencontrollerpods verwendet werden soll, die diese benötigen.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

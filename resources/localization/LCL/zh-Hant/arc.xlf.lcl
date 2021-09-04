@@ -184,6 +184,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.confirmNewPassword" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Confirm the new password]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[確認新密碼]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -217,12 +220,18 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.connectToControllerFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Could not connect to controller {0}. {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[無法連線到控制器 {0}。{1}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.connectToMSSql" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Connect to SQL managed instance - Azure Arc ({0})]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[連線到 SQL 受控執行個體 - Azure Arc ({0})]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -238,6 +247,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.connectToPGSql" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Connect to PostgreSQL Hyperscale - Azure Arc ({0})]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[連線到 PostgreSQL 超大規模資料庫 - Azure Arc ({0})]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -280,6 +292,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.containerReady" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Pod containers are ready.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Pod 容器已就緒。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -295,12 +310,18 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.controllerDashboard" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Arc Data Controller Dashboard (Preview) - {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Arc 資料控制器儀表板 (預覽) - {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.controllerEndpoint" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Controller endpoint]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[控制器端點]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -325,6 +346,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.controllerNameDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The name to display in the tree view, this is not applied to the controller itself.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[要在樹狀檢視中顯示的名稱，這不會套用到控制器本身。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -340,6 +364,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.controllerUrl" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Controller URL]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[控制器 URL]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -355,6 +382,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.controllerUrlPlaceholder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[https://<IP or hostname>:<port>]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[https://<IP 或主機名稱>:<port>]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -370,24 +400,36 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.coordinator" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Coordinator]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[協調器]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.coordinatorCoresLimit" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Coordinator Node CPU limit]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[協調器節點 CPU 限制]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.coordinatorCoresRequest" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Coordinator Node CPU request]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[協調器節點 CPU 要求]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.coordinatorEndpoint" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Coordinator endpoint]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[協調器端點]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -439,18 +481,27 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.coordinatorNodeParametersDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[ These server parameters of the Coordinator node can be set to custom (non-default) values. Search to find parameters.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ 協調器節點的這些伺服器參數可以設定為自訂 (非預設) 值。搜尋以尋找參數。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.copiedToClipboard" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} copied to clipboard]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0} 已複製到剪貼簿]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.copyConnectionStringToClipboard" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Copy {0} Connection String to clipboard]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[將 {0} 連接字串複製到剪貼簿]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -520,6 +571,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.dataControllersType" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Arc Data Controller]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Arc 資料控制器]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -535,6 +589,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.databaseCreated" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Database {0} created]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[資料庫 {0} 已建立]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -586,6 +643,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.deletingInstance" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Deleting instance '{0}'...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[正在刪除執行個體 '{0}'...]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -638,7 +698,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Drop]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[置放]]></Val>
+            <Val><![CDATA[卸除]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -682,12 +742,18 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.enterANonEmptyPassword" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enter a non empty password or press escape to exit.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[輸入非空白的密碼或按 Esc 鍵結束。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.enterNewPassword" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enter a new password]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[輸入新密碼]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -712,6 +778,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.extensionInstallationFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to install extension {0}.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[無法安裝延伸模組 {0}。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -754,6 +823,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.extensionsAdded" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Extensions '{0}' added]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[已新增延伸模組 '{0}']]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -805,12 +877,18 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.extensionsTableLoading" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Table of preloaded extensions are loading.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[正在載入預先載入之延伸模組的資料表。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.extensionsTableLoadingComplete" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Preloaded extensions can now be viewed.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[現在可以檢視預先載入的延伸模組。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -844,30 +922,45 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.fetchConfigFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[An unexpected error occurred retrieving the config for '{0}'. {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[擷取 '{0}' 的設定時發生未預期的錯誤。{1}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.fetchDatabasesFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[An unexpected error occurred retrieving the databases for '{0}'. {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[擷取 '{0}' 的資料庫時發生未預期的錯誤。{1}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.fetchEndpointsFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[An unexpected error occurred retrieving the endpoints for '{0}'. {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[擷取 '{0}' 的端點時發生未預期的錯誤。{1}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.fetchEngineSettingsFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[An unexpected error occurred retrieving the engine settings for '{0}'. {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[擷取 '{0}' 的引擎設定時發生未預期的錯誤。{1}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.fetchRegistrationsFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[An unexpected error occurred retrieving the registrations for '{0}'. {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[擷取 '{0}' 的註冊時發生未預期的錯誤。{1}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -892,6 +985,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.grafanaDashboardDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Dashboard for viewing metrics]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[用於檢視計量的儀表板]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -916,30 +1012,45 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.instanceDeleted" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Instance '{0}' deleted]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[執行個體 '{0}' 已刪除]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.instanceDeletionFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to delete instance {0}. {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[無法刪除執行個體 {0}。{1}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.instanceDeletionWarning" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Warning! Deleting an instance is permanent and cannot be undone. To delete the instance '{0}' type the name '{0}' below to proceed.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[警告! 刪除執行個體是永久性的，無法復原。若要刪除執行個體 '{0}'，請在下方輸入名稱 '{0}' 以繼續。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.instanceUpdateFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to update instance {0}. {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[無法更新執行個體 {0}。{1}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.instanceUpdated" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Instance '{0}' updated]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[執行個體 '{0}' 已更新]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -955,6 +1066,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.invalidInstanceDeletionName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The value '{0}' does not match the instance name. Try again or press escape to exit]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[值 '{0}' 不符合執行個體名稱。請再試一次或按 Esc 鍵結束]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -979,24 +1093,36 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.kibanaDashboardDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Dashboard for viewing logs]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[用於檢視記錄的儀表板]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.lastTransition" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Last transition]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[上次轉換時間]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.learnAboutNodeParameters" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Learn more about database engine settings for Azure Arc-enabled PostgreSQL Hyperscale]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[深入了解支援 Azure Arc 之 PostgreSQL 超大規模資料庫的資料庫引擎設定]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.learnAboutPostgresClients" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Learn more about Azure PostgreSQL Hyperscale client interfaces]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[深入了解 Azure PostgreSQL 超大規模資料庫用戶端介面]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1030,6 +1156,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.loadingClusterContextsError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error loading cluster contexts. {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[載入叢集內容時發生錯誤。{0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1054,6 +1183,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.memoryLimit" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Memory limit (in GB)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[記憶體限制 (GB)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1087,12 +1219,18 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.miaaConnectionRequired" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[A connection is required to list the databases on this instance.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[需要連線才能列出此執行個體上的資料庫。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.miaaDashboard" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SQL managed instance - Azure Arc Dashboard (Preview) - {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[SQL 受控執行個體 - Azure Arc 儀表板 (預覽) - {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1189,6 +1327,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.noExternalEndpoint" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No External Endpoint has been configured so this information isn't available.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[未設定任何外部端點，因此無法使用此資訊。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1213,12 +1354,18 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.noPodIssuesDetected" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[There aren’t any known issues affecting this PostgreSQL Hyperscale instance.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[沒有任何已知的問題會影響此 PostgreSQL 超大規模資料庫執行個體。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.noWorkerPods" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No worker pods in this configuration.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[此設定中沒有背景工作角色 Pod。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1235,7 +1382,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Node configuration]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[節點組態]]></Val>
+            <Val><![CDATA[節點設定]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1334,7 +1481,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Online]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[線上]]></Val>
+            <Val><![CDATA[上線]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1342,6 +1489,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.openDashboardFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error opening dashboard. {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[開啟儀表板時發生錯誤。{0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1366,6 +1516,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.pageDiscardFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to discard user input. {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[無法捨棄使用者輸入。{0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1399,6 +1552,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.passwordReset" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Password reset successfully]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[密碼重設成功]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1414,6 +1570,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.passwordToController" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Provide Password to Controller]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[為控制器提供密碼]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1429,12 +1588,18 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.pgConnectionRequired" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[A connection is required to show and set database engine settings.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[需要連線才能顯示及設定資料庫引擎設定。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.pgSqlType" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[PostgreSQL Hyperscale - Azure Arc]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[PostgreSQL 超大規模資料庫 - Azure Arc]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1495,6 +1660,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.podsUsedDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select a pod in the dropdown below for detailed health information.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[請在下方的下拉式清單中選取 Pod，以取得詳細的健康情況資訊。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2518,6 +2686,9 @@
       <Item ItemId=";extensions/arc/package.arc.data.controller.details.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Provide a namespace, name and storage class for your Azure Arc data controller. This name will be used to identify your Arc instance for remote management and monitoring.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[請提供 Azure Arc 資料控制器的命名空間、名稱和儲存類別。此名稱將用於識別您的 Arc 執行個體，以進行遠端管理及監視。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2560,6 +2731,9 @@
       <Item ItemId=";extensions/arc/package.arc.data.controller.name.validation.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Name must consist of lower case alphanumeric characters, '-' or '.', start/end with an alphanumeric character and be 253 characters or less in length.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[名稱必須包含小寫英數字元、'-' 或 '.'、以英數字元開頭/結尾，且長度不得超過 253 個字元。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2764,6 +2938,9 @@
       <Item ItemId=";extensions/arc/package.arc.data.controller.summary.profile" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Config profile]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[設定檔]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2780,7 +2957,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Subscription]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[訂閱]]></Val>
+            <Val><![CDATA[訂用帳戶]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2878,6 +3055,9 @@
       <Item ItemId=";extensions/arc/package.arc.postgres.server.group.coordinator.cores.limit.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The maximum number of CPU cores for the Postgres instance that can be used on the coordinator node. Fractional cores are supported.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[協調器節點可使用之 Postgres 執行個體的 CPU 核心數上限。支援分數的核心數。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2893,6 +3073,9 @@
       <Item ItemId=";extensions/arc/package.arc.postgres.server.group.coordinator.cores.request.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The minimum number of CPU cores that must be available on the coordinator node to schedule the service. Fractional cores are supported.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[協調器節點欲排程服務必須可使用之 CPU 核心數的最小值。支援分數的核心數。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2917,18 +3100,27 @@
       <Item ItemId=";extensions/arc/package.arc.postgres.server.group.coordinator.memory.limit.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Memory limit (GB)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[記憶體限制 (GB)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/package.arc.postgres.server.group.coordinator.memory.request.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The memory request of the Postgres instance on the coordinator node in GB.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[協調器節點之 Postgres 執行個體的記憶體要求 (GB)。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/package.arc.postgres.server.group.coordinator.memory.request.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Memory request (GB)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[記憶體要求 (GB)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3007,12 +3199,18 @@
       <Item ItemId=";extensions/arc/package.arc.postgres.server.group.volume.size.data.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The size of the storage volume to be used for data in GB.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[要用於資料之儲存磁碟區的大小 (GB)。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/package.arc.postgres.server.group.volume.size.data.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Volume Size GB (Data)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[磁碟區大小 GB (資料)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3037,6 +3235,9 @@
       <Item ItemId=";extensions/arc/package.arc.postgres.server.group.workers.cores.limit.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The maximum number of CPU cores for the Postgres instance that can be used per node. Fractional cores are supported.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[每個節點可使用之 Postgres 執行個體的 CPU 核心數上限。支援分數的核心數。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3097,12 +3298,18 @@
       <Item ItemId=";extensions/arc/package.arc.postgres.server.group.workers.memory.limit.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Memory limit (GB per node)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[記憶體限制 (每個節點的 GB)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/package.arc.postgres.server.group.workers.memory.request.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The memory request of the Postgres instance per node in GB.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[每個節點之 Postgres 執行個體的記憶體要求 (GB)。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3163,6 +3370,9 @@
       <Item ItemId=";extensions/arc/package.arc.postgres.storage-class.data.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The storage class to be used for data persistent volumes]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[用於資料永久性磁碟區的儲存類別]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3214,6 +3424,9 @@
       <Item ItemId=";extensions/arc/package.arc.sql.cores-request.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The request for cores of the managed instance as an integer.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[受控執行個體的核心數要求，以整數表示。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3238,12 +3451,18 @@
       <Item ItemId=";extensions/arc/package.arc.sql.invalid.instance.name" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Instance name must consist of lower case alphanumeric characters or '-', start with a letter, end with an alphanumeric character, and be 13 characters or fewer in length.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[執行個體名稱必須包含小寫英數字元或 '-'、以字母開頭，以英數字元結尾，且長度不得超過 13 個字元。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/package.arc.sql.invalid.username" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[sa username is disabled, please choose another username]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[已停用 sa 使用者名稱，請選擇其他使用者名稱]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3268,6 +3487,9 @@
       <Item ItemId=";extensions/arc/package.arc.sql.replicas.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The number of SQL Managed Instance replicas that will be deployed in your Kubernetes cluster for high availability purposes]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[出於高可用性目的，將部署在 Kubernetes 叢集中的 SQL 受控執行個體複本數目]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3283,6 +3505,9 @@
       <Item ItemId=";extensions/arc/package.arc.sql.storage-class.data.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The storage class to be used for data (.mdf)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[用於資料 (.mdf) 的儲存類別]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3298,6 +3523,9 @@
       <Item ItemId=";extensions/arc/package.arc.sql.storage-class.logs.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The storage class to be used for logs (/var/log)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[用於記錄 (/var/log) 的儲存類別]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3313,12 +3541,18 @@
       <Item ItemId=";extensions/arc/package.arc.sql.wizard.page1.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Provide Azure SQL managed instance parameters]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[提供 Azure SQL 受控執行個體參數]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/package.arc.sql.wizard.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Deploy Azure SQL managed instance - Azure Arc (preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[部署 Azure SQL 受控執行個體 - Azure Arc (預覽)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3361,12 +3595,18 @@
       <Item ItemId=";extensions/arc/package.arc.view.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Arc Controllers]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Arc 控制器]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/package.arc.view.welcome.connect" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No Azure Arc controllers registered. [Learn More]5D;(https://azure.microsoft.com/services/azure-arc/)]D;]A;[Connect Controller]5D;(command:arc.connectToController)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[未註冊任何 Azure Arc 控制器。[深入了解]5D;(https://azure.microsoft.com/services/azure-arc/)]D;]A;[連線控制器]5D;(command:arc.connectToController)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3382,12 +3622,18 @@
       <Item ItemId=";extensions/arc/package.command.connectToController.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Connect to Existing Azure Arc Controller]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[連線到現有的 Azure Arc 控制器]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/package.command.createController.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Create New Azure Arc Controller]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[建立新的 Azure Arc 控制器]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3421,6 +3667,9 @@
       <Item ItemId=";extensions/arc/package.cores.limit.greater.than.or.equal.to.requested.cores" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cores limit must be greater than or equal to requested cores]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[核心數限制必須大於或等於要求的核心數]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3445,6 +3694,9 @@
       <Item ItemId=";extensions/arc/package.memory.limit.greater.than.or.equal.to.requested.memory" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Memory limit must be greater than or equal to requested memory]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[記憶體限制必須大於或等於要求的記憶體]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3460,24 +3712,36 @@
       <Item ItemId=";extensions/arc/package.requested.cores.less.than.or.equal.to.cores.limit" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Requested cores must be less than or equal to cores limit]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[要求的核心數必須小於或等於核心數限制]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/package.requested.memory.less.than.or.equal.to.memory.limit" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Requested memory must be less than or equal to memory limit]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[要求的記憶體必須小於或等於記憶體限制]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/package.resource.type.arc.postgres.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Deploy PostgreSQL Hyperscale server groups into an Azure Arc environment]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[將 PostgreSQL 超大規模資料庫伺服器群組部署到 Azure Arc 環境]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/package.resource.type.arc.postgres.display.name" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[PostgreSQL Hyperscale server groups - Azure Arc (preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[PostgreSQL 超大規模資料庫伺服器群組 - Azure Arc (預覽)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3493,18 +3757,27 @@
       <Item ItemId=";extensions/arc/package.resource.type.arc.sql.display.name" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure SQL managed instance - Azure Arc (preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure SQL 受控執行個體 - Azure Arc (預覽)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/package.resource.type.azure.arc.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Creates an Azure Arc data controller]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[建立 Azure Arc 資料控制器]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/package.resource.type.azure.arc.display.name" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Arc data controller (preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Arc 資料控制器 (預覽)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3520,6 +3793,9 @@
       <Item ItemId=";extensions/arc/package.worker.node.count.should.not.be.one" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Value of 1 is not supported.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[不支援 1 的值。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
