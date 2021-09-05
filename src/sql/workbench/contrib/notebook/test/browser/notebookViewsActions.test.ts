@@ -133,8 +133,6 @@ suite('Notebook Views Actions', function (): void {
 		let insertCellsModal = TypeMoq.Mock.ofType(InsertCellsModal, TypeMoq.MockBehavior.Strict,
 			(cell: ICellModel) => { }, // onInsert
 			notebookViews, // _context
-			undefined, // _containerRef
-			undefined, // _componentFactoryResolver
 			undefined, // logService
 			undefined, // themeService
 			undefined, // layoutService
@@ -153,9 +151,9 @@ suite('Notebook Views Actions', function (): void {
 		});
 
 		const instantiationService = new InstantiationService();
-		sinon.stub(instantiationService, 'createInstance').withArgs(InsertCellsModal, sinon.match.any, sinon.match.any, sinon.match.any, sinon.match.any).returns(insertCellsModal.object);
+		sinon.stub(instantiationService, 'createInstance').withArgs(InsertCellsModal, sinon.match.any, sinon.match.any).returns(insertCellsModal.object);
 
-		const insertCellAction = new InsertCellAction((cell: ICellModel) => { }, notebookViews, undefined, undefined, instantiationService);
+		const insertCellAction = new InsertCellAction((cell: ICellModel) => { }, notebookViews, instantiationService);
 		await insertCellAction.run();
 
 		assert.ok(rendered);
