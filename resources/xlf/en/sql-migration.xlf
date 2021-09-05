@@ -80,6 +80,18 @@ This may take some time.</source>
     <trans-unit id="sql.migration.wizard.sku.choose_a_target">
       <source xml:lang="en">Choose your Azure SQL target</source>
     </trans-unit>
+    <trans-unit id="sql.migration.sku.subscription">
+      <source xml:lang="en">Subscription name for your Azure SQL target</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.sku.location">
+      <source xml:lang="en">Azure region for your Azure SQL target</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.sku.resource_group">
+      <source xml:lang="en">Resource group for your Azure SQL target</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.sku.resource">
+      <source xml:lang="en">Your Azure SQL target resource name</source>
+    </trans-unit>
     <trans-unit id="sql.migration.sku.mi.card.title">
       <source xml:lang="en">Azure SQL Managed Instance (PaaS)</source>
     </trans-unit>
@@ -169,6 +181,12 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.network.share.header.text">
       <source xml:lang="en">Network share details</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.network.share.location.info">
+      <source xml:lang="en">Network share path for your database backups. The migration process will automatically retrieve valid backup files from this network share.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.network.share.windows.user.info">
+      <source xml:lang="en">Windows user account with read access to the network share location.</source>
     </trans-unit>
     <trans-unit id="sql.migration.network.share.help.text">
       <source xml:lang="en">Provide the network share location where the backups are stored, and the user credentials used to access the share.</source>
@@ -338,6 +356,21 @@ This may take some time.</source>
     <trans-unit id="sql.migration.services.dialog.title">
       <source xml:lang="en">Create Azure Database Migration Service</source>
     </trans-unit>
+    <trans-unit id="sql.migration.services.subscription">
+      <source xml:lang="en">Subscription name for your Azure Database Migration Service.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.services.location">
+      <source xml:lang="en">Azure region for your Azure Database Migration Service. This should be the same region as your target Azure SQL.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.services.resourcegroup">
+      <source xml:lang="en">Resource group for your Azure Database Migration Service.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.services.name">
+      <source xml:lang="en">Azure Database Migration Service name.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.services.target">
+      <source xml:lang="en">Azure SQL target selected as default.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.services.container.description">
       <source xml:lang="en">Enter the information below to add a new Azure Database Migration Service.</source>
     </trans-unit>
@@ -457,6 +490,12 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.name.of.new.rg">
       <source xml:lang="en">Name of new resource group</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.data.uploaded.info">
+      <source xml:lang="en">Comparison of the actual amount of data read from the source and the actual amount of data uploaded to the target.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.copy.throughput.info">
+      <source xml:lang="en">Data movement throughput achieved during the migration of your database backups to Azure. This is the rate of data transfer, calculated by data read divided by duration of backups migration to Azure.</source>
     </trans-unit>
     <trans-unit id="sql.migration.learn.more">
       <source xml:lang="en">Learn more</source>

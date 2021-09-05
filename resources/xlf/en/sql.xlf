@@ -5596,10 +5596,7 @@ Error: {1}</source>
       <source xml:lang="en">No</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/update/electron-browser/releaseNotes" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="gettingStarted">
-      <source xml:lang="en">Get Started</source>
-    </trans-unit>
+  <file original="src/sql/workbench/update/electron-browser/gettingStarted" source-language="en" datatype="plaintext"><body>
     <trans-unit id="showReleaseNotes">
       <source xml:lang="en">Show Getting Started</source>
     </trans-unit>
