@@ -471,7 +471,14 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				// The connected succeeded so add it to our active connections now, optionally adding it to the MRU based on
 				// the options.saveTheConnection setting
 				let connectionMgmtInfo = this._connectionStatusManager.findConnection(uri);
+				if (!connectionMgmtInfo) {
+					this._logService.info(`Could not find connection management info for ${uri} after connection`);
+				}
+				// Currently this could potentially throw an error because it expects there to always be
+				// a connection management info. See https://github.com/microsoft/azuredatastudio/issues/16556
 				this.tryAddActiveConnection(connectionMgmtInfo, connection, options.saveTheConnection);
+
+
 
 				if (callbacks.onConnectSuccess) {
 					callbacks.onConnectSuccess(options.params, connectionResult.connectionProfile);
@@ -555,6 +562,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	private doActionsAfterConnectionComplete(uri: string, options: IConnectionCompletionOptions): void {
 		let connectionManagementInfo = this._connectionStatusManager.findConnection(uri);
+		if (!connectionManagementInfo) {
+			// Currently this could potentially throw an error because it expects there to always be
+			// a connection management info. See https://github.com/microsoft/azuredatastudio/issues/16556
+			this._logService.info(`Could not find connection management info for ${uri} after connection complete`);
+		}
 		if (options.showDashboard) {
 			this.showDashboardForConnectionManagementInfo(connectionManagementInfo.connectionProfile);
 		}
@@ -1072,11 +1084,13 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			connectionInfo.connectHandler = ((connectResult, errorMessage, errorCode, callStack) => {
 				let connectionMngInfo = this._connectionStatusManager.findConnection(uri);
 				if (connectionMngInfo && connectionMngInfo.deleted) {
+					this._logService.info(`Found deleted connection management info for ${uri} - removing`);
 					this._connectionStatusManager.deleteConnection(uri);
 					resolve({ connected: connectResult, errorMessage: undefined, errorCode: undefined, callStack: undefined, errorHandled: true, connectionProfile: connection });
 				} else {
 					if (errorMessage) {
 						// Connection to the server failed
+						this._logService.info(`Error occurred while connecting, removing connection management info for ${uri}`);
 						this._connectionStatusManager.deleteConnection(uri);
 						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack, connectionProfile: connection });
 					} else {
@@ -1116,6 +1130,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this.sendDisconnectRequest(fileUri).then((result) => {
 			// If the request was sent
 			if (result) {
+				this._logService.info(`Disconnect request sent for ${fileUri} - deleting connection`);
 				this._connectionStatusManager.deleteConnection(fileUri);
 				if (connection) {
 					this._notifyDisconnected(connection, fileUri);
@@ -1167,7 +1182,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		// Create a new set of cancel connection params with our file URI
 		let cancelParams: ConnectionContracts.CancelConnectParams = new ConnectionContracts.CancelConnectParams();
 		cancelParams.ownerUri = fileUri;
-
+		this._logService.info(`Cancelling connection for URI ${fileUri}`);
 		this._connectionStatusManager.deleteConnection(fileUri);
 		// Send connection cancellation request
 		return this.sendCancelRequest(fileUri);
