@@ -5,7 +5,6 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import { TokenCredentials } from '@azure/ms-rest-js';
 
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
@@ -13,7 +12,7 @@ const localize = nls.loadMessageBundle();
 import { AppContext } from '../../appContext';
 import { azureResource } from 'azureResource';
 import { TreeNode } from '../treeNode';
-import { AzureResourceCredentialError } from '../errors';
+import { AzureSubscriptionError } from '../errors';
 import { AzureResourceContainerTreeNodeBase } from './baseTreeNodes';
 import { AzureResourceItemType, AzureResourceServiceNames } from '../constants';
 import { IAzureResourceTreeChangeHandler } from './treeChangeHandler';
@@ -119,15 +118,7 @@ async function getSubscriptionInfo(account: AzureAccount, subscriptionService: I
 	total: number,
 	selected: number
 }> {
-	let subscriptions: azureResource.AzureResourceSubscription[] = [];
-	try {
-		for (const tenant of account.properties.tenants) {
-			const token = await azdata.accounts.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.ResourceManagement);
-			subscriptions.push(...(await subscriptionService.getSubscriptions(account, new TokenCredentials(token.token, token.tokenType), tenant.id) || <azureResource.AzureResourceSubscription[]>[]));
-		}
-	} catch (error) {
-		throw new AzureResourceCredentialError(localize('azure.resource.tree.accountTreeNode.credentialError', "Failed to get credential for account {0}. Please go to the accounts dialog and refresh the account.", account.key.accountId), error);
-	}
+	let subscriptions = await subscriptionService.getAllSubscriptions(account);
 	const total = subscriptions.length;
 	let selected = total;
 
@@ -219,13 +210,13 @@ class FlatAccountTreeNodeLoader {
 				}
 			}
 		} catch (error) {
-			if (error instanceof AzureResourceCredentialError) {
+			if (error instanceof AzureSubscriptionError) {
 				vscode.commands.executeCommand('azure.resource.signin');
 			}
 			// http status code 429 means "too many requests"
 			// use a custom error message for azure resource graph api throttling error to make it more actionable for users.
 			const errorMessage = error?.statusCode === 429 ? localize('azure.resource.throttleerror', "Requests from this account have been throttled. To retry, please select a smaller number of subscriptions.") : AzureResourceErrorMessageUtil.getErrorMessage(error);
-			vscode.window.showErrorMessage(localize('azure.resource.tree.loadresourceerror', "An error occured while loading Azure resources: {0}", errorMessage));
+			vscode.window.showErrorMessage(localize('azure.resource.tree.loadresourceerror', "An error occurred while loading Azure resources: {0}", errorMessage));
 		}
 
 		this._isLoading = false;
