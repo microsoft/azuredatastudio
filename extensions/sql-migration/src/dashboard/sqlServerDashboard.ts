@@ -551,7 +551,7 @@ export class DashboardWidget {
 		const statusContainerTitle = view.modelBuilder.text().withProps({
 			value: loc.DATABASE_MIGRATION_STATUS,
 			CSSStyles: {
-				'font-size': '14px',
+				'font-size': '18px',
 				'font-weight': 'bold',
 				'margin': '0px',
 				'width': '290px'
