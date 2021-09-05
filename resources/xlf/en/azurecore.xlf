@@ -362,6 +362,9 @@
     </trans-unit>
   </body></file>
   <file original="extensions/azurecore/dist/azureResource/tree/accountTreeNode" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="azure.unableToAccessSubscription">
+      <source xml:lang="en">Unable to access subscription {0} ({1}). Please [refresh the account](command:azure.resource.signin) to try again. {2}</source>
+    </trans-unit>
     <trans-unit id="azure.resource.tree.accountTreeNode.noSubscriptionsLabel">
       <source xml:lang="en">No Subscriptions found.</source>
     </trans-unit>

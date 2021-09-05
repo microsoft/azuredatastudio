@@ -339,7 +339,7 @@ This may take some time.</source>
       <source xml:lang="en">Create Azure Database Migration Service</source>
     </trans-unit>
     <trans-unit id="sql.migration.services.container.description">
-      <source xml:lang="en">Enter the SQL Authentication credentials used to connect to SQL Server Instance {0}. These credentials will be used to connect to the SQL Server instance and identifying valid backup file(s).</source>
+      <source xml:lang="en">Enter the information below to add a new Azure Database Migration Service.</source>
     </trans-unit>
     <trans-unit id="sql.migration.service.container.loading.help">
       <source xml:lang="en">Loading Migration Services</source>
