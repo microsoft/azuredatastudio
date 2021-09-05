@@ -17,16 +17,18 @@ import { Project } from '../../models/project';
 import { ProjectsController } from '../../controllers/projectController';
 import { IDeploySettings } from '../../models/IDeploySettings';
 import { emptySqlDatabaseProjectTypeId } from '../../common/constants';
-import { mockDacFxOptionsResult } from '../testContext';
+import { createContext, mockDacFxOptionsResult, TestContext } from '../testContext';
 
+let testContext: TestContext;
 describe('Publish Database Dialog', () => {
 	before(async function (): Promise<void> {
 		await templates.loadTemplates(path.join(__dirname, '..', '..', '..', 'resources', 'templates'));
 		await baselines.loadBaselines();
+		testContext = createContext();
 	});
 
 	it('Should open dialog successfully ', async function (): Promise<void> {
-		const projController = new ProjectsController();
+		const projController = new ProjectsController(testContext.outputChannel);
 		const projFileDir = path.join(os.tmpdir(), `TestProject_${new Date().getTime()}`);
 
 		const projFilePath = await projController.createNewProject({
@@ -43,7 +45,7 @@ describe('Publish Database Dialog', () => {
 	});
 
 	it('Should create default database name correctly ', async function (): Promise<void> {
-		const projController = new ProjectsController();
+		const projController = new ProjectsController(testContext.outputChannel);
 		const projFolder = `TestProject_${new Date().getTime()}`;
 		const projFileDir = path.join(os.tmpdir(), projFolder);
 

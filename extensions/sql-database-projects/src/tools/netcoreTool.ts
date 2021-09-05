@@ -12,7 +12,7 @@ import * as semver from 'semver';
 import { isNullOrUndefined } from 'util';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { DoNotAskAgain, InstallNetCore, NetCoreInstallationConfirmation, NetCoreSupportedVersionInstallationConfirmation, projectsOutputChannel, UpdateNetCoreLocation } from '../common/constants';
+import { DoNotAskAgain, InstallNetCore, NetCoreInstallationConfirmation, NetCoreSupportedVersionInstallationConfirmation, UpdateNetCoreLocation } from '../common/constants';
 import * as utils from '../common/utils';
 const localize = nls.loadMessageBundle();
 
@@ -39,10 +39,8 @@ export interface DotNetCommandOptions {
 	commandTitle?: string;
 	argument?: string;
 }
-
 export class NetCoreTool {
 
-	private static _outputChannel: vscode.OutputChannel = vscode.window.createOutputChannel(projectsOutputChannel);
 	private osPlatform: string = os.platform();
 	private netCoreSdkInstalledVersion: string | undefined;
 	private netCoreInstallState: netCoreInstallState = netCoreInstallState.netCoreVersionSupported;
@@ -61,6 +59,10 @@ export class NetCoreTool {
 		}
 		this.netCoreInstallState = netCoreInstallState.netCoreVersionSupported;
 		return true;
+	}
+
+
+	constructor(private _outputChannel: vscode.OutputChannel) {
 	}
 
 	public async showInstallDialog(): Promise<void> {
@@ -183,7 +185,7 @@ export class NetCoreTool {
 
 	public async runDotnetCommand(options: DotNetCommandOptions): Promise<string> {
 		if (options && options.commandTitle !== undefined && options.commandTitle !== null) {
-			NetCoreTool._outputChannel.appendLine(`\t[ ${options.commandTitle} ]`);
+			this._outputChannel.appendLine(`\t[ ${options.commandTitle} ]`);
 		}
 
 		if (!(await this.findOrInstallNetCore())) {
@@ -198,9 +200,9 @@ export class NetCoreTool {
 		const command = dotnetPath + ' ' + options.argument;
 
 		try {
-			return await this.runStreamedCommand(command, NetCoreTool._outputChannel, options);
+			return await this.runStreamedCommand(command, this._outputChannel, options);
 		} catch (error) {
-			NetCoreTool._outputChannel.append(localize('sqlDatabaseProject.RunCommand.ErroredOut', "\t>>> {0}   … errored out: {1}", command, utils.getErrorMessage(error))); //errors are localized in our code where emitted, other errors are pass through from external components that are not easily localized
+			this._outputChannel.append(localize('sqlDatabaseProject.RunCommand.ErroredOut', "\t>>> {0}   … errored out: {1}", command, utils.getErrorMessage(error))); //errors are localized in our code where emitted, other errors are pass through from external components that are not easily localized
 			throw error;
 		}
 	}

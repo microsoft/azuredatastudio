@@ -51,7 +51,7 @@ describe('ProjectsController', function (): void {
 	describe('project controller operations', function (): void {
 		describe('Project file operations and prompting', function (): void {
 			it('Should create new sqlproj file with correct values', async function (): Promise<void> {
-				const projController = new ProjectsController();
+				const projController = new ProjectsController(testContext.outputChannel);
 				const projFileDir = path.join(os.tmpdir(), `TestProject_${new Date().getTime()}`);
 
 				const projFilePath = await projController.createNewProject({
@@ -67,7 +67,7 @@ describe('ProjectsController', function (): void {
 			});
 
 			it('Should create new sqlproj file with correct specified target platform', async function (): Promise<void> {
-				const projController = new ProjectsController();
+				const projController = new ProjectsController(testContext.outputChannel);
 				const projFileDir = path.join(os.tmpdir(), `TestProject_${new Date().getTime()}`);
 				const projTargetPlatform = SqlTargetPlatform.sqlAzure; // default is SQL Server 2019
 
@@ -89,7 +89,7 @@ describe('ProjectsController', function (): void {
 				for (const name of ['', '    ', undefined]) {
 					const showInputBoxStub = sinon.stub(vscode.window, 'showInputBox').resolves(name);
 					const showErrorMessageSpy = sinon.spy(vscode.window, 'showErrorMessage');
-					const projController = new ProjectsController();
+					const projController = new ProjectsController(testContext.outputChannel);
 					const project = new Project('FakePath');
 
 					should(project.files.length).equal(0);
@@ -105,7 +105,7 @@ describe('ProjectsController', function (): void {
 				const tableName = 'table1';
 				sinon.stub(vscode.window, 'showInputBox').resolves(tableName);
 				const spy = sinon.spy(vscode.window, 'showErrorMessage');
-				const projController = new ProjectsController();
+				const projController = new ProjectsController(testContext.outputChannel);
 				const project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
 
 				should(project.files.length).equal(0, 'There should be no files');
@@ -121,7 +121,7 @@ describe('ProjectsController', function (): void {
 				const folderName = 'folder1';
 				const stub = sinon.stub(vscode.window, 'showInputBox').resolves(folderName);
 
-				const projController = new ProjectsController();
+				const projController = new ProjectsController(testContext.outputChannel);
 				const project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
 				const projectRoot = new ProjectRootTreeItem(project);
 
@@ -141,7 +141,7 @@ describe('ProjectsController', function (): void {
 				const folderName = 'folder1';
 				const stub = sinon.stub(vscode.window, 'showInputBox').resolves(folderName);
 
-				const projController = new ProjectsController();
+				const projController = new ProjectsController(testContext.outputChannel);
 				const project = await testUtils.createTestProject(baselines.openProjectFileBaseline);
 				const projectRoot = new ProjectRootTreeItem(project);
 
@@ -180,7 +180,7 @@ describe('ProjectsController', function (): void {
 				const setupResult = await setupDeleteExcludeTest(proj);
 				const scriptEntry = setupResult[0], projTreeRoot = setupResult[1], preDeployEntry = setupResult[2], postDeployEntry = setupResult[3], noneEntry = setupResult[4];
 
-				const projController = new ProjectsController();
+				const projController = new ProjectsController(testContext.outputChannel);
 
 				await projController.delete(createWorkspaceTreeItem(projTreeRoot.children.find(x => x.friendlyName === 'UpperFolder')!.children[0]) /* LowerFolder */);
 				await projController.delete(createWorkspaceTreeItem(projTreeRoot.children.find(x => x.friendlyName === 'anotherScript.sql')!));
@@ -206,7 +206,7 @@ describe('ProjectsController', function (): void {
 			it('Should delete database references', async function (): Promise<void> {
 				// setup - openProject baseline has a system db reference to master
 				const proj = await testUtils.createTestProject(baselines.openProjectFileBaseline);
-				const projController = new ProjectsController();
+				const projController = new ProjectsController(testContext.outputChannel);
 				sinon.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve(constants.yesString));
 
 				// add dacpac reference
@@ -241,7 +241,7 @@ describe('ProjectsController', function (): void {
 				const setupResult = await setupDeleteExcludeTest(proj);
 				const scriptEntry = setupResult[0], projTreeRoot = setupResult[1], preDeployEntry = setupResult[2], postDeployEntry = setupResult[3], noneEntry = setupResult[4];
 
-				const projController = new ProjectsController();
+				const projController = new ProjectsController(testContext.outputChannel);
 
 				await projController.exclude(createWorkspaceTreeItem(<FolderNode>projTreeRoot.children.find(x => x.friendlyName === 'UpperFolder')!.children[0]) /* LowerFolder */);
 				await projController.exclude(createWorkspaceTreeItem(<FileNode>projTreeRoot.children.find(x => x.friendlyName === 'anotherScript.sql')!));
@@ -272,7 +272,7 @@ describe('ProjectsController', function (): void {
 				const upperFolder = projTreeRoot.children.find(x => x.friendlyName === 'UpperFolder')!;
 				const lowerFolder = upperFolder.children.find(x => x.friendlyName === 'LowerFolder')!;
 
-				const projController = new ProjectsController();
+				const projController = new ProjectsController(testContext.outputChannel);
 
 				// Exclude files under LowerFolder
 				await projController.exclude(createWorkspaceTreeItem(<FileNode>lowerFolder.children.find(x => x.friendlyName === 'someScript.sql')!));
@@ -296,7 +296,7 @@ describe('ProjectsController', function (): void {
 				const folderPath = await testUtils.generateTestFolderPath();
 				const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline, folderPath);
 				const treeProvider = new SqlDatabaseProjectTreeViewProvider();
-				const projController = new ProjectsController();
+				const projController = new ProjectsController(testContext.outputChannel);
 				const project = await Project.openProject(vscode.Uri.file(sqlProjPath).fsPath);
 				treeProvider.load([project]);
 
@@ -319,7 +319,7 @@ describe('ProjectsController', function (): void {
 				const preDeployScriptName = 'PreDeployScript1.sql';
 				const postDeployScriptName = 'PostDeployScript1.sql';
 
-				const projController = new ProjectsController();
+				const projController = new ProjectsController(testContext.outputChannel);
 				const project = await testUtils.createTestProject(baselines.newProjectFileBaseline);
 
 				sinon.stub(vscode.window, 'showInputBox').resolves(preDeployScriptName);
@@ -337,7 +337,7 @@ describe('ProjectsController', function (): void {
 			it('Should change target platform', async function (): Promise<void> {
 				sinon.stub(vscode.window, 'showQuickPick').resolves({ label: SqlTargetPlatform.sqlAzure });
 
-				const projController = new ProjectsController();
+				const projController = new ProjectsController(testContext.outputChannel);
 				const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline);
 				const project = await Project.openProject(sqlProjPath);
 				should(project.getProjectTargetVersion()).equal(constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlServer2019));
@@ -447,7 +447,7 @@ describe('ProjectsController', function (): void {
 		it('Should create list of all files and folders correctly', async function (): Promise<void> {
 			const testFolderPath = await testUtils.createDummyFileStructure();
 
-			const projController = new ProjectsController();
+			const projController = new ProjectsController(testContext.outputChannel);
 			const fileList = await projController.generateList(testFolderPath);
 
 			should(fileList.length).equal(15);	// Parent folder + 2 files under parent folder + 2 directories with 5 files each
@@ -459,7 +459,7 @@ describe('ProjectsController', function (): void {
 			let testFolderPath = await testUtils.generateTestFolderPath();
 			testFolderPath += '_nonexistentFolder';	// Modify folder path to point to a nonexistent location
 
-			const projController = new ProjectsController();
+			const projController = new ProjectsController(testContext.outputChannel);
 
 			await projController.generateList(testFolderPath);
 			should(spy.calledOnce).be.true('showErrorMessage should have been called');
@@ -521,7 +521,7 @@ describe('ProjectsController', function (): void {
 			let importPath;
 			let model: ImportDataModel = { connectionUri: 'My Id', database: 'My Database', projName: projectName, filePath: folderPath, version: '1.0.0.0', extractTarget: mssql.ExtractTarget['file'] };
 
-			const projController = new ProjectsController();
+			const projController = new ProjectsController(testContext.outputChannel);
 			projController.setFilePath(model);
 			importPath = model.filePath;
 
@@ -534,7 +534,7 @@ describe('ProjectsController', function (): void {
 			let importPath;
 			let model: ImportDataModel = { connectionUri: 'My Id', database: 'My Database', projName: projectName, filePath: folderPath, version: '1.0.0.0', extractTarget: mssql.ExtractTarget['schemaObjectType'] };
 
-			const projController = new ProjectsController();
+			const projController = new ProjectsController(testContext.outputChannel);
 			projController.setFilePath(model);
 			importPath = model.filePath;
 
@@ -591,7 +591,7 @@ describe('ProjectsController', function (): void {
 		it('Should not allow adding circular project references', async function (): Promise<void> {
 			const projPath1 = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline);
 			const projPath2 = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
-			const projController = new ProjectsController();
+			const projController = new ProjectsController(testContext.outputChannel);
 
 			const project1 = await Project.openProject(vscode.Uri.file(projPath1).fsPath);
 			const project2 = await Project.openProject(vscode.Uri.file(projPath2).fsPath);
@@ -623,7 +623,7 @@ describe('ProjectsController', function (): void {
 
 		it('Should add dacpac references as relative paths', async function (): Promise<void> {
 			const projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
-			const projController = new ProjectsController();
+			const projController = new ProjectsController(testContext.outputChannel);
 
 			const project1 = await Project.openProject(vscode.Uri.file(projFilePath).fsPath);
 			const showErrorMessageSpy = sinon.spy(vscode.window, 'showErrorMessage');

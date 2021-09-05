@@ -14,6 +14,13 @@ import * as mssql from '../../../mssql';
 import * as vscodeMssql from 'vscode-mssql';
 import { promises as fs } from 'fs';
 import { Project } from '../models/project';
+import * as childProcess from 'child_process';
+import * as fse from 'fs-extra';
+
+export interface ValidationResult {
+	errorMessage: string;
+	validated: boolean
+}
 
 /**
  * Consolidates on the error message string
@@ -394,4 +401,80 @@ try {
  */
 export function getAzdataApi(): typeof azdataType | undefined {
 	return azdataApi;
+}
+
+export async function createFolderIfNotExist(folderPath: string): Promise<void> {
+	try {
+		await fse.mkdir(folderPath);
+	} catch {
+		// Ignore if failed
+	}
+}
+
+export async function executeCommand(cmd: string, outputChannel: vscode.OutputChannel, timeout: number = 5 * 60 * 1000): Promise<string> {
+	return new Promise<string>((resolve, reject) => {
+		if (outputChannel) {
+			outputChannel.appendLine(`    > ${cmd}`);
+		}
+		let child = childProcess.exec(cmd, {
+			timeout: timeout
+		}, (err, stdout) => {
+			if (err) {
+				reject(err);
+			} else {
+				resolve(stdout);
+			}
+		});
+
+		// Add listeners to print stdout and stderr if an output channel was provided
+
+		if (child?.stdout) {
+			child.stdout.on('data', data => { outputDataChunk(outputChannel, data, '    stdout: '); });
+		}
+		if (child?.stderr) {
+			child.stderr.on('data', data => { outputDataChunk(outputChannel, data, '    stderr: '); });
+		}
+	});
+}
+
+export function outputDataChunk(outputChannel: vscode.OutputChannel, data: string | Buffer, header: string): void {
+	data.toString().split(/\r?\n/)
+		.forEach(line => {
+			if (outputChannel) {
+				outputChannel.appendLine(header + line);
+			}
+		});
+}
+
+export async function retry<T>(
+	name: string,
+	attempt: () => Promise<T>,
+	verify: (result: T) => Promise<ValidationResult>,
+	formatResult: (result: T) => Promise<string>,
+	outputChannel: vscode.OutputChannel,
+	numberOfAttempts: number = 10,
+	waitInSeconds: number = 2
+): Promise<T | undefined> {
+	for (let count = 0; count < numberOfAttempts; count++) {
+		outputChannel.appendLine(constants.retryWaitMessage(waitInSeconds, name));
+		await new Promise(c => setTimeout(c, waitInSeconds * 1000));
+		outputChannel.appendLine(constants.retryRunMessage(count, numberOfAttempts, name));
+
+		try {
+			let result = await attempt();
+			const validationResult = await verify(result);
+			const formattedResult = await formatResult(result);
+			if (validationResult.validated) {
+				outputChannel.appendLine(constants.retrySucceedMessage(name, formattedResult));
+				return result;
+			} else {
+				outputChannel.appendLine(constants.retryFailedMessage(name, formattedResult, validationResult.errorMessage));
+			}
+
+		} catch (err) {
+			outputChannel.appendLine(constants.retryMessage(name, err));
+		}
+	}
+
+	return undefined;
 }

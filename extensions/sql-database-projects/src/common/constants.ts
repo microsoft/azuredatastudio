@@ -126,6 +126,53 @@ export const selectDatabase = localize('selectDatabase', "Select database");
 export const done = localize('done', "Done");
 export const nameMustNotBeEmpty = localize('nameMustNotBeEmpty', "Name must not be empty");
 
+// Deploy
+export const selectDeployOption = localize('selectDeployOption', "Select where to deploy the project to");
+export const deployToExistingServer = localize('deployToExistingServer', "Deploy to existing server");
+export const deployToDockerContainer = localize('deployToDockerContainer', "Deploy to docker container");
+export const enterPortNumber = localize('enterPortNumber', "Enter port number or press enter to use the default value");
+export const enterConnectionStringEnvName = localize('enterConnectionStringEnvName', "Enter connection string environment variable name");
+export const enterConnectionStringTemplate = localize('enterConnectionStringTemplate', "Enter connection string template");
+export const enterPassword = localize('enterPassword', "Enter password or press enter to use the generated password");
+export const portMustBeNumber = localize('portMustNotBeNumber', "Port must a be number");
+export const valueCannotBeEmpty = localize('valueCannotBeEmpty', "Value cannot be empty");
+export const dockerImageLabelPrefix = 'source=sqldbproject';
+export const dockerImageNamePrefix = 'sqldbproject';
+export const connectionNamePrefix = 'SQLDbProject';
+export const dockerBaseImage = 'mcr.microsoft.com/azure-sql-edge:latest';
+export const commandsFolderName = 'commands';
+export const mssqlFolderName = '.mssql';
+export const dockerFileName = 'Dockerfile';
+export const startCommandName = 'start.sh';
+export const defaultPortNumber = '1433';
+export const defaultConnectionStringEnvVarName = 'SQLConnectionString';
+export const defaultConnectionStringTemplate = 'Data Source=@@SERVER@@,@@PORT@@;Initial Catalog=@@DATABASE@@;User id=@@USER@@;Password=@@SA_PASSWORD@@;';
+export const azureFunctionLocalSettingsFileName = 'local.settings.json';
+export const enterConnStringTemplateDescription = localize('enterConnStringTemplateDescription', "Enter a template for SQL connection string");
+export const appSettingPrompt = localize('appSettingPrompt', "Would you like to update Azure Function local.settings.json with the new connection string?");
+export const enterConnectionStringEnvNameDescription = localize('enterConnectionStringEnvNameDescription', "Enter environment variable for SQL connection string");
+export const deployDbTaskName = localize('deployDbTaskName', "Deploying SQL Db Project Locally");
+export const deployProjectSucceed = localize('deployProjectSucceed', "Database project deployed successfully");
+export const cleaningDockerImagesMessage = localize('cleaningDockerImagesMessage', "Cleaning existing deployments...");
+export const creatingDeploymentSettingsMessage = localize('creatingDeploymentSettingsMessage', "Creating deployment settings ...");
+export const runningDockerMessage = localize('runningDockerMessage', "Building and running the docker container ...");
+export const dockerContainerNotRunningErrorMessage = localize('dockerContainerNotRunningErrorMessage', "Docker container is not running");
+export const dockerContainerFailedToRunErrorMessage = localize('dockerContainerFailedToRunErrorMessage', "Failed to run the docker container");
+export const connectingToSqlServerOnDockerMessage = localize('connectingToSqlServerOnDockerMessage', "Connecting to SQL Server on Docker");
+export const deployProjectFailedMessage = localize('deployProjectFailedMessage', "Failed to open a connection to the deployed database'");
+export function taskFailedError(taskName: string, err: string): string { return localize('taskFailedError.error', "Failed to complete task '{0}'. Error: {1}", taskName, err); }
+export function deployProjectFailed(errorMessage: string) { return localize('deployProjectFailed', "Failed to deploy project. Check output pane for more details. {0}", errorMessage); }
+export function deployAppSettingUpdateFailed(appSetting: string) { return localize('deployAppSettingUpdateFailed', "Failed to update app setting '{0}'", appSetting); }
+export function deployAppSettingUpdating(appSetting: string) { return localize('deployAppSettingUpdating', "Updating app setting: '{0}'", appSetting); }
+export function connectionFailedError(error: string) { return localize('connectionFailedError', "Connection failed error: '{0}'", error); }
+export function dockerContainerCreatedMessage(id: string) { return localize('dockerContainerCreatedMessage', "Docker created id: '{0}'", id); }
+export function dockerLogMessage(log: string) { return localize('dockerLogMessage', "Docker logs: '{0}'", log); }
+export function retryWaitMessage(numberOfSeconds: number, name: string) { return localize('retryWaitMessage', "Waiting for {0} seconds before another attempt for operation '{1}'", numberOfSeconds, name); }
+export function retryRunMessage(attemptNumber: number, numberOfAttempts: number, name: string) { return localize('retryRunMessage', "Running operation '{2}' Attempt {0} of {1}", attemptNumber, numberOfAttempts, name); }
+export function retrySucceedMessage(name: string, result: string) { return localize('retrySucceedMessage', "Operation '{0}' completed successfully. Result: {1}", name, result); }
+export function retryFailedMessage(name: string, result: string, error: string) { return localize('retryFailedMessage', "Operation '{0}' failed. Re-trying... Current Result: {1}. Error: '{2}'", name, result, error); }
+export function retryMessage(name: string, error: string) { return localize('retryMessage', "Operation '{0}' failed. Re-trying... Error: '{1}'", name, error || ''); }
+
 // Add Database Reference dialog strings
 
 export const addDatabaseReferenceDialogName = localize('addDatabaseReferencedialogName', "Add database reference");
