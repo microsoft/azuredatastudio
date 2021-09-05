@@ -76,7 +76,7 @@ export class CreateSqlMigrationServiceDialog {
 
 
 				const subscription = this._model._targetSubscription;
-				const resourceGroup = (this.migrationServiceResourceGroupDropdown.value as azdata.CategoryValue).name;
+				const resourceGroup = (this.migrationServiceResourceGroupDropdown.value as azdata.CategoryValue)?.name;
 				const location = this._model._targetServerInstance.location;
 				const serviceName = this.migrationServiceNameText.value;
 
