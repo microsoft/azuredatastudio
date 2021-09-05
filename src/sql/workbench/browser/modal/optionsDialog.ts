@@ -201,6 +201,7 @@ export class OptionsDialog extends Modal {
 
 			let serviceOptions: azdata.ServiceOption[] = categoryMap[category];
 			let bodyContainer = $('table.optionsDialog-table');
+			bodyContainer.setAttribute('role', 'presentation');
 			this.fillInOptions(bodyContainer, serviceOptions);
 			append(this._optionGroupsContainer!, bodyContainer);
 		}

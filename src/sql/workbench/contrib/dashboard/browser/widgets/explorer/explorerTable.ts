@@ -34,6 +34,8 @@ import { IEditorProgressService } from 'vs/platform/progress/common/progress';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 
 const ShowActionsText: string = nls.localize('dashboard.explorer.actions', "Show Actions");
+const LabelColoumnActions: string = nls.localize('dashboard.explorer.actionsColumn', "Actions");
+const ActionsColumnWidth: number = 50;
 const NameWithIconProperty: string = 'NameWithIcon';
 export const ConnectionProfilePropertyName: string = 'connection_profile';
 
@@ -72,7 +74,10 @@ export class ExplorerTable extends Disposable {
 		this._actionsColumn = new ButtonColumn<Slick.SlickData>({
 			id: 'actions',
 			iconCssClass: 'toggle-more',
-			title: ShowActionsText
+			title: ShowActionsText,
+			name: LabelColoumnActions,
+			width: ActionsColumnWidth,
+			resizable: false
 		});
 		this._table.registerPlugin(this._actionsColumn);
 		this._register(this._actionsColumn.onClick((args) => {
