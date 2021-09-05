@@ -5,8 +5,6 @@
 
 import * as msRest from '@azure/ms-rest-js';
 
-import { Account } from 'azdata';
-
 import { azureResource } from 'azureResource';
 import { AzureAccount, Tenant } from 'azurecore';
 
@@ -22,8 +20,8 @@ export interface IAzureResourceSubscriptionService {
 }
 
 export interface IAzureResourceSubscriptionFilterService {
-	getSelectedSubscriptions(account: Account): Promise<azureResource.AzureResourceSubscription[]>;
-	saveSelectedSubscriptions(account: Account, selectedSubscriptions: azureResource.AzureResourceSubscription[]): Promise<void>;
+	getSelectedSubscriptions(account: AzureAccount): Promise<azureResource.AzureResourceSubscription[]>;
+	saveSelectedSubscriptions(account: AzureAccount, selectedSubscriptions: azureResource.AzureResourceSubscription[]): Promise<void>;
 }
 
 export interface IAzureTerminalService {
@@ -45,5 +43,5 @@ export interface IAzureResourceNodeWithProviderId {
 }
 
 export interface IAzureResourceService<T extends azureResource.AzureResource> {
-	getResources(subscriptions: azureResource.AzureResourceSubscription[], credential: msRest.ServiceClientCredentials, account: Account): Promise<T[]>;
+	getResources(subscriptions: azureResource.AzureResourceSubscription[], credential: msRest.ServiceClientCredentials, account: AzureAccount): Promise<T[]>;
 }
