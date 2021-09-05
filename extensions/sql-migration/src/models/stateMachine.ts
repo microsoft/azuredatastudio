@@ -846,6 +846,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			}
 		});
 
+		const isOfflineMigration = this._databaseBackup.migrationMode === MigrationMode.OFFLINE;
+
 		const requestBody: StartDatabaseMigrationRequest = {
 			location: this._sqlMigrationService?.location!,
 			properties: {
@@ -859,7 +861,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					password: this._sqlServerPassword
 				},
 				scope: this._targetServerInstance.id,
-				autoCutoverConfiguration: {}
+				autoCutoverConfiguration: {
+					autoCutover: isOfflineMigration
+				}
 			}
 		};
 
@@ -878,9 +882,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 							}
 						};
 
-						if (this._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
+						if (isOfflineMigration) {
 							requestBody.properties.autoCutoverConfiguration = {
-								autoCutover: (this._databaseBackup.migrationMode === MigrationMode.OFFLINE ? true : false),
+								autoCutover: isOfflineMigration,
 								lastBackupName: this._databaseBackup.blobs[i]?.lastBackupFile
 							};
 						}
@@ -899,12 +903,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 								}
 							}
 						};
-
-						if (this._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
-							requestBody.properties.autoCutoverConfiguration = {
-								autoCutover: (this._databaseBackup.migrationMode === MigrationMode.OFFLINE ? true : false)
-							};
-						}
 						break;
 				}
 				requestBody.properties.sourceDatabaseName = this._migrationDbs[i];
@@ -919,15 +917,16 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				);
 				response.databaseMigration.properties.sourceDatabaseName = this._migrationDbs[i];
 				response.databaseMigration.properties.backupConfiguration = requestBody.properties.backupConfiguration!;
-				if (response.status === 201 || response.status === 200) {
+				response.databaseMigration.properties.autoCutoverConfiguration = requestBody.properties.autoCutoverConfiguration!;
 
+				if (response.status === 201 || response.status === 200) {
 					sendSqlMigrationActionEvent(
 						TelemetryViews.MigrationWizardSummaryPage,
 						TelemetryAction.StartMigration,
 						{
 							'hashedServerName': hashString(this._assessmentApiResponse.assessmentResult.name),
 							'hashedDatabaseName': hashString(this._migrationDbs[i]),
-							'migrationMode': requestBody.properties.autoCutoverConfiguration ? 'online' : 'offline',
+							'migrationMode': isOfflineMigration ? 'offline' : 'online',
 							'sessionId': this._sessionId,
 							'migrationStartTime': new Date().toString(),
 							'targetDatabaseName': this._targetDatabaseNames[i],

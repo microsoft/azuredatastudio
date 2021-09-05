@@ -27,6 +27,7 @@ export class MigrationLocalStorage {
 			if (migration.sourceConnectionProfile.serverName === connectionProfile.serverName) {
 				if (refreshStatus) {
 					try {
+						const autoCutoverConfiguration = migration.migrationContext.properties.autoCutoverConfiguration;
 						const backupConfiguration = migration.migrationContext.properties.backupConfiguration;
 						const sourceDatabase = migration.migrationContext.properties.sourceDatabaseName;
 
@@ -50,6 +51,7 @@ export class MigrationLocalStorage {
 
 							migration.migrationContext.properties.sourceDatabaseName = sourceDatabase;
 							migration.migrationContext.properties.backupConfiguration = backupConfiguration;
+							migration.migrationContext.properties.autoCutoverConfiguration = autoCutoverConfiguration;
 						}
 					}
 					catch (e) {

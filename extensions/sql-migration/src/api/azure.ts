@@ -438,10 +438,7 @@ export interface StartDatabaseMigrationRequest {
 			password: string
 		},
 		scope: string,
-		autoCutoverConfiguration?: {
-			autoCutover?: boolean,
-			lastBackupName?: string
-		},
+		autoCutoverConfiguration: AutoCutoverConfiguration,
 	}
 }
 
@@ -507,7 +504,7 @@ export interface BackupConfiguration {
 
 export interface AutoCutoverConfiguration {
 	autoCutover: boolean;
-	lastBackupName: string;
+	lastBackupName?: string;
 }
 
 export interface ErrorInfo {
