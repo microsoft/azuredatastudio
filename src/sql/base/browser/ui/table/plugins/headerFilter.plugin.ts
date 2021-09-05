@@ -41,6 +41,10 @@ export interface ITableFilterOptions {
 	refreshColumns?: boolean;
 }
 
+const DefaultTableFilterOptions: ITableFilterOptions = {
+	refreshColumns: true
+};
+
 export interface ITableFilterStyles extends IButtonStyles, IInputBoxStyles, IListStyles, ICountBadgetyles {
 }
 
@@ -81,7 +85,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 	private columnButtonMapping: Map<string, HTMLElement> = new Map<string, HTMLElement>();
 	private previouslyFocusedElement: HTMLElement;
 
-	constructor(private readonly contextViewProvider: IContextViewProvider, private readonly notificationProvider?: NotificationProvider, private readonly options?: ITableFilterOptions) {
+	constructor(private readonly contextViewProvider: IContextViewProvider, private readonly notificationProvider?: NotificationProvider, private readonly options: ITableFilterOptions = DefaultTableFilterOptions) {
 	}
 
 	public init(grid: Slick.Grid<T>): void {
