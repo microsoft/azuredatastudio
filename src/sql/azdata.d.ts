@@ -2691,7 +2691,7 @@ declare module 'azdata' {
 	}
 
 	// Building on top of flex item
-	export interface SplitViewBuilder extends ContainerBuilder<SplitViewContainer, SplitViewLayout, FlexItemLayout, SplitViewContainer> {
+	export interface SplitViewBuilder extends ContainerBuilder<SplitViewContainer, SplitViewLayout, FlexItemLayout, ComponentProperties> {
 	}
 
 	export interface DivBuilder extends ContainerBuilder<DivContainer, DivLayout, DivItemLayout, DivContainerProperties> {
