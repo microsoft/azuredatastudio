@@ -76,7 +76,7 @@ export async function getPublishDatabaseSettings(project: Project, promptForConn
 	// 2. Select connection
 
 	let connectionProfile: IConnectionInfo | undefined = undefined;
-	let dbs: string[] = [];
+	let dbs: string[] | undefined = undefined;
 	let connectionUri: string | undefined;
 	if (promptForConnection) {
 		const vscodeMssqlApi = await getVscodeMssqlApi();
@@ -95,6 +95,8 @@ export async function getPublishDatabaseSettings(project: Project, promptForConn
 				// back and prompt the user for a connection again
 			}
 		}
+	} else {
+		dbs = [];
 	}
 
 	// 3. Select database
