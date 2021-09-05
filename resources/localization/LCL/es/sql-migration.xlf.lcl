@@ -2027,7 +2027,7 @@
         <Str Cat="Text">
           <Val><![CDATA[New support request]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nueva solicitud de soporte]]></Val>
+            <Val><![CDATA[Nueva solicitud de soporte técnico]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3518,7 +3518,7 @@
         <Str Cat="Text">
           <Val><![CDATA[New support request]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nueva solicitud de soporte]]></Val>
+            <Val><![CDATA[Nueva solicitud de soporte técnico]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
