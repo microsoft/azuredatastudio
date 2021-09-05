@@ -604,13 +604,6 @@
 		"dist/services/tools/azdataTool": {
 			"resourceDeployment.AzdataDescription": "Интерфейс командной строки Azure Data",
 			"resourceDeployment.AzdataDisplayName": "Azure Data CLI",
-			"deploy.azdataExtMissing": "Для развертывания этого ресурса необходимо установить расширение Azure Data CLI. Установите его из коллекции расширений и повторите попытку.",
-			"deployCluster.GetToolVersionErrorInformation": "Ошибка при получении сведений о версии. Дополнительные сведения см. в канале вывода \"{0}\"",
-			"deployCluster.GetToolVersionError": "Ошибка при получении сведений о версии.{0}Получены недопустимые выходные данные, выходные данные команды get version: \"{1}\" "
-		},
-		"dist/services/tools/azdataToolOld": {
-			"resourceDeployment.AzdataDescription": "Интерфейс командной строки Azure Data",
-			"resourceDeployment.AzdataDisplayName": "Azure Data CLI",
 			"resourceDeployment.Azdata.DeletingPreviousAzdata.msi": "удаление ранее скачанного файла Azdata.msi, если он существует…",
 			"resourceDeployment.Azdata.DownloadingAndInstallingAzdata": "скачивание Azdata.msi и установка azdata-cli…",
 			"resourceDeployment.Azdata.DisplayingInstallationLog": "отображение журнала установки…",

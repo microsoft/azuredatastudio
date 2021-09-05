@@ -604,13 +604,6 @@
 		"dist/services/tools/azdataTool": {
 			"resourceDeployment.AzdataDescription": "Azure Data コマンド ライン インターフェイス",
 			"resourceDeployment.AzdataDisplayName": "Azure Data CLI",
-			"deploy.azdataExtMissing": "このリソースをデプロイするには、Azure Data CLI 拡張機能をインストールする必要があります。拡張機能ギャラリーを使用してインストールしてから、もう一度お試しください。",
-			"deployCluster.GetToolVersionErrorInformation": "バージョン情報の取得でエラーが発生しました。詳細については、出力チャネル '{0}' を参照してください",
-			"deployCluster.GetToolVersionError": "バージョン情報の取得でエラーが発生しました。{0}無効な出力を受け取りました。バージョン取得コマンドの出力: '{1}'"
-		},
-		"dist/services/tools/azdataToolOld": {
-			"resourceDeployment.AzdataDescription": "Azure Data コマンド ライン インターフェイス",
-			"resourceDeployment.AzdataDisplayName": "Azure Data CLI",
 			"resourceDeployment.Azdata.DeletingPreviousAzdata.msi": "以前にダウンロードされた Azdata.msi が存在する場合にそれを削除しています...",
 			"resourceDeployment.Azdata.DownloadingAndInstallingAzdata": "Azdata.msi をダウンロードして、azdata cli をインストールしています...",
 			"resourceDeployment.Azdata.DisplayingInstallationLog": "インストール ログを表示しています...",

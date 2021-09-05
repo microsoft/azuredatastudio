@@ -39,7 +39,8 @@
 			"sqlDatabaseProjects.Settings": "資料庫專案",
 			"sqlDatabaseProjects.netCoreInstallLocation": "電腦上 .NET Core SDK 的完整路徑。",
 			"sqlDatabaseProjects.netCoreDoNotAsk": "是否在未偵測到時提示使用者安裝 .NET Core。",
-			"sqlDatabaseProjects.welcome": "目前沒有開啟的資料庫專案。\r\n[New Project](command:sqlDatabaseProjects.new)\r\n[Open Project](command:sqlDatabaseProjects.open)\r\n[Create Project From Database](command:sqlDatabaseProjects.importDatabase)"
+			"sqlDatabaseProjects.welcome": "目前沒有開啟的資料庫專案。\r\n[New Project](command:sqlDatabaseProjects.new)\r\n[Open Project](command:sqlDatabaseProjects.open)\r\n[Create Project From Database](command:sqlDatabaseProjects.importDatabase)",
+			"sqlDatabaseProjects.addSqlBinding": "Add SQL Binding"
 		},
 		"dist/common/constants": {
 			"emptyProjectTypeDisplayName": "SQL Database",
@@ -156,7 +157,10 @@
 			"projectLocationLabel": "位置",
 			"projectLocationPlaceholderText": "選取要建立專案的位置",
 			"browseButtonText": "瀏覽資料夾",
+			"selectFolderStructure": "Select folder structure",
 			"folderStructureLabel": "資料夾結構",
+			"browseEllipsis": "Browse...",
+			"selectProjectLocation": "Select project location",
 			"dataworkspace.projectParentDirectoryNotExistError": "選取的專案位置 '{0}' 不存在或不是目錄。",
 			"dataworkspace.projectDirectoryAlreadyExistError": "選取的位置中已有名為 '{0}' 的目錄: '{1}'。",
 			"multipleSqlProjFilesSelected": "選取了多個 .sqlproj 檔案；請只選取一個。",
@@ -192,8 +196,7 @@
 			"cannotResolvePath": "無法解析路徑 {0}",
 			"fileAlreadyExists": "磁碟的這個位置已經有名稱為 '{0}' 的檔案存在。請選擇其他名稱。",
 			"folderAlreadyExists": "磁碟的這個位置已經有名稱為 '{0}' 的資料夾存在。請選擇其他名稱。",
-			"fileAlreadyAddedToProject": "已將路徑為 '{0}' 的檔案新增到專案中",
-			"folderAlreadyAddedToProject": "已將路徑為 '{0}' 的資料夾新增到專案中",
+			"folderAlreadyExistsChooseNewLocation": "A folder with the name '{0}' already exists on disk at this location. Please choose another location.",
 			"invalidInput": "輸入無效: {0}",
 			"invalidPropertyValue": "在 .sqlproj 中為屬性 '{0}' 指定的值無效",
 			"unableToCreatePublishConnection": "無法建立連線: {0}",
@@ -224,7 +227,16 @@
 			"externalStream": "外部資料流",
 			"externalStreamingJobFriendlyName": "外部資料流作業",
 			"preDeployScriptFriendlyName": "Script.PreDeployment",
-			"postDeployScriptFriendlyName": "Script.PostDeployment"
+			"postDeployScriptFriendlyName": "Script.PostDeployment",
+			"input": "Input",
+			"output": "Output",
+			"selectBindingType": "Select type of binding",
+			"selectAzureFunction": "Select an Azure function in the current file to add SQL binding to",
+			"sqlObjectToQuery": "SQL object to query",
+			"sqlTableToUpsert": "SQL table to upsert into",
+			"connectionStringSetting": "Connection string setting name",
+			"connectionStringSettingPlaceholder": "Connection string setting specified in \"local.settings.json\"",
+			"noAzureFunctionsInFile": "No Azure functions in the current active file"
 		},
 		"dist/tools/netcoreTool": {
 			"sqlDatabaseProjects.NetCoreInstallationConfirmation": "找不到 .NET Core SDK。專案組建將無法運作。請安裝 .NET Core SDK 3.1 版，或更新設定中的 .Net Core SDK 位置 (如果已安裝)。",

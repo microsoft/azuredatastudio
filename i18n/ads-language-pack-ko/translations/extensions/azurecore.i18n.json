@@ -207,7 +207,7 @@
 			"azure.resource.providers.KustoContainerLabel": "Azure 데이터 탐색기 클러스터"
 		},
 		"dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider": {
-			"azure.resource.providers.AzureMonitorContainerLabel": "Azure Monitor 로그 작업 영역"
+			"azure.resource.providers.AzureMonitorContainerLabel": "Log Analytics 작업 영역"
 		},
 		"dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider": {
 			"azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel": "Azure Database for PostgreSQL 서버"

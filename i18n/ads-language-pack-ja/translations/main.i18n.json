@@ -10387,6 +10387,8 @@
 			"textPreview": "テキスト セル",
 			"runAllPreview": "すべて実行",
 			"addCell": "セル",
+			"views": "ビュー",
+			"editor": "エディター",
 			"code": "コード",
 			"text": "テキスト",
 			"runAll": "セルの実行",
@@ -10411,7 +10413,8 @@
 			"notebook.markdownPreviewLineHeight": "ノートブック マークダウン プレビューで使用される行の高さを制御します。この数値はフォント サイズを基準とします。",
 			"notebook.showRenderedNotebookinDiffEditor": "(プレビュー) レンダリングされたノートブックを差分エディターで表示します。",
 			"notebook.maxRichTextUndoHistory": "ノートブックのリッチ テキスト エディターを元に戻す操作の履歴に格納される変更の最大数です。",
-			"notebook.useAbsoluteFilePaths": "Use absolute file paths when linking to other notebooks.",
+			"notebook.useAbsoluteFilePaths": "他のノートブックにリンクする場合は、絶対ファイル パスを使用します。",
+			"notebook.enableIncrementalGridRendering": "Enable incremental grid rendering for notebooks. This will improve the initial rendering time for large notebooks. There may be performance issues when interacting with the notebook while the rest of the grids are rendering.",
 			"searchConfigurationTitle": "ノートブックの検索",
 			"exclude": "フルテキスト検索および Quick Open でファイルやフォルダーを除外するための glob パターンを構成します。'#files.exclude#' 設定からすべての glob パターンを継承します。glob パターンの詳細については、[こちら](https://code.visualstudio.com/docs/editor/codebasics#_advanced-search-options) を参照してください。",
 			"exclude.boolean": "ファイル パスの照合基準となる glob パターン。これを true または false に設定すると、パターンがそれぞれ有効/無効になります。",
@@ -10470,6 +10473,9 @@
 			"noParametersCell": "パラメーター セルが追加されるまで、パラメーターを指定してこのノートブックを実行することはできません。[詳細情報](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization)。",
 			"noParametersInCell": "パラメーター セルにパラメーターが追加されるまで、パラメーターを指定してこのノートブックを実行することはできません。[詳細情報] (https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization)。",
 			"clearResults": "結果のクリア",
+			"notebookViewLabel": "エディター",
+			"newViewLabel": "Create New View",
+			"viewNotFound": "Unable to find view: {0}",
 			"trustLabel": "信頼されています",
 			"untrustLabel": "信頼されていません",
 			"collapseAllCells": "セルを折りたたむ",
@@ -10513,7 +10519,8 @@
 		},
 		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViews.component": {
 			"cellNotFound": "URI {0} を含むセルは、このモデルには見つかりませんでした",
-			"cellRunFailed": "セルの実行に失敗しました。詳細については、現在選択されているセルの出力内のエラーをご覧ください。"
+			"cellRunFailed": "セルの実行に失敗しました。詳細については、現在選択されているセルの出力内のエラーをご覧ください。",
+			"runAllPreview": "すべて実行"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCodeCell.component": {
 			"viewsCodeCell.emptyCellText": "出力を表示するには、このセルを実行してください。"
@@ -11447,6 +11454,37 @@
 		},
 		"sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution": {
 			"deployment.title": "新しい展開..."
+		},
+		"sql/workbench/contrib/notebook/browser/notebookViews/insertCellsModal": {
+			"insertCellsModal.title": "セルの挿入",
+			"insertCellsModal.selectCells": "セルのソースの選択",
+			"insertCellsModal.thumbnailError": "エラー: サムネイルを生成できません。",
+			"insertCellsModal.untitled": "無題のセル: {0}",
+			"insertCellsModal.Insert": "挿入",
+			"insertCellsModal.Cancel": "キャンセル"
+		},
+		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsActions": {
+			"viewsUnableToRemove": "Unable to remove view",
+			"confirmDelete": "Are you sure you want to delete view \"{0}\"?",
+			"delete": "&&Delete",
+			"insertCells": "セルの挿入",
+			"runCell": "セルの実行",
+			"stopCell": "実行のキャンセル",
+			"errorRunCell": "Error on last run. Click to run again",
+			"unableToNavigateToCell": "ノートブックのセルに移動できません。",
+			"viewCellInNotebook": "ノートブックのセルの表示",
+			"moreActionsLabel": "その他"
+		},
+		"sql/workbench/contrib/notebook/browser/notebookViews/viewOptionsModal": {
+			"viewOptionsModal.title": "ビューの構成",
+			"viewOptionsModal.name": "ビュー名",
+			"viewOptionsModal.missingRequireField": "This field is required.",
+			"viewOptionsModal.nameTaken": "このビュー名は既に取得されています。",
+			"save": "保存",
+			"cancel": "キャンセル"
+		},
+		"sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension": {
+			"notebookView.untitledView": "無題のビュー"
 		}
 	}
 }

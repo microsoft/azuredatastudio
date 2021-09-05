@@ -39,7 +39,8 @@
 			"sqlDatabaseProjects.Settings": "Progetti di database",
 			"sqlDatabaseProjects.netCoreInstallLocation": "Percorso completo a .NET Core SDK nel computer.",
 			"sqlDatabaseProjects.netCoreDoNotAsk": "Indica se richiedere all'utente di installare .NET Core quando non viene rilevato.",
-			"sqlDatabaseProjects.welcome": "Nessun progetto di database attualmente open.\r\n[Nuovo progetto](command:sqlDatabaseProjects.new)\r\n[Apri progetto](command:sqlDatabaseProjects.open)\r\n[Crea progetto dal database](command:sqlDatabaseProjects.importDatabase)"
+			"sqlDatabaseProjects.welcome": "Nessun progetto di database attualmente open.\r\n[Nuovo progetto](command:sqlDatabaseProjects.new)\r\n[Apri progetto](command:sqlDatabaseProjects.open)\r\n[Crea progetto dal database](command:sqlDatabaseProjects.importDatabase)",
+			"sqlDatabaseProjects.addSqlBinding": "Add SQL Binding"
 		},
 		"dist/common/constants": {
 			"emptyProjectTypeDisplayName": "Database SQL",
@@ -156,7 +157,10 @@
 			"projectLocationLabel": "Percorso",
 			"projectLocationPlaceholderText": "Selezionare il percorso per creare il progetto",
 			"browseButtonText": "Sfoglia cartella",
+			"selectFolderStructure": "Select folder structure",
 			"folderStructureLabel": "Struttura di cartelle",
+			"browseEllipsis": "Browse...",
+			"selectProjectLocation": "Select project location",
 			"dataworkspace.projectParentDirectoryNotExistError": "Il percorso del progetto selezionato '{0}' non esiste o non è una directory.",
 			"dataworkspace.projectDirectoryAlreadyExistError": "Esiste già una directory denominata '{0}' nel percorso selezionato: '{1}'.",
 			"multipleSqlProjFilesSelected": "Sono stati selezionati più file con estensione sqlproj; sceglierne solo uno.",
@@ -192,8 +196,7 @@
 			"cannotResolvePath": "Non è possibile risolvere il percorso {0}",
 			"fileAlreadyExists": "Un file con il nome '{0}' esiste già in questa posizione del disco. Scegliere un altro nome.",
 			"folderAlreadyExists": "Una cartella con il nome '{0}' esiste già in questa posizione del disco. Scegliere un altro nome.",
-			"fileAlreadyAddedToProject": "Un file con il percorso '{0}' è già stato aggiunto al progetto",
-			"folderAlreadyAddedToProject": "Una cartella con il percorso '{0}' è già stata aggiunta al progetto",
+			"folderAlreadyExistsChooseNewLocation": "A folder with the name '{0}' already exists on disk at this location. Please choose another location.",
 			"invalidInput": "L'input non è valido: {0}",
 			"invalidPropertyValue": "Valore non valido specificato per la proprietà '{0}' nel file con estensione .sqlproj",
 			"unableToCreatePublishConnection": "Impossibile costruire la connessione: {0}",
@@ -224,7 +227,16 @@
 			"externalStream": "Flusso esterno",
 			"externalStreamingJobFriendlyName": "Processo di streaming esterno",
 			"preDeployScriptFriendlyName": "Script.PreDeployment",
-			"postDeployScriptFriendlyName": "Script.PostDeployment"
+			"postDeployScriptFriendlyName": "Script.PostDeployment",
+			"input": "Input",
+			"output": "Output",
+			"selectBindingType": "Select type of binding",
+			"selectAzureFunction": "Select an Azure function in the current file to add SQL binding to",
+			"sqlObjectToQuery": "SQL object to query",
+			"sqlTableToUpsert": "SQL table to upsert into",
+			"connectionStringSetting": "Connection string setting name",
+			"connectionStringSettingPlaceholder": "Connection string setting specified in \"local.settings.json\"",
+			"noAzureFunctionsInFile": "No Azure functions in the current active file"
 		},
 		"dist/tools/netcoreTool": {
 			"sqlDatabaseProjects.NetCoreInstallationConfirmation": "Impossibile individuare .NET Core SDK. La compilazione del progetto non funzionerà. Installare .NET Core SDK versione 3.1 o aggiornare il percorso di .NET Core SDK nelle impostazioni, se l'installazione è già presente.",

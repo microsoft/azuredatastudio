@@ -207,7 +207,7 @@
 			"azure.resource.providers.KustoContainerLabel": "Azure 資料總管叢集"
 		},
 		"dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider": {
-			"azure.resource.providers.AzureMonitorContainerLabel": "Azure 監視器記錄工作區"
+			"azure.resource.providers.AzureMonitorContainerLabel": "Log Analytics workspace"
 		},
 		"dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider": {
 			"azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel": "適用於 PostgreSQL 的 Azure 資料庫伺服器"

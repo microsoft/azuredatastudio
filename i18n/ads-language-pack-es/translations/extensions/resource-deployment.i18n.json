@@ -604,13 +604,6 @@
 		"dist/services/tools/azdataTool": {
 			"resourceDeployment.AzdataDescription": "Interfaz de la línea de comandos de datos de Azure",
 			"resourceDeployment.AzdataDisplayName": "CLI de datos de Azure",
-			"deploy.azdataExtMissing": "La extensión CLI de datos de Azure debe estar instalada para implementar este recurso. Instálela a través de la galería de extensiones y vuelva a intentarlo.",
-			"deployCluster.GetToolVersionErrorInformation": "Error al recuperar la información de la versión. Consulte el canal de salida \"{0}\" para obtener más detalles.",
-			"deployCluster.GetToolVersionError": "Error al recuperar la información de la versión. {0}Se ha recibido una salida no válida; salida del comando GET de la versión: \"{1}\". "
-		},
-		"dist/services/tools/azdataToolOld": {
-			"resourceDeployment.AzdataDescription": "Interfaz de la línea de comandos de datos de Azure",
-			"resourceDeployment.AzdataDisplayName": "CLI de datos de Azure",
 			"resourceDeployment.Azdata.DeletingPreviousAzdata.msi": "Se está eliminando el archivo Azdata.msi descargado anteriormente, si existe...",
 			"resourceDeployment.Azdata.DownloadingAndInstallingAzdata": "Se está descargando Azdata.msi e instalando azdata-cli...",
 			"resourceDeployment.Azdata.DisplayingInstallationLog": "Se muestra el registro de la instalación...",
