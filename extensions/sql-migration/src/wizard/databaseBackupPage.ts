@@ -735,6 +735,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			this._blobTableContainer.display = 'none';
 			this._blobContainer.updateCssStyles({ 'display': 'none' });
 
+			this._targetDatabaseContainer.updateCssStyles({ 'display': 'none' });
+			this._networkShareStorageAccountDetails.updateCssStyles({ 'display': 'none' });
 			const connectionProfile = await this.migrationStateModel.getSourceConnectionProfile();
 			const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>((await this.migrationStateModel.getSourceConnectionProfile()).providerId, azdata.DataProviderType.QueryProvider);
 			const query = 'select SUSER_NAME()';
