@@ -920,6 +920,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.offline.caps">
       <source xml:lang="en">OFFLINE</source>
     </trans-unit>
+    <trans-unit id="sql.migration.select.database.to.continue">
+      <source xml:lang="en">Please select 1 or more databases to assess for migration</source>
+    </trans-unit>
     <trans-unit id="sql.migration.issues">
       <source xml:lang="en">Issues</source>
     </trans-unit>
