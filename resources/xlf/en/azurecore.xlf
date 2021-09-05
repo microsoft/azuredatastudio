@@ -303,6 +303,11 @@
       <source xml:lang="en">Unable to get token for tenant {0}</source>
     </trans-unit>
   </body></file>
+  <file original="extensions/azurecore/dist/azureResource/errors" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="azure.subscriptionError">
+      <source xml:lang="en">Failed to get subscriptions for account {0}. Please refresh the account.</source>
+    </trans-unit>
+  </body></file>
   <file original="extensions/azurecore/dist/account-provider/auths/azureAuth" source-language="en" datatype="plaintext"><body>
     <trans-unit id="azureAuth.unidentifiedError">
       <source xml:lang="en">Unidentified error with azure authentication</source>
@@ -357,9 +362,6 @@
     </trans-unit>
   </body></file>
   <file original="extensions/azurecore/dist/azureResource/tree/accountTreeNode" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="azure.resource.tree.accountTreeNode.credentialError">
-      <source xml:lang="en">Failed to get credential for account {0}. Please refresh the account.</source>
-    </trans-unit>
     <trans-unit id="azure.resource.tree.accountTreeNode.noSubscriptionsLabel">
       <source xml:lang="en">No Subscriptions found.</source>
     </trans-unit>
@@ -379,14 +381,11 @@
 {1} is the number of selected subscriptions in this account
 {2} is the number of total subscriptions in this account</note>
     </trans-unit>
-    <trans-unit id="azure.resource.tree.accountTreeNode.credentialError">
-      <source xml:lang="en">Failed to get credential for account {0}. Please go to the accounts dialog and refresh the account.</source>
-    </trans-unit>
     <trans-unit id="azure.resource.throttleerror">
       <source xml:lang="en">Requests from this account have been throttled. To retry, please select a smaller number of subscriptions.</source>
     </trans-unit>
     <trans-unit id="azure.resource.tree.loadresourceerror">
-      <source xml:lang="en">An error occured while loading Azure resources: {0}</source>
+      <source xml:lang="en">An error occurred while loading Azure resources: {0}</source>
     </trans-unit>
   </body></file>
   <file original="extensions/azurecore/dist/azureResource/tree/accountNotSignedInTreeNode" source-language="en" datatype="plaintext"><body>
@@ -468,6 +467,11 @@
       <source xml:lang="en">SQL database</source>
     </trans-unit>
   </body></file>
+  <file original="extensions/azurecore/dist/azureResource/services/subscriptionService" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="azure.resource.tenantSubscriptionsError">
+      <source xml:lang="en">Failed to get subscriptions for account {0} (tenant '{1}'). {2}</source>
+    </trans-unit>
+  </body></file>
   <file original="extensions/azurecore/dist/azureResource/commands" source-language="en" datatype="plaintext"><body>
     <trans-unit id="azure.cloudTerminalPreview">
       <source xml:lang="en">You must enable preview features in order to use Azure Cloud Shell.</source>
@@ -492,9 +496,6 @@
     </trans-unit>
     <trans-unit id="azure.mustPickTenant">
       <source xml:lang="en">You must select a tenant for this feature to work.</source>
-    </trans-unit>
-    <trans-unit id="azure.resource.selectsubscriptions.credentialError">
-      <source xml:lang="en">Failed to get credential for account {0}. Please refresh the account.</source>
     </trans-unit>
   </body></file>
   <file original="extensions/azurecore/dist/azureResource/tree/subscriptionTreeNode" source-language="en" datatype="plaintext"><body>
