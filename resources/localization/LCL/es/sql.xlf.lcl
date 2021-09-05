@@ -8058,6 +8058,9 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebook.contribution.notebook.enableIncrementalGridRendering" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enable incremental grid rendering for notebooks. This will improve the initial rendering time for large notebooks. There may be performance issues when interacting with the notebook while the rest of the grids are rendering.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Habilite la representación de la cuadrícula incremental para los cuadernos. Esto mejorará el tiempo de representación inicial de los cuadernos grandes. Puede haber problemas de rendimiento al interactuar con el cuaderno mientras el resto de las cuadrículas se están representando.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

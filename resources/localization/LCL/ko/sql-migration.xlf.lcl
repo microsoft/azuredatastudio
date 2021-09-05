@@ -12,19 +12,25 @@
       <Disp Icon="Str" Disp="true" LocTbl="false" />
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.azure.accounts.accountAccessError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[An error occurred while accessing the selected account '{0}'. Please click the 'Link Account' button and refresh the account or select a different account. Error '{1}']]></Val>
+          <Val><![CDATA[An error occurred while accessing the selected account '{0}'. Select 'Link Account' and refresh the account, or select a different account. Error '{1}']]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[선택한 계정 '{0}'에 액세스하는 동안 오류가 발생했습니다. '계정 연결' 버튼을 클릭하고 계정을 새로 고치거나 다른 계정을 선택하세요. 오류 '{1}']]></Val>
+            <Val><![CDATA[선택한 계정 '{0}'에 액세스하는 동안 오류가 발생했습니다. '계정 연결'을 선택하고 계정을 새로 고치거나 다른 계정을 선택하세요. 오류 '{1}']]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[An error occurred while accessing the selected account '{0}'. Please click the 'Link Account' button and refresh the account or select a different account. Error '{1}']]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.azure.accounts.accountStaleError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[The access token for selected account '{0}' is no longer valid. Please click the 'Link Account' button and refresh the account or select a different account.]]></Val>
+          <Val><![CDATA[The access token for selected account '{0}' is no longer valid. Select 'Link Account' and refresh the account, or select a different account.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[선택한 계정 '{0}'의 액세스 토큰이 더 이상 유효하지 않습니다. ‘계정 연결’ 단추를 클릭하고 계정을 새로 고치거나, 다른 계정을 선택하세요.]]></Val>
+            <Val><![CDATA[선택한 계정 '{0}'에 대한 액세스 토큰이 더 이상 유효하지 않습니다. '계정 연결'을 선택하고 계정을 새로 고치거나 다른 계정을 선택하세요.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[The access token for selected account '{0}' is no longer valid. Please click the 'Link Account' button and refresh the account or select a different account.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -42,27 +48,6 @@
           <Val><![CDATA[Are you sure you want to cancel this migration?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[이 마이그레이션을 취소하시겠습니까?]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migartion.cutover.pending.backup" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Log backups pending restore: {0}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[복원 보류 중인 로그 백업: {0}]]></Val>
-          </Tgt>
-          <Prev Cat="Text">
-            <Val><![CDATA[Pending log backups: {0}]]></Val>
-          </Prev>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migraiton.data.uploaded.size" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Data Uploaded/Size]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[업로드된 데이터/크기]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -112,15 +97,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.assessmen.results" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Assessment Results]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[평가 결과]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.assessment" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Assessment results for '{0}']]></Val>
@@ -160,6 +136,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.assessment.results" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Assessment Results]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[평가 결과]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.assessments.blocking.issue" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[This is a blocking issue that will prevent the database migration from succeeding.]]></Val>
@@ -169,11 +154,20 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.assessments.progress" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.authKeys.header" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Assessments Progress]]></Val>
+          <Val><![CDATA[Authentication key]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[평가 진행률]]></Val>
+            <Val><![CDATA[인증 키]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.authKeys.refresh.message" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Authentication key '{0}' has been refreshed.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA['{0}' 인증 키를 새로 고쳤습니다.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -189,82 +183,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.authentication.types" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Authentication Keys]]></Val>
+          <Val><![CDATA[Authentication keys]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[인증 키]]></Val>
           </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.authkeys.header" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Authentication key]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[인증 키]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.authkeys.refresh.message" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Authentication key '{0}' has been refreshed.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA['{0}' 인증 키를 새로 고쳤습니다.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.auto.refresh.1.min" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Auto refresh: 1 minute]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[자동 새로 고침: 1분]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.auto.refresh.15.seconds" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Auto refresh: 15 seconds]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[자동 새로 고침: 15초]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.auto.refresh.3.min" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Auto refresh: 3 minutes]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[자동 새로 고침: 3분]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.auto.refresh.30.seconds" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Auto refresh: 30 seconds]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[자동 새로 고침: 30 초]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.auto.refresh.5.min" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Auto refresh: 5 minutes]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[자동 새로 고침: 5분]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.auto.refresh.off" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Auto Refresh: Off]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[자동 새로 고침: 끄기]]></Val>
-          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Authentication Keys]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -279,19 +204,25 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.azure.sql.database.managed.instance" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure SQL Database Managed Instance]]></Val>
+          <Val><![CDATA[Azure SQL Managed Instance]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure SQL Database Managed Instance]]></Val>
+            <Val><![CDATA[Azure SQL Managed Instance]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure SQL Database Managed Instance]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.azure.sql.database.virtual.machine" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure SQL Database Virtual Machine]]></Val>
+          <Val><![CDATA[SQL Server on Azure Virtual Machines]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure SQL Database 가상 머신]]></Val>
+            <Val><![CDATA[Azure 가상 컴퓨터의 SQL Server]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure SQL Database Virtual Machine]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -342,28 +273,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.bc.info" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Managed Instance migration cutover for Business Critical service tier can take significantly longer than General Purpose as three secondary replicas have to be seeded for Always On High Availability group. This operation duration depends on the size of data. Seeding speed in 90% of cases is 220 GB/hour or higher.]]></Val>
+          <Val><![CDATA[A SQL Managed Instance migration cutover to the Business Critical service tier can take significantly longer than General Purpose because three secondary replicas have to be seeded for Always On High Availability group. The duration of the operation depends on the size of the data. Seeding speed in 90% of cases is 220 GB/hour or higher.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[중요 비즈니스용 서비스 계층에 대한 Managed Instance 마이그레이션 컷오버는 Always On 고가용성 그룹에 대해 세 개의 보조 복제본을 시드해야 하므로 범용보다 훨씬 더 오래 걸릴 수 있습니다. 이 작업 기간은 데이터 크기에 따라 달라집니다. 사례의 90%에서 시드 속도는 220GB/시간 이상입니다.]]></Val>
+            <Val><![CDATA[중요 업무용 서비스 계층으로의 SQL Managed Instance 마이그레이션 전환은 Always On 고가용성 그룹에 대해 3개의 보조 복제본을 시드해야 하기 때문에 범용보다 훨씬 오래 걸릴 수 있습니다. 작업 기간은 데이터 크기에 따라 다릅니다. 90%의 경우 시딩 속도는 220GB/시간 이상입니다.]]></Val>
           </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.blob.container" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select the container that contains the backup files for ‘{0}’]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[‘{0}’에 대한 백업 파일이 포함된 컨테이너를 선택합니다.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.blob.container.information" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Enter the target name and select the blob container location for selected databases]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[대상 이름을 입력하고 선택한 데이터베이스에 대한 BLOB 컨테이너 위치를 선택합니다.]]></Val>
-          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Managed Instance migration cutover for Business Critical service tier can take significantly longer than General Purpose as three secondary replicas have to be seeded for Always On High Availability group. This operation duration depends on the size of data. Seeding speed in 90% of cases is 220 GB/hour or higher.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -417,33 +333,6 @@
           <Val><![CDATA[Select a resource group value first.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[먼저 리소스 그룹 값을 선택합니다.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.blob.storage.account.label" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select the storage account that contains the backup files.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[백업 파일이 포함된 스토리지 계정을 선택합니다.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.blob.storage.container.label" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select the container that contains the backup files.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[‘백업 파일이 포함된 컨테이너를 선택합니다.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.blob.storage.container.placeholder" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select container]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[컨테이너 선택]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -504,10 +393,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.cannot.cancel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Migration is not in progress and cannot be cancelled.]]></Val>
+          <Val><![CDATA[Migration is not in progress and cannot be canceled.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[마이그레이션이 진행 중이 아니므로 취소할 수 없습니다.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Migration is not in progress and cannot be cancelled.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -522,19 +414,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.cannot.start.cutover.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Cannot start the cutover process until all the migrations are done. Click refresh to fetch the latest file status]]></Val>
+          <Val><![CDATA[The cutover process cannot start until all the migrations are done. To return the latest file status, refresh your browser window.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[모든 마이그레이션이 완료될 때까지 컷오버 프로세스를 시작할 수 없습니다. 새로 고침을 클릭하여 최신 파일 상태를 가져옵니다.]]></Val>
+            <Val><![CDATA[모든 마이그레이션이 완료될 때까지 컷오버 프로세스를 시작할 수 없습니다. 최신 파일 상태를 반환하려면 브라우저 창을 새로 고칩니다.]]></Val>
           </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.choose.to.migrate.to.azure.sql" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Choose to migrate to Azure SQL]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure SQL로 마이그레이션하도록 선택]]></Val>
-          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Cannot start the cutover process until all the migrations are done. Click refresh to fetch the latest file status]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -543,33 +429,6 @@
           <Val><![CDATA[Close]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[닫기]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.collecting_source_configurations" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Collecting source configurations]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[원본 구성을 수집하는 중]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.collecting_source_configurations.error" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[There was an error when gathering information about your data configuration. {0}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[데이터 구성에 대한 정보를 수집하는 동안 오류가 발생했습니다. {0}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.collecting_source_configurations.info" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[We need to collect some information about how your data is configured currently.]D;]A;This may take some time.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[현재 데이터가 구성된 방법에 대한 일부 정보를 수집해야 합니다.]D;]A;시간이 걸릴 수 있습니다.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -585,10 +444,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.completing.cutover.warning" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Completing cutover without restoring all the backup(s) may result in loss of data.]]></Val>
+          <Val><![CDATA[Completing cutover without restoring all the backup(s) may result in a data loss.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[모든 백업을 복원하지 않고 컷오버를 완료하면 데이터가 손실될 수 있습니다.]]></Val>
+            <Val><![CDATA[모든 백업을 복원하지 않고 중단을 완료하면 데이터가 손실될 수 있습니다.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Completing cutover without restoring all the backup(s) may result in loss of data.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -691,15 +553,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.custom.setup.button" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Custom setup: Add DMS after customizing most options.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[사용자 지정 설치: 대부분의 옵션을 사용자 지정한 후 DMS를 추가합니다.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.cutover" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Migration cutover]]></Val>
@@ -748,6 +601,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.cutover.pending.backup" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Log backups pending restore: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[복원 보류 중인 로그 백업: {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.cutover.status.refresh.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[An error occurred while refreshing the migration status.]]></Val>
@@ -759,52 +621,70 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.cutover.step.1" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[1. Stop all the incoming transactions coming to the source database.]]></Val>
+          <Val><![CDATA[1. Stop all incoming transactions to the source database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[1. 원본 데이터베이스로 들어오는 모든 트랙잭션을 중지합니다.]]></Val>
+            <Val><![CDATA[1. 원본 데이터베이스로 들어오는 모든 트랜잭션을 중지합니다.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[1. Stop all the incoming transactions coming to the source database.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.cutover.step.2.blob" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[2. Take final differential or transaction log backup and provide it in the Azure Storage Blob Container.]]></Val>
+          <Val><![CDATA[2. Take a final differential or backup of the transaction log and store it in the Azure Storage Blob Container.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[2. 최종 차등 또는 트랜잭션 로그 백업을 수행하고 Azure Storage Blob 컨테이너에 제공합니다.]]></Val>
+            <Val><![CDATA[2. 트랜잭션 로그의 최종 차등 또는 백업을 가져와 Azure Storage Blob Container에 저장합니다.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[2. Take final differential or transaction log backup and provide it in the Azure Storage Blob Container.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.cutover.step.2.network.share" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[2. Take final transaction log backup and provide it in the network share location.]]></Val>
+          <Val><![CDATA[2. Take a final backup of the transaction log and store it in the network share location.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[2. 최종 트랜잭션 로그 백업을 수행하고 네트워크 공유 위치에 제공합니다.]]></Val>
+            <Val><![CDATA[2. 트랜잭션 로그의 최종 백업을 만들어 네트워크 공유 위치에 저장합니다.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[2. Take final transaction log backup and provide it in the network share location.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.cutover.step.3.blob" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[3. Make sure all the log backups are restored on target database. The "Log backups(s) pending restore" should be zero.]]></Val>
+          <Val><![CDATA[3. Verify that your backup(s) have been restored on the target database. The "Log backup(s) pending restore" value should be zero.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[3. 백업이 대상 데이터베이스에서 복원되었는지 확인합니다. "복원 보류 중인 로그 백업" 값은 0이어야 합니다.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.cutover.step.3.network.share" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[3. Make sure all the log backups are restored on target database. The "Log backups(s) pending restore" should be zero.]]></Val>
+          <Val><![CDATA[3. Verify that your backup(s) have been restored on the target database. The "Log backup(s) pending restore" value should be zero.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[3. 모든 로그 백업이 대상 데이터베이스에서 복원되었는지 확인합니다. "로그 백업 보류 중인 복원"은 0이어야 합니다.]]></Val>
+            <Val><![CDATA[3. 백업이 대상 데이터베이스에서 복원되었는지 확인합니다. "복원 보류 중인 로그 백업" 값은 0이어야 합니다.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[3. Make sure all the log backups are restored on target database. The "Log backups(s) pending restore" should be zero.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.cutover.type" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Migration Mode]]></Val>
+          <Val><![CDATA[Migration mode]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[마이그레이션 모드]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Migration Mode]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -828,10 +708,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dashboard.link1.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[See the list of rules used to assess the feasibility of migrating your SQL Server to Azure SQL Managed Instance.]]></Val>
+          <Val><![CDATA[See the list of rules used to determine whether your SQL Server instance can be migrated to Azure SQL Managed Instance.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[SQL Server를 Azure SQL Managed Instance로 마이그레이션하는 가능성을 평가하는 데 사용되는 규칙 목록을 참조하세요.]]></Val>
+            <Val><![CDATA[SQL Server 인스턴스를 Azure SQL Managed Instance로 마이그레이션할 수 있는지 여부를 결정하는 데 사용되는 규칙 목록을 참조하세요.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[See the list of rules used to assess the feasibility of migrating your SQL Server to Azure SQL Managed Instance.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -871,20 +754,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dashboard.video1.title" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.data.uploaded.size" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Migrate SQL Server to SQL Managed Instance]]></Val>
+          <Val><![CDATA[Data Uploaded/Size]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[SQL Managed Instance로 SQL Server 마이그레이션]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dashboard.video2.title" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Migrate SQL Server to SQL Virtual Machine]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[SQL 가상 머신으로 SQL Server 마이그레이션]]></Val>
+            <Val><![CDATA[업로드된 데이터/크기]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -900,28 +774,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.database.already.exists" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Database '{0}' already exists on target Managed Instance '{1}'.]]></Val>
+          <Val><![CDATA[Database '{0}' already exists on the target managed instance '{1}'.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[데이터베이스 '{0}'이(가) 대상 Managed Instance '{1}'에 이미 있습니다.]]></Val>
+            <Val><![CDATA[데이터베이스 '{0}'이(가) 대상 관리되는 인스턴스 '{1}'에 이미 있습니다.]]></Val>
           </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.database.backup.email.notification.checkbox.label" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Notify me when migration is complete]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[마이그레이션이 완료되면 알림]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.database.backup.email.notification.label" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Email notifications]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[전자 메일 알림]]></Val>
-          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Database '{0}' already exists on target Managed Instance '{1}'.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -936,10 +795,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.database.migration.mode.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Choose from the following migration modes to migrate to your Azure SQL target based on your downtime requirements.]]></Val>
+          <Val><![CDATA[To migrate to the Azure SQL target, choose a migration mode based on your downtime requirements.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[다음 마이그레이션 모드 중에서 선택하여 가동 중지 시간 요구 사항에 따라 Azure SQL 대상으로 마이그레이션합니다.]]></Val>
+            <Val><![CDATA[Azure SQL 대상으로 마이그레이션하려면 가동 중지 시간 요구 사항에 따라 마이그레이션 모드를 선택합니다.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Choose from the following migration modes to migrate to your Azure SQL target based on your downtime requirements.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -972,10 +834,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.database.migration.mode.online.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Application downtime is limited to cut over at the end of migration.]]></Val>
+          <Val><![CDATA[Application downtime is limited to cutover at the end of migration.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[애플리케이션 가동 중지 시간은 마이그레이션이 끝날 때 컷오버로 제한됩니다.]]></Val>
+            <Val><![CDATA[애플리케이션 다운타임은 마이그레이션 종료 시 컷오버로 제한됩니다.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Application downtime is limited to cut over at the end of migration.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -999,19 +864,25 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.database.migration.service.authentication.keys" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Database migration service authentication keys]]></Val>
+          <Val><![CDATA[Database Migration Service authentication keys]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[데이터베이스 마이그레이션 서비스 인증 키]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Database migration service authentication keys]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.database.migration.service.created.successfully" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Database migration service has been created successfully]]></Val>
+          <Val><![CDATA[Successfully created a Database Migration Service.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Database Migration Service를 만들었습니다.]]></Val>
+            <Val><![CDATA[데이터베이스 마이그레이션 서비스를 생성했습니다.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Database migration service has been created successfully]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1096,15 +967,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.default.setup.button" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Setup with defaults: Add DMS with one click express setup using default options.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[기본값으로 설정: 기본 옵션을 사용하여 한 번의 클릭으로 빠른 설치 프로그램을 사용하여 DMS를 추가합니다.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Description]]></Val>
@@ -1125,19 +987,25 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dms.portal.info" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please note that any existing Azure Database Migration Service (DMS) in Azure portal will not show up in Azure Data Studio. DMS created in Azure Data Studio will not be visible in Azure portal yet.]]></Val>
+          <Val><![CDATA[Any existing Azure Database Migration Service in the Azure portal do not appear in Azure Data Studio. Any Database Migration Service created in Azure Data Studio will not be visible in the Azure portal yet.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure Portal 기존 Azure DMS(Database Migration Service)는 Azure Data Studio에 표시되지 않습니다. Azure Data Studio에서 만든 DMS는 아직 Azure Portal에 표시되지 않습니다.]]></Val>
+            <Val><![CDATA[Azure Portal의 기존 Azure Database Migration Service는 Azure Data Studio에 표시되지 않습니다. Azure Data Studio에서 만든 모든 데이터베이스 마이그레이션 서비스는 아직 Azure Portal에 표시되지 않습니다.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please note that any existing Azure Database Migration Service (DMS) in Azure portal will not show up in Azure Data Studio. DMS created in Azure Data Studio will not be visible in Azure portal yet.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dms.provision.failed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Database migration service has failed to provision. Please try again after some time.]]></Val>
+          <Val><![CDATA[Failed to provision a Database Migration Service. Wait a few minutes and then try again.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[데이터베이스 마이그레이션 서비스를 프로비전하지 못했습니다. 잠시 후 다시 시도하세요.]]></Val>
+            <Val><![CDATA[데이터베이스 마이그레이션 서비스를 프로비전하지 못했습니다. 몇 분 기다렸다가 다시 시도하세요.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Database migration service has failed to provision. Please try again after some time.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1150,75 +1018,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.eastus2euap" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[East US 2 EUAP]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[미국 동부 2 EUAP]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.enter.file.share.information" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Enter the target name and select the file share location of selected databases]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[대상 이름을 입력하고 선택한 데이터베이스의 파일 공유 위치를 선택합니다.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.enter.network.share.information" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Enter target names for selected source database(s)]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[선택한 원본 데이터베이스의 대상 이름 입력]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.enter.your.sql.cred" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Enter the credential for source SQL Server instance. This credential will be used while migrating database(s) to Azure SQL.]]></Val>
+          <Val><![CDATA[Enter the credentials for the source SQL Server instance. These credentials will be used while migrating database(s) to Azure SQL.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[원본 SQL Server 인스턴스의 자격 증명을 입력하세요. 이 자격 증명은 데이터베이스를 Azure SQL로 마이그레이션하는 동안 사용됩니다.]]></Val>
+            <Val><![CDATA[원본 SQL Server 인스턴스에 대한 자격 증명을 입력합니다. 이러한 자격 증명은 데이터베이스를 Azure SQL로 마이그레이션하는 동안 사용됩니다.]]></Val>
           </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.every.1.minute" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Every 1 minute]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[1분마다]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.every.3.minutes" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Every 3 minutes]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[3분마다]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.every.30.second" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Every 30 seconds]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[30초마다]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.every.5.minutes" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Every 5 minutes]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[5분마다]]></Val>
-          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Enter the credential for source SQL Server instance. This credential will be used while migrating database(s) to Azure SQL.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1227,15 +1035,6 @@
           <Val><![CDATA[Migration failed]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[마이그레이션 실패]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.feature.not.available" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[This feature is not available yet.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[이 기능은 아직 사용할 수 없습니다.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1254,60 +1053,6 @@
           <Val><![CDATA[File name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[파일 이름]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.file.share" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select the file share that contains the backup files for ‘{0}’]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[‘{0}’에 대한 백업 파일이 포함된 파일 공유를 선택합니다.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.file.share.label" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select the file share that contains the backup files.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[백업 파일이 포함된 파일 공유를 선택합니다.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.file.share.placeholder" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select share]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[공유 선택]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.file.share.storage.account.label" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select the storage account that contains the file share.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[파일 공유가 포함된 스토리지 계정을 선택합니다.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.file.share.subscription.label" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select the subscription that contains the file share.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[파일 공유가 포함된 구독을 선택합니다.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.file.share.title" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[File Share]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[파일 공유]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1431,73 +1176,85 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.blob.container.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please select a valid blob container for source database '{0}' to proceed.]]></Val>
+          <Val><![CDATA[To continue, select a valid blob container for source database '{0}'.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[계속하려면 원본 데이터베이스 '{0}'에 대해 유효한 BLOB 컨테이너를 선택하세요.]]></Val>
+            <Val><![CDATA[계속하려면 원본 데이터베이스 '{0}'에 대해 유효한 Blob 컨테이너를 선택하세요.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please select a valid blob container for source database '{0}' to proceed.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.blob.lastBackupFile.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please select a valid last backup file for source database '{0}' to proceed.]]></Val>
+          <Val><![CDATA[To continue, select a valid last backup file for source database '{0}'.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[계속하려면 원본 데이터베이스 '{0}'에 대한 유효한 마지막 백업 파일을 선택하세요.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please select a valid last backup file for source database '{0}' to proceed.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.blob.resourceGroup.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please select a valid resource group for source database '{0}' to proceed.]]></Val>
+          <Val><![CDATA[To continue, select a valid resource group for source database '{0}'.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[계속하려면 원본 데이터베이스 '{0}'에 대한 유효한 리소스 그룹을 선택하세요.]]></Val>
+            <Val><![CDATA[계속하려면 원본 데이터베이스 '{0}'에 대해 유효한 리소스 그룹을 선택하세요.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please select a valid resource group for source database '{0}' to proceed.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.blob.storageAccount.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please select a valid storage account for source database '{0}' to proceed.]]></Val>
+          <Val><![CDATA[To continue, select a valid storage account for source database '{0}'.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[계속하려면 원본 데이터베이스 '{0}'에 대한 유효한 저장소 계정을 선택하세요.]]></Val>
           </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.fileShare.error" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Please select a valid file share to proceed.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[계속하려면 유효한 파일 공유를 선택하세요.]]></Val>
-          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please select a valid storage account for source database '{0}' to proceed.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.location.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please select a valid location to proceed.]]></Val>
+          <Val><![CDATA[To continue, select a valid location.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[계속하려면 올바른 위치를 선택하세요.]]></Val>
+            <Val><![CDATA[계속하려면 유효한 위치를 선택하세요.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please select a valid location to proceed.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.migration.service.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please select a valid DMS]]></Val>
+          <Val><![CDATA[Select a valid Database Migration Service.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[유효한 DMS를 선택하세요.]]></Val>
+            <Val><![CDATA[유효한 데이터베이스 마이그레이션 서비스를 선택하세요.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please select a valid DMS]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.migration.service.offline.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please select a DMS that is connected to a node]]></Val>
+          <Val><![CDATA[Select a Database Migration Service that is connected to a node.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[노드에 연결된 DMS를 선택하세요.]]></Val>
+            <Val><![CDATA[노드에 연결된 Database Migration Service를 선택합니다.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please select a DMS that is connected to a node]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1510,57 +1267,63 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.region.error" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Please select a valid location to proceed.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[계속하려면 올바른 위치를 선택하세요.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.resourceGroup.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please select a valid resource group to proceed.]]></Val>
+          <Val><![CDATA[ To continue, select a valid resource group.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[계속하려면 올바른 리소스 그룹을 선택하세요.]]></Val>
+            <Val><![CDATA[ 계속하려면 유효한 리소스 그룹을 선택하세요.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please select a valid resource group to proceed.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.service.name.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please enter a valid name for the Migration Service.]]></Val>
+          <Val><![CDATA[Enter a valid name for the Migration Service.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[마이그레이션 서비스의 유효한 이름을 입력하세요.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please enter a valid name for the Migration Service.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.storageAccount.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please select a valid storage account to proceed.]]></Val>
+          <Val><![CDATA[To continue, select a valid storage account.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[계속하려면 유효한 스토리지 계정을 선택하세요.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please select a valid storage account to proceed.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.subscription.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please select a valid subscription to proceed.]]></Val>
+          <Val><![CDATA[To continue, select a valid subscription.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[계속 진행하려면 유효한 구독을 선택하세요.]]></Val>
+            <Val><![CDATA[계속하려면 유효한 구독을 선택하세요.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please select a valid subscription to proceed.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.target.name.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please enter a valid name for the target database.]]></Val>
+          <Val><![CDATA[Enter a valid name for the target database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[대상 데이터베이스의 올바른 이름을 입력하세요.]]></Val>
+            <Val><![CDATA[대상 데이터베이스의 유효한 이름을 입력하세요.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please enter a valid name for the target database.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1573,39 +1336,27 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.ir.node" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Integration Runtime node]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Integration Runtime 노드]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.ir.page.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Database Migration Service (DMS) orchestrates database migration activities and tracks their progress. You can select an existing DMS for Azure SQL target if you have created one previously or create a new one below.]]></Val>
+          <Val><![CDATA[Azure Database Migration Service orchestrates database migration activities and tracks their progress. You can select an existing Database Migration Service as an Azure SQL target if you have created one previously, or create a new one below.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure DMS(Database Migration Service)는 데이터베이스 마이그레이션 작업을 오케스트레이션하고 진행률을 추적합니다. 이전에 만든 경우 Azure SQL 대상에 대한 기존 DMS를 선택하거나 아래에서 새 DMS를 만들 수 있습니다.]]></Val>
+            <Val><![CDATA[Azure Database Migration Service는 데이터베이스 마이그레이션 활동을 오케스트레이션하고 진행 상황을 추적합니다. 기존 Database Migration Service를 Azure SQL 대상으로 선택하거나 이전에 만든 경우 아래에서 새로 만들 수 있습니다.]]></Val>
           </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.ir.page.note" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Note: DMS will run in your Azure subscription in the chosen resource group and does not incur any cost for running it.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[참고: DMS는 선택한 리소스 그룹의 Azure 구독에서 실행되며 실행 비용이 발생하지 않습니다.]]></Val>
-          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure Database Migration Service (DMS) orchestrates database migration activities and tracks their progress. You can select an existing DMS for Azure SQL target if you have created one previously or create a new one below.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.ir.page.sql.migration.service.not.found" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[No DMS found. Please create a new one]]></Val>
+          <Val><![CDATA[No Database Migration Service found. Create a new one]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[DMS를 찾을 수 없습니다. 새 항목을 만드세요.]]></Val>
+            <Val><![CDATA[데이터베이스 마이그레이션 서비스를 찾을 수 없습니다. 새로 만들기]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[No DMS found. Please create a new one]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1638,10 +1389,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.ir.setup.step3" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Step 3: Click on 'Test connection' button to check the connection between Azure Database Migration Service and Integration Runtime]]></Val>
+          <Val><![CDATA[Step 3: Click on 'Test connection' button to check the connection between Azure Database Migration Service and integration runtime]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[3단계: '연결 테스트' 단추를 클릭하여 Azure Database Migration Service와 Integration Runtime 간의 연결을 확인합니다.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Step 3: Click on 'Test connection' button to check the connection between Azure Database Migration Service and Integration Runtime]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1789,21 +1543,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.log.shipping.in.progress" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Log shipping in progress]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[로그 전달 진행 중]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.managed.instance" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure SQL managed instance]]></Val>
+          <Val><![CDATA[Azure SQL Managed Instance]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Azure SQL Managed Instance]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure SQL managed instance]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1911,10 +1659,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.name.of.new.rg" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Name of new Resource group]]></Val>
+          <Val><![CDATA[Name of new resource group]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[새 리소스 그룹의 이름]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Name of new Resource group]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1923,15 +1674,6 @@
           <Val><![CDATA[My database backups are in an Azure Storage Blob Container]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[내 데이터베이스 백업은 Azure Storage Blob 컨테이너에 있습니다.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.nc.file.share.radio.label" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[My database backups are in an Azure Storage File Share (Coming soon)]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[내 데이터베이스 백업은 Azure Storage 파일 공유(출시 예정)에 있습니다.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1990,15 +1732,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.network.share.location" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Network share location to read backups for database ‘{0}’]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[데이터베이스 '{0}'에 대한 백업을 읽을 네트워크 공유 위치]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.network.share.location.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Network share location that contains backups.]]></Val>
@@ -2026,56 +1759,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.network.share.storage.account.label" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select the storage account where backup files will be copied.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[백업 파일을 복사할 스토리지 계정을 선택하세요.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.network.share.storage.account.placeholder" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select account]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[계정 선택]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.network.share.subscription.label" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select the subscription that contains the storage account.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[스토리지 계정이 포함된 구독을 선택합니다.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.network.share.subscription.placeholder" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select subscription]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[구독 선택]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.network.share.windows.user.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Windows user account with read access to the network share location.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[네트워크 공유 위치에 대한 읽기 권한이 있는 Windows 사용자 계정입니다.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.new" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[New]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[새로 만들기]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2089,7 +1777,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.newsupportrequest" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.newSupportRequest" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[New support request]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2208,10 +1896,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.notebook.open.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Error opening migration notebook]]></Val>
+          <Val><![CDATA[Failed to open the migration notebook]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[마이그레이션 전자 필기장을 여는 중 오류 발생]]></Val>
+            <Val><![CDATA[마이그레이션 노트북을 열지 못했습니다.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Error opening migration notebook]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2220,15 +1911,6 @@
           <Val><![CDATA[Object details]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[개체 세부 정보]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.off" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Off]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[끄기]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2274,15 +1956,6 @@
           <Val><![CDATA[Download and install integration runtime]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[통합 런타임 다운로드 및 설치]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.path" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Path]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[경로]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2334,10 +2007,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.provide.unique.containers" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please provide unique containers for target databases. Databases affected: ]]></Val>
+          <Val><![CDATA[Provide a unique container for each target database. Databases affected: ]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[대상 데이터베이스에 고유한 컨테이너를 제공하세요. 영향을 받는 데이터베이스: ]]></Val>
+            <Val><![CDATA[각 대상 데이터베이스에 대해 고유한 컨테이너를 제공하세요. 영향을 받는 데이터베이스:]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please provide unique containers for target databases. Databases affected: ]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2386,21 +2062,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.region" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Region]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[지역]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.resource.group.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[A resource group is a container that holds related resources for an Azure solution]]></Val>
+          <Val><![CDATA[A resource group is a container that holds related resources for an Azure solution.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[리소스 그룹은 Azure 솔루션에 대한 관련 리소스를 보유하는 컨테이너입니다.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[A resource group is a container that holds related resources for an Azure solution]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2458,15 +2128,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.select.a.migration.service" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select Azure Database Migration Service]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure Database Migration Service 선택]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.select.azure.mi" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select your target Azure subscription and your target Azure SQL Managed Instance]]></Val>
@@ -2487,10 +2148,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.select.database.to.migrate" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please select databases to migrate]]></Val>
+          <Val><![CDATA[Select the databases to migrate.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[마이그레이션할 데이터베이스를 선택하세요.]]></Val>
+            <Val><![CDATA[마이그레이션할 데이터베이스를 선택합니다.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please select databases to migrate]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2505,19 +2169,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.select.target.to.continue" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please select a target to continue]]></Val>
+          <Val><![CDATA[To continue, select a target database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[계속하려면 대상을 선택하세요.]]></Val>
+            <Val><![CDATA[계속하려면 대상 데이터베이스를 선택하세요.]]></Val>
           </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.select.the.refresh.interval" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select the refresh interval]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[새로 고침 간격 선택]]></Val>
-          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please select a target to continue]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2541,28 +2199,37 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.service.container.container.description1" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Database Migration Service leverages Azure Data Factory's Self-hosted Integration Runtime to upload backups from on-premise network fie share to Azure.]]></Val>
+          <Val><![CDATA[Azure Database Migration Service leverages Azure Data Factory's self-hosted integration runtime to upload backups from on-premises network fie share to Azure.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Azure Database Migration Service는 Azure Data Factory의 자체 호스팅 통합 런타임을 활용하여 온-프레미스 네트워크 파일 공유에서 Azure로 백업을 업로드합니다.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure Database Migration Service leverages Azure Data Factory's Self-hosted Integration Runtime to upload backups from on-premise network fie share to Azure.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.service.container.container.description2" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Follow the instructions below to setup self-hosted Integration Runtime.]]></Val>
+          <Val><![CDATA[Follow the instructions below to setup self-hosted integration runtime.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[아래 지침에 따라 자체 호스팅 통합 런타임을 설정합니다.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Follow the instructions below to setup self-hosted Integration Runtime.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.service.container.heading" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Setup Integration Runtime]]></Val>
+          <Val><![CDATA[Setup integration runtime]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Integration Runtime 설정]]></Val>
+            <Val><![CDATA[통합 런타임 설정]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Setup Integration Runtime]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2575,7 +2242,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.service.details.authkeys.label" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.service.details.authKeys.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Authentication keys]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2584,9 +2251,9 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.service.details.authkeys.title" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.service.details.authKeys.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Authentication keys used to connect to the Self-hosted Integration Runtime node]]></Val>
+          <Val><![CDATA[Authentication keys used to connect to the self-hosted integration runtime node]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[자체 호스팅 통합 런타임 노드에 연결하는 데 사용되는 인증 키]]></Val>
           </Tgt>
@@ -2613,10 +2280,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.service.details.ir.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Self-hosted Integration Runtime node]]></Val>
+          <Val><![CDATA[Self-hosted integration runtime node]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[자체 호스팅 통합 런타임 노드 ]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Self-hosted Integration Runtime node]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2640,37 +2310,37 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.service.not.found" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[No Migration Services found. Please create a new one.]]></Val>
+          <Val><![CDATA[No Migration Services found. To continue, create a new one.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[마이그레이션 서비스를 찾을 수 없습니다. 새 항목을 만드세요.]]></Val>
+            <Val><![CDATA[마이그레이션 서비스를 찾을 수 없습니다. 계속하려면 새 항목을 만드세요.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[No Migration Services found. Please create a new one.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.service.not.ready" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Database Migration Service is not registered. Azure Database Migration Service '{0}' needs to be registered with self-hosted Integration Runtime on any node.]]></Val>
+          <Val><![CDATA[Azure Database Migration Service is not registered. Azure Database Migration Service '{0}' needs to be registered with self-hosted integration runtime on any node.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Azure Database Migration Service가 등록되지 않았습니다. Azure Database Migration Service '{0}'를 노드에서 자체 호스팅 통합 런타임에 등록해야 합니다.]]></Val>
           </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.service.not.setup" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Please add a Migration Service to proceed.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[계속하려면 마이그레이션 서비스를 추가하세요.]]></Val>
-          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure Database Migration Service is not registered. Azure Database Migration Service '{0}' needs to be registered with self-hosted Integration Runtime on any node.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.service.ready" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Database Migration Service '{0}' is connected to self-hosted Integration Runtime running on the node - {1}]]></Val>
+          <Val><![CDATA[Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on the node - {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure Database Migration Service '{0}'이(가) 노드에서 실행되는 자체 호스팅 Integration Runtime에 연결되어 있습니다. {1}]]></Val>
+            <Val><![CDATA[Azure Database Migration Service '{0}'이(가) 노드에서 실행 중인 자체 호스팅 통합 런타임에 연결되어 있습니다. - {1}]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure Database Migration Service '{0}' is connected to self-hosted Integration Runtime running on the node - {1}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2685,10 +2355,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.services.container.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Enter the information below to add a new Azure Database Migration Service.]]></Val>
+          <Val><![CDATA[Enter the SQL Authentication credentials used to connect to SQL Server Instance {0}. These credentials will be used to connect to the SQL Server instance and identifying valid backup file(s).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[새 Azure Database Migration Service를 추가하려면 아래 정보를 입력하세요.]]></Val>
+            <Val><![CDATA[SQL Server 인스턴스 {0}에 연결하는 데 사용되는 SQL 인증 자격 증명을 입력합니다. 이러한 자격 증명은 SQL Server 인스턴스에 연결하고 유효한 백업 파일을 식별하는 데 사용됩니다.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Enter the information below to add a new Azure Database Migration Service.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2703,10 +2376,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.shir" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Self-hosted Integration Runtime node]]></Val>
+          <Val><![CDATA[Self-hosted integration runtime node]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[자체 호스팅 통합 런타임 노드]]></Val>
+            <Val><![CDATA[자체 호스팅 통합 런타임 노드 ]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Self-hosted Integration Runtime node]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2746,30 +2422,27 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.none" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Based on the results of our source configuration scans, none of your databases can be migrated to Azure SQL.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[원본 구성 검사 결과에 따라 데이터베이스를 Azure SQL로 마이그레이션할 수 없습니다.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.recommendation.view.assessment.mi" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[View assessment results and select one or more  database(s) to migrate to Azure SQL Managed Instance (PaaS)]]></Val>
+          <Val><![CDATA[To migrate to Azure SQL Managed Instance (PaaS), view assessment results and select one or more database(s).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[평가 결과를 보고 하나 이상의 데이터베이스를 선택하여 Azure SQL Managed Instance(PaaS)로 마이그레이션합니다.]]></Val>
+            <Val><![CDATA[Azure SQL Managed Instance(PaaS)로 마이그레이션하려면 평가 결과를 보고 하나 이상의 데이터베이스를 선택합니다.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[View assessment results and select one or more  database(s) to migrate to Azure SQL Managed Instance (PaaS)]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.recommendation.view.assessment.vm" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[View assessment results and select one or more  database(s) to migrate to SQL Server on Azure Virtual Machine (IaaS)]]></Val>
+          <Val><![CDATA[To migrate to SQL Server on Azure Virtual Machine (IaaS), view assessment results and select one or more database(s).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[평가 결과를 보고 하나 이상의 데이터베이스를 선택하여 Azure 가상 머신(IaaS)의 SQL Server로 마이그레이션]]></Val>
+            <Val><![CDATA[Azure 가상 머신(IaaS)의 SQL Server로 마이그레이션하려면 평가 결과를 보고 하나 이상의 데이터베이스를 선택합니다.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[View assessment results and select one or more  database(s) to migrate to SQL Server on Azure Virtual Machine (IaaS)]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2820,19 +2493,25 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.source.details.sqlAuth" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Enter the SQL Authentication credential used for connecting to SQL Server Instance {0}. ​ This credential will be used to for connecting to SQL Server instance and identifying valid backup file(s)]]></Val>
+          <Val><![CDATA[Enter the SQL Authentication credentials used to connect to SQL Server Instance {0}. ​These credentials will be used to connect to the SQL Server instance and identify valid backup file(s).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[SQL Server 인스턴스 {0}에 연결하는 데 사용되는 SQL 인증 자격 증명을 입력합니다. ​ 이 자격 증명은 SQL Server 인스턴스에 연결하고 유효한 백업 파일을 식별하는 데 사용됩니다.]]></Val>
+            <Val><![CDATA[SQL Server 인스턴스 {0}에 연결하는 데 사용되는 SQL 인증 자격 증명을 입력합니다. ​이러한 자격 증명은 SQL Server 인스턴스에 연결하고 유효한 백업 파일을 식별하는 데 사용됩니다.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Enter the SQL Authentication credential used for connecting to SQL Server Instance {0}. ​ This credential will be used to for connecting to SQL Server instance and identifying valid backup file(s)]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.source.details.windowAuth" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Enter the Windows Authentication credential used for connecting to SQL Server Instance {0}. ​ This credential will be used to for connecting to SQL Server instance and identifying valid backup file(s)]]></Val>
+          <Val><![CDATA[Enter the Windows Authentication credentials used to connect to SQL Server Instance {0}. These credentials will be used to connect to the SQL Server instance and identify valid backup file(s).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[SQL Server 인스턴스 {0}에 연결하는 데 사용되는 Windows 인증 자격 증명을 입력하세요. ​ 이 자격 증명은 SQL Server 인스턴스에 연결하고 유효한 백업 파일을 식별하는 데 사용됩니다.]]></Val>
+            <Val><![CDATA[SQL Server 인스턴스 {0}에 연결하는 데 사용되는 Windows 인증 자격 증명을 입력합니다. 이러한 자격 증명은 SQL Server 인스턴스에 연결하고 유효한 백업 파일을 식별하는 데 사용됩니다.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Enter the Windows Authentication credential used for connecting to SQL Server Instance {0}. ​ This credential will be used to for connecting to SQL Server instance and identifying valid backup file(s)]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2859,15 +2538,6 @@
           <Val><![CDATA[SQL migration assessment]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[SQL 마이그레이션 평가]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sql.login" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[SQL Login]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[SQL 로그인]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2904,15 +2574,6 @@
           <Val><![CDATA[Start Time]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[시작 시간]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.started.notification" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Migration in progress]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[마이그레이션 진행 중]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3067,38 +2728,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.submit" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Submit]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[제출]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.subscription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Subscription]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[구독]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.successfully.migrated.to.azure.sql" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Successfully migrated to Azure SQL]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure SQL로 마이그레이션했습니다.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.summary.azure.account.linked" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Azure account linked]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[연결된 Azure 계정]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3123,10 +2757,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.summary.database.count" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Database(s) to be migrated]]></Val>
+          <Val><![CDATA[Database(s) for migration]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[마이그레이션할 데이터베이스]]></Val>
+            <Val><![CDATA[마이그레이션을 위한 데이터베이스]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Database(s) to be migrated]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3139,29 +2776,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.summary.migration.target" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Migration target]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[마이그레이션 대상]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.summary.page.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Summary]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[요약]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.summary.target.name" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Target Databases:]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[대상 데이터베이스:]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3198,15 +2817,6 @@
           <Val><![CDATA[Target database name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[대상 데이터베이스 이름]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.target.page.title" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Choose the target Azure SQL]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[대상 Azure SQL 선택]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3328,15 +2938,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.windows.auth" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Windows Authentication]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Windows 인증]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.account.add.button.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Link account]]></Val>
@@ -3366,18 +2967,21 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.account.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Select an Azure account linked to Azure Data Studio or link one now.]]></Val>
+          <Val><![CDATA[Select an Azure account linked to Azure Data Studio, or link one now.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure Data Studio 연결된 Azure 계정을 선택하거나 지금 연결하세요.]]></Val>
+            <Val><![CDATA[Azure Data Studio에 연결된 Azure 계정을 선택하거나 지금 연결하세요.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Select an Azure account linked to Azure Data Studio or link one now.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.account.noaccount.error" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.account.noAccount.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[There is no linked account. Please add an account.]]></Val>
+          <Val><![CDATA[Add a linked account and then try again.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[연결된 계정이 없습니다. 계정을 추가하세요.]]></Val>
+            <Val><![CDATA[연결된 계정을 추가한 후 다시 시도하세요.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3393,9 +2997,21 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.sku.all" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Based on the assessment results, all {0} of your database(s) in online state can be migrated to Azure SQL.]]></Val>
+          <Val><![CDATA[Based on the assessment results, all {0} of your database(s) in an online state can be migrated to Azure SQL.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[평가 결과를 기준으로 온라인 상태의 데이터베이스 {0}개를 모두 Azure SQL로 마이그레이션할 수 있습니다.]]></Val>
+            <Val><![CDATA[평가 결과에 따라 온라인 상태의 모든 {0} 데이터베이스를 Azure SQL로 마이그레이션할 수 있습니다.]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Based on the assessment results, all {0} of your database(s) in online state can be migrated to Azure SQL.]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.sku.assessment.error" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[An error occurred while assessing the server '{0}'.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA['{0}' 서버를 평가하는 동안 오류가 발생했습니다.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3409,65 +3025,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.sku.some" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Based on the results of our source configuration scans, {0} out of {1} of your databases can be migrated to Azure SQL.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[원본 구성 검사 결과에 따라 {1}개 중 {0}개 데이터베이스를 Azure SQL로 마이그레이션할 수 있습니다.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.sku.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure SQL Target]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Azure SQL 대상]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.source_configuration.title" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[SQL Source Configuration]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[SQL 원본 구성]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.subscription.azure.account.title" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Azure Account]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure 계정]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.subscription.azure.product.title" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Azure Product]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure Product]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.subscription.azure.subscription.title" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Azure Subscription]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure 구독]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.subscription.title" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Azure Subscription Selection]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure 구독 선택]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

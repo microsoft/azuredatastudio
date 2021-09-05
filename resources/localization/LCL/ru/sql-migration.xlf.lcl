@@ -12,19 +12,25 @@
       <Disp Icon="Str" Disp="true" LocTbl="false" />
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.azure.accounts.accountAccessError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[An error occurred while accessing the selected account '{0}'. Please click the 'Link Account' button and refresh the account or select a different account. Error '{1}']]></Val>
+          <Val><![CDATA[An error occurred while accessing the selected account '{0}'. Select 'Link Account' and refresh the account, or select a different account. Error '{1}']]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Произошла ошибка при доступе к выбранной учетной записи «{0}». Нажмите кнопку «Связать учетную запись» и обновите учетную запись или выберите другую учетную запись. Ошибка «{1}».]]></Val>
+            <Val><![CDATA[Произошла ошибка при доступе к выбранной учетной записи "{0}". Нажмите кнопку "Связать учетную запись" и обновите учетную запись или выберите другую учетную запись. Ошибка "{1}".]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[An error occurred while accessing the selected account '{0}'. Please click the 'Link Account' button and refresh the account or select a different account. Error '{1}']]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.azure.accounts.accountStaleError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[The access token for selected account '{0}' is no longer valid. Please click the 'Link Account' button and refresh the account or select a different account.]]></Val>
+          <Val><![CDATA[The access token for selected account '{0}' is no longer valid. Select 'Link Account' and refresh the account, or select a different account.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Токен доступа для выбранной учетной записи "{0}" больше не действителен. Нажмите кнопку "Связать учетную запись" и обновите учетную запись или выберите другую учетную запись.]]></Val>
+            <Val><![CDATA[Маркер доступа для выбранной учетной записи "{0}" больше не действителен. Нажмите "Связать учетную запись" и обновите учетную запись, либо выберите другую учетную запись.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[The access token for selected account '{0}' is no longer valid. Please click the 'Link Account' button and refresh the account or select a different account.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -42,27 +48,6 @@
           <Val><![CDATA[Are you sure you want to cancel this migration?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Вы действительно хотите отменить эту миграцию?]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migartion.cutover.pending.backup" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Log backups pending restore: {0}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Ожидающие резервные копии журнала: {0}]]></Val>
-          </Tgt>
-          <Prev Cat="Text">
-            <Val><![CDATA[Pending log backups: {0}]]></Val>
-          </Prev>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migraiton.data.uploaded.size" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Data Uploaded/Size]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Отправленные данные/размер]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -112,15 +97,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.assessmen.results" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Assessment Results]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Результаты оценки]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.assessment" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Assessment results for '{0}']]></Val>
@@ -160,6 +136,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.assessment.results" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Assessment Results]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Результаты оценки]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.assessments.blocking.issue" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[This is a blocking issue that will prevent the database migration from succeeding.]]></Val>
@@ -169,11 +154,20 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.assessments.progress" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.authKeys.header" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Assessments Progress]]></Val>
+          <Val><![CDATA[Authentication key]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Ход выполнения оценки]]></Val>
+            <Val><![CDATA[Ключ проверки подлинности]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.authKeys.refresh.message" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Authentication key '{0}' has been refreshed.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ключ проверки подлинности "{0}" обновлен.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -189,82 +183,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.authentication.types" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Authentication Keys]]></Val>
+          <Val><![CDATA[Authentication keys]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Ключи проверки подлинности]]></Val>
           </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.authkeys.header" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Authentication key]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Ключ проверки подлинности]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.authkeys.refresh.message" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Authentication key '{0}' has been refreshed.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Ключ проверки подлинности "{0}" обновлен.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.auto.refresh.1.min" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Auto refresh: 1 minute]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Автоматическое обновление: 1 минута]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.auto.refresh.15.seconds" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Auto refresh: 15 seconds]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Автоматическое обновление: 15 секунд]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.auto.refresh.3.min" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Auto refresh: 3 minutes]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Автоматическое обновление: 3 минуты]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.auto.refresh.30.seconds" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Auto refresh: 30 seconds]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Автоматическое обновление: 30 секунд]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.auto.refresh.5.min" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Auto refresh: 5 minutes]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Автоматическое обновление: 5 минут]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.auto.refresh.off" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Auto Refresh: Off]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Автообновление: выкл.]]></Val>
-          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Authentication Keys]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -279,19 +204,25 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.azure.sql.database.managed.instance" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure SQL Database Managed Instance]]></Val>
+          <Val><![CDATA[Azure SQL Managed Instance]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Управляемый экземпляр базы данных SQL Azure]]></Val>
+            <Val><![CDATA[Управляемый экземпляр SQL Azure]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure SQL Database Managed Instance]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.azure.sql.database.virtual.machine" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure SQL Database Virtual Machine]]></Val>
+          <Val><![CDATA[SQL Server on Azure Virtual Machines]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Виртуальная машина базы данных SQL Azure]]></Val>
+            <Val><![CDATA[SQL Server на виртуальных машинах Azure]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure SQL Database Virtual Machine]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -342,28 +273,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.bc.info" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Managed Instance migration cutover for Business Critical service tier can take significantly longer than General Purpose as three secondary replicas have to be seeded for Always On High Availability group. This operation duration depends on the size of data. Seeding speed in 90% of cases is 220 GB/hour or higher.]]></Val>
+          <Val><![CDATA[A SQL Managed Instance migration cutover to the Business Critical service tier can take significantly longer than General Purpose because three secondary replicas have to be seeded for Always On High Availability group. The duration of the operation depends on the size of the data. Seeding speed in 90% of cases is 220 GB/hour or higher.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Миграция управляемого экземпляра для уровня служб критически важных для бизнеса может занять значительно больше времени, чем общее назначение, так как для группы высокого уровня доступности Always On необходимо предоставить начальное значение трех вторичных реплик. Длительность этой операции зависит от размера данных. Скорость присвоения начального значения в 90 % случаев составляет 220 ГБ в час или выше.]]></Val>
+            <Val><![CDATA[Прямая миграция управляемого экземпляра SQL на критически важный для бизнеса уровень может занять значительно больше времени, чем для уровня общего назначения, поскольку для группы высокого уровня доступности Always On необходимо присвоить начальное значение трем вторичным репликам. Продолжительность этой операции зависит от объема данных. В 90% случаев скорость присвоения начального значения составляет 220 ГБ в час или выше.]]></Val>
           </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.blob.container" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select the container that contains the backup files for ‘{0}’]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Выберите контейнер, содержащий файлы резервных копий для "{0}"]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.blob.container.information" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Enter the target name and select the blob container location for selected databases]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Введите целевое имя и выберите расположение контейнера BLOB-объектов для выбранных баз данных]]></Val>
-          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Managed Instance migration cutover for Business Critical service tier can take significantly longer than General Purpose as three secondary replicas have to be seeded for Always On High Availability group. This operation duration depends on the size of data. Seeding speed in 90% of cases is 220 GB/hour or higher.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -421,33 +337,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.blob.storage.account.label" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select the storage account that contains the backup files.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Выберите учетную запись хранения, содержащую файлы резервных копий.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.blob.storage.container.label" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select the container that contains the backup files.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Выберите контейнер, содержащий файлы резервных копий]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.blob.storage.container.placeholder" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select container]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Выбрать контейнер]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.blob.storage.subscription.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select the subscription that contains the storage account.]]></Val>
@@ -487,6 +376,9 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.cancel.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[An error occurred while canceling the migration.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Произошла ошибка при отмене миграции]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -501,10 +393,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.cannot.cancel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Migration is not in progress and cannot be cancelled.]]></Val>
+          <Val><![CDATA[Migration is not in progress and cannot be canceled.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Миграция не выполняется и не может быть отменена.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Migration is not in progress and cannot be cancelled.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -519,19 +414,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.cannot.start.cutover.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Cannot start the cutover process until all the migrations are done. Click refresh to fetch the latest file status]]></Val>
+          <Val><![CDATA[The cutover process cannot start until all the migrations are done. To return the latest file status, refresh your browser window.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Невозможно начать процесс прямой миграции до завершения всех миграций. Нажмите кнопку "Обновить", чтобы получить последнее состояние файла]]></Val>
+            <Val><![CDATA[Процесс прямой миграции не может быть запущен, пока не будут завершены все процессы миграции. Чтобы узнать о последнем состоянии файла, обновите окно браузера.]]></Val>
           </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.choose.to.migrate.to.azure.sql" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Choose to migrate to Azure SQL]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Выберите миграцию в Azure SQL]]></Val>
-          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Cannot start the cutover process until all the migrations are done. Click refresh to fetch the latest file status]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -540,33 +429,6 @@
           <Val><![CDATA[Close]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Закрыть]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.collecting_source_configurations" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Collecting source configurations]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Идет сбор исходных конфигураций]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.collecting_source_configurations.error" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[There was an error when gathering information about your data configuration. {0}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Произошла ошибка при сборе сведений о конфигурации данных. {0}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.collecting_source_configurations.info" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[We need to collect some information about how your data is configured currently.]D;]A;This may take some time.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Необходимо собрать сведения о настройке данных в настоящее время.]D;]A;Это может занять некоторое время.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -582,10 +444,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.completing.cutover.warning" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Completing cutover without restoring all the backup(s) may result in loss of data.]]></Val>
+          <Val><![CDATA[Completing cutover without restoring all the backup(s) may result in a data loss.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Завершение прямой миграции без восстановления всех резервных копий может привести к потере данных.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Completing cutover without restoring all the backup(s) may result in loss of data.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -688,15 +553,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.custom.setup.button" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Custom setup: Add DMS after customizing most options.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Выборочная установка: добавьте DMS после настройки большинства параметров.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.cutover" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Migration cutover]]></Val>
@@ -718,8 +574,8 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.cutover.help.main" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Perform the following steps before you complete cutover.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Когда вы будете готовы выполнить прямую миграцию, сделайте следующее. Обратите внимание, что база данных будет готова к прямой миграции только после восстановления из полной резервной копии в целевом Управляемом экземпляре Базы данных SQL Azure.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Перед выполнением прямой миграции сделайте следующее.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[When you are ready to do the migration cutover, perform the following steps to complete the database migration. Please note that the database is ready for cutover only after a full backup has been restored on the target Azure SQL Database Managed Instance.]]></Val>
@@ -739,63 +595,96 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.cutover.last.file.restored" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Last file restored: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Последний восстановленный файл: {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.cutover.pending.backup" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Log backups pending restore: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Резервные копии журналов, ожидающие восстановления: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.cutover.status.refresh.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[An error occurred while refreshing the migration status.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Произошла ошибка при обновлении статуса миграции.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.cutover.step.1" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[1. Stop all the incoming transactions coming to the source database.]]></Val>
+          <Val><![CDATA[1. Stop all incoming transactions to the source database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[1. Остановите все входящие транзакции в базе данных-источнике.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[1. Stop all the incoming transactions coming to the source database.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.cutover.step.2.blob" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[2. Take final differential or transaction log backup and provide it in the Azure Storage Blob Container.]]></Val>
+          <Val><![CDATA[2. Take a final differential or backup of the transaction log and store it in the Azure Storage Blob Container.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[2. Сохраните окончательную разностную или резервную копию журнала транзакций в контейнере Azure Storage Blob.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.cutover.step.2.network.share" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[2. Take final transaction log backup and provide it in the network share location.]]></Val>
+          <Val><![CDATA[2. Take a final backup of the transaction log and store it in the network share location.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[2. Сделайте окончательную резервную копию журналов транзакций и разместите ее в общей сетевой папке.]]></Val>
+            <Val><![CDATA[2. Сохраните последнюю резервную копию журнала транзакций в расположении сетевой папки.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[2. Take final transaction log backup and provide it in the network share location.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.cutover.step.3.blob" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[3. Make sure all the log backups are restored on target database. The "Log backups(s) pending restore" should be zero.]]></Val>
+          <Val><![CDATA[3. Verify that your backup(s) have been restored on the target database. The "Log backup(s) pending restore" value should be zero.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[3. Убедитесь, что все резервные копии журналов восстановлены в целевой базе данных. Параметр "ожидающие восстановления резервных копий журналов" должен быть равен нулю.]]></Val>
+            <Val><![CDATA[3. Убедитесь в том, что резервные копии восстановлены в целевой базе данных. Значение параметра "Резервные копии журналов, ожидающие восстановления" должно быть нулевым.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[3. Make sure all the log backups are restored on target database. The "Log backups(s) pending restore" should be zero.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.cutover.step.3.network.share" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[3. Make sure all the log backups are restored on target database. The "Log backups(s) pending restore" should be zero.]]></Val>
+          <Val><![CDATA[3. Verify that your backup(s) have been restored on the target database. The "Log backup(s) pending restore" value should be zero.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[3. Убедитесь, что все резервные копии журналов восстановлены в целевой базе данных. Параметр "ожидающие восстановления резервных копий журналов" должен быть равен нулю.]]></Val>
+            <Val><![CDATA[3. Убедитесь в том, что резервные копии восстановлены в целевой базе данных. Значение параметра "Резервные копии журналов, ожидающие восстановления" должно быть нулевым.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[3. Make sure all the log backups are restored on target database. The "Log backups(s) pending restore" should be zero.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.cutover.type" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Migration Mode]]></Val>
+          <Val><![CDATA[Migration mode]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Режим миграции]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Migration Mode]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -819,10 +708,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dashboard.link1.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[See the list of rules used to assess the feasibility of migrating your SQL Server to Azure SQL Managed Instance.]]></Val>
+          <Val><![CDATA[See the list of rules used to determine whether your SQL Server instance can be migrated to Azure SQL Managed Instance.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Список правил, используемых для оценки возможности переноса SQL Server в Управляемый экземпляр SQL Azure.]]></Val>
+            <Val><![CDATA[Ознакомьтесь со списком правил, используемых для определения возможности миграции вашего экземпляра SQL Server в управляемый экземпляр SQL Azure.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[See the list of rules used to assess the feasibility of migrating your SQL Server to Azure SQL Managed Instance.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -862,20 +754,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dashboard.video1.title" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.data.uploaded.size" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Migrate SQL Server to SQL Managed Instance]]></Val>
+          <Val><![CDATA[Data Uploaded/Size]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Перенос SQL Server в Управляемый экземпляр SQL]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dashboard.video2.title" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Migrate SQL Server to SQL Virtual Machine]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Миграция SQL Server в виртуальную машину SQL]]></Val>
+            <Val><![CDATA[Отправленные данные/размер]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -891,28 +774,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.database.already.exists" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Database '{0}' already exists on target Managed Instance '{1}'.]]></Val>
+          <Val><![CDATA[Database '{0}' already exists on the target managed instance '{1}'.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[База данных "{0}" уже существует в целевом управляемом экземпляре "{1}".]]></Val>
           </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.database.backup.email.notification.checkbox.label" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Notify me when migration is complete]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Уведомлять меня о завершении миграции]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.database.backup.email.notification.label" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Email notifications]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Уведомления по электронной почте]]></Val>
-          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Database '{0}' already exists on target Managed Instance '{1}'.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -927,10 +795,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.database.migration.mode.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Choose from the following migration modes to migrate to your Azure SQL target based on your downtime requirements.]]></Val>
+          <Val><![CDATA[To migrate to the Azure SQL target, choose a migration mode based on your downtime requirements.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Выберите один из следующих режимов миграции, чтобы выполнить миграцию в целевой объект Azure SQL в соответствии с требованиями к простою.]]></Val>
+            <Val><![CDATA[Чтобы выполнить миграцию в целевую базу данных Azure SQL, выберите режим миграции в соответствии с требованиями к простою.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Choose from the following migration modes to migrate to your Azure SQL target based on your downtime requirements.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -963,10 +834,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.database.migration.mode.online.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Application downtime is limited to cut over at the end of migration.]]></Val>
+          <Val><![CDATA[Application downtime is limited to cutover at the end of migration.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Время простоя приложения ограничено в конце миграции.]]></Val>
+            <Val><![CDATA[Простой приложения ограничен прямой миграцией в конце миграционного процесса.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Application downtime is limited to cut over at the end of migration.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -990,19 +864,25 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.database.migration.service.authentication.keys" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Database migration service authentication keys]]></Val>
+          <Val><![CDATA[Database Migration Service authentication keys]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Ключи проверки подлинности службы миграции базы данных]]></Val>
+            <Val><![CDATA[Ключи проверки подлинности Database Migration Service]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Database migration service authentication keys]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.database.migration.service.created.successfully" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Database migration service has been created successfully]]></Val>
+          <Val><![CDATA[Successfully created a Database Migration Service.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Database Migration Service успешно создана]]></Val>
+            <Val><![CDATA[Создание Database Migration Service выполнено.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Database migration service has been created successfully]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1087,15 +967,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.default.setup.button" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Setup with defaults: Add DMS with one click express setup using default options.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Настройка с параметрами по умолчанию: добавьте DMS путем экспресс-настройки одним щелчком с использованием параметров по умолчанию.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Description]]></Val>
@@ -1116,19 +987,25 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dms.portal.info" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please note that any existing Azure Database Migration Service (DMS) in Azure portal will not show up in Azure Data Studio. DMS created in Azure Data Studio will not be visible in Azure portal yet.]]></Val>
+          <Val><![CDATA[Any existing Azure Database Migration Service in the Azure portal do not appear in Azure Data Studio. Any Database Migration Service created in Azure Data Studio will not be visible in the Azure portal yet.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Обратите внимание, что все существующие службы Azure Database Migration Service (DMS) на портале Azure не будут отображаться в Azure Data Studio. Служба DMS, созданная в Azure Data Studio, пока не будет отображаться на портале Azure.]]></Val>
+            <Val><![CDATA[Существующие службы Azure Database Migration Service на портале Azure не отображаются в Azure Data Studio. Любая служба Database Migration Service, созданная в Azure Data Studio, пока не будет отображаться на портале Azure.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please note that any existing Azure Database Migration Service (DMS) in Azure portal will not show up in Azure Data Studio. DMS created in Azure Data Studio will not be visible in Azure portal yet.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dms.provision.failed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Database migration service has failed to provision. Please try again after some time.]]></Val>
+          <Val><![CDATA[Failed to provision a Database Migration Service. Wait a few minutes and then try again.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Не удалось подготовить Database Migration Service. Повторите попытку через некоторое время.]]></Val>
+            <Val><![CDATA[Не удалось подготовить Database Migration Service. Подождите несколько минут и повторите попытку.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Database migration service has failed to provision. Please try again after some time.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1141,75 +1018,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.eastus2euap" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[East US 2 EUAP]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Восточная часть США 2 (EUAP)]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.enter.file.share.information" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Enter the target name and select the file share location of selected databases]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Введите имя целевого объекта и укажите расположение общей папки для выбранных баз данных]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.enter.network.share.information" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Enter target names for selected source database(s)]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Введите целевые имена для выбранных баз данных-источников]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.enter.your.sql.cred" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Enter the credential for source SQL Server instance. This credential will be used while migrating database(s) to Azure SQL.]]></Val>
+          <Val><![CDATA[Enter the credentials for the source SQL Server instance. These credentials will be used while migrating database(s) to Azure SQL.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Введите учетные данные для источника экземпляра SQL Server. Эти учетные данные будут использоваться при миграции баз данных в Azure SQL.]]></Val>
           </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.every.1.minute" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Every 1 minute]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Каждую минуту]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.every.3.minutes" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Every 3 minutes]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Каждые 3 минуты]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.every.30.second" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Every 30 seconds]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Каждые 30 секунд]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.every.5.minutes" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Every 5 minutes]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Каждые 5 минут]]></Val>
-          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Enter the credential for source SQL Server instance. This credential will be used while migrating database(s) to Azure SQL.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1218,15 +1035,6 @@
           <Val><![CDATA[Migration failed]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Сбой миграции]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.feature.not.available" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[This feature is not available yet.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Эта функция пока недоступна.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1245,60 +1053,6 @@
           <Val><![CDATA[File name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Имя файла]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.file.share" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select the file share that contains the backup files for ‘{0}’]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Выберите общую папку, содержащую файлы резервных копий для "{0}".]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.file.share.label" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select the file share that contains the backup files.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Выберите общую папку, содержащую файлы резервных копий.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.file.share.placeholder" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select share]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Выберите общую папку]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.file.share.storage.account.label" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select the storage account that contains the file share.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Выберите учетную запись хранения, содержащую общую папку.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.file.share.subscription.label" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select the subscription that contains the file share.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Выберите подписку, содержащую общую папку.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.file.share.title" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[File Share]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Общая папка]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1422,73 +1176,85 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.blob.container.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please select a valid blob container for source database '{0}' to proceed.]]></Val>
+          <Val><![CDATA[To continue, select a valid blob container for source database '{0}'.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Для продолжения выберите допустимый контейнер больших двоичных объектов для базы данных-источника "{0}".]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please select a valid blob container for source database '{0}' to proceed.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.blob.lastBackupFile.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please select a valid last backup file for source database '{0}' to proceed.]]></Val>
+          <Val><![CDATA[To continue, select a valid last backup file for source database '{0}'.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Для продолжения выберите допустимый последний файл резервной копии для базы данных-источника "{0}".]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please select a valid last backup file for source database '{0}' to proceed.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.blob.resourceGroup.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please select a valid resource group for source database '{0}' to proceed.]]></Val>
+          <Val><![CDATA[To continue, select a valid resource group for source database '{0}'.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Для продолжения выберите допустимую группу ресурсов для базы данных-источника "{0}".]]></Val>
+            <Val><![CDATA[Для продолжения выберите действительную группу ресурсов для базы данных-источника "{0}".]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please select a valid resource group for source database '{0}' to proceed.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.blob.storageAccount.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please select a valid storage account for source database '{0}' to proceed.]]></Val>
+          <Val><![CDATA[To continue, select a valid storage account for source database '{0}'.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Для продолжения выберите допустимую учетную запись хранения для базы данных-источника "{0}".]]></Val>
+            <Val><![CDATA[Для продолжения выберите действительную учетную запись хранения для базы данных-источника "{0}".]]></Val>
           </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.fileShare.error" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Please select a valid file share to proceed.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Для продолжения выберите допустимую общую папку.]]></Val>
-          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please select a valid storage account for source database '{0}' to proceed.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.location.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please select a valid location to proceed.]]></Val>
+          <Val><![CDATA[To continue, select a valid location.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Для продолжения выберите допустимое расположение.]]></Val>
+            <Val><![CDATA[Чтобы продолжить, выберите действительное расположение.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please select a valid location to proceed.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.migration.service.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please select a valid DMS]]></Val>
+          <Val><![CDATA[Select a valid Database Migration Service.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Выберите допустимую DMS]]></Val>
+            <Val><![CDATA[Выберите действительную Database Migration Service.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please select a valid DMS]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.migration.service.offline.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please select a DMS that is connected to a node]]></Val>
+          <Val><![CDATA[Select a Database Migration Service that is connected to a node.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Выберите DMS, подключенную к узлу]]></Val>
+            <Val><![CDATA[Выберите службу Database Migration Service, подключенную к какому-либо узлу.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please select a DMS that is connected to a node]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1501,57 +1267,63 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.region.error" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Please select a valid location to proceed.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Для продолжения выберите допустимое расположение.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.resourceGroup.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please select a valid resource group to proceed.]]></Val>
+          <Val><![CDATA[ To continue, select a valid resource group.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Для продолжения выберите допустимую группу ресурсов.]]></Val>
+            <Val><![CDATA[ Чтобы продолжить, выберите действительную группу ресурсов.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please select a valid resource group to proceed.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.service.name.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please enter a valid name for the Migration Service.]]></Val>
+          <Val><![CDATA[Enter a valid name for the Migration Service.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Введите допустимое имя для службы миграции.]]></Val>
+            <Val><![CDATA[Введите действительное имя для службы миграции.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please enter a valid name for the Migration Service.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.storageAccount.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please select a valid storage account to proceed.]]></Val>
+          <Val><![CDATA[To continue, select a valid storage account.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Для продолжения выберите допустимую учетную запись хранения.]]></Val>
+            <Val><![CDATA[Чтобы продолжить, выберите действительную учетную запись хранения.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please select a valid storage account to proceed.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.subscription.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please select a valid subscription to proceed.]]></Val>
+          <Val><![CDATA[To continue, select a valid subscription.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Для продолжения выберите допустимую подписку.]]></Val>
+            <Val><![CDATA[Чтобы продолжить, выберите действительную подписку.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please select a valid subscription to proceed.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.target.name.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please enter a valid name for the target database.]]></Val>
+          <Val><![CDATA[Enter a valid name for the target database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Введите допустимое имя для целевой базы данных.]]></Val>
+            <Val><![CDATA[Введите действительное имя для целевой базы данных.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please enter a valid name for the target database.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1564,39 +1336,27 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.ir.node" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Integration Runtime node]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Узел среды выполнения интеграции]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.ir.page.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Database Migration Service (DMS) orchestrates database migration activities and tracks their progress. You can select an existing DMS for Azure SQL target if you have created one previously or create a new one below.]]></Val>
+          <Val><![CDATA[Azure Database Migration Service orchestrates database migration activities and tracks their progress. You can select an existing Database Migration Service as an Azure SQL target if you have created one previously, or create a new one below.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure Database Migration Service (DMS) управляет действиями переноса базы данных и отслеживает ход их выполнения. Вы можете выбрать существующую службу DMS для цели Azure SQL, если вы создали ее ранее, или создайте новую ниже.]]></Val>
+            <Val><![CDATA[Azure Database Migration Service управляет действиями переноса базы данных и отслеживает ход их выполнения. Вы можете выбрать существующую службу Database Migration Service для цели Azure SQL, если создали ее ранее, или создать новую ниже.]]></Val>
           </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.ir.page.note" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Note: DMS will run in your Azure subscription in the chosen resource group and does not incur any cost for running it.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Примечание. Служба DMS будет запущена в вашей подписке Azure в выбранной группе ресурсов, и ее запуск не повлечет никаких затрат.]]></Val>
-          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure Database Migration Service (DMS) orchestrates database migration activities and tracks their progress. You can select an existing DMS for Azure SQL target if you have created one previously or create a new one below.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.ir.page.sql.migration.service.not.found" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[No DMS found. Please create a new one]]></Val>
+          <Val><![CDATA[No Database Migration Service found. Create a new one]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[DMS не найден. Создайте новый объект]]></Val>
+            <Val><![CDATA[Служба Database Migration Service не найдена. Создайте новую службу.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[No DMS found. Please create a new one]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1629,10 +1389,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.ir.setup.step3" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Step 3: Click on 'Test connection' button to check the connection between Azure Database Migration Service and Integration Runtime]]></Val>
+          <Val><![CDATA[Step 3: Click on 'Test connection' button to check the connection between Azure Database Migration Service and integration runtime]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Шаг 3: нажмите кнопку "тестирование подключения", чтобы проверить подключение между Azure Database Migration Service и Integration Runtime]]></Val>
+            <Val><![CDATA[Шаг 3. Нажмите кнопку "Тестирование подключения", чтобы проверить подключение между Azure Database Migration Service и Integration Runtime]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Step 3: Click on 'Test connection' button to check the connection between Azure Database Migration Service and Integration Runtime]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1747,6 +1510,9 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.last.scan.completed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Last scan completed: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Последнее сканирование: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1777,21 +1543,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.log.shipping.in.progress" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Log shipping in progress]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Выполняется доставка журналов]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.managed.instance" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure SQL managed instance]]></Val>
+          <Val><![CDATA[Azure SQL Managed Instance]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Управляемый экземпляр SQL Azure]]></Val>
+            <Val><![CDATA[Управляемый экземпляр SQL Azure]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure SQL managed instance]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1899,10 +1659,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.name.of.new.rg" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Name of new Resource group]]></Val>
+          <Val><![CDATA[Name of new resource group]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Имя новой группы ресурсов]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Name of new Resource group]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1911,15 +1674,6 @@
           <Val><![CDATA[My database backups are in an Azure Storage Blob Container]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Мои резервные копии базы данных находятся в контейнере Azure Storage Blob]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.nc.file.share.radio.label" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[My database backups are in an Azure Storage File Share (Coming soon)]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Мои резервные копии базы данных находятся в общей папке службы хранилища Azure (ожидается в ближайшее время)]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1978,15 +1732,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.network.share.location" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Network share location to read backups for database ‘{0}’]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Расположение сетевой папки для чтения резервных копий базы данных "{0}"]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.network.share.location.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Network share location that contains backups.]]></Val>
@@ -2014,56 +1759,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.network.share.storage.account.label" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select the storage account where backup files will be copied.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Выберите учетную запись хранения, куда будут копироваться файлы резервных копий.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.network.share.storage.account.placeholder" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select account]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Выберите учетную запись]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.network.share.subscription.label" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select the subscription that contains the storage account.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Выберите подписку, содержащую учетную запись хранения.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.network.share.subscription.placeholder" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select subscription]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Выберите подписку]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.network.share.windows.user.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Windows user account with read access to the network share location.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Учетная запись пользователя Windows с доступом на чтение сетевой папки.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.new" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[New]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Создать]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2077,7 +1777,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.newsupportrequest" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.newSupportRequest" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[New support request]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2161,6 +1861,9 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.no.pending.backups" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No pending backups. Click refresh to check current status.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ожидающие резервные копии отсутствуют. Нажмите кнопку Обновить, чтобы проверить текущее состояние.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2193,10 +1896,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.notebook.open.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Error opening migration notebook]]></Val>
+          <Val><![CDATA[Failed to open the migration notebook]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Ошибка при открытии записной книжки миграции]]></Val>
+            <Val><![CDATA[Не удалось открыть записную книжку миграции]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Error opening migration notebook]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2205,15 +1911,6 @@
           <Val><![CDATA[Object details]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Сведения об объекте]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.off" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Off]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Выкл.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2259,15 +1956,6 @@
           <Val><![CDATA[Download and install integration runtime]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Скачайте и установите среду выполнения интеграции.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.path" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Path]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Путь]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2319,10 +2007,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.provide.unique.containers" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please provide unique containers for target databases. Databases affected: ]]></Val>
+          <Val><![CDATA[Provide a unique container for each target database. Databases affected: ]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Укажите уникальные контейнеры для целевых баз данных. Затронутые базы данных: ]]></Val>
+            <Val><![CDATA[Укажите уникальный контейнер для каждой целевой базы данных. Затронутые базы данных: ]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please provide unique containers for target databases. Databases affected: ]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2371,21 +2062,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.region" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Region]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Регион]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.resource.group.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[A resource group is a container that holds related resources for an Azure solution]]></Val>
+          <Val><![CDATA[A resource group is a container that holds related resources for an Azure solution.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Группа ресурсов — это контейнер, содержащий связанные ресурсы для решения Azure]]></Val>
+            <Val><![CDATA[Группа ресурсов — это контейнер, содержащий связанные ресурсы для решения Azure.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[A resource group is a container that holds related resources for an Azure solution]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2443,15 +2128,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.select.a.migration.service" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select Azure Database Migration Service]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Выбрать Azure Database Migration Service]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.select.azure.mi" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select your target Azure subscription and your target Azure SQL Managed Instance]]></Val>
@@ -2472,10 +2148,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.select.database.to.migrate" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please select databases to migrate]]></Val>
+          <Val><![CDATA[Select the databases to migrate.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Выберите базы данных для миграции]]></Val>
+            <Val><![CDATA[Выберите базы данных для миграции.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please select databases to migrate]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2490,19 +2169,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.select.target.to.continue" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please select a target to continue]]></Val>
+          <Val><![CDATA[To continue, select a target database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Чтобы продолжить, выберите целевой объект]]></Val>
+            <Val><![CDATA[Чтобы продолжить, выберите целевую базу данных.]]></Val>
           </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.select.the.refresh.interval" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select the refresh interval]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Выберите интервал обновления]]></Val>
-          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please select a target to continue]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2526,28 +2199,37 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.service.container.container.description1" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Database Migration Service leverages Azure Data Factory's Self-hosted Integration Runtime to upload backups from on-premise network fie share to Azure.]]></Val>
+          <Val><![CDATA[Azure Database Migration Service leverages Azure Data Factory's self-hosted integration runtime to upload backups from on-premises network fie share to Azure.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Azure Database Migration Service использует локальную среду выполнения интеграции Фабрики данных Azure для отправки резервных копий из общей папки локальной сети в Azure.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure Database Migration Service leverages Azure Data Factory's Self-hosted Integration Runtime to upload backups from on-premise network fie share to Azure.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.service.container.container.description2" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Follow the instructions below to setup self-hosted Integration Runtime.]]></Val>
+          <Val><![CDATA[Follow the instructions below to setup self-hosted integration runtime.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Следуйте указанным ниже инструкциям, чтобы настроить локальную среду выполнения интеграции.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Follow the instructions below to setup self-hosted Integration Runtime.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.service.container.heading" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Setup Integration Runtime]]></Val>
+          <Val><![CDATA[Setup integration runtime]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Настройка среды выполнения интеграции]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Setup Integration Runtime]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2560,7 +2242,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.service.details.authkeys.label" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.service.details.authKeys.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Authentication keys]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2569,9 +2251,9 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.service.details.authkeys.title" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.service.details.authKeys.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Authentication keys used to connect to the Self-hosted Integration Runtime node]]></Val>
+          <Val><![CDATA[Authentication keys used to connect to the self-hosted integration runtime node]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Ключи проверки подлинности, используемые для подключения к узлу локальной среды выполнения интеграции]]></Val>
           </Tgt>
@@ -2598,10 +2280,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.service.details.ir.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Self-hosted Integration Runtime node]]></Val>
+          <Val><![CDATA[Self-hosted integration runtime node]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Узел локальной среды выполнения интеграции]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Self-hosted Integration Runtime node]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2625,52 +2310,58 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.service.not.found" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[No Migration Services found. Please create a new one.]]></Val>
+          <Val><![CDATA[No Migration Services found. To continue, create a new one.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Службы миграции не найдены. Создайте новую.]]></Val>
+            <Val><![CDATA[Службы миграции не найдены. Чтобы продолжить, создайте новую.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[No Migration Services found. Please create a new one.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.service.not.ready" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Database Migration Service is not registered. Azure Database Migration Service '{0}' needs to be registered with self-hosted Integration Runtime on any node.]]></Val>
+          <Val><![CDATA[Azure Database Migration Service is not registered. Azure Database Migration Service '{0}' needs to be registered with self-hosted integration runtime on any node.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Служба Azure Database Migration Service не зарегистрирована. Azure Database Migration Service "{0}" необходимо зарегистрировать в локальной среде выполнения интеграции на любом узле.]]></Val>
           </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.service.not.setup" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Please add a Migration Service to proceed.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Чтобы продолжить, добавьте службу миграции.]]></Val>
-          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure Database Migration Service is not registered. Azure Database Migration Service '{0}' needs to be registered with self-hosted Integration Runtime on any node.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.service.ready" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Database Migration Service '{0}' is connected to self-hosted Integration Runtime running on the node - {1}]]></Val>
+          <Val><![CDATA[Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on the node - {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure Database Migration Service "{0}" подключена к локальной среде выполнения интеграции, запущенное на узле — {1}]]></Val>
+            <Val><![CDATA[Azure Database Migration Service "{0}" подключена к локальной среде выполнения интеграции, запущенной на узле — {1}]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure Database Migration Service '{0}' is connected to self-hosted Integration Runtime running on the node - {1}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.service.status.refresh.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[An error occurred while refreshing the migration service creation status.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Произошла ошибка при обновлении статуса создания службы миграции.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.services.container.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Enter the information below to add a new Azure Database Migration Service.]]></Val>
+          <Val><![CDATA[Enter the SQL Authentication credentials used to connect to SQL Server Instance {0}. These credentials will be used to connect to the SQL Server instance and identifying valid backup file(s).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Чтобы добавить новую службу Azure Database Migration Service, введите сведения ниже.]]></Val>
+            <Val><![CDATA[Введите учетные данные проверки подлинности SQL, используемые для подключения к экземпляру SQL Server {0}. Эти учетные данные будут использоваться для подключения к экземпляру SQL Server и идентификации действительных файлов резервных копий.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Enter the information below to add a new Azure Database Migration Service.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2685,10 +2376,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.shir" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Self-hosted Integration Runtime node]]></Val>
+          <Val><![CDATA[Self-hosted integration runtime node]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Узел локальной среды выполнения интеграции]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Self-hosted Integration Runtime node]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2728,30 +2422,27 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.none" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Based on the results of our source configuration scans, none of your databases can be migrated to Azure SQL.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[На основе результатов проверок исходной конфигурации ни одна из ваших баз данных не может быть перенесена в Azure SQL.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.recommendation.view.assessment.mi" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[View assessment results and select one or more  database(s) to migrate to Azure SQL Managed Instance (PaaS)]]></Val>
+          <Val><![CDATA[To migrate to Azure SQL Managed Instance (PaaS), view assessment results and select one or more database(s).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Просмотрите результаты оценки и выберите одну или несколько баз данных для миграции на управляемый экземпляр SQL Azure (PaaS)]]></Val>
+            <Val><![CDATA[Просмотрите результаты оценки и выберите одну или несколько баз данных для миграции в управляемый экземпляр SQL Azure (PaaS)]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[View assessment results and select one or more  database(s) to migrate to Azure SQL Managed Instance (PaaS)]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.recommendation.view.assessment.vm" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[View assessment results and select one or more  database(s) to migrate to SQL Server on Azure Virtual Machine (IaaS)]]></Val>
+          <Val><![CDATA[To migrate to SQL Server on Azure Virtual Machine (IaaS), view assessment results and select one or more database(s).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Просмотрите результаты оценки и выберите одну или несколько баз данных для миграции в SQL Server на виртуальной машине Azure (IaaS)]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[View assessment results and select one or more  database(s) to migrate to SQL Server on Azure Virtual Machine (IaaS)]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2802,19 +2493,25 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.source.details.sqlAuth" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Enter the SQL Authentication credential used for connecting to SQL Server Instance {0}. ​ This credential will be used to for connecting to SQL Server instance and identifying valid backup file(s)]]></Val>
+          <Val><![CDATA[Enter the SQL Authentication credentials used to connect to SQL Server Instance {0}. ​These credentials will be used to connect to the SQL Server instance and identify valid backup file(s).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Введите учетные данные проверки подлинности SQL, используемые для подключения к экземпляру SQL Server {0}. ​ Эти учетные данные будут использоваться для подключения к экземпляру SQL Server и идентификации действительных файлов резервных копий]]></Val>
+            <Val><![CDATA[Введите учетные данные проверки подлинности SQL, используемые для подключения к экземпляру SQL Server {0}. ​Эти учетные данные будут использоваться для подключения к экземпляру SQL Server и определения действительных файлов резервных копий.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Enter the SQL Authentication credential used for connecting to SQL Server Instance {0}. ​ This credential will be used to for connecting to SQL Server instance and identifying valid backup file(s)]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.source.details.windowAuth" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Enter the Windows Authentication credential used for connecting to SQL Server Instance {0}. ​ This credential will be used to for connecting to SQL Server instance and identifying valid backup file(s)]]></Val>
+          <Val><![CDATA[Enter the Windows Authentication credentials used to connect to SQL Server Instance {0}. These credentials will be used to connect to the SQL Server instance and identify valid backup file(s).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Введите учетные данные проверки подлинности Windows, используемые для подключения к экземпляру SQL Server {0}. ​ Эти учетные данные будут использоваться для подключения к экземпляру SQL Server и идентификации действительных файлов резервных копий]]></Val>
+            <Val><![CDATA[Введите учетные данные проверки подлинности Windows, используемые для подключения к экземпляру SQL Server {0}. Эти учетные данные будут использоваться для подключения к экземпляру SQL Server и определения действительных файлов резервных копий.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Enter the Windows Authentication credential used for connecting to SQL Server Instance {0}. ​ This credential will be used to for connecting to SQL Server instance and identifying valid backup file(s)]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2841,15 +2538,6 @@
           <Val><![CDATA[SQL migration assessment]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Оценка миграции SQL]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sql.login" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[SQL Login]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Вход SQL]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2886,15 +2574,6 @@
           <Val><![CDATA[Start Time]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Время запуска]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.started.notification" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Migration in progress]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Миграция выполняется]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3049,38 +2728,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.submit" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Submit]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Отправить]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.subscription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Subscription]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Подписка]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.successfully.migrated.to.azure.sql" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Successfully migrated to Azure SQL]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Миграция в Azure SQL выполнена успешно]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.summary.azure.account.linked" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Azure account linked]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Связанная учетная запись Azure]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3105,10 +2757,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.summary.database.count" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Database(s) to be migrated]]></Val>
+          <Val><![CDATA[Database(s) for migration]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Базы данных для миграции]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Database(s) to be migrated]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3121,29 +2776,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.summary.migration.target" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Migration target]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Цель миграции]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.summary.page.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Summary]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Сводка]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.summary.target.name" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Target Databases:]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Целевые базы данных:]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3180,15 +2817,6 @@
           <Val><![CDATA[Target database name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Имя целевой базы данных]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.target.page.title" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Choose the target Azure SQL]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Выберите целевое значение Azure SQL]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3310,15 +2938,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.windows.auth" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Windows Authentication]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Проверка подлинности Windows]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.account.add.button.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Link account]]></Val>
@@ -3348,18 +2967,21 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.account.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Select an Azure account linked to Azure Data Studio or link one now.]]></Val>
+          <Val><![CDATA[Select an Azure account linked to Azure Data Studio, or link one now.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Выберите учетную запись Azure, связанную с Azure Data Studio или свяжите ее сейчас.]]></Val>
+            <Val><![CDATA[Выберите учетную запись Azure, связанную с Azure Data Studio, или свяжите ее сейчас.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Select an Azure account linked to Azure Data Studio or link one now.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.account.noaccount.error" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.account.noAccount.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[There is no linked account. Please add an account.]]></Val>
+          <Val><![CDATA[Add a linked account and then try again.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Связанная учетная запись не существует. Добавьте учетную запись.]]></Val>
+            <Val><![CDATA[Добавьте связанную учетную запись и повторите попытку.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3375,9 +2997,21 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.sku.all" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Based on the assessment results, all {0} of your database(s) in online state can be migrated to Azure SQL.]]></Val>
+          <Val><![CDATA[Based on the assessment results, all {0} of your database(s) in an online state can be migrated to Azure SQL.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[На основе результатов оценки все {0} из ваших баз данных во включенном состоянии можно перенести в Azure SQL.]]></Val>
+            <Val><![CDATA[Исходя из результатов оценки, все {0} из ваших баз данных в подключенном состоянии можно перенести в Azure SQL.]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Based on the assessment results, all {0} of your database(s) in online state can be migrated to Azure SQL.]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.sku.assessment.error" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[An error occurred while assessing the server '{0}'.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[При доступе к серверу "{0}" произошла ошибка.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3391,65 +3025,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.sku.some" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Based on the results of our source configuration scans, {0} out of {1} of your databases can be migrated to Azure SQL.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[На основе результатов проверок исходной конфигурации {0} из {1} ваших баз данных не может быть перенесена в Azure SQL.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.sku.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure SQL Target]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Целевой объект Azure SQL]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.source_configuration.title" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[SQL Source Configuration]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Конфигурация источника SQL]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.subscription.azure.account.title" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Azure Account]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Учетная запись Azure]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.subscription.azure.product.title" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Azure Product]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Продукт Azure]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.subscription.azure.subscription.title" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Azure Subscription]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Подписка Azure]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.subscription.title" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Azure Subscription Selection]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Выбор подписки Azure]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3619,8 +3199,8 @@
       <Item ItemId=";extensions/sql-migration/package.view-service-menu" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Database Migration Service details]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Подробная информация о службе миграции базы данных]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Сведения Database Migration Service]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Dataase Migration Service details]]></Val>

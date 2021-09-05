@@ -12,19 +12,25 @@
       <Disp Icon="Str" Disp="true" LocTbl="false" />
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.azure.accounts.accountAccessError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[An error occurred while accessing the selected account '{0}'. Please click the 'Link Account' button and refresh the account or select a different account. Error '{1}']]></Val>
+          <Val><![CDATA[An error occurred while accessing the selected account '{0}'. Select 'Link Account' and refresh the account, or select a different account. Error '{1}']]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[選択したアカウント '{0}' へのアクセスでエラーが発生しました。'リンク アカウント' ボタンをクリックして、アカウントを更新するか、別のアカウントを選択してください。エラー '{1}']]></Val>
+            <Val><![CDATA[選択したアカウント '{0}' へのアクセスでエラーが発生しました。'リンク アカウント' を選択して、アカウントを更新するか、別のアカウントを選択してください。エラー '{1}']]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[An error occurred while accessing the selected account '{0}'. Please click the 'Link Account' button and refresh the account or select a different account. Error '{1}']]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.azure.accounts.accountStaleError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[The access token for selected account '{0}' is no longer valid. Please click the 'Link Account' button and refresh the account or select a different account.]]></Val>
+          <Val><![CDATA[The access token for selected account '{0}' is no longer valid. Select 'Link Account' and refresh the account, or select a different account.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[選択したアカウント '{0}' のアクセス トークンは有効でなくなりました。'リンク アカウント' ボタンをクリックして、アカウントを更新するか、別のアカウントを選択してください。]]></Val>
+            <Val><![CDATA[選択したアカウント '{0}' のアクセス トークンは有効でなくなりました。'リンク アカウント' を選択して、アカウントを更新するか、別のアカウントを選択してください。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[The access token for selected account '{0}' is no longer valid. Please click the 'Link Account' button and refresh the account or select a different account.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -42,27 +48,6 @@
           <Val><![CDATA[Are you sure you want to cancel this migration?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[この移行を取り消しますか?]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migartion.cutover.pending.backup" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Log backups pending restore: {0}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[復元保留中のログ バックアップ: {0}]]></Val>
-          </Tgt>
-          <Prev Cat="Text">
-            <Val><![CDATA[Pending log backups: {0}]]></Val>
-          </Prev>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migraiton.data.uploaded.size" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Data Uploaded/Size]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[アップロードされたデータまたはサイズ]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -112,15 +97,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.assessmen.results" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Assessment Results]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[評価結果]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.assessment" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Assessment results for '{0}']]></Val>
@@ -160,6 +136,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.assessment.results" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Assessment Results]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[評価結果]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.assessments.blocking.issue" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[This is a blocking issue that will prevent the database migration from succeeding.]]></Val>
@@ -169,11 +154,20 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.assessments.progress" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.authKeys.header" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Assessments Progress]]></Val>
+          <Val><![CDATA[Authentication key]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[評価の進行状況]]></Val>
+            <Val><![CDATA[認証キー]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.authKeys.refresh.message" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Authentication key '{0}' has been refreshed.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[認証キー '{0}' が更新されました。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -189,82 +183,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.authentication.types" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Authentication Keys]]></Val>
+          <Val><![CDATA[Authentication keys]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[認証キー]]></Val>
           </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.authkeys.header" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Authentication key]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[認証キー]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.authkeys.refresh.message" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Authentication key '{0}' has been refreshed.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[認証キー '{0}' が更新されました。]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.auto.refresh.1.min" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Auto refresh: 1 minute]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[自動更新: 1 分]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.auto.refresh.15.seconds" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Auto refresh: 15 seconds]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[自動更新: 15 秒]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.auto.refresh.3.min" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Auto refresh: 3 minutes]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[自動更新: 3 分]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.auto.refresh.30.seconds" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Auto refresh: 30 seconds]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[自動更新: 30 秒]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.auto.refresh.5.min" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Auto refresh: 5 minutes]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[自動更新: 5 分]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.auto.refresh.off" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Auto Refresh: Off]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[自動更新: オフ]]></Val>
-          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Authentication Keys]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -279,19 +204,25 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.azure.sql.database.managed.instance" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure SQL Database Managed Instance]]></Val>
+          <Val><![CDATA[Azure SQL Managed Instance]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure SQL Database Managed Instance]]></Val>
+            <Val><![CDATA[Azure SQL Managed Instance]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure SQL Database Managed Instance]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.azure.sql.database.virtual.machine" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure SQL Database Virtual Machine]]></Val>
+          <Val><![CDATA[SQL Server on Azure Virtual Machines]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure SQL データベース仮想マシン]]></Val>
+            <Val><![CDATA[Azure Virtual Machines 上の SQL Server]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure SQL Database Virtual Machine]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -342,28 +273,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.bc.info" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Managed Instance migration cutover for Business Critical service tier can take significantly longer than General Purpose as three secondary replicas have to be seeded for Always On High Availability group. This operation duration depends on the size of data. Seeding speed in 90% of cases is 220 GB/hour or higher.]]></Val>
+          <Val><![CDATA[A SQL Managed Instance migration cutover to the Business Critical service tier can take significantly longer than General Purpose because three secondary replicas have to be seeded for Always On High Availability group. The duration of the operation depends on the size of the data. Seeding speed in 90% of cases is 220 GB/hour or higher.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[ビジネス クリティカル サービス層のマネージド インスタンスの移行カットオーバーでは、Always On 高可用性グループに 3 つのセカンダリ レプリカをシードする必要があるため、通常の目的よりも大幅に時間がかかります。このオペレーション期間は、データのサイズに依存します。シードの速度は、90% のケースで220GB/時以上となっています。]]></Val>
+            <Val><![CDATA[ビジネス クリティカル サービス層の SQL Managed Instance の移行カットオーバーでは、Always On 高可用性グループに 3 つのセカンダリ レプリカをシードする必要があるため、通常の目的よりも大幅に時間がかかります。このオペレーションの期間は、データのサイズに依存します。シードの速度は、90% のケースで220GB/時以上となっています。]]></Val>
           </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.blob.container" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select the container that contains the backup files for ‘{0}’]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[‘{0}’ のバックアップ ファイルを含むコンテナーを選択する]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.blob.container.information" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Enter the target name and select the blob container location for selected databases]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[ターゲット名を入力し、選択したデータベースの blob コンテナーの場所を選択します]]></Val>
-          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Managed Instance migration cutover for Business Critical service tier can take significantly longer than General Purpose as three secondary replicas have to be seeded for Always On High Availability group. This operation duration depends on the size of data. Seeding speed in 90% of cases is 220 GB/hour or higher.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -421,33 +337,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.blob.storage.account.label" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select the storage account that contains the backup files.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[バックアップ ファイルを含むストレージ アカウントを選択します。]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.blob.storage.container.label" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select the container that contains the backup files.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[バックアップ ファイルを含むコンテナーを選択します。]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.blob.storage.container.placeholder" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select container]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[コンテナーの選択]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.blob.storage.subscription.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select the subscription that contains the storage account.]]></Val>
@@ -487,6 +376,9 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.cancel.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[An error occurred while canceling the migration.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[移行のキャンセル中にエラーが発生しました。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -501,10 +393,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.cannot.cancel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Migration is not in progress and cannot be cancelled.]]></Val>
+          <Val><![CDATA[Migration is not in progress and cannot be canceled.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[移行は進行中ではないため、取り消すことができません。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Migration is not in progress and cannot be cancelled.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -519,19 +414,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.cannot.start.cutover.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Cannot start the cutover process until all the migrations are done. Click refresh to fetch the latest file status]]></Val>
+          <Val><![CDATA[The cutover process cannot start until all the migrations are done. To return the latest file status, refresh your browser window.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[すべての移行が完了するまでカットオーバー処理を開始できません。更新をクリックすると、最新のファイル状態が表示されます。]]></Val>
+            <Val><![CDATA[すべての移行が完了するまでカットオーバー処理を開始できません。最新のファイル状態に戻るには、ブラウザー ウィンドウを更新します。]]></Val>
           </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.choose.to.migrate.to.azure.sql" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Choose to migrate to Azure SQL]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure SQL への移行を選択する]]></Val>
-          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Cannot start the cutover process until all the migrations are done. Click refresh to fetch the latest file status]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -540,33 +429,6 @@
           <Val><![CDATA[Close]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[閉じる]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.collecting_source_configurations" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Collecting source configurations]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[ソース構成を収集しています]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.collecting_source_configurations.error" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[There was an error when gathering information about your data configuration. {0}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[データ構成の情報収集時にエラーが発生しました。{0}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.collecting_source_configurations.info" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[We need to collect some information about how your data is configured currently.]D;]A;This may take some time.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[お客様のデータが現在どのように構成されているかについて、いくつかの情報を収集する必要があります。]D;]A;これには時間がかかる場合があります。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -582,10 +444,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.completing.cutover.warning" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Completing cutover without restoring all the backup(s) may result in loss of data.]]></Val>
+          <Val><![CDATA[Completing cutover without restoring all the backup(s) may result in a data loss.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[すべてのバックアップを復元せずにカットオーバーを完了すると、データが失われる可能性があります。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Completing cutover without restoring all the backup(s) may result in loss of data.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -688,15 +553,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.custom.setup.button" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Custom setup: Add DMS after customizing most options.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[カスタム セットアップ: ほとんどのオプションをカスタマイズした後に DMS を追加します。]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.cutover" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Migration cutover]]></Val>
@@ -745,60 +601,90 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.cutover.pending.backup" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Log backups pending restore: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[復元保留中のログ バックアップ: {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.cutover.status.refresh.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[An error occurred while refreshing the migration status.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[移行ステータスの更新中にエラーが発生しました。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.cutover.step.1" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[1. Stop all the incoming transactions coming to the source database.]]></Val>
+          <Val><![CDATA[1. Stop all incoming transactions to the source database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[1. ソース データベースに送信されるすべてのトランザクションを停止します。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[1. Stop all the incoming transactions coming to the source database.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.cutover.step.2.blob" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[2. Take final differential or transaction log backup and provide it in the Azure Storage Blob Container.]]></Val>
+          <Val><![CDATA[2. Take a final differential or backup of the transaction log and store it in the Azure Storage Blob Container.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[2. 最終の差分またはトランザクション ログのバックアップを実行し、Azure Storage Blob コンテナーに指定します。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[2. Take final differential or transaction log backup and provide it in the Azure Storage Blob Container.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.cutover.step.2.network.share" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[2. Take final transaction log backup and provide it in the network share location.]]></Val>
+          <Val><![CDATA[2. Take a final backup of the transaction log and store it in the network share location.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[2. トランザクション ログの最終的なバックアップを取り、それをネットワーク共有の場所に提供します。]]></Val>
+            <Val><![CDATA[2. トランザクション ログの最終バックアップを取得して、それをネットワーク共有場所に保存してください。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[2. Take final transaction log backup and provide it in the network share location.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.cutover.step.3.blob" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[3. Make sure all the log backups are restored on target database. The "Log backups(s) pending restore" should be zero.]]></Val>
+          <Val><![CDATA[3. Verify that your backup(s) have been restored on the target database. The "Log backup(s) pending restore" value should be zero.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[3. ターゲット データベースでバックアップが復元されていることを確認します。"保留中の復元のログ バックアップ" 値は、0 にする必要があります。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.cutover.step.3.network.share" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[3. Make sure all the log backups are restored on target database. The "Log backups(s) pending restore" should be zero.]]></Val>
+          <Val><![CDATA[3. Verify that your backup(s) have been restored on the target database. The "Log backup(s) pending restore" value should be zero.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[3. すべてのログ バックアップがターゲット データベースに復元されていることを確認します。「復元が保留中のログ バックアップ」が 0 である必要があります。]]></Val>
+            <Val><![CDATA[3. ターゲット データベースでバックアップが復元されていることを確認します。"保留中の復元のログ バックアップ" 値は、0 にする必要があります。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[3. Make sure all the log backups are restored on target database. The "Log backups(s) pending restore" should be zero.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.cutover.type" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Migration Mode]]></Val>
+          <Val><![CDATA[Migration mode]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[移行モード]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Migration Mode]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -822,10 +708,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dashboard.link1.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[See the list of rules used to assess the feasibility of migrating your SQL Server to Azure SQL Managed Instance.]]></Val>
+          <Val><![CDATA[See the list of rules used to determine whether your SQL Server instance can be migrated to Azure SQL Managed Instance.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[SQL Server を Azure SQL マネージド インスタンスに移行する可能性を評価するために使用されるルールの一覧を参照してください。]]></Val>
+            <Val><![CDATA[使用するルールの一覧を参照して、SQL Server インスタンスを Azure SQL Managed Instance に移行できるかどうかを判断します。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[See the list of rules used to assess the feasibility of migrating your SQL Server to Azure SQL Managed Instance.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -865,20 +754,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dashboard.video1.title" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.data.uploaded.size" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Migrate SQL Server to SQL Managed Instance]]></Val>
+          <Val><![CDATA[Data Uploaded/Size]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[SQL Server を SQL Managed Instance に移行する]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dashboard.video2.title" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Migrate SQL Server to SQL Virtual Machine]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[SQL Virtual Machine に SQL Server を移行する]]></Val>
+            <Val><![CDATA[アップロードされたデータまたはサイズ]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -894,28 +774,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.database.already.exists" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Database '{0}' already exists on target Managed Instance '{1}'.]]></Val>
+          <Val><![CDATA[Database '{0}' already exists on the target managed instance '{1}'.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[データベース '{0}' は、ターゲット Managed Instance '{1}' に既に存在します。]]></Val>
+            <Val><![CDATA[データベース '{0}' は、ターゲット マネージド インスタンス '{1}' に既に存在します。]]></Val>
           </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.database.backup.email.notification.checkbox.label" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Notify me when migration is complete]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[移行完了時に通知する]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.database.backup.email.notification.label" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Email notifications]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[メールの通知]]></Val>
-          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Database '{0}' already exists on target Managed Instance '{1}'.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -930,10 +795,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.database.migration.mode.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Choose from the following migration modes to migrate to your Azure SQL target based on your downtime requirements.]]></Val>
+          <Val><![CDATA[To migrate to the Azure SQL target, choose a migration mode based on your downtime requirements.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[以下の移行モードから選択し、ダウンタイムの要件に基づいて Azure SQL ターゲットに移行します。]]></Val>
+            <Val><![CDATA[Azure SQL ターゲットに移行するには、ダウンタイムの要件に基づいて移行モードを選択します。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Choose from the following migration modes to migrate to your Azure SQL target based on your downtime requirements.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -966,10 +834,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.database.migration.mode.online.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Application downtime is limited to cut over at the end of migration.]]></Val>
+          <Val><![CDATA[Application downtime is limited to cutover at the end of migration.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[アプリケーションのダウンタイムは、移行終了時のカットオーバーに限定されます。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Application downtime is limited to cut over at the end of migration.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -993,19 +864,25 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.database.migration.service.authentication.keys" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Database migration service authentication keys]]></Val>
+          <Val><![CDATA[Database Migration Service authentication keys]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[データベース移行サービスの認証キー]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Database migration service authentication keys]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.database.migration.service.created.successfully" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Database migration service has been created successfully]]></Val>
+          <Val><![CDATA[Successfully created a Database Migration Service.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Database Migration Service が正常に作成されました]]></Val>
+            <Val><![CDATA[Database Migration Service が正常に作成されました。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Database migration service has been created successfully]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1090,15 +967,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.default.setup.button" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Setup with defaults: Add DMS with one click express setup using default options.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[既定の設定を使用したセットアップ: ワンクリックで DMS を追加し、既定のオプションを使用してセットアップを行います。]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Description]]></Val>
@@ -1119,19 +987,25 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dms.portal.info" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please note that any existing Azure Database Migration Service (DMS) in Azure portal will not show up in Azure Data Studio. DMS created in Azure Data Studio will not be visible in Azure portal yet.]]></Val>
+          <Val><![CDATA[Any existing Azure Database Migration Service in the Azure portal do not appear in Azure Data Studio. Any Database Migration Service created in Azure Data Studio will not be visible in the Azure portal yet.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure Portal の既存の Azure Database Migration Service (DMS) がある場合、Azure Data Studio では表示されないことに注意してください。Azure Data Studio で作成された DMS は、Azure Portal ではまだ表示されません。]]></Val>
+            <Val><![CDATA[Azure Portal の既存の Azure Database Migration Service がある場合、Azure Data Studio では表示されないことに注意してください。Azure Data Studio で作成された Database Migration Service は、Azure Portal ではまだ表示されません。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please note that any existing Azure Database Migration Service (DMS) in Azure portal will not show up in Azure Data Studio. DMS created in Azure Data Studio will not be visible in Azure portal yet.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.dms.provision.failed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Database migration service has failed to provision. Please try again after some time.]]></Val>
+          <Val><![CDATA[Failed to provision a Database Migration Service. Wait a few minutes and then try again.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[データベース移行サービスがプロビジョニングに失敗しました。しばらく待ってから、もう一度お試しください。]]></Val>
+            <Val><![CDATA[Database Migration Service をプロビジョニングできませんでした。数分待ってからもう一度やり直してください。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Database migration service has failed to provision. Please try again after some time.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1144,75 +1018,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.eastus2euap" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[East US 2 EUAP]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[米国東部 2 EUAP]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.enter.file.share.information" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Enter the target name and select the file share location of selected databases]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[ターゲット名を入力し、選択したデータベースのファイル共有の場所を選択する]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.enter.network.share.information" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Enter target names for selected source database(s)]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[選択したソース データベースのターゲット名を入力する]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.enter.your.sql.cred" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Enter the credential for source SQL Server instance. This credential will be used while migrating database(s) to Azure SQL.]]></Val>
+          <Val><![CDATA[Enter the credentials for the source SQL Server instance. These credentials will be used while migrating database(s) to Azure SQL.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[ソース SQL Server インスタンスの資格情報を入力します。この資格情報は、データベースを Azure SQL に移行する場合に使用されます。]]></Val>
+            <Val><![CDATA[ソース SQL Server インスタンスの資格情報を入力します。これらの資格情報は、データベースを Azure SQL に移行する場合に使用されます。]]></Val>
           </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.every.1.minute" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Every 1 minute]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[1 分ごと]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.every.3.minutes" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Every 3 minutes]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[3 分ごと]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.every.30.second" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Every 30 seconds]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[30 秒ごと]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.every.5.minutes" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Every 5 minutes]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[5 分ごと]]></Val>
-          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Enter the credential for source SQL Server instance. This credential will be used while migrating database(s) to Azure SQL.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1221,15 +1035,6 @@
           <Val><![CDATA[Migration failed]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[移行は失敗しました]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.feature.not.available" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[This feature is not available yet.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[この機能はまだ使用できません。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1248,60 +1053,6 @@
           <Val><![CDATA[File name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[ファイル名]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.file.share" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select the file share that contains the backup files for ‘{0}’]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[‘{0}’ にバックアップ ファイルを保存するファイル共有を選択します。]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.file.share.label" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select the file share that contains the backup files.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[バックアップ ファイルを保存するコンテナーを選択します。]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.file.share.placeholder" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select share]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[共有の選択]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.file.share.storage.account.label" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select the storage account that contains the file share.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[ファイル共有を保存するストレージ アカウントを選択します。]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.file.share.subscription.label" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select the subscription that contains the file share.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[ファイル共有を保存するサブスクリプションを選択します。]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.file.share.title" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[File Share]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[ファイルの共有]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1425,73 +1176,85 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.blob.container.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please select a valid blob container for source database '{0}' to proceed.]]></Val>
+          <Val><![CDATA[To continue, select a valid blob container for source database '{0}'.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[続行するには、ソース データベース '{0}' の有効な BLOB コンテナーを選択してください。]]></Val>
+            <Val><![CDATA[先に進むには、ソース データベース '{0}' の有効な BLOB コンテナーを選択してください。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please select a valid blob container for source database '{0}' to proceed.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.blob.lastBackupFile.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please select a valid last backup file for source database '{0}' to proceed.]]></Val>
+          <Val><![CDATA[To continue, select a valid last backup file for source database '{0}'.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[続行するには、ソース データベース '{0}' の有効な最終バックアップ ファイルを選択してください。]]></Val>
+            <Val><![CDATA[先に進むには、ソース データベース '{0}' の有効な最終バックアップ ファイルを選択してください。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please select a valid last backup file for source database '{0}' to proceed.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.blob.resourceGroup.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please select a valid resource group for source database '{0}' to proceed.]]></Val>
+          <Val><![CDATA[To continue, select a valid resource group for source database '{0}'.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[続行するには、ソース データベース '{0}' の有効なリソース グループを選択してください。]]></Val>
+            <Val><![CDATA[先に進むには、ソース データベース '{0}' の有効なリソース グループを選択してください。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please select a valid resource group for source database '{0}' to proceed.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.blob.storageAccount.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please select a valid storage account for source database '{0}' to proceed.]]></Val>
+          <Val><![CDATA[To continue, select a valid storage account for source database '{0}'.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[続行するには、ソース データベース '{0}' の有効なストレージ アカウントを選択してください。]]></Val>
+            <Val><![CDATA[先に進むには、ソース データベース '{0}' の有効なストレージ アカウントを選択してください。]]></Val>
           </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.fileShare.error" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Please select a valid file share to proceed.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[有効なファイル共有を選択して続行してください。]]></Val>
-          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please select a valid storage account for source database '{0}' to proceed.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.location.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please select a valid location to proceed.]]></Val>
+          <Val><![CDATA[To continue, select a valid location.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[有効な場所を選択して続行してください。]]></Val>
+            <Val><![CDATA[先に進むには、有効な場所を選択してください。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please select a valid location to proceed.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.migration.service.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please select a valid DMS]]></Val>
+          <Val><![CDATA[Select a valid Database Migration Service.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[有効な DMS を選択してください]]></Val>
+            <Val><![CDATA[有効な Database Migration Service を選択してください。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please select a valid DMS]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.migration.service.offline.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please select a DMS that is connected to a node]]></Val>
+          <Val><![CDATA[Select a Database Migration Service that is connected to a node.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[ノードに接続された DMS を選択してください]]></Val>
+            <Val><![CDATA[ノードに接続された Database Migration Service を選択します。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please select a DMS that is connected to a node]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1504,57 +1267,63 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.region.error" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Please select a valid location to proceed.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[有効な場所を選択して続行してください。]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.resourceGroup.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please select a valid resource group to proceed.]]></Val>
+          <Val><![CDATA[ To continue, select a valid resource group.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[有効なリソースグループを選択して続行してください。]]></Val>
+            <Val><![CDATA[ 先に進むには、有効なリソースグループを選択して続行してください。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please select a valid resource group to proceed.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.service.name.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please enter a valid name for the Migration Service.]]></Val>
+          <Val><![CDATA[Enter a valid name for the Migration Service.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[移行サービスに有効な名前を入力してください。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please enter a valid name for the Migration Service.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.storageAccount.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please select a valid storage account to proceed.]]></Val>
+          <Val><![CDATA[To continue, select a valid storage account.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[有効なストレージ アカウントを選択して続行してください。]]></Val>
+            <Val><![CDATA[先に進むには、有効なストレージ アカウントを選択してください。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please select a valid storage account to proceed.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.subscription.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please select a valid subscription to proceed.]]></Val>
+          <Val><![CDATA[To continue, select a valid subscription.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[続行するには、有効なサブスクリプションを選択してください。]]></Val>
+            <Val><![CDATA[先に進むには、有効なサブスクリプションを選択してください。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please select a valid subscription to proceed.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.invalid.target.name.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please enter a valid name for the target database.]]></Val>
+          <Val><![CDATA[Enter a valid name for the target database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[ターゲット データベースに有効な名前を入力してください。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please enter a valid name for the target database.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1567,39 +1336,27 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.ir.node" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Integration Runtime node]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[統合ランタイム ノード]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.ir.page.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Database Migration Service (DMS) orchestrates database migration activities and tracks their progress. You can select an existing DMS for Azure SQL target if you have created one previously or create a new one below.]]></Val>
+          <Val><![CDATA[Azure Database Migration Service orchestrates database migration activities and tracks their progress. You can select an existing Database Migration Service as an Azure SQL target if you have created one previously, or create a new one below.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure Database Migration Service (DMS) は、データベースの移行アクティビティを調整し、その進行状況を追跡します。Azure SQL ターゲットの既存の DMS を以前に作成している場合は、それを選択するか、以下で新しい DMS を作成することができます。]]></Val>
+            <Val><![CDATA[Azure Database Migration Service は、データベースの移行アクティビティを調整し、その進行状況を追跡します。Azure SQL ターゲットの既存の Database Migration Service を以前に作成している場合は、それを選択するか、以下で新しい DMS を作成することができます。]]></Val>
           </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.ir.page.note" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Note: DMS will run in your Azure subscription in the chosen resource group and does not incur any cost for running it.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[注意: DMS は、選択したリソース グループの Azure サブスクリプションで実行され、実行のためのコストは発生しません。]]></Val>
-          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure Database Migration Service (DMS) orchestrates database migration activities and tracks their progress. You can select an existing DMS for Azure SQL target if you have created one previously or create a new one below.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.ir.page.sql.migration.service.not.found" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[No DMS found. Please create a new one]]></Val>
+          <Val><![CDATA[No Database Migration Service found. Create a new one]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[DMS が見つかりません。新しいものを作成してください]]></Val>
+            <Val><![CDATA[Database Migration Service が見つかりません。新しく作成します]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[No DMS found. Please create a new one]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1632,10 +1389,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.ir.setup.step3" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Step 3: Click on 'Test connection' button to check the connection between Azure Database Migration Service and Integration Runtime]]></Val>
+          <Val><![CDATA[Step 3: Click on 'Test connection' button to check the connection between Azure Database Migration Service and integration runtime]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[手順 3: [テスト接続]5D; ボタンをクリックして、Azure Database Migration Service と統合ランタイム間の接続を確認します]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Step 3: Click on 'Test connection' button to check the connection between Azure Database Migration Service and Integration Runtime]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1783,21 +1543,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.log.shipping.in.progress" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Log shipping in progress]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[ログ配布が進行中]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.managed.instance" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure SQL managed instance]]></Val>
+          <Val><![CDATA[Azure SQL Managed Instance]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Azure SQL Managed Instance]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure SQL managed instance]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1905,10 +1659,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.name.of.new.rg" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Name of new Resource group]]></Val>
+          <Val><![CDATA[Name of new resource group]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[新しいリソース グループの名前]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Name of new Resource group]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1917,15 +1674,6 @@
           <Val><![CDATA[My database backups are in an Azure Storage Blob Container]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[データベースのバックアップは、Azure Storage Blob コンテナーにあります。]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.nc.file.share.radio.label" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[My database backups are in an Azure Storage File Share (Coming soon)]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[データベースのバックアップは、Azure Storage ファイル共有にあります (近日公開予定)]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1984,15 +1732,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.network.share.location" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Network share location to read backups for database ‘{0}’]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[データベース ‘{0}’ のバックアップを読み取るためのネットワーク共有の場所]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.network.share.location.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Network share location that contains backups.]]></Val>
@@ -2020,56 +1759,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.network.share.storage.account.label" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select the storage account where backup files will be copied.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[バックアップ ファイルをコピーするストレージ アカウントを選択します。]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.network.share.storage.account.placeholder" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select account]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[アカウントを選択]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.network.share.subscription.label" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select the subscription that contains the storage account.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[ストレージ アカウントを含むサブスクリプションを選択します。]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.network.share.subscription.placeholder" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select subscription]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[サブスクリプションを選択する]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.network.share.windows.user.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Windows user account with read access to the network share location.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[ネットワーク共有の場所への読み取り権限のある Windows ユーザー アカウント。]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.new" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[New]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[新規]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2083,7 +1777,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.newsupportrequest" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.newSupportRequest" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[New support request]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2202,10 +1896,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.notebook.open.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Error opening migration notebook]]></Val>
+          <Val><![CDATA[Failed to open the migration notebook]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[移行ノートブックを開くときにエラーが発生しました]]></Val>
+            <Val><![CDATA[移行ノートブックを開けませんでした]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Error opening migration notebook]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2214,15 +1911,6 @@
           <Val><![CDATA[Object details]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[オブジェクトの詳細]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.off" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Off]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[オフ]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2268,15 +1956,6 @@
           <Val><![CDATA[Download and install integration runtime]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[統合ランタイムのダウンロードとインストール]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.path" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Path]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[パス]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2328,10 +2007,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.provide.unique.containers" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please provide unique containers for target databases. Databases affected: ]]></Val>
+          <Val><![CDATA[Provide a unique container for each target database. Databases affected: ]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[ターゲット データベースに一意のコンテナーを指定してください。影響を受けるデータベース: ]]></Val>
+            <Val><![CDATA[ターゲット データベースごとに一意のコンテナーを指定してください。影響を受けるデータベースは以下のとおりです。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please provide unique containers for target databases. Databases affected: ]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2380,21 +2062,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.region" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Region]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[リージョン]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.resource.group.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[A resource group is a container that holds related resources for an Azure solution]]></Val>
+          <Val><![CDATA[A resource group is a container that holds related resources for an Azure solution.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[リソース グループは、Azure のソリューションに関連するリソースを保持するコンテナーです]]></Val>
+            <Val><![CDATA[リソース グループは、Azure のソリューションに関連するリソースを保持するコンテナーです。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[A resource group is a container that holds related resources for an Azure solution]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2452,15 +2128,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.select.a.migration.service" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select Azure Database Migration Service]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure Database Migration Service を選択する]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.select.azure.mi" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select your target Azure subscription and your target Azure SQL Managed Instance]]></Val>
@@ -2481,10 +2148,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.select.database.to.migrate" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please select databases to migrate]]></Val>
+          <Val><![CDATA[Select the databases to migrate.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[データベースを選択して移行してください]]></Val>
+            <Val><![CDATA[移行するデータベースを選択してください。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please select databases to migrate]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2499,19 +2169,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.select.target.to.continue" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Please select a target to continue]]></Val>
+          <Val><![CDATA[To continue, select a target database.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[操作を続行するにはターゲットを選択してください]]></Val>
+            <Val><![CDATA[先に進むには、ターゲット データベースを選択してください。]]></Val>
           </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.select.the.refresh.interval" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Select the refresh interval]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[更新間隔を選択する]]></Val>
-          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Please select a target to continue]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2535,28 +2199,37 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.service.container.container.description1" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Database Migration Service leverages Azure Data Factory's Self-hosted Integration Runtime to upload backups from on-premise network fie share to Azure.]]></Val>
+          <Val><![CDATA[Azure Database Migration Service leverages Azure Data Factory's self-hosted integration runtime to upload backups from on-premises network fie share to Azure.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Azure Database Migration Service は Azure Data Factory のセルフホステッド統合ランタイムを活用して、オンプレミスのネットワーク Fie 共有から Azure にバックアップをアップロードします。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure Database Migration Service leverages Azure Data Factory's Self-hosted Integration Runtime to upload backups from on-premise network fie share to Azure.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.service.container.container.description2" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Follow the instructions below to setup self-hosted Integration Runtime.]]></Val>
+          <Val><![CDATA[Follow the instructions below to setup self-hosted integration runtime.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[次の手順に従って、セルフホステッド統合ランタイムを設定します。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Follow the instructions below to setup self-hosted Integration Runtime.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.service.container.heading" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Setup Integration Runtime]]></Val>
+          <Val><![CDATA[Setup integration runtime]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[統合ランタイムの設定]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Setup Integration Runtime]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2569,7 +2242,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.service.details.authkeys.label" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.service.details.authKeys.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Authentication keys]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2578,9 +2251,9 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.service.details.authkeys.title" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.service.details.authKeys.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Authentication keys used to connect to the Self-hosted Integration Runtime node]]></Val>
+          <Val><![CDATA[Authentication keys used to connect to the self-hosted integration runtime node]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[セルフホステッド統合ランタイム ノードへの接続に使用される認証キー]]></Val>
           </Tgt>
@@ -2607,10 +2280,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.service.details.ir.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Self-hosted Integration Runtime node]]></Val>
+          <Val><![CDATA[Self-hosted integration runtime node]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[セルフホステッド統合ランタイム ノード]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Self-hosted Integration Runtime node]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2634,52 +2310,58 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.service.not.found" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[No Migration Services found. Please create a new one.]]></Val>
+          <Val><![CDATA[No Migration Services found. To continue, create a new one.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Migration Services が見つかりません。新しいものを作成してください。]]></Val>
+            <Val><![CDATA[Migration Services が見つかりません。新しく作成してください。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[No Migration Services found. Please create a new one.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.service.not.ready" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Database Migration Service is not registered. Azure Database Migration Service '{0}' needs to be registered with self-hosted Integration Runtime on any node.]]></Val>
+          <Val><![CDATA[Azure Database Migration Service is not registered. Azure Database Migration Service '{0}' needs to be registered with self-hosted integration runtime on any node.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Azure Database Migration Service が登録されていません。Azure Database Migration Service '{0}' は、任意のノードでセルフホステッド統合ランタイムに登録する必要があります。]]></Val>
           </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.service.not.setup" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Please add a Migration Service to proceed.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Migration Service を追加して続行してください。]]></Val>
-          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure Database Migration Service is not registered. Azure Database Migration Service '{0}' needs to be registered with self-hosted Integration Runtime on any node.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.service.ready" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Database Migration Service '{0}' is connected to self-hosted Integration Runtime running on the node - {1}]]></Val>
+          <Val><![CDATA[Azure Database Migration Service '{0}' is connected to self-hosted integration runtime running on the node - {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Azure Database Migration Service '{0}' は、ノード - {1} で実行中のセルフホステッド統合ランタイムに接続されています。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure Database Migration Service '{0}' is connected to self-hosted Integration Runtime running on the node - {1}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.service.status.refresh.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[An error occurred while refreshing the migration service creation status.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Migration Service の作成ステータスを更新中にエラーが発生しました。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.services.container.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Enter the information below to add a new Azure Database Migration Service.]]></Val>
+          <Val><![CDATA[Enter the SQL Authentication credentials used to connect to SQL Server Instance {0}. These credentials will be used to connect to the SQL Server instance and identifying valid backup file(s).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[以下の情報を入力して、新しい Azure Database Migration Service を追加します。]]></Val>
+            <Val><![CDATA[SQL Server インスタンス {0} への接続に使用する SQL 認証の資格情報を入力します。これらの資格情報は、SQL Server インスタンスに接続して、有効なバックアップ ファイルを識別するために使用されます。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Enter the information below to add a new Azure Database Migration Service.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2694,10 +2376,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.shir" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Self-hosted Integration Runtime node]]></Val>
+          <Val><![CDATA[Self-hosted integration runtime node]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[セルフホステッド統合ランタイム ノード]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Self-hosted Integration Runtime node]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2737,30 +2422,27 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.none" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Based on the results of our source configuration scans, none of your databases can be migrated to Azure SQL.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[ソース構成のスキャン結果に基づき、データベースの中で Azure SQL に移行できるものはありません。]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.recommendation.view.assessment.mi" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[View assessment results and select one or more  database(s) to migrate to Azure SQL Managed Instance (PaaS)]]></Val>
+          <Val><![CDATA[To migrate to Azure SQL Managed Instance (PaaS), view assessment results and select one or more database(s).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[評価結果を表示し、Azure SQL Managed Instance (PaaS) に移行する 1 つ以上のデータベースを選択します]]></Val>
+            <Val><![CDATA[Azure SQL Managed Instance (PaaS) に移行するには、評価結果を表示し、1 つ以上のデータベースを選択します。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[View assessment results and select one or more  database(s) to migrate to Azure SQL Managed Instance (PaaS)]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sku.recommendation.view.assessment.vm" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[View assessment results and select one or more  database(s) to migrate to SQL Server on Azure Virtual Machine (IaaS)]]></Val>
+          <Val><![CDATA[To migrate to SQL Server on Azure Virtual Machine (IaaS), view assessment results and select one or more database(s).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[評価結果を表示し、SQL Server on Azure Virtual Machine (IaaS) に移行する 1 つ以上のデータベースを選択します]]></Val>
+            <Val><![CDATA[SQL Server on Azure Virtual Machine (IaaS) に移行するには、評価結果を表示し、1 つ以上のデータベースを選択します。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[View assessment results and select one or more  database(s) to migrate to SQL Server on Azure Virtual Machine (IaaS)]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2811,19 +2493,25 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.source.details.sqlAuth" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Enter the SQL Authentication credential used for connecting to SQL Server Instance {0}. ​ This credential will be used to for connecting to SQL Server instance and identifying valid backup file(s)]]></Val>
+          <Val><![CDATA[Enter the SQL Authentication credentials used to connect to SQL Server Instance {0}. ​These credentials will be used to connect to the SQL Server instance and identify valid backup file(s).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[SQL Server インスタンス {0} への接続に使用する SQL 認証の資格情報を入力します。​ この資格情報は、SQL Server インスタンスに接続して、有効なバックアップ ファイルを識別するために使用されます]]></Val>
+            <Val><![CDATA[SQL Server インスタンス {0} への接続に使用する SQL 認証の資格情報を入力します。​これらの資格情報は、SQL Server インスタンスに接続して、有効なバックアップ ファイルを識別するために使用されます。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Enter the SQL Authentication credential used for connecting to SQL Server Instance {0}. ​ This credential will be used to for connecting to SQL Server instance and identifying valid backup file(s)]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.source.details.windowAuth" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Enter the Windows Authentication credential used for connecting to SQL Server Instance {0}. ​ This credential will be used to for connecting to SQL Server instance and identifying valid backup file(s)]]></Val>
+          <Val><![CDATA[Enter the Windows Authentication credentials used to connect to SQL Server Instance {0}. These credentials will be used to connect to the SQL Server instance and identify valid backup file(s).]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[SQL Server インスタンス {0} への接続に使用する Windows 認証の資格情報を入力します。​ この資格情報は、SQL Server インスタンスに接続して、有効なバックアップ ファイルを識別するために使用されます]]></Val>
+            <Val><![CDATA[SQL Server インスタンス {0} への接続に使用する Windows 認証の資格情報を入力します。これらの資格情報は、SQL Server インスタンスに接続して、有効なバックアップ ファイルを識別するために使用されます。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Enter the Windows Authentication credential used for connecting to SQL Server Instance {0}. ​ This credential will be used to for connecting to SQL Server instance and identifying valid backup file(s)]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2850,15 +2538,6 @@
           <Val><![CDATA[SQL migration assessment]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[SQL 移行評価]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.sql.login" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[SQL Login]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[SQL ログイン]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2895,15 +2574,6 @@
           <Val><![CDATA[Start Time]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[開始時刻]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.started.notification" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Migration in progress]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[移行が進行中です]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3058,38 +2728,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.submit" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Submit]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[送信]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.subscription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Subscription]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[サブスクリプション]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.successfully.migrated.to.azure.sql" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Successfully migrated to Azure SQL]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure SQL に正常に移行されました]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.summary.azure.account.linked" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Azure account linked]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[リンク済みの Azure アカウント]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3114,10 +2757,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.summary.database.count" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Database(s) to be migrated]]></Val>
+          <Val><![CDATA[Database(s) for migration]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[移行されるデータベース]]></Val>
+            <Val><![CDATA[移行のデータベース]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Database(s) to be migrated]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3130,29 +2776,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.summary.migration.target" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Migration target]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[移行のターゲット]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.summary.page.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Summary]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[概要]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.summary.target.name" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Target Databases:]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[ターゲット データベース:]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3189,15 +2817,6 @@
           <Val><![CDATA[Target database name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[ターゲット データベース名]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.target.page.title" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Choose the target Azure SQL]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[ターゲット Azure SQL の選択]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3319,15 +2938,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.windows.auth" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Windows Authentication]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Windows 認証]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.account.add.button.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Link account]]></Val>
@@ -3357,18 +2967,21 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.account.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Select an Azure account linked to Azure Data Studio or link one now.]]></Val>
+          <Val><![CDATA[Select an Azure account linked to Azure Data Studio, or link one now.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Azure Data Studio にリンクされている Azure アカウントを選択するか、今すぐリンクします。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Select an Azure account linked to Azure Data Studio or link one now.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.account.noaccount.error" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.account.noAccount.error" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[There is no linked account. Please add an account.]]></Val>
+          <Val><![CDATA[Add a linked account and then try again.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[リンクされているアカウントはありません。アカウントを追加してください。]]></Val>
+            <Val><![CDATA[リンクされたアカウントを追加して、もう一度お試しください。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3384,9 +2997,21 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.sku.all" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Based on the assessment results, all {0} of your database(s) in online state can be migrated to Azure SQL.]]></Val>
+          <Val><![CDATA[Based on the assessment results, all {0} of your database(s) in an online state can be migrated to Azure SQL.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[評価結果に基づき、オンライン状態のデータベース {0} すべてを Azure SQL に移行することができます。]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Based on the assessment results, all {0} of your database(s) in online state can be migrated to Azure SQL.]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.sku.assessment.error" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[An error occurred while assessing the server '{0}'.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[サーバー '{0}' の評価中にエラーが発生しました。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3400,65 +3025,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.sku.some" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Based on the results of our source configuration scans, {0} out of {1} of your databases can be migrated to Azure SQL.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[ソース構成のスキャン結果に基づき、{1} のデータベースのうち {0} を Azure SQL に移行できます。]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.sku.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure SQL Target]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Azure SQL Target]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.source_configuration.title" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[SQL Source Configuration]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[SQL ソース構成]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.subscription.azure.account.title" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Azure Account]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure アカウント]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.subscription.azure.product.title" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Azure Product]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure Product]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.subscription.azure.subscription.title" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Azure Subscription]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure サブスクリプション]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.wizard.subscription.title" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Azure Subscription Selection]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure サブスクリプションの選択]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3628,7 +3199,7 @@
       <Item ItemId=";extensions/sql-migration/package.view-service-menu" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Database Migration Service details]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Database Migration Service の詳細]]></Val>
           </Tgt>
           <Prev Cat="Text">

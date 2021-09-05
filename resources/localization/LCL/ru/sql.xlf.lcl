@@ -8058,6 +8058,9 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebook.contribution.notebook.enableIncrementalGridRendering" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enable incremental grid rendering for notebooks. This will improve the initial rendering time for large notebooks. There may be performance issues when interacting with the notebook while the rest of the grids are rendering.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Включить отрисовку добавочных сеток для записных книжек. Это улучшит время первоначальной отрисовки для больших ноутбуков. При взаимодействии с записной книжкой во время отрисовки остальных сеток могут возникнуть проблемы с производительностью.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -8583,6 +8586,9 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebookActions.newViewLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Create New View]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Создать новое представление]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -8688,6 +8694,9 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebookActions.viewNotFound" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Unable to find view: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Не удается найти представление: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -8910,24 +8919,36 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebookViews/insertCellsModal.insertCellsModal.selectCells" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select cell sources]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Выбрать источники ячеек]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebookViews/insertCellsModal.insertCellsModal.thumbnailError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error: Unable to generate thumbnails.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ошибка: не удается создать эскизы.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebookViews/insertCellsModal.insertCellsModal.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Insert cells]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Вставить ячейки]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebookViews/insertCellsModal.insertCellsModal.untitled" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Untitled Cell : {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ячейка без названия: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -8961,6 +8982,9 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsActions.confirmDelete" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Are you sure you want to delete view "{0}"?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Вы действительно хотите удалить представление "{0}"?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -8968,7 +8992,7 @@
         <Str Cat="Text">
           <Val><![CDATA[&&Delete]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[&&Удалить]]></Val>
+            <Val><![CDATA[&&Delete]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -8985,6 +9009,9 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsActions.insertCells" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Insert Cells]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Вставить ячейки]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -9001,7 +9028,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Run cell]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Выполнить ячейку]]></Val>
+            <Val><![CDATA[Запустить ячейку]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -9018,18 +9045,27 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsActions.unableToNavigateToCell" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Unable to navigate to notebook cell.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Не удается перейти в ячейку записной книжки.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsActions.viewCellInNotebook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[View Cell In Notebook]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Просмотреть ячейку в записной книжке]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsActions.viewsUnableToRemove" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Unable to remove view]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Не удается удалить представление]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -9081,12 +9117,18 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebookViews/viewOptionsModal.viewOptionsModal.nameTaken" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[This view name has already been taken.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Это имя представления уже используется.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebookViews/viewOptionsModal.viewOptionsModal.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Configure View]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Настроить представление]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -13971,6 +14013,9 @@
       <Item ItemId=";src/sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension.notebookView.untitledView" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Untitled View]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Представление без названия]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
