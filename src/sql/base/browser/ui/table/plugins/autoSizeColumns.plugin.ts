@@ -14,6 +14,10 @@ const defaultOptions: IAutoColumnSizeOptions = {
 	autoSizeOnRender: false
 };
 
+// Set the max number of rows to scan to 10 since the result grid viewport in query editor is usually around 10 rows but can go up to 20 rows for notebooks.
+// In most cases, 10 rows are enough to get a reasonable width and will cut down measuring costs for large notebooks.
+const MAX_ROWS_TO_SCAN = 10;
+
 export class AutoColumnSize<T extends Slick.SlickData> implements Slick.Plugin<T> {
 	private _grid!: Slick.Grid<T>;
 	private _$container!: JQuery;
@@ -78,20 +82,33 @@ export class AutoColumnSize<T extends Slick.SlickData> implements Slick.Plugin<T
 				col.asyncPostRender = origCols[index].asyncPostRender;
 			});
 			let change = false;
+			let headerElements: HTMLElement[] = [];
+			let columnDefs: Slick.Column<T>[] = [];
+			let colIndices: number[] = [];
+
 			for (let i = 0; i <= headerColumns.children.length; i++) {
 				let headerEl = jQuery(headerColumns.children.item(i)!);
 				let columnDef = headerEl.data('column');
 				if (columnDef) {
-					let headerWidth = this.getElementWidth(headerEl[0]);
-					let colIndex = this._grid.getColumnIndex(columnDef.id);
-					let column = allColumns[colIndex];
-					let autoSizeWidth = Math.max(headerWidth, this.getMaxColumnTextWidth(columnDef, colIndex)) + 1;
-					if (autoSizeWidth !== column.width) {
-						allColumns[colIndex].width = autoSizeWidth;
-						change = true;
-					}
+					headerElements.push(headerEl[0]);
+					columnDefs.push(columnDef);
+					colIndices.push(this._grid.getColumnIndex(columnDef.id));
 				}
 			}
+
+			let headerWidths: number[] = this.getElementWidths(headerElements);
+			let maxColumnTextWidths: number[] = this.getMaxColumnTextWidths(columnDefs, colIndices);
+
+			for (let i = 0; i < columnDefs.length; i++) {
+				let colIndex: number = colIndices[i];
+				let column: Slick.Column<T> = allColumns[colIndex];
+				let autoSizeWidth: number = Math.max(headerWidths[i], maxColumnTextWidths[i]) + 1;
+				if (autoSizeWidth !== column.width) {
+					allColumns[colIndex].width = autoSizeWidth;
+					change = true;
+				}
+			}
+
 			if (change) {
 				this.onPostEventHandler.unsubscribeAll();
 				this._grid.setColumns(allColumns);
@@ -115,7 +132,7 @@ export class AutoColumnSize<T extends Slick.SlickData> implements Slick.Plugin<T
 	}
 
 	private reSizeColumn(headerEl: JQuery, columnDef: Slick.Column<T>) {
-		let headerWidth = this.getElementWidth(headerEl[0]);
+		let headerWidth = this.getElementWidths([headerEl[0]])[0];
 		let colIndex = this._grid.getColumnIndex(columnDef.id!);
 		let origCols = this._grid.getColumns();
 		let allColumns = deepClone(origCols);
@@ -134,27 +151,69 @@ export class AutoColumnSize<T extends Slick.SlickData> implements Slick.Plugin<T
 		}
 	}
 
+	/**
+	 * For each column, find the max width of the texts in the first MAX_ROW_TO_SCAN rows.
+	 * @param columnDefs Column definitions of all columns that need to be resized
+	 * @param colIndices Column indices of all columns that need to be resized
+	 * @returns An array of the max widths of each column
+	 */
+	private getMaxColumnTextWidths(columnDefs: Slick.Column<T>[], colIndices: number[]): number[] {
+		let data = this._grid.getData() as Slick.DataProvider<T>;
+		let viewPort = this._grid.getViewport();
+		let start = Math.max(0, viewPort.top);
+		let end = Math.min(data.getLength(), MAX_ROWS_TO_SCAN);
+		let allTexts: Array<string>[] = [];
+		let rowElements: JQuery[] = [];
+
+		columnDefs.forEach((columnDef) => {
+			let texts: Array<string> = [];
+			for (let i = start; i < end; i++) {
+				texts.push(data.getItem(i)[columnDef.field!]);
+			}
+			allTexts.push(texts);
+			let rowEl = this.createRow();
+			rowElements.push(rowEl);
+		});
+
+		let templates = this.getMaxTextTemplates(allTexts, columnDefs, colIndices, data, rowElements);
+
+		let widths = this.getTemplateWidths(rowElements, templates);
+
+		return widths.map((width) => Math.min(this._options.maxWidth, width));
+	}
+
 	private getMaxColumnTextWidth(columnDef: Slick.Column<T>, colIndex: number): number {
 		let texts: Array<string> = [];
 		let rowEl = this.createRow();
 		let data = this._grid.getData() as Slick.DataProvider<T>;
 		let viewPort = this._grid.getViewport();
 		let start = Math.max(0, viewPort.top);
-		let end = Math.min(data.getLength(), viewPort.bottom);
+		let end = Math.min(data.getLength(), MAX_ROWS_TO_SCAN);
 		for (let i = start; i < end; i++) {
 			texts.push(data.getItem(i)[columnDef.field!]);
 		}
 		let template = this.getMaxTextTemplate(texts, columnDef, colIndex, data, rowEl);
-		let width = this.getTemplateWidth(rowEl, template);
+		let width = this.getTemplateWidths([rowEl], [template])[0];
 		this.deleteRow(rowEl);
 		return width > this._options.maxWidth! ? this._options.maxWidth! : width;
 	}
 
-	private getTemplateWidth(rowEl: JQuery, template: JQuery | HTMLElement | string): number {
-		let cell = jQuery(rowEl.find('.slick-cell'));
-		cell.append(template);
-		jQuery(cell).find('*').css('position', 'relative');
-		return cell.outerWidth() + 1;
+	private getTemplateWidths(rowElements: JQuery[], templates: (JQuery | HTMLElement | string)[]): number[] {
+		// Write all changes first then read all widths to prevent layout thrashing
+		// (https://developers.google.com/web/fundamentals/performance/rendering/avoid-large-complex-layouts-and-layout-thrashing)
+		const cells: JQuery[] = templates.map((template, index) => {
+			let rowEl = rowElements[index];
+			let cell = jQuery(rowEl.find('.slick-cell'));
+			cell.append(template);
+			jQuery(cell).find('*').css('position', 'relative');
+			return cell;
+		});
+
+		return cells.map(cell => cell.outerWidth() + 1);
+	}
+
+	private getMaxTextTemplates(allTexts: string[][], columnDefs: Slick.Column<T>[], colIndices: number[], data: Slick.DataProvider<T>, rowElements: JQuery[]): (JQuery | HTMLElement | string)[] {
+		return columnDefs.map((columnDef, index) => this.getMaxTextTemplate(allTexts[index], columnDef, colIndices[index], data, rowElements[index]));
 	}
 
 	private getMaxTextTemplate(texts: string[], columnDef: Slick.Column<T>, colIndex: number, data: Slick.DataProvider<T>, rowEl: JQuery): JQuery | HTMLElement | string {
@@ -192,13 +251,28 @@ export class AutoColumnSize<T extends Slick.SlickData> implements Slick.Plugin<T
 		jQuery(rowEl).remove();
 	}
 
-	private getElementWidth(element: HTMLElement): number {
-		let width, clone = element.cloneNode(true) as HTMLElement;
-		clone.style.cssText = 'position: absolute; visibility: hidden;right: auto;text-overflow: initial;white-space: nowrap;';
-		element.parentNode!.insertBefore(clone, element);
-		width = clone.offsetWidth;
-		clone.parentNode!.removeChild(clone);
-		return width;
+	private getElementWidths(elements: HTMLElement[]): number[] {
+		let clones: HTMLElement[] = [];
+		let widths: number[] = [];
+
+		// Write all changes first then read all widths to prevent layout thrashing
+		// (https://developers.google.com/web/fundamentals/performance/rendering/avoid-large-complex-layouts-and-layout-thrashing)
+		elements.forEach((element) => {
+			let clone = element.cloneNode(true) as HTMLElement;
+			clone.style.cssText = 'position: absolute; visibility: hidden;right: auto;text-overflow: initial;white-space: nowrap;';
+			element.parentNode!.insertBefore(clone, element);
+			clones.push(clone);
+		});
+
+		clones.forEach(clone => {
+			widths.push(clone.offsetWidth);
+		});
+
+		clones.forEach(clone => {
+			clone.parentNode!.removeChild(clone);
+		});
+
+		return widths;
 	}
 
 	private getElementWidthUsingCanvas(element: JQuery, text: string): number {
