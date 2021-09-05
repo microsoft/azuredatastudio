@@ -494,6 +494,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.newSupportRequest">
       <source xml:lang="en">New support request</source>
     </trans-unit>
+    <trans-unit id="sql.migration.all.fields.required">
+      <source xml:lang="en">All fields are required.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.summary.page.title">
       <source xml:lang="en">Summary</source>
     </trans-unit>
