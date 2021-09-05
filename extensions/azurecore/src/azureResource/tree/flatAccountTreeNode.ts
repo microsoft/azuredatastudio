@@ -118,7 +118,7 @@ async function getSubscriptionInfo(account: AzureAccount, subscriptionService: I
 	total: number,
 	selected: number
 }> {
-	let subscriptions = await subscriptionService.getAllSubscriptions(account);
+	let subscriptions = await subscriptionService.getSubscriptions(account);
 	const total = subscriptions.length;
 	let selected = total;
 
