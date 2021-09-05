@@ -384,3 +384,16 @@ export const defaultDSP = targetPlatformToVersion.get(defaultTargetPlatform)!;
 export function getTargetPlatformFromVersion(version: string): string {
 	return Array.from(targetPlatformToVersion.keys()).filter(k => targetPlatformToVersion.get(k) === version)[0];
 }
+
+// Insert SQL binding
+export const hostFileName = 'host.json';
+export const placeHolderObject = '[dbo].[table1]';
+export const input = localize('input', "Input");
+export const output = localize('output', "Output");
+export const selectBindingType = localize('selectBindingType', "Select type of binding");
+export const selectAzureFunction = localize('selectAzureFunction', "Select an Azure function in the current file to add SQL binding to");
+export const sqlObjectToQuery = localize('sqlObjectToQuery', "SQL object to query");
+export const sqlTableToUpsert = localize('sqlTableToUpsert', "SQL table to upsert into");
+export const connectionStringSetting = localize('connectionStringSetting', "Connection string setting name");
+export const connectionStringSettingPlaceholder = localize('connectionStringSettingPlaceholder', "Connection string setting specified in \"local.settings.json\"");
+export const noAzureFunctionsInFile = localize('noAzureFunctionsInFile', "No Azure functions in the current active file");

@@ -34,5 +34,7 @@
 	"sqlDatabaseProjects.Settings": "Database Projects",
 	"sqlDatabaseProjects.netCoreInstallLocation": "Full path to .NET Core SDK on the machine.",
 	"sqlDatabaseProjects.netCoreDoNotAsk": "Whether to prompt the user to install .NET Core when not detected.",
-	"sqlDatabaseProjects.welcome": "No database projects currently open.\n[New Project](command:sqlDatabaseProjects.new)\n[Open Project](command:sqlDatabaseProjects.open)\n[Create Project From Database](command:sqlDatabaseProjects.importDatabase)"
+	"sqlDatabaseProjects.welcome": "No database projects currently open.\n[New Project](command:sqlDatabaseProjects.new)\n[Open Project](command:sqlDatabaseProjects.open)\n[Create Project From Database](command:sqlDatabaseProjects.importDatabase)",
+
+	"sqlDatabaseProjects.addSqlBinding":"Add SQL Binding"
 }
