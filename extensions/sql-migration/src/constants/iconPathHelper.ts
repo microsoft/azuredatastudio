@@ -111,7 +111,7 @@ export class IconPathHelper {
 		};
 		IconPathHelper.info = {
 			light: context.asAbsolutePath('images/info.svg'),
-			dark: context.asAbsolutePath('images/infoBox.svg')
+			dark: context.asAbsolutePath('images/info.svg')
 		};
 		IconPathHelper.error = {
 			light: context.asAbsolutePath('images/error.svg'),
