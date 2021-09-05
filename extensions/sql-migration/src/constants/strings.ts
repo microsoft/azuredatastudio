@@ -35,6 +35,9 @@ export const SKU_RECOMMENDATION_PAGE_TITLE = localize('sql.migration.wizard.sku.
 export const SKU_RECOMMENDATION_ALL_SUCCESSFUL = (databaseCount: number): string => {
 	return localize('sql.migration.wizard.sku.all', "Based on the assessment results, all {0} of your database(s) in online state can be migrated to Azure SQL.", databaseCount);
 };
+export const SKU_RECOMMENDATION_ASSESSMENT_ERROR = (serverName: string): string => {
+	return localize('sql.migration.qizard.sku.assessment.error', "An error occurred while assessing the server '{0}'.", serverName);
+};
 export const SKU_RECOMMENDATION_SOME_SUCCESSFUL = (migratableCount: number, databaseCount: number): string => {
 	return localize('sql.migration.wizard.sku.some', "Based on the results of our source configuration scans, {0} out of {1} of your databases can be migrated to Azure SQL.", migratableCount, databaseCount);
 };
