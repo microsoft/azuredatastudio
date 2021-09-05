@@ -2896,6 +2896,9 @@ Error: {1}</source>
     <trans-unit id="notebook.useAbsoluteFilePaths">
       <source xml:lang="en">Use absolute file paths when linking to other notebooks.</source>
     </trans-unit>
+    <trans-unit id="notebook.enableIncrementalGridRendering">
+      <source xml:lang="en">Enable incremental grid rendering for notebooks. This will improve the initial rendering time for large notebooks. There may be performance issues when interacting with the notebook while the rest of the grids are rendering.</source>
+    </trans-unit>
     <trans-unit id="searchConfigurationTitle">
       <source xml:lang="en">Search Notebooks</source>
     </trans-unit>
