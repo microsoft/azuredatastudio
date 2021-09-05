@@ -4063,7 +4063,7 @@ Erro: {1}</target>
       </trans-unit>
       <trans-unit id="notebook.enableIncrementalGridRendering">
         <source xml:lang="en">Enable incremental grid rendering for notebooks. This will improve the initial rendering time for large notebooks. There may be performance issues when interacting with the notebook while the rest of the grids are rendering.</source>
-        <target state="new">Enable incremental grid rendering for notebooks. This will improve the initial rendering time for large notebooks. There may be performance issues when interacting with the notebook while the rest of the grids are rendering.</target>
+        <target state="translated">Habilitar a renderização em grade incremental para blocos de anotações. Isto melhorará o tempo inicial de renderização para grandes blocos de anotações. Pode haver problemas de desempenho ao interagir com o bloco de anotações enquanto o resto das grades estão sendo renderizadas.</target>
       </trans-unit>
       <trans-unit id="searchConfigurationTitle">
         <source xml:lang="en">Search Notebooks</source>
@@ -4299,11 +4299,11 @@ Erro: {1}</target>
       </trans-unit>
       <trans-unit id="newViewLabel">
         <source xml:lang="en">Create New View</source>
-        <target state="new">Create New View</target>
+        <target state="translated">Criar novo modo de exibição</target>
       </trans-unit>
       <trans-unit id="viewNotFound">
         <source xml:lang="en">Unable to find view: {0}</source>
-        <target state="new">Unable to find view: {0}</target>
+        <target state="translated">Não é possível encontrar o modo de exibição: {0}</target>
       </trans-unit>
       <trans-unit id="trustLabel">
         <source xml:lang="en">Trusted</source>
@@ -4467,7 +4467,7 @@ Erro: {1}</target>
       </trans-unit>
       <trans-unit id="insertCellsModal.untitled">
         <source xml:lang="en">Untitled Cell : {0}</source>
-        <target state="new">Untitled Cell : {0}</target>
+        <target state="translated">Célula Sem Título: {0}</target>
       </trans-unit>
       <trans-unit id="insertCellsModal.Insert">
         <source xml:lang="en">Insert</source>
@@ -4499,11 +4499,11 @@ Erro: {1}</target>
     <body>
       <trans-unit id="viewsUnableToRemove">
         <source xml:lang="en">Unable to remove view</source>
-        <target state="new">Unable to remove view</target>
+        <target state="translated">Não foi possível remover o modo de exibição</target>
       </trans-unit>
       <trans-unit id="confirmDelete">
         <source xml:lang="en">Are you sure you want to delete view "{0}"?</source>
-        <target state="new">Are you sure you want to delete view "{0}"?</target>
+        <target state="translated">Tem certeza de que deseja excluir a exibição "{0}"</target>
       </trans-unit>
       <trans-unit id="delete">
         <source xml:lang="en">&amp;&amp;Delete</source>
@@ -4511,7 +4511,7 @@ Erro: {1}</target>
       </trans-unit>
       <trans-unit id="insertCells">
         <source xml:lang="en">Insert Cells</source>
-        <target state="new">Insert Cells</target>
+        <target state="translated">Inserir Células</target>
       </trans-unit>
       <trans-unit id="runCell">
         <source xml:lang="en">Run cell</source>
@@ -4527,11 +4527,11 @@ Erro: {1}</target>
       </trans-unit>
       <trans-unit id="unableToNavigateToCell">
         <source xml:lang="en">Unable to navigate to notebook cell.</source>
-        <target state="new">Unable to navigate to notebook cell.</target>
+        <target state="translated">Não é possível navegar até a célula do bloco de anotações.</target>
       </trans-unit>
       <trans-unit id="viewCellInNotebook">
         <source xml:lang="en">View Cell In Notebook</source>
-        <target state="new">View Cell In Notebook</target>
+        <target state="translated">Exibir Célula no Bloco de Anotações</target>
       </trans-unit>
       <trans-unit id="moreActionsLabel">
         <source xml:lang="en">More</source>
@@ -4559,7 +4559,7 @@ Erro: {1}</target>
     <body>
       <trans-unit id="viewOptionsModal.title">
         <source xml:lang="en">Configure View</source>
-        <target state="new">Configure View</target>
+        <target state="translated">Configurar Modo de Exibição</target>
       </trans-unit>
       <trans-unit id="viewOptionsModal.name">
         <source xml:lang="en">View Name</source>
@@ -7147,7 +7147,7 @@ Erro: {1}</target>
     <body>
       <trans-unit id="notebookView.untitledView">
         <source xml:lang="en">Untitled View</source>
-        <target state="new">Untitled View</target>
+        <target state="translated">Modo de Exibição Sem Título</target>
       </trans-unit>
     </body>
   </file>

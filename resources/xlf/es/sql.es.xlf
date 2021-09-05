@@ -3959,11 +3959,11 @@ Error: {1}</target>
       </trans-unit>
       <trans-unit id="views">
         <source xml:lang="en">Views</source>
-        <target state="new">Views</target>
+        <target state="translated">Vistas</target>
       </trans-unit>
       <trans-unit id="editor">
         <source xml:lang="en">Editor</source>
-        <target state="new">Editor</target>
+        <target state="translated">Editor</target>
       </trans-unit>
       <trans-unit id="code">
         <source xml:lang="en">Code</source>
@@ -4295,15 +4295,15 @@ Error: {1}</target>
       </trans-unit>
       <trans-unit id="notebookViewLabel">
         <source xml:lang="en">Editor</source>
-        <target state="new">Editor</target>
+        <target state="translated">Editor</target>
       </trans-unit>
       <trans-unit id="newViewLabel">
         <source xml:lang="en">Create New View</source>
-        <target state="new">Create New View</target>
+        <target state="translated">Crear nueva vista</target>
       </trans-unit>
       <trans-unit id="viewNotFound">
         <source xml:lang="en">Unable to find view: {0}</source>
-        <target state="new">Unable to find view: {0}</target>
+        <target state="translated">No se encuentra la vista: {0}</target>
       </trans-unit>
       <trans-unit id="trustLabel">
         <source xml:lang="en">Trusted</source>
@@ -4455,27 +4455,27 @@ Error: {1}</target>
     <body>
       <trans-unit id="insertCellsModal.title">
         <source xml:lang="en">Insert cells</source>
-        <target state="new">Insert cells</target>
+        <target state="translated">Insertar celdas</target>
       </trans-unit>
       <trans-unit id="insertCellsModal.selectCells">
         <source xml:lang="en">Select cell sources</source>
-        <target state="new">Select cell sources</target>
+        <target state="translated">Seleccionar orígenes de celdas</target>
       </trans-unit>
       <trans-unit id="insertCellsModal.thumbnailError">
         <source xml:lang="en">Error: Unable to generate thumbnails.</source>
-        <target state="new">Error: Unable to generate thumbnails.</target>
+        <target state="translated">Error: no se pueden generar miniaturas.</target>
       </trans-unit>
       <trans-unit id="insertCellsModal.untitled">
         <source xml:lang="en">Untitled Cell : {0}</source>
-        <target state="new">Untitled Cell : {0}</target>
+        <target state="translated">Celda sin título: {0}</target>
       </trans-unit>
       <trans-unit id="insertCellsModal.Insert">
         <source xml:lang="en">Insert</source>
-        <target state="new">Insert</target>
+        <target state="translated">Insertar</target>
       </trans-unit>
       <trans-unit id="insertCellsModal.Cancel">
         <source xml:lang="en">Cancel</source>
-        <target state="new">Cancel</target>
+        <target state="translated">Cancelar</target>
       </trans-unit>
     </body>
   </file>
@@ -4491,7 +4491,7 @@ Error: {1}</target>
       </trans-unit>
       <trans-unit id="runAllPreview">
         <source xml:lang="en">Run all</source>
-        <target state="new">Run all</target>
+        <target state="translated">Ejecutar todo</target>
       </trans-unit>
     </body>
   </file>
@@ -4499,27 +4499,27 @@ Error: {1}</target>
     <body>
       <trans-unit id="viewsUnableToRemove">
         <source xml:lang="en">Unable to remove view</source>
-        <target state="new">Unable to remove view</target>
+        <target state="translated">No se puede quitar la vista</target>
       </trans-unit>
       <trans-unit id="confirmDelete">
         <source xml:lang="en">Are you sure you want to delete view "{0}"?</source>
-        <target state="new">Are you sure you want to delete view "{0}"?</target>
+        <target state="translated">¿Está seguro de que desea eliminar la vista "{0}"?</target>
       </trans-unit>
       <trans-unit id="delete">
         <source xml:lang="en">&amp;&amp;Delete</source>
-        <target state="new">&amp;&amp;Delete</target>
+        <target state="translated">&amp;&amp;Eliminar</target>
       </trans-unit>
       <trans-unit id="insertCells">
         <source xml:lang="en">Insert Cells</source>
-        <target state="new">Insert Cells</target>
+        <target state="translated">Insertar celdas</target>
       </trans-unit>
       <trans-unit id="runCell">
         <source xml:lang="en">Run cell</source>
-        <target state="new">Run cell</target>
+        <target state="translated">Ejecutar celda</target>
       </trans-unit>
       <trans-unit id="stopCell">
         <source xml:lang="en">Cancel execution</source>
-        <target state="new">Cancel execution</target>
+        <target state="translated">Cancelar ejecución</target>
       </trans-unit>
       <trans-unit id="errorRunCell">
         <source xml:lang="en">Error on last run. Click to run again</source>
@@ -4527,15 +4527,15 @@ Error: {1}</target>
       </trans-unit>
       <trans-unit id="unableToNavigateToCell">
         <source xml:lang="en">Unable to navigate to notebook cell.</source>
-        <target state="new">Unable to navigate to notebook cell.</target>
+        <target state="translated">No se puede navegar a la celda del Bloc de notas.</target>
       </trans-unit>
       <trans-unit id="viewCellInNotebook">
         <source xml:lang="en">View Cell In Notebook</source>
-        <target state="new">View Cell In Notebook</target>
+        <target state="translated">Ver celda en Bloc de notas</target>
       </trans-unit>
       <trans-unit id="moreActionsLabel">
         <source xml:lang="en">More</source>
-        <target state="new">More</target>
+        <target state="translated">Más</target>
       </trans-unit>
     </body>
   </file>
@@ -4559,11 +4559,11 @@ Error: {1}</target>
     <body>
       <trans-unit id="viewOptionsModal.title">
         <source xml:lang="en">Configure View</source>
-        <target state="new">Configure View</target>
+        <target state="translated">Configurar vista</target>
       </trans-unit>
       <trans-unit id="viewOptionsModal.name">
         <source xml:lang="en">View Name</source>
-        <target state="new">View Name</target>
+        <target state="translated">Nombre de vista</target>
       </trans-unit>
       <trans-unit id="viewOptionsModal.missingRequireField">
         <source xml:lang="en">This field is required.</source>
@@ -4571,15 +4571,15 @@ Error: {1}</target>
       </trans-unit>
       <trans-unit id="viewOptionsModal.nameTaken">
         <source xml:lang="en">This view name has already been taken.</source>
-        <target state="new">This view name has already been taken.</target>
+        <target state="translated">Este nombre de vista ya se está usando.</target>
       </trans-unit>
       <trans-unit id="save">
         <source xml:lang="en">Save</source>
-        <target state="new">Save</target>
+        <target state="translated">Guardar</target>
       </trans-unit>
       <trans-unit id="cancel">
         <source xml:lang="en">Cancel</source>
-        <target state="new">Cancel</target>
+        <target state="translated">Cancelar</target>
       </trans-unit>
     </body>
   </file>
@@ -7148,7 +7148,7 @@ Error: {1}</target>
     <body>
       <trans-unit id="notebookView.untitledView">
         <source xml:lang="en">Untitled View</source>
-        <target state="new">Untitled View</target>
+        <target state="translated">Vista sin título</target>
       </trans-unit>
     </body>
   </file>

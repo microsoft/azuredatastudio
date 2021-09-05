@@ -4299,11 +4299,11 @@ Error: {1}</source>
       </trans-unit>
       <trans-unit id="newViewLabel">
         <source xml:lang="en">Create New View</source>
-        <target state="new">Create New View</target>
+        <target state="translated">新しいビューの作成</target>
       </trans-unit>
       <trans-unit id="viewNotFound">
         <source xml:lang="en">Unable to find view: {0}</source>
-        <target state="new">Unable to find view: {0}</target>
+        <target state="translated">ビューが見つかりません: {0}</target>
       </trans-unit>
       <trans-unit id="trustLabel">
         <source xml:lang="en">Trusted</source>
@@ -4499,15 +4499,15 @@ Error: {1}</source>
     <body>
       <trans-unit id="viewsUnableToRemove">
         <source xml:lang="en">Unable to remove view</source>
-        <target state="new">Unable to remove view</target>
+        <target state="translated">ビューを削除できません</target>
       </trans-unit>
       <trans-unit id="confirmDelete">
         <source xml:lang="en">Are you sure you want to delete view "{0}"?</source>
-        <target state="new">Are you sure you want to delete view "{0}"?</target>
+        <target state="translated">ビュー "{0}" を削除しますか?</target>
       </trans-unit>
       <trans-unit id="delete">
         <source xml:lang="en">&amp;&amp;Delete</source>
-        <target state="new">&amp;&amp;Delete</target>
+        <target state="translated">削除(&amp;D)</target>
       </trans-unit>
       <trans-unit id="insertCells">
         <source xml:lang="en">Insert Cells</source>

@@ -3959,11 +3959,11 @@ Fehler: {1}</target>
       </trans-unit>
       <trans-unit id="views">
         <source xml:lang="en">Views</source>
-        <target state="new">Views</target>
+        <target state="translated">Ansichten</target>
       </trans-unit>
       <trans-unit id="editor">
         <source xml:lang="en">Editor</source>
-        <target state="new">Editor</target>
+        <target state="translated">Editor</target>
       </trans-unit>
       <trans-unit id="code">
         <source xml:lang="en">Code</source>
@@ -4063,7 +4063,7 @@ Fehler: {1}</target>
       </trans-unit>
       <trans-unit id="notebook.enableIncrementalGridRendering">
         <source xml:lang="en">Enable incremental grid rendering for notebooks. This will improve the initial rendering time for large notebooks. There may be performance issues when interacting with the notebook while the rest of the grids are rendering.</source>
-        <target state="new">Enable incremental grid rendering for notebooks. This will improve the initial rendering time for large notebooks. There may be performance issues when interacting with the notebook while the rest of the grids are rendering.</target>
+        <target state="translated">Aktivieren Sie inkrementelles Rasterrendering für Notebooks. Hierdurch wird die anfängliche Renderingzeit für große Notebooks verbessert. Bei der Interaktion mit dem Notebook können Leistungsprobleme auftreten, während die restlichen Raster gerendert werden.</target>
       </trans-unit>
       <trans-unit id="searchConfigurationTitle">
         <source xml:lang="en">Search Notebooks</source>
@@ -4295,15 +4295,15 @@ Fehler: {1}</target>
       </trans-unit>
       <trans-unit id="notebookViewLabel">
         <source xml:lang="en">Editor</source>
-        <target state="new">Editor</target>
+        <target state="translated">Editor</target>
       </trans-unit>
       <trans-unit id="newViewLabel">
         <source xml:lang="en">Create New View</source>
-        <target state="new">Create New View</target>
+        <target state="translated">Neue Ansicht erstellen</target>
       </trans-unit>
       <trans-unit id="viewNotFound">
         <source xml:lang="en">Unable to find view: {0}</source>
-        <target state="new">Unable to find view: {0}</target>
+        <target state="translated">Ansicht nicht gefunden: {0}</target>
       </trans-unit>
       <trans-unit id="trustLabel">
         <source xml:lang="en">Trusted</source>
@@ -4455,27 +4455,27 @@ Fehler: {1}</target>
     <body>
       <trans-unit id="insertCellsModal.title">
         <source xml:lang="en">Insert cells</source>
-        <target state="new">Insert cells</target>
+        <target state="translated">Zellen einfügen</target>
       </trans-unit>
       <trans-unit id="insertCellsModal.selectCells">
         <source xml:lang="en">Select cell sources</source>
-        <target state="new">Select cell sources</target>
+        <target state="translated">Zellenquellen auswählen</target>
       </trans-unit>
       <trans-unit id="insertCellsModal.thumbnailError">
         <source xml:lang="en">Error: Unable to generate thumbnails.</source>
-        <target state="new">Error: Unable to generate thumbnails.</target>
+        <target state="translated">Fehler: Miniaturansichten können nicht generiert werden.</target>
       </trans-unit>
       <trans-unit id="insertCellsModal.untitled">
         <source xml:lang="en">Untitled Cell : {0}</source>
-        <target state="new">Untitled Cell : {0}</target>
+        <target state="translated">Zelle ohne Titel: {0}</target>
       </trans-unit>
       <trans-unit id="insertCellsModal.Insert">
         <source xml:lang="en">Insert</source>
-        <target state="new">Insert</target>
+        <target state="translated">Einfügen</target>
       </trans-unit>
       <trans-unit id="insertCellsModal.Cancel">
         <source xml:lang="en">Cancel</source>
-        <target state="new">Cancel</target>
+        <target state="translated">Abbrechen</target>
       </trans-unit>
     </body>
   </file>
@@ -4491,7 +4491,7 @@ Fehler: {1}</target>
       </trans-unit>
       <trans-unit id="runAllPreview">
         <source xml:lang="en">Run all</source>
-        <target state="new">Run all</target>
+        <target state="translated">Alle ausführen</target>
       </trans-unit>
     </body>
   </file>
@@ -4499,27 +4499,27 @@ Fehler: {1}</target>
     <body>
       <trans-unit id="viewsUnableToRemove">
         <source xml:lang="en">Unable to remove view</source>
-        <target state="new">Unable to remove view</target>
+        <target state="translated">Die Ansicht kann nicht entfernt werden.</target>
       </trans-unit>
       <trans-unit id="confirmDelete">
         <source xml:lang="en">Are you sure you want to delete view "{0}"?</source>
-        <target state="new">Are you sure you want to delete view "{0}"?</target>
+        <target state="translated">Möchten Sie die Ansicht "{0}" löschen?</target>
       </trans-unit>
       <trans-unit id="delete">
         <source xml:lang="en">&amp;&amp;Delete</source>
-        <target state="new">&amp;&amp;Delete</target>
+        <target state="translated">&amp;&amp;Löschen</target>
       </trans-unit>
       <trans-unit id="insertCells">
         <source xml:lang="en">Insert Cells</source>
-        <target state="new">Insert Cells</target>
+        <target state="translated">Zellen einfügen</target>
       </trans-unit>
       <trans-unit id="runCell">
         <source xml:lang="en">Run cell</source>
-        <target state="new">Run cell</target>
+        <target state="translated">Zelle ausführen</target>
       </trans-unit>
       <trans-unit id="stopCell">
         <source xml:lang="en">Cancel execution</source>
-        <target state="new">Cancel execution</target>
+        <target state="translated">Ausführung abbrechen</target>
       </trans-unit>
       <trans-unit id="errorRunCell">
         <source xml:lang="en">Error on last run. Click to run again</source>
@@ -4527,15 +4527,15 @@ Fehler: {1}</target>
       </trans-unit>
       <trans-unit id="unableToNavigateToCell">
         <source xml:lang="en">Unable to navigate to notebook cell.</source>
-        <target state="new">Unable to navigate to notebook cell.</target>
+        <target state="translated">Die Navigation zur Notebook-Zelle ist nicht möglich.</target>
       </trans-unit>
       <trans-unit id="viewCellInNotebook">
         <source xml:lang="en">View Cell In Notebook</source>
-        <target state="new">View Cell In Notebook</target>
+        <target state="translated">Zelle in Notebook anzeigen</target>
       </trans-unit>
       <trans-unit id="moreActionsLabel">
         <source xml:lang="en">More</source>
-        <target state="new">More</target>
+        <target state="translated">Mehr</target>
       </trans-unit>
     </body>
   </file>
@@ -4559,11 +4559,11 @@ Fehler: {1}</target>
     <body>
       <trans-unit id="viewOptionsModal.title">
         <source xml:lang="en">Configure View</source>
-        <target state="new">Configure View</target>
+        <target state="translated">Ansicht konfigurieren</target>
       </trans-unit>
       <trans-unit id="viewOptionsModal.name">
         <source xml:lang="en">View Name</source>
-        <target state="new">View Name</target>
+        <target state="translated">Ansichtsname</target>
       </trans-unit>
       <trans-unit id="viewOptionsModal.missingRequireField">
         <source xml:lang="en">This field is required.</source>
@@ -4571,15 +4571,15 @@ Fehler: {1}</target>
       </trans-unit>
       <trans-unit id="viewOptionsModal.nameTaken">
         <source xml:lang="en">This view name has already been taken.</source>
-        <target state="new">This view name has already been taken.</target>
+        <target state="translated">Dieser Ansichtsname wird bereits verwendet.</target>
       </trans-unit>
       <trans-unit id="save">
         <source xml:lang="en">Save</source>
-        <target state="new">Save</target>
+        <target state="translated">Speichern</target>
       </trans-unit>
       <trans-unit id="cancel">
         <source xml:lang="en">Cancel</source>
-        <target state="new">Cancel</target>
+        <target state="translated">Abbrechen</target>
       </trans-unit>
     </body>
   </file>
@@ -7148,7 +7148,7 @@ Fehler: {1}</target>
     <body>
       <trans-unit id="notebookView.untitledView">
         <source xml:lang="en">Untitled View</source>
-        <target state="new">Untitled View</target>
+        <target state="translated">Ansicht ohne Titel</target>
       </trans-unit>
     </body>
   </file>

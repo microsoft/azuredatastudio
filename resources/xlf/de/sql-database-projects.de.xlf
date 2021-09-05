@@ -134,7 +134,7 @@
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.addSqlBinding">
         <source xml:lang="en">Add SQL Binding</source>
-        <target state="new">Add SQL Binding</target>
+        <target state="translated">SQL-Bindung hinzufügen</target>
       </trans-unit>
     </body>
   </file>
@@ -599,7 +599,7 @@
       </trans-unit>
       <trans-unit id="selectFolderStructure">
         <source xml:lang="en">Select folder structure</source>
-        <target state="new">Select folder structure</target>
+        <target state="translated">Ordnerstruktur auswählen</target>
       </trans-unit>
       <trans-unit id="folderStructureLabel">
         <source xml:lang="en">Folder structure</source>
@@ -607,11 +607,11 @@
       </trans-unit>
       <trans-unit id="browseEllipsis">
         <source xml:lang="en">Browse...</source>
-        <target state="new">Browse...</target>
+        <target state="translated">Durchsuchen...</target>
       </trans-unit>
       <trans-unit id="selectProjectLocation">
         <source xml:lang="en">Select project location</source>
-        <target state="new">Select project location</target>
+        <target state="translated">Projektspeicherort auswählen</target>
       </trans-unit>
       <trans-unit id="dataworkspace.projectParentDirectoryNotExistError">
         <source xml:lang="en">The selected project location '{0}' does not exist or is not a directory.</source>
@@ -755,7 +755,7 @@
       </trans-unit>
       <trans-unit id="folderAlreadyExistsChooseNewLocation">
         <source xml:lang="en">A folder with the name '{0}' already exists on disk at this location. Please choose another location.</source>
-        <target state="new">A folder with the name '{0}' already exists on disk at this location. Please choose another location.</target>
+        <target state="translated">An diesem Speicherort ist auf dem Datenträger bereits ein Ordner mit dem Namen "{0}" vorhanden. Wählen Sie einen anderen Speicherort aus.</target>
       </trans-unit>
       <trans-unit id="invalidInput">
         <source xml:lang="en">Invalid input: {0}</source>
@@ -881,66 +881,70 @@
         <source xml:lang="en">Script.PostDeployment</source>
         <target state="translated">Script.PostDeployment</target>
       </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.NetCoreInstallationConfirmation">
+        <source xml:lang="en">The .NET Core SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK location in settings if already installed.</source>
+        <target state="new">The .NET Core SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK location in settings if already installed.</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.NetCoreSupportedVersionInstallationConfirmation">
+        <source xml:lang="en">Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK supported version location in settings if already installed.</source>
+        <target state="new">Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK supported version location in settings if already installed.</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.UpdateNetCoreLocation">
+        <source xml:lang="en">Update Location</source>
+        <target state="new">Update Location</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.InstallNetCore">
+        <source xml:lang="en">Install</source>
+        <target state="new">Install</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.doNotAskAgain">
+        <source xml:lang="en">Don't Ask Again</source>
+        <target state="new">Don't Ask Again</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.outputChannel">
+        <source xml:lang="en">Database Projects</source>
+        <target state="new">Database Projects</target>
+      </trans-unit>
       <trans-unit id="input">
         <source xml:lang="en">Input</source>
-        <target state="new">Input</target>
+        <target state="translated">Eingabe</target>
       </trans-unit>
       <trans-unit id="output">
         <source xml:lang="en">Output</source>
-        <target state="new">Output</target>
+        <target state="translated">Ausgabe</target>
       </trans-unit>
       <trans-unit id="selectBindingType">
         <source xml:lang="en">Select type of binding</source>
-        <target state="new">Select type of binding</target>
+        <target state="translated">Wählen Sie den Bindungstyp aus</target>
       </trans-unit>
       <trans-unit id="selectAzureFunction">
         <source xml:lang="en">Select an Azure function in the current file to add SQL binding to</source>
-        <target state="new">Select an Azure function in the current file to add SQL binding to</target>
+        <target state="translated">Azure-Funktion in der aktuellen Datei auswählen, der die SQL-Bindung hinzugefügt werden soll</target>
       </trans-unit>
       <trans-unit id="sqlObjectToQuery">
         <source xml:lang="en">SQL object to query</source>
-        <target state="new">SQL object to query</target>
+        <target state="translated">Abzufragende SQL-Objekte</target>
       </trans-unit>
       <trans-unit id="sqlTableToUpsert">
         <source xml:lang="en">SQL table to upsert into</source>
-        <target state="new">SQL table to upsert into</target>
+        <target state="translated">SQL-Tabelle zum Upsertieren</target>
       </trans-unit>
       <trans-unit id="connectionStringSetting">
         <source xml:lang="en">Connection string setting name</source>
-        <target state="new">Connection string setting name</target>
+        <target state="translated">Name der Verbindungszeichenfolge-Einstellung</target>
       </trans-unit>
       <trans-unit id="connectionStringSettingPlaceholder">
         <source xml:lang="en">Connection string setting specified in "local.settings.json"</source>
-        <target state="new">Connection string setting specified in "local.settings.json"</target>
+        <target state="translated">In "local.settings.json" angegebene Verbindungszeichenfolgeneinstellung</target>
       </trans-unit>
       <trans-unit id="noAzureFunctionsInFile">
         <source xml:lang="en">No Azure functions in the current active file</source>
-        <target state="new">No Azure functions in the current active file</target>
+        <target state="translated">Keine Azure-Funktionen in der aktuellen aktiven Datei</target>
       </trans-unit>
     </body>
   </file>
   <file original="extensions/sql-database-projects/dist/tools/netcoreTool" source-language="en" datatype="plaintext" target-language="de">
     <body>
-      <trans-unit id="sqlDatabaseProjects.NetCoreInstallationConfirmation">
-        <source xml:lang="en">The .NET Core SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or update the .Net Core SDK location in settings if already installed.</source>
-        <target state="translated">Das .NET Core SDK kann nicht gefunden werden. Der Projektbuild funktioniert nicht. Installieren Sie .NET Core SDK Version 3.1 oder aktualisieren Sie den Speicherort des .NET Core SDK in den Einstellungen, sofern bereits installiert.</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.UpdateNetCoreLocation">
-        <source xml:lang="en">Update Location</source>
-        <target state="translated">Speicherort für Updates</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.InstallNetCore">
-        <source xml:lang="en">Install</source>
-        <target state="translated">Installieren</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.doNotAskAgain">
-        <source xml:lang="en">Don't Ask Again</source>
-        <target state="translated">Nicht mehr fragen</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.outputChannel">
-        <source xml:lang="en">Database Projects</source>
-        <target state="translated">Datenbankprojekte</target>
-      </trans-unit>
       <trans-unit id="sqlDatabaseProject.RunCommand.ErroredOut">
         <source xml:lang="en">	&gt;&gt;&gt; {0}   … errored out: {1}</source>
         <target state="translated">	&gt;&gt;&gt; {0}   … Fehler: {1}</target>

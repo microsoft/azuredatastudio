@@ -3959,11 +3959,11 @@ Error: {1}</source>
       </trans-unit>
       <trans-unit id="views">
         <source xml:lang="en">Views</source>
-        <target state="new">Views</target>
+        <target state="translated">视图</target>
       </trans-unit>
       <trans-unit id="editor">
         <source xml:lang="en">Editor</source>
-        <target state="new">Editor</target>
+        <target state="translated">编辑器</target>
       </trans-unit>
       <trans-unit id="code">
         <source xml:lang="en">Code</source>
@@ -4063,7 +4063,7 @@ Error: {1}</source>
       </trans-unit>
       <trans-unit id="notebook.enableIncrementalGridRendering">
         <source xml:lang="en">Enable incremental grid rendering for notebooks. This will improve the initial rendering time for large notebooks. There may be performance issues when interacting with the notebook while the rest of the grids are rendering.</source>
-        <target state="new">Enable incremental grid rendering for notebooks. This will improve the initial rendering time for large notebooks. There may be performance issues when interacting with the notebook while the rest of the grids are rendering.</target>
+        <target state="translated">为笔记本启用增量网格呈现。这将缩短大型笔记本的初始呈现时间。当其余网格呈现时，与笔记本交互时可能会出现性能问题。</target>
       </trans-unit>
       <trans-unit id="searchConfigurationTitle">
         <source xml:lang="en">Search Notebooks</source>
@@ -4295,15 +4295,15 @@ Error: {1}</source>
       </trans-unit>
       <trans-unit id="notebookViewLabel">
         <source xml:lang="en">Editor</source>
-        <target state="new">Editor</target>
+        <target state="translated">编辑器</target>
       </trans-unit>
       <trans-unit id="newViewLabel">
         <source xml:lang="en">Create New View</source>
-        <target state="new">Create New View</target>
+        <target state="translated">创建新视图</target>
       </trans-unit>
       <trans-unit id="viewNotFound">
         <source xml:lang="en">Unable to find view: {0}</source>
-        <target state="new">Unable to find view: {0}</target>
+        <target state="translated">找不到视图: {0}</target>
       </trans-unit>
       <trans-unit id="trustLabel">
         <source xml:lang="en">Trusted</source>
@@ -4455,27 +4455,27 @@ Error: {1}</source>
     <body>
       <trans-unit id="insertCellsModal.title">
         <source xml:lang="en">Insert cells</source>
-        <target state="new">Insert cells</target>
+        <target state="translated">插入单元格</target>
       </trans-unit>
       <trans-unit id="insertCellsModal.selectCells">
         <source xml:lang="en">Select cell sources</source>
-        <target state="new">Select cell sources</target>
+        <target state="translated">选择单元格源</target>
       </trans-unit>
       <trans-unit id="insertCellsModal.thumbnailError">
         <source xml:lang="en">Error: Unable to generate thumbnails.</source>
-        <target state="new">Error: Unable to generate thumbnails.</target>
+        <target state="translated">错误: 无法生成缩略图。</target>
       </trans-unit>
       <trans-unit id="insertCellsModal.untitled">
         <source xml:lang="en">Untitled Cell : {0}</source>
-        <target state="new">Untitled Cell : {0}</target>
+        <target state="translated">无标题单元格: {0}</target>
       </trans-unit>
       <trans-unit id="insertCellsModal.Insert">
         <source xml:lang="en">Insert</source>
-        <target state="new">Insert</target>
+        <target state="translated">插入</target>
       </trans-unit>
       <trans-unit id="insertCellsModal.Cancel">
         <source xml:lang="en">Cancel</source>
-        <target state="new">Cancel</target>
+        <target state="translated">取消</target>
       </trans-unit>
     </body>
   </file>
@@ -4491,7 +4491,7 @@ Error: {1}</source>
       </trans-unit>
       <trans-unit id="runAllPreview">
         <source xml:lang="en">Run all</source>
-        <target state="new">Run all</target>
+        <target state="translated">全部运行</target>
       </trans-unit>
     </body>
   </file>
@@ -4499,27 +4499,27 @@ Error: {1}</source>
     <body>
       <trans-unit id="viewsUnableToRemove">
         <source xml:lang="en">Unable to remove view</source>
-        <target state="new">Unable to remove view</target>
+        <target state="translated">无法删除视图</target>
       </trans-unit>
       <trans-unit id="confirmDelete">
         <source xml:lang="en">Are you sure you want to delete view "{0}"?</source>
-        <target state="new">Are you sure you want to delete view "{0}"?</target>
+        <target state="translated">确定要删除视图“{0}”?</target>
       </trans-unit>
       <trans-unit id="delete">
         <source xml:lang="en">&amp;&amp;Delete</source>
-        <target state="new">&amp;&amp;Delete</target>
+        <target state="translated">删除(&amp;&amp;D)</target>
       </trans-unit>
       <trans-unit id="insertCells">
         <source xml:lang="en">Insert Cells</source>
-        <target state="new">Insert Cells</target>
+        <target state="translated">插入单元格</target>
       </trans-unit>
       <trans-unit id="runCell">
         <source xml:lang="en">Run cell</source>
-        <target state="new">Run cell</target>
+        <target state="translated">运行单元格</target>
       </trans-unit>
       <trans-unit id="stopCell">
         <source xml:lang="en">Cancel execution</source>
-        <target state="new">Cancel execution</target>
+        <target state="translated">取消执行</target>
       </trans-unit>
       <trans-unit id="errorRunCell">
         <source xml:lang="en">Error on last run. Click to run again</source>
@@ -4527,15 +4527,15 @@ Error: {1}</source>
       </trans-unit>
       <trans-unit id="unableToNavigateToCell">
         <source xml:lang="en">Unable to navigate to notebook cell.</source>
-        <target state="new">Unable to navigate to notebook cell.</target>
+        <target state="translated">无法导航到笔记本单元格。</target>
       </trans-unit>
       <trans-unit id="viewCellInNotebook">
         <source xml:lang="en">View Cell In Notebook</source>
-        <target state="new">View Cell In Notebook</target>
+        <target state="translated">在笔记本中查看单元格</target>
       </trans-unit>
       <trans-unit id="moreActionsLabel">
         <source xml:lang="en">More</source>
-        <target state="new">More</target>
+        <target state="translated">更多</target>
       </trans-unit>
     </body>
   </file>
@@ -4559,11 +4559,11 @@ Error: {1}</source>
     <body>
       <trans-unit id="viewOptionsModal.title">
         <source xml:lang="en">Configure View</source>
-        <target state="new">Configure View</target>
+        <target state="translated">配置视图</target>
       </trans-unit>
       <trans-unit id="viewOptionsModal.name">
         <source xml:lang="en">View Name</source>
-        <target state="new">View Name</target>
+        <target state="translated">视图名称</target>
       </trans-unit>
       <trans-unit id="viewOptionsModal.missingRequireField">
         <source xml:lang="en">This field is required.</source>
@@ -4571,15 +4571,15 @@ Error: {1}</source>
       </trans-unit>
       <trans-unit id="viewOptionsModal.nameTaken">
         <source xml:lang="en">This view name has already been taken.</source>
-        <target state="new">This view name has already been taken.</target>
+        <target state="translated">此视图名称已被占用。</target>
       </trans-unit>
       <trans-unit id="save">
         <source xml:lang="en">Save</source>
-        <target state="new">Save</target>
+        <target state="translated">保存</target>
       </trans-unit>
       <trans-unit id="cancel">
         <source xml:lang="en">Cancel</source>
-        <target state="new">Cancel</target>
+        <target state="translated">取消</target>
       </trans-unit>
     </body>
   </file>
@@ -7148,7 +7148,7 @@ Error: {1}</source>
     <body>
       <trans-unit id="notebookView.untitledView">
         <source xml:lang="en">Untitled View</source>
-        <target state="new">Untitled View</target>
+        <target state="translated">无标题视图</target>
       </trans-unit>
     </body>
   </file>
