@@ -353,34 +353,21 @@ export class CreateProjectFromDatabaseDialog {
 	}
 
 	public async handleCreateButtonClick(): Promise<void> {
+		const azdataApi = getAzdataApi()!;
+		const connectionUri = await azdataApi!.connection.getUriForConnection(this.connectionId!);
 		const model: ImportDataModel = {
-			serverId: this.connectionId!,
+			connectionUri: connectionUri,
 			database: <string>this.sourceDatabaseDropDown!.value,
 			projName: this.projectNameTextBox!.value!,
 			filePath: this.projectLocationTextBox!.value!,
 			version: '1.0.0.0',
-			extractTarget: this.mapExtractTargetEnum(<string>this.folderStructureDropDown!.value)
+			extractTarget: mapExtractTargetEnum(<string>this.folderStructureDropDown!.value)
 		};
 
-		getAzdataApi()!.window.closeDialog(this.dialog);
+		azdataApi!.window.closeDialog(this.dialog);
 		await this.createProjectFromDatabaseCallback!(model);
 
 		this.dispose();
-	}
-
-	private mapExtractTargetEnum(inputTarget: any): mssql.ExtractTarget {
-		if (inputTarget) {
-			switch (inputTarget) {
-				case constants.file: return mssql.ExtractTarget['file'];
-				case constants.flat: return mssql.ExtractTarget['flat'];
-				case constants.objectType: return mssql.ExtractTarget['objectType'];
-				case constants.schema: return mssql.ExtractTarget['schema'];
-				case constants.schemaObjectType: return mssql.ExtractTarget['schemaObjectType'];
-				default: throw new Error(constants.invalidInput(inputTarget));
-			}
-		} else {
-			throw new Error(constants.extractTargetRequired);
-		}
 	}
 
 	async validate(): Promise<boolean> {
@@ -413,5 +400,20 @@ export class CreateProjectFromDatabaseDialog {
 			text: message,
 			level: getAzdataApi()!.window.MessageLevel.Error
 		};
+	}
+}
+
+export function mapExtractTargetEnum(inputTarget: string): mssql.ExtractTarget {
+	if (inputTarget) {
+		switch (inputTarget) {
+			case constants.file: return mssql.ExtractTarget.file;
+			case constants.flat: return mssql.ExtractTarget.flat;
+			case constants.objectType: return mssql.ExtractTarget.objectType;
+			case constants.schema: return mssql.ExtractTarget.schema;
+			case constants.schemaObjectType: return mssql.ExtractTarget.schemaObjectType;
+			default: throw new Error(constants.invalidInput(inputTarget));
+		}
+	} else {
+		throw new Error(constants.extractTargetRequired);
 	}
 }

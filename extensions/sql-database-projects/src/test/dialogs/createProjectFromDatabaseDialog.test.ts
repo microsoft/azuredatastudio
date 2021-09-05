@@ -83,8 +83,10 @@ describe('Create Project From Database Dialog', () => {
 	});
 
 	it('Should include all info in import data model and connect to appropriate call back properties', async function (): Promise<void> {
+		const stubUri = 'My URI';
 		const dialog = new CreateProjectFromDatabaseDialog(mockConnectionProfile);
 		sinon.stub(azdata.connection, 'listDatabases').resolves(['My Database']);
+		sinon.stub(azdata.connection, 'getUriForConnection').resolves(stubUri);
 		await dialog.openDialog();
 
 		dialog.projectNameTextBox!.value = 'testProject';
@@ -93,12 +95,12 @@ describe('Create Project From Database Dialog', () => {
 		let model: ImportDataModel;
 
 		const expectedImportDataModel: ImportDataModel  = {
-			serverId: 'My Id',
+			connectionUri: stubUri,
 			database: 'My Database',
 			projName: 'testProject',
 			filePath: 'testLocation',
 			version: '1.0.0.0',
-			extractTarget: mssql.ExtractTarget['schemaObjectType']
+			extractTarget: mssql.ExtractTarget.schemaObjectType
 		};
 
 		dialog.createProjectFromDatabaseCallback = (m) => { model = m; };

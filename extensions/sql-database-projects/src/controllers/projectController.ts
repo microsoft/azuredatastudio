@@ -36,6 +36,7 @@ import { IconPathHelper } from '../common/iconHelper';
 import { DashboardData, PublishData, Status } from '../models/dashboardData/dashboardData';
 import { launchPublishDatabaseQuickpick } from '../dialogs/publishDatabaseQuickpick';
 import { SqlTargetPlatform } from 'sqldbproj';
+import { createNewProjectFromDatabaseWithQuickpick } from '../dialogs/createProjectFromDatabaseQuickpick';
 
 const maxTableLength = 10;
 
@@ -862,15 +863,24 @@ export class ProjectsController {
 	 * Creates a new SQL database project from the existing database,
 	 * prompting the user for a name, file path location and extract target
 	 */
-	public async createProjectFromDatabase(context: azdataType.IConnectionProfile | any): Promise<CreateProjectFromDatabaseDialog> {
+	public async createProjectFromDatabase(context: azdataType.IConnectionProfile | any): Promise<CreateProjectFromDatabaseDialog | undefined> {
 		const profile = this.getConnectionProfileFromContext(context);
-		let createProjectFromDatabaseDialog = this.getCreateProjectFromDatabaseDialog(profile);
+		if (utils.getAzdataApi()) {
+			let createProjectFromDatabaseDialog = this.getCreateProjectFromDatabaseDialog(profile);
 
-		createProjectFromDatabaseDialog.createProjectFromDatabaseCallback = async (model) => await this.createProjectFromDatabaseCallback(model);
+			createProjectFromDatabaseDialog.createProjectFromDatabaseCallback = async (model) => await this.createProjectFromDatabaseCallback(model);
 
-		await createProjectFromDatabaseDialog.openDialog();
+			await createProjectFromDatabaseDialog.openDialog();
 
-		return createProjectFromDatabaseDialog;
+			return createProjectFromDatabaseDialog;
+		} else {
+			const model = await createNewProjectFromDatabaseWithQuickpick();
+			if (model) {
+				await this.createProjectFromDatabaseCallback(model);
+			}
+			return undefined;
+		}
+
 	}
 
 	public getCreateProjectFromDatabaseDialog(profile: azdataType.IConnectionProfile | undefined): CreateProjectFromDatabaseDialog {
@@ -926,13 +936,14 @@ export class ProjectsController {
 	}
 
 	public async createProjectFromDatabaseApiCall(model: ImportDataModel): Promise<void> {
-		let ext = vscode.extensions.getExtension(mssql.extension.name)!;
+		const service = await utils.getDacFxService();
+		const azdataApi = utils.getAzdataApi();
 
-		const service = (await ext.activate() as mssql.IExtension).dacFx;
-		const ownerUri = await utils.getAzdataApi()!.connection.getUriForConnection(model.serverId);
-
-		await service.createProjectFromDatabase(model.database, model.filePath, model.projName, model.version, ownerUri, model.extractTarget, utils.getAzdataApi()!.TaskExecutionMode.execute);
-
+		if (azdataApi) {
+			await (service as mssql.IDacFxService).createProjectFromDatabase(model.database, model.filePath, model.projName, model.version, model.connectionUri, model.extractTarget as mssql.ExtractTarget, azdataApi.TaskExecutionMode.execute);
+		} else {
+			await (service as mssqlVscode.IDacFxService).createProjectFromDatabase(model.database, model.filePath, model.projName, model.version, model.connectionUri, model.extractTarget as mssqlVscode.ExtractTarget, TaskExecutionMode.execute as unknown as mssqlVscode.TaskExecutionMode);
+		}
 		// TODO: Check for success; throw error
 	}
 
