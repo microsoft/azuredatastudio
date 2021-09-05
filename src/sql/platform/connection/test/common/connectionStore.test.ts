@@ -26,7 +26,7 @@ suite('ConnectionStore', () => {
 		serverName: 'namedServer',
 		databaseName: 'bcd',
 		authenticationType: 'SqlLogin',
-		userName: 'cde',
+		userName: 'cde', // [SuppressMessage("Microsoft.Security", "CS001:SecretInline", Justification="Mock value, never actually used to connect")]
 		password: generateUuid(),
 		savePassword: true,
 		groupId: '',
