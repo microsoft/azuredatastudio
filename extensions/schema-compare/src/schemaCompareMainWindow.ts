@@ -33,7 +33,7 @@ export class SchemaCompareMainWindow {
 	private waitText: azdata.TextComponent;
 	private editor: azdata.workspace.ModelViewEditor;
 	private diffEditor: azdata.DiffEditorComponent;
-	private splitView: azdata.SplitViewContainer | undefined;
+	private splitView: azdata.SplitViewContainer;
 	private flexModel: azdata.FlexContainer;
 	private noDifferencesLabel: azdata.TextComponent;
 	private sourceTargetFlexLayout: azdata.FlexContainer;
@@ -131,6 +131,19 @@ export class SchemaCompareMainWindow {
 				if (isNullOrUndefined(this.view)) {
 					this.view = view;
 				}
+
+				this.differencesTable = this.view.modelBuilder.table().withProps({
+					data: [],
+					title: loc.differencesTableTitle,
+					columns: []
+				}).component();
+
+				this.diffEditor = this.view.modelBuilder.diffeditor().withProperties({
+					contentLeft: os.EOL,
+					contentRight: os.EOL,
+					height: 500,
+					title: loc.diffEditorTitle
+				}).component();
 
 				this.splitView = this.view.modelBuilder.splitViewContainer().component();
 
@@ -286,88 +299,56 @@ export class SchemaCompareMainWindow {
 				'operationId': this.comparisonResult.operationId
 			}).send();
 
+		let data = this.getAllDifferences(this.comparisonResult.differences);
+
+		this.differencesTable.updateProperties({
+			data: data,
+			columns: [
+				{
+					value: loc.type,
+					cssClass: 'align-with-header',
+					width: 50
+				},
+				{
+					value: loc.sourceName,
+					cssClass: 'align-with-header',
+					width: 90
+				},
+				<azdata.CheckboxColumn>
+				{
+					value: loc.include,
+					cssClass: 'align-with-header',
+					width: 60,
+					type: azdata.ColumnType.checkBox,
+					action: azdata.ActionOnCellCheckboxCheck.customAction
+				},
+				{
+					value: loc.action,
+					cssClass: 'align-with-header',
+					width: 30
+				},
+				{
+					value: loc.targetName,
+					cssClass: 'align-with-header',
+					width: 150
+				}
+			],
+			CSSStyles: { 'left': '15px' },
+			width: '98%'
+		});
+
+		this.splitView.addItem(this.differencesTable);
+		this.splitView.addItem(this.diffEditor);
+		this.splitView.setLayout({
+			orientation: 'vertical',
+			splitViewHeight: 800
+		});
+
 		this.flexModel.removeItem(this.loader);
 		this.flexModel.removeItem(this.waitText);
 		this.resetButtons(ResetButtonState.afterCompareComplete);
 
 		if (this.comparisonResult.differences.length > 0) {
-			const data = this.getAllDifferences(this.comparisonResult.differences);
-
-			this.differencesTable = this.view.modelBuilder.table().withProps({
-				data: data,
-				columns: [
-					{
-						value: loc.type,
-						cssClass: 'align-with-header',
-						width: 50
-					},
-					{
-						value: loc.sourceName,
-						cssClass: 'align-with-header',
-						width: 90
-					},
-					<azdata.CheckboxColumn>
-					{
-						value: loc.include,
-						cssClass: 'align-with-header',
-						width: 60,
-						type: azdata.ColumnType.checkBox,
-						action: azdata.ActionOnCellCheckboxCheck.customAction
-					},
-					{
-						value: loc.action,
-						cssClass: 'align-with-header',
-						width: 30
-					},
-					{
-						value: loc.targetName,
-						cssClass: 'align-with-header',
-						width: 150
-					}
-				],
-				CSSStyles: { 'left': '15px' },
-				width: '98%',
-				title: loc.differencesTableTitle
-			}).component();
-
-			this.diffEditor = this.view.modelBuilder.diffeditor().withProperties({
-				contentLeft: os.EOL,
-				contentRight: os.EOL,
-				height: 500,
-				title: loc.diffEditorTitle
-			}).component();
-
-			let sourceText = '';
-			let targetText = '';
-			this.tablelistenersToDispose.push(this.differencesTable.onRowSelected(() => {
-				let difference = this.comparisonResult.differences[this.differencesTable.selectedRows[0]];
-				if (difference !== undefined) {
-					sourceText = this.getFormattedScript(difference, true);
-					targetText = this.getFormattedScript(difference, false);
-
-					this.diffEditor.updateProperties({
-						contentLeft: sourceText,
-						contentRight: targetText,
-						title: loc.diffEditorTitle
-					});
-				}
-			}));
-			this.tablelistenersToDispose.push(this.differencesTable.onCellAction(async (rowState) => {
-				let checkboxState = <azdata.ICheckboxCellActionEventArgs>rowState;
-				if (checkboxState) {
-					await this.applyIncludeExclude(checkboxState);
-				}
-			}));
-
-			this.splitView = this.view.modelBuilder.splitViewContainer().withItems([
-				this.differencesTable,
-				this.diffEditor
-			]).component();
-
-			this.splitView.setLayout({
-				orientation: 'vertical',
-				splitViewHeight: 800
-			});
 			this.flexModel.addItem(this.splitView);
 
 			// create a map of the differences to row numbers
@@ -399,6 +380,28 @@ export class SchemaCompareMainWindow {
 				this.setButtonStatesForNoChanges(false);
 			}
 		}
+
+		let sourceText = '';
+		let targetText = '';
+		this.tablelistenersToDispose.push(this.differencesTable.onRowSelected(() => {
+			let difference = this.comparisonResult.differences[this.differencesTable.selectedRows[0]];
+			if (difference !== undefined) {
+				sourceText = this.getFormattedScript(difference, true);
+				targetText = this.getFormattedScript(difference, false);
+
+				this.diffEditor.updateProperties({
+					contentLeft: sourceText,
+					contentRight: targetText,
+					title: loc.diffEditorTitle
+				});
+			}
+		}));
+		this.tablelistenersToDispose.push(this.differencesTable.onCellAction(async (rowState) => {
+			let checkboxState = <azdata.ICheckboxCellActionEventArgs>rowState;
+			if (checkboxState) {
+				await this.applyIncludeExclude(checkboxState);
+			}
+		}));
 	}
 
 	public async applyIncludeExclude(checkboxState: azdata.ICheckboxCellActionEventArgs): Promise<void> {
@@ -593,16 +596,19 @@ export class SchemaCompareMainWindow {
 	}
 
 	public async startCompare(): Promise<void> {
-		if (this.splitView) {
-			this.flexModel.removeItem(this.splitView);
-			this.splitView = undefined;
-		}
+		this.flexModel.removeItem(this.splitView);
 		this.flexModel.removeItem(this.noDifferencesLabel);
 		this.flexModel.removeItem(this.startText);
 		this.flexModel.addItem(this.loader, { CSSStyles: { 'margin-top': '30px' } });
 		this.flexModel.addItem(this.waitText, { CSSStyles: { 'margin-top': '30px', 'align-self': 'center' } });
 		this.showIncludeExcludeWaitingMessage = true;
+		this.diffEditor.updateProperties({
+			contentLeft: os.EOL,
+			contentRight: os.EOL,
+			title: loc.diffEditorTitle
+		});
 
+		this.differencesTable.selectedRows = null;
 		if (this.tablelistenersToDispose) {
 			this.tablelistenersToDispose.forEach(x => x.dispose());
 		}
@@ -836,10 +842,7 @@ export class SchemaCompareMainWindow {
 
 	// reset state afer loading an scmp
 	private resetForNewCompare(): void {
-		if (this.splitView) {
-			this.flexModel.removeItem(this.splitView);
-			this.splitView = undefined;
-		}
+		this.flexModel.removeItem(this.splitView);
 		this.flexModel.removeItem(this.noDifferencesLabel);
 		this.flexModel.addItem(this.startText, { CSSStyles: { 'margin': 'auto' } });
 	}
