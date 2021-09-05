@@ -1,0 +1,18 @@
+notebook-view-component .modal{
+	position: absolute;
+	opacity: .3;
+}
+
+notebook-view-component .modal .content {
+	height: calc(100% - 60px);
+	width: calc(100% - 60px);
+	position: absolute;
+	top: 30px;
+	left: 30px;
+	border: 1px solid;
+}
+
+notebook-view-component .modal .content .title {
+	padding: 10px;
+	border-bottom: 1px solid;
+}

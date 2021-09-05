@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.nb-grid-stack .grid-stack-item.notebook-cell .actionbar {
+.nb-grid-stack .grid-stack-item .notebook-cell .actionbar {
 	border-width: 1px;
 	border-style: solid;
 	position: absolute;
@@ -11,48 +11,48 @@
 	top: -20px;
 }
 
-.nb-grid-stack .grid-stack-item.notebook-cell .actionbar .carbon-taskbar .monaco-action-bar.animated {
+.nb-grid-stack .grid-stack-item .notebook-cell .actionbar .carbon-taskbar .monaco-action-bar.animated {
 	padding: 0;
 }
 
-.nb-grid-stack .grid-stack-item.notebook-cell .actionbar .carbon-taskbar.monaco-toolbar .monaco-action-bar.animated ul.actions-container {
+.nb-grid-stack .grid-stack-item .notebook-cell .actionbar .carbon-taskbar.monaco-toolbar .monaco-action-bar.animated ul.actions-container {
 	display: flex;
 	list-style: none;
 	margin: 0;
 	padding: 0;
 }
 
-.nb-grid-stack .grid-stack-item.notebook-cell .actionbar ul.actions-container li.action-item {
+.nb-grid-stack .grid-stack-item .notebook-cell .actionbar ul.actions-container li.action-item {
 	display: inline-flex;
 	margin-right: 0;
 	text-align: center;
 }
 
-.nb-grid-stack .grid-stack-item.notebook-cell .actionbar ul.actions-container li:last-child {
+.nb-grid-stack .grid-stack-item .notebook-cell .actionbar ul.actions-container li:last-child {
 	margin-right: 0;
 }
-.nb-grid-stack .grid-stack-item.notebook-cell .actionbar .carbon-taskbar .action-label {
+.nb-grid-stack .grid-stack-item .notebook-cell .actionbar .carbon-taskbar .action-label {
 	padding: 0;
 }
-.nb-grid-stack .grid-stack-item.notebook-cell .actionbar .monaco-action-bar .action-label {
+.nb-grid-stack .grid-stack-item .notebook-cell .actionbar .monaco-action-bar .action-label {
 	margin-right: 0;
 }
-.nb-grid-stack .grid-stack-item.notebook-cell .actionbar ul.actions-container li a.masked-icon {
+.nb-grid-stack .grid-stack-item .notebook-cell .actionbar ul.actions-container li a.masked-icon {
 	display: flex;
 }
-.nb-grid-stack .grid-stack-item.notebook-cell .actionbar ul.actions-container li a.masked-icon,
-.nb-grid-stack .grid-stack-item.notebook-cell .actionbar ul.actions-container li a.masked-icon:before {
+.nb-grid-stack .grid-stack-item .notebook-cell .actionbar ul.actions-container li a.masked-icon,
+.nb-grid-stack .grid-stack-item .notebook-cell .actionbar ul.actions-container li a.masked-icon:before {
 	height: 24px;
 	width: 29px;
 }
-.nb-grid-stack .grid-stack-item.notebook-cell .actionbar .codicon.masked-icon,
-.vs .nb-grid-stack .grid-stack-item.notebook-cell .actionbar .codicon.masked-icon,
-.vs-dark .nb-grid-stack .grid-stack-item.notebook-cell .actionbar .codicon.masked-icon,
-.hc-black .nb-grid-stack .grid-stack-item.notebook-cell .actionbar .codicon.masked-icon {
+.nb-grid-stack .grid-stack-item .notebook-cell .actionbar .codicon.masked-icon,
+.vs .nb-grid-stack .grid-stack-item .notebook-cell .actionbar .codicon.masked-icon,
+.vs-dark .nb-grid-stack .grid-stack-item .notebook-cell .actionbar .codicon.masked-icon,
+.hc-black .nb-grid-stack .grid-stack-item .notebook-cell .actionbar .codicon.masked-icon {
 	background-image: none;
 }
 
-.nb-grid-stack .grid-stack-item.notebook-cell .actionbar .notebook-button.toolbarIconStop {
+.nb-grid-stack .grid-stack-item .notebook-cell .actionbar .notebook-button.toolbarIconStop {
 	margin: 0 2px;
 	background-size: 20px 25px;
 	height: 24px;

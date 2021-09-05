@@ -14,7 +14,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IModelFactory, ViewMode, NotebookContentChange } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { IModelFactory, ViewMode, NotebookContentChange, INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
@@ -25,6 +25,9 @@ import { IMenuService, MenuId } from 'vs/platform/actions/common/actions';
 import { fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
+import { INotebookView } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
+import { Deferred } from 'sql/base/common/promise';
+import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 
 export const NOTEBOOKEDITOR_SELECTOR: string = 'notebookeditor-component';
 
@@ -33,11 +36,16 @@ export const NOTEBOOKEDITOR_SELECTOR: string = 'notebookeditor-component';
 	templateUrl: decodeURI(require.toUrl('./notebookEditor.component.html'))
 })
 export class NotebookEditorComponent extends AngularDisposable {
+	private readonly defaultViewMode = ViewMode.Notebook;
 	private profile: IConnectionProfile;
 	private notebookManagers: INotebookManager[] = [];
-	private _model: NotebookModel;
+	private _modelReadyDeferred = new Deferred<NotebookModel>();
 
+	public model: NotebookModel;
 	public views: NotebookViewsExtension;
+	public activeView: INotebookView;
+	public viewMode: ViewMode;
+	public ViewMode = ViewMode;
 
 	constructor(
 		@Inject(ILogService) private readonly logService: ILogService,
@@ -74,6 +82,9 @@ export class NotebookEditorComponent extends AngularDisposable {
 		await this.createModelAndLoadContents();
 		await this.setNotebookManager();
 		await this.loadModel();
+
+		this.setActiveView();
+		this._modelReadyDeferred.resolve(this.model);
 	}
 
 	private async loadModel(): Promise<void> {
@@ -104,15 +115,19 @@ export class NotebookEditorComponent extends AngularDisposable {
 		}, this.profile, this.logService, this.notificationService, this.adstelemetryService, this.connectionManagementService, this._configurationService, this.capabilitiesService);
 
 		let trusted = await this.notebookService.isNotebookTrustCached(this._notebookParams.notebookUri, this.isDirty());
-		this._model = this._register(model);
+		this.model = this._register(model);
 		await this.model.loadContents(trusted);
 
 		this.views = new NotebookViewsExtension(this.model);
+		this.viewMode = this.viewMode ?? this.defaultViewMode;
 
 		this._register(model.viewModeChanged((mode) => this.onViewModeChanged()));
 		this._register(model.contentChanged((change) => this.handleContentChanged(change)));
 		this._register(model.onCellTypeChanged(() => this.detectChanges()));
 		this._register(model.layoutChanged(() => this.detectChanges()));
+
+		this.views.onViewDeleted(() => this.handleViewDeleted());
+		this.views.onActiveViewChanged(() => this.handleActiveViewChanged());
 
 		this.detectChanges();
 	}
@@ -166,24 +181,43 @@ export class NotebookEditorComponent extends AngularDisposable {
 		return this._notebookParams.modelFactory;
 	}
 
-	public get model(): NotebookModel | null {
-		return this._model;
-	}
-
-	public get viewMode(): ViewMode {
-		return this.model?.viewMode;
-	}
-
 	private isDirty(): boolean {
 		return this._notebookParams.input.isDirty();
 	}
 
+	public get modelReady(): Promise<INotebookModel> {
+		return this._modelReadyDeferred.promise;
+	}
+
 	private handleContentChanged(change: NotebookContentChange) {
 		// Note: for now we just need to set dirty state and refresh the UI.
+		if (change.changeType === NotebookChangeType.MetadataChanged) {
+			this.handleActiveViewChanged();
+		}
+
+		this.detectChanges();
+	}
+
+	private handleViewDeleted() {
+		this.viewMode = this.model?.viewMode;
+		this.detectChanges();
+	}
+
+	private handleActiveViewChanged() {
+		this.setActiveView();
 		this.detectChanges();
 	}
 
 	public onViewModeChanged(): void {
+		this.viewMode = this.model?.viewMode;
+		this.setActiveView();
 		this.detectChanges();
+	}
+
+	public setActiveView() {
+		const views = this.views.getViews();
+		let activeView = this.views.getActiveView() ?? views[0];
+
+		this.activeView = activeView;
 	}
 }
