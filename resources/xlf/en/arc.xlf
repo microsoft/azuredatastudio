@@ -610,9 +610,6 @@
     <trans-unit id="arc.miaaAdmin">
       <source xml:lang="en">Managed instance admin</source>
     </trans-unit>
-    <trans-unit id="arc.controllerEndpoint">
-      <source xml:lang="en">Controller endpoint</source>
-    </trans-unit>
     <trans-unit id="arc.extensionName">
       <source xml:lang="en">Extension name</source>
     </trans-unit>
