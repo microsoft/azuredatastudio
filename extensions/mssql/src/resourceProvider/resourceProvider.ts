@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { IConfig, ServerProvider } from 'service-downloader';
+import { IConfig, ServerProvider } from '@microsoft/ads-service-downloader';
 import { SqlOpsDataClient, SqlOpsFeature, ClientOptions } from 'dataprotocol-client';
 import { ServerCapabilities, ClientCapabilities, RPCMessageType, ServerOptions, TransportKind } from 'vscode-languageclient';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';

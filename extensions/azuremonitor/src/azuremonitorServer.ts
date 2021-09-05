@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ServerProvider, IConfig, Events } from 'service-downloader';
+import { ServerProvider, IConfig, Events } from '@microsoft/ads-service-downloader';
 import { ServerOptions, TransportKind } from 'vscode-languageclient';
 import * as Constants from './constants';
 import * as vscode from 'vscode';
