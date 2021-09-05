@@ -1,0 +1,12 @@
+#insert-dialog-cell-grid .loading-spinner-container {
+	flex: 1;
+	align-self: center;
+}
+#insert-dialog-cell-grid .loading-spinner {
+	margin: auto;
+}
+#insert-dialog-cell-grid input[type="checkbox"] {
+	display: flex;
+	-webkit-appearance: none;
+	outline: none !important;
+}

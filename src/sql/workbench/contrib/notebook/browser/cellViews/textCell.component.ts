@@ -166,6 +166,10 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		return this._activeCellId;
 	}
 
+	get outputRef(): ElementRef {
+		return this.output;
+	}
+
 	private setLoading(isLoading: boolean): void {
 		this.cellModel.loaded = !isLoading;
 		this._changeRef.detectChanges();

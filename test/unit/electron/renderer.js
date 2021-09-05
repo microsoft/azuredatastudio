@@ -103,6 +103,7 @@ function initLoader(opts) {
 			'@angular/platform-browser-dynamic',
 			'@angular/router',
 			'angular2-grid',
+			'html-to-image',
 			'gridstack/dist/h5/gridstack-dd-native',
 			'ng2-charts',
 			'rxjs/add/observable/of',
