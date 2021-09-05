@@ -12,7 +12,7 @@
 	"complete-cutover-menu": "Complete cutover",
 	"database-details-menu": "Database details",
 	"view-target-menu": "Azure SQL Target details",
-	"view-service-menu": "Dataase Migration Service details",
+	"view-service-menu": "Database Migration Service details",
 	"copy-migration-menu": "Copy migration details",
 	"cancel-migration-menu": "Cancel migration"
 }

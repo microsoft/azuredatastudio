@@ -6,10 +6,10 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { IconPathHelper } from '../../constants/iconPathHelper';
-import { MigrationContext } from '../../models/migrationLocalStorage';
-import { MigrationCutoverDialogModel, MigrationStatus } from './migrationCutoverDialogModel';
+import { MigrationContext, MigrationStatus, ProvisioningState } from '../../models/migrationLocalStorage';
+import { MigrationCutoverDialogModel } from './migrationCutoverDialogModel';
 import * as loc from '../../constants/strings';
-import { convertByteSizeToReadableUnit, convertIsoTimeToLocalTime, getSqlServerName, getMigrationStatusImage, SupportedAutoRefreshIntervals } from '../../api/utils';
+import { convertByteSizeToReadableUnit, convertIsoTimeToLocalTime, getSqlServerName, getMigrationStatusImage, SupportedAutoRefreshIntervals, clearDialogMessage } from '../../api/utils';
 import { EOL } from 'os';
 import { ConfirmCutoverDialog } from './confirmCutoverDialog';
 import { MigrationMode } from '../../models/stateMachine';
@@ -445,7 +445,12 @@ export class MigrationCutoverDialog {
 	}
 
 	private setAutoRefresh(interval: SupportedAutoRefreshIntervals): void {
-		const shouldRefresh = (status: string | undefined) => !status || ['InProgress', 'Creating', 'Completing', 'Creating'].includes(status);
+		const shouldRefresh = (status: string | undefined) => !status
+			|| status === MigrationStatus.InProgress
+			|| status === MigrationStatus.Creating
+			|| status === MigrationStatus.Completing
+			|| status === MigrationStatus.Canceling;
+
 		if (shouldRefresh(this.getMigrationStatus())) {
 			const classVariable = this;
 			clearInterval(this._autoRefreshHandle);
@@ -474,6 +479,8 @@ export class MigrationCutoverDialog {
 		}
 
 		try {
+			clearDialogMessage(this._dialogObject);
+
 			if (this._isProvisioned() && this._isOnlineMigration()) {
 				this._cutoverButton.updateCssStyles({
 					'display': 'inline'
@@ -490,7 +497,10 @@ export class MigrationCutoverDialog {
 			errors.push(this._model.migrationStatus.properties.migrationStatusDetails?.restoreBlockingReason);
 			this._dialogObject.message = {
 				text: errors.filter(e => e !== undefined).join(EOL),
-				level: (this._model.migrationStatus.properties.migrationStatus === MigrationStatus.InProgress || this._model.migrationStatus.properties.migrationStatus === 'Completing') ? azdata.window.MessageLevel.Warning : azdata.window.MessageLevel.Error,
+				level: this._model.migrationStatus.properties.migrationStatus === MigrationStatus.InProgress
+					|| this._model.migrationStatus.properties.migrationStatus === MigrationStatus.Completing
+					? azdata.window.MessageLevel.Warning
+					: azdata.window.MessageLevel.Error,
 				description: this.getMigrationDetails()
 			};
 			const sqlServerInfo = await azdata.connection.getServerInfo((await azdata.connection.getCurrentConnection()).connectionId);
@@ -599,12 +609,21 @@ export class MigrationCutoverDialog {
 				if (restoredCount > 0 || isBlobMigration) {
 					this._cutoverButton.enabled = true;
 				}
-				this._cancelButton.enabled = true;
 			} else {
 				this._cutoverButton.enabled = false;
-				this._cancelButton.enabled = false;
 			}
+
+			this._cancelButton.enabled =
+				migrationStatusTextValue === MigrationStatus.Canceling ||
+				migrationStatusTextValue === MigrationStatus.Creating ||
+				migrationStatusTextValue === MigrationStatus.InProgress;
+
 		} catch (e) {
+			this._dialogObject.message = {
+				level: azdata.window.MessageLevel.Error,
+				text: loc.MIGRATION_STATUS_REFRESH_ERROR,
+				description: e.message
+			};
 			console.log(e);
 		} finally {
 			this.isRefreshing = false;
@@ -696,7 +715,9 @@ export class MigrationCutoverDialog {
 
 	private _isProvisioned(): boolean {
 		const { migrationStatus, provisioningState } = this._model._migration.migrationContext.properties;
-		return provisioningState === 'Succeeded' || migrationStatus === 'Completing' || migrationStatus === 'Canceling';
+		return provisioningState === ProvisioningState.Succeeded
+			|| migrationStatus === MigrationStatus.Completing
+			|| migrationStatus === MigrationStatus.Canceling;
 	}
 
 	private _isOnlineMigration(): boolean {
@@ -713,9 +734,11 @@ export class MigrationCutoverDialog {
 
 	private getMigrationStatus(): string {
 		if (this._model.migrationStatus) {
-			return this._model.migrationStatus.properties.migrationStatus ?? this._model.migrationStatus.properties.provisioningState;
+			return this._model.migrationStatus.properties.migrationStatus
+				?? this._model.migrationStatus.properties.provisioningState;
 		}
-		return this._model._migration.migrationContext.properties.migrationStatus;
+		return this._model._migration.migrationContext.properties.migrationStatus
+			?? this._model._migration.migrationContext.properties.provisioningState;
 	}
 }
 
