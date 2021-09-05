@@ -1040,4 +1040,15 @@ declare module 'azdata' {
 		 */
 		showToggleButton?: boolean;
 	}
+
+	export interface ServerInfo {
+		/**
+		 * The CPU count of the host running the server.
+		 */
+		cpuCount?: number;
+		/**
+		 * The physical memory of the host running the server.
+		 */
+		physicalMemoryInMb?: number;
+	}
 }
