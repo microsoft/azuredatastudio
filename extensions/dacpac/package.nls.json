@@ -1,4 +1,6 @@
 {
 	"dacFx.settings": "Dacpac",
+	"dacFx.startTitle": "Data-tier Application Wizard",
+	"dacFx.category": "DacFx",
 	"dacFx.defaultSaveLocation": "Full path to folder where .DACPAC and .BACPAC files are saved by default"
 }
