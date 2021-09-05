@@ -5,5 +5,18 @@
 	"azcli.arc.config.debug": "Log debug info to the output channel for all executed az commands",
 
 	"command.category": "Azure CLI",
-	"azcli.arc.category": "Azure CLI"
+	"azcli.arc.category": "Azure CLI",
+
+	"azcli.arc.azArcdataInstallKey.description": "Choose whether you will be prompted to download the Azure CLI arcdata extension.",
+	"azcli.arc.install.prompt.description": "The user will be prompted to install the Azure CLI arcdata extension",
+	"azcli.arc.install.dontPrompt.description": "The user will not be prompted to install the Azure CLI arcdata extension",
+
+	"azcli.arc.azArcdataUpdateKey.description": "Choose whether you will be prompted when an update of the Azure CLI arcdata extension is available.",
+	"azcli.arc.update.prompt.description": "The user will be prompted for update of the Azure CLI arcdata extension",
+	"azcli.arc.update.dontPrompt.description": "The user will not be prompted for update of the Azure CLI arcdata extension",
+
+	"azcli.azCliInstallKey.description": "Choose whether you will be prompted to install Azure CLI.",
+	"azcli.install.prompt.description": "The user will be prompted to install the Azure CLI",
+	"azcli.install.dontPrompt.description": "The user will not be prompted to install the Azure CLI"
+
 }

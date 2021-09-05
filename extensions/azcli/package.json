@@ -32,6 +32,45 @@
             "type": "boolean",
             "default": false,
             "description": "%azcli.arc.config.debug%"
+          },
+          "azcli.arcdataInstall": {
+            "type": "string",
+            "default": "prompt",
+            "enum": [
+              "dontPrompt",
+              "prompt"
+            ],
+            "enumDescriptions": [
+              "%azcli.arc.install.dontPrompt.description%",
+              "%azcli.arc.install.prompt.description%"
+            ],
+            "description": "%azcli.arc.azArcdataInstallKey.description%"
+          },
+          "azcli.arcdataUpdate": {
+            "type": "string",
+            "default": "prompt",
+            "enum": [
+              "dontPrompt",
+              "prompt"
+            ],
+            "enumDescriptions": [
+              "%azcli.arc.update.dontPrompt.description%",
+              "%azcli.arc.update.prompt.description%"
+            ],
+            "description": "%azcli.arc.azArcdataUpdateKey.description%"
+          },
+          "azcli.azInstall": {
+            "type": "string",
+            "default": "prompt",
+            "enum": [
+              "dontPrompt",
+              "prompt"
+            ],
+            "enumDescriptions": [
+              "%azcli.install.dontPrompt.description%",
+              "%azcli.install.prompt.description%"
+            ],
+            "description": "%azcli.azCliInstallKey.description%"
           }
         }
       }

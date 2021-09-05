@@ -6,17 +6,17 @@
 import * as should from 'should';
 import * as sinon from 'sinon';
 import * as childProcess from '../common/childProcess';
-import * as azdata from '../az';
+import * as az from '../az';
 
 describe('az', function () {
 	afterEach(function (): void {
 		sinon.restore();
 	});
 	describe('azTool', function (): void {
-		const azTool = new azdata.AzTool('C:/Program Files (x86)/Microsoft SDKs/Azure/CLI2/wbin/az.cmd', '2.26.0');
+		const azTool = new az.AzTool('my path', '2.26.0', '1.0.0');
 		let executeCommandStub: sinon.SinonStub;
-		const namespace = 'arc4';
-		const name = 'cy-dc-4';
+		const namespace = 'arc';
+		const name = 'arcdc';
 
 		beforeEach(function (): void {
 			executeCommandStub = sinon.stub(childProcess, 'executeCommand').resolves({ stdout: '{}', stderr: '' });
@@ -148,5 +148,4 @@ describe('az', function () {
 			args.forEach(arg => should(commandArgs).not.containEql(arg));
 		}
 	});
-
 });
