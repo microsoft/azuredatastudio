@@ -2266,30 +2266,6 @@ Select a different subscription containing at least one server</source>
         <source xml:lang="en">Azure Data CLI</source>
         <target state="translated">Azure Data CLI</target>
       </trans-unit>
-      <trans-unit id="deploy.azdataExtMissing">
-        <source xml:lang="en">The Azure Data CLI extension must be installed to deploy this resource. Please install it through the extension gallery and try again.</source>
-        <target state="translated">이 리소스를 배포하려면 Azure Data CLI 확장을 설치해야 합니다. 확장 갤러리를 통해 설치한 후 다시 시도하세요.</target>
-      </trans-unit>
-      <trans-unit id="deployCluster.GetToolVersionErrorInformation">
-        <source xml:lang="en">Error retrieving version information. See output channel '{0}' for more details</source>
-        <target state="translated">버전 정보를 검색하는 동안 오류가 발생했습니다. 자세한 내용은 출력 채널 '{0}'을(를) 참조하세요.</target>
-      </trans-unit>
-      <trans-unit id="deployCluster.GetToolVersionError">
-        <source xml:lang="en">Error retrieving version information.{0}Invalid output received, get version command output: '{1}' </source>
-        <target state="translated">버전 정보를 검색하는 동안 오류가 발생했습니다. {0}잘못된 출력이 수신되었습니다. 버전 명령 출력 '{1}'을(를) 가져옵니다. </target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/resource-deployment/dist/services/tools/azdataToolOld" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="resourceDeployment.AzdataDescription">
-        <source xml:lang="en">Azure Data command line interface</source>
-        <target state="translated">Azure 데이터 명령줄 인터페이스</target>
-      </trans-unit>
-      <trans-unit id="resourceDeployment.AzdataDisplayName">
-        <source xml:lang="en">Azure Data CLI</source>
-        <target state="translated">Azure Data CLI</target>
-      </trans-unit>
       <trans-unit id="resourceDeployment.Azdata.DeletingPreviousAzdata.msi">
         <source xml:lang="en">deleting previously downloaded Azdata.msi if one exists …</source>
         <target state="translated">이전에 다운로드한 Azdata.msi를 삭제하는 중(있는 경우)...</target>

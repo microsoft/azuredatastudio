@@ -2266,30 +2266,6 @@ Seleccione otra suscripción que contenga al menos un servidor.</target>
         <source xml:lang="en">Azure Data CLI</source>
         <target state="translated">CLI de datos de Azure</target>
       </trans-unit>
-      <trans-unit id="deploy.azdataExtMissing">
-        <source xml:lang="en">The Azure Data CLI extension must be installed to deploy this resource. Please install it through the extension gallery and try again.</source>
-        <target state="translated">La extensión CLI de datos de Azure debe estar instalada para implementar este recurso. Instálela a través de la galería de extensiones y vuelva a intentarlo.</target>
-      </trans-unit>
-      <trans-unit id="deployCluster.GetToolVersionErrorInformation">
-        <source xml:lang="en">Error retrieving version information. See output channel '{0}' for more details</source>
-        <target state="translated">Error al recuperar la información de la versión. Consulte el canal de salida "{0}" para obtener más detalles.</target>
-      </trans-unit>
-      <trans-unit id="deployCluster.GetToolVersionError">
-        <source xml:lang="en">Error retrieving version information.{0}Invalid output received, get version command output: '{1}' </source>
-        <target state="translated">Error al recuperar la información de la versión. {0}Se ha recibido una salida no válida; salida del comando GET de la versión: "{1}". </target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/resource-deployment/dist/services/tools/azdataToolOld" source-language="en" datatype="plaintext" target-language="es">
-    <body>
-      <trans-unit id="resourceDeployment.AzdataDescription">
-        <source xml:lang="en">Azure Data command line interface</source>
-        <target state="translated">Interfaz de la línea de comandos de datos de Azure</target>
-      </trans-unit>
-      <trans-unit id="resourceDeployment.AzdataDisplayName">
-        <source xml:lang="en">Azure Data CLI</source>
-        <target state="translated">CLI de datos de Azure</target>
-      </trans-unit>
       <trans-unit id="resourceDeployment.Azdata.DeletingPreviousAzdata.msi">
         <source xml:lang="en">deleting previously downloaded Azdata.msi if one exists …</source>
         <target state="translated">Se está eliminando el archivo Azdata.msi descargado anteriormente, si existe...</target>

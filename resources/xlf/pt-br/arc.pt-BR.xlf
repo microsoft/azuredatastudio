@@ -136,6 +136,10 @@
         <source xml:lang="en">Location</source>
         <target state="translated">Localização</target>
       </trans-unit>
+      <trans-unit id="arc.data.controller.infrastructure">
+        <source xml:lang="en">Infrastructure</source>
+        <target state="translated">Infraestrutura</target>
+      </trans-unit>
       <trans-unit id="arc.data.controller.admin.account.title">
         <source xml:lang="en">Administrator account</source>
         <target state="translated">Conta de administrador</target>
@@ -235,6 +239,10 @@
       <trans-unit id="arc.data.controller.summary.data.controller.namespace">
         <source xml:lang="en">Data controller namespace</source>
         <target state="translated">Namespace do controlador de dados</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.data.controller.infrastructure">
+        <source xml:lang="en">Data controller infrastructure</source>
+        <target state="translated">Infraestrutura do controlador de dados</target>
       </trans-unit>
       <trans-unit id="arc.data.controller.summary.controller">
         <source xml:lang="en">Controller</source>
@@ -605,8 +613,8 @@
         <target state="translated">O limite de memória deve ser maior ou igual à memória solicitada</target>
       </trans-unit>
       <trans-unit id="arc.agreement.sql.help.text">
-        <source xml:lang="en">Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. While this service is in preview, it has some feature limitations compared to SQL Managed Instance on Azure. {0}</source>
-        <target state="translated">A Instância Gerenciada habilitada para Azure Arc fornece acesso de SQL Server e compatibilidade de recursos que podem ser implantados na infraestrutura de sua escolha. Enquanto esse serviço está em versão prévia, ele tem algumas limitações de recurso em comparação à Instância Gerenciada do Banco de Dados SQL do Azure. {0}</target>
+        <source xml:lang="en">Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}</source>
+        <target state="translated">A Instância Gerenciada habilitada para o Azure Arc fornece acesso ao SQL Server e compatibilidade de recursos que podem ser implantados na infraestrutura de sua escolha. {0}</target>
       </trans-unit>
       <trans-unit id="arc.agreement.sql.help.text.learn.more">
         <source xml:lang="en">Learn more</source>
@@ -823,6 +831,14 @@
       <trans-unit id="arc.extensionsFunction">
         <source xml:lang="en">Some extensions must be loaded into PostgreSQL at startup time before they can be used. These preloaded extensions can be viewed and edited  below.</source>
         <target state="translated">Algumas extensões devem ser carregadas no PostgreSQL no momento da inicialização antes que possam ser usadas. Essas extensões pré-carregadas podem ser exibidas e editadas abaixo.</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionsAddFunction">
+        <source xml:lang="en">Some extensions must be loaded into PostgreSQL at startup time before they can be used. To edit, type in comma separated list of valid extensions: ({0}).</source>
+        <target state="translated">Algumas extensões devem ser carregadas no PostgreSQL no momento da inicialização antes que possam ser usadas. Para editar, digite uma lista separada por vírgulas de extensões válidas: ({0}).</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionsAddErrorrMessage">
+        <source xml:lang="en">Value should be either of the following: ({0}).</source>
+        <target state="translated">O valor deve ser um dos seguintes: ({0}).</target>
       </trans-unit>
       <trans-unit id="arc.extensionsLearnMore">
         <source xml:lang="en">Learn more about PostgreSQL extensions.</source>

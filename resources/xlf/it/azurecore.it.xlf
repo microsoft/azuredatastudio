@@ -718,8 +718,8 @@
   <file original="extensions/azurecore/dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider" source-language="en" datatype="plaintext" target-language="it">
     <body>
       <trans-unit id="azure.resource.providers.AzureMonitorContainerLabel">
-        <source xml:lang="en">Azure Monitor Logs workspace</source>
-        <target state="translated">Area di lavoro di log di monitoraggio di Azure</target>
+        <source xml:lang="en">Log Analytics workspace</source>
+        <target state="new">Log Analytics workspace</target>
       </trans-unit>
     </body>
   </file>
