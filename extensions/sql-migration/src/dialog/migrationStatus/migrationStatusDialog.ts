@@ -316,7 +316,7 @@ export class MigrationStatusDialog {
 				this._searchBox.value!);
 
 			migrations.sort((m1, m2) => {
-				return new Date(m1.migrationContext.properties.startedOn) > new Date(m2.migrationContext.properties.startedOn) ? -1 : 1;
+				return new Date(m1.migrationContext.properties?.startedOn) > new Date(m2.migrationContext.properties?.startedOn) ? -1 : 1;
 			});
 
 			const data: azdata.DeclarativeTableCellValue[][] = migrations.map((migration, index) => {
