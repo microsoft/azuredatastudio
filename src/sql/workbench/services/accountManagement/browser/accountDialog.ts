@@ -305,8 +305,10 @@ export class AccountDialog extends Modal {
 	// PRIVATE HELPERS /////////////////////////////////////////////////////
 	private addProvider(newProvider: AccountProviderAddedEventParams) {
 
+		this.logService.debug(`Adding new provider ${newProvider.addedProvider.id}`);
 		// Skip adding the provider if it already exists
 		if (this._providerViewsMap.get(newProvider.addedProvider.id)) {
+			this.logService.debug(`Provider ${newProvider.addedProvider.id} is already registered!`);
 			return;
 		}
 
@@ -364,14 +366,17 @@ export class AccountDialog extends Modal {
 
 		this.layout();
 
+		this.logService.debug(`Storing view for provider ${newProvider.addedProvider.id}`);
 		// Store the view for the provider and action
 		this._providerViewsMap.set(newProvider.addedProvider.id, { view: providerView, addAccountAction: addAccountAction });
 	}
 
 	private removeProvider(removedProvider: azdata.AccountProviderMetadata) {
+		this.logService.debug(`Removing provider ${removedProvider.id}`);
 		// Skip removing the provider if it doesn't exist
 		const providerView = this._providerViewsMap.get(removedProvider.id);
 		if (!providerView || !providerView.view) {
+			this.logService.warn(`Provider ${removedProvider.id} doesn't exist while removing`);
 			return;
 		}
 
@@ -381,6 +386,7 @@ export class AccountDialog extends Modal {
 
 		// Remove the list view from our internal map
 		this._providerViewsMap.delete(removedProvider.id);
+		this.logService.debug(`Provider ${removedProvider.id} removed`);
 		this.layout();
 	}
 
@@ -427,8 +433,8 @@ export class AccountDialog extends Modal {
 	}
 
 	private async runAddAccountAction() {
+		this.logService.debug(`Adding account - providers ${JSON.stringify(Iterable.consume(this._providerViewsMap.keys()))}`);
 		const vals = Iterable.consume(this._providerViewsMap.values())[0];
-
 		let pickedValue: string | undefined;
 		if (vals.length === 0) {
 			this._notificationService.error(localize('accountDialog.noCloudsRegistered', "You have no clouds enabled. Go to Settings -> Search Azure Account Configuration -> Enable at least one cloud"));
