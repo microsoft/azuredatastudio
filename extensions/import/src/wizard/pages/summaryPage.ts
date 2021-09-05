@@ -129,13 +129,23 @@ export class SummaryPage extends ImportPage {
 
 		let result: InsertDataResponse;
 		let err;
-		let includePasswordInConnectionString = (this.model.server.options.authenticationType === 'Integrated') ? false : true;
+
+		const currentServer = this.model.server;
+		const includePasswordInConnectionString = (currentServer.options.authenticationType === 'Integrated') ? false : true;
+		const connectionString = await azdata.connection.getConnectionString(currentServer.connectionId, includePasswordInConnectionString);
+
+		let accessToken = undefined;
+		if (currentServer.options.authenticationType = 'AzureMFA') {
+			const azureAccount = (await azdata.accounts.getAllAccounts()).filter(v => v.key.accountId === currentServer.options.azureAccount)[0];
+			accessToken = (await azdata.accounts.getAccountSecurityToken(azureAccount, currentServer.options.azureTenantId, azdata.AzureResource.Sql)).token;
+		}
 
 		try {
 			result = await this.provider.sendInsertDataRequest({
-				connectionString: await azdata.connection.getConnectionString(this.model.server.connectionId, includePasswordInConnectionString),
+				connectionString: connectionString,
 				//TODO check what SSMS uses as batch size
-				batchSize: 500
+				batchSize: 500,
+				azureAccessToken: accessToken
 			});
 		} catch (e) {
 			err = e.toString();

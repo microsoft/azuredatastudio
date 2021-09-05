@@ -1,7 +1,7 @@
 {
 	"downloadUrl": "https://sqlopsextensions.blob.core.windows.net/extensions/import/service/{#version#}/{#fileName#}",
 	"useDefaultLinuxRuntime": true,
-	"version": "0.0.7",
+	"version": "0.0.8",
 	"downloadFileNames": {
 		"Windows_64": "win-x64.zip",
 		"Windows_86": "win-x86.zip",
