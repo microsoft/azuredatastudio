@@ -598,10 +598,14 @@ export abstract class Modal extends Disposable implements IThemable {
 				DOM.prepend(this._modalContent!, this._messageElement!);
 			}
 		} else {
-			DOM.removeNode(this._messageElement!);
-			// Set the focus to first focus element if the focus is not within the dialog
-			if (!DOM.isAncestor(document.activeElement, this._bodyContainer!)) {
-				this.setInitialFocusedElement();
+			// only do the removal when the messageElement has parent element.
+			if (this._messageElement!.parentElement) {
+				// Reset the focus if keyboard focus is currently in the message area.
+				const resetFocus = DOM.isAncestor(document.activeElement, this._messageElement!);
+				this._messageElement!.remove();
+				if (resetFocus) {
+					this.setInitialFocusedElement();
+				}
 			}
 		}
 	}
