@@ -192,6 +192,9 @@
     <trans-unit id="noString">
       <source xml:lang="en">No</source>
     </trans-unit>
+    <trans-unit id="noStringDefault">
+      <source xml:lang="en">No (default)</source>
+    </trans-unit>
     <trans-unit id="okString">
       <source xml:lang="en">Ok</source>
     </trans-unit>
@@ -221,6 +224,9 @@
     </trans-unit>
     <trans-unit id="defaultProjectNameStarter">
       <source xml:lang="en">DatabaseProject</source>
+    </trans-unit>
+    <trans-unit id="location">
+      <source xml:lang="en">Location</source>
     </trans-unit>
     <trans-unit id="reloadProject">
       <source xml:lang="en">Would you like to reload your database project?</source>
@@ -355,23 +361,17 @@
     <trans-unit id="referenceRadioButtonsGroupTitle">
       <source xml:lang="en">Type</source>
     </trans-unit>
-    <trans-unit id="projectRadioButtonTitle">
+    <trans-unit id="projectLocString">
       <source xml:lang="en">Project</source>
     </trans-unit>
-    <trans-unit id="systemDatabaseRadioButtonTitle">
+    <trans-unit id="systemDatabase">
       <source xml:lang="en">System database</source>
     </trans-unit>
     <trans-unit id="dacpacText">
       <source xml:lang="en">Data-tier application (.dacpac)</source>
     </trans-unit>
-    <trans-unit id="dacpacPlaceholder">
+    <trans-unit id="selectDacpac">
       <source xml:lang="en">Select .dacpac</source>
-    </trans-unit>
-    <trans-unit id="loadDacpacButton">
-      <source xml:lang="en">Select .dacpac</source>
-    </trans-unit>
-    <trans-unit id="locationDropdown">
-      <source xml:lang="en">Location</source>
     </trans-unit>
     <trans-unit id="sameDatabase">
       <source xml:lang="en">Same database</source>
@@ -415,6 +415,9 @@
     <trans-unit id="dacpacNotOnSameDrive">
       <source xml:lang="en">Dacpac references need to be located on the same drive as the project file. The project file is located at {0}</source>
     </trans-unit>
+    <trans-unit id="referenceType">
+      <source xml:lang="en">Reference type</source>
+    </trans-unit>
     <trans-unit id="createProjectFromDatabaseDialogName">
       <source xml:lang="en">Create project from database</source>
     </trans-unit>
@@ -435,9 +438,6 @@
     </trans-unit>
     <trans-unit id="projectNamePlaceholderText">
       <source xml:lang="en">Enter project name</source>
-    </trans-unit>
-    <trans-unit id="projectLocationLabel">
-      <source xml:lang="en">Location</source>
     </trans-unit>
     <trans-unit id="projectLocationPlaceholderText">
       <source xml:lang="en">Select location to create project</source>
