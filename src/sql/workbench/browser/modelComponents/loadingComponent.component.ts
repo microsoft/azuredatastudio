@@ -67,10 +67,18 @@ export default class LoadingComponent extends ComponentBase<azdata.LoadingCompon
 		this.layout();
 	}
 
+	public override layout() {
+		super.layout();
+		if (this._component) {
+			const childComponent = this.modelStore.getComponent(this._component.id);
+			childComponent?.layout();
+		}
+	}
+
 	public override setProperties(properties: { [key: string]: any; }): void {
 		const wasLoading = this.loading;
 		super.setProperties(properties);
-		if (wasLoading && !this.loading) {
+		if (wasLoading !== this.loading) {
 			status(this.getStatusText());
 		}
 	}
