@@ -4,12 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-// import { isLinux } from 'vs/base/common/platform'; // {{SQL CARBON EDIT}} - disable test while failure is investigated
+import { isLinux } from 'vs/base/common/platform'; // {{SQL CARBON EDIT}} - disable test while failure is investigated
 
 suite('Keytar', () => {
-	// {{SQL CARBON EDIT}} - disable test while failure is investigated
-	(test.skip)('loads and is functional', async () => { // TODO@RMacfarlane test seems to fail on Linux (Error: Unknown or unsupported transport 'disabled' for address 'disabled:')
-		//(isLinux ? test.skip : test)('loads and is functional', async () => { // TODO@RMacfarlane test seems to fail on Linux (Error: Unknown or unsupported transport 'disabled' for address 'disabled:')
+	(isLinux ? test.skip : test)('loads and is functional', async () => { // TODO@RMacfarlane test seems to fail on Linux (Error: Unknown or unsupported transport 'disabled' for address 'disabled:')
 		const keytar = await import('keytar');
 		const name = `VSCode Test ${Math.floor(Math.random() * 1e9)}`;
 		try {
