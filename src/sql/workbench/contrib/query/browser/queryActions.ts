@@ -46,6 +46,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { IRange } from 'vs/editor/common/core/range';
 import { getErrorMessage, onUnexpectedError } from 'vs/base/common/errors';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
+import { gen3Version, sqlDataWarehouse } from 'sql/platform/connection/common/constants';
 
 /**
  * Action class that query-based Actions will extend. This base class automatically handles activating and
@@ -720,6 +721,33 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 				});
 	}
 
+	/**
+	 *
+	 * @param id profile id
+	 * @returns boolean saying if the server connection is a Gen 3 DW server
+	 */
+	private isDWGen3Database(id: string): boolean {
+		const serverInfo = this.connectionManagementService.getServerInfo(id);
+		if (serverInfo) {
+			return serverInfo.serverEdition === sqlDataWarehouse &&
+				serverInfo.serverMajorVersion === gen3Version;
+		}
+		return false;
+	}
+
+	/**
+	 *
+	 * @param dbName database name
+	 * @returns updated database name after stripping the pool name, if any
+	 */
+	private removePoolInstanceName(dbName: string): string {
+		if (dbName.includes('@')) {
+			const lastIndex = dbName.lastIndexOf('@');
+			dbName = dbName.slice(0, lastIndex);
+		}
+		return dbName;
+	}
+
 	private getCurrentDatabaseName(): string | undefined {
 		if (!this._editor.input) {
 			this.logService.error('editor input was null');
@@ -730,6 +758,9 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 		if (uri) {
 			let profile = this.connectionManagementService.getConnectionProfile(uri);
 			if (profile) {
+				if (this.isDWGen3Database(profile.id)) {
+					return this.removePoolInstanceName(profile.databaseName);
+				}
 				return profile.databaseName;
 			}
 		}
