@@ -131,6 +131,7 @@ describe('AzureResourceAccountTreeNode.info', function (): void {
 	it('Should be correct when there are subscriptions listed.', async function (): Promise<void> {
 		mockSubscriptionService.setup((o) => o.getSubscriptions(mockAccount, TypeMoq.It.isAny())).returns(() => Promise.resolve(mockSubscriptions));
 		mockSubscriptionFilterService.setup((o) => o.getSelectedSubscriptions(mockAccount)).returns(() => Promise.resolve(undefined));
+		sinon.stub(azdata.accounts, 'getAccountSecurityToken').resolves(mockToken);
 
 		const accountTreeNodeLabel = `${mockAccount.displayInfo.displayName} (${mockSubscriptions.length} / ${mockSubscriptions.length} subscriptions)`;
 
@@ -148,10 +149,30 @@ describe('AzureResourceAccountTreeNode.info', function (): void {
 		should(nodeInfo.label).equal(accountTreeNodeLabel);
 	});
 
-	it('Should be correct when there are subscriptions filtered.', async function (): Promise<void> {
-		mockSubscriptionService.setup((o) => o.getSubscriptions(mockAccount, TypeMoq.It.isAny())).returns(() => Promise.resolve(mockSubscriptions));
+	it('Should only show subscriptions with valid tokens.', async function (): Promise<void> {
+		mockSubscriptionService.setup((o) => o.getSubscriptions(mockAccount)).returns(() => Promise.resolve(mockSubscriptions));
 		mockSubscriptionFilterService.setup((o) => o.getSelectedSubscriptions(mockAccount)).returns(() => Promise.resolve(mockFilteredSubscriptions));
+		sinon.stub(azdata.accounts, 'getAccountSecurityToken').onFirstCall().resolves(mockToken);
+		const accountTreeNodeLabel = `${mockAccount.displayInfo.displayName} (${mockFilteredSubscriptions.length} / ${mockSubscriptions.length} subscriptions)`;
 
+		const accountTreeNode = new AzureResourceAccountTreeNode(mockAccount, mockAppContext, mockTreeChangeHandler.object);
+
+		const subscriptionNodes = await accountTreeNode.getChildren();
+
+		should(subscriptionNodes).Array();
+		should(subscriptionNodes.length).equal(1);
+
+		const treeItem = await accountTreeNode.getTreeItem();
+		should(treeItem.label).equal(accountTreeNodeLabel);
+
+		const nodeInfo = accountTreeNode.getNodeInfo();
+		should(nodeInfo.label).equal(accountTreeNodeLabel);
+	});
+
+	it('Should be correct when there are subscriptions filtered.', async function (): Promise<void> {
+		mockSubscriptionService.setup((o) => o.getSubscriptions(mockAccount)).returns(() => Promise.resolve(mockSubscriptions));
+		mockSubscriptionFilterService.setup((o) => o.getSelectedSubscriptions(mockAccount)).returns(() => Promise.resolve(mockFilteredSubscriptions));
+		sinon.stub(azdata.accounts, 'getAccountSecurityToken').resolves(mockToken);
 		const accountTreeNodeLabel = `${mockAccount.displayInfo.displayName} (${mockFilteredSubscriptions.length} / ${mockSubscriptions.length} subscriptions)`;
 
 		const accountTreeNode = new AzureResourceAccountTreeNode(mockAccount, mockAppContext, mockTreeChangeHandler.object);

@@ -836,7 +836,7 @@ declare module 'azdata' {
 		 * @param resource The resource to get the token for
 		 * @return Promise to return a security token object
 		 */
-		getAccountSecurityToken(account: Account, tenant: string, resource: AzureResource): Thenable<{ token: string } | undefined>;
+		getAccountSecurityToken(account: Account, tenant: string, resource: AzureResource): Thenable<accounts.AccountSecurityToken | undefined>;
 	}
 
 	export interface AccountKey {
