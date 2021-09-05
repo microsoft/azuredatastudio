@@ -14,29 +14,46 @@ import { mapExtractTargetEnum } from './createProjectFromDatabaseDialog';
 
 /**
  * Create flow for a New Project using only VS Code-native APIs such as QuickPick
+ * @param connectionInfo Optional connection info to use instead of prompting the user for a connection
  */
-export async function createNewProjectFromDatabaseWithQuickpick(): Promise<ImportDataModel | undefined> {
+export async function createNewProjectFromDatabaseWithQuickpick(connectionInfo?: IConnectionInfo): Promise<ImportDataModel | undefined> {
+
+	const vscodeMssqlApi = await getVscodeMssqlApi();
 
 	// 1. Select connection
-	const vscodeMssqlApi = await getVscodeMssqlApi();
-	let connectionProfile: IConnectionInfo | undefined = undefined;
+	// Use passed in profile if we have one - otherwise prompt user to select one
+	let connectionProfile: IConnectionInfo | undefined = connectionInfo ?? await vscodeMssqlApi.promptForConnection(true);
+	if (!connectionProfile) {
+		// User cancelled
+		return undefined;
+	}
 	let connectionUri: string = '';
 	let dbs: string[] | undefined = undefined;
 	while (!dbs) {
-		connectionProfile = await vscodeMssqlApi.promptForConnection(true);
-		if (!connectionProfile) {
-			// User cancelled
-			return undefined;
-		}
 		// Get the list of databases now to validate that the connection is valid and re-prompt them if it isn't
 		try {
 			connectionUri = await vscodeMssqlApi.connect(connectionProfile);
 			dbs = (await vscodeMssqlApi.listDatabases(connectionUri))
 				.filter(db => !constants.systemDbs.includes(db)); // Filter out system dbs
 		} catch (err) {
-			// no-op, the mssql extension handles showing the error to the user. We'll just go
-			// back and prompt the user for a connection again
+			// The mssql extension handles showing the error to the user. Prompt the user
+			// for a new connection and then go and try getting the DBs again
+			connectionProfile = await vscodeMssqlApi.promptForConnection(true);
+			if (!connectionProfile) {
+				// User cancelled
+				return undefined;
+			}
+
 		}
+	}
+
+	// Move the database for the given connection up to the top
+	if (connectionProfile.database && connectionProfile.database !== constants.master) {
+		const index = dbs.indexOf(connectionProfile.database);
+		if (index >= 0) {
+			dbs.splice(index, 1);
+		}
+		dbs.unshift(connectionProfile.database);
 	}
 
 	// 2. Select database

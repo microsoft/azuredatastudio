@@ -351,6 +351,11 @@
           "command": "sqlDatabaseProjects.openContainingFolder",
           "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project",
           "group": "9_dbProjectsLast@8"
+        },
+        {
+          "command": "sqlDatabaseProjects.createProjectFromDatabase",
+          "when": "!azdataAvailable && view == objectExplorer && viewItem =~ /^(disconnectedServer|Server|Database)$/",
+          "group": "sqldbproj@1"
         }
       ],
       "objectExplorer/item/context": [

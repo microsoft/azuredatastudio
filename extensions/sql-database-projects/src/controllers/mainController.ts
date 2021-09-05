@@ -5,6 +5,7 @@
 
 import type * as azdataType from 'azdata';
 import * as vscode from 'vscode';
+import * as vscodeMssql from 'vscode-mssql';
 import * as templates from '../templates/templates';
 import * as path from 'path';
 
@@ -50,7 +51,7 @@ export default class MainController implements vscode.Disposable {
 		vscode.commands.registerCommand('sqlDatabaseProjects.build', async (node: WorkspaceTreeItem) => { await this.projectsController.buildProject(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.publish', async (node: WorkspaceTreeItem) => { this.projectsController.publishProject(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.schemaCompare', async (node: WorkspaceTreeItem) => { await this.projectsController.schemaCompare(node); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.createProjectFromDatabase', async (profile: azdataType.IConnectionProfile) => { await this.projectsController.createProjectFromDatabase(profile); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.createProjectFromDatabase', async (context: azdataType.IConnectionProfile | vscodeMssql.ITreeNodeInfo | undefined) => { await this.projectsController.createProjectFromDatabase(context); });
 
 		vscode.commands.registerCommand('sqlDatabaseProjects.newScript', async (node: WorkspaceTreeItem) => { await this.projectsController.addItemPromptFromNode(node, templates.script); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.newPreDeploymentScript', async (node: WorkspaceTreeItem) => { await this.projectsController.addItemPromptFromNode(node, templates.preDeployScript); });

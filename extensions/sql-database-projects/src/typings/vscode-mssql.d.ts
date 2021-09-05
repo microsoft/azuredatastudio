@@ -4,6 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 declare module 'vscode-mssql' {
+
+    import * as vscode from 'vscode';
+
     /**
      * Covers defining what the vscode-mssql extension exports to other extensions
      *
@@ -51,6 +54,15 @@ declare module 'vscode-mssql' {
          * @returns The list of database names
          */
         listDatabases(connectionUri: string): Promise<string[]>;
+
+        /**
+         * Gets the database name for the node - which is the database name of the connection for a server node, the database name
+         * for nodes at or under a database node or a default value if it's neither of those.
+         * @param node The node to get the database name of
+         * @returns The database name
+         */
+        getDatabaseNameFromTreeNode(node: ITreeNodeInfo): string;
+
     }
 
     /**
@@ -490,4 +502,29 @@ declare module 'vscode-mssql' {
         defaultDeploymentOptions: DeploymentOptions;
     }
 
+    export interface ITreeNodeInfo extends vscode.TreeItem {
+        readonly connectionInfo: IConnectionInfo;
+        nodeType: string;
+        metadata: ObjectMetadata;
+        parentNode: ITreeNodeInfo;
+    }
+
+    export const enum MetadataType {
+        Table = 0,
+        View = 1,
+        SProc = 2,
+        Function = 3
+    }
+
+    export interface ObjectMetadata {
+        metadataType: MetadataType;
+
+        metadataTypeName: string;
+
+        urn: string;
+
+        name: string;
+
+        schema: string;
+    }
 }
