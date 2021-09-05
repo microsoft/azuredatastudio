@@ -143,7 +143,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 	});
 
 	return {
-		getSubscriptions(account?: azdata.Account, ignoreErrors?: boolean, selectedOnly: boolean = false): Promise<azurecore.GetSubscriptionsResult> {
+		getSubscriptions(account?: azurecore.AzureAccount, ignoreErrors?: boolean, selectedOnly: boolean = false): Promise<azurecore.GetSubscriptionsResult> {
 			return selectedOnly
 				? azureResourceUtils.getSelectedSubscriptions(appContext, account, ignoreErrors)
 				: azureResourceUtils.getSubscriptions(appContext, account, ignoreErrors);
