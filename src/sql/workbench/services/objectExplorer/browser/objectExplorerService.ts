@@ -44,7 +44,7 @@ export interface IServerTreeView {
 	deleteObjectExplorerNodeAndRefreshTree(profile: ConnectionProfile): Promise<void>;
 	getSelection(): Array<ServerTreeElement>;
 	isFocused(): boolean;
-	refreshElement(node: TreeNode): Promise<void>;
+	refreshElement(node: ServerTreeElement): Promise<void>;
 	readonly treeActionProvider: ServerTreeActionProvider;
 	isExpanded(node?: ServerTreeElement): boolean;
 	reveal(node: ServerTreeElement): Promise<void>;
@@ -722,7 +722,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		if (!treeNode) {
 			return undefined;
 		}
-		await this._serverTreeView?.refreshElement(treeNode);
+		await this._serverTreeView?.refreshElement(this.getTreeItem(treeNode));
 		if (treeNode?.children?.length ?? -1 > 0) {
 			await treeNode?.setExpandedState(TreeItemCollapsibleState.Expanded);
 		}
