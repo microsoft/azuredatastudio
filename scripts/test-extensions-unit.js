@@ -14,7 +14,6 @@ const extensionList = [
 	'agent',
 	'arc',
 	'azcli',
-	'azdata',
 	'azurecore',
 	'cms',
 	'dacpac',

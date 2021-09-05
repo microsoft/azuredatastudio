@@ -72,9 +72,9 @@ echo **************************
 call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\arc --extensionTestsPath=%~dp0\..\extensions\arc\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
 
 echo *****************************
-echo *** starting azdata tests ***
+echo *** starting azcli tests ***
 echo *****************************
-call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\azdata --extensionTestsPath=%~dp0\..\extensions\azdata\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
+call "%INTEGRATION_TEST_ELECTRON_PATH%" --extensionDevelopmentPath=%~dp0\..\extensions\azcli --extensionTestsPath=%~dp0\..\extensions\azcli\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
 
 echo ********************************
 echo *** starting azurecore tests ***

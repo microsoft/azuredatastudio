@@ -105,9 +105,9 @@ echo **************************
 "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/arc --extensionTestsPath=$ROOT/extensions/arc/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
 
 echo *****************************
-echo *** starting azdata tests ***
+echo *** starting azcli tests ***
 echo *****************************
-"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/azdata --extensionTestsPath=$ROOT/extensions/azdata/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
+"$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS --extensionDevelopmentPath=$ROOT/extensions/azcli --extensionTestsPath=$ROOT/extensions/azcli/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
 
 echo ********************************
 echo *** starting azurecore tests ***
