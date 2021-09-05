@@ -103,3 +103,8 @@ export class NodeType {
 export interface SqlThemeIcon {
 	readonly id: string;
 }
+
+export function instanceOfSqlThemeIcon(obj: any): obj is SqlThemeIcon {
+	const icon = obj as SqlThemeIcon;
+	return icon && icon.id !== undefined;
+}
