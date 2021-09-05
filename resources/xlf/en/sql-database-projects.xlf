@@ -658,6 +658,24 @@
     <trans-unit id="postDeployScriptFriendlyName">
       <source xml:lang="en">Script.PostDeployment</source>
     </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.NetCoreInstallationConfirmation">
+      <source xml:lang="en">The .NET Core SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK location in settings if already installed.</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.NetCoreSupportedVersionInstallationConfirmation">
+      <source xml:lang="en">Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK supported version location in settings if already installed.</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.UpdateNetCoreLocation">
+      <source xml:lang="en">Update Location</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.InstallNetCore">
+      <source xml:lang="en">Install</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.doNotAskAgain">
+      <source xml:lang="en">Don't Ask Again</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.outputChannel">
+      <source xml:lang="en">Database Projects</source>
+    </trans-unit>
     <trans-unit id="input">
       <source xml:lang="en">Input</source>
     </trans-unit>
@@ -687,21 +705,6 @@
     </trans-unit>
   </body></file>
   <file original="extensions/sql-database-projects/dist/tools/netcoreTool" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="sqlDatabaseProjects.NetCoreInstallationConfirmation">
-      <source xml:lang="en">The .NET Core SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or update the .Net Core SDK location in settings if already installed.</source>
-    </trans-unit>
-    <trans-unit id="sqlDatabaseProjects.UpdateNetCoreLocation">
-      <source xml:lang="en">Update Location</source>
-    </trans-unit>
-    <trans-unit id="sqlDatabaseProjects.InstallNetCore">
-      <source xml:lang="en">Install</source>
-    </trans-unit>
-    <trans-unit id="sqlDatabaseProjects.doNotAskAgain">
-      <source xml:lang="en">Don't Ask Again</source>
-    </trans-unit>
-    <trans-unit id="sqlDatabaseProjects.outputChannel">
-      <source xml:lang="en">Database Projects</source>
-    </trans-unit>
     <trans-unit id="sqlDatabaseProject.RunCommand.ErroredOut">
       <source xml:lang="en">	&gt;&gt;&gt; {0}   … errored out: {1}</source>
     </trans-unit>
