@@ -10414,7 +10414,7 @@
 			"notebook.showRenderedNotebookinDiffEditor": "(미리 보기) diff 편집기에서 렌더링된 전자 필기장을 표시합니다.",
 			"notebook.maxRichTextUndoHistory": "전자 필기장 서식 있는 텍스트 편집기의 실행 취소 기록에 저장된 최대 변경 내용 수입니다.",
 			"notebook.useAbsoluteFilePaths": "다른 노트북에 연결할 때 절대 파일 경로를 사용하세요.",
-			"notebook.enableIncrementalGridRendering": "Enable incremental grid rendering for notebooks. This will improve the initial rendering time for large notebooks. There may be performance issues when interacting with the notebook while the rest of the grids are rendering.",
+			"notebook.enableIncrementalGridRendering": "전자 필기장에 대한 증분 그리드 렌더링을 활성화합니다. 이렇게 하면 대형 전자 필기장의 초기 렌더링 시간이 향상됩니다. 나머지 그리드가 렌더링되는 동안 전자 필기장과 상호 작용할 때 성능 문제가 있을 수 있습니다.",
 			"searchConfigurationTitle": "Notebook 검색",
 			"exclude": "전체 텍스트 검색 및 빠른 열기에서 glob 패턴을 구성하여 파일 및 폴더를 제외합니다. `#files.exclude#` 설정에서 모든 glob 패턴을 상속합니다. [여기](https://code.visualstudio.com/docs/editor/codebasics#_advanced-search-options)에서 glob 패턴에 대해 자세히 알아보세요.",
 			"exclude.boolean": "파일 경로를 일치시킬 GLOB 패턴입니다. 패턴을 사용하거나 사용하지 않도록 설정하려면 true 또는 false로 설정하세요.",
@@ -10474,8 +10474,8 @@
 			"noParametersInCell": "매개 변수 셀에 추가된 매개 변수가 있을 때까지 이 전자 필기장을 매개 변수로 실행할 수 없습니다. [자세한 정보] (https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).",
 			"clearResults": "결과 지우기",
 			"notebookViewLabel": "편집기",
-			"newViewLabel": "Create New View",
-			"viewNotFound": "Unable to find view: {0}",
+			"newViewLabel": "새 보기 만들기",
+			"viewNotFound": "뷰 '{0}'을(를) 찾을 수 없습니다.",
 			"trustLabel": "신뢰할 수 있음",
 			"untrustLabel": "신뢰할 수 없음",
 			"collapseAllCells": "셀 축소",
@@ -11464,7 +11464,7 @@
 			"insertCellsModal.Cancel": "취소"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsActions": {
-			"viewsUnableToRemove": "Unable to remove view",
+			"viewsUnableToRemove": "뷰를 제거할 수 없음",
 			"confirmDelete": "'{0}' 보기를 삭제할까요?",
 			"delete": "삭제(&&D)",
 			"insertCells": "셀 삽입",
@@ -11479,7 +11479,7 @@
 			"viewOptionsModal.title": "보기 구성",
 			"viewOptionsModal.name": "뷰 이름",
 			"viewOptionsModal.missingRequireField": "This field is required.",
-			"viewOptionsModal.nameTaken": "This view name has already been taken.",
+			"viewOptionsModal.nameTaken": "이 보기 이름은 이미 사용되었습니다.",
 			"save": "저장",
 			"cancel": "취소"
 		},

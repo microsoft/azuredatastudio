@@ -207,7 +207,7 @@
 			"azure.resource.providers.KustoContainerLabel": "Azure 数据资源管理器群集"
 		},
 		"dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider": {
-			"azure.resource.providers.AzureMonitorContainerLabel": "Log Analytics workspace"
+			"azure.resource.providers.AzureMonitorContainerLabel": "Log Analytics 工作区"
 		},
 		"dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider": {
 			"azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel": "Azure Database for PostgreSQL 服务器"

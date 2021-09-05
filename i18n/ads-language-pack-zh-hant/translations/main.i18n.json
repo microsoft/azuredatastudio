@@ -10387,8 +10387,8 @@
 			"textPreview": "文字資料格",
 			"runAllPreview": "全部執行",
 			"addCell": "資料格",
-			"views": "Views",
-			"editor": "Editor",
+			"views": "檢視",
+			"editor": "編輯器",
 			"code": "程式碼",
 			"text": "文字",
 			"runAll": "執行資料格",
@@ -10414,7 +10414,7 @@
 			"notebook.showRenderedNotebookinDiffEditor": "(預覽) 在 Diff 編輯器中顯示轉譯的筆記本。",
 			"notebook.maxRichTextUndoHistory": "筆記本 RTF 文字編輯器復原歷程記錄中儲存的變更數目上限。",
 			"notebook.useAbsoluteFilePaths": "連結到其他筆記本時，請使用絕對檔案路徑。",
-			"notebook.enableIncrementalGridRendering": "Enable incremental grid rendering for notebooks. This will improve the initial rendering time for large notebooks. There may be performance issues when interacting with the notebook while the rest of the grids are rendering.",
+			"notebook.enableIncrementalGridRendering": "啟用筆記本的增量格線轉譯。這會改善大型筆記本的初始轉譯時間。當其餘格線轉譯時，與筆記本的互動可能會發生效能問題。",
 			"searchConfigurationTitle": "搜尋筆記本",
 			"exclude": "設定 Glob 模式，在全文檢索搜尋中排除檔案與資料夾，並快速開啟。繼承 `#files.exclude#` 設定的所有 Glob 模式。深入了解 Glob 模式 [這裡](https://code.visualstudio.com/docs/editor/codebasics#_advanced-search-options)。",
 			"exclude.boolean": "要符合檔案路徑的 Glob 模式。設為 True 或 False 可啟用或停用模式。",
@@ -10473,9 +10473,9 @@
 			"noParametersCell": "在新增參數儲存格之前，此筆記本無法以參數執行。[深入了解](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization)。",
 			"noParametersInCell": "在參數新增至參數儲存格之前，此筆記本無法以參數執行。[深入了解](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization)。",
 			"clearResults": "清除結果",
-			"notebookViewLabel": "Editor",
-			"newViewLabel": "Create New View",
-			"viewNotFound": "Unable to find view: {0}",
+			"notebookViewLabel": "編輯器",
+			"newViewLabel": "建立新檢視",
+			"viewNotFound": "找不到檢視: {0}",
 			"trustLabel": "受信任",
 			"untrustLabel": "不受信任",
 			"collapseAllCells": "摺疊資料格",
@@ -10520,7 +10520,7 @@
 		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViews.component": {
 			"cellNotFound": "無法在此模型中找到 URI 為 {0} 的資料格",
 			"cellRunFailed": "執行資料格失敗 - 如需詳細資訊，請參閱目前所選資料格之輸出中的錯誤。",
-			"runAllPreview": "Run all"
+			"runAllPreview": "全部執行"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCodeCell.component": {
 			"viewsCodeCell.emptyCellText": "請執行此儲存格以檢視輸出。"
@@ -11456,35 +11456,35 @@
 			"deployment.title": "新部署…"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookViews/insertCellsModal": {
-			"insertCellsModal.title": "Insert cells",
-			"insertCellsModal.selectCells": "Select cell sources",
-			"insertCellsModal.thumbnailError": "Error: Unable to generate thumbnails.",
-			"insertCellsModal.untitled": "Untitled Cell : {0}",
-			"insertCellsModal.Insert": "Insert",
-			"insertCellsModal.Cancel": "Cancel"
+			"insertCellsModal.title": "插入儲存格",
+			"insertCellsModal.selectCells": "選取儲存格來源",
+			"insertCellsModal.thumbnailError": "錯誤: 無法產生縮圖。",
+			"insertCellsModal.untitled": "未命名的儲存格: {0}",
+			"insertCellsModal.Insert": "插入",
+			"insertCellsModal.Cancel": "取消"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsActions": {
-			"viewsUnableToRemove": "Unable to remove view",
-			"confirmDelete": "Are you sure you want to delete view \"{0}\"?",
-			"delete": "&&Delete",
-			"insertCells": "Insert Cells",
-			"runCell": "Run cell",
-			"stopCell": "Cancel execution",
-			"errorRunCell": "Error on last run. Click to run again",
-			"unableToNavigateToCell": "Unable to navigate to notebook cell.",
-			"viewCellInNotebook": "View Cell In Notebook",
-			"moreActionsLabel": "More"
+			"viewsUnableToRemove": "無法移除檢視",
+			"confirmDelete": "確定要刪除檢視 \"{0}\" 嗎?",
+			"delete": "刪除(&&D)",
+			"insertCells": "插入儲存格",
+			"runCell": "執行儲存格",
+			"stopCell": "取消執行",
+			"errorRunCell": "上一個執行發生錯誤。按一下即可重新執行",
+			"unableToNavigateToCell": "無法瀏覽至筆記本儲存格。",
+			"viewCellInNotebook": "在筆記本中檢視儲存格",
+			"moreActionsLabel": "更多"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookViews/viewOptionsModal": {
-			"viewOptionsModal.title": "Configure View",
-			"viewOptionsModal.name": "View Name",
-			"viewOptionsModal.missingRequireField": "This field is required.",
-			"viewOptionsModal.nameTaken": "This view name has already been taken.",
-			"save": "Save",
-			"cancel": "Cancel"
+			"viewOptionsModal.title": "設定檢視",
+			"viewOptionsModal.name": "檢視名稱",
+			"viewOptionsModal.missingRequireField": "這是必要欄位。",
+			"viewOptionsModal.nameTaken": "此檢視名稱已經有人使用。",
+			"save": "儲存",
+			"cancel": "取消"
 		},
 		"sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension": {
-			"notebookView.untitledView": "Untitled View"
+			"notebookView.untitledView": "未命名的檢視"
 		}
 	}
 }
