@@ -19,7 +19,8 @@ const enum SettingIds {
 	vault = 'vault',
 	ado = 'ado',
 	ala = 'ala',
-	storage = 'storage'
+	storage = 'storage',
+	kusto = 'kusto'
 }
 
 const publicAzureSettings: ProviderSettings = {
@@ -80,6 +81,11 @@ const publicAzureSettings: ProviderSettings = {
 				endpoint: '',
 				endpointSuffix: '.core.windows.net',
 				azureResourceId: AzureResource.AzureStorage
+			},
+			azureKustoResource: {
+				id: SettingIds.kusto,
+				endpoint: 'https://api.kusto.io',
+				azureResourceId: AzureResource.AzureKusto,
 			},
 			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
 			scopes: [

@@ -75,7 +75,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	private static readonly CONNECTION_MEMENTO = 'ConnectionManagement';
 	private static readonly _azureResources: AzureResource[] =
-		[AzureResource.ResourceManagement, AzureResource.Sql, AzureResource.OssRdbms, AzureResource.AzureLogAnalytics];
+		[AzureResource.ResourceManagement, AzureResource.Sql, AzureResource.OssRdbms, AzureResource.AzureLogAnalytics, AzureResource.AzureKusto];
 
 	constructor(
 		@IConnectionDialogService private _connectionDialogService: IConnectionDialogService,
