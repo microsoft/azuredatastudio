@@ -152,9 +152,9 @@ export async function getSqlMigrationService(account: azdata.Account, subscripti
 	return response.response.data;
 }
 
-export async function getSqlMigrationServices(account: azdata.Account, subscription: Subscription, sessionId: string): Promise<SqlMigrationService[]> {
+export async function getSqlMigrationServices(account: azdata.Account, subscription: Subscription, resouceGroupName: string, sessionId: string): Promise<SqlMigrationService[]> {
 	const api = await getAzureCoreAPI();
-	const path = `/subscriptions/${subscription.id}/providers/Microsoft.DataMigration/sqlMigrationServices?api-version=2020-09-01-preview`;
+	const path = `/subscriptions/${subscription.id}/resourceGroups/${resouceGroupName}/providers/Microsoft.DataMigration/sqlMigrationServices?api-version=2020-09-01-preview`;
 	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, undefined, getSessionIdHeader(sessionId));
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
