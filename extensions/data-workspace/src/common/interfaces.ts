@@ -50,8 +50,10 @@ export interface IWorkspaceService {
 
 	/**
 	 * Gets the project files in current workspace
+	 * @param ext project extension to filter on. If this is passed in, this will only return projects with this file extension
+	 * @param refreshFromDisk whether to rescan the folder for project files, or return the cached version. Defaults to false.
 	 */
-	getProjectsInWorkspace(): Promise<vscode.Uri[]>;
+	getProjectsInWorkspace(ext?: string, refreshFromDisk?: boolean): Promise<vscode.Uri[]>;
 
 	/**
 	 * Gets the project provider by project file

@@ -13,13 +13,18 @@ import { IWorkspaceService } from '../common/interfaces';
 import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
 import Logger from '../common/logger';
 import { TelemetryReporter, TelemetryViews, TelemetryActions } from '../common/telemetry';
+import { Deferred } from '../common/promise';
 import { getAzdataApi } from '../common/utils';
 
 export class WorkspaceService implements IWorkspaceService {
 	private _onDidWorkspaceProjectsChange: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
 	readonly onDidWorkspaceProjectsChange: vscode.Event<void> = this._onDidWorkspaceProjectsChange?.event;
 
-	constructor() { }
+	private openedProjects: vscode.Uri[] = [];
+
+	constructor() {
+		this.getProjectsInWorkspace(undefined, true);
+	}
 
 	get isProjectProviderAvailable(): boolean {
 		for (const extension of vscode.extensions.all) {
@@ -49,46 +54,53 @@ export class WorkspaceService implements IWorkspaceService {
 		}
 	}
 
-	async addProjectsToWorkspace(projectFiles: vscode.Uri[]): Promise<void> {
-		if (!projectFiles || projectFiles.length === 0) {
-			return;
-		}
+	public async addProjectsToWorkspace(projectFiles: vscode.Uri[]): Promise<void> {
+		// 1. Include new workspace folders if any of the new projects' locations aren't already included
 
-		const currentProjects: vscode.Uri[] = await this.getProjectsInWorkspace();
 		const newWorkspaceFolders: string[] = [];
-		let newProjectFileAdded = false;
+
 		for (const projectFile of projectFiles) {
-			if (currentProjects.findIndex((p: vscode.Uri) => p.fsPath === projectFile.fsPath) === -1) {
-				currentProjects.push(projectFile);
-				newProjectFileAdded = true;
+			const relativePath = vscode.workspace.asRelativePath(projectFile, false);
 
-				TelemetryReporter.createActionEvent(TelemetryViews.WorkspaceTreePane, TelemetryActions.ProjectAddedToWorkspace)
-					.withAdditionalProperties({
-						projectType: path.extname(projectFile.fsPath)
-					}).send();
-
-				// if the relativePath and the original path is the same, that means the project file is not under
-				// any workspace folders, we should add the parent folder of the project file to the workspace
-				const relativePath = vscode.workspace.asRelativePath(projectFile, false);
-				if (vscode.Uri.file(relativePath).fsPath === projectFile.fsPath) {
-					newWorkspaceFolders.push(path.dirname(projectFile.path));
-				}
-			} else {
-				vscode.window.showInformationMessage(constants.ProjectAlreadyOpened(projectFile.fsPath));
+			if (relativePath === undefined || vscode.Uri.file(relativePath).fsPath === projectFile.fsPath) {
+				newWorkspaceFolders.push(path.dirname(projectFile.path));
 			}
-		}
-
-		if (newProjectFileAdded) {
-			this._onDidWorkspaceProjectsChange.fire();
 		}
 
 		if (newWorkspaceFolders.length > 0) {
 			// Add to the end of the workspace folders to avoid a restart of the extension host if we can
 			vscode.workspace.updateWorkspaceFolders(vscode.workspace.workspaceFolders?.length || 0, undefined, ...(newWorkspaceFolders.map(folder => ({ uri: vscode.Uri.file(folder) }))));
 		}
+
+		// 2. Re-detect projects from the updated set of workspace folders
+
+		const previousProjects: string[] = await (await this.getProjectsInWorkspace(undefined, true)).map(p => p.path);
+		let newProjectAdded: boolean = false;
+		const projectsAlreadyOpen: string[] = [];
+
+		for (const projectFile of projectFiles) {
+			if (previousProjects.includes(projectFile.path)) {
+				projectsAlreadyOpen.push(projectFile.fsPath);
+				vscode.window.showInformationMessage(constants.ProjectAlreadyOpened(projectFile.fsPath));
+			}
+			else {
+				newProjectAdded = true;
+
+				TelemetryReporter.createActionEvent(TelemetryViews.WorkspaceTreePane, TelemetryActions.ProjectAddedToWorkspace)
+					.withAdditionalProperties({
+						projectType: path.extname(projectFile.fsPath)
+					}).send();
+			}
+		}
+
+		// 3. If any new projects are detected, fire event to refresh projects tree
+
+		if (newProjectAdded) {
+			this._onDidWorkspaceProjectsChange.fire();
+		}
 	}
 
-	async getAllProjectTypes(): Promise<dataworkspace.IProjectType[]> {
+	public async getAllProjectTypes(): Promise<dataworkspace.IProjectType[]> {
 		await this.ensureProviderExtensionLoaded();
 		const projectTypes: dataworkspace.IProjectType[] = [];
 		ProjectProviderRegistry.providers.forEach(provider => {
@@ -97,19 +109,46 @@ export class WorkspaceService implements IWorkspaceService {
 		return projectTypes;
 	}
 
-	async getProjectsInWorkspace(ext?: string): Promise<vscode.Uri[]> {
-		const projectPromises = vscode.workspace.workspaceFolders?.map(f => this.getAllProjectsInFolder(f.uri));
-		if (!projectPromises) {
-			return [];
+	private getProjectsPromise: Deferred<void> | undefined = undefined;
+
+	/**
+	 * Returns all the projects in the workspace
+	 * @param ext project extension to filter on. If this is passed in, this will only return projects with this file extension
+	 * @param refreshFromDisk whether to rescan the folder for project files, or return the cached version. Defaults to false.
+	 * @returns array of file URIs for projects
+	 */
+	public async getProjectsInWorkspace(ext?: string, refreshFromDisk: boolean = false): Promise<vscode.Uri[]> {
+
+		if (refreshFromDisk || this.openedProjects.length === 0) { // always check if nothing cached
+			await this.refreshProjectsFromDisk();
 		}
-		let projects = (await Promise.all(projectPromises)).reduce((prev, curr) => prev.concat(curr), []);
 
 		// filter by specified extension
 		if (ext) {
-			projects = projects.filter(p => p.fsPath.toLowerCase().endsWith(ext.toLowerCase()));
+			return this.openedProjects.filter(p => p.fsPath.toLowerCase().endsWith(ext.toLowerCase()));
+		} else {
+			return this.openedProjects;
+		}
+	}
+
+	private async refreshProjectsFromDisk(): Promise<void> {
+		// Only allow one disk scan to be happening at a time
+		if (this.getProjectsPromise) {
+			return this.getProjectsPromise.promise;
 		}
 
-		return projects;
+		this.getProjectsPromise = new Deferred();
+
+		try {
+			const projectPromises = vscode.workspace.workspaceFolders?.map(f => this.getAllProjectsInFolder(f.uri)) ?? [];
+			this.openedProjects = (await Promise.all(projectPromises)).reduce((prev, curr) => prev.concat(curr), []);
+			this.getProjectsPromise.resolve();
+		} catch (err) {
+			this.getProjectsPromise.reject(err);
+			throw err;
+		} finally {
+			this.getProjectsPromise = undefined;
+		}
 	}
 
 	/**

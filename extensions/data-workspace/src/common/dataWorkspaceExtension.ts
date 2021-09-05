@@ -13,8 +13,8 @@ export class DataWorkspaceExtension implements IExtension {
 	constructor(private workspaceService: WorkspaceService) {
 	}
 
-	getProjectsInWorkspace(ext?: string): Promise<vscode.Uri[]> {
-		return this.workspaceService.getProjectsInWorkspace(ext);
+	getProjectsInWorkspace(ext?: string, refreshFromDisk?: boolean): Promise<vscode.Uri[]> {
+		return this.workspaceService.getProjectsInWorkspace(ext, refreshFromDisk);
 	}
 
 	addProjectsToWorkspace(projectFiles: vscode.Uri[]): Promise<void> {

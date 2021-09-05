@@ -23,7 +23,7 @@ describe('Add Database Reference Dialog', () => {
 
 	beforeEach(function (): void {
 		const dataWorkspaceMock = TypeMoq.Mock.ofType<dataworkspace.IExtension>();
-		dataWorkspaceMock.setup(x => x.getProjectsInWorkspace(TypeMoq.It.isAny())).returns(() => Promise.resolve([]));
+		dataWorkspaceMock.setup(x => x.getProjectsInWorkspace(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve([]));
 		sinon.stub(vscode.extensions, 'getExtension').returns(<any>{ exports: dataWorkspaceMock.object });
 	});
 

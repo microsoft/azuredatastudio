@@ -59,7 +59,7 @@
       {
         "command": "dataworkspace.refresh",
         "title": "%refresh-workspace-command%",
-        "category": "",
+        "category": "%data-workspace-view-container-name%",
         "icon": "$(refresh)"
       },
       {
@@ -78,12 +78,12 @@
         {
           "command": "dataworkspace.refresh",
           "when": "view == dataworkspace.views.main",
-          "group": "1_currentWorkspace"
+          "group": "navigation"
         },
         {
           "command": "dataworkspace.close",
           "when": "view == dataworkspace.views.main && workbenchState == workspace",
-          "group": "2_commands"
+          "group": "1_commands"
         },
         {
           "command": "projects.new",

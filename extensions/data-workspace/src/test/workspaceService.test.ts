@@ -44,19 +44,19 @@ suite('WorkspaceService', function (): void {
 
 	test('getProjectsInWorkspace', async () => {
 		// No workspace is loaded
-		let projects = await service.getProjectsInWorkspace();
+		let projects = await service.getProjectsInWorkspace(undefined, true);
 		should.strictEqual(projects.length, 0, 'no projects should be returned when no workspace is loaded');
 
 		// No projects are present in the workspace file
 		const workspaceFoldersStub = sinon.stub(vscode.workspace, 'workspaceFolders').value([]);
-		projects = await service.getProjectsInWorkspace();
+		projects = await service.getProjectsInWorkspace(undefined, true);
 		should.strictEqual(projects.length, 0, 'no projects should be returned when projects are present in the workspace file');
 		workspaceFoldersStub.restore();
 
 		// Projects are present
 		sinon.stub(vscode.workspace, 'workspaceFolders').value([{ uri: vscode.Uri.file('')}]);
 		sinon.stub(service, 'getAllProjectsInFolder').resolves([vscode.Uri.file('/test/folder/abc.sqlproj'), vscode.Uri.file('/test/folder/folder1/abc1.sqlproj'), vscode.Uri.file('/test/folder/folder2/abc2.sqlproj')]);
-		projects = await service.getProjectsInWorkspace();
+		projects = await service.getProjectsInWorkspace(undefined, true);
 		should.strictEqual(projects.length, 3, 'there should be 3 projects');
 		const project1 = vscode.Uri.file('/test/folder/abc.sqlproj');
 		const project2 = vscode.Uri.file('/test/folder/folder1/abc1.sqlproj');

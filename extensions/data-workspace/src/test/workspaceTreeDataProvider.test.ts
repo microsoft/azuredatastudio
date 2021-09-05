@@ -20,12 +20,12 @@ suite('workspaceTreeDataProvider Tests', function (): void {
 		sinon.restore();
 	});
 
-	test('test refresh()', () => {
+	test('test refresh()', async () => {
 		const treeDataChangeHandler = sinon.stub();
 		treeProvider.onDidChangeTreeData!((e) => {
 			treeDataChangeHandler(e);
 		});
-		treeProvider.refresh();
+		await treeProvider.refresh();
 		should.strictEqual(treeDataChangeHandler.calledOnce, true);
 	});
 
@@ -100,16 +100,17 @@ suite('workspaceTreeDataProvider Tests', function (): void {
 			}],
 			getDashboardComponents: (projectFile: string): IDashboardTable[] => {
 				return [{
-				name: 'Deployments',
-				columns: [{ displayName: 'c1', width: 75, type: 'string' }],
-				data: [['d1']]
-			},
-			{
-				name: 'Builds',
-				columns: [{ displayName: 'c1', width: 75, type: 'string' }],
-				data: [['d1']]
-			}];
-		}};
+					name: 'Deployments',
+					columns: [{ displayName: 'c1', width: 75, type: 'string' }],
+					data: [['d1']]
+				},
+				{
+					name: 'Builds',
+					columns: [{ displayName: 'c1', width: 75, type: 'string' }],
+					data: [['d1']]
+				}];
+			}
+		};
 		const getProjectProviderStub = sinon.stub(workspaceService, 'getProjectProvider');
 		getProjectProviderStub.onFirstCall().resolves(undefined);
 		getProjectProviderStub.onSecondCall().resolves(projectProvider);
