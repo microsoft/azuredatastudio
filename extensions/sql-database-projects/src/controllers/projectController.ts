@@ -37,6 +37,7 @@ import { DashboardData, PublishData, Status } from '../models/dashboardData/dash
 import { launchPublishDatabaseQuickpick } from '../dialogs/publishDatabaseQuickpick';
 import { SqlTargetPlatform } from 'sqldbproj';
 import { createNewProjectFromDatabaseWithQuickpick } from '../dialogs/createProjectFromDatabaseQuickpick';
+import { addDatabaseReferenceQuickpick } from '../dialogs/addDatabaseReferenceQuickpick';
 
 const maxTableLength = 10;
 
@@ -52,6 +53,8 @@ export enum TaskExecutionMode {
 	script = 1,
 	executeAndScript = 2
 }
+
+export type AddDatabaseReferenceSettings = ISystemDatabaseReferenceSettings | IDacpacReferenceSettings | IProjectReferenceSettings;
 
 /**
  * Controller for managing lifecycle of projects
@@ -672,15 +675,25 @@ export class ProjectsController {
 	 * Adds a database reference to the project
 	 * @param context a treeItem in a project's hierarchy, to be used to obtain a Project
 	 */
-	public async addDatabaseReference(context: Project | dataworkspace.WorkspaceTreeItem): Promise<AddDatabaseReferenceDialog> {
+	public async addDatabaseReference(context: Project | dataworkspace.WorkspaceTreeItem): Promise<AddDatabaseReferenceDialog | undefined> {
 		const project = this.getProjectFromContext(context);
 
-		const addDatabaseReferenceDialog = this.getAddDatabaseReferenceDialog(project);
-		addDatabaseReferenceDialog.addReference = async (proj, prof) => await this.addDatabaseReferenceCallback(proj, prof, context as dataworkspace.WorkspaceTreeItem);
+		if (utils.getAzdataApi()) {
+			const addDatabaseReferenceDialog = this.getAddDatabaseReferenceDialog(project);
+			addDatabaseReferenceDialog.addReference = async (proj, settings) => await this.addDatabaseReferenceCallback(proj, settings, context as dataworkspace.WorkspaceTreeItem);
 
-		addDatabaseReferenceDialog.openDialog();
+			addDatabaseReferenceDialog.openDialog();
+			return addDatabaseReferenceDialog;
+		} else {
+			const settings = await addDatabaseReferenceQuickpick(project);
+			if (settings) {
+				await this.addDatabaseReferenceCallback(project, settings, context as dataworkspace.WorkspaceTreeItem);
+			}
+			return undefined;
+		}
 
-		return addDatabaseReferenceDialog;
+
+
 	}
 
 	/**
@@ -689,7 +702,7 @@ export class ProjectsController {
 	 * @param settings settings for the database reference
 	 * @param context a treeItem in a project's hierarchy, to be used to obtain a Project
 	 */
-	public async addDatabaseReferenceCallback(project: Project, settings: ISystemDatabaseReferenceSettings | IDacpacReferenceSettings | IProjectReferenceSettings, context: dataworkspace.WorkspaceTreeItem): Promise<void> {
+	public async addDatabaseReferenceCallback(project: Project, settings: AddDatabaseReferenceSettings, context: dataworkspace.WorkspaceTreeItem): Promise<void> {
 		try {
 			if ((<IProjectReferenceSettings>settings).projectName !== undefined) {
 				// get project path and guid

@@ -165,7 +165,7 @@ export class AddDatabaseReferenceDialog {
 		} else if (this.currentReferenceType === ReferenceType.systemDb) {
 			referenceSettings = {
 				databaseName: <string>this.databaseNameTextbox?.value,
-				systemDb: <string>this.systemDatabaseDropdown?.value === constants.master ? SystemDatabase.master : SystemDatabase.msdb,
+				systemDb: getSystemDatabase(<string>this.systemDatabaseDropdown?.value),
 				suppressMissingDependenciesErrors: <boolean>this.suppressMissingDependenciesErrorsCheckbox?.checked
 			};
 		} else { // this.currentReferenceType === ReferenceType.dacpac
@@ -192,7 +192,7 @@ export class AddDatabaseReferenceDialog {
 		this.projectRadioButton = this.view!.modelBuilder.radioButton()
 			.withProps({
 				name: 'referenceType',
-				label: constants.projectRadioButtonTitle
+				label: constants.projectLabel
 			}).component();
 
 		this.projectRadioButton.onDidClick(() => {
@@ -202,7 +202,7 @@ export class AddDatabaseReferenceDialog {
 		this.systemDatabaseRadioButton = this.view!.modelBuilder.radioButton()
 			.withProps({
 				name: 'referenceType',
-				label: constants.systemDatabaseRadioButtonTitle
+				label: constants.systemDatabase
 			}).component();
 
 		this.systemDatabaseRadioButton.onDidClick(() => {
@@ -307,18 +307,13 @@ export class AddDatabaseReferenceDialog {
 
 	private createSystemDatabaseDropdown(): azdataType.FormComponent {
 		this.systemDatabaseDropdown = this.view!.modelBuilder.dropDown().withProps({
-			values: [constants.master, constants.msdb],
+			values: getSystemDbOptions(this.project),
 			ariaLabel: constants.databaseNameLabel
 		}).component();
 
 		this.systemDatabaseDropdown.onValueChanged(() => {
 			this.setDefaultDatabaseValues();
 		});
-
-		// only master is a valid system db reference for projects targetting Azure and DW
-		if (this.project.getProjectTargetVersion().toLowerCase().includes('azure') || this.project.getProjectTargetVersion().toLowerCase().includes('dw')) {
-			this.systemDatabaseDropdown.values?.splice(1);
-		}
 
 		return {
 			component: this.systemDatabaseDropdown,
@@ -329,7 +324,7 @@ export class AddDatabaseReferenceDialog {
 	private createDacpacTextbox(): azdataType.FormComponent {
 		this.dacpacTextbox = this.view!.modelBuilder.inputBox().withProps({
 			ariaLabel: constants.dacpacText,
-			placeHolder: constants.dacpacPlaceholder,
+			placeHolder: constants.selectDacpac,
 			width: '400px'
 		}).component();
 
@@ -351,25 +346,14 @@ export class AddDatabaseReferenceDialog {
 
 	private createLoadDacpacButton(): azdataType.ButtonComponent {
 		const loadDacpacButton = this.view!.modelBuilder.button().withProps({
-			ariaLabel: constants.loadDacpacButton,
+			ariaLabel: constants.selectDacpac,
 			iconPath: IconPathHelper.folder_blue,
 			height: '18px',
 			width: '18px'
 		}).component();
 
 		loadDacpacButton.onDidClick(async () => {
-			let fileUris = await vscode.window.showOpenDialog(
-				{
-					canSelectFiles: true,
-					canSelectFolders: false,
-					canSelectMany: false,
-					defaultUri: vscode.workspace.workspaceFolders ? (vscode.workspace.workspaceFolders as vscode.WorkspaceFolder[])[0].uri : undefined,
-					openLabel: constants.selectString,
-					filters: {
-						[constants.dacpacFiles]: ['dacpac'],
-					}
-				}
-			);
+			let fileUris = await promptDacpacLocation();
 
 			if (!fileUris || fileUris.length === 0) {
 				return;
@@ -383,7 +367,7 @@ export class AddDatabaseReferenceDialog {
 
 	private createLocationDropdown(): azdataType.FormComponent {
 		this.locationDropdown = this.view!.modelBuilder.dropDown().withProps({
-			ariaLabel: constants.locationDropdown,
+			ariaLabel: constants.location,
 			values: this.currentReferenceType === ReferenceType.systemDb ? constants.systemDbLocationDropdownValues : constants.locationDropdownValues
 		}).component();
 
@@ -397,7 +381,7 @@ export class AddDatabaseReferenceDialog {
 
 		return {
 			component: this.locationDropdown,
-			title: constants.locationDropdown
+			title: constants.location
 		};
 	}
 
@@ -629,4 +613,32 @@ export class AddDatabaseReferenceDialog {
 	private differentDatabaseDifferentServerRequiredFieldsFilled(): boolean {
 		return !!this.databaseNameTextbox?.value && !!this.serverNameTextbox?.value && !!this.serverVariableTextbox?.value;
 	}
+}
+
+export function getSystemDbOptions(project: Project): string[] {
+	// only master is a valid system db reference for projects targeting Azure and DW
+	if (project.getProjectTargetVersion().toLowerCase().includes('azure') || project.getProjectTargetVersion().toLowerCase().includes('dw')) {
+		return [constants.master];
+	}
+	return [constants.master, constants.msdb];
+}
+
+export function getSystemDatabase(name: string): SystemDatabase {
+	return name === constants.master ? SystemDatabase.master : SystemDatabase.msdb;
+}
+
+export async function promptDacpacLocation(): Promise<vscode.Uri[] | undefined> {
+	return await vscode.window.showOpenDialog(
+		{
+			canSelectFiles: true,
+			canSelectFolders: false,
+			canSelectMany: false,
+			defaultUri: vscode.workspace.workspaceFolders ? (vscode.workspace.workspaceFolders as vscode.WorkspaceFolder[])[0].uri : undefined,
+			openLabel: constants.selectString,
+			title: constants.selectDacpac,
+			filters: {
+				[constants.dacpacFiles]: ['dacpac'],
+			}
+		}
+	);
 }
