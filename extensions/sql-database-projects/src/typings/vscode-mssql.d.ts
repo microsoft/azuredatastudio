@@ -25,6 +25,11 @@ declare module 'vscode-mssql' {
     export interface IExtension {
 
         /**
+         * Path to the root of the SQL Tools Service folder
+         */
+        readonly sqlToolsServicePath: string;
+
+        /**
          * Service for accessing DacFx functionality
          */
         readonly dacFx: IDacFxService;

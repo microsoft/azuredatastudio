@@ -25,6 +25,10 @@ export const enum extension {
 */
 export interface IExtension {
 	/**
+	 * Path to the root of the SQL Tools Service folder
+	 */
+	readonly sqlToolsServicePath: string;
+	/**
 	 * Gets the object explorer API that supports querying over the connections supported by this extension
 	 *
 	 */
