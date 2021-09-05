@@ -442,8 +442,17 @@
     <trans-unit id="browseButtonText">
       <source xml:lang="en">Browse folder</source>
     </trans-unit>
+    <trans-unit id="selectFolderStructure">
+      <source xml:lang="en">Select folder structure</source>
+    </trans-unit>
     <trans-unit id="folderStructureLabel">
       <source xml:lang="en">Folder structure</source>
+    </trans-unit>
+    <trans-unit id="browseEllipsis">
+      <source xml:lang="en">Browse...</source>
+    </trans-unit>
+    <trans-unit id="selectProjectLocation">
+      <source xml:lang="en">Select project location</source>
     </trans-unit>
     <trans-unit id="dataworkspace.projectParentDirectoryNotExistError">
       <source xml:lang="en">The selected project location '{0}' does not exist or is not a directory.</source>
@@ -549,6 +558,9 @@
     </trans-unit>
     <trans-unit id="folderAlreadyExists">
       <source xml:lang="en">A folder with the name '{0}' already exists on disk at this location. Please choose another name.</source>
+    </trans-unit>
+    <trans-unit id="folderAlreadyExistsChooseNewLocation">
+      <source xml:lang="en">A folder with the name '{0}' already exists on disk at this location. Please choose another location.</source>
     </trans-unit>
     <trans-unit id="invalidInput">
       <source xml:lang="en">Invalid input: {0}</source>
