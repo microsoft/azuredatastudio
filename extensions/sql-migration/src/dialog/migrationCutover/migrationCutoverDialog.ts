@@ -526,17 +526,18 @@ export class MigrationCutoverDialog {
 
 				if (this._shouldDisplayBackupFileTable()) {
 					tableData.push(
-						{
-							fileName: activeBackupSet.listOfBackupFiles[0].fileName,
-							type: activeBackupSet.backupType,
-							status: activeBackupSet.listOfBackupFiles[0].status,
-							dataUploaded: `${convertByteSizeToReadableUnit(activeBackupSet.listOfBackupFiles[0].dataWritten)}/ ${convertByteSizeToReadableUnit(activeBackupSet.listOfBackupFiles[0].totalSize)}`,
-							copyThroughput: (activeBackupSet.listOfBackupFiles[0].copyThroughput) ? (activeBackupSet.listOfBackupFiles[0].copyThroughput / 1024).toFixed(2) : '-',
-							backupStartTime: activeBackupSet.backupStartDate,
-							firstLSN: activeBackupSet.firstLSN,
-							lastLSN: activeBackupSet.lastLSN
-
-						}
+						...activeBackupSet.listOfBackupFiles.map(f => {
+							return {
+								fileName: f.fileName,
+								type: activeBackupSet.backupType,
+								status: f.status,
+								dataUploaded: `${convertByteSizeToReadableUnit(f.dataWritten)}/ ${convertByteSizeToReadableUnit(f.totalSize)}`,
+								copyThroughput: (f.copyThroughput) ? (f.copyThroughput / 1024).toFixed(2) : '-',
+								backupStartTime: activeBackupSet.backupStartDate,
+								firstLSN: activeBackupSet.firstLSN,
+								lastLSN: activeBackupSet.lastLSN
+							};
+						})
 					);
 				}
 

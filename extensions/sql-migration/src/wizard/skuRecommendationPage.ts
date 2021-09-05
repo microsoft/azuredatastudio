@@ -447,16 +447,31 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			await this.migrationStateModel.getDatabaseAssessments();
 			this._detailsComponent.value = constants.SKU_RECOMMENDATION_ALL_SUCCESSFUL(this.migrationStateModel._assessmentResults.databaseAssessments.length);
 
-			const error = this.migrationStateModel._assessmentResults.assessmentError;
-			if (error) {
+			const errors: string[] = [];
+			const assessmentError = this.migrationStateModel._assessmentResults.assessmentError;
+			if (assessmentError) {
+				errors.push(`message: ${assessmentError.message}
+stack: ${assessmentError.stack}
+`);
+			}
+			if (this.migrationStateModel?._assessmentResults?.errors?.length! > 0) {
+				errors.push(...this.migrationStateModel._assessmentResults.errors?.map(e => `message: ${e.message}
+errorSummary: ${e.errorSummary}
+possibleCauses: ${e.possibleCauses}
+guidance: ${e.guidance}
+errorId: ${e.errorId}
+`)!);
+			}
+
+			if (errors.length > 0) {
 				this.wizard.message = {
 					text: constants.SKU_RECOMMENDATION_ASSESSMENT_ERROR(serverName),
-					description: error.message + EOL + error.stack,
+					description: errors.join(EOL),
 					level: azdata.window.MessageLevel.Error
 				};
 			}
 
-			this.migrationStateModel._runAssessments = !!error;
+			this.migrationStateModel._runAssessments = errors.length > 0;
 		} catch (e) {
 			console.log(e);
 		}
