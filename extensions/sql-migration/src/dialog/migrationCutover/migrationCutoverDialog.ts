@@ -47,6 +47,7 @@ export class MigrationCutoverDialog {
 	private _fileTable!: azdata.TableComponent;
 	private _autoRefreshHandle!: any;
 	private _disposables: vscode.Disposable[] = [];
+	private _emptyTableFill!: azdata.FlexContainer;
 
 	private isRefreshing = false;
 
@@ -124,13 +125,58 @@ export class MigrationCutoverDialog {
 					}
 				}).component();
 
+				const _emptyTableImage = view.modelBuilder.image().withProps({
+					iconPath: IconPathHelper.emptyTable,
+					iconHeight: '100px',
+					iconWidth: '100px',
+					height: '100px',
+					width: '100px',
+					CSSStyles: {
+						'text-align': 'center'
+					}
+				}).component();
+
+				const _emptyTableText = view.modelBuilder.text().withProps({
+					value: loc.EMPTY_TABLE_TEXT,
+					CSSStyles: {
+						'text-align': 'center',
+						'font-size': 'large',
+						'font-weight': 'bold',
+						'width': '300px'
+					}
+				}).component();
+
+				const _emptyTableSubText = view.modelBuilder.text().withProps({
+					value: loc.EMPTY_TABLE_SUBTEXT,
+					CSSStyles: {
+						'text-align': 'center',
+						'margin-top': '0px',
+						'font-size': '15px',
+						'width': '300px'
+					}
+				}).component();
+
+				this._emptyTableFill = view.modelBuilder.flexContainer()
+					.withLayout({
+						flexFlow: 'column',
+						alignItems: 'center'
+					}).withItems([
+						_emptyTableImage,
+						_emptyTableText,
+						_emptyTableSubText
+					]).withProps({
+						width: 1000,
+						display: 'none'
+					}).component();
+
 				let formItems = [
 					{ component: this.migrationContainerHeader() },
 					{ component: this._view.modelBuilder.separator().withProps({ width: 1000 }).component() },
 					{ component: this.migrationInfoGrid() },
 					{ component: this._view.modelBuilder.separator().withProps({ width: 1000 }).component() },
 					{ component: this._fileCount },
-					{ component: this._fileTable }
+					{ component: this._fileTable },
+					{ component: this._emptyTableFill }
 				];
 
 				const formBuilder = view.modelBuilder.formContainer().withFormItems(
@@ -577,6 +623,13 @@ export class MigrationCutoverDialog {
 			this._lastAppliedBackupTakenOnInfoField.text.value = lastAppliedBackupFileTakenOn! ? convertIsoTimeToLocalTime(lastAppliedBackupFileTakenOn).toLocaleString() : '-';
 			this.showInfoField(this._lastLSNInfoField);
 			this.showInfoField(this._lastAppliedBackupTakenOnInfoField);
+
+			if (tableData.length === 0 && this._shouldDisplayBackupFileTable()) {
+				this._emptyTableFill.updateCssStyles({
+					'display': 'flex'
+				});
+				this._fileTable.height = '50px';
+			}
 
 			if (this._shouldDisplayBackupFileTable()) {
 				this._fileCount.updateCssStyles({
