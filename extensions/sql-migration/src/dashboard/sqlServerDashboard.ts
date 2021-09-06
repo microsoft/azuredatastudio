@@ -615,7 +615,7 @@ export class DashboardWidget {
 			height: 96,
 			CSSStyles: {
 				'opacity': '50%',
-				'margin': '20% auto 10% auto',
+				'margin': '15% auto 10% auto',
 				'filter': 'drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))',
 				'display': 'none'
 			}
@@ -647,7 +647,9 @@ export class DashboardWidget {
 
 		this._disposables.push(addAccountButton.onDidClick(async (e) => {
 			await vscode.commands.executeCommand('workbench.actions.modal.linkedAccount');
-			this.refreshMigrations();
+			addAccountButton.enabled = false;
+			await this.refreshMigrations();
+			addAccountButton.enabled = true;
 		}));
 
 		const header = view.modelBuilder.flexContainer().withItems(
