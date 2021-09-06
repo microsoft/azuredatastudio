@@ -164,7 +164,7 @@ suite.skip('NotebookService:', function (): void {
 		notebookService = new NotebookService(lifecycleService, storageService, extensionServiceMock.object, extensionManagementService,
 			instantiationService, fileService, logServiceMock.object, queryManagementService, contextService, productService,
 			editorService, untitledTextEditorService, editorGroupsService, configurationService);
-		sandbox = sinon.sandbox.create();
+		sandbox = sinon.createSandbox();
 	});
 
 	teardown(() => {
@@ -183,20 +183,20 @@ suite.skip('NotebookService:', function (): void {
 	});
 
 	test('Validate default properties on create', async function (): Promise<void> {
-		assert.equal(notebookService.languageMagics.length, 0, 'No language magics should exist after creation');
-		assert.equal(notebookService.listNotebookEditors().length, 0, 'No notebook editors should be listed');
-		assert.equal(notebookService.getMimeRegistry().mimeTypes.length, 15, 'MIME Types need to have appropriate tests when added or removed');
-		assert.deepEqual(notebookService.getProvidersForFileType('ipynb'), ['sql'], 'sql provider should be registered for ipynb extension');
-		assert.equal(notebookService.getStandardKernelsForProvider('sql').length, 1, 'SQL kernel should be provided by default');
-		assert.equal(notebookService.getStandardKernelsForProvider('otherProvider'), undefined, 'Other provider should not have kernels since it has not been added as a provider');
-		assert.deepEqual(notebookService.getSupportedFileExtensions(), ['IPYNB'], 'IPYNB file extension should be supported by default');
+		assert.strictEqual(notebookService.languageMagics.length, 0, 'No language magics should exist after creation');
+		assert.strictEqual(notebookService.listNotebookEditors().length, 0, 'No notebook editors should be listed');
+		assert.strictEqual(notebookService.getMimeRegistry().mimeTypes.length, 15, 'MIME Types need to have appropriate tests when added or removed');
+		assert.deepStrictEqual(notebookService.getProvidersForFileType('ipynb'), ['sql'], 'sql provider should be registered for ipynb extension');
+		assert.strictEqual(notebookService.getStandardKernelsForProvider('sql').length, 1, 'SQL kernel should be provided by default');
+		assert.strictEqual(notebookService.getStandardKernelsForProvider('otherProvider'), undefined, 'Other provider should not have kernels since it has not been added as a provider');
+		assert.deepStrictEqual(notebookService.getSupportedFileExtensions(), ['IPYNB'], 'IPYNB file extension should be supported by default');
 		await notebookService.registrationComplete;
 		assert.ok(notebookService.isRegistrationComplete, `notebookService.isRegistrationComplete should be true once its registrationComplete promise is resolved`);
 	});
 
 	test('Validate another provider added successfully', async function (): Promise<void> {
 		await notebookService.registrationComplete;
-		assert.deepEqual(notebookService.getProvidersForFileType('ipynb'), ['sql'], 'sql provider should be registered for ipynb extension');
+		assert.deepStrictEqual(notebookService.getProvidersForFileType('ipynb'), ['sql'], 'sql provider should be registered for ipynb extension');
 
 		const otherProviderRegistration: NotebookProviderRegistration = {
 			fileExtensions: 'ipynb',
@@ -211,10 +211,10 @@ suite.skip('NotebookService:', function (): void {
 		const notebookRegistry = Registry.as<INotebookProviderRegistry>(Extensions.NotebookProviderContribution);
 		notebookRegistry.registerNotebookProvider(otherProviderRegistration);
 
-		assert.deepEqual(notebookService.getProvidersForFileType('ipynb'), ['sql', 'otherProvider'], 'otherProvider should also be registered for ipynb extension');
-		assert.deepEqual(notebookService.getSupportedFileExtensions(), ['IPYNB'], 'Only IPYNB should be registered as supported file extension');
-		assert.equal(notebookService.getStandardKernelsForProvider('otherProvider').length, 1, 'otherProvider kernel info could not be found');
-		assert.deepEqual(notebookService.getStandardKernelsForProvider('otherProvider')[0], otherProviderRegistration.standardKernels, 'otherProviderRegistration standard kernels does not match');
+		assert.deepStrictEqual(notebookService.getProvidersForFileType('ipynb'), ['sql', 'otherProvider'], 'otherProvider should also be registered for ipynb extension');
+		assert.deepStrictEqual(notebookService.getSupportedFileExtensions(), ['IPYNB'], 'Only IPYNB should be registered as supported file extension');
+		assert.strictEqual(notebookService.getStandardKernelsForProvider('otherProvider').length, 1, 'otherProvider kernel info could not be found');
+		assert.deepStrictEqual(notebookService.getStandardKernelsForProvider('otherProvider')[0], otherProviderRegistration.standardKernels, 'otherProviderRegistration standard kernels does not match');
 	});
 
 	test('tests that dispose() method calls dispose on underlying disposable objects exactly once', async () => {
@@ -412,7 +412,7 @@ suite.skip('NotebookService:', function (): void {
 				id: 'id1'
 			}
 		});
-		const targetMethodSpy = sandbox.spy(notebookService, methodName);
+		const targetMethodSpy = sandbox.spy(notebookService, methodName as keyof NotebookService);
 		didUninstallExtensionEmitter.fire(extensionIdentifier);
 		assert.ok(targetMethodSpy.calledWithExactly(extensionIdentifier.identifier, extensionServiceMock.object), `call arguments to ${methodName} should be ${extensionIdentifier.identifier} & ${extensionServiceMock.object}`);
 		assert.ok(targetMethodSpy.calledOnce, `${methodName} should be called exactly once`);
@@ -432,7 +432,7 @@ suite.skip('NotebookService:', function (): void {
 				id: 'id1'
 			}
 		});
-		const targetMethodSpy = sandbox.spy(notebookService, methodName);
+		const targetMethodSpy = sandbox.spy(notebookService, methodName as keyof NotebookService);
 		// the following call will encounter an exception internally with extensionService.getExtensions() returning undefined.
 		didUninstallExtensionEmitter.fire(extensionIdentifier);
 		assert.ok(targetMethodSpy.calledWithExactly(extensionIdentifier.identifier, extensionServiceMock.object), `call arguments to ${methodName} should be ${extensionIdentifier.identifier} & ${extensionServiceMock.object}`);
@@ -570,7 +570,7 @@ suite.skip('NotebookService:', function (): void {
 		let getUntitledUriPathSpy = sinon.spy(notebookService, 'getUntitledUriPath');
 		notebookService.getUntitledUriPath('title.ipynb');
 		sinon.assert.calledOnce(getUntitledUriPathSpy);
-		assert.equal(getUntitledUriPathSpy, 'title-0.ipynb');
+		assert.strictEqual(getUntitledUriPathSpy, 'title-0.ipynb');
 	});
 
 });

@@ -53,7 +53,7 @@ export class AccountFeature implements StaticFeature {
 
 		if (accountList.length < 1) {
 			// TODO: Prompt user to add account
-			window.showErrorMessage(localize('mssql.missingLinkedAzureAccount', "Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account is available. Please add a linked Azure account and retry the query."));
+			void window.showErrorMessage(localize('mssql.missingLinkedAzureAccount', "Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account is available. Please add a linked Azure account and retry the query."));
 			return undefined;
 		} else if (accountList.length > 1) {
 			let options: QuickPickOptions = {
@@ -63,7 +63,7 @@ export class AccountFeature implements StaticFeature {
 			let items = accountList.map(a => new AccountFeature.AccountQuickPickItem(a));
 			let selectedItem = await window.showQuickPick(items, options);
 			if (!selectedItem) { // The user canceled the selection.
-				window.showErrorMessage(localize('mssql.canceledLinkedAzureAccountSelection', "Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account was selected. Please retry the query and select a linked Azure account when prompted."));
+				void window.showErrorMessage(localize('mssql.canceledLinkedAzureAccountSelection', "Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account was selected. Please retry the query and select a linked Azure account when prompted."));
 				return undefined;
 			}
 			account = selectedItem.account;
@@ -74,13 +74,13 @@ export class AccountFeature implements StaticFeature {
 		const tenant = account.properties.tenants.find(tenant => request.authority.includes(tenant.id));
 		const unauthorizedMessage = localize('mssql.insufficientlyPrivelagedAzureAccount', "The configured Azure account for {0} does not have sufficient permissions for Azure Key Vault to access a column master key for Always Encrypted.", account.key.accountId);
 		if (!tenant) {
-			window.showErrorMessage(unauthorizedMessage);
+			void window.showErrorMessage(unauthorizedMessage);
 			return undefined;
 		}
 		const securityToken = await azdata.accounts.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.AzureKeyVault);
 
 		if (!securityToken?.token) {
-			window.showErrorMessage(unauthorizedMessage);
+			void window.showErrorMessage(unauthorizedMessage);
 			return undefined;
 		}
 

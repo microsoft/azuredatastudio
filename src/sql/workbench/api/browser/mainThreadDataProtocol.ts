@@ -25,7 +25,6 @@ import { ISerializationService } from 'sql/platform/serialization/common/seriali
 import { IFileBrowserService } from 'sql/workbench/services/fileBrowser/common/interfaces';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
-import { assign } from 'vs/base/common/objects';
 import { serializableToMap } from 'sql/base/common/map';
 import { IAssessmentService } from 'sql/workbench/services/assessment/common/interfaces';
 import { IDataGridProviderService } from 'sql/workbench/services/dataGridProvider/common/dataGridProviderService';
@@ -132,6 +131,9 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 			},
 			disposeQuery(ownerUri: string): Promise<void> {
 				return Promise.resolve(self._proxy.$disposeQuery(handle, ownerUri));
+			},
+			connectionUriChanged(newUri: string, oldUri: string): Promise<void> {
+				return Promise.resolve(self._proxy.$connectionUriChanged(handle, newUri, oldUri));
 			},
 			saveResults(requestParams: azdata.SaveResultsRequestParams): Promise<azdata.SaveResultRequestResult> {
 				let saveResultsFeatureInfo = self._serializationService.getSaveResultsFeatureMetadataProvider(requestParams.ownerUri);
@@ -570,7 +572,7 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 	}
 
 	public $onObjectExplorerNodeExpanded(providerId: string, expandResponse: azdata.ObjectExplorerExpandInfo): void {
-		let expandInfo: NodeExpandInfoWithProviderId = assign({ providerId: providerId }, expandResponse);
+		let expandInfo: NodeExpandInfoWithProviderId = Object.assign({ providerId: providerId }, expandResponse);
 		this._objectExplorerService.onNodeExpanded(expandInfo);
 	}
 

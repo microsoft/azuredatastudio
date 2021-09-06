@@ -27,7 +27,7 @@ suite('Account Store Tests', () => {
 
 				// ... The memento should have been initialized and account added
 				assert.ok(Array.isArray(memento[AccountStore.MEMENTO_KEY]));
-				assert.equal(memento[AccountStore.MEMENTO_KEY].length, 1);
+				assert.strictEqual(memento[AccountStore.MEMENTO_KEY].length, 1);
 				assertAccountEqual(memento[AccountStore.MEMENTO_KEY][0], account1);
 			});
 	});
@@ -49,7 +49,7 @@ suite('Account Store Tests', () => {
 
 				// ... The memento should have the account added
 				assert.ok(Array.isArray(memento[AccountStore.MEMENTO_KEY]));
-				assert.equal(memento[AccountStore.MEMENTO_KEY].length, 1);
+				assert.strictEqual(memento[AccountStore.MEMENTO_KEY].length, 1);
 				assertAccountEqual(memento[AccountStore.MEMENTO_KEY][0], account1);
 			});
 	});
@@ -75,7 +75,7 @@ suite('Account Store Tests', () => {
 
 				// ... The memento should have been initialized and account updated
 				assert.ok(Array.isArray(memento[AccountStore.MEMENTO_KEY]));
-				assert.equal(memento[AccountStore.MEMENTO_KEY].length, 2);
+				assert.strictEqual(memento[AccountStore.MEMENTO_KEY].length, 2);
 				assertAccountEqual(memento[AccountStore.MEMENTO_KEY][0], account1);
 				assertAccountEqual(memento[AccountStore.MEMENTO_KEY][1], param);
 			});
@@ -92,10 +92,10 @@ suite('Account Store Tests', () => {
 				// Then:
 				// ... I should get back an empty array
 				assert.ok(Array.isArray(result));
-				assert.equal(result.length, 0);
+				assert.strictEqual(result.length, 0);
 
 				// ... Memento should not have been written
-				assert.equal(Object.keys(memento).length, 0);
+				assert.strictEqual(Object.keys(memento).length, 0);
 			});
 	});
 
@@ -110,7 +110,7 @@ suite('Account Store Tests', () => {
 			.then(result => {
 				// Then: I should get back an empty array
 				assert.ok(Array.isArray(result));
-				assert.equal(result.length, 0);
+				assert.strictEqual(result.length, 0);
 			});
 	});
 
@@ -124,7 +124,7 @@ suite('Account Store Tests', () => {
 			.then(result => {
 				// Then: I should get back an empty array
 				assert.ok(Array.isArray(result));
-				assert.equal(result.length, 0);
+				assert.strictEqual(result.length, 0);
 			});
 	});
 
@@ -138,7 +138,7 @@ suite('Account Store Tests', () => {
 			.then(result => {
 				// Then: I should get the accounts
 				assert.ok(Array.isArray(result));
-				assert.equal(result.length, 2);
+				assert.strictEqual(result.length, 2);
 				assertAccountEqual(result[0], memento[AccountStore.MEMENTO_KEY][0]);
 				assertAccountEqual(result[1], memento[AccountStore.MEMENTO_KEY][1]);
 			});
@@ -155,10 +155,10 @@ suite('Account Store Tests', () => {
 				// Then:
 				// ... I should get back an empty array
 				assert.ok(Array.isArray(result));
-				assert.equal(result.length, 0);
+				assert.strictEqual(result.length, 0);
 
 				// ... Memento should not have been written
-				assert.equal(Object.keys(memento).length, 0);
+				assert.strictEqual(Object.keys(memento).length, 0);
 			});
 	});
 
@@ -173,7 +173,7 @@ suite('Account Store Tests', () => {
 			.then(result => {
 				// Then: I should get back an empty array
 				assert.ok(Array.isArray(result));
-				assert.equal(result.length, 0);
+				assert.strictEqual(result.length, 0);
 			});
 	});
 
@@ -187,7 +187,7 @@ suite('Account Store Tests', () => {
 			.then(result => {
 				// Then: I should get the accounts
 				assert.ok(Array.isArray(result));
-				assert.equal(result.length, 2);
+				assert.strictEqual(result.length, 2);
 				assertAccountEqual(result[0], memento[AccountStore.MEMENTO_KEY][0]);
 				assertAccountEqual(result[1], memento[AccountStore.MEMENTO_KEY][1]);
 			});
@@ -207,7 +207,7 @@ suite('Account Store Tests', () => {
 
 				// ... The memento should have been initialized
 				assert.ok(Array.isArray(memento[AccountStore.MEMENTO_KEY]));
-				assert.equal(memento[AccountStore.MEMENTO_KEY].length, 0);
+				assert.strictEqual(memento[AccountStore.MEMENTO_KEY].length, 0);
 			});
 	});
 
@@ -226,7 +226,7 @@ suite('Account Store Tests', () => {
 
 				// ... The memento should still be empty
 				assert.ok(Array.isArray(memento[AccountStore.MEMENTO_KEY]));
-				assert.equal(memento[AccountStore.MEMENTO_KEY].length, 0);
+				assert.strictEqual(memento[AccountStore.MEMENTO_KEY].length, 0);
 			});
 	});
 
@@ -244,7 +244,7 @@ suite('Account Store Tests', () => {
 
 				// ... The memento should have removed the first account
 				assert.ok(Array.isArray(memento[AccountStore.MEMENTO_KEY]));
-				assert.equal(memento[AccountStore.MEMENTO_KEY].length, 1);
+				assert.strictEqual(memento[AccountStore.MEMENTO_KEY].length, 1);
 				assertAccountEqual(memento[AccountStore.MEMENTO_KEY][0], account2);
 			});
 	});
@@ -267,7 +267,7 @@ suite('Account Store Tests', () => {
 
 				// ... The memento should have been initialized
 				assert.ok(Array.isArray(memento[AccountStore.MEMENTO_KEY]));
-				assert.equal(memento[AccountStore.MEMENTO_KEY].length, 0);
+				assert.strictEqual(memento[AccountStore.MEMENTO_KEY].length, 0);
 
 				// ... The callback shouldn't have been called
 				updateCallback.assertNotFired();
@@ -292,7 +292,7 @@ suite('Account Store Tests', () => {
 
 				// ... The memento should still be empty
 				assert.ok(Array.isArray(memento[AccountStore.MEMENTO_KEY]));
-				assert.equal(memento[AccountStore.MEMENTO_KEY].length, 0);
+				assert.strictEqual(memento[AccountStore.MEMENTO_KEY].length, 0);
 
 				// ... The callback shouldn't have been called
 				updateCallback.assertNotFired();
@@ -319,10 +319,10 @@ suite('Account Store Tests', () => {
 
 				// ... The memento still contains two accounts
 				assert.ok(Array.isArray(memento[AccountStore.MEMENTO_KEY]));
-				assert.equal(memento[AccountStore.MEMENTO_KEY].length, 2);
+				assert.strictEqual(memento[AccountStore.MEMENTO_KEY].length, 2);
 
 				// ... Account 1 should have been updated
-				assert.equal(memento[AccountStore.MEMENTO_KEY][0].displayInfo.displayName, newDisplayName);
+				assert.strictEqual(memento[AccountStore.MEMENTO_KEY][0].displayInfo.displayName, newDisplayName);
 
 				// ... Account 2 should have stayed the same
 				assertAccountEqual(memento[AccountStore.MEMENTO_KEY][1], account2);
@@ -334,11 +334,11 @@ suite('Account Store Tests', () => {
 		memento[AccountStore.MEMENTO_KEY].push(deprecatedAccount1, deprecatedAccount2);
 		let as = new AccountStore(memento, consoleLogService);
 		// We know that we have 4 accounts now
-		assert.equal(memento[AccountStore.MEMENTO_KEY].length, 4);
+		assert.strictEqual(memento[AccountStore.MEMENTO_KEY].length, 4);
 
 		return as.getAllAccounts().then(accounts => {
 			// After pruning we will have 2 accounts
-			assert.equal(accounts.length, 2);
+			assert.strictEqual(accounts.length, 2);
 		});
 	});
 
@@ -406,12 +406,12 @@ function getTestMemento() {
 }
 
 function assertAccountEqual(a: azdata.Account, b: azdata.Account) {
-	assert.equal(a.key.providerId, b.key.providerId);
-	assert.equal(a.key.accountId, b.key.accountId);
+	assert.strictEqual(a.key.providerId, b.key.providerId);
+	assert.strictEqual(a.key.accountId, b.key.accountId);
 
-	assert.equal(a.displayInfo.contextualDisplayName, b.displayInfo.contextualDisplayName);
-	assert.equal(a.displayInfo.accountType, b.displayInfo.accountType);
-	assert.equal(a.displayInfo.displayName, b.displayInfo.displayName);
+	assert.strictEqual(a.displayInfo.contextualDisplayName, b.displayInfo.contextualDisplayName);
+	assert.strictEqual(a.displayInfo.accountType, b.displayInfo.accountType);
+	assert.strictEqual(a.displayInfo.displayName, b.displayInfo.displayName);
 
-	assert.equal(a.isStale, b.isStale);
+	assert.strictEqual(a.isStale, b.isStale);
 }

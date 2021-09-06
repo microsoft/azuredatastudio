@@ -8,68 +8,68 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"displayName": "SQL 评估",
-			"description": "Azure Data Studio (Preview) 的 SQL 评估提供了一种机制来评估 SQL Server 的配置，以找出最佳做法。",
-			"dashboard.tabName": "SQL 评估"
-		},
-		"dist/localized": {
-			"asmt.section.api.title": "信息",
-			"asmt.apiversion": "API 版本",
-			"asmt.rulesetversion": "默认规则集",
-			"asmt.section.instance.title": "SQL Server 实例详细信息",
-			"asmt.serverversion": "版本",
-			"asmt.serveredition": "版本",
-			"asmt.instancename": "实例名",
-			"asmt.osversion": "OS 版本",
-			"asmt.column.target": "目标",
-			"asmt.column.severity": "严重性",
-			"asmt.column.message": "消息",
-			"asmt.column.checkId": "检查 ID",
-			"asmt.column.tags": "标记",
-			"asmt.learnMore": "了解详细信息",
-			"asmt.sqlReportTitle": "SQL 评估报表",
-			"asmt.sqlReport.resultForDatabase": "数据库结果",
-			"asmt.sqlReport.resultForInstance": "服务器结果",
-			"asmt.sqlReport.Error": "错误",
-			"asmt.sqlReport.Warning": "警告",
-			"asmt.sqlReport.Info": "信息",
-			"asmt.column.helpLink": "帮助链接",
-			"asmt.sqlReport.severityMsg": "{0}: {1} 项"
-		},
 		"dist/assessmentResultGrid": {
-			"databaseIconLabel": "数据库",
-			"serverIconLabel": "服务器",
 			"asmt.column.targetType": "目标类型",
 			"asmt.details.clickHere": "单击此处",
-			"asmt.details.toLearnMore": "了解详细信息。",
+			"asmt.details.recommendation": "建议",
 			"asmt.details.ruleDescription": "规则说明",
-			"asmt.details.recommendation": "建议"
+			"asmt.details.toLearnMore": "了解详细信息。",
+			"databaseIconLabel": "数据库",
+			"serverIconLabel": "服务器"
+		},
+		"dist/localized": {
+			"asmt.apiversion": "API 版本",
+			"asmt.column.checkId": "检查 ID",
+			"asmt.column.helpLink": "帮助链接",
+			"asmt.column.message": "消息",
+			"asmt.column.severity": "严重性",
+			"asmt.column.tags": "标记",
+			"asmt.column.target": "目标",
+			"asmt.instancename": "实例名",
+			"asmt.learnMore": "了解详细信息",
+			"asmt.osversion": "OS 版本",
+			"asmt.rulesetversion": "默认规则集",
+			"asmt.section.api.title": "信息",
+			"asmt.section.instance.title": "SQL Server 实例详细信息",
+			"asmt.serveredition": "版本",
+			"asmt.serverversion": "版本",
+			"asmt.sqlReport.Error": "错误",
+			"asmt.sqlReport.Info": "信息",
+			"asmt.sqlReport.Warning": "警告",
+			"asmt.sqlReport.resultForDatabase": "数据库结果",
+			"asmt.sqlReport.resultForInstance": "服务器结果",
+			"asmt.sqlReport.severityMsg": "{0}: {1} 项",
+			"asmt.sqlReportTitle": "SQL 评估报表"
 		},
 		"dist/tabs/assessmentMainTab": {
-			"invokeAssessmentLabelServer": "调用评估",
-			"getAssessmentItemsServer": "查看适用规则",
-			"invokeAssessmentLabelDatabase": "调用 {0} 的评估",
-			"getAssessmentItemsDatabase": "查看 {0} 的适用规则",
+			"asmtaction.label.cancel": "取消",
+			"asmtaction.label.open": "打开",
+			"asmtaction.openReport": "已保存报表。是否要打开它?",
 			"btnExportAsScript": "导出为脚本",
 			"btnGeneratehtmlreport": "创建 HTML 报表",
-			"asmtaction.openReport": "已保存报表。是否要打开它?",
-			"asmtaction.label.open": "打开",
-			"asmtaction.label.cancel": "取消",
-			"btnViewSamplesShort": "在 GitHub 上查看全部",
 			"btnViewSamples": "查看所有规则并了解有关 GitHub 的详细信息",
+			"btnViewSamplesShort": "在 GitHub 上查看全部",
+			"getAssessmentItemsDatabase": "查看 {0} 的适用规则",
+			"getAssessmentItemsServer": "查看适用规则",
+			"invokeAssessmentLabelDatabase": "调用 {0} 的评估",
+			"invokeAssessmentLabelServer": "调用评估",
 			"msgBoxAsmtInfo": "SQL 评估信息",
+			"msgBoxCopied": "已复制 SQL 评估信息",
 			"msgBoxCopyBtn": "复制",
-			"ok": "确定",
-			"msgBoxCopied": "已复制 SQL 评估信息"
+			"ok": "确定"
 		},
 		"dist/tabs/historyTab": {
 			"asmt.history.back": "<< 返回",
 			"asmt.history.resultsTitle": "{0} 的评估结果",
 			"asmt.history.summaryAsmtDate": "评估日期",
 			"asmt.history.summaryError": "错误",
-			"asmt.history.summaryWarning": "警告",
-			"asmt.history.summaryInfo": "信息"
+			"asmt.history.summaryInfo": "信息",
+			"asmt.history.summaryWarning": "警告"
+		},
+		"package": {
+			"dashboard.tabName": "SQL 评估",
+			"description": "Azure Data Studio (Preview) 的 SQL 评估提供了一种机制来评估 SQL Server 的配置，以找出最佳做法。",
+			"displayName": "SQL 评估"
 		}
 	}
 }

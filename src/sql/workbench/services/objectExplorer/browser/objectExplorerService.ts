@@ -18,7 +18,6 @@ import * as Utils from 'sql/platform/connection/common/utils';
 import { ILogService } from 'vs/platform/log/common/log';
 import { entries } from 'sql/base/common/collections';
 import { values } from 'vs/base/common/collections';
-import { startsWith } from 'vs/base/common/strings';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { ServerTreeActionProvider } from 'sql/workbench/services/objectExplorer/browser/serverTreeActionProvider';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
@@ -44,7 +43,7 @@ export interface IServerTreeView {
 	deleteObjectExplorerNodeAndRefreshTree(profile: ConnectionProfile): Promise<void>;
 	getSelection(): Array<ServerTreeElement>;
 	isFocused(): boolean;
-	refreshElement(node: TreeNode): Promise<void>;
+	refreshElement(node: ServerTreeElement): Promise<void>;
 	readonly treeActionProvider: ServerTreeActionProvider;
 	isExpanded(node?: ServerTreeElement): boolean;
 	reveal(node: ServerTreeElement): Promise<void>;
@@ -614,7 +613,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		}
 
 		let node = new TreeNode(nodeInfo.nodeType, nodeInfo.label, isLeaf, nodeInfo.nodePath,
-			nodeInfo.nodeSubType!, nodeInfo.nodeStatus, parent, nodeInfo.metadata, nodeInfo.iconType, {
+			nodeInfo.nodeSubType!, nodeInfo.nodeStatus, parent, nodeInfo.metadata, nodeInfo.iconType, nodeInfo.icon, {
 			getChildren: (treeNode?: TreeNode) => this.getChildren(treeNode),
 			isExpanded: treeNode => this.isExpanded(treeNode),
 			setNodeExpandedState: async (treeNode, expandedState) => await this.setNodeExpandedState(treeNode, expandedState),
@@ -722,7 +721,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		if (!treeNode) {
 			return undefined;
 		}
-		await this._serverTreeView?.refreshElement(treeNode);
+		await this._serverTreeView?.refreshElement(this.getTreeItem(treeNode));
 		if (treeNode?.children?.length ?? -1 > 0) {
 			await treeNode?.setExpandedState(TreeItemCollapsibleState.Expanded);
 		}
@@ -842,7 +841,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			}
 			if (currentNode.children) {
 				// Look at the next node in the path, which is the child object with the longest path where the desired path starts with the child path
-				let children = currentNode.children.filter(child => startsWith(nodePath, child.nodePath));
+				let children = currentNode.children.filter(child => nodePath.startsWith(child.nodePath));
 				if (children.length > 0) {
 					nextNode = children.reduce((currentMax, candidate) => currentMax.nodePath.length < candidate.nodePath.length ? candidate : currentMax);
 				}

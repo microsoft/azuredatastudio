@@ -14,7 +14,6 @@ import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/browser/m
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { ModelStore } from 'sql/workbench/browser/modelComponents/modelStore';
 import { Event, Emitter } from 'vs/base/common/event';
-import { assign } from 'vs/base/common/objects';
 import { IModelStore, IComponentDescriptor, IComponent, ModelComponentTypes } from 'sql/platform/dashboard/browser/interfaces';
 import { ILogService } from 'vs/platform/log/common/log';
 
@@ -191,7 +190,7 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 		this.queueAction(componentId, (component) => {
 			this.logService.debug(`Registering event handler for component ${componentId}`);
 			this._register(component.registerEventHandler(e => {
-				let modelViewEvent: IModelViewEventArgs = assign({
+				let modelViewEvent: IModelViewEventArgs = Object.assign({
 					componentId: componentId,
 					isRootComponent: componentId === this.rootDescriptor.id
 				}, e);

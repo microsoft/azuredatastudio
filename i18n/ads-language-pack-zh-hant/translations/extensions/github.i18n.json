@@ -8,38 +8,36 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"displayName": "GitHub",
-			"description": "GitHub",
-			"config.gitAuthentication": "控制是否要在 VS Code 中為 git 命令啟用自動 GitHub 驗證。",
-			"welcome.publishFolder": "您也可以直接將此資料夾發佈到 GitHub 存放庫。發佈之後，您就可以存取 git 與 GitHub 所支援的原始檔控制功能。\r\n[$(github) 發佈至 GitHub](command:github.publish)",
-			"welcome.publishWorkspaceFolder": "您也可以直接將工作區資料夾發佈到 GitHub 存放庫。發佈之後，您就可以存取 git 與 GitHub 所支援的原始檔控制功能。\r\n[$(github) 發佈至 GitHub](command:github.publish)"
-		},
 		"dist/publish": {
-			"pick folder": "挑選要發佈至 GitHub 的資料夾",
 			"ignore": "選取要包含在存放庫中的檔案。",
+			"openingithub": "在 GitHub 上開啟",
+			"pick folder": "挑選要發佈至 GitHub 的資料夾",
+			"publishing_done": "已成功將 '{0}' 存放庫發行到 GitHub。",
+			"publishing_firstcommit": "正在建立第一個認可",
 			"publishing_private": "正在發行到私人 GitHub 存放庫",
 			"publishing_public": "正在發行到公用 GitHub 存放庫",
-			"publishing_firstcommit": "正在建立第一個認可",
-			"publishing_uploading": "正在上傳檔案",
-			"openingithub": "在 GitHub 上開啟",
-			"publishing_done": "已成功將 '{0}' 存放庫發行到 GitHub。"
+			"publishing_uploading": "正在上傳檔案"
 		},
 		"dist/pushErrorHandler": {
-			"ok": "確定",
-			"fork unable": "您無權在 GitHub 上推送至 '{0}/{1}'。",
 			"create a fork": "建立分支",
-			"no": "否",
-			"fork": "您無權在 GitHub 上推送至 '{0}/{1}'。要建立分支並改為推送至該分支嗎?",
 			"create fork": "建立 GitHub 分支",
-			"forking": "正在派生 '{0}/{1}'...",
-			"forking_pushing": "正在推送變更...",
-			"openingithub": "在 GitHub 上開啟",
-			"createpr": "建立 PR",
-			"forking_done": "已成功在 GitHub 上建立分支 '{0}'。",
 			"createghpr": "正在建立 GitHub 提取要求...",
-			"openpr": "開啟 PR",
-			"donepr": "已成功在 GitHub 上建立 PR '{0}/{1}#{2}'。"
+			"createpr": "建立 PR",
+			"donepr": "已成功在 GitHub 上建立 PR '{0}/{1}#{2}'。",
+			"fork": "您無權在 GitHub 上推送至 '{0}/{1}'。要建立分支並改為推送至該分支嗎?",
+			"forking": "正在派生 '{0}/{1}'...",
+			"forking_done": "已成功在 GitHub 上建立分支 '{0}'。",
+			"forking_pushing": "正在推送變更...",
+			"no": "否",
+			"openingithub": "在 GitHub 上開啟",
+			"openpr": "開啟 PR"
+		},
+		"package": {
+			"config.gitAuthentication": "控制是否要在 VS Code 中為 git 命令啟用自動 GitHub 驗證。",
+			"description": "GitHub",
+			"displayName": "GitHub",
+			"welcome.publishFolder": "您也可以直接將此資料夾發佈到 GitHub 存放庫。發佈之後，您就可以存取 git 與 GitHub 所支援的原始檔控制功能。\r\n[$(github) 發佈至 GitHub](command:github.publish)",
+			"welcome.publishWorkspaceFolder": "您也可以直接將工作區資料夾發佈到 GitHub 存放庫。發佈之後，您就可以存取 git 與 GitHub 所支援的原始檔控制功能。\r\n[$(github) 發佈至 GitHub](command:github.publish)"
 		}
 	}
 }

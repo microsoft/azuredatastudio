@@ -13,6 +13,7 @@ import * as azdata from 'azdata';
 
 import * as nls from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { ILogService } from 'vs/platform/log/common/log';
 import { Event, Emitter } from 'vs/base/common/event';
 import * as strings from 'vs/base/common/strings';
 import * as types from 'vs/base/common/types';
@@ -47,6 +48,11 @@ export class QueryInfo {
 		this.queryEventQueue = [];
 		this.range = [];
 	}
+
+	public set uri(newUri: string) {
+		this.queryRunner.uri = newUri;
+		this.dataService.uri = newUri;
+	}
 }
 
 /**
@@ -75,7 +81,8 @@ export class QueryModelService implements IQueryModelService {
 	// CONSTRUCTOR /////////////////////////////////////////////////////////
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@INotificationService private _notificationService: INotificationService
+		@INotificationService private _notificationService: INotificationService,
+		@ILogService private _logService: ILogService
 	) {
 		this._queryInfoMap = new Map<string, QueryInfo>();
 		this._onRunQueryStart = new Emitter<string>();
@@ -249,7 +256,7 @@ export class QueryModelService implements IQueryModelService {
 		let queryRunner = this._instantiationService.createInstance(EditQueryRunner, uri);
 		let info = new QueryInfo();
 		queryRunner.onResultSet(e => {
-			this._fireQueryEvent(uri, 'resultSet', e);
+			this._fireQueryEvent(queryRunner.uri, 'resultSet', e);
 		});
 		queryRunner.onBatchStart(b => {
 			let link = undefined;
@@ -273,18 +280,18 @@ export class QueryModelService implements IQueryModelService {
 				time: new Date().toLocaleTimeString(),
 				link: link
 			};
-			this._fireQueryEvent(uri, 'message', message);
+			this._fireQueryEvent(queryRunner.uri, 'message', message);
 		});
 		queryRunner.onMessage(m => {
-			this._fireQueryEvent(uri, 'message', m);
+			this._fireQueryEvent(queryRunner.uri, 'message', m);
 		});
 		queryRunner.onQueryEnd(totalMilliseconds => {
-			this._onRunQueryComplete.fire(uri);
+			this._onRunQueryComplete.fire(queryRunner.uri);
 
 			// fire extensibility API event
 			let event: IQueryEvent = {
 				type: 'queryStop',
-				uri: uri,
+				uri: queryRunner.uri,
 				queryInfo:
 				{
 					range: info.range!,
@@ -294,15 +301,15 @@ export class QueryModelService implements IQueryModelService {
 			this._onQueryEvent.fire(event);
 
 			// fire UI event
-			this._fireQueryEvent(uri, 'complete', totalMilliseconds);
+			this._fireQueryEvent(queryRunner.uri, 'complete', totalMilliseconds);
 		});
 		queryRunner.onQueryStart(() => {
-			this._onRunQueryStart.fire(uri);
+			this._onRunQueryStart.fire(queryRunner.uri);
 
 			// fire extensibility API event
 			let event: IQueryEvent = {
 				type: 'queryStart',
-				uri: uri,
+				uri: queryRunner.uri,
 				queryInfo:
 				{
 					range: info.range!,
@@ -311,14 +318,14 @@ export class QueryModelService implements IQueryModelService {
 			};
 			this._onQueryEvent.fire(event);
 
-			this._fireQueryEvent(uri, 'start');
+			this._fireQueryEvent(queryRunner.uri, 'start');
 		});
 		queryRunner.onResultSetUpdate(() => {
-			this._onRunQueryUpdate.fire(uri);
+			this._onRunQueryUpdate.fire(queryRunner.uri);
 
 			let event: IQueryEvent = {
 				type: 'queryUpdate',
-				uri: uri,
+				uri: queryRunner.uri,
 				queryInfo:
 				{
 					range: info.range!,
@@ -327,7 +334,7 @@ export class QueryModelService implements IQueryModelService {
 			};
 			this._onQueryEvent.fire(event);
 
-			this._fireQueryEvent(uri, 'update');
+			this._fireQueryEvent(queryRunner.uri, 'update');
 		});
 
 		queryRunner.onQueryPlanAvailable(planInfo => {
@@ -348,7 +355,7 @@ export class QueryModelService implements IQueryModelService {
 		queryRunner.onVisualize(resultSetInfo => {
 			let event: IQueryEvent = {
 				type: 'visualize',
-				uri: uri,
+				uri: queryRunner.uri,
 				queryInfo:
 				{
 					range: info.range!,
@@ -360,8 +367,8 @@ export class QueryModelService implements IQueryModelService {
 		});
 
 		info.queryRunner = queryRunner;
-		info.dataService = this._instantiationService.createInstance(DataService, uri);
-		this._queryInfoMap.set(uri, info);
+		info.dataService = this._instantiationService.createInstance(DataService, queryRunner.uri);
+		this._queryInfoMap.set(queryRunner.uri, info);
 		return info;
 	}
 
@@ -407,6 +414,27 @@ export class QueryModelService implements IQueryModelService {
 		if (this._queryInfoMap.has(ownerUri)) {
 			this._queryInfoMap.delete(ownerUri);
 		}
+	}
+
+	public async changeConnectionUri(newUri: string, oldUri: string): Promise<void> {
+		// Get existing query runner
+		let queryRunner = this.internalGetQueryRunner(oldUri);
+		if (!queryRunner) {
+			this._logService.error(`A Query and QueryRunner was not found for '${oldUri}'`);
+			throw new Error(nls.localize('queryModelService.noQueryFoundForUri', 'No Query found for {0}', oldUri));
+		}
+		else if (this._queryInfoMap.has(newUri)) {
+			this._logService.error(`New URI '${newUri}' already has query info associated with it.`);
+			throw new Error(nls.localize('queryModelService.uriAlreadyHasQuery', '{0} already has an existing query', newUri));
+		}
+
+		await queryRunner.changeConnectionUri(newUri, oldUri);
+
+		// remove the old key and set new key with same query info as old uri. (Info existence is checked in internalGetQueryRunner)
+		let info = this._queryInfoMap.get(oldUri);
+		info.uri = newUri;
+		this._queryInfoMap.set(newUri, info);
+		this._queryInfoMap.delete(oldUri);
 	}
 
 	// EDIT DATA METHODS /////////////////////////////////////////////////////

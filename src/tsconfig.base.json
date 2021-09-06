@@ -12,8 +12,10 @@
 		"strictBindCallApply": true,
 		"strictNullChecks": false,
 		"strictPropertyInitialization": false,
-		"strict": false,
 		"allowUnreachableCode": false,
+		"strict": true,
+		"strictOptionalProperties": false,
+		"useUnknownInCatchVariables": false,
 		"forceConsistentCasingInFileNames": true,
 		"baseUrl": ".",
 		"paths": {

@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Nozioni di base sul linguaggio PowerShell",
-			"description": "Offre i frammenti, la sottolineatura delle sintassi, la corrispondenza delle parentesi e la riduzione del codice nei file PowerShell."
+			"description": "Offre i frammenti, la sottolineatura delle sintassi, la corrispondenza delle parentesi e la riduzione del codice nei file PowerShell.",
+			"displayName": "Nozioni di base sul linguaggio PowerShell"
 		}
 	}
 }

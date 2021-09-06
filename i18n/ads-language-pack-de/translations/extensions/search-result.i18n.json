@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Suchergebnis",
-			"description": "Stellt Syntaxhervorhebung und Sprachfeatures für Registerkartensuchergebnisse bereit"
+			"description": "Stellt Syntaxhervorhebung und Sprachfeatures für Registerkartensuchergebnisse bereit",
+			"displayName": "Suchergebnis"
 		}
 	}
 }

@@ -1,4 +1,4 @@
-This is a sample extension that will show some basic model-backed UI scenarios. The long-term goal is to use SQL Service querying (e.g. see if Agent and other services are running) and visualize in interesting ways. Additional suggestions for improving this sample are welcome.
+This is a sample extension that will show some basic model-backed UI scenarios and how to contribute feature providers(e.g. Connection, Object Explorer) in ADS. Note: only implement the providers this way if your data service has native JavaScript SDK available, otherwise use [data protocol client](https://github.com/microsoft/sqlops-dataprotocolclient), please refer to [SQL Tools Service] (https://github.com/microsoft/sqltoolsservice) or [PG Tools Service](https://github.com/microsoft/pgtoolsservice) as examples.
 
 ## Run the following commands to produce an extension installation package
 

@@ -9,11 +9,11 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Azure SQL 하이브리드 클라우드 도구 키트",
+			"books-preview-category": "Jupyter Book",
 			"description": "Azure SQL 하이브리드 클라우드 도구 키트 Jupyter Book을 엽니다.",
-			"title.openJupyterBook": "Azure SQL 하이브리드 클라우드 도구 키트 Jupyter Book 열기",
+			"displayName": "Azure SQL 하이브리드 클라우드 도구 키트",
 			"title.cloudHybridBooks": "Azure SQL 하이브리드 클라우드 도구 키트",
-			"books-preview-category": "Jupyter Book"
+			"title.openJupyterBook": "Azure SQL 하이브리드 클라우드 도구 키트 Jupyter Book 열기"
 		}
 	}
 }

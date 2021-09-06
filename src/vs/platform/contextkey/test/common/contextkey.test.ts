@@ -27,7 +27,7 @@ suite('ContextKeyExpr', () => {
 			ContextKeyExpr.notEquals('c1', 'cc1'),
 			ContextKeyExpr.notEquals('c2', 'cc2'),
 			ContextKeyExpr.not('d1'),
-			ContextKeyExpr.not('d2'),
+			ContextKeyExpr.not('d2')
 		)!;
 		let b = ContextKeyExpr.and(
 			ContextKeyExpr.equals('b2', 'bb2'),

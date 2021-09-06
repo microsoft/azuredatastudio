@@ -281,7 +281,7 @@ suite('ConnectionDialogService tests', () => {
 		Also openDialogAndWait returns the connection profile passed in */
 		(connectionDialogService as any).handleDefaultOnConnect(testConnectionParams, connectionProfile);
 		let result = await connectionPromise;
-		assert.equal(result, connectionProfile);
+		assert.strictEqual(result, connectionProfile);
 	});
 
 	test('handleFillInConnectionInputs calls function on ConnectionController widget', async () => {
@@ -292,7 +292,7 @@ suite('ConnectionDialogService tests', () => {
 		await connectionDialogService.showDialog(mockConnectionManagementService.object, testConnectionParams, connectionProfile);
 		await (connectionDialogService as any).handleFillInConnectionInputs(connectionProfile);
 		let returnedModel = ((connectionDialogService as any)._connectionControllerMap['MSSQL'] as any)._model;
-		assert.equal(returnedModel._groupName, 'testGroup');
+		assert.strictEqual(returnedModel._groupName, 'testGroup');
 		assert(called);
 	});
 

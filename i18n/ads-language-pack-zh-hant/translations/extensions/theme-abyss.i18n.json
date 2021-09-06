@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Abyss 佈景主題",
 			"description": "Visual Studio Code的Abyss 佈景主題",
+			"displayName": "Abyss 佈景主題",
 			"themeLabel": "Abyss"
 		}
 	}

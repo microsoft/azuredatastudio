@@ -27,5 +27,7 @@
 	"azuremonitor.connectionOptions.databaseName.description": "The name of the initial catalog or database in the data source",
 	"azuremonitor.connectionProperties.authType.displayName": "Authentication type",
 	"azuremonitor.connectionProperties.authType.description": "Specifies the method of authenticating with Azure Monitor",
-	"azuremonitor.connectionProperties.authType.categoryValues.azureMFA": "Azure Active Directory - Universal with MFA support"
+	"azuremonitor.connectionProperties.authType.categoryValues.azureMFA": "Azure Active Directory - Universal with MFA support",
+	"azuremonitor.connectionProperties.groupName.source": "Source",
+	"azuremonitor.connectionProperties.groupName.security": "Security"
 }

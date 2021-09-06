@@ -8,7 +8,7 @@ import * as TypeMoq from 'typemoq';
 import 'mocha';
 import { AzureAuthCodeGrant } from '../../../account-provider/auths/azureAuthCodeGrant';
 import { Token, TokenClaims, AccessToken, RefreshToken, OAuthTokenResponse, TokenPostData } from '../../../account-provider/auths/azureAuth';
-import { Tenant, AzureAccount } from 'azurecore'
+import { Tenant, AzureAccount } from 'azurecore';
 import providerSettings from '../../../account-provider/providerSettings';
 import { AzureResource } from 'azdata';
 import { AxiosResponse } from 'axios';
@@ -96,8 +96,8 @@ describe('Azure Authentication', function () {
 		it('token recieved for ossRdbmns resource', async function () {
 			azureAuthCodeGrant.setup(x => x.getTenants(mockToken)).returns(() => {
 				return Promise.resolve([
-				mockTenant
-			]);
+					mockTenant
+				]);
 			});
 			azureAuthCodeGrant.setup(x => x.getTokenHelper(mockTenant, provider.settings.ossRdbmsResource, TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
 				return Promise.resolve({

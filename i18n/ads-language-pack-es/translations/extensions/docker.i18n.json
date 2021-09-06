@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Conceptos básicos del lenguaje Docker",
-			"description": "Proporciona resaltado de sintaxis y correspondencia de corchetes en archivos de Docker."
+			"description": "Proporciona resaltado de sintaxis y correspondencia de corchetes en archivos de Docker.",
+			"displayName": "Conceptos básicos del lenguaje Docker"
 		}
 	}
 }

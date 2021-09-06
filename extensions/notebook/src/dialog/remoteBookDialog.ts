@@ -100,7 +100,7 @@ export class RemoteBookDialog {
 			}).component();
 
 			this.languageDropdown.onValueChanged(async () => this.checkValues());
-			this.setFieldsToEmpty();
+			await this.setFieldsToEmpty();
 
 			this.formModel = this.view.modelBuilder.formContainer()
 				.withFormItems([{
@@ -191,7 +191,7 @@ export class RemoteBookDialog {
 					if (releases) {
 						this.releaseDropdown.enabled = true;
 						await this.fillReleasesDropdown();
-						this.setFieldsToEmpty();
+						await this.setFieldsToEmpty();
 					}
 				} else {
 					throw new Error(loc.urlGithubError);
@@ -200,7 +200,7 @@ export class RemoteBookDialog {
 		}
 		catch (error) {
 			await this.fillReleasesDropdown();
-			this.setFieldsToEmpty();
+			await this.setFieldsToEmpty();
 			this.showErrorMessage(error.message);
 		}
 	}
@@ -219,7 +219,7 @@ export class RemoteBookDialog {
 			}
 		}
 		catch (error) {
-			this.setFieldsToEmpty();
+			await this.setFieldsToEmpty();
 			this.showErrorMessage(error.message);
 		}
 	}
