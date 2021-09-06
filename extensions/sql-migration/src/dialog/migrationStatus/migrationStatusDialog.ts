@@ -454,11 +454,7 @@ export class MigrationStatusDialog {
 		return this._getStatusControl(migrationStatus, warningCount, migration);
 	}
 
-	public openWarningCalloutDialog(dialogHeading: string, dialogName?: string, calloutMessageText?: string, calloutMessageLinkText?: string): void {
-		/**
-		 * Here a specific value is assigned to dialogWidth. This meets design guidelines.
-		 */
-		// this.openWarningCalloutDialog(constants.columnDataTypeMismatchWarningHeading, 'input-table-row-dialog', constants.columnDataTypeMismatchWarning, constants.learnMoreLink, constants.mlExtDocLink, warningButtonProperties);
+	public openCalloutDialog(dialogHeading: string, dialogName?: string, calloutMessageText?: string, calloutMessageLink?: azdata.HyperlinkComponent): void {
 		const dialog = azdata.window.createModelViewDialog(dialogHeading, dialogName, 288, 'callout', 'left', true, false,
 			{
 				xPos: 0,
@@ -466,35 +462,29 @@ export class MigrationStatusDialog {
 				width: 20,
 				height: 20
 			});
-		const warningTab: azdata.window.DialogTab = azdata.window.createTab('warning');
-		warningTab.registerContent(async view => {
+		const tab: azdata.window.DialogTab = azdata.window.createTab('');
+		tab.registerContent(async view => {
 			const warningContentContainer = view.modelBuilder.divContainer().withProps({}).component();
 			const messageTextComponent = view.modelBuilder.text().withProps({
 				value: calloutMessageText,
 				CSSStyles: {
 					'font-size': '12px',
 					'line-height': '16px',
-					'margin': '0 0 12px 0'
+					'margin': '0 0 12px 0',
+					'display': '-webkit-box',
+					'-webkit-box-orient': 'vertical',
+					'-webkit-line-clamp': '5',
+					'overflow': 'hidden'
 				}
 			}).component();
 			warningContentContainer.addItem(messageTextComponent);
-			if (calloutMessageLinkText) {
-				const messageLinkComponent = view.modelBuilder.hyperlink().withProps({
-					label: calloutMessageLinkText,
-					url: 'www.google.com',
-					CSSStyles: {
-						'font-size': '13px',
-						'margin': '0px'
-					}
-				}).component();
-				// this._disposables.push(messageLinkComponent.onDidClick(
-				// 	async (e) => await (new MigrationCutoverDialog(migration)).initialize()));
-				warningContentContainer.addItem(messageLinkComponent);
+			if (calloutMessageLink) {
+				warningContentContainer.addItem(calloutMessageLink);
 			}
 			view.initializeModel(warningContentContainer);
 		});
-		// set tab as content
-		dialog.content = [warningTab];
+
+		dialog.content = [tab];
 
 		azdata.window.openDialog(dialog);
 	}
@@ -535,57 +525,46 @@ export class MigrationStatusDialog {
 					CSSStyles: imageCellStyles
 				}).component();
 
-			const migrationWarningCount = this._view.modelBuilder.text()
+			const migrationWarningCount = this._view.modelBuilder.hyperlink()
 				.withProps({
-					value: loc.STATUS_WARNING_COUNT(status, count) ?? '',
+					label: loc.STATUS_WARNING_COUNT(status, count) ?? '',
+					url: '',
 					height: statusImageSize,
 					CSSStyles: statusCellStyles,
 				}).component();
-			// this._disposables.push(migrationWarningCount.onDidClick(async () => {
-			// 	clearDialogMessage(this._dialogObject);
-			// 	const cutoverDialogModel = new MigrationCutoverDialogModel(migration!);
-			// 	const errors = await cutoverDialogModel.fetchErrors();
-			// 	this._dialogObject.message = {
-			// 		text: errors
-			// 			.filter((e, i, arr) => e !== undefined && i === arr.indexOf(e))
-			// 			.join(EOL),
-			// 		level: status === MigrationStatus.InProgress
-			// 			|| status === MigrationStatus.Completing
-			// 			? azdata.window.MessageLevel.Warning
-			// 			: azdata.window.MessageLevel.Error,
-			// 		description: (cutoverDialogModel.migrationOpStatus) ?
-			// 			(JSON.stringify(
-			// 				{
-			// 					'async-operation-details': cutoverDialogModel.migrationOpStatus,
-			// 					'details': status
-			// 				}
-			// 				, undefined, 2)) :
-			// 			(JSON.stringify(status, undefined, 2))
-			// 	};
-			// }));
 
 			control.addItems([
 				migrationWarningImage,
 				migrationWarningCount
 			]);
 
-			control.onDidClick(async () => {
+			const linkComponent = this._view.modelBuilder.hyperlink().withProps({
+				label: loc.LEARN_MORE,
+				url: '',
+				CSSStyles: {
+					'font-size': '13px',
+					'margin': '0px'
+				}
+			}).component();
+
+			this._disposables.push(linkComponent.onDidClick(
+				async (e) => await (new MigrationCutoverDialog(migration)).initialize())
+			);
+
+			migrationWarningCount.onDidClick(async () => {
 				const cutoverDialogModel = new MigrationCutoverDialogModel(migration!);
 				const errors = await cutoverDialogModel.fetchErrors();
-				this.openWarningCalloutDialog(
+				this.openCalloutDialog(
+					status === MigrationStatus.InProgress
+						|| status === MigrationStatus.Completing
+						? loc.WARNING
+						: loc.ERROR,
+					'input-table-row-dialog',
 					errors
 						.filter((e, i, arr) => e !== undefined && i === arr.indexOf(e))
 						.join(EOL),
-					'input-table-row-dialog',
-					(cutoverDialogModel.migrationOpStatus) ?
-						(JSON.stringify(
-							{
-								'async-operation-details': cutoverDialogModel.migrationOpStatus,
-								'details': status
-							}
-							, undefined, 2)) :
-						(JSON.stringify(status, undefined, 2)),
-					loc.LEARN_MORE);
+					linkComponent
+				);
 			});
 		}
 

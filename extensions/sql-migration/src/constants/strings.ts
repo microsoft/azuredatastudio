@@ -205,6 +205,8 @@ export const CREATING_RESOURCE_GROUP = localize('sql.migration.creating.rg.loadi
 export const RESOURCE_GROUP_CREATED = localize('sql.migration.rg.created', "Resource group created");
 export const NAME_OF_NEW_RESOURCE_GROUP = localize('sql.migration.name.of.new.rg', "Name of new resource group");
 // common strings
+export const WARNING = localize('sql.migration.warning', "Warning");
+export const ERROR = localize('sql.migration.error', "Error");
 export const LEARN_MORE = localize('sql.migration.learn.more', "Learn more");
 export const LEARN_MORE_ABOUT_PRE_REQS = localize('sql.migration.learn.more.pre.reqs', "Learn more about things you need before starting a migration.");
 export const SUBSCRIPTION = localize('sql.migration.subscription', "Subscription");
