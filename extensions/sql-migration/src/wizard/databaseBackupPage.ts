@@ -33,7 +33,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private _passwordText!: azdata.InputBoxComponent;
 	private _networkSharePath!: azdata.InputBoxComponent;
 	private _sourceHelpText!: azdata.TextComponent;
-	private _sqlSourceUsernameInput!: azdata.TextComponent;
+	private _sqlSourceUsernameInput!: azdata.InputBoxComponent;
 	private _sqlSourcepassword!: azdata.InputBoxComponent;
 
 	private _blobContainer!: azdata.FlexContainer;
@@ -200,18 +200,14 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				'font-weight': 'bold',
 			}
 		}).component();
-		this._sqlSourceUsernameInput = this._view.modelBuilder.text().withProps({
+		this._sqlSourceUsernameInput = this._view.modelBuilder.inputBox().withProps({
+			required: true,
 			enabled: false,
-			value: this.migrationStateModel._sqlServerUsername,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
-			CSSStyles: {
-				'font-size': '13px',
-				'margin': '0px',
-			}
 		}).component();
-		// this._disposables.push(this._sqlSourceUsernameInput.onTextChanged(value => {
-		// 	this.migrationStateModel._sqlServerUsername = value;
-		// }));
+		this._disposables.push(this._sqlSourceUsernameInput.onTextChanged(value => {
+			this.migrationStateModel._sqlServerUsername = value;
+		}));
 
 		const sqlPasswordLabel = this._view.modelBuilder.text().withProps({
 			value: constants.DATABASE_BACKUP_NETWORK_SHARE_PASSWORD_LABEL,
