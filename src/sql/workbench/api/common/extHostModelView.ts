@@ -1550,6 +1550,22 @@ class DropDownWrapper extends ComponentWrapper implements azdata.DropDownCompone
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
 	}
+
+	public get editableDropdownPlaceholder(): string {
+		return this.properties['editableDropdownPlaceholder'];
+	}
+
+	public set editableDropdownPlaceholder(v: string) {
+		this.setProperty('editableDropdownPlaceholder', v);
+	}
+
+	public get validationErrorMessage(): string {
+		return this.properties['validationErrorMessage'];
+	}
+
+	public set validationErrorMessage(v: string) {
+		this.setProperty('validationErrorMessage', v);
+	}
 }
 
 class DeclarativeTableWrapper extends ComponentWrapper implements azdata.DeclarativeTableComponent {

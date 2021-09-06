@@ -1,0 +1,25 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.dropdown-error-container {
+	width:100%;
+	display: table;
+	margin-top: 4px;
+	position: relative;
+}
+
+.dropdown-error-text {
+	display: block;
+	margin-left: 22px;
+}
+
+.dropdown-error-icon {
+	background-image: url('status_error.svg');
+	height: 14px;
+	width: 14px;
+	position: absolute;
+	top: 2px;
+	left: 0;
+}

@@ -430,6 +430,17 @@ declare module 'azdata' {
 		enabled?: boolean;
 	}
 
+	export interface DropDownProperties {
+		/**
+		 * Adding short hint the describes the expected value for editable dropdown
+		 */
+		editableDropdownPlaceholder?: string;
+		/**
+		 * The error message to show when custom validation fails. Note: For required dropdowns we use a default error message.
+		 */
+		validationErrorMessage?: string;
+	}
+
 	/**
 	 * Panel component with tabs
 	 */

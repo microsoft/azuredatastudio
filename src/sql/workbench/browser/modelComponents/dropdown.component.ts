@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import 'vs/css!./media/dropdown';
 import {
 	Component, Input, Inject, ChangeDetectorRef, forwardRef,
 	ViewChild, ElementRef, OnDestroy, AfterViewInit
@@ -23,6 +24,8 @@ import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } fro
 import { localize } from 'vs/nls';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
+import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
+import { errorForeground } from 'vs/platform/theme/common/colorRegistry';
 
 @Component({
 	selector: 'modelview-dropdown',
@@ -35,6 +38,10 @@ import { ILogService } from 'vs/platform/log/common/log';
 		</div>
 		<div [style.display]="getEditableDisplay()" #editableDropDown style="width: 100%;"></div>
 		<div [style.display]="getNotEditableDisplay()" #dropDown style="width: 100%;"></div>
+		<div class="dropdown-error-container" #errorMessage *ngIf="!isValid && validationErrorMessage.length!==0 && !isInitState">
+			<div class="dropdown-error-icon"></div>
+			<span class="dropdown-error-text">{{validationErrorMessage}}</span>
+		</div>
 	</div>
 	`
 })
@@ -45,6 +52,11 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 	private _selectBox: SelectBox;
 	private _isInAccessibilityMode: boolean;
 	private _loadingBox: SelectBox;
+	public isValid: boolean;
+	/**
+	 * This flag is used to hide the error message in the initial state of the dropdown. We do not want to show the error message before user has interacted with it.
+	 */
+	public isInitState: boolean = true;
 
 	@ViewChild('editableDropDown', { read: ElementRef }) private _editableDropDownContainer: ElementRef;
 	@ViewChild('dropDown', { read: ElementRef }) private _dropDownContainer: ElementRef;
@@ -69,7 +81,7 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 			let dropdownOptions: IDropdownOptions = {
 				values: [],
 				strictSelection: false,
-				placeholder: '',
+				placeholder: this.editableDropdownPlaceholder,
 				maxHeight: 125,
 				ariaLabel: ''
 			};
@@ -87,6 +99,7 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 						args: e
 					});
 				}
+				this.isInitState = false;
 			}));
 			this._validations.push(() => !this.required || !this.editable || !!this._editableDropdown.value);
 		}
@@ -110,6 +123,7 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 						args: e
 					});
 				}
+				this.isInitState = false;
 			}));
 			this._validations.push(() => !this.required || this.editable || !!this._selectBox.value);
 		}
@@ -119,6 +133,13 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 
 	override ngOnDestroy(): void {
 		this.baseDestroy();
+	}
+
+	public override async validate(): Promise<boolean> {
+		const validationResult = await super.validate();
+		this.isValid = validationResult;
+		this._changeRef.detectChanges();
+		return validationResult;
 	}
 
 	/// IComponent implementation
@@ -145,6 +166,8 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 			}
 			this._editableDropdown.enabled = this.enabled;
 			this._editableDropdown.fireOnTextChange = this.fireOnTextChange;
+
+			this._editableDropdown.input.setPlaceHolder(this.editableDropdownPlaceholder);
 
 			// Add tooltip when editable dropdown is disabled to show overflow text
 			this._editableDropdown.input.setTooltip(!this.enabled ? this._editableDropdown.input.value : '');
@@ -300,4 +323,27 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 			'width': this.getWidth()
 		});
 	}
+
+	public get editableDropdownPlaceholder(): string {
+		return this.getPropertyOrDefault<string>((props) => props.editableDropdownPlaceholder, '');
+	}
+
+	public get validationErrorMessage(): string {
+		let validationErrorMessage = this.getPropertyOrDefault<string>((props) => props.validationErrorMessage, '');
+		if (this.required && validationErrorMessage) {
+			validationErrorMessage = localize('defaultDropdownErrorMessage', "Please fill out this field."); // Adding a default error message for required dropdowns.
+		}
+		return validationErrorMessage;
+	}
 }
+
+registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
+	const errorForegroundColor = theme.getColor(errorForeground);
+	if (errorForegroundColor) {
+		collector.addRule(`
+		.dropdown-error-text {
+			color: ${errorForegroundColor};
+		}
+		`);
+	}
+});
