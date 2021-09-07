@@ -1037,6 +1037,9 @@
         <Item ItemId=";(...) orUri" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Could not find provider for uri: {0}]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Non è stato possibile trovare il provider per l'URI: {0}]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1740,12 +1743,18 @@
       <Item ItemId=";src/sql/platform/connection/common/connectionStatusManager.connectionStatusManager.noConnectionForUri" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Could not find connection with uri: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Non è stato possibile trovare la connessione per l'URI:{0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/platform/connection/common/connectionStatusManager.connectionStatusManager.uriAlreadyInConnectionsList" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[There is already a connection with uri: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Esiste già una connessione con URI: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -13173,6 +13182,9 @@
       <Item ItemId=";src/sql/workbench/services/connection/browser/connectionManagementService.connection.invalidConnectionResult" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Connection result is invalid]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Risultato connessione non valido]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -13188,6 +13200,9 @@
       <Item ItemId=";src/sql/workbench/services/connection/browser/connectionManagementService.connection.refreshAzureTokenFailure" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to refresh Azure account token for connection]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Non è stato possibile aggiornare il token dell'account di Azure per la connessione]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -14706,12 +14721,18 @@
       <Item ItemId=";src/sql/workbench/services/query/common/queryManagement.queryManagement.noQueryRunnerForUri" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Could not find Query Runner for uri: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Non è stato possibile trovare il Runner di query per l'URI: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/services/query/common/queryManagement.queryManagement.uriAlreadyHasQueryRunner" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Uri: {0} unexpectedly already has a query runner.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[URI: {0} imprevisto ha già un Runner di query.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -14736,12 +14757,18 @@
       <Item ItemId=";src/sql/workbench/services/query/common/queryModelService.queryModelService.noQueryFoundForUri" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No Query found for {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Non sono state trovate query per {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/services/query/common/queryModelService.queryModelService.uriAlreadyHasQuery" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} already has an existing query]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0} esiste già una query esistente]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
