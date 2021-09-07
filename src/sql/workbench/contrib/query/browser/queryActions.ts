@@ -206,11 +206,8 @@ export class RunQueryAction extends QueryTaskbarAction {
 
 	public override async run(): Promise<void> {
 		if (!this.editor.isSelectionEmpty()) {
-			await this.connectionManagementService.refreshAzureAccountTokenIfNecessary(this.editor.input.uri);
-			if (this.isConnected(this.editor)) {
-				// If we are already connected, run the query
-				this.runQuery(this.editor);
-			} else {
+			const runQueryResult = await this.runQuery(this.editor);
+			if (!runQueryResult) {
 				// If we are not already connected, prompt for connection and run the query if the
 				// connection succeeds. "runQueryOnCompletion=true" will cause the query to run after connection
 				this.connectEditor(this.editor, RunQueryOnConnectionMode.executeQuery, this.editor.getSelection());
@@ -221,11 +218,8 @@ export class RunQueryAction extends QueryTaskbarAction {
 
 	public async runCurrent(): Promise<void> {
 		if (!this.editor.isSelectionEmpty()) {
-			await this.connectionManagementService.refreshAzureAccountTokenIfNecessary(this.editor.input.uri);
-			if (this.isConnected(this.editor)) {
-				// If we are already connected, run the query
-				this.runQuery(this.editor, true);
-			} else {
+			const runQueryResult = await this.runQuery(this.editor, true);
+			if (!runQueryResult) {
 				// If we are not already connected, prompt for connection and run the query if the
 				// connection succeeds. "runQueryOnCompletion=true" will cause the query to run after connection
 				this.connectEditor(this.editor, RunQueryOnConnectionMode.executeCurrentQuery, this.editor.getSelection(false));
@@ -234,11 +228,12 @@ export class RunQueryAction extends QueryTaskbarAction {
 		return;
 	}
 
-	public runQuery(editor: QueryEditor, runCurrentStatement: boolean = false) {
+	private async runQuery(editor: QueryEditor, runCurrentStatement: boolean = false): Promise<boolean> {
 		if (!editor) {
 			editor = this.editor;
 		}
 
+		await this.connectionManagementService.refreshAzureAccountTokenIfNecessary(this.editor.input.uri);
 		if (this.isConnected(editor)) {
 			// Hide IntelliSense suggestions list when running query to match SSMS behavior
 			this.commandService?.executeCommand('hideSuggestWidget');
@@ -252,7 +247,9 @@ export class RunQueryAction extends QueryTaskbarAction {
 				selection = editor.getSelection();
 				editor.input.runQuery(selection);
 			}
+			return true;
 		}
+		return false;
 	}
 
 	protected isCursorPosition(selection: IRange) {
