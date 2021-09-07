@@ -14,7 +14,6 @@ import { clearDialogMessage, convertTimeDifferenceToDuration, filterMigrations, 
 import { SqlMigrationServiceDetailsDialog } from '../sqlMigrationService/sqlMigrationServiceDetailsDialog';
 import { ConfirmCutoverDialog } from '../migrationCutover/confirmCutoverDialog';
 import { MigrationCutoverDialogModel } from '../migrationCutover/migrationCutoverDialogModel';
-import { EOL } from 'os';
 
 const refreshFrequency: SupportedAutoRefreshIntervals = 180000;
 
@@ -563,9 +562,7 @@ export class MigrationStatusDialog {
 						? loc.WARNING
 						: loc.ERROR,
 					'input-table-row-dialog',
-					errors
-						.filter((e, i, arr) => e !== undefined && i === arr.indexOf(e))
-						.join(EOL),
+					errors,
 					linkComponent
 				);
 			});
