@@ -432,7 +432,7 @@ declare module 'azdata' {
 
 	export interface DropDownProperties {
 		/**
-		 * Adding short hint the describes the expected value for editable dropdown
+		 * Adds a short hint that describes the expected value for the editable dropdown
 		 */
 		editableDropdownPlaceholder?: string;
 		/**
