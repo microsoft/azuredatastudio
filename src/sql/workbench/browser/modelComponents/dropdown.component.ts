@@ -330,8 +330,8 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 
 	public get validationErrorMessage(): string {
 		let validationErrorMessage = this.getPropertyOrDefault<string>((props) => props.validationErrorMessage, '');
-		if (this.required && validationErrorMessage) {
-			validationErrorMessage = localize('defaultDropdownErrorMessage', "Please fill out this field."); // Adding a default error message for required dropdowns.
+		if (this.required && this.editable && this._editableDropdown.input.value === '') {
+			return localize('defaultDropdownErrorMessage', "Please fill out this field."); // Adding a default error message for required editable dropdowns having an empty value.
 		}
 		return validationErrorMessage;
 	}
