@@ -8,6 +8,8 @@ import * as which from 'which';
 import * as utils from '../common/utils';
 import { ShellExecutionHelper } from './shellExecutionHelper';
 
+const autorestPackageVersion = '0.0.2'; // latest version of AutoRest.Sql package on npm
+
 export class AutorestHelper extends ShellExecutionHelper {
 
 	constructor(_outputChannel: vscode.OutputChannel) {
@@ -33,7 +35,7 @@ export class AutorestHelper extends ShellExecutionHelper {
 		}
 
 		// should --clear-output-folder be included? We should always be writing to a folder created just for this, but potentially risky
-		const command = `autorest --use:autorest-sql-testing --input-file="${swaggerPath}" --output-folder="${outputFolder}" --clear-output-folder`;
+		const command = `autorest --use:autorest-sql-testing@${autorestPackageVersion} --input-file="${swaggerPath}" --output-folder="${outputFolder}" --clear-output-folder`;
 
 		const output = await this.runStreamedCommand(command, this._outputChannel);
 
