@@ -265,6 +265,14 @@
       <source xml:lang="en">A server group with the same name already exists.</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/platform/connection/common/connectionStatusManager" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="connectionStatusManager.noConnectionForUri">
+      <source xml:lang="en">Could not find connection with uri: {0}</source>
+    </trans-unit>
+    <trans-unit id="connectionStatusManager.uriAlreadyInConnectionsList">
+      <source xml:lang="en">There is already a connection with uri: {0}</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/platform/dashboard/browser/insightRegistry" source-language="en" datatype="plaintext"><body>
     <trans-unit id="schema.dashboardWidgets.InsightsRegistry">
       <source xml:lang="en">Widget used in the dashboards</source>
@@ -649,6 +657,9 @@
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/browser/modal/optionsDialogHelper" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="optionsDialog.defaultGroupName">
+      <source xml:lang="en">General</source>
+    </trans-unit>
     <trans-unit id="optionsDialog.invalidInput">
       <source xml:lang="en">Invalid input.  Numeric value expected.</source>
     </trans-unit>
@@ -4756,8 +4767,17 @@ Error: {1}</source>
     <trans-unit id="cancelConnectionConfirmation">
       <source xml:lang="en">Are you sure you want to cancel this connection?</source>
     </trans-unit>
+    <trans-unit id="connection.invalidConnectionResult">
+      <source xml:lang="en">Connection result is invalid</source>
+    </trans-unit>
     <trans-unit id="connection.noAzureAccount">
       <source xml:lang="en">Failed to get Azure account token for connection</source>
+    </trans-unit>
+    <trans-unit id="connection.refreshAzureTokenFailure">
+      <source xml:lang="en">Failed to refresh Azure account token for connection</source>
+    </trans-unit>
+    <trans-unit id="connectionManagementService.noProviderForUri">
+      <source xml:lang="en">Could not find provider for uri: {0}</source>
     </trans-unit>
     <trans-unit id="connectionNotAcceptedError">
       <source xml:lang="en">Connection Not Accepted</source>
@@ -5345,12 +5365,26 @@ Error: {1}</source>
       <source xml:lang="en">Value</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/services/query/common/queryManagement" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="queryManagement.noQueryRunnerForUri">
+      <source xml:lang="en">Could not find Query Runner for uri: {0}</source>
+    </trans-unit>
+    <trans-unit id="queryManagement.uriAlreadyHasQueryRunner">
+      <source xml:lang="en">Uri: {0} unexpectedly already has a query runner.</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/services/query/common/queryModelService" source-language="en" datatype="plaintext"><body>
     <trans-unit id="commitEditFailed">
       <source xml:lang="en">Commit row failed: </source>
     </trans-unit>
     <trans-unit id="msgCancelQueryFailed">
       <source xml:lang="en">Canceling the query failed: {0}</source>
+    </trans-unit>
+    <trans-unit id="queryModelService.noQueryFoundForUri">
+      <source xml:lang="en">No Query found for {0}</source>
+    </trans-unit>
+    <trans-unit id="queryModelService.uriAlreadyHasQuery">
+      <source xml:lang="en">{0} already has an existing query</source>
     </trans-unit>
     <trans-unit id="runQueryBatchStartLine">
       <source xml:lang="en">Line {0}</source>

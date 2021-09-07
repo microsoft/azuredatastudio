@@ -62,8 +62,8 @@ export class IconPathHelper {
 			dark: context.asAbsolutePath('images/sqlVmVideoThumbnail.svg')
 		};
 		IconPathHelper.migrationDashboardHeaderBackground = {
-			light: context.asAbsolutePath('images/background.svg'),
-			dark: context.asAbsolutePath('images/background.svg')
+			light: context.asAbsolutePath('images/dashboardWatermark.svg'),
+			dark: context.asAbsolutePath('images/dashboardWatermark.svg')
 		};
 		IconPathHelper.sqlMigrationLogo = {
 			light: context.asAbsolutePath('images/migration.svg'),

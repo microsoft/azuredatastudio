@@ -2464,7 +2464,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Source]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Fonte]]></Val>
+            <Val><![CDATA[Origem]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

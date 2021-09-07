@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Noções Básicas da Linguagem SQL",
-			"description": "Fornece realce de sintaxe e correspondência de colchetes em arquivos SQL."
+			"description": "Fornece realce de sintaxe e correspondência de colchetes em arquivos SQL.",
+			"displayName": "Noções Básicas da Linguagem SQL"
 		}
 	}
 }

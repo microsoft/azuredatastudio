@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Docker-Sprachgrundlagen",
-			"description": "Bietet Syntaxhervorhebung und Klammernabgleich in Docker-Dateien."
+			"description": "Bietet Syntaxhervorhebung und Klammernabgleich in Docker-Dateien.",
+			"displayName": "Docker-Sprachgrundlagen"
 		}
 	}
 }

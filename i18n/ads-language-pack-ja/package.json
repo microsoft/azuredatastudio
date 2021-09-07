@@ -2,7 +2,7 @@
 	"name": "ads-language-pack-ja",
 	"displayName": "Japanese Language Pack for Azure Data Studio",
 	"description": "Language pack extension for Japanese",
-	"version": "1.32.0",
+	"version": "1.33.0",
 	"publisher": "Microsoft",
 	"repository": {
 		"type": "git",
@@ -11,7 +11,7 @@
 	"license": "SEE SOURCE EULA LICENSE IN LICENSE.txt",
 	"engines": {
 		"vscode": "*",
-		"azdata": "^1.32.0"
+		"azdata": "^1.33.0"
 	},
 	"icon": "languagepack.png",
 	"categories": [
@@ -173,8 +173,20 @@
 						"path": "./translations/extensions/agent.i18n.json"
 					},
 					{
+						"id": "Microsoft.arc",
+						"path": "./translations/extensions/arc.i18n.json"
+					},
+					{
+						"id": "Microsoft.asde-deployment",
+						"path": "./translations/extensions/asde-deployment.i18n.json"
+					},
+					{
 						"id": "Microsoft.azurecore",
 						"path": "./translations/extensions/azurecore.i18n.json"
+					},
+					{
+						"id": "Microsoft.azurehybridtoolkit",
+						"path": "./translations/extensions/azurehybridtoolkit.i18n.json"
 					},
 					{
 						"id": "Microsoft.big-data-cluster",
@@ -189,8 +201,20 @@
 						"path": "./translations/extensions/dacpac.i18n.json"
 					},
 					{
+						"id": "Microsoft.data-workspace",
+						"path": "./translations/extensions/data-workspace.i18n.json"
+					},
+					{
 						"id": "Microsoft.import",
 						"path": "./translations/extensions/import.i18n.json"
+					},
+					{
+						"id": "Microsoft.kusto",
+						"path": "./translations/extensions/kusto.i18n.json"
+					},
+					{
+						"id": "Microsoft.machine-learning",
+						"path": "./translations/extensions/machine-learning.i18n.json"
 					},
 					{
 						"id": "Microsoft.sqlservernotebook",
@@ -209,6 +233,10 @@
 						"path": "./translations/extensions/profiler.i18n.json"
 					},
 					{
+						"id": "Microsoft.query-history",
+						"path": "./translations/extensions/query-history.i18n.json"
+					},
+					{
 						"id": "Microsoft.resource-deployment",
 						"path": "./translations/extensions/resource-deployment.i18n.json"
 					},
@@ -217,36 +245,8 @@
 						"path": "./translations/extensions/schema-compare.i18n.json"
 					},
 					{
-						"id": "Microsoft.arc",
-						"path": "./translations/extensions/arc.i18n.json"
-					},
-					{
-						"id": "Microsoft.asde-deployment",
-						"path": "./translations/extensions/asde-deployment.i18n.json"
-					},
-					{
-						"id": "Microsoft.azdata",
-						"path": "./translations/extensions/azdata.i18n.json"
-					},
-					{
-						"id": "Microsoft.azurehybridtoolkit",
-						"path": "./translations/extensions/azurehybridtoolkit.i18n.json"
-					},
-					{
-						"id": "Microsoft.data-workspace",
-						"path": "./translations/extensions/data-workspace.i18n.json"
-					},
-					{
-						"id": "Microsoft.kusto",
-						"path": "./translations/extensions/kusto.i18n.json"
-					},
-					{
-						"id": "Microsoft.machine-learning",
-						"path": "./translations/extensions/machine-learning.i18n.json"
-					},
-					{
-						"id": "Microsoft.query-history",
-						"path": "./translations/extensions/query-history.i18n.json"
+						"id": "Microsoft.server-report",
+						"path": "./translations/extensions/server-report.i18n.json"
 					},
 					{
 						"id": "Microsoft.sql-assessment",

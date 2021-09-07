@@ -13,6 +13,7 @@ import * as azdata from 'azdata';
 
 import * as nls from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { ILogService } from 'vs/platform/log/common/log';
 import { Event, Emitter } from 'vs/base/common/event';
 import * as strings from 'vs/base/common/strings';
 import * as types from 'vs/base/common/types';
@@ -47,6 +48,11 @@ export class QueryInfo {
 		this.queryEventQueue = [];
 		this.range = [];
 	}
+
+	public set uri(newUri: string) {
+		this.queryRunner.uri = newUri;
+		this.dataService.uri = newUri;
+	}
 }
 
 /**
@@ -75,7 +81,8 @@ export class QueryModelService implements IQueryModelService {
 	// CONSTRUCTOR /////////////////////////////////////////////////////////
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@INotificationService private _notificationService: INotificationService
+		@INotificationService private _notificationService: INotificationService,
+		@ILogService private _logService: ILogService
 	) {
 		this._queryInfoMap = new Map<string, QueryInfo>();
 		this._onRunQueryStart = new Emitter<string>();
@@ -407,6 +414,27 @@ export class QueryModelService implements IQueryModelService {
 		if (this._queryInfoMap.has(ownerUri)) {
 			this._queryInfoMap.delete(ownerUri);
 		}
+	}
+
+	public async changeConnectionUri(newUri: string, oldUri: string): Promise<void> {
+		// Get existing query runner
+		let queryRunner = this.internalGetQueryRunner(oldUri);
+		if (!queryRunner) {
+			this._logService.error(`A Query and QueryRunner was not found for '${oldUri}'`);
+			throw new Error(nls.localize('queryModelService.noQueryFoundForUri', 'No Query found for {0}', oldUri));
+		}
+		else if (this._queryInfoMap.has(newUri)) {
+			this._logService.error(`New URI '${newUri}' already has query info associated with it.`);
+			throw new Error(nls.localize('queryModelService.uriAlreadyHasQuery', '{0} already has an existing query', newUri));
+		}
+
+		await queryRunner.changeConnectionUri(newUri, oldUri);
+
+		// remove the old key and set new key with same query info as old uri. (Info existence is checked in internalGetQueryRunner)
+		let info = this._queryInfoMap.get(oldUri);
+		info.uri = newUri;
+		this._queryInfoMap.set(newUri, info);
+		this._queryInfoMap.delete(oldUri);
 	}
 
 	// EDIT DATA METHODS /////////////////////////////////////////////////////

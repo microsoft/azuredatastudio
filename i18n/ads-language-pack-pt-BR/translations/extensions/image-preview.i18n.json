@@ -8,20 +8,13 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"displayName": "Visualização da Imagem",
-			"description": "Fornece a visualização de imagem interna do VS Code",
-			"customEditors.displayName": "Visualização da Imagem",
-			"command.zoomIn": "Ampliar",
-			"command.zoomOut": "Reduzir"
-		},
 		"dist/binarySizeStatusBarEntry": {
 			"sizeB": "{0} B",
+			"sizeGB": "{0} GB",
 			"sizeKB": "{0} KB",
 			"sizeMB": "{0} MB",
-			"sizeGB": "{0} GB",
-			"sizeTB": "{0} TB",
-			"sizeStatusBar.name": "Tamanho Binário da Imagem"
+			"sizeStatusBar.name": "Tamanho Binário da Imagem",
+			"sizeTB": "{0} TB"
 		},
 		"dist/preview": {
 			"preview.imageLoadError": "Ocorreu um erro ao carregar a imagem.",
@@ -34,6 +27,13 @@
 			"zoomStatusBar.name": "Zoom da Imagem",
 			"zoomStatusBar.placeholder": "Selecionar nível de zoom",
 			"zoomStatusBar.wholeImageLabel": "Imagem Inteira"
+		},
+		"package": {
+			"command.zoomIn": "Ampliar",
+			"command.zoomOut": "Reduzir",
+			"customEditors.displayName": "Visualização da Imagem",
+			"description": "Fornece a visualização de imagem interna do VS Code",
+			"displayName": "Visualização da Imagem"
 		}
 	}
 }

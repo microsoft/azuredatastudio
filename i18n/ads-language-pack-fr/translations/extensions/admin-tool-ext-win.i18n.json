@@ -8,19 +8,19 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"adminToolExtWin.displayName": "Extensions de l'outil d'administration de base de données pour Windows",
-			"adminToolExtWin.description": "Ajoute d'autres fonctionnalités spécifiques de Windows à Azure Data Studio",
-			"adminToolExtWin.propertiesMenuItem": "Propriétés",
-			"adminToolExtWin.launchGswMenuItem": "Générer des scripts..."
-		},
 		"dist/main": {
-			"adminToolExtWin.noConnectionContextForProp": "Aucun ConnectionContext pour handleLaunchSsmsMinPropertiesDialogCommand",
-			"adminToolExtWin.noOENode": "Impossible de déterminer le nœud de l'Explorateur d'objets à partir de connectionContext : {0}",
-			"adminToolExtWin.noConnectionContextForGsw": "Aucun ConnectionContext pour handleLaunchSsmsMinPropertiesDialogCommand",
-			"adminToolExtWin.noConnectionProfile": "Aucun connectionProfile fourni par connectionContext : {0}",
 			"adminToolExtWin.launchingDialogStatus": "Lancement de la boîte de dialogue...",
+			"adminToolExtWin.noConnectionContextForGsw": "Aucun ConnectionContext pour handleLaunchSsmsMinPropertiesDialogCommand",
+			"adminToolExtWin.noConnectionContextForProp": "Aucun ConnectionContext pour handleLaunchSsmsMinPropertiesDialogCommand",
+			"adminToolExtWin.noConnectionProfile": "Aucun connectionProfile fourni par connectionContext : {0}",
+			"adminToolExtWin.noOENode": "Impossible de déterminer le nœud de l'Explorateur d'objets à partir de connectionContext : {0}",
 			"adminToolExtWin.ssmsMinError": "Erreur d'appel de SsmsMin avec les arguments '{0}' - {1}"
+		},
+		"package": {
+			"adminToolExtWin.description": "Ajoute d'autres fonctionnalités spécifiques de Windows à Azure Data Studio",
+			"adminToolExtWin.displayName": "Extensions de l'outil d'administration de base de données pour Windows",
+			"adminToolExtWin.launchGswMenuItem": "Générer des scripts...",
+			"adminToolExtWin.propertiesMenuItem": "Propriétés"
 		}
 	}
 }

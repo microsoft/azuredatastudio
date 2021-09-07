@@ -19,6 +19,7 @@ import { IRange } from 'vs/editor/common/core/range';
 import { AbstractTextResourceEditorInput } from 'vs/workbench/common/editor/textResourceEditorInput';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 const MAX_SIZE = 13;
 
@@ -106,6 +107,14 @@ export class QueryEditorState extends Disposable {
 	public get isSqlCmdMode(): boolean {
 		return this._isSqlCmdMode;
 	}
+
+	public setState(newState: QueryEditorState): void {
+		this.connected = newState.connected;
+		this.connecting = newState.connecting;
+		this.resultsVisible = newState.resultsVisible;
+		this.executing = newState.executing;
+		this.isSqlCmdMode = newState.isSqlCmdMode;
+	}
 }
 
 /**
@@ -125,7 +134,8 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		protected _results: QueryResultsInput,
 		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
 		@IQueryModelService private readonly queryModelService: IQueryModelService,
-		@IConfigurationService private readonly configurationService: IConfigurationService
+		@IConfigurationService private readonly configurationService: IConfigurationService,
+		@IInstantiationService protected readonly instantiationService: IInstantiationService
 	) {
 		super();
 
@@ -196,6 +206,17 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		}
 	}
 
+	protected async changeConnectionUri(newUri: string): Promise<void> {
+		this.connectionManagementService.changeConnectionUri(newUri, this.uri);
+		try {
+			await this.queryModelService.changeConnectionUri(newUri, this.uri);
+		}
+		catch (error) {
+			this.connectionManagementService.changeConnectionUri(this.uri, newUri);
+			throw error;
+		}
+	}
+
 	// Forwarding resource functions to the inline sql file editor
 	public override isDirty(): boolean { return this._text.isDirty(); }
 	public get resource(): URI { return this._text.resource; }
@@ -224,10 +245,6 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 
 	override save(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
 		return this.text.save(group, options);
-	}
-
-	override saveAs(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
-		return this.text.saveAs(group, options);
 	}
 
 	// Called to get the tooltip of the tab

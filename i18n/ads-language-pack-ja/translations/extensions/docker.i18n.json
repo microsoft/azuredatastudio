@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Docker ファイルの基本言語サポート",
-			"description": "Docker ファイル内で構文ハイライト、かっこ一致を提供します。"
+			"description": "Docker ファイル内で構文ハイライト、かっこ一致を提供します。",
+			"displayName": "Docker ファイルの基本言語サポート"
 		}
 	}
 }

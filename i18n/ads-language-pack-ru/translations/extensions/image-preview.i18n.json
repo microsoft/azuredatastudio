@@ -8,20 +8,13 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"displayName": "Предварительный просмотр изображения",
-			"description": "Предоставляет встроенный предварительный просмотр изображений VS Code",
-			"customEditors.displayName": "Предварительный просмотр изображения",
-			"command.zoomIn": "Увеличить",
-			"command.zoomOut": "Уменьшить"
-		},
 		"dist/binarySizeStatusBarEntry": {
 			"sizeB": "{0} Б",
+			"sizeGB": "{0} ГБ",
 			"sizeKB": "{0} КБ",
 			"sizeMB": "{0} МБ",
-			"sizeGB": "{0} ГБ",
-			"sizeTB": "{0} ТБ",
-			"sizeStatusBar.name": "Размер двоичного файла образа"
+			"sizeStatusBar.name": "Размер двоичного файла образа",
+			"sizeTB": "{0} ТБ"
 		},
 		"dist/preview": {
 			"preview.imageLoadError": "При загрузке изображения произошла ошибка.",
@@ -34,6 +27,13 @@
 			"zoomStatusBar.name": "Масштаб изображения",
 			"zoomStatusBar.placeholder": "Выберите уровень масштабирования",
 			"zoomStatusBar.wholeImageLabel": "Все изображение"
+		},
+		"package": {
+			"command.zoomIn": "Увеличить",
+			"command.zoomOut": "Уменьшить",
+			"customEditors.displayName": "Предварительный просмотр изображения",
+			"description": "Предоставляет встроенный предварительный просмотр изображений VS Code",
+			"displayName": "Предварительный просмотр изображения"
 		}
 	}
 }

@@ -532,7 +532,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Connection Resiliency]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[连接弹性]]></Val>
+            <Val><![CDATA[连接复原力]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
