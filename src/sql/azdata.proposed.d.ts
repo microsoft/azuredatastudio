@@ -436,7 +436,7 @@ declare module 'azdata' {
 		 */
 		editableDropdownPlaceholder?: string;
 		/**
-		 * The error message to show when custom validation fails. Note: For required dropdowns we use a default error message.
+		 * The error message to show when custom validation fails. Note: For empty required dropdowns we use a default error message.
 		 */
 		validationErrorMessage?: string;
 	}
