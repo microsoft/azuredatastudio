@@ -7,7 +7,6 @@ import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 import { AppSettingType, IDeployProfile, ILocalDbSetting } from '../models/deploy/deployProfile';
 import { Project } from '../models/project';
-import * as generator from 'generate-password';
 import { getPublishDatabaseSettings } from './publishDatabaseQuickpick';
 import * as path from 'path';
 import * as fse from 'fs-extra';
@@ -44,14 +43,7 @@ export async function launchDeployDatabaseQuickpick(project: Project): Promise<I
 			return undefined;
 		}
 
-		let password: string | undefined = generator.generate({
-			length: 10,
-			numbers: true,
-			symbols: true,
-			lowercase: true,
-			uppercase: true,
-			exclude: '`"\'' // Exclude the chars that cannot be included in the password. Some chars can make the command fail in the terminal
-		});
+		let password: string | undefined = '';
 		password = await vscode.window.showInputBox({
 			title: constants.enterPassword,
 			ignoreFocusOut: true,
