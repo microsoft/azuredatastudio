@@ -67,7 +67,7 @@ export function setup() {
 			await app.workbench.configurePythonDialog.waitForPageOneLoaded();
 			await app.workbench.configurePythonDialog.next();
 			await app.workbench.configurePythonDialog.waitForPageTwoLoaded();
-			await app.workbench.configurePythonDialog.install(); // TODO - lewissanchez - need to figure out why .notifications-toasts is failing in _waitForInstallationComplete.
+			await app.workbench.configurePythonDialog.install();
 			await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('Python 3');
 
 			await app.workbench.sqlNotebook.runActiveCell();
