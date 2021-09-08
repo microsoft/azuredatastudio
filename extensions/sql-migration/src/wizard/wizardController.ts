@@ -95,7 +95,7 @@ export class WizardController {
 				TelemetryViews.SqlMigrationWizard,
 				TelemetryAction.PageButtonClick,
 				{
-					'sessionId': this._model._sessionId,
+					...this.getTelemetryProps(),
 					'buttonPressed': 'cancel',
 					'pageTitle': this._wizardObject.pages[this._wizardObject.currentPage].title
 				}, {});
@@ -106,7 +106,7 @@ export class WizardController {
 				TelemetryViews.SqlMigrationWizard,
 				TelemetryAction.PageButtonClick,
 				{
-					'sessionId': this._model._sessionId,
+					...this.getTelemetryProps(),
 					'buttonPressed': 'done',
 					'pageTitle': this._wizardObject.pages[this._wizardObject.currentPage].title
 				}, {});
@@ -115,15 +115,24 @@ export class WizardController {
 
 	private async sendPageButtonClickEvent(pageChangeInfo: azdata.window.WizardPageChangeInfo) {
 		const buttonPressed = pageChangeInfo.newPage > pageChangeInfo.lastPage ? 'next' : 'prev';
-		const pageTitle = this._wizardObject.pages[pageChangeInfo.lastPage].title;
+		const pageTitle = this._wizardObject.pages[pageChangeInfo.lastPage]?.title;
 		sendSqlMigrationActionEvent(
 			TelemetryViews.SqlMigrationWizard,
 			TelemetryAction.PageButtonClick,
 			{
-				'sessionId': this._model._sessionId,
+				...this.getTelemetryProps(),
 				'buttonPressed': buttonPressed,
 				'pageTitle': pageTitle
 			}, {});
+	}
+
+	private getTelemetryProps() {
+		return {
+			'sessionId': this._model._sessionId,
+			'subscriptionId': this._model._targetSubscription?.id,
+			'resourceGroup': this._model._resourceGroup?.name,
+			'targetType': this._model._targetType,
+		};
 	}
 }
 

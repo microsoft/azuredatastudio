@@ -3,10 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { getMigrationStatus, DatabaseMigration, startMigrationCutover, stopMigration, getMigrationAsyncOperationDetails, AzureAsyncOperationResource, BackupFileInfo } from '../../api/azure';
+import { getMigrationStatus, DatabaseMigration, startMigrationCutover, stopMigration, getMigrationAsyncOperationDetails, AzureAsyncOperationResource, BackupFileInfo, getResourceGroupFromId } from '../../api/azure';
 import { MigrationContext } from '../../models/migrationLocalStorage';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../../telemtery';
 import * as constants from '../../constants/strings';
+import { getMigrationTargetType, getMigrationMode, getSqlServerVersion } from '../../constants/helper';
 
 export class MigrationCutoverDialogModel {
 
@@ -53,12 +54,14 @@ export class MigrationCutoverDialogModel {
 					this.migrationStatus,
 					this._migration.sessionId!
 				);
+
+				const telemetryProps = await this.getTelemetryProps(this._migration);
 				sendSqlMigrationActionEvent(
 					TelemetryViews.MigrationCutoverDialog,
 					TelemetryAction.CutoverMigration,
 					{
-						'sessionId': this._migration.sessionId!,
-						'migrationEndTime': new Date().toString()
+						...telemetryProps,
+						'migrationEndTime': new Date().toString(),
 					},
 					{}
 				);
@@ -80,11 +83,14 @@ export class MigrationCutoverDialogModel {
 					this.migrationStatus,
 					this._migration.sessionId!
 				);
+
+				const telemetryProps = await this.getTelemetryProps(this._migration);
 				sendSqlMigrationActionEvent(
 					TelemetryViews.MigrationCutoverDialog,
 					TelemetryAction.CancelMigration,
 					{
-						'sessionId': this._migration.sessionId!,
+						...telemetryProps,
+						'migrationMode': getMigrationMode(this._migration),
 						'cutoverStartTime': cutoverStartTime
 					},
 					{}
@@ -130,5 +136,19 @@ export class MigrationCutoverDialogModel {
 			});
 		});
 		return files;
+	}
+
+	private async getTelemetryProps(migration: MigrationContext) {
+		return {
+			'sessionId': migration.sessionId!,
+			'subscriptionId': migration.subscription.id,
+			'resourceGroup': getResourceGroupFromId(migration.targetManagedInstance.id),
+			'sqlServerName': migration.sourceConnectionProfile.serverName,
+			'sourceDatabaseName': migration.migrationContext.properties.sourceDatabaseName,
+			'sqlServerVersion': await getSqlServerVersion(),
+			'targetType': getMigrationTargetType(migration),
+			'targetDatabaseName': migration.migrationContext.name,
+			'targetServerName': migration.targetManagedInstance.name,
+		};
 	}
 }
