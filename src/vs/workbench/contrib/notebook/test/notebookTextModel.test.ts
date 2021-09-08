@@ -11,11 +11,6 @@ import { CellEditType, CellKind, ICellEditOperation, NotebookTextModelChangedEve
 import { setupInstantiationService, TestCell, valueBytesFromString, withTestNotebook } from 'vs/workbench/contrib/notebook/test/testNotebookEditor';
 
 suite('NotebookTextModel', () => {
-
-	function valueBytesFromString(value: string) {
-		return Array.from(new TextEncoder().encode(value));
-	}
-
 	const instantiationService = setupInstantiationService();
 	const modeService = instantiationService.get(IModeService);
 	instantiationService.spy(IUndoRedoService, 'pushElement');
