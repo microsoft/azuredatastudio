@@ -215,6 +215,13 @@ export class ConnectionStatusManager {
 		if (this.isSharedSession(id)) {
 			return true;
 		}
+		//console.log('connections size is ' + this._connections.length);
+		let idInConnections = id in this._connections;
+		let connectionId = undefined;
+		if (idInConnections) {
+			connectionId = this._connections[id].connectionId;
+		}
+		//console.log('result id inConnections ' + idInConnections + ' connection id: ' + connectionId);
 		return !!(id in this._connections && this._connections[id].connectionId && !!this._connections[id].connectionId);
 	}
 
