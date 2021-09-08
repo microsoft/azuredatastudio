@@ -119,9 +119,16 @@ export class QueryEditor extends EditorPane {
 	}
 
 	private onFilesChanged(e: FileChangesEvent): void {
-		const deleted = e.getDeleted();
-		if (deleted && deleted.length) {
-			this.clearTextEditorViewState(deleted.map(d => d.resource));
+		const deleted = e.rawDeleted;
+		if (!deleted) {
+			return;
+		}
+		const changes = [];
+		for (const [, change] of deleted) {
+			changes.push(change);
+		}
+		if (changes.length) {
+			this.clearTextEditorViewState(changes.map(d => d.resource));
 		}
 	}
 
