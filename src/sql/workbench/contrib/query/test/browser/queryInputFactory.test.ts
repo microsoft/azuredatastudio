@@ -157,7 +157,6 @@ suite('Query Input Factory', () => {
 		const response2 = queryEditorLanguageAssociation.convertInput(input2);
 		assert(isThenable(response2));
 		await response2;
-		assert(connectionManagementService.getConnectionProfile('/test/file.sql')?.azureResourceId === '/test/file.sql', 'getConnectionProfile should return the uri');
 		assert(connectionManagementService.numberConnects === 1, 'Convert input should have called connect when active OE connection exists');
 	});
 
@@ -173,7 +172,6 @@ suite('Query Input Factory', () => {
 		const input2 = createFileInput(URI.file('/test/file.sql'), undefined, undefined, undefined);
 		await queryEditorLanguageAssociation.convertInput(input1);
 		await queryEditorLanguageAssociation.convertInput(input2);
-		assert(connectionManagementService.getConnectionProfile('/test/file.sql')?.azureResourceId === '/test/file.sql', 'getConnectionProfile should return the uri');
 		assert(connectionManagementService.numberConnects === 1, 'Convert input should have called connect only once when active OE connection exists');
 	});
 
@@ -189,8 +187,6 @@ suite('Query Input Factory', () => {
 		const input2 = createFileInput(URI.file('/test/file2.sql'), undefined, undefined, undefined);
 		await queryEditorLanguageAssociation.convertInput(input1);
 		await queryEditorLanguageAssociation.convertInput(input2);
-		assert(connectionManagementService.getConnectionProfile('/test/file1.sql')?.azureResourceId === '/test/file1.sql', 'getConnectionProfile should return the uri for file1');
-		assert(connectionManagementService.getConnectionProfile('/test/file2.sql')?.azureResourceId === '/test/file2.sql', 'getConnectionProfile should return the uri for file2');
 		assert(connectionManagementService.numberConnects === 2, 'Convert input should have called connect two times when active OE connection exists and we have two inputs');
 	});
 
@@ -206,7 +202,6 @@ suite('Query Input Factory', () => {
 		const input2 = createFileInput(URI.file('/test/file.sql'), undefined, undefined, undefined);
 		queryEditorLanguageAssociation.convertInput(input1);
 		queryEditorLanguageAssociation.convertInput(input2);
-		assert(connectionManagementService.getConnectionProfile('/test/file.sql')?.azureResourceId === '/test/file.sql', 'getConnectionProfile should return the uri');
 		assert(connectionManagementService.numberConnects === 1, 'Convert input should have called connect when active editor connection exists');
 	});
 
