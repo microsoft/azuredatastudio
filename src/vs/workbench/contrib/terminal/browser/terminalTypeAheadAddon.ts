@@ -242,7 +242,7 @@ class StringReader {
 	 */
 	eatChar(char: string) {
 		if (this._input[this.index] !== char) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} strict-nulls
 		}
 
 		this.index++;
@@ -254,7 +254,7 @@ class StringReader {
 	 */
 	eatStr(substr: string) {
 		if (this._input.slice(this.index, substr.length) !== substr) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} strict-nulls
 		}
 
 		this.index += substr.length;
@@ -288,7 +288,7 @@ class StringReader {
 	eatRe(re: RegExp) {
 		const match = re.exec(this._input.slice(this.index));
 		if (!match) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} strict-nulls
 		}
 
 		this.index += match[0].length;

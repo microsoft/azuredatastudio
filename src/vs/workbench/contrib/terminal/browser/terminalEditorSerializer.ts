@@ -21,7 +21,7 @@ export class TerminalInputSerializer implements IEditorInputSerializer {
 
 	public serialize(editorInput: TerminalEditorInput): string | undefined {
 		if (!editorInput.terminalInstance?.persistentProcessId) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} strict-nulls
 		}
 		const term = JSON.stringify(this._toJson(editorInput.terminalInstance));
 		return term;

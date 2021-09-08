@@ -1149,7 +1149,7 @@ namespace ClosePortAction {
 				}
 			}
 			if (!ports) {
-				return;
+				return undefined; // {{SQL CARBON EDIT}} strict-nulls
 			}
 			const remoteExplorerService = accessor.get(IRemoteExplorerService);
 			return Promise.all(ports.map(port => remoteExplorerService.close({ host: port.remoteHost, port: port.remotePort })));

@@ -894,7 +894,7 @@ export class TerminalService implements ITerminalService {
 					isSplitTerminal: !!(keyMods?.alt && activeInstance),
 					icon: value.profile.icon
 				});
-				return;
+				return undefined; // {{SQL CARBON EDIT}} strict-nulls
 			} else {
 				if (keyMods?.alt && activeInstance) {
 					// create split, only valid if there's an active instance
