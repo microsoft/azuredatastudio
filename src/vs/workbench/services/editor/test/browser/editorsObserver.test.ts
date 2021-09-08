@@ -19,14 +19,13 @@ import { timeout } from 'vs/base/common/async';
 import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
 import { SideBySideEditorInput } from 'vs/workbench/common/editor/sideBySideEditorInput';
 
-suite.skip('EditorsObserver', function () {
+suite.skip('EditorsObserver', function () { // {{SQL CARBON EDIT}} Skip suite
 
 	const TEST_EDITOR_ID = 'MyTestEditorForEditorsObserver';
 	const TEST_EDITOR_INPUT_ID = 'testEditorInputForEditorsObserver';
 	const TEST_SERIALIZABLE_EDITOR_INPUT_ID = 'testSerializableEditorInputForEditorsObserver';
 
 	const disposables = new DisposableStore();
-
 
 	setup(() => {
 		disposables.add(registerTestEditor(TEST_EDITOR_ID, [new SyncDescriptor(TestFileEditorInput)], TEST_SERIALIZABLE_EDITOR_INPUT_ID));

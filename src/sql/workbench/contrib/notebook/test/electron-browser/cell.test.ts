@@ -19,7 +19,6 @@ import { ServiceCollection } from 'vs/platform/instantiation/common/serviceColle
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
-import { startsWith } from 'vs/base/common/strings';
 import { Schemas } from 'vs/base/common/network';
 import { URI } from 'vs/base/common/uri';
 import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
@@ -741,15 +740,15 @@ suite('Cell Model', function (): void {
 			let content = JSON.stringify(cell.toJSON(), undefined, '    ');
 			let contentSplit = content.split('\n');
 			assert.equal(contentSplit.length, 9);
-			assert(startsWith(contentSplit[0].trim(), '{'));
-			assert(startsWith(contentSplit[1].trim(), '"cell_type": "code",'));
-			assert(startsWith(contentSplit[2].trim(), '"source": ""'));
-			assert(startsWith(contentSplit[3].trim(), '"metadata": {'));
-			assert(startsWith(contentSplit[4].trim(), '"azdata_cell_guid": "'));
-			assert(startsWith(contentSplit[5].trim(), '}'));
-			assert(startsWith(contentSplit[6].trim(), '"outputs": []'));
-			assert(startsWith(contentSplit[7].trim(), '"execution_count": null'));
-			assert(startsWith(contentSplit[8].trim(), '}'));
+			assert(contentSplit[0].trim().startsWith('{'));
+			assert(contentSplit[1].trim().startsWith('"cell_type": "code",'));
+			assert(contentSplit[2].trim().startsWith('"source": ""'));
+			assert(contentSplit[3].trim().startsWith('"metadata": {'));
+			assert(contentSplit[4].trim().startsWith('"azdata_cell_guid": "'));
+			assert(contentSplit[5].trim().startsWith('}'));
+			assert(contentSplit[6].trim().startsWith('"outputs": []'));
+			assert(contentSplit[7].trim().startsWith('"execution_count": null'));
+			assert(contentSplit[8].trim().startsWith('}'));
 		});
 	});
 

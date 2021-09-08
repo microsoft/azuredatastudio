@@ -293,6 +293,6 @@ export interface IKeybindingsEditorPane extends IEditorPane {
 	showSimilarKeybindings(keybindingEntry: IKeybindingItemEntry): void;
 }
 
-export const FOLDER_SETTINGS_PATH = '.azuredatastudio/settings.json';
+export const FOLDER_SETTINGS_PATH = '.azuredatastudio/settings.json'; // {{SQL CARBON EDIT}}
 export const DEFAULT_SETTINGS_EDITOR_SETTING = 'workbench.settings.openDefaultSettings';
 export const USE_SPLIT_JSON_SETTING = 'workbench.settings.useSplitJSON';

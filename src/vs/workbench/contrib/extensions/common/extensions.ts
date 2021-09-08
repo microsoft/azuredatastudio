@@ -18,7 +18,7 @@ import { RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 
 export const VIEWLET_ID = 'workbench.view.extensions';
 
-export const EXTENSIONS_CONFIG = '.azuredatastudio/extensions.json';
+export const EXTENSIONS_CONFIG = '.azuredatastudio/extensions.json'; // {{SQL CARBON EDIT}}
 
 export interface IExtensionsViewPaneContainer extends IViewPaneContainer {
 	readonly searchValue: string | undefined;
@@ -106,14 +106,12 @@ export interface IExtensionsWorkbenchService {
 export const ConfigurationKey = 'extensions';
 export const AutoUpdateConfigurationKey = 'extensions.autoUpdate';
 export const AutoCheckUpdatesConfigurationKey = 'extensions.autoCheckUpdates';
-export const ShowRecommendationsOnlyOnDemandKey = 'extensions.showRecommendationsOnlyOnDemand';
 export const CloseExtensionDetailsOnViewChangeKey = 'extensions.closeExtensionDetailsOnViewChange';
 
 export interface IExtensionsConfiguration {
 	autoUpdate: boolean;
 	autoCheckUpdates: boolean;
 	ignoreRecommendations: boolean;
-	showRecommendationsOnlyOnDemand: boolean;
 	closeExtensionDetailsOnViewChange: boolean;
 	// {{SQL CARBON EDIT}}
 	extensionsPolicy: string;

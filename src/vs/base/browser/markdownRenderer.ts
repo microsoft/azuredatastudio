@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as DOM from 'vs/base/browser/dom'; // {{SQL CARBON EDIT}} added missing import to fix build break
+import * as DOM from 'vs/base/browser/dom';
 import { createElement, FormattedTextRenderOptions } from 'vs/base/browser/formattedTextRenderer';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { IMarkdownString, parseHrefAndDimensions, removeMarkdownEscapes } from 'vs/base/common/htmlContent';
@@ -179,15 +179,6 @@ export function renderMarkdown(markdown: IMarkdownString, options: MarkdownRende
 					// ignore
 				});
 			});
-
-			// const promise = Promise.all([value, withInnerHTML]).then(values => {
-			// 	const span = <HTMLDivElement>element.querySelector(`div[data-code="${id}"]`);
-			// 	if (span) {
-			// 		DOM.reset(span, values[0]);
-			// 	}
-			// }).catch(_err => {
-			// 	// ignore
-			// });
 
 			if (options.asyncRenderCallback) {
 				promise.then(options.asyncRenderCallback);

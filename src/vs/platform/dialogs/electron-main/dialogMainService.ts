@@ -120,7 +120,7 @@ export class DialogMainService implements IDialogMainService {
 			return result.filePaths;
 		}
 
-		return undefined;
+		return undefined; // {{SQL CARBON EDIT}} Strict nulls
 	}
 
 	private getWindowDialogQueue<T extends MessageBoxReturnValue | SaveDialogReturnValue | OpenDialogReturnValue>(window?: BrowserWindow): Queue<T> {

@@ -424,10 +424,10 @@ export class StatefulMarkdownCell extends Disposable {
 				this.templateData.foldingIndicator.innerText = '';
 				break;
 			case CellFoldingState.Collapsed:
-				DOM.reset(this.templateData.foldingIndicator, <any>renderIcon(collapsedIcon));
+				DOM.reset(this.templateData.foldingIndicator, <any>renderIcon(collapsedIcon)); // {{SQL CARBON EDIT}}
 				break;
 			case CellFoldingState.Expanded:
-				DOM.reset(this.templateData.foldingIndicator, <any>renderIcon(expandedIcon));
+				DOM.reset(this.templateData.foldingIndicator, <any>renderIcon(expandedIcon)); // {{SQL CARBON EDIT}}
 				break;
 
 			default:

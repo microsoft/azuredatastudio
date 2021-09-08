@@ -81,7 +81,7 @@ class EditorOpener implements IOpener {
 
 		await this._editorService.openCodeEditor(
 			{
-				resource: <any>target,
+				resource: target as URI, // {{SQL CARBON EDIT}} Cast to URI to fix strict compiler error
 				options: {
 					selection,
 					context: options?.fromUserGesture ? EditorOpenContext.USER : EditorOpenContext.API,

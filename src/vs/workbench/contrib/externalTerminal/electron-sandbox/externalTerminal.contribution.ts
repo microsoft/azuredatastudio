@@ -5,7 +5,7 @@
 
 import * as nls from 'vs/nls';
 import * as paths from 'vs/base/common/path';
-import { DEFAULT_TERMINAL_OSX, IExternalTerminalService, IExternalTerminalSettings } from 'vs/platform/externalTerminal/common/externalTerminal';
+import { DEFAULT_TERMINAL_OSX, IExternalTerminalService } from 'vs/platform/externalTerminal/common/externalTerminal';
 import { MenuId, MenuRegistry } from 'vs/platform/actions/common/actions';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { KEYBINDING_CONTEXT_TERMINAL_NOT_FOCUSED } from 'vs/workbench/contrib/terminal/common/terminal';
@@ -17,7 +17,6 @@ import { IConfigurationRegistry, Extensions, ConfigurationScope } from 'vs/platf
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IExternalTerminalMainService } from 'vs/platform/externalTerminal/electron-sandbox/externalTerminalMainService';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 const OPEN_NATIVE_CONSOLE_COMMAND_ID = 'workbench.action.terminal.openNativeConsole';
 KeybindingsRegistry.registerCommandAndKeybindingRule({
@@ -29,20 +28,18 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 		const historyService = accessor.get(IHistoryService);
 		// Open external terminal in local workspaces
 		const terminalService = accessor.get(IExternalTerminalService);
-		const configurationService = accessor.get(IConfigurationService);
 		const root = historyService.getLastActiveWorkspaceRoot(Schemas.file);
-		const config = configurationService.getValue<IExternalTerminalSettings>('terminal.external');
 		if (root) {
-			terminalService.openTerminal(config, root.fsPath);
+			terminalService.openTerminal(root.fsPath);
 		} else {
 			// Opens current file's folder, if no folder is open in editor
 			const activeFile = historyService.getLastActiveFile(Schemas.file);
 			if (activeFile) {
-				terminalService.openTerminal(config, paths.dirname(activeFile.fsPath));
+				terminalService.openTerminal(paths.dirname(activeFile.fsPath));
 			} else {
 				const pathService = accessor.get(IPathService);
 				const userHome = await pathService.userHome();
-				terminalService.openTerminal(config, userHome.fsPath);
+				terminalService.openTerminal(userHome.fsPath);
 			}
 		}
 	}

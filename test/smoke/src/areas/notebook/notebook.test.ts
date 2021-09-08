@@ -64,7 +64,7 @@ export function setup(opts: minimist.ParsedArgs) {
 			await app.workbench.notebook.waitForActiveCellEditorContents('code()');
 		});
 
-		it('cell action execution', async function () {
+		it.skip('cell action execution', async function () {
 			const app = this.app as Application;
 			await app.workbench.notebook.openNotebook();
 			await app.workbench.notebook.insertNotebookCell('code');

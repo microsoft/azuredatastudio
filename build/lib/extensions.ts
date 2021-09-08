@@ -24,7 +24,7 @@ import webpack = require('webpack');
 const util = require('./util');
 const root = path.dirname(path.dirname(__dirname));
 const commit = util.getVersion(root);
-const sourceMappingURLBase = `https://sqlopsbuilds.blob.core.windows.net/sourcemaps/${commit}`;
+const sourceMappingURLBase = `https://sqlopsbuilds.blob.core.windows.net/sourcemaps/${commit}`; // {{SQL CARBON EDIT}}
 
 function minifyExtensionResources(input: Stream): Stream {
 	const jsonFilter = filter(['**/*.json', '**/*.code-snippets'], { restore: true });
@@ -207,7 +207,7 @@ export function fromMarketplace(extensionName: string, version: string, metadata
 	const json = require('gulp-json-editor') as typeof import('gulp-json-editor');
 
 	const [, name] = extensionName.split('.');
-	const url = `https://sqlopsextensions.blob.core.windows.net/extensions/${name}/${name}-${version}.vsix`;
+	const url = `https://sqlopsextensions.blob.core.windows.net/extensions/${name}/${name}-${version}.vsix`; // {{SQL CARBON EDIT}}
 
 	fancyLog('Downloading extension:', ansiColors.yellow(`${extensionName}@${version}`), '...');
 
@@ -426,6 +426,7 @@ export function scanBuiltinExtensions(extensionsRoot: string, exclude: string[] 
 	}
 }
 
+// {{SQL CARBON EDIT}} start
 export function packageExternalExtensionsStream(): NodeJS.ReadWriteStream {
 	const extenalExtensionDescriptions = (<string[]>glob.sync('extensions/*/package.json'))
 		.map(manifestPath => {
@@ -443,7 +444,6 @@ export function packageExternalExtensionsStream(): NodeJS.ReadWriteStream {
 	return es.merge(builtExtensions);
 }
 
-// {{SQL CARBON EDIT}} start
 export function cleanRebuildExtensions(root: string): Promise<void> {
 	return Promise.all(rebuildExtensions.map(async e => {
 		await util2.rimraf(path.join(root, e))();

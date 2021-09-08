@@ -24,6 +24,6 @@
 	],
 	"exclude": [
 		"node_modules/**",
-		"actions/**"
+		"actions/**" // {{SQL CARBON EDIT}}
 	]
 }

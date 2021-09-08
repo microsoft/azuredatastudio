@@ -473,7 +473,7 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 			provideCompletionItems: async (model: ITextModel, position: EditorPosition, context: modes.CompletionContext, token: CancellationToken): Promise<modes.CompletionList | undefined> => {
 				const result = await this._proxy.$provideCompletionItems(handle, model.uri, position, context, token);
 				if (!result) {
-					return <any>result;
+					return <any>result; // {{SQL CARBON EDIT}}
 				}
 				return {
 					suggestions: result[ISuggestResultDtoField.completions].map(d => MainThreadLanguageFeatures._inflateSuggestDto(result[ISuggestResultDtoField.defaultRanges], d)),

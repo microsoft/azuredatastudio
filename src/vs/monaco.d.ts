@@ -6576,17 +6576,16 @@ declare namespace monaco.languages {
 		resolveCodeLens?(model: editor.ITextModel, codeLens: CodeLens, token: CancellationToken): ProviderResult<CodeLens>;
 	}
 
-	export enum InlineHintKind {
+	export enum InlayHintKind {
 		Other = 0,
 		Type = 1,
 		Parameter = 2
 	}
 
-	export interface InlineHint {
+	export interface InlayHint {
 		text: string;
-		range: IRange;
-		kind: InlineHintKind;
-		description?: string | IMarkdownString;
+		position: IPosition;
+		kind: InlayHintKind;
 		whitespaceBefore?: boolean;
 		whitespaceAfter?: boolean;
 	}

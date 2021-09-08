@@ -151,6 +151,7 @@ export class MenuId {
 	static readonly InteractiveCellTitle = new MenuId('InteractiveCellTitle');
 	static readonly InteractiveCellExecute = new MenuId('InteractiveCellExecute');
 	// static readonly NotebookToolbar = new MenuId('NotebookToolbar'); {{SQL CARBON EDIT}} We have our own toolbar
+	static readonly NotebookRightToolbar = new MenuId('NotebookRightToolbar');
 	static readonly NotebookCellTitle = new MenuId('NotebookCellTitle');
 	static readonly NotebookCellInsert = new MenuId('NotebookCellInsert');
 	static readonly NotebookCellBetween = new MenuId('NotebookCellBetween');
@@ -225,7 +226,7 @@ export interface IMenuRegistry {
 	addCommand(userCommand: ICommandAction): IDisposable;
 	getCommand(id: string): ICommandAction | undefined;
 	getCommands(): ICommandsMap;
-	appendMenuItems(items: Iterable<{ id: MenuId, item: IMenuItem | ISubmenuItem; }>): IDisposable;
+	appendMenuItems(items: Iterable<{ id: MenuId, item: IMenuItem | ISubmenuItem }>): IDisposable;
 	appendMenuItem(menu: MenuId, item: IMenuItem | ISubmenuItem): IDisposable;
 	getMenuItems(loc: MenuId): Array<IMenuItem | ISubmenuItem>;
 }
@@ -276,7 +277,7 @@ export const MenuRegistry: IMenuRegistry = new class implements IMenuRegistry {
 		return this.appendMenuItems(Iterable.single({ id, item }));
 	}
 
-	appendMenuItems(items: Iterable<{ id: MenuId, item: IMenuItem | ISubmenuItem; }>): IDisposable {
+	appendMenuItems(items: Iterable<{ id: MenuId, item: IMenuItem | ISubmenuItem }>): IDisposable {
 
 		const changedIds = new Set<MenuId>();
 		const toRemove = new LinkedList<Function>();
@@ -398,7 +399,7 @@ export class MenuItemAction implements IAction {
 	readonly class: string | undefined;
 	readonly enabled: boolean;
 	readonly checked: boolean;
-	readonly expanded: boolean = false;
+	readonly expanded: boolean = false; // {{SQL CARBON EDIT}}
 
 	constructor(
 		item: ICommandAction,
@@ -456,8 +457,6 @@ export class MenuItemAction implements IAction {
 
 		return this._commandService.executeCommand(this.id, ...runArgs);
 	}
-
-
 }
 
 export class SyncActionDescriptor {
@@ -470,7 +469,7 @@ export class SyncActionDescriptor {
 	private readonly _keybindingContext: ContextKeyExpression | undefined;
 	private readonly _keybindingWeight: number | undefined;
 
-	public static create<Services extends BrandedService[]>(ctor: { new(id: string, label: string, ...services: Services): Action; },
+	public static create<Services extends BrandedService[]>(ctor: { new(id: string, label: string, ...services: Services): Action },
 		id: string, label: string | undefined, keybindings?: IKeybindings, keybindingContext?: ContextKeyExpression, keybindingWeight?: number
 	): SyncActionDescriptor {
 		return new SyncActionDescriptor(ctor as IConstructorSignature2<string, string | undefined, Action>, id, label, keybindings, keybindingContext, keybindingWeight);
@@ -537,7 +536,7 @@ export interface IAction2Options extends ICommandAction {
 	/**
 	 * One or many menu items.
 	 */
-	menu?: OneOrN<{ id: MenuId; } & Omit<IMenuItem, 'command'>>;
+	menu?: OneOrN<{ id: MenuId } & Omit<IMenuItem, 'command'>>;
 
 	/**
 	 * One keybinding.
@@ -556,7 +555,7 @@ export abstract class Action2 {
 	abstract run(accessor: ServicesAccessor, ...args: any[]): void;
 }
 
-export function registerAction2(ctor: { new(): Action2; }): IDisposable {
+export function registerAction2(ctor: { new(): Action2 }): IDisposable {
 	const disposables = new DisposableStore();
 	const action = new ctor();
 

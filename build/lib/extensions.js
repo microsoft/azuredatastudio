@@ -25,7 +25,7 @@ const jsoncParser = require("jsonc-parser");
 const util = require('./util');
 const root = path.dirname(path.dirname(__dirname));
 const commit = util.getVersion(root);
-const sourceMappingURLBase = `https://sqlopsbuilds.blob.core.windows.net/sourcemaps/${commit}`;
+const sourceMappingURLBase = `https://sqlopsbuilds.blob.core.windows.net/sourcemaps/${commit}`; // {{SQL CARBON EDIT}}
 function minifyExtensionResources(input) {
     const jsonFilter = filter(['**/*.json', '**/*.code-snippets'], { restore: true });
     return input
@@ -146,7 +146,7 @@ function fromLocalWebpack(extensionPath, webpackConfigFileName) {
         console.error(packagedDependencies);
         result.emit('error', err);
     });
-    return result.pipe((0, stats_1.createStatsStream)(path.basename(extensionPath)));
+    return result.pipe(stats_1.createStatsStream(path.basename(extensionPath)));
 }
 function fromLocalNormal(extensionPath) {
     const result = es.through();
@@ -164,7 +164,7 @@ function fromLocalNormal(extensionPath) {
         es.readArray(files).pipe(result);
     })
         .catch(err => result.emit('error', err));
-    return result.pipe((0, stats_1.createStatsStream)(path.basename(extensionPath)));
+    return result.pipe(stats_1.createStatsStream(path.basename(extensionPath)));
 }
 exports.fromLocalNormal = fromLocalNormal;
 const baseHeaders = {
@@ -176,7 +176,7 @@ function fromMarketplace(extensionName, version, metadata) {
     const remote = require('gulp-remote-retry-src');
     const json = require('gulp-json-editor');
     const [, name] = extensionName.split('.');
-    const url = `https://sqlopsextensions.blob.core.windows.net/extensions/${name}/${name}-${version}.vsix`;
+    const url = `https://sqlopsextensions.blob.core.windows.net/extensions/${name}/${name}-${version}.vsix`; // {{SQL CARBON EDIT}}
     fancyLog('Downloading extension:', ansiColors.yellow(`${extensionName}@${version}`), '...');
     const options = {
         base: url,
@@ -348,6 +348,7 @@ function scanBuiltinExtensions(extensionsRoot, exclude = []) {
     }
 }
 exports.scanBuiltinExtensions = scanBuiltinExtensions;
+// {{SQL CARBON EDIT}} start
 function packageExternalExtensionsStream() {
     const extenalExtensionDescriptions = glob.sync('extensions/*/package.json')
         .map(manifestPath => {
@@ -363,7 +364,6 @@ function packageExternalExtensionsStream() {
     return es.merge(builtExtensions);
 }
 exports.packageExternalExtensionsStream = packageExternalExtensionsStream;
-// {{SQL CARBON EDIT}} start
 function cleanRebuildExtensions(root) {
     return Promise.all(rebuildExtensions.map(async (e) => {
         await util2.rimraf(path.join(root, e))();

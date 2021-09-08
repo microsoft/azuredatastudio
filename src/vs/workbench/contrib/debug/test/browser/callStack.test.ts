@@ -67,7 +67,7 @@ function createTwoStackFrames(session: DebugSession): { firstStackFrame: StackFr
 	return { firstStackFrame, secondStackFrame };
 }
 
-suite.skip('Debug - CallStack', () => {
+suite.skip('Debug - CallStack', () => { // {{SQL CARBON EDIT}} Skip test
 	let model: DebugModel;
 	let rawSession: MockRawSession;
 

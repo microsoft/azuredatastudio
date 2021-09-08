@@ -96,7 +96,7 @@ function modifyI18nPackFiles(existingTranslationFolder, resultingTranslationPath
     let mainPack = { version: i18n.i18nPackVersion, contents: {} };
     let extensionsPacks = {};
     let errors = [];
-    return (0, event_stream_1.through)(function (xlf) {
+    return event_stream_1.through(function (xlf) {
         let rawResource = path.basename(xlf.relative, '.xlf');
         let resource = rawResource.substring(0, rawResource.lastIndexOf('.'));
         let contents = xlf.contents.toString();

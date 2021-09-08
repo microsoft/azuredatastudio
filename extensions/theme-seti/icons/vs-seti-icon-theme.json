@@ -1807,6 +1807,7 @@
 		"procfile": "_heroku",
 		"todo": "_todo",
 		"npm-debug.log": "_npm_ignored",
+		// {{SQL CARBON EDIT}}
 		"dashboard": "_shell",
 		"profiler": "_csv",
 		"Schema Compare": "scmp_dark",
@@ -2252,6 +2253,7 @@
 			"cmakelists.txt": "_makefile_3_light",
 			"procfile": "_heroku_light",
 			"npm-debug.log": "_npm_ignored_light",
+			// {{SQL CARBON EDIT}}
 			"dashboard": "_shell_light",
 			"profiler": "_csv_light",
 			"Schema Compare": "scmp"

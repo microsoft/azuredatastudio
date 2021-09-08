@@ -12,7 +12,7 @@ import { IExtHostCommands, ExtHostCommands } from 'vs/workbench/api/common/extHo
 import { IExtHostDocumentsAndEditors, ExtHostDocumentsAndEditors } from 'vs/workbench/api/common/extHostDocumentsAndEditors';
 import { IExtHostTerminalService, WorkerExtHostTerminalService } from 'vs/workbench/api/common/extHostTerminalService';
 import { IExtHostTask, WorkerExtHostTask } from 'vs/workbench/api/common/extHostTask';
-// import { IExtHostDebugService, WorkerExtHostDebugService } from 'vs/workbench/api/common/extHostDebugService';
+// import { IExtHostDebugService, WorkerExtHostDebugService } from 'vs/workbench/api/common/extHostDebugService'; {{SQL CARBON EDIT}}
 import { IExtHostSearch, ExtHostSearch } from 'vs/workbench/api/common/extHostSearch';
 import { IExtHostStorage, ExtHostStorage } from 'vs/workbench/api/common/extHostStorage';
 import { IExtHostTunnelService, ExtHostTunnelService } from 'vs/workbench/api/common/extHostTunnelService';
@@ -28,7 +28,7 @@ registerSingleton(IExtHostApiDeprecationService, ExtHostApiDeprecationService);
 registerSingleton(IExtHostCommands, ExtHostCommands);
 registerSingleton(IExtHostConfiguration, ExtHostConfiguration);
 registerSingleton(IExtHostConsumerFileSystem, ExtHostConsumerFileSystem);
-// registerSingleton(IExtHostDebugService, WorkerExtHostDebugService);
+// registerSingleton(IExtHostDebugService, WorkerExtHostDebugService); {{SQL CARBON EDIT}}
 registerSingleton(IExtHostDecorations, ExtHostDecorations);
 registerSingleton(IExtHostDocumentsAndEditors, ExtHostDocumentsAndEditors);
 registerSingleton(IExtHostFileSystemInfo, ExtHostFileSystemInfo);

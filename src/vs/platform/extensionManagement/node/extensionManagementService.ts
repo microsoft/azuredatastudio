@@ -7,6 +7,7 @@ import * as nls from 'vs/nls';
 import * as path from 'vs/base/common/path';
 import * as pfs from 'vs/base/node/pfs';
 import { toDisposable, Disposable } from 'vs/base/common/lifecycle';
+// import { isNonEmptyArray } from 'vs/base/common/arrays'; {{SQL CARBON EDIT}}
 import { zip, IFile } from 'vs/base/node/zip';
 import {
 	IExtensionManagementService, IExtensionGalleryService, ILocalExtension,
@@ -182,10 +183,10 @@ export class ExtensionManagementService extends Disposable implements IExtension
 			const identifier = { id: getGalleryExtensionId(manifest.publisher, manifest.name) };
 			// let operation: InstallOperation = InstallOperation.Install; {{SQL CARBON EDIT}}
 			// {{SQL CARBON EDIT}}
-			if (manifest.engines?.vscode && !isEngineValid(manifest.engines.vscode, product.vscodeVersion)) {
+			if (manifest.engines?.vscode && !isEngineValid(manifest.engines.vscode, product.vscodeVersion, product.date)) {
 				throw new Error(nls.localize('incompatible', "Unable to install extension '{0}' as it is not compatible with the current VS Code engine version '{1}'.", identifier.id, product.vscodeVersion));
 			}
-			if (manifest.engines?.azdata && !isEngineValid(manifest.engines.azdata, product.version)) {
+			if (manifest.engines?.azdata && !isEngineValid(manifest.engines.azdata, product.version, product.date)) {
 				throw new Error(nls.localize('incompatibleAzdata', "Unable to install extension '{0}' as it is not compatible with Azure Data Studio '{1}'.", identifier.id, product.version));
 			}
 

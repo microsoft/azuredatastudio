@@ -9,8 +9,8 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
 import { FILE_EDITOR_INPUT_ID } from 'vs/workbench/contrib/files/common/files';
 import { UntitledQueryEditorInput } from 'sql/workbench/common/editor/query/untitledQueryEditorInput';
-import { FileQueryEditorInput } from 'sql/workbench/contrib/query/common/fileQueryEditorInput';
-import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
+import { FileQueryEditorInput } from 'sql/workbench/contrib/query/browser/fileQueryEditorInput';
+import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/fileEditorInput';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { ILanguageAssociation } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
@@ -71,7 +71,7 @@ export class QueryEditorLanguageAssociation implements ILanguageAssociation {
 		return queryEditorInput;
 	}
 
-	syncConvertinput(activeEditor: IEditorInput): QueryEditorInput | undefined {
+	syncConvertInput(activeEditor: IEditorInput): QueryEditorInput | undefined {
 		const queryResultsInput = this.instantiationService.createInstance(QueryResultsInput, activeEditor.resource.toString(true));
 		let queryEditorInput: QueryEditorInput;
 		if (activeEditor instanceof FileEditorInput) {

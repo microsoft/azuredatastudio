@@ -231,7 +231,7 @@ export class EditorMemento<T> implements IEditorMemento<T> {
 	loadEditorState(group: IEditorGroup, resourceOrEditor: URI | EditorInput): T | undefined {
 		const resource = this.doGetResource(resourceOrEditor);
 		if (!resource || !group) {
-			return undefined; // we are not in a good state to load any state for a resource
+			return undefined; // we are not in a good state to load any state for a resource {{SQL CARBON EDIT}} Strict nulls
 		}
 
 		const cache = this.doLoad();
@@ -241,7 +241,7 @@ export class EditorMemento<T> implements IEditorMemento<T> {
 			return mementoForResource[group.id];
 		}
 
-		return undefined;
+		return undefined; // {{SQL CARBON EDIT}} Strict nulls
 	}
 
 	clearEditorState(resource: URI, group?: IEditorGroup): void;

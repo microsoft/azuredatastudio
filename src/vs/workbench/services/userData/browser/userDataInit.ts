@@ -109,7 +109,7 @@ export class UserDataInitializationService implements IUserDataInitializationSer
 				const userDataSyncStore = this.userDataSyncStoreManagementService.userDataSyncStore;
 				if (!userDataSyncStore) {
 					this.logService.trace(`Skipping initializing user data as sync service is not provided`);
-					return undefined;
+					return undefined; // {{SQL CARBON EDIT}} strict-null-check
 				}
 
 				this.logService.info(`Using settings sync service ${userDataSyncStore.url.toString()} for initialization`);

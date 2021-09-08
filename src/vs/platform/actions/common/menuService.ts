@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { RunOnceScheduler } from 'vs/base/common/async';
@@ -131,7 +131,7 @@ class Menu implements IMenu {
 			}
 			// keep toggled keys for event if applicable
 			if (item.command.toggled) {
-				const toggledExpression: ContextKeyExpression = (item.command.toggled as { condition: ContextKeyExpression }).condition || item.command.toggled as ContextKeyExpression;
+				const toggledExpression: ContextKeyExpression = (item.command.toggled as { condition: ContextKeyExpression }).condition || item.command.toggled as ContextKeyExpression; // {{SQL CARBON EDIT}} Cast to ContextKeyExpression
 				Menu._fillInKbExprKeys(toggledExpression, this._contextKeys);
 			}
 

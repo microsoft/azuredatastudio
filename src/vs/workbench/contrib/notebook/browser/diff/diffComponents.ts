@@ -233,7 +233,7 @@ class PropertyHeader extends Disposable {
 		}
 	}
 
-	private _updateFoldingIcon(): any {
+	private _updateFoldingIcon() {
 		if (this.accessor.getFoldingState(this.cell) === PropertyFoldingState.Collapsed) {
 			DOM.reset(this._foldingIndicator, renderIcon(collapsedIcon));
 			this._propertyExpanded?.set(false);

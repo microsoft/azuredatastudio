@@ -362,7 +362,7 @@ class QuickInput extends Disposable implements IQuickInput {
 		const validationMessage = this.validationMessage || this.noValidationMessage;
 		if (this._lastValidationMessage !== validationMessage) {
 			this._lastValidationMessage = validationMessage;
-			dom.reset(this.ui.message, ...renderLabelWithIcons(escape(validationMessage)));
+			dom.reset(this.ui.message, ...renderLabelWithIcons(validationMessage));
 		}
 		if (this._lastSeverity !== this.severity) {
 			this._lastSeverity = this.severity;

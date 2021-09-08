@@ -181,7 +181,7 @@ function configureCommandlineSwitchesSync(cliArgs) {
 	// Read argv config
 	const argvConfig = readArgvConfigSync();
 
-	let browserCodeLoadingStrategy = typeof codeCachePath === 'string' ? 'bypassHeatCheck' : 'none';
+	let browserCodeLoadingStrategy = undefined; // {{SQL CARBON EDIT}} Set to undefined by default
 
 	Object.keys(argvConfig).forEach(argvKey => {
 		const argvValue = argvConfig[argvKey];
@@ -266,7 +266,7 @@ function readArgvConfigSync() {
 	// Fallback to default
 	if (!argvConfig) {
 		argvConfig = {
-			'disable-color-correct-rendering': true // Force pre-Chrome-60 color profile handling (for https://github.com/Microsoft/vscode/issues/51791)
+			'disable-color-correct-rendering': true // Force pre-Chrome-60 color profile handling (for https://github.com/microsoft/vscode/issues/51791)
 		};
 	}
 
@@ -300,7 +300,7 @@ function createDefaultArgvConfigSync(argvConfigPath) {
 			'	// "disable-hardware-acceleration": true,',
 			'',
 			'	// Enabled by default by VS Code to resolve color issues in the renderer',
-			'	// See https://github.com/Microsoft/vscode/issues/51791 for details',
+			'	// See https://github.com/microsoft/vscode/issues/51791 for details',
 			'	"disable-color-correct-rendering": true',
 			'}'
 		];

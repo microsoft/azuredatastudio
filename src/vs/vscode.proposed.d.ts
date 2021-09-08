@@ -1723,10 +1723,11 @@ declare module 'vscode' {
 
 	//#region https://github.com/microsoft/vscode/issues/16221
 
-	// todo@API rename to InlayHint
+	// todo@API Split between Inlay- and OverlayHints (InlayHint are for a position, OverlayHints for a non-empty range)
 	// todo@API add "mini-markdown" for links and styles
-	// todo@API remove description
-	// (done:)  add InlayHintKind with type, argument, etc
+	// (done) remove description
+	// (done) rename to InlayHint
+	// (done)  add InlayHintKind with type, argument, etc
 
 	export namespace languages {
 		/**
@@ -1749,12 +1750,6 @@ declare module 'vscode' {
 		Parameter = 2,
 	}
 
-	export enum InlineHintKind {
-		Other = 0,
-		Type = 1,
-		Parameter = 2,
-	}
-
 	/**
 	 * Inlay hint information.
 	 */
@@ -1766,12 +1761,11 @@ declare module 'vscode' {
 		/**
 		 * The position of this hint.
 		 */
-		range: Range;
-
-		kind?: InlineHintKind;
-
-		// todo@API remove this
-		description?: string | MarkdownString;
+		position: Position;
+		/**
+		 * The kind of this hint.
+		 */
+		kind?: InlayHintKind;
 		/**
 		 * Whitespace before the hint.
 		 */
@@ -1782,7 +1776,7 @@ declare module 'vscode' {
 		whitespaceAfter?: boolean;
 
 		// todo@API make range first argument
-		constructor(text: string, range: Range, kind?: InlineHintKind);
+		constructor(text: string, position: Position, kind?: InlayHintKind);
 	}
 
 	/**
@@ -2567,27 +2561,6 @@ declare module 'vscode' {
 		 * workspace trust request.
 		 */
 		export function requestWorkspaceTrust(options?: WorkspaceTrustRequestOptions): Thenable<boolean | undefined>;
-	}
-
-	//#endregion
-
-	//#region https://github.com/microsoft/vscode/issues/115807
-
-	export interface Webview {
-		/**
-		 * @param message A json serializable message to send to the webview.
-		 *
-		 *   For older versions of vscode, if an `ArrayBuffer` is included in `message`,
-		 *   it will not be serialized properly and will not be received by the webview.
-		 *   Similarly any TypedArrays, such as a `Uint8Array`, will be very inefficiently
-		 *   serialized and will also not be recreated as a typed array inside the webview.
-		 *
-		 *   However if your extension targets vscode 1.56+ in the `engines` field of its
-		 *   `package.json` any `ArrayBuffer` values that appear in `message` will be more
-		 *   efficiently transferred to the webview and will also be recreated inside of
-		 *   the webview.
-		 */
-		postMessage(message: any): Thenable<boolean>;
 	}
 
 	//#endregion

@@ -90,8 +90,6 @@ flakySuite('WorkingCopyBackupTracker (native)', function () {
 	let accessor: TestServiceAccessor;
 	const disposables = new DisposableStore();
 
-	this.retries(3);
-	this.timeout(1000 * 20);
 	setup(async () => {
 		testDir = getRandomTestPath(tmpdir(), 'vsctests', 'backuprestorer');
 		backupHome = join(testDir, 'Backups');

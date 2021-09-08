@@ -44,7 +44,6 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { EditorOptions } from 'vs/workbench/common/editor';
 import { ICell } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -58,6 +57,7 @@ import { workbenchInstantiationService } from 'vs/workbench/test/browser/workben
 import { IProductService } from 'vs/platform/product/common/productService';
 import { IHostColorSchemeService } from 'vs/workbench/services/themes/common/hostColorSchemeService';
 import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
+import { IEditorOptions } from 'vs/platform/editor/common/editor';
 
 class NotebookModelStub extends stubs.NotebookModelStub {
 	public contentChangedEmitter = new Emitter<NotebookContentChange>();
@@ -132,7 +132,7 @@ suite('Test class NotebookEditor:', () => {
 			const testNotebookEditor = new NotebookEditorStub({ cellGuid: cellTextEditorGuid, editor: queryTextEditor, model: notebookModel, notebookParams: <INotebookParams>{ notebookUri: untitledNotebookInput.notebookUri } });
 			notebookService.addNotebookEditor(testNotebookEditor);
 			notebookEditor.clearInput();
-			await notebookEditor.setInput(untitledNotebookInput, EditorOptions.create({ pinned: true }), undefined);
+			await notebookEditor.setInput(untitledNotebookInput, { pinned: true }, undefined);
 			untitledNotebookInput.notebookFindModel.notebookModel = undefined; // clear preexisting notebookModel
 			const result = await notebookEditor.getNotebookModel();
 			assert.strictEqual(result, notebookModel, `getNotebookModel() should return the model set in the INotebookEditor object`);
@@ -215,7 +215,7 @@ suite('Test class NotebookEditor:', () => {
 
 	test('Tests setInput call with various states of input on a notebookEditor object', async () => {
 		createEditor(notebookEditor);
-		const editorOptions = EditorOptions.create({ pinned: true });
+		const editorOptions: IEditorOptions = { pinned: true };
 		for (const input of [
 			untitledNotebookInput /* set to a known input */,
 			untitledNotebookInput /* tries to set the same input that was previously set */
@@ -227,7 +227,7 @@ suite('Test class NotebookEditor:', () => {
 
 	test('Tests setInput call with various states of findState.isRevealed on a notebookEditor object', async () => {
 		createEditor(notebookEditor);
-		const editorOptions = EditorOptions.create({ pinned: true });
+		const editorOptions: IEditorOptions = { pinned: true };
 		for (const isRevealed of [true, false]) {
 			notebookEditor['_findState']['_isRevealed'] = isRevealed;
 			notebookEditor.clearInput();
@@ -754,7 +754,7 @@ async function setupNotebookEditor(notebookEditor: NotebookEditor, untitledNoteb
 }
 
 async function setInputDocument(notebookEditor: NotebookEditor, untitledNotebookInput: UntitledNotebookInput): Promise<void> {
-	const editorOptions = EditorOptions.create({ pinned: true });
+	const editorOptions: IEditorOptions = { pinned: true };
 	await notebookEditor.setInput(untitledNotebookInput, editorOptions, undefined);
 	assert.strictEqual(notebookEditor.options, editorOptions, 'NotebookEditor options must be the ones that we set');
 }

@@ -25,78 +25,11 @@ export function clearNode(node: HTMLElement): void {
 }
 
 /**
- * @deprecated use `node.remove()` instead
+ * @deprecated Use node.isConnected directly
  */
-export function removeNode(node: HTMLElement): void {
-	if (node.parentNode) {
-		node.parentNode.removeChild(node);
-	}
-}
-
-export function trustedInnerHTML(node: Element, value: TrustedHTML): void {
-	// this is a workaround for innerHTML not allowing for "asymetric" accessors
-	// see https://github.com/microsoft/vscode/issues/106396#issuecomment-692625393
-	// and https://github.com/microsoft/TypeScript/issues/30024
-	node.innerHTML = value as unknown as string;
-}
-
 export function isInDOM(node: Node | null): boolean {
 	return node?.isConnected ?? false;
 }
-
-interface IDomClassList {
-	hasClass(node: HTMLElement | SVGElement, className: string): boolean;
-	addClass(node: HTMLElement | SVGElement, className: string): void;
-	addClasses(node: HTMLElement | SVGElement, ...classNames: string[]): void;
-	removeClass(node: HTMLElement | SVGElement, className: string): void;
-	removeClasses(node: HTMLElement | SVGElement, ...classNames: string[]): void;
-	toggleClass(node: HTMLElement | SVGElement, className: string, shouldHaveIt?: boolean): void;
-}
-
-const _classList: IDomClassList = new class implements IDomClassList {
-	hasClass(node: HTMLElement, className: string): boolean {
-		return Boolean(className) && node.classList && node.classList.contains(className);
-	}
-
-	addClasses(node: HTMLElement, ...classNames: string[]): void {
-		classNames.forEach(nameValue => nameValue.split(' ').forEach(name => this.addClass(node, name)));
-	}
-
-	addClass(node: HTMLElement, className: string): void {
-		if (className && node.classList) {
-			node.classList.add(className);
-		}
-	}
-
-	removeClass(node: HTMLElement, className: string): void {
-		if (className && node.classList) {
-			node.classList.remove(className);
-		}
-	}
-
-	removeClasses(node: HTMLElement, ...classNames: string[]): void {
-		classNames.forEach(nameValue => nameValue.split(' ').forEach(name => this.removeClass(node, name)));
-	}
-
-	toggleClass(node: HTMLElement, className: string, shouldHaveIt?: boolean): void {
-		if (node.classList) {
-			node.classList.toggle(className, shouldHaveIt);
-		}
-	}
-};
-
-/** @deprecated ES6 - use classList*/
-export function hasClass(node: HTMLElement | SVGElement, className: string): boolean { return _classList.hasClass(node, className); }
-/** @deprecated ES6 - use classList*/
-export function addClass(node: HTMLElement | SVGElement, className: string): void { return _classList.addClass(node, className); }
-/** @deprecated ES6 - use classList*/
-export function addClasses(node: HTMLElement | SVGElement, ...classNames: string[]): void { return _classList.addClasses(node, ...classNames); }
-/** @deprecated ES6 - use classList*/
-export function removeClass(node: HTMLElement | SVGElement, className: string): void { return _classList.removeClass(node, className); }
-/** @deprecated ES6 - use classList*/
-export function removeClasses(node: HTMLElement | SVGElement, ...classNames: string[]): void { return _classList.removeClasses(node, ...classNames); }
-/** @deprecated ES6 - use classList*/
-export function toggleClass(node: HTMLElement | SVGElement, className: string, shouldHaveIt?: boolean): void { return _classList.toggleClass(node, className, shouldHaveIt); }
 
 class DomListener implements IDisposable {
 

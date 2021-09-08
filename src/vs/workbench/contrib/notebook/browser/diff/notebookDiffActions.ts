@@ -192,14 +192,14 @@ registerAction2(class extends Action2 {
 	}
 	run(accessor: ServicesAccessor, context?: { cell: DiffElementViewModelBase; }) {
 		if (!context) {
-			return undefined;
+			return undefined; // {{SQL CARBON EDIT}} Strict nulls
 		}
 
 		const original = context.cell.original;
 		const modified = context.cell.modified;
 
 		if (!original || !modified) {
-			return undefined;
+			return undefined; // {{SQL CARBON EDIT}} Strict nulls
 		}
 
 		const bulkEditService = accessor.get(IBulkEditService);

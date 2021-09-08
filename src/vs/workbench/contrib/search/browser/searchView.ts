@@ -908,7 +908,7 @@ export class SearchView extends ViewPane {
 
 	override focus(): void {
 		super.focus();
-		if (this.lastFocusState === 'input' || !this.hasSearchResults()) {
+		if (!env.isIOS && (this.lastFocusState === 'input' || !this.hasSearchResults())) {
 			const updatedText = this.searchConfig.seedOnFocus ? this.updateTextFromSelection({ allowSearchOnType: false }) : false;
 			this.searchWidget.focus(undefined, undefined, updatedText);
 		} else {
@@ -1587,7 +1587,7 @@ export class SearchView extends ViewPane {
 			this.preferencesService.openGlobalSettings(undefined, options);
 	}
 
-	protected onLearnMore(): void {
+	protected onLearnMore(): void { // {{SQL CARBON EDIT}}
 		this.openerService.open(URI.parse('https://go.microsoft.com/fwlink/?linkid=853977'));
 	}
 
