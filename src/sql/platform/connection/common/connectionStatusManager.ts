@@ -215,12 +215,8 @@ export class ConnectionStatusManager {
 		if (this.isSharedSession(id)) {
 			return true;
 		}
-		let results: boolean;
-		setTimeout(() => {
-			results = !!(id in this._connections && this._connections[id].connectionId && !!this._connections[id].connectionId);
-		}, 10);
 
-		return results;
+		return !!(id in this._connections && this._connections[id].connectionId && !!this._connections[id].connectionId);
 	}
 
 	public isConnecting(id: string): boolean {
