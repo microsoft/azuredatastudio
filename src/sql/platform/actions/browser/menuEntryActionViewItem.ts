@@ -103,8 +103,7 @@ export class MaskedLabeledMenuItemActionItem extends MenuEntryActionViewItem {
 		action: MenuItemAction,
 		@IKeybindingService keybindingService: IKeybindingService,
 		@INotificationService notificationService: INotificationService,
-		@IContextKeyService contextKeyService: IContextKeyService,
-		private readonly _defaultCSSClassToAdd: string = ''
+		@IContextKeyService contextKeyService: IContextKeyService
 	) {
 		super(action, undefined, keybindingService, notificationService, contextKeyService);
 	}
@@ -141,9 +140,6 @@ export class MaskedLabeledMenuItemActionItem extends MenuEntryActionViewItem {
 
 				if (this.label) {
 					const iconClasses = iconClass.split(' ');
-					if (this._defaultCSSClassToAdd) {
-						iconClasses.push(this._defaultCSSClassToAdd);
-					}
 					this.label.classList.add('codicon', ...iconClasses);
 					this.label.classList.add('masked-icon', ...iconClasses);
 					this._labeledItemClassDispose = toDisposable(() => {

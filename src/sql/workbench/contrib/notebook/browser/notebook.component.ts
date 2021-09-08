@@ -99,7 +99,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		@Inject(IConnectionDialogService) private connectionDialogService: IConnectionDialogService,
 		@Inject(IContextKeyService) private contextKeyService: IContextKeyService,
 		@Inject(IMenuService) private menuService: IMenuService,
-		@Inject(IKeybindingService) private keybindingService: IKeybindingService,
 		@Inject(ICapabilitiesService) private capabilitiesService: ICapabilitiesService,
 		@Inject(ITextFileService) private textFileService: ITextFileService,
 		@Inject(ILogService) private readonly logService: ILogService,
@@ -572,7 +571,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				action.tooltip = action.label;
 				action.label = '';
 			}
-			return new MaskedLabeledMenuItemActionItem(action, this.keybindingService, this.notificationService);
+			return this.instantiationService.createInstance(MaskedLabeledMenuItemActionItem, action);
 		}
 		return undefined;
 	}
