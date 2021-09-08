@@ -152,6 +152,7 @@ const DefaultQueryState: IQueryState = {
 	assetTypes: []
 };
 
+/* {{SQL CARBON EDIT}} Remove unused
 type GalleryServiceQueryClassification = {
 	readonly filterTypes: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
 	readonly sortBy: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
@@ -164,6 +165,7 @@ type GalleryServiceQueryClassification = {
 	readonly errorCode?: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
 	readonly count?: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
 };
+*/
 
 type QueryTelemetryData = {
 	readonly filterTypes: string[];
@@ -171,6 +173,7 @@ type QueryTelemetryData = {
 	readonly sortOrder: string;
 };
 
+/* {{SQL CARBON EDIT}} Remove unused
 type GalleryServiceQueryEvent = QueryTelemetryData & {
 	readonly duration: number;
 	readonly success: boolean;
@@ -180,6 +183,7 @@ type GalleryServiceQueryEvent = QueryTelemetryData & {
 	readonly errorCode?: string;
 	readonly count?: string;
 };
+*/
 
 class Query {
 
@@ -917,8 +921,8 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			if (!vsCodeEngine && !azDataEngine) {
 				return null;
 			}
-			const vsCodeEngineValid = !vsCodeEngine || (vsCodeEngine && isEngineValid(vsCodeEngine, this.productService.vscodeVersion));
-			const azDataEngineValid = !azDataEngine || (azDataEngine && isEngineValid(azDataEngine, this.productService.version));
+			const vsCodeEngineValid = !vsCodeEngine || (vsCodeEngine && isEngineValid(vsCodeEngine, this.productService.vscodeVersion, this.productService.date));
+			const azDataEngineValid = !azDataEngine || (azDataEngine && isEngineValid(azDataEngine, this.productService.version, this.productService.date));
 			if (vsCodeEngineValid && azDataEngineValid) {
 				return version;
 			}
