@@ -15,8 +15,8 @@ import { ITextModel, ITextBufferFactory, DefaultEndOfLine, ITextBuffer } from 'v
 import { IModelService } from 'vs/editor/common/services/modelService';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { ITextModelContentProvider, ITextModelService } from 'vs/editor/common/services/resolverService';
-import * as nls from 'vs/nls';
-// import { Extensions, IConfigurationRegistry } from 'vs/platform/configuration/common/configurationRegistry'; {{SQL CARBON EDIT}} Remove VS Notebook configurations
+// import * as nls from 'vs/nls'; {{SQL CARBON EDIT}} Remove unused
+import { IConfigurationPropertySchema } from 'vs/platform/configuration/common/configurationRegistry'; // {{SQL CARBON EDIT}} Remove unused
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -30,7 +30,7 @@ import { NotebookEditor } from 'vs/workbench/contrib/notebook/browser/notebookEd
 import { isCompositeNotebookEditorInput, NotebookEditorInput } from 'vs/workbench/contrib/notebook/common/notebookEditorInput';
 import { INotebookService } from 'vs/workbench/contrib/notebook/common/notebookService';
 import { NotebookService } from 'vs/workbench/contrib/notebook/browser/notebookServiceImpl';
-import { CellKind, CellUri, getCellUndoRedoComparisonKey, IResolvedNotebookEditorModel, NotebookDocumentBackupData, NOTEBOOK_WORKING_COPY_TYPE_PREFIX } from 'vs/workbench/contrib/notebook/common/notebookCommon'; // {{SQL CARBON EDIT}} Remove VS Notebook configurations
+import { CellKind, CellUri, UndoRedoPerCell, IResolvedNotebookEditorModel, NotebookDocumentBackupData, NotebookWorkingCopyTypeIdentifier } from 'vs/workbench/contrib/notebook/common/notebookCommon'; // {{SQL CARBON EDIT}} Remove unused
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
 import { INotebookEditorModelResolverService } from 'vs/workbench/contrib/notebook/common/notebookEditorModelResolverService';
@@ -588,6 +588,7 @@ for (const editorOption of editorOptionsRegistry) {
 	}
 }
 
+/* {{SQL CARBON EDIT}} Remove VS Notebook configurations
 const editorOptionsCustomizationSchema: IConfigurationPropertySchema = {
 	description: nls.localize('notebook.editorOptions.experimentalCustomization', 'Settings for code editors used in notebooks. This can be used to customize most editor.* settings.'),
 	default: {},
@@ -607,7 +608,6 @@ const editorOptionsCustomizationSchema: IConfigurationPropertySchema = {
 	]
 };
 
-/* {{SQL CARBON EDIT}} Remove VS Notebook configurations
 const configurationRegistry = Registry.as<IConfigurationRegistry>(Extensions.Configuration);
 configurationRegistry.registerConfiguration({
 	id: 'notebook',
