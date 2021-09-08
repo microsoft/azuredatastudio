@@ -265,23 +265,24 @@ export class RemoteTerminalChannelClient {
 		return this._channel.call<void>('$setTerminalLayoutInfo', args);
 	}
 
-	public getTerminalLayoutInfo(): Promise<ITerminalsLayoutInfo | undefined> {
-		// {{SQL CARBON EDIT}} - temp disable this code since it refers to non-implemented method
-		//                     - currently remote code is ahead of OSS code and they need to catch-up (karlb 5/13/2021)
-
-		// const workspace = this._workspaceContextService.getWorkspace();
-		// const args: IGetTerminalLayoutInfoArgs = {
-		// 	workspaceId: workspace.id,
-		// };
-		// return this._channel.call<ITerminalsLayoutInfo>('$getTerminalLayoutInfo', args);
-		return Promise.resolve(undefined);
-	}
-
 	updateTitle(id: number, title: string): Promise<string> {
 		return this._channel.call('$updateTitle', [id, title]);
 	}
 
 	updateIcon(id: number, icon: TerminalIcon, color?: string): Promise<string> {
 		return this._channel.call('$updateIcon', [id, icon, color]);
+	}
+
+	getTerminalLayoutInfo(): Promise<ITerminalsLayoutInfo | undefined> {
+		// {{SQL CARBON EDIT}} - temp disable this code since it refers to non-implemented method
+		//                     - currently remote code is ahead of OSS code and they need to catch-up (karlb 5/13/2021)
+		return Promise.resolve(undefined);
+		/*
+		const workspace = this._workspaceContextService.getWorkspace();
+		const args: IGetTerminalLayoutInfoArgs = {
+			workspaceId: workspace.id,
+		};
+		return this._channel.call<ITerminalsLayoutInfo>('$getTerminalLayoutInfo', args);
+		*/
 	}
 }
