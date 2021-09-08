@@ -17,6 +17,7 @@ import { IConfigurationRegistry, Extensions, ConfigurationScope } from 'vs/platf
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IExternalTerminalMainService } from 'vs/platform/externalTerminal/electron-sandbox/externalTerminalMainService';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 const OPEN_NATIVE_CONSOLE_COMMAND_ID = 'workbench.action.terminal.openNativeConsole';
 KeybindingsRegistry.registerCommandAndKeybindingRule({
@@ -28,18 +29,20 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 		const historyService = accessor.get(IHistoryService);
 		// Open external terminal in local workspaces
 		const terminalService = accessor.get(IExternalTerminalService);
+		const configurationService = accessor.get(IConfigurationService);
 		const root = historyService.getLastActiveWorkspaceRoot(Schemas.file);
+		const config = configurationService.getValue<IExternalTerminalSettings>('terminal.external');
 		if (root) {
-			terminalService.openTerminal(root.fsPath);
+			terminalService.openTerminal(config, root.fsPath);
 		} else {
 			// Opens current file's folder, if no folder is open in editor
 			const activeFile = historyService.getLastActiveFile(Schemas.file);
 			if (activeFile) {
-				terminalService.openTerminal(paths.dirname(activeFile.fsPath));
+				terminalService.openTerminal(config, paths.dirname(activeFile.fsPath));
 			} else {
 				const pathService = accessor.get(IPathService);
 				const userHome = await pathService.userHome();
-				terminalService.openTerminal(userHome.fsPath);
+				terminalService.openTerminal(config, userHome.fsPath);
 			}
 		}
 	}
