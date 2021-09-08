@@ -1532,13 +1532,6 @@ export function registerTerminalActions() {
 			await accessor.get(ITerminalService).doWithActiveInstance(async t => accessor.get(ITerminalGroupService).unsplitInstance(t));
 		}
 	});
-	MenuRegistry.appendMenuItem(MenuId.TerminalTabInlineActions, {
-		command: {
-			id: TERMINAL_COMMAND_ID.SPLIT_INSTANCE,
-			title: localize('workbench.action.terminal.splitInstance', "Split Terminal"),
-		},
-		group: ContextMenuGroup.Create
-	});
 	registerAction2(class extends Action2 {
 		constructor() {
 			super({
@@ -1772,13 +1765,6 @@ export function registerTerminalActions() {
 				focusNext(accessor);
 			}
 		}
-	});
-	MenuRegistry.appendMenuItem(MenuId.TerminalTabInlineActions, {
-		command: {
-			id: TERMINAL_COMMAND_ID.KILL_INSTANCE,
-			title: localize('workbench.action.terminal.killInstance', "Kill Terminal")
-		},
-		group: ContextMenuGroup.Kill
 	});
 	registerAction2(class extends Action2 {
 		constructor() {
