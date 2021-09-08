@@ -19,7 +19,7 @@ import { CellEditType, ICellPartialMetadataEdit, IDocumentMetadataEdit } from 'v
 import type * as vscode from 'vscode';
 
 function es5ClassCompat(target: Function): any {
-	// @ts-ignore - {{SQL CARBON EDIT}}
+	///@ts-expect-error
 	function _() { return Reflect.construct(target, arguments, this.constructor); }
 	Object.defineProperty(_, 'name', Object.getOwnPropertyDescriptor(target, 'name')!);
 	Object.setPrototypeOf(_, target);
@@ -1400,7 +1400,7 @@ export enum SignatureHelpTriggerKind {
 }
 
 
-export enum InlineHintKind {
+export enum InlayHintKind {
 	Other = 0,
 	Type = 1,
 	Parameter = 2,
@@ -1409,15 +1409,14 @@ export enum InlineHintKind {
 @es5ClassCompat
 export class InlayHint {
 	text: string;
-	range: Range;
-	kind?: vscode.InlineHintKind;
-	description?: string | vscode.MarkdownString;
+	position: Position;
+	kind?: vscode.InlayHintKind;
 	whitespaceBefore?: boolean;
 	whitespaceAfter?: boolean;
 
-	constructor(text: string, range: Range, kind?: vscode.InlineHintKind) {
+	constructor(text: string, position: Position, kind?: vscode.InlayHintKind) {
 		this.text = text;
-		this.range = range;
+		this.position = position;
 		this.kind = kind;
 	}
 }
@@ -1589,11 +1588,6 @@ export enum TextEditorSelectionChangeKind {
 	Keyboard = 1,
 	Mouse = 2,
 	Command = 3
-}
-
-export enum TextDocumentChangeReason {
-	Undo = 1,
-	Redo = 2,
 }
 
 /**

@@ -616,8 +616,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 					alignment = priorityOrAlignment;
 					priority = priorityArg;
 				} else {
-					id = extension.identifier.value;
-					alignment = alignmentOrId as number; // {{SQL CARBON EDIT}} strict-null-check
+					alignment = alignmentOrId;
 					priority = priorityOrAlignment;
 				}
 
@@ -997,66 +996,87 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			get activeDebugSession() {
 				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
 				return undefined!;
+				// return extHostDebugService.activeDebugSession; {{SQL CARBON EDIT}} Removed
 			},
 			get activeDebugConsole() {
 				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
 				return undefined!;
+				// return extHostDebugService.activeDebugConsole; {{SQL CARBON EDIT}} Removed
 			},
 			get breakpoints() {
 				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
-				return [];
+				return undefined!;
+				// return extHostDebugService.breakpoints; {{SQL CARBON EDIT}} Removed
 			},
 			onDidStartDebugSession(listener, thisArg?, disposables?) {
 				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
 				return undefined!;
+				// return extHostDebugService.onDidStartDebugSession(listener, thisArg, disposables); {{SQL CARBON EDIT}} Removed
 			},
 			onDidTerminateDebugSession(listener, thisArg?, disposables?) {
 				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
 				return undefined!;
+				// return extHostDebugService.onDidTerminateDebugSession(listener, thisArg, disposables); {{SQL CARBON EDIT}} Removed
 			},
 			onDidChangeActiveDebugSession(listener, thisArg?, disposables?) {
 				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
 				return undefined!;
+				// return extHostDebugService.onDidChangeActiveDebugSession(listener, thisArg, disposables); {{SQL CARBON EDIT}} Removed
 			},
 			onDidReceiveDebugSessionCustomEvent(listener, thisArg?, disposables?) {
 				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
 				return undefined!;
+				// return extHostDebugService.onDidReceiveDebugSessionCustomEvent(listener, thisArg, disposables); {{SQL CARBON EDIT}} Removed
 			},
 			onDidChangeBreakpoints(listener, thisArgs?, disposables?) {
 				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
 				return undefined!;
+				// return extHostDebugService.onDidChangeBreakpoints(listener, thisArgs, disposables); {{SQL CARBON EDIT}} Removed
 			},
 			registerDebugConfigurationProvider(debugType: string, provider: vscode.DebugConfigurationProvider, triggerKind?: vscode.DebugConfigurationProviderTriggerKind) {
 				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
 				return undefined!;
+				// return extHostDebugService.registerDebugConfigurationProvider(debugType, provider, triggerKind || extHostTypes.DebugConfigurationProviderTriggerKind.Initial); {{SQL CARBON EDIT}} Removed
 			},
 			registerDebugAdapterDescriptorFactory(debugType: string, factory: vscode.DebugAdapterDescriptorFactory) {
 				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
 				return undefined!;
+				// return extHostDebugService.registerDebugAdapterDescriptorFactory(extension, debugType, factory); {{SQL CARBON EDIT}} Removed
 			},
 			registerDebugAdapterTrackerFactory(debugType: string, factory: vscode.DebugAdapterTrackerFactory) {
 				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
 				return undefined!;
+				// return extHostDebugService.registerDebugAdapterTrackerFactory(debugType, factory); {{SQL CARBON EDIT}} Removed
 			},
 			startDebugging(folder: vscode.WorkspaceFolder | undefined, nameOrConfig: string | vscode.DebugConfiguration, parentSessionOrOptions?: vscode.DebugSession | vscode.DebugSessionOptions) {
 				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
 				return undefined!;
+				/* {{SQL CARBON EDIT}} Removed
+				if (!parentSessionOrOptions || (typeof parentSessionOrOptions === 'object' && 'configuration' in parentSessionOrOptions)) {
+					return extHostDebugService.startDebugging(folder, nameOrConfig, { parentSession: parentSessionOrOptions });
+				}
+				return extHostDebugService.startDebugging(folder, nameOrConfig, parentSessionOrOptions || {});
+				*/
 			},
 			stopDebugging(session?: vscode.DebugSession) {
 				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
 				return undefined!;
+				// return extHostDebugService.stopDebugging(session); {{SQL CARBON EDIT}} Removed
 			},
-			addBreakpoints(breakpoints: vscode.Breakpoint[]) {
-				extHostLogService.warn('Debug API is disabled in Azure Data Studio'); // {{SQL CARBON EDIT}}
+			addBreakpoints(breakpoints: readonly vscode.Breakpoint[]) {
+				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
 				return undefined!;
+				// return extHostDebugService.addBreakpoints(breakpoints); {{SQL CARBON EDIT}} Removed
 			},
-			removeBreakpoints(breakpoints: vscode.Breakpoint[]) {
-				extHostLogService.warn('Debug API is disabled in Azure Data Studio'); // {{SQL CARBON EDIT}}
+			removeBreakpoints(breakpoints: readonly vscode.Breakpoint[]) {
+				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
 				return undefined!;
+				// return extHostDebugService.removeBreakpoints(breakpoints); {{SQL CARBON EDIT}} Removed
 			},
 			asDebugSourceUri(source: vscode.DebugProtocolSource, session?: vscode.DebugSession): vscode.Uri {
 				extHostLogService.warn('Debug API is disabled in Azure Data Studio');
 				return undefined!;
+				// return extHostDebugService.asDebugSourceUri(source, session); {{SQL CARBON EDIT}} Removed
 			}
 		};
 
@@ -1257,7 +1277,6 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			TextEditorLineNumbersStyle: extHostTypes.TextEditorLineNumbersStyle,
 			TextEditorRevealType: extHostTypes.TextEditorRevealType,
 			TextEditorSelectionChangeKind: extHostTypes.TextEditorSelectionChangeKind,
-			TextDocumentChangeReason: extHostTypes.TextDocumentChangeReason,
 			ThemeColor: extHostTypes.ThemeColor,
 			ThemeIcon: extHostTypes.ThemeIcon,
 			TreeItem: extHostTypes.TreeItem,
@@ -1267,8 +1286,8 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			ViewColumn: extHostTypes.ViewColumn,
 			WorkspaceEdit: extHostTypes.WorkspaceEdit,
 			// proposed api types
-			InlineHint: extHostTypes.InlineHint,
-			InlineHintKind: extHostTypes.InlineHintKind,
+			InlayHint: extHostTypes.InlayHint,
+			InlayHintKind: extHostTypes.InlayHintKind,
 			RemoteAuthorityResolverError: extHostTypes.RemoteAuthorityResolverError,
 			ResolvedAuthority: extHostTypes.ResolvedAuthority,
 			SourceControlInputBoxValidationType: extHostTypes.SourceControlInputBoxValidationType,
