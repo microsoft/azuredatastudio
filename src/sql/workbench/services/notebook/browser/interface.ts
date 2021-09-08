@@ -7,8 +7,9 @@ import { URI } from 'vs/base/common/uri';
 import { Event } from 'vs/base/common/event';
 import { IContentManager } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
+import { IEditorInput } from 'vs/workbench/common/editor';
 
-export interface INotebookInput {
+export interface INotebookInput extends IEditorInput {
 	defaultKernel?: azdata.nb.IKernelSpec,
 	connectionProfile?: azdata.IConnectionProfile,
 	isDirty(): boolean;
