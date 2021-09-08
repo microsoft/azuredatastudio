@@ -215,7 +215,6 @@ export class ConnectionStatusManager {
 		if (this.isSharedSession(id)) {
 			return true;
 		}
-
 		return !!(id in this._connections && this._connections[id].connectionId && !!this._connections[id].connectionId);
 	}
 

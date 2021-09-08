@@ -270,9 +270,7 @@ export class QueryEditor extends EditorPane {
 		const separator = Taskbar.createTaskbarSeparator();
 		let content: ITaskbarContent[];
 		const previewFeaturesEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
-		//console.log('this got fired!');
 		let connectionProfile = this.connectionManagementService.getConnectionProfile(this.input?.uri);
-		//console.log('connectionProfile is ' + connectionProfile);
 		let fileExtension = path.extname(this.input?.uri || '');
 		const providerId = connectionProfile?.providerName ||
 			this.connectionManagementService.getProviderIdFromUri(this.input?.uri) ||

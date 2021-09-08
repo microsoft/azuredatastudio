@@ -640,8 +640,11 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 
 	// EVENT HANDLERS FROM EDITOR //////////////////////////////////////////
 	public onConnected(): void {
-		let dbName = this.getCurrentDatabaseName();
-		this.updateConnection(dbName);
+		// Need to delay in order to wait for the current database to reassign itself if reconnecting via file explorer.
+		setTimeout(() => {
+			let dbName = this.getCurrentDatabaseName();
+			this.updateConnection(dbName);
+		}, 200);
 	}
 
 	public onDisconnect(): void {
