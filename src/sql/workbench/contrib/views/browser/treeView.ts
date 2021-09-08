@@ -382,7 +382,7 @@ export class TreeView extends Disposable implements ITreeView {
 	private createTree() {
 		const actionViewItemProvider = (action: IAction) => {
 			if (action instanceof MenuItemAction) {
-				return this.instantiationService.createInstance(MenuEntryActionViewItem, action);
+				return this.instantiationService.createInstance(MenuEntryActionViewItem, action, undefined);
 			} else if (action instanceof SubmenuItemAction) {
 				return this.instantiationService.createInstance(SubmenuEntryActionViewItem, action);
 			}
