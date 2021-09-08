@@ -54,7 +54,7 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 	public findExpression: string;
 
 	//#region Decorations
-	private readonly _onDidChangeDecorations: DidChangeDecorationsEmitter = this._register(new DidChangeDecorationsEmitter());
+	private readonly _onDidChangeDecorations: DidChangeDecorationsEmitter = this._register(new DidChangeDecorationsEmitter(affectedInjectedTextLines => { } /* this.handleBeforeFireDecorationsChangedEvent(affectedInjectedTextLines) */)); // Do we need this event?
 	public readonly onDidChangeDecorations: Event<IModelDecorationsChangedEvent> = this._onDidChangeDecorations.event;
 	private _decorations: { [decorationId: string]: NotebookIntervalNode; };
 	//#endregion
