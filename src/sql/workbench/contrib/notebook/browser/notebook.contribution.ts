@@ -56,12 +56,14 @@ import { INotebookModel } from 'sql/workbench/services/notebook/browser/models/m
 import { INotebookManager } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookExplorerViewletViewsContribution } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
-import { ContributedEditorPriority, IEditorOverrideService } from 'vs/workbench/services/editor/common/editorOverrideService';
+import { IEditorOverrideService, RegisteredEditorPriority } from 'vs/workbench/services/editor/common/editorOverrideService';
 import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/fileEditorInput';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
 import { useNewMarkdownRendererKey } from 'sql/workbench/contrib/notebook/common/notebookCommon';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { DiffNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/diffNotebookInput';
 
 Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories)
 	.registerEditorInputSerializer(FileNotebookInput.ID, FileNoteBookEditorInputSerializer);
@@ -695,7 +697,9 @@ export class NotebookEditorOverrideContribution extends Disposable implements IW
 		@ILogService private _logService: ILogService,
 		@IEditorService private _editorService: IEditorService,
 		@IEditorOverrideService private _editorOverrideService: IEditorOverrideService,
-		@IModeService private _modeService: IModeService
+		@IModeService private _modeService: IModeService,
+		@IConfigurationService private _configurationService: IConfigurationService,
+		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
 		super();
 		this.registerEditorOverrides();
@@ -722,22 +726,28 @@ export class NotebookEditorOverrideContribution extends Disposable implements IW
 				{
 					id: NotebookEditor.ID,
 					label: NotebookEditor.LABEL,
-					describes: (currentEditor) => currentEditor instanceof FileNotebookInput,
-					priority: ContributedEditorPriority.builtin
+					priority: RegisteredEditorPriority.builtin
 				},
 				{},
-				(resource, options, group) => {
-					const fileInput = this._editorService.createEditorInput({
-						resource: resource
-					}) as FileEditorInput;
+				(editorInput, group) => {
+					const fileInput = this._editorService.createEditorInput(editorInput) as FileEditorInput;
 					// Try to convert the input, falling back to just a plain file input if we're unable to
 					const newInput = this.tryConvertInput(fileInput, lang) ?? fileInput;
-					return { editor: newInput, options: options, group: group };
+					return { editor: newInput, options: editorInput.options, group: group };
 				},
-				(diffEditorInput, options, group) => {
-					// Try to convert the input, falling back to the original input if we're unable to
-					const newInput = this.tryConvertInput(diffEditorInput, lang) ?? diffEditorInput;
-					return { editor: newInput, options: options, group: group };
+				undefined,
+				(diffEditorInput, group) => {
+					// todo@chgagnon, consolidate this logic and make sure it works as intended
+					let newInput: IEditorInput | undefined = undefined;
+					if (diffEditorInput instanceof DiffEditorInput) {
+						if (this._configurationService.getValue('notebook.showRenderedNotebookInDiffEditor') === true) {
+							newInput = this._instantiationService.createInstance(DiffNotebookInput, diffEditorInput.getName(), diffEditorInput);
+						}
+					}
+					if (!newInput) {
+						newInput = this._editorService.createEditorInput(diffEditorInput);
+					}
+					return { editor: newInput, options: diffEditorInput.options, group: group };
 				}
 			));
 		});

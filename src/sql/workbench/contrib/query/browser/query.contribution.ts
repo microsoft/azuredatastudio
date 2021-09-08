@@ -44,7 +44,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/fileEditorInput';
-import { IEditorOverrideService, ContributedEditorPriority } from 'vs/workbench/services/editor/common/editorOverrideService';
+import { IEditorOverrideService, RegisteredEditorPriority } from 'vs/workbench/services/editor/common/editorOverrideService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ILogService } from 'vs/platform/log/common/log';
 
@@ -528,21 +528,18 @@ export class QueryEditorOverrideContribution extends Disposable implements IWork
 				{
 					id: QueryEditor.ID,
 					label: QueryEditor.LABEL,
-					describes: (currentEditor) => currentEditor instanceof FileQueryEditorInput,
-					priority: ContributedEditorPriority.builtin
+					priority: RegisteredEditorPriority.builtin
 				},
 				{},
-				(resource, options, group) => {
-					const fileInput = this._editorService.createEditorInput({
-						resource: resource
-					}) as FileEditorInput;
+				(editorInput, group) => {
+					const fileInput = this._editorService.createEditorInput(editorInput) as FileEditorInput;
 					const langAssociation = languageAssociationRegistry.getAssociationForLanguage(lang);
 					const queryEditorInput = langAssociation?.syncConvertInput?.(fileInput);
 					if (!queryEditorInput) {
-						this._logService.warn('Unable to create input for overriding editor ', resource);
+						this._logService.warn('Unable to create input for overriding editor ', editorInput.resource);
 						return undefined;
 					}
-					return { editor: queryEditorInput, options: options, group: group };
+					return { editor: queryEditorInput, options: editorInput.options, group: group };
 				}
 			));
 		});

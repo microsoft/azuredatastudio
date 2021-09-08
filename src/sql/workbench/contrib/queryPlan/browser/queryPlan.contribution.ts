@@ -10,7 +10,7 @@ import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { QueryPlanEditor } from 'sql/workbench/contrib/queryPlan/browser/queryPlanEditor';
 import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
-import { ContributedEditorPriority, IEditorOverrideService } from 'vs/workbench/services/editor/common/editorOverrideService';
+import { IEditorOverrideService, RegisteredEditorPriority } from 'vs/workbench/services/editor/common/editorOverrideService';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions, IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -41,13 +41,12 @@ export class QueryPlanEditorOverrideContribution extends Disposable implements I
 			{
 				id: QueryPlanEditor.ID,
 				label: QueryPlanEditor.LABEL,
-				describes: (currentEditor) => currentEditor instanceof QueryPlanInput,
-				priority: ContributedEditorPriority.builtin
+				priority: RegisteredEditorPriority.builtin
 			},
 			{},
-			(resource, options, group) => {
-				const queryPlanInput = this._instantiationService.createInstance(QueryPlanInput, resource);
-				return { editor: queryPlanInput };
+			(editorInput, group) => {
+				const queryPlanInput = this._instantiationService.createInstance(QueryPlanInput, editorInput.resource);
+				return { editor: queryPlanInput, options: editorInput.options, group: group };
 			}
 		);
 	}
