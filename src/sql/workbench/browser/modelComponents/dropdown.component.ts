@@ -38,7 +38,7 @@ import { errorForeground } from 'vs/platform/theme/common/colorRegistry';
 		</div>
 		<div [style.display]="getEditableDisplay()" #editableDropDown style="width: 100%;"></div>
 		<div [style.display]="getNotEditableDisplay()" #dropDown style="width: 100%;"></div>
-		<div class="dropdown-error-container" #errorMessage *ngIf="!isValid && validationErrorMessage.length!==0 && !isInitState">
+		<div class="dropdown-error-container" #errorMessage *ngIf="!_valid && validationErrorMessage.length!==0 && !isInitState">
 			<div class="dropdown-error-icon"></div>
 			<span class="dropdown-error-text">{{validationErrorMessage}}</span>
 		</div>
@@ -52,7 +52,6 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 	private _selectBox: SelectBox;
 	private _isInAccessibilityMode: boolean;
 	private _loadingBox: SelectBox;
-	public isValid: boolean;
 	/**
 	 * This flag is used to hide the error message in the initial state of the dropdown. We do not want to show the error message before user has interacted with it.
 	 */
@@ -81,7 +80,7 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 			let dropdownOptions: IDropdownOptions = {
 				values: [],
 				strictSelection: false,
-				placeholder: this.editableDropdownPlaceholder,
+				placeholder: this.placeholder,
 				maxHeight: 125,
 				ariaLabel: ''
 			};
@@ -137,7 +136,6 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 
 	public override async validate(): Promise<boolean> {
 		const validationResult = await super.validate();
-		this.isValid = validationResult;
 		this._changeRef.detectChanges();
 		return validationResult;
 	}
@@ -167,7 +165,7 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 			this._editableDropdown.enabled = this.enabled;
 			this._editableDropdown.fireOnTextChange = this.fireOnTextChange;
 
-			this._editableDropdown.input.setPlaceHolder(this.editableDropdownPlaceholder);
+			this._editableDropdown.input.setPlaceHolder(this.placeholder);
 
 			// Add tooltip when editable dropdown is disabled to show overflow text
 			this._editableDropdown.input.setTooltip(!this.enabled ? this._editableDropdown.input.value : '');
@@ -324,13 +322,13 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 		});
 	}
 
-	public get editableDropdownPlaceholder(): string {
-		return this.getPropertyOrDefault<string>((props) => props.editableDropdownPlaceholder, '');
+	public get placeholder(): string | undefined {
+		return this.getPropertyOrDefault<string>((props) => props.placeholder, undefined);
 	}
 
-	public get validationErrorMessage(): string {
-		let validationErrorMessage = this.getPropertyOrDefault<string>((props) => props.validationErrorMessage, '');
-		if (this.required && this.editable && this._editableDropdown.input.value === '') {
+	public get validationErrorMessage(): string | undefined {
+		let validationErrorMessage = this.getPropertyOrDefault<string>((props) => props.validationErrorMessage, undefined);
+		if (this.required && this.editable && (!this._editableDropdown.input.value || this._editableDropdown.input.value === '')) {
 			return localize('defaultDropdownErrorMessage', "Please fill out this field."); // Adding a default error message for required editable dropdowns having an empty value.
 		}
 		return validationErrorMessage;
