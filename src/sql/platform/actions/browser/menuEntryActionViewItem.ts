@@ -27,10 +27,10 @@ export class LabeledMenuItemActionItem extends MenuEntryActionViewItem {
 
 	constructor(
 		_action: MenuItemAction,
+		private readonly _defaultCSSClassToAdd: string | undefined,
 		@IKeybindingService labeledkeybindingService: IKeybindingService,
 		@INotificationService _notificationService: INotificationService,
 		@IContextKeyService _contextKeyService: IContextKeyService,
-		private readonly _defaultCSSClassToAdd: string = ''
 	) {
 		super(_action, undefined, labeledkeybindingService, _notificationService, _contextKeyService);
 	}
