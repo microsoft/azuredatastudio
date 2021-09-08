@@ -88,27 +88,21 @@ export class ConnectionStatusManager {
 	}
 
 	public addConnection(connection: IConnectionProfile, id: string): ConnectionManagementInfo {
-		if (this._connections[id]) {
-			this._logService.info(`Adding connection ${id}`);
-			// Always create a copy and save that in the list
-			let connectionProfile = new ConnectionProfile(this._capabilitiesService, connection);
-			let connectionInfo: ConnectionManagementInfo = {
-				providerId: connection.providerName,
-				extensionTimer: StopWatch.create(),
-				intelliSenseTimer: StopWatch.create(),
-				connectionProfile: connectionProfile,
-				connecting: true,
-				serviceTimer: StopWatch.create(),
-				ownerUri: id
-			};
-			this._connections[id] = connectionInfo;
-			this._logService.info(`Successfully added connection ${id}`);
-			return connectionInfo;
-		}
-		else {
-			this._logService.info(`Connection with ${id} already exists`);
-			return this._connections[id];
-		}
+		this._logService.info(`Adding connection ${id}`);
+		// Always create a copy and save that in the list
+		let connectionProfile = new ConnectionProfile(this._capabilitiesService, connection);
+		let connectionInfo: ConnectionManagementInfo = {
+			providerId: connection.providerName,
+			extensionTimer: StopWatch.create(),
+			intelliSenseTimer: StopWatch.create(),
+			connectionProfile: connectionProfile,
+			connecting: true,
+			serviceTimer: StopWatch.create(),
+			ownerUri: id
+		};
+		this._connections[id] = connectionInfo;
+		this._logService.info(`Successfully added connection ${id}`);
+		return connectionInfo;
 	}
 
 	/**
@@ -221,14 +215,12 @@ export class ConnectionStatusManager {
 		if (this.isSharedSession(id)) {
 			return true;
 		}
-		//console.log('connections size is ' + this._connections.length);
-		let idInConnections = id in this._connections;
-		let connectionId = undefined;
-		if (idInConnections) {
-			connectionId = this._connections[id].connectionId;
-		}
-		//console.log('result id inConnections ' + idInConnections + ' connection id: ' + connectionId);
-		return !!(id in this._connections && this._connections[id].connectionId && !!this._connections[id].connectionId);
+		let results: boolean;
+		setTimeout(() => {
+			results = !!(id in this._connections && this._connections[id].connectionId && !!this._connections[id].connectionId);
+		}, 10);
+
+		return results;
 	}
 
 	public isConnecting(id: string): boolean {
