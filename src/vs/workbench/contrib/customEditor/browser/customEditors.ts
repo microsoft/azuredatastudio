@@ -146,7 +146,7 @@ export class CustomEditorService extends Disposable implements ICustomEditorServ
 	): DiffEditorInput {
 		const createEditorForSubInput = (subInput: IResourceEditorInput | IUntitledTextResourceEditorInput, editorID: string, customClasses: string): EditorInput | undefined => {
 			if (!subInput.resource) {
-				return;
+				return undefined; // {{SQL CARBON EDIT}} strict-nulls
 			}
 			// We check before calling this call back that both resources are defined
 			const input = CustomEditorInput.create(this.instantiationService, subInput.resource, editorID, group.id, { customClasses });

@@ -156,7 +156,7 @@ export class UntitledFileWorkingCopy<M extends IUntitledFileWorkingCopyModel> ex
 	async resolve(): Promise<void> {
 		this.trace('[untitled file working copy] resolve()');
 
-		if (this.isResolved()) {
+		if ((this as UntitledFileWorkingCopy<M>).isResolved()) { // {{SQL CARBON EDIT}} strict-nulls
 			this.trace('[untitled file working copy] resolve() - exit (already resolved)');
 
 			// return early if the untitled file working copy is already

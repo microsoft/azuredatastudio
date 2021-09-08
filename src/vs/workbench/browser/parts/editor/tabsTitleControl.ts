@@ -6,7 +6,7 @@
 import 'vs/css!./media/tabstitlecontrol';
 import { isMacintosh, isWindows } from 'vs/base/common/platform';
 import { shorten } from 'vs/base/common/labels';
-import { EditorResourceAccessor, GroupIdentifier, IEditorInput, Verbosity, IEditorPartOptions, SideBySideEditor, DEFAULT_EDITOR_ASSOCIATION } from 'vs/workbench/common/editor';
+import { EditorResourceAccessor, GroupIdentifier, IEditorInput, Verbosity, IEditorPartOptions, SideBySideEditor } from 'vs/workbench/common/editor'; // {{SQL CARBON EDIT}} Remove unused
 import { computeEditorAriaLabel } from 'vs/workbench/browser/editor';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { EventType as TouchEventType, GestureEvent, Gesture } from 'vs/base/browser/touch';
@@ -220,7 +220,7 @@ export class TabsTitleControl extends TitleControl {
 
 		// New file when double clicking on tabs container (but not tabs)
 		[TouchEventType.Tap, EventType.DBLCLICK].forEach(eventType => {
-			this._register(addDisposableListener(tabsContainer, eventType, async (e: MouseEvent | GestureEvent) => {
+			this._register(addDisposableListener(tabsContainer, eventType, async (e: MouseEvent | GestureEvent) => { // {{SQL CARBON EDIT}}
 				if (eventType === EventType.DBLCLICK) {
 					if (e.target !== tabsContainer) {
 						return; // ignore if target is not tabs container

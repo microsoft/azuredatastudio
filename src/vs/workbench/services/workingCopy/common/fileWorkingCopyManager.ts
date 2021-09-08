@@ -239,7 +239,7 @@ export class FileWorkingCopyManager<S extends IStoredFileWorkingCopyModel, U ext
 		}
 
 		if (!target) {
-			return; // user canceled
+			return undefined; // user canceled {{SQL CARBON EDIT}} strict-nulls
 		}
 
 		// Just save if target is same as working copies own resource

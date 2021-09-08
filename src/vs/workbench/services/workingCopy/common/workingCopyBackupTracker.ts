@@ -290,7 +290,7 @@ export abstract class WorkingCopyBackupTracker extends Disposable {
 		// already to prevent calling `resolve` twice!
 		await Promises.settled([...openedEditorsForBackups].map(async openedEditorForBackup => {
 			if (this.editorService.isVisible(openedEditorForBackup)) {
-				return;
+				return undefined; // {{SQL CARBON EDIT}} strict-nulls
 			}
 
 			return openedEditorForBackup.resolve();

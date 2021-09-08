@@ -533,7 +533,7 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 			const [resolvedEditor, resolvedGroup, resolvedActivation] = await this.doResolveEditor(isEditorInput(editor) ? { editor, options } : editor, preferredGroup);
 
 			if (resolvedEditor === OverrideStatus.ABORT) {
-				return; // skip editor if override is aborted
+				return undefined; // skip editor if override is aborted {{SQL CARBON EDIT}} strict-nulls
 			}
 
 			group = resolvedGroup;
