@@ -608,43 +608,44 @@ export class ExtensionManagementService extends Disposable implements IExtension
 		return local;
 	}
 
-	private async installDependenciesAndPackExtensions(installed: ILocalExtension, existing: ILocalExtension | undefined, options: InstallOptions): Promise<void> {
-		if (!this.galleryService.isEnabled()) {
-			return;
-		}
-		const dependenciesAndPackExtensions: string[] = installed.manifest.extensionDependencies || [];
-		if (installed.manifest.extensionPack) {
-			for (const extension of installed.manifest.extensionPack) {
-				// add only those extensions which are new in currently installed extension
-				if (!(existing && existing.manifest.extensionPack && existing.manifest.extensionPack.some(old => areSameExtensions({ id: old }, { id: extension })))) {
-					if (dependenciesAndPackExtensions.every(e => !areSameExtensions({ id: e }, { id: extension }))) {
-						dependenciesAndPackExtensions.push(extension);
-					}
-				}
-			}
-		}
-		if (dependenciesAndPackExtensions.length) {
-			const installed = await this.getInstalled();
-			// filter out installed extensions
-			const names = dependenciesAndPackExtensions.filter(id => installed.every(({ identifier: galleryIdentifier }) => !areSameExtensions(galleryIdentifier, { id })));
-			if (names.length) {
-				const galleryResult = await this.galleryService.query({ names, pageSize: dependenciesAndPackExtensions.length }, CancellationToken.None);
-				const extensionsToInstall = galleryResult.firstPage;
-				try {
-					await Promises.settled(extensionsToInstall.map(e => this.installFromGallery(e, options)));
-				} catch (error) {
-					try { await this.rollback(extensionsToInstall); } catch (e) { /* ignore */ }
-					throw error;
-				}
-			}
-		}
-	}
+	// {{SQL CARBON EDIT}} Remove unused
+	// private async installDependenciesAndPackExtensions(installed: ILocalExtension, existing: ILocalExtension | undefined, options: InstallOptions): Promise<void> {
+	// 	if (!this.galleryService.isEnabled()) {
+	// 		return;
+	// 	}
+	// 	const dependenciesAndPackExtensions: string[] = installed.manifest.extensionDependencies || [];
+	// 	if (installed.manifest.extensionPack) {
+	// 		for (const extension of installed.manifest.extensionPack) {
+	// 			// add only those extensions which are new in currently installed extension
+	// 			if (!(existing && existing.manifest.extensionPack && existing.manifest.extensionPack.some(old => areSameExtensions({ id: old }, { id: extension })))) {
+	// 				if (dependenciesAndPackExtensions.every(e => !areSameExtensions({ id: e }, { id: extension }))) {
+	// 					dependenciesAndPackExtensions.push(extension);
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	// 	if (dependenciesAndPackExtensions.length) {
+	// 		const installed = await this.getInstalled();
+	// 		// filter out installed extensions
+	// 		const names = dependenciesAndPackExtensions.filter(id => installed.every(({ identifier: galleryIdentifier }) => !areSameExtensions(galleryIdentifier, { id })));
+	// 		if (names.length) {
+	// 			const galleryResult = await this.galleryService.query({ names, pageSize: dependenciesAndPackExtensions.length }, CancellationToken.None);
+	// 			const extensionsToInstall = galleryResult.firstPage;
+	// 			try {
+	// 				await Promises.settled(extensionsToInstall.map(e => this.installFromGallery(e, options)));
+	// 			} catch (error) {
+	// 				try { await this.rollback(extensionsToInstall); } catch (e) { /* ignore */ }
+	// 				throw error;
+	// 			}
+	// 		}
+	// 	}
+	// }
 
-	private async rollback(extensions: IGalleryExtension[]): Promise<void> {
-		const installed = await this.getInstalled(ExtensionType.User);
-		const extensionsToUninstall = installed.filter(local => extensions.some(galleryExtension => new ExtensionIdentifierWithVersion(local.identifier, local.manifest.version).equals(new ExtensionIdentifierWithVersion(galleryExtension.identifier, galleryExtension.version)))); // Check with version because we want to rollback the exact version
-		await Promises.settled(extensionsToUninstall.map(local => this.uninstall(local)));
-	}
+	// private async rollback(extensions: IGalleryExtension[]): Promise<void> {
+	// 	const installed = await this.getInstalled(ExtensionType.User);
+	// 	const extensionsToUninstall = installed.filter(local => extensions.some(galleryExtension => new ExtensionIdentifierWithVersion(local.identifier, local.manifest.version).equals(new ExtensionIdentifierWithVersion(galleryExtension.identifier, galleryExtension.version)))); // Check with version because we want to rollback the exact version
+	// 	await Promises.settled(extensionsToUninstall.map(local => this.uninstall(local)));
+	// }
 
 	async uninstall(extension: ILocalExtension, options: UninstallOptions = {}): Promise<void> {
 		this.logService.trace('ExtensionManagementService#uninstall', extension.identifier.id);
