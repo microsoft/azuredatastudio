@@ -205,16 +205,25 @@ class MockConnectionManagementService extends TestConnectionManagementService {
 
 	public numberConnects = 0;
 
+	public connectionProfiles = [];
+
 	public override isProfileConnected(connectionProfile: IConnectionProfile): boolean {
 		return true;
 	}
 
 	public override connect(connection: IConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult> {
+		this.connectionProfiles[this.numberConnects] = uri;
 		this.numberConnects++;
 		return Promise.resolve(undefined);
 	}
 
 	public override getConnectionProfile(fileUri: string): IConnectionProfile {
-		return <IConnectionProfile>{}; // Not actually used so fine to cast
+		let element = this.connectionProfiles.find(element => fileUri === element);
+		if (element) {
+			return <IConnectionProfile>{ azureResourceId: element };
+		}
+		else {
+			return undefined;
+		}
 	}
 }
