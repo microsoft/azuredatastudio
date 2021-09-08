@@ -219,6 +219,11 @@ export interface IConnectionManagementService {
 	getUniqueConnectionProvidersByNameMap(providerNameToDisplayNameMap: { [providerDisplayName: string]: string }): { [providerDisplayName: string]: string };
 
 	/**
+	 * Gets the default authentication type from the configuration service
+	 */
+	getDefaultAuthenticationTypeId(): string;
+
+	/**
 	 * Cancels the connection
 	 */
 	cancelConnection(connection: IConnectionProfile): Thenable<boolean>;
