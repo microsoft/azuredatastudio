@@ -23,12 +23,14 @@ export function createContext(): TestContext {
 			subscriptions: [],
 			workspaceState: {
 				get: () => { return undefined; },
-				update: () => { return Promise.resolve(); }
+				update: () => { return Promise.resolve(); },
+				keys: () => []
 			},
 			globalState: {
 				setKeysForSync: (): void => { },
 				get: (): any | undefined => { return Promise.resolve(); },
-				update: (): Thenable<void> => { return Promise.resolve(); }
+				update: (): Thenable<void> => { return Promise.resolve(); },
+				keys: () => []
 			},
 			extensionPath: extensionPath,
 			asAbsolutePath: () => { return ''; },
