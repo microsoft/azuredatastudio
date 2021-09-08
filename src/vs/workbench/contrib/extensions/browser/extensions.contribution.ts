@@ -14,7 +14,7 @@ import { IExtensionIgnoredRecommendationsService, IExtensionRecommendationsServi
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions, IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IOutputChannelRegistry, Extensions as OutputExtensions } from 'vs/workbench/services/output/common/output';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
-import { VIEWLET_ID, IExtensionsWorkbenchService, IExtensionsViewPaneContainer, TOGGLE_IGNORE_EXTENSION_ACTION_ID, INSTALL_EXTENSION_FROM_VSIX_COMMAND_ID, DefaultViewsContext, WORKSPACE_RECOMMENDATIONS_VIEW_ID, IWorkspaceRecommendedExtensionsView, AutoUpdateConfigurationKey, HasOutdatedExtensionsContext, SELECT_INSTALL_VSIX_EXTENSION_COMMAND_ID, LIST_WORKSPACE_UNSUPPORTED_EXTENSIONS_COMMAND_ID } from 'vs/workbench/contrib/extensions/common/extensions'; //{{SQL CARBON EDIT}} Remove ExtensionsSortByContext
+import { VIEWLET_ID, IExtensionsWorkbenchService, IExtensionsViewPaneContainer, TOGGLE_IGNORE_EXTENSION_ACTION_ID, INSTALL_EXTENSION_FROM_VSIX_COMMAND_ID, DefaultViewsContext, WORKSPACE_RECOMMENDATIONS_VIEW_ID, IWorkspaceRecommendedExtensionsView, AutoUpdateConfigurationKey, HasOutdatedExtensionsContext, SELECT_INSTALL_VSIX_EXTENSION_COMMAND_ID, LIST_WORKSPACE_UNSUPPORTED_EXTENSIONS_COMMAND_ID } from 'vs/workbench/contrib/extensions/common/extensions'; // {{SQL CARBON EDIT}} Remove unused
 import { ReinstallAction, InstallSpecificVersionOfExtensionAction, ConfigureWorkspaceRecommendedExtensionsAction, ConfigureWorkspaceFolderRecommendedExtensionsAction, PromptExtensionInstallFailureAction, SearchExtensionsAction } from 'vs/workbench/contrib/extensions/browser/extensionsActions';
 import { ExtensionsInput } from 'vs/workbench/contrib/extensions/common/extensionsInput';
 import { ExtensionEditor } from 'vs/workbench/contrib/extensions/browser/extensionEditor';
@@ -62,7 +62,7 @@ import { Schemas } from 'vs/base/common/network';
 import { ShowRuntimeExtensionsAction } from 'vs/workbench/contrib/extensions/browser/abstractRuntimeExtensionsEditor';
 import { ExtensionEnablementWorkspaceTrustTransitionParticipant } from 'vs/workbench/contrib/extensions/browser/extensionEnablementWorkspaceTrustTransitionParticipant';
 import { clearSearchResultsIcon, configureRecommendedIcon, extensionsViewIcon, filterIcon, installWorkspaceRecommendedIcon, refreshIcon } from 'vs/workbench/contrib/extensions/browser/extensionsIcons';
-import { ExtensionsPolicy, ExtensionsPolicyKey, EXTENSION_CATEGORIES } from 'vs/platform/extensions/common/extensions';
+import { EXTENSION_CATEGORIES, ExtensionsPolicy, ExtensionsPolicyKey, } from 'vs/platform/extensions/common/extensions'; // {{SQL CARBON EDIT}}
 import { Disposable, DisposableStore, IDisposable } from 'vs/base/common/lifecycle';
 import { isArray } from 'vs/base/common/types';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -75,6 +75,10 @@ import { WORKSPACE_TRUST_EXTENSION_SUPPORT } from 'vs/workbench/services/workspa
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage'; // {{SQL CARBON EDIT}}
 import * as locConstants from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}}
 import product from 'vs/platform/product/common/product'; // {{SQL CARBON EDIT}}
+import { ExtensionsCompletionItemsProvider } from 'vs/workbench/contrib/extensions/browser/extensionsCompletionItemsProvider';
+import { ITASExperimentService } from 'vs/workbench/services/experiment/common/experimentService';
+import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
+import { Event } from 'vs/base/common/event';
 
 // Singletons
 registerSingleton(IExtensionsWorkbenchService, ExtensionsWorkbenchService);
@@ -407,7 +411,7 @@ class ExtensionsContributions extends Disposable implements IWorkbenchContributi
 		@IExtensionManagementServerService private readonly extensionManagementServerService: IExtensionManagementServerService,
 		@IExtensionGalleryService extensionGalleryService: IExtensionGalleryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		// @IViewletService private readonly viewletService: IViewletService, {{SQL CARBON EDIT}} Unused
+		// @IViewletService private readonly viewletService: IViewletService, {{SQL CARBON EDIT}} Remove unused
 		@IExtensionsWorkbenchService private readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
 		@IWorkbenchExtensionEnablementService private readonly extensionEnablementService: IWorkbenchExtensionEnablementService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
@@ -817,7 +821,7 @@ class ExtensionsContributions extends Disposable implements IWorkbenchContributi
 								return undefined;
 							}
 						}
-						return await extensionsWorkbenchService.install(vsix);
+						return extensionsWorkbenchService.install(vsix);
 					}))
 						.then(async (extensions) => {
 							for (const extension of extensions) {
@@ -841,7 +845,38 @@ class ExtensionsContributions extends Disposable implements IWorkbenchContributi
 						});
 				}
 			});
+
+			this.registerExtensionAction({
+				id: 'workbench.extensions.action.installWebExtensionFromLocation',
+				title: { value: localize('installWebExtensionFromLocation', "Install Web Extension..."), original: 'Install Web Extension...' },
+				category: CATEGORIES.Developer,
+				menu: [{
+					id: MenuId.CommandPalette,
+					when: ContextKeyOrExpr.create([CONTEXT_HAS_WEB_SERVER])
+				}],
+				run: async (accessor: ServicesAccessor) => {
+					const quickInputService = accessor.get(IQuickInputService);
+					const extensionManagementService = accessor.get(IWorkbenchExtensionManagementService);
+
+					const disposables = new DisposableStore();
+					const quickPick = disposables.add(quickInputService.createQuickPick());
+					quickPick.title = localize('installFromLocation', "Install Web Extension from Location");
+					quickPick.customButton = true;
+					quickPick.customLabel = localize('install button', "Install");
+					quickPick.placeholder = localize('installFromLocationPlaceHolder', "Location of the web extension");
+					quickPick.ignoreFocusOut = true;
+					disposables.add(Event.any(quickPick.onDidAccept, quickPick.onDidCustom)(() => {
+						quickPick.hide();
+						if (quickPick.value) {
+							extensionManagementService.installWebExtension(URI.parse(quickPick.value));
+						}
+					}));
+					disposables.add(quickPick.onDidHide(() => disposables.dispose()));
+					quickPick.show();
+				}
+			});
 		}
+
 		const extensionsFilterSubMenu = new MenuId('extensionsFilterSubMenu');
 		MenuRegistry.appendMenuItem(MenuId.ViewContainerTitle, <ISubmenuItem>{
 			submenu: extensionsFilterSubMenu,
