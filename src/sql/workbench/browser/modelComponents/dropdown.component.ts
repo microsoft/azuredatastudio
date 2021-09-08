@@ -39,7 +39,7 @@ import { errorForeground } from 'vs/platform/theme/common/colorRegistry';
 		<div [style.display]="getEditableDisplay()" #editableDropDown style="width: 100%;"></div>
 		<div [style.display]="getNotEditableDisplay()" #dropDown style="width: 100%;"></div>
 		<div class="dropdown-error-container" #errorMessage *ngIf="!_valid && validationErrorMessage.length!==0 && !isInitState">
-			<div class="dropdown-error-icon"></div>
+			<div class="sql codicon error dropdown-error-icon"></div>
 			<span class="dropdown-error-text">{{validationErrorMessage}}</span>
 		</div>
 	</div>
