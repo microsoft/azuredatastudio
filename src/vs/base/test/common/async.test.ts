@@ -593,7 +593,7 @@ suite('Async', () => {
 
 	suite('TaskSequentializer', () => {
 		test('pending basics', async function () {
-			const sequentializer = new async.TaskSequentializer();
+			const sequentializer = new async.TaskSequentializer() as any; // {{SQL CARBON EDIT}} Cast as any to get around compilation issues with the type guards
 
 			assert.ok(!sequentializer.hasPending());
 			assert.ok(!sequentializer.hasPending(2323));
