@@ -30,7 +30,7 @@ export interface IAction extends IDisposable {
 	class: string | undefined;
 	enabled: boolean;
 	checked: boolean;
-	expanded: boolean | undefined; // {{SQL CARBON EDIT}}
+	expanded?: boolean | undefined; // {{SQL CARBON EDIT}}
 	run(event?: unknown): unknown;
 }
 

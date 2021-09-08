@@ -14,6 +14,7 @@ import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { EditorOverride, IEditorOptions } from 'vs/platform/editor/common/editor';
 import { IEditorOverrideService, OverrideStatus, ReturnedOverride } from 'vs/workbench/services/editor/common/editorOverrideService';
+import { IEditorInputWithOptions } from 'vs/workbench/common/editor'; // {{SQL CARBON EDIT}} Cast to avoid compiler errors
 
 /**
  * An implementation of editor for binary files that cannot be displayed.
@@ -61,7 +62,7 @@ export class BinaryFileEditor extends BaseBinaryResourceEditor {
 			} else if (overridenInput === OverrideStatus.ABORT) {
 				return;
 			}
-
+			overridenInput = overridenInput as IEditorInputWithOptions | undefined; // {{SQL CARBON EDIT}} Cast to avoid compiler errors
 			// Replace the overrriden input, with the text based input
 			await this.editorService.replaceEditors([{
 				editor,

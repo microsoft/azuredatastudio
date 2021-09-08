@@ -196,7 +196,7 @@ export class TerminalViewPane extends ViewPane {
 							const newInstance = this._terminalService.splitInstance(instance);
 							return newInstance?.focusWhenReady();
 						}
-						return;
+						return undefined; // {{SQL CARBON EDIT}} Strict nulls
 					}
 				};
 				return new ActionViewItem(action, panelOnlySplitAction, { icon: true, label: false, keybinding: this._getKeybindingLabel(action) });

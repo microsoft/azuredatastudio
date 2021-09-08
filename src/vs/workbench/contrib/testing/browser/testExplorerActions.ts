@@ -835,7 +835,7 @@ abstract class RunOrDebugCurrentFile extends Action2 {
 		const position = control?.getPosition();
 		const model = control?.getModel();
 		if (!position || !model || !('uri' in model)) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} strict-null
 		}
 
 		const testService = accessor.get(ITestService);

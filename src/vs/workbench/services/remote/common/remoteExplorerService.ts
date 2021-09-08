@@ -572,15 +572,15 @@ export class TunnelModel extends Disposable {
 	private mismatchCooldown = new Date();
 	private async showPortMismatchModalIfNeeded(tunnel: RemoteTunnel, expectedLocal: number, attributes: Attributes | undefined) {
 		if (!tunnel.tunnelLocalPort || !attributes?.requireLocalPort) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} Strict nulls
 		}
 		if (tunnel.tunnelLocalPort === expectedLocal) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} Strict nulls
 		}
 
 		const newCooldown = new Date();
 		if ((this.mismatchCooldown.getTime() + MISMATCH_LOCAL_PORT_COOLDOWN) > newCooldown.getTime()) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} Strict nulls
 		}
 		this.mismatchCooldown = newCooldown;
 		const mismatchString = nls.localize('remote.localPortMismatch.single', "Local port {0} could not be used for forwarding to remote port {1}.\n\nThis usually happens when there is already another process using local port {0}.\n\nPort number {2} has been used instead.",

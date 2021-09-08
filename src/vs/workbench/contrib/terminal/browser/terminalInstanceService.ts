@@ -86,7 +86,7 @@ export class TerminalInstanceService extends Disposable implements ITerminalInst
 		// Shell launch config was provided
 		if (shellLaunchConfigOrProfile) {
 			if (cwd) {
-				shellLaunchConfigOrProfile.cwd = cwd;
+				(shellLaunchConfigOrProfile as IShellLaunchConfig).cwd = cwd; // {{SQL CARBON EDIT}} Cast to expected type
 			}
 			return shellLaunchConfigOrProfile;
 		}

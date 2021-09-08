@@ -727,14 +727,14 @@ class MarkdownTestMessagePeek extends Disposable implements IPeekOutputRenderer 
 	}
 
 	public update(_dto: TestDto, message: ITestMessage): void {
-		if (isDiffable(message) || typeof message.message === 'string') {
+		if (isDiffable(message) || typeof (message as ITestMessage).message === 'string') { // {{SQL CARBON EDIT}} cast to avoid type guard assert compilation errors
 			return this.textPreview.clear();
 		}
 
 		this.textPreview.value = new ScrollableMarkdownMessage(
 			this.container,
 			this.markdown.getValue(),
-			message.message as IMarkdownString,
+			(message as ITestMessage).message as IMarkdownString, // {{SQL CARBON EDIT}} cast to avoid type guard assert compilation errors
 		);
 	}
 
@@ -758,7 +758,7 @@ class PlainTextMessagePeek extends Disposable implements IPeekOutputRenderer {
 	}
 
 	public async update({ messageUri }: TestDto, message: ITestMessage) {
-		if (isDiffable(message) || typeof message.message !== 'string') {
+		if (isDiffable(message) || typeof (message as ITestMessage).message !== 'string') { // {{SQL CARBON EDIT}} cast to avoid type guard assert compilation errors
 			return this.clear();
 		}
 
@@ -777,7 +777,7 @@ class PlainTextMessagePeek extends Disposable implements IPeekOutputRenderer {
 		}
 
 		this.widget.value.setModel(modelRef.object.textEditorModel);
-		this.widget.value.updateOptions(this.getOptions(isMultiline(message.message)));
+		this.widget.value.updateOptions(this.getOptions(isMultiline((message as ITestMessage).message as string))); // {{SQL CARBON EDIT}} cast to avoid type guard assert compilation errors
 	}
 
 	private clear() {

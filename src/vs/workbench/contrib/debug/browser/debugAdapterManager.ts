@@ -289,7 +289,7 @@ export class AdapterManager implements IAdapterManager {
 
 		// We want to get the debuggers that have configuration providers in the case we are fetching configurations
 		// Or if a breakpoint can be set in the current file (good hint that an extension can handle it)
-		if ((!languageLabel || gettingConfigurations || (model && this.canSetBreakpointsIn(model))) && candidates.length === 0) {
+		if ((!languageLabel || gettingConfigurations || (model && this.canSetBreakpointsIn(model as ITextModel))) && candidates.length === 0) { // {{SQL CARBON EDIT}} Cast to avoid compilation error - we assume vs code is doing the right thing here
 			await this.activateDebuggers('onDebugInitialConfigurations');
 			candidates = this.debuggers.filter(dbg => dbg.hasInitialConfiguration() || dbg.hasConfigurationProvider());
 		}
