@@ -212,8 +212,8 @@ class MockConnectionManagementService extends TestConnectionManagementService {
 	}
 
 	public override connect(connection: IConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult> {
-		this.connectionProfiles[this.numberConnects] = uri;
 		this.numberConnects++;
+		this.connectionProfiles.push(uri);
 		return Promise.resolve(undefined);
 	}
 
