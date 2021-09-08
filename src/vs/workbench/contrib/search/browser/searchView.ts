@@ -159,7 +159,7 @@ export class SearchView extends ViewPane {
 		@IProgressService protected readonly progressService: IProgressService, // {{SQL CARBON EDIT}}
 		@INotificationService protected readonly notificationService: INotificationService, // {{SQL CARBON EDIT}}
 		@IDialogService protected readonly dialogService: IDialogService, // {{SQL CARBON EDIT}}
-		@ICommandService private readonly commandService: ICommandService,
+		@ICommandService protected readonly commandService: ICommandService, // {{SQL CARBON EDIT}}
 		@IContextViewService protected readonly contextViewService: IContextViewService, // {{SQL CARBON EDIT}}
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,

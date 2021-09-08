@@ -768,7 +768,7 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 		private async _load(): Promise<RendererApi | undefined> {
 			const module = await runRenderScript(this.data.entrypoint, this.data.id);
 			if (!module) {
-				return;
+				return undefined; // {{SQL CARBON EDIT}} strict-nulls
 			}
 
 			const api = await module.activate(this.createRendererContext());

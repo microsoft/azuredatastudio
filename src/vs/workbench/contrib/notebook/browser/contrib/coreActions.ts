@@ -248,7 +248,7 @@ export abstract class NotebookMultiCellAction<T> extends Action2 {
 
 		const editor = getNotebookEditorFromEditorPane(accessor.get(IEditorService).activeEditorPane);
 		if (!editor || !editor.hasModel()) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} strict nulls
 		}
 
 		return editor;
@@ -357,7 +357,7 @@ function getEditorFromArgsOrActivePane(accessor: ServicesAccessor, context?: Uri
 
 	const editor = getNotebookEditorFromEditorPane(accessor.get(IEditorService).activeEditorPane);
 	if (!editor || !editor.hasModel()) {
-		return;
+		return undefined; // {{SQL CARBON EDIT}} strict nulls
 	}
 
 	return editor;
@@ -375,7 +375,7 @@ function parseMultiCellExecutionArgs(accessor: ServicesAccessor, ...args: any[])
 	if (isMultiCellArgs(firstArg)) {
 		const editor = getEditorFromArgsOrActivePane(accessor, firstArg.document);
 		if (!editor) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} strict nulls
 		}
 
 		const ranges = firstArg.ranges;
@@ -394,7 +394,7 @@ function parseMultiCellExecutionArgs(accessor: ServicesAccessor, ...args: any[])
 		const secondArg = args[1];
 		const editor = getEditorFromArgsOrActivePane(accessor, secondArg);
 		if (!editor) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} strict nulls
 		}
 
 		return {
@@ -1564,7 +1564,7 @@ registerAction2(class ChangeCellLanguageAction extends NotebookCellAction<ICellR
 
 	protected override getCellContextFromArgs(accessor: ServicesAccessor, context?: ICellRange, ...additionalArgs: any[]): IChangeCellContext | undefined {
 		if (!context || typeof context.start !== 'number' || typeof context.end !== 'number' || context.start >= context.end) {
-			return undefined;
+			return undefined; // {{SQL CARBON EDIT}} strict nulls
 		}
 
 		const language = additionalArgs.length && typeof additionalArgs[0] === 'string' ? additionalArgs[0] : undefined;

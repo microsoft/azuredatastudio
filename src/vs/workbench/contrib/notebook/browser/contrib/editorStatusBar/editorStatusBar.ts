@@ -93,7 +93,7 @@ registerAction2(class extends Action2 {
 
 		const editor = context?.notebookEditor ?? getNotebookEditorFromEditorPane(editorService.activeEditorPane);
 		if (!editor || !editor.hasModel()) {
-			return;
+			return false; // {{SQL CARBON EDIT}} strict nulls
 		}
 
 		if (context && (typeof context.id !== 'string' || typeof context.extension !== 'string')) {
@@ -106,7 +106,7 @@ registerAction2(class extends Action2 {
 
 		if (selected && context && selected.id === context.id && ExtensionIdentifier.equals(selected.extension, context.extension)) {
 			// current kernel is wanted kernel -> done
-			return;
+			return false; // {{SQL CARBON EDIT}} strict nulls
 		}
 
 		let newKernel: INotebookKernel | undefined;
@@ -161,6 +161,7 @@ registerAction2(class extends Action2 {
 		if (newKernel) {
 			notebookKernelService.selectKernelForNotebook(newKernel, notebook);
 		}
+		return true; // {{SQL CARBON EDIT}} strict nulls
 	}
 });
 
