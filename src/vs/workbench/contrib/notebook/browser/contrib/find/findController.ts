@@ -8,14 +8,9 @@ import { alert as alertFn } from 'vs/base/browser/ui/aria/aria';
 import * as strings from 'vs/base/common/strings';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IContextKeyService, IContextKey, ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
-import { KEYBINDING_CONTEXT_NOTEBOOK_FIND_WIDGET_FOCUSED, INotebookEditor, CellFindMatch, CellEditState, INotebookEditorContribution, NOTEBOOK_EDITOR_FOCUSED, getNotebookEditorFromEditorPane, NOTEBOOK_IS_ACTIVE_EDITOR } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
+import { KEYBINDING_CONTEXT_NOTEBOOK_FIND_WIDGET_FOCUSED, INotebookEditor, CellEditState, INotebookEditorContribution, NOTEBOOK_EDITOR_FOCUSED, getNotebookEditorFromEditorPane, NOTEBOOK_IS_ACTIVE_EDITOR } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
 import { Range } from 'vs/editor/common/core/range';
 import { MATCHES_LIMIT } from 'vs/editor/contrib/find/findModel';
-import { FindDecorations } from 'vs/editor/contrib/find/findDecorations';
-import { ModelDecorationOptions } from 'vs/editor/common/model/textModel';
-import { IModelDeltaDecoration } from 'vs/editor/common/model';
-import { ICellModelDeltaDecorations, ICellModelDecorations } from 'vs/workbench/contrib/notebook/browser/viewModel/notebookViewModel';
-import { PrefixSumComputer } from 'vs/editor/common/viewModel/prefixSumComputer';
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { SimpleFindReplaceWidget } from 'vs/workbench/contrib/codeEditor/browser/find/simpleFindReplaceWidget';
@@ -101,37 +96,7 @@ export class NotebookFindWidget extends SimpleFindReplaceWidget implements INote
 	}
 
 	protected find(previous: boolean): void {
-		if (!this._findMatches.length) {
-			return;
-		}
-
-		// let currCell;
-		if (!this._findMatchesStarts) {
-			this.set(this._findMatches, true);
-		} else {
-			// const currIndex = this._findMatchesStarts!.getIndexOf(this._currentMatch);
-			// currCell = this._findMatches[currIndex.index].cell;
-
-			const totalVal = this._findMatchesStarts.getTotalValue();
-			const nextVal = (this._currentMatch + (previous ? -1 : 1) + totalVal) % totalVal;
-			this._currentMatch = nextVal;
-		}
-
-		const nextIndex = this._findMatchesStarts!.getIndexOf(this._currentMatch);
-		// const newFocusedCell = this._findMatches[nextIndex.index].cell;
-		this.setCurrentFindMatchDecoration(nextIndex.index, nextIndex.remainder);
-		this.revealCellRange(nextIndex.index, nextIndex.remainder);
-
-		this._state.changeMatchInfo(
-			this._currentMatch,
-			this._findMatches.reduce((p, c) => p + c.matches.length, 0),
-			undefined
-		);
-
-		// if (currCell && currCell !== newFocusedCell && currCell.getEditState() === CellEditState.Editing && currCell.editStateSource === 'find') {
-		// 	currCell.updateEditState(CellEditState.Preview, 'find');
-		// }
-		// this._updateMatchesCount();
+		this._findModel.find(previous);
 	}
 
 	protected replaceOne() {
@@ -161,13 +126,6 @@ export class NotebookFindWidget extends SimpleFindReplaceWidget implements INote
 		});
 	}
 
-	private revealCellRange(cellIndex: number, matchIndex: number) {
-		this._findMatches[cellIndex].cell.updateEditState(CellEditState.Editing, 'find');
-		this._notebookEditor.focusElement(this._findMatches[cellIndex].cell);
-		this._notebookEditor.setCellEditorSelection(this._findMatches[cellIndex].cell, this._findMatches[cellIndex].matches[matchIndex].range);
-		this._notebookEditor.revealRangeInCenterIfOutsideViewportAsync(this._findMatches[cellIndex].cell, this._findMatches[cellIndex].matches[matchIndex].range);
-	}
-
 	protected findFirst(): void { }
 
 	protected onFocusTrackerFocus() {
@@ -188,97 +146,6 @@ export class NotebookFindWidget extends SimpleFindReplaceWidget implements INote
 
 	protected onFindInputFocusTrackerFocus(): void { }
 	protected onFindInputFocusTrackerBlur(): void { }
-
-	private constructFindMatchesStarts() {
-		if (this._findMatches && this._findMatches.length) {
-			const values = new Uint32Array(this._findMatches.length);
-			for (let i = 0; i < this._findMatches.length; i++) {
-				values[i] = this._findMatches[i].matches.length;
-			}
-
-			this._findMatchesStarts = new PrefixSumComputer(values);
-		} else {
-			this._findMatchesStarts = null;
-		}
-	}
-
-	private set(cellFindMatches: CellFindMatch[] | null, autoStart: boolean): void {
-		if (!cellFindMatches || !cellFindMatches.length) {
-			this._findMatches = [];
-			this.setAllFindMatchesDecorations([]);
-
-			this.constructFindMatchesStarts();
-			this._currentMatch = -1;
-			this.clearCurrentFindMatchDecoration();
-			return;
-		}
-
-		// all matches
-		this._findMatches = cellFindMatches;
-		this.setAllFindMatchesDecorations(cellFindMatches || []);
-
-		// current match
-		this.constructFindMatchesStarts();
-
-		if (autoStart) {
-			this._currentMatch = 0;
-			this.setCurrentFindMatchDecoration(0, 0);
-		}
-
-		this._state.changeMatchInfo(
-			this._currentMatch,
-			this._findMatches.reduce((p, c) => p + c.matches.length, 0),
-			undefined
-		);
-	}
-
-	private setCurrentFindMatchDecoration(cellIndex: number, matchIndex: number) {
-		this._notebookEditor.changeModelDecorations(accessor => {
-			const findMatchesOptions: ModelDecorationOptions = FindDecorations._CURRENT_FIND_MATCH_DECORATION;
-
-			const cell = this._findMatches[cellIndex].cell;
-			const match = this._findMatches[cellIndex].matches[matchIndex];
-			const decorations: IModelDeltaDecoration[] = [
-				{ range: match.range, options: findMatchesOptions }
-			];
-			const deltaDecoration: ICellModelDeltaDecorations = {
-				ownerId: cell.handle,
-				decorations: decorations
-			};
-
-			this._currentMatchDecorations = accessor.deltaDecorations(this._currentMatchDecorations, [deltaDecoration]);
-		});
-	}
-
-	private clearCurrentFindMatchDecoration() {
-		this._notebookEditor.changeModelDecorations(accessor => {
-			this._currentMatchDecorations = accessor.deltaDecorations(this._currentMatchDecorations, []);
-		});
-	}
-
-	private setAllFindMatchesDecorations(cellFindMatches: CellFindMatch[]) {
-		this._notebookEditor.changeModelDecorations((accessor) => {
-
-			const findMatchesOptions: ModelDecorationOptions = FindDecorations._FIND_MATCH_DECORATION;
-
-			const deltaDecorations: ICellModelDeltaDecorations[] = cellFindMatches.map(cellFindMatch => {
-				const findMatches = cellFindMatch.matches;
-
-				// Find matches
-				const newFindMatchesDecorations: IModelDeltaDecoration[] = new Array<IModelDeltaDecoration>(findMatches.length);
-				for (let i = 0, len = findMatches.length; i < len; i++) {
-					newFindMatchesDecorations[i] = {
-						range: findMatches[i].range,
-						options: findMatchesOptions
-					};
-				}
-
-				return { ownerId: cellFindMatch.cell.handle, decorations: newFindMatchesDecorations };
-			});
-
-			this._allMatchesDecorations = accessor.deltaDecorations(this._allMatchesDecorations, deltaDecorations);
-		});
-	}
 
 	override show(initialInput?: string): void {
 		super.show(initialInput);
@@ -355,49 +222,6 @@ export class NotebookFindWidget extends SimpleFindReplaceWidget implements INote
 	}
 
 	override _updateMatchesCount(): void {
-		if (!this._findMatches) {
-			return;
-		}
-
-		this._matchesCount.style.minWidth = MAX_MATCHES_COUNT_WIDTH + 'px';
-		this._matchesCount.title = '';
-
-		// remove previous content
-		if (this._matchesCount.firstChild) {
-			this._matchesCount.removeChild(this._matchesCount.firstChild);
-		}
-
-		let label: string;
-
-		if (this._state.matchesCount > 0) {
-			let matchesCount: string = String(this._state.matchesCount);
-			if (this._state.matchesCount >= MATCHES_LIMIT) {
-				matchesCount += '+';
-			}
-			let matchesPosition: string = this._currentMatch < 0 ? '?' : String((this._currentMatch + 1));
-			label = strings.format(NLS_MATCHES_LOCATION, matchesPosition, matchesCount);
-		} else {
-			label = NLS_NO_RESULTS;
-		}
-
-		this._matchesCount.appendChild(document.createTextNode(label));
-
-		alertFn(this._getAriaLabel(label, this._state.currentMatch, this._state.searchString));
-		MAX_MATCHES_COUNT_WIDTH = Math.max(MAX_MATCHES_COUNT_WIDTH, this._matchesCount.clientWidth);
-	}
-
-	private _getAriaLabel(label: string, currentMatch: Range | null, searchString: string): string {
-		if (label === NLS_NO_RESULTS) {
-			return searchString === ''
-				? localize('ariaSearchNoResultEmpty', "{0} found", label)
-				: localize('ariaSearchNoResult', "{0} found for '{1}'", label, searchString);
-		}
-
-		// TODO@rebornix, aria for `cell ${index}, line {line}`
-		return localize('ariaSearchNoResultWithLineNumNoCurrentMatch', "{0} found for '{1}'", label, searchString);
-	}
-
-	override _updateMatchesCount(): void {
 		if (!this._findModel || !this._findModel.findMatches) {
 			return;
 		}
@@ -429,6 +253,16 @@ export class NotebookFindWidget extends SimpleFindReplaceWidget implements INote
 		MAX_MATCHES_COUNT_WIDTH = Math.max(MAX_MATCHES_COUNT_WIDTH, this._matchesCount.clientWidth);
 	}
 
+	private _getAriaLabel(label: string, currentMatch: Range | null, searchString: string): string {
+		if (label === NLS_NO_RESULTS) {
+			return searchString === ''
+				? localize('ariaSearchNoResultEmpty', "{0} found", label)
+				: localize('ariaSearchNoResult', "{0} found for '{1}'", label, searchString);
+		}
+
+		// TODO@rebornix, aria for `cell ${index}, line {line}`
+		return localize('ariaSearchNoResultWithLineNumNoCurrentMatch', "{0} found for '{1}'", label, searchString);
+	}
 	override dispose() {
 		this._notebookEditor?.removeClassName(FIND_SHOW_TRANSITION);
 		this._notebookEditor?.removeClassName(FIND_HIDE_TRANSITION);
