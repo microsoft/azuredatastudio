@@ -172,6 +172,8 @@ suite('Query Input Factory', () => {
 		const input2 = createFileInput(URI.file('/test/file.sql'), undefined, undefined, undefined);
 		await queryEditorLanguageAssociation.convertInput(input1);
 		await queryEditorLanguageAssociation.convertInput(input2);
+		let endProfile = connectionManagementService.getConnectionProfile('/test/file.sql');
+		assert(endProfile.azureResourceId !== undefined, 'azureResourceId should not be undefined');
 		assert(connectionManagementService.numberConnects === 1, 'Convert input should have called connect only once when active OE connection exists');
 	});
 
