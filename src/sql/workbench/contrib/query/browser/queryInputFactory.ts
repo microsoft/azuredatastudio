@@ -82,10 +82,10 @@ export class QueryEditorLanguageAssociation implements ILanguageAssociation {
 			return undefined;
 		}
 
-		const profile = getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
-		let existingProfile = this.connectionManagementService.getConnectionProfile(queryEditorInput.uri);
+		const existingProfile = this.connectionManagementService.getConnectionProfile(queryEditorInput.uri);
 		// Create new connection if only there is no existing connectionProfile with the uri.
-		if (profile && !existingProfile) {
+		if (!existingProfile) {
+			const profile = getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
 			const options: IConnectionCompletionOptions = {
 				params: { connectionType: ConnectionType.editor, runQueryOnCompletion: undefined, input: queryEditorInput },
 				saveTheConnection: false,
