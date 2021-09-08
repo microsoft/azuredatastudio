@@ -28,6 +28,7 @@ import { EditorsVisibleContext, SingleEditorGroupsContext } from 'vs/workbench/c
 // eslint-disable-next-line code-import-patterns
 import { SELECT_INSTALL_VSIX_EXTENSION_COMMAND_ID } from 'vs/workbench/contrib/extensions/common/extensions';
 import * as locConstants from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}}
+import product from 'vs/platform/product/common/product'; // {{SQL CARBON EDIT}} Disable menu items based on quality
 
 // Actions
 (function registerActions(): void {
@@ -112,16 +113,7 @@ import * as locConstants from 'sql/base/common/locConstants'; // {{SQL CARBON ED
 			}
 		});
 	}
-
-	MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, {
-		group: '6_close',
-		command: {
-			id: CloseCurrentWindowAction.ID,
-			title: localize({ key: 'miCloseWindow', comment: ['&& denotes a mnemonic'] }, "Clos&&e Window")
-		},
-		order: 4
-	});
-
+	// Quit
 	MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, {
 		group: 'z_Exit',
 		command: {
