@@ -96,7 +96,7 @@ export class WizardController {
 				TelemetryAction.PageButtonClick,
 				{
 					...this.getTelemetryProps(),
-					'buttonPressed': 'cancel',
+					'buttonPressed': TelemetryAction.Cancel,
 					'pageTitle': this._wizardObject.pages[this._wizardObject.currentPage].title
 				}, {});
 		});
@@ -107,14 +107,14 @@ export class WizardController {
 				TelemetryAction.PageButtonClick,
 				{
 					...this.getTelemetryProps(),
-					'buttonPressed': 'done',
+					'buttonPressed': TelemetryAction.Done,
 					'pageTitle': this._wizardObject.pages[this._wizardObject.currentPage].title
 				}, {});
 		});
 	}
 
 	private async sendPageButtonClickEvent(pageChangeInfo: azdata.window.WizardPageChangeInfo) {
-		const buttonPressed = pageChangeInfo.newPage > pageChangeInfo.lastPage ? 'next' : 'prev';
+		const buttonPressed = pageChangeInfo.newPage > pageChangeInfo.lastPage ? TelemetryAction.Next : TelemetryAction.Prev;
 		const pageTitle = this._wizardObject.pages[pageChangeInfo.lastPage]?.title;
 		sendSqlMigrationActionEvent(
 			TelemetryViews.SqlMigrationWizard,
