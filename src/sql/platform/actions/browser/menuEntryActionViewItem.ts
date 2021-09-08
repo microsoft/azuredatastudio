@@ -11,6 +11,7 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { ThemeIcon } from 'vs/platform/theme/common/themeService';
 import { MenuEntryActionViewItem } from 'vs/platform/actions/browser/menuEntryActionViewItem';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
 const ids = new IdGenerator('menu-item-action-item-icon-');
 
@@ -28,9 +29,10 @@ export class LabeledMenuItemActionItem extends MenuEntryActionViewItem {
 		_action: MenuItemAction,
 		@IKeybindingService labeledkeybindingService: IKeybindingService,
 		@INotificationService _notificationService: INotificationService,
+		@IContextKeyService _contextKeyService: IContextKeyService,
 		private readonly _defaultCSSClassToAdd: string = ''
 	) {
-		super(_action, labeledkeybindingService, _notificationService);
+		super(_action, undefined, labeledkeybindingService, _notificationService, _contextKeyService);
 	}
 
 	override updateLabel(): void {
@@ -98,12 +100,13 @@ export class MaskedLabeledMenuItemActionItem extends MenuEntryActionViewItem {
 	private _labeledItemClassDispose?: IDisposable;
 
 	constructor(
-		_action: MenuItemAction,
-		@IKeybindingService labeledkeybindingService: IKeybindingService,
-		@INotificationService _notificationService: INotificationService,
+		action: MenuItemAction,
+		@IKeybindingService keybindingService: IKeybindingService,
+		@INotificationService notificationService: INotificationService,
+		@IContextKeyService contextKeyService: IContextKeyService,
 		private readonly _defaultCSSClassToAdd: string = ''
 	) {
-		super(_action, labeledkeybindingService, _notificationService);
+		super(action, undefined, keybindingService, notificationService, contextKeyService);
 	}
 
 	override updateLabel(): void {
