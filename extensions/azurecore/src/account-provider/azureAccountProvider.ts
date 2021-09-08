@@ -113,7 +113,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 
 	private async _getAccountSecurityToken(account: AzureAccount, tenantId: string, resource: azdata.AzureResource): Promise<Token | undefined> {
 		await this.initCompletePromise;
-		const azureAuth = this.getAuthMethod(undefined);
+		const azureAuth = this.getAuthMethod(account);
 		Logger.pii(`Getting account security token for ${JSON.stringify(account.key)} (tenant ${tenantId}). Auth Method = ${azureAuth.userFriendlyName}`, [], []);
 		return azureAuth?.getAccountSecurityToken(account, tenantId, resource);
 	}
