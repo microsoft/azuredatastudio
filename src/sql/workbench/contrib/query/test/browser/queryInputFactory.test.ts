@@ -77,7 +77,7 @@ suite('Query Input Factory', () => {
 		queryEditorLanguageAssociation.syncConvertInput(input2);
 		let connProfile = connectionManagementService.getConnectionProfile('file:///test/file.sql');
 		assert(connProfile !== undefined, 'connection profile should not be undefined');
-		assert(connectionManagementService.numberConnects === 1, 'Sync convert input should have called connect only once when active OE connection exists');
+		assert(connectionManagementService.numberConnects === 1, 'Sync convert input should have called connect only once for one URI');
 	});
 
 	test('sync query editor inputs can be connected one after the other with different uris when global connection exists (OE)', () => {
@@ -97,7 +97,7 @@ suite('Query Input Factory', () => {
 		let connProfile2 = connectionManagementService.getConnectionProfile('file:///test/file2.sql');
 		assert(connProfile2 !== undefined, 'connection profile should not be undefined');
 		assert(connProfile2 !== connProfile1, 'connection profiles should be different for two uris');
-		assert(connectionManagementService.numberConnects === 2, 'Sync convert input should have called connect two times when we have two different uris');
+		assert(connectionManagementService.numberConnects === 2, 'Sync convert input should have called connect two times when we have two different URIs');
 	});
 
 	test('only one async query editor input can call connect with a unique uri when global connection exists (OE)', async () => {
@@ -142,7 +142,7 @@ suite('Query Input Factory', () => {
 		let connProfile2 = connectionManagementService.getConnectionProfile('file:///test/file2.sql');
 		assert(connProfile2 !== undefined, 'connection profile 2 should not be undefined');
 		assert(connProfile2 !== connProfile1, 'connection profiles should be different for two uris');
-		assert(connectionManagementService.numberConnects === 2, 'Async convert input should have called connect two times when we have two different uris');
+		assert(connectionManagementService.numberConnects === 2, 'Async convert input should have called connect two times when we have two different URIs');
 	});
 
 
@@ -232,7 +232,7 @@ suite('Query Input Factory', () => {
 		let connProfile2 = connectionManagementService.getConnectionProfile('file:///test/file2.sql');
 		assert(connProfile2 !== undefined, 'connection profile 2 should not be undefined');
 		assert(connProfile2 !== connProfile1, 'connection profiles should be different for two uris');
-		assert(connectionManagementService.numberConnects === 2, 'Sync convert input should have called connect two times when we have two different uris');
+		assert(connectionManagementService.numberConnects === 2, 'Sync convert input should have called connect two times when we have two different URIs');
 	});
 
 
@@ -278,7 +278,7 @@ suite('Query Input Factory', () => {
 		let connProfile2 = connectionManagementService.getConnectionProfile('file:///test/file2.sql');
 		assert(connProfile2 !== undefined, 'connection profile 2 should not be undefined');
 		assert(connProfile2 !== connProfile1, 'connection profiles should be different for two uris');
-		assert(connectionManagementService.numberConnects === 2, 'Async convert input should have called connect two times when we have two different uris');
+		assert(connectionManagementService.numberConnects === 2, 'Async convert input should have called connect two times when we have two different URIs');
 	});
 
 	test('sync query editor input is not connected if no global connection exists', () => {
