@@ -38,10 +38,12 @@ import { errorForeground } from 'vs/platform/theme/common/colorRegistry';
 		</div>
 		<div [style.display]="getEditableDisplay()" #editableDropDown style="width: 100%;"></div>
 		<div [style.display]="getNotEditableDisplay()" #dropDown style="width: 100%;"></div>
-		<div class="dropdown-error-container" #errorMessage *ngIf="!_valid && validationErrorMessage.length!==0 && !isInitState">
+		<label #errorMessage tabindex="-1" class="dropdown-error-container"
+		aria-live="polite" [attr.id]="errorId" aria-atomic="true"
+		*ngIf="!_valid && validationErrorMessage && validationErrorMessage.length!==0 && !isInitState">
 			<div class="sql codicon error dropdown-error-icon"></div>
 			<span class="dropdown-error-text">{{validationErrorMessage}}</span>
-		</div>
+		</label>
 	</div>
 	`
 })
@@ -137,6 +139,27 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 	public override async validate(): Promise<boolean> {
 		const validationResult = await super.validate();
 		this._changeRef.detectChanges();
+		if (!validationResult) {
+			if (this.editable) {
+				this._editableDropdown.inputElement.setAttribute('aria-describedby', this.errorId);
+				this._editableDropdown.inputElement.setAttribute('aria-errormessage', this.errorId);
+				this._editableDropdown.inputElement.setAttribute('aria-invalid', 'true');
+			} else {
+				this._selectBox.selectElem.setAttribute('aria-describedby', this.errorId);
+				this._selectBox.selectElem.setAttribute('aria-errormessage', this.errorId);
+				this._selectBox.selectElem.setAttribute('aria-invalid', 'true');
+			}
+		} else {
+			if (this.editable) {
+				this._editableDropdown.inputElement.removeAttribute('aria-describedby');
+				this._editableDropdown.inputElement.removeAttribute('aria-errormessage');
+				this._editableDropdown.inputElement.removeAttribute('aria-invalid');
+			} else {
+				this._selectBox.selectElem.removeAttribute('aria-describedby');
+				this._selectBox.selectElem.removeAttribute('aria-errormessage');
+				this._selectBox.selectElem.removeAttribute('aria-invalid');
+			}
+		}
 		return validationResult;
 	}
 
@@ -332,6 +355,10 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 			return localize('defaultDropdownErrorMessage', "Please fill out this field."); // Adding a default error message for required editable dropdowns having an empty value.
 		}
 		return validationErrorMessage;
+	}
+
+	public get errorId(): string {
+		return this.descriptor.id + '-err';
 	}
 }
 
