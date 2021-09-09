@@ -105,6 +105,11 @@ suite('NotebookMarkdownRenderer', () => {
 		assert.strictEqual(result.innerHTML, `<p><img src="attachment:ads.png" alt="altText"></p>`, 'Cell attachment no image data failed');
 	});
 
+	test('table followed by blank line with space and then header renders correctly (#16245)', function (): void {
+		let result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: '<table></table>\n \n### Hello', isTrusted: true });
+		assert.strictEqual(result.innerHTML, '<table></table>\n\n<h3 id="hello">Hello</h3>\n');
+	});
+
 	/**
 	 * This suite contains tests that verify the expected parsing results for the current version of marked.js which were determined to have
 	 * changed in newer versions of marked.js being brought in. They are put here as a staging ground to keep track of these differences, but once the
