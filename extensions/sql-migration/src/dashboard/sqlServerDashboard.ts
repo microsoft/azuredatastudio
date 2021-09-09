@@ -617,14 +617,14 @@ export class DashboardWidget {
 			height: 96,
 			CSSStyles: {
 				'opacity': '50%',
-				'margin': '20% auto 10% auto',
+				'margin': '15% auto 10% auto',
 				'filter': 'drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))',
 				'display': 'none'
 			}
 		}).component();
 
 		const addAccountText = view.modelBuilder.text().withProps({
-			value: loc.ADD_ACCOUNT,
+			value: loc.ADD_ACCOUNT_MESSAGE,
 			width: 198,
 			height: 34,
 			CSSStyles: {
@@ -636,6 +636,37 @@ export class DashboardWidget {
 				'display': 'none'
 			}
 		}).component();
+
+		const addAccountButton = view.modelBuilder.button().withProps({
+			label: loc.ADD_ACCOUNT,
+			width: '100px',
+			enabled: true,
+			CSSStyles: {
+				'margin': '5% 40%',
+				'display': 'none'
+			}
+		}).component();
+
+		this._disposables.push(addAccountButton.onDidClick(async (e) => {
+			await vscode.commands.executeCommand('workbench.actions.modal.linkedAccount');
+			addAccountButton.enabled = false;
+			let accounts = await azdata.accounts.getAllAccounts();
+
+			if (accounts.length !== 0) {
+				addAccountImage.updateCssStyles({
+					'display': 'none'
+				});
+				addAccountText.updateCssStyles({
+					'display': 'none'
+				});
+				addAccountButton.updateCssStyles({
+					'display': 'none'
+				});
+				this._migrationStatusCardsContainer.updateCssStyles({ 'visibility': 'visible' });
+				this._viewAllMigrationsButton.updateCssStyles({ 'visibility': 'visible' });
+			}
+			await this.refreshMigrations();
+		}));
 
 		const header = view.modelBuilder.flexContainer().withItems(
 			[
@@ -657,13 +688,11 @@ export class DashboardWidget {
 			addAccountText.updateCssStyles({
 				'display': 'block'
 			});
-			this._migrationStatusCardsContainer.updateCssStyles({
-				'visibility': 'hidden'
+			addAccountButton.updateCssStyles({
+				'display': 'block'
 			});
-			buttonContainer.removeItem(this._viewAllMigrationsButton);
-			refreshButton.updateCssStyles({
-				'float': 'right'
-			});
+			this._migrationStatusCardsContainer.updateCssStyles({ 'visibility': 'hidden' });
+			this._viewAllMigrationsButton.updateCssStyles({ 'visibility': 'hidden' });
 		}
 
 		this._inProgressMigrationButton = this.createStatusCard(
@@ -754,6 +783,7 @@ export class DashboardWidget {
 
 		statusContainer.addItem(addAccountImage, {});
 		statusContainer.addItem(addAccountText, {});
+		statusContainer.addItem(addAccountButton, {});
 
 		statusContainer.addItem(this._migrationStatusCardLoadingContainer, {
 			CSSStyles: {
