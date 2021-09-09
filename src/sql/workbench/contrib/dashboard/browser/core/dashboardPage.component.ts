@@ -165,9 +165,6 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			this.createTabs(tempWidgets);
 		}
 
-		this.showToolbar = true;
-		this.createToolbar(this.toolbarContainer.nativeElement, this.homeTabId);
-
 		this._register(this.themeService.onDidColorThemeChange((event: IColorTheme) => {
 			this.updateTheme(event);
 		}));
