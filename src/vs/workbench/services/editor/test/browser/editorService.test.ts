@@ -873,8 +873,8 @@ suite.skip('EditorService', () => { // {{SQL CARBON EDIT}} Skip suite
 				assert.ok(!lastEditorFactoryEditor);
 				assert.ok(!lastUntitledEditorFactoryEditor);
 				assert.strictEqual(lastDiffEditorFactoryEditor, untypedEditor);
-				assert.strictEqual((lastDiffEditorFactoryEditor as IUntitledTextResourceEditorInput).options?.preserveFocus, true);
-				assert.strictEqual((lastDiffEditorFactoryEditor as IUntitledTextResourceEditorInput).options?.sticky, true);
+				assert.strictEqual((lastDiffEditorFactoryEditor as unknown as IUntitledTextResourceEditorInput).options?.preserveFocus, true); // {{SQL CARBON EDIT}} Cast to get around stricter compilation rules
+				assert.strictEqual((lastDiffEditorFactoryEditor as unknown as IUntitledTextResourceEditorInput).options?.sticky, true); // {{SQL CARBON EDIT}} Cast to get around stricter compilation rules
 
 				await resetTestState();
 			}
