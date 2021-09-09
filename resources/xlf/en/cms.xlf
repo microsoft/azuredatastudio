@@ -179,6 +179,30 @@
     <trans-unit id="cms.connectionOptions.failoverPartner.displayName">
       <source xml:lang="en">Failover partner</source>
     </trans-unit>
+    <trans-unit id="cms.connectionOptions.groupName.advanced">
+      <source xml:lang="en">Advanced</source>
+    </trans-unit>
+    <trans-unit id="cms.connectionOptions.groupName.connectionResiliency">
+      <source xml:lang="en">Connection Resiliency</source>
+    </trans-unit>
+    <trans-unit id="cms.connectionOptions.groupName.context">
+      <source xml:lang="en">Context</source>
+    </trans-unit>
+    <trans-unit id="cms.connectionOptions.groupName.initialization">
+      <source xml:lang="en">Initialization</source>
+    </trans-unit>
+    <trans-unit id="cms.connectionOptions.groupName.pooling">
+      <source xml:lang="en">Pooling</source>
+    </trans-unit>
+    <trans-unit id="cms.connectionOptions.groupName.replication">
+      <source xml:lang="en">Replication</source>
+    </trans-unit>
+    <trans-unit id="cms.connectionOptions.groupName.security">
+      <source xml:lang="en">Security</source>
+    </trans-unit>
+    <trans-unit id="cms.connectionOptions.groupName.source">
+      <source xml:lang="en">Source</source>
+    </trans-unit>
     <trans-unit id="cms.connectionOptions.loadBalanceTimeout.description">
       <source xml:lang="en">The minimum amount of time (in seconds) for this connection to live in the pool before being destroyed</source>
     </trans-unit>
