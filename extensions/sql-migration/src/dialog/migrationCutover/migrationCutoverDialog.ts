@@ -9,10 +9,9 @@ import { IconPathHelper } from '../../constants/iconPathHelper';
 import { MigrationContext, MigrationStatus } from '../../models/migrationLocalStorage';
 import { MigrationCutoverDialogModel } from './migrationCutoverDialogModel';
 import * as loc from '../../constants/strings';
-import { convertByteSizeToReadableUnit, convertIsoTimeToLocalTime, getMigrationStatusImage, SupportedAutoRefreshIntervals, clearDialogMessage } from '../../api/utils';
+import { convertByteSizeToReadableUnit, convertIsoTimeToLocalTime, getSqlServerName, getMigrationStatusImage, SupportedAutoRefreshIntervals, clearDialogMessage } from '../../api/utils';
 import { EOL } from 'os';
 import { ConfirmCutoverDialog } from './confirmCutoverDialog';
-import { getSqlServerVersion } from '../../constants/helper';
 
 const refreshFrequency: SupportedAutoRefreshIntervals = 30000;
 const statusImageSize: number = 14;
@@ -588,7 +587,8 @@ export class MigrationCutoverDialog {
 			const sqlServerInfo = await azdata.connection.getServerInfo((await azdata.connection.getCurrentConnection()).connectionId);
 			const sqlServerName = this._model._migration.sourceConnectionProfile.serverName;
 			const sourceDatabaseName = this._model._migration.migrationContext.properties.sourceDatabaseName;
-			const sqlServerVersion = await getSqlServerVersion();
+			const versionName = getSqlServerName(sqlServerInfo.serverMajorVersion!);
+			const sqlServerVersion = versionName ? versionName : sqlServerInfo.serverVersion;
 			const targetDatabaseName = this._model._migration.migrationContext.name;
 			const targetServerName = this._model._migration.targetManagedInstance.name;
 			let targetServerVersion;

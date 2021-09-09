@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
-import { getSqlServerName } from '../api/utils';
 import { MigrationContext } from '../models/migrationLocalStorage';
 import * as loc from './strings';
 
@@ -26,11 +24,4 @@ export function getMigrationTargetType(migration: MigrationContext): string {
 
 export function getMigrationMode(migration: MigrationContext): string {
 	return migration.migrationContext.properties.autoCutoverConfiguration?.autoCutover?.valueOf() ? loc.OFFLINE : loc.OFFLINE;
-}
-
-export async function getSqlServerVersion(): Promise<string> {
-	const sqlServerInfo = await azdata.connection.getServerInfo((await azdata.connection.getCurrentConnection()).connectionId);
-	const versionName = getSqlServerName(sqlServerInfo.serverMajorVersion!);
-	const sqlServerVersion = versionName ? versionName : sqlServerInfo.serverVersion;
-	return sqlServerVersion;
 }
