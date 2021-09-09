@@ -236,6 +236,7 @@ export class TabsTitleControl extends TitleControl {
 				}
 
 				EventHelper.stop(e);
+
 				// {{SQL CARBON EDIT}} - Create our own editor input so we open an untitled query editor
 				const queryEditorInput = await this.queryEditorService.newSqlEditor({ connectWithGlobal: true, open: false });
 				this.group.openEditor(
@@ -245,6 +246,17 @@ export class TabsTitleControl extends TitleControl {
 						index: this.group.count // always at the end
 					}
 				);
+				/*
+				this.editorService.openEditor({
+					resource: undefined,
+					forceUntitled: true,
+					options: {
+						pinned: true,
+						index: this.group.count, // always at the end
+						override: DEFAULT_EDITOR_ASSOCIATION.id
+					}
+				);
+				*/
 			}));
 		});
 

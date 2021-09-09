@@ -147,7 +147,7 @@ suite('Files - TextFileEditorTracker', () => {
 	test.skip('dirty untitled text file model opens as editor', async function () { // {{SQL CARBON EDIT}} tabcolormode failure
 		const accessor = await createTracker();
 
-		const untitledTextEditor = accessor.editorService.createEditorInput({ forceUntitled: true }) as UntitledTextEditorInput;
+		const untitledTextEditor = accessor.editorService.createEditorInput({ resource: undefined, forceUntitled: true }) as UntitledTextEditorInput;
 		const model = disposables.add(await untitledTextEditor.resolve());
 
 		assert.ok(!accessor.editorService.isOpened(untitledTextEditor));

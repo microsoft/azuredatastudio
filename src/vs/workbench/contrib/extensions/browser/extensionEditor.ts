@@ -27,8 +27,8 @@ import { RemoteBadgeWidget } from 'vs/workbench/contrib/extensions/browser/exten
 import { IEditorOpenContext } from 'vs/workbench/common/editor';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import {
-	UpdateAction, ReloadAction, EnableDropDownAction, DisableDropDownAction, StatusLabelAction, SetFileIconThemeAction, SetColorThemeAction,
-	RemoteInstallAction, ExtensionToolTipAction, SystemDisabledWarningAction, LocalInstallAction, ToggleSyncExtensionAction, SetProductIconThemeAction,
+	UpdateAction, ReloadAction, EnableDropDownAction, DisableDropDownAction, ExtensionStatusLabelAction, SetFileIconThemeAction, SetColorThemeAction,
+	RemoteInstallAction, ExtensionToolTipAction, ExtensionStatusIconAction, LocalInstallAction, ToggleSyncExtensionAction, SetProductIconThemeAction,
 	ActionWithDropDownAction, InstallDropdownAction, InstallingLabelAction, UninstallAction, ExtensionActionWithDropdownActionViewItem, ExtensionDropDownAction,
 	InstallAnotherVersionAction, ExtensionEditorManageExtensionAction, WebInstallAction
 } from 'vs/workbench/contrib/extensions/browser/extensionsActions';
@@ -437,10 +437,10 @@ export class ExtensionEditor extends EditorPane {
 		];
 		const reloadAction = this.instantiationService.createInstance(ReloadAction);
 		const combinedInstallAction = this.instantiationService.createInstance(InstallDropdownAction);
-		const systemDisabledWarningAction = this.instantiationService.createInstance(SystemDisabledWarningAction);
+		const systemDisabledWarningAction = this.instantiationService.createInstance(ExtensionStatusIconAction);
 		const actions = [
 			reloadAction,
-			this.instantiationService.createInstance(StatusLabelAction),
+			this.instantiationService.createInstance(ExtensionStatusLabelAction),
 			this.instantiationService.createInstance(UpdateAction),
 			this.instantiationService.createInstance(SetColorThemeAction, await this.workbenchThemeService.getColorThemes()),
 			this.instantiationService.createInstance(SetFileIconThemeAction, await this.workbenchThemeService.getFileIconThemes()),

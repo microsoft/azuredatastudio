@@ -294,6 +294,16 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 				// {{SQL CARBON EDIT}} - Create our own editor input so we open an untitled query editor
 				const queryEditorInput = await this.queryEditorService.newSqlEditor({ connectWithGlobal: true, open: false });
 				this.openEditor(queryEditorInput, { pinned: true });
+				/*
+				this.editorService.openEditor({
+					resource: undefined,
+					forceUntitled: true,
+					options: {
+						pinned: true,
+						override: DEFAULT_EDITOR_ASSOCIATION.id
+					}
+				}, this.id);
+				*/
 			}
 		}));
 

@@ -141,7 +141,7 @@ export class DiffEditorInput extends SideBySideEditorInput {
 		const originalResourceEditorInput = this.secondary.toUntyped(group, context);
 		const modifiedResourceEditorInput = this.primary.toUntyped(group, context);
 
-		if (originalResourceEditorInput && modifiedResourceEditorInput) {
+		if (originalResourceEditorInput && modifiedResourceEditorInput && !isResourceDiffEditorInput(originalResourceEditorInput) && !isResourceDiffEditorInput(modifiedResourceEditorInput)) {
 			return {
 				label: this.name,
 				description: this.description,
@@ -154,15 +154,19 @@ export class DiffEditorInput extends SideBySideEditorInput {
 	}
 
 	override matches(otherInput: IEditorInput | IUntypedEditorInput): boolean {
+		if (this === otherInput) {
+			return true;
+		}
+
+		if (otherInput instanceof DiffEditorInput) {
+			return this.modified.matches(otherInput.modified) && this.original.matches(otherInput.original) && otherInput.forceOpenAsBinary === this.forceOpenAsBinary;
+		}
+
 		if (isResourceDiffEditorInput(otherInput)) {
 			return this.modified.matches(otherInput.modified) && this.original.matches(otherInput.original);
 		}
 
-		if (!super.matches(otherInput)) {
-			return false;
-		}
-
-		return otherInput instanceof DiffEditorInput && otherInput.forceOpenAsBinary === this.forceOpenAsBinary;
+		return false;
 	}
 
 	override dispose(): void {
