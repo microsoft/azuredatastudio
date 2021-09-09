@@ -1,0 +1,13 @@
+{
+	"parserOptions": {
+		"project": "./extensions/admin-tool-ext-win/tsconfig.json"
+	},
+	"rules": {
+		"@typescript-eslint/no-floating-promises": [
+			"error",
+			{
+				"ignoreVoid": true
+			}
+		]
+	}
+}
