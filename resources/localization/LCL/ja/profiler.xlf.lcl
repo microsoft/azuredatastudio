@@ -19,7 +19,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Cancel]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[キャンセル]]></Val>
+            <Val><![CDATA[取り消し]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -99,6 +99,9 @@
       <Item ItemId=";extensions/profiler/package.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SQL Server Profiler for Azure Data Studio]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Data Studio のSQL Server Profiler]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -124,7 +127,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Launch Profiler]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Profiler を起動]]></Val>
+            <Val><![CDATA[プロファイラーを起動]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -132,6 +135,9 @@
       <Item ItemId=";extensions/profiler/package.profiler.contributes.title.openCreateSessionDialog" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Create Profiler Season]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[プロファイラー シーズンの作成]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
