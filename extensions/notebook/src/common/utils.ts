@@ -14,6 +14,7 @@ import { notebookLanguages, notebookConfigKey, pinnedBooksConfigKey, AUTHTYPE, I
 import { IPrompter, IQuestion, QuestionTypes } from '../prompts/question';
 import { BookTreeItemFormat, BookTreeItemType } from '../book/bookTreeItem';
 import * as loc from './localizedConstants';
+import * as path from 'path';
 
 const localize = nls.loadMessageBundle();
 
@@ -515,4 +516,29 @@ export async function selectFolder(): Promise<string | undefined> {
 		return uris[0].fsPath;
 	}
 	return undefined;
+}
+
+export function transformPathToBaseFolder(notebookPath: string): string {
+	let parsedPath = path.parse(notebookPath);
+	let userHome = getUserHome();
+	let relativePathStrUserHome = path.relative(notebookPath, userHome);
+	if (notebookPath === '.' || relativePathStrUserHome.endsWith('..') || relativePathStrUserHome === '') {
+		// If you don't match the notebookPath's casing for drive letters,
+		// a 404 will result when trying to create a new session on Windows
+		if (notebookPath && userHome && notebookPath[0].toLowerCase() === userHome[0].toLowerCase()) {
+			userHome = notebookPath[0] + userHome.substr(1);
+		}
+		// If the user is using a system version of python, then
+		// '.' will try to create a notebook in a system directory.
+		// Since this will fail due to permissions issues, use the user's
+		// home folder instead.
+		return userHome;
+	} else {
+		let splitDirName: string[] = path.dirname(notebookPath).split(path.sep);
+		if (splitDirName.length > 1) {
+			return path.join(parsedPath.root, splitDirName[1]);
+		} else {
+			return userHome;
+		}
+	}
 }
