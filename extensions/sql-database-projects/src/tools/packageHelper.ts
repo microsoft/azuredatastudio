@@ -66,7 +66,7 @@ export class PackageHelper {
 				await this.addPackage(project, packageName, packageVersion);
 			}
 		} catch (e) {
-			vscode.window.showErrorMessage(e.message);
+			void vscode.window.showErrorMessage(e.message);
 		}
 	}
 
@@ -85,7 +85,7 @@ export class PackageHelper {
 			// TODO: figure out which project contains the file
 			// the new style csproj doesn't list all the files in the project anymore, unless the file isn't in the same folder
 			// so we can't rely on using that to check
-			vscode.window.showInformationMessage(`To use SQL bindings, ensure your Azure Functions project has a reference to ${constants.sqlExtensionPackageName}`);
+			void vscode.window.showInformationMessage(`To use SQL bindings, ensure your Azure Functions project has a reference to ${constants.sqlExtensionPackageName}`);
 			console.error('need to find which project contains the file ' + filePath);
 			return undefined;
 		} else if (functionsProjects.length === 0) {
