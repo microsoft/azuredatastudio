@@ -1,26 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/kusto/dist/features" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="kusto.accountDoesNotExist">
+      <source xml:lang="en">Account does not exist.</source>
+    </trans-unit>
+    <trans-unit id="kusto.insufficientlyPrivelagedAzureAccount">
+      <source xml:lang="en">The configured Azure account for {0} does not have sufficient permissions for Azure Key Vault to access a column master key for Always Encrypted.</source>
+    </trans-unit>
+    <trans-unit id="kusto.missingLinkedAzureAccount">
+      <source xml:lang="en">Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account is available. Please add a linked Azure account and retry the query.</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/kusto/dist/kustoServer" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="downloadServiceDoneChannelMsg">
+      <source xml:lang="en">Done installing {0}</source>
+    </trans-unit>
+    <trans-unit id="downloadingServiceChannelMsg">
+      <source xml:lang="en">Downloading {0}</source>
+    </trans-unit>
+    <trans-unit id="downloadingServiceSizeChannelMsg">
+      <source xml:lang="en">({0} KB)</source>
+    </trans-unit>
+    <trans-unit id="downloadingServiceStatusMsg">
+      <source xml:lang="en">Downloading {0}</source>
+    </trans-unit>
+    <trans-unit id="failedToStartServiceErrorMsg">
+      <source xml:lang="en">Failed to start {0}</source>
+    </trans-unit>
+    <trans-unit id="installedServiceChannelMsg">
+      <source xml:lang="en">Installed {0}</source>
+    </trans-unit>
+    <trans-unit id="installingServiceChannelMsg">
+      <source xml:lang="en">Installing {0} to {1}</source>
+    </trans-unit>
+    <trans-unit id="installingServiceStatusMsg">
+      <source xml:lang="en">Installing {0}</source>
+    </trans-unit>
+    <trans-unit id="serviceStartedStatusMsg">
+      <source xml:lang="en">{0} Started</source>
+    </trans-unit>
+    <trans-unit id="startingServiceStatusMsg">
+      <source xml:lang="en">Starting {0}</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/kusto/dist/main" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="kusto.unsupportedPlatform">
+      <source xml:lang="en">Unsupported platform</source>
+    </trans-unit>
+    <trans-unit id="notebookFileType">
+      <source xml:lang="en">Notebooks</source>
+    </trans-unit>
+    <trans-unit id="unsupportedFileType">
+      <source xml:lang="en">Only .ipynb Notebooks are supported</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/kusto/dist/objectExplorerNodeProvider/command" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="cancel">
+      <source xml:lang="en">Cancel operation?</source>
+    </trans-unit>
+    <trans-unit id="cancelTooltip">
+      <source xml:lang="en">Cancel</source>
+    </trans-unit>
+    <trans-unit id="kusto.searchServers">
+      <source xml:lang="en">Search Server Names</source>
+    </trans-unit>
+    <trans-unit id="progress">
+      <source xml:lang="en">$(sync~spin) {0}...</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/kusto/dist/objectExplorerNodeProvider/objectExplorerNodeProvider" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="notifyError">
+      <source xml:lang="en">Error notifying of node change: {0}</source>
+    </trans-unit>
+    <trans-unit id="rootLabel">
+      <source xml:lang="en">Root</source>
+    </trans-unit>
+    <trans-unit id="sessionNotFound">
+      <source xml:lang="en">Session for node {0} does not exist</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/kusto/dist/telemetry" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="serviceCrashMessage">
+      <source xml:lang="en">{0} component exited unexpectedly. Please restart Azure Data Studio.</source>
+    </trans-unit>
+    <trans-unit id="viewKnownIssuesText">
+      <source xml:lang="en">View Known Issues</source>
+    </trans-unit>
+</body></file>
   <file original="extensions/kusto/package" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="notebook.command.new">
-      <source xml:lang="en">New Notebook</source>
-    </trans-unit>
-    <trans-unit id="notebook.command.open">
-      <source xml:lang="en">Open Notebook</source>
-    </trans-unit>
     <trans-unit id="cloud.databaseProperties.name">
       <source xml:lang="en">Database Name</source>
     </trans-unit>
     <trans-unit id="cloud.databaseProperties.size">
       <source xml:lang="en">Size (MB)</source>
     </trans-unit>
-    <trans-unit id="cloud.serverProperties.summary">
-      <source xml:lang="en">Status</source>
+    <trans-unit id="cloud.serverProperties.diskCacheCapacity">
+      <source xml:lang="en">% of Cluster data capacity used</source>
     </trans-unit>
     <trans-unit id="cloud.serverProperties.machinesTotal">
       <source xml:lang="en">Total Machines in the cluster</source>
     </trans-unit>
-    <trans-unit id="cloud.serverProperties.diskCacheCapacity">
-      <source xml:lang="en">% of Cluster data capacity used</source>
+    <trans-unit id="cloud.serverProperties.summary">
+      <source xml:lang="en">Status</source>
     </trans-unit>
     <trans-unit id="databasesListProperties.name">
       <source xml:lang="en">Name</source>
@@ -28,17 +109,89 @@
     <trans-unit id="databasesListProperties.size">
       <source xml:lang="en">Size (MB)</source>
     </trans-unit>
-    <trans-unit id="objectsListProperties.name">
-      <source xml:lang="en">Name</source>
-    </trans-unit>
-    <trans-unit id="objectsListProperties.metadataTypeName">
-      <source xml:lang="en">Type</source>
-    </trans-unit>
     <trans-unit id="kusto.configuration.title">
       <source xml:lang="en">KUSTO configuration</source>
     </trans-unit>
-    <trans-unit id="kusto.query.displayBitAsNumber">
-      <source xml:lang="en">Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false'</source>
+    <trans-unit id="kusto.connectionOptions.applicationName.description">
+      <source xml:lang="en">The name of the application</source>
+    </trans-unit>
+    <trans-unit id="kusto.connectionOptions.applicationName.displayName">
+      <source xml:lang="en">Application name</source>
+    </trans-unit>
+    <trans-unit id="kusto.connectionOptions.authType.categoryValues.azureMFA">
+      <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
+    </trans-unit>
+    <trans-unit id="kusto.connectionOptions.authType.categoryValues.none">
+      <source xml:lang="en">No Authentication</source>
+    </trans-unit>
+    <trans-unit id="kusto.connectionOptions.authType.categoryValues.sqlLogin">
+      <source xml:lang="en">User Authentication</source>
+    </trans-unit>
+    <trans-unit id="kusto.connectionOptions.authType.description">
+      <source xml:lang="en">Specifies the method of authenticating with Kusto Server</source>
+    </trans-unit>
+    <trans-unit id="kusto.connectionOptions.authType.displayName">
+      <source xml:lang="en">Authentication type</source>
+    </trans-unit>
+    <trans-unit id="kusto.connectionOptions.connectRetryCount.description">
+      <source xml:lang="en">Number of attempts to restore connection</source>
+    </trans-unit>
+    <trans-unit id="kusto.connectionOptions.connectRetryCount.displayName">
+      <source xml:lang="en">Connect retry count</source>
+    </trans-unit>
+    <trans-unit id="kusto.connectionOptions.connectRetryInterval.description">
+      <source xml:lang="en">Delay between attempts to restore connection</source>
+    </trans-unit>
+    <trans-unit id="kusto.connectionOptions.connectRetryInterval.displayName">
+      <source xml:lang="en">Connect retry interval</source>
+    </trans-unit>
+    <trans-unit id="kusto.connectionOptions.connectTimeout.description">
+      <source xml:lang="en">The length of time (in seconds) to wait for a connection to the server before terminating the attempt and generating an error</source>
+    </trans-unit>
+    <trans-unit id="kusto.connectionOptions.connectTimeout.displayName">
+      <source xml:lang="en">Connect timeout</source>
+    </trans-unit>
+    <trans-unit id="kusto.connectionOptions.connectionName.description">
+      <source xml:lang="en">Custom name of the connection</source>
+    </trans-unit>
+    <trans-unit id="kusto.connectionOptions.connectionName.displayName">
+      <source xml:lang="en">Name (optional)</source>
+    </trans-unit>
+    <trans-unit id="kusto.connectionOptions.databaseName.description">
+      <source xml:lang="en">The name of the initial catalog or database in the data source</source>
+    </trans-unit>
+    <trans-unit id="kusto.connectionOptions.databaseName.displayName">
+      <source xml:lang="en">Database</source>
+    </trans-unit>
+    <trans-unit id="kusto.connectionOptions.failoverPartner.description">
+      <source xml:lang="en">The name or network address of the instance of Kusto Server that acts as a failover partner</source>
+    </trans-unit>
+    <trans-unit id="kusto.connectionOptions.failoverPartner.displayName">
+      <source xml:lang="en">Failover partner</source>
+    </trans-unit>
+    <trans-unit id="kusto.connectionOptions.password.description">
+      <source xml:lang="en">Indicates the password to be used when connecting to the data source</source>
+    </trans-unit>
+    <trans-unit id="kusto.connectionOptions.password.displayName">
+      <source xml:lang="en">Password</source>
+    </trans-unit>
+    <trans-unit id="kusto.connectionOptions.serverName.description">
+      <source xml:lang="en">Kusto cluster name</source>
+    </trans-unit>
+    <trans-unit id="kusto.connectionOptions.serverName.displayName">
+      <source xml:lang="en">Cluster</source>
+    </trans-unit>
+    <trans-unit id="kusto.connectionOptions.userName.description">
+      <source xml:lang="en">Indicates the user ID to be used when connecting to the data source</source>
+    </trans-unit>
+    <trans-unit id="kusto.connectionOptions.userName.displayName">
+      <source xml:lang="en">User name</source>
+    </trans-unit>
+    <trans-unit id="kusto.connectionOptions.workstationId.description">
+      <source xml:lang="en">The name of the workstation connecting to Kusto Server</source>
+    </trans-unit>
+    <trans-unit id="kusto.connectionOptions.workstationId.displayName">
+      <source xml:lang="en">Workstation Id</source>
     </trans-unit>
     <trans-unit id="kusto.format.alignColumnDefinitionsInColumns">
       <source xml:lang="en">Should column definitions be aligned?</source>
@@ -52,179 +205,26 @@
     <trans-unit id="kusto.logDebugInfo">
       <source xml:lang="en">[Optional] Log debug output to the console (View -&gt; Output) and then select appropriate output channel from the dropdown</source>
     </trans-unit>
-    <trans-unit id="kusto.tracingLevel">
-      <source xml:lang="en">[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information</source>
-    </trans-unit>
     <trans-unit id="kusto.provider.displayName">
       <source xml:lang="en">Azure Data Explorer (Kusto)</source>
     </trans-unit>
-    <trans-unit id="kusto.connectionOptions.connectionName.displayName">
-      <source xml:lang="en">Name (optional)</source>
+    <trans-unit id="kusto.query.displayBitAsNumber">
+      <source xml:lang="en">Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false'</source>
     </trans-unit>
-    <trans-unit id="kusto.connectionOptions.connectionName.description">
-      <source xml:lang="en">Custom name of the connection</source>
+    <trans-unit id="kusto.tracingLevel">
+      <source xml:lang="en">[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information</source>
     </trans-unit>
-    <trans-unit id="kusto.connectionOptions.serverName.displayName">
-      <source xml:lang="en">Cluster</source>
+    <trans-unit id="notebook.command.new">
+      <source xml:lang="en">New Notebook</source>
     </trans-unit>
-    <trans-unit id="kusto.connectionOptions.serverName.description">
-      <source xml:lang="en">Kusto cluster name</source>
+    <trans-unit id="notebook.command.open">
+      <source xml:lang="en">Open Notebook</source>
     </trans-unit>
-    <trans-unit id="kusto.connectionOptions.databaseName.displayName">
-      <source xml:lang="en">Database</source>
+    <trans-unit id="objectsListProperties.metadataTypeName">
+      <source xml:lang="en">Type</source>
     </trans-unit>
-    <trans-unit id="kusto.connectionOptions.databaseName.description">
-      <source xml:lang="en">The name of the initial catalog or database in the data source</source>
+    <trans-unit id="objectsListProperties.name">
+      <source xml:lang="en">Name</source>
     </trans-unit>
-    <trans-unit id="kusto.connectionOptions.authType.displayName">
-      <source xml:lang="en">Authentication type</source>
-    </trans-unit>
-    <trans-unit id="kusto.connectionOptions.authType.description">
-      <source xml:lang="en">Specifies the method of authenticating with Kusto Server</source>
-    </trans-unit>
-    <trans-unit id="kusto.connectionOptions.authType.categoryValues.azureMFA">
-      <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
-    </trans-unit>
-    <trans-unit id="kusto.connectionOptions.authType.categoryValues.none">
-      <source xml:lang="en">No Authentication</source>
-    </trans-unit>
-    <trans-unit id="kusto.connectionOptions.authType.categoryValues.sqlLogin">
-      <source xml:lang="en">User Authentication</source>
-    </trans-unit>
-    <trans-unit id="kusto.connectionOptions.userName.displayName">
-      <source xml:lang="en">User name</source>
-    </trans-unit>
-    <trans-unit id="kusto.connectionOptions.userName.description">
-      <source xml:lang="en">Indicates the user ID to be used when connecting to the data source</source>
-    </trans-unit>
-    <trans-unit id="kusto.connectionOptions.password.displayName">
-      <source xml:lang="en">Password</source>
-    </trans-unit>
-    <trans-unit id="kusto.connectionOptions.password.description">
-      <source xml:lang="en">Indicates the password to be used when connecting to the data source</source>
-    </trans-unit>
-    <trans-unit id="kusto.connectionOptions.connectTimeout.displayName">
-      <source xml:lang="en">Connect timeout</source>
-    </trans-unit>
-    <trans-unit id="kusto.connectionOptions.connectTimeout.description">
-      <source xml:lang="en">The length of time (in seconds) to wait for a connection to the server before terminating the attempt and generating an error</source>
-    </trans-unit>
-    <trans-unit id="kusto.connectionOptions.connectRetryCount.displayName">
-      <source xml:lang="en">Connect retry count</source>
-    </trans-unit>
-    <trans-unit id="kusto.connectionOptions.connectRetryCount.description">
-      <source xml:lang="en">Number of attempts to restore connection</source>
-    </trans-unit>
-    <trans-unit id="kusto.connectionOptions.connectRetryInterval.displayName">
-      <source xml:lang="en">Connect retry interval</source>
-    </trans-unit>
-    <trans-unit id="kusto.connectionOptions.connectRetryInterval.description">
-      <source xml:lang="en">Delay between attempts to restore connection</source>
-    </trans-unit>
-    <trans-unit id="kusto.connectionOptions.applicationName.displayName">
-      <source xml:lang="en">Application name</source>
-    </trans-unit>
-    <trans-unit id="kusto.connectionOptions.applicationName.description">
-      <source xml:lang="en">The name of the application</source>
-    </trans-unit>
-    <trans-unit id="kusto.connectionOptions.workstationId.displayName">
-      <source xml:lang="en">Workstation Id</source>
-    </trans-unit>
-    <trans-unit id="kusto.connectionOptions.workstationId.description">
-      <source xml:lang="en">The name of the workstation connecting to Kusto Server</source>
-    </trans-unit>
-    <trans-unit id="kusto.connectionOptions.failoverPartner.displayName">
-      <source xml:lang="en">Failover partner</source>
-    </trans-unit>
-    <trans-unit id="kusto.connectionOptions.failoverPartner.description">
-      <source xml:lang="en">The name or network address of the instance of Kusto Server that acts as a failover partner</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/kusto/dist/telemetry" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="viewKnownIssuesText">
-      <source xml:lang="en">View Known Issues</source>
-    </trans-unit>
-    <trans-unit id="serviceCrashMessage">
-      <source xml:lang="en">{0} component exited unexpectedly. Please restart Azure Data Studio.</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/kusto/dist/main" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="kusto.unsupportedPlatform">
-      <source xml:lang="en">Unsupported platform</source>
-    </trans-unit>
-    <trans-unit id="notebookFileType">
-      <source xml:lang="en">Notebooks</source>
-    </trans-unit>
-    <trans-unit id="unsupportedFileType">
-      <source xml:lang="en">Only .ipynb Notebooks are supported</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/kusto/dist/objectExplorerNodeProvider/objectExplorerNodeProvider" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="sessionNotFound">
-      <source xml:lang="en">Session for node {0} does not exist</source>
-    </trans-unit>
-    <trans-unit id="notifyError">
-      <source xml:lang="en">Error notifying of node change: {0}</source>
-    </trans-unit>
-    <trans-unit id="rootLabel">
-      <source xml:lang="en">Root</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/kusto/dist/objectExplorerNodeProvider/command" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="progress">
-      <source xml:lang="en">$(sync~spin) {0}...</source>
-    </trans-unit>
-    <trans-unit id="cancelTooltip">
-      <source xml:lang="en">Cancel</source>
-    </trans-unit>
-    <trans-unit id="cancel">
-      <source xml:lang="en">Cancel operation?</source>
-    </trans-unit>
-    <trans-unit id="kusto.searchServers">
-      <source xml:lang="en">Search Server Names</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/kusto/dist/kustoServer" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="serviceStartedStatusMsg">
-      <source xml:lang="en">{0} Started</source>
-    </trans-unit>
-    <trans-unit id="startingServiceStatusMsg">
-      <source xml:lang="en">Starting {0}</source>
-    </trans-unit>
-    <trans-unit id="failedToStartServiceErrorMsg">
-      <source xml:lang="en">Failed to start {0}</source>
-    </trans-unit>
-    <trans-unit id="installingServiceChannelMsg">
-      <source xml:lang="en">Installing {0} to {1}</source>
-    </trans-unit>
-    <trans-unit id="installingServiceStatusMsg">
-      <source xml:lang="en">Installing {0}</source>
-    </trans-unit>
-    <trans-unit id="installedServiceChannelMsg">
-      <source xml:lang="en">Installed {0}</source>
-    </trans-unit>
-    <trans-unit id="downloadingServiceChannelMsg">
-      <source xml:lang="en">Downloading {0}</source>
-    </trans-unit>
-    <trans-unit id="downloadingServiceSizeChannelMsg">
-      <source xml:lang="en">({0} KB)</source>
-    </trans-unit>
-    <trans-unit id="downloadingServiceStatusMsg">
-      <source xml:lang="en">Downloading {0}</source>
-    </trans-unit>
-    <trans-unit id="downloadServiceDoneChannelMsg">
-      <source xml:lang="en">Done installing {0}</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/kusto/dist/features" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="kusto.missingLinkedAzureAccount">
-      <source xml:lang="en">Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account is available. Please add a linked Azure account and retry the query.</source>
-    </trans-unit>
-    <trans-unit id="kusto.accountDoesNotExist">
-      <source xml:lang="en">Account does not exist.</source>
-    </trans-unit>
-    <trans-unit id="kusto.insufficientlyPrivelagedAzureAccount">
-      <source xml:lang="en">The configured Azure account for {0} does not have sufficient permissions for Azure Key Vault to access a column master key for Always Encrypted.</source>
-    </trans-unit>
-  </body></file>
+</body></file>
 </xliff>
