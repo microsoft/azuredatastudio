@@ -366,7 +366,8 @@ export const FILE_NAME = localize('sql.migration.file.name', "File name");
 export const SIZE_COLUMN_HEADER = localize('sql.migration.size.column.header', "Size");
 export const NO_PENDING_BACKUPS = localize('sql.migration.no.pending.backups', "No pending backups. Click refresh to check current status.");
 //Migration status dialog
-export const ADD_ACCOUNT = localize('sql.migration.status.add.account', "Add your Azure account to view existing migrations and their status.");
+export const ADD_ACCOUNT = localize('sql.migration.status.add.account', "Add account");
+export const ADD_ACCOUNT_MESSAGE = localize('sql.migration.status.add.account.MESSAGE', "Add your Azure account to view existing migrations and their status.");
 export const STATUS_ALL = localize('sql.migration.status.dropdown.all', "Status: All");
 export const STATUS_ONGOING = localize('sql.migration.status.dropdown.ongoing', "Status: Ongoing");
 export const STATUS_COMPLETING = localize('sql.migration.status.dropdown.completing', "Status: Completing");
