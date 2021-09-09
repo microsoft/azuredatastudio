@@ -30,7 +30,7 @@ import { ITextEditorOptions } from 'vs/platform/editor/common/editor';
 export class QueryTextEditor extends BaseTextEditor {
 
 	public static ID = 'modelview.editors.textEditor';
-	private _dimension: DOM.Dimension;
+	public _dimension: DOM.Dimension;
 	private _minHeight: number = 0;
 	private _maxHeight: number = 4000;
 	private _selected: boolean;
