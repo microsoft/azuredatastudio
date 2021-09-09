@@ -14,7 +14,6 @@ import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { ExtHostNotebook } from 'sql/workbench/api/common/extHostNotebook';
 import { MainThreadNotebookShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { INotebookManagerDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 suite('ExtHostNotebook Tests', () => {
 
@@ -124,7 +123,6 @@ suite('ExtHostNotebook Tests', () => {
 
 class NotebookProviderStub implements azdata.nb.NotebookProvider {
 	providerId: string = 'TestProvider';
-	standardKernels: azdata.nb.IStandardKernel[] = [{ name: 'fakeKernel', displayName: 'fakeKernel', connectionProviderIds: [mssqlProviderName] }];
 
 	getNotebookManager(notebookUri: vscode.Uri): Thenable<azdata.nb.NotebookManager> {
 		throw new Error('Method not implemented.');

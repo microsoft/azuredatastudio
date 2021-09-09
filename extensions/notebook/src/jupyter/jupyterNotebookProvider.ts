@@ -79,10 +79,6 @@ export class JupyterNotebookProvider implements nb.NotebookProvider {
 		}
 	}
 
-	public get standardKernels(): nb.IStandardKernel[] {
-		return [];
-	}
-
 	private transformToBaseFolder(notebookPath: string): string {
 		let parsedPath = path.parse(notebookPath);
 		let userHome = utils.getUserHome();

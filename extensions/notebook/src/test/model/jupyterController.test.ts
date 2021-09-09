@@ -76,7 +76,6 @@ describe('Jupyter Controller', function () {
 
 	it('Returns expected values from notebook provider', async () =>  {
 		await controller.activate();
-		should(controller.notebookProvider.standardKernels).deepEqual([], 'Notebook provider standard kernels should return empty array');
 		should(controller.notebookProvider.providerId).equal('jupyter', 'Notebook provider should be jupyter');
 		await should(controller.notebookProvider.getNotebookManager(undefined)).be.rejected();
 		should(controller.notebookProvider.notebookManagerCount).equal(0);

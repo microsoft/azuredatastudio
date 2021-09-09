@@ -4942,11 +4942,6 @@ declare module 'azdata' {
 
 		export interface NotebookProvider {
 			readonly providerId: string;
-			/**
-			 * @deprecated standardKernels will be removed in an upcoming release. Standard kernel contribution
-			 * should happen via JSON for extensions. Until this is removed, notebook providers can safely return an empty array.
-			 */
-			readonly standardKernels: IStandardKernel[];
 			getNotebookManager(notebookUri: vscode.Uri): Thenable<NotebookManager>;
 			handleNotebookClosed(notebookUri: vscode.Uri): void;
 		}
