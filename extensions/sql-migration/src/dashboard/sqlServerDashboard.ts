@@ -607,6 +607,34 @@ export class DashboardWidget {
 			}
 		});
 
+		const addAccountImage = view.modelBuilder.image().withProps({
+			iconPath: IconPathHelper.addAzureAccount,
+			iconHeight: 100,
+			iconWidth: 100,
+			width: 96,
+			height: 96,
+			CSSStyles: {
+				'opacity': '50%',
+				'margin': '20% auto 10% auto',
+				'filter': 'drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))',
+				'display': 'none'
+			}
+		}).component();
+
+		const addAccountText = view.modelBuilder.text().withProps({
+			value: loc.ADD_ACCOUNT,
+			width: 198,
+			height: 34,
+			CSSStyles: {
+				'font-family': 'Segoe UI',
+				'font-size': '12px',
+				'margin': 'auto',
+				'text-align': 'center',
+				'line-height': '16px',
+				'display': 'none'
+			}
+		}).component();
+
 		const header = view.modelBuilder.flexContainer().withItems(
 			[
 				statusContainerTitle,
@@ -617,6 +645,24 @@ export class DashboardWidget {
 		}).component();
 
 		this._migrationStatusCardsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
+
+		let accounts = await azdata.accounts.getAllAccounts();
+
+		if (accounts.length === 0) {
+			addAccountImage.updateCssStyles({
+				'display': 'block'
+			});
+			addAccountText.updateCssStyles({
+				'display': 'block'
+			});
+			this._migrationStatusCardsContainer.updateCssStyles({
+				'visibility': 'hidden'
+			});
+			buttonContainer.removeItem(this._viewAllMigrationsButton);
+			refreshButton.updateCssStyles({
+				'float': 'right'
+			});
+		}
 
 		this._inProgressMigrationButton = this.createStatusCard(
 			IconPathHelper.inProgressMigration,
@@ -703,6 +749,9 @@ export class DashboardWidget {
 			}
 		}
 		);
+
+		statusContainer.addItem(addAccountImage, {});
+		statusContainer.addItem(addAccountText, {});
 
 		statusContainer.addItem(this._migrationStatusCardLoadingContainer, {
 			CSSStyles: {
