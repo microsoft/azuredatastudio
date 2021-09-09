@@ -273,31 +273,14 @@
 	],
 	"compounds": [
 		{
-			"name": "Launch ADS & Debug All",
-			"stopAll": true,
-			"configurations": [
-				"Launch Azure Data Studio",
-				"Attach to Main Process",
-				"Attach to Extension Host",
-				"Attach to Shared Process",
-				"Attach to Renderer"
-			],
-			"preLaunchTask": "Ensure Prelaunch Dependencies",
-			"presentation": {
-				"group": "1_debug",
-				"order": 4
-			}
-		},
-		{
-			"name": "Launch ADS & Debug Main, Renderer and Extension Host",
+			"name": "Launch ADS & Debug Renderer and Extension Host",
 			"configurations": [
 				"Launch ADS & Debug Renderer",
-				"Attach to Main Process",
 				"Attach to Extension Host"
 			],
 			"presentation": {
 				"group": "1_debug",
-				"order": 3
+				"order": 1
 			}
 		},
 		{
@@ -312,14 +295,31 @@
 			}
 		},
 		{
-			"name": "Launch ADS & Debug Renderer and Extension Host",
+			"name": "Launch ADS & Debug Main, Renderer and Extension Host",
 			"configurations": [
 				"Launch ADS & Debug Renderer",
+				"Attach to Main Process",
 				"Attach to Extension Host"
 			],
 			"presentation": {
 				"group": "1_debug",
-				"order": 1
+				"order": 4
+			}
+		},
+		{
+			"name": "Launch ADS & Debug All",
+			"stopAll": true,
+			"configurations": [
+				"Launch Azure Data Studio",
+				"Attach to Main Process",
+				"Attach to Extension Host",
+				"Attach to Shared Process",
+				"Attach to Renderer"
+			],
+			"preLaunchTask": "Ensure Prelaunch Dependencies",
+			"presentation": {
+				"group": "1_debug",
+				"order": 5
 			}
 		},
 		{
