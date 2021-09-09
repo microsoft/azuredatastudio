@@ -873,9 +873,6 @@ This may take some time.</source>
     <trans-unit id="sql.migration.status">
       <source xml:lang="en">Status</source>
     </trans-unit>
-    <trans-unit id="sql.migration.status.add.account">
-      <source xml:lang="en">Add your Azure account to view existing migrations and their status.</source>
-    </trans-unit>
     <trans-unit id="sql.migration.status.canceling">
       <source xml:lang="en">Canceling</source>
     </trans-unit>
