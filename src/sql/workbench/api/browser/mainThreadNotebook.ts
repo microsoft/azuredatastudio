@@ -11,7 +11,7 @@ import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { Event, Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 
-import { INotebookService, INotebookProvider, INotebookManager } from 'sql/workbench/services/notebook/browser/notebookService';
+import { INotebookService, IExecuteProvider, INotebookManager, ISerializationProvider } from 'sql/workbench/services/notebook/browser/notebookService';
 import { INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, FutureMessageType, INotebookFutureDetails, INotebookFutureDone } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { LocalContentManager } from 'sql/workbench/services/notebook/common/localContentManager';
 import { Deferred } from 'sql/base/common/promise';
@@ -22,7 +22,8 @@ import type { FutureInternal } from 'sql/workbench/services/notebook/browser/int
 export class MainThreadNotebook extends Disposable implements MainThreadNotebookShape {
 
 	private _proxy: ExtHostNotebookShape;
-	private _providers = new Map<number, NotebookProviderWrapper>();
+	private _serializationProviders = new Map<number, SerializationProviderWrapper>();
+	private _executeProviders = new Map<number, ExecuteProviderWrapper>();
 	private _futures = new Map<number, FutureWrapper>();
 
 	constructor(
@@ -45,22 +46,41 @@ export class MainThreadNotebook extends Disposable implements MainThreadNotebook
 	}
 
 	//#region Extension host callable methods
-	public $registerNotebookProvider(providerId: string, handle: number): void {
+	public $registerSerializationProvider(providerId: string, handle: number): void {
 		let proxy: Proxies = {
 			main: this,
 			ext: this._proxy
 		};
-		let notebookProvider = this.instantiationService.createInstance(NotebookProviderWrapper, proxy, providerId, handle);
-		this._providers.set(handle, notebookProvider);
-		this.notebookService.registerProvider(providerId, notebookProvider);
+		let notebookProvider = this.instantiationService.createInstance(SerializationProviderWrapper, proxy, providerId, handle);
+		this._serializationProviders.set(handle, notebookProvider);
+		this.notebookService.registerSerializationProvider(providerId, notebookProvider);
 	}
 
-	public $unregisterNotebookProvider(handle: number): void {
-		let registration = this._providers.get(handle);
+	public $registerExecuteProvider(providerId: string, handle: number): void {
+		let proxy: Proxies = {
+			main: this,
+			ext: this._proxy
+		};
+		let notebookProvider = this.instantiationService.createInstance(ExecuteProviderWrapper, proxy, providerId, handle);
+		this._executeProviders.set(handle, notebookProvider);
+		this.notebookService.registerExecuteProvider(providerId, notebookProvider);
+	}
+
+	public $unregisterSerializationProvider(handle: number): void {
+		let registration = this._serializationProviders.get(handle);
 		if (registration) {
-			this.notebookService.unregisterProvider(registration.providerId);
+			this.notebookService.unregisterSerializationProvider(registration.providerId);
 			registration.dispose();
-			this._providers.delete(handle);
+			this._serializationProviders.delete(handle);
+		}
+	}
+
+	public $unregisterExecuteProvider(handle: number): void {
+		let registration = this._executeProviders.get(handle);
+		if (registration) {
+			this.notebookService.unregisterExecuteProvider(registration.providerId);
+			registration.dispose();
+			this._executeProviders.delete(handle);
 		}
 	}
 
@@ -86,7 +106,7 @@ interface Proxies {
 	ext: ExtHostNotebookShape;
 }
 
-class NotebookProviderWrapper extends Disposable implements INotebookProvider {
+class SerializationProviderWrapper extends Disposable implements ISerializationProvider {
 	private _notebookUriToManagerMap = new Map<string, NotebookManagerWrapper>();
 
 	constructor(
@@ -98,7 +118,36 @@ class NotebookProviderWrapper extends Disposable implements INotebookProvider {
 		super();
 	}
 
-	getNotebookManager(notebookUri: URI): Thenable<INotebookManager> {
+	getContentManager(notebookUri: URI): Thenable<azdata.nb.ContentManager> {
+		// TODO must call through to setup in the extension host
+		return this.doGetNotebookManager(notebookUri);
+	}
+
+	private async doGetNotebookManager(notebookUri: URI): Promise<azdata.nb.ContentManager> {
+		let uriString = notebookUri.toString();
+		let manager = this._notebookUriToManagerMap.get(uriString);
+		if (!manager) {
+			manager = this.instantiationService.createInstance(NotebookManagerWrapper, this._proxy, this.providerId, notebookUri);
+			await manager.initialize(this.providerHandle);
+			this._notebookUriToManagerMap.set(uriString, manager);
+		}
+		return manager;
+	}
+}
+
+class ExecuteProviderWrapper extends Disposable implements IExecuteProvider {
+	private _notebookUriToManagerMap = new Map<string, NotebookManagerWrapper>();
+
+	constructor(
+		private _proxy: Proxies,
+		public readonly providerId: string,
+		public readonly providerHandle: number,
+		@IInstantiationService private readonly instantiationService: IInstantiationService
+	) {
+		super();
+	}
+
+	getExecuteManager(notebookUri: URI): Thenable<INotebookManager> {
 		// TODO must call through to setup in the extension host
 		return this.doGetNotebookManager(notebookUri);
 	}

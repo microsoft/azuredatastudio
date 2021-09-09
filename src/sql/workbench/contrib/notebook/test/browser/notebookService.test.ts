@@ -12,10 +12,10 @@ import { NotebookModelStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { NotebookEditorStub } from 'sql/workbench/contrib/notebook/test/testCommon';
 import { notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
-import { INavigationProvider, INotebookEditor, INotebookManager, INotebookParams, INotebookProvider, NavigationProviders, SQL_NOTEBOOK_PROVIDER, unsavedBooksContextKey } from 'sql/workbench/services/notebook/browser/notebookService';
-import { FailToSaveTrustState, NotebookService, NotebookServiceNoProviderRegistered, NotebookUriNotDefined, ProviderDescriptor } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
+import { INavigationProvider, INotebookEditor, INotebookManager, INotebookParams, IExecuteProvider, NavigationProviders, SQL_NOTEBOOK_PROVIDER, unsavedBooksContextKey } from 'sql/workbench/services/notebook/browser/notebookService';
+import { FailToSaveTrustState, NotebookService, NotebookServiceNoProviderRegistered, NotebookUriNotDefined, ExecuteProviderDescriptor } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
 import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
-import { Extensions, INotebookProviderRegistry, NotebookProviderRegistration } from 'sql/workbench/services/notebook/common/notebookRegistry';
+import { Extensions, INotebookProviderRegistry, ExecuteProviderRegistration } from 'sql/workbench/services/notebook/common/notebookRegistry';
 import * as TypeMoq from 'typemoq';
 import { errorHandler, onUnexpectedError } from 'vs/base/common/errors';
 import { Emitter, Event } from 'vs/base/common/event';
@@ -66,13 +66,13 @@ class TestNotebookManager implements INotebookManager {
 /**
  * * TestNotebookProvider - creates a NotebookManager object that helps keep track of state needed by testing
  */
-class TestNotebookProvider implements INotebookProvider {
+class TestNotebookProvider implements IExecuteProvider {
 	constructor(
 		public providerId: string = 'providerId1',
 		public manager: TestNotebookManager = new TestNotebookManager(providerId)
 	) { }
 
-	getNotebookManager(uri: URI): Thenable<INotebookManager> {
+	getExecuteManager(uri: URI): Thenable<INotebookManager> {
 		return Promise.resolve(this.manager);
 	}
 
@@ -83,8 +83,8 @@ class TestNotebookProvider implements INotebookProvider {
 
 suite('ProviderDescriptor:', () => {
 	test('Verifies varies getter setters of Provider Descriptor', async () => {
-		const notebookProvider = <INotebookProvider>{};
-		const providerDescriptor = new ProviderDescriptor(notebookProvider);
+		const notebookProvider = <IExecuteProvider>{};
+		const providerDescriptor = new ExecuteProviderDescriptor(notebookProvider);
 		assert.strictEqual(providerDescriptor.instance, notebookProvider, `providerDescriptor instance should be the value passed into the constructor`);
 		const providerInstancePromise = providerDescriptor.instanceReady;
 		assert.notStrictEqual(providerInstancePromise, undefined, `providerDescriptor instanceReady should not return an undefined promise object`);
@@ -198,7 +198,7 @@ suite.skip('NotebookService:', function (): void {
 		await notebookService.registrationComplete;
 		assert.deepStrictEqual(notebookService.getProvidersForFileType('ipynb'), ['sql'], 'sql provider should be registered for ipynb extension');
 
-		const otherProviderRegistration: NotebookProviderRegistration = {
+		const otherProviderRegistration: ExecuteProviderRegistration = {
 			fileExtensions: 'ipynb',
 			standardKernels: {
 				name: 'kernel1',
@@ -226,7 +226,7 @@ suite.skip('NotebookService:', function (): void {
 	test('verify that getOrCreateNotebookManager does not throw when extensionService.whenInstalledExtensionRegistered() throws', async () => {
 		const providerId = 'providerId1';
 		createRegisteredProviderWithManager({ notebookService, providerId });
-		notebookService.registerProvider(providerId, undefined);
+		notebookService.registerExecuteProvider(providerId, undefined);
 		//verify method under test logs error and does not throw when extensionService.whenInstalledExtensionRegistered() throws
 		const error: Error = new Error('Extension Registration Failed');
 		extensionServiceMock.setup(x => x.whenInstalledExtensionsRegistered()).throws(error);
@@ -245,7 +245,7 @@ suite.skip('NotebookService:', function (): void {
 		const methodName = 'getOrCreateNotebookManager';
 
 		// register the builtin sql provider to be undefined
-		notebookService.registerProvider(SQL_NOTEBOOK_PROVIDER, undefined);
+		notebookService.registerExecuteProvider(SQL_NOTEBOOK_PROVIDER, undefined);
 		try {
 			await notebookService.getOrCreateNotebookManager('test', URI.parse('untitled:uri1'));
 			throw Error(`${methodName}  did not throw as was expected`);
@@ -362,7 +362,7 @@ suite.skip('NotebookService:', function (): void {
 
 	test('test registration of a new provider with multiple filetypes & kernels and verify that corresponding manager is returned by getOrCreateNotebookManager', async () => {
 		const providerId = 'Jpeg';
-		const notebookProviderRegistration = <NotebookProviderRegistration>{
+		const notebookProviderRegistration = <ExecuteProviderRegistration>{
 			provider: providerId,
 			fileExtensions: ['jpeg', 'jpg'],
 			standardKernels: [<azdata.nb.IStandardKernel>{ name: 'kernel1' }, <azdata.nb.IStandardKernel>{ name: 'kernel2' }]
@@ -371,7 +371,7 @@ suite.skip('NotebookService:', function (): void {
 		notebookRegistry.registerNotebookProvider(notebookProviderRegistration);
 		const managerPromise = notebookService.getOrCreateNotebookManager(providerId, URI.parse('untitled:jpg'));
 		const providerInstance = createRegisteredProviderWithManager({ notebookService, providerId });
-		notebookService.registerProvider(providerId, providerInstance);
+		notebookService.registerExecuteProvider(providerId, providerInstance);
 		const result = await managerPromise;
 
 		// verify result
@@ -579,7 +579,7 @@ function unRegisterProviders(notebookService: NotebookService) {
 	const notebookRegistry = Registry.as<INotebookProviderRegistry>(Extensions.NotebookProviderContribution);
 	// unregister all builtin providers
 	for (const providerContribution of notebookRegistry.providers) {
-		notebookService.unregisterProvider(providerContribution.provider);
+		notebookService.unregisterExecuteProvider(providerContribution.provider);
 	}
 }
 
@@ -597,7 +597,7 @@ function setTrustedSetup(notebookService: NotebookService) {
 
 function createRegisteredProviderWithManager({ notebookService, providerId = 'providerId', testProviderManagers = undefined }: { providerId?: string; notebookService: NotebookService; testProviderManagers?: TestNotebookProvider[] }): TestNotebookProvider {
 	const provider = new TestNotebookProvider(providerId);
-	notebookService.registerProvider(providerId, provider);
+	notebookService.registerExecuteProvider(providerId, provider);
 	if (testProviderManagers !== undefined) {
 		testProviderManagers.push(provider);
 	}

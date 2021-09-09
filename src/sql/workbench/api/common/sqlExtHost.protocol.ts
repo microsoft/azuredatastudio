@@ -899,8 +899,10 @@ export interface ExtHostNotebookShape {
 }
 
 export interface MainThreadNotebookShape extends IDisposable {
-	$registerNotebookProvider(providerId: string, handle: number): void;
-	$unregisterNotebookProvider(handle: number): void;
+	$registerSerializationProvider(providerId: string, handle: number): void;
+	$registerExecuteProvider(providerId: string, handle: number): void;
+	$unregisterSerializationProvider(handle: number): void;
+	$unregisterExecuteProvider(handle: number): void;
 	$onFutureMessage(futureId: number, type: FutureMessageType, payload: azdata.nb.IMessage): void;
 	$onFutureDone(futureId: number, done: INotebookFutureDone): void;
 }

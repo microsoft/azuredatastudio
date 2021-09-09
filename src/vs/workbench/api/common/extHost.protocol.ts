@@ -882,9 +882,9 @@ export interface INotebookCellStatusBarListDto {
 }
 
 export interface MainThreadNotebookShape extends IDisposable {
-	$registerNotebookProvider(extension: NotebookExtensionDescription, viewType: string, options: TransientOptions, registration: INotebookContributionData | undefined): Promise<void>;
+	$registerContentProvider(extension: NotebookExtensionDescription, viewType: string, options: TransientOptions, registration: INotebookContributionData | undefined): Promise<void>;
 	$updateNotebookProviderOptions(viewType: string, options?: { transientOutputs: boolean; transientCellMetadata: TransientCellMetadata; transientDocumentMetadata: TransientDocumentMetadata; }): Promise<void>;
-	$unregisterNotebookProvider(viewType: string): Promise<void>;
+	$unregisterContentProvider(viewType: string): Promise<void>;
 
 	$registerNotebookSerializer(handle: number, extension: NotebookExtensionDescription, viewType: string, options: TransientOptions, registration: INotebookContributionData | undefined): void;
 	$unregisterNotebookSerializer(handle: number): void;

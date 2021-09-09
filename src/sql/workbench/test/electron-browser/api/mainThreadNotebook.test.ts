@@ -12,7 +12,7 @@ import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 
 import { MainThreadNotebook } from 'sql/workbench/api/browser/mainThreadNotebook';
 import { NotebookService } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
-import { INotebookProvider } from 'sql/workbench/services/notebook/browser/notebookService';
+import { IExecuteProvider } from 'sql/workbench/services/notebook/browser/notebookService';
 import { INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, INotebookFutureDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { LocalContentManager } from 'sql/workbench/services/notebook/common/localContentManager';
 import { TestLifecycleService } from 'vs/workbench/test/browser/workbenchTestServices';
@@ -58,34 +58,34 @@ suite('MainThreadNotebook Tests', () => {
 	});
 
 	suite('On registering a provider', () => {
-		let provider: INotebookProvider;
+		let provider: IExecuteProvider;
 		setup(() => {
-			mockNotebookService.setup(s => s.registerProvider(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns((id, providerImpl) => {
+			mockNotebookService.setup(s => s.registerExecuteProvider(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns((id, providerImpl) => {
 				provider = providerImpl;
 			});
 		});
 
 		test('should call through to notebook service', () => {
 			// When I register a provider
-			mainThreadNotebook.$registerNotebookProvider(providerId, 1);
+			mainThreadNotebook.$registerExecuteProvider(providerId, 1);
 			// Then I expect a provider implementation to be passed to the service
-			mockNotebookService.verify(s => s.registerProvider(TypeMoq.It.isAnyString(), TypeMoq.It.isAny()), TypeMoq.Times.once());
+			mockNotebookService.verify(s => s.registerExecuteProvider(TypeMoq.It.isAnyString(), TypeMoq.It.isAny()), TypeMoq.Times.once());
 			assert.strictEqual(provider.providerId, providerId);
 		});
 		test('should unregister in service', () => {
 			// Given we have a provider
-			mainThreadNotebook.$registerNotebookProvider(providerId, 1);
+			mainThreadNotebook.$registerExecuteProvider(providerId, 1);
 			// When I unregister a provider twice
-			mainThreadNotebook.$unregisterNotebookProvider(1);
-			mainThreadNotebook.$unregisterNotebookProvider(1);
+			mainThreadNotebook.$unregisterExecuteProvider(1);
+			mainThreadNotebook.$unregisterExecuteProvider(1);
 			// Then I expect it to be unregistered in the service just 1 time
-			mockNotebookService.verify(s => s.unregisterProvider(TypeMoq.It.isValue(providerId)), TypeMoq.Times.once());
+			mockNotebookService.verify(s => s.unregisterExecuteProvider(TypeMoq.It.isValue(providerId)), TypeMoq.Times.once());
 		});
 	});
 
 	suite('getNotebookManager', () => {
 		let managerWithAllFeatures: INotebookManagerDetails;
-		let provider: INotebookProvider;
+		let provider: IExecuteProvider;
 
 		setup(() => {
 			managerWithAllFeatures = {
@@ -93,10 +93,10 @@ suite('MainThreadNotebook Tests', () => {
 				hasContentManager: true,
 				hasServerManager: true
 			};
-			mockNotebookService.setup(s => s.registerProvider(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns((id, providerImpl) => {
+			mockNotebookService.setup(s => s.registerExecuteProvider(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns((id, providerImpl) => {
 				provider = providerImpl;
 			});
-			mainThreadNotebook.$registerNotebookProvider(providerId, 1);
+			mainThreadNotebook.$registerExecuteProvider(providerId, 1);
 
 			// Always return empty specs in this test suite
 			mockProxy.setup(p => p.$refreshSpecs(TypeMoq.It.isAnyNumber())).returns(() => Promise.resolve(undefined));
@@ -113,7 +113,7 @@ suite('MainThreadNotebook Tests', () => {
 				.returns(() => Promise.resolve(details));
 
 			// When I get the notebook manager
-			let manager = await provider.getNotebookManager(notebookUri);
+			let manager = await provider.getExecuteManager(notebookUri);
 
 			// Then it should use the built-in content manager
 			assert.ok(manager.contentManager instanceof LocalContentManager);
@@ -127,7 +127,7 @@ suite('MainThreadNotebook Tests', () => {
 				.returns(() => Promise.resolve(managerWithAllFeatures));
 
 			// When I get the notebook manager
-			let manager = await provider.getNotebookManager(notebookUri);
+			let manager = await provider.getExecuteManager(notebookUri);
 
 			// Then it shouldn't have wrappers for the content or server manager
 			assert.ok(!(manager.contentManager instanceof LocalContentManager));

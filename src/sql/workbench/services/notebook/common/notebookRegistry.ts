@@ -15,7 +15,13 @@ export const Extensions = {
 	NotebookLanguageMagicContribution: 'notebook.languagemagics'
 };
 
-export interface NotebookProviderRegistration {
+export interface SerializationProviderRegistration {
+	provider: string;
+	fileExtensions: string | string[];
+	standardKernels: azdata.nb.IStandardKernel | azdata.nb.IStandardKernel[];
+}
+
+export interface ExecuteProviderRegistration {
 	provider: string;
 	fileExtensions: string | string[];
 	standardKernels: azdata.nb.IStandardKernel | azdata.nb.IStandardKernel[];
@@ -146,29 +152,29 @@ export interface NotebookLanguageMagicRegistration {
 }
 
 export interface INotebookProviderRegistry {
-	readonly providers: NotebookProviderRegistration[];
+	readonly providers: ExecuteProviderRegistration[];
 	readonly languageMagics: NotebookLanguageMagicRegistration[];
-	readonly onNewRegistration: Event<{ id: string, registration: NotebookProviderRegistration }>;
+	readonly onNewRegistration: Event<{ id: string, registration: ExecuteProviderRegistration }>;
 
-	registerNotebookProvider(provider: NotebookProviderRegistration): void;
+	registerNotebookProvider(provider: ExecuteProviderRegistration): void;
 	registerNotebookLanguageMagic(magic: NotebookLanguageMagicRegistration): void;
 }
 
 class NotebookProviderRegistry implements INotebookProviderRegistry {
-	private providerIdToRegistration = new Map<string, NotebookProviderRegistration>();
+	private providerIdToRegistration = new Map<string, ExecuteProviderRegistration>();
 	private magicToRegistration = new Map<string, NotebookLanguageMagicRegistration>();
-	private _onNewRegistration = new Emitter<{ id: string, registration: NotebookProviderRegistration }>();
-	public readonly onNewRegistration: Event<{ id: string, registration: NotebookProviderRegistration }> = this._onNewRegistration.event;
+	private _onNewRegistration = new Emitter<{ id: string, registration: ExecuteProviderRegistration }>();
+	public readonly onNewRegistration: Event<{ id: string, registration: ExecuteProviderRegistration }> = this._onNewRegistration.event;
 
-	registerNotebookProvider(registration: NotebookProviderRegistration): void {
+	registerNotebookProvider(registration: ExecuteProviderRegistration): void {
 		// Note: this method intentionally overrides default provider for a file type.
 		// This means that any built-in provider will be overridden by registered extensions
 		this.providerIdToRegistration.set(registration.provider, registration);
 		this._onNewRegistration.fire({ id: registration.provider, registration: registration });
 	}
 
-	public get providers(): NotebookProviderRegistration[] {
-		let registrationArray: NotebookProviderRegistration[] = [];
+	public get providers(): ExecuteProviderRegistration[] {
+		let registrationArray: ExecuteProviderRegistration[] = [];
 		this.providerIdToRegistration.forEach(p => registrationArray.push(p));
 		return registrationArray;
 	}
@@ -189,9 +195,9 @@ const notebookProviderRegistry = new NotebookProviderRegistry();
 platform.Registry.add(Extensions.NotebookProviderContribution, notebookProviderRegistry);
 
 
-ExtensionsRegistry.registerExtensionPoint<NotebookProviderRegistration | NotebookProviderRegistration[]>({ extensionPoint: Extensions.NotebookProviderContribution, jsonSchema: notebookContrib }).setHandler(extensions => {
+ExtensionsRegistry.registerExtensionPoint<ExecuteProviderRegistration | ExecuteProviderRegistration[]>({ extensionPoint: Extensions.NotebookProviderContribution, jsonSchema: notebookContrib }).setHandler(extensions => {
 
-	function handleExtension(contrib: NotebookProviderRegistration, extension: IExtensionPointUser<any>) {
+	function handleExtension(contrib: ExecuteProviderRegistration, extension: IExtensionPointUser<any>) {
 		notebookProviderRegistry.registerNotebookProvider(contrib);
 	}
 

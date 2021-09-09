@@ -20,7 +20,7 @@ export class MainThreadNotebooks implements MainThreadNotebookShape {
 	private readonly _disposables = new DisposableStore();
 
 	private readonly _proxy: ExtHostNotebookShape;
-	private readonly _notebookProviders = new Map<string, { controller: INotebookContentProvider, disposable: IDisposable }>();
+	private readonly _notebookContentProviders = new Map<string, { controller: INotebookContentProvider, disposable: IDisposable }>();
 	private readonly _notebookSerializer = new Map<number, IDisposable>();
 	private readonly _notebookCellStatusBarRegistrations = new Map<number, IDisposable>();
 
@@ -35,13 +35,13 @@ export class MainThreadNotebooks implements MainThreadNotebookShape {
 	dispose(): void {
 		this._disposables.dispose();
 		// remove all notebook providers
-		for (const item of this._notebookProviders.values()) {
+		for (const item of this._notebookContentProviders.values()) {
 			item.disposable.dispose();
 		}
 		dispose(this._notebookSerializer.values());
 	}
 
-	async $registerNotebookProvider(extension: NotebookExtensionDescription, viewType: string, options: TransientOptions, data: INotebookContributionData | undefined): Promise<void> {
+	async $registerContentProvider(extension: NotebookExtensionDescription, viewType: string, options: TransientOptions, data: INotebookContributionData | undefined): Promise<void> {
 		let contentOptions = { ...options };
 
 		const controller: INotebookContentProvider = {
@@ -76,11 +76,11 @@ export class MainThreadNotebooks implements MainThreadNotebookShape {
 		if (data) {
 			disposable.add(this._notebookService.registerContributedNotebookType(viewType, data));
 		}
-		this._notebookProviders.set(viewType, { controller, disposable });
+		this._notebookContentProviders.set(viewType, { controller, disposable });
 	}
 
 	async $updateNotebookProviderOptions(viewType: string, options?: { transientOutputs: boolean; transientCellMetadata: TransientCellMetadata; transientDocumentMetadata: TransientDocumentMetadata; }): Promise<void> {
-		const provider = this._notebookProviders.get(viewType);
+		const provider = this._notebookContentProviders.get(viewType);
 
 		if (provider && options) {
 			provider.controller.options = options;
@@ -92,11 +92,11 @@ export class MainThreadNotebooks implements MainThreadNotebookShape {
 		}
 	}
 
-	async $unregisterNotebookProvider(viewType: string): Promise<void> {
-		const entry = this._notebookProviders.get(viewType);
+	async $unregisterContentProvider(viewType: string): Promise<void> {
+		const entry = this._notebookContentProviders.get(viewType);
 		if (entry) {
 			entry.disposable.dispose();
-			this._notebookProviders.delete(viewType);
+			this._notebookContentProviders.delete(viewType);
 		}
 	}
 

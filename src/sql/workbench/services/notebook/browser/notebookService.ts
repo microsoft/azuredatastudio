@@ -57,15 +57,14 @@ export interface INotebookService {
 	readonly isRegistrationComplete: boolean;
 	readonly registrationComplete: Promise<void>;
 	readonly languageMagics: ILanguageMagic[];
-	/**
-	 * Register a metadata provider
-	 */
-	registerProvider(providerId: string, provider: INotebookProvider): void;
 
-	/**
-	 * Register a metadata provider
-	 */
-	unregisterProvider(providerId: string): void;
+	registerSerializationProvider(providerId: string, provider: ISerializationProvider): void;
+
+	registerExecuteProvider(providerId: string, provider: IExecuteProvider): void;
+
+	unregisterSerializationProvider(providerId: string): void;
+
+	unregisterExecuteProvider(providerId: string): void;
 
 	registerNavigationProvider(provider: INavigationProvider): void;
 
@@ -148,10 +147,15 @@ export interface INotebookService {
 	getUntitledUriPath(originalTitle: string): string;
 }
 
-export interface INotebookProvider {
+export interface IExecuteProvider {
 	readonly providerId: string;
-	getNotebookManager(notebookUri: URI): Thenable<INotebookManager>;
+	getExecuteManager(notebookUri: URI): Thenable<INotebookManager>;
 	handleNotebookClosed(notebookUri: URI): void;
+}
+
+export interface ISerializationProvider {
+	readonly providerId: string;
+	getContentManager(notebookUri: URI): Thenable<azdata.nb.ContentManager>;
 }
 
 export interface INotebookManager {

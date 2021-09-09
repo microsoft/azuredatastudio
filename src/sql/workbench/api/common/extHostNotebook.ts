@@ -14,7 +14,7 @@ import { URI, UriComponents } from 'vs/base/common/uri';
 import { ExtHostNotebookShape, MainThreadNotebookShape, SqlMainContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, INotebookFutureDetails, FutureMessageType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
-type Adapter = azdata.nb.NotebookProvider | azdata.nb.NotebookManager | azdata.nb.ISession | azdata.nb.IKernel | azdata.nb.IFuture;
+type Adapter = azdata.nb.NotebookSerializationProvider | azdata.nb.NotebookExecuteProvider | azdata.nb.NotebookManager | azdata.nb.ISession | azdata.nb.IKernel | azdata.nb.IFuture;
 
 export class ExtHostNotebook implements ExtHostNotebookShape {
 	private static _handlePool: number = 0;
@@ -33,7 +33,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		let uriString = uri.toString();
 		let adapter = this.findManagerForUri(uriString);
 		if (!adapter) {
-			adapter = await this._withProvider(providerHandle, (provider) => {
+			adapter = await this._withExecuteProvider(providerHandle, (provider) => {
 				return this.getOrCreateManager(provider, uri);
 			});
 		}
@@ -222,12 +222,21 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 	//#endregion
 
 	//#region APIs called by extensions
-	registerNotebookProvider(provider: azdata.nb.NotebookProvider): vscode.Disposable {
+	registerExecuteProvider(provider: azdata.nb.NotebookExecuteProvider): vscode.Disposable {
 		if (!provider || !provider.providerId) {
-			throw new Error(localize('providerRequired', "A NotebookProvider with valid providerId must be passed to this method"));
+			throw new Error(localize('executeProviderRequired', "A NotebookExecuteProvider with valid providerId must be passed to this method"));
 		}
 		const handle = this._addNewAdapter(provider);
-		this._proxy.$registerNotebookProvider(provider.providerId, handle);
+		this._proxy.$registerExecuteProvider(provider.providerId, handle);
+		return this._createDisposable(handle);
+	}
+
+	registerSerializationProvider(provider: azdata.nb.NotebookSerializationProvider): vscode.Disposable {
+		if (!provider || !provider.providerId) {
+			throw new Error(localize('serializationProviderRequired', "A NotebookSerializationProvider with valid providerId must be passed to this method"));
+		}
+		const handle = this._addNewAdapter(provider);
+		this._proxy.$registerExecuteProvider(provider.providerId, handle);
 		return this._createDisposable(handle);
 	}
 	//#endregion
@@ -254,8 +263,8 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		return undefined;
 	}
 
-	private async getOrCreateManager(provider: azdata.nb.NotebookProvider, notebookUri: URI): Promise<NotebookManagerAdapter> {
-		let manager = await provider.getNotebookManager(notebookUri);
+	private async getOrCreateManager(provider: azdata.nb.NotebookExecuteProvider, notebookUri: URI): Promise<NotebookManagerAdapter> {
+		let manager = await provider.getExecuteManager(notebookUri);
 		let uriString = notebookUri.toString();
 		let adapter = new NotebookManagerAdapter(provider, manager, uriString);
 		adapter.handle = this._addNewAdapter(adapter);
@@ -272,8 +281,8 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		return ExtHostNotebook._handlePool++;
 	}
 
-	private _withProvider<R>(handle: number, callback: (provider: azdata.nb.NotebookProvider) => R | PromiseLike<R>): Promise<R> {
-		let provider = this._adapters.get(handle) as azdata.nb.NotebookProvider;
+	private _withExecuteProvider(handle: number, callback: (provider: azdata.nb.NotebookExecuteProvider) => R | PromiseLike<R>): Promise<R> {
+		let provider = this._adapters.get(handle) as azdata.nb.NotebookExecuteProvider;
 		if (provider === undefined) {
 			return Promise.reject(new Error(localize('errNoProvider', "no notebook provider found")));
 		}
@@ -348,7 +357,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 class NotebookManagerAdapter implements azdata.nb.NotebookManager {
 	public handle: number;
 	constructor(
-		public readonly provider: azdata.nb.NotebookProvider,
+		public readonly provider: azdata.nb.NotebookExecuteProvider,
 		private manager: azdata.nb.NotebookManager,
 		public readonly uriString: string
 	) {

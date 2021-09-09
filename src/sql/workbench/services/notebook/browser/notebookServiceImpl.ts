@@ -9,12 +9,12 @@ import { URI, UriComponents } from 'vs/base/common/uri';
 import { Registry } from 'vs/platform/registry/common/platform';
 
 import {
-	INotebookService, INotebookManager, INotebookProvider,
-	DEFAULT_NOTEBOOK_FILETYPE, INotebookEditor, SQL_NOTEBOOK_PROVIDER, INavigationProvider, ILanguageMagic, NavigationProviders, unsavedBooksContextKey
+	INotebookService, INotebookManager, IExecuteProvider,
+	DEFAULT_NOTEBOOK_FILETYPE, INotebookEditor, SQL_NOTEBOOK_PROVIDER, INavigationProvider, ILanguageMagic, NavigationProviders, unsavedBooksContextKey, ISerializationProvider
 } from 'sql/workbench/services/notebook/browser/notebookService';
 import { RenderMimeRegistry } from 'sql/workbench/services/notebook/browser/outputs/registry';
 import { standardRendererFactories } from 'sql/workbench/services/notebook/browser/outputs/factories';
-import { Extensions, INotebookProviderRegistry, NotebookProviderRegistration } from 'sql/workbench/services/notebook/common/notebookRegistry';
+import { Extensions, INotebookProviderRegistry, ExecuteProviderRegistration } from 'sql/workbench/services/notebook/common/notebookRegistry';
 import { Emitter, Event } from 'vs/base/common/event';
 import { Memento } from 'vs/workbench/common/memento';
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
@@ -26,7 +26,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IQueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { ILifecycleService } from 'vs/workbench/services/lifecycle/common/lifecycle';
-import { SqlNotebookProvider } from 'sql/workbench/services/notebook/browser/sql/sqlNotebookProvider';
+import { SqlExecuteProvider } from 'sql/workbench/services/notebook/browser/sql/sqlExecuteProvider';
 import { IFileService, IFileStatWithMetadata } from 'vs/platform/files/common/files';
 import { Schemas } from 'vs/base/common/network';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -82,22 +82,43 @@ export interface TrustedNotebooksMemento {
 
 const notebookRegistry = Registry.as<INotebookProviderRegistry>(Extensions.NotebookProviderContribution);
 
-export class ProviderDescriptor {
-	private _instanceReady = new Deferred<INotebookProvider>();
-	constructor(private _instance?: INotebookProvider) {
+export class SerializationProviderDescriptor {
+	private _instanceReady = new Deferred<ISerializationProvider>();
+	constructor(private _instance?: ISerializationProvider) {
 		if (_instance) {
 			this._instanceReady.resolve(_instance);
 		}
 	}
 
-	public get instanceReady(): Promise<INotebookProvider> {
+	public get instanceReady(): Promise<ISerializationProvider> {
 		return this._instanceReady.promise;
 	}
 
-	public get instance(): INotebookProvider {
+	public get instance(): ISerializationProvider {
 		return this._instance;
 	}
-	public set instance(value: INotebookProvider) {
+	public set instance(value: ISerializationProvider) {
+		this._instance = value;
+		this._instanceReady.resolve(value);
+	}
+}
+
+export class ExecuteProviderDescriptor {
+	private _instanceReady = new Deferred<IExecuteProvider>();
+	constructor(private _instance?: IExecuteProvider) {
+		if (_instance) {
+			this._instanceReady.resolve(_instance);
+		}
+	}
+
+	public get instanceReady(): Promise<IExecuteProvider> {
+		return this._instanceReady.promise;
+	}
+
+	public get instance(): IExecuteProvider {
+		return this._instance;
+	}
+	public set instance(value: IExecuteProvider) {
 		this._instance = value;
 		this._instanceReady.resolve(value);
 	}
@@ -113,14 +134,15 @@ export class NotebookService extends Disposable implements INotebookService {
 	private _providersMemento: Memento;
 	private _trustedNotebooksMemento: Memento;
 	private _mimeRegistry: RenderMimeRegistry;
-	private _providers: Map<string, ProviderDescriptor> = new Map();
+	private _serializationProviders: Map<string, SerializationProviderDescriptor> = new Map();
+	private _executeProviders: Map<string, ExecuteProviderDescriptor> = new Map();
 	private _navigationProviders: Map<string, INavigationProvider> = new Map();
 	private _managersMap: Map<string, INotebookManager[]> = new Map();
 	private _onNotebookEditorAdd = new Emitter<INotebookEditor>();
 	private _onNotebookEditorRemove = new Emitter<INotebookEditor>();
 	private _onNotebookEditorRename = new Emitter<INotebookEditor>();
 	private _editors = new Map<string, INotebookEditor>();
-	private _fileToProviders = new Map<string, NotebookProviderRegistration[]>();
+	private _fileToProviders = new Map<string, ExecuteProviderRegistration[]>();
 	private _providerToStandardKernels = new Map<string, nb.IStandardKernel[]>();
 	private _registrationComplete = new Deferred<void>();
 	private _isRegistrationComplete = false;
@@ -266,11 +288,11 @@ export class NotebookService extends Disposable implements INotebookService {
 		this._registrationComplete.resolve();
 	}
 
-	private updateRegisteredProviders(p: { id: string; registration: NotebookProviderRegistration }) {
+	private updateRegisteredProviders(p: { id: string; registration: ExecuteProviderRegistration }) {
 		let registration = p.registration;
 
-		if (!this._providers.has(p.id)) {
-			this._providers.set(p.id, new ProviderDescriptor());
+		if (!this._executeProviders.has(p.id)) {
+			this._executeProviders.set(p.id, new ExecuteProviderDescriptor());
 		}
 		if (registration.fileExtensions) {
 			if (Array.isArray(registration.fileExtensions)) {
@@ -287,18 +309,32 @@ export class NotebookService extends Disposable implements INotebookService {
 		}
 	}
 
-	registerProvider(providerId: string, instance: INotebookProvider): void {
-		let providerDescriptor = this._providers.get(providerId);
+	registerSerializationProvider(providerId: string, instance: ISerializationProvider): void {
+		let providerDescriptor = this._serializationProviders.get(providerId);
 		if (providerDescriptor) {
 			// Update, which will resolve the promise for anyone waiting on the instance to be registered
 			providerDescriptor.instance = instance;
 		} else {
-			this._providers.set(providerId, new ProviderDescriptor(instance));
+			this._serializationProviders.set(providerId, new SerializationProviderDescriptor(instance));
 		}
 	}
 
-	unregisterProvider(providerId: string): void {
-		this._providers.delete(providerId);
+	registerExecuteProvider(providerId: string, instance: IExecuteProvider): void {
+		let providerDescriptor = this._executeProviders.get(providerId);
+		if (providerDescriptor) {
+			// Update, which will resolve the promise for anyone waiting on the instance to be registered
+			providerDescriptor.instance = instance;
+		} else {
+			this._executeProviders.set(providerId, new ExecuteProviderDescriptor(instance));
+		}
+	}
+
+	unregisterSerializationProvider(providerId: string): void {
+		this._serializationProviders.delete(providerId);
+	}
+
+	unregisterExecuteProvider(providerId: string): void {
+		this._executeProviders.delete(providerId);
 	}
 
 	registerNavigationProvider(provider: INavigationProvider): void {
@@ -322,7 +358,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		return this._registrationComplete.promise;
 	}
 
-	private addFileProvider(fileType: string, provider: NotebookProviderRegistration) {
+	private addFileProvider(fileType: string, provider: ExecuteProviderRegistration) {
 		let providers = this._fileToProviders.get(fileType.toUpperCase());
 		if (!providers) {
 			providers = [];
@@ -335,7 +371,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	// in the kernels dropdown list before a SessionManager has been started; this way,
 	// every NotebookProvider doesn't need to have an active SessionManager in order to contribute
 	// kernels to the dropdown
-	private addStandardKernels(provider: NotebookProviderRegistration) {
+	private addStandardKernels(provider: ExecuteProviderRegistration) {
 		let providerUpperCase = provider.provider.toUpperCase();
 		let standardKernels = this._providerToStandardKernels.get(providerUpperCase);
 		if (!standardKernels) {
@@ -394,7 +430,7 @@ export class NotebookService extends Disposable implements INotebookService {
 				return managers[index];
 			}
 		}
-		let newManager = await this.doWithProvider(providerId, (provider) => provider.getNotebookManager(uri));
+		let newManager = await this.doWithProvider(providerId, (provider) => provider.getExecuteManager(uri));
 
 		managers = managers || [];
 		managers.push(newManager);
@@ -466,21 +502,21 @@ export class NotebookService extends Disposable implements INotebookService {
 			// As we have a manager, we can assume provider is ready
 			this._managersMap.delete(uriString);
 			managers.forEach(m => {
-				let provider = this._providers.get(m.providerId);
+				let provider = this._executeProviders.get(m.providerId);
 				provider.instance.handleNotebookClosed(notebookUri);
 			});
 		}
 	}
 
-	private async doWithProvider<T>(providerId: string, op: (provider: INotebookProvider) => Thenable<T>): Promise<T> {
+	private async doWithProvider<T>(providerId: string, op: (provider: IExecuteProvider) => Thenable<T>): Promise<T> {
 		// Make sure the provider exists before attempting to retrieve accounts
-		let provider: INotebookProvider = await this.getProviderInstance(providerId);
+		let provider: IExecuteProvider = await this.getProviderInstance(providerId);
 		return op(provider);
 	}
 
-	private async getProviderInstance(providerId: string, timeout?: number): Promise<INotebookProvider> {
-		let providerDescriptor = this._providers.get(providerId);
-		let instance: INotebookProvider;
+	private async getProviderInstance(providerId: string, timeout?: number): Promise<IExecuteProvider> {
+		let providerDescriptor = this._executeProviders.get(providerId);
+		let instance: IExecuteProvider;
 
 		// Try get from actual provider, waiting on its registration
 		if (providerDescriptor) {
@@ -499,7 +535,7 @@ export class NotebookService extends Disposable implements INotebookService {
 
 		// Fall back to default (SQL) if this failed
 		if (!instance) {
-			providerDescriptor = this._providers.get(SQL_NOTEBOOK_PROVIDER);
+			providerDescriptor = this._executeProviders.get(SQL_NOTEBOOK_PROVIDER);
 			instance = providerDescriptor ? providerDescriptor.instance : undefined;
 		}
 
@@ -510,12 +546,12 @@ export class NotebookService extends Disposable implements INotebookService {
 		return instance;
 	}
 
-	private waitOnProviderAvailability(providerDescriptor: ProviderDescriptor, timeout?: number): Promise<INotebookProvider> {
+	private waitOnProviderAvailability(providerDescriptor: ExecuteProviderDescriptor, timeout?: number): Promise<IExecuteProvider> {
 		// Wait up to 30 seconds for the provider to be registered
 		timeout = timeout ?? 30000;
-		let promises: Promise<INotebookProvider>[] = [
+		let promises: Promise<IExecuteProvider>[] = [
 			providerDescriptor.instanceReady,
-			new Promise<INotebookProvider>((resolve, reject) => setTimeout(() => resolve(undefined), timeout))
+			new Promise<IExecuteProvider>((resolve, reject) => setTimeout(() => resolve(undefined), timeout))
 		];
 		return Promise.race(promises);
 	}
@@ -547,15 +583,15 @@ export class NotebookService extends Disposable implements INotebookService {
 		let cache = this.providersMemento.notebookProviderCache;
 		for (let key in cache) {
 			if (!knownProviders.some(x => x === key)) {
-				this._providers.delete(key);
+				this._executeProviders.delete(key);
 				delete cache[key];
 			}
 		}
 	}
 
 	private registerBuiltInProvider() {
-		let sqlProvider = new SqlNotebookProvider(this._instantiationService);
-		this.registerProvider(sqlProvider.providerId, sqlProvider);
+		let sqlProvider = new SqlExecuteProvider(this._instantiationService);
+		this.registerExecuteProvider(sqlProvider.providerId, sqlProvider);
 		notebookRegistry.registerNotebookProvider({
 			provider: sqlProvider.providerId,
 			fileExtensions: DEFAULT_NOTEBOOK_FILETYPE,

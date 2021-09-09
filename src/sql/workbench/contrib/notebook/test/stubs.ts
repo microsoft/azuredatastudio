@@ -8,7 +8,7 @@ import * as vsEvent from 'vs/base/common/event';
 import { INotebookModel, ICellModel, IClientSession, NotebookContentChange, ISingleNotebookEditOperation, MoveDirection, ViewMode } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { INotebookFindModel } from 'sql/workbench/contrib/notebook/browser/models/notebookFindModel';
 import { NotebookChangeType, CellType } from 'sql/workbench/services/notebook/common/contracts';
-import { INotebookManager, INotebookService, INotebookEditor, ILanguageMagic, INotebookProvider, INavigationProvider, INotebookParams, INotebookSection, ICellEditorProvider, NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
+import { INotebookManager, INotebookService, INotebookEditor, ILanguageMagic, IExecuteProvider, INavigationProvider, INotebookParams, INotebookSection, ICellEditorProvider, NotebookRange, ISerializationProvider } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import { IModelDecorationsChangeAccessor } from 'vs/editor/common/model';
 import { NotebookFindMatch } from 'sql/workbench/contrib/notebook/browser/find/notebookFindDecorations';
@@ -245,10 +245,16 @@ export class NotebookServiceStub implements INotebookService {
 	setTrusted(notebookUri: URI, isTrusted: boolean): Promise<boolean> {
 		throw new Error('Method not implemented.');
 	}
-	registerProvider(providerId: string, provider: INotebookProvider): void {
+	registerSerializationProvider(providerId: string, provider: ISerializationProvider): void {
 		throw new Error('Method not implemented.');
 	}
-	unregisterProvider(providerId: string): void {
+	registerExecuteProvider(providerId: string, provider: IExecuteProvider): void {
+		throw new Error('Method not implemented.');
+	}
+	unregisterSerializationProvider(providerId: string): void {
+		throw new Error('Method not implemented.');
+	}
+	unregisterExecuteProvider(providerId: string): void {
 		throw new Error('Method not implemented.');
 	}
 	registerNavigationProvider(provider: INavigationProvider): void {

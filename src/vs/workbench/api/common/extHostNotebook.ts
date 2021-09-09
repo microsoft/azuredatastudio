@@ -169,7 +169,7 @@ export class ExtHostNotebookController implements ExtHostNotebookShape {
 			});
 		}
 
-		this._notebookProxy.$registerNotebookProvider(
+		this._notebookProxy.$registerContentProvider(
 			{ id: extension.identifier, location: extension.extensionLocation },
 			viewType,
 			typeConverters.NotebookDocumentContentOptions.from(options),
@@ -179,7 +179,7 @@ export class ExtHostNotebookController implements ExtHostNotebookShape {
 		return new extHostTypes.Disposable(() => {
 			listener?.dispose();
 			this._notebookContentProviders.delete(viewType);
-			this._notebookProxy.$unregisterNotebookProvider(viewType);
+			this._notebookProxy.$unregisterContentProvider(viewType);
 		});
 	}
 
