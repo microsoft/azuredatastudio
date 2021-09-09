@@ -8,38 +8,36 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"displayName": "GitHub",
-			"description": "GitHub",
-			"config.gitAuthentication": "Steuert, ob die automatische GitHub-Authentifizierung für Git-Befehle innerhalb von VS Code aktiviert werden soll.",
-			"welcome.publishFolder": "Sie können diesen Ordner auch direkt in einem GitHub-Repository veröffentlichen. Nach der Veröffentlichung haben Sie Zugriff auf die Funktionen zur Quellcodeverwaltung von Git und GitHub.\r\n[$(github): Veröffentlichung in GitHub](command:github.publish)",
-			"welcome.publishWorkspaceFolder": "Sie können einen Arbeitsbereichsordner auch direkt in einem GitHub-Repository veröffentlichen. Nach der Veröffentlichung haben Sie Zugriff auf die Funktionen zur Quellcodeverwaltung von Git und GitHub.\r\n[$(github): Veröffentlichung in GitHub](command:github.publish)"
-		},
 		"dist/publish": {
-			"pick folder": "Wählen Sie einen Ordner für die Veröffentlichung in GitHub aus.",
 			"ignore": "Wählen Sie aus, welche Dateien in das Repository eingeschlossen werden sollen.",
+			"openingithub": "In GitHub öffnen",
+			"pick folder": "Wählen Sie einen Ordner für die Veröffentlichung in GitHub aus.",
+			"publishing_done": "Das Repository \"{0}\" wurde erfolgreich in GitHub veröffentlicht.",
+			"publishing_firstcommit": "Erster Commit wird erstellt.",
 			"publishing_private": "Veröffentlichung in privatem GitHub-Repository",
 			"publishing_public": "Veröffentlichung in öffentlichem GitHub-Repository",
-			"publishing_firstcommit": "Erster Commit wird erstellt.",
-			"publishing_uploading": "Dateien werden hochgeladen.",
-			"openingithub": "In GitHub öffnen",
-			"publishing_done": "Das Repository \"{0}\" wurde erfolgreich in GitHub veröffentlicht."
+			"publishing_uploading": "Dateien werden hochgeladen."
 		},
 		"dist/pushErrorHandler": {
-			"ok": "OK",
-			"fork unable": "Sie besitzen keine Berechtigungen zum Pushen von \"{0}/{1}\" nach GitHub.",
 			"create a fork": "Verzweigung erstellen",
-			"no": "Nein",
-			"fork": "Sie besitzen keine Berechtigungen zum Pushen von \"{0}/{1}\" nach GitHub. Möchten Sie eine Verzweigung erstellen und den Pushvorgang stattdessen dorthin ausführen?",
 			"create fork": "GitHub-Verzweigung erstellen",
-			"forking": "Verzweigung für \"{0}/{1}\" wird erstellt...",
-			"forking_pushing": "Änderungen pushen...",
-			"openingithub": "In GitHub öffnen",
-			"createpr": "PR erstellen",
-			"forking_done": "Die Verzweigung \"{0}\" wurde erfolgreich in GitHub erstellt.",
 			"createghpr": "GitHub-Pull Request wird erstellt...",
-			"openpr": "PR öffnen",
-			"donepr": "Der Pull Request \"{0}/{1}#{2}\" wurde erfolgreich in GitHub erstellt."
+			"createpr": "PR erstellen",
+			"donepr": "Der Pull Request \"{0}/{1}#{2}\" wurde erfolgreich in GitHub erstellt.",
+			"fork": "Sie besitzen keine Berechtigungen zum Pushen von \"{0}/{1}\" nach GitHub. Möchten Sie eine Verzweigung erstellen und den Pushvorgang stattdessen dorthin ausführen?",
+			"forking": "Verzweigung für \"{0}/{1}\" wird erstellt...",
+			"forking_done": "Die Verzweigung \"{0}\" wurde erfolgreich in GitHub erstellt.",
+			"forking_pushing": "Änderungen pushen...",
+			"no": "Nein",
+			"openingithub": "In GitHub öffnen",
+			"openpr": "PR öffnen"
+		},
+		"package": {
+			"config.gitAuthentication": "Steuert, ob die automatische GitHub-Authentifizierung für Git-Befehle innerhalb von VS Code aktiviert werden soll.",
+			"description": "GitHub",
+			"displayName": "GitHub",
+			"welcome.publishFolder": "Sie können diesen Ordner auch direkt in einem GitHub-Repository veröffentlichen. Nach der Veröffentlichung haben Sie Zugriff auf die Funktionen zur Quellcodeverwaltung von Git und GitHub.\r\n[$(github): Veröffentlichung in GitHub](command:github.publish)",
+			"welcome.publishWorkspaceFolder": "Sie können einen Arbeitsbereichsordner auch direkt in einem GitHub-Repository veröffentlichen. Nach der Veröffentlichung haben Sie Zugriff auf die Funktionen zur Quellcodeverwaltung von Git und GitHub.\r\n[$(github): Veröffentlichung in GitHub](command:github.publish)"
 		}
 	}
 }

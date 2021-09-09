@@ -8,16 +8,18 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"displayName": "Проверка подлинности GitHub",
-			"description": "Поставщик проверки подлинности GitHub"
+		"dist/common/keychain": {
+			"keychainWriteError": "Не удалось записать информацию о входе в цепочку ключей, ошибка \"{0}\".",
+			"troubleshooting": "Руководство по устранению неполадок"
 		},
 		"dist/githubServer": {
-			"signingIn": "$(mark-github) Выполняется вход в github.com..."
+			"signingIn": "$(mark-github) Выполняется вход в github.com...",
+			"signingInEnterprise": "$(mark-github) Выполняется вход в {0}...",
+			"status.git.signIn.name": "Вход в GitHub"
 		},
-		"dist/common/keychain": {
-			"troubleshooting": "Руководство по устранению неполадок",
-			"keychainWriteError": "Не удалось записать информацию о входе в цепочку ключей, ошибка \"{0}\"."
+		"package": {
+			"description": "Поставщик проверки подлинности GitHub",
+			"displayName": "Проверка подлинности GitHub"
 		}
 	}
 }

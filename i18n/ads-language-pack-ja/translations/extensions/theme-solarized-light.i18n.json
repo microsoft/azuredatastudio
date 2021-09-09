@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Solarized Light テーマ",
 			"description": "Visual Studio Code の Solarized light テーマ",
+			"displayName": "Solarized Light テーマ",
 			"themeLabel": "Solarized Light"
 		}
 	}

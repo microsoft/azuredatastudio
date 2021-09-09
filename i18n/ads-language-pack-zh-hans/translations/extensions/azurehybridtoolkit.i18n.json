@@ -9,11 +9,11 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Azure SQL 混合云工具包",
+			"books-preview-category": "Jupyter Book",
 			"description": "打开 Azure SQL 混合云工具包 Jupyter Book",
-			"title.openJupyterBook": "打开 Azure SQL 混合云工具包 Jupyter Book",
+			"displayName": "Azure SQL 混合云工具包",
 			"title.cloudHybridBooks": "Azure SQL 混合云工具包",
-			"books-preview-category": "Jupyter Book"
+			"title.openJupyterBook": "打开 Azure SQL 混合云工具包 Jupyter Book"
 		}
 	}
 }

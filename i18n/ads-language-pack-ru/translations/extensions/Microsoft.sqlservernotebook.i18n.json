@@ -9,9 +9,9 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"title.sqlServerNotebooks": "Записные книжки SQL Server",
+			"description.sqlserverNotebooks": "Записные книжки для начала работы и устранения неполадок с SQL Server",
 			"title.sqlServer2019Book": "Руководство по SQL Server 2019",
-			"description.sqlserverNotebooks": "Записные книжки для начала работы и устранения неполадок с SQL Server"
+			"title.sqlServerNotebooks": "Записные книжки SQL Server"
 		}
 	}
 }

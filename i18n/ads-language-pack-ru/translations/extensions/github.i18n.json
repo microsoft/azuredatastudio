@@ -8,38 +8,36 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"displayName": "GitHub",
-			"description": "GitHub",
-			"config.gitAuthentication": "Управляет тем, следует ли включить автоматическую проверку подлинности GitHub для команд Git в VS Code.",
-			"welcome.publishFolder": "Вы также можете напрямую опубликовать эту папку в репозитории GitHub. После публикации вы получите доступ к возможностям системы управления версиями на платформе Git и GitHub.\r\n[$(github) Опубликовать в GitHub](command:github.publish)",
-			"welcome.publishWorkspaceFolder": "Вы также можете напрямую опубликовать папку рабочей области в репозитории GitHub. После публикации вы получите доступ к возможностям системы управления версиями на платформе Git и GitHub.\r\n[$(github) Опубликовать в GitHub](command:github.publish)"
-		},
 		"dist/publish": {
-			"pick folder": "Выберите папку для публикации в GitHub",
 			"ignore": "Выберите, какие файлы должны быть включены в репозиторий.",
+			"openingithub": "Открыть в GitHub",
+			"pick folder": "Выберите папку для публикации в GitHub",
+			"publishing_done": "Репозиторий \"{0}\" опубликован в GitHub.",
+			"publishing_firstcommit": "Создание первой фиксации",
 			"publishing_private": "Публикация в частный репозиторий GitHub",
 			"publishing_public": "Публикация в общедоступный репозиторий GitHub",
-			"publishing_firstcommit": "Создание первой фиксации",
-			"publishing_uploading": "Отправка файлов",
-			"openingithub": "Открыть в GitHub",
-			"publishing_done": "Репозиторий \"{0}\" опубликован в GitHub."
+			"publishing_uploading": "Отправка файлов"
 		},
 		"dist/pushErrorHandler": {
-			"ok": "ОК",
-			"fork unable": "У вас нет разрешений на отправку \"{0}/{1}\" в GitHub.",
 			"create a fork": "Создать вилку",
-			"no": "Нет",
-			"fork": "У вас нет разрешений на отправку \"{0}/{1}\" в GitHub. Вы хотите создать вилку и выполнить отправку в нее?",
 			"create fork": "Создать вилку GitHub",
-			"forking": "Создание вилки \"{0}/{1}\"...",
-			"forking_pushing": "Выполняется отправка изменений...",
-			"openingithub": "Открыть в GitHub",
-			"createpr": "Создать запрос на вытягивание",
-			"forking_done": "Вилка \"{0}\" успешно создана в GitHub.",
 			"createghpr": "Идет создание запроса на вытягивание GitHub...",
-			"openpr": "Открыть запрос на вытягивание",
-			"donepr": "Запрос на вытягивание \"{0}/{1}#{2}\" успешно создан в GitHub."
+			"createpr": "Создать запрос на вытягивание",
+			"donepr": "Запрос на вытягивание \"{0}/{1}#{2}\" успешно создан в GitHub.",
+			"fork": "У вас нет разрешений на отправку \"{0}/{1}\" в GitHub. Вы хотите создать вилку и выполнить отправку в нее?",
+			"forking": "Создание вилки \"{0}/{1}\"...",
+			"forking_done": "Вилка \"{0}\" успешно создана в GitHub.",
+			"forking_pushing": "Выполняется отправка изменений...",
+			"no": "Нет",
+			"openingithub": "Открыть в GitHub",
+			"openpr": "Открыть запрос на вытягивание"
+		},
+		"package": {
+			"config.gitAuthentication": "Управляет тем, следует ли включить автоматическую проверку подлинности GitHub для команд Git в VS Code.",
+			"description": "GitHub",
+			"displayName": "GitHub",
+			"welcome.publishFolder": "Вы также можете напрямую опубликовать эту папку в репозитории GitHub. После публикации вы получите доступ к возможностям системы управления версиями на платформе Git и GitHub.\r\n[$(github) Опубликовать в GitHub](command:github.publish)",
+			"welcome.publishWorkspaceFolder": "Вы также можете напрямую опубликовать папку рабочей области в репозитории GitHub. После публикации вы получите доступ к возможностям системы управления версиями на платформе Git и GitHub.\r\n[$(github) Опубликовать в GitHub](command:github.publish)"
 		}
 	}
 }

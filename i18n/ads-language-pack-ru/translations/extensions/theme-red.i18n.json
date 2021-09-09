@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Красная тема",
 			"description": "Красная тема для Visual Studio Code",
+			"displayName": "Красная тема",
 			"themeLabel": "Красный"
 		}
 	}

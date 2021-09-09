@@ -9,9 +9,9 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"queryHistory.displayName": "Cronologia delle query",
-			"queryHistory.description": "Visualizza ed esegue query eseguite in precedenza",
 			"queryHistory.clear": "Cancella tutta la cronologia",
+			"queryHistory.description": "Visualizza ed esegue query eseguite in precedenza",
+			"queryHistory.displayName": "Cronologia delle query",
 			"queryHistory.toggleCapture": "Attiva/Disattiva acquisizione della cronologia delle query"
 		}
 	}

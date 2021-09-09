@@ -8,18 +8,18 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"displayName": "Compte Microsoft",
-			"description": "Fournisseur d'authentification Microsoft",
-			"signIn": "Se connecter",
-			"signOut": "Se déconnecter"
-		},
 		"dist/AADHelper": {
 			"signOut": "Vous avez été déconnecté en raison de l'échec de la lecture des informations d'authentification stockées."
 		},
 		"dist/keychain": {
-			"troubleshooting": "Guide de résolution des problèmes",
-			"keychainWriteError": "Échec de l'écriture des informations de connexion dans le trousseau. Erreur '{0}'."
+			"keychainWriteError": "Échec de l'écriture des informations de connexion dans le trousseau. Erreur '{0}'.",
+			"troubleshooting": "Guide de résolution des problèmes"
+		},
+		"package": {
+			"description": "Fournisseur d'authentification Microsoft",
+			"displayName": "Compte Microsoft",
+			"signIn": "Se connecter",
+			"signOut": "Se déconnecter"
 		}
 	}
 }

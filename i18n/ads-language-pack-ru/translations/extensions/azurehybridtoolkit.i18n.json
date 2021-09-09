@@ -9,11 +9,11 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Набор инструментов гибридного облака Azure SQL",
+			"books-preview-category": "Книги Jupyter",
 			"description": "Открывает книгу Jupyter набора инструментов гибридного облака Azure SQL",
-			"title.openJupyterBook": "Открыть книгу Jupyter набора инструментов гибридного облака Azure SQL",
+			"displayName": "Набор инструментов гибридного облака Azure SQL",
 			"title.cloudHybridBooks": "Набор инструментов гибридного облака Azure SQL",
-			"books-preview-category": "Книги Jupyter"
+			"title.openJupyterBook": "Открыть книгу Jupyter набора инструментов гибридного облака Azure SQL"
 		}
 	}
 }
