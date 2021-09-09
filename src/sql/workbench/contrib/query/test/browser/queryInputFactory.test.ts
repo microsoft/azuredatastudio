@@ -141,6 +141,45 @@ suite('Query Input Factory', () => {
 		assert(connectionManagementService.numberConnects === 0, 'Convert input should not have been called connect when no global connections exist');
 	});
 
+	test('sync query editor input can only be connected once when global connection exists', () => {
+		const instantiationService = workbenchInstantiationService();
+		const editorService = new MockEditorService();
+		const connectionManagementService = new MockConnectionManagementService();
+		instantiationService.stub(IObjectExplorerService, new MockObjectExplorerService());
+		instantiationService.stub(IConnectionManagementService, connectionManagementService);
+		instantiationService.stub(IEditorService, editorService);
+		const queryEditorLanguageAssociation = instantiationService.createInstance(QueryEditorLanguageAssociation);
+		const input1 = createFileInput(URI.file('/test/file.sql'), undefined, undefined, undefined);
+		const input2 = createFileInput(URI.file('/test/file.sql'), undefined, undefined, undefined);
+		queryEditorLanguageAssociation.syncConvertInput(input1);
+		queryEditorLanguageAssociation.syncConvertInput(input2);
+		let connProfile = connectionManagementService.getConnectionProfile('file:///test/file.sql');
+		assert(connProfile !== undefined, 'connection profile should not be undefined');
+		assert(connProfile.azureResourceId === 'file:///test/file.sql', 'azureResourceId should not be undefined');
+		assert(connectionManagementService.numberConnects === 1, 'Convert input should have called connect when active OE connection exists');
+	});
+
+	test('sync query editor inputs can be connected one after the other when global connection exists', () => {
+		const instantiationService = workbenchInstantiationService();
+		const editorService = new MockEditorService();
+		const connectionManagementService = new MockConnectionManagementService();
+		instantiationService.stub(IObjectExplorerService, new MockObjectExplorerService());
+		instantiationService.stub(IConnectionManagementService, connectionManagementService);
+		instantiationService.stub(IEditorService, editorService);
+		const queryEditorLanguageAssociation = instantiationService.createInstance(QueryEditorLanguageAssociation);
+		const input1 = createFileInput(URI.file('/test/file1.sql'), undefined, undefined, undefined);
+		const input2 = createFileInput(URI.file('/test/file2.sql'), undefined, undefined, undefined);
+		queryEditorLanguageAssociation.syncConvertInput(input1);
+		queryEditorLanguageAssociation.syncConvertInput(input2);
+		let connProfile1 = connectionManagementService.getConnectionProfile('file:///test/file1.sql');
+		assert(connProfile1 !== undefined, 'connection profile should not be undefined');
+		assert(connProfile1.azureResourceId === 'file:///test/file.sql', 'azureResourceId should not be undefined');
+		let connProfile2 = connectionManagementService.getConnectionProfile('file:///test/file2.sql');
+		assert(connProfile2 !== undefined, 'connection profile should not be undefined');
+		assert(connProfile2.azureResourceId === 'file:///test/file2.sql', 'azureResourceId should not be undefined');
+		assert(connectionManagementService.numberConnects === 1, 'Convert input should have called connect when active OE connection exists');
+	});
+
 	test('query editor input can only be connected once when global connection exists (OE)', async () => {
 		const editorService = new MockEditorService();
 		instantiationService = workbenchInstantiationService();
@@ -157,6 +196,9 @@ suite('Query Input Factory', () => {
 		const response2 = queryEditorLanguageAssociation.convertInput(input2);
 		assert(isThenable(response2));
 		await response2;
+		let connProfile = connectionManagementService.getConnectionProfile('file:///test/file.sql');
+		assert(connProfile !== undefined, 'connection profile should not be undefined');
+		assert(connProfile.azureResourceId === 'file:///test/file.sql', 'azureResourceId should not be undefined');
 		assert(connectionManagementService.numberConnects === 1, 'Convert input should have called connect when active OE connection exists');
 	});
 
@@ -172,8 +214,9 @@ suite('Query Input Factory', () => {
 		const input2 = createFileInput(URI.file('/test/file.sql'), undefined, undefined, undefined);
 		await queryEditorLanguageAssociation.convertInput(input1);
 		await queryEditorLanguageAssociation.convertInput(input2);
-		let endProfile = connectionManagementService.getConnectionProfile('/test/file.sql');
-		assert(endProfile.azureResourceId !== undefined, 'azureResourceId should not be undefined');
+		let connProfile = connectionManagementService.getConnectionProfile('file:///test/file.sql');
+		assert(connProfile !== undefined, 'connection profile should not be undefined');
+		assert(connProfile.azureResourceId === 'file:///test/file.sql', 'azureResourceId should not be undefined');
 		assert(connectionManagementService.numberConnects === 1, 'Convert input should have called connect only once when active OE connection exists');
 	});
 
@@ -189,6 +232,12 @@ suite('Query Input Factory', () => {
 		const input2 = createFileInput(URI.file('/test/file2.sql'), undefined, undefined, undefined);
 		await queryEditorLanguageAssociation.convertInput(input1);
 		await queryEditorLanguageAssociation.convertInput(input2);
+		let connProfile1 = connectionManagementService.getConnectionProfile('file:///test/file1.sql');
+		assert(connProfile1 !== undefined, 'connection profile should not be undefined');
+		assert(connProfile1.azureResourceId === 'file:///test/file1.sql', 'azureResourceId should not be undefined');
+		let connProfile2 = connectionManagementService.getConnectionProfile('file:///test/file2.sql');
+		assert(connProfile2 !== undefined, 'connection profile should not be undefined');
+		assert(connProfile2.azureResourceId === 'file:///test/file2.sql', 'azureResourceId should not be undefined');
 		assert(connectionManagementService.numberConnects === 2, 'Convert input should have called connect two times when active OE connection exists and we have two inputs');
 	});
 
@@ -204,6 +253,12 @@ suite('Query Input Factory', () => {
 		const input2 = createFileInput(URI.file('/test/file.sql'), undefined, undefined, undefined);
 		queryEditorLanguageAssociation.convertInput(input1);
 		queryEditorLanguageAssociation.convertInput(input2);
+		let connProfile1 = connectionManagementService.getConnectionProfile('file:///test/file1.sql');
+		assert(connProfile1 !== undefined, 'connection profile should not be undefined');
+		assert(connProfile1.azureResourceId === 'file:///test/file1.sql', 'azureResourceId should not be undefined');
+		let connProfile2 = connectionManagementService.getConnectionProfile('file:///test/file2.sql');
+		assert(connProfile2 !== undefined, 'connection profile should not be undefined');
+		assert(connProfile2.azureResourceId === 'file:///test/file2.sql', 'azureResourceId should not be undefined');
 		assert(connectionManagementService.numberConnects === 1, 'Convert input should have called connect when active editor connection exists');
 	});
 
