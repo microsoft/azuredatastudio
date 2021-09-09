@@ -38,11 +38,15 @@ import { errorForeground } from 'vs/platform/theme/common/colorRegistry';
 		</div>
 		<div [style.display]="getEditableDisplay()" #editableDropDown style="width: 100%;"></div>
 		<div [style.display]="getNotEditableDisplay()" #dropDown style="width: 100%;"></div>
-		<label #errorMessage tabindex="-1" class="dropdown-error-container"
+		<label #errorMessage tabindex="-1"
 		aria-live="polite" [attr.id]="errorId" aria-atomic="true"
-		*ngIf="!_valid && validationErrorMessage && validationErrorMessage.length!==0 && !isInitState">
-			<div class="sql codicon error dropdown-error-icon"></div>
-			<span class="dropdown-error-text">{{validationErrorMessage}}</span>
+		*ngIf="!_valid && validationErrorMessages && validationErrorMessages.length!==0 && !isInitState">
+			<ng-container *ngFor="let error of validationErrorMessages">
+				<div  class="dropdown-error-container">
+					<div class="sql codicon error dropdown-error-icon"></div>
+					<span class="dropdown-error-text">{{error}}</span>
+				</div>
+			</ng-container>
 		</label>
 	</div>
 	`
@@ -349,10 +353,10 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 		return this.getPropertyOrDefault<string>((props) => props.placeholder, undefined);
 	}
 
-	public get validationErrorMessage(): string | undefined {
-		let validationErrorMessage = this.getPropertyOrDefault<string>((props) => props.validationErrorMessage, undefined);
+	public get validationErrorMessages(): string[] | undefined {
+		let validationErrorMessage = this.getPropertyOrDefault<string[]>((props) => props.validationErrorMessages, undefined);
 		if (this.required && this.editable && (!this._editableDropdown.input.value || this._editableDropdown.input.value === '')) {
-			return localize('defaultDropdownErrorMessage', "Please fill out this field."); // Adding a default error message for required editable dropdowns having an empty value.
+			return [localize('defaultDropdownErrorMessage', "Please fill out this field.")]; // Adding a default error message for required editable dropdowns having an empty value.
 		}
 		return validationErrorMessage;
 	}

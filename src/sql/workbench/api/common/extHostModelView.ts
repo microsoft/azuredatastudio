@@ -1551,7 +1551,7 @@ class DropDownWrapper extends ComponentWrapper implements azdata.DropDownCompone
 		return emitter && emitter.event;
 	}
 
-	public get editableDropdownPlaceholder(): string {
+	public get editableDropdownPlaceholder(): string | undefined {
 		return this.properties['editableDropdownPlaceholder'];
 	}
 
@@ -1559,12 +1559,12 @@ class DropDownWrapper extends ComponentWrapper implements azdata.DropDownCompone
 		this.setProperty('editableDropdownPlaceholder', v);
 	}
 
-	public get validationErrorMessage(): string {
-		return this.properties['validationErrorMessage'];
+	public get validationErrorMessages(): string[] | undefined {
+		return this.properties['validationErrorMessages'];
 	}
 
-	public set validationErrorMessage(v: string) {
-		this.setProperty('validationErrorMessage', v);
+	public set validationErrorMessages(v: string[]) {
+		this.setProperty('validationErrorMessages', v);
 	}
 }
 
