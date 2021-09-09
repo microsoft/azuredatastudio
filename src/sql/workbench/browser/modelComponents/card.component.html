@@ -2,7 +2,7 @@
 <div #cardDiv role="radio" *ngIf="label" [class]="getClass() + ' horizontal'" (click)="onCardClick()"
 	[attr.aria-checked]="selected" (mouseover)="onCardHoverChanged($event)" (mouseout)="onCardHoverChanged($event)"
 	tabIndex="0" [style.width]="width" [style.height]="height">
-	<ng-container *ngIf="isVerticalButton || isDetailsCard">
+	<ng-container *ngIf="isVerticalButton || isDetailsCard || isImageCard">
 		<span *ngIf="hasStatus" class="card-status">
 			<div class="status-content" [style.backgroundColor]="statusColor"></div>
 		</span>
@@ -45,6 +45,15 @@
 						</tr>
 					</table>
 				</span>
+			</div>
+		</ng-container>
+
+		<ng-container *ngIf="isImageCard">
+			<div class="card-content">
+				<div [class]="'card-image ' + iconClass"></div>
+				<div *ngIf="label" class="card-label-overlay">
+					<h4 class="card-label">{{label}}</h4>
+				</div>
 			</div>
 		</ng-container>
 	</ng-container>

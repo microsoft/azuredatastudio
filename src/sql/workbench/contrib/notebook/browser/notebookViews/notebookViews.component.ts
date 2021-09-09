@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import { Component, Input, ViewChildren, QueryList, ChangeDetectorRef, forwardRef, Inject, ViewChild, ElementRef, ViewContainerRef, ComponentFactoryResolver } from '@angular/core';
 import { ICellModel, INotebookModel, ISingleNotebookEditOperation, NotebookContentChange } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import 'vs/css!./notebookViewsGrid';
 import { CodeCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/codeCell.component';
 import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
 import { ICellEditorProvider, INotebookParams, INotebookService, INotebookEditor, NotebookRange, INotebookSection, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
@@ -257,6 +258,10 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 		titleElement.style.minHeight = '25px';
 
 		let insertCellsAction = this._instantiationService.createInstance(InsertCellAction, this.insertCell.bind(this), this.views, this._containerRef, this._componentFactoryResolver);
+
+		// Hide the insert cell action button if no cells can be added
+		insertCellsAction.enabled = this.activeView?.hiddenCells.length > 0;
+		this.activeView.onCellVisibilityChanged(e => { insertCellsAction.enabled = this.activeView?.hiddenCells.length > 0; });
 
 		this._runAllCellsAction = this._instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAllPreview', "Run all"), 'notebook-button masked-pseudo start-outline');
 
