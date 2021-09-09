@@ -30,6 +30,11 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	IconPathHelper.setExtensionContext(extensionContext);
 
 	const appContext = new AppContext(extensionContext);
+
+	const config = vscode.workspace.getConfiguration('notebook');
+	if (vscode.env.uiKind === vscode.UIKind.Web) {
+		await config.update('allowRoot', true, vscode.ConfigurationTarget.Global);
+	}
 	/**
 	 *  									***** IMPORTANT *****
 	 * If changes are made to bookTreeView.openBook, please ensure backwards compatibility with its current state.

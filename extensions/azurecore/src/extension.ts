@@ -81,6 +81,12 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 	if (!storagePath) {
 		return undefined;
 	}
+
+	const config = vscode.workspace.getConfiguration('accounts.azure.auth');
+	if (vscode.env.uiKind === vscode.UIKind.Web) {
+		await config.update('deviceCode', true, vscode.ConfigurationTarget.Global);
+	}
+
 	updatePiiLoggingLevel();
 
 	// Create the provider service and activate
