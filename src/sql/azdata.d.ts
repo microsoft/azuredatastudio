@@ -4916,23 +4916,7 @@ declare module 'azdata' {
 			deleteCell(index: number): void;
 		}
 
-		/**
-		 * Register a notebook provider. The supported file types handled by this
-		 * provider are defined in the `package.json:
-		 * ```json
-		 * {
-		 *    "contributes": {
-		 *       "notebook.providers": [{
-		 *          "provider": "providername",
-		 *          "fileExtensions": ["FILEEXT"]
-		 *        }]
-		 *    }
-		 * }
-		 * ```
-		 * @param notebook provider
-		 * @returns disposable
-		 */
-		export function registerContentProvider(provider: NotebookContentProvider): vscode.Disposable;
+		export function registerSerializationProvider(provider: NotebookSerializationProvider): vscode.Disposable;
 		export function registerExecuteProvider(provider: NotebookExecuteProvider): vscode.Disposable;
 
 		export interface IStandardKernel {
@@ -4941,15 +4925,24 @@ declare module 'azdata' {
 			readonly connectionProviderIds: string[];
 		}
 
-		export interface NotebookContentProvider {
+		export interface NotebookSerializationProvider {
 			readonly providerId: string;
-			getContentManager(notebookUri: vscode.Uri): Thenable<ContentManager>;
+			getContentManager(notebookUri: vscode.Uri): Thenable<SerializationManager>;
 		}
 
 		export interface NotebookExecuteProvider {
 			readonly providerId: string;
 			getExecuteManager(notebookUri: vscode.Uri): Thenable<ExecuteManager>;
 			handleNotebookClosed(notebookUri: vscode.Uri): void;
+		}
+
+		export interface SerializationManager {
+			/**
+			 * Manages reading and writing contents to/from files.
+			 * Files may be local or remote, with this manager giving them a chance to convert and migrate
+			 * from specific notebook file types to and from a standard type for this UI
+			 */
+			readonly contentManager: ContentManager;
 		}
 
 		export interface ExecuteManager {
