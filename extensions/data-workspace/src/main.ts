@@ -18,7 +18,7 @@ import { createNewProjectWithQuickpick } from './dialogs/newProjectQuickpick';
 
 export async function activate(context: vscode.ExtensionContext): Promise<IExtension> {
 	const azdataApi = getAzdataApi();
-	vscode.commands.executeCommand('setContext', 'azdataAvailable', !!azdataApi);
+	void vscode.commands.executeCommand('setContext', 'azdataAvailable', !!azdataApi);
 	const workspaceService = new WorkspaceService();
 
 	const workspaceTreeDataProvider = new WorkspaceTreeDataProvider(workspaceService);
@@ -59,7 +59,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('dataworkspace.close', () => {
-		vscode.commands.executeCommand('workbench.action.closeFolder');
+		return vscode.commands.executeCommand('workbench.action.closeFolder');
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('projects.manageProject', async (treeItem: WorkspaceTreeItem) => {
@@ -73,7 +73,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 }
 
 function setProjectProviderContextValue(workspaceService: IWorkspaceService): void {
-	vscode.commands.executeCommand('setContext', 'isProjectProviderAvailable', workspaceService.isProjectProviderAvailable);
+	void vscode.commands.executeCommand('setContext', 'isProjectProviderAvailable', workspaceService.isProjectProviderAvailable);
 }
 
 export function deactivate(): void {

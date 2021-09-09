@@ -93,7 +93,7 @@ export class OpenExistingDialog extends DialogBase {
 			await addProjectsPromise;
 		}
 		catch (err) {
-			vscode.window.showErrorMessage(err?.message ? err.message : err);
+			void vscode.window.showErrorMessage(err?.message ? err.message : err);
 		}
 	}
 
@@ -142,7 +142,7 @@ export class OpenExistingDialog extends DialogBase {
 		}).component();
 
 		this.register(gitRepoTextBox.onTextChanged(() => {
-			gitRepoTextBox.updateProperty('title', this.localClonePathTextBox!.value!);
+			return gitRepoTextBox.updateProperty('title', this.localClonePathTextBox!.value!);
 		}));
 
 		this.gitRepoTextBoxComponent = {
@@ -158,7 +158,7 @@ export class OpenExistingDialog extends DialogBase {
 		}).component();
 
 		this.register(this.localClonePathTextBox.onTextChanged(() => {
-			this.localClonePathTextBox!.updateProperty('title', this.localClonePathTextBox!.value!);
+			return this.localClonePathTextBox!.updateProperty('title', this.localClonePathTextBox!.value!);
 		}));
 
 		const localClonePathBrowseFolderButton = view.modelBuilder.button().withProps({
@@ -181,7 +181,7 @@ export class OpenExistingDialog extends DialogBase {
 
 			const selectedFolder = folderUris[0].fsPath;
 			this.localClonePathTextBox!.value = selectedFolder;
-			this.localClonePathTextBox!.updateProperty('title', this.localClonePathTextBox!.value);
+			void this.localClonePathTextBox!.updateProperty('title', this.localClonePathTextBox!.value);
 		}));
 
 		this.localClonePathComponent = {
@@ -198,7 +198,7 @@ export class OpenExistingDialog extends DialogBase {
 		}).component();
 
 		this.register(this.filePathTextBox.onTextChanged(() => {
-			this.filePathTextBox!.updateProperty('title', this.filePathTextBox!.value!);
+			return this.filePathTextBox!.updateProperty('title', this.filePathTextBox!.value!);
 		}));
 
 		const localProjectBrowseFolderButton = view.modelBuilder.button().withProps({
@@ -210,7 +210,7 @@ export class OpenExistingDialog extends DialogBase {
 		this.register(localProjectBrowseFolderButton.onDidClick(() => this.onBrowseButtonClick()));
 
 		const flexContainer = this.createHorizontalContainer(view, [this.filePathTextBox, localProjectBrowseFolderButton]);
-		flexContainer.updateCssStyles({ 'margin-top': '-10px' });
+		void flexContainer.updateCssStyles({ 'margin-top': '-10px' });
 		this.filePathAndButtonComponent = {
 			component: flexContainer
 		};
