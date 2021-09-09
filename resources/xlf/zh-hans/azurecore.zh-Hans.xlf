@@ -1,162 +1,439 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/azurecore/package" source-language="en" datatype="plaintext" target-language="zh-Hans">
+  <file original="extensions/azurecore/dist/account-provider/auths/azureAuth" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
-      <trans-unit id="azure.displayName">
-        <source xml:lang="en">Azure (Core)</source>
-        <target state="translated">Azure (核心)</target>
+      <trans-unit id="azure.accessTokenEmpty">
+        <source xml:lang="en">No access token returned from Microsoft OAuth</source>
+        <target state="translated">未从 Microsoft OAuth 返回访问令牌</target>
       </trans-unit>
-      <trans-unit id="azure.description">
-        <source xml:lang="en">Browse and work with Azure resources</source>
-        <target state="translated">浏览和使用 Azure 资源</target>
+      <trans-unit id="azure.cacheErrorAdd">
+        <source xml:lang="en">Error when adding your account to the cache.</source>
+        <target state="translated">将帐户添加到缓存时出错。</target>
       </trans-unit>
-      <trans-unit id="azure.title">
+      <trans-unit id="azure.cacheErrorGet">
+        <source xml:lang="en">Error when getting your account from the cache</source>
+        <target state="translated">从缓存获取帐户时出错</target>
+      </trans-unit>
+      <trans-unit id="azure.cacheErrorParse">
+        <source xml:lang="en">Error when parsing your account from the cache</source>
+        <target state="translated">在缓存中分析帐户时出错</target>
+      </trans-unit>
+      <trans-unit id="azure.cacheErrrorRemove">
+        <source xml:lang="en">Error when removing your account from the cache.</source>
+        <target state="translated">从缓存中删除帐户时出错。</target>
+      </trans-unit>
+      <trans-unit id="azure.microsoftAccountDisplayName">
+        <source xml:lang="en">Microsoft Account</source>
+        <target state="translated">Microsoft 帐户</target>
+      </trans-unit>
+      <trans-unit id="azure.microsoftCorpAccount">
+        <source xml:lang="en">Microsoft Corp</source>
+        <target state="translated">Microsoft Corp</target>
+      </trans-unit>
+      <trans-unit id="azure.noBaseToken">
+        <source xml:lang="en">Something failed with the authentication, or your tokens have been deleted from the system. Please try adding your account to Azure Data Studio again.</source>
+        <target state="translated">身份验证失败，或者你的令牌已从系统中删除。请尝试再次将帐户添加到 Azure Data Studio。</target>
+      </trans-unit>
+      <trans-unit id="azure.noUniqueIdentifier">
+        <source xml:lang="en">The user had no unique identifier within AAD</source>
+        <target state="translated">用户在 AAD 中没有唯一标识符</target>
+      </trans-unit>
+      <trans-unit id="azure.responseError">
+        <source xml:lang="en">Token retrieval failed with an error. Open developer tools to view the error</source>
+        <target state="translated">令牌检索失败，出现错误。请打开开发人员工具以查看错误</target>
+      </trans-unit>
+      <trans-unit id="azure.tenantNotFound">
+        <source xml:lang="en">Specified tenant with ID '{0}' not found.</source>
+        <target state="translated">找不到带有 ID '{0}' 的指定租户。</target>
+      </trans-unit>
+      <trans-unit id="azureAuth.unidentifiedError">
+        <source xml:lang="en">Unidentified error with azure authentication</source>
+        <target state="translated">使用 Azure 身份验证时出现不明错误</target>
+      </trans-unit>
+      <trans-unit id="azureWorkAccountDisplayName">
+        <source xml:lang="en">Work or school account</source>
+        <target state="translated">工作或学校帐户</target>
+      </trans-unit>
+      <trans-unit id="azurecore.consentDialog.body">
+        <source xml:lang="en">Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.</source>
+        <target state="translated">你的租户“{0} ({1})”需要你重新进行身份验证才能访问 {2} 资源。请按“打开”启动身份验证过程。</target>
+      </trans-unit>
+      <trans-unit id="azurecore.consentDialog.cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">取消</target>
+      </trans-unit>
+      <trans-unit id="azurecore.consentDialog.ignore">
+        <source xml:lang="en">Ignore Tenant</source>
+        <target state="translated">忽略租户</target>
+      </trans-unit>
+      <trans-unit id="azurecore.consentDialog.open">
+        <source xml:lang="en">Open</source>
+        <target state="translated">打开</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/account-provider/auths/azureAuthCodeGrant" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="azure.azureAuthCodeGrantName">
+        <source xml:lang="en">Azure Auth Code Grant</source>
+        <target state="translated">Azure 身份验证代码授予</target>
+      </trans-unit>
+      <trans-unit id="azure.serverCouldNotStart">
+        <source xml:lang="en">Server could not start. This could be a permissions error or an incompatibility on your system. You can try enabling device code authentication from settings.</source>
+        <target state="translated">无法启动服务器。这可能是由于权限错误或系统不兼容。可以尝试从设置启用设备代码身份验证。</target>
+      </trans-unit>
+      <trans-unit id="azureAuth.nonceError">
+        <source xml:lang="en">Authentication failed due to a nonce mismatch, please close Azure Data Studio and try again.</source>
+        <target state="translated">由于 nonce 不匹配，身份验证失败，请关闭 Azure Data Studio，然后重试。</target>
+      </trans-unit>
+      <trans-unit id="azureAuth.stateError">
+        <source xml:lang="en">Authentication failed due to a state mismatch, please close ADS and try again.</source>
+        <target state="translated">由于状态不匹配，身份验证失败，请关闭 ADS，然后重试。</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/account-provider/auths/azureDeviceCode" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="addAccount">
+        <source xml:lang="en">Add {0} account</source>
+        <target state="translated">添加 {0} 帐户</target>
+      </trans-unit>
+      <trans-unit id="azure.azureDeviceCodeAuth">
+        <source xml:lang="en">Azure Device Code</source>
+        <target state="translated">Azure 设备代码</target>
+      </trans-unit>
+      <trans-unit id="azure.deviceCodeCheckFail">
+        <source xml:lang="en">Error encountered when trying to check for login results</source>
+        <target state="translated">尝试检查登录结果时遇到错误</target>
+      </trans-unit>
+      <trans-unit id="azure.timeoutDeviceCode">
+        <source xml:lang="en">Timed out when waiting for device code login.</source>
+        <target state="translated">等待设备代码登录时超时。</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/account-provider/azureAccountProvider" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="azure.NoAuthMethod.Available">
+        <source xml:lang="en">No Azure auth method available. You must enable the auth methods in ADS configuration.</source>
+        <target state="translated">无可用的 Azure 身份验证方法。必须在 ADS 配置中启用身份验证方法。</target>
+      </trans-unit>
+      <trans-unit id="azure.NoAuthMethod.Selected">
+        <source xml:lang="en">No Azure auth method selected. You must select what method of authentication you want to use.</source>
+        <target state="translated">未选择任何 Azure 身份验证方法。必须选择你要使用的身份验证方法。</target>
+      </trans-unit>
+      <trans-unit id="azure.deprecatedGetSecurityToken">
+        <source xml:lang="en">A call was made to azdata.accounts.getSecurityToken, this method is deprecated and will be removed in future releases. Please use getAccountSecurityToken instead.</source>
+        <target state="translated">对 azdata.accounts.getSecurityToken 进行了调用，此方法已弃用，并会在未来的版本中删除。请改用 getAccountSecurityToken。</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/account-provider/azureAccountProviderService" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="clearTokenCacheFailure">
+        <source xml:lang="en">Failed to clear token cache</source>
+        <target state="translated">未能清除令牌缓存</target>
+      </trans-unit>
+      <trans-unit id="clearTokenCacheSuccess">
+        <source xml:lang="en">Token cache successfully cleared</source>
+        <target state="translated">令牌缓存已成功清除</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/account-provider/providerSettings" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="chinaCloudDisplayName">
+        <source xml:lang="en">Azure (China)</source>
+        <target state="translated">Azure (中国)</target>
+      </trans-unit>
+      <trans-unit id="germanyCloud">
+        <source xml:lang="en">Azure (Germany)</source>
+        <target state="translated">Azure (德国)</target>
+      </trans-unit>
+      <trans-unit id="publicCloudDisplayName">
         <source xml:lang="en">Azure</source>
         <target state="translated">Azure</target>
       </trans-unit>
-      <trans-unit id="azure.resource.config.title">
-        <source xml:lang="en">Azure Resource Configuration</source>
-        <target state="translated">Azure 资源配置</target>
+      <trans-unit id="usGovCloudDisplayName">
+        <source xml:lang="en">Azure (US Government)</source>
+        <target state="translated">Azure (美国政府)</target>
       </trans-unit>
-      <trans-unit id="azure.resource.config.filter.description">
-        <source xml:lang="en">The resource filter, each element is an account id, a subscription id and name separated by a slash</source>
-        <target state="translated">资源筛选器，每个元素是帐户 ID、订阅 ID 和由斜杠分隔的名称</target>
+      <trans-unit id="usNatCloudDisplayName">
+        <source xml:lang="en">Azure (US National)</source>
+        <target state="translated">Azure (美国国家)</target>
       </trans-unit>
-      <trans-unit id="azure.resource.explorer.title">
-        <source xml:lang="en">Azure</source>
-        <target state="translated">Azure</target>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/commands" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="azure.accountNotSelectedError">
+        <source xml:lang="en">You must select an Azure account for this feature to work.</source>
+        <target state="translated">必须选择一个 Azure 帐户才能使用此功能。</target>
       </trans-unit>
-      <trans-unit id="azure.resource.refreshall.title">
-        <source xml:lang="en">Azure: Refresh All Accounts</source>
-        <target state="translated">Azure: 刷新所有帐户</target>
+      <trans-unit id="azure.cloudTerminalPreview">
+        <source xml:lang="en">You must enable preview features in order to use Azure Cloud Shell.</source>
+        <target state="translated">必须启用预览功能才能使用 Azure Cloud Shell。</target>
       </trans-unit>
-      <trans-unit id="azure.resource.refresh.title">
-        <source xml:lang="en">Refresh</source>
-        <target state="translated">刷新</target>
+      <trans-unit id="azure.mustPickTenant">
+        <source xml:lang="en">You must select a tenant for this feature to work.</source>
+        <target state="translated">必须选择一个租户才能使用此功能。</target>
       </trans-unit>
-      <trans-unit id="azure.resource.signin.title">
-        <source xml:lang="en">Azure: Sign In</source>
-        <target state="translated">Azure: 登录</target>
+      <trans-unit id="azure.noAccountError">
+        <source xml:lang="en">You are not currently signed into any Azure accounts, Please sign in and then try again.</source>
+        <target state="translated">你当前未登录到任何 Azure 帐户，请登录，然后重试。</target>
       </trans-unit>
-      <trans-unit id="azure.resource.selectsubscriptions.title">
-        <source xml:lang="en">Select Subscriptions</source>
-        <target state="translated">选择订阅</target>
+      <trans-unit id="azure.noTenants">
+        <source xml:lang="en">A tenant is required for this feature. Your Azure subscription seems to have no tenants.</source>
+        <target state="translated">此功能需要使用租户。你的 Azure 订阅似乎没有租户。</target>
       </trans-unit>
-      <trans-unit id="azure.resource.startterminal.title">
-        <source xml:lang="en">Start Cloud Shell</source>
-        <target state="translated">启动 Cloud Shell</target>
+      <trans-unit id="azure.pickAnAzureAccount">
+        <source xml:lang="en">Select an Azure account</source>
+        <target state="translated">选择 Azure 帐户</target>
       </trans-unit>
-      <trans-unit id="azure.resource.connectsqlserver.title">
-        <source xml:lang="en">Connect</source>
-        <target state="translated">连接</target>
+      <trans-unit id="azure.signIn">
+        <source xml:lang="en">Sign in</source>
+        <target state="translated">登录</target>
       </trans-unit>
-      <trans-unit id="azure.resource.connectsqldb.title">
-        <source xml:lang="en">Add to Servers</source>
-        <target state="translated">添加到服务器</target>
+      <trans-unit id="azure.startingCloudShell">
+        <source xml:lang="en">Starting cloud shell…</source>
+        <target state="translated">正在启动 Cloud Shell…</target>
       </trans-unit>
-      <trans-unit id="azure.resource.view.title">
-        <source xml:lang="en">Azure (Preview)</source>
-        <target state="translated">Azure (预览)</target>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/errors" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="azure.subscriptionError">
+        <source xml:lang="en">Failed to get subscriptions for account {0}. Please refresh the account.</source>
+        <target state="translated">无法获取帐户 {0} 的订阅。请刷新帐户。</target>
       </trans-unit>
-      <trans-unit id="azure.tenant.config.filter.description">
-        <source xml:lang="en">The list of tenant IDs to ignore when querying azure resources. Each element is a tenant id.</source>
-        <target state="translated">查询 Azure 资源时要忽略的租户 ID 列表。每个元素都是一个租户 ID。</target>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="azure.resource.providers.AzureMonitorContainerLabel">
+        <source xml:lang="en">Log Analytics workspace</source>
+        <target state="translated">Log Analytics 工作区</target>
       </trans-unit>
-      <trans-unit id="accounts.clearTokenCache">
-        <source xml:lang="en">Clear Azure Account Token Cache</source>
-        <target state="translated">清除 Azure 帐户令牌缓存</target>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/providers/database/databaseTreeDataProvider" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="azure.resource.providers.database.treeDataProvider.databaseContainerLabel">
+        <source xml:lang="en">SQL database</source>
+        <target state="translated">SQL 数据库</target>
       </trans-unit>
-      <trans-unit id="azure.openInAzurePortal.title">
-        <source xml:lang="en">Open in Azure Portal</source>
-        <target state="translated">在 Azure 门户中打开</target>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/providers/databaseServer/databaseServerTreeDataProvider" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel">
+        <source xml:lang="en">SQL server</source>
+        <target state="translated">SQL 服务器</target>
       </trans-unit>
-      <trans-unit id="config.azureAccountConfigurationSection">
-        <source xml:lang="en">Azure Account Configuration</source>
-        <target state="translated">Azure 帐户配置</target>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/providers/kusto/kustoTreeDataProvider" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="azure.resource.providers.KustoContainerLabel">
+        <source xml:lang="en">Azure Data Explorer Cluster</source>
+        <target state="translated">Azure 数据资源管理器群集</target>
       </trans-unit>
-      <trans-unit id="config.enablePublicCloudDescription">
-        <source xml:lang="en">Should Azure public cloud integration be enabled</source>
-        <target state="translated">是否应启用 Azure 公有云集成</target>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel">
+        <source xml:lang="en">PostgreSQL Hyperscale – Azure Arc</source>
+        <target state="translated">PostgreSQL 超大规模 – Azure Arc</target>
       </trans-unit>
-      <trans-unit id="config.enableUsGovCloudDescription">
-        <source xml:lang="en">Should US Government Azure cloud (Fairfax) integration be enabled</source>
-        <target state="translated">是否应启用美国政府 Azure 云(Fairfax)集成</target>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel">
+        <source xml:lang="en">Azure Database for PostgreSQL server</source>
+        <target state="translated">Azure Database for PostgreSQL 服务器</target>
       </trans-unit>
-      <trans-unit id="config.enableUsNatCloudDescription">
-        <source xml:lang="en">Should US National Azure cloud integration be enabled</source>
-        <target state="translated">是否应启用美国国家 Azure 云集成</target>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/providers/sqlinstance/sqlInstanceTreeDataProvider" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="azure.resource.providers.sqlInstanceContainerLabel">
+        <source xml:lang="en">Azure SQL DB managed instance</source>
+        <target state="translated">Azure SQL DB 托管实例</target>
       </trans-unit>
-      <trans-unit id="config.enableChinaCloudDescription">
-        <source xml:lang="en">Should Azure China integration be enabled</source>
-        <target state="translated">是否应启用 Azure 中国集成</target>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/providers/sqlinstanceArc/sqlInstanceArcTreeDataProvider" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="azure.resource.providers.sqlInstanceArcContainerLabel">
+        <source xml:lang="en">SQL managed instance – Azure Arc</source>
+        <target state="translated">SQL 托管实例 - Azure Arc</target>
       </trans-unit>
-      <trans-unit id="config.enableGermanyCloudDescription">
-        <source xml:lang="en">Should Azure Germany integration be enabled</source>
-        <target state="translated">是否应启用 Azure 德国集成</target>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/resourceTreeNode" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="azure.resource.resourceTreeNode.noResourcesLabel">
+        <source xml:lang="en">No Resources found</source>
+        <target state="translated">未找到资源</target>
       </trans-unit>
-      <trans-unit id="config.azureAuthMethodConfigurationSection">
-        <source xml:lang="en">Azure Authentication Method</source>
-        <target state="translated">Azure 身份验证方法</target>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/services/subscriptionService" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="azure.resource.tenantSubscriptionsError">
+        <source xml:lang="en">Failed to get subscriptions for account {0} (tenant '{1}'). {2}</source>
+        <target state="translated">无法获取帐户{0} (租户 "{1}")的订阅。{2}</target>
       </trans-unit>
-      <trans-unit id="config.azureCodeGrantMethod">
-        <source xml:lang="en">Code Grant Method</source>
-        <target state="translated">代码授予方法</target>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/services/terminalService" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="azure.cloudShell">
+        <source xml:lang="en">Azure Cloud Shell (Preview) {0} ({1})</source>
+        <target state="translated">Azure Cloud Shell (预览) {0} ({1})</target>
       </trans-unit>
-      <trans-unit id="config.azureDeviceCodeMethod">
-        <source xml:lang="en">Device Code Method</source>
-        <target state="translated">设备代码方法</target>
+      <trans-unit id="azure.cloudTerminal.ok">
+        <source xml:lang="en">OK</source>
+        <target state="translated">确定</target>
       </trans-unit>
-      <trans-unit id="config.noSystemKeychain">
-        <source xml:lang="en">Disable system keychain integration. Credentials will be stored in a flat file in the user's home directory.</source>
-        <target state="translated">禁用系统密钥链集成。凭据将存储在用户主目录的平面文件中。</target>
+      <trans-unit id="azure.cloudTerminal.openAzureShell">
+        <source xml:lang="en">Open Azure Shell</source>
+        <target state="translated">打开 Azure Shell</target>
       </trans-unit>
-      <trans-unit id="config.piiLogging">
-        <source xml:lang="en">Should Personally Identifiable Information (PII) be logged in the console view locally</source>
-        <target state="translated">应在控制台视图中本地记录个人身份信息(PII)</target>
+      <trans-unit id="azure.coudTerminal.neverUsed">
+        <source xml:lang="en">If you have not launched Azure Cloud Shell from this account before, please visit https://shell.azure.com/ to get started. Once you are set up, you can use AzureCloud Shell directly in Azure Data Studio.</source>
+        <target state="translated">如果你以前未从此帐户启动过 Azure Cloud Shell，请访问 https://shell.azure.com/ 以开始使用。设置后，可以直接在 Azure Data Studio 中使用 AzureCloud Shell。</target>
+      </trans-unit>
+      <trans-unit id="azure.selectShellType">
+        <source xml:lang="en">Select Bash or PowerShell for Azure Cloud Shell</source>
+        <target state="translated">为 Azure Cloud Shell 选择 Bash 或 PowerShell</target>
+      </trans-unit>
+      <trans-unit id="azure.shellClosed">
+        <source xml:lang="en">Shell closed.
+</source>
+        <target state="translated">Shell 已关闭。
+</target>
+      </trans-unit>
+      <trans-unit id="azure.shellTypeRequired">
+        <source xml:lang="en">You must pick a shell type</source>
+        <target state="translated">必须选取一个 shell 类型</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/tree/accountNotSignedInTreeNode" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="azure.resource.tree.accountNotSignedInTreeNode.signInLabel">
+        <source xml:lang="en">Sign in to Azure...</source>
+        <target state="translated">登录到 Azure…</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/tree/accountTreeNode" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="azure.resource.tree.accountTreeNode.noSubscriptionsLabel">
+        <source xml:lang="en">No Subscriptions found.</source>
+        <target state="translated">未找到订阅。</target>
+      </trans-unit>
+      <trans-unit id="azure.unableToAccessSubscription">
+        <source xml:lang="en">Unable to access subscription {0} ({1}). Please [refresh the account](command:azure.resource.signin) to try again. {2}</source>
+        <target state="translated">无法访问订阅 {0} ({1})。请[刷新帐户](command: azure.resource.signin)重试。{2}</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/tree/connectionDialogTreeProvider" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="azure.resource.tree.treeProvider.accountLoadError">
+        <source xml:lang="en">Failed to load some Azure accounts. {0}</source>
+        <target state="translated">未能加载部分 Azure 存储帐户。{0}</target>
+      </trans-unit>
+      <trans-unit id="azure.resource.tree.treeProvider.loadingLabel">
+        <source xml:lang="en">Loading ...</source>
+        <target state="translated">正在加载…</target>
+      </trans-unit>
+      <trans-unit id="azure.resource.tree.treeProvider.openAccountsDialog">
+        <source xml:lang="en">Show Azure accounts</source>
+        <target state="translated">显示 Azure 帐户</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/tree/flatAccountTreeNode" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="azure.resource.throttleerror">
+        <source xml:lang="en">Requests from this account have been throttled. To retry, please select a smaller number of subscriptions.</source>
+        <target state="translated">已限制来自此帐户的请求。要重试，请选择少量订阅。</target>
+      </trans-unit>
+      <trans-unit id="azure.resource.tree.accountTreeNode.title">
+        <source xml:lang="en">{0} ({1}/{2} subscriptions)</source>
+        <note>{0} is the display name of the azure account
+{1} is the number of selected subscriptions in this account
+{2} is the number of total subscriptions in this account</note>
+        <target state="translated">{0} ({1}/{2} 个订阅)</target>
+      </trans-unit>
+      <trans-unit id="azure.resource.tree.accountTreeNode.titleLoading">
+        <source xml:lang="en">{0} - Loading...</source>
+        <target state="translated">{0} - 正在加载...</target>
+      </trans-unit>
+      <trans-unit id="azure.resource.tree.loadresourceerror">
+        <source xml:lang="en">An error occurred while loading Azure resources: {0}</source>
+        <target state="translated">加载 Azure 资源时出错: {0}</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/tree/subscriptionTreeNode" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="azure.resource.tree.subscriptionTreeNode.noResourcesLabel">
+        <source xml:lang="en">No Resources found.</source>
+        <target state="translated">未找到资源。</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/tree/treeProvider" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="azure.resource.tree.treeProvider.loadingLabel">
+        <source xml:lang="en">Loading ...</source>
+        <target state="translated">正在加载…</target>
       </trans-unit>
     </body>
   </file>
   <file original="extensions/azurecore/dist/azureResource/utils" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
-      <trans-unit id="azure.resource.error">
-        <source xml:lang="en">Error: {0}</source>
-        <target state="translated">错误: {0}</target>
+      <trans-unit id="azure.accounts.getLocations.queryError">
+        <source xml:lang="en">Error fetching locations for account {0} ({1}) subscription {2} ({3}) tenant {4} : {5}</source>
+        <target state="translated">提取帐户 {0} ({1})订阅 {2} ({3})租户 {4} 的位置时出错: {5}</target>
       </trans-unit>
       <trans-unit id="azure.accounts.getResourceGroups.queryError">
         <source xml:lang="en">Error fetching resource groups for account {0} ({1}) subscription {2} ({3}) tenant {4} : {5}</source>
         <target state="translated">为帐户 {0} ({1})订阅 {2} ({3})租户 {4} 提取资源组时出错: {5}</target>
       </trans-unit>
-      <trans-unit id="azure.accounts.getLocations.queryError">
-        <source xml:lang="en">Error fetching locations for account {0} ({1}) subscription {2} ({3}) tenant {4} : {5}</source>
-        <target state="translated">提取帐户 {0} ({1})订阅 {2} ({3})租户 {4} 的位置时出错: {5}</target>
-      </trans-unit>
-      <trans-unit id="azure.accounts.runResourceQuery.errors.invalidQuery">
-        <source xml:lang="en">Invalid query</source>
-        <target state="translated">查询无效</target>
+      <trans-unit id="azure.accounts.getSelectedSubscriptions.queryError">
+        <source xml:lang="en">Error fetching subscriptions for account {0} : {1}</source>
+        <target state="translated">为帐户 {0} 提取订阅时出错: {1}</target>
       </trans-unit>
       <trans-unit id="azure.accounts.getSubscriptions.queryError">
         <source xml:lang="en">Error fetching subscriptions for account {0} tenant {1} : {2}</source>
         <target state="translated">为帐户 {0} 租户 {1} 提取订阅时出错: {2}</target>
       </trans-unit>
-      <trans-unit id="azure.accounts.getSelectedSubscriptions.queryError">
-        <source xml:lang="en">Error fetching subscriptions for account {0} : {1}</source>
-        <target state="translated">为帐户 {0} 提取订阅时出错: {1}</target>
+      <trans-unit id="azure.accounts.runResourceQuery.errors.invalidQuery">
+        <source xml:lang="en">Invalid query</source>
+        <target state="translated">查询无效</target>
+      </trans-unit>
+      <trans-unit id="azure.resource.error">
+        <source xml:lang="en">Error: {0}</source>
+        <target state="translated">错误: {0}</target>
       </trans-unit>
     </body>
   </file>
   <file original="extensions/azurecore/dist/localizedConstants" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
-      <trans-unit id="azurecore.extensionName">
-        <source xml:lang="en">Azure Accounts</source>
-        <target state="translated">Azure 帐户</target>
+      <trans-unit id="azure.azureResourcesGridTitle">
+        <source xml:lang="en">Azure Resources (Preview)</source>
+        <target state="translated">Azure 资源(预览)</target>
       </trans-unit>
-      <trans-unit id="azurecore.requiresReload">
-        <source xml:lang="en">Modifying this setting requires reloading the window for all changes to take effect.</source>
-        <target state="translated">修改此设置需要重新加载窗口，以使所有更改生效。</target>
-      </trans-unit>
-      <trans-unit id="azurecore.reload">
-        <source xml:lang="en">Reload</source>
-        <target state="translated">重载</target>
+      <trans-unit id="azure.unableToOpenAzureLink">
+        <source xml:lang="en">Unable to open link, missing required values</source>
+        <target state="translated">无法打开链接，缺少所需的值</target>
       </trans-unit>
       <trans-unit id="azurecore.australiacentral">
         <source xml:lang="en">Australia Central</source>
@@ -173,6 +450,18 @@
       <trans-unit id="azurecore.australiasoutheast">
         <source xml:lang="en">Australia Southeast</source>
         <target state="translated">澳大利亚东南部</target>
+      </trans-unit>
+      <trans-unit id="azurecore.azureArcPostgres">
+        <source xml:lang="en">Azure Arc-enabled PostgreSQL Hyperscale</source>
+        <target state="translated">启用 Azure Arc 的 PostgreSQL 超大规模</target>
+      </trans-unit>
+      <trans-unit id="azurecore.azureArcService">
+        <source xml:lang="en">Data Service - Azure Arc</source>
+        <target state="translated">数据服务 - Azure Arc</target>
+      </trans-unit>
+      <trans-unit id="azurecore.azureArcsqlManagedInstance">
+        <source xml:lang="en">SQL managed instance - Azure Arc</source>
+        <target state="translated">SQL 托管实例 - Azure Arc</target>
       </trans-unit>
       <trans-unit id="azurecore.brazilsouth">
         <source xml:lang="en">Brazil South</source>
@@ -218,6 +507,10 @@
         <source xml:lang="en">East US 2 EUAP</source>
         <target state="translated">美国东部 2 EUAP</target>
       </trans-unit>
+      <trans-unit id="azurecore.extensionName">
+        <source xml:lang="en">Azure Accounts</source>
+        <target state="translated">Azure 帐户</target>
+      </trans-unit>
       <trans-unit id="azurecore.francecentral">
         <source xml:lang="en">France Central</source>
         <target state="translated">法国中部</target>
@@ -233,6 +526,14 @@
       <trans-unit id="azurecore.germanywestcentral">
         <source xml:lang="en">Germany West Central</source>
         <target state="translated">德国中西部</target>
+      </trans-unit>
+      <trans-unit id="azurecore.invalidAzureAccount">
+        <source xml:lang="en">Invalid account</source>
+        <target state="translated">帐户无效</target>
+      </trans-unit>
+      <trans-unit id="azurecore.invalidTenant">
+        <source xml:lang="en">Invalid tenant for subscription</source>
+        <target state="translated">订阅的租户无效</target>
       </trans-unit>
       <trans-unit id="azurecore.japaneast">
         <source xml:lang="en">Japan East</source>
@@ -250,6 +551,14 @@
         <source xml:lang="en">Korea South</source>
         <target state="translated">韩国南部</target>
       </trans-unit>
+      <trans-unit id="azurecore.location">
+        <source xml:lang="en">Location</source>
+        <target state="translated">位置</target>
+      </trans-unit>
+      <trans-unit id="azurecore.name">
+        <source xml:lang="en">Name</source>
+        <target state="translated">名称</target>
+      </trans-unit>
       <trans-unit id="azurecore.northcentralus">
         <source xml:lang="en">North Central US</source>
         <target state="translated">美国中北部</target>
@@ -265,6 +574,26 @@
       <trans-unit id="azurecore.norwaywest">
         <source xml:lang="en">Norway West</source>
         <target state="translated">挪威西部</target>
+      </trans-unit>
+      <trans-unit id="azurecore.postgresServer">
+        <source xml:lang="en">Azure Database for PostgreSQL server</source>
+        <target state="translated">Azure Database for PostgreSQL 服务器</target>
+      </trans-unit>
+      <trans-unit id="azurecore.reload">
+        <source xml:lang="en">Reload</source>
+        <target state="translated">重载</target>
+      </trans-unit>
+      <trans-unit id="azurecore.requiresReload">
+        <source xml:lang="en">Modifying this setting requires reloading the window for all changes to take effect.</source>
+        <target state="translated">修改此设置需要重新加载窗口，以使所有更改生效。</target>
+      </trans-unit>
+      <trans-unit id="azurecore.resourceGroup">
+        <source xml:lang="en">Resource group</source>
+        <target state="translated">资源组</target>
+      </trans-unit>
+      <trans-unit id="azurecore.resourceType">
+        <source xml:lang="en">Resource type</source>
+        <target state="translated">资源类型</target>
       </trans-unit>
       <trans-unit id="azurecore.southafricanorth">
         <source xml:lang="en">South Africa North</source>
@@ -286,6 +615,26 @@
         <source xml:lang="en">South India</source>
         <target state="translated">印度南部</target>
       </trans-unit>
+      <trans-unit id="azurecore.sqlDatabase">
+        <source xml:lang="en">SQL database</source>
+        <target state="translated">SQL 数据库</target>
+      </trans-unit>
+      <trans-unit id="azurecore.sqlManagedInstance">
+        <source xml:lang="en">SQL managed instance</source>
+        <target state="translated">SQL 托管实例</target>
+      </trans-unit>
+      <trans-unit id="azurecore.sqlServer">
+        <source xml:lang="en">SQL server</source>
+        <target state="translated">SQL 服务器</target>
+      </trans-unit>
+      <trans-unit id="azurecore.sqlServerArc">
+        <source xml:lang="en">SQL Server - Azure Arc</source>
+        <target state="translated">SQL Server - Azure Arc</target>
+      </trans-unit>
+      <trans-unit id="azurecore.subscription">
+        <source xml:lang="en">Subscription</source>
+        <target state="translated">订阅</target>
+      </trans-unit>
       <trans-unit id="azurecore.switzerlandnorth">
         <source xml:lang="en">Switzerland North</source>
         <target state="translated">瑞士北部</target>
@@ -293,6 +642,10 @@
       <trans-unit id="azurecore.switzerlandwest">
         <source xml:lang="en">Switzerland West</source>
         <target state="translated">瑞士西部</target>
+      </trans-unit>
+      <trans-unit id="azurecore.typeIcon">
+        <source xml:lang="en">Type Icon</source>
+        <target state="translated">类型图标</target>
       </trans-unit>
       <trans-unit id="azurecore.uaecentral">
         <source xml:lang="en">UAE Central</source>
@@ -309,6 +662,10 @@
       <trans-unit id="azurecore.ukwest">
         <source xml:lang="en">UK West</source>
         <target state="translated">英国西部</target>
+      </trans-unit>
+      <trans-unit id="azurecore.unableToFetchToken">
+        <source xml:lang="en">Unable to get token for tenant {0}</source>
+        <target state="translated">无法获取租户 {0} 的令牌</target>
       </trans-unit>
       <trans-unit id="azurecore.westcentralus">
         <source xml:lang="en">West Central US</source>
@@ -330,470 +687,121 @@
         <source xml:lang="en">West US 2</source>
         <target state="translated">美国西部 2</target>
       </trans-unit>
-      <trans-unit id="azurecore.name">
-        <source xml:lang="en">Name</source>
-        <target state="translated">名称</target>
-      </trans-unit>
-      <trans-unit id="azurecore.resourceType">
-        <source xml:lang="en">Resource type</source>
-        <target state="translated">资源类型</target>
-      </trans-unit>
-      <trans-unit id="azurecore.resourceGroup">
-        <source xml:lang="en">Resource group</source>
-        <target state="translated">资源组</target>
-      </trans-unit>
-      <trans-unit id="azurecore.location">
-        <source xml:lang="en">Location</source>
-        <target state="translated">位置</target>
-      </trans-unit>
-      <trans-unit id="azurecore.subscription">
-        <source xml:lang="en">Subscription</source>
-        <target state="translated">订阅</target>
-      </trans-unit>
-      <trans-unit id="azurecore.typeIcon">
-        <source xml:lang="en">Type Icon</source>
-        <target state="translated">类型图标</target>
-      </trans-unit>
-      <trans-unit id="azurecore.sqlServer">
-        <source xml:lang="en">SQL server</source>
-        <target state="translated">SQL 服务器</target>
-      </trans-unit>
-      <trans-unit id="azurecore.sqlDatabase">
-        <source xml:lang="en">SQL database</source>
-        <target state="translated">SQL 数据库</target>
-      </trans-unit>
-      <trans-unit id="azurecore.postgresServer">
-        <source xml:lang="en">Azure Database for PostgreSQL server</source>
-        <target state="translated">Azure Database for PostgreSQL 服务器</target>
-      </trans-unit>
-      <trans-unit id="azurecore.sqlManagedInstance">
-        <source xml:lang="en">SQL managed instance</source>
-        <target state="translated">SQL 托管实例</target>
-      </trans-unit>
-      <trans-unit id="azurecore.azureArcsqlManagedInstance">
-        <source xml:lang="en">SQL managed instance - Azure Arc</source>
-        <target state="translated">SQL 托管实例 - Azure Arc</target>
-      </trans-unit>
-      <trans-unit id="azurecore.azureArcService">
-        <source xml:lang="en">Data Service - Azure Arc</source>
-        <target state="translated">数据服务 - Azure Arc</target>
-      </trans-unit>
-      <trans-unit id="azurecore.sqlServerArc">
-        <source xml:lang="en">SQL Server - Azure Arc</source>
-        <target state="translated">SQL Server - Azure Arc</target>
-      </trans-unit>
-      <trans-unit id="azurecore.azureArcPostgres">
-        <source xml:lang="en">Azure Arc-enabled PostgreSQL Hyperscale</source>
-        <target state="translated">启用 Azure Arc 的 PostgreSQL 超大规模</target>
-      </trans-unit>
-      <trans-unit id="azure.unableToOpenAzureLink">
-        <source xml:lang="en">Unable to open link, missing required values</source>
-        <target state="translated">无法打开链接，缺少所需的值</target>
-      </trans-unit>
-      <trans-unit id="azure.azureResourcesGridTitle">
-        <source xml:lang="en">Azure Resources (Preview)</source>
-        <target state="translated">Azure 资源(预览)</target>
-      </trans-unit>
-      <trans-unit id="azurecore.invalidAzureAccount">
-        <source xml:lang="en">Invalid account</source>
-        <target state="translated">帐户无效</target>
-      </trans-unit>
-      <trans-unit id="azurecore.invalidTenant">
-        <source xml:lang="en">Invalid tenant for subscription</source>
-        <target state="translated">订阅的租户无效</target>
-      </trans-unit>
-      <trans-unit id="azurecore.unableToFetchToken">
-        <source xml:lang="en">Unable to get token for tenant {0}</source>
-        <target state="translated">无法获取租户 {0} 的令牌</target>
-      </trans-unit>
     </body>
   </file>
-  <file original="extensions/azurecore/dist/account-provider/auths/azureAuth" source-language="en" datatype="plaintext" target-language="zh-Hans">
+  <file original="extensions/azurecore/package" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
-      <trans-unit id="azureAuth.unidentifiedError">
-        <source xml:lang="en">Unidentified error with azure authentication</source>
-        <target state="translated">使用 Azure 身份验证时出现不明错误</target>
+      <trans-unit id="accounts.clearTokenCache">
+        <source xml:lang="en">Clear Azure Account Token Cache</source>
+        <target state="translated">清除 Azure 帐户令牌缓存</target>
       </trans-unit>
-      <trans-unit id="azure.tenantNotFound">
-        <source xml:lang="en">Specified tenant with ID '{0}' not found.</source>
-        <target state="translated">找不到带有 ID '{0}' 的指定租户。</target>
+      <trans-unit id="azure.description">
+        <source xml:lang="en">Browse and work with Azure resources</source>
+        <target state="translated">浏览和使用 Azure 资源</target>
       </trans-unit>
-      <trans-unit id="azure.noBaseToken">
-        <source xml:lang="en">Something failed with the authentication, or your tokens have been deleted from the system. Please try adding your account to Azure Data Studio again.</source>
-        <target state="translated">身份验证失败，或者你的令牌已从系统中删除。请尝试再次将帐户添加到 Azure Data Studio。</target>
+      <trans-unit id="azure.displayName">
+        <source xml:lang="en">Azure (Core)</source>
+        <target state="translated">Azure (核心)</target>
       </trans-unit>
-      <trans-unit id="azure.responseError">
-        <source xml:lang="en">Token retrieval failed with an error. Open developer tools to view the error</source>
-        <target state="translated">令牌检索失败，出现错误。请打开开发人员工具以查看错误</target>
+      <trans-unit id="azure.openInAzurePortal.title">
+        <source xml:lang="en">Open in Azure Portal</source>
+        <target state="translated">在 Azure 门户中打开</target>
       </trans-unit>
-      <trans-unit id="azure.accessTokenEmpty">
-        <source xml:lang="en">No access token returned from Microsoft OAuth</source>
-        <target state="translated">未从 Microsoft OAuth 返回访问令牌</target>
+      <trans-unit id="azure.resource.config.filter.description">
+        <source xml:lang="en">The resource filter, each element is an account id, a subscription id and name separated by a slash</source>
+        <target state="translated">资源筛选器，每个元素是帐户 ID、订阅 ID 和由斜杠分隔的名称</target>
       </trans-unit>
-      <trans-unit id="azure.noUniqueIdentifier">
-        <source xml:lang="en">The user had no unique identifier within AAD</source>
-        <target state="translated">用户在 AAD 中没有唯一标识符</target>
+      <trans-unit id="azure.resource.config.title">
+        <source xml:lang="en">Azure Resource Configuration</source>
+        <target state="translated">Azure 资源配置</target>
       </trans-unit>
-      <trans-unit id="azureWorkAccountDisplayName">
-        <source xml:lang="en">Work or school account</source>
-        <target state="translated">工作或学校帐户</target>
+      <trans-unit id="azure.resource.connectsqldb.title">
+        <source xml:lang="en">Add to Servers</source>
+        <target state="translated">添加到服务器</target>
       </trans-unit>
-      <trans-unit id="azure.cacheErrorAdd">
-        <source xml:lang="en">Error when adding your account to the cache.</source>
-        <target state="translated">将帐户添加到缓存时出错。</target>
+      <trans-unit id="azure.resource.connectsqlserver.title">
+        <source xml:lang="en">Connect</source>
+        <target state="translated">连接</target>
       </trans-unit>
-      <trans-unit id="azure.cacheErrorGet">
-        <source xml:lang="en">Error when getting your account from the cache</source>
-        <target state="translated">从缓存获取帐户时出错</target>
-      </trans-unit>
-      <trans-unit id="azure.cacheErrorParse">
-        <source xml:lang="en">Error when parsing your account from the cache</source>
-        <target state="translated">在缓存中分析帐户时出错</target>
-      </trans-unit>
-      <trans-unit id="azurecore.consentDialog.open">
-        <source xml:lang="en">Open</source>
-        <target state="translated">打开</target>
-      </trans-unit>
-      <trans-unit id="azurecore.consentDialog.cancel">
-        <source xml:lang="en">Cancel</source>
-        <target state="translated">取消</target>
-      </trans-unit>
-      <trans-unit id="azurecore.consentDialog.ignore">
-        <source xml:lang="en">Ignore Tenant</source>
-        <target state="translated">忽略租户</target>
-      </trans-unit>
-      <trans-unit id="azurecore.consentDialog.body">
-        <source xml:lang="en">Your tenant '{0} ({1})' requires you to re-authenticate again to access {2} resources. Press Open to start the authentication process.</source>
-        <target state="translated">你的租户“{0} ({1})”需要你重新进行身份验证才能访问 {2} 资源。请按“打开”启动身份验证过程。</target>
-      </trans-unit>
-      <trans-unit id="azure.microsoftCorpAccount">
-        <source xml:lang="en">Microsoft Corp</source>
-        <target state="translated">Microsoft Corp</target>
-      </trans-unit>
-      <trans-unit id="azure.microsoftAccountDisplayName">
-        <source xml:lang="en">Microsoft Account</source>
-        <target state="translated">Microsoft 帐户</target>
-      </trans-unit>
-      <trans-unit id="azure.cacheErrrorRemove">
-        <source xml:lang="en">Error when removing your account from the cache.</source>
-        <target state="translated">从缓存中删除帐户时出错。</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/azurecore/dist/azureResource/tree/accountTreeNode" source-language="en" datatype="plaintext" target-language="zh-Hans">
-    <body>
-      <trans-unit id="azure.resource.tree.accountTreeNode.credentialError">
-        <source xml:lang="en">Failed to get credential for account {0}. Please refresh the account.</source>
-        <target state="translated">未能获取帐户 {0} 的凭据。请刷新帐户。</target>
-      </trans-unit>
-      <trans-unit id="azure.resource.tree.accountTreeNode.noSubscriptionsLabel">
-        <source xml:lang="en">No Subscriptions found.</source>
-        <target state="translated">未找到订阅。</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/azurecore/dist/azureResource/resourceTreeNode" source-language="en" datatype="plaintext" target-language="zh-Hans">
-    <body>
-      <trans-unit id="azure.resource.resourceTreeNode.noResourcesLabel">
-        <source xml:lang="en">No Resources found</source>
-        <target state="translated">未找到资源</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/azurecore/dist/azureResource/tree/flatAccountTreeNode" source-language="en" datatype="plaintext" target-language="zh-Hans">
-    <body>
-      <trans-unit id="azure.resource.tree.accountTreeNode.titleLoading">
-        <source xml:lang="en">{0} - Loading...</source>
-        <target state="translated">{0} - 正在加载...</target>
-      </trans-unit>
-      <trans-unit id="azure.resource.tree.accountTreeNode.title">
-        <source xml:lang="en">{0} ({1}/{2} subscriptions)</source>
-        <note>{0} is the display name of the azure account
-{1} is the number of selected subscriptions in this account
-{2} is the number of total subscriptions in this account</note>
-        <target state="translated">{0} ({1}/{2} 个订阅)</target>
-      </trans-unit>
-      <trans-unit id="azure.resource.tree.accountTreeNode.credentialError">
-        <source xml:lang="en">Failed to get credential for account {0}. Please go to the accounts dialog and refresh the account.</source>
-        <target state="translated">未能获取帐户 {0} 的凭据。请转到“帐户”对话框并刷新帐户。</target>
-      </trans-unit>
-      <trans-unit id="azure.resource.throttleerror">
-        <source xml:lang="en">Requests from this account have been throttled. To retry, please select a smaller number of subscriptions.</source>
-        <target state="translated">已限制来自此帐户的请求。要重试，请选择少量订阅。</target>
-      </trans-unit>
-      <trans-unit id="azure.resource.tree.loadresourceerror">
-        <source xml:lang="en">An error occured while loading Azure resources: {0}</source>
-        <target state="translated">加载 Azure 资源时出错: {0}</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/azurecore/dist/azureResource/tree/accountNotSignedInTreeNode" source-language="en" datatype="plaintext" target-language="zh-Hans">
-    <body>
-      <trans-unit id="azure.resource.tree.accountNotSignedInTreeNode.signInLabel">
-        <source xml:lang="en">Sign in to Azure...</source>
-        <target state="translated">登录到 Azure…</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/azurecore/dist/account-provider/azureAccountProviderService" source-language="en" datatype="plaintext" target-language="zh-Hans">
-    <body>
-      <trans-unit id="clearTokenCacheSuccess">
-        <source xml:lang="en">Token cache successfully cleared</source>
-        <target state="translated">令牌缓存已成功清除</target>
-      </trans-unit>
-      <trans-unit id="clearTokenCacheFailure">
-        <source xml:lang="en">Failed to clear token cache</source>
-        <target state="translated">未能清除令牌缓存</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/azurecore/dist/account-provider/providerSettings" source-language="en" datatype="plaintext" target-language="zh-Hans">
-    <body>
-      <trans-unit id="publicCloudDisplayName">
+      <trans-unit id="azure.resource.explorer.title">
         <source xml:lang="en">Azure</source>
         <target state="translated">Azure</target>
       </trans-unit>
-      <trans-unit id="usGovCloudDisplayName">
-        <source xml:lang="en">Azure (US Government)</source>
-        <target state="translated">Azure (美国政府)</target>
+      <trans-unit id="azure.resource.refresh.title">
+        <source xml:lang="en">Refresh</source>
+        <target state="translated">刷新</target>
       </trans-unit>
-      <trans-unit id="usNatCloudDisplayName">
-        <source xml:lang="en">Azure (US National)</source>
-        <target state="translated">Azure (美国国家)</target>
+      <trans-unit id="azure.resource.refreshall.title">
+        <source xml:lang="en">Azure: Refresh All Accounts</source>
+        <target state="translated">Azure: 刷新所有帐户</target>
       </trans-unit>
-      <trans-unit id="germanyCloud">
-        <source xml:lang="en">Azure (Germany)</source>
-        <target state="translated">Azure (德国)</target>
+      <trans-unit id="azure.resource.selectsubscriptions.title">
+        <source xml:lang="en">Select Subscriptions</source>
+        <target state="translated">选择订阅</target>
       </trans-unit>
-      <trans-unit id="chinaCloudDisplayName">
-        <source xml:lang="en">Azure (China)</source>
-        <target state="translated">Azure (中国)</target>
+      <trans-unit id="azure.resource.signin.title">
+        <source xml:lang="en">Azure: Sign In</source>
+        <target state="translated">Azure: 登录</target>
       </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/azurecore/dist/account-provider/azureAccountProvider" source-language="en" datatype="plaintext" target-language="zh-Hans">
-    <body>
-      <trans-unit id="azure.deprecatedGetSecurityToken">
-        <source xml:lang="en">A call was made to azdata.accounts.getSecurityToken, this method is deprecated and will be removed in future releases. Please use getAccountSecurityToken instead.</source>
-        <target state="translated">对 azdata.accounts.getSecurityToken 进行了调用，此方法已弃用，并会在未来的版本中删除。请改用 getAccountSecurityToken。</target>
+      <trans-unit id="azure.resource.startterminal.title">
+        <source xml:lang="en">Start Cloud Shell</source>
+        <target state="translated">启动 Cloud Shell</target>
       </trans-unit>
-      <trans-unit id="azure.NoAuthMethod.Selected">
-        <source xml:lang="en">No Azure auth method selected. You must select what method of authentication you want to use.</source>
-        <target state="translated">未选择任何 Azure 身份验证方法。必须选择你要使用的身份验证方法。</target>
+      <trans-unit id="azure.resource.view.title">
+        <source xml:lang="en">Azure (Preview)</source>
+        <target state="translated">Azure (预览)</target>
       </trans-unit>
-      <trans-unit id="azure.NoAuthMethod.Available">
-        <source xml:lang="en">No Azure auth method available. You must enable the auth methods in ADS configuration.</source>
-        <target state="translated">无可用的 Azure 身份验证方法。必须在 ADS 配置中启用身份验证方法。</target>
+      <trans-unit id="azure.tenant.config.filter.description">
+        <source xml:lang="en">The list of tenant IDs to ignore when querying azure resources. Each element is a tenant id.</source>
+        <target state="translated">查询 Azure 资源时要忽略的租户 ID 列表。每个元素都是一个租户 ID。</target>
       </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/azurecore/dist/account-provider/auths/azureAuthCodeGrant" source-language="en" datatype="plaintext" target-language="zh-Hans">
-    <body>
-      <trans-unit id="azure.serverCouldNotStart">
-        <source xml:lang="en">Server could not start. This could be a permissions error or an incompatibility on your system. You can try enabling device code authentication from settings.</source>
-        <target state="translated">无法启动服务器。这可能是由于权限错误或系统不兼容。可以尝试从设置启用设备代码身份验证。</target>
+      <trans-unit id="azure.title">
+        <source xml:lang="en">Azure</source>
+        <target state="translated">Azure</target>
       </trans-unit>
-      <trans-unit id="azureAuth.nonceError">
-        <source xml:lang="en">Authentication failed due to a nonce mismatch, please close Azure Data Studio and try again.</source>
-        <target state="translated">由于 nonce 不匹配，身份验证失败，请关闭 Azure Data Studio，然后重试。</target>
+      <trans-unit id="config.azureAccountConfigurationSection">
+        <source xml:lang="en">Azure Account Configuration</source>
+        <target state="translated">Azure 帐户配置</target>
       </trans-unit>
-      <trans-unit id="azureAuth.stateError">
-        <source xml:lang="en">Authentication failed due to a state mismatch, please close ADS and try again.</source>
-        <target state="translated">由于状态不匹配，身份验证失败，请关闭 ADS，然后重试。</target>
+      <trans-unit id="config.azureAuthMethodConfigurationSection">
+        <source xml:lang="en">Azure Authentication Method</source>
+        <target state="translated">Azure 身份验证方法</target>
       </trans-unit>
-      <trans-unit id="azure.azureAuthCodeGrantName">
-        <source xml:lang="en">Azure Auth Code Grant</source>
-        <target state="translated">Azure 身份验证代码授予</target>
+      <trans-unit id="config.azureCodeGrantMethod">
+        <source xml:lang="en">Code Grant Method</source>
+        <target state="translated">代码授予方法</target>
       </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/azurecore/dist/account-provider/auths/azureDeviceCode" source-language="en" datatype="plaintext" target-language="zh-Hans">
-    <body>
-      <trans-unit id="addAccount">
-        <source xml:lang="en">Add {0} account</source>
-        <target state="translated">添加 {0} 帐户</target>
+      <trans-unit id="config.azureDeviceCodeMethod">
+        <source xml:lang="en">Device Code Method</source>
+        <target state="translated">设备代码方法</target>
       </trans-unit>
-      <trans-unit id="azure.timeoutDeviceCode">
-        <source xml:lang="en">Timed out when waiting for device code login.</source>
-        <target state="translated">等待设备代码登录时超时。</target>
+      <trans-unit id="config.enableChinaCloudDescription">
+        <source xml:lang="en">Should Azure China integration be enabled</source>
+        <target state="translated">是否应启用 Azure 中国集成</target>
       </trans-unit>
-      <trans-unit id="azure.deviceCodeCheckFail">
-        <source xml:lang="en">Error encountered when trying to check for login results</source>
-        <target state="translated">尝试检查登录结果时遇到错误</target>
+      <trans-unit id="config.enableGermanyCloudDescription">
+        <source xml:lang="en">Should Azure Germany integration be enabled</source>
+        <target state="translated">是否应启用 Azure 德国集成</target>
       </trans-unit>
-      <trans-unit id="azure.azureDeviceCodeAuth">
-        <source xml:lang="en">Azure Device Code</source>
-        <target state="translated">Azure 设备代码</target>
+      <trans-unit id="config.enablePublicCloudDescription">
+        <source xml:lang="en">Should Azure public cloud integration be enabled</source>
+        <target state="translated">是否应启用 Azure 公有云集成</target>
       </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/azurecore/dist/azureResource/providers/databaseServer/databaseServerTreeDataProvider" source-language="en" datatype="plaintext" target-language="zh-Hans">
-    <body>
-      <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel">
-        <source xml:lang="en">SQL server</source>
-        <target state="translated">SQL 服务器</target>
+      <trans-unit id="config.enableUsGovCloudDescription">
+        <source xml:lang="en">Should US Government Azure cloud (Fairfax) integration be enabled</source>
+        <target state="translated">是否应启用美国政府 Azure 云(Fairfax)集成</target>
       </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/azurecore/dist/azureResource/providers/database/databaseTreeDataProvider" source-language="en" datatype="plaintext" target-language="zh-Hans">
-    <body>
-      <trans-unit id="azure.resource.providers.database.treeDataProvider.databaseContainerLabel">
-        <source xml:lang="en">SQL database</source>
-        <target state="translated">SQL 数据库</target>
+      <trans-unit id="config.enableUsNatCloudDescription">
+        <source xml:lang="en">Should US National Azure cloud integration be enabled</source>
+        <target state="translated">是否应启用美国国家 Azure 云集成</target>
       </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/azurecore/dist/azureResource/commands" source-language="en" datatype="plaintext" target-language="zh-Hans">
-    <body>
-      <trans-unit id="azure.cloudTerminalPreview">
-        <source xml:lang="en">You must enable preview features in order to use Azure Cloud Shell.</source>
-        <target state="translated">必须启用预览功能才能使用 Azure Cloud Shell。</target>
+      <trans-unit id="config.noSystemKeychain">
+        <source xml:lang="en">Disable system keychain integration. Credentials will be stored in a flat file in the user's home directory.</source>
+        <target state="translated">禁用系统密钥链集成。凭据将存储在用户主目录的平面文件中。</target>
       </trans-unit>
-      <trans-unit id="azure.signIn">
-        <source xml:lang="en">Sign in</source>
-        <target state="translated">登录</target>
-      </trans-unit>
-      <trans-unit id="azure.noAccountError">
-        <source xml:lang="en">You are not currently signed into any Azure accounts, Please sign in and then try again.</source>
-        <target state="translated">你当前未登录到任何 Azure 帐户，请登录，然后重试。</target>
-      </trans-unit>
-      <trans-unit id="azure.pickAnAzureAccount">
-        <source xml:lang="en">Select an Azure account</source>
-        <target state="translated">选择 Azure 帐户</target>
-      </trans-unit>
-      <trans-unit id="azure.accountNotSelectedError">
-        <source xml:lang="en">You must select an Azure account for this feature to work.</source>
-        <target state="translated">必须选择一个 Azure 帐户才能使用此功能。</target>
-      </trans-unit>
-      <trans-unit id="azure.noTenants">
-        <source xml:lang="en">A tenant is required for this feature. Your Azure subscription seems to have no tenants.</source>
-        <target state="translated">此功能需要使用租户。你的 Azure 订阅似乎没有租户。</target>
-      </trans-unit>
-      <trans-unit id="azure.startingCloudShell">
-        <source xml:lang="en">Starting cloud shell…</source>
-        <target state="translated">正在启动 Cloud Shell…</target>
-      </trans-unit>
-      <trans-unit id="azure.mustPickTenant">
-        <source xml:lang="en">You must select a tenant for this feature to work.</source>
-        <target state="translated">必须选择一个租户才能使用此功能。</target>
-      </trans-unit>
-      <trans-unit id="azure.resource.selectsubscriptions.credentialError">
-        <source xml:lang="en">Failed to get credential for account {0}. Please refresh the account.</source>
-        <target state="translated">未能获取帐户 {0} 的凭据。请刷新帐户。</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/azurecore/dist/azureResource/tree/subscriptionTreeNode" source-language="en" datatype="plaintext" target-language="zh-Hans">
-    <body>
-      <trans-unit id="azure.resource.tree.subscriptionTreeNode.noResourcesLabel">
-        <source xml:lang="en">No Resources found.</source>
-        <target state="translated">未找到资源。</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/azurecore/dist/azureResource/tree/treeProvider" source-language="en" datatype="plaintext" target-language="zh-Hans">
-    <body>
-      <trans-unit id="azure.resource.tree.treeProvider.loadingLabel">
-        <source xml:lang="en">Loading ...</source>
-        <target state="translated">正在加载…</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/azurecore/dist/azureResource/providers/sqlinstance/sqlInstanceTreeDataProvider" source-language="en" datatype="plaintext" target-language="zh-Hans">
-    <body>
-      <trans-unit id="azure.resource.providers.sqlInstanceContainerLabel">
-        <source xml:lang="en">Azure SQL DB managed instance</source>
-        <target state="translated">Azure SQL DB 托管实例</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/azurecore/dist/azureResource/providers/kusto/kustoTreeDataProvider" source-language="en" datatype="plaintext" target-language="zh-Hans">
-    <body>
-      <trans-unit id="azure.resource.providers.KustoContainerLabel">
-        <source xml:lang="en">Azure Data Explorer Cluster</source>
-        <target state="translated">Azure 数据资源管理器群集</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/azurecore/dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider" source-language="en" datatype="plaintext" target-language="zh-Hans">
-    <body>
-      <trans-unit id="azure.resource.providers.AzureMonitorContainerLabel">
-        <source xml:lang="en">Log Analytics workspace</source>
-        <target state="translated">Log Analytics 工作区</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/azurecore/dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider" source-language="en" datatype="plaintext" target-language="zh-Hans">
-    <body>
-      <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel">
-        <source xml:lang="en">Azure Database for PostgreSQL server</source>
-        <target state="translated">Azure Database for PostgreSQL 服务器</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/azurecore/dist/azureResource/services/terminalService" source-language="en" datatype="plaintext" target-language="zh-Hans">
-    <body>
-      <trans-unit id="azure.coudTerminal.neverUsed">
-        <source xml:lang="en">If you have not launched Azure Cloud Shell from this account before, please visit https://shell.azure.com/ to get started. Once you are set up, you can use AzureCloud Shell directly in Azure Data Studio.</source>
-        <target state="translated">如果你以前未从此帐户启动过 Azure Cloud Shell，请访问 https://shell.azure.com/ 以开始使用。设置后，可以直接在 Azure Data Studio 中使用 AzureCloud Shell。</target>
-      </trans-unit>
-      <trans-unit id="azure.cloudTerminal.openAzureShell">
-        <source xml:lang="en">Open Azure Shell</source>
-        <target state="translated">打开 Azure Shell</target>
-      </trans-unit>
-      <trans-unit id="azure.cloudTerminal.ok">
-        <source xml:lang="en">OK</source>
-        <target state="translated">确定</target>
-      </trans-unit>
-      <trans-unit id="azure.selectShellType">
-        <source xml:lang="en">Select Bash or PowerShell for Azure Cloud Shell</source>
-        <target state="translated">为 Azure Cloud Shell 选择 Bash 或 PowerShell</target>
-      </trans-unit>
-      <trans-unit id="azure.shellTypeRequired">
-        <source xml:lang="en">You must pick a shell type</source>
-        <target state="translated">必须选取一个 shell 类型</target>
-      </trans-unit>
-      <trans-unit id="azure.cloudShell">
-        <source xml:lang="en">Azure Cloud Shell (Preview) {0} ({1})</source>
-        <target state="translated">Azure Cloud Shell (预览) {0} ({1})</target>
-      </trans-unit>
-      <trans-unit id="azure.shellClosed">
-        <source xml:lang="en">Shell closed.
-</source>
-        <target state="translated">Shell 已关闭。
-</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/azurecore/dist/azureResource/providers/sqlinstanceArc/sqlInstanceArcTreeDataProvider" source-language="en" datatype="plaintext" target-language="zh-Hans">
-    <body>
-      <trans-unit id="azure.resource.providers.sqlInstanceArcContainerLabel">
-        <source xml:lang="en">SQL managed instance – Azure Arc</source>
-        <target state="translated">SQL 托管实例 - Azure Arc</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/azurecore/dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider" source-language="en" datatype="plaintext" target-language="zh-Hans">
-    <body>
-      <trans-unit id="azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel">
-        <source xml:lang="en">PostgreSQL Hyperscale – Azure Arc</source>
-        <target state="translated">PostgreSQL 超大规模 – Azure Arc</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/azurecore/dist/azureResource/tree/connectionDialogTreeProvider" source-language="en" datatype="plaintext" target-language="zh-Hans">
-    <body>
-      <trans-unit id="azure.resource.tree.treeProvider.loadingLabel">
-        <source xml:lang="en">Loading ...</source>
-        <target state="translated">正在加载…</target>
-      </trans-unit>
-      <trans-unit id="azure.resource.tree.treeProvider.openAccountsDialog">
-        <source xml:lang="en">Show Azure accounts</source>
-        <target state="translated">显示 Azure 帐户</target>
-      </trans-unit>
-      <trans-unit id="azure.resource.tree.treeProvider.accountLoadError">
-        <source xml:lang="en">Failed to load some Azure accounts. {0}</source>
-        <target state="translated">未能加载部分 Azure 存储帐户。{0}</target>
+      <trans-unit id="config.piiLogging">
+        <source xml:lang="en">Should Personally Identifiable Information (PII) be logged in the console view locally</source>
+        <target state="translated">应在控制台视图中本地记录个人身份信息(PII)</target>
       </trans-unit>
     </body>
   </file>

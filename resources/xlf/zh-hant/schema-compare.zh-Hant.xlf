@@ -1,622 +1,22 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/schema-compare/package" source-language="en" datatype="plaintext" target-language="zh-Hant">
-    <body>
-      <trans-unit id="displayName">
-        <source xml:lang="en">SQL Server Schema Compare</source>
-        <target state="translated">SQL Server 結構描述比較</target>
-      </trans-unit>
-      <trans-unit id="description">
-        <source xml:lang="en">SQL Server Schema Compare for Azure Data Studio supports comparing the schemas of databases and dacpacs.</source>
-        <target state="translated">Azure Data Studio 的 SQL Server 結構描述比較支援比較資料庫和 dacpac 的結構描述。</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.start">
-        <source xml:lang="en">Schema Compare</source>
-        <target state="translated">結構描述比較</target>
-      </trans-unit>
-    </body>
-  </file>
   <file original="extensions/schema-compare/dist/localizedConstants" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
-      <trans-unit id="schemaCompareDialog.ok">
-        <source xml:lang="en">OK</source>
-        <target state="translated">確定</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.cancel">
-        <source xml:lang="en">Cancel</source>
-        <target state="translated">取消</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.SourceTitle">
-        <source xml:lang="en">Source</source>
-        <target state="translated">來源</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.TargetTitle">
-        <source xml:lang="en">Target</source>
-        <target state="translated">目標</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.fileTextBoxLabel">
-        <source xml:lang="en">File</source>
-        <target state="translated">FILE</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.dacpacRadioButtonLabel">
-        <source xml:lang="en">Data-tier Application File (.dacpac)</source>
-        <target state="translated">資料層應用程式檔案 (.dacpac)</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.databaseButtonLabel">
-        <source xml:lang="en">Database</source>
-        <target state="translated">資料庫</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.radioButtonsLabel">
-        <source xml:lang="en">Type</source>
-        <target state="translated">類型</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.serverDropdownTitle">
-        <source xml:lang="en">Server</source>
-        <target state="translated">伺服器</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.databaseDropdownTitle">
-        <source xml:lang="en">Database</source>
-        <target state="translated">資料庫</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.dialogTitle">
-        <source xml:lang="en">Schema Compare</source>
-        <target state="translated">結構描述比較</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.differentSourceMessage">
-        <source xml:lang="en">A different source schema has been selected. Compare to see the comparison?</source>
-        <target state="translated">已選取其他來源結構描述。要比較以查看比較結果嗎?</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.differentTargetMessage">
-        <source xml:lang="en">A different target schema has been selected. Compare to see the comparison?</source>
-        <target state="translated">已選取其他目標結構描述。要比較以查看比較結果嗎?</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.differentSourceTargetMessage">
-        <source xml:lang="en">Different source and target schemas have been selected. Compare to see the comparison?</source>
-        <target state="translated">已選取不同的來源和結構描述。要比較以查看比較結果嗎?</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.Yes">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">是</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.No">
-        <source xml:lang="en">No</source>
-        <target state="translated">否</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.sourceTextBox">
-        <source xml:lang="en">Source file</source>
-        <target state="translated">原始程式檔</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.targetTextBox">
-        <source xml:lang="en">Target file</source>
-        <target state="translated">目標檔案</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.sourceDatabaseDropdown">
-        <source xml:lang="en">Source Database</source>
-        <target state="translated">來源資料庫</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.targetDatabaseDropdown">
-        <source xml:lang="en">Target Database</source>
-        <target state="translated">目標資料庫</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.sourceServerDropdown">
-        <source xml:lang="en">Source Server</source>
-        <target state="translated">來源伺服器</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.targetServerDropdown">
-        <source xml:lang="en">Target Server</source>
-        <target state="translated">目標伺服器</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.defaultUser">
-        <source xml:lang="en">default</source>
-        <target state="translated">預設</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.openFile">
-        <source xml:lang="en">Open</source>
-        <target state="translated">開啟</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.selectSourceFile">
-        <source xml:lang="en">Select source file</source>
-        <target state="translated">選取來源檔案</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.selectTargetFile">
-        <source xml:lang="en">Select target file</source>
-        <target state="translated">選取目標檔案</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompareOptionsDialog.Reset">
-        <source xml:lang="en">Reset</source>
-        <target state="translated">重設</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareOptions.RecompareMessage">
-        <source xml:lang="en">Options have changed. Recompare to see the comparison?</source>
-        <target state="translated">選項已變更。要重新比較以查看比較嗎?</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.SchemaCompareOptionsDialogLabel">
-        <source xml:lang="en">Schema Compare Options</source>
-        <target state="translated">結構描述比較選項</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.GeneralOptionsLabel">
-        <source xml:lang="en">General Options</source>
-        <target state="translated">一般選項</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.ObjectTypesOptionsLabel">
-        <source xml:lang="en">Include Object Types</source>
-        <target state="translated">包含物件類型</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.CompareDetailsTitle">
-        <source xml:lang="en">Compare Details</source>
-        <target state="translated">比較詳細資料</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.ApplyConfirmation">
-        <source xml:lang="en">Are you sure you want to update the target?</source>
-        <target state="translated">確定要更新目標嗎?</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.RecompareToRefresh">
-        <source xml:lang="en">Press Compare to refresh the comparison.</source>
-        <target state="translated">按下 [比較] 即可重新整理比較結果。</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.generateScriptEnabledButton">
-        <source xml:lang="en">Generate script to deploy changes to target</source>
-        <target state="translated">產生指令碼以將變更部署至目標</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.generateScriptNoChanges">
-        <source xml:lang="en">No changes to script</source>
-        <target state="translated">指令碼沒有任何變更</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.applyButtonEnabledTitle">
-        <source xml:lang="en">Apply changes to target</source>
-        <target state="translated">將變更套用至目標</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.applyNoChanges">
-        <source xml:lang="en">No changes to apply</source>
-        <target state="translated">沒有任何要套用的變更</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.includeExcludeInfoMessage">
-        <source xml:lang="en">Please note that include/exclude operations can take a moment to calculate affected dependencies</source>
-        <target state="translated">請注意，包含/排除作業可能需要一些時間來計算受影響的相依性</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.deleteAction">
-        <source xml:lang="en">Delete</source>
-        <target state="translated">刪除</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.changeAction">
-        <source xml:lang="en">Change</source>
-        <target state="translated">變更</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.addAction">
-        <source xml:lang="en">Add</source>
-        <target state="translated">新增</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.differencesTableTitle">
-        <source xml:lang="en">Comparison between Source and Target</source>
-        <target state="translated">來源和目標之間的比較</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.waitText">
-        <source xml:lang="en">Initializing Comparison. This might take a moment.</source>
-        <target state="translated">正在將比較結果初始化。這可能需要一些時間。</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.startText">
-        <source xml:lang="en">To compare two schemas, first select a source schema and target schema, then press Compare.</source>
-        <target state="translated">若要比較兩個結構描述，請先選取來源結構描述，然後按下 [比較]。</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.noDifferences">
-        <source xml:lang="en">No schema differences were found.</source>
-        <target state="translated">找不到任何結構描述差異。</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.typeColumn">
-        <source xml:lang="en">Type</source>
-        <target state="translated">類型</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.sourceNameColumn">
-        <source xml:lang="en">Source Name</source>
-        <target state="translated">來源名稱</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.includeColumnName">
-        <source xml:lang="en">Include</source>
-        <target state="translated">包含</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.actionColumn">
-        <source xml:lang="en">Action</source>
-        <target state="translated">動作</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.targetNameColumn">
-        <source xml:lang="en">Target Name</source>
-        <target state="translated">目標名稱</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.generateScriptButtonDisabledTitle">
-        <source xml:lang="en">Generate script is enabled when the target is a database</source>
-        <target state="translated">當目標為資料庫時，會啟用產生指令碼</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.applyButtonDisabledTitle">
-        <source xml:lang="en">Apply is enabled when the target is a database</source>
-        <target state="translated">當目標為資料庫時會啟用套用</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.cannotExcludeMessageWithDependent">
-        <source xml:lang="en">Cannot exclude {0}. Included dependents exist, such as {1}</source>
-        <target state="translated">無法排除 {0}。包含的相依性已存在，例如 {1}</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.cannotIncludeMessageWithDependent">
-        <source xml:lang="en">Cannot include {0}. Excluded dependents exist, such as {1}</source>
-        <target state="translated">不無法包含 {0}。排除的相依性已存在，例如 {1}</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.cannotExcludeMessage">
-        <source xml:lang="en">Cannot exclude {0}. Included dependents exist</source>
-        <target state="translated">無法排除 {0}。包含的相依性已存在</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.cannotIncludeMessage">
-        <source xml:lang="en">Cannot include {0}. Excluded dependents exist</source>
-        <target state="translated">無法包含 {0}。排除的相依性已存在</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.compareButton">
-        <source xml:lang="en">Compare</source>
-        <target state="translated">比較</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.cancelCompareButton">
-        <source xml:lang="en">Stop</source>
-        <target state="translated">停止</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.generateScriptButton">
-        <source xml:lang="en">Generate script</source>
-        <target state="translated">產生指令碼</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.optionsButton">
-        <source xml:lang="en">Options</source>
-        <target state="translated">選項</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.updateButton">
-        <source xml:lang="en">Apply</source>
-        <target state="translated">套用</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.switchDirectionButton">
-        <source xml:lang="en">Switch direction</source>
-        <target state="translated">切換方向</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.switchButtonTitle">
-        <source xml:lang="en">Switch source and target</source>
-        <target state="translated">切換來源和目標</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.sourceButtonTitle">
-        <source xml:lang="en">Select Source</source>
-        <target state="translated">選取來源</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.targetButtonTitle">
-        <source xml:lang="en">Select Target</source>
-        <target state="translated">選取目標</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.openScmpButton">
-        <source xml:lang="en">Open .scmp file</source>
-        <target state="translated">開啟 .scmp 檔案</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.openScmpButtonTitle">
-        <source xml:lang="en">Load source, target, and options saved in an .scmp file</source>
-        <target state="translated">載入儲存在 .scmp 檔案中的來源、目標和選項</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.saveScmpButton">
-        <source xml:lang="en">Save .scmp file</source>
-        <target state="translated">儲存 .scmp 檔案</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.saveScmpButtonTitle">
-        <source xml:lang="en">Save source and target, options, and excluded elements</source>
-        <target state="translated">儲存來源和目標、選項及排除的元素</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.saveFile">
-        <source xml:lang="en">Save</source>
-        <target state="translated">儲存</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.GetConnectionString">
-        <source xml:lang="en">Do you want to connect to {0}?</source>
-        <target state="translated">是否要連接到 {0}?</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.selectConnection">
-        <source xml:lang="en">Select connection</source>
-        <target state="translated">選取連線</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreTableOptions">
-        <source xml:lang="en">Ignore Table Options</source>
-        <target state="translated">忽略資料表選項</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreSemicolonBetweenStatements">
-        <source xml:lang="en">Ignore Semicolon Between Statements</source>
-        <target state="translated">忽略陳述式之間的分號</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreRouteLifetime">
-        <source xml:lang="en">Ignore Route Lifetime</source>
-        <target state="translated">忽略路由存留期</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreRoleMembership">
-        <source xml:lang="en">Ignore Role Membership</source>
-        <target state="translated">忽略角色成員資格</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreQuotedIdentifiers">
-        <source xml:lang="en">Ignore Quoted Identifiers</source>
-        <target state="translated">忽略引號識別碼</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnorePermissions">
-        <source xml:lang="en">Ignore Permissions</source>
-        <target state="translated">忽略權限</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnorePartitionSchemes">
-        <source xml:lang="en">Ignore Partition Schemes</source>
-        <target state="translated">忽略資料分隔配置</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreObjectPlacementOnPartitionScheme">
-        <source xml:lang="en">Ignore Object Placement On Partition Scheme</source>
-        <target state="translated">忽略磁碟分割配置上的物件放置</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreNotForReplication">
-        <source xml:lang="en">Ignore Not For Replication</source>
-        <target state="translated">忽略不可複寫</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreLoginSids">
-        <source xml:lang="en">Ignore Login Sids</source>
-        <target state="translated">忽略登入 Sid</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreLockHintsOnIndexes">
-        <source xml:lang="en">Ignore Lock Hints On Indexes</source>
-        <target state="translated">忽略索引的鎖定提示</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreKeywordCasing">
-        <source xml:lang="en">Ignore Keyword Casing</source>
-        <target state="translated">忽略關鍵字大小寫</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreIndexPadding">
-        <source xml:lang="en">Ignore Index Padding</source>
-        <target state="translated">忽略索引填補</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreIndexOptions">
-        <source xml:lang="en">Ignore Index Options</source>
-        <target state="translated">忽略索引選項</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreIncrement">
-        <source xml:lang="en">Ignore Increment</source>
-        <target state="translated">忽略增量</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreIdentitySeed">
-        <source xml:lang="en">Ignore Identity Seed</source>
-        <target state="translated">忽略識別值種子</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreUserSettingsObjects">
-        <source xml:lang="en">Ignore User Settings Objects</source>
-        <target state="translated">忽略使用者設定物件</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreFullTextCatalogFilePath">
-        <source xml:lang="en">Ignore Full Text Catalog FilePath</source>
-        <target state="translated">忽略全文檢索目錄 FilePath</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreWhitespace">
-        <source xml:lang="en">Ignore Whitespace</source>
-        <target state="translated">忽略空白</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreWithNocheckOnForeignKeys">
-        <source xml:lang="en">Ignore With Nocheck On ForeignKeys</source>
-        <target state="translated">忽略 With Nocheck On ForeignKeys</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.VerifyCollationCompatibility">
-        <source xml:lang="en">Verify Collation Compatibility</source>
-        <target state="translated">驗證定序相容性</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.UnmodifiableObjectWarnings">
-        <source xml:lang="en">Unmodifiable Object Warnings</source>
-        <target state="translated">無法修改的物件警告</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.TreatVerificationErrorsAsWarnings">
-        <source xml:lang="en">Treat Verification Errors As Warnings</source>
-        <target state="translated">將驗證錯誤視為警告</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.ScriptRefreshModule">
-        <source xml:lang="en">Script Refresh Module</source>
-        <target state="translated">指令碼重新整理模組</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.ScriptNewConstraintValidation">
-        <source xml:lang="en">Script New Constraint Validation</source>
-        <target state="translated">指令碼新增條件約束驗證</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.ScriptFileSize">
-        <source xml:lang="en">Script File Size</source>
-        <target state="translated">指令碼檔案大小</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.ScriptDeployStateChecks">
-        <source xml:lang="en">Script Deploy StateChecks</source>
-        <target state="translated">指令碼部署 StateChecks</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.ScriptDatabaseOptions">
-        <source xml:lang="en">Script Database Options</source>
-        <target state="translated">指令碼資料庫選項</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.ScriptDatabaseCompatibility">
-        <source xml:lang="en">Script Database Compatibility</source>
-        <target state="translated">指令碼資料庫相容性</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.ScriptDatabaseCollation">
-        <source xml:lang="en">Script Database Collation</source>
-        <target state="translated">指令碼資料庫定序</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.RunDeploymentPlanExecutors">
-        <source xml:lang="en">Run Deployment Plan Executors</source>
-        <target state="translated">執行部署計劃執行程式</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.RegisterDataTierApplication">
-        <source xml:lang="en">Register DataTier Application</source>
-        <target state="translated">註冊 DataTier 應用程式</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.PopulateFilesOnFileGroups">
-        <source xml:lang="en">Populate Files On File Groups</source>
-        <target state="translated">填入檔案群組上的檔案</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.NoAlterStatementsToChangeClrTypes">
-        <source xml:lang="en">No Alter Statements To Change Clr Types</source>
-        <target state="translated">不更改陳述式以變更 Cir 類型</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IncludeTransactionalScripts">
-        <source xml:lang="en">Include Transactional Scripts</source>
-        <target state="translated">包含交易指令碼</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IncludeCompositeObjects">
-        <source xml:lang="en">Include Composite Objects</source>
-        <target state="translated">包含複合物件</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.AllowUnsafeRowLevelSecurityDataMovement">
-        <source xml:lang="en">Allow Unsafe Row Level Security Data Movement</source>
-        <target state="translated">允許不安全的資料列層級安全性資料移動</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreWithNocheckOnCheckConstraints">
-        <source xml:lang="en">Ignore With No check On Check Constraints</source>
-        <target state="translated">忽略 With No check On Check 條件約束</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreFillFactor">
-        <source xml:lang="en">Ignore Fill Factor</source>
-        <target state="translated">忽略填滿因數</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreFileSize">
-        <source xml:lang="en">Ignore File Size</source>
-        <target state="translated">忽略檔案大小</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreFilegroupPlacement">
-        <source xml:lang="en">Ignore Filegroup Placement</source>
-        <target state="translated">忽略檔案群組放置</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.DoNotAlterReplicatedObjects">
-        <source xml:lang="en">Do Not Alter Replicated Objects</source>
-        <target state="translated">不要改變已複寫物件</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.DoNotAlterChangeDataCaptureObjects">
-        <source xml:lang="en">Do Not Alter Change Data Capture Objects</source>
-        <target state="translated">不要更改異動資料擷取物件</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.DisableAndReenableDdlTriggers">
-        <source xml:lang="en">Disable And Reenable Ddl Triggers</source>
-        <target state="translated">停用再重新啟用 Ddl 觸發程序</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.DeployDatabaseInSingleUserMode">
-        <source xml:lang="en">Deploy Database In Single User Mode</source>
-        <target state="translated">在單一使用者模式中部署資料庫</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.CreateNewDatabase">
-        <source xml:lang="en">Create New Database</source>
-        <target state="translated">建立新的資料庫</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.CompareUsingTargetCollation">
-        <source xml:lang="en">Compare Using Target Collation</source>
-        <target state="translated">使用目標定序進行比較</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.CommentOutSetVarDeclarations">
-        <source xml:lang="en">Comment Out Set Var Declarations</source>
-        <target state="translated">Comment Out Set Var 宣告</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.BlockWhenDriftDetected">
-        <source xml:lang="en">Block When Drift Detected</source>
-        <target state="translated">當偵測到飄移時封鎖</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.BlockOnPossibleDataLoss">
-        <source xml:lang="en">Block On Possible Data Loss</source>
-        <target state="translated">於可能遺失資料時封鎖</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.BackupDatabaseBeforeChanges">
-        <source xml:lang="en">Backup Database Before Changes</source>
-        <target state="translated">在變更前備份資料庫</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.AllowIncompatiblePlatform">
-        <source xml:lang="en">Allow Incompatible Platform</source>
-        <target state="translated">允許不相容的平台</target>
+      <trans-unit id="SchemaCompare.Aggregates">
+        <source xml:lang="en">Aggregates</source>
+        <target state="translated">彙總</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.AllowDropBlockingAssemblies">
         <source xml:lang="en">Allow Drop Blocking Assemblies</source>
         <target state="translated">允許捨棄封鎖的組件</target>
       </trans-unit>
-      <trans-unit id="SchemaCompare.DropConstraintsNotInSource">
-        <source xml:lang="en">Drop Constraints Not In Source</source>
-        <target state="translated">捨棄不在來源中的條件約束</target>
+      <trans-unit id="SchemaCompare.AllowIncompatiblePlatform">
+        <source xml:lang="en">Allow Incompatible Platform</source>
+        <target state="translated">允許不相容的平台</target>
       </trans-unit>
-      <trans-unit id="SchemaCompare.DropDmlTriggersNotInSource">
-        <source xml:lang="en">Drop Dml Triggers Not In Source</source>
-        <target state="translated">捨棄不在來源中的 Dml 觸發程序</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.DropExtendedPropertiesNotInSource">
-        <source xml:lang="en">Drop Extended Properties Not In Source</source>
-        <target state="translated">捨棄不在來源中的擴充屬性</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.DropIndexesNotInSource">
-        <source xml:lang="en">Drop Indexes Not In Source</source>
-        <target state="translated">捨棄不在來源中的索引</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreFileAndLogFilePath">
-        <source xml:lang="en">Ignore File And Log File Path</source>
-        <target state="translated">忽略檔案和記錄檔路徑</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreExtendedProperties">
-        <source xml:lang="en">Ignore Extended Properties</source>
-        <target state="translated">忽略擴充屬性</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreDmlTriggerState">
-        <source xml:lang="en">Ignore Dml Trigger State</source>
-        <target state="translated">忽略 Dml 觸發程序狀態</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreDmlTriggerOrder">
-        <source xml:lang="en">Ignore Dml Trigger Order</source>
-        <target state="translated">忽略 Dml 觸發程序順序</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreDefaultSchema">
-        <source xml:lang="en">Ignore Default Schema</source>
-        <target state="translated">忽略預設結構描述</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreDdlTriggerState">
-        <source xml:lang="en">Ignore Ddl Trigger State</source>
-        <target state="translated">忽略 Ddl 觸發程序狀態</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreDdlTriggerOrder">
-        <source xml:lang="en">Ignore Ddl Trigger Order</source>
-        <target state="translated">忽略 Ddl 觸發程序順序</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreCryptographicProviderFilePath">
-        <source xml:lang="en">Ignore Cryptographic Provider FilePath</source>
-        <target state="translated">忽略密碼編譯提供者 FilePath</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.VerifyDeployment">
-        <source xml:lang="en">Verify Deployment</source>
-        <target state="translated">驗證部署</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreComments">
-        <source xml:lang="en">Ignore Comments</source>
-        <target state="translated">忽略註解</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreColumnCollation">
-        <source xml:lang="en">Ignore Column Collation</source>
-        <target state="translated">忽略資料行定序</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreAuthorizer">
-        <source xml:lang="en">Ignore Authorizer</source>
-        <target state="translated">忽略授權者</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreAnsiNulls">
-        <source xml:lang="en">Ignore AnsiNulls</source>
-        <target state="translated">忽略 AnsiNulls</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.GenerateSmartDefaults">
-        <source xml:lang="en">Generate SmartDefaults</source>
-        <target state="translated">產生 SmartDefaults</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.DropStatisticsNotInSource">
-        <source xml:lang="en">Drop Statistics Not In Source</source>
-        <target state="translated">捨棄不在來源中的統計資料</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.DropRoleMembersNotInSource">
-        <source xml:lang="en">Drop Role Members Not In Source</source>
-        <target state="translated">捨棄不在來源中的角色成員</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.DropPermissionsNotInSource">
-        <source xml:lang="en">Drop Permissions Not In Source</source>
-        <target state="translated">捨棄不在來源中的權限</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.DropObjectsNotInSource">
-        <source xml:lang="en">Drop Objects Not In Source</source>
-        <target state="translated">捨棄不在來源中的物件</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreColumnOrder">
-        <source xml:lang="en">Ignore Column Order</source>
-        <target state="translated">忽略資料行順序</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Aggregates">
-        <source xml:lang="en">Aggregates</source>
-        <target state="translated">彙總</target>
+      <trans-unit id="SchemaCompare.AllowUnsafeRowLevelSecurityDataMovement">
+        <source xml:lang="en">Allow Unsafe Row Level Security Data Movement</source>
+        <target state="translated">允許不安全的資料列層級安全性資料移動</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.ApplicationRoles">
         <source xml:lang="en">Application Roles</source>
@@ -634,6 +34,22 @@
         <source xml:lang="en">Asymmetric Keys</source>
         <target state="translated">非對稱金鑰</target>
       </trans-unit>
+      <trans-unit id="SchemaCompare.Audits">
+        <source xml:lang="en">Audits</source>
+        <target state="translated">稽核</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.BackupDatabaseBeforeChanges">
+        <source xml:lang="en">Backup Database Before Changes</source>
+        <target state="translated">在變更前備份資料庫</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.BlockOnPossibleDataLoss">
+        <source xml:lang="en">Block On Possible Data Loss</source>
+        <target state="translated">於可能遺失資料時封鎖</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.BlockWhenDriftDetected">
+        <source xml:lang="en">Block When Drift Detected</source>
+        <target state="translated">當偵測到飄移時封鎖</target>
+      </trans-unit>
       <trans-unit id="SchemaCompare.BrokerPriorities">
         <source xml:lang="en">Broker Priorities</source>
         <target state="translated">Broker 優先權</target>
@@ -641,6 +57,10 @@
       <trans-unit id="SchemaCompare.Certificates">
         <source xml:lang="en">Certificates</source>
         <target state="translated">憑證</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ClrUserDefinedTypes">
+        <source xml:lang="en">Clr User Defined Types</source>
+        <target state="translated">Clr 使用者定義的類型</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.ColumnEncryptionKeys">
         <source xml:lang="en">Column Encryption Keys</source>
@@ -650,9 +70,37 @@
         <source xml:lang="en">Column Master Keys</source>
         <target state="translated">資料行主要金鑰</target>
       </trans-unit>
+      <trans-unit id="SchemaCompare.CommentOutSetVarDeclarations">
+        <source xml:lang="en">Comment Out Set Var Declarations</source>
+        <target state="translated">Comment Out Set Var 宣告</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.CompareUsingTargetCollation">
+        <source xml:lang="en">Compare Using Target Collation</source>
+        <target state="translated">使用目標定序進行比較</target>
+      </trans-unit>
       <trans-unit id="SchemaCompare.Contracts">
         <source xml:lang="en">Contracts</source>
         <target state="translated">合約</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.CreateNewDatabase">
+        <source xml:lang="en">Create New Database</source>
+        <target state="translated">建立新的資料庫</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Credentials">
+        <source xml:lang="en">Credentials</source>
+        <target state="translated">認證</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.CryptographicProviders">
+        <source xml:lang="en">Cryptographic Providers</source>
+        <target state="translated">密碼編譯提供者</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.DatabaseAuditSpecifications">
+        <source xml:lang="en">Database Audit Specifications</source>
+        <target state="translated">資料庫稽核規格</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.DatabaseEncryptionKeys">
+        <source xml:lang="en">Database Encryption Keys</source>
+        <target state="translated">資料庫加密金鑰</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.DatabaseOptions">
         <source xml:lang="en">Database Options</source>
@@ -662,6 +110,10 @@
         <source xml:lang="en">Database Roles</source>
         <target state="translated">資料庫角色</target>
       </trans-unit>
+      <trans-unit id="SchemaCompare.DatabaseScopedCredentials">
+        <source xml:lang="en">Database Scoped Credentials</source>
+        <target state="translated">資料庫範圍認證</target>
+      </trans-unit>
       <trans-unit id="SchemaCompare.DatabaseTriggers">
         <source xml:lang="en">Database Triggers</source>
         <target state="translated">資料庫觸發程序</target>
@@ -669,6 +121,374 @@
       <trans-unit id="SchemaCompare.Defaults">
         <source xml:lang="en">Defaults</source>
         <target state="translated">預設</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.DeployDatabaseInSingleUserMode">
+        <source xml:lang="en">Deploy Database In Single User Mode</source>
+        <target state="translated">在單一使用者模式中部署資料庫</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.AllowDropBlockingAssemblies">
+        <source xml:lang="en">This property is used by SqlClr deployment to cause any blocking assemblies to be dropped as part of the deployment plan. By default, any blocking/referencing assemblies will block an assembly update if the referencing assembly needs to be dropped.</source>
+        <target state="translated">這個屬性是供 SqlClr 部署用來使任何封鎖的組件會在部署計畫中卸除。根據預設，如果必須卸除任何參考組件，則該封鎖/參考組件將會封鎖組件更新。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.AllowIncompatiblePlatform">
+        <source xml:lang="en">Specifies whether to attempt the action despite incompatible SQL Server platforms.</source>
+        <target state="translated">指定儘管 SQL Server 平台不相容，是否仍要嘗試動作。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.AllowUnsafeRowLevelSecurityDataMovement">
+        <source xml:lang="en">Do not block data motion on a table which has Row Level Security if this property is set to true. Default is false.</source>
+        <target state="translated">若此屬性設定為 True，請勿封鎖具有資料列層級安全性之資料表的資料移動 (data motion)。預設為 False。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.BackupDatabaseBeforeChanges">
+        <source xml:lang="en">Backups the database before deploying any changes.</source>
+        <target state="translated">在部署任何變更之前，先備份資料庫。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.BlockOnPossibleDataLoss">
+        <source xml:lang="en">Specifies that the publish episode should be terminated if there is a possibility of data loss resulting from the publish operation.</source>
+        <target state="translated">指定如果發佈作業可能導致資料遺失，就應該終止發佈事件。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.BlockWhenDriftDetected">
+        <source xml:lang="en">Specifies whether to block updating a database whose schema no longer matches its registration or is unregistered.</source>
+        <target state="translated">指定是否封鎖更新結構描述不再符合註冊或已取消註冊的資料庫。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.CommentOutSetVarDeclarations">
+        <source xml:lang="en">Specifies whether the declaration of SETVAR variables should be commented out in the generated publish script. You might choose to do this if you plan to specify the values on the command line when you publish by using a tool such as SQLCMD.EXE.</source>
+        <target state="translated">指定在產生的發行指令碼中是否應該將 SETVAR 變數的宣告標記為註解。如果您計畫在使用 SQLCMD.EXE 一類工具進行發行時在命令列指定值，就可以選擇這種作法。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.CompareUsingTargetCollation">
+        <source xml:lang="en">This setting dictates how the database's collation is handled during deployment; by default the target database's collation will be updated if it does not match the collation specified by the source.  When this option is set, the target database's (or server's) collation should be used.</source>
+        <target state="translated">這項設定會指出部署期間的資料庫定序處理方式；根據預設，如果目標資料庫的定序與來源所指定的定序不相符，就會受到更新。設定此選項時，應使用目標資料庫 (或伺服器) 的定序。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.CreateNewDatabase">
+        <source xml:lang="en">Specifies whether the target database should be updated or whether it should be dropped and re-created when you publish to a database.</source>
+        <target state="translated">指定當您發行至資料庫時，應該更新目標資料庫或應該卸除並重新建立目標資料庫。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.DeployDatabaseInSingleUserMode">
+        <source xml:lang="en">If true, the database is set to Single User Mode before deploying.</source>
+        <target state="translated">若為 True，則會在部署前將資料庫設為單一使用者模式。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.DisableAndReenableDdlTriggers">
+        <source xml:lang="en">Specifies whether Data Definition Language (DDL) triggers are disabled at the beginning of the publish process and re-enabled at the end of the publish action.</source>
+        <target state="translated">指定是否在發行程序開始時停用 Data Definition Language (DDL) 觸發程序，並在發行動作結束時重新啟用。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.DoNotAlterChangeDataCaptureObjects">
+        <source xml:lang="en">If true, Change Data Capture objects are not altered.</source>
+        <target state="translated">如果為 True，則不會改變變更資料擷取物件。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.DoNotAlterReplicatedObjects">
+        <source xml:lang="en">Specifies whether objects that are replicated are identified during verification.</source>
+        <target state="translated">指定驗證期間是否識別有複寫的物件。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.DropConstraintsNotInSource">
+        <source xml:lang="en">Specifies whether constraints that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
+        <target state="translated">指定當您發行至資料庫時，是否要從目標資料庫中卸除不存在資料庫快照集 (.dacpac) 檔案中的條件約束。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.DropDmlTriggersNotInSource">
+        <source xml:lang="en">Specifies whether DML triggers that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
+        <target state="translated">指定當您發行至資料庫時，是否要從目標資料庫中卸除不存在資料庫快照集 (.dacpac) 檔案中的 DML 觸發程序。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.DropExtendedPropertiesNotInSource">
+        <source xml:lang="en">Specifies whether extended properties that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
+        <target state="translated">指定當您發行至資料庫時，是否要從目標資料庫中卸除不存在資料庫快照集 (.dacpac) 檔案中的擴充屬性。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.DropIndexesNotInSource">
+        <source xml:lang="en">Specifies whether indexes that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
+        <target state="translated">指定當您發行至資料庫時，是否要從目標資料庫中卸除不存在資料庫快照集 (.dacpac) 檔案中的索引。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.DropObjectsNotInSource">
+        <source xml:lang="en">Specifies whether objects that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.  This value takes precedence over DropExtendedProperties.</source>
+        <target state="translated">指定當您發行至資料庫時，是否要從目標資料庫卸除不存在於資料庫快照集 (.dacpac) 檔案中的物件。這個值的優先順序高過 DropExtendedProperties。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.DropPermissionsNotInSource">
+        <source xml:lang="en">Specifies whether permissions that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish updates to a database.</source>
+        <target state="translated">指定當您發行更新至資料庫時，是否要從目標資料庫中卸除不存在資料庫快照集 (.dacpac) 檔案中的權限。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.DropRoleMembersNotInSource">
+        <source xml:lang="en">Specifies whether role members that are not defined in the database snapshot (.dacpac) file will be dropped from the target database when you publish updates to a database.&lt;/</source>
+        <target state="translated">指定是否要在您對資料庫發佈更新時，將未於資料庫快照集 (.dacpac) 檔案中定義的角色成員從目標資料庫捨棄。&lt;/</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.DropStatisticsNotInSource">
+        <source xml:lang="en">Specifies whether statistics that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
+        <target state="translated">指定當您發行至資料庫時，是否要從目標資料庫卸除不存在資料庫快照集 (.dacpac) 檔案中的統計資料。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.GenerateSmartDefaults">
+        <source xml:lang="en">Automatically provides a default value when updating a table that contains data with a column that does not allow null values.</source>
+        <target state="translated">在更新含有資料且資料行不允許 null 值的資料表時，自動提供預設值。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreAnsiNulls">
+        <source xml:lang="en">Specifies whether differences in the ANSI NULLS setting should be ignored or updated when you publish to a database.</source>
+        <target state="translated">指定當您發佈至資料庫時，應該忽略或更新 ANSI NULLS 設定的差異。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreAuthorizer">
+        <source xml:lang="en">Specifies whether differences in the Authorizer should be ignored or updated when you publish to a database.</source>
+        <target state="translated">指定當您發佈至資料庫時，要忽略或更新授權者的差異。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreColumnCollation">
+        <source xml:lang="en">Specifies whether differences in the column collations should be ignored or updated when you publish to a database.</source>
+        <target state="translated">指定當您發佈至資料庫時，要忽略或更新資料行定序的差異。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreColumnOrder">
+        <source xml:lang="en">Specifies whether differences in table column order should be ignored or updated when you publish to a database.</source>
+        <target state="translated">指定當您發佈至資料庫時，要略過或更新資料表資料行順序的差異。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreComments">
+        <source xml:lang="en">Specifies whether differences in the comments should be ignored or updated when you publish to a database.</source>
+        <target state="translated">指定當您發佈至資料庫時，要忽略或更新註解的差異。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreCryptographicProviderFilePath">
+        <source xml:lang="en">Specifies whether differences in the file path for the cryptographic provider should be ignored or updated when you publish to a database.</source>
+        <target state="translated">指定當您發佈至資料庫時，要忽略或更新密碼編譯提供者之檔案路徑的差異。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreDdlTriggerOrder">
+        <source xml:lang="en">Specifies whether differences in the order of Data Definition Language (DDL) triggers should be ignored or updated when you publish to a database or server.</source>
+        <target state="translated">指定當您發行至資料庫或伺服器時，應該忽略或更新 Data Definition Language (DDL) triggers 的順序差異。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreDdlTriggerState">
+        <source xml:lang="en">Specifies whether differences in the enabled or disabled state of Data Definition Language (DDL) triggers should be ignored or updated when you publish to a database.</source>
+        <target state="translated">指定當您發行至資料庫時，應該忽略或更新 Data Definition Language (DDL) triggers 之啟用或停用狀態的差異。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreDefaultSchema">
+        <source xml:lang="en">Specifies whether differences in the default schema should be ignored or updated when you publish to a database.</source>
+        <target state="translated">指定當您發佈至資料庫時，是否應忽略或更新預設結構描述中的差異。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreDmlTriggerOrder">
+        <source xml:lang="en">Specifies whether differences in the order of Data Manipulation Language (DML) triggers should be ignored or updated when you publish to a database.</source>
+        <target state="translated">指定當您發行至資料庫時，應該忽略或更新 Data Manipulation Language (DML) triggers 的順序差異。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreDmlTriggerState">
+        <source xml:lang="en">Specifies whether differences in the enabled or disabled state of DML triggers should be ignored or updated when you publish to a database.</source>
+        <target state="translated">指定當您發行至資料庫時，應該忽略或更新 DML 觸發程序之啟用或停用狀態的差異。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreExtendedProperties">
+        <source xml:lang="en">Specifies whether extended properties should be ignored.</source>
+        <target state="translated">指定是否應該忽略擴充屬性。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreFileAndLogFilePath">
+        <source xml:lang="en">Specifies whether differences in the paths for files and log files should be ignored or updated when you publish to a database.</source>
+        <target state="translated">指定當您發佈至資料庫時，應該忽略或更新檔案和記錄檔之路徑的差異。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreFileSize">
+        <source xml:lang="en">Specifies whether differences in the file sizes should be ignored or whether a warning should be issued when you publish to a database.</source>
+        <target state="translated">指定當您發行至資料庫時，應該忽略檔案大小的差異或應該發出警告。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreFilegroupPlacement">
+        <source xml:lang="en">Specifies whether differences in the placement of objects in FILEGROUPs should be ignored or updated when you publish to a database.</source>
+        <target state="translated">指定當您發佈至資料庫時，應該忽略或更新 FILEGROUP 中物件位置的差異。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreFillFactor">
+        <source xml:lang="en">Specifies whether differences in the fill factor for index storage should be ignored or whether a warning should be issued when you publish to a database.</source>
+        <target state="translated">指定當您發行至資料庫時，應該忽略索引儲存體之填滿因數的差異或應該發出警告。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreFullTextCatalogFilePath">
+        <source xml:lang="en">Specifies whether differences in the file path for the full-text catalog should be ignored or whether a warning should be issued when you publish to a database.</source>
+        <target state="translated">指定當您發行至資料庫時，應該忽略全文檢索目錄之檔案路徑的差異或應該發出警告。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreIdentitySeed">
+        <source xml:lang="en">Specifies whether differences in the seed for an identity column should be ignored or updated when you publish updates to a database.</source>
+        <target state="translated">指定當您發佈更新至資料庫時，應該忽略或更新識別欄位之種子的差異。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreIncrement">
+        <source xml:lang="en">Specifies whether differences in the increment for an identity column should be ignored or updated when you publish to a database.</source>
+        <target state="translated">指定當您發佈至資料庫時，應該忽略或更新識別欄位之增量的差異。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreIndexOptions">
+        <source xml:lang="en">Specifies whether differences in the index options should be ignored or updated when you publish to a database.</source>
+        <target state="translated">指定當您發佈至資料庫時，是否要忽略或更新索引選項的差異。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreIndexPadding">
+        <source xml:lang="en">Specifies whether differences in the index padding should be ignored or updated when you publish to a database.</source>
+        <target state="translated">指定當您發佈至資料庫時，要忽略或更新索引填補的差異。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreKeywordCasing">
+        <source xml:lang="en">Specifies whether differences in the casing of keywords should be ignored or updated when you publish to a database.</source>
+        <target state="translated">指定當您發佈至資料庫時，應該忽略或更新關鍵字之大小寫的差異。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreLockHintsOnIndexes">
+        <source xml:lang="en">Specifies whether differences in the lock hints on indexes should be ignored or updated when you publish to a database.</source>
+        <target state="translated">指定當您發佈至資料庫時，應該忽略或更新索引之鎖定提示的差異。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreLoginSids">
+        <source xml:lang="en">Specifies whether differences in the security identification number (SID) should be ignored or updated when you publish to a database.</source>
+        <target state="translated">指定當您發佈至資料庫時，應該忽略或更新安全性識別碼 (SID) 的差異。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreNotForReplication">
+        <source xml:lang="en">Specifies whether the not for replication settings should be ignored or updated when you publish to a database.</source>
+        <target state="translated">指定當您發佈至資料庫時，要忽略或更新不可複寫設定。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreObjectPlacementOnPartitionScheme">
+        <source xml:lang="en">Specifies whether an object's placement on a partition scheme should be ignored or updated when you publish to a database.</source>
+        <target state="translated">指定當您發行至資料庫時，應該忽略或更新物件在資料分割配置上的位置。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnorePartitionSchemes">
+        <source xml:lang="en">Specifies whether differences in partition schemes and functions should be ignored or updated when you publish to a database.</source>
+        <target state="translated">指定當您發佈至資料庫時，應該忽略或更新資料分割配置和函數的差異。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnorePermissions">
+        <source xml:lang="en">Specifies whether permissions should be ignored.</source>
+        <target state="translated">指定是否應該忽略權限。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreQuotedIdentifiers">
+        <source xml:lang="en">Specifies whether differences in the quoted identifiers setting should be ignored or updated when you publish to a database.</source>
+        <target state="translated">指定當您發佈至資料庫時，應該忽略或更新引號識別碼設定的差異。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreRoleMembership">
+        <source xml:lang="en">Specifies whether differences in the role membership of logins should be ignored or updated when you publish to a database.</source>
+        <target state="translated">指定當您發佈至資料庫時，應該忽略或更新登入之角色成員資格的差異。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreRouteLifetime">
+        <source xml:lang="en">Specifies whether differences in the amount of time that SQL Server retains the route in the routing table should be ignored or updated when you publish to a database.</source>
+        <target state="translated">指定當您發行至資料庫時，應該忽略或更新 SQL Server 將路由保留在路由表中之時間長短的差異。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreSemicolonBetweenStatements">
+        <source xml:lang="en">Specifies whether differences in the semi-colons between T-SQL statements will be ignored or updated when you publish to a database.</source>
+        <target state="translated">指定當您發佈至資料庫時，應該忽略或更新 T-SQL 陳述式間之分號的差異。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreTableOptions">
+        <source xml:lang="en">Specifies whether differences in the table options will be ignored or updated when you publish to a database.</source>
+        <target state="translated">指定當您發佈至資料庫時，應該忽略或更新資料表選項的差異。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreUserSettingsObjects">
+        <source xml:lang="en">Specifies whether differences in the user settings objects will be ignored or updated when you publish to a database.</source>
+        <target state="translated">指定當您發佈至資料庫時，是否要忽略或更新使用者設定物件的差異。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreWhitespace">
+        <source xml:lang="en">Specifies whether differences in white space will be ignored or updated when you publish to a database.</source>
+        <target state="translated">指定當您發佈至資料庫時，要忽略或更新空白字元的差異。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreWithNocheckOnCheckConstraints">
+        <source xml:lang="en">Specifies whether differences in the value of the WITH NOCHECK clause for check constraints will be ignored or updated when you publish to a database.</source>
+        <target state="translated">指定當您發行至資料庫時，將忽略或更新檢查條件約束之 WITH NOCHECK 子句值的差異。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreWithNocheckOnForeignKeys">
+        <source xml:lang="en">Specifies whether differences in the value of the WITH NOCHECK clause for foreign keys will be ignored or updated when you publish to a database.</source>
+        <target state="translated">指定當您發行至資料庫時，將忽略或更新外部索引鍵之 WITH NOCHECK 子句值的差異。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IncludeCompositeObjects">
+        <source xml:lang="en">Include all composite elements as part of a single publish operation.</source>
+        <target state="translated">將所有複合項目加入單一發佈作業中。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IncludeTransactionalScripts">
+        <source xml:lang="en">Specifies whether transactional statements should be used where possible when you publish to a database.</source>
+        <target state="translated">指定當您發佈至資料庫時，是否應該盡可能地使用交易陳述式。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.NoAlterStatementsToChangeClrTypes">
+        <source xml:lang="en">Specifies that publish should always drop and re-create an assembly if there is a difference instead of issuing an ALTER ASSEMBLY statement</source>
+        <target state="translated">指定發佈應在有差異時一律捨棄並重新建立組件，而非發出 ALTER ASSEMBLY 陳述式</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.PopulateFilesOnFileGroups">
+        <source xml:lang="en">Specifies whether a new file is also created when a new FileGroup is created in the target database.</source>
+        <target state="translated">指定在目標資料庫中建立新 FileGroup 時，是否一併建立新檔案。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.RegisterDataTierApplication">
+        <source xml:lang="en">Specifies whether the schema is registered with the database server.</source>
+        <target state="translated">指定結構描述是否向資料庫伺服器註冊。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.RunDeploymentPlanExecutors">
+        <source xml:lang="en">Specifies whether DeploymentPlanExecutor contributors should be run when other operations are executed.</source>
+        <target state="translated">指定其他作業執行時，是否應該執行 DeploymentPlanExecutor 參與者。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.ScriptDatabaseCollation">
+        <source xml:lang="en">Specifies whether differences in the database collation should be ignored or updated when you publish to a database.</source>
+        <target state="translated">指定當您發佈至資料庫時，要忽略或更新資料庫定序的差異。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.ScriptDatabaseCompatibility">
+        <source xml:lang="en">Specifies whether differences in the database compatibility should be ignored or updated when you publish to a database.</source>
+        <target state="translated">指定當您發佈至資料庫時，要忽略或更新資料庫相容性的差異。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.ScriptDatabaseOptions">
+        <source xml:lang="en">Specifies whether target database properties should be set or updated as part of the publish action.</source>
+        <target state="translated">指定是否要在執行發佈動作時，設定或更新目標資料庫屬性。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.ScriptDeployStateChecks">
+        <source xml:lang="en">Specifies whether statements are generated in the publish script to verify that the database name and server name match the names specified in the database project.</source>
+        <target state="translated">指定是否在發行指令碼中產生陳述式，來驗證資料庫名稱和伺服器名稱是否符合資料庫專案中指定的名稱。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.ScriptFileSize">
+        <source xml:lang="en">Controls whether size is specified when adding a file to a filegroup.</source>
+        <target state="translated">控制將檔案加入 filegroup 時是否指定大小。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.ScriptNewConstraintValidation">
+        <source xml:lang="en">At the end of publish all of the constraints will be verified as one set, avoiding data errors caused by a check or foreign key constraint in the middle of publish. If set to False, your constraints will be published without checking the corresponding data.</source>
+        <target state="translated">在發行結束時，系統會將所有條件約束當做單一集合進行驗證，避免檢查或外部索引鍵條件約束在發行進行中導致資料錯誤。如果設定為 False，系統將會發行您的條件約束，但不檢查對應的資料。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.ScriptRefreshModule">
+        <source xml:lang="en">Include refresh statements at the end of the publish script.</source>
+        <target state="translated">在發佈指令碼的結尾包含重新整理陳述式。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.TreatVerificationErrorsAsWarnings">
+        <source xml:lang="en">Specifies whether errors encountered during publish verification should be treated as warnings. The check is performed against the generated deployment plan before the plan is executed against your target database. Plan verification detects problems such as the loss of target-only objects (such as indexes) that must be dropped to make a change. Verification will also detect situations where dependencies (such as a table or view) exist because of a reference to a composite project, but do not exist in the target database. You might choose to do this to get a complete list of all issues, instead of having the publish action stop on the first error.</source>
+        <target state="translated">指定是否應該將發行驗證期間所發生的錯誤視為警告。系統會先針對產生的部署計畫執行檢查，之後再針對您的目標資料庫執行計畫。計畫驗證會偵測出遺漏僅限於目標的物件 (例如索引) 這類必須卸除後才能進行變更的問題。驗證也會偵測因為參考複合物件而有相依性 (例如資料表或檢視) 存在，但是卻不存在目標資料庫中的情況。您可以選擇執行這個動作，以取得所有問題的清單，而不讓發行動作在第一次錯誤時就停止。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.UnmodifiableObjectWarnings">
+        <source xml:lang="en">Specifies whether warnings should be generated when differences are found in objects that cannot be modified, for example, if the file size or file paths were different for a file.</source>
+        <target state="translated">指定在無法修改的物件中發現差異時 (例如檔案的檔案大小或檔案路徑不同) 是否應該產生警告。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.VerifyCollationCompatibility">
+        <source xml:lang="en">Specifies whether collation compatibility is verified.</source>
+        <target state="translated">指定是否驗證定序相容性。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.VerifyDeployment">
+        <source xml:lang="en">Specifies whether checks should be performed before publishing that will stop the publish action if issues are present that might block successful publishing. For example, your publish action might stop if you have foreign keys on the target database that do not exist in the database project, and that will cause errors when you publish.</source>
+        <target state="translated">指定是否應該先執行檢查，以防止發行因為出現阻止發行成功的問題而停止發行動作。例如，如果目標資料庫有不存在資料庫專案中的外部索引鍵，該外部索引鍵會在發行時造成錯誤，則您的發行動作就可能會停止。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.DisableAndReenableDdlTriggers">
+        <source xml:lang="en">Disable And Reenable Ddl Triggers</source>
+        <target state="translated">停用再重新啟用 Ddl 觸發程序</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.DoNotAlterChangeDataCaptureObjects">
+        <source xml:lang="en">Do Not Alter Change Data Capture Objects</source>
+        <target state="translated">不要更改異動資料擷取物件</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.DoNotAlterReplicatedObjects">
+        <source xml:lang="en">Do Not Alter Replicated Objects</source>
+        <target state="translated">不要改變已複寫物件</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.DropConstraintsNotInSource">
+        <source xml:lang="en">Drop Constraints Not In Source</source>
+        <target state="translated">捨棄不在來源中的條件約束</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.DropDmlTriggersNotInSource">
+        <source xml:lang="en">Drop Dml Triggers Not In Source</source>
+        <target state="translated">捨棄不在來源中的 Dml 觸發程序</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.DropExtendedPropertiesNotInSource">
+        <source xml:lang="en">Drop Extended Properties Not In Source</source>
+        <target state="translated">捨棄不在來源中的擴充屬性</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.DropIndexesNotInSource">
+        <source xml:lang="en">Drop Indexes Not In Source</source>
+        <target state="translated">捨棄不在來源中的索引</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.DropObjectsNotInSource">
+        <source xml:lang="en">Drop Objects Not In Source</source>
+        <target state="translated">捨棄不在來源中的物件</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.DropPermissionsNotInSource">
+        <source xml:lang="en">Drop Permissions Not In Source</source>
+        <target state="translated">捨棄不在來源中的權限</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.DropRoleMembersNotInSource">
+        <source xml:lang="en">Drop Role Members Not In Source</source>
+        <target state="translated">捨棄不在來源中的角色成員</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.DropStatisticsNotInSource">
+        <source xml:lang="en">Drop Statistics Not In Source</source>
+        <target state="translated">捨棄不在來源中的統計資料</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Endpoints">
+        <source xml:lang="en">Endpoints</source>
+        <target state="translated">端點</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ErrorMessages">
+        <source xml:lang="en">Error Messages</source>
+        <target state="translated">錯誤訊息</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.EventNotifications">
+        <source xml:lang="en">Event Notifications</source>
+        <target state="translated">事件通知</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.EventSessions">
+        <source xml:lang="en">Event Sessions</source>
+        <target state="translated">事件工作階段</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.ExtendedProperties">
         <source xml:lang="en">Extended Properties</source>
@@ -682,17 +502,21 @@
         <source xml:lang="en">External File Formats</source>
         <target state="translated">外部檔案格式</target>
       </trans-unit>
-      <trans-unit id="SchemaCompare.ExternalStreams">
-        <source xml:lang="en">External Streams</source>
-        <target state="translated">外部資料流</target>
-      </trans-unit>
       <trans-unit id="SchemaCompare.ExternalStreamingJobs">
         <source xml:lang="en">External Streaming Jobs</source>
         <target state="translated">外部串流作業</target>
       </trans-unit>
+      <trans-unit id="SchemaCompare.ExternalStreams">
+        <source xml:lang="en">External Streams</source>
+        <target state="translated">外部資料流</target>
+      </trans-unit>
       <trans-unit id="SchemaCompare.ExternalTables">
         <source xml:lang="en">External Tables</source>
         <target state="translated">外部資料表</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.FileTables">
+        <source xml:lang="en">File Tables</source>
+        <target state="translated">檔案資料表</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Filegroups">
         <source xml:lang="en">Filegroups</source>
@@ -702,10 +526,6 @@
         <source xml:lang="en">Files</source>
         <target state="translated">檔案</target>
       </trans-unit>
-      <trans-unit id="SchemaCompare.FileTables">
-        <source xml:lang="en">File Tables</source>
-        <target state="translated">檔案資料表</target>
-      </trans-unit>
       <trans-unit id="SchemaCompare.FullTextCatalogs">
         <source xml:lang="en">Full Text Catalogs</source>
         <target state="translated">全文檢索目錄</target>
@@ -714,9 +534,197 @@
         <source xml:lang="en">Full Text Stoplists</source>
         <target state="translated">全文檢索停用字詞表</target>
       </trans-unit>
+      <trans-unit id="SchemaCompare.GeneralOptionsLabel">
+        <source xml:lang="en">General Options</source>
+        <target state="translated">一般選項</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.GenerateSmartDefaults">
+        <source xml:lang="en">Generate SmartDefaults</source>
+        <target state="translated">產生 SmartDefaults</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreAnsiNulls">
+        <source xml:lang="en">Ignore AnsiNulls</source>
+        <target state="translated">忽略 AnsiNulls</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreAuthorizer">
+        <source xml:lang="en">Ignore Authorizer</source>
+        <target state="translated">忽略授權者</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreColumnCollation">
+        <source xml:lang="en">Ignore Column Collation</source>
+        <target state="translated">忽略資料行定序</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreColumnOrder">
+        <source xml:lang="en">Ignore Column Order</source>
+        <target state="translated">忽略資料行順序</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreComments">
+        <source xml:lang="en">Ignore Comments</source>
+        <target state="translated">忽略註解</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreCryptographicProviderFilePath">
+        <source xml:lang="en">Ignore Cryptographic Provider FilePath</source>
+        <target state="translated">忽略密碼編譯提供者 FilePath</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreDdlTriggerOrder">
+        <source xml:lang="en">Ignore Ddl Trigger Order</source>
+        <target state="translated">忽略 Ddl 觸發程序順序</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreDdlTriggerState">
+        <source xml:lang="en">Ignore Ddl Trigger State</source>
+        <target state="translated">忽略 Ddl 觸發程序狀態</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreDefaultSchema">
+        <source xml:lang="en">Ignore Default Schema</source>
+        <target state="translated">忽略預設結構描述</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreDmlTriggerOrder">
+        <source xml:lang="en">Ignore Dml Trigger Order</source>
+        <target state="translated">忽略 Dml 觸發程序順序</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreDmlTriggerState">
+        <source xml:lang="en">Ignore Dml Trigger State</source>
+        <target state="translated">忽略 Dml 觸發程序狀態</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreExtendedProperties">
+        <source xml:lang="en">Ignore Extended Properties</source>
+        <target state="translated">忽略擴充屬性</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreFileAndLogFilePath">
+        <source xml:lang="en">Ignore File And Log File Path</source>
+        <target state="translated">忽略檔案和記錄檔路徑</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreFileSize">
+        <source xml:lang="en">Ignore File Size</source>
+        <target state="translated">忽略檔案大小</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreFilegroupPlacement">
+        <source xml:lang="en">Ignore Filegroup Placement</source>
+        <target state="translated">忽略檔案群組放置</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreFillFactor">
+        <source xml:lang="en">Ignore Fill Factor</source>
+        <target state="translated">忽略填滿因數</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreFullTextCatalogFilePath">
+        <source xml:lang="en">Ignore Full Text Catalog FilePath</source>
+        <target state="translated">忽略全文檢索目錄 FilePath</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreIdentitySeed">
+        <source xml:lang="en">Ignore Identity Seed</source>
+        <target state="translated">忽略識別值種子</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreIncrement">
+        <source xml:lang="en">Ignore Increment</source>
+        <target state="translated">忽略增量</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreIndexOptions">
+        <source xml:lang="en">Ignore Index Options</source>
+        <target state="translated">忽略索引選項</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreIndexPadding">
+        <source xml:lang="en">Ignore Index Padding</source>
+        <target state="translated">忽略索引填補</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreKeywordCasing">
+        <source xml:lang="en">Ignore Keyword Casing</source>
+        <target state="translated">忽略關鍵字大小寫</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreLockHintsOnIndexes">
+        <source xml:lang="en">Ignore Lock Hints On Indexes</source>
+        <target state="translated">忽略索引的鎖定提示</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreLoginSids">
+        <source xml:lang="en">Ignore Login Sids</source>
+        <target state="translated">忽略登入 Sid</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreNotForReplication">
+        <source xml:lang="en">Ignore Not For Replication</source>
+        <target state="translated">忽略不可複寫</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreObjectPlacementOnPartitionScheme">
+        <source xml:lang="en">Ignore Object Placement On Partition Scheme</source>
+        <target state="translated">忽略磁碟分割配置上的物件放置</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnorePartitionSchemes">
+        <source xml:lang="en">Ignore Partition Schemes</source>
+        <target state="translated">忽略資料分隔配置</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnorePermissions">
+        <source xml:lang="en">Ignore Permissions</source>
+        <target state="translated">忽略權限</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreQuotedIdentifiers">
+        <source xml:lang="en">Ignore Quoted Identifiers</source>
+        <target state="translated">忽略引號識別碼</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreRoleMembership">
+        <source xml:lang="en">Ignore Role Membership</source>
+        <target state="translated">忽略角色成員資格</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreRouteLifetime">
+        <source xml:lang="en">Ignore Route Lifetime</source>
+        <target state="translated">忽略路由存留期</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreSemicolonBetweenStatements">
+        <source xml:lang="en">Ignore Semicolon Between Statements</source>
+        <target state="translated">忽略陳述式之間的分號</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreTableOptions">
+        <source xml:lang="en">Ignore Table Options</source>
+        <target state="translated">忽略資料表選項</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreUserSettingsObjects">
+        <source xml:lang="en">Ignore User Settings Objects</source>
+        <target state="translated">忽略使用者設定物件</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreWhitespace">
+        <source xml:lang="en">Ignore Whitespace</source>
+        <target state="translated">忽略空白</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreWithNocheckOnCheckConstraints">
+        <source xml:lang="en">Ignore With No check On Check Constraints</source>
+        <target state="translated">忽略 With No check On Check 條件約束</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreWithNocheckOnForeignKeys">
+        <source xml:lang="en">Ignore With Nocheck On ForeignKeys</source>
+        <target state="translated">忽略 With Nocheck On ForeignKeys</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IncludeCompositeObjects">
+        <source xml:lang="en">Include Composite Objects</source>
+        <target state="translated">包含複合物件</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IncludeTransactionalScripts">
+        <source xml:lang="en">Include Transactional Scripts</source>
+        <target state="translated">包含交易指令碼</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.LinkedServerLogins">
+        <source xml:lang="en">Linked Server Logins</source>
+        <target state="translated">連結的伺服器登入</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.LinkedServers">
+        <source xml:lang="en">Linked Servers</source>
+        <target state="translated">連結的伺服器</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Logins">
+        <source xml:lang="en">Logins</source>
+        <target state="translated">登入</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.MasterKeys">
+        <source xml:lang="en">Master Keys</source>
+        <target state="translated">主要金鑰</target>
+      </trans-unit>
       <trans-unit id="SchemaCompare.MessageTypes">
         <source xml:lang="en">Message Types</source>
         <target state="translated">訊息類型</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.NoAlterStatementsToChangeClrTypes">
+        <source xml:lang="en">No Alter Statements To Change Clr Types</source>
+        <target state="translated">不更改陳述式以變更 Cir 類型</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ObjectTypesOptionsLabel">
+        <source xml:lang="en">Include Object Types</source>
+        <target state="translated">包含物件類型</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.PartitionFunctions">
         <source xml:lang="en">Partition Functions</source>
@@ -730,9 +738,17 @@
         <source xml:lang="en">Permissions</source>
         <target state="translated">權限</target>
       </trans-unit>
+      <trans-unit id="SchemaCompare.PopulateFilesOnFileGroups">
+        <source xml:lang="en">Populate Files On File Groups</source>
+        <target state="translated">填入檔案群組上的檔案</target>
+      </trans-unit>
       <trans-unit id="SchemaCompare.Queues">
         <source xml:lang="en">Queues</source>
         <target state="translated">佇列</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.RegisterDataTierApplication">
+        <source xml:lang="en">Register DataTier Application</source>
+        <target state="translated">註冊 DataTier 應用程式</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.RemoteServiceBindings">
         <source xml:lang="en">Remote Service Bindings</source>
@@ -742,13 +758,53 @@
         <source xml:lang="en">Role Membership</source>
         <target state="translated">角色成員資格</target>
       </trans-unit>
+      <trans-unit id="SchemaCompare.Routes">
+        <source xml:lang="en">Routes</source>
+        <target state="translated">路由</target>
+      </trans-unit>
       <trans-unit id="SchemaCompare.Rules">
         <source xml:lang="en">Rules</source>
         <target state="translated">規則</target>
       </trans-unit>
+      <trans-unit id="SchemaCompare.RunDeploymentPlanExecutors">
+        <source xml:lang="en">Run Deployment Plan Executors</source>
+        <target state="translated">執行部署計劃執行程式</target>
+      </trans-unit>
       <trans-unit id="SchemaCompare.ScalarValuedFunctions">
         <source xml:lang="en">Scalar Valued Functions</source>
         <target state="translated">純量值函式</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.SchemaCompareOptionsDialogLabel">
+        <source xml:lang="en">Schema Compare Options</source>
+        <target state="translated">結構描述比較選項</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ScriptDatabaseCollation">
+        <source xml:lang="en">Script Database Collation</source>
+        <target state="translated">指令碼資料庫定序</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ScriptDatabaseCompatibility">
+        <source xml:lang="en">Script Database Compatibility</source>
+        <target state="translated">指令碼資料庫相容性</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ScriptDatabaseOptions">
+        <source xml:lang="en">Script Database Options</source>
+        <target state="translated">指令碼資料庫選項</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ScriptDeployStateChecks">
+        <source xml:lang="en">Script Deploy StateChecks</source>
+        <target state="translated">指令碼部署 StateChecks</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ScriptFileSize">
+        <source xml:lang="en">Script File Size</source>
+        <target state="translated">指令碼檔案大小</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ScriptNewConstraintValidation">
+        <source xml:lang="en">Script New Constraint Validation</source>
+        <target state="translated">指令碼新增條件約束驗證</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ScriptRefreshModule">
+        <source xml:lang="en">Script Refresh Module</source>
+        <target state="translated">指令碼重新整理模組</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.SearchPropertyLists">
         <source xml:lang="en">Search Property Lists</source>
@@ -761,6 +817,22 @@
       <trans-unit id="SchemaCompare.Sequences">
         <source xml:lang="en">Sequences</source>
         <target state="translated">序列</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ServerAuditSpecifications">
+        <source xml:lang="en">Server Audit Specifications</source>
+        <target state="translated">伺服器稽核規格</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ServerRoleMembership">
+        <source xml:lang="en">Server Role Membership</source>
+        <target state="translated">伺服器角色成員資格</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ServerRoles">
+        <source xml:lang="en">Server Roles</source>
+        <target state="translated">伺服器角色</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ServerTriggers">
+        <source xml:lang="en">Server Triggers</source>
+        <target state="translated">伺服器觸發程序</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Services">
         <source xml:lang="en">Services</source>
@@ -782,13 +854,21 @@
         <source xml:lang="en">Synonyms</source>
         <target state="translated">同義資料表</target>
       </trans-unit>
+      <trans-unit id="SchemaCompare.TableValuedFunctions">
+        <source xml:lang="en">Table Valued Functions</source>
+        <target state="translated">資料表值函式</target>
+      </trans-unit>
       <trans-unit id="SchemaCompare.Tables">
         <source xml:lang="en">Tables</source>
         <target state="translated">資料表</target>
       </trans-unit>
-      <trans-unit id="SchemaCompare.TableValuedFunctions">
-        <source xml:lang="en">Table Valued Functions</source>
-        <target state="translated">資料表值函式</target>
+      <trans-unit id="SchemaCompare.TreatVerificationErrorsAsWarnings">
+        <source xml:lang="en">Treat Verification Errors As Warnings</source>
+        <target state="translated">將驗證錯誤視為警告</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.UnmodifiableObjectWarnings">
+        <source xml:lang="en">Unmodifiable Object Warnings</source>
+        <target state="translated">無法修改的物件警告</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.UserDefinedDataTypes">
         <source xml:lang="en">User Defined Data Types</source>
@@ -798,13 +878,17 @@
         <source xml:lang="en">User Defined Table Types</source>
         <target state="translated">使用者定義的資料表類型</target>
       </trans-unit>
-      <trans-unit id="SchemaCompare.ClrUserDefinedTypes">
-        <source xml:lang="en">Clr User Defined Types</source>
-        <target state="translated">Clr 使用者定義的類型</target>
-      </trans-unit>
       <trans-unit id="SchemaCompare.Users">
         <source xml:lang="en">Users</source>
         <target state="translated">使用者</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.VerifyCollationCompatibility">
+        <source xml:lang="en">Verify Collation Compatibility</source>
+        <target state="translated">驗證定序相容性</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.VerifyDeployment">
+        <source xml:lang="en">Verify Deployment</source>
+        <target state="translated">驗證部署</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Views">
         <source xml:lang="en">Views</source>
@@ -814,409 +898,325 @@
         <source xml:lang="en">Xml Schema Collections</source>
         <target state="translated">XML 結構描述集合</target>
       </trans-unit>
-      <trans-unit id="SchemaCompare.Audits">
-        <source xml:lang="en">Audits</source>
-        <target state="translated">稽核</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Credentials">
-        <source xml:lang="en">Credentials</source>
-        <target state="translated">認證</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.CryptographicProviders">
-        <source xml:lang="en">Cryptographic Providers</source>
-        <target state="translated">密碼編譯提供者</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.DatabaseAuditSpecifications">
-        <source xml:lang="en">Database Audit Specifications</source>
-        <target state="translated">資料庫稽核規格</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.DatabaseEncryptionKeys">
-        <source xml:lang="en">Database Encryption Keys</source>
-        <target state="translated">資料庫加密金鑰</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.DatabaseScopedCredentials">
-        <source xml:lang="en">Database Scoped Credentials</source>
-        <target state="translated">資料庫範圍認證</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Endpoints">
-        <source xml:lang="en">Endpoints</source>
-        <target state="translated">端點</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.ErrorMessages">
-        <source xml:lang="en">Error Messages</source>
-        <target state="translated">錯誤訊息</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.EventNotifications">
-        <source xml:lang="en">Event Notifications</source>
-        <target state="translated">事件通知</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.EventSessions">
-        <source xml:lang="en">Event Sessions</source>
-        <target state="translated">事件工作階段</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.LinkedServerLogins">
-        <source xml:lang="en">Linked Server Logins</source>
-        <target state="translated">連結的伺服器登入</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.LinkedServers">
-        <source xml:lang="en">Linked Servers</source>
-        <target state="translated">連結的伺服器</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Logins">
-        <source xml:lang="en">Logins</source>
-        <target state="translated">登入</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.MasterKeys">
-        <source xml:lang="en">Master Keys</source>
-        <target state="translated">主要金鑰</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Routes">
-        <source xml:lang="en">Routes</source>
-        <target state="translated">路由</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.ServerAuditSpecifications">
-        <source xml:lang="en">Server Audit Specifications</source>
-        <target state="translated">伺服器稽核規格</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.ServerRoleMembership">
-        <source xml:lang="en">Server Role Membership</source>
-        <target state="translated">伺服器角色成員資格</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.ServerRoles">
-        <source xml:lang="en">Server Roles</source>
-        <target state="translated">伺服器角色</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.ServerTriggers">
-        <source xml:lang="en">Server Triggers</source>
-        <target state="translated">伺服器觸發程序</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreTableOptions">
-        <source xml:lang="en">Specifies whether differences in the table options will be ignored or updated when you publish to a database.</source>
-        <target state="translated">指定當您發佈至資料庫時，應該忽略或更新資料表選項的差異。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreSemicolonBetweenStatements">
-        <source xml:lang="en">Specifies whether differences in the semi-colons between T-SQL statements will be ignored or updated when you publish to a database.</source>
-        <target state="translated">指定當您發佈至資料庫時，應該忽略或更新 T-SQL 陳述式間之分號的差異。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreRouteLifetime">
-        <source xml:lang="en">Specifies whether differences in the amount of time that SQL Server retains the route in the routing table should be ignored or updated when you publish to a database.</source>
-        <target state="translated">指定當您發行至資料庫時，應該忽略或更新 SQL Server 將路由保留在路由表中之時間長短的差異。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreRoleMembership">
-        <source xml:lang="en">Specifies whether differences in the role membership of logins should be ignored or updated when you publish to a database.</source>
-        <target state="translated">指定當您發佈至資料庫時，應該忽略或更新登入之角色成員資格的差異。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreQuotedIdentifiers">
-        <source xml:lang="en">Specifies whether differences in the quoted identifiers setting should be ignored or updated when you publish to a database.</source>
-        <target state="translated">指定當您發佈至資料庫時，應該忽略或更新引號識別碼設定的差異。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnorePermissions">
-        <source xml:lang="en">Specifies whether permissions should be ignored.</source>
-        <target state="translated">指定是否應該忽略權限。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnorePartitionSchemes">
-        <source xml:lang="en">Specifies whether differences in partition schemes and functions should be ignored or updated when you publish to a database.</source>
-        <target state="translated">指定當您發佈至資料庫時，應該忽略或更新資料分割配置和函數的差異。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreObjectPlacementOnPartitionScheme">
-        <source xml:lang="en">Specifies whether an object's placement on a partition scheme should be ignored or updated when you publish to a database.</source>
-        <target state="translated">指定當您發行至資料庫時，應該忽略或更新物件在資料分割配置上的位置。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreNotForReplication">
-        <source xml:lang="en">Specifies whether the not for replication settings should be ignored or updated when you publish to a database.</source>
-        <target state="translated">指定當您發佈至資料庫時，要忽略或更新不可複寫設定。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreLoginSids">
-        <source xml:lang="en">Specifies whether differences in the security identification number (SID) should be ignored or updated when you publish to a database.</source>
-        <target state="translated">指定當您發佈至資料庫時，應該忽略或更新安全性識別碼 (SID) 的差異。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreLockHintsOnIndexes">
-        <source xml:lang="en">Specifies whether differences in the lock hints on indexes should be ignored or updated when you publish to a database.</source>
-        <target state="translated">指定當您發佈至資料庫時，應該忽略或更新索引之鎖定提示的差異。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreKeywordCasing">
-        <source xml:lang="en">Specifies whether differences in the casing of keywords should be ignored or updated when you publish to a database.</source>
-        <target state="translated">指定當您發佈至資料庫時，應該忽略或更新關鍵字之大小寫的差異。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreIndexPadding">
-        <source xml:lang="en">Specifies whether differences in the index padding should be ignored or updated when you publish to a database.</source>
-        <target state="translated">指定當您發佈至資料庫時，要忽略或更新索引填補的差異。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreIndexOptions">
-        <source xml:lang="en">Specifies whether differences in the index options should be ignored or updated when you publish to a database.</source>
-        <target state="translated">指定當您發佈至資料庫時，是否要忽略或更新索引選項的差異。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreIncrement">
-        <source xml:lang="en">Specifies whether differences in the increment for an identity column should be ignored or updated when you publish to a database.</source>
-        <target state="translated">指定當您發佈至資料庫時，應該忽略或更新識別欄位之增量的差異。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreIdentitySeed">
-        <source xml:lang="en">Specifies whether differences in the seed for an identity column should be ignored or updated when you publish updates to a database.</source>
-        <target state="translated">指定當您發佈更新至資料庫時，應該忽略或更新識別欄位之種子的差異。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreUserSettingsObjects">
-        <source xml:lang="en">Specifies whether differences in the user settings objects will be ignored or updated when you publish to a database.</source>
-        <target state="translated">指定當您發佈至資料庫時，是否要忽略或更新使用者設定物件的差異。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreFullTextCatalogFilePath">
-        <source xml:lang="en">Specifies whether differences in the file path for the full-text catalog should be ignored or whether a warning should be issued when you publish to a database.</source>
-        <target state="translated">指定當您發行至資料庫時，應該忽略全文檢索目錄之檔案路徑的差異或應該發出警告。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreWhitespace">
-        <source xml:lang="en">Specifies whether differences in white space will be ignored or updated when you publish to a database.</source>
-        <target state="translated">指定當您發佈至資料庫時，要忽略或更新空白字元的差異。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreWithNocheckOnForeignKeys">
-        <source xml:lang="en">Specifies whether differences in the value of the WITH NOCHECK clause for foreign keys will be ignored or updated when you publish to a database.</source>
-        <target state="translated">指定當您發行至資料庫時，將忽略或更新外部索引鍵之 WITH NOCHECK 子句值的差異。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.VerifyCollationCompatibility">
-        <source xml:lang="en">Specifies whether collation compatibility is verified.</source>
-        <target state="translated">指定是否驗證定序相容性。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.UnmodifiableObjectWarnings">
-        <source xml:lang="en">Specifies whether warnings should be generated when differences are found in objects that cannot be modified, for example, if the file size or file paths were different for a file.</source>
-        <target state="translated">指定在無法修改的物件中發現差異時 (例如檔案的檔案大小或檔案路徑不同) 是否應該產生警告。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.TreatVerificationErrorsAsWarnings">
-        <source xml:lang="en">Specifies whether errors encountered during publish verification should be treated as warnings. The check is performed against the generated deployment plan before the plan is executed against your target database. Plan verification detects problems such as the loss of target-only objects (such as indexes) that must be dropped to make a change. Verification will also detect situations where dependencies (such as a table or view) exist because of a reference to a composite project, but do not exist in the target database. You might choose to do this to get a complete list of all issues, instead of having the publish action stop on the first error.</source>
-        <target state="translated">指定是否應該將發行驗證期間所發生的錯誤視為警告。系統會先針對產生的部署計畫執行檢查，之後再針對您的目標資料庫執行計畫。計畫驗證會偵測出遺漏僅限於目標的物件 (例如索引) 這類必須卸除後才能進行變更的問題。驗證也會偵測因為參考複合物件而有相依性 (例如資料表或檢視) 存在，但是卻不存在目標資料庫中的情況。您可以選擇執行這個動作，以取得所有問題的清單，而不讓發行動作在第一次錯誤時就停止。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.ScriptRefreshModule">
-        <source xml:lang="en">Include refresh statements at the end of the publish script.</source>
-        <target state="translated">在發佈指令碼的結尾包含重新整理陳述式。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.ScriptNewConstraintValidation">
-        <source xml:lang="en">At the end of publish all of the constraints will be verified as one set, avoiding data errors caused by a check or foreign key constraint in the middle of publish. If set to False, your constraints will be published without checking the corresponding data.</source>
-        <target state="translated">在發行結束時，系統會將所有條件約束當做單一集合進行驗證，避免檢查或外部索引鍵條件約束在發行進行中導致資料錯誤。如果設定為 False，系統將會發行您的條件約束，但不檢查對應的資料。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.ScriptFileSize">
-        <source xml:lang="en">Controls whether size is specified when adding a file to a filegroup.</source>
-        <target state="translated">控制將檔案加入 filegroup 時是否指定大小。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.ScriptDeployStateChecks">
-        <source xml:lang="en">Specifies whether statements are generated in the publish script to verify that the database name and server name match the names specified in the database project.</source>
-        <target state="translated">指定是否在發行指令碼中產生陳述式，來驗證資料庫名稱和伺服器名稱是否符合資料庫專案中指定的名稱。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.ScriptDatabaseOptions">
-        <source xml:lang="en">Specifies whether target database properties should be set or updated as part of the publish action.</source>
-        <target state="translated">指定是否要在執行發佈動作時，設定或更新目標資料庫屬性。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.ScriptDatabaseCompatibility">
-        <source xml:lang="en">Specifies whether differences in the database compatibility should be ignored or updated when you publish to a database.</source>
-        <target state="translated">指定當您發佈至資料庫時，要忽略或更新資料庫相容性的差異。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.ScriptDatabaseCollation">
-        <source xml:lang="en">Specifies whether differences in the database collation should be ignored or updated when you publish to a database.</source>
-        <target state="translated">指定當您發佈至資料庫時，要忽略或更新資料庫定序的差異。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.RunDeploymentPlanExecutors">
-        <source xml:lang="en">Specifies whether DeploymentPlanExecutor contributors should be run when other operations are executed.</source>
-        <target state="translated">指定其他作業執行時，是否應該執行 DeploymentPlanExecutor 參與者。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.RegisterDataTierApplication">
-        <source xml:lang="en">Specifies whether the schema is registered with the database server.</source>
-        <target state="translated">指定結構描述是否向資料庫伺服器註冊。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.PopulateFilesOnFileGroups">
-        <source xml:lang="en">Specifies whether a new file is also created when a new FileGroup is created in the target database.</source>
-        <target state="translated">指定在目標資料庫中建立新 FileGroup 時，是否一併建立新檔案。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.NoAlterStatementsToChangeClrTypes">
-        <source xml:lang="en">Specifies that publish should always drop and re-create an assembly if there is a difference instead of issuing an ALTER ASSEMBLY statement</source>
-        <target state="translated">指定發佈應在有差異時一律捨棄並重新建立組件，而非發出 ALTER ASSEMBLY 陳述式</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IncludeTransactionalScripts">
-        <source xml:lang="en">Specifies whether transactional statements should be used where possible when you publish to a database.</source>
-        <target state="translated">指定當您發佈至資料庫時，是否應該盡可能地使用交易陳述式。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IncludeCompositeObjects">
-        <source xml:lang="en">Include all composite elements as part of a single publish operation.</source>
-        <target state="translated">將所有複合項目加入單一發佈作業中。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.AllowUnsafeRowLevelSecurityDataMovement">
-        <source xml:lang="en">Do not block data motion on a table which has Row Level Security if this property is set to true. Default is false.</source>
-        <target state="translated">若此屬性設定為 True，請勿封鎖具有資料列層級安全性之資料表的資料移動 (data motion)。預設為 False。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreWithNocheckOnCheckConstraints">
-        <source xml:lang="en">Specifies whether differences in the value of the WITH NOCHECK clause for check constraints will be ignored or updated when you publish to a database.</source>
-        <target state="translated">指定當您發行至資料庫時，將忽略或更新檢查條件約束之 WITH NOCHECK 子句值的差異。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreFillFactor">
-        <source xml:lang="en">Specifies whether differences in the fill factor for index storage should be ignored or whether a warning should be issued when you publish to a database.</source>
-        <target state="translated">指定當您發行至資料庫時，應該忽略索引儲存體之填滿因數的差異或應該發出警告。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreFileSize">
-        <source xml:lang="en">Specifies whether differences in the file sizes should be ignored or whether a warning should be issued when you publish to a database.</source>
-        <target state="translated">指定當您發行至資料庫時，應該忽略檔案大小的差異或應該發出警告。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreFilegroupPlacement">
-        <source xml:lang="en">Specifies whether differences in the placement of objects in FILEGROUPs should be ignored or updated when you publish to a database.</source>
-        <target state="translated">指定當您發佈至資料庫時，應該忽略或更新 FILEGROUP 中物件位置的差異。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.DoNotAlterReplicatedObjects">
-        <source xml:lang="en">Specifies whether objects that are replicated are identified during verification.</source>
-        <target state="translated">指定驗證期間是否識別有複寫的物件。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.DoNotAlterChangeDataCaptureObjects">
-        <source xml:lang="en">If true, Change Data Capture objects are not altered.</source>
-        <target state="translated">如果為 True，則不會改變變更資料擷取物件。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.DisableAndReenableDdlTriggers">
-        <source xml:lang="en">Specifies whether Data Definition Language (DDL) triggers are disabled at the beginning of the publish process and re-enabled at the end of the publish action.</source>
-        <target state="translated">指定是否在發行程序開始時停用 Data Definition Language (DDL) 觸發程序，並在發行動作結束時重新啟用。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.DeployDatabaseInSingleUserMode">
-        <source xml:lang="en">If true, the database is set to Single User Mode before deploying.</source>
-        <target state="translated">若為 True，則會在部署前將資料庫設為單一使用者模式。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.CreateNewDatabase">
-        <source xml:lang="en">Specifies whether the target database should be updated or whether it should be dropped and re-created when you publish to a database.</source>
-        <target state="translated">指定當您發行至資料庫時，應該更新目標資料庫或應該卸除並重新建立目標資料庫。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.CompareUsingTargetCollation">
-        <source xml:lang="en">This setting dictates how the database's collation is handled during deployment; by default the target database's collation will be updated if it does not match the collation specified by the source.  When this option is set, the target database's (or server's) collation should be used.</source>
-        <target state="translated">這項設定會指出部署期間的資料庫定序處理方式；根據預設，如果目標資料庫的定序與來源所指定的定序不相符，就會受到更新。設定此選項時，應使用目標資料庫 (或伺服器) 的定序。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.CommentOutSetVarDeclarations">
-        <source xml:lang="en">Specifies whether the declaration of SETVAR variables should be commented out in the generated publish script. You might choose to do this if you plan to specify the values on the command line when you publish by using a tool such as SQLCMD.EXE.</source>
-        <target state="translated">指定在產生的發行指令碼中是否應該將 SETVAR 變數的宣告標記為註解。如果您計畫在使用 SQLCMD.EXE 一類工具進行發行時在命令列指定值，就可以選擇這種作法。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.BlockWhenDriftDetected">
-        <source xml:lang="en">Specifies whether to block updating a database whose schema no longer matches its registration or is unregistered.</source>
-        <target state="translated">指定是否封鎖更新結構描述不再符合註冊或已取消註冊的資料庫。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.BlockOnPossibleDataLoss">
-        <source xml:lang="en">Specifies that the publish episode should be terminated if there is a possibility of data loss resulting from the publish operation.</source>
-        <target state="translated">指定如果發佈作業可能導致資料遺失，就應該終止發佈事件。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.BackupDatabaseBeforeChanges">
-        <source xml:lang="en">Backups the database before deploying any changes.</source>
-        <target state="translated">在部署任何變更之前，先備份資料庫。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.AllowIncompatiblePlatform">
-        <source xml:lang="en">Specifies whether to attempt the action despite incompatible SQL Server platforms.</source>
-        <target state="translated">指定儘管 SQL Server 平台不相容，是否仍要嘗試動作。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.AllowDropBlockingAssemblies">
-        <source xml:lang="en">This property is used by SqlClr deployment to cause any blocking assemblies to be dropped as part of the deployment plan. By default, any blocking/referencing assemblies will block an assembly update if the referencing assembly needs to be dropped.</source>
-        <target state="translated">這個屬性是供 SqlClr 部署用來使任何封鎖的組件會在部署計畫中卸除。根據預設，如果必須卸除任何參考組件，則該封鎖/參考組件將會封鎖組件更新。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.DropConstraintsNotInSource">
-        <source xml:lang="en">Specifies whether constraints that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
-        <target state="translated">指定當您發行至資料庫時，是否要從目標資料庫中卸除不存在資料庫快照集 (.dacpac) 檔案中的條件約束。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.DropDmlTriggersNotInSource">
-        <source xml:lang="en">Specifies whether DML triggers that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
-        <target state="translated">指定當您發行至資料庫時，是否要從目標資料庫中卸除不存在資料庫快照集 (.dacpac) 檔案中的 DML 觸發程序。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.DropExtendedPropertiesNotInSource">
-        <source xml:lang="en">Specifies whether extended properties that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
-        <target state="translated">指定當您發行至資料庫時，是否要從目標資料庫中卸除不存在資料庫快照集 (.dacpac) 檔案中的擴充屬性。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.DropIndexesNotInSource">
-        <source xml:lang="en">Specifies whether indexes that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
-        <target state="translated">指定當您發行至資料庫時，是否要從目標資料庫中卸除不存在資料庫快照集 (.dacpac) 檔案中的索引。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreFileAndLogFilePath">
-        <source xml:lang="en">Specifies whether differences in the paths for files and log files should be ignored or updated when you publish to a database.</source>
-        <target state="translated">指定當您發佈至資料庫時，應該忽略或更新檔案和記錄檔之路徑的差異。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreExtendedProperties">
-        <source xml:lang="en">Specifies whether extended properties should be ignored.</source>
-        <target state="translated">指定是否應該忽略擴充屬性。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreDmlTriggerState">
-        <source xml:lang="en">Specifies whether differences in the enabled or disabled state of DML triggers should be ignored or updated when you publish to a database.</source>
-        <target state="translated">指定當您發行至資料庫時，應該忽略或更新 DML 觸發程序之啟用或停用狀態的差異。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreDmlTriggerOrder">
-        <source xml:lang="en">Specifies whether differences in the order of Data Manipulation Language (DML) triggers should be ignored or updated when you publish to a database.</source>
-        <target state="translated">指定當您發行至資料庫時，應該忽略或更新 Data Manipulation Language (DML) triggers 的順序差異。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreDefaultSchema">
-        <source xml:lang="en">Specifies whether differences in the default schema should be ignored or updated when you publish to a database.</source>
-        <target state="translated">指定當您發佈至資料庫時，是否應忽略或更新預設結構描述中的差異。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreDdlTriggerState">
-        <source xml:lang="en">Specifies whether differences in the enabled or disabled state of Data Definition Language (DDL) triggers should be ignored or updated when you publish to a database.</source>
-        <target state="translated">指定當您發行至資料庫時，應該忽略或更新 Data Definition Language (DDL) triggers 之啟用或停用狀態的差異。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreDdlTriggerOrder">
-        <source xml:lang="en">Specifies whether differences in the order of Data Definition Language (DDL) triggers should be ignored or updated when you publish to a database or server.</source>
-        <target state="translated">指定當您發行至資料庫或伺服器時，應該忽略或更新 Data Definition Language (DDL) triggers 的順序差異。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreCryptographicProviderFilePath">
-        <source xml:lang="en">Specifies whether differences in the file path for the cryptographic provider should be ignored or updated when you publish to a database.</source>
-        <target state="translated">指定當您發佈至資料庫時，要忽略或更新密碼編譯提供者之檔案路徑的差異。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.VerifyDeployment">
-        <source xml:lang="en">Specifies whether checks should be performed before publishing that will stop the publish action if issues are present that might block successful publishing. For example, your publish action might stop if you have foreign keys on the target database that do not exist in the database project, and that will cause errors when you publish.</source>
-        <target state="translated">指定是否應該先執行檢查，以防止發行因為出現阻止發行成功的問題而停止發行動作。例如，如果目標資料庫有不存在資料庫專案中的外部索引鍵，該外部索引鍵會在發行時造成錯誤，則您的發行動作就可能會停止。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreComments">
-        <source xml:lang="en">Specifies whether differences in the comments should be ignored or updated when you publish to a database.</source>
-        <target state="translated">指定當您發佈至資料庫時，要忽略或更新註解的差異。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreColumnCollation">
-        <source xml:lang="en">Specifies whether differences in the column collations should be ignored or updated when you publish to a database.</source>
-        <target state="translated">指定當您發佈至資料庫時，要忽略或更新資料行定序的差異。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreAuthorizer">
-        <source xml:lang="en">Specifies whether differences in the Authorizer should be ignored or updated when you publish to a database.</source>
-        <target state="translated">指定當您發佈至資料庫時，要忽略或更新授權者的差異。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreAnsiNulls">
-        <source xml:lang="en">Specifies whether differences in the ANSI NULLS setting should be ignored or updated when you publish to a database.</source>
-        <target state="translated">指定當您發佈至資料庫時，應該忽略或更新 ANSI NULLS 設定的差異。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.GenerateSmartDefaults">
-        <source xml:lang="en">Automatically provides a default value when updating a table that contains data with a column that does not allow null values.</source>
-        <target state="translated">在更新含有資料且資料行不允許 null 值的資料表時，自動提供預設值。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.DropStatisticsNotInSource">
-        <source xml:lang="en">Specifies whether statistics that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
-        <target state="translated">指定當您發行至資料庫時，是否要從目標資料庫卸除不存在資料庫快照集 (.dacpac) 檔案中的統計資料。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.DropRoleMembersNotInSource">
-        <source xml:lang="en">Specifies whether role members that are not defined in the database snapshot (.dacpac) file will be dropped from the target database when you publish updates to a database.&lt;/</source>
-        <target state="translated">指定是否要在您對資料庫發佈更新時，將未於資料庫快照集 (.dacpac) 檔案中定義的角色成員從目標資料庫捨棄。&lt;/</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.DropPermissionsNotInSource">
-        <source xml:lang="en">Specifies whether permissions that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish updates to a database.</source>
-        <target state="translated">指定當您發行更新至資料庫時，是否要從目標資料庫中卸除不存在資料庫快照集 (.dacpac) 檔案中的權限。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.DropObjectsNotInSource">
-        <source xml:lang="en">Specifies whether objects that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.  This value takes precedence over DropExtendedProperties.</source>
-        <target state="translated">指定當您發行至資料庫時，是否要從目標資料庫卸除不存在於資料庫快照集 (.dacpac) 檔案中的物件。這個值的優先順序高過 DropExtendedProperties。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreColumnOrder">
-        <source xml:lang="en">Specifies whether differences in table column order should be ignored or updated when you publish to a database.</source>
-        <target state="translated">指定當您發佈至資料庫時，要略過或更新資料表資料行順序的差異。</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.compareErrorMessage">
-        <source xml:lang="en">Schema Compare failed: {0}</source>
-        <target state="translated">結構描述比較失敗: {0}</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.saveScmpErrorMessage">
-        <source xml:lang="en">Save scmp failed: '{0}'</source>
-        <target state="translated">無法儲存 scmp: '{0}'</target>
+      <trans-unit id="SchemaCompareOptionsDialog.Reset">
+        <source xml:lang="en">Reset</source>
+        <target state="translated">重設</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.ApplyConfirmation">
+        <source xml:lang="en">Are you sure you want to update the target?</source>
+        <target state="translated">確定要更新目標嗎?</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.CompareDetailsTitle">
+        <source xml:lang="en">Compare Details</source>
+        <target state="translated">比較詳細資料</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.GetConnectionString">
+        <source xml:lang="en">Do you want to connect to {0}?</source>
+        <target state="translated">是否要連接到 {0}?</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.RecompareToRefresh">
+        <source xml:lang="en">Press Compare to refresh the comparison.</source>
+        <target state="translated">按下 [比較] 即可重新整理比較結果。</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.actionColumn">
+        <source xml:lang="en">Action</source>
+        <target state="translated">動作</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.addAction">
+        <source xml:lang="en">Add</source>
+        <target state="translated">新增</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.applyButtonDisabledTitle">
+        <source xml:lang="en">Apply is enabled when the target is a database</source>
+        <target state="translated">當目標為資料庫時會啟用套用</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.applyButtonEnabledTitle">
+        <source xml:lang="en">Apply changes to target</source>
+        <target state="translated">將變更套用至目標</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.applyNoChanges">
+        <source xml:lang="en">No changes to apply</source>
+        <target state="translated">沒有任何要套用的變更</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.cancelCompareButton">
+        <source xml:lang="en">Stop</source>
+        <target state="translated">停止</target>
       </trans-unit>
       <trans-unit id="schemaCompare.cancelErrorMessage">
         <source xml:lang="en">Cancel schema compare failed: '{0}'</source>
         <target state="translated">取消結構描述比較失敗: '{0}'</target>
       </trans-unit>
+      <trans-unit id="schemaCompare.cannotExcludeMessage">
+        <source xml:lang="en">Cannot exclude {0}. Included dependents exist</source>
+        <target state="translated">無法排除 {0}。包含的相依性已存在</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.cannotExcludeMessageWithDependent">
+        <source xml:lang="en">Cannot exclude {0}. Included dependents exist, such as {1}</source>
+        <target state="translated">無法排除 {0}。包含的相依性已存在，例如 {1}</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.cannotIncludeMessage">
+        <source xml:lang="en">Cannot include {0}. Excluded dependents exist</source>
+        <target state="translated">無法包含 {0}。排除的相依性已存在</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.cannotIncludeMessageWithDependent">
+        <source xml:lang="en">Cannot include {0}. Excluded dependents exist, such as {1}</source>
+        <target state="translated">不無法包含 {0}。排除的相依性已存在，例如 {1}</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.changeAction">
+        <source xml:lang="en">Change</source>
+        <target state="translated">變更</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.compareButton">
+        <source xml:lang="en">Compare</source>
+        <target state="translated">比較</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.compareErrorMessage">
+        <source xml:lang="en">Schema Compare failed: {0}</source>
+        <target state="translated">結構描述比較失敗: {0}</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.dacpacRadioButtonLabel">
+        <source xml:lang="en">Data-tier Application File (.dacpac)</source>
+        <target state="translated">資料層應用程式檔案 (.dacpac)</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.databaseButtonLabel">
+        <source xml:lang="en">Database</source>
+        <target state="translated">資料庫</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.deleteAction">
+        <source xml:lang="en">Delete</source>
+        <target state="translated">刪除</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.dialogTitle">
+        <source xml:lang="en">Schema Compare</source>
+        <target state="translated">結構描述比較</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.differencesTableTitle">
+        <source xml:lang="en">Comparison between Source and Target</source>
+        <target state="translated">來源和目標之間的比較</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.generateScriptButton">
+        <source xml:lang="en">Generate script</source>
+        <target state="translated">產生指令碼</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.generateScriptButtonDisabledTitle">
+        <source xml:lang="en">Generate script is enabled when the target is a database</source>
+        <target state="translated">當目標為資料庫時，會啟用產生指令碼</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.generateScriptEnabledButton">
+        <source xml:lang="en">Generate script to deploy changes to target</source>
+        <target state="translated">產生指令碼以將變更部署至目標</target>
+      </trans-unit>
       <trans-unit id="schemaCompare.generateScriptErrorMessage">
         <source xml:lang="en">Generate script failed: '{0}'</source>
         <target state="translated">無法產生指令碼: '{0}'</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.generateScriptNoChanges">
+        <source xml:lang="en">No changes to script</source>
+        <target state="translated">指令碼沒有任何變更</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.includeColumnName">
+        <source xml:lang="en">Include</source>
+        <target state="translated">包含</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.includeExcludeInfoMessage">
+        <source xml:lang="en">Please note that include/exclude operations can take a moment to calculate affected dependencies</source>
+        <target state="translated">請注意，包含/排除作業可能需要一些時間來計算受影響的相依性</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.noDifferences">
+        <source xml:lang="en">No schema differences were found.</source>
+        <target state="translated">找不到任何結構描述差異。</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.openFile">
+        <source xml:lang="en">Open</source>
+        <target state="translated">開啟</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.openScmpButton">
+        <source xml:lang="en">Open .scmp file</source>
+        <target state="translated">開啟 .scmp 檔案</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.openScmpButtonTitle">
+        <source xml:lang="en">Load source, target, and options saved in an .scmp file</source>
+        <target state="translated">載入儲存在 .scmp 檔案中的來源、目標和選項</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.openScmpErrorMessage">
+        <source xml:lang="en">Open scmp failed: '{0}'</source>
+        <target state="translated">無法開啟 scmp: '{0}'</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.optionsButton">
+        <source xml:lang="en">Options</source>
+        <target state="translated">選項</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.radioButtonsLabel">
+        <source xml:lang="en">Type</source>
+        <target state="translated">類型</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.saveFile">
+        <source xml:lang="en">Save</source>
+        <target state="translated">儲存</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.saveScmpButton">
+        <source xml:lang="en">Save .scmp file</source>
+        <target state="translated">儲存 .scmp 檔案</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.saveScmpButtonTitle">
+        <source xml:lang="en">Save source and target, options, and excluded elements</source>
+        <target state="translated">儲存來源和目標、選項及排除的元素</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.saveScmpErrorMessage">
+        <source xml:lang="en">Save scmp failed: '{0}'</source>
+        <target state="translated">無法儲存 scmp: '{0}'</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.selectConnection">
+        <source xml:lang="en">Select connection</source>
+        <target state="translated">選取連線</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.selectSourceFile">
+        <source xml:lang="en">Select source file</source>
+        <target state="translated">選取來源檔案</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.selectTargetFile">
+        <source xml:lang="en">Select target file</source>
+        <target state="translated">選取目標檔案</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.sourceButtonTitle">
+        <source xml:lang="en">Select Source</source>
+        <target state="translated">選取來源</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.sourceNameColumn">
+        <source xml:lang="en">Source Name</source>
+        <target state="translated">來源名稱</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.startText">
+        <source xml:lang="en">To compare two schemas, first select a source schema and target schema, then press Compare.</source>
+        <target state="translated">若要比較兩個結構描述，請先選取來源結構描述，然後按下 [比較]。</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.switchButtonTitle">
+        <source xml:lang="en">Switch source and target</source>
+        <target state="translated">切換來源和目標</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.switchDirectionButton">
+        <source xml:lang="en">Switch direction</source>
+        <target state="translated">切換方向</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.targetButtonTitle">
+        <source xml:lang="en">Select Target</source>
+        <target state="translated">選取目標</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.targetNameColumn">
+        <source xml:lang="en">Target Name</source>
+        <target state="translated">目標名稱</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.typeColumn">
+        <source xml:lang="en">Type</source>
+        <target state="translated">類型</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.updateButton">
+        <source xml:lang="en">Apply</source>
+        <target state="translated">套用</target>
       </trans-unit>
       <trans-unit id="schemaCompare.updateErrorMessage">
         <source xml:lang="en">Schema Compare Apply failed '{0}'</source>
         <target state="translated">結構描述比較套用失敗 '{0}'</target>
       </trans-unit>
-      <trans-unit id="schemaCompare.openScmpErrorMessage">
-        <source xml:lang="en">Open scmp failed: '{0}'</source>
-        <target state="translated">無法開啟 scmp: '{0}'</target>
+      <trans-unit id="schemaCompare.waitText">
+        <source xml:lang="en">Initializing Comparison. This might take a moment.</source>
+        <target state="translated">正在將比較結果初始化。這可能需要一些時間。</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.No">
+        <source xml:lang="en">No</source>
+        <target state="translated">否</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.SourceTitle">
+        <source xml:lang="en">Source</source>
+        <target state="translated">來源</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.TargetTitle">
+        <source xml:lang="en">Target</source>
+        <target state="translated">目標</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.Yes">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">是</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">取消</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.databaseDropdownTitle">
+        <source xml:lang="en">Database</source>
+        <target state="translated">資料庫</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.defaultUser">
+        <source xml:lang="en">default</source>
+        <target state="translated">預設</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.differentSourceMessage">
+        <source xml:lang="en">A different source schema has been selected. Compare to see the comparison?</source>
+        <target state="translated">已選取其他來源結構描述。要比較以查看比較結果嗎?</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.differentSourceTargetMessage">
+        <source xml:lang="en">Different source and target schemas have been selected. Compare to see the comparison?</source>
+        <target state="translated">已選取不同的來源和結構描述。要比較以查看比較結果嗎?</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.differentTargetMessage">
+        <source xml:lang="en">A different target schema has been selected. Compare to see the comparison?</source>
+        <target state="translated">已選取其他目標結構描述。要比較以查看比較結果嗎?</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.fileTextBoxLabel">
+        <source xml:lang="en">File</source>
+        <target state="translated">FILE</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.ok">
+        <source xml:lang="en">OK</source>
+        <target state="translated">確定</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.serverDropdownTitle">
+        <source xml:lang="en">Server</source>
+        <target state="translated">伺服器</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.sourceDatabaseDropdown">
+        <source xml:lang="en">Source Database</source>
+        <target state="translated">來源資料庫</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.sourceServerDropdown">
+        <source xml:lang="en">Source Server</source>
+        <target state="translated">來源伺服器</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.sourceTextBox">
+        <source xml:lang="en">Source file</source>
+        <target state="translated">原始程式檔</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.targetDatabaseDropdown">
+        <source xml:lang="en">Target Database</source>
+        <target state="translated">目標資料庫</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.targetServerDropdown">
+        <source xml:lang="en">Target Server</source>
+        <target state="translated">目標伺服器</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.targetTextBox">
+        <source xml:lang="en">Target file</source>
+        <target state="translated">目標檔案</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareOptions.RecompareMessage">
+        <source xml:lang="en">Options have changed. Recompare to see the comparison?</source>
+        <target state="translated">選項已變更。要重新比較以查看比較嗎?</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/schema-compare/package" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="description">
+        <source xml:lang="en">SQL Server Schema Compare for Azure Data Studio supports comparing the schemas of databases and dacpacs.</source>
+        <target state="translated">Azure Data Studio 的 SQL Server 結構描述比較支援比較資料庫和 dacpac 的結構描述。</target>
+      </trans-unit>
+      <trans-unit id="displayName">
+        <source xml:lang="en">SQL Server Schema Compare</source>
+        <target state="translated">SQL Server 結構描述比較</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.start">
+        <source xml:lang="en">Schema Compare</source>
+        <target state="translated">結構描述比較</target>
       </trans-unit>
     </body>
   </file>

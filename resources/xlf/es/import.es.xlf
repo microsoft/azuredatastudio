@@ -1,114 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/import/package" source-language="en" datatype="plaintext" target-language="es">
-    <body>
-      <trans-unit id="flatfileimport.configuration.title">
-        <source xml:lang="en">Flat File Import configuration</source>
-        <target state="translated">Configuración de importación de archivos planos</target>
-      </trans-unit>
-      <trans-unit id="flatfileimport.logDebugInfo">
-        <source xml:lang="en">[Optional] Log debug output to the console (View -&gt; Output) and then select appropriate output channel from the dropdown</source>
-        <target state="translated">[Opcional] Registre la salida de depuración en a la consola (Ver -&gt; Salida) y después seleccione el canal de salida apropiado del menú desplegable</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/import/out/services/serviceClient" source-language="en" datatype="plaintext" target-language="es">
-    <body>
-      <trans-unit id="serviceStarted">
-        <source xml:lang="en">{0} Started</source>
-        <target state="translated">{0} iniciado</target>
-      </trans-unit>
-      <trans-unit id="serviceStarting">
-        <source xml:lang="en">Starting {0}</source>
-        <target state="translated">Iniciando {0}</target>
-      </trans-unit>
-      <trans-unit id="flatFileImport.serviceStartFailed">
-        <source xml:lang="en">Failed to start {0}: {1}</source>
-        <target state="translated">No se pudo iniciar {0}: {1}</target>
-      </trans-unit>
-      <trans-unit id="installingServiceDetailed">
-        <source xml:lang="en">Installing {0} to {1}</source>
-        <target state="translated">Instalando {0} en {1}</target>
-      </trans-unit>
-      <trans-unit id="installingService">
-        <source xml:lang="en">Installing {0} Service</source>
-        <target state="translated">Instalando servicio {0}</target>
-      </trans-unit>
-      <trans-unit id="serviceInstalled">
-        <source xml:lang="en">Installed {0}</source>
-        <target state="translated">{0} instalado</target>
-      </trans-unit>
-      <trans-unit id="downloadingService">
-        <source xml:lang="en">Downloading {0}</source>
-        <target state="translated">Descargando {0}</target>
-      </trans-unit>
-      <trans-unit id="downloadingServiceSize">
-        <source xml:lang="en">({0} KB)</source>
-        <target state="translated">({0} KB)</target>
-      </trans-unit>
-      <trans-unit id="downloadingServiceStatus">
-        <source xml:lang="en">Downloading {0}</source>
-        <target state="translated">Descargando {0}</target>
-      </trans-unit>
-      <trans-unit id="downloadingServiceComplete">
-        <source xml:lang="en">Done downloading {0}</source>
-        <target state="translated">Descarga finalizada de {0}</target>
-      </trans-unit>
-      <trans-unit id="entryExtractedChannelMsg">
-        <source xml:lang="en">Extracted {0} ({1}/{2})</source>
-        <target state="translated">Elementos extraídos {0} ({1} de {2})</target>
-      </trans-unit>
-    </body>
-  </file>
   <file original="extensions/import/out/common/constants" source-language="en" datatype="plaintext" target-language="es">
     <body>
-      <trans-unit id="import.serviceCrashButton">
-        <source xml:lang="en">Give Feedback</source>
-        <target state="translated">Ofrecer comentarios</target>
-      </trans-unit>
-      <trans-unit id="serviceCrashMessage">
-        <source xml:lang="en">service component could not start</source>
-        <target state="translated">el componente de servicio no se pudo iniciar</target>
-      </trans-unit>
-      <trans-unit id="flatFileImport.serverDropdownTitle">
-        <source xml:lang="en">Server the database is in</source>
-        <target state="translated">El servidor de la base de datos está en</target>
-      </trans-unit>
-      <trans-unit id="flatFileImport.databaseDropdownTitle">
-        <source xml:lang="en">Database the table is created in</source>
-        <target state="translated">Base de datos en la que se crea la tabla</target>
-      </trans-unit>
       <trans-unit id="flatFile.InvalidFileLocation">
         <source xml:lang="en">Invalid file location. Please try a different input file</source>
         <target state="translated">Ubicación de archivo no válida. Inténtelo con otro archivo de entrada</target>
       </trans-unit>
+      <trans-unit id="flatFileImport.allowNulls">
+        <source xml:lang="en">Allow Nulls</source>
+        <target state="translated">Permitir valores NULL</target>
+      </trans-unit>
       <trans-unit id="flatFileImport.browseFiles">
         <source xml:lang="en">Browse</source>
         <target state="translated">Examinar</target>
-      </trans-unit>
-      <trans-unit id="flatFileImport.openFile">
-        <source xml:lang="en">Open</source>
-        <target state="translated">Abrir</target>
-      </trans-unit>
-      <trans-unit id="flatFileImport.fileTextboxTitle">
-        <source xml:lang="en">Location of the file to be imported</source>
-        <target state="translated">Ubicación del archivo para importar</target>
-      </trans-unit>
-      <trans-unit id="flatFileImport.tableTextboxTitle">
-        <source xml:lang="en">New table name</source>
-        <target state="translated">Nuevo nombre de la tabla</target>
-      </trans-unit>
-      <trans-unit id="flatFileImport.schemaTextboxTitle">
-        <source xml:lang="en">Table schema</source>
-        <target state="translated">Esquema de tabla</target>
-      </trans-unit>
-      <trans-unit id="flatFileImport.importData">
-        <source xml:lang="en">Import Data</source>
-        <target state="translated">Importar datos</target>
-      </trans-unit>
-      <trans-unit id="flatFileImport.next">
-        <source xml:lang="en">Next</source>
-        <target state="translated">Siguiente</target>
       </trans-unit>
       <trans-unit id="flatFileImport.columnName">
         <source xml:lang="en">Column Name</source>
@@ -118,69 +22,45 @@
         <source xml:lang="en">Data Type</source>
         <target state="translated">Tipo de datos</target>
       </trans-unit>
-      <trans-unit id="flatFileImport.primaryKey">
-        <source xml:lang="en">Primary Key</source>
-        <target state="translated">Clave principal</target>
-      </trans-unit>
-      <trans-unit id="flatFileImport.allowNulls">
-        <source xml:lang="en">Allow Nulls</source>
-        <target state="translated">Permitir valores NULL</target>
-      </trans-unit>
-      <trans-unit id="flatFileImport.prosePreviewMessage">
-        <source xml:lang="en">This operation analyzed the input file structure to generate the preview below for up to the first 50 rows.</source>
-        <target state="translated">Esta operación analizó la estructura del archivo de entrada para generar la vista previa siguiente para las primeras 50 filas.</target>
-      </trans-unit>
-      <trans-unit id="flatFileImport.prosePreviewMessageFail">
-        <source xml:lang="en">This operation was unsuccessful. Please try a different input file.</source>
-        <target state="translated">Esta operación no se completó correctamente. Pruebe con un archivo de entrada diferente.</target>
-      </trans-unit>
-      <trans-unit id="flatFileImport.refresh">
-        <source xml:lang="en">Refresh</source>
-        <target state="translated">Actualizar</target>
-      </trans-unit>
-      <trans-unit id="flatFileImport.importInformation">
-        <source xml:lang="en">Import information</source>
-        <target state="translated">Información de la importación</target>
-      </trans-unit>
-      <trans-unit id="flatFileImport.importStatus">
-        <source xml:lang="en">Import status</source>
-        <target state="translated">Estado de la importación</target>
-      </trans-unit>
-      <trans-unit id="flatFileImport.serverName">
-        <source xml:lang="en">Server name</source>
-        <target state="translated">Nombre del servidor</target>
+      <trans-unit id="flatFileImport.databaseDropdownTitle">
+        <source xml:lang="en">Database the table is created in</source>
+        <target state="translated">Base de datos en la que se crea la tabla</target>
       </trans-unit>
       <trans-unit id="flatFileImport.databaseName">
         <source xml:lang="en">Database name</source>
         <target state="translated">Nombre de la base de datos</target>
       </trans-unit>
-      <trans-unit id="flatFileImport.tableName">
-        <source xml:lang="en">Table name</source>
-        <target state="translated">Nombre de la tabla</target>
-      </trans-unit>
-      <trans-unit id="flatFileImport.tableSchema">
-        <source xml:lang="en">Table schema</source>
-        <target state="translated">Esquema de tabla</target>
-      </trans-unit>
       <trans-unit id="flatFileImport.fileImport">
         <source xml:lang="en">File to be imported</source>
         <target state="translated">Archivo para importar</target>
       </trans-unit>
-      <trans-unit id="flatFileImport.success.norows">
-        <source xml:lang="en">✔ You have successfully inserted the data into a table.</source>
-        <target state="translated">✔ Ha insertado correctamente los datos en una tabla.</target>
+      <trans-unit id="flatFileImport.fileTextboxTitle">
+        <source xml:lang="en">Location of the file to be imported</source>
+        <target state="translated">Ubicación del archivo para importar</target>
       </trans-unit>
-      <trans-unit id="import.needConnection">
-        <source xml:lang="en">Please connect to a server before using this wizard.</source>
-        <target state="translated">Por favor, conéctese a un servidor antes de utilizar a este asistente.</target>
+      <trans-unit id="flatFileImport.importData">
+        <source xml:lang="en">Import Data</source>
+        <target state="translated">Importar datos</target>
       </trans-unit>
-      <trans-unit id="import.needSQLConnection">
-        <source xml:lang="en">SQL Server Import extension does not support this type of connection</source>
-        <target state="translated">La extensión de importación de SQL Server no admite este tipo de conexión</target>
+      <trans-unit id="flatFileImport.importInformation">
+        <source xml:lang="en">Import information</source>
+        <target state="translated">Información de la importación</target>
       </trans-unit>
-      <trans-unit id="flatFileImport.wizardName">
-        <source xml:lang="en">Import flat file wizard</source>
-        <target state="translated">Asistente de importación de archivo plano</target>
+      <trans-unit id="flatFileImport.importNewFile">
+        <source xml:lang="en">Import new file</source>
+        <target state="translated">Importar nuevo archivo</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.importStatus">
+        <source xml:lang="en">Import status</source>
+        <target state="translated">Estado de la importación</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.next">
+        <source xml:lang="en">Next</source>
+        <target state="translated">Siguiente</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.openFile">
+        <source xml:lang="en">Open</source>
+        <target state="translated">Abrir</target>
       </trans-unit>
       <trans-unit id="flatFileImport.page1Name">
         <source xml:lang="en">Specify Input File</source>
@@ -198,9 +78,129 @@
         <source xml:lang="en">Summary</source>
         <target state="translated">Resumen</target>
       </trans-unit>
-      <trans-unit id="flatFileImport.importNewFile">
-        <source xml:lang="en">Import new file</source>
-        <target state="translated">Importar nuevo archivo</target>
+      <trans-unit id="flatFileImport.primaryKey">
+        <source xml:lang="en">Primary Key</source>
+        <target state="translated">Clave principal</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.prosePreviewMessage">
+        <source xml:lang="en">This operation analyzed the input file structure to generate the preview below for up to the first 50 rows.</source>
+        <target state="translated">Esta operación analizó la estructura del archivo de entrada para generar la vista previa siguiente para las primeras 50 filas.</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.prosePreviewMessageFail">
+        <source xml:lang="en">This operation was unsuccessful. Please try a different input file.</source>
+        <target state="translated">Esta operación no se completó correctamente. Pruebe con un archivo de entrada diferente.</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.refresh">
+        <source xml:lang="en">Refresh</source>
+        <target state="translated">Actualizar</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.schemaTextboxTitle">
+        <source xml:lang="en">Table schema</source>
+        <target state="translated">Esquema de tabla</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.serverDropdownTitle">
+        <source xml:lang="en">Server the database is in</source>
+        <target state="translated">El servidor de la base de datos está en</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.serverName">
+        <source xml:lang="en">Server name</source>
+        <target state="translated">Nombre del servidor</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.success.norows">
+        <source xml:lang="en">✔ You have successfully inserted the data into a table.</source>
+        <target state="translated">✔ Ha insertado correctamente los datos en una tabla.</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.tableName">
+        <source xml:lang="en">Table name</source>
+        <target state="translated">Nombre de la tabla</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.tableSchema">
+        <source xml:lang="en">Table schema</source>
+        <target state="translated">Esquema de tabla</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.tableTextboxTitle">
+        <source xml:lang="en">New table name</source>
+        <target state="translated">Nuevo nombre de la tabla</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.wizardName">
+        <source xml:lang="en">Import flat file wizard</source>
+        <target state="translated">Asistente de importación de archivo plano</target>
+      </trans-unit>
+      <trans-unit id="import.needConnection">
+        <source xml:lang="en">Please connect to a server before using this wizard.</source>
+        <target state="translated">Por favor, conéctese a un servidor antes de utilizar a este asistente.</target>
+      </trans-unit>
+      <trans-unit id="import.needSQLConnection">
+        <source xml:lang="en">SQL Server Import extension does not support this type of connection</source>
+        <target state="translated">La extensión de importación de SQL Server no admite este tipo de conexión</target>
+      </trans-unit>
+      <trans-unit id="import.serviceCrashButton">
+        <source xml:lang="en">Give Feedback</source>
+        <target state="translated">Ofrecer comentarios</target>
+      </trans-unit>
+      <trans-unit id="serviceCrashMessage">
+        <source xml:lang="en">service component could not start</source>
+        <target state="translated">el componente de servicio no se pudo iniciar</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/import/out/services/serviceClient" source-language="en" datatype="plaintext" target-language="es">
+    <body>
+      <trans-unit id="downloadingService">
+        <source xml:lang="en">Downloading {0}</source>
+        <target state="translated">Descargando {0}</target>
+      </trans-unit>
+      <trans-unit id="downloadingServiceComplete">
+        <source xml:lang="en">Done downloading {0}</source>
+        <target state="translated">Descarga finalizada de {0}</target>
+      </trans-unit>
+      <trans-unit id="downloadingServiceSize">
+        <source xml:lang="en">({0} KB)</source>
+        <target state="translated">({0} KB)</target>
+      </trans-unit>
+      <trans-unit id="downloadingServiceStatus">
+        <source xml:lang="en">Downloading {0}</source>
+        <target state="translated">Descargando {0}</target>
+      </trans-unit>
+      <trans-unit id="entryExtractedChannelMsg">
+        <source xml:lang="en">Extracted {0} ({1}/{2})</source>
+        <target state="translated">Elementos extraídos {0} ({1} de {2})</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.serviceStartFailed">
+        <source xml:lang="en">Failed to start {0}: {1}</source>
+        <target state="translated">No se pudo iniciar {0}: {1}</target>
+      </trans-unit>
+      <trans-unit id="installingService">
+        <source xml:lang="en">Installing {0} Service</source>
+        <target state="translated">Instalando servicio {0}</target>
+      </trans-unit>
+      <trans-unit id="installingServiceDetailed">
+        <source xml:lang="en">Installing {0} to {1}</source>
+        <target state="translated">Instalando {0} en {1}</target>
+      </trans-unit>
+      <trans-unit id="serviceInstalled">
+        <source xml:lang="en">Installed {0}</source>
+        <target state="translated">{0} instalado</target>
+      </trans-unit>
+      <trans-unit id="serviceStarted">
+        <source xml:lang="en">{0} Started</source>
+        <target state="translated">{0} iniciado</target>
+      </trans-unit>
+      <trans-unit id="serviceStarting">
+        <source xml:lang="en">Starting {0}</source>
+        <target state="translated">Iniciando {0}</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/import/package" source-language="en" datatype="plaintext" target-language="es">
+    <body>
+      <trans-unit id="flatfileimport.configuration.title">
+        <source xml:lang="en">Flat File Import configuration</source>
+        <target state="translated">Configuración de importación de archivos planos</target>
+      </trans-unit>
+      <trans-unit id="flatfileimport.logDebugInfo">
+        <source xml:lang="en">[Optional] Log debug output to the console (View -&gt; Output) and then select appropriate output channel from the dropdown</source>
+        <target state="translated">[Opcional] Registre la salida de depuración en a la consola (Ver -&gt; Salida) y después seleccione el canal de salida apropiado del menú desplegable</target>
       </trans-unit>
     </body>
   </file>

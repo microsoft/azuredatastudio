@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/server-report/dist/constants" source-language="en" datatype="plaintext" target-language="de">
+    <body>
+      <trans-unit id="XEventsFailed">
+        <source xml:lang="en">XEvents operation failed.</source>
+        <target state="new">XEvents operation failed.</target>
+      </trans-unit>
+      <trans-unit id="XEventsNotSupported">
+        <source xml:lang="en">XEvents sessions not supported.</source>
+        <target state="new">XEvents sessions not supported.</target>
+      </trans-unit>
+      <trans-unit id="XEventsStarted">
+        <source xml:lang="en">XEvents sessions started for PageContention and ObjectContention.</source>
+        <target state="new">XEvents sessions started for PageContention and ObjectContention.</target>
+      </trans-unit>
+      <trans-unit id="XEventsStopped">
+        <source xml:lang="en">XEvents sessions PageContention and ObjectContention removed.</source>
+        <target state="new">XEvents sessions PageContention and ObjectContention removed.</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
