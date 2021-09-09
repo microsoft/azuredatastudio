@@ -7,20 +7,20 @@ import { nb } from 'azdata';
 
 import * as vscode from 'vscode';
 import { charCountToJsCountDiff, jsIndexToCharIndex } from './text';
+import { JupyterExecuteProvider } from '../jupyter/jupyterExecuteProvider';
 import { JupyterSessionManager } from '../jupyter/jupyterSessionManager';
-import { JupyterSessionProvider } from '../jupyter/jupyterSessionProvider';
 
 const timeoutMilliseconds = 3000;
 
 export class NotebookCompletionItemProvider implements vscode.CompletionItemProvider {
 
-	constructor(private _sessionProvider: JupyterSessionProvider) {
+	constructor(private _notebookProvider: JupyterExecuteProvider) {
 	}
 
 	public provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext)
 		: vscode.ProviderResult<vscode.CompletionItem[] | vscode.CompletionList> {
 		let info = this.findMatchingCell(document, nb.notebookDocuments);
-		if (!info || !this._sessionProvider) {
+		if (!info || !this._notebookProvider) {
 			// No matching document found
 			return Promise.resolve([]);
 		}
@@ -45,10 +45,10 @@ export class NotebookCompletionItemProvider implements vscode.CompletionItemProv
 
 	private async tryFindKernelForDocument(document: vscode.TextDocument, info: INewIntellisenseInfo): Promise<nb.IKernel> {
 		try {
-			let sessionManager = await this._sessionProvider.getSessionManager(document.uri);
-			if (sessionManager) {
-				let jupyterSessionManager: JupyterSessionManager = <JupyterSessionManager>(sessionManager);
-				let sessions = jupyterSessionManager.listRunning();
+			let executeManager = await this._notebookProvider.getExecuteManager(document.uri);
+			if (executeManager) {
+				let sessionManager: JupyterSessionManager = <JupyterSessionManager>(executeManager.sessionManager);
+				let sessions = sessionManager.listRunning();
 				if (sessions && sessions.length > 0) {
 					let session = sessions.find(session => session.path === info.notebook.uri.path);
 					if (!session) {

@@ -76,23 +76,23 @@ describe('Jupyter Controller', function () {
 
 	it('Returns expected values from notebook provider', async () =>  {
 		await controller.activate();
-		should(controller.notebookProvider.providerId).equal('jupyter', 'Notebook provider should be jupyter');
-		await should(controller.notebookProvider.getNotebookManager(undefined)).be.rejected();
-		should(controller.notebookProvider.notebookManagerCount).equal(0);
-		controller.notebookProvider.handleNotebookClosed(undefined);
+		should(controller.executeProvider.providerId).equal('jupyter', 'Notebook provider should be jupyter');
+		await should(controller.executeProvider.getExecuteManager(undefined)).be.rejected();
+		should(controller.executeProvider.executeManagerCount).equal(0);
+		controller.executeProvider.handleNotebookClosed(undefined);
 	});
 
-	it('Returns notebook manager for real notebook editor', async () =>  {
+	it('Returns execute manager for real notebook editor', async () =>  {
 		await controller.activate();
 		let notebookUtils = new NotebookUtils();
 		const notebookEditor = await notebookUtils.newNotebook(undefined);
-		let notebookManager = await controller.notebookProvider.getNotebookManager(notebookEditor.document.uri);
-		should(controller.notebookProvider.notebookManagerCount).equal(1);
+		let notebookManager = await controller.executeProvider.getExecuteManager(notebookEditor.document.uri);
+		should(controller.executeProvider.executeManagerCount).equal(1);
 
 		// Session manager should not be immediately ready
 		should(notebookManager.sessionManager.isReady).equal(false);
 		// Session manager should not immediately have specs
 		should(notebookManager.sessionManager.specs).equal(undefined);
-		controller.notebookProvider.handleNotebookClosed(notebookEditor.document.uri);
+		controller.executeProvider.handleNotebookClosed(notebookEditor.document.uri);
 	});
 });

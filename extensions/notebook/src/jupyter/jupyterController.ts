@@ -27,8 +27,7 @@ import { LocalPipPackageManageProvider } from './localPipPackageManageProvider';
 import { LocalCondaPackageManageProvider } from './localCondaPackageManageProvider';
 import { ManagePackagesDialogModel, ManagePackageDialogOptions } from '../dialog/managePackages/managePackagesDialogModel';
 import { PyPiClient } from './pypiClient';
-import { JupyterSessionProvider } from './jupyterSessionProvider';
-import { JupyterServerProvider } from './jupyterServerProvider';
+import { JupyterExecuteProvider } from './jupyterExecuteProvider';
 
 let untitledCounter = 0;
 
@@ -38,8 +37,7 @@ export class JupyterController {
 	private _packageManageProviders = new Map<string, IPackageManageProvider>();
 
 	private prompter: IPrompter;
-	private _sessionProvider: JupyterSessionProvider;
-	private _serverProvider: JupyterServerProvider;
+	private _executeProvider: JupyterExecuteProvider;
 
 	constructor(private appContext: AppContext) {
 		this.prompter = new CodeAdapter();
@@ -49,12 +47,8 @@ export class JupyterController {
 		return this.appContext && this.appContext.extensionContext;
 	}
 
-	public get sessionProvider(): JupyterSessionProvider {
-		return this._sessionProvider;
-	}
-
-	public get serverProvider(): JupyterServerProvider {
-		return this._serverProvider;
+	public get executeProvider(): JupyterExecuteProvider {
+		return this._executeProvider;
 	}
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
@@ -85,23 +79,19 @@ export class JupyterController {
 		let supportedFileFilter: vscode.DocumentFilter[] = [
 			{ scheme: 'untitled', language: '*' }
 		];
-		this.createAndRegisterProviders();
-		this.extensionContext.subscriptions.push(vscode.languages.registerCompletionItemProvider(supportedFileFilter, new NotebookCompletionItemProvider(this._sessionProvider), '.'));
 
-		this.registerDefaultPackageManageProviders();
-		return true;
-	}
-
-	private createAndRegisterProviders(): void {
-		this._sessionProvider = new JupyterSessionProvider();
-		this._serverProvider = new JupyterServerProvider((documentUri: vscode.Uri) => new LocalJupyterServerManager({
+		this._executeProvider = new JupyterExecuteProvider((documentUri: vscode.Uri) => new LocalJupyterServerManager({
 			documentPath: documentUri.fsPath,
 			jupyterInstallation: this._jupyterInstallation,
 			extensionContext: this.extensionContext,
 			factory: this._serverInstanceFactory
 		}));
-		azdata.nb.registerSessionProvider(this._sessionProvider);
-		azdata.nb.registerServerProvider(this._serverProvider);
+		azdata.nb.registerExecuteProvider(this._executeProvider);
+
+		this.extensionContext.subscriptions.push(vscode.languages.registerCompletionItemProvider(supportedFileFilter, new NotebookCompletionItemProvider(this._executeProvider), '.'));
+
+		this.registerDefaultPackageManageProviders();
+		return true;
 	}
 
 	private saveProfileAndCreateNotebook(profile: azdata.IConnectionProfile): Promise<void> {

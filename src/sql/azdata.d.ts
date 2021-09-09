@@ -4933,8 +4933,7 @@ declare module 'azdata' {
 		 * @returns disposable
 		 */
 		export function registerContentProvider(provider: NotebookContentProvider): vscode.Disposable;
-		export function registerSessionProvider(provider: NotebookSessionProvider): vscode.Disposable;
-		export function registerServerProvider(provider: NotebookServerProvider): vscode.Disposable;
+		export function registerExecuteProvider(provider: NotebookExecuteProvider): vscode.Disposable;
 
 		export interface IStandardKernel {
 			readonly name: string;
@@ -4947,15 +4946,24 @@ declare module 'azdata' {
 			getContentManager(notebookUri: vscode.Uri): Thenable<ContentManager>;
 		}
 
-		export interface NotebookSessionProvider {
+		export interface NotebookExecuteProvider {
 			readonly providerId: string;
-			getSessionManager(notebookUri: vscode.Uri): Thenable<SessionManager>;
+			getExecuteManager(notebookUri: vscode.Uri): Thenable<ExecuteManager>;
 			handleNotebookClosed(notebookUri: vscode.Uri): void;
 		}
 
-		export interface NotebookServerProvider {
-			readonly providerId: string;
-			getServerManager(notebookUri: vscode.Uri): Thenable<ServerManager>;
+		export interface ExecuteManager {
+			/**
+			 * A SessionManager that handles starting, stopping and handling notifications around sessions.
+			 * Each notebook has 1 session associated with it, and the session is responsible
+			 * for kernel management
+			 */
+			readonly sessionManager: SessionManager;
+			/**
+			 * (Optional) ServerManager to handle server lifetime management operations.
+			 * Depending on the implementation this may not be needed.
+			 */
+			readonly serverManager?: ServerManager | undefined;
 		}
 
 		/**
