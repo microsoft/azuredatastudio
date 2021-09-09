@@ -8,52 +8,147 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"azure.displayName": "Azure (核心)",
-			"azure.description": "浏览和使用 Azure 资源",
-			"azure.title": "Azure",
-			"azure.resource.config.title": "Azure 资源配置",
-			"azure.resource.config.filter.description": "资源筛选器，每个元素是帐户 ID、订阅 ID 和由斜杠分隔的名称",
-			"azure.resource.explorer.title": "Azure",
-			"azure.resource.refreshall.title": "Azure: 刷新所有帐户",
-			"azure.resource.refresh.title": "刷新",
-			"azure.resource.signin.title": "Azure: 登录",
-			"azure.resource.selectsubscriptions.title": "选择订阅",
-			"azure.resource.startterminal.title": "启动 Cloud Shell",
-			"azure.resource.connectsqlserver.title": "连接",
-			"azure.resource.connectsqldb.title": "添加到服务器",
-			"azure.resource.view.title": "Azure (预览)",
-			"azure.tenant.config.filter.description": "查询 Azure 资源时要忽略的租户 ID 列表。每个元素都是一个租户 ID。",
-			"accounts.clearTokenCache": "清除 Azure 帐户令牌缓存",
-			"azure.openInAzurePortal.title": "在 Azure 门户中打开",
-			"config.azureAccountConfigurationSection": "Azure 帐户配置",
-			"config.enablePublicCloudDescription": "是否应启用 Azure 公有云集成",
-			"config.enableUsGovCloudDescription": "是否应启用美国政府 Azure 云(Fairfax)集成",
-			"config.enableUsNatCloudDescription": "是否应启用美国国家 Azure 云集成",
-			"config.enableChinaCloudDescription": "是否应启用 Azure 中国集成",
-			"config.enableGermanyCloudDescription": "是否应启用 Azure 德国集成",
-			"config.azureAuthMethodConfigurationSection": "Azure 身份验证方法",
-			"config.azureCodeGrantMethod": "代码授予方法",
-			"config.azureDeviceCodeMethod": "设备代码方法",
-			"config.noSystemKeychain": "禁用系统密钥链集成。凭据将存储在用户主目录的平面文件中。",
-			"config.piiLogging": "应在控制台视图中本地记录个人身份信息(PII)"
+		"dist/account-provider/auths/azureAuth": {
+			"azure.accessTokenEmpty": "未从 Microsoft OAuth 返回访问令牌",
+			"azure.cacheErrorAdd": "将帐户添加到缓存时出错。",
+			"azure.cacheErrorGet": "从缓存获取帐户时出错",
+			"azure.cacheErrorParse": "在缓存中分析帐户时出错",
+			"azure.cacheErrrorRemove": "从缓存中删除帐户时出错。",
+			"azure.microsoftAccountDisplayName": "Microsoft 帐户",
+			"azure.microsoftCorpAccount": "Microsoft Corp",
+			"azure.noBaseToken": "身份验证失败，或者你的令牌已从系统中删除。请尝试再次将帐户添加到 Azure Data Studio。",
+			"azure.noUniqueIdentifier": "用户在 AAD 中没有唯一标识符",
+			"azure.responseError": "令牌检索失败，出现错误。请打开开发人员工具以查看错误",
+			"azure.tenantNotFound": "找不到带有 ID '{0}' 的指定租户。",
+			"azureAuth.unidentifiedError": "使用 Azure 身份验证时出现不明错误",
+			"azureWorkAccountDisplayName": "工作或学校帐户",
+			"azurecore.consentDialog.body": "你的租户“{0} ({1})”需要你重新进行身份验证才能访问 {2} 资源。请按“打开”启动身份验证过程。",
+			"azurecore.consentDialog.cancel": "取消",
+			"azurecore.consentDialog.ignore": "忽略租户",
+			"azurecore.consentDialog.open": "打开"
+		},
+		"dist/account-provider/auths/azureAuthCodeGrant": {
+			"azure.azureAuthCodeGrantName": "Azure 身份验证代码授予",
+			"azure.serverCouldNotStart": "无法启动服务器。这可能是由于权限错误或系统不兼容。可以尝试从设置启用设备代码身份验证。",
+			"azureAuth.nonceError": "由于 nonce 不匹配，身份验证失败，请关闭 Azure Data Studio，然后重试。",
+			"azureAuth.stateError": "由于状态不匹配，身份验证失败，请关闭 ADS，然后重试。"
+		},
+		"dist/account-provider/auths/azureDeviceCode": {
+			"addAccount": "添加 {0} 帐户",
+			"azure.azureDeviceCodeAuth": "Azure 设备代码",
+			"azure.deviceCodeCheckFail": "尝试检查登录结果时遇到错误",
+			"azure.timeoutDeviceCode": "等待设备代码登录时超时。"
+		},
+		"dist/account-provider/azureAccountProvider": {
+			"azure.NoAuthMethod.Available": "无可用的 Azure 身份验证方法。必须在 ADS 配置中启用身份验证方法。",
+			"azure.NoAuthMethod.Selected": "未选择任何 Azure 身份验证方法。必须选择你要使用的身份验证方法。",
+			"azure.deprecatedGetSecurityToken": "对 azdata.accounts.getSecurityToken 进行了调用，此方法已弃用，并会在未来的版本中删除。请改用 getAccountSecurityToken。"
+		},
+		"dist/account-provider/azureAccountProviderService": {
+			"clearTokenCacheFailure": "未能清除令牌缓存",
+			"clearTokenCacheSuccess": "令牌缓存已成功清除"
+		},
+		"dist/account-provider/providerSettings": {
+			"chinaCloudDisplayName": "Azure (中国)",
+			"germanyCloud": "Azure (德国)",
+			"publicCloudDisplayName": "Azure",
+			"usGovCloudDisplayName": "Azure (美国政府)",
+			"usNatCloudDisplayName": "Azure (美国国家)"
+		},
+		"dist/azureResource/commands": {
+			"azure.accountNotSelectedError": "必须选择一个 Azure 帐户才能使用此功能。",
+			"azure.cloudTerminalPreview": "必须启用预览功能才能使用 Azure Cloud Shell。",
+			"azure.mustPickTenant": "必须选择一个租户才能使用此功能。",
+			"azure.noAccountError": "你当前未登录到任何 Azure 帐户，请登录，然后重试。",
+			"azure.noTenants": "此功能需要使用租户。你的 Azure 订阅似乎没有租户。",
+			"azure.pickAnAzureAccount": "选择 Azure 帐户",
+			"azure.signIn": "登录",
+			"azure.startingCloudShell": "正在启动 Cloud Shell…"
+		},
+		"dist/azureResource/errors": {
+			"azure.subscriptionError": "无法获取帐户 {0} 的订阅。请刷新帐户。"
+		},
+		"dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider": {
+			"azure.resource.providers.AzureMonitorContainerLabel": "Log Analytics 工作区"
+		},
+		"dist/azureResource/providers/database/databaseTreeDataProvider": {
+			"azure.resource.providers.database.treeDataProvider.databaseContainerLabel": "SQL 数据库"
+		},
+		"dist/azureResource/providers/databaseServer/databaseServerTreeDataProvider": {
+			"azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel": "SQL 服务器"
+		},
+		"dist/azureResource/providers/kusto/kustoTreeDataProvider": {
+			"azure.resource.providers.KustoContainerLabel": "Azure 数据资源管理器群集"
+		},
+		"dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider": {
+			"azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel": "PostgreSQL 超大规模 – Azure Arc"
+		},
+		"dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider": {
+			"azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel": "Azure Database for PostgreSQL 服务器"
+		},
+		"dist/azureResource/providers/sqlinstance/sqlInstanceTreeDataProvider": {
+			"azure.resource.providers.sqlInstanceContainerLabel": "Azure SQL DB 托管实例"
+		},
+		"dist/azureResource/providers/sqlinstanceArc/sqlInstanceArcTreeDataProvider": {
+			"azure.resource.providers.sqlInstanceArcContainerLabel": "SQL 托管实例 - Azure Arc"
+		},
+		"dist/azureResource/resourceTreeNode": {
+			"azure.resource.resourceTreeNode.noResourcesLabel": "未找到资源"
+		},
+		"dist/azureResource/services/subscriptionService": {
+			"azure.resource.tenantSubscriptionsError": "无法获取帐户{0} (租户 \"{1}\")的订阅。{2}"
+		},
+		"dist/azureResource/services/terminalService": {
+			"azure.cloudShell": "Azure Cloud Shell (预览) {0} ({1})",
+			"azure.cloudTerminal.ok": "确定",
+			"azure.cloudTerminal.openAzureShell": "打开 Azure Shell",
+			"azure.coudTerminal.neverUsed": "如果你以前未从此帐户启动过 Azure Cloud Shell，请访问 https://shell.azure.com/ 以开始使用。设置后，可以直接在 Azure Data Studio 中使用 AzureCloud Shell。",
+			"azure.selectShellType": "为 Azure Cloud Shell 选择 Bash 或 PowerShell",
+			"azure.shellClosed": "Shell 已关闭。\r\n",
+			"azure.shellTypeRequired": "必须选取一个 shell 类型"
+		},
+		"dist/azureResource/tree/accountNotSignedInTreeNode": {
+			"azure.resource.tree.accountNotSignedInTreeNode.signInLabel": "登录到 Azure…"
+		},
+		"dist/azureResource/tree/accountTreeNode": {
+			"azure.resource.tree.accountTreeNode.noSubscriptionsLabel": "未找到订阅。",
+			"azure.unableToAccessSubscription": "无法访问订阅 {0} ({1})。请[刷新帐户](command: azure.resource.signin)重试。{2}"
+		},
+		"dist/azureResource/tree/connectionDialogTreeProvider": {
+			"azure.resource.tree.treeProvider.accountLoadError": "未能加载部分 Azure 存储帐户。{0}",
+			"azure.resource.tree.treeProvider.loadingLabel": "正在加载…",
+			"azure.resource.tree.treeProvider.openAccountsDialog": "显示 Azure 帐户"
+		},
+		"dist/azureResource/tree/flatAccountTreeNode": {
+			"azure.resource.throttleerror": "已限制来自此帐户的请求。要重试，请选择少量订阅。",
+			"azure.resource.tree.accountTreeNode.title": "{0} ({1}/{2} 个订阅)",
+			"azure.resource.tree.accountTreeNode.titleLoading": "{0} - 正在加载...",
+			"azure.resource.tree.loadresourceerror": "加载 Azure 资源时出错: {0}"
+		},
+		"dist/azureResource/tree/subscriptionTreeNode": {
+			"azure.resource.tree.subscriptionTreeNode.noResourcesLabel": "未找到资源。"
+		},
+		"dist/azureResource/tree/treeProvider": {
+			"azure.resource.tree.treeProvider.loadingLabel": "正在加载…"
 		},
 		"dist/azureResource/utils": {
-			"azure.resource.error": "错误: {0}",
-			"azure.accounts.getResourceGroups.queryError": "为帐户 {0} ({1})订阅 {2} ({3})租户 {4} 提取资源组时出错: {5}",
 			"azure.accounts.getLocations.queryError": "提取帐户 {0} ({1})订阅 {2} ({3})租户 {4} 的位置时出错: {5}",
-			"azure.accounts.runResourceQuery.errors.invalidQuery": "查询无效",
+			"azure.accounts.getResourceGroups.queryError": "为帐户 {0} ({1})订阅 {2} ({3})租户 {4} 提取资源组时出错: {5}",
+			"azure.accounts.getSelectedSubscriptions.queryError": "为帐户 {0} 提取订阅时出错: {1}",
 			"azure.accounts.getSubscriptions.queryError": "为帐户 {0} 租户 {1} 提取订阅时出错: {2}",
-			"azure.accounts.getSelectedSubscriptions.queryError": "为帐户 {0} 提取订阅时出错: {1}"
+			"azure.accounts.runResourceQuery.errors.invalidQuery": "查询无效",
+			"azure.resource.error": "错误: {0}"
 		},
 		"dist/localizedConstants": {
-			"azurecore.extensionName": "Azure 帐户",
-			"azurecore.requiresReload": "修改此设置需要重新加载窗口，以使所有更改生效。",
-			"azurecore.reload": "重载",
+			"azure.azureResourcesGridTitle": "Azure 资源(预览)",
+			"azure.unableToOpenAzureLink": "无法打开链接，缺少所需的值",
 			"azurecore.australiacentral": "澳大利亚中部",
 			"azurecore.australiacentral2": "澳大利亚中部 2",
 			"azurecore.australiaeast": "澳大利亚东部",
 			"azurecore.australiasoutheast": "澳大利亚东南部",
+			"azurecore.azureArcPostgres": "启用 Azure Arc 的 PostgreSQL 超大规模",
+			"azurecore.azureArcService": "数据服务 - Azure Arc",
+			"azurecore.azureArcsqlManagedInstance": "SQL 托管实例 - Azure Arc",
 			"azurecore.brazilsouth": "巴西南部",
 			"azurecore.brazilsoutheast": "巴西东南部",
 			"azurecore.canadacentral": "加拿大中部",
@@ -65,172 +160,81 @@
 			"azurecore.eastus": "美国东部",
 			"azurecore.eastus2": "美国东部 2",
 			"azurecore.eastus2euap": "美国东部 2 EUAP",
+			"azurecore.extensionName": "Azure 帐户",
 			"azurecore.francecentral": "法国中部",
 			"azurecore.francesouth": "法国南部",
 			"azurecore.germanynorth": "德国北部",
 			"azurecore.germanywestcentral": "德国中西部",
+			"azurecore.invalidAzureAccount": "帐户无效",
+			"azurecore.invalidTenant": "订阅的租户无效",
 			"azurecore.japaneast": "日本东部",
 			"azurecore.japanwest": "日本西部",
 			"azurecore.koreacentral": "韩国中部",
 			"azurecore.koreasouth": "韩国南部",
+			"azurecore.location": "位置",
+			"azurecore.name": "名称",
 			"azurecore.northcentralus": "美国中北部",
 			"azurecore.northeurope": "北欧",
 			"azurecore.norwayeast": "挪威东部",
 			"azurecore.norwaywest": "挪威西部",
+			"azurecore.postgresServer": "Azure Database for PostgreSQL 服务器",
+			"azurecore.reload": "重载",
+			"azurecore.requiresReload": "修改此设置需要重新加载窗口，以使所有更改生效。",
+			"azurecore.resourceGroup": "资源组",
+			"azurecore.resourceType": "资源类型",
 			"azurecore.southafricanorth": "南非北部",
 			"azurecore.southafricawest": "南非西部",
 			"azurecore.southcentralus": "美国中南部",
 			"azurecore.southeastasia": "东南亚",
 			"azurecore.southindia": "印度南部",
+			"azurecore.sqlDatabase": "SQL 数据库",
+			"azurecore.sqlManagedInstance": "SQL 托管实例",
+			"azurecore.sqlServer": "SQL 服务器",
+			"azurecore.sqlServerArc": "SQL Server - Azure Arc",
+			"azurecore.subscription": "订阅",
 			"azurecore.switzerlandnorth": "瑞士北部",
 			"azurecore.switzerlandwest": "瑞士西部",
+			"azurecore.typeIcon": "类型图标",
 			"azurecore.uaecentral": "阿拉伯联合酋长国中部",
 			"azurecore.uaenorth": "阿拉伯联合酋长国北部",
 			"azurecore.uksouth": "英国南部",
 			"azurecore.ukwest": "英国西部",
+			"azurecore.unableToFetchToken": "无法获取租户 {0} 的令牌",
 			"azurecore.westcentralus": "美国中西部",
 			"azurecore.westeurope": "西欧",
 			"azurecore.westindia": "印度西部",
 			"azurecore.westus": "美国西部",
-			"azurecore.westus2": "美国西部 2",
-			"azurecore.name": "名称",
-			"azurecore.resourceType": "资源类型",
-			"azurecore.resourceGroup": "资源组",
-			"azurecore.location": "位置",
-			"azurecore.subscription": "订阅",
-			"azurecore.typeIcon": "类型图标",
-			"azurecore.sqlServer": "SQL 服务器",
-			"azurecore.sqlDatabase": "SQL 数据库",
-			"azurecore.postgresServer": "Azure Database for PostgreSQL 服务器",
-			"azurecore.sqlManagedInstance": "SQL 托管实例",
-			"azurecore.azureArcsqlManagedInstance": "SQL 托管实例 - Azure Arc",
-			"azurecore.azureArcService": "数据服务 - Azure Arc",
-			"azurecore.sqlServerArc": "SQL Server - Azure Arc",
-			"azurecore.azureArcPostgres": "启用 Azure Arc 的 PostgreSQL 超大规模",
-			"azure.unableToOpenAzureLink": "无法打开链接，缺少所需的值",
-			"azure.azureResourcesGridTitle": "Azure 资源(预览)",
-			"azurecore.invalidAzureAccount": "帐户无效",
-			"azurecore.invalidTenant": "订阅的租户无效",
-			"azurecore.unableToFetchToken": "无法获取租户 {0} 的令牌"
+			"azurecore.westus2": "美国西部 2"
 		},
-		"dist/account-provider/auths/azureAuth": {
-			"azureAuth.unidentifiedError": "使用 Azure 身份验证时出现不明错误",
-			"azure.tenantNotFound": "找不到带有 ID '{0}' 的指定租户。",
-			"azure.noBaseToken": "身份验证失败，或者你的令牌已从系统中删除。请尝试再次将帐户添加到 Azure Data Studio。",
-			"azure.responseError": "令牌检索失败，出现错误。请打开开发人员工具以查看错误",
-			"azure.accessTokenEmpty": "未从 Microsoft OAuth 返回访问令牌",
-			"azure.noUniqueIdentifier": "用户在 AAD 中没有唯一标识符",
-			"azureWorkAccountDisplayName": "工作或学校帐户",
-			"azure.cacheErrorAdd": "将帐户添加到缓存时出错。",
-			"azure.cacheErrorGet": "从缓存获取帐户时出错",
-			"azure.cacheErrorParse": "在缓存中分析帐户时出错",
-			"azurecore.consentDialog.open": "打开",
-			"azurecore.consentDialog.cancel": "取消",
-			"azurecore.consentDialog.ignore": "忽略租户",
-			"azurecore.consentDialog.body": "你的租户“{0} ({1})”需要你重新进行身份验证才能访问 {2} 资源。请按“打开”启动身份验证过程。",
-			"azure.microsoftCorpAccount": "Microsoft Corp",
-			"azure.microsoftAccountDisplayName": "Microsoft 帐户",
-			"azure.cacheErrrorRemove": "从缓存中删除帐户时出错。"
-		},
-		"dist/azureResource/tree/accountTreeNode": {
-			"azure.resource.tree.accountTreeNode.credentialError": "未能获取帐户 {0} 的凭据。请刷新帐户。",
-			"azure.resource.tree.accountTreeNode.noSubscriptionsLabel": "未找到订阅。"
-		},
-		"dist/azureResource/resourceTreeNode": {
-			"azure.resource.resourceTreeNode.noResourcesLabel": "未找到资源"
-		},
-		"dist/azureResource/tree/flatAccountTreeNode": {
-			"azure.resource.tree.accountTreeNode.titleLoading": "{0} - 正在加载...",
-			"azure.resource.tree.accountTreeNode.title": "{0} ({1}/{2} 个订阅)",
-			"azure.resource.tree.accountTreeNode.credentialError": "未能获取帐户 {0} 的凭据。请转到“帐户”对话框并刷新帐户。",
-			"azure.resource.throttleerror": "已限制来自此帐户的请求。要重试，请选择少量订阅。",
-			"azure.resource.tree.loadresourceerror": "加载 Azure 资源时出错: {0}"
-		},
-		"dist/azureResource/tree/accountNotSignedInTreeNode": {
-			"azure.resource.tree.accountNotSignedInTreeNode.signInLabel": "登录到 Azure…"
-		},
-		"dist/account-provider/azureAccountProviderService": {
-			"clearTokenCacheSuccess": "令牌缓存已成功清除",
-			"clearTokenCacheFailure": "未能清除令牌缓存"
-		},
-		"dist/account-provider/providerSettings": {
-			"publicCloudDisplayName": "Azure",
-			"usGovCloudDisplayName": "Azure (美国政府)",
-			"usNatCloudDisplayName": "Azure (美国国家)",
-			"germanyCloud": "Azure (德国)",
-			"chinaCloudDisplayName": "Azure (中国)"
-		},
-		"dist/account-provider/azureAccountProvider": {
-			"azure.deprecatedGetSecurityToken": "对 azdata.accounts.getSecurityToken 进行了调用，此方法已弃用，并会在未来的版本中删除。请改用 getAccountSecurityToken。",
-			"azure.NoAuthMethod.Selected": "未选择任何 Azure 身份验证方法。必须选择你要使用的身份验证方法。",
-			"azure.NoAuthMethod.Available": "无可用的 Azure 身份验证方法。必须在 ADS 配置中启用身份验证方法。"
-		},
-		"dist/account-provider/auths/azureAuthCodeGrant": {
-			"azure.serverCouldNotStart": "无法启动服务器。这可能是由于权限错误或系统不兼容。可以尝试从设置启用设备代码身份验证。",
-			"azureAuth.nonceError": "由于 nonce 不匹配，身份验证失败，请关闭 Azure Data Studio，然后重试。",
-			"azureAuth.stateError": "由于状态不匹配，身份验证失败，请关闭 ADS，然后重试。",
-			"azure.azureAuthCodeGrantName": "Azure 身份验证代码授予"
-		},
-		"dist/account-provider/auths/azureDeviceCode": {
-			"addAccount": "添加 {0} 帐户",
-			"azure.timeoutDeviceCode": "等待设备代码登录时超时。",
-			"azure.deviceCodeCheckFail": "尝试检查登录结果时遇到错误",
-			"azure.azureDeviceCodeAuth": "Azure 设备代码"
-		},
-		"dist/azureResource/providers/databaseServer/databaseServerTreeDataProvider": {
-			"azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel": "SQL 服务器"
-		},
-		"dist/azureResource/providers/database/databaseTreeDataProvider": {
-			"azure.resource.providers.database.treeDataProvider.databaseContainerLabel": "SQL 数据库"
-		},
-		"dist/azureResource/commands": {
-			"azure.cloudTerminalPreview": "必须启用预览功能才能使用 Azure Cloud Shell。",
-			"azure.signIn": "登录",
-			"azure.noAccountError": "你当前未登录到任何 Azure 帐户，请登录，然后重试。",
-			"azure.pickAnAzureAccount": "选择 Azure 帐户",
-			"azure.accountNotSelectedError": "必须选择一个 Azure 帐户才能使用此功能。",
-			"azure.noTenants": "此功能需要使用租户。你的 Azure 订阅似乎没有租户。",
-			"azure.startingCloudShell": "正在启动 Cloud Shell…",
-			"azure.mustPickTenant": "必须选择一个租户才能使用此功能。",
-			"azure.resource.selectsubscriptions.credentialError": "未能获取帐户 {0} 的凭据。请刷新帐户。"
-		},
-		"dist/azureResource/tree/subscriptionTreeNode": {
-			"azure.resource.tree.subscriptionTreeNode.noResourcesLabel": "未找到资源。"
-		},
-		"dist/azureResource/tree/treeProvider": {
-			"azure.resource.tree.treeProvider.loadingLabel": "正在加载…"
-		},
-		"dist/azureResource/providers/sqlinstance/sqlInstanceTreeDataProvider": {
-			"azure.resource.providers.sqlInstanceContainerLabel": "Azure SQL DB 托管实例"
-		},
-		"dist/azureResource/providers/kusto/kustoTreeDataProvider": {
-			"azure.resource.providers.KustoContainerLabel": "Azure 数据资源管理器群集"
-		},
-		"dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider": {
-			"azure.resource.providers.AzureMonitorContainerLabel": "Log Analytics 工作区"
-		},
-		"dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider": {
-			"azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel": "Azure Database for PostgreSQL 服务器"
-		},
-		"dist/azureResource/services/terminalService": {
-			"azure.coudTerminal.neverUsed": "如果你以前未从此帐户启动过 Azure Cloud Shell，请访问 https://shell.azure.com/ 以开始使用。设置后，可以直接在 Azure Data Studio 中使用 AzureCloud Shell。",
-			"azure.cloudTerminal.openAzureShell": "打开 Azure Shell",
-			"azure.cloudTerminal.ok": "确定",
-			"azure.selectShellType": "为 Azure Cloud Shell 选择 Bash 或 PowerShell",
-			"azure.shellTypeRequired": "必须选取一个 shell 类型",
-			"azure.cloudShell": "Azure Cloud Shell (预览) {0} ({1})",
-			"azure.shellClosed": "Shell 已关闭。\r\n"
-		},
-		"dist/azureResource/providers/sqlinstanceArc/sqlInstanceArcTreeDataProvider": {
-			"azure.resource.providers.sqlInstanceArcContainerLabel": "SQL 托管实例 - Azure Arc"
-		},
-		"dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider": {
-			"azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel": "PostgreSQL 超大规模 – Azure Arc"
-		},
-		"dist/azureResource/tree/connectionDialogTreeProvider": {
-			"azure.resource.tree.treeProvider.loadingLabel": "正在加载…",
-			"azure.resource.tree.treeProvider.openAccountsDialog": "显示 Azure 帐户",
-			"azure.resource.tree.treeProvider.accountLoadError": "未能加载部分 Azure 存储帐户。{0}"
+		"package": {
+			"accounts.clearTokenCache": "清除 Azure 帐户令牌缓存",
+			"azure.description": "浏览和使用 Azure 资源",
+			"azure.displayName": "Azure (核心)",
+			"azure.openInAzurePortal.title": "在 Azure 门户中打开",
+			"azure.resource.config.filter.description": "资源筛选器，每个元素是帐户 ID、订阅 ID 和由斜杠分隔的名称",
+			"azure.resource.config.title": "Azure 资源配置",
+			"azure.resource.connectsqldb.title": "添加到服务器",
+			"azure.resource.connectsqlserver.title": "连接",
+			"azure.resource.explorer.title": "Azure",
+			"azure.resource.refresh.title": "刷新",
+			"azure.resource.refreshall.title": "Azure: 刷新所有帐户",
+			"azure.resource.selectsubscriptions.title": "选择订阅",
+			"azure.resource.signin.title": "Azure: 登录",
+			"azure.resource.startterminal.title": "启动 Cloud Shell",
+			"azure.resource.view.title": "Azure (预览)",
+			"azure.tenant.config.filter.description": "查询 Azure 资源时要忽略的租户 ID 列表。每个元素都是一个租户 ID。",
+			"azure.title": "Azure",
+			"config.azureAccountConfigurationSection": "Azure 帐户配置",
+			"config.azureAuthMethodConfigurationSection": "Azure 身份验证方法",
+			"config.azureCodeGrantMethod": "代码授予方法",
+			"config.azureDeviceCodeMethod": "设备代码方法",
+			"config.enableChinaCloudDescription": "是否应启用 Azure 中国集成",
+			"config.enableGermanyCloudDescription": "是否应启用 Azure 德国集成",
+			"config.enablePublicCloudDescription": "是否应启用 Azure 公有云集成",
+			"config.enableUsGovCloudDescription": "是否应启用美国政府 Azure 云(Fairfax)集成",
+			"config.enableUsNatCloudDescription": "是否应启用美国国家 Azure 云集成",
+			"config.noSystemKeychain": "禁用系统密钥链集成。凭据将存储在用户主目录的平面文件中。",
+			"config.piiLogging": "应在控制台视图中本地记录个人身份信息(PII)"
 		}
 	}
 }

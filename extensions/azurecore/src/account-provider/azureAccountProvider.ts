@@ -113,13 +113,13 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 
 	private async _getAccountSecurityToken(account: AzureAccount, tenantId: string, resource: azdata.AzureResource): Promise<Token | undefined> {
 		await this.initCompletePromise;
-		const azureAuth = this.getAuthMethod(undefined);
+		const azureAuth = this.getAuthMethod(account);
 		Logger.pii(`Getting account security token for ${JSON.stringify(account.key)} (tenant ${tenantId}). Auth Method = ${azureAuth.userFriendlyName}`, [], []);
 		return azureAuth?.getAccountSecurityToken(account, tenantId, resource);
 	}
 
 	private async _getSecurityToken(account: AzureAccount, resource: azdata.AzureResource): Promise<MultiTenantTokenResponse | undefined> {
-		vscode.window.showInformationMessage(localize('azure.deprecatedGetSecurityToken', "A call was made to azdata.accounts.getSecurityToken, this method is deprecated and will be removed in future releases. Please use getAccountSecurityToken instead."));
+		void vscode.window.showInformationMessage(localize('azure.deprecatedGetSecurityToken', "A call was made to azdata.accounts.getSecurityToken, this method is deprecated and will be removed in future releases. Please use getAccountSecurityToken instead."));
 		const azureAccount = account as AzureAccount;
 		const response: MultiTenantTokenResponse = {};
 		for (const tenant of azureAccount.properties.tenants) {
@@ -147,7 +147,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 
 		if (this.authMappings.size === 0) {
 			Logger.log('No auth method was enabled.');
-			vscode.window.showErrorMessage(noAuthAvailable);
+			void vscode.window.showErrorMessage(noAuthAvailable);
 			return { canceled: true };
 		}
 
@@ -164,7 +164,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 
 		if (!pick) {
 			Logger.log('No auth method was selected.');
-			vscode.window.showErrorMessage(noAuthSelected);
+			void vscode.window.showErrorMessage(noAuthSelected);
 			return { canceled: true };
 		}
 

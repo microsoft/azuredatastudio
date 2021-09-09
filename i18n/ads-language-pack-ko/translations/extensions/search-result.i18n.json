@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "검색 결과",
-			"description": "탭된 검색 결과에 대한 구문 강조 표시 및 언어 기능을 제공합니다."
+			"description": "탭된 검색 결과에 대한 구문 강조 표시 및 언어 기능을 제공합니다.",
+			"displayName": "검색 결과"
 		}
 	}
 }

@@ -9,9 +9,9 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"queryHistory.displayName": "Historique des requêtes",
-			"queryHistory.description": "Afficher et exécuter des requêtes exécutées précédemment",
 			"queryHistory.clear": "Effacer tout l'historique",
+			"queryHistory.description": "Afficher et exécuter des requêtes exécutées précédemment",
+			"queryHistory.displayName": "Historique des requêtes",
 			"queryHistory.toggleCapture": "Activer/désactiver la capture de l'historique des requêtes"
 		}
 	}

@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "JSON 语言基础功能",
-			"description": "在 JSON 文件中提供语法突出显示和括号匹配功能。"
+			"description": "在 JSON 文件中提供语法突出显示和括号匹配功能。",
+			"displayName": "JSON 语言基础功能"
 		}
 	}
 }

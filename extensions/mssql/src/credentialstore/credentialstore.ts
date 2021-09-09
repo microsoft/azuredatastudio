@@ -88,9 +88,9 @@ export class CredentialStore {
 		this._client.start();
 	}
 
-	dispose() {
+	async dispose(): Promise<void> {
 		if (this._client) {
-			this._client.stop();
+			await this._client.stop();
 		}
 	}
 

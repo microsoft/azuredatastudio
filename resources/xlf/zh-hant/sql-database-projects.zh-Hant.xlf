@@ -1,216 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/sql-database-projects/package" source-language="en" datatype="plaintext" target-language="zh-Hant">
-    <body>
-      <trans-unit id="title.projectsView">
-        <source xml:lang="en">Projects</source>
-        <target state="translated">專案</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.displayName">
-        <source xml:lang="en">Database Projects</source>
-        <target state="translated">資料庫專案</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.description">
-        <source xml:lang="en">Design and publish SQL database schemas</source>
-        <target state="translated">設計及發佈 SQL 資料庫結構描述</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.new">
-        <source xml:lang="en">New Database Project</source>
-        <target state="translated">新的資料庫專案</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.open">
-        <source xml:lang="en">Open Database Project</source>
-        <target state="translated">開啟資料庫專案</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.close">
-        <source xml:lang="en">Close Database Project</source>
-        <target state="translated">關閉資料庫專案</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.build">
-        <source xml:lang="en">Build</source>
-        <target state="translated">組建</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.publish">
-        <source xml:lang="en">Publish</source>
-        <target state="translated">發佈</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.createProjectFromDatabase">
-        <source xml:lang="en">Create Project From Database</source>
-        <target state="translated">從資料庫建立專案</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.properties">
-        <source xml:lang="en">Properties</source>
-        <target state="translated">屬性</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.schemaCompare">
-        <source xml:lang="en">Schema Compare</source>
-        <target state="translated">結構描述比較</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.delete">
-        <source xml:lang="en">Delete</source>
-        <target state="translated">刪除</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.exclude">
-        <source xml:lang="en">Exclude from project</source>
-        <target state="translated">從專案中排除</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.validateExternalStreamingJob">
-        <source xml:lang="en">Validate External Streaming Job</source>
-        <target state="translated">驗證外部串流作業</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.newScript">
-        <source xml:lang="en">Add Script</source>
-        <target state="translated">新增指令碼</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.newPreDeploymentScript">
-        <source xml:lang="en">Add Pre-Deployment Script</source>
-        <target state="translated">新增預先部署指令碼</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.newPostDeploymentScript">
-        <source xml:lang="en">Add Post-Deployment Script</source>
-        <target state="translated">新增部署後指令碼</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.newTable">
-        <source xml:lang="en">Add Table</source>
-        <target state="translated">新增資料表</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.newView">
-        <source xml:lang="en">Add View</source>
-        <target state="translated">新增檢視</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.newStoredProcedure">
-        <source xml:lang="en">Add Stored Procedure</source>
-        <target state="translated">新增預存程序</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.newExternalStreamingJob">
-        <source xml:lang="en">Add External Streaming Job</source>
-        <target state="translated">新增外部資料流作業</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.newItem">
-        <source xml:lang="en">Add Item...</source>
-        <target state="translated">新增項目...</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.newFolder">
-        <source xml:lang="en">Add Folder</source>
-        <target state="translated">新增資料夾</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.addDatabaseReference">
-        <source xml:lang="en">Add Database Reference</source>
-        <target state="translated">新增資料庫參考</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.openContainingFolder">
-        <source xml:lang="en">Open Containing Folder</source>
-        <target state="translated">開啟收納資料夾</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.editProjectFile">
-        <source xml:lang="en">Edit .sqlproj File</source>
-        <target state="translated">編輯 .sqlproj 檔</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.changeTargetPlatform">
-        <source xml:lang="en">Change Target Platform</source>
-        <target state="translated">變更目標平台</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.Settings">
-        <source xml:lang="en">Database Projects</source>
-        <target state="translated">資料庫專案</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.netCoreInstallLocation">
-        <source xml:lang="en">Full path to .NET Core SDK on the machine.</source>
-        <target state="translated">電腦上 .NET Core SDK 的完整路徑。</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.netCoreDoNotAsk">
-        <source xml:lang="en">Whether to prompt the user to install .NET Core when not detected.</source>
-        <target state="translated">是否在未偵測到時提示使用者安裝 .NET Core。</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.welcome">
-        <source xml:lang="en">No database projects currently open.
-[New Project](command:sqlDatabaseProjects.new)
-[Open Project](command:sqlDatabaseProjects.open)
-[Create Project From Database](command:sqlDatabaseProjects.importDatabase)</source>
-        <target state="translated">目前沒有開啟的資料庫專案。
-[New Project](command:sqlDatabaseProjects.new)
-[Open Project](command:sqlDatabaseProjects.open)
-[Create Project From Database](command:sqlDatabaseProjects.importDatabase)</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.addSqlBinding">
-        <source xml:lang="en">Add SQL Binding</source>
-        <target state="translated">新增 SQL 繫結</target>
-      </trans-unit>
-    </body>
-  </file>
   <file original="extensions/sql-database-projects/dist/common/constants" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
-      <trans-unit id="emptyProjectTypeDisplayName">
-        <source xml:lang="en">SQL Database</source>
-        <target state="translated">SQL Database</target>
-      </trans-unit>
-      <trans-unit id="emptyProjectTypeDescription">
-        <source xml:lang="en">Develop and publish schemas for SQL databases starting from an empty project</source>
-        <target state="translated">為從空白專案開始的 SQL 資料庫開發及發佈結構描述</target>
-      </trans-unit>
-      <trans-unit id="edgeProjectTypeDisplayName">
-        <source xml:lang="en">SQL Edge</source>
-        <target state="translated">SQL Edge</target>
-      </trans-unit>
-      <trans-unit id="edgeProjectTypeDescription">
-        <source xml:lang="en">Start with the core pieces to develop and publish schemas for SQL Edge</source>
-        <target state="translated">從核心元件開始開發及發佈 SQL Edge 的結構描述</target>
-      </trans-unit>
-      <trans-unit id="addItemAction">
-        <source xml:lang="en">Add Item</source>
-        <target state="translated">新增項目</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareAction">
-        <source xml:lang="en">Schema Compare</source>
-        <target state="translated">結構描述比較</target>
-      </trans-unit>
-      <trans-unit id="buildAction">
-        <source xml:lang="en">Build</source>
-        <target state="translated">組建</target>
-      </trans-unit>
-      <trans-unit id="publishAction">
-        <source xml:lang="en">Publish</source>
-        <target state="translated">發佈</target>
-      </trans-unit>
-      <trans-unit id="changeTargetPlatformAction">
-        <source xml:lang="en">Change Target Platform</source>
-        <target state="translated">變更目標平台</target>
-      </trans-unit>
-      <trans-unit id="Status">
-        <source xml:lang="en">Status</source>
-        <target state="translated">狀態</target>
-      </trans-unit>
-      <trans-unit id="Time">
-        <source xml:lang="en">Time</source>
-        <target state="translated">時間</target>
-      </trans-unit>
-      <trans-unit id="Date">
-        <source xml:lang="en">Date</source>
-        <target state="translated">日期</target>
-      </trans-unit>
-      <trans-unit id="TargetPlatform">
-        <source xml:lang="en">Target Platform</source>
-        <target state="translated">目標平台</target>
-      </trans-unit>
-      <trans-unit id="TargetServer">
-        <source xml:lang="en">Target Server</source>
-        <target state="translated">目標伺服器</target>
-      </trans-unit>
-      <trans-unit id="TargetDatabase">
-        <source xml:lang="en">Target Database</source>
-        <target state="translated">目標資料庫</target>
-      </trans-unit>
       <trans-unit id="BuildHistory">
         <source xml:lang="en">Build History</source>
         <target state="translated">組建歷程記錄</target>
       </trans-unit>
-      <trans-unit id="PublishHistory">
-        <source xml:lang="en">Publish History</source>
-        <target state="translated">發佈歷程記錄</target>
-      </trans-unit>
-      <trans-unit id="Success">
-        <source xml:lang="en">Success</source>
-        <target state="translated">成功</target>
+      <trans-unit id="Date">
+        <source xml:lang="en">Date</source>
+        <target state="translated">日期</target>
       </trans-unit>
       <trans-unit id="Failed">
         <source xml:lang="en">Failed</source>
@@ -220,209 +18,93 @@
         <source xml:lang="en">In progress</source>
         <target state="translated">進行中</target>
       </trans-unit>
-      <trans-unit id="hr">
-        <source xml:lang="en">hr</source>
-        <target state="translated">小時</target>
+      <trans-unit id="PublishHistory">
+        <source xml:lang="en">Publish History</source>
+        <target state="translated">發佈歷程記錄</target>
       </trans-unit>
-      <trans-unit id="min">
-        <source xml:lang="en">min</source>
-        <target state="translated">分鐘</target>
+      <trans-unit id="Status">
+        <source xml:lang="en">Status</source>
+        <target state="translated">狀態</target>
       </trans-unit>
-      <trans-unit id="sec">
-        <source xml:lang="en">sec</source>
-        <target state="translated">秒</target>
+      <trans-unit id="Success">
+        <source xml:lang="en">Success</source>
+        <target state="translated">成功</target>
       </trans-unit>
-      <trans-unit id="msec">
-        <source xml:lang="en">msec</source>
-        <target state="translated">毫秒</target>
+      <trans-unit id="TargetDatabase">
+        <source xml:lang="en">Target Database</source>
+        <target state="translated">目標資料庫</target>
+      </trans-unit>
+      <trans-unit id="TargetPlatform">
+        <source xml:lang="en">Target Platform</source>
+        <target state="translated">目標平台</target>
+      </trans-unit>
+      <trans-unit id="TargetServer">
+        <source xml:lang="en">Target Server</source>
+        <target state="translated">目標伺服器</target>
+      </trans-unit>
+      <trans-unit id="Time">
+        <source xml:lang="en">Time</source>
+        <target state="translated">時間</target>
+      </trans-unit>
+      <trans-unit id="addDatabaseReferenceOkButtonText">
+        <source xml:lang="en">Add reference</source>
+        <target state="translated">新增參考</target>
+      </trans-unit>
+      <trans-unit id="addDatabaseReferencedialogName">
+        <source xml:lang="en">Add database reference</source>
+        <target state="translated">新增資料庫參考</target>
+      </trans-unit>
+      <trans-unit id="addItemAction">
+        <source xml:lang="en">Add Item</source>
+        <target state="translated">新增項目</target>
+      </trans-unit>
+      <trans-unit id="addPackage">
+        <source xml:lang="en">Add Package</source>
+        <target state="translated">新增套件</target>
+      </trans-unit>
+      <trans-unit id="appSettingPrompt">
+        <source xml:lang="en">Would you like to update Azure Function local.settings.json with the new connection string?</source>
+        <target state="translated">是否要以新的連接字串更新 Azure Function local.settings.json?</target>
       </trans-unit>
       <trans-unit id="at">
         <source xml:lang="en">at</source>
         <target state="translated">於</target>
       </trans-unit>
-      <trans-unit id="dataSourcesNodeName">
-        <source xml:lang="en">Data Sources</source>
-        <target state="translated">資料來源</target>
+      <trans-unit id="browseButtonText">
+        <source xml:lang="en">Browse folder</source>
+        <target state="translated">瀏覽資料夾</target>
       </trans-unit>
-      <trans-unit id="databaseReferencesNodeName">
-        <source xml:lang="en">Database References</source>
-        <target state="translated">資料庫參考</target>
+      <trans-unit id="browseEllipsis">
+        <source xml:lang="en">Browse...</source>
+        <target state="translated">瀏覽...</target>
       </trans-unit>
-      <trans-unit id="sqlConnectionStringFriendly">
-        <source xml:lang="en">SQL connection string</source>
-        <target state="translated">SQL 連接字串</target>
+      <trans-unit id="browseForProfile">
+        <source xml:lang="en">Browse for profile</source>
+        <target state="translated">瀏覽設定檔</target>
       </trans-unit>
-      <trans-unit id="yesString">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">是</target>
+      <trans-unit id="buildAction">
+        <source xml:lang="en">Build</source>
+        <target state="translated">組建</target>
       </trans-unit>
-      <trans-unit id="noString">
-        <source xml:lang="en">No</source>
-        <target state="translated">否</target>
-      </trans-unit>
-      <trans-unit id="okString">
-        <source xml:lang="en">Ok</source>
-        <target state="translated">確定</target>
-      </trans-unit>
-      <trans-unit id="selectString">
-        <source xml:lang="en">Select</source>
-        <target state="translated">選取</target>
-      </trans-unit>
-      <trans-unit id="dacpacFiles">
-        <source xml:lang="en">dacpac Files</source>
-        <target state="translated">dacpac 檔案</target>
-      </trans-unit>
-      <trans-unit id="publishSettingsFiles">
-        <source xml:lang="en">Publish Settings File</source>
-        <target state="translated">發佈設定檔案</target>
-      </trans-unit>
-      <trans-unit id="file">
-        <source xml:lang="en">File</source>
-        <target state="translated">檔案</target>
-      </trans-unit>
-      <trans-unit id="flat">
-        <source xml:lang="en">Flat</source>
-        <target state="translated">一般</target>
-      </trans-unit>
-      <trans-unit id="objectType">
-        <source xml:lang="en">Object Type</source>
-        <target state="translated">物件類型</target>
-      </trans-unit>
-      <trans-unit id="schema">
-        <source xml:lang="en">Schema</source>
-        <target state="translated">結構描述</target>
-      </trans-unit>
-      <trans-unit id="schemaObjectType">
-        <source xml:lang="en">Schema/Object Type</source>
-        <target state="translated">結構描述/物件類型</target>
-      </trans-unit>
-      <trans-unit id="defaultProjectNameStarter">
-        <source xml:lang="en">DatabaseProject</source>
-        <target state="translated">DatabaseProject</target>
-      </trans-unit>
-      <trans-unit id="reloadProject">
-        <source xml:lang="en">Would you like to reload your database project?</source>
-        <target state="translated">要重新載入資料庫專案嗎?</target>
-      </trans-unit>
-      <trans-unit id="newObjectNamePrompt">
-        <source xml:lang="en">New {0} name:</source>
-        <target state="translated">新的 {0} 名稱:</target>
-      </trans-unit>
-      <trans-unit id="deleteConfirmation">
-        <source xml:lang="en">Are you sure you want to delete {0}?</source>
-        <target state="translated">確定要刪除 {0} 嗎?</target>
-      </trans-unit>
-      <trans-unit id="deleteConfirmationContents">
-        <source xml:lang="en">Are you sure you want to delete {0} and all of its contents?</source>
-        <target state="translated">您確定要刪除 {0} 及其所有內容嗎?</target>
-      </trans-unit>
-      <trans-unit id="deleteReferenceConfirmation">
-        <source xml:lang="en">Are you sure you want to delete the reference to {0}?</source>
-        <target state="translated">確定要刪除 {0} 的參考嗎?</target>
-      </trans-unit>
-      <trans-unit id="selectTargetPlatform">
-        <source xml:lang="en">Current target platform: {0}. Select new target platform</source>
-        <target state="translated">目前的目標平台: {0}。請選取新的目標平台</target>
-      </trans-unit>
-      <trans-unit id="currentTargetPlatform">
-        <source xml:lang="en">Target platform of the project {0} is now {1}</source>
-        <target state="translated">專案 {0} 的目標平台現在已{1}</target>
-      </trans-unit>
-      <trans-unit id="publishDialogName">
-        <source xml:lang="en">Publish project</source>
-        <target state="translated">發佈專案</target>
-      </trans-unit>
-      <trans-unit id="publish">
-        <source xml:lang="en">Publish</source>
-        <target state="translated">發佈</target>
+      <trans-unit id="buildFailedCannotStartSchemaCompare">
+        <source xml:lang="en">Schema compare could not start because build failed</source>
+        <target state="translated">因為組建失敗，所以無法啟動結構描述比較</target>
       </trans-unit>
       <trans-unit id="cancelButtonText">
         <source xml:lang="en">Cancel</source>
         <target state="translated">取消</target>
       </trans-unit>
-      <trans-unit id="generateScriptButtonText">
-        <source xml:lang="en">Generate Script</source>
-        <target state="translated">產生指令碼</target>
+      <trans-unit id="cannotResolvePath">
+        <source xml:lang="en">Cannot resolve path {0}</source>
+        <target state="translated">無法解析路徑 {0}</target>
       </trans-unit>
-      <trans-unit id="databaseNameLabel">
-        <source xml:lang="en">Database</source>
-        <target state="translated">資料庫</target>
+      <trans-unit id="cantAddCircularProjectReference">
+        <source xml:lang="en">A reference to project '{0}' cannot be added. Adding this project as a reference would cause a circular dependency</source>
+        <target state="translated">無法新增專案 '{0}' 的參考。以參考方式新增此專案將導致循環相依性</target>
       </trans-unit>
-      <trans-unit id="targetConnectionLabel">
-        <source xml:lang="en">Connection</source>
-        <target state="translated">連線</target>
-      </trans-unit>
-      <trans-unit id="dataSourceRadioButtonLabel">
-        <source xml:lang="en">Data sources</source>
-        <target state="translated">資料來源</target>
-      </trans-unit>
-      <trans-unit id="connectionRadioButtonLabel">
-        <source xml:lang="en">Connections</source>
-        <target state="translated">連線</target>
-      </trans-unit>
-      <trans-unit id="dataSourceDropdownTitle">
-        <source xml:lang="en">Data source</source>
-        <target state="translated">資料來源</target>
-      </trans-unit>
-      <trans-unit id="noDataSourcesText">
-        <source xml:lang="en">No data sources in this project</source>
-        <target state="translated">此專案中沒有資料來源</target>
-      </trans-unit>
-      <trans-unit id="loadProfilePlaceholderText">
-        <source xml:lang="en">Load profile...</source>
-        <target state="translated">負載設定檔...</target>
-      </trans-unit>
-      <trans-unit id="profileReadError">
-        <source xml:lang="en">Error loading the publish profile. {0}</source>
-        <target state="translated">載入發佈設定檔時發生錯誤。{0}</target>
-      </trans-unit>
-      <trans-unit id="sqlCmdTableLabel">
-        <source xml:lang="en">SQLCMD Variables</source>
-        <target state="translated">SQLCMD 變數</target>
-      </trans-unit>
-      <trans-unit id="sqlCmdVariableColumn">
-        <source xml:lang="en">Name</source>
-        <target state="translated">名稱</target>
-      </trans-unit>
-      <trans-unit id="sqlCmdValueColumn">
-        <source xml:lang="en">Value</source>
-        <target state="translated">值</target>
-      </trans-unit>
-      <trans-unit id="reloadValuesFromProjectButtonTitle">
-        <source xml:lang="en">Reload values from project</source>
-        <target state="translated">從專案重新載入值</target>
-      </trans-unit>
-      <trans-unit id="profile">
-        <source xml:lang="en">Profile</source>
-        <target state="translated">設定檔</target>
-      </trans-unit>
-      <trans-unit id="selectConnection">
-        <source xml:lang="en">Select connection</source>
-        <target state="translated">選取連線</target>
-      </trans-unit>
-      <trans-unit id="server">
-        <source xml:lang="en">Server</source>
-        <target state="translated">伺服器​</target>
-      </trans-unit>
-      <trans-unit id="default">
-        <source xml:lang="en">default</source>
-        <target state="translated">預設</target>
-      </trans-unit>
-      <trans-unit id="selectProfileToUse">
-        <source xml:lang="en">Select publish profile to load</source>
-        <target state="translated">選取要載入的發行設定檔</target>
-      </trans-unit>
-      <trans-unit id="selectProfile">
-        <source xml:lang="en">Select Profile</source>
-        <target state="translated">選取設定檔</target>
-      </trans-unit>
-      <trans-unit id="dontUseProfile">
-        <source xml:lang="en">Don't use profile</source>
-        <target state="translated">不要使用設定檔</target>
-      </trans-unit>
-      <trans-unit id="browseForProfile">
-        <source xml:lang="en">Browse for profile</source>
-        <target state="translated">瀏覽設定檔</target>
+      <trans-unit id="changeTargetPlatformAction">
+        <source xml:lang="en">Change Target Platform</source>
+        <target state="translated">變更目標平台</target>
       </trans-unit>
       <trans-unit id="chooseAction">
         <source xml:lang="en">Choose action</source>
@@ -432,114 +114,105 @@
         <source xml:lang="en">Choose SQLCMD variables to modify</source>
         <target state="translated">選擇要修改的 SQLCMD 變數</target>
       </trans-unit>
-      <trans-unit id="enterNewValueForVar">
-        <source xml:lang="en">Enter new value for variable '{0}'</source>
-        <target state="translated">輸入變數 '{0}' 的新值</target>
+      <trans-unit id="cicularProjectReference">
+        <source xml:lang="en">Circular reference from project {0} to project {1}</source>
+        <target state="translated">從專案 {0} 到專案 {1} 的循環參考</target>
       </trans-unit>
-      <trans-unit id="resetAllVars">
-        <source xml:lang="en">Reset all variables</source>
-        <target state="translated">重設所有變數</target>
+      <trans-unit id="cleaningDockerImagesMessage">
+        <source xml:lang="en">Cleaning existing deployments...</source>
+        <target state="translated">正在清除現有的部署...</target>
+      </trans-unit>
+      <trans-unit id="connectingToSqlServerOnDockerMessage">
+        <source xml:lang="en">Connecting to SQL Server on Docker</source>
+        <target state="translated">在 Docker 上連接至 SQL Server</target>
+      </trans-unit>
+      <trans-unit id="connectionFailedError">
+        <source xml:lang="en">Connection failed error: '{0}'</source>
+        <target state="translated">連線失敗。錯誤: '{0}'</target>
+      </trans-unit>
+      <trans-unit id="connectionRadioButtonLabel">
+        <source xml:lang="en">Connections</source>
+        <target state="translated">連線</target>
+      </trans-unit>
+      <trans-unit id="connectionStringSetting">
+        <source xml:lang="en">Connection string setting name</source>
+        <target state="translated">連接字串設定名稱</target>
+      </trans-unit>
+      <trans-unit id="connectionStringSettingPlaceholder">
+        <source xml:lang="en">Connection string setting specified in "local.settings.json"</source>
+        <target state="translated">在 "local.settings.json" 中指定的連接字串設定</target>
       </trans-unit>
       <trans-unit id="createNew">
-        <source xml:lang="en">&lt;Create New&gt;</source>
-        <target state="translated">&lt;建立新項目&gt;</target>
+        <source xml:lang="en">Create New</source>
+        <target state="translated">新建立</target>
       </trans-unit>
-      <trans-unit id="enterNewDatabaseName">
-        <source xml:lang="en">Enter new database name</source>
-        <target state="translated">輸入新的資料庫名稱</target>
+      <trans-unit id="createProjectDialogOkButtonText">
+        <source xml:lang="en">Create</source>
+        <target state="translated">建立</target>
       </trans-unit>
-      <trans-unit id="newDatabaseTitle">
-        <source xml:lang="en">{0} (new)</source>
-        <note>Name is the name of a new database being created</note>
-        <target state="translated">{0} (新增)</target>
+      <trans-unit id="createProjectFromDatabaseDialogName">
+        <source xml:lang="en">Create project from database</source>
+        <target state="translated">從資料庫建立專案</target>
       </trans-unit>
-      <trans-unit id="selectDatabase">
-        <source xml:lang="en">Select database</source>
-        <target state="translated">選取資料庫</target>
+      <trans-unit id="createProjectSettings">
+        <source xml:lang="en">Settings</source>
+        <target state="translated">設定</target>
       </trans-unit>
-      <trans-unit id="done">
-        <source xml:lang="en">Done</source>
-        <target state="translated">完成</target>
+      <trans-unit id="creatingDeploymentSettingsMessage">
+        <source xml:lang="en">Creating deployment settings ...</source>
+        <target state="translated">正在建立部署設定...</target>
       </trans-unit>
-      <trans-unit id="nameMustNotBeEmpty">
-        <source xml:lang="en">Name must not be empty</source>
-        <target state="translated">名稱不得為空白</target>
+      <trans-unit id="currentTargetPlatform">
+        <source xml:lang="en">Target platform of the project {0} is now {1}</source>
+        <target state="translated">專案 {0} 的目標平台現在已{1}</target>
       </trans-unit>
-      <trans-unit id="addDatabaseReferencedialogName">
-        <source xml:lang="en">Add database reference</source>
-        <target state="translated">新增資料庫參考</target>
+      <trans-unit id="dacpacFileLocationRequired">
+        <source xml:lang="en">Dacpac file location is required for adding a reference to a database</source>
+        <target state="translated">需要 Dacpac 檔案位置才能將參考新增到資料庫</target>
       </trans-unit>
-      <trans-unit id="addDatabaseReferenceOkButtonText">
-        <source xml:lang="en">Add reference</source>
-        <target state="translated">新增參考</target>
+      <trans-unit id="dacpacFiles">
+        <source xml:lang="en">dacpac Files</source>
+        <target state="translated">dacpac 檔案</target>
       </trans-unit>
-      <trans-unit id="referenceRadioButtonsGroupTitle">
-        <source xml:lang="en">Type</source>
-        <target state="translated">類型</target>
-      </trans-unit>
-      <trans-unit id="projectRadioButtonTitle">
-        <source xml:lang="en">Project</source>
-        <target state="translated">專案</target>
-      </trans-unit>
-      <trans-unit id="systemDatabaseRadioButtonTitle">
-        <source xml:lang="en">System database</source>
-        <target state="translated">系統資料庫</target>
+      <trans-unit id="dacpacNotOnSameDrive">
+        <source xml:lang="en">Dacpac references need to be located on the same drive as the project file. The project file is located at {0}</source>
+        <target state="translated">Dacpac 參考必須位於與專案檔相同的磁碟機上。專案檔位於 {0}</target>
       </trans-unit>
       <trans-unit id="dacpacText">
         <source xml:lang="en">Data-tier application (.dacpac)</source>
         <target state="translated">資料層應用程式 (.dacpac)</target>
       </trans-unit>
-      <trans-unit id="dacpacPlaceholder">
-        <source xml:lang="en">Select .dacpac</source>
-        <target state="translated">選取 .dacpac</target>
+      <trans-unit id="dataSource">
+        <source xml:lang="en">Data Source</source>
+        <target state="translated">資料來源</target>
       </trans-unit>
-      <trans-unit id="loadDacpacButton">
-        <source xml:lang="en">Select .dacpac</source>
-        <target state="translated">選取 .dacpac</target>
+      <trans-unit id="dataSourceDropdownTitle">
+        <source xml:lang="en">Data source</source>
+        <target state="translated">資料來源</target>
       </trans-unit>
-      <trans-unit id="locationDropdown">
-        <source xml:lang="en">Location</source>
-        <target state="translated">位置</target>
+      <trans-unit id="dataSourceRadioButtonLabel">
+        <source xml:lang="en">Data sources</source>
+        <target state="translated">資料來源</target>
       </trans-unit>
-      <trans-unit id="sameDatabase">
-        <source xml:lang="en">Same database</source>
-        <target state="translated">相同資料庫</target>
+      <trans-unit id="dataSourcesNodeName">
+        <source xml:lang="en">Data Sources</source>
+        <target state="translated">資料來源</target>
       </trans-unit>
-      <trans-unit id="differentDbSameServer">
-        <source xml:lang="en">Different database, same server</source>
-        <target state="translated">不同資料庫，相同伺服器</target>
-      </trans-unit>
-      <trans-unit id="differentDbDifferentServer">
-        <source xml:lang="en">Different database, different server</source>
-        <target state="translated">不同資料庫，不同伺服器</target>
+      <trans-unit id="databaseLocation">
+        <source xml:lang="en">Database location is required for adding a reference to a database</source>
+        <target state="translated">需要資料庫位置才能將參考新增到資料庫</target>
       </trans-unit>
       <trans-unit id="databaseName">
         <source xml:lang="en">Database name</source>
         <target state="translated">資料庫名稱</target>
       </trans-unit>
-      <trans-unit id="databaseVariable">
-        <source xml:lang="en">Database variable</source>
-        <target state="translated">資料庫變數</target>
+      <trans-unit id="databaseNameLabel">
+        <source xml:lang="en">Database</source>
+        <target state="translated">資料庫</target>
       </trans-unit>
-      <trans-unit id="serverName">
-        <source xml:lang="en">Server name</source>
-        <target state="translated">伺服器名稱</target>
-      </trans-unit>
-      <trans-unit id="serverVariable">
-        <source xml:lang="en">Server variable</source>
-        <target state="translated">伺服器變數</target>
-      </trans-unit>
-      <trans-unit id="suppressMissingDependenciesErrors">
-        <source xml:lang="en">Suppress errors caused by unresolved references in the referenced project</source>
-        <target state="translated">隱藏參考的專案中未解析參考造成的錯誤</target>
-      </trans-unit>
-      <trans-unit id="exampleUsage">
-        <source xml:lang="en">Example Usage</source>
-        <target state="translated">使用方式範例</target>
-      </trans-unit>
-      <trans-unit id="enterSystemDbName">
-        <source xml:lang="en">Enter a database name for this system database</source>
-        <target state="translated">輸入此系統資料庫的資料庫名稱</target>
+      <trans-unit id="databaseNameRequired">
+        <source xml:lang="en">Database name is required for adding a reference to a different database</source>
+        <target state="translated">必須有資料庫參考類型才能新增資料庫的參考</target>
       </trans-unit>
       <trans-unit id="databaseNameRequiredVariableOptional">
         <source xml:lang="en">A database name is required. The database variable is optional.</source>
@@ -553,317 +226,189 @@
         <source xml:lang="en">Database project</source>
         <target state="translated">資料庫專案</target>
       </trans-unit>
-      <trans-unit id="dacpacNotOnSameDrive">
-        <source xml:lang="en">Dacpac references need to be located on the same drive as the project file. The project file is located at {0}</source>
-        <target state="translated">Dacpac 參考必須位於與專案檔相同的磁碟機上。專案檔位於 {0}</target>
-      </trans-unit>
-      <trans-unit id="createProjectFromDatabaseDialogName">
-        <source xml:lang="en">Create project from database</source>
-        <target state="translated">從資料庫建立專案</target>
-      </trans-unit>
-      <trans-unit id="createProjectDialogOkButtonText">
-        <source xml:lang="en">Create</source>
-        <target state="translated">建立</target>
-      </trans-unit>
-      <trans-unit id="sourceDatabase">
-        <source xml:lang="en">Source database</source>
-        <target state="translated">來源資料庫</target>
-      </trans-unit>
-      <trans-unit id="targetProject">
-        <source xml:lang="en">Target project</source>
-        <target state="translated">目標專案</target>
-      </trans-unit>
-      <trans-unit id="createProjectSettings">
-        <source xml:lang="en">Settings</source>
-        <target state="translated">設定</target>
-      </trans-unit>
-      <trans-unit id="projectNameLabel">
-        <source xml:lang="en">Name</source>
-        <target state="translated">名稱</target>
-      </trans-unit>
-      <trans-unit id="projectNamePlaceholderText">
-        <source xml:lang="en">Enter project name</source>
-        <target state="translated">輸入專案名稱</target>
-      </trans-unit>
-      <trans-unit id="projectLocationLabel">
-        <source xml:lang="en">Location</source>
-        <target state="translated">位置</target>
-      </trans-unit>
-      <trans-unit id="projectLocationPlaceholderText">
-        <source xml:lang="en">Select location to create project</source>
-        <target state="translated">選取要建立專案的位置</target>
-      </trans-unit>
-      <trans-unit id="browseButtonText">
-        <source xml:lang="en">Browse folder</source>
-        <target state="translated">瀏覽資料夾</target>
-      </trans-unit>
-      <trans-unit id="selectFolderStructure">
-        <source xml:lang="en">Select folder structure</source>
-        <target state="translated">選取資料夾結構</target>
-      </trans-unit>
-      <trans-unit id="folderStructureLabel">
-        <source xml:lang="en">Folder structure</source>
-        <target state="translated">資料夾結構</target>
-      </trans-unit>
-      <trans-unit id="browseEllipsis">
-        <source xml:lang="en">Browse...</source>
-        <target state="translated">瀏覽...</target>
-      </trans-unit>
-      <trans-unit id="selectProjectLocation">
-        <source xml:lang="en">Select project location</source>
-        <target state="translated">選取專案位置</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.projectParentDirectoryNotExistError">
-        <source xml:lang="en">The selected project location '{0}' does not exist or is not a directory.</source>
-        <target state="translated">選取的專案位置 '{0}' 不存在或不是目錄。</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.projectDirectoryAlreadyExistError">
-        <source xml:lang="en">There is already a directory named '{0}' in the selected location: '{1}'.</source>
-        <target state="translated">選取的位置中已有名為 '{0}' 的目錄: '{1}'。</target>
-      </trans-unit>
-      <trans-unit id="multipleSqlProjFilesSelected">
-        <source xml:lang="en">Multiple .sqlproj files selected; please select only one.</source>
-        <target state="translated">選取了多個 .sqlproj 檔案；請只選取一個。</target>
-      </trans-unit>
-      <trans-unit id="noSqlProjFilesSelected">
-        <source xml:lang="en">No .sqlproj file selected; please select one.</source>
-        <target state="translated">未選取任何 .sqlproj 檔案；請選取一個。</target>
-      </trans-unit>
-      <trans-unit id="noDataSourcesFile">
-        <source xml:lang="en">No {0} found</source>
-        <target state="translated">找不到 {0}</target>
-      </trans-unit>
-      <trans-unit id="missingVersion">
-        <source xml:lang="en">Missing 'version' entry in {0}</source>
-        <target state="translated">遺漏了 {0} 的 'version' 項目</target>
-      </trans-unit>
-      <trans-unit id="unrecognizedDataSourcesVersion">
-        <source xml:lang="en">Unrecognized version: </source>
-        <target state="translated">無法辨識的版本:</target>
-      </trans-unit>
-      <trans-unit id="unknownDataSourceType">
-        <source xml:lang="en">Unknown data source type: </source>
-        <target state="translated">不明的資料來源類型:</target>
-      </trans-unit>
-      <trans-unit id="invalidSqlConnectionString">
-        <source xml:lang="en">Invalid SQL connection string</source>
-        <target state="translated">不正確的 SQL 連接字串</target>
-      </trans-unit>
-      <trans-unit id="extractTargetRequired">
-        <source xml:lang="en">Target information for extract is required to create database project.</source>
-        <target state="translated">需要供解壓縮的目標資訊才能建立資料庫專案。</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareNotInstalled">
-        <source xml:lang="en">Schema compare extension installation is required to run schema compare</source>
-        <target state="translated">需要安裝結構描述比較延伸模組，才能執行結構描述比較</target>
-      </trans-unit>
-      <trans-unit id="buildFailedCannotStartSchemaCompare">
-        <source xml:lang="en">Schema compare could not start because build failed</source>
-        <target state="translated">因為組建失敗，所以無法啟動結構描述比較</target>
-      </trans-unit>
-      <trans-unit id="updateProjectForRoundTrip">
-        <source xml:lang="en">To build this project, Azure Data Studio needs to update targets, references, and system database references. If the project is created in SSDT, it will continue to work in both tools. Do you want Azure Data Studio to update the project?</source>
-        <target state="translated">若要組建這個專案，Azure Data Studio 需要更新目標、參考和系統資料庫參考。如果專案是在 SSDT 中建立，則會繼續在兩個工具中運作。是否要讓 Azure Data Studio 更新專案?</target>
-      </trans-unit>
-      <trans-unit id="updateProjectDatabaseReferencesForRoundTrip">
-        <source xml:lang="en">To build this project, Azure Data Studio needs to update system database references. If the project is created in SSDT, it will continue to work in both tools. Do you want Azure Data Studio to update the project?</source>
-        <target state="translated">若要組建這個專案，Azure Data Studio 需要更新系統資料庫參考。如果專案是在 SSDT 中建立，則會繼續在兩個工具中運作。是否要讓 Azure Data Studio 更新專案?</target>
+      <trans-unit id="databaseReferenceAlreadyExists">
+        <source xml:lang="en">A reference to this database already exists in this project</source>
+        <target state="translated">此專案中已經有這個資料庫的參考。</target>
       </trans-unit>
       <trans-unit id="databaseReferenceTypeRequired">
         <source xml:lang="en">Database reference type is required for adding a reference to a database</source>
         <target state="translated">必須有資料庫參考類型才能新增資料庫的參考</target>
       </trans-unit>
-      <trans-unit id="systemDatabaseReferenceRequired">
-        <source xml:lang="en">System database selection is required for adding a reference to a system database</source>
-        <target state="translated">必須有系統資料庫選取項目，才可將參考加入系統資料庫</target>
-      </trans-unit>
-      <trans-unit id="dacpacFileLocationRequired">
-        <source xml:lang="en">Dacpac file location is required for adding a reference to a database</source>
-        <target state="translated">需要 Dacpac 檔案位置才能將參考新增到資料庫</target>
-      </trans-unit>
-      <trans-unit id="databaseLocation">
-        <source xml:lang="en">Database location is required for adding a reference to a database</source>
-        <target state="translated">需要資料庫位置才能將參考新增到資料庫</target>
-      </trans-unit>
-      <trans-unit id="databaseNameRequired">
-        <source xml:lang="en">Database name is required for adding a reference to a different database</source>
-        <target state="translated">必須有資料庫參考類型才能新增資料庫的參考</target>
-      </trans-unit>
-      <trans-unit id="invalidDataSchemaProvider">
-        <source xml:lang="en">Invalid DSP in .sqlproj file</source>
-        <target state="translated">.sqlproj 檔中的 DSP 無效</target>
-      </trans-unit>
-      <trans-unit id="invalidDatabaseReference">
-        <source xml:lang="en">Invalid database reference in .sqlproj file</source>
-        <target state="translated">.sqlproj 檔中的資料庫參考無效</target>
+      <trans-unit id="databaseReferencesNodeName">
+        <source xml:lang="en">Database References</source>
+        <target state="translated">資料庫參考</target>
       </trans-unit>
       <trans-unit id="databaseSelectionRequired">
         <source xml:lang="en">Database selection is required to create a project from a database</source>
         <target state="translated">必須選取資料庫，才能從資料庫建立專案</target>
       </trans-unit>
-      <trans-unit id="databaseReferenceAlreadyExists">
-        <source xml:lang="en">A reference to this database already exists in this project</source>
-        <target state="translated">此專案中已經有這個資料庫的參考。</target>
+      <trans-unit id="databaseVariable">
+        <source xml:lang="en">Database variable</source>
+        <target state="translated">資料庫變數</target>
       </trans-unit>
-      <trans-unit id="outsideFolderPath">
-        <source xml:lang="en">Items with absolute path outside project folder are not supported. Please make sure the paths in the project file are relative to project folder.</source>
-        <target state="translated">不支援在專案資料夾外具有絕對路徑的專案。請確定專案檔中的路徑與專案資料夾相對。</target>
+      <trans-unit id="dataworkspace.projectDirectoryAlreadyExistError">
+        <source xml:lang="en">There is already a directory named '{0}' in the selected location: '{1}'.</source>
+        <target state="translated">選取的位置中已有名為 '{0}' 的目錄: '{1}'。</target>
       </trans-unit>
-      <trans-unit id="parentTreeItemUnknown">
-        <source xml:lang="en">Cannot access parent of provided tree item</source>
-        <target state="translated">無法存取提供之樹狀項目的父代</target>
+      <trans-unit id="dataworkspace.projectParentDirectoryNotExistError">
+        <source xml:lang="en">The selected project location '{0}' does not exist or is not a directory.</source>
+        <target state="translated">選取的專案位置 '{0}' 不存在或不是目錄。</target>
       </trans-unit>
-      <trans-unit id="prePostDeployCount">
-        <source xml:lang="en">To successfully build, update the project to have one pre-deployment script and/or one post-deployment script</source>
-        <target state="translated">若要成功組建，請更新專案以擁有一個預先部署指令碼和/或一個部署後指令碼</target>
+      <trans-unit id="default">
+        <source xml:lang="en">default</source>
+        <target state="translated">預設</target>
       </trans-unit>
-      <trans-unit id="invalidProjectReload">
-        <source xml:lang="en">Cannot access provided database project. Only valid, open database projects can be reloaded.</source>
-        <target state="translated">無法存取提供的資料庫專案。只能重新載入有效、開啟的資料庫專案。</target>
-      </trans-unit>
-      <trans-unit id="externalStreamingJobValidationPassed">
-        <source xml:lang="en">Validation of external streaming job passed.</source>
-        <target state="translated">外部資料流作業的驗證已通過。</target>
-      </trans-unit>
-      <trans-unit id="projectAlreadyOpened">
-        <source xml:lang="en">Project '{0}' is already opened.</source>
-        <target state="translated">專案 '{0}' 已經開啟。</target>
-      </trans-unit>
-      <trans-unit id="projectAlreadyExists">
-        <source xml:lang="en">A project named {0} already exists in {1}.</source>
-        <target state="translated">名為 {0} 的專案已存在於 {1}。</target>
-      </trans-unit>
-      <trans-unit id="noFileExist">
-        <source xml:lang="en">File {0} doesn't exist</source>
-        <target state="translated">檔案 {0} 不存在</target>
-      </trans-unit>
-      <trans-unit id="fileOrFolderDoesNotExist">
-        <source xml:lang="en">File or directory '{0}' doesn't exist</source>
-        <target state="translated">檔案或目錄 '{0}' 不存在</target>
-      </trans-unit>
-      <trans-unit id="cannotResolvePath">
-        <source xml:lang="en">Cannot resolve path {0}</source>
-        <target state="translated">無法解析路徑 {0}</target>
-      </trans-unit>
-      <trans-unit id="fileAlreadyExists">
-        <source xml:lang="en">A file with the name '{0}' already exists on disk at this location. Please choose another name.</source>
-        <target state="translated">磁碟的這個位置已經有名稱為 '{0}' 的檔案存在。請選擇其他名稱。</target>
-      </trans-unit>
-      <trans-unit id="folderAlreadyExists">
-        <source xml:lang="en">A folder with the name '{0}' already exists on disk at this location. Please choose another name.</source>
-        <target state="translated">磁碟的這個位置已經有名稱為 '{0}' 的資料夾存在。請選擇其他名稱。</target>
-      </trans-unit>
-      <trans-unit id="folderAlreadyExistsChooseNewLocation">
-        <source xml:lang="en">A folder with the name '{0}' already exists on disk at this location. Please choose another location.</source>
-        <target state="translated">磁碟的這個位置已經有名稱為 '{0}' 的資料夾存在。請選擇其他位置。</target>
-      </trans-unit>
-      <trans-unit id="invalidInput">
-        <source xml:lang="en">Invalid input: {0}</source>
-        <target state="translated">輸入無效: {0}</target>
-      </trans-unit>
-      <trans-unit id="invalidPropertyValue">
-        <source xml:lang="en">Invalid value specified for the property '{0}' in .sqlproj file</source>
-        <target state="translated">在 .sqlproj 中為屬性 '{0}' 指定的值無效</target>
-      </trans-unit>
-      <trans-unit id="unableToCreatePublishConnection">
-        <source xml:lang="en">Unable to construct connection: {0}</source>
-        <target state="translated">無法建立連線: {0}</target>
-      </trans-unit>
-      <trans-unit id="cicularProjectReference">
-        <source xml:lang="en">Circular reference from project {0} to project {1}</source>
-        <target state="translated">從專案 {0} 到專案 {1} 的循環參考</target>
-      </trans-unit>
-      <trans-unit id="mssqlNotFound">
-        <source xml:lang="en">Could not get SQL Tools Service install location at {0}</source>
-        <target state="translated">無法取得 SQL Tools Service 安裝位置於 {0}</target>
-      </trans-unit>
-      <trans-unit id="projBuildFailed">
-        <source xml:lang="en">Build failed. Check output pane for more details. {0}</source>
-        <target state="translated">組建失敗。如需詳細資料，請查看輸出窗格。{0}</target>
-      </trans-unit>
-      <trans-unit id="unexpectedProjectContext">
-        <source xml:lang="en">Unable to establish project context.  Command invoked from unexpected location: {0}</source>
-        <target state="translated">無法建立專案內容。從未預期的位置叫用的命令: {0}</target>
-      </trans-unit>
-      <trans-unit id="unableToPerformAction">
-        <source xml:lang="en">Unable to locate '{0}' target: '{1}'</source>
-        <target state="translated">找不到 '{0}' 目標: '{1}'</target>
-      </trans-unit>
-      <trans-unit id="unableToFindFile">
-        <source xml:lang="en">Unable to find {1} with path '{0}'</source>
-        <target state="translated">找不到路徑為 '{0}' 的 {1}</target>
-      </trans-unit>
-      <trans-unit id="deployScriptExists">
-        <source xml:lang="en">A {0} script already exists. The new script will not be included in build.</source>
-        <target state="translated">{0} 指令碼已存在。新指令碼不會包含在組建中。</target>
-      </trans-unit>
-      <trans-unit id="notValidVariableName">
-        <source xml:lang="en">The variable name '{0}' is not valid.</source>
-        <target state="translated">變數名稱 '{0}' 無效。</target>
-      </trans-unit>
-      <trans-unit id="cantAddCircularProjectReference">
-        <source xml:lang="en">A reference to project '{0}' cannot be added. Adding this project as a reference would cause a circular dependency</source>
-        <target state="translated">無法新增專案 '{0}' 的參考。以參考方式新增此專案將導致循環相依性</target>
-      </trans-unit>
-      <trans-unit id="unableToFindSqlCmdVariable">
-        <source xml:lang="en">Unable to find SQLCMD variable '{0}'</source>
-        <target state="translated">找不到 SQLCMD 變數 '{0}'</target>
-      </trans-unit>
-      <trans-unit id="unableToFindReference">
-        <source xml:lang="en">Unable to find database reference {0}</source>
-        <target state="translated">找不到資料庫參考 {0}</target>
-      </trans-unit>
-      <trans-unit id="invalidGuid">
-        <source xml:lang="en">Specified GUID is invalid: {0}</source>
-        <target state="translated">指定的 GUID 無效: {0}</target>
-      </trans-unit>
-      <trans-unit id="invalidTargetPlatform">
-        <source xml:lang="en">Invalid target platform: {0}. Supported target platforms: {1}</source>
-        <target state="translated">目標平台無效: {0}。支援的目標平台: {1}</target>
+      <trans-unit id="defaultProjectNameStarter">
+        <source xml:lang="en">DatabaseProject</source>
+        <target state="translated">DatabaseProject</target>
       </trans-unit>
       <trans-unit id="deleteAction">
         <source xml:lang="en">Delete</source>
         <target state="translated">刪除</target>
       </trans-unit>
+      <trans-unit id="deleteConfirmation">
+        <source xml:lang="en">Are you sure you want to delete {0}?</source>
+        <target state="translated">確定要刪除 {0} 嗎?</target>
+      </trans-unit>
+      <trans-unit id="deleteConfirmationContents">
+        <source xml:lang="en">Are you sure you want to delete {0} and all of its contents?</source>
+        <target state="translated">您確定要刪除 {0} 及其所有內容嗎?</target>
+      </trans-unit>
+      <trans-unit id="deleteReferenceConfirmation">
+        <source xml:lang="en">Are you sure you want to delete the reference to {0}?</source>
+        <target state="translated">確定要刪除 {0} 的參考嗎?</target>
+      </trans-unit>
+      <trans-unit id="deployAppSettingUpdateFailed">
+        <source xml:lang="en">Failed to update app setting '{0}'</source>
+        <target state="translated">無法更新應用程式設定 '{0}'</target>
+      </trans-unit>
+      <trans-unit id="deployAppSettingUpdating">
+        <source xml:lang="en">Updating app setting: '{0}'</source>
+        <target state="translated">正在更新應用程式設定: '{0}'</target>
+      </trans-unit>
+      <trans-unit id="deployDbTaskName">
+        <source xml:lang="en">Deploying SQL Db Project Locally</source>
+        <target state="translated">在本機部署 SQL 資料庫專案</target>
+      </trans-unit>
+      <trans-unit id="deployProjectFailed">
+        <source xml:lang="en">Failed to deploy project. Check output pane for more details. {0}</source>
+        <target state="translated">無法部署專案。如需詳細資料，請查看輸出窗格。{0}</target>
+      </trans-unit>
+      <trans-unit id="deployProjectFailedMessage">
+        <source xml:lang="en">Failed to open a connection to the deployed database'</source>
+        <target state="translated">無法開啟與已部署資料庫的連線</target>
+      </trans-unit>
+      <trans-unit id="deployProjectSucceed">
+        <source xml:lang="en">Database project deployed successfully</source>
+        <target state="translated">已成功部署資料庫專案</target>
+      </trans-unit>
+      <trans-unit id="deployScriptExists">
+        <source xml:lang="en">A {0} script already exists. The new script will not be included in build.</source>
+        <target state="translated">{0} 指令碼已存在。新指令碼不會包含在組建中。</target>
+      </trans-unit>
+      <trans-unit id="deployToDockerContainer">
+        <source xml:lang="en">Deploy to docker container</source>
+        <target state="translated">部署至 Docker 容器</target>
+      </trans-unit>
+      <trans-unit id="deployToExistingServer">
+        <source xml:lang="en">Deploy to existing server</source>
+        <target state="translated">部署到現有的伺服器</target>
+      </trans-unit>
+      <trans-unit id="differentDbDifferentServer">
+        <source xml:lang="en">Different database, different server</source>
+        <target state="translated">不同資料庫，不同伺服器</target>
+      </trans-unit>
+      <trans-unit id="differentDbSameServer">
+        <source xml:lang="en">Different database, same server</source>
+        <target state="translated">不同資料庫，相同伺服器</target>
+      </trans-unit>
+      <trans-unit id="dockerContainerCreatedMessage">
+        <source xml:lang="en">Docker created id: '{0}'</source>
+        <target state="translated">Docker 建立的識別碼: '{0}'</target>
+      </trans-unit>
+      <trans-unit id="dockerContainerFailedToRunErrorMessage">
+        <source xml:lang="en">Failed to run the docker container</source>
+        <target state="translated">無法執行 Docker 容器</target>
+      </trans-unit>
+      <trans-unit id="dockerContainerNotRunningErrorMessage">
+        <source xml:lang="en">Docker container is not running</source>
+        <target state="translated">Docker 容器未執行</target>
+      </trans-unit>
+      <trans-unit id="dockerLogMessage">
+        <source xml:lang="en">Docker logs: '{0}'</source>
+        <target state="translated">Docker 記錄檔: '{0}'</target>
+      </trans-unit>
+      <trans-unit id="done">
+        <source xml:lang="en">Done</source>
+        <target state="translated">完成</target>
+      </trans-unit>
+      <trans-unit id="dontUseProfile">
+        <source xml:lang="en">Don't use profile</source>
+        <target state="translated">不要使用設定檔</target>
+      </trans-unit>
+      <trans-unit id="edgeProjectTypeDescription">
+        <source xml:lang="en">Start with the core pieces to develop and publish schemas for SQL Edge</source>
+        <target state="translated">從核心元件開始開發及發佈 SQL Edge 的結構描述</target>
+      </trans-unit>
+      <trans-unit id="edgeProjectTypeDisplayName">
+        <source xml:lang="en">SQL Edge</source>
+        <target state="translated">SQL Edge</target>
+      </trans-unit>
+      <trans-unit id="emptyProjectTypeDescription">
+        <source xml:lang="en">Develop and publish schemas for SQL databases starting from an empty project</source>
+        <target state="translated">為從空白專案開始的 SQL 資料庫開發及發佈結構描述</target>
+      </trans-unit>
+      <trans-unit id="emptyProjectTypeDisplayName">
+        <source xml:lang="en">SQL Database</source>
+        <target state="translated">SQL Database</target>
+      </trans-unit>
+      <trans-unit id="enterConnStringTemplateDescription">
+        <source xml:lang="en">Enter a template for SQL connection string</source>
+        <target state="translated">輸入 SQL 連接字串的範本</target>
+      </trans-unit>
+      <trans-unit id="enterConnectionStringEnvName">
+        <source xml:lang="en">Enter connection string environment variable name</source>
+        <target state="translated">輸入連接字串環境變數名稱</target>
+      </trans-unit>
+      <trans-unit id="enterConnectionStringEnvNameDescription">
+        <source xml:lang="en">Enter environment variable for SQL connection string</source>
+        <target state="translated">輸入 SQL 連接字串的環境變數</target>
+      </trans-unit>
+      <trans-unit id="enterConnectionStringTemplate">
+        <source xml:lang="en">Enter connection string template</source>
+        <target state="translated">輸入連接字串範本</target>
+      </trans-unit>
+      <trans-unit id="enterNewDatabaseName">
+        <source xml:lang="en">Enter new database name</source>
+        <target state="translated">輸入新的資料庫名稱</target>
+      </trans-unit>
+      <trans-unit id="enterNewValueForVar">
+        <source xml:lang="en">Enter new value for variable '{0}'</source>
+        <target state="translated">輸入變數 '{0}' 的新值</target>
+      </trans-unit>
+      <trans-unit id="enterPassword">
+        <source xml:lang="en">Enter password or press enter to use the generated password</source>
+        <target state="translated">輸入密碼或按下 Enter 以使用產生的密碼</target>
+      </trans-unit>
+      <trans-unit id="enterPortNumber">
+        <source xml:lang="en">Enter port number or press enter to use the default value</source>
+        <target state="translated">輸入連接埠號碼或按 Enter 以使用預設值</target>
+      </trans-unit>
+      <trans-unit id="enterSystemDbName">
+        <source xml:lang="en">Enter a database name for this system database</source>
+        <target state="translated">輸入此系統資料庫的資料庫名稱</target>
+      </trans-unit>
+      <trans-unit id="errorFindingBuildFilesLocation">
+        <source xml:lang="en">Error finding build files location: {0}</source>
+        <target state="translated">尋找組建檔案位置時發生錯誤: {0}</target>
+      </trans-unit>
+      <trans-unit id="exampleUsage">
+        <source xml:lang="en">Example Usage</source>
+        <target state="translated">使用方式範例</target>
+      </trans-unit>
       <trans-unit id="excludeAction">
         <source xml:lang="en">Exclude</source>
         <target state="translated">排除</target>
-      </trans-unit>
-      <trans-unit id="fileObject">
-        <source xml:lang="en">file</source>
-        <target state="translated">檔案</target>
-      </trans-unit>
-      <trans-unit id="folderObject">
-        <source xml:lang="en">folder</source>
-        <target state="translated">資料夾</target>
-      </trans-unit>
-      <trans-unit id="folderFriendlyName">
-        <source xml:lang="en">Folder</source>
-        <target state="translated">資料夾</target>
-      </trans-unit>
-      <trans-unit id="scriptFriendlyName">
-        <source xml:lang="en">Script</source>
-        <target state="translated">指令碼</target>
-      </trans-unit>
-      <trans-unit id="tableFriendlyName">
-        <source xml:lang="en">Table</source>
-        <target state="translated">資料表</target>
-      </trans-unit>
-      <trans-unit id="viewFriendlyName">
-        <source xml:lang="en">View</source>
-        <target state="translated">檢視</target>
-      </trans-unit>
-      <trans-unit id="storedProcedureFriendlyName">
-        <source xml:lang="en">Stored Procedure</source>
-        <target state="translated">預存程序</target>
-      </trans-unit>
-      <trans-unit id="dataSource">
-        <source xml:lang="en">Data Source</source>
-        <target state="translated">資料來源</target>
-      </trans-unit>
-      <trans-unit id="fileFormat">
-        <source xml:lang="en">File Format</source>
-        <target state="translated">檔案格式</target>
       </trans-unit>
       <trans-unit id="externalStream">
         <source xml:lang="en">External Stream</source>
@@ -873,53 +418,437 @@
         <source xml:lang="en">External Streaming Job</source>
         <target state="translated">外部資料流作業</target>
       </trans-unit>
-      <trans-unit id="preDeployScriptFriendlyName">
-        <source xml:lang="en">Script.PreDeployment</source>
-        <target state="translated">Script.PreDeployment</target>
+      <trans-unit id="externalStreamingJobValidationPassed">
+        <source xml:lang="en">Validation of external streaming job passed.</source>
+        <target state="translated">外部資料流作業的驗證已通過。</target>
       </trans-unit>
-      <trans-unit id="postDeployScriptFriendlyName">
-        <source xml:lang="en">Script.PostDeployment</source>
-        <target state="translated">Script.PostDeployment</target>
+      <trans-unit id="extractTargetRequired">
+        <source xml:lang="en">Target information for extract is required to create database project.</source>
+        <target state="translated">需要供解壓縮的目標資訊才能建立資料庫專案。</target>
       </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.NetCoreInstallationConfirmation">
-        <source xml:lang="en">The .NET Core SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK location in settings if already installed.</source>
-        <target state="new">The .NET Core SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK location in settings if already installed.</target>
+      <trans-unit id="file">
+        <source xml:lang="en">File</source>
+        <target state="translated">檔案</target>
       </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.NetCoreSupportedVersionInstallationConfirmation">
-        <source xml:lang="en">Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK supported version location in settings if already installed.</source>
-        <target state="new">Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK supported version location in settings if already installed.</target>
+      <trans-unit id="fileAlreadyExists">
+        <source xml:lang="en">A file with the name '{0}' already exists on disk at this location. Please choose another name.</source>
+        <target state="translated">磁碟的這個位置已經有名稱為 '{0}' 的檔案存在。請選擇其他名稱。</target>
       </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.UpdateNetCoreLocation">
-        <source xml:lang="en">Update Location</source>
-        <target state="new">Update Location</target>
+      <trans-unit id="fileFormat">
+        <source xml:lang="en">File Format</source>
+        <target state="translated">檔案格式</target>
       </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.InstallNetCore">
-        <source xml:lang="en">Install</source>
-        <target state="new">Install</target>
+      <trans-unit id="fileObject">
+        <source xml:lang="en">file</source>
+        <target state="translated">檔案</target>
       </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.doNotAskAgain">
-        <source xml:lang="en">Don't Ask Again</source>
-        <target state="new">Don't Ask Again</target>
+      <trans-unit id="fileOrFolderDoesNotExist">
+        <source xml:lang="en">File or directory '{0}' doesn't exist</source>
+        <target state="translated">檔案或目錄 '{0}' 不存在</target>
       </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.outputChannel">
-        <source xml:lang="en">Database Projects</source>
-        <target state="new">Database Projects</target>
+      <trans-unit id="flat">
+        <source xml:lang="en">Flat</source>
+        <target state="translated">一般</target>
+      </trans-unit>
+      <trans-unit id="folderAlreadyExists">
+        <source xml:lang="en">A folder with the name '{0}' already exists on disk at this location. Please choose another name.</source>
+        <target state="translated">磁碟的這個位置已經有名稱為 '{0}' 的資料夾存在。請選擇其他名稱。</target>
+      </trans-unit>
+      <trans-unit id="folderAlreadyExistsChooseNewLocation">
+        <source xml:lang="en">A folder with the name '{0}' already exists on disk at this location. Please choose another location.</source>
+        <target state="translated">磁碟的這個位置已經有名稱為 '{0}' 的資料夾存在。請選擇其他位置。</target>
+      </trans-unit>
+      <trans-unit id="folderFriendlyName">
+        <source xml:lang="en">Folder</source>
+        <target state="translated">資料夾</target>
+      </trans-unit>
+      <trans-unit id="folderObject">
+        <source xml:lang="en">folder</source>
+        <target state="translated">資料夾</target>
+      </trans-unit>
+      <trans-unit id="folderStructureLabel">
+        <source xml:lang="en">Folder structure</source>
+        <target state="translated">資料夾結構</target>
+      </trans-unit>
+      <trans-unit id="generateScriptButtonText">
+        <source xml:lang="en">Generate Script</source>
+        <target state="translated">產生指令碼</target>
+      </trans-unit>
+      <trans-unit id="hr">
+        <source xml:lang="en">hr</source>
+        <target state="translated">小時</target>
       </trans-unit>
       <trans-unit id="input">
         <source xml:lang="en">Input</source>
         <target state="translated">輸入</target>
       </trans-unit>
+      <trans-unit id="invalidDataSchemaProvider">
+        <source xml:lang="en">Invalid DSP in .sqlproj file</source>
+        <target state="translated">.sqlproj 檔中的 DSP 無效</target>
+      </trans-unit>
+      <trans-unit id="invalidDatabaseReference">
+        <source xml:lang="en">Invalid database reference in .sqlproj file</source>
+        <target state="translated">.sqlproj 檔中的資料庫參考無效</target>
+      </trans-unit>
+      <trans-unit id="invalidGuid">
+        <source xml:lang="en">Specified GUID is invalid: {0}</source>
+        <target state="translated">指定的 GUID 無效: {0}</target>
+      </trans-unit>
+      <trans-unit id="invalidInput">
+        <source xml:lang="en">Invalid input: {0}</source>
+        <target state="translated">輸入無效: {0}</target>
+      </trans-unit>
+      <trans-unit id="invalidProjectReload">
+        <source xml:lang="en">Cannot access provided database project. Only valid, open database projects can be reloaded.</source>
+        <target state="translated">無法存取提供的資料庫專案。只能重新載入有效、開啟的資料庫專案。</target>
+      </trans-unit>
+      <trans-unit id="invalidPropertyValue">
+        <source xml:lang="en">Invalid value specified for the property '{0}' in .sqlproj file</source>
+        <target state="translated">在 .sqlproj 中為屬性 '{0}' 指定的值無效</target>
+      </trans-unit>
+      <trans-unit id="invalidSqlConnectionString">
+        <source xml:lang="en">Invalid SQL connection string</source>
+        <target state="translated">不正確的 SQL 連接字串</target>
+      </trans-unit>
+      <trans-unit id="invalidTargetPlatform">
+        <source xml:lang="en">Invalid target platform: {0}. Supported target platforms: {1}</source>
+        <target state="translated">目標平台無效: {0}。支援的目標平台: {1}</target>
+      </trans-unit>
+      <trans-unit id="loadProfilePlaceholderText">
+        <source xml:lang="en">Load profile...</source>
+        <target state="translated">負載設定檔...</target>
+      </trans-unit>
+      <trans-unit id="location">
+        <source xml:lang="en">Location</source>
+        <target state="translated">位置</target>
+      </trans-unit>
+      <trans-unit id="min">
+        <source xml:lang="en">min</source>
+        <target state="translated">分鐘</target>
+      </trans-unit>
+      <trans-unit id="missingVersion">
+        <source xml:lang="en">Missing 'version' entry in {0}</source>
+        <target state="translated">遺漏了 {0} 的 'version' 項目</target>
+      </trans-unit>
+      <trans-unit id="msec">
+        <source xml:lang="en">msec</source>
+        <target state="translated">毫秒</target>
+      </trans-unit>
+      <trans-unit id="multipleSqlProjFilesSelected">
+        <source xml:lang="en">Multiple .sqlproj files selected; please select only one.</source>
+        <target state="translated">選取了多個 .sqlproj 檔案；請只選取一個。</target>
+      </trans-unit>
+      <trans-unit id="nameMustNotBeEmpty">
+        <source xml:lang="en">Name must not be empty</source>
+        <target state="translated">名稱不得為空白</target>
+      </trans-unit>
+      <trans-unit id="new">
+        <source xml:lang="en">New</source>
+        <target state="translated">新增</target>
+      </trans-unit>
+      <trans-unit id="newObjectNamePrompt">
+        <source xml:lang="en">New {0} name:</source>
+        <target state="translated">新的 {0} 名稱:</target>
+      </trans-unit>
+      <trans-unit id="noAzureFunctionsInFile">
+        <source xml:lang="en">No Azure functions in the current active file</source>
+        <target state="translated">目前的作用中檔案中沒有任何 Azure 函式</target>
+      </trans-unit>
+      <trans-unit id="noAzureFunctionsProjectsInWorkspace">
+        <source xml:lang="en">No Azure functions projects found in the workspace</source>
+        <target state="translated">在工作區中找不到任何 Azure 函式專案</target>
+      </trans-unit>
+      <trans-unit id="noDataSourcesFile">
+        <source xml:lang="en">No {0} found</source>
+        <target state="translated">找不到 {0}</target>
+      </trans-unit>
+      <trans-unit id="noDataSourcesText">
+        <source xml:lang="en">No data sources in this project</source>
+        <target state="translated">此專案中沒有資料來源</target>
+      </trans-unit>
+      <trans-unit id="noFileExist">
+        <source xml:lang="en">File {0} doesn't exist</source>
+        <target state="translated">檔案 {0} 不存在</target>
+      </trans-unit>
+      <trans-unit id="noSqlProjFilesSelected">
+        <source xml:lang="en">No .sqlproj file selected; please select one.</source>
+        <target state="translated">未選取任何 .sqlproj 檔案；請選取一個。</target>
+      </trans-unit>
+      <trans-unit id="noString">
+        <source xml:lang="en">No</source>
+        <target state="translated">否</target>
+      </trans-unit>
+      <trans-unit id="noStringDefault">
+        <source xml:lang="en">No (default)</source>
+        <target state="translated">無 (預設值)</target>
+      </trans-unit>
+      <trans-unit id="notValidVariableName">
+        <source xml:lang="en">The variable name '{0}' is not valid.</source>
+        <target state="translated">變數名稱 '{0}' 無效。</target>
+      </trans-unit>
+      <trans-unit id="objectType">
+        <source xml:lang="en">Object Type</source>
+        <target state="translated">物件類型</target>
+      </trans-unit>
+      <trans-unit id="okString">
+        <source xml:lang="en">Ok</source>
+        <target state="translated">確定</target>
+      </trans-unit>
       <trans-unit id="output">
         <source xml:lang="en">Output</source>
         <target state="translated">輸出</target>
+      </trans-unit>
+      <trans-unit id="outsideFolderPath">
+        <source xml:lang="en">Items with absolute path outside project folder are not supported. Please make sure the paths in the project file are relative to project folder.</source>
+        <target state="translated">不支援在專案資料夾外具有絕對路徑的專案。請確定專案檔中的路徑與專案資料夾相對。</target>
+      </trans-unit>
+      <trans-unit id="parentTreeItemUnknown">
+        <source xml:lang="en">Cannot access parent of provided tree item</source>
+        <target state="translated">無法存取提供之樹狀項目的父代</target>
+      </trans-unit>
+      <trans-unit id="portMustNotBeNumber">
+        <source xml:lang="en">Port must a be number</source>
+        <target state="translated">連接埠必須是數字</target>
+      </trans-unit>
+      <trans-unit id="postDeployScriptFriendlyName">
+        <source xml:lang="en">Script.PostDeployment</source>
+        <target state="translated">Script.PostDeployment</target>
+      </trans-unit>
+      <trans-unit id="preDeployScriptFriendlyName">
+        <source xml:lang="en">Script.PreDeployment</source>
+        <target state="translated">Script.PreDeployment</target>
+      </trans-unit>
+      <trans-unit id="prePostDeployCount">
+        <source xml:lang="en">To successfully build, update the project to have one pre-deployment script and/or one post-deployment script</source>
+        <target state="translated">若要成功組建，請更新專案以擁有一個預先部署指令碼和/或一個部署後指令碼</target>
+      </trans-unit>
+      <trans-unit id="profile">
+        <source xml:lang="en">Profile</source>
+        <target state="translated">設定檔</target>
+      </trans-unit>
+      <trans-unit id="profileReadError">
+        <source xml:lang="en">Error loading the publish profile. {0}</source>
+        <target state="translated">載入發佈設定檔時發生錯誤。{0}</target>
+      </trans-unit>
+      <trans-unit id="projBuildFailed">
+        <source xml:lang="en">Build failed. Check output pane for more details. {0}</source>
+        <target state="translated">組建失敗。如需詳細資料，請查看輸出窗格。{0}</target>
+      </trans-unit>
+      <trans-unit id="projectAlreadyExists">
+        <source xml:lang="en">A project named {0} already exists in {1}.</source>
+        <target state="translated">名為 {0} 的專案已存在於 {1}。</target>
+      </trans-unit>
+      <trans-unit id="projectAlreadyOpened">
+        <source xml:lang="en">Project '{0}' is already opened.</source>
+        <target state="translated">專案 '{0}' 已經開啟。</target>
+      </trans-unit>
+      <trans-unit id="projectLocString">
+        <source xml:lang="en">Project</source>
+        <target state="translated">專案</target>
+      </trans-unit>
+      <trans-unit id="projectLocationPlaceholderText">
+        <source xml:lang="en">Select location to create project</source>
+        <target state="translated">選取要建立專案的位置</target>
+      </trans-unit>
+      <trans-unit id="projectNameLabel">
+        <source xml:lang="en">Name</source>
+        <target state="translated">名稱</target>
+      </trans-unit>
+      <trans-unit id="projectNamePlaceholderText">
+        <source xml:lang="en">Enter project name</source>
+        <target state="translated">輸入專案名稱</target>
+      </trans-unit>
+      <trans-unit id="publish">
+        <source xml:lang="en">Publish</source>
+        <target state="translated">發佈</target>
+      </trans-unit>
+      <trans-unit id="publishAction">
+        <source xml:lang="en">Publish</source>
+        <target state="translated">發佈</target>
+      </trans-unit>
+      <trans-unit id="publishDialogName">
+        <source xml:lang="en">Publish project</source>
+        <target state="translated">發佈專案</target>
+      </trans-unit>
+      <trans-unit id="publishSettingsFiles">
+        <source xml:lang="en">Publish Settings File</source>
+        <target state="translated">發佈設定檔案</target>
+      </trans-unit>
+      <trans-unit id="referenceRadioButtonsGroupTitle">
+        <source xml:lang="en">Type</source>
+        <target state="translated">類型</target>
+      </trans-unit>
+      <trans-unit id="referenceType">
+        <source xml:lang="en">Reference type</source>
+        <target state="translated">參考型別</target>
+      </trans-unit>
+      <trans-unit id="reloadProject">
+        <source xml:lang="en">Would you like to reload your database project?</source>
+        <target state="translated">要重新載入資料庫專案嗎?</target>
+      </trans-unit>
+      <trans-unit id="reloadValuesFromProjectButtonTitle">
+        <source xml:lang="en">Reload values from project</source>
+        <target state="translated">從專案重新載入值</target>
+      </trans-unit>
+      <trans-unit id="resetAllVars">
+        <source xml:lang="en">Reset all variables</source>
+        <target state="translated">重設所有變數</target>
+      </trans-unit>
+      <trans-unit id="retryFailedMessage">
+        <source xml:lang="en">Operation '{0}' failed. Re-trying... Current Result: {1}. Error: '{2}'</source>
+        <target state="translated">作業 '{0}' 失敗。正在重新嘗試... 目前的結果: {1}。錯誤: '{2}'</target>
+      </trans-unit>
+      <trans-unit id="retryMessage">
+        <source xml:lang="en">Operation '{0}' failed. Re-trying... Error: '{1}'</source>
+        <target state="translated">作業 '{0}' 失敗。正在重新嘗試...錯誤: '{1}'</target>
+      </trans-unit>
+      <trans-unit id="retryRunMessage">
+        <source xml:lang="en">Running operation '{2}' Attempt {0} of {1}</source>
+        <target state="translated">執行作業 '{2}' 嘗試 {0} / {1}</target>
+      </trans-unit>
+      <trans-unit id="retrySucceedMessage">
+        <source xml:lang="en">Operation '{0}' completed successfully. Result: {1}</source>
+        <target state="translated">作業 '{0}' 已成功完成。結果: {1}</target>
+      </trans-unit>
+      <trans-unit id="retryWaitMessage">
+        <source xml:lang="en">Waiting for {0} seconds before another attempt for operation '{1}'</source>
+        <target state="translated">在另一次嘗試作業 '{0}' 之前等候 {1} 秒</target>
+      </trans-unit>
+      <trans-unit id="runningDockerMessage">
+        <source xml:lang="en">Building and running the docker container ...</source>
+        <target state="translated">建置並執行 Docker 容器...</target>
+      </trans-unit>
+      <trans-unit id="sameDatabase">
+        <source xml:lang="en">Same database</source>
+        <target state="translated">相同資料庫</target>
+      </trans-unit>
+      <trans-unit id="schema">
+        <source xml:lang="en">Schema</source>
+        <target state="translated">結構描述</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareAction">
+        <source xml:lang="en">Schema Compare</source>
+        <target state="translated">結構描述比較</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareNotInstalled">
+        <source xml:lang="en">Schema compare extension installation is required to run schema compare</source>
+        <target state="translated">需要安裝結構描述比較延伸模組，才能執行結構描述比較</target>
+      </trans-unit>
+      <trans-unit id="schemaObjectType">
+        <source xml:lang="en">Schema/Object Type</source>
+        <target state="translated">結構描述/物件類型</target>
+      </trans-unit>
+      <trans-unit id="scriptFriendlyName">
+        <source xml:lang="en">Script</source>
+        <target state="translated">指令碼</target>
+      </trans-unit>
+      <trans-unit id="sec">
+        <source xml:lang="en">sec</source>
+        <target state="translated">秒</target>
+      </trans-unit>
+      <trans-unit id="selectAzureFunction">
+        <source xml:lang="en">Select an Azure function in the current file to add SQL binding to</source>
+        <target state="translated">在目前檔案中選取要新增 SQL 繫結的 Azure 函式</target>
       </trans-unit>
       <trans-unit id="selectBindingType">
         <source xml:lang="en">Select type of binding</source>
         <target state="translated">選取繫結類型</target>
       </trans-unit>
-      <trans-unit id="selectAzureFunction">
-        <source xml:lang="en">Select an Azure function in the current file to add SQL binding to</source>
-        <target state="translated">在目前檔案中選取要新增 SQL 繫結的 Azure 函式</target>
+      <trans-unit id="selectConnection">
+        <source xml:lang="en">Select connection</source>
+        <target state="translated">選取連線</target>
+      </trans-unit>
+      <trans-unit id="selectDacpac">
+        <source xml:lang="en">Select .dacpac</source>
+        <target state="translated">選取 .dacpac</target>
+      </trans-unit>
+      <trans-unit id="selectDatabase">
+        <source xml:lang="en">Select database</source>
+        <target state="translated">選取資料庫</target>
+      </trans-unit>
+      <trans-unit id="selectDeployOption">
+        <source xml:lang="en">Select where to deploy the project to</source>
+        <target state="translated">選取專案部署位置</target>
+      </trans-unit>
+      <trans-unit id="selectFolderStructure">
+        <source xml:lang="en">Select folder structure</source>
+        <target state="translated">選取資料夾結構</target>
+      </trans-unit>
+      <trans-unit id="selectProfile">
+        <source xml:lang="en">Select Profile</source>
+        <target state="translated">選取設定檔</target>
+      </trans-unit>
+      <trans-unit id="selectProfileToUse">
+        <source xml:lang="en">Select publish profile to load</source>
+        <target state="translated">選取要載入的發行設定檔</target>
+      </trans-unit>
+      <trans-unit id="selectProjectLocation">
+        <source xml:lang="en">Select project location</source>
+        <target state="translated">選取專案位置</target>
+      </trans-unit>
+      <trans-unit id="selectString">
+        <source xml:lang="en">Select</source>
+        <target state="translated">選取</target>
+      </trans-unit>
+      <trans-unit id="selectTargetPlatform">
+        <source xml:lang="en">Current target platform: {0}. Select new target platform</source>
+        <target state="translated">目前的目標平台: {0}。請選取新的目標平台</target>
+      </trans-unit>
+      <trans-unit id="server">
+        <source xml:lang="en">Server</source>
+        <target state="translated">伺服器​</target>
+      </trans-unit>
+      <trans-unit id="serverName">
+        <source xml:lang="en">Server name</source>
+        <target state="translated">伺服器名稱</target>
+      </trans-unit>
+      <trans-unit id="serverVariable">
+        <source xml:lang="en">Server variable</source>
+        <target state="translated">伺服器變數</target>
+      </trans-unit>
+      <trans-unit id="sourceDatabase">
+        <source xml:lang="en">Source database</source>
+        <target state="translated">來源資料庫</target>
+      </trans-unit>
+      <trans-unit id="sqlCmdTableLabel">
+        <source xml:lang="en">SQLCMD Variables</source>
+        <target state="translated">SQLCMD 變數</target>
+      </trans-unit>
+      <trans-unit id="sqlCmdValueColumn">
+        <source xml:lang="en">Value</source>
+        <target state="translated">值</target>
+      </trans-unit>
+      <trans-unit id="sqlCmdVariableColumn">
+        <source xml:lang="en">Name</source>
+        <target state="translated">名稱</target>
+      </trans-unit>
+      <trans-unit id="sqlConnectionStringFriendly">
+        <source xml:lang="en">SQL connection string</source>
+        <target state="translated">SQL 連接字串</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.InstallNetCore">
+        <source xml:lang="en">Install</source>
+        <target state="translated">安裝</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.NetCoreInstallationConfirmation">
+        <source xml:lang="en">The .NET Core SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK location in settings if already installed.</source>
+        <target state="translated">找不到 .NET Core SDK。專案組建將無法運作。請安裝 .NET Core SDK 3.1 版，或在設定中更新 .NET Core SDK 支援的版本位置 (如果已安裝)。</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.NetCoreSupportedVersionInstallationConfirmation">
+        <source xml:lang="en">Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK supported version location in settings if already installed.</source>
+        <target state="translated">目前安裝的 .NET Core SDK 版本是 {0}，但不支援此版本。專案組建將無法運作。請安裝 .NET Core SDK 3.1 版，或在設定中更新 .NET Core SDK 支援的版本位置 (如果已安裝)。</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.UpdateNetCoreLocation">
+        <source xml:lang="en">Update Location</source>
+        <target state="translated">更新位置</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.doNotAskAgain">
+        <source xml:lang="en">Don't Ask Again</source>
+        <target state="translated">不要再詢問</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.outputChannel">
+        <source xml:lang="en">Database Projects</source>
+        <target state="translated">資料庫專案</target>
       </trans-unit>
       <trans-unit id="sqlObjectToQuery">
         <source xml:lang="en">SQL object to query</source>
@@ -929,17 +858,89 @@
         <source xml:lang="en">SQL table to upsert into</source>
         <target state="translated">要 upsert 的目標 SQL 資料表</target>
       </trans-unit>
-      <trans-unit id="connectionStringSetting">
-        <source xml:lang="en">Connection string setting name</source>
-        <target state="translated">連接字串設定名稱</target>
+      <trans-unit id="storedProcedureFriendlyName">
+        <source xml:lang="en">Stored Procedure</source>
+        <target state="translated">預存程序</target>
       </trans-unit>
-      <trans-unit id="connectionStringSettingPlaceholder">
-        <source xml:lang="en">Connection string setting specified in "local.settings.json"</source>
-        <target state="translated">在 "local.settings.json" 中指定的連接字串設定</target>
+      <trans-unit id="suppressMissingDependenciesErrors">
+        <source xml:lang="en">Suppress errors caused by unresolved references in the referenced project</source>
+        <target state="translated">隱藏參考的專案中未解析參考造成的錯誤</target>
       </trans-unit>
-      <trans-unit id="noAzureFunctionsInFile">
-        <source xml:lang="en">No Azure functions in the current active file</source>
-        <target state="translated">目前的作用中檔案中沒有任何 Azure 函式</target>
+      <trans-unit id="systemDatabase">
+        <source xml:lang="en">System database</source>
+        <target state="translated">系統資料庫</target>
+      </trans-unit>
+      <trans-unit id="systemDatabaseReferenceRequired">
+        <source xml:lang="en">System database selection is required for adding a reference to a system database</source>
+        <target state="translated">必須有系統資料庫選取項目，才可將參考加入系統資料庫</target>
+      </trans-unit>
+      <trans-unit id="tableFriendlyName">
+        <source xml:lang="en">Table</source>
+        <target state="translated">資料表</target>
+      </trans-unit>
+      <trans-unit id="targetConnectionLabel">
+        <source xml:lang="en">Connection</source>
+        <target state="translated">連線</target>
+      </trans-unit>
+      <trans-unit id="targetProject">
+        <source xml:lang="en">Target project</source>
+        <target state="translated">目標專案</target>
+      </trans-unit>
+      <trans-unit id="taskFailedError.error">
+        <source xml:lang="en">Failed to complete task '{0}'. Error: {1}</source>
+        <target state="translated">無法完成工作 '{0}'。錯誤: {1}</target>
+      </trans-unit>
+      <trans-unit id="unableToCreatePublishConnection">
+        <source xml:lang="en">Unable to construct connection: {0}</source>
+        <target state="translated">無法建立連線: {0}</target>
+      </trans-unit>
+      <trans-unit id="unableToFindFile">
+        <source xml:lang="en">Unable to find {1} with path '{0}'</source>
+        <target state="translated">找不到路徑為 '{0}' 的 {1}</target>
+      </trans-unit>
+      <trans-unit id="unableToFindReference">
+        <source xml:lang="en">Unable to find database reference {0}</source>
+        <target state="translated">找不到資料庫參考 {0}</target>
+      </trans-unit>
+      <trans-unit id="unableToFindSqlCmdVariable">
+        <source xml:lang="en">Unable to find SQLCMD variable '{0}'</source>
+        <target state="translated">找不到 SQLCMD 變數 '{0}'</target>
+      </trans-unit>
+      <trans-unit id="unableToPerformAction">
+        <source xml:lang="en">Unable to locate '{0}' target: '{1}'</source>
+        <target state="translated">找不到 '{0}' 目標: '{1}'</target>
+      </trans-unit>
+      <trans-unit id="unexpectedProjectContext">
+        <source xml:lang="en">Unable to establish project context.  Command invoked from unexpected location: {0}</source>
+        <target state="translated">無法建立專案內容。從未預期的位置叫用的命令: {0}</target>
+      </trans-unit>
+      <trans-unit id="unknownDataSourceType">
+        <source xml:lang="en">Unknown data source type: </source>
+        <target state="translated">不明的資料來源類型:</target>
+      </trans-unit>
+      <trans-unit id="unrecognizedDataSourcesVersion">
+        <source xml:lang="en">Unrecognized version: </source>
+        <target state="translated">無法辨識的版本:</target>
+      </trans-unit>
+      <trans-unit id="updateProjectDatabaseReferencesForRoundTrip">
+        <source xml:lang="en">The system database references need to be updated to build this project. If the project is created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
+        <target state="translated">必須更新系統資料庫參照，以建置此專案。如果專案是在 SSDT 中建立，它會繼續在這兩個工具中運行。是否要更新專案?</target>
+      </trans-unit>
+      <trans-unit id="updateProjectForRoundTrip">
+        <source xml:lang="en">The targets, references, and system database references need to be updated to build this project. If the project is created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
+        <target state="translated">目標、參考和系統資料庫參考需要更新，以建置此專案。如果專案是在 SSDT 中建立，它會繼續在這兩個工具中運行。是否要更新專案?</target>
+      </trans-unit>
+      <trans-unit id="valueCannotBeEmpty">
+        <source xml:lang="en">Value cannot be empty</source>
+        <target state="translated">值不得空白</target>
+      </trans-unit>
+      <trans-unit id="viewFriendlyName">
+        <source xml:lang="en">View</source>
+        <target state="translated">檢視</target>
+      </trans-unit>
+      <trans-unit id="yesString">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">是</target>
       </trans-unit>
     </body>
   </file>
@@ -949,6 +950,14 @@
         <source xml:lang="en">	&gt;&gt;&gt; {0}   … errored out: {1}</source>
         <target state="translated">	&gt;&gt;&gt; {0}   … 發生錯誤: {1}</target>
       </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.RunCommand.stderr">
+        <source xml:lang="en">    stderr: </source>
+        <target state="translated">    stderr: </target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.RunCommand.stdout">
+        <source xml:lang="en">    stdout: </source>
+        <target state="translated">    stdout: </target>
+      </trans-unit>
       <trans-unit id="sqlDatabaseProjects.RunStreamedCommand.ExitedWithCode">
         <source xml:lang="en">    &gt;&gt;&gt; {0}    … exited with code: {1}</source>
         <target state="translated">    &gt;&gt;&gt; {0}   …已結束。代碼: {1}</target>
@@ -957,13 +966,147 @@
         <source xml:lang="en">    &gt;&gt;&gt; {0}   … exited with signal: {1}</source>
         <target state="translated">    &gt;&gt;&gt; {0}   …已結束。訊號: {1}</target>
       </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.RunCommand.stdout">
-        <source xml:lang="en">    stdout: </source>
-        <target state="translated">    stdout: </target>
+    </body>
+  </file>
+  <file original="extensions/sql-database-projects/package" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="sqlDatabaseProjects.Settings">
+        <source xml:lang="en">Database Projects</source>
+        <target state="translated">資料庫專案</target>
       </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.RunCommand.stderr">
-        <source xml:lang="en">    stderr: </source>
-        <target state="translated">    stderr: </target>
+      <trans-unit id="sqlDatabaseProjects.addDatabaseReference">
+        <source xml:lang="en">Add Database Reference</source>
+        <target state="translated">新增資料庫參考</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.addSqlBinding">
+        <source xml:lang="en">Add SQL Binding</source>
+        <target state="translated">新增 SQL 繫結</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.build">
+        <source xml:lang="en">Build</source>
+        <target state="translated">組建</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.changeTargetPlatform">
+        <source xml:lang="en">Change Target Platform</source>
+        <target state="translated">變更目標平台</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.close">
+        <source xml:lang="en">Close Database Project</source>
+        <target state="translated">關閉資料庫專案</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.createProjectFromDatabase">
+        <source xml:lang="en">Create Project From Database</source>
+        <target state="translated">從資料庫建立專案</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.delete">
+        <source xml:lang="en">Delete</source>
+        <target state="translated">刪除</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.deployLocal">
+        <source xml:lang="en">Deploy</source>
+        <target state="translated">部署</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.description">
+        <source xml:lang="en">Design and publish SQL database schemas</source>
+        <target state="translated">設計及發佈 SQL 資料庫結構描述</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.displayName">
+        <source xml:lang="en">Database Projects</source>
+        <target state="translated">資料庫專案</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.editProjectFile">
+        <source xml:lang="en">Edit .sqlproj File</source>
+        <target state="translated">編輯 .sqlproj 檔</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.exclude">
+        <source xml:lang="en">Exclude from project</source>
+        <target state="translated">從專案中排除</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.netCoreDoNotAsk">
+        <source xml:lang="en">Whether to prompt the user to install .NET Core when not detected.</source>
+        <target state="translated">是否在未偵測到時提示使用者安裝 .NET Core。</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.netCoreInstallLocation">
+        <source xml:lang="en">Full path to .NET Core SDK on the machine.</source>
+        <target state="translated">電腦上 .NET Core SDK 的完整路徑。</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.new">
+        <source xml:lang="en">New Database Project</source>
+        <target state="translated">新的資料庫專案</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.newExternalStreamingJob">
+        <source xml:lang="en">Add External Streaming Job</source>
+        <target state="translated">新增外部資料流作業</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.newFolder">
+        <source xml:lang="en">Add Folder</source>
+        <target state="translated">新增資料夾</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.newItem">
+        <source xml:lang="en">Add Item...</source>
+        <target state="translated">新增項目...</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.newPostDeploymentScript">
+        <source xml:lang="en">Add Post-Deployment Script</source>
+        <target state="translated">新增部署後指令碼</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.newPreDeploymentScript">
+        <source xml:lang="en">Add Pre-Deployment Script</source>
+        <target state="translated">新增預先部署指令碼</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.newScript">
+        <source xml:lang="en">Add Script</source>
+        <target state="translated">新增指令碼</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.newStoredProcedure">
+        <source xml:lang="en">Add Stored Procedure</source>
+        <target state="translated">新增預存程序</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.newTable">
+        <source xml:lang="en">Add Table</source>
+        <target state="translated">新增資料表</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.newView">
+        <source xml:lang="en">Add View</source>
+        <target state="translated">新增檢視</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.open">
+        <source xml:lang="en">Open Database Project</source>
+        <target state="translated">開啟資料庫專案</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.openContainingFolder">
+        <source xml:lang="en">Open Containing Folder</source>
+        <target state="translated">開啟收納資料夾</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.properties">
+        <source xml:lang="en">Properties</source>
+        <target state="translated">屬性</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.publish">
+        <source xml:lang="en">Publish</source>
+        <target state="translated">發佈</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.schemaCompare">
+        <source xml:lang="en">Schema Compare</source>
+        <target state="translated">結構描述比較</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.validateExternalStreamingJob">
+        <source xml:lang="en">Validate External Streaming Job</source>
+        <target state="translated">驗證外部串流作業</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.welcome">
+        <source xml:lang="en">No database projects currently open.
+[New Project](command:sqlDatabaseProjects.new)
+[Open Project](command:sqlDatabaseProjects.open)
+[Create Project From Database](command:sqlDatabaseProjects.importDatabase)</source>
+        <target state="translated">目前沒有開啟的資料庫專案。
+[New Project](command:sqlDatabaseProjects.new)
+[Open Project](command:sqlDatabaseProjects.open)
+[Create Project From Database](command:sqlDatabaseProjects.importDatabase)</target>
+      </trans-unit>
+      <trans-unit id="title.projectsView">
+        <source xml:lang="en">Projects</source>
+        <target state="translated">專案</target>
       </trans-unit>
     </body>
   </file>

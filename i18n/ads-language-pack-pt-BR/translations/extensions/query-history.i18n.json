@@ -9,9 +9,9 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"queryHistory.displayName": "Histórico de Consultas",
-			"queryHistory.description": "Exibir e executar consultas executadas anteriormente",
 			"queryHistory.clear": "Limpar todo o histórico",
+			"queryHistory.description": "Exibir e executar consultas executadas anteriormente",
+			"queryHistory.displayName": "Histórico de Consultas",
 			"queryHistory.toggleCapture": "Ativar/desativar a captura de Histórico de Consultas"
 		}
 	}

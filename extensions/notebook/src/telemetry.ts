@@ -21,5 +21,6 @@ export enum NbTelemetryActions {
 	PinNotebook = 'NotebookPinned',
 	OpenNotebookFromBook = 'NotebookOpenedFromBook',
 	MoveNotebook = 'MoveNotebook',
+	DragAndDrop = 'DragAndDrop'
 }
 

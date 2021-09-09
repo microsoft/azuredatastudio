@@ -159,7 +159,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		return dialog.createDialog();
 	}
 
-	async getSelectionQuickPick(movingElement: BookTreeItem): Promise<quickPickResults> {
+	async bookSectionQuickPick(): Promise<quickPickResults> {
 		let bookOptions: vscode.QuickPickItem[] = [];
 		let pickedSection: vscode.QuickPickItem;
 		this.books.forEach(book => {
@@ -172,7 +172,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			placeHolder: loc.labelBookFolder
 		});
 
-		if (pickedBook && movingElement) {
+		if (pickedBook) {
 			const updateBook = this.books.find(book => book.bookPath === pickedBook.detail).bookItems[0];
 			if (updateBook) {
 				let bookSections = updateBook.sections;
@@ -194,11 +194,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 							break;
 						}
 						else if (pickedSection && pickedSection.detail) {
-							if (updateBook.root === movingElement.root && pickedSection.detail === movingElement.uri) {
-								pickedSection = undefined;
-							} else {
-								bookSections = updateBook.findChildSection(pickedSection.detail).sections;
-							}
+							bookSections = updateBook.findChildSection(pickedSection.detail).sections;
 						}
 					}
 				}
@@ -208,17 +204,27 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		return undefined;
 	}
 
-	async editBook(movingElement: BookTreeItem): Promise<void> {
+	/**
+	 * Move selected tree items (sections/notebooks) using the move option tree item entry point.
+	 * A quick pick menu will show all the possible books and sections for the user to choose
+	 * the target element to add the selected tree items.
+	 * @param treeItems Elements to be moved
+	 */
+	async moveTreeItems(treeItems: BookTreeItem[]): Promise<void> {
 		TelemetryReporter.sendActionEvent(BookTelemetryView, NbTelemetryActions.MoveNotebook);
-		const selectionResults = await this.getSelectionQuickPick(movingElement);
+		const selectionResults = await this.bookSectionQuickPick();
 		if (selectionResults) {
-			const pickedSection = selectionResults.quickPickSection;
-			const updateBook = selectionResults.book;
-			const targetSection = pickedSection.detail !== undefined ? updateBook.findChildSection(pickedSection.detail) : undefined;
-			const sourceBook = this.books.find(book => book.bookPath === movingElement.book.root);
-			const targetBook = this.books.find(book => book.bookPath === updateBook.book.root);
-			this.bookTocManager = new BookTocManager(sourceBook, targetBook);
-			await this.bookTocManager.updateBook(movingElement, updateBook, targetSection);
+			let pickedSection = selectionResults.quickPickSection;
+			// filter target from sources
+			let movingElements = treeItems.filter(item => item.uri !== pickedSection.detail);
+			const targetBookItem = selectionResults.book;
+			const targetSection = pickedSection.detail !== undefined ? targetBookItem.findChildSection(pickedSection.detail) : undefined;
+			let sourcesByBook = this.groupTreeItemsByBookModel(movingElements);
+			const targetBookModel = this.books.find(book => book.bookPath === targetBookItem.book.root);
+			for (let [bookModel, items] of sourcesByBook) {
+				this.bookTocManager = new BookTocManager(bookModel, targetBookModel);
+				await this.bookTocManager.updateBook(items, targetBookItem, targetSection);
+			}
 		}
 	}
 
@@ -717,11 +723,56 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		return Promise.resolve(result);
 	}
 
-	async onDrop(sources: vscode.TreeDataTransfer, target: BookTreeItem): Promise<void> {
-		let treeItems = JSON.parse(await sources.items.get('text/treeitems')!.asString());
-		if (treeItems) {
-
+	groupTreeItemsByBookModel(treeItems: BookTreeItem[]): Map<BookModel, BookTreeItem[]> {
+		const sourcesByBook = new Map<BookModel, BookTreeItem[]>();
+		for (let item of treeItems) {
+			const book = this.books.find(book => book.bookPath === item.book.root);
+			if (sourcesByBook.has(book)) {
+				sourcesByBook.get(book).push(item);
+			} else {
+				sourcesByBook.set(book, [item]);
+			}
 		}
+		return sourcesByBook;
+	}
+
+	async onDrop(sources: vscode.TreeDataTransfer, target: BookTreeItem): Promise<void> {
+		TelemetryReporter.sendActionEvent(BookTelemetryView, NbTelemetryActions.DragAndDrop);
+		// gets the tree items that are dragged and dropped
+		let treeItems = JSON.parse(await sources.items.get(this.supportedTypes[0])!.asString()) as BookTreeItem[];
+		let rootItems = this.getLocalRoots(treeItems);
+		rootItems = rootItems.filter(item => item.resourceUri !== target.resourceUri);
+		if (rootItems && target) {
+			let sourcesByBook = this.groupTreeItemsByBookModel(rootItems);
+			const targetBook = this.books.find(book => book.bookPath === target.book.root);
+			for (let [book, items] of sourcesByBook) {
+				this.bookTocManager = new BookTocManager(book, targetBook);
+				await this.bookTocManager.updateBook(items, target);
+			}
+		}
+	}
+
+	/**
+	 * From the tree items moved find the local roots.
+	 * We don't need to move a child element if the parent element has been selected as well, since every time that an element is moved
+	 * we add its children.
+	 * @param bookItems that have been dragged and dropped
+	 * @returns an array of tree items that do not share a parent element.
+	 */
+	public getLocalRoots(bookItems: BookTreeItem[]): BookTreeItem[] {
+		const localRoots = [];
+		for (let i = 0; i < bookItems.length; i++) {
+			const parent = bookItems[i].book.parent;
+			if (parent) {
+				const isInList = bookItems.find(item => item.resourceUri.path === parent.resourceUri.path && parent.contextValue !== 'savedBook');
+				if (isInList === undefined) {
+					localRoots.push(bookItems[i]);
+				}
+			} else {
+				localRoots.push(bookItems[i]);
+			}
+		}
+		return localRoots;
 	}
 
 	dispose(): void { }

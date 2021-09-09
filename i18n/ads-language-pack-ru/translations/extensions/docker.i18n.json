@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Основы языка Docker",
-			"description": "Предоставляет подсветку синтаксиса и выделение парных скобок в файлах Docker."
+			"description": "Предоставляет подсветку синтаксиса и выделение парных скобок в файлах Docker.",
+			"displayName": "Основы языка Docker"
 		}
 	}
 }

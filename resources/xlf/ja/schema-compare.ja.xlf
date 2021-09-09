@@ -1,622 +1,22 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/schema-compare/package" source-language="en" datatype="plaintext" target-language="ja">
-    <body>
-      <trans-unit id="displayName">
-        <source xml:lang="en">SQL Server Schema Compare</source>
-        <target state="translated">SQL Server Schema Compare</target>
-      </trans-unit>
-      <trans-unit id="description">
-        <source xml:lang="en">SQL Server Schema Compare for Azure Data Studio supports comparing the schemas of databases and dacpacs.</source>
-        <target state="translated">Azure Data Studio 用 SQL Server Schema Compare では、データベースと dacpac のスキーマを比較できます。</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.start">
-        <source xml:lang="en">Schema Compare</source>
-        <target state="translated">Schema Compare</target>
-      </trans-unit>
-    </body>
-  </file>
   <file original="extensions/schema-compare/dist/localizedConstants" source-language="en" datatype="plaintext" target-language="ja">
     <body>
-      <trans-unit id="schemaCompareDialog.ok">
-        <source xml:lang="en">OK</source>
-        <target state="translated">OK</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.cancel">
-        <source xml:lang="en">Cancel</source>
-        <target state="translated">キャンセル</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.SourceTitle">
-        <source xml:lang="en">Source</source>
-        <target state="translated">ソース</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.TargetTitle">
-        <source xml:lang="en">Target</source>
-        <target state="translated">ターゲット</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.fileTextBoxLabel">
-        <source xml:lang="en">File</source>
-        <target state="translated">ファイル</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.dacpacRadioButtonLabel">
-        <source xml:lang="en">Data-tier Application File (.dacpac)</source>
-        <target state="translated">データ層アプリケーション ファイル (.dacpac)</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.databaseButtonLabel">
-        <source xml:lang="en">Database</source>
-        <target state="translated">データベース</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.radioButtonsLabel">
-        <source xml:lang="en">Type</source>
-        <target state="translated">種類</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.serverDropdownTitle">
-        <source xml:lang="en">Server</source>
-        <target state="translated">サーバー</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.databaseDropdownTitle">
-        <source xml:lang="en">Database</source>
-        <target state="translated">データベース</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.dialogTitle">
-        <source xml:lang="en">Schema Compare</source>
-        <target state="translated">Schema Compare</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.differentSourceMessage">
-        <source xml:lang="en">A different source schema has been selected. Compare to see the comparison?</source>
-        <target state="translated">別のソース スキーマが選択されました。比較を表示して比較しますか?</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.differentTargetMessage">
-        <source xml:lang="en">A different target schema has been selected. Compare to see the comparison?</source>
-        <target state="translated">別のターゲット スキーマが選択されました。比較を表示して比較しますか?</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.differentSourceTargetMessage">
-        <source xml:lang="en">Different source and target schemas have been selected. Compare to see the comparison?</source>
-        <target state="translated">異なるソース スキーマとターゲット スキーマが選択されています。比較を表示して比較しますか?</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.Yes">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">はい</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.No">
-        <source xml:lang="en">No</source>
-        <target state="translated">いいえ</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.sourceTextBox">
-        <source xml:lang="en">Source file</source>
-        <target state="translated">ソース ファイル</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.targetTextBox">
-        <source xml:lang="en">Target file</source>
-        <target state="translated">ターゲット ファイル</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.sourceDatabaseDropdown">
-        <source xml:lang="en">Source Database</source>
-        <target state="translated">ソース データベース</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.targetDatabaseDropdown">
-        <source xml:lang="en">Target Database</source>
-        <target state="translated">ターゲット データベース</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.sourceServerDropdown">
-        <source xml:lang="en">Source Server</source>
-        <target state="translated">ソース サーバー</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.targetServerDropdown">
-        <source xml:lang="en">Target Server</source>
-        <target state="translated">ターゲット サーバー</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.defaultUser">
-        <source xml:lang="en">default</source>
-        <target state="translated">既定</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.openFile">
-        <source xml:lang="en">Open</source>
-        <target state="translated">開く</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.selectSourceFile">
-        <source xml:lang="en">Select source file</source>
-        <target state="translated">ソース ファイルの選択</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.selectTargetFile">
-        <source xml:lang="en">Select target file</source>
-        <target state="translated">ターゲット ファイルの選択</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompareOptionsDialog.Reset">
-        <source xml:lang="en">Reset</source>
-        <target state="translated">リセット</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareOptions.RecompareMessage">
-        <source xml:lang="en">Options have changed. Recompare to see the comparison?</source>
-        <target state="translated">オプションが変更されました。比較を表示して再比較しますか?</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.SchemaCompareOptionsDialogLabel">
-        <source xml:lang="en">Schema Compare Options</source>
-        <target state="translated">Schema Compare のオプション</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.GeneralOptionsLabel">
-        <source xml:lang="en">General Options</source>
-        <target state="translated">全般オプション</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.ObjectTypesOptionsLabel">
-        <source xml:lang="en">Include Object Types</source>
-        <target state="translated">オブジェクトの種類を含める</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.CompareDetailsTitle">
-        <source xml:lang="en">Compare Details</source>
-        <target state="translated">詳細の比較</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.ApplyConfirmation">
-        <source xml:lang="en">Are you sure you want to update the target?</source>
-        <target state="translated">ターゲットを更新しますか?</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.RecompareToRefresh">
-        <source xml:lang="en">Press Compare to refresh the comparison.</source>
-        <target state="translated">比較を更新するには、[比較] を押します。</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.generateScriptEnabledButton">
-        <source xml:lang="en">Generate script to deploy changes to target</source>
-        <target state="translated">ターゲットに変更をデプロイするスクリプトを生成します</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.generateScriptNoChanges">
-        <source xml:lang="en">No changes to script</source>
-        <target state="translated">スクリプトに変更はありません</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.applyButtonEnabledTitle">
-        <source xml:lang="en">Apply changes to target</source>
-        <target state="translated">ターゲットに変更を適用する</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.applyNoChanges">
-        <source xml:lang="en">No changes to apply</source>
-        <target state="translated">適用する変更はありません</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.includeExcludeInfoMessage">
-        <source xml:lang="en">Please note that include/exclude operations can take a moment to calculate affected dependencies</source>
-        <target state="translated">対象の依存関係を計算するために、包含/除外操作に少し時間がかかる場合があることにご注意ください</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.deleteAction">
-        <source xml:lang="en">Delete</source>
-        <target state="translated">削除</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.changeAction">
-        <source xml:lang="en">Change</source>
-        <target state="translated">変更</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.addAction">
-        <source xml:lang="en">Add</source>
-        <target state="translated">追加</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.differencesTableTitle">
-        <source xml:lang="en">Comparison between Source and Target</source>
-        <target state="translated">ソースとターゲットの比較</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.waitText">
-        <source xml:lang="en">Initializing Comparison. This might take a moment.</source>
-        <target state="translated">比較を初期化します。しばらく時間がかかる場合があります。</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.startText">
-        <source xml:lang="en">To compare two schemas, first select a source schema and target schema, then press Compare.</source>
-        <target state="translated">2 つのスキーマを比較するには、最初にソース スキーマとターゲット スキーマを選択し、[比較] を押します。</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.noDifferences">
-        <source xml:lang="en">No schema differences were found.</source>
-        <target state="translated">スキーマの違いは見つかりませんでした。</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.typeColumn">
-        <source xml:lang="en">Type</source>
-        <target state="translated">種類</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.sourceNameColumn">
-        <source xml:lang="en">Source Name</source>
-        <target state="translated">ソース名</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.includeColumnName">
-        <source xml:lang="en">Include</source>
-        <target state="translated">包含</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.actionColumn">
-        <source xml:lang="en">Action</source>
-        <target state="translated">アクション</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.targetNameColumn">
-        <source xml:lang="en">Target Name</source>
-        <target state="translated">ターゲット名</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.generateScriptButtonDisabledTitle">
-        <source xml:lang="en">Generate script is enabled when the target is a database</source>
-        <target state="translated">ターゲットがデータベースの場合にスクリプトの生成が有効になります</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.applyButtonDisabledTitle">
-        <source xml:lang="en">Apply is enabled when the target is a database</source>
-        <target state="translated">ターゲットがデータベースの場合に適用が有効になります</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.cannotExcludeMessageWithDependent">
-        <source xml:lang="en">Cannot exclude {0}. Included dependents exist, such as {1}</source>
-        <target state="translated">{0} を除外することはできません。対象の依存関係が存在します ({1} など)</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.cannotIncludeMessageWithDependent">
-        <source xml:lang="en">Cannot include {0}. Excluded dependents exist, such as {1}</source>
-        <target state="translated">{0} を含めることはできません。対象外の依存関係が存在します ({1} など)</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.cannotExcludeMessage">
-        <source xml:lang="en">Cannot exclude {0}. Included dependents exist</source>
-        <target state="translated">{0} を除外することはできません。対象の依存関係が存在します</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.cannotIncludeMessage">
-        <source xml:lang="en">Cannot include {0}. Excluded dependents exist</source>
-        <target state="translated">{0} を含めることはできません。対象外の依存関係が存在します</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.compareButton">
-        <source xml:lang="en">Compare</source>
-        <target state="translated">比較</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.cancelCompareButton">
-        <source xml:lang="en">Stop</source>
-        <target state="translated">停止</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.generateScriptButton">
-        <source xml:lang="en">Generate script</source>
-        <target state="translated">スクリプトの生成</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.optionsButton">
-        <source xml:lang="en">Options</source>
-        <target state="translated">オプション​​</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.updateButton">
-        <source xml:lang="en">Apply</source>
-        <target state="translated">適用</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.switchDirectionButton">
-        <source xml:lang="en">Switch direction</source>
-        <target state="translated">方向の切り替え</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.switchButtonTitle">
-        <source xml:lang="en">Switch source and target</source>
-        <target state="translated">ソースとターゲットの切り替え</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.sourceButtonTitle">
-        <source xml:lang="en">Select Source</source>
-        <target state="translated">ソースの選択</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.targetButtonTitle">
-        <source xml:lang="en">Select Target</source>
-        <target state="translated">ターゲットの選択</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.openScmpButton">
-        <source xml:lang="en">Open .scmp file</source>
-        <target state="translated">.scmp ファイルを開く</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.openScmpButtonTitle">
-        <source xml:lang="en">Load source, target, and options saved in an .scmp file</source>
-        <target state="translated">.scmp ファイルに保存されたソース、ターゲット、およびオプションを読み込みます</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.saveScmpButton">
-        <source xml:lang="en">Save .scmp file</source>
-        <target state="translated">.scmp ファイルを保存</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.saveScmpButtonTitle">
-        <source xml:lang="en">Save source and target, options, and excluded elements</source>
-        <target state="translated">ソース、ターゲット、オプション、および除外された要素を保存します</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.saveFile">
-        <source xml:lang="en">Save</source>
-        <target state="translated">保存</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.GetConnectionString">
-        <source xml:lang="en">Do you want to connect to {0}?</source>
-        <target state="translated">{0} に接続しますか?</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.selectConnection">
-        <source xml:lang="en">Select connection</source>
-        <target state="translated">接続の選択</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreTableOptions">
-        <source xml:lang="en">Ignore Table Options</source>
-        <target state="translated">テーブル オプションを無視する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreSemicolonBetweenStatements">
-        <source xml:lang="en">Ignore Semicolon Between Statements</source>
-        <target state="translated">ステートメント間のセミコロンを無視する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreRouteLifetime">
-        <source xml:lang="en">Ignore Route Lifetime</source>
-        <target state="translated">ルートの有効期間を無視する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreRoleMembership">
-        <source xml:lang="en">Ignore Role Membership</source>
-        <target state="translated">ロール メンバーシップを無視する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreQuotedIdentifiers">
-        <source xml:lang="en">Ignore Quoted Identifiers</source>
-        <target state="translated">引用符で囲まれた識別子を無視する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnorePermissions">
-        <source xml:lang="en">Ignore Permissions</source>
-        <target state="translated">アクセス許可を無視する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnorePartitionSchemes">
-        <source xml:lang="en">Ignore Partition Schemes</source>
-        <target state="translated">パーティション構成を無視する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreObjectPlacementOnPartitionScheme">
-        <source xml:lang="en">Ignore Object Placement On Partition Scheme</source>
-        <target state="translated">パーティション構成でのオブジェクトの位置を無視する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreNotForReplication">
-        <source xml:lang="en">Ignore Not For Replication</source>
-        <target state="translated">レプリケーション用以外を無視する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreLoginSids">
-        <source xml:lang="en">Ignore Login Sids</source>
-        <target state="translated">ログイン SID を無視する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreLockHintsOnIndexes">
-        <source xml:lang="en">Ignore Lock Hints On Indexes</source>
-        <target state="translated">インデックスのロック ヒントを無視する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreKeywordCasing">
-        <source xml:lang="en">Ignore Keyword Casing</source>
-        <target state="translated">キーワードの大文字/小文字を無視する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreIndexPadding">
-        <source xml:lang="en">Ignore Index Padding</source>
-        <target state="translated">インデックス パディングを無視する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreIndexOptions">
-        <source xml:lang="en">Ignore Index Options</source>
-        <target state="translated">インデックス オプションを無視する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreIncrement">
-        <source xml:lang="en">Ignore Increment</source>
-        <target state="translated">増分を無視する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreIdentitySeed">
-        <source xml:lang="en">Ignore Identity Seed</source>
-        <target state="translated">ID シードを無視する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreUserSettingsObjects">
-        <source xml:lang="en">Ignore User Settings Objects</source>
-        <target state="translated">ユーザー設定オブジェクトを無視する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreFullTextCatalogFilePath">
-        <source xml:lang="en">Ignore Full Text Catalog FilePath</source>
-        <target state="translated">フルテキスト カタログ FilePath を無視する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreWhitespace">
-        <source xml:lang="en">Ignore Whitespace</source>
-        <target state="translated">空白を無視する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreWithNocheckOnForeignKeys">
-        <source xml:lang="en">Ignore With Nocheck On ForeignKeys</source>
-        <target state="translated">外部キーの With Nocheck を無視する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.VerifyCollationCompatibility">
-        <source xml:lang="en">Verify Collation Compatibility</source>
-        <target state="translated">照合順序の互換性を確認する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.UnmodifiableObjectWarnings">
-        <source xml:lang="en">Unmodifiable Object Warnings</source>
-        <target state="translated">変更できないオブジェクトの警告</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.TreatVerificationErrorsAsWarnings">
-        <source xml:lang="en">Treat Verification Errors As Warnings</source>
-        <target state="translated">検証エラーを警告として扱う</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.ScriptRefreshModule">
-        <source xml:lang="en">Script Refresh Module</source>
-        <target state="translated">スクリプトでの更新モジュール</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.ScriptNewConstraintValidation">
-        <source xml:lang="en">Script New Constraint Validation</source>
-        <target state="translated">スクリプトでの新しい制約の検証</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.ScriptFileSize">
-        <source xml:lang="en">Script File Size</source>
-        <target state="translated">スクリプト ファイル サイズ</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.ScriptDeployStateChecks">
-        <source xml:lang="en">Script Deploy StateChecks</source>
-        <target state="translated">スクリプトでのデプロイ状態チェック</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.ScriptDatabaseOptions">
-        <source xml:lang="en">Script Database Options</source>
-        <target state="translated">スクリプトでのデータベース オプション</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.ScriptDatabaseCompatibility">
-        <source xml:lang="en">Script Database Compatibility</source>
-        <target state="translated">スクリプトでのデータベース互換性</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.ScriptDatabaseCollation">
-        <source xml:lang="en">Script Database Collation</source>
-        <target state="translated">スクリプトでのデータベース照合順序</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.RunDeploymentPlanExecutors">
-        <source xml:lang="en">Run Deployment Plan Executors</source>
-        <target state="translated">デプロイ計画 Executor の実行</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.RegisterDataTierApplication">
-        <source xml:lang="en">Register DataTier Application</source>
-        <target state="translated">データ層アプリケーションの登録</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.PopulateFilesOnFileGroups">
-        <source xml:lang="en">Populate Files On File Groups</source>
-        <target state="translated">ファイル グループに対してファイルを作成する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.NoAlterStatementsToChangeClrTypes">
-        <source xml:lang="en">No Alter Statements To Change Clr Types</source>
-        <target state="translated">CLR 型を変更する ALTER ステートメントがない</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IncludeTransactionalScripts">
-        <source xml:lang="en">Include Transactional Scripts</source>
-        <target state="translated">トランザクション スクリプトを含める</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IncludeCompositeObjects">
-        <source xml:lang="en">Include Composite Objects</source>
-        <target state="translated">複合オブジェクトを含める</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.AllowUnsafeRowLevelSecurityDataMovement">
-        <source xml:lang="en">Allow Unsafe Row Level Security Data Movement</source>
-        <target state="translated">安全でない行レベル セキュリティ データ移動を許可する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreWithNocheckOnCheckConstraints">
-        <source xml:lang="en">Ignore With No check On Check Constraints</source>
-        <target state="translated">CHECK 制約の With No check を無視する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreFillFactor">
-        <source xml:lang="en">Ignore Fill Factor</source>
-        <target state="translated">FILL FACTOR を無視する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreFileSize">
-        <source xml:lang="en">Ignore File Size</source>
-        <target state="translated">ファイル サイズを無視する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreFilegroupPlacement">
-        <source xml:lang="en">Ignore Filegroup Placement</source>
-        <target state="translated">ファイル グループの配置を無視する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.DoNotAlterReplicatedObjects">
-        <source xml:lang="en">Do Not Alter Replicated Objects</source>
-        <target state="translated">レプリケートされたオブジェクトを変更しない</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.DoNotAlterChangeDataCaptureObjects">
-        <source xml:lang="en">Do Not Alter Change Data Capture Objects</source>
-        <target state="translated">変更データ キャプチャ オブジェクトを変更しない</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.DisableAndReenableDdlTriggers">
-        <source xml:lang="en">Disable And Reenable Ddl Triggers</source>
-        <target state="translated">DDL トリガーを無効にし、再び有効にする</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.DeployDatabaseInSingleUserMode">
-        <source xml:lang="en">Deploy Database In Single User Mode</source>
-        <target state="translated">シングル ユーザー モードでデータベースをデプロイする</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.CreateNewDatabase">
-        <source xml:lang="en">Create New Database</source>
-        <target state="translated">新しいデータベースの作成</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.CompareUsingTargetCollation">
-        <source xml:lang="en">Compare Using Target Collation</source>
-        <target state="translated">ターゲットの照合順序を使用して比較する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.CommentOutSetVarDeclarations">
-        <source xml:lang="en">Comment Out Set Var Declarations</source>
-        <target state="translated">コメント アウト セット変数宣言</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.BlockWhenDriftDetected">
-        <source xml:lang="en">Block When Drift Detected</source>
-        <target state="translated">ドリフトが検出されたときにブロックする</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.BlockOnPossibleDataLoss">
-        <source xml:lang="en">Block On Possible Data Loss</source>
-        <target state="translated">データ損失の可能性がある場合にブロックする</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.BackupDatabaseBeforeChanges">
-        <source xml:lang="en">Backup Database Before Changes</source>
-        <target state="translated">変更前にデータベースをバックアップする</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.AllowIncompatiblePlatform">
-        <source xml:lang="en">Allow Incompatible Platform</source>
-        <target state="translated">互換性のないプラットフォームを許可する</target>
+      <trans-unit id="SchemaCompare.Aggregates">
+        <source xml:lang="en">Aggregates</source>
+        <target state="translated">集約</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.AllowDropBlockingAssemblies">
         <source xml:lang="en">Allow Drop Blocking Assemblies</source>
         <target state="translated">ブロックしているアセンブリの削除を許可する</target>
       </trans-unit>
-      <trans-unit id="SchemaCompare.DropConstraintsNotInSource">
-        <source xml:lang="en">Drop Constraints Not In Source</source>
-        <target state="translated">ソース内にない制約を削除する</target>
+      <trans-unit id="SchemaCompare.AllowIncompatiblePlatform">
+        <source xml:lang="en">Allow Incompatible Platform</source>
+        <target state="translated">互換性のないプラットフォームを許可する</target>
       </trans-unit>
-      <trans-unit id="SchemaCompare.DropDmlTriggersNotInSource">
-        <source xml:lang="en">Drop Dml Triggers Not In Source</source>
-        <target state="translated">ソース内にない DML トリガーを削除する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.DropExtendedPropertiesNotInSource">
-        <source xml:lang="en">Drop Extended Properties Not In Source</source>
-        <target state="translated">ソース内にない拡張プロパティを削除する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.DropIndexesNotInSource">
-        <source xml:lang="en">Drop Indexes Not In Source</source>
-        <target state="translated">ソース内にないインデックスを削除する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreFileAndLogFilePath">
-        <source xml:lang="en">Ignore File And Log File Path</source>
-        <target state="translated">ファイルおよびログ ファイル パスを無視する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreExtendedProperties">
-        <source xml:lang="en">Ignore Extended Properties</source>
-        <target state="translated">拡張プロパティを無視する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreDmlTriggerState">
-        <source xml:lang="en">Ignore Dml Trigger State</source>
-        <target state="translated">DML トリガーの状態を無視する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreDmlTriggerOrder">
-        <source xml:lang="en">Ignore Dml Trigger Order</source>
-        <target state="translated">DML トリガーの順序を無視する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreDefaultSchema">
-        <source xml:lang="en">Ignore Default Schema</source>
-        <target state="translated">既定のスキーマを無視する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreDdlTriggerState">
-        <source xml:lang="en">Ignore Ddl Trigger State</source>
-        <target state="translated">DDL トリガーの状態を無視する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreDdlTriggerOrder">
-        <source xml:lang="en">Ignore Ddl Trigger Order</source>
-        <target state="translated">DDL トリガーの順序を無視する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreCryptographicProviderFilePath">
-        <source xml:lang="en">Ignore Cryptographic Provider FilePath</source>
-        <target state="translated">暗号化プロバイダーのファイル パスを無視する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.VerifyDeployment">
-        <source xml:lang="en">Verify Deployment</source>
-        <target state="translated">デプロイを確認する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreComments">
-        <source xml:lang="en">Ignore Comments</source>
-        <target state="translated">コメントを無視する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreColumnCollation">
-        <source xml:lang="en">Ignore Column Collation</source>
-        <target state="translated">列の照合順序を無視する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreAuthorizer">
-        <source xml:lang="en">Ignore Authorizer</source>
-        <target state="translated">承認者を無視する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreAnsiNulls">
-        <source xml:lang="en">Ignore AnsiNulls</source>
-        <target state="translated">AnsiNulls を無視する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.GenerateSmartDefaults">
-        <source xml:lang="en">Generate SmartDefaults</source>
-        <target state="translated">SmartDefaults の生成</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.DropStatisticsNotInSource">
-        <source xml:lang="en">Drop Statistics Not In Source</source>
-        <target state="translated">ソース内にない統計をドロップする</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.DropRoleMembersNotInSource">
-        <source xml:lang="en">Drop Role Members Not In Source</source>
-        <target state="translated">ソースに含まれないロール メンバーをドロップする</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.DropPermissionsNotInSource">
-        <source xml:lang="en">Drop Permissions Not In Source</source>
-        <target state="translated">ソース内にないアクセス許可をドロップする</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.DropObjectsNotInSource">
-        <source xml:lang="en">Drop Objects Not In Source</source>
-        <target state="translated">ソース内にないオブジェクトをドロップする</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreColumnOrder">
-        <source xml:lang="en">Ignore Column Order</source>
-        <target state="translated">列の順序を無視する</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Aggregates">
-        <source xml:lang="en">Aggregates</source>
-        <target state="translated">集約</target>
+      <trans-unit id="SchemaCompare.AllowUnsafeRowLevelSecurityDataMovement">
+        <source xml:lang="en">Allow Unsafe Row Level Security Data Movement</source>
+        <target state="translated">安全でない行レベル セキュリティ データ移動を許可する</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.ApplicationRoles">
         <source xml:lang="en">Application Roles</source>
@@ -634,6 +34,22 @@
         <source xml:lang="en">Asymmetric Keys</source>
         <target state="translated">非対称キー</target>
       </trans-unit>
+      <trans-unit id="SchemaCompare.Audits">
+        <source xml:lang="en">Audits</source>
+        <target state="translated">監査</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.BackupDatabaseBeforeChanges">
+        <source xml:lang="en">Backup Database Before Changes</source>
+        <target state="translated">変更前にデータベースをバックアップする</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.BlockOnPossibleDataLoss">
+        <source xml:lang="en">Block On Possible Data Loss</source>
+        <target state="translated">データ損失の可能性がある場合にブロックする</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.BlockWhenDriftDetected">
+        <source xml:lang="en">Block When Drift Detected</source>
+        <target state="translated">ドリフトが検出されたときにブロックする</target>
+      </trans-unit>
       <trans-unit id="SchemaCompare.BrokerPriorities">
         <source xml:lang="en">Broker Priorities</source>
         <target state="translated">ブローカーの優先度</target>
@@ -641,6 +57,10 @@
       <trans-unit id="SchemaCompare.Certificates">
         <source xml:lang="en">Certificates</source>
         <target state="translated">証明書</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ClrUserDefinedTypes">
+        <source xml:lang="en">Clr User Defined Types</source>
+        <target state="translated">Clr ユーザー定義型</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.ColumnEncryptionKeys">
         <source xml:lang="en">Column Encryption Keys</source>
@@ -650,9 +70,37 @@
         <source xml:lang="en">Column Master Keys</source>
         <target state="translated">列マスター キー</target>
       </trans-unit>
+      <trans-unit id="SchemaCompare.CommentOutSetVarDeclarations">
+        <source xml:lang="en">Comment Out Set Var Declarations</source>
+        <target state="translated">コメント アウト セット変数宣言</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.CompareUsingTargetCollation">
+        <source xml:lang="en">Compare Using Target Collation</source>
+        <target state="translated">ターゲットの照合順序を使用して比較する</target>
+      </trans-unit>
       <trans-unit id="SchemaCompare.Contracts">
         <source xml:lang="en">Contracts</source>
         <target state="translated">コントラクト</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.CreateNewDatabase">
+        <source xml:lang="en">Create New Database</source>
+        <target state="translated">新しいデータベースの作成</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Credentials">
+        <source xml:lang="en">Credentials</source>
+        <target state="translated">資格情報</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.CryptographicProviders">
+        <source xml:lang="en">Cryptographic Providers</source>
+        <target state="translated">暗号化プロバイダー</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.DatabaseAuditSpecifications">
+        <source xml:lang="en">Database Audit Specifications</source>
+        <target state="translated">データベース監査の仕様</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.DatabaseEncryptionKeys">
+        <source xml:lang="en">Database Encryption Keys</source>
+        <target state="translated">データベース暗号化キー</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.DatabaseOptions">
         <source xml:lang="en">Database Options</source>
@@ -662,6 +110,10 @@
         <source xml:lang="en">Database Roles</source>
         <target state="translated">データベース ロール</target>
       </trans-unit>
+      <trans-unit id="SchemaCompare.DatabaseScopedCredentials">
+        <source xml:lang="en">Database Scoped Credentials</source>
+        <target state="translated">データベース スコープ資格情報</target>
+      </trans-unit>
       <trans-unit id="SchemaCompare.DatabaseTriggers">
         <source xml:lang="en">Database Triggers</source>
         <target state="translated">データベース トリガー</target>
@@ -669,6 +121,374 @@
       <trans-unit id="SchemaCompare.Defaults">
         <source xml:lang="en">Defaults</source>
         <target state="translated">既定値</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.DeployDatabaseInSingleUserMode">
+        <source xml:lang="en">Deploy Database In Single User Mode</source>
+        <target state="translated">シングル ユーザー モードでデータベースをデプロイする</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.AllowDropBlockingAssemblies">
+        <source xml:lang="en">This property is used by SqlClr deployment to cause any blocking assemblies to be dropped as part of the deployment plan. By default, any blocking/referencing assemblies will block an assembly update if the referencing assembly needs to be dropped.</source>
+        <target state="translated">このプロパティは、デプロイ計画の一部として、ブロックしているアセンブリを削除するために、SqlClr デプロイによって使用されます。既定では、参照しているアセンブリを削除する必要がある場合、ブロックまたは参照しているアセンブリは、アセンブリの更新をブロックします。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.AllowIncompatiblePlatform">
+        <source xml:lang="en">Specifies whether to attempt the action despite incompatible SQL Server platforms.</source>
+        <target state="translated">互換性のない SQL Server プラットフォームであっても操作を行うかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.AllowUnsafeRowLevelSecurityDataMovement">
+        <source xml:lang="en">Do not block data motion on a table which has Row Level Security if this property is set to true. Default is false.</source>
+        <target state="translated">このプロパティが true に設定されている場合、行レベル セキュリティを使用するテーブルに対するデータ モーションをブロックしません。既定値は false です。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.BackupDatabaseBeforeChanges">
+        <source xml:lang="en">Backups the database before deploying any changes.</source>
+        <target state="translated">変更をデプロイする前にデータベースをバックアップします。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.BlockOnPossibleDataLoss">
+        <source xml:lang="en">Specifies that the publish episode should be terminated if there is a possibility of data loss resulting from the publish operation.</source>
+        <target state="translated">公開操作によるデータ損失の可能性がある場合に、今回の公開を終了するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.BlockWhenDriftDetected">
+        <source xml:lang="en">Specifies whether to block updating a database whose schema no longer matches its registration or is unregistered.</source>
+        <target state="translated">スキーマがその登録内容と一致しなくなったか、登録が解除されているデータベースの更新を、ブロックするかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.CommentOutSetVarDeclarations">
+        <source xml:lang="en">Specifies whether the declaration of SETVAR variables should be commented out in the generated publish script. You might choose to do this if you plan to specify the values on the command line when you publish by using a tool such as SQLCMD.EXE.</source>
+        <target state="translated">生成された公開スクリプトで SETVAR 変数の宣言をコメントにするかを指定します。SQLCMD.EXE などのツールを使用して公開するときにコマンド ラインに値を指定する場合は、このオプションを選択することをお勧めします。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.CompareUsingTargetCollation">
+        <source xml:lang="en">This setting dictates how the database's collation is handled during deployment; by default the target database's collation will be updated if it does not match the collation specified by the source.  When this option is set, the target database's (or server's) collation should be used.</source>
+        <target state="translated">この設定は、デプロイの際にデータベースの照合順序を処理する方法を決定します。既定では、ターゲット データベースの照合順序がソースによって指定された照合順序と一致しない場合は更新されます。このオプションを設定すると、ターゲット データベース (またはサーバー) の照合順序を使用する必要があります。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.CreateNewDatabase">
+        <source xml:lang="en">Specifies whether the target database should be updated or whether it should be dropped and re-created when you publish to a database.</source>
+        <target state="translated">データベースに公開するときに、ターゲット データベースを更新するか、削除して作成し直すかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.DeployDatabaseInSingleUserMode">
+        <source xml:lang="en">If true, the database is set to Single User Mode before deploying.</source>
+        <target state="translated">true の場合、データベースはデプロイ前にシングル ユーザー モードに設定されます。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.DisableAndReenableDdlTriggers">
+        <source xml:lang="en">Specifies whether Data Definition Language (DDL) triggers are disabled at the beginning of the publish process and re-enabled at the end of the publish action.</source>
+        <target state="translated">Data Definition Language (DDL) トリガーを公開プロセスの開始時点で無効にし、公開操作の終了時点で再び有効にするかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.DoNotAlterChangeDataCaptureObjects">
+        <source xml:lang="en">If true, Change Data Capture objects are not altered.</source>
+        <target state="translated">true の場合、Change Data Capture オブジェクトは変更されません。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.DoNotAlterReplicatedObjects">
+        <source xml:lang="en">Specifies whether objects that are replicated are identified during verification.</source>
+        <target state="translated">検証中に、レプリケートされるオブジェクトを特定するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.DropConstraintsNotInSource">
+        <source xml:lang="en">Specifies whether constraints that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
+        <target state="translated">データベースに公開するとき、データベース スナップショット (.dacpac) ファイルに存在しない制約をターゲット データベースから削除するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.DropDmlTriggersNotInSource">
+        <source xml:lang="en">Specifies whether DML triggers that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
+        <target state="translated">データベースに公開するとき、データベース スナップショット (.dacpac) ファイルに存在しない DML トリガーが、ターゲット データベースから削除されるかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.DropExtendedPropertiesNotInSource">
+        <source xml:lang="en">Specifies whether extended properties that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
+        <target state="translated">データベースに公開するとき、データベース スナップショット (.dacpac) ファイルに存在しない拡張プロパティをターゲット データベースから削除するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.DropIndexesNotInSource">
+        <source xml:lang="en">Specifies whether indexes that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
+        <target state="translated">データベースに公開するとき、データベース スナップショット (.dacpac) ファイルに存在しないインデックスをターゲット データベースから削除するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.DropObjectsNotInSource">
+        <source xml:lang="en">Specifies whether objects that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.  This value takes precedence over DropExtendedProperties.</source>
+        <target state="translated">データベースに公開するとき、データベース スナップショット (.dacpac) ファイルに存在しないオブジェクトをターゲット データベースから削除するかを指定します。この値は DropExtendedProperties よりも優先されます。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.DropPermissionsNotInSource">
+        <source xml:lang="en">Specifies whether permissions that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish updates to a database.</source>
+        <target state="translated">データベースに更新を公開するとき、データベース スナップショット (.dacpac) ファイルに存在しない権限をターゲット データベースから削除するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.DropRoleMembersNotInSource">
+        <source xml:lang="en">Specifies whether role members that are not defined in the database snapshot (.dacpac) file will be dropped from the target database when you publish updates to a database.&lt;/</source>
+        <target state="translated">データベースに更新を公開するとき、データベース スナップショット (.dacpac) ファイルで定義されていないロール メンバーをターゲット データベースから削除するかを指定します。&lt;/</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.DropStatisticsNotInSource">
+        <source xml:lang="en">Specifies whether statistics that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
+        <target state="translated">データベースに公開するとき、データベース スナップショット (.dacpac) ファイルに存在しない統計をターゲット データベースから削除するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.GenerateSmartDefaults">
+        <source xml:lang="en">Automatically provides a default value when updating a table that contains data with a column that does not allow null values.</source>
+        <target state="translated">NULL 値を許可しない列を使用してデータが含まれるテーブルを更新するときに、自動的に既定値を指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreAnsiNulls">
+        <source xml:lang="en">Specifies whether differences in the ANSI NULLS setting should be ignored or updated when you publish to a database.</source>
+        <target state="translated">データベースに公開するとき、ANSI NULLS 設定の相違を無視するか、更新するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreAuthorizer">
+        <source xml:lang="en">Specifies whether differences in the Authorizer should be ignored or updated when you publish to a database.</source>
+        <target state="translated">データベースに公開するとき、Authorizer の相違を無視するか、更新するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreColumnCollation">
+        <source xml:lang="en">Specifies whether differences in the column collations should be ignored or updated when you publish to a database.</source>
+        <target state="translated">データベースに公開するとき、列の照合順序の相違を無視するか、更新するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreColumnOrder">
+        <source xml:lang="en">Specifies whether differences in table column order should be ignored or updated when you publish to a database.</source>
+        <target state="translated">データベースに公開するときに、テーブルの列の順序の違いを無視するか、更新するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreComments">
+        <source xml:lang="en">Specifies whether differences in the comments should be ignored or updated when you publish to a database.</source>
+        <target state="translated">データベースに公開するとき、コメントの相違を無視するか、更新するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreCryptographicProviderFilePath">
+        <source xml:lang="en">Specifies whether differences in the file path for the cryptographic provider should be ignored or updated when you publish to a database.</source>
+        <target state="translated">データベースに公開するとき、暗号化プロバイダーのファイル パスの相違を無視するか、更新するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreDdlTriggerOrder">
+        <source xml:lang="en">Specifies whether differences in the order of Data Definition Language (DDL) triggers should be ignored or updated when you publish to a database or server.</source>
+        <target state="translated">データベースまたはサーバーに公開するとき、データ定義言語 (DDL) トリガーの順序の相違を無視するか、更新するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreDdlTriggerState">
+        <source xml:lang="en">Specifies whether differences in the enabled or disabled state of Data Definition Language (DDL) triggers should be ignored or updated when you publish to a database.</source>
+        <target state="translated">データベースに公開するとき、データ定義言語 (DDL) トリガーの有効または無効にされた状態の相違を無視するか、更新するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreDefaultSchema">
+        <source xml:lang="en">Specifies whether differences in the default schema should be ignored or updated when you publish to a database.</source>
+        <target state="translated">データベースに公開するとき、既定のスキーマの相違を無視するか、更新するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreDmlTriggerOrder">
+        <source xml:lang="en">Specifies whether differences in the order of Data Manipulation Language (DML) triggers should be ignored or updated when you publish to a database.</source>
+        <target state="translated">データベースに公開するとき、データ操作言語 (DML) トリガーの順序の相違を無視するか、更新するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreDmlTriggerState">
+        <source xml:lang="en">Specifies whether differences in the enabled or disabled state of DML triggers should be ignored or updated when you publish to a database.</source>
+        <target state="translated">データベースに公開するとき、DML トリガーの有効または無効にされた状態の相違を無視するか、更新するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreExtendedProperties">
+        <source xml:lang="en">Specifies whether extended properties should be ignored.</source>
+        <target state="translated">拡張プロパティを無視するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreFileAndLogFilePath">
+        <source xml:lang="en">Specifies whether differences in the paths for files and log files should be ignored or updated when you publish to a database.</source>
+        <target state="translated">データベースに公開するとき、ファイルおよびログ ファイルのパスの相違を無視するか、更新するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreFileSize">
+        <source xml:lang="en">Specifies whether differences in the file sizes should be ignored or whether a warning should be issued when you publish to a database.</source>
+        <target state="translated">データベースに公開するとき、ファイル サイズの相違を無視するか、または警告を発するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreFilegroupPlacement">
+        <source xml:lang="en">Specifies whether differences in the placement of objects in FILEGROUPs should be ignored or updated when you publish to a database.</source>
+        <target state="translated">データベースに公開するとき、FILEGROUP 内のオブジェクトの配置の相違を無視するか、更新するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreFillFactor">
+        <source xml:lang="en">Specifies whether differences in the fill factor for index storage should be ignored or whether a warning should be issued when you publish to a database.</source>
+        <target state="translated">データベースに公開するとき、インデックス格納の FILL FACTOR の相違を無視するか、または警告を発するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreFullTextCatalogFilePath">
+        <source xml:lang="en">Specifies whether differences in the file path for the full-text catalog should be ignored or whether a warning should be issued when you publish to a database.</source>
+        <target state="translated">データベースに公開するとき、フルテキスト カタログのファイル パスの相違を無視するか、または警告を発するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreIdentitySeed">
+        <source xml:lang="en">Specifies whether differences in the seed for an identity column should be ignored or updated when you publish updates to a database.</source>
+        <target state="translated">データベースに公開するとき、ID 列のシードの相違を無視するか、更新するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreIncrement">
+        <source xml:lang="en">Specifies whether differences in the increment for an identity column should be ignored or updated when you publish to a database.</source>
+        <target state="translated">データベースに公開するとき、ID 列のインクリメントの相違を無視するか、更新するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreIndexOptions">
+        <source xml:lang="en">Specifies whether differences in the index options should be ignored or updated when you publish to a database.</source>
+        <target state="translated">データベースに公開するとき、インデックス オプションの相違を無視するか、更新するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreIndexPadding">
+        <source xml:lang="en">Specifies whether differences in the index padding should be ignored or updated when you publish to a database.</source>
+        <target state="translated">データベースに公開するとき、インデックス パディングの相違を無視するか、更新するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreKeywordCasing">
+        <source xml:lang="en">Specifies whether differences in the casing of keywords should be ignored or updated when you publish to a database.</source>
+        <target state="translated">データベースに公開するとき、キーワードの大文字と小文字の相違を無視するか、更新するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreLockHintsOnIndexes">
+        <source xml:lang="en">Specifies whether differences in the lock hints on indexes should be ignored or updated when you publish to a database.</source>
+        <target state="translated">データベースに公開するとき、インデックスのロック ヒントの相違を無視するか、更新するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreLoginSids">
+        <source xml:lang="en">Specifies whether differences in the security identification number (SID) should be ignored or updated when you publish to a database.</source>
+        <target state="translated">データベースに公開するとき、セキュリティ ID 番号 (SID) の相違を無視するか、更新するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreNotForReplication">
+        <source xml:lang="en">Specifies whether the not for replication settings should be ignored or updated when you publish to a database.</source>
+        <target state="translated">データベースに公開するとき、レプリケーションでは使わない設定を無視するか、更新するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreObjectPlacementOnPartitionScheme">
+        <source xml:lang="en">Specifies whether an object's placement on a partition scheme should be ignored or updated when you publish to a database.</source>
+        <target state="translated">データベースに公開するとき、パーティション構成でのオブジェクトの位置を無視するか、更新するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnorePartitionSchemes">
+        <source xml:lang="en">Specifies whether differences in partition schemes and functions should be ignored or updated when you publish to a database.</source>
+        <target state="translated">データベースに公開するとき、パーティション構成と関数の相違を無視するか、更新するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnorePermissions">
+        <source xml:lang="en">Specifies whether permissions should be ignored.</source>
+        <target state="translated">権限を無視するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreQuotedIdentifiers">
+        <source xml:lang="en">Specifies whether differences in the quoted identifiers setting should be ignored or updated when you publish to a database.</source>
+        <target state="translated">データベースに公開するとき、引用符で囲まれた識別子の相違を無視するか、更新するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreRoleMembership">
+        <source xml:lang="en">Specifies whether differences in the role membership of logins should be ignored or updated when you publish to a database.</source>
+        <target state="translated">データベースに公開するとき、ログインのロール メンバーシップの相違を無視するか、更新するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreRouteLifetime">
+        <source xml:lang="en">Specifies whether differences in the amount of time that SQL Server retains the route in the routing table should be ignored or updated when you publish to a database.</source>
+        <target state="translated">データベースに公開するとき、SQL Server がルーティング テーブルにルートを保持する時間の相違を無視するか、更新するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreSemicolonBetweenStatements">
+        <source xml:lang="en">Specifies whether differences in the semi-colons between T-SQL statements will be ignored or updated when you publish to a database.</source>
+        <target state="translated">データベースに公開するとき、T-SQL ステートメント間のセミコロンの相違を無視するか、更新するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreTableOptions">
+        <source xml:lang="en">Specifies whether differences in the table options will be ignored or updated when you publish to a database.</source>
+        <target state="translated">データベースに公開するとき、テーブル オプションの相違を無視するか、更新するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreUserSettingsObjects">
+        <source xml:lang="en">Specifies whether differences in the user settings objects will be ignored or updated when you publish to a database.</source>
+        <target state="translated">データベースに公開するとき、ユーザー設定オブジェクトの相違を無視するか、更新するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreWhitespace">
+        <source xml:lang="en">Specifies whether differences in white space will be ignored or updated when you publish to a database.</source>
+        <target state="translated">データベースに公開するとき、空白の相違を無視するか、更新するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreWithNocheckOnCheckConstraints">
+        <source xml:lang="en">Specifies whether differences in the value of the WITH NOCHECK clause for check constraints will be ignored or updated when you publish to a database.</source>
+        <target state="translated">データベースに公開するとき、CHECK 制約の WITH NOCHECK 句の値の相違を無視するか、更新するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreWithNocheckOnForeignKeys">
+        <source xml:lang="en">Specifies whether differences in the value of the WITH NOCHECK clause for foreign keys will be ignored or updated when you publish to a database.</source>
+        <target state="translated">データベースに公開するとき、外部キーの WITH NOCHECK 句の値の相違を無視するか、更新するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IncludeCompositeObjects">
+        <source xml:lang="en">Include all composite elements as part of a single publish operation.</source>
+        <target state="translated">単一の公開操作の一部としてすべての複合要素を含めます。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IncludeTransactionalScripts">
+        <source xml:lang="en">Specifies whether transactional statements should be used where possible when you publish to a database.</source>
+        <target state="translated">データベースに公開するとき、可能であればトランザクション ステートメントを使用するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.NoAlterStatementsToChangeClrTypes">
+        <source xml:lang="en">Specifies that publish should always drop and re-create an assembly if there is a difference instead of issuing an ALTER ASSEMBLY statement</source>
+        <target state="translated">アセンブリに相違がある場合、公開で ALTER ASSEMBLY ステートメントを発行するのではなく、常にアセンブリを削除して作成し直すことを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.PopulateFilesOnFileGroups">
+        <source xml:lang="en">Specifies whether a new file is also created when a new FileGroup is created in the target database.</source>
+        <target state="translated">ターゲット データベースで新しいファイル グループが作成されたときに新しいファイルも作成するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.RegisterDataTierApplication">
+        <source xml:lang="en">Specifies whether the schema is registered with the database server.</source>
+        <target state="translated">スキーマをデータベース サーバーに登録するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.RunDeploymentPlanExecutors">
+        <source xml:lang="en">Specifies whether DeploymentPlanExecutor contributors should be run when other operations are executed.</source>
+        <target state="translated">他の操作が実行されているときに、DeploymentPlanExecutor の共同作成者を実行するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.ScriptDatabaseCollation">
+        <source xml:lang="en">Specifies whether differences in the database collation should be ignored or updated when you publish to a database.</source>
+        <target state="translated">データベースに公開するとき、データベース照合順序の相違を無視するか、更新するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.ScriptDatabaseCompatibility">
+        <source xml:lang="en">Specifies whether differences in the database compatibility should be ignored or updated when you publish to a database.</source>
+        <target state="translated">データベースに公開するとき、データベース互換性の相違を無視するか、更新するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.ScriptDatabaseOptions">
+        <source xml:lang="en">Specifies whether target database properties should be set or updated as part of the publish action.</source>
+        <target state="translated">ターゲット データベースのプロパティを公開操作の一部として設定するか、更新するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.ScriptDeployStateChecks">
+        <source xml:lang="en">Specifies whether statements are generated in the publish script to verify that the database name and server name match the names specified in the database project.</source>
+        <target state="translated">データベース名とサーバー名がデータベース プロジェクトで指定された名前と一致していることを確認するステートメントを公開スクリプト内に生成するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.ScriptFileSize">
+        <source xml:lang="en">Controls whether size is specified when adding a file to a filegroup.</source>
+        <target state="translated">ファイル グループにファイルを追加するときにサイズを指定するかを設定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.ScriptNewConstraintValidation">
+        <source xml:lang="en">At the end of publish all of the constraints will be verified as one set, avoiding data errors caused by a check or foreign key constraint in the middle of publish. If set to False, your constraints will be published without checking the corresponding data.</source>
+        <target state="translated">公開の最後に、すべての制約が 1 つのセットとしてチェックされるため、公開の途中でチェックまたは外部キー制約によってデータ エラーが発生することを回避できます。False に設定した場合、対応するデータをチェックすることなく制約が公開されます。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.ScriptRefreshModule">
+        <source xml:lang="en">Include refresh statements at the end of the publish script.</source>
+        <target state="translated">公開スクリプトの末尾に更新ステートメントを含めます。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.TreatVerificationErrorsAsWarnings">
+        <source xml:lang="en">Specifies whether errors encountered during publish verification should be treated as warnings. The check is performed against the generated deployment plan before the plan is executed against your target database. Plan verification detects problems such as the loss of target-only objects (such as indexes) that must be dropped to make a change. Verification will also detect situations where dependencies (such as a table or view) exist because of a reference to a composite project, but do not exist in the target database. You might choose to do this to get a complete list of all issues, instead of having the publish action stop on the first error.</source>
+        <target state="translated">公開の検証中に発生したエラーを警告として扱うかを指定します。デプロイ計画をターゲット データベースに対して実行する前に、生成されたデプロイ計画がチェックされます。計画の検証では、変更を加えるために取り除く必要のあるターゲットのみのオブジェクト (インデックスなど) の損失などの問題が検出されます。また、複合プロジェクトへの参照のためテーブルやビューなどに依存関係が存在するのに、それがターゲット データベースに存在しない状況も検出されます。すべての問題の完全な一覧を取得するには、最初のエラー発生時に公開操作を停止するのではなく、この方法を使用することをお勧めします。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.UnmodifiableObjectWarnings">
+        <source xml:lang="en">Specifies whether warnings should be generated when differences are found in objects that cannot be modified, for example, if the file size or file paths were different for a file.</source>
+        <target state="translated">ファイルのサイズまたはパスが異なるなど、変更できない相違がオブジェクトに見つかった場合に、警告を生成するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.VerifyCollationCompatibility">
+        <source xml:lang="en">Specifies whether collation compatibility is verified.</source>
+        <target state="translated">照合順序の互換性を確認するかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.VerifyDeployment">
+        <source xml:lang="en">Specifies whether checks should be performed before publishing that will stop the publish action if issues are present that might block successful publishing. For example, your publish action might stop if you have foreign keys on the target database that do not exist in the database project, and that will cause errors when you publish.</source>
+        <target state="translated">公開の成功を妨げるような問題が生じた場合に、公開操作を停止する前にチェックを実行するかを指定します。たとえば、データベース プロジェクトに存在しない外部キーがターゲット データベースにあって、公開時にエラーが発生すると、公開操作が停止することがあります。</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.DisableAndReenableDdlTriggers">
+        <source xml:lang="en">Disable And Reenable Ddl Triggers</source>
+        <target state="translated">DDL トリガーを無効にし、再び有効にする</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.DoNotAlterChangeDataCaptureObjects">
+        <source xml:lang="en">Do Not Alter Change Data Capture Objects</source>
+        <target state="translated">変更データ キャプチャ オブジェクトを変更しない</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.DoNotAlterReplicatedObjects">
+        <source xml:lang="en">Do Not Alter Replicated Objects</source>
+        <target state="translated">レプリケートされたオブジェクトを変更しない</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.DropConstraintsNotInSource">
+        <source xml:lang="en">Drop Constraints Not In Source</source>
+        <target state="translated">ソース内にない制約を削除する</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.DropDmlTriggersNotInSource">
+        <source xml:lang="en">Drop Dml Triggers Not In Source</source>
+        <target state="translated">ソース内にない DML トリガーを削除する</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.DropExtendedPropertiesNotInSource">
+        <source xml:lang="en">Drop Extended Properties Not In Source</source>
+        <target state="translated">ソース内にない拡張プロパティを削除する</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.DropIndexesNotInSource">
+        <source xml:lang="en">Drop Indexes Not In Source</source>
+        <target state="translated">ソース内にないインデックスを削除する</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.DropObjectsNotInSource">
+        <source xml:lang="en">Drop Objects Not In Source</source>
+        <target state="translated">ソース内にないオブジェクトをドロップする</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.DropPermissionsNotInSource">
+        <source xml:lang="en">Drop Permissions Not In Source</source>
+        <target state="translated">ソース内にないアクセス許可をドロップする</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.DropRoleMembersNotInSource">
+        <source xml:lang="en">Drop Role Members Not In Source</source>
+        <target state="translated">ソースに含まれないロール メンバーをドロップする</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.DropStatisticsNotInSource">
+        <source xml:lang="en">Drop Statistics Not In Source</source>
+        <target state="translated">ソース内にない統計をドロップする</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Endpoints">
+        <source xml:lang="en">Endpoints</source>
+        <target state="translated">エンドポイント</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ErrorMessages">
+        <source xml:lang="en">Error Messages</source>
+        <target state="translated">エラー メッセージ</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.EventNotifications">
+        <source xml:lang="en">Event Notifications</source>
+        <target state="translated">イベント通知</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.EventSessions">
+        <source xml:lang="en">Event Sessions</source>
+        <target state="translated">イベント セッション</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.ExtendedProperties">
         <source xml:lang="en">Extended Properties</source>
@@ -682,17 +502,21 @@
         <source xml:lang="en">External File Formats</source>
         <target state="translated">外部ファイル形式</target>
       </trans-unit>
-      <trans-unit id="SchemaCompare.ExternalStreams">
-        <source xml:lang="en">External Streams</source>
-        <target state="translated">外部ストリーム</target>
-      </trans-unit>
       <trans-unit id="SchemaCompare.ExternalStreamingJobs">
         <source xml:lang="en">External Streaming Jobs</source>
         <target state="translated">外部ストリーミング ジョブ</target>
       </trans-unit>
+      <trans-unit id="SchemaCompare.ExternalStreams">
+        <source xml:lang="en">External Streams</source>
+        <target state="translated">外部ストリーム</target>
+      </trans-unit>
       <trans-unit id="SchemaCompare.ExternalTables">
         <source xml:lang="en">External Tables</source>
         <target state="translated">外部テーブル</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.FileTables">
+        <source xml:lang="en">File Tables</source>
+        <target state="translated">ファイル テーブル</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Filegroups">
         <source xml:lang="en">Filegroups</source>
@@ -702,10 +526,6 @@
         <source xml:lang="en">Files</source>
         <target state="translated">ファイル</target>
       </trans-unit>
-      <trans-unit id="SchemaCompare.FileTables">
-        <source xml:lang="en">File Tables</source>
-        <target state="translated">ファイル テーブル</target>
-      </trans-unit>
       <trans-unit id="SchemaCompare.FullTextCatalogs">
         <source xml:lang="en">Full Text Catalogs</source>
         <target state="translated">フルテキスト カタログ</target>
@@ -714,9 +534,197 @@
         <source xml:lang="en">Full Text Stoplists</source>
         <target state="translated">フルテキスト ストップリスト</target>
       </trans-unit>
+      <trans-unit id="SchemaCompare.GeneralOptionsLabel">
+        <source xml:lang="en">General Options</source>
+        <target state="translated">全般オプション</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.GenerateSmartDefaults">
+        <source xml:lang="en">Generate SmartDefaults</source>
+        <target state="translated">SmartDefaults の生成</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreAnsiNulls">
+        <source xml:lang="en">Ignore AnsiNulls</source>
+        <target state="translated">AnsiNulls を無視する</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreAuthorizer">
+        <source xml:lang="en">Ignore Authorizer</source>
+        <target state="translated">承認者を無視する</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreColumnCollation">
+        <source xml:lang="en">Ignore Column Collation</source>
+        <target state="translated">列の照合順序を無視する</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreColumnOrder">
+        <source xml:lang="en">Ignore Column Order</source>
+        <target state="translated">列の順序を無視する</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreComments">
+        <source xml:lang="en">Ignore Comments</source>
+        <target state="translated">コメントを無視する</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreCryptographicProviderFilePath">
+        <source xml:lang="en">Ignore Cryptographic Provider FilePath</source>
+        <target state="translated">暗号化プロバイダーのファイル パスを無視する</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreDdlTriggerOrder">
+        <source xml:lang="en">Ignore Ddl Trigger Order</source>
+        <target state="translated">DDL トリガーの順序を無視する</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreDdlTriggerState">
+        <source xml:lang="en">Ignore Ddl Trigger State</source>
+        <target state="translated">DDL トリガーの状態を無視する</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreDefaultSchema">
+        <source xml:lang="en">Ignore Default Schema</source>
+        <target state="translated">既定のスキーマを無視する</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreDmlTriggerOrder">
+        <source xml:lang="en">Ignore Dml Trigger Order</source>
+        <target state="translated">DML トリガーの順序を無視する</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreDmlTriggerState">
+        <source xml:lang="en">Ignore Dml Trigger State</source>
+        <target state="translated">DML トリガーの状態を無視する</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreExtendedProperties">
+        <source xml:lang="en">Ignore Extended Properties</source>
+        <target state="translated">拡張プロパティを無視する</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreFileAndLogFilePath">
+        <source xml:lang="en">Ignore File And Log File Path</source>
+        <target state="translated">ファイルおよびログ ファイル パスを無視する</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreFileSize">
+        <source xml:lang="en">Ignore File Size</source>
+        <target state="translated">ファイル サイズを無視する</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreFilegroupPlacement">
+        <source xml:lang="en">Ignore Filegroup Placement</source>
+        <target state="translated">ファイル グループの配置を無視する</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreFillFactor">
+        <source xml:lang="en">Ignore Fill Factor</source>
+        <target state="translated">FILL FACTOR を無視する</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreFullTextCatalogFilePath">
+        <source xml:lang="en">Ignore Full Text Catalog FilePath</source>
+        <target state="translated">フルテキスト カタログ FilePath を無視する</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreIdentitySeed">
+        <source xml:lang="en">Ignore Identity Seed</source>
+        <target state="translated">ID シードを無視する</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreIncrement">
+        <source xml:lang="en">Ignore Increment</source>
+        <target state="translated">増分を無視する</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreIndexOptions">
+        <source xml:lang="en">Ignore Index Options</source>
+        <target state="translated">インデックス オプションを無視する</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreIndexPadding">
+        <source xml:lang="en">Ignore Index Padding</source>
+        <target state="translated">インデックス パディングを無視する</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreKeywordCasing">
+        <source xml:lang="en">Ignore Keyword Casing</source>
+        <target state="translated">キーワードの大文字/小文字を無視する</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreLockHintsOnIndexes">
+        <source xml:lang="en">Ignore Lock Hints On Indexes</source>
+        <target state="translated">インデックスのロック ヒントを無視する</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreLoginSids">
+        <source xml:lang="en">Ignore Login Sids</source>
+        <target state="translated">ログイン SID を無視する</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreNotForReplication">
+        <source xml:lang="en">Ignore Not For Replication</source>
+        <target state="translated">レプリケーション用以外を無視する</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreObjectPlacementOnPartitionScheme">
+        <source xml:lang="en">Ignore Object Placement On Partition Scheme</source>
+        <target state="translated">パーティション構成でのオブジェクトの位置を無視する</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnorePartitionSchemes">
+        <source xml:lang="en">Ignore Partition Schemes</source>
+        <target state="translated">パーティション構成を無視する</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnorePermissions">
+        <source xml:lang="en">Ignore Permissions</source>
+        <target state="translated">アクセス許可を無視する</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreQuotedIdentifiers">
+        <source xml:lang="en">Ignore Quoted Identifiers</source>
+        <target state="translated">引用符で囲まれた識別子を無視する</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreRoleMembership">
+        <source xml:lang="en">Ignore Role Membership</source>
+        <target state="translated">ロール メンバーシップを無視する</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreRouteLifetime">
+        <source xml:lang="en">Ignore Route Lifetime</source>
+        <target state="translated">ルートの有効期間を無視する</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreSemicolonBetweenStatements">
+        <source xml:lang="en">Ignore Semicolon Between Statements</source>
+        <target state="translated">ステートメント間のセミコロンを無視する</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreTableOptions">
+        <source xml:lang="en">Ignore Table Options</source>
+        <target state="translated">テーブル オプションを無視する</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreUserSettingsObjects">
+        <source xml:lang="en">Ignore User Settings Objects</source>
+        <target state="translated">ユーザー設定オブジェクトを無視する</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreWhitespace">
+        <source xml:lang="en">Ignore Whitespace</source>
+        <target state="translated">空白を無視する</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreWithNocheckOnCheckConstraints">
+        <source xml:lang="en">Ignore With No check On Check Constraints</source>
+        <target state="translated">CHECK 制約の With No check を無視する</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreWithNocheckOnForeignKeys">
+        <source xml:lang="en">Ignore With Nocheck On ForeignKeys</source>
+        <target state="translated">外部キーの With Nocheck を無視する</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IncludeCompositeObjects">
+        <source xml:lang="en">Include Composite Objects</source>
+        <target state="translated">複合オブジェクトを含める</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IncludeTransactionalScripts">
+        <source xml:lang="en">Include Transactional Scripts</source>
+        <target state="translated">トランザクション スクリプトを含める</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.LinkedServerLogins">
+        <source xml:lang="en">Linked Server Logins</source>
+        <target state="translated">リンク サーバー ログイン</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.LinkedServers">
+        <source xml:lang="en">Linked Servers</source>
+        <target state="translated">リンク サーバー</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Logins">
+        <source xml:lang="en">Logins</source>
+        <target state="translated">ログイン</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.MasterKeys">
+        <source xml:lang="en">Master Keys</source>
+        <target state="translated">マスター キー</target>
+      </trans-unit>
       <trans-unit id="SchemaCompare.MessageTypes">
         <source xml:lang="en">Message Types</source>
         <target state="translated">メッセージ型</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.NoAlterStatementsToChangeClrTypes">
+        <source xml:lang="en">No Alter Statements To Change Clr Types</source>
+        <target state="translated">CLR 型を変更する ALTER ステートメントがない</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ObjectTypesOptionsLabel">
+        <source xml:lang="en">Include Object Types</source>
+        <target state="translated">オブジェクトの種類を含める</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.PartitionFunctions">
         <source xml:lang="en">Partition Functions</source>
@@ -730,9 +738,17 @@
         <source xml:lang="en">Permissions</source>
         <target state="translated">アクセス許可</target>
       </trans-unit>
+      <trans-unit id="SchemaCompare.PopulateFilesOnFileGroups">
+        <source xml:lang="en">Populate Files On File Groups</source>
+        <target state="translated">ファイル グループに対してファイルを作成する</target>
+      </trans-unit>
       <trans-unit id="SchemaCompare.Queues">
         <source xml:lang="en">Queues</source>
         <target state="translated">キュー</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.RegisterDataTierApplication">
+        <source xml:lang="en">Register DataTier Application</source>
+        <target state="translated">データ層アプリケーションの登録</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.RemoteServiceBindings">
         <source xml:lang="en">Remote Service Bindings</source>
@@ -742,13 +758,53 @@
         <source xml:lang="en">Role Membership</source>
         <target state="translated">ロール メンバーシップ</target>
       </trans-unit>
+      <trans-unit id="SchemaCompare.Routes">
+        <source xml:lang="en">Routes</source>
+        <target state="translated">ルート</target>
+      </trans-unit>
       <trans-unit id="SchemaCompare.Rules">
         <source xml:lang="en">Rules</source>
         <target state="translated">ルール</target>
       </trans-unit>
+      <trans-unit id="SchemaCompare.RunDeploymentPlanExecutors">
+        <source xml:lang="en">Run Deployment Plan Executors</source>
+        <target state="translated">デプロイ計画 Executor の実行</target>
+      </trans-unit>
       <trans-unit id="SchemaCompare.ScalarValuedFunctions">
         <source xml:lang="en">Scalar Valued Functions</source>
         <target state="translated">スカラー値関数</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.SchemaCompareOptionsDialogLabel">
+        <source xml:lang="en">Schema Compare Options</source>
+        <target state="translated">Schema Compare のオプション</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ScriptDatabaseCollation">
+        <source xml:lang="en">Script Database Collation</source>
+        <target state="translated">スクリプトでのデータベース照合順序</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ScriptDatabaseCompatibility">
+        <source xml:lang="en">Script Database Compatibility</source>
+        <target state="translated">スクリプトでのデータベース互換性</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ScriptDatabaseOptions">
+        <source xml:lang="en">Script Database Options</source>
+        <target state="translated">スクリプトでのデータベース オプション</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ScriptDeployStateChecks">
+        <source xml:lang="en">Script Deploy StateChecks</source>
+        <target state="translated">スクリプトでのデプロイ状態チェック</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ScriptFileSize">
+        <source xml:lang="en">Script File Size</source>
+        <target state="translated">スクリプト ファイル サイズ</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ScriptNewConstraintValidation">
+        <source xml:lang="en">Script New Constraint Validation</source>
+        <target state="translated">スクリプトでの新しい制約の検証</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ScriptRefreshModule">
+        <source xml:lang="en">Script Refresh Module</source>
+        <target state="translated">スクリプトでの更新モジュール</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.SearchPropertyLists">
         <source xml:lang="en">Search Property Lists</source>
@@ -761,6 +817,22 @@
       <trans-unit id="SchemaCompare.Sequences">
         <source xml:lang="en">Sequences</source>
         <target state="translated">シーケンス</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ServerAuditSpecifications">
+        <source xml:lang="en">Server Audit Specifications</source>
+        <target state="translated">サーバー監査の仕様</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ServerRoleMembership">
+        <source xml:lang="en">Server Role Membership</source>
+        <target state="translated">サーバー ロール メンバーシップ</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ServerRoles">
+        <source xml:lang="en">Server Roles</source>
+        <target state="translated">サーバー ロール</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ServerTriggers">
+        <source xml:lang="en">Server Triggers</source>
+        <target state="translated">サーバー トリガー</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Services">
         <source xml:lang="en">Services</source>
@@ -782,13 +854,21 @@
         <source xml:lang="en">Synonyms</source>
         <target state="translated">シノニム</target>
       </trans-unit>
+      <trans-unit id="SchemaCompare.TableValuedFunctions">
+        <source xml:lang="en">Table Valued Functions</source>
+        <target state="translated">テーブル値関数</target>
+      </trans-unit>
       <trans-unit id="SchemaCompare.Tables">
         <source xml:lang="en">Tables</source>
         <target state="translated">テーブル</target>
       </trans-unit>
-      <trans-unit id="SchemaCompare.TableValuedFunctions">
-        <source xml:lang="en">Table Valued Functions</source>
-        <target state="translated">テーブル値関数</target>
+      <trans-unit id="SchemaCompare.TreatVerificationErrorsAsWarnings">
+        <source xml:lang="en">Treat Verification Errors As Warnings</source>
+        <target state="translated">検証エラーを警告として扱う</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.UnmodifiableObjectWarnings">
+        <source xml:lang="en">Unmodifiable Object Warnings</source>
+        <target state="translated">変更できないオブジェクトの警告</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.UserDefinedDataTypes">
         <source xml:lang="en">User Defined Data Types</source>
@@ -798,13 +878,17 @@
         <source xml:lang="en">User Defined Table Types</source>
         <target state="translated">ユーザー定義テーブル型</target>
       </trans-unit>
-      <trans-unit id="SchemaCompare.ClrUserDefinedTypes">
-        <source xml:lang="en">Clr User Defined Types</source>
-        <target state="translated">Clr ユーザー定義型</target>
-      </trans-unit>
       <trans-unit id="SchemaCompare.Users">
         <source xml:lang="en">Users</source>
         <target state="translated">ユーザー</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.VerifyCollationCompatibility">
+        <source xml:lang="en">Verify Collation Compatibility</source>
+        <target state="translated">照合順序の互換性を確認する</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.VerifyDeployment">
+        <source xml:lang="en">Verify Deployment</source>
+        <target state="translated">デプロイを確認する</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Views">
         <source xml:lang="en">Views</source>
@@ -814,409 +898,325 @@
         <source xml:lang="en">Xml Schema Collections</source>
         <target state="translated">XML スキーマ コレクション</target>
       </trans-unit>
-      <trans-unit id="SchemaCompare.Audits">
-        <source xml:lang="en">Audits</source>
-        <target state="translated">監査</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Credentials">
-        <source xml:lang="en">Credentials</source>
-        <target state="translated">資格情報</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.CryptographicProviders">
-        <source xml:lang="en">Cryptographic Providers</source>
-        <target state="translated">暗号化プロバイダー</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.DatabaseAuditSpecifications">
-        <source xml:lang="en">Database Audit Specifications</source>
-        <target state="translated">データベース監査の仕様</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.DatabaseEncryptionKeys">
-        <source xml:lang="en">Database Encryption Keys</source>
-        <target state="translated">データベース暗号化キー</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.DatabaseScopedCredentials">
-        <source xml:lang="en">Database Scoped Credentials</source>
-        <target state="translated">データベース スコープ資格情報</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Endpoints">
-        <source xml:lang="en">Endpoints</source>
-        <target state="translated">エンドポイント</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.ErrorMessages">
-        <source xml:lang="en">Error Messages</source>
-        <target state="translated">エラー メッセージ</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.EventNotifications">
-        <source xml:lang="en">Event Notifications</source>
-        <target state="translated">イベント通知</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.EventSessions">
-        <source xml:lang="en">Event Sessions</source>
-        <target state="translated">イベント セッション</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.LinkedServerLogins">
-        <source xml:lang="en">Linked Server Logins</source>
-        <target state="translated">リンク サーバー ログイン</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.LinkedServers">
-        <source xml:lang="en">Linked Servers</source>
-        <target state="translated">リンク サーバー</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Logins">
-        <source xml:lang="en">Logins</source>
-        <target state="translated">ログイン</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.MasterKeys">
-        <source xml:lang="en">Master Keys</source>
-        <target state="translated">マスター キー</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Routes">
-        <source xml:lang="en">Routes</source>
-        <target state="translated">ルート</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.ServerAuditSpecifications">
-        <source xml:lang="en">Server Audit Specifications</source>
-        <target state="translated">サーバー監査の仕様</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.ServerRoleMembership">
-        <source xml:lang="en">Server Role Membership</source>
-        <target state="translated">サーバー ロール メンバーシップ</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.ServerRoles">
-        <source xml:lang="en">Server Roles</source>
-        <target state="translated">サーバー ロール</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.ServerTriggers">
-        <source xml:lang="en">Server Triggers</source>
-        <target state="translated">サーバー トリガー</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreTableOptions">
-        <source xml:lang="en">Specifies whether differences in the table options will be ignored or updated when you publish to a database.</source>
-        <target state="translated">データベースに公開するとき、テーブル オプションの相違を無視するか、更新するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreSemicolonBetweenStatements">
-        <source xml:lang="en">Specifies whether differences in the semi-colons between T-SQL statements will be ignored or updated when you publish to a database.</source>
-        <target state="translated">データベースに公開するとき、T-SQL ステートメント間のセミコロンの相違を無視するか、更新するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreRouteLifetime">
-        <source xml:lang="en">Specifies whether differences in the amount of time that SQL Server retains the route in the routing table should be ignored or updated when you publish to a database.</source>
-        <target state="translated">データベースに公開するとき、SQL Server がルーティング テーブルにルートを保持する時間の相違を無視するか、更新するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreRoleMembership">
-        <source xml:lang="en">Specifies whether differences in the role membership of logins should be ignored or updated when you publish to a database.</source>
-        <target state="translated">データベースに公開するとき、ログインのロール メンバーシップの相違を無視するか、更新するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreQuotedIdentifiers">
-        <source xml:lang="en">Specifies whether differences in the quoted identifiers setting should be ignored or updated when you publish to a database.</source>
-        <target state="translated">データベースに公開するとき、引用符で囲まれた識別子の相違を無視するか、更新するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnorePermissions">
-        <source xml:lang="en">Specifies whether permissions should be ignored.</source>
-        <target state="translated">権限を無視するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnorePartitionSchemes">
-        <source xml:lang="en">Specifies whether differences in partition schemes and functions should be ignored or updated when you publish to a database.</source>
-        <target state="translated">データベースに公開するとき、パーティション構成と関数の相違を無視するか、更新するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreObjectPlacementOnPartitionScheme">
-        <source xml:lang="en">Specifies whether an object's placement on a partition scheme should be ignored or updated when you publish to a database.</source>
-        <target state="translated">データベースに公開するとき、パーティション構成でのオブジェクトの位置を無視するか、更新するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreNotForReplication">
-        <source xml:lang="en">Specifies whether the not for replication settings should be ignored or updated when you publish to a database.</source>
-        <target state="translated">データベースに公開するとき、レプリケーションでは使わない設定を無視するか、更新するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreLoginSids">
-        <source xml:lang="en">Specifies whether differences in the security identification number (SID) should be ignored or updated when you publish to a database.</source>
-        <target state="translated">データベースに公開するとき、セキュリティ ID 番号 (SID) の相違を無視するか、更新するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreLockHintsOnIndexes">
-        <source xml:lang="en">Specifies whether differences in the lock hints on indexes should be ignored or updated when you publish to a database.</source>
-        <target state="translated">データベースに公開するとき、インデックスのロック ヒントの相違を無視するか、更新するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreKeywordCasing">
-        <source xml:lang="en">Specifies whether differences in the casing of keywords should be ignored or updated when you publish to a database.</source>
-        <target state="translated">データベースに公開するとき、キーワードの大文字と小文字の相違を無視するか、更新するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreIndexPadding">
-        <source xml:lang="en">Specifies whether differences in the index padding should be ignored or updated when you publish to a database.</source>
-        <target state="translated">データベースに公開するとき、インデックス パディングの相違を無視するか、更新するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreIndexOptions">
-        <source xml:lang="en">Specifies whether differences in the index options should be ignored or updated when you publish to a database.</source>
-        <target state="translated">データベースに公開するとき、インデックス オプションの相違を無視するか、更新するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreIncrement">
-        <source xml:lang="en">Specifies whether differences in the increment for an identity column should be ignored or updated when you publish to a database.</source>
-        <target state="translated">データベースに公開するとき、ID 列のインクリメントの相違を無視するか、更新するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreIdentitySeed">
-        <source xml:lang="en">Specifies whether differences in the seed for an identity column should be ignored or updated when you publish updates to a database.</source>
-        <target state="translated">データベースに公開するとき、ID 列のシードの相違を無視するか、更新するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreUserSettingsObjects">
-        <source xml:lang="en">Specifies whether differences in the user settings objects will be ignored or updated when you publish to a database.</source>
-        <target state="translated">データベースに公開するとき、ユーザー設定オブジェクトの相違を無視するか、更新するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreFullTextCatalogFilePath">
-        <source xml:lang="en">Specifies whether differences in the file path for the full-text catalog should be ignored or whether a warning should be issued when you publish to a database.</source>
-        <target state="translated">データベースに公開するとき、フルテキスト カタログのファイル パスの相違を無視するか、または警告を発するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreWhitespace">
-        <source xml:lang="en">Specifies whether differences in white space will be ignored or updated when you publish to a database.</source>
-        <target state="translated">データベースに公開するとき、空白の相違を無視するか、更新するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreWithNocheckOnForeignKeys">
-        <source xml:lang="en">Specifies whether differences in the value of the WITH NOCHECK clause for foreign keys will be ignored or updated when you publish to a database.</source>
-        <target state="translated">データベースに公開するとき、外部キーの WITH NOCHECK 句の値の相違を無視するか、更新するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.VerifyCollationCompatibility">
-        <source xml:lang="en">Specifies whether collation compatibility is verified.</source>
-        <target state="translated">照合順序の互換性を確認するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.UnmodifiableObjectWarnings">
-        <source xml:lang="en">Specifies whether warnings should be generated when differences are found in objects that cannot be modified, for example, if the file size or file paths were different for a file.</source>
-        <target state="translated">ファイルのサイズまたはパスが異なるなど、変更できない相違がオブジェクトに見つかった場合に、警告を生成するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.TreatVerificationErrorsAsWarnings">
-        <source xml:lang="en">Specifies whether errors encountered during publish verification should be treated as warnings. The check is performed against the generated deployment plan before the plan is executed against your target database. Plan verification detects problems such as the loss of target-only objects (such as indexes) that must be dropped to make a change. Verification will also detect situations where dependencies (such as a table or view) exist because of a reference to a composite project, but do not exist in the target database. You might choose to do this to get a complete list of all issues, instead of having the publish action stop on the first error.</source>
-        <target state="translated">公開の検証中に発生したエラーを警告として扱うかを指定します。デプロイ計画をターゲット データベースに対して実行する前に、生成されたデプロイ計画がチェックされます。計画の検証では、変更を加えるために取り除く必要のあるターゲットのみのオブジェクト (インデックスなど) の損失などの問題が検出されます。また、複合プロジェクトへの参照のためテーブルやビューなどに依存関係が存在するのに、それがターゲット データベースに存在しない状況も検出されます。すべての問題の完全な一覧を取得するには、最初のエラー発生時に公開操作を停止するのではなく、この方法を使用することをお勧めします。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.ScriptRefreshModule">
-        <source xml:lang="en">Include refresh statements at the end of the publish script.</source>
-        <target state="translated">公開スクリプトの末尾に更新ステートメントを含めます。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.ScriptNewConstraintValidation">
-        <source xml:lang="en">At the end of publish all of the constraints will be verified as one set, avoiding data errors caused by a check or foreign key constraint in the middle of publish. If set to False, your constraints will be published without checking the corresponding data.</source>
-        <target state="translated">公開の最後に、すべての制約が 1 つのセットとしてチェックされるため、公開の途中でチェックまたは外部キー制約によってデータ エラーが発生することを回避できます。False に設定した場合、対応するデータをチェックすることなく制約が公開されます。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.ScriptFileSize">
-        <source xml:lang="en">Controls whether size is specified when adding a file to a filegroup.</source>
-        <target state="translated">ファイル グループにファイルを追加するときにサイズを指定するかを設定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.ScriptDeployStateChecks">
-        <source xml:lang="en">Specifies whether statements are generated in the publish script to verify that the database name and server name match the names specified in the database project.</source>
-        <target state="translated">データベース名とサーバー名がデータベース プロジェクトで指定された名前と一致していることを確認するステートメントを公開スクリプト内に生成するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.ScriptDatabaseOptions">
-        <source xml:lang="en">Specifies whether target database properties should be set or updated as part of the publish action.</source>
-        <target state="translated">ターゲット データベースのプロパティを公開操作の一部として設定するか、更新するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.ScriptDatabaseCompatibility">
-        <source xml:lang="en">Specifies whether differences in the database compatibility should be ignored or updated when you publish to a database.</source>
-        <target state="translated">データベースに公開するとき、データベース互換性の相違を無視するか、更新するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.ScriptDatabaseCollation">
-        <source xml:lang="en">Specifies whether differences in the database collation should be ignored or updated when you publish to a database.</source>
-        <target state="translated">データベースに公開するとき、データベース照合順序の相違を無視するか、更新するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.RunDeploymentPlanExecutors">
-        <source xml:lang="en">Specifies whether DeploymentPlanExecutor contributors should be run when other operations are executed.</source>
-        <target state="translated">他の操作が実行されているときに、DeploymentPlanExecutor の共同作成者を実行するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.RegisterDataTierApplication">
-        <source xml:lang="en">Specifies whether the schema is registered with the database server.</source>
-        <target state="translated">スキーマをデータベース サーバーに登録するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.PopulateFilesOnFileGroups">
-        <source xml:lang="en">Specifies whether a new file is also created when a new FileGroup is created in the target database.</source>
-        <target state="translated">ターゲット データベースで新しいファイル グループが作成されたときに新しいファイルも作成するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.NoAlterStatementsToChangeClrTypes">
-        <source xml:lang="en">Specifies that publish should always drop and re-create an assembly if there is a difference instead of issuing an ALTER ASSEMBLY statement</source>
-        <target state="translated">アセンブリに相違がある場合、公開で ALTER ASSEMBLY ステートメントを発行するのではなく、常にアセンブリを削除して作成し直すことを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IncludeTransactionalScripts">
-        <source xml:lang="en">Specifies whether transactional statements should be used where possible when you publish to a database.</source>
-        <target state="translated">データベースに公開するとき、可能であればトランザクション ステートメントを使用するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IncludeCompositeObjects">
-        <source xml:lang="en">Include all composite elements as part of a single publish operation.</source>
-        <target state="translated">単一の公開操作の一部としてすべての複合要素を含めます。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.AllowUnsafeRowLevelSecurityDataMovement">
-        <source xml:lang="en">Do not block data motion on a table which has Row Level Security if this property is set to true. Default is false.</source>
-        <target state="translated">このプロパティが true に設定されている場合、行レベル セキュリティを使用するテーブルに対するデータ モーションをブロックしません。既定値は false です。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreWithNocheckOnCheckConstraints">
-        <source xml:lang="en">Specifies whether differences in the value of the WITH NOCHECK clause for check constraints will be ignored or updated when you publish to a database.</source>
-        <target state="translated">データベースに公開するとき、CHECK 制約の WITH NOCHECK 句の値の相違を無視するか、更新するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreFillFactor">
-        <source xml:lang="en">Specifies whether differences in the fill factor for index storage should be ignored or whether a warning should be issued when you publish to a database.</source>
-        <target state="translated">データベースに公開するとき、インデックス格納の FILL FACTOR の相違を無視するか、または警告を発するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreFileSize">
-        <source xml:lang="en">Specifies whether differences in the file sizes should be ignored or whether a warning should be issued when you publish to a database.</source>
-        <target state="translated">データベースに公開するとき、ファイル サイズの相違を無視するか、または警告を発するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreFilegroupPlacement">
-        <source xml:lang="en">Specifies whether differences in the placement of objects in FILEGROUPs should be ignored or updated when you publish to a database.</source>
-        <target state="translated">データベースに公開するとき、FILEGROUP 内のオブジェクトの配置の相違を無視するか、更新するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.DoNotAlterReplicatedObjects">
-        <source xml:lang="en">Specifies whether objects that are replicated are identified during verification.</source>
-        <target state="translated">検証中に、レプリケートされるオブジェクトを特定するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.DoNotAlterChangeDataCaptureObjects">
-        <source xml:lang="en">If true, Change Data Capture objects are not altered.</source>
-        <target state="translated">true の場合、Change Data Capture オブジェクトは変更されません。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.DisableAndReenableDdlTriggers">
-        <source xml:lang="en">Specifies whether Data Definition Language (DDL) triggers are disabled at the beginning of the publish process and re-enabled at the end of the publish action.</source>
-        <target state="translated">Data Definition Language (DDL) トリガーを公開プロセスの開始時点で無効にし、公開操作の終了時点で再び有効にするかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.DeployDatabaseInSingleUserMode">
-        <source xml:lang="en">If true, the database is set to Single User Mode before deploying.</source>
-        <target state="translated">true の場合、データベースはデプロイ前にシングル ユーザー モードに設定されます。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.CreateNewDatabase">
-        <source xml:lang="en">Specifies whether the target database should be updated or whether it should be dropped and re-created when you publish to a database.</source>
-        <target state="translated">データベースに公開するときに、ターゲット データベースを更新するか、削除して作成し直すかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.CompareUsingTargetCollation">
-        <source xml:lang="en">This setting dictates how the database's collation is handled during deployment; by default the target database's collation will be updated if it does not match the collation specified by the source.  When this option is set, the target database's (or server's) collation should be used.</source>
-        <target state="translated">この設定は、デプロイの際にデータベースの照合順序を処理する方法を決定します。既定では、ターゲット データベースの照合順序がソースによって指定された照合順序と一致しない場合は更新されます。このオプションを設定すると、ターゲット データベース (またはサーバー) の照合順序を使用する必要があります。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.CommentOutSetVarDeclarations">
-        <source xml:lang="en">Specifies whether the declaration of SETVAR variables should be commented out in the generated publish script. You might choose to do this if you plan to specify the values on the command line when you publish by using a tool such as SQLCMD.EXE.</source>
-        <target state="translated">生成された公開スクリプトで SETVAR 変数の宣言をコメントにするかを指定します。SQLCMD.EXE などのツールを使用して公開するときにコマンド ラインに値を指定する場合は、このオプションを選択することをお勧めします。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.BlockWhenDriftDetected">
-        <source xml:lang="en">Specifies whether to block updating a database whose schema no longer matches its registration or is unregistered.</source>
-        <target state="translated">スキーマがその登録内容と一致しなくなったか、登録が解除されているデータベースの更新を、ブロックするかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.BlockOnPossibleDataLoss">
-        <source xml:lang="en">Specifies that the publish episode should be terminated if there is a possibility of data loss resulting from the publish operation.</source>
-        <target state="translated">公開操作によるデータ損失の可能性がある場合に、今回の公開を終了するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.BackupDatabaseBeforeChanges">
-        <source xml:lang="en">Backups the database before deploying any changes.</source>
-        <target state="translated">変更をデプロイする前にデータベースをバックアップします。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.AllowIncompatiblePlatform">
-        <source xml:lang="en">Specifies whether to attempt the action despite incompatible SQL Server platforms.</source>
-        <target state="translated">互換性のない SQL Server プラットフォームであっても操作を行うかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.AllowDropBlockingAssemblies">
-        <source xml:lang="en">This property is used by SqlClr deployment to cause any blocking assemblies to be dropped as part of the deployment plan. By default, any blocking/referencing assemblies will block an assembly update if the referencing assembly needs to be dropped.</source>
-        <target state="translated">このプロパティは、デプロイ計画の一部として、ブロックしているアセンブリを削除するために、SqlClr デプロイによって使用されます。既定では、参照しているアセンブリを削除する必要がある場合、ブロックまたは参照しているアセンブリは、アセンブリの更新をブロックします。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.DropConstraintsNotInSource">
-        <source xml:lang="en">Specifies whether constraints that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
-        <target state="translated">データベースに公開するとき、データベース スナップショット (.dacpac) ファイルに存在しない制約をターゲット データベースから削除するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.DropDmlTriggersNotInSource">
-        <source xml:lang="en">Specifies whether DML triggers that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
-        <target state="translated">データベースに公開するとき、データベース スナップショット (.dacpac) ファイルに存在しない DML トリガーが、ターゲット データベースから削除されるかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.DropExtendedPropertiesNotInSource">
-        <source xml:lang="en">Specifies whether extended properties that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
-        <target state="translated">データベースに公開するとき、データベース スナップショット (.dacpac) ファイルに存在しない拡張プロパティをターゲット データベースから削除するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.DropIndexesNotInSource">
-        <source xml:lang="en">Specifies whether indexes that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
-        <target state="translated">データベースに公開するとき、データベース スナップショット (.dacpac) ファイルに存在しないインデックスをターゲット データベースから削除するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreFileAndLogFilePath">
-        <source xml:lang="en">Specifies whether differences in the paths for files and log files should be ignored or updated when you publish to a database.</source>
-        <target state="translated">データベースに公開するとき、ファイルおよびログ ファイルのパスの相違を無視するか、更新するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreExtendedProperties">
-        <source xml:lang="en">Specifies whether extended properties should be ignored.</source>
-        <target state="translated">拡張プロパティを無視するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreDmlTriggerState">
-        <source xml:lang="en">Specifies whether differences in the enabled or disabled state of DML triggers should be ignored or updated when you publish to a database.</source>
-        <target state="translated">データベースに公開するとき、DML トリガーの有効または無効にされた状態の相違を無視するか、更新するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreDmlTriggerOrder">
-        <source xml:lang="en">Specifies whether differences in the order of Data Manipulation Language (DML) triggers should be ignored or updated when you publish to a database.</source>
-        <target state="translated">データベースに公開するとき、データ操作言語 (DML) トリガーの順序の相違を無視するか、更新するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreDefaultSchema">
-        <source xml:lang="en">Specifies whether differences in the default schema should be ignored or updated when you publish to a database.</source>
-        <target state="translated">データベースに公開するとき、既定のスキーマの相違を無視するか、更新するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreDdlTriggerState">
-        <source xml:lang="en">Specifies whether differences in the enabled or disabled state of Data Definition Language (DDL) triggers should be ignored or updated when you publish to a database.</source>
-        <target state="translated">データベースに公開するとき、データ定義言語 (DDL) トリガーの有効または無効にされた状態の相違を無視するか、更新するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreDdlTriggerOrder">
-        <source xml:lang="en">Specifies whether differences in the order of Data Definition Language (DDL) triggers should be ignored or updated when you publish to a database or server.</source>
-        <target state="translated">データベースまたはサーバーに公開するとき、データ定義言語 (DDL) トリガーの順序の相違を無視するか、更新するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreCryptographicProviderFilePath">
-        <source xml:lang="en">Specifies whether differences in the file path for the cryptographic provider should be ignored or updated when you publish to a database.</source>
-        <target state="translated">データベースに公開するとき、暗号化プロバイダーのファイル パスの相違を無視するか、更新するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.VerifyDeployment">
-        <source xml:lang="en">Specifies whether checks should be performed before publishing that will stop the publish action if issues are present that might block successful publishing. For example, your publish action might stop if you have foreign keys on the target database that do not exist in the database project, and that will cause errors when you publish.</source>
-        <target state="translated">公開の成功を妨げるような問題が生じた場合に、公開操作を停止する前にチェックを実行するかを指定します。たとえば、データベース プロジェクトに存在しない外部キーがターゲット データベースにあって、公開時にエラーが発生すると、公開操作が停止することがあります。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreComments">
-        <source xml:lang="en">Specifies whether differences in the comments should be ignored or updated when you publish to a database.</source>
-        <target state="translated">データベースに公開するとき、コメントの相違を無視するか、更新するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreColumnCollation">
-        <source xml:lang="en">Specifies whether differences in the column collations should be ignored or updated when you publish to a database.</source>
-        <target state="translated">データベースに公開するとき、列の照合順序の相違を無視するか、更新するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreAuthorizer">
-        <source xml:lang="en">Specifies whether differences in the Authorizer should be ignored or updated when you publish to a database.</source>
-        <target state="translated">データベースに公開するとき、Authorizer の相違を無視するか、更新するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreAnsiNulls">
-        <source xml:lang="en">Specifies whether differences in the ANSI NULLS setting should be ignored or updated when you publish to a database.</source>
-        <target state="translated">データベースに公開するとき、ANSI NULLS 設定の相違を無視するか、更新するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.GenerateSmartDefaults">
-        <source xml:lang="en">Automatically provides a default value when updating a table that contains data with a column that does not allow null values.</source>
-        <target state="translated">NULL 値を許可しない列を使用してデータが含まれるテーブルを更新するときに、自動的に既定値を指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.DropStatisticsNotInSource">
-        <source xml:lang="en">Specifies whether statistics that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
-        <target state="translated">データベースに公開するとき、データベース スナップショット (.dacpac) ファイルに存在しない統計をターゲット データベースから削除するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.DropRoleMembersNotInSource">
-        <source xml:lang="en">Specifies whether role members that are not defined in the database snapshot (.dacpac) file will be dropped from the target database when you publish updates to a database.&lt;/</source>
-        <target state="translated">データベースに更新を公開するとき、データベース スナップショット (.dacpac) ファイルで定義されていないロール メンバーをターゲット データベースから削除するかを指定します。&lt;/</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.DropPermissionsNotInSource">
-        <source xml:lang="en">Specifies whether permissions that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish updates to a database.</source>
-        <target state="translated">データベースに更新を公開するとき、データベース スナップショット (.dacpac) ファイルに存在しない権限をターゲット データベースから削除するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.DropObjectsNotInSource">
-        <source xml:lang="en">Specifies whether objects that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.  This value takes precedence over DropExtendedProperties.</source>
-        <target state="translated">データベースに公開するとき、データベース スナップショット (.dacpac) ファイルに存在しないオブジェクトをターゲット データベースから削除するかを指定します。この値は DropExtendedProperties よりも優先されます。</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreColumnOrder">
-        <source xml:lang="en">Specifies whether differences in table column order should be ignored or updated when you publish to a database.</source>
-        <target state="translated">データベースに公開するときに、テーブルの列の順序の違いを無視するか、更新するかを指定します。</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.compareErrorMessage">
-        <source xml:lang="en">Schema Compare failed: {0}</source>
-        <target state="translated">Schema Compare に失敗しました: {0}</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.saveScmpErrorMessage">
-        <source xml:lang="en">Save scmp failed: '{0}'</source>
-        <target state="translated">scmp を保存できませんでした: '{0}'</target>
+      <trans-unit id="SchemaCompareOptionsDialog.Reset">
+        <source xml:lang="en">Reset</source>
+        <target state="translated">リセット</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.ApplyConfirmation">
+        <source xml:lang="en">Are you sure you want to update the target?</source>
+        <target state="translated">ターゲットを更新しますか?</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.CompareDetailsTitle">
+        <source xml:lang="en">Compare Details</source>
+        <target state="translated">詳細の比較</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.GetConnectionString">
+        <source xml:lang="en">Do you want to connect to {0}?</source>
+        <target state="translated">{0} に接続しますか?</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.RecompareToRefresh">
+        <source xml:lang="en">Press Compare to refresh the comparison.</source>
+        <target state="translated">比較を更新するには、[比較] を押します。</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.actionColumn">
+        <source xml:lang="en">Action</source>
+        <target state="translated">アクション</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.addAction">
+        <source xml:lang="en">Add</source>
+        <target state="translated">追加</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.applyButtonDisabledTitle">
+        <source xml:lang="en">Apply is enabled when the target is a database</source>
+        <target state="translated">ターゲットがデータベースの場合に適用が有効になります</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.applyButtonEnabledTitle">
+        <source xml:lang="en">Apply changes to target</source>
+        <target state="translated">ターゲットに変更を適用する</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.applyNoChanges">
+        <source xml:lang="en">No changes to apply</source>
+        <target state="translated">適用する変更はありません</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.cancelCompareButton">
+        <source xml:lang="en">Stop</source>
+        <target state="translated">停止</target>
       </trans-unit>
       <trans-unit id="schemaCompare.cancelErrorMessage">
         <source xml:lang="en">Cancel schema compare failed: '{0}'</source>
         <target state="translated">スキーマ比較を取り消すことができませんでした: '{0}'</target>
       </trans-unit>
+      <trans-unit id="schemaCompare.cannotExcludeMessage">
+        <source xml:lang="en">Cannot exclude {0}. Included dependents exist</source>
+        <target state="translated">{0} を除外することはできません。対象の依存関係が存在します</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.cannotExcludeMessageWithDependent">
+        <source xml:lang="en">Cannot exclude {0}. Included dependents exist, such as {1}</source>
+        <target state="translated">{0} を除外することはできません。対象の依存関係が存在します ({1} など)</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.cannotIncludeMessage">
+        <source xml:lang="en">Cannot include {0}. Excluded dependents exist</source>
+        <target state="translated">{0} を含めることはできません。対象外の依存関係が存在します</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.cannotIncludeMessageWithDependent">
+        <source xml:lang="en">Cannot include {0}. Excluded dependents exist, such as {1}</source>
+        <target state="translated">{0} を含めることはできません。対象外の依存関係が存在します ({1} など)</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.changeAction">
+        <source xml:lang="en">Change</source>
+        <target state="translated">変更</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.compareButton">
+        <source xml:lang="en">Compare</source>
+        <target state="translated">比較</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.compareErrorMessage">
+        <source xml:lang="en">Schema Compare failed: {0}</source>
+        <target state="translated">Schema Compare に失敗しました: {0}</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.dacpacRadioButtonLabel">
+        <source xml:lang="en">Data-tier Application File (.dacpac)</source>
+        <target state="translated">データ層アプリケーション ファイル (.dacpac)</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.databaseButtonLabel">
+        <source xml:lang="en">Database</source>
+        <target state="translated">データベース</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.deleteAction">
+        <source xml:lang="en">Delete</source>
+        <target state="translated">削除</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.dialogTitle">
+        <source xml:lang="en">Schema Compare</source>
+        <target state="translated">Schema Compare</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.differencesTableTitle">
+        <source xml:lang="en">Comparison between Source and Target</source>
+        <target state="translated">ソースとターゲットの比較</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.generateScriptButton">
+        <source xml:lang="en">Generate script</source>
+        <target state="translated">スクリプトの生成</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.generateScriptButtonDisabledTitle">
+        <source xml:lang="en">Generate script is enabled when the target is a database</source>
+        <target state="translated">ターゲットがデータベースの場合にスクリプトの生成が有効になります</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.generateScriptEnabledButton">
+        <source xml:lang="en">Generate script to deploy changes to target</source>
+        <target state="translated">ターゲットに変更をデプロイするスクリプトを生成します</target>
+      </trans-unit>
       <trans-unit id="schemaCompare.generateScriptErrorMessage">
         <source xml:lang="en">Generate script failed: '{0}'</source>
         <target state="translated">スクリプトを生成できませんでした: '{0}'</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.generateScriptNoChanges">
+        <source xml:lang="en">No changes to script</source>
+        <target state="translated">スクリプトに変更はありません</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.includeColumnName">
+        <source xml:lang="en">Include</source>
+        <target state="translated">包含</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.includeExcludeInfoMessage">
+        <source xml:lang="en">Please note that include/exclude operations can take a moment to calculate affected dependencies</source>
+        <target state="translated">対象の依存関係を計算するために、包含/除外操作に少し時間がかかる場合があることにご注意ください</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.noDifferences">
+        <source xml:lang="en">No schema differences were found.</source>
+        <target state="translated">スキーマの違いは見つかりませんでした。</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.openFile">
+        <source xml:lang="en">Open</source>
+        <target state="translated">開く</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.openScmpButton">
+        <source xml:lang="en">Open .scmp file</source>
+        <target state="translated">.scmp ファイルを開く</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.openScmpButtonTitle">
+        <source xml:lang="en">Load source, target, and options saved in an .scmp file</source>
+        <target state="translated">.scmp ファイルに保存されたソース、ターゲット、およびオプションを読み込みます</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.openScmpErrorMessage">
+        <source xml:lang="en">Open scmp failed: '{0}'</source>
+        <target state="translated">scmp を開くことができませんでした: '{0}'</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.optionsButton">
+        <source xml:lang="en">Options</source>
+        <target state="translated">オプション​​</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.radioButtonsLabel">
+        <source xml:lang="en">Type</source>
+        <target state="translated">種類</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.saveFile">
+        <source xml:lang="en">Save</source>
+        <target state="translated">保存</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.saveScmpButton">
+        <source xml:lang="en">Save .scmp file</source>
+        <target state="translated">.scmp ファイルを保存</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.saveScmpButtonTitle">
+        <source xml:lang="en">Save source and target, options, and excluded elements</source>
+        <target state="translated">ソース、ターゲット、オプション、および除外された要素を保存します</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.saveScmpErrorMessage">
+        <source xml:lang="en">Save scmp failed: '{0}'</source>
+        <target state="translated">scmp を保存できませんでした: '{0}'</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.selectConnection">
+        <source xml:lang="en">Select connection</source>
+        <target state="translated">接続の選択</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.selectSourceFile">
+        <source xml:lang="en">Select source file</source>
+        <target state="translated">ソース ファイルの選択</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.selectTargetFile">
+        <source xml:lang="en">Select target file</source>
+        <target state="translated">ターゲット ファイルの選択</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.sourceButtonTitle">
+        <source xml:lang="en">Select Source</source>
+        <target state="translated">ソースの選択</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.sourceNameColumn">
+        <source xml:lang="en">Source Name</source>
+        <target state="translated">ソース名</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.startText">
+        <source xml:lang="en">To compare two schemas, first select a source schema and target schema, then press Compare.</source>
+        <target state="translated">2 つのスキーマを比較するには、最初にソース スキーマとターゲット スキーマを選択し、[比較] を押します。</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.switchButtonTitle">
+        <source xml:lang="en">Switch source and target</source>
+        <target state="translated">ソースとターゲットの切り替え</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.switchDirectionButton">
+        <source xml:lang="en">Switch direction</source>
+        <target state="translated">方向の切り替え</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.targetButtonTitle">
+        <source xml:lang="en">Select Target</source>
+        <target state="translated">ターゲットの選択</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.targetNameColumn">
+        <source xml:lang="en">Target Name</source>
+        <target state="translated">ターゲット名</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.typeColumn">
+        <source xml:lang="en">Type</source>
+        <target state="translated">種類</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.updateButton">
+        <source xml:lang="en">Apply</source>
+        <target state="translated">適用</target>
       </trans-unit>
       <trans-unit id="schemaCompare.updateErrorMessage">
         <source xml:lang="en">Schema Compare Apply failed '{0}'</source>
         <target state="translated">Schema Compare を適用できませんでした '{0}'</target>
       </trans-unit>
-      <trans-unit id="schemaCompare.openScmpErrorMessage">
-        <source xml:lang="en">Open scmp failed: '{0}'</source>
-        <target state="translated">scmp を開くことができませんでした: '{0}'</target>
+      <trans-unit id="schemaCompare.waitText">
+        <source xml:lang="en">Initializing Comparison. This might take a moment.</source>
+        <target state="translated">比較を初期化します。しばらく時間がかかる場合があります。</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.No">
+        <source xml:lang="en">No</source>
+        <target state="translated">いいえ</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.SourceTitle">
+        <source xml:lang="en">Source</source>
+        <target state="translated">ソース</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.TargetTitle">
+        <source xml:lang="en">Target</source>
+        <target state="translated">ターゲット</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.Yes">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">はい</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">キャンセル</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.databaseDropdownTitle">
+        <source xml:lang="en">Database</source>
+        <target state="translated">データベース</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.defaultUser">
+        <source xml:lang="en">default</source>
+        <target state="translated">既定</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.differentSourceMessage">
+        <source xml:lang="en">A different source schema has been selected. Compare to see the comparison?</source>
+        <target state="translated">別のソース スキーマが選択されました。比較を表示して比較しますか?</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.differentSourceTargetMessage">
+        <source xml:lang="en">Different source and target schemas have been selected. Compare to see the comparison?</source>
+        <target state="translated">異なるソース スキーマとターゲット スキーマが選択されています。比較を表示して比較しますか?</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.differentTargetMessage">
+        <source xml:lang="en">A different target schema has been selected. Compare to see the comparison?</source>
+        <target state="translated">別のターゲット スキーマが選択されました。比較を表示して比較しますか?</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.fileTextBoxLabel">
+        <source xml:lang="en">File</source>
+        <target state="translated">ファイル</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.ok">
+        <source xml:lang="en">OK</source>
+        <target state="translated">OK</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.serverDropdownTitle">
+        <source xml:lang="en">Server</source>
+        <target state="translated">サーバー</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.sourceDatabaseDropdown">
+        <source xml:lang="en">Source Database</source>
+        <target state="translated">ソース データベース</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.sourceServerDropdown">
+        <source xml:lang="en">Source Server</source>
+        <target state="translated">ソース サーバー</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.sourceTextBox">
+        <source xml:lang="en">Source file</source>
+        <target state="translated">ソース ファイル</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.targetDatabaseDropdown">
+        <source xml:lang="en">Target Database</source>
+        <target state="translated">ターゲット データベース</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.targetServerDropdown">
+        <source xml:lang="en">Target Server</source>
+        <target state="translated">ターゲット サーバー</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.targetTextBox">
+        <source xml:lang="en">Target file</source>
+        <target state="translated">ターゲット ファイル</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareOptions.RecompareMessage">
+        <source xml:lang="en">Options have changed. Recompare to see the comparison?</source>
+        <target state="translated">オプションが変更されました。比較を表示して再比較しますか?</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/schema-compare/package" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="description">
+        <source xml:lang="en">SQL Server Schema Compare for Azure Data Studio supports comparing the schemas of databases and dacpacs.</source>
+        <target state="translated">Azure Data Studio 用 SQL Server Schema Compare では、データベースと dacpac のスキーマを比較できます。</target>
+      </trans-unit>
+      <trans-unit id="displayName">
+        <source xml:lang="en">SQL Server Schema Compare</source>
+        <target state="translated">SQL Server Schema Compare</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.start">
+        <source xml:lang="en">Schema Compare</source>
+        <target state="translated">Schema Compare</target>
       </trans-unit>
     </body>
   </file>

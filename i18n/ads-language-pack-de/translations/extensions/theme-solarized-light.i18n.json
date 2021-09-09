@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Helles Solarisationsdesign",
 			"description": "Helles Solarisationsdesign für Visual Studio Code",
+			"displayName": "Helles Solarisationsdesign",
 			"themeLabel": "Solarisation hell"
 		}
 	}

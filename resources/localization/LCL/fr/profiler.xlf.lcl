@@ -15,7 +15,7 @@
     <Disp Icon="Expand" Expand="true" Disp="true" LocTbl="false" />
     <Item ItemId=";Xliff Resources" ItemType="0" PsrId="308" Leaf="false">
       <Disp Icon="Str" Disp="true" LocTbl="false" />
-      <Item ItemId=";createSessionDialog.cancel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/profiler/dist/dialogs/profilerCreateSessionDialog.createSessionDialog.cancel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cancel]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -24,7 +24,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";createSessionDialog.create" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/profiler/dist/dialogs/profilerCreateSessionDialog.createSessionDialog.create" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Start]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -33,7 +33,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";createSessionDialog.createSessionFailed" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/profiler/dist/dialogs/profilerCreateSessionDialog.createSessionDialog.createSessionFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to create a session]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -42,7 +42,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";createSessionDialog.dialogOwnerInvalid" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/profiler/dist/dialogs/profilerCreateSessionDialog.createSessionDialog.dialogOwnerInvalid" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Invalid dialog owner, cannot open dialog]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -51,16 +51,16 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";createSessionDialog.enterSessionName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/profiler/dist/dialogs/profilerCreateSessionDialog.createSessionDialog.enterSessionName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enter session name:]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Entrez le nom de la session :]]></Val>
+            <Val><![CDATA[Entrez le nom de la session :]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";createSessionDialog.invalidProviderType" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/profiler/dist/dialogs/profilerCreateSessionDialog.createSessionDialog.invalidProviderType" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Invalid provider type, cannot open dialog]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -69,16 +69,16 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";createSessionDialog.selectTemplates" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/profiler/dist/dialogs/profilerCreateSessionDialog.createSessionDialog.selectTemplates" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select session template:]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Sélectionnez un modèle de session :]]></Val>
+            <Val><![CDATA[Sélectionnez un modèle de session :]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";createSessionDialog.templatesInvalid" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/profiler/dist/dialogs/profilerCreateSessionDialog.createSessionDialog.templatesInvalid" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Invalid templates list, cannot open dialog]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -87,11 +87,74 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";createSessionDialog.title" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/profiler/dist/dialogs/profilerCreateSessionDialog.createSessionDialog.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Start New Profiler Session]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Démarrer une nouvelle session Profiler]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/profiler/package.description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[SQL Server Profiler for Azure Data Studio]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[SQL Server Profiler pour Azure Data Studio]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/profiler/package.displayName" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[SQL Server Profiler]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[SQL Server Profiler]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/profiler/package.profiler.category" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Profiler]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Profileur]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/profiler/package.profiler.contributes.title.newProfler" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Launch Profiler]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Lancer Profiler]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/profiler/package.profiler.contributes.title.openCreateSessionDialog" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Create Profiler Season]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Créer une saison de profileur]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/profiler/package.profiler.contributes.title.start" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Start]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Démarrer]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/profiler/package.profiler.contributes.title.stop" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Stop]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Arrêter]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

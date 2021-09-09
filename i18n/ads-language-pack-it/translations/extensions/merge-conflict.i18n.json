@@ -8,28 +8,46 @@
 	],
 	"version": "1.0.0",
 	"contents": {
+		"dist/codelensProvider": {
+			"acceptBothChanges": "Accetta entrambe le modifiche",
+			"acceptCurrentChange": "Accetta modifica corrente",
+			"acceptIncomingChange": "Accetta modifica in ingresso",
+			"compareChanges": "Confronta le modifiche"
+		},
+		"dist/commandHandler": {
+			"compareChangesTitle": "{0}: modifiche correnti ⟷ modifiche in ingresso",
+			"cursorNotInConflict": "Il cursore dell'editor non si trova all'interno di un conflitto merge",
+			"cursorOnCommonAncestorsRange": "Il cursore dell'editor si trova all'interno del blocco di predecessori comuni. Spostarlo nel blocco \"corrente\" o \"in arrivo\"",
+			"cursorOnSplitterRange": "Il cursore dell'editor si trova all'interno della barra di divisione dei conflitti di merge. Spostarlo nel blocco \"corrente\" o \"in arrivo\"",
+			"noConflicts": "Conflitti merge non trovati in questo file",
+			"noOtherConflictsInThisFile": "Nessun altro conflitto merge trovato in questo file"
+		},
+		"dist/mergeDecorator": {
+			"currentChange": "(modifica corrente)",
+			"incomingChange": "(modifica in ingresso)"
+		},
 		"package": {
-			"displayName": "Esegui merge del conflitto",
-			"description": "Evidenziazione e comandi per i conflitti di merge inline.",
-			"command.category": "Esegui merge del conflitto",
+			"command.accept.all-both": "Accetta tutte in entrambe",
 			"command.accept.all-current": "Accetta tutte le modifiche correnti",
 			"command.accept.all-incoming": "Accetta tutte le modifiche in ingresso",
-			"command.accept.all-both": "Accetta tutte in entrambe",
+			"command.accept.both": "Accetta entrambe",
 			"command.accept.current": "Accetta corrente",
 			"command.accept.incoming": "Accetta modifiche in ingresso",
 			"command.accept.selection": "Accetta selezione",
-			"command.accept.both": "Accetta entrambe",
+			"command.category": "Esegui merge del conflitto",
+			"command.compare": "Confronta il conflitto corrente",
 			"command.next": "Conflitto successivo",
 			"command.previous": "Conflitto precedente",
-			"command.compare": "Confronta il conflitto corrente",
-			"config.title": "Esegui merge del conflitto",
 			"config.autoNavigateNextConflictEnabled": "Indica se passare automaticamente al conflitto successivo dopo la risoluzione di un conflitto di merge.",
 			"config.codeLensEnabled": "Crea le finestre di CodeLens per i blocchi di conflitti di merge all'interno dell'editor.",
 			"config.decoratorsEnabled": "Crea elementi Decorator per blocchi di conflitti di merge all'interno dell'editor.",
 			"config.diffViewPosition": "Controlla dove verrà aperta la visualizzazione differenze quando si confrontano le modifiche nei conflitti di merge.",
-			"config.diffViewPosition.current": "Apri la visualizzazione differenze nel gruppo di editor corrente.",
+			"config.diffViewPosition.below": "Apri la visualizzazione differenze sotto il gruppo di editor corrente.",
 			"config.diffViewPosition.beside": "Apri la visualizzazione differenze accanto al gruppo di editor corrente.",
-			"config.diffViewPosition.below": "Apri la visualizzazione differenze sotto il gruppo di editor corrente."
+			"config.diffViewPosition.current": "Apri la visualizzazione differenze nel gruppo di editor corrente.",
+			"config.title": "Esegui merge del conflitto",
+			"description": "Evidenziazione e comandi per i conflitti di merge inline.",
+			"displayName": "Esegui merge del conflitto"
 		}
 	}
 }
