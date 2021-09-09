@@ -19,35 +19,45 @@ suite('Explorer Widget Tests', () => {
 				metadataTypeName: undefined,
 				urn: undefined,
 				name: 'testView',
-				schema: undefined
+				schema: undefined,
+				parentName: undefined,
+				parentTypeName: undefined
 			},
 			{
 				metadataType: MetadataType.Table,
 				metadataTypeName: undefined,
 				urn: undefined,
 				name: 'testTable',
-				schema: undefined
+				schema: undefined,
+				parentName: undefined,
+				parentTypeName: undefined
 			},
 			{
 				metadataType: MetadataType.SProc,
 				metadataTypeName: undefined,
 				urn: undefined,
 				name: 'testSProc',
-				schema: undefined
+				schema: undefined,
+				parentName: undefined,
+				parentTypeName: undefined
 			},
 			{
 				metadataType: MetadataType.Function,
 				metadataTypeName: undefined,
 				urn: undefined,
 				name: 'testFunction',
-				schema: undefined
+				schema: undefined,
+				parentName: undefined,
+				parentTypeName: undefined
 			},
 			{
 				metadataType: MetadataType.View,
 				metadataTypeName: undefined,
 				urn: undefined,
 				name: 'firstView',
-				schema: undefined
+				schema: undefined,
+				parentName: undefined,
+				parentTypeName: undefined
 			}
 		].map(m => new ObjectMetadataWrapper(m));
 
@@ -84,35 +94,45 @@ suite('Explorer Widget Tests', () => {
 				metadataTypeName: undefined,
 				urn: undefined,
 				name: 'testView',
-				schema: undefined
+				schema: undefined,
+				parentName: undefined,
+				parentTypeName: undefined
 			},
 			{
 				metadataType: MetadataType.Table,
 				metadataTypeName: undefined,
 				urn: undefined,
 				name: 'testTable',
-				schema: undefined
+				schema: undefined,
+				parentName: undefined,
+				parentTypeName: undefined
 			},
 			{
 				metadataType: MetadataType.SProc,
 				metadataTypeName: undefined,
 				urn: undefined,
 				name: 'testSProc',
-				schema: undefined
+				schema: undefined,
+				parentName: undefined,
+				parentTypeName: undefined
 			},
 			{
 				metadataType: MetadataType.Function,
 				metadataTypeName: undefined,
 				urn: undefined,
 				name: 'testFunction',
-				schema: undefined
+				schema: undefined,
+				parentName: undefined,
+				parentTypeName: undefined
 			},
 			{
 				metadataType: MetadataType.View,
 				metadataTypeName: undefined,
 				urn: undefined,
 				name: 'firstView',
-				schema: undefined
+				schema: undefined,
+				parentName: undefined,
+				parentTypeName: undefined
 			}
 		].map(o => new ObjectMetadataWrapper(o));
 		const filter = new ExplorerFilter('database', ['name']);
