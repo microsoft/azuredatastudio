@@ -559,6 +559,8 @@ export class CellModel extends Disposable implements ICellModel {
 				return false;
 			}
 			this._outputCounter = 0;
+			// Hide IntelliSense suggestions list when running cell to match SSMS behavior
+			this._commandService.executeCommand('hideSuggestWidget');
 			this._telemetryService?.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.RunCell)
 				.withAdditionalProperties({ cell_language: kernel.name })
 				.send();
