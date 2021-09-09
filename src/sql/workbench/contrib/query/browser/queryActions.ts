@@ -206,6 +206,7 @@ export class RunQueryAction extends QueryTaskbarAction {
 
 	public override async run(): Promise<void> {
 		if (!this.editor.isSelectionEmpty()) {
+			await this.connectionManagementService.refreshAzureAccountTokenIfNecessary(this.editor.input.uri);
 			if (this.isConnected(this.editor)) {
 				// If we are already connected, run the query
 				this.runQuery(this.editor);
@@ -220,6 +221,7 @@ export class RunQueryAction extends QueryTaskbarAction {
 
 	public async runCurrent(): Promise<void> {
 		if (!this.editor.isSelectionEmpty()) {
+			await this.connectionManagementService.refreshAzureAccountTokenIfNecessary(this.editor.input.uri);
 			if (this.isConnected(this.editor)) {
 				// If we are already connected, run the query
 				this.runQuery(this.editor, true);
@@ -307,6 +309,7 @@ export class EstimatedQueryPlanAction extends QueryTaskbarAction {
 
 	public override async run(): Promise<void> {
 		if (!this.editor.isSelectionEmpty()) {
+			await this.connectionManagementService.refreshAzureAccountTokenIfNecessary(this.editor.input.uri);
 			if (this.isConnected(this.editor)) {
 				// If we are already connected, run the query
 				this.runQuery(this.editor);
@@ -346,6 +349,7 @@ export class ActualQueryPlanAction extends QueryTaskbarAction {
 
 	public override async run(): Promise<void> {
 		if (!this.editor.isSelectionEmpty()) {
+			await this.connectionManagementService.refreshAzureAccountTokenIfNecessary(this.editor.input.uri);
 			if (this.isConnected(this.editor)) {
 				// If we are already connected, run the query
 				this.runQuery(this.editor);

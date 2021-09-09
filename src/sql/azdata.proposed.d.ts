@@ -947,4 +947,13 @@ declare module 'azdata' {
 		 */
 		parentTypeName?: string;
 	}
+
+	export namespace accounts {
+		export interface AccountSecurityToken {
+			/**
+			 * Access token expiry timestamp
+			 */
+			expiresOn?: number
+		}
+	}
 }
