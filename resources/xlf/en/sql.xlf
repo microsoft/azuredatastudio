@@ -1319,6 +1319,21 @@
     <trans-unit id="connection.parseClipboardForConnectionStringDescription">
       <source xml:lang="en">Attempt to parse the contents of the clipboard when the connection dialog is opened or a paste is performed.</source>
     </trans-unit>
+    <trans-unit id="sql.defaultAuthenticationType.AzureMFA">
+      <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
+    </trans-unit>
+    <trans-unit id="sql.defaultAuthenticationType.AzureMFAAndUser">
+      <source xml:lang="en">Azure Active Directory - Password</source>
+    </trans-unit>
+    <trans-unit id="sql.defaultAuthenticationType.Integrated">
+      <source xml:lang="en">Windows Authentication</source>
+    </trans-unit>
+    <trans-unit id="sql.defaultAuthenticationType.SqlLogin">
+      <source xml:lang="en">Sql Login</source>
+    </trans-unit>
+    <trans-unit id="sql.defaultAuthenticationTypeDescription">
+      <source xml:lang="en">Default authentication type to use when connecting to Azure resources. </source>
+    </trans-unit>
     <trans-unit id="sql.defaultEngineDescription">
       <source xml:lang="en">Default SQL Engine to use. This drives default language provider in .sql files and the default to use when creating a new connection.</source>
     </trans-unit>
