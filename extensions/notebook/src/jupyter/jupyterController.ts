@@ -156,7 +156,7 @@ export class JupyterController {
 					+ os.EOL + '.option(\"header\", \"true\")' + os.EOL + '.csv(\'{0}\'))' + os.EOL + 'df.show(10)';
 				// TODO re-enable insert into document once APIs are finalized.
 				// editor.document.cells[0].source = [analyzeCommand.replace('{0}', hdfsPath)];
-				editor.edit(editBuilder => {
+				await editor.edit(editBuilder => {
 					editBuilder.replace(0, {
 						cell_type: 'code',
 						source: analyzeCommand.replace('{0}', hdfsPath)

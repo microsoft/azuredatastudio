@@ -48,7 +48,7 @@ export class BookModel {
 	public watchTOC(): void {
 		fs.watchFile(this.tableOfContentsPath, async (curr, prev) => {
 			if (curr.mtime > prev.mtime) {
-				this.reinitializeContents();
+				this.reinitializeContents().catch(err => console.error('Error reinitializing book contents ', err));
 			}
 		});
 	}

@@ -155,8 +155,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	async createBook(): Promise<void> {
 		const dialog = new CreateBookDialog(this.bookTocManager);
-		dialog.createDialog();
 		TelemetryReporter.sendActionEvent(BookTelemetryView, NbTelemetryActions.CreateBook);
+		return dialog.createDialog();
 	}
 
 	async getSelectionQuickPick(movingElement: BookTreeItem): Promise<quickPickResults> {
@@ -237,7 +237,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 			if (showPreview) {
 				this.currentBook = this.books.find(book => book.bookPath === bookPath);
-				this._bookViewer.reveal(this.currentBook.bookItems[0], { expand: vscode.TreeItemCollapsibleState.Expanded, focus: true, select: true });
+				await this._bookViewer.reveal(this.currentBook.bookItems[0], { expand: vscode.TreeItemCollapsibleState.Expanded, focus: true, select: true });
 				await this.showPreviewFile(urlToOpen);
 			}
 

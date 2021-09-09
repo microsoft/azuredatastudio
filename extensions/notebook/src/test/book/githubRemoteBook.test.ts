@@ -31,7 +31,7 @@ describe('Github Remote Book', function () {
 
 	it('Verify GitHub Remote Book is created by controller', async function (): Promise<void> {
 		let releaseURL = vscode.Uri.parse('https://api.github.com/repos/microsoft/test/releases/v1');
-		let asset : IAsset = {
+		let asset: IAsset = {
 			name: 'CU-1.0-EN.zip',
 			book: 'CU',
 			version: '1.0',
@@ -41,7 +41,13 @@ describe('Github Remote Book', function () {
 			browserDownloadUrl: vscode.Uri.parse('https://github.com/microsoft/test/releases/download/v1/CU-1.0-EN.zip'),
 		};
 		let remoteLocation = loc.onGitHub;
-		controller.setRemoteBook(releaseURL, remoteLocation, asset);
+		nock('https://github.com')
+			.persist()
+			.get('/microsoft/test/releases/download/v1/CU-1.0-EN.zip')
+			.replyWithFile(200, __filename);
+		// Aren't returning an actual zip so just stub this out since we don't care about actually testing that functionality currently
+		sinon.stub(GitHubRemoteBook.prototype, 'extractFiles').resolves();
+		await controller.setRemoteBook(releaseURL, remoteLocation, asset);
 		should(controller.model.remoteBook).not.null();
 		should(controller.model.remoteBook instanceof GitHubRemoteBook).be.true();
 		let book = model.remoteBook as GitHubRemoteBook;
@@ -50,7 +56,7 @@ describe('Github Remote Book', function () {
 
 	it('Verify set local path is called when creating a GitHub Remote Book', async function (): Promise<void> {
 		let releaseURL = vscode.Uri.parse('https://api.github.com/repos/microsoft/test/releases/v1');
-		let asset : IAsset = {
+		let asset: IAsset = {
 			name: 'CU-1.0-EN.zip',
 			book: 'CU',
 			version: '1.0',
@@ -60,16 +66,22 @@ describe('Github Remote Book', function () {
 			browserDownloadUrl: vscode.Uri.parse('https://github.com/microsoft/test/releases/download/v1/CU-1.0-EN.zip'),
 		};
 		let remoteLocation = loc.onGitHub;
+		nock('https://github.com')
+			.persist()
+			.get('/microsoft/test/releases/download/v1/CU-1.0-EN.zip')
+			.replyWithFile(200, __filename);
+		// Aren't returning an actual zip so just stub this out since we don't care about actually testing that functionality currently
 		const createCopySpy = sinon.spy(GitHubRemoteBook.prototype, 'createLocalCopy');
+		sinon.stub(GitHubRemoteBook.prototype, 'extractFiles').resolves();
 		const setPathSpy = sinon.spy(RemoteBook.prototype, 'setLocalPath');
-		controller.setRemoteBook(releaseURL, remoteLocation, asset);
-		should(createCopySpy.calledOnce).be.true();
-		should(setPathSpy.calledOnce).be.true();
+		await controller.setRemoteBook(releaseURL, remoteLocation, asset);
+		should(createCopySpy.calledOnce).be.true('createLocalCopy not called');
+		should(setPathSpy.calledOnce).be.true('setLocalPath not called');
 	});
 
 	it('Should download contents from Github', async function (): Promise<void> {
 		let releaseURL = vscode.Uri.parse('https://api.github.com/repos/microsoft/test/releases/v1');
-		let asset : IAsset = {
+		let asset: IAsset = {
 			name: 'CU-1.0-EN.zip',
 			book: 'CU',
 			version: '1.0',
@@ -79,18 +91,19 @@ describe('Github Remote Book', function () {
 			browserDownloadUrl: vscode.Uri.parse('https://github.com/microsoft/test/releases/download/v1/CU-1.0-EN.zip'),
 		};
 		let remoteLocation = loc.onGitHub;
-		controller.setRemoteBook(releaseURL, remoteLocation, asset);
+		const setExtractSpy = sinon.spy(GitHubRemoteBook.prototype, 'extractFiles');
+		nock('https://github.com')
+			.persist()
+			.get('/microsoft/test/releases/download/v1/CU-1.0-EN.zip')
+			.replyWithFile(200, __filename);
+		await controller.setRemoteBook(releaseURL, remoteLocation, asset);
 
 		model.remoteBook.localPath = vscode.Uri.file(os.tmpdir());
 		let setPathStub = sinon.stub(GitHubRemoteBook.prototype, 'setLocalPath');
-		setPathStub.callsFake(function() {
+		setPathStub.callsFake(function () {
 			console.log(`Downloading book in ${model.remoteBook.localPath}`);
 		});
-		const setExtractSpy = sinon.spy(GitHubRemoteBook.prototype, 'extractFiles');
-		nock('https://github.com')
-				.persist()
-				.get('/microsoft/test/releases/download/v1/CU-1.0-EN.zip')
-				.replyWithFile(200, __filename);
+
 		await model.remoteBook.createLocalCopy();
 		should(setExtractSpy.calledOnceWith(vscode.Uri.file(model.remoteBook.localPath.fsPath)));
 		await fs.promises.stat(model.remoteBook.localPath.fsPath);
@@ -98,18 +111,18 @@ describe('Github Remote Book', function () {
 
 	it('Should reject if unexpected error', async function (): Promise<void> {
 		nock('https://github.com')
-				.persist()
-				.get('/microsoft/test/releases/download/v1/CU-1.0-EN.zip')
-				.replyWithError(new Error('Unexpected Error'));
+			.persist()
+			.get('/microsoft/test/releases/download/v1/CU-1.0-EN.zip')
+			.replyWithError(new Error('Unexpected Error'));
 		await should(model.remoteBook.createLocalCopy()).be.rejected();
 	});
 
 	it('Should reject if response status code is not 200', async function (): Promise<void> {
 		nock('https://github.com')
-				.persist()
-				.get('/microsoft/test/releases/download/v1/CU-1.0-EN.zip')
-				.reply(404);
-		const createLocalCopy =  model.remoteBook.createLocalCopy();
+			.persist()
+			.get('/microsoft/test/releases/download/v1/CU-1.0-EN.zip')
+			.reply(404);
+		const createLocalCopy = model.remoteBook.createLocalCopy();
 		await should(createLocalCopy).be.rejected();
 	});
 });

@@ -71,7 +71,7 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.openRemoteBook', async () => {
 		let dialog = new RemoteBookDialog(remoteBookController);
-		dialog.createDialog();
+		return dialog.createDialog();
 	}));
 
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('_notebook.command.new', async (options?: azdata.nb.NotebookShowOptions) => {
