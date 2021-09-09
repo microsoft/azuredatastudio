@@ -54,12 +54,23 @@ export class SchemaCompareService implements mssql.ISchemaCompareService {
 		);
 	}
 
-	public schemaComparePublishChanges(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
-		const params: contracts.SchemaComparePublishChangesParams = { operationId: operationId, targetServerName: targetServerName, targetDatabaseName: targetDatabaseName, taskExecutionMode: taskExecutionMode };
-		return this.client.sendRequest(contracts.SchemaComparePublishChangesRequest.type, params).then(
+	public schemaComparePublishDatabaseChanges(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
+		const params: contracts.SchemaComparePublishDatabaseChangesParams = { operationId: operationId, targetServerName: targetServerName, targetDatabaseName: targetDatabaseName, taskExecutionMode: taskExecutionMode };
+		return this.client.sendRequest(contracts.SchemaComparePublishDatabaseChangesRequest.type, params).then(
 			undefined,
 			e => {
-				this.client.logFailedRequest(contracts.SchemaComparePublishChangesRequest.type, e);
+				this.client.logFailedRequest(contracts.SchemaComparePublishDatabaseChangesRequest.type, e);
+				return Promise.resolve(undefined);
+			}
+		);
+	}
+
+	public schemaComparePublishProjectChanges(operationId: string, targetProjectPath: string, targetFolderStructure: contracts.DacExtractTarget, taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.SchemaComparePublishProjectResult> {
+		const params: contracts.SchemaComparePublishProjectChangesParams = { operationId: operationId, targetProjectPath: targetProjectPath, targetFolderStructure: targetFolderStructure, taskExecutionMode: taskExecutionMode };
+		return this.client.sendRequest(contracts.SchemaComparePublishProjectChangesRequest.type, params).then(
+			undefined,
+			(e: any) => {
+				this.client.logFailedRequest(contracts.SchemaComparePublishProjectChangesRequest.type, e);
 				return Promise.resolve(undefined);
 			}
 		);

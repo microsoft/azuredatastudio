@@ -7,6 +7,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import { DacExtractTarget } from './contracts';
 
 /**
  * Covers defining what the mssql extension exports to other extensions
@@ -122,7 +123,8 @@ export const enum SchemaDifferenceType {
 
 export const enum SchemaCompareEndpointType {
 	Database = 0,
-	Dacpac = 1
+	Project = 1,
+	Dacpac = 2
 }
 
 export interface SchemaCompareEndpointInfo {
@@ -134,6 +136,10 @@ export interface SchemaCompareEndpointInfo {
 	ownerUri: string;
 	connectionDetails: azdata.ConnectionInfo;
 	connectionName?: string;
+	projectFilePath: string;
+	targetScripts: string[];
+	folderStructure: string;
+	dataSchemaProvider: string;
 }
 
 export interface SchemaCompareObjectId {
@@ -310,7 +316,8 @@ export interface ISchemaCompareService {
 
 	schemaCompare(operationId: string, sourceEndpointInfo: SchemaCompareEndpointInfo, targetEndpointInfo: SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: DeploymentOptions): Thenable<SchemaCompareResult>;
 	schemaCompareGenerateScript(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus>;
-	schemaComparePublishChanges(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus>;
+	schemaComparePublishDatabaseChanges(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus>;
+	schemaComparePublishProjectChanges(operationId: string, targetProjectPath: string, targetFolderStructure: DacExtractTarget, taskExecutionMode: azdata.TaskExecutionMode): Thenable<SchemaComparePublishProjectResult>;
 	schemaCompareGetDefaultOptions(): Thenable<SchemaCompareOptionsResult>;
 	schemaCompareIncludeExcludeNode(operationId: string, diffEntry: DiffEntry, IncludeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<SchemaCompareIncludeExcludeResult>;
 	schemaCompareOpenScmp(filePath: string): Thenable<SchemaCompareOpenScmpResult>;
@@ -326,6 +333,12 @@ export interface SchemaCompareOpenScmpResult extends azdata.ResultStatus {
 	deploymentOptions: DeploymentOptions;
 	excludedSourceElements: SchemaCompareObjectId[];
 	excludedTargetElements: SchemaCompareObjectId[];
+}
+
+export interface SchemaComparePublishProjectResult extends azdata.ResultStatus {
+	changedFiles: string[];
+	addedFiles: string[];
+	deletedFiles: string[];
 }
 
 //#endregion
