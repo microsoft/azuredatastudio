@@ -54,8 +54,8 @@ else {
 	// Running out of sources
 	if (Object.keys(product).length === 0) {
 		Object.assign(product, {
-			version: '1.27.0-dev',
-			vscodeVersion: '1.53.0-dev',
+			version: '1.33.0-dev',
+			vscodeVersion: '1.59.0-dev',
 			nameLong: isWeb ? 'Azure Data Studio Web Dev' : 'Azure Data Studio Dev',
 			nameShort: isWeb ? 'Azure Data Studio Web Dev' : 'Azure Data Studio Dev',
 			applicationName: 'azuredatastudio-oss',
