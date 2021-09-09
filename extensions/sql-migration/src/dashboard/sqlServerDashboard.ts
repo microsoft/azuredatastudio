@@ -648,8 +648,22 @@ export class DashboardWidget {
 		this._disposables.push(addAccountButton.onDidClick(async (e) => {
 			await vscode.commands.executeCommand('workbench.actions.modal.linkedAccount');
 			addAccountButton.enabled = false;
+			let accounts = await azdata.accounts.getAllAccounts();
+
+			if (accounts.length !== 0) {
+				addAccountImage.updateCssStyles({
+					'display': 'none'
+				});
+				addAccountText.updateCssStyles({
+					'display': 'none'
+				});
+				addAccountButton.updateCssStyles({
+					'display': 'none'
+				});
+				this._migrationStatusCardsContainer.updateCssStyles({ 'visibility': 'visible' });
+				this._viewAllMigrationsButton.updateCssStyles({ 'visibility': 'visible' });
+			}
 			await this.refreshMigrations();
-			addAccountButton.enabled = true;
 		}));
 
 		const header = view.modelBuilder.flexContainer().withItems(
@@ -675,13 +689,8 @@ export class DashboardWidget {
 			addAccountButton.updateCssStyles({
 				'display': 'block'
 			});
-			this._migrationStatusCardsContainer.updateCssStyles({
-				'visibility': 'hidden'
-			});
-			buttonContainer.removeItem(this._viewAllMigrationsButton);
-			refreshButton.updateCssStyles({
-				'float': 'right'
-			});
+			this._migrationStatusCardsContainer.updateCssStyles({ 'visibility': 'hidden' });
+			this._viewAllMigrationsButton.updateCssStyles({ 'visibility': 'hidden' });
 		}
 
 		this._inProgressMigrationButton = this.createStatusCard(
