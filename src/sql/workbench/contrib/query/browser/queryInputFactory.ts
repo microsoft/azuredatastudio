@@ -57,22 +57,7 @@ export class QueryEditorLanguageAssociation implements ILanguageAssociation {
 			}) as UntitledQueryEditorInput;
 		}
 
-		const existingProfile = this.connectionManagementService.getConnectionProfile(queryEditorInput.uri);
-		// Create new connection if only there is no existing connectionProfile with the uri.
-		if (!existingProfile) {
-			const profile = getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
-			if (profile) {
-				const options: IConnectionCompletionOptions = {
-					params: { connectionType: ConnectionType.editor, runQueryOnCompletion: undefined, input: queryEditorInput },
-					saveTheConnection: false,
-					showDashboard: false,
-					showConnectionDialogOnError: true,
-					showFirewallRuleOnError: true
-				};
-				this.connectionManagementService.connect(profile, queryEditorInput.uri, options).catch(err => onUnexpectedError(err));
-			}
-		}
-
+		this.connectInput(queryEditorInput);
 		return queryEditorInput;
 	}
 
@@ -87,6 +72,11 @@ export class QueryEditorLanguageAssociation implements ILanguageAssociation {
 			return undefined;
 		}
 
+		this.connectInput(queryEditorInput);
+		return queryEditorInput;
+	}
+
+	private connectInput(queryEditorInput: QueryEditorInput): void {
 		const existingProfile = this.connectionManagementService.getConnectionProfile(queryEditorInput.uri);
 		// Create new connection if only there is no existing connectionProfile with the uri.
 		if (!existingProfile) {
@@ -102,8 +92,6 @@ export class QueryEditorLanguageAssociation implements ILanguageAssociation {
 				this.connectionManagementService.connect(profile, queryEditorInput.uri, options).catch(err => onUnexpectedError(err));
 			}
 		}
-
-		return queryEditorInput;
 	}
 
 	createBase(activeEditor: QueryEditorInput): IEditorInput {
