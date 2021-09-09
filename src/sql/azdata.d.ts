@@ -4932,7 +4932,9 @@ declare module 'azdata' {
 		 * @param notebook provider
 		 * @returns disposable
 		 */
-		export function registerNotebookProvider(provider: NotebookProvider): vscode.Disposable;
+		export function registerContentProvider(provider: NotebookContentProvider): vscode.Disposable;
+		export function registerSessionProvider(provider: NotebookSessionProvider): vscode.Disposable;
+		export function registerServerProvider(provider: NotebookServerProvider): vscode.Disposable;
 
 		export interface IStandardKernel {
 			readonly name: string;
@@ -4940,30 +4942,20 @@ declare module 'azdata' {
 			readonly connectionProviderIds: string[];
 		}
 
-		export interface NotebookProvider {
+		export interface NotebookContentProvider {
 			readonly providerId: string;
-			getNotebookManager(notebookUri: vscode.Uri): Thenable<NotebookManager>;
+			getContentManager(notebookUri: vscode.Uri): Thenable<ContentManager>;
+		}
+
+		export interface NotebookSessionProvider {
+			readonly providerId: string;
+			getSessionManager(notebookUri: vscode.Uri): Thenable<SessionManager>;
 			handleNotebookClosed(notebookUri: vscode.Uri): void;
 		}
 
-		export interface NotebookManager {
-			/**
-			 * Manages reading and writing contents to/from files.
-			 * Files may be local or remote, with this manager giving them a chance to convert and migrate
-			 * from specific notebook file types to and from a standard type for this UI
-			 */
-			readonly contentManager: ContentManager;
-			/**
-			 * A SessionManager that handles starting, stopping and handling notifications around sessions.
-			 * Each notebook has 1 session associated with it, and the session is responsible
-			 * for kernel management
-			 */
-			readonly sessionManager: SessionManager;
-			/**
-			 * (Optional) ServerManager to handle server lifetime management operations.
-			 * Depending on the implementation this may not be needed.
-			 */
-			readonly serverManager?: ServerManager | undefined;
+		export interface NotebookServerProvider {
+			readonly providerId: string;
+			getServerManager(notebookUri: vscode.Uri): Thenable<ServerManager>;
 		}
 
 		/**
