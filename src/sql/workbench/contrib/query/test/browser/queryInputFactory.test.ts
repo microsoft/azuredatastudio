@@ -257,7 +257,7 @@ suite('Query Input Factory', () => {
 		assert(connectionManagementService.numberConnects === 1, 'Async convert input should have called connect only once for one URI');
 	});
 
-	test('Async query editor input can be connected one after the other when global connection exists (Editor)', async () => {
+	test('async query editor input can be connected one after the other when global connection exists (Editor)', async () => {
 		instantiationService = workbenchInstantiationService();
 		const editorService = new MockEditorService(instantiationService);
 		const connectionManagementService = new MockConnectionManagementService();
