@@ -559,7 +559,7 @@ export async function webpackExtensions(taskName: string, isWatch: boolean, webp
 				if (err) {
 					reject();
 				} else {
-					reporter(stats.toJson());
+					reporter(stats?.toJson());
 				}
 			});
 		} else {
@@ -568,7 +568,7 @@ export async function webpackExtensions(taskName: string, isWatch: boolean, webp
 					fancyLog.error(err);
 					reject();
 				} else {
-					reporter(stats.toJson());
+					reporter(stats?.toJson());
 					resolve();
 				}
 			});
