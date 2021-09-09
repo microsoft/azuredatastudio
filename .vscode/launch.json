@@ -301,6 +301,17 @@
 			}
 		},
 		{
+			"name": "Launch ADS & Debug Extension Host",
+			"configurations": [
+				"Launch Azure Data Studio",
+				"Attach to Extension Host"
+			],
+			"presentation": {
+				"group": "1_debug",
+				"order": 3
+			}
+		},
+		{
 			"name": "Launch ADS & Debug Renderer and Extension Host",
 			"configurations": [
 				"Launch ADS & Debug Renderer",
