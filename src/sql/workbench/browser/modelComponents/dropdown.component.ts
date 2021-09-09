@@ -25,7 +25,7 @@ import { localize } from 'vs/nls';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
 import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
-import { errorForeground } from 'vs/platform/theme/common/colorRegistry';
+import { errorForeground, inputValidationErrorBorder, selectBorder } from 'vs/platform/theme/common/colorRegistry';
 
 @Component({
 	selector: 'modelview-dropdown',
@@ -143,27 +143,22 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 	public override async validate(): Promise<boolean> {
 		const validationResult = await super.validate();
 		this._changeRef.detectChanges();
+
+		const element = this.editable ? this._editableDropdown.inputElement : this._selectBox.selectElem;
 		if (!validationResult) {
-			if (this.editable) {
-				this._editableDropdown.inputElement.setAttribute('aria-describedby', this.errorId);
-				this._editableDropdown.inputElement.setAttribute('aria-errormessage', this.errorId);
-				this._editableDropdown.inputElement.setAttribute('aria-invalid', 'true');
-			} else {
-				this._selectBox.selectElem.setAttribute('aria-describedby', this.errorId);
-				this._selectBox.selectElem.setAttribute('aria-errormessage', this.errorId);
-				this._selectBox.selectElem.setAttribute('aria-invalid', 'true');
-			}
+			element.setAttribute('aria-describedby', this.errorId);
+			element.setAttribute('aria-errormessage', this.errorId);
+			element.setAttribute('aria-invalid', 'true');
+			element.style.borderColor = this.themeService.getColorTheme().getColor(inputValidationErrorBorder).toString();
+			element.style.outlineOffset = '2px';
 		} else {
-			if (this.editable) {
-				this._editableDropdown.inputElement.removeAttribute('aria-describedby');
-				this._editableDropdown.inputElement.removeAttribute('aria-errormessage');
-				this._editableDropdown.inputElement.removeAttribute('aria-invalid');
-			} else {
-				this._selectBox.selectElem.removeAttribute('aria-describedby');
-				this._selectBox.selectElem.removeAttribute('aria-errormessage');
-				this._selectBox.selectElem.removeAttribute('aria-invalid');
-			}
+			element.removeAttribute('aria-describedby');
+			element.removeAttribute('aria-errormessage');
+			element.removeAttribute('aria-invalid');
+			element.style.borderColor = this.themeService.getColorTheme().getColor(selectBorder).toString();
+			element.style.outlineOffset = '-1px'; // Setting the offset to the default value.
 		}
+
 		return validationResult;
 	}
 
