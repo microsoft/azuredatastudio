@@ -56,6 +56,7 @@ export function setup() {
 		// Python Notebooks
 
 		it('can open new notebook, configure Python, and execute one cell', async function () {
+			this.timeout(600000); // increase the timeout for this test to 10 minutes
 			const app = this.app as Application;
 			await app.workbench.sqlNotebook.newUntitledNotebook();
 			await app.workbench.sqlNotebook.addCell('code');
