@@ -21,7 +21,7 @@ export class CreateSqlMigrationServiceDialog {
 
 	private migrationServiceSubscription!: azdata.TextComponent;
 	private migrationServiceResourceGroupDropdown!: azdata.DropDownComponent;
-	private migrationServiceLocation!: azdata.InputBoxComponent;
+	private migrationServiceLocation!: azdata.TextComponent;
 	private migrationServiceNameText!: azdata.InputBoxComponent;
 	private _formSubmitButton!: azdata.ButtonComponent;
 	private _createResourceGroupLink!: azdata.HyperlinkComponent;
@@ -221,9 +221,12 @@ export class CreateSqlMigrationServiceDialog {
 			}
 		}).component();
 
-		this.migrationServiceSubscription = this._view.modelBuilder.inputBox().withProps({
-			required: true,
-			enabled: false
+		this.migrationServiceSubscription = this._view.modelBuilder.text().withProps({
+			enabled: false,
+			CSSStyles: {
+				'font-size': '13px',
+				'margin': '0px'
+			}
 		}).component();
 
 		const resourceGroupDropdownLabel = this._view.modelBuilder.text().withProps({
@@ -287,10 +290,12 @@ export class CreateSqlMigrationServiceDialog {
 			}
 		}).component();
 
-		this.migrationServiceLocation = this._view.modelBuilder.inputBox().withProps({
-			required: true,
-			enabled: false,
-			value: await this._model.getLocationDisplayName(this._model._targetServerInstance.location)
+		this.migrationServiceLocation = this._view.modelBuilder.text().withProps({
+			value: await this._model.getLocationDisplayName(this._model._targetServerInstance.location),
+			CSSStyles: {
+				'font-size': '13px',
+				'margin': '0px'
+			}
 		}).component();
 
 		const targetlabel = this._view.modelBuilder.text().withProps({
@@ -302,9 +307,13 @@ export class CreateSqlMigrationServiceDialog {
 			}
 		}).component();
 
-		const targetText = this._view.modelBuilder.inputBox().withProps({
+		const targetText = this._view.modelBuilder.text().withProps({
 			enabled: false,
-			value: constants.AZURE_SQL
+			value: constants.AZURE_SQL,
+			CSSStyles: {
+				'font-size': '13px',
+				'margin': '0px'
+			}
 		}).component();
 
 		const flexContainer = this._view.modelBuilder.flexContainer().withItems([
