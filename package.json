@@ -58,7 +58,8 @@
     "hygiene": "node --max_old_space_size=4095 ./node_modules/gulp/bin/gulp.js hygiene",
     "core-ci": "node --max_old_space_size=4095 ./node_modules/gulp/bin/gulp.js core-ci",
     "extensions-ci": "node --max_old_space_size=4095 ./node_modules/gulp/bin/gulp.js extensions-ci",
-    "sqllint": "eslint --no-eslintrc -c .eslintrc.sql.ts.json --rulesdir ./build/lib/eslint --ext .ts ./src/sql"
+    "sqllint": "eslint --no-eslintrc -c .eslintrc.sql.ts.json --rulesdir ./build/lib/eslint --ext .ts ./src/sql",
+    "extensions-lint": "eslint --rulesdir ./build/lib/eslint --ext .ts ./extensions"
   },
   "dependencies": {
     "@angular/animations": "~4.1.3",
