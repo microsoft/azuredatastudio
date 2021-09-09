@@ -67,7 +67,6 @@ export function setup() {
 			await app.workbench.configurePythonDialog.waitForPageOneLoaded();
 			await app.workbench.configurePythonDialog.next();
 			await app.workbench.configurePythonDialog.waitForPageTwoLoaded();
-			await app.captureScreenshot('before installation complete');
 			await app.workbench.configurePythonDialog.install();
 			await app.captureScreenshot('after installation complete');
 			await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('Python 3');
@@ -143,11 +142,8 @@ export function setup() {
 }
 
 async function openAndRunNotebook(app: Application, filename: string): Promise<void> {
-	await app.captureScreenshot('before python notebook opened');
 	await app.workbench.sqlNotebook.openFile(filename);
-	await app.captureScreenshot('after python notebook opened');
 	await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('Python 3');
-	await app.captureScreenshot('before python kernel loaded');
 
 	await app.workbench.sqlNotebook.notebookToolbar.clearResults();
 	await app.workbench.sqlNotebook.waitForAllResultsGone();
