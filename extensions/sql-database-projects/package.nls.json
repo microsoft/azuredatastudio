@@ -10,6 +10,7 @@
 	"sqlDatabaseProjects.publish": "Publish",
 	"sqlDatabaseProjects.deployLocal": "Deploy",
 	"sqlDatabaseProjects.createProjectFromDatabase": "Create Project From Database",
+	"sqlDatabaseProjects.updateProjectFromDatabase": "Update Project From Database",
 	"sqlDatabaseProjects.properties": "Properties",
 	"sqlDatabaseProjects.schemaCompare": "Schema Compare",
 	"sqlDatabaseProjects.delete": "Delete",
