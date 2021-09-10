@@ -42,7 +42,13 @@ suite('ExtHostNotebook Tests', () => {
 	});
 
 	suite('getNotebookManager', () => {
-		test('Should throw if no matching provider is defined', async () => {
+		test('Should throw if no matching serialization provider is defined', async () => {
+			try {
+				await extHostNotebook.$getSerializationManagerDetails(-1, notebookUri);
+				assert.fail('expected to throw');
+			} catch (e) { }
+		});
+		test('Should throw if no matching execute provider is defined', async () => {
 			try {
 				await extHostNotebook.$getExecuteManagerDetails(-1, notebookUri);
 				assert.fail('expected to throw');
@@ -117,7 +123,10 @@ suite('ExtHostNotebook Tests', () => {
 		});
 	});
 
-	suite('registerNotebookProvider', () => {
+	suite('registerSerializationProvider', () => {
+	});
+
+	suite('registerExecuteProvider', () => {
 		let savedHandle: number = -1;
 		setup(() => {
 			mockProxy.setup(p =>

@@ -315,7 +315,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 	private _withSerializationProvider(handle: number, callback: (provider: azdata.nb.NotebookSerializationProvider) => SerializationManagerAdapter | PromiseLike<SerializationManagerAdapter>): Promise<SerializationManagerAdapter> {
 		let provider = this._adapters.get(handle) as azdata.nb.NotebookSerializationProvider;
 		if (provider === undefined) {
-			return Promise.reject(new Error(localize('errNoProvider', "no notebook provider found")));
+			return Promise.reject(new Error(localize('errNoSerializationProvider', "no notebook serialization provider found")));
 		}
 		return Promise.resolve(callback(provider));
 	}
@@ -323,7 +323,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 	private _withExecuteProvider(handle: number, callback: (provider: azdata.nb.NotebookExecuteProvider) => ExecuteManagerAdapter | PromiseLike<ExecuteManagerAdapter>): Promise<ExecuteManagerAdapter> {
 		let provider = this._adapters.get(handle) as azdata.nb.NotebookExecuteProvider;
 		if (provider === undefined) {
-			return Promise.reject(new Error(localize('errNoProvider', "no notebook provider found")));
+			return Promise.reject(new Error(localize('errNoExecuteProvider', "no notebook execute provider found")));
 		}
 		return Promise.resolve(callback(provider));
 	}
