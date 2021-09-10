@@ -250,7 +250,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 			throw new Error(localize('serializationProviderRequired', "A NotebookSerializationProvider with valid providerId must be passed to this method"));
 		}
 		const handle = this._addNewAdapter(provider);
-		this._proxy.$registerExecuteProvider(provider.providerId, handle);
+		this._proxy.$registerSerializationProvider(provider.providerId, handle);
 		return this._createDisposable(handle);
 	}
 	//#endregion
