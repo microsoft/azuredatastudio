@@ -207,17 +207,37 @@ export async function getPublishDatabaseSettings(project: Project, promptForConn
 * Create flow for Publishing a database using only VS Code-native APIs such as QuickPick
 */
 export async function launchPublishDatabaseQuickpick(project: Project, projectController: ProjectsController): Promise<void> {
-	let settings: IDeploySettings | undefined = await getPublishDatabaseSettings(project);
+	const publishTarget = await lunchPublishTargetOption();
+	if (publishTarget === constants.deployToDockerContainer) {
+		await projectController.publishToDockerContainer(project);
+	} else {
+		let settings: IDeploySettings | undefined = await getPublishDatabaseSettings(project);
 
-	if (settings) {
-		// 5. Select action to take
-		const action = await vscode.window.showQuickPick(
-			[constants.generateScriptButtonText, constants.publish],
-			{ title: constants.chooseAction, ignoreFocusOut: true });
-		if (!action) {
-			return;
+		if (settings) {
+			// 5. Select action to take
+			const action = await vscode.window.showQuickPick(
+				[constants.generateScriptButtonText, constants.publish],
+				{ title: constants.chooseAction, ignoreFocusOut: true });
+			if (!action) {
+				return;
+			}
+			await projectController.publishOrScriptProject(project, settings, action === constants.publish);
 		}
-		await projectController.publishOrScriptProject(project, settings, action === constants.publish);
 	}
+}
+
+export async function lunchPublishTargetOption(): Promise<string | undefined> {
+	// Show options to user for deploy to existing server or docker
+
+	const publishOption = await vscode.window.showQuickPick(
+		[constants.deployToExistingServer, constants.deployToDockerContainer],
+		{ title: constants.selectDeployOption, ignoreFocusOut: true });
+
+	// Return when user hits escape
+	if (!publishOption) {
+		return undefined;
+	}
+
+	return publishOption;
 }
 

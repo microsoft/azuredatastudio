@@ -8,7 +8,6 @@
 	"sqlDatabaseProjects.close": "Close Database Project",
 	"sqlDatabaseProjects.build": "Build",
 	"sqlDatabaseProjects.publish": "Publish",
-	"sqlDatabaseProjects.deployLocal": "Deploy To Local Instance",
 	"sqlDatabaseProjects.createProjectFromDatabase": "Create Project From Database",
 	"sqlDatabaseProjects.properties": "Properties",
 	"sqlDatabaseProjects.schemaCompare": "Schema Compare",
