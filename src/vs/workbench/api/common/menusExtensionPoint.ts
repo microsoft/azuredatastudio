@@ -295,6 +295,12 @@ const apiMenus: IAPIMenu[] = [
 	},
 	// {{SQL CARBON EDIT}} end menu entries
 	{
+		key: 'file/newFile',
+		id: MenuId.NewFile,
+		description: localize('file.newFile', "The 'New File...' quick pick, shown on welcome page and File menu. Supports property `{0}` to override the default title if needed.)", 'title'),
+		supportsSubmenus: false,
+	},
+	{
 		key: 'editor/inlineCompletions/actions',
 		id: MenuId.InlineCompletionsActions,
 		description: localize('inlineCompletions.actions', "The actions shown when hovering on an inline completion"),
