@@ -3,19 +3,19 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.dropdown-error-container {
+modelview-dropdown .dropdown-error-container {
 	width:100%;
 	display: table;
 	margin-top: 4px;
 	position: relative;
 }
 
-.dropdown-error-text {
+modelview-dropdown .dropdown-error-text {
 	display: block;
 	margin-left: 22px;
 }
 
-.dropdown-error-icon {
+modelview-dropdown .dropdown-error-icon {
 	height: 14px;
 	width: 14px;
 	position: absolute;
