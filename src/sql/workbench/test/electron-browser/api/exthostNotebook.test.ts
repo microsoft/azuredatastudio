@@ -103,7 +103,24 @@ suite('ExtHostNotebook Tests', () => {
 				assert.ok(managerDetails.handle > 0, 'Expect a valid handle defined');
 			});
 
-			test('Should have a unique handle for each notebook URI', async () => {
+			test('Should have a unique serialization provider handle for each notebook URI', async () => {
+				// Given the we request 2 URIs
+				let expectedManager = new SerializationManagerStub();
+				serializationProviderMock.setup(p => p.getSerializationManager(TypeMoq.It.isAny())).returns(() => Promise.resolve(expectedManager));
+
+				// When I call through using the handle provided during registration
+				let originalManagerDetails = await extHostNotebook.$getSerializationManagerDetails(serializationProviderHandle, notebookUri);
+				let differentDetails = await extHostNotebook.$getSerializationManagerDetails(serializationProviderHandle, URI.parse('file://other/file.ipynb'));
+				let sameDetails = await extHostNotebook.$getSerializationManagerDetails(serializationProviderHandle, notebookUri);
+
+				// Then I expect the 2 different handles in the managers returned.
+				// This is because we can't easily track identity of the managers, so just track which one is assigned to
+				// a notebook by the handle ID
+				assert.notStrictEqual(originalManagerDetails.handle, differentDetails.handle, 'Should have unique handle for each manager');
+				assert.strictEqual(originalManagerDetails.handle, sameDetails.handle, 'Should have same handle when same URI is passed in');
+			});
+
+			test('Should have a unique execute provider handle for each notebook URI', async () => {
 				// Given the we request 2 URIs
 				let expectedManager = new ExecuteManagerStub();
 				executeProviderMock.setup(p => p.getExecuteManager(TypeMoq.It.isAny())).returns(() => Promise.resolve(expectedManager));
@@ -118,12 +135,35 @@ suite('ExtHostNotebook Tests', () => {
 				// a notebook by the handle ID
 				assert.notStrictEqual(originalManagerDetails.handle, differentDetails.handle, 'Should have unique handle for each manager');
 				assert.strictEqual(originalManagerDetails.handle, sameDetails.handle, 'Should have same handle when same URI is passed in');
-
 			});
 		});
 	});
 
 	suite('registerSerializationProvider', () => {
+		let savedHandle: number = -1;
+		setup(() => {
+			mockProxy.setup(p =>
+				p.$registerSerializationProvider(TypeMoq.It.isValue(serializationProviderMock.object.providerId), TypeMoq.It.isAnyNumber()))
+				.returns((providerId, handle) => {
+					savedHandle = handle;
+					return undefined;
+				});
+		});
+
+		test('Should register with a new handle to the proxy', () => {
+			extHostNotebook.registerSerializationProvider(serializationProviderMock.object);
+			mockProxy.verify(p =>
+				p.$registerSerializationProvider(TypeMoq.It.isValue(serializationProviderMock.object.providerId),
+					TypeMoq.It.isAnyNumber()), TypeMoq.Times.once());
+			// It shouldn't unregister until requested
+			mockProxy.verify(p => p.$unregisterSerializationProvider(TypeMoq.It.isValue(savedHandle)), TypeMoq.Times.never());
+		});
+
+		test('Should not call unregister on disposing', () => {
+			let disposable = extHostNotebook.registerSerializationProvider(serializationProviderMock.object);
+			disposable.dispose();
+			mockProxy.verify(p => p.$unregisterSerializationProvider(TypeMoq.It.isValue(savedHandle)), TypeMoq.Times.never());
+		});
 	});
 
 	suite('registerExecuteProvider', () => {
@@ -144,7 +184,6 @@ suite('ExtHostNotebook Tests', () => {
 					TypeMoq.It.isAnyNumber()), TypeMoq.Times.once());
 			// It shouldn't unregister until requested
 			mockProxy.verify(p => p.$unregisterExecuteProvider(TypeMoq.It.isValue(savedHandle)), TypeMoq.Times.never());
-
 		});
 
 		test('Should not call unregister on disposing', () => {
