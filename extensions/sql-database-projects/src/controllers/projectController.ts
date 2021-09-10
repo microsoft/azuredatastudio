@@ -42,7 +42,6 @@ import { DeployService } from '../models/deploy/deployService';
 import { SqlTargetPlatform } from 'sqldbproj';
 import { createNewProjectFromDatabaseWithQuickpick } from '../dialogs/createProjectFromDatabaseQuickpick';
 import { addDatabaseReferenceQuickpick } from '../dialogs/addDatabaseReferenceQuickpick';
-import { DacExtractTarget } from '../../../mssql/src/contracts';
 
 const maxTableLength = 10;
 
@@ -487,22 +486,22 @@ export class ProjectsController {
 
 		const projectPath = path.dirname(projectFilePath);
 
-		let fs: DacExtractTarget = DacExtractTarget.flat;
+		let fs: mssql.ExtractTarget = mssql.ExtractTarget.flat;
 		switch (folderStructure) {
 			case constants.file:
-				fs = DacExtractTarget.file;
+				fs = mssql.ExtractTarget.file;
 				break;
 			case constants.flat:
-				fs = DacExtractTarget.flat;
+				fs = mssql.ExtractTarget.flat;
 				break;
 			case constants.objectType:
-				fs = DacExtractTarget.objectType;
+				fs = mssql.ExtractTarget.objectType;
 				break;
 			case constants.schema:
-				fs = DacExtractTarget.schema;
+				fs = mssql.ExtractTarget.schema;
 				break;
 			case constants.schemaObjectType:
-				fs = DacExtractTarget.schemaObjectType;
+				fs = mssql.ExtractTarget.schemaObjectType;
 				break;
 		}
 
