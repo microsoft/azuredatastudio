@@ -61,7 +61,7 @@ import { infoIcon, manageExtensionIcon, syncEnabledIcon, syncIgnoredIcon, trustI
 import { isIOS, isWeb } from 'vs/base/common/platform';
 import { IExtensionManifestPropertiesService } from 'vs/workbench/services/extensions/common/extensionManifestPropertiesService';
 import * as locConstants from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}}
-import { IWorkspaceTrustManagementService } from 'vs/platform/workspace/common/workspaceTrust';
+import { IWorkspaceTrustEnablementService, IWorkspaceTrustManagementService } from 'vs/platform/workspace/common/workspaceTrust';
 import { isVirtualWorkspace } from 'vs/platform/remote/common/remoteHosts';
 
 function getRelativeDateLabel(date: Date): string {
@@ -2105,6 +2105,7 @@ export class ExtensionStatusIconAction extends ExtensionAction {
 		@IExtensionManagementServerService private readonly extensionManagementServerService: IExtensionManagementServerService,
 		@ILabelService private readonly labelService: ILabelService,
 		@ICommandService private readonly commandService: ICommandService,
+		@IWorkspaceTrustEnablementService private readonly workspaceTrustEnablementService: IWorkspaceTrustEnablementService,
 		@IWorkspaceTrustManagementService private readonly workspaceTrustService: IWorkspaceTrustManagementService,
 		@IExtensionsWorkbenchService private readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
 		@IExtensionService private readonly extensionService: IExtensionService,
@@ -2190,7 +2191,7 @@ export class ExtensionStatusIconAction extends ExtensionAction {
 		}
 
 		// Limited support in Untrusted Workspace
-		if (this.workspaceTrustService.workspaceTrustEnabled && !this.workspaceTrustService.isWorkspaceTrusted()) {
+		if (this.workspaceTrustEnablementService.isWorkspaceTrustEnabled() && !this.workspaceTrustService.isWorkspaceTrusted()) {
 			const untrustedSupportType = this.extensionManifestPropertiesService.getExtensionUntrustedWorkspaceSupportType(this.extension.local.manifest);
 			const untrustedDetails = getWorkspaceSupportTypeMessage(this.extension.local.manifest.capabilities?.untrustedWorkspaces);
 			if (untrustedSupportType === 'limited' || untrustedDetails) {

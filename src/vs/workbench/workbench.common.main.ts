@@ -256,7 +256,7 @@ registerSingleton(IDataGridProviderService, DataGridProviderService);
 //#region --- workbench contributions
 
 // Editor Override
-import 'vs/workbench/services/editor/browser/editorOverrideService';
+import 'vs/workbench/services/editor/browser/editorResolverService';
 
 // Telemetry
 import 'vs/workbench/contrib/telemetry/browser/telemetry.contribution';

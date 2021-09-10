@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IResourceEditorInput, IEditorOptions, EditorActivation, EditorOverride, IResourceEditorInputIdentifier, ITextEditorOptions, ITextResourceEditorInput } from 'vs/platform/editor/common/editor';
-import { SideBySideEditor, IEditorInput, IEditorPane, GroupIdentifier, IFileEditorInput, IUntitledTextResourceEditorInput, IResourceDiffEditorInput, IEditorInputFactoryRegistry, EditorExtensions, IEditorInputWithOptions, isEditorInputWithOptions, IEditorIdentifier, IEditorCloseEvent, ITextEditorPane, ITextDiffEditorPane, IRevertOptions, SaveReason, EditorsOrder, isTextEditorPane, IWorkbenchEditorConfiguration, EditorResourceAccessor, IVisibleEditorPane, EditorInputCapabilities, isResourceDiffEditorInput, IUntypedEditorInput, DEFAULT_EDITOR_ASSOCIATION, isResourceEditorInput, isEditorInput, isEditorInputWithOptionsAndGroup } from 'vs/workbench/common/editor';
+import { IResourceEditorInput, IEditorOptions, EditorActivation, EditorResolution, IResourceEditorInputIdentifier, ITextEditorOptions, ITextResourceEditorInput } from 'vs/platform/editor/common/editor';
+import { SideBySideEditor, IEditorInput, IEditorPane, GroupIdentifier, IFileEditorInput, IUntitledTextResourceEditorInput, IResourceDiffEditorInput, IEditorFactoryRegistry, EditorExtensions, IEditorInputWithOptions, isEditorInputWithOptions, IEditorIdentifier, IEditorCloseEvent, ITextEditorPane, ITextDiffEditorPane, IRevertOptions, SaveReason, EditorsOrder, isTextEditorPane, IWorkbenchEditorConfiguration, EditorResourceAccessor, IVisibleEditorPane, EditorInputCapabilities, isResourceDiffEditorInput, IUntypedEditorInput, DEFAULT_EDITOR_ASSOCIATION, isResourceEditorInput, isEditorInput, isEditorInputWithOptionsAndGroup } from 'vs/workbench/common/editor';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { SideBySideEditorInput } from 'vs/workbench/common/editor/sideBySideEditorInput';
 import { TextResourceEditorInput } from 'vs/workbench/common/editor/textResourceEditorInput';
@@ -34,7 +34,7 @@ import { Promises, timeout } from 'vs/base/common/async';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { indexOfPath } from 'vs/base/common/extpath';
 import { IUriIdentityService } from 'vs/workbench/services/uriIdentity/common/uriIdentity';
-import { RegisteredEditorPriority, IEditorOverrideService, OverrideStatus } from 'vs/workbench/services/editor/common/editorOverrideService';
+import { RegisteredEditorPriority, IEditorResolverService, ResolvedStatus } from 'vs/workbench/services/editor/common/editorResolverService';
 import { IWorkingCopyService } from 'vs/workbench/services/workingCopy/common/workingCopyService';
 import { IWorkspaceTrustRequestService, WorkspaceTrustUriResponse } from 'vs/platform/workspace/common/workspaceTrust';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
@@ -65,7 +65,7 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 
 	//#endregion
 
-	private readonly fileEditorInputFactory = Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories).getFileEditorInputFactory();
+	private readonly fileEditorFactory = Registry.as<IEditorFactoryRegistry>(EditorExtensions.EditorFactory).getFileEditorFactory();
 
 	constructor(
 		@IEditorGroupsService private readonly editorGroupService: IEditorGroupsService,
@@ -75,7 +75,7 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@IWorkspaceContextService private readonly contextService: IWorkspaceContextService,
 		@IUriIdentityService private readonly uriIdentityService: IUriIdentityService,
-		@IEditorOverrideService private readonly editorOverrideService: IEditorOverrideService,
+		@IEditorResolverService private readonly editorResolverService: IEditorResolverService,
 		@IWorkingCopyService private readonly workingCopyService: IWorkingCopyService,
 		@IWorkspaceTrustRequestService private readonly workspaceTrustRequestService: IWorkspaceTrustRequestService,
 		@IHostService private readonly hostService: IHostService,
@@ -115,7 +115,7 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 	}
 
 	private registerDefaultOverride(): void {
-		this._register(this.editorOverrideService.registerEditor(
+		this._register(this.editorResolverService.registerEditor(
 			'*',
 			{
 				id: DEFAULT_EDITOR_ASSOCIATION.id,
@@ -524,10 +524,10 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 		}
 
 		// Resolve override unless disabled
-		if (options?.override !== EditorOverride.DISABLED) {
-			const resolvedEditor = await this.editorOverrideService.resolveEditor(isEditorInput(editor) ? { editor, options } : editor, preferredGroup);
+		if (options?.override !== EditorResolution.DISABLED) {
+			const resolvedEditor = await this.editorResolverService.resolveEditor(isEditorInput(editor) ? { editor, options } : editor, preferredGroup);
 
-			if (resolvedEditor === OverrideStatus.ABORT) {
+			if (resolvedEditor === ResolvedStatus.ABORT) {
 				return undefined; // skip editor if override is aborted {{SQL CARBON EDIT}} strict-nulls
 			}
 
@@ -584,10 +584,10 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 			let group: IEditorGroup | undefined = undefined;
 
 			// Resolve override unless disabled
-			if (editor.options?.override !== EditorOverride.DISABLED) {
-				const resolvedEditor = await this.editorOverrideService.resolveEditor(editor, preferredGroup);
+			if (editor.options?.override !== EditorResolution.DISABLED) {
+				const resolvedEditor = await this.editorResolverService.resolveEditor(editor, preferredGroup);
 
-				if (resolvedEditor === OverrideStatus.ABORT) {
+				if (resolvedEditor === ResolvedStatus.ABORT) {
 					continue; // skip editor if override is aborted
 				}
 
@@ -814,7 +814,7 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 			let typedReplacement: IEditorReplacement | undefined = undefined;
 
 			// Figure out the override rule based on options
-			let override: string | EditorOverride | undefined;
+			let override: string | EditorResolution | undefined;
 			if (isEditorReplacement(replacement)) {
 				override = replacement.options?.override;
 			} else {
@@ -822,13 +822,13 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 			}
 
 			// Resolve override unless disabled
-			if (override !== EditorOverride.DISABLED) {
-				const resolvedEditor = await this.editorOverrideService.resolveEditor(
+			if (override !== EditorResolution.DISABLED) {
+				const resolvedEditor = await this.editorResolverService.resolveEditor(
 					isEditorReplacement(replacement) ? { editor: replacement.replacement, options: replacement.options } : replacement.replacement,
 					targetGroup
 				);
 
-				if (resolvedEditor === OverrideStatus.ABORT) {
+				if (resolvedEditor === ResolvedStatus.ABORT) {
 					continue; // skip editor if override is aborted
 				}
 
@@ -942,7 +942,7 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 
 				// File
 				if (textResourceEditorInput.forceFile || this.fileService.canHandleResource(canonicalResource)) {
-					return this.fileEditorInputFactory.createFileEditorInput(canonicalResource, preferredResource, textResourceEditorInput.label, textResourceEditorInput.description, textResourceEditorInput.encoding, textResourceEditorInput.mode, textResourceEditorInput.contents, this.instantiationService);
+					return this.fileEditorFactory.createFileEditor(canonicalResource, preferredResource, textResourceEditorInput.label, textResourceEditorInput.description, textResourceEditorInput.encoding, textResourceEditorInput.mode, textResourceEditorInput.contents, this.instantiationService);
 				}
 
 				// Resource

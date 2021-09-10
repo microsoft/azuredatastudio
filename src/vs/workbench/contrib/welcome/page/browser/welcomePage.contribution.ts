@@ -14,7 +14,7 @@ import {
 import { IWorkbenchActionRegistry, Extensions as ActionExtensions, CATEGORIES } from 'vs/workbench/common/actions'; // {{SQL CARBON EDIT}}
 import { SyncActionDescriptor } from 'vs/platform/actions/common/actions'; // {{SQL CARBON EDIT}}
 import { IConfigurationRegistry, Extensions as ConfigurationExtensions, ConfigurationScope } from 'vs/platform/configuration/common/configurationRegistry';
-import { IEditorInputFactoryRegistry, EditorExtensions } from 'vs/workbench/common/editor';
+import { IEditorFactoryRegistry, EditorExtensions } from 'vs/workbench/common/editor';
 import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration'; // {{SQL CARBON EDIT}} - use our welcome page
 import { workbenchConfigurationNodeBase } from 'vs/workbench/common/configuration';
@@ -74,4 +74,4 @@ Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
 	.registerWorkbenchContribution(WelcomeContributions, LifecyclePhase.Starting);
 // {{SQL CARBON EDIT}} - end preview startup customization
 
-Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories).registerEditorInputSerializer(WelcomeInputSerializer.ID, WelcomeInputSerializer);
+Registry.as<IEditorFactoryRegistry>(EditorExtensions.EditorFactory).registerEditorSerializer(WelcomeInputSerializer.ID, WelcomeInputSerializer);

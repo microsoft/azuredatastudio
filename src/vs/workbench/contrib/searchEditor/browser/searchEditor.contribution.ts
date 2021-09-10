@@ -21,7 +21,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { EditorPaneDescriptor, IEditorPaneRegistry } from 'vs/workbench/browser/editor';
 import { Extensions as WorkbenchExtensions, IWorkbenchContribution, IWorkbenchContributionsRegistry } from 'vs/workbench/common/contributions';
-import { ActiveEditorContext, IEditorInputSerializer, IEditorInputFactoryRegistry, EditorExtensions, DEFAULT_EDITOR_ASSOCIATION } from 'vs/workbench/common/editor';
+import { ActiveEditorContext, IEditorSerializer, IEditorFactoryRegistry, EditorExtensions, DEFAULT_EDITOR_ASSOCIATION } from 'vs/workbench/common/editor';
 import { IViewsService } from 'vs/workbench/common/views';
 import { getSearchView } from 'vs/workbench/contrib/search/browser/searchActions';
 import { searchNewEditorIcon, searchRefreshIcon } from 'vs/workbench/contrib/search/browser/searchIcons';
@@ -32,7 +32,7 @@ import { createEditorFromSearchResult, modifySearchEditorContextLinesCommand, op
 import { getOrMakeSearchEditorInput, SearchConfiguration, SearchEditorInput, SEARCH_EDITOR_EXT } from 'vs/workbench/contrib/searchEditor/browser/searchEditorInput';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { VIEW_ID } from 'vs/workbench/services/search/common/search';
-import { RegisteredEditorPriority, IEditorOverrideService } from 'vs/workbench/services/editor/common/editorOverrideService';
+import { RegisteredEditorPriority, IEditorResolverService } from 'vs/workbench/services/editor/common/editorResolverService';
 import { IWorkingCopyEditorService } from 'vs/workbench/services/workingCopy/common/workingCopyEditorService';
 import { Disposable } from 'vs/base/common/lifecycle';
 
@@ -54,7 +54,7 @@ const SelectAllSearchEditorMatchesCommandId = 'selectAllSearchEditorMatches';
 
 
 //#region Editor Descriptior
-Registry.as<IEditorPaneRegistry>(EditorExtensions.Editors).registerEditorPane(
+Registry.as<IEditorPaneRegistry>(EditorExtensions.EditorPane).registerEditorPane(
 	EditorPaneDescriptor.create(
 		SearchEditor,
 		SearchEditor.ID,
@@ -69,13 +69,13 @@ Registry.as<IEditorPaneRegistry>(EditorExtensions.Editors).registerEditorPane(
 //#region Startup Contribution
 class SearchEditorContribution implements IWorkbenchContribution {
 	constructor(
-		@IEditorOverrideService private readonly editorOverrideService: IEditorOverrideService,
+		@IEditorResolverService private readonly editorResolverService: IEditorResolverService,
 		@IInstantiationService protected readonly instantiationService: IInstantiationService,
 		@ITelemetryService protected readonly telemetryService: ITelemetryService,
 		@IContextKeyService protected readonly contextKeyService: IContextKeyService,
 	) {
 
-		this.editorOverrideService.registerEditor(
+		this.editorResolverService.registerEditor(
 			'*' + SEARCH_EDITOR_EXT,
 			{
 				id: SearchEditorInput.ID,
@@ -102,7 +102,7 @@ workbenchContributionsRegistry.registerWorkbenchContribution(SearchEditorContrib
 //#region Input Serializer
 type SerializedSearchEditor = { modelUri: string | undefined, dirty: boolean, config: SearchConfiguration, name: string, matchRanges: Range[], backingUri: string };
 
-class SearchEditorInputSerializer implements IEditorInputSerializer {
+class SearchEditorInputSerializer implements IEditorSerializer {
 
 	canSerialize(input: SearchEditorInput) {
 		return !!input.tryReadConfigSync();
@@ -149,7 +149,7 @@ class SearchEditorInputSerializer implements IEditorInputSerializer {
 	}
 }
 
-Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories).registerEditorInputSerializer(
+Registry.as<IEditorFactoryRegistry>(EditorExtensions.EditorFactory).registerEditorSerializer(
 	SearchEditorInput.ID,
 	SearchEditorInputSerializer);
 //#endregion

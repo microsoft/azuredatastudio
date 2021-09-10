@@ -97,7 +97,7 @@ Registry.as<IQuickAccessRegistry>(Extensions.Quickaccess).registerQuickAccessPro
 });
 
 // Editor
-Registry.as<IEditorPaneRegistry>(EditorExtensions.Editors).registerEditorPane(
+Registry.as<IEditorPaneRegistry>(EditorExtensions.EditorPane).registerEditorPane(
 	EditorPaneDescriptor.create(
 		ExtensionEditor,
 		ExtensionEditor.ID,
