@@ -4572,12 +4572,18 @@
       <Item ItemId=";src/sql/workbench/contrib/connection/browser/connection.contribution.sql.defaultAuthenticationType.SqlLogin" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Sql Login]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[SQL ログイン]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/connection/browser/connection.contribution.sql.defaultAuthenticationTypeDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Default authentication type to use when connecting to Azure resources. ]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure リソースに接続するときに使用する既定の認証の種類です。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
