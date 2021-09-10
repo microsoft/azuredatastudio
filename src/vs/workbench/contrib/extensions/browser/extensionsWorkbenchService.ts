@@ -43,7 +43,7 @@ import { IUserDataAutoSyncService } from 'vs/platform/userDataSync/common/userDa
 import { isEngineValid } from 'vs/platform/extensions/common/extensionValidator'; // {{SQL CARBON EDIT}}
 import { IOpenerService } from 'vs/platform/opener/common/opener'; // {{SQL CARBON EDIT}}
 import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { isBoolean, isString } from 'vs/base/common/types';
+import { isBoolean } from 'vs/base/common/types';
 import { IExtensionManifestPropertiesService } from 'vs/workbench/services/extensions/common/extensionManifestPropertiesService';
 import * as locConstants from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}}
 
@@ -437,7 +437,7 @@ class Extensions extends Disposable {
 
 	private onInstallExtension(event: InstallExtensionEvent): void {
 		const { source } = event;
-		if (source && !isString(source)) {
+		if (source && !URI.isUri(source)) {
 			const extension = this.installed.filter(e => areSameExtensions(e.identifier, source.identifier))[0]
 				|| this.instantiationService.createInstance(Extension, this.stateProvider, this.server, undefined, source);
 			this.installing.push(extension);
@@ -448,13 +448,13 @@ class Extensions extends Disposable {
 	private onDidInstallExtensions(results: readonly InstallExtensionResult[]): void {
 		for (const event of results) {
 			const { local, source } = event;
-			const gallery = source && !isString(source) ? source : undefined;
-			const zipPath = source && isString(source) ? source : undefined;
+			const gallery = source && !URI.isUri(source) ? source : undefined;
+			const location = source && URI.isUri(source) ? source : undefined;
 			const installingExtension = gallery ? this.installing.filter(e => areSameExtensions(e.identifier, gallery.identifier))[0] : null;
 			this.installing = installingExtension ? this.installing.filter(e => e !== installingExtension) : this.installing;
 
 			let extension: Extension | undefined = installingExtension ? installingExtension
-				: (zipPath || local) ? this.instantiationService.createInstance(Extension, this.stateProvider, this.server, local, undefined)
+				: (location || local) ? this.instantiationService.createInstance(Extension, this.stateProvider, this.server, local, undefined)
 					: undefined;
 			if (extension) {
 				if (local) {
