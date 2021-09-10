@@ -16,6 +16,7 @@
     "onCommand:sqlDatabaseProjects.new",
     "onCommand:sqlDatabaseProjects.open",
     "onCommand:sqlDatabaseProjects.createProjectFromDatabase",
+    "onCommand:sqlDatabaseProjects.updateProjectFromDatabase",
     "onCommand:sqlDatabaseProjects.addSqlBinding",
     "workspaceContains:**/*.sqlproj",
     "onView:dataworkspace.views.main"
@@ -136,6 +137,12 @@
         "icon": "images/databaseProjectToolbar.svg"
       },
       {
+        "command": "sqlDatabaseProjects.updateProjectFromDatabase",
+        "title": "%sqlDatabaseProjects.updateProjectFromDatabase%",
+        "category": "%sqlDatabaseProjects.displayName%",
+        "icon": "images/databaseProjectToolbar.svg"
+      },
+      {
         "command": "sqlDatabaseProjects.addDatabaseReference",
         "title": "%sqlDatabaseProjects.addDatabaseReference%",
         "category": "%sqlDatabaseProjects.displayName%"
@@ -170,7 +177,12 @@
         {
           "command": "sqlDatabaseProjects.createProjectFromDatabase",
           "when": "view == dataworkspace.views.main",
-          "group": "1_currentWorkspace"
+          "group": "1_currentWorkspace@1"
+        },
+        {
+          "command": "sqlDatabaseProjects.updateProjectFromDatabase",
+          "when": "view == dataworkspace.views.main",
+          "group": "1_currentWorkspace@2"
         }
       ],
       "commandPalette": [
@@ -238,6 +250,10 @@
           "command": "sqlDatabaseProjects.createProjectFromDatabase"
         },
         {
+          "command": "sqlDatabaseProjects.updateProjectFromDatabase",
+          "when": "false"
+        },
+        {
           "command": "sqlDatabaseProjects.addDatabaseReference",
           "when": "false"
         },
@@ -286,6 +302,11 @@
           "command": "sqlDatabaseProjects.schemaCompare",
           "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project && azdataAvailable",
           "group": "1_dbProjectsFirst@3"
+        },
+        {
+          "command": "sqlDatabaseProjects.updateProjectFromDatabase",
+          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project",
+          "group": "1_dbProjectsFirst@4"
         },
         {
           "command": "sqlDatabaseProjects.newItem",
@@ -377,19 +398,33 @@
         {
           "command": "sqlDatabaseProjects.createProjectFromDatabase",
           "when": "nodeType =~ /^(Database|Server)$/ && connectionProvider == MSSQL && mssql:engineedition != 11",
-          "group": "export"
+          "group": "export@1"
+        },
+        {
+          "command": "sqlDatabaseProjects.updateProjectFromDatabase",
+          "when": "nodeType =~ /^(Database|Server)$/ && connectionProvider == MSSQL && mssql:engineedition != 11",
+          "group": "export@2"
         }
       ],
       "dataExplorer/context": [
         {
           "command": "sqlDatabaseProjects.createProjectFromDatabase",
           "when": "nodeType =~ /^(Database|Server)$/ && connectionProvider == MSSQL && mssql:engineedition != 11",
-          "group": "export"
+          "group": "export@1"
+        },
+        {
+          "command": "sqlDatabaseProjects.updateProjectFromDatabase",
+          "when": "nodeType =~ /^(Database|Server)$/ && connectionProvider == MSSQL && mssql:engineedition != 11",
+          "group": "export@2"
         }
       ],
       "dashboard/toolbar": [
         {
           "command": "sqlDatabaseProjects.createProjectFromDatabase",
+          "when": "connectionProvider == 'MSSQL' && mssql:engineedition != 11"
+        },
+        {
+          "command": "sqlDatabaseProjects.updateProjectFromDatabase",
           "when": "connectionProvider == 'MSSQL' && mssql:engineedition != 11"
         }
       ]
