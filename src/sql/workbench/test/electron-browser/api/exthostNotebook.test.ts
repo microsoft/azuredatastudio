@@ -24,7 +24,9 @@ suite('ExtHostNotebook Tests', () => {
 	let executeProviderMock: TypeMoq.Mock<ExecuteProviderStub>;
 	setup(() => {
 		mockProxy = TypeMoq.Mock.ofInstance(<MainThreadNotebookShape>{
+			$registerSerializationProvider: (providerId, handle) => undefined,
 			$registerExecuteProvider: (providerId, handle) => undefined,
+			$unregisterSerializationProvider: (handle) => undefined,
 			$unregisterExecuteProvider: (handle) => undefined,
 			dispose: () => undefined
 		});
@@ -47,17 +49,25 @@ suite('ExtHostNotebook Tests', () => {
 			} catch (e) { }
 		});
 		suite('with provider', () => {
-			let providerHandle: number = -1;
+			let serializationProviderHandle: number = -1;
+			let executeProviderHandle: number = -1;
 
 			setup(() => {
 				mockProxy.setup(p =>
+					p.$registerSerializationProvider(TypeMoq.It.isValue(serializationProviderMock.object.providerId), TypeMoq.It.isAnyNumber()))
+					.returns((providerId, handle) => {
+						serializationProviderHandle = handle;
+						return undefined;
+					});
+				mockProxy.setup(p =>
 					p.$registerExecuteProvider(TypeMoq.It.isValue(executeProviderMock.object.providerId), TypeMoq.It.isAnyNumber()))
 					.returns((providerId, handle) => {
-						providerHandle = handle;
+						executeProviderHandle = handle;
 						return undefined;
 					});
 
 				// Register the provider so we can test behavior with this present
+				extHostNotebook.registerSerializationProvider(serializationProviderMock.object);
 				extHostNotebook.registerExecuteProvider(executeProviderMock.object);
 			});
 
@@ -67,7 +77,7 @@ suite('ExtHostNotebook Tests', () => {
 				serializationProviderMock.setup(p => p.getSerializationManager(TypeMoq.It.isAny())).returns(() => Promise.resolve(expectedManager));
 
 				// When I call through using the handle provided during registration
-				let managerDetails: ISerializationManagerDetails = await extHostNotebook.$getSerializationManagerDetails(providerHandle, notebookUri);
+				let managerDetails: ISerializationManagerDetails = await extHostNotebook.$getSerializationManagerDetails(serializationProviderHandle, notebookUri);
 
 				// Then I expect the same manager to be returned
 				assert.ok(managerDetails.hasContentManager === false, 'Expect no content manager defined');
@@ -80,7 +90,7 @@ suite('ExtHostNotebook Tests', () => {
 				executeProviderMock.setup(p => p.getExecuteManager(TypeMoq.It.isAny())).returns(() => Promise.resolve(expectedManager));
 
 				// When I call through using the handle provided during registration
-				let managerDetails: IExecuteManagerDetails = await extHostNotebook.$getExecuteManagerDetails(providerHandle, notebookUri);
+				let managerDetails: IExecuteManagerDetails = await extHostNotebook.$getExecuteManagerDetails(executeProviderHandle, notebookUri);
 
 				// Then I expect the same manager to be returned
 				assert.ok(managerDetails.hasServerManager === false, 'Expect no server manager defined');
@@ -93,9 +103,9 @@ suite('ExtHostNotebook Tests', () => {
 				executeProviderMock.setup(p => p.getExecuteManager(TypeMoq.It.isAny())).returns(() => Promise.resolve(expectedManager));
 
 				// When I call through using the handle provided during registration
-				let originalManagerDetails = await extHostNotebook.$getExecuteManagerDetails(providerHandle, notebookUri);
-				let differentDetails = await extHostNotebook.$getExecuteManagerDetails(providerHandle, URI.parse('file://other/file.ipynb'));
-				let sameDetails = await extHostNotebook.$getExecuteManagerDetails(providerHandle, notebookUri);
+				let originalManagerDetails = await extHostNotebook.$getExecuteManagerDetails(executeProviderHandle, notebookUri);
+				let differentDetails = await extHostNotebook.$getExecuteManagerDetails(executeProviderHandle, URI.parse('file://other/file.ipynb'));
+				let sameDetails = await extHostNotebook.$getExecuteManagerDetails(executeProviderHandle, notebookUri);
 
 				// Then I expect the 2 different handles in the managers returned.
 				// This is because we can't easily track identity of the managers, so just track which one is assigned to
