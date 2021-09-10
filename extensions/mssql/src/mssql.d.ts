@@ -7,7 +7,6 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { DacExtractTarget } from './contracts';
 
 /**
  * Covers defining what the mssql extension exports to other extensions
@@ -317,7 +316,7 @@ export interface ISchemaCompareService {
 	schemaCompare(operationId: string, sourceEndpointInfo: SchemaCompareEndpointInfo, targetEndpointInfo: SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: DeploymentOptions): Thenable<SchemaCompareResult>;
 	schemaCompareGenerateScript(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus>;
 	schemaComparePublishDatabaseChanges(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus>;
-	schemaComparePublishProjectChanges(operationId: string, targetProjectPath: string, targetFolderStructure: DacExtractTarget, taskExecutionMode: azdata.TaskExecutionMode): Thenable<SchemaComparePublishProjectResult>;
+	schemaComparePublishProjectChanges(operationId: string, targetProjectPath: string, targetFolderStructure: ExtractTarget, taskExecutionMode: azdata.TaskExecutionMode): Thenable<SchemaComparePublishProjectResult>;
 	schemaCompareGetDefaultOptions(): Thenable<SchemaCompareOptionsResult>;
 	schemaCompareIncludeExcludeNode(operationId: string, diffEntry: DiffEntry, IncludeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<SchemaCompareIncludeExcludeResult>;
 	schemaCompareOpenScmp(filePath: string): Thenable<SchemaCompareOpenScmpResult>;
