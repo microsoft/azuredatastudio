@@ -88,8 +88,8 @@ export class DeployService {
 				return undefined;
 			}
 			const projectName = project.projectFileName;
-			const imageLabel = `${constants.dockerImageLabelPrefix}_${projectName}`;
-			const imageName = `${constants.dockerImageNamePrefix}-${projectName}-${UUID.generateUuid().toLowerCase()}`;
+			const imageLabel = `${constants.dockerImageLabelPrefix}_${projectName}`.toLocaleLowerCase();
+			const imageName = `${constants.dockerImageNamePrefix}-${projectName}-${UUID.generateUuid()}`.toLocaleLowerCase();
 			const root = project.projectFolderPath;
 			const mssqlFolderPath = path.join(root, constants.mssqlFolderName);
 			const commandsFolderPath = path.join(mssqlFolderPath, constants.commandsFolderName);
