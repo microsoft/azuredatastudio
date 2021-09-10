@@ -34,7 +34,7 @@ export function main(isWeb: boolean = false): void {
 const PLATFORM = '${PLATFORM}';
 const RUNTIME = '${RUNTIME}';
 const VERSION = '${VERSION}';
-const RELEASE_VERSION = '1.5.0';
+const RELEASE_VERSION = '${RELEASE_VERSION}';
 
 const sqliteUrl = `https://github.com/Microsoft/azuredatastudio-sqlite/releases/download/${RELEASE_VERSION}/azuredatastudio-sqlite-${PLATFORM}-${RUNTIME}-${VERSION}.zip`;
 
