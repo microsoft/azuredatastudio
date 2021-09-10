@@ -172,13 +172,13 @@ export class NotebookService extends Disposable implements INotebookService {
 		if (this._storageService !== undefined && this.providersMemento.notebookProviderCache === undefined) {
 			this.providersMemento.notebookProviderCache = <NotebookProviderCache>{};
 		}
-		this._register(notebookRegistry.onNewRegistration(this.updateRegisteredProviders, this));
+		this._register(notebookRegistry.onNewExecuteRegistration(this.updateRegisteredProviders, this));
 		this.registerBuiltInProvider();
 
 		// If a provider has been already registered, the onNewRegistration event will not have a listener attached yet
 		// So, explicitly updating registered providers here.
-		if (notebookRegistry.providers.length > 0) {
-			notebookRegistry.providers.forEach(p => {
+		if (notebookRegistry.executeProviders.length > 0) {
+			notebookRegistry.executeProviders.forEach(p => {
 				// Don't need to re-register SQL_NOTEBOOK_PROVIDER
 				if (p.provider !== SQL_NOTEBOOK_PROVIDER) {
 					this.updateRegisteredProviders({ id: p.provider, registration: p });
@@ -579,7 +579,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	private cleanupProviders(): void {
-		let knownProviders = Object.keys(notebookRegistry.providers);
+		let knownProviders = Object.keys(notebookRegistry.executeProviders);
 		let cache = this.providersMemento.notebookProviderCache;
 		for (let key in cache) {
 			if (!knownProviders.some(x => x === key)) {
@@ -592,7 +592,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	private registerBuiltInProvider() {
 		let sqlProvider = new SqlExecuteProvider(this._instantiationService);
 		this.registerExecuteProvider(sqlProvider.providerId, sqlProvider);
-		notebookRegistry.registerNotebookProvider({
+		notebookRegistry.registerExecuteProvider({
 			provider: sqlProvider.providerId,
 			fileExtensions: DEFAULT_NOTEBOOK_FILETYPE,
 			standardKernels: { name: notebookConstants.SQL, displayName: notebookConstants.SQL, connectionProviderIds: [notebookConstants.SQL_CONNECTION_PROVIDER] }

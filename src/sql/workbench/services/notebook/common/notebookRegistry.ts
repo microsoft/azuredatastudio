@@ -18,7 +18,6 @@ export const Extensions = {
 export interface SerializationProviderRegistration {
 	provider: string;
 	fileExtensions: string | string[];
-	standardKernels: azdata.nb.IStandardKernel | azdata.nb.IStandardKernel[];
 }
 
 export interface ExecuteProviderRegistration {
@@ -152,40 +151,59 @@ export interface NotebookLanguageMagicRegistration {
 }
 
 export interface INotebookProviderRegistry {
-	readonly providers: ExecuteProviderRegistration[];
+	readonly executeProviders: ExecuteProviderRegistration[];
+	readonly serializationProviders: SerializationProviderRegistration[];
 	readonly languageMagics: NotebookLanguageMagicRegistration[];
-	readonly onNewRegistration: Event<{ id: string, registration: ExecuteProviderRegistration }>;
+	readonly onNewSerializationRegistration: Event<{ id: string, registration: SerializationProviderRegistration }>;
+	readonly onNewExecuteRegistration: Event<{ id: string, registration: ExecuteProviderRegistration }>;
 
-	registerNotebookProvider(provider: ExecuteProviderRegistration): void;
+	registerSerializationProvider(provider: SerializationProviderRegistration): void;
+	registerExecuteProvider(provider: ExecuteProviderRegistration): void;
 	registerNotebookLanguageMagic(magic: NotebookLanguageMagicRegistration): void;
 }
 
 class NotebookProviderRegistry implements INotebookProviderRegistry {
-	private providerIdToRegistration = new Map<string, ExecuteProviderRegistration>();
-	private magicToRegistration = new Map<string, NotebookLanguageMagicRegistration>();
-	private _onNewRegistration = new Emitter<{ id: string, registration: ExecuteProviderRegistration }>();
-	public readonly onNewRegistration: Event<{ id: string, registration: ExecuteProviderRegistration }> = this._onNewRegistration.event;
+	private _serializationProviderRegistration = new Map<string, SerializationProviderRegistration>();
+	private _executeProviderRegistration = new Map<string, ExecuteProviderRegistration>();
+	private _magicToRegistration = new Map<string, NotebookLanguageMagicRegistration>();
+	private _onNewSerializationRegistration = new Emitter<{ id: string, registration: SerializationProviderRegistration }>();
+	private _onNewExecuteRegistration = new Emitter<{ id: string, registration: ExecuteProviderRegistration }>();
+	public readonly onNewSerializationRegistration: Event<{ id: string, registration: SerializationProviderRegistration }> = this._onNewSerializationRegistration.event;
+	public readonly onNewExecuteRegistration: Event<{ id: string, registration: ExecuteProviderRegistration }> = this._onNewExecuteRegistration.event;
 
-	registerNotebookProvider(registration: ExecuteProviderRegistration): void {
+	registerSerializationProvider(registration: SerializationProviderRegistration): void {
 		// Note: this method intentionally overrides default provider for a file type.
 		// This means that any built-in provider will be overridden by registered extensions
-		this.providerIdToRegistration.set(registration.provider, registration);
-		this._onNewRegistration.fire({ id: registration.provider, registration: registration });
+		this._serializationProviderRegistration.set(registration.provider, registration);
+		this._onNewSerializationRegistration.fire({ id: registration.provider, registration: registration });
 	}
 
-	public get providers(): ExecuteProviderRegistration[] {
+	registerExecuteProvider(registration: ExecuteProviderRegistration): void {
+		// Note: this method intentionally overrides default provider for a file type.
+		// This means that any built-in provider will be overridden by registered extensions
+		this._executeProviderRegistration.set(registration.provider, registration);
+		this._onNewExecuteRegistration.fire({ id: registration.provider, registration: registration });
+	}
+
+	public get serializationProviders(): SerializationProviderRegistration[] {
+		let registrationArray: SerializationProviderRegistration[] = [];
+		this._executeProviderRegistration.forEach(p => registrationArray.push(p));
+		return registrationArray;
+	}
+
+	public get executeProviders(): ExecuteProviderRegistration[] {
 		let registrationArray: ExecuteProviderRegistration[] = [];
-		this.providerIdToRegistration.forEach(p => registrationArray.push(p));
+		this._executeProviderRegistration.forEach(p => registrationArray.push(p));
 		return registrationArray;
 	}
 
 	registerNotebookLanguageMagic(magicRegistration: NotebookLanguageMagicRegistration): void {
-		this.magicToRegistration.set(magicRegistration.magic, magicRegistration);
+		this._magicToRegistration.set(magicRegistration.magic, magicRegistration);
 	}
 
 	public get languageMagics(): NotebookLanguageMagicRegistration[] {
 		let registrationArray: NotebookLanguageMagicRegistration[] = [];
-		this.magicToRegistration.forEach(p => registrationArray.push(p));
+		this._magicToRegistration.forEach(p => registrationArray.push(p));
 		return registrationArray;
 	}
 
@@ -198,7 +216,7 @@ platform.Registry.add(Extensions.NotebookProviderContribution, notebookProviderR
 ExtensionsRegistry.registerExtensionPoint<ExecuteProviderRegistration | ExecuteProviderRegistration[]>({ extensionPoint: Extensions.NotebookProviderContribution, jsonSchema: notebookContrib }).setHandler(extensions => {
 
 	function handleExtension(contrib: ExecuteProviderRegistration, extension: IExtensionPointUser<any>) {
-		notebookProviderRegistry.registerNotebookProvider(contrib);
+		notebookProviderRegistry.registerExecuteProvider(contrib);
 	}
 
 	for (let extension of extensions) {
