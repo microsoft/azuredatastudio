@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IEditorInputFactoryRegistry, IEditorInput, IEditorInputSerializer, EditorExtensions } from 'vs/workbench/common/editor';
+import { IEditorFactoryRegistry, IEditorInput, IEditorSerializer, EditorExtensions } from 'vs/workbench/common/editor';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { FILE_EDITOR_INPUT_ID } from 'vs/workbench/contrib/files/common/files';
@@ -18,9 +18,9 @@ import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
 import { DiffNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/diffNotebookInput';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
-const editorInputFactoryRegistry = Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories);
+const editorFactoryRegistry = Registry.as<IEditorFactoryRegistry>(EditorExtensions.EditorFactory);
 
-export class NotebookEditorInputAssociation implements ILanguageAssociation {
+export class NotebookEditorLanguageAssociation implements ILanguageAssociation {
 	/**
 	 * The language IDs that are associated with Notebooks. These are case sensitive for comparing with what's
 	 * registered in the ModeService registry.
@@ -53,9 +53,9 @@ export class NotebookEditorInputAssociation implements ILanguageAssociation {
 	}
 }
 
-export class FileNoteBookEditorInputSerializer implements IEditorInputSerializer {
+export class FileNoteBookEditorSerializer implements IEditorSerializer {
 	serialize(editorInput: FileNotebookInput): string {
-		const factory = editorInputFactoryRegistry.getEditorInputSerializer(FILE_EDITOR_INPUT_ID);
+		const factory = editorFactoryRegistry.getEditorSerializer(FILE_EDITOR_INPUT_ID);
 		if (factory) {
 			return factory.serialize(editorInput.textInput); // serialize based on the underlying input
 		}
@@ -63,7 +63,7 @@ export class FileNoteBookEditorInputSerializer implements IEditorInputSerializer
 	}
 
 	deserialize(instantiationService: IInstantiationService, serializedEditorInput: string): FileNotebookInput | undefined {
-		const factory = editorInputFactoryRegistry.getEditorInputSerializer(FILE_EDITOR_INPUT_ID);
+		const factory = editorFactoryRegistry.getEditorSerializer(FILE_EDITOR_INPUT_ID);
 		const fileEditorInput = factory.deserialize(instantiationService, serializedEditorInput) as FileEditorInput;
 		return instantiationService.createInstance(FileNotebookInput, fileEditorInput.getName(), fileEditorInput.resource, fileEditorInput);
 	}
@@ -73,9 +73,9 @@ export class FileNoteBookEditorInputSerializer implements IEditorInputSerializer
 	}
 }
 
-export class UntitledNotebookEditorInputSerializer implements IEditorInputSerializer {
+export class UntitledNotebookEditorSerializer implements IEditorSerializer {
 	serialize(editorInput: UntitledNotebookInput): string {
-		const factory = editorInputFactoryRegistry.getEditorInputSerializer(UntitledTextEditorInput.ID);
+		const factory = editorFactoryRegistry.getEditorSerializer(UntitledTextEditorInput.ID);
 		if (factory) {
 			return factory.serialize(editorInput.textInput); // serialize based on the underlying input
 		}
@@ -83,7 +83,7 @@ export class UntitledNotebookEditorInputSerializer implements IEditorInputSerial
 	}
 
 	deserialize(instantiationService: IInstantiationService, serializedEditorInput: string): UntitledNotebookInput | undefined {
-		const factory = editorInputFactoryRegistry.getEditorInputSerializer(UntitledTextEditorInput.ID);
+		const factory = editorFactoryRegistry.getEditorSerializer(UntitledTextEditorInput.ID);
 		const untitledEditorInput = factory.deserialize(instantiationService, serializedEditorInput) as UntitledTextEditorInput;
 		return instantiationService.createInstance(UntitledNotebookInput, untitledEditorInput.getName(), untitledEditorInput.resource, untitledEditorInput);
 	}

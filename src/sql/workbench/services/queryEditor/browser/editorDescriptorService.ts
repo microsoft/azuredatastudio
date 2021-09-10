@@ -23,7 +23,7 @@ export class EditorDescriptorService implements IEditorDescriptorService {
 	}
 
 	public getEditor(input: EditorInput): IEditorPaneDescriptor | undefined {
-		return Registry.as<IEditorPaneRegistry>(EditorExtensions.Editors).getEditorPane(input);
+		return Registry.as<IEditorPaneRegistry>(EditorExtensions.EditorPane).getEditorPane(input);
 	}
 }
 

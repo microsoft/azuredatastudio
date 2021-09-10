@@ -10,7 +10,7 @@ import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { QueryPlanEditor } from 'sql/workbench/contrib/queryPlan/browser/queryPlanEditor';
 import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
-import { IEditorOverrideService, RegisteredEditorPriority } from 'vs/workbench/services/editor/common/editorOverrideService';
+import { IEditorResolverService, RegisteredEditorPriority } from 'vs/workbench/services/editor/common/editorResolverService';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions, IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -23,20 +23,20 @@ const queryPlanEditorDescriptor = EditorPaneDescriptor.create(
 	QueryPlanEditor.LABEL
 );
 
-Registry.as<IEditorPaneRegistry>(EditorExtensions.Editors)
+Registry.as<IEditorPaneRegistry>(EditorExtensions.EditorPane)
 	.registerEditorPane(queryPlanEditorDescriptor, [new SyncDescriptor(QueryPlanInput)]);
 
 export class QueryPlanEditorOverrideContribution extends Disposable implements IWorkbenchContribution {
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IEditorOverrideService private _editorOverrideService: IEditorOverrideService
+		@IEditorResolverService private _editorResolverService: IEditorResolverService
 	) {
 		super();
 		this.registerEditorOverride();
 	}
 
 	private registerEditorOverride(): void {
-		this._editorOverrideService.registerEditor(
+		this._editorResolverService.registerEditor(
 			'*.sqlplan',
 			{
 				id: QueryPlanEditor.ID,

@@ -38,7 +38,7 @@ configurationRegistry.registerConfiguration({
 	}
 });
 
-Registry.as<IEditorPaneRegistry>(EditorExtensions.Editors)
+Registry.as<IEditorPaneRegistry>(EditorExtensions.EditorPane)
 	.registerEditorPane(editDataEditorDescriptor, [new SyncDescriptor(EditDataInput)]);
 
 // Editor
@@ -48,7 +48,7 @@ const editDataResultsEditorDescriptor = EditorPaneDescriptor.create(
 	'EditDataResults'
 );
 
-Registry.as<IEditorPaneRegistry>(EditorExtensions.Editors)
+Registry.as<IEditorPaneRegistry>(EditorExtensions.EditorPane)
 	.registerEditorPane(editDataResultsEditorDescriptor, [new SyncDescriptor(EditDataResultsInput)]);
 
 // Keybinding for toggling the query pane

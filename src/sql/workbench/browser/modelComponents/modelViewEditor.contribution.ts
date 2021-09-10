@@ -17,5 +17,5 @@ const viewModelEditorDescriptor = EditorPaneDescriptor.create(
 	'ViewModel'
 );
 
-Registry.as<IEditorPaneRegistry>(EditorExtensions.Editors)
+Registry.as<IEditorPaneRegistry>(EditorExtensions.EditorPane)
 	.registerEditorPane(viewModelEditorDescriptor, [new SyncDescriptor(ModelViewInput)]);

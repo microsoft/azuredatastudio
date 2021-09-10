@@ -56,7 +56,7 @@ class WelcomeContributions {
 			Registry.as<IWorkbenchActionRegistry>(ActionExtensions.WorkbenchActions)
 				.registerWorkbenchAction(SyncActionDescriptor.create(WelcomePageAction, WelcomePageAction.ID, WelcomePageAction.LABEL), 'Help: Welcome', CATEGORIES.Help.value);
 
-			Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories).registerEditorInputSerializer(WelcomeInputSerializer.ID, WelcomeInputSerializer);
+			Registry.as<IEditorFactoryRegistry>(EditorExtensions.EditorFactory).registerEditorSerializer(WelcomeInputSerializer.ID, WelcomeInputSerializer);
 
 		} else {
 			Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
@@ -65,7 +65,7 @@ class WelcomeContributions {
 			Registry.as<IWorkbenchActionRegistry>(ActionExtensions.WorkbenchActions)
 				.registerWorkbenchAction(SyncActionDescriptor.create(WelcomePageAction2, WelcomePageAction2.ID, WelcomePageAction2.LABEL), 'Help: Welcome', CATEGORIES.Help.value);
 
-			Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories).registerEditorInputSerializer(WelcomeInputSerializer2.ID, WelcomeInputSerializer2);
+			Registry.as<IEditorFactoryRegistry>(EditorExtensions.EditorFactory).registerEditorSerializer(WelcomeInputSerializer2.ID, WelcomeInputSerializer2);
 		}
 	}
 }

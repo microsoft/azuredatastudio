@@ -64,5 +64,5 @@ const dashboardEditorDescriptor = EditorPaneDescriptor.create(
 	localize('dashboard.editor.label', "Dashboard")
 );
 
-Registry.as<IEditorPaneRegistry>(EditorExtensions.Editors)
+Registry.as<IEditorPaneRegistry>(EditorExtensions.EditorPane)
 	.registerEditorPane(dashboardEditorDescriptor, [new SyncDescriptor(DashboardInput)]);

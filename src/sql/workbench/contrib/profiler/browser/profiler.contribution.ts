@@ -21,7 +21,7 @@ const profilerDescriptor = EditorPaneDescriptor.create(
 	'ProfilerEditor'
 );
 
-Registry.as<IEditorPaneRegistry>(EditorExtensions.Editors)
+Registry.as<IEditorPaneRegistry>(EditorExtensions.EditorPane)
 	.registerEditorPane(profilerDescriptor, [new SyncDescriptor(ProfilerInput)]);
 
 const profilerViewTemplateSchema: IJSONSchema = {

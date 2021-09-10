@@ -45,7 +45,7 @@ const resourceViewerDescriptor = EditorPaneDescriptor.create(
 	'ResourceViewerEditor'
 );
 
-Registry.as<IEditorPaneRegistry>(EditorExtensions.Editors)
+Registry.as<IEditorPaneRegistry>(EditorExtensions.EditorPane)
 	.registerEditorPane(resourceViewerDescriptor, [new SyncDescriptor(ResourceViewerInput)]);
 
 Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).registerWorkbenchContribution(ResourceViewResourcesExtensionHandler, LifecyclePhase.Ready);
