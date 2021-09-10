@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { Registry } from 'vs/platform/registry/common/platform';
-import { EditorDescriptor, IEditorRegistry } from 'vs/workbench/browser/editor';
+import { EditorPaneDescriptor, IEditorPaneRegistry } from 'vs/workbench/browser/editor';
 
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
@@ -74,8 +74,8 @@ Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories)
 Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations)
 	.registerLanguageAssociation(NotebookEditorInputAssociation.languages, NotebookEditorInputAssociation);
 
-Registry.as<IEditorRegistry>(EditorExtensions.Editors)
-	.registerEditor(EditorDescriptor.create(NotebookEditor, NotebookEditor.ID, NotebookEditor.LABEL), [new SyncDescriptor(UntitledNotebookInput), new SyncDescriptor(FileNotebookInput)]);
+Registry.as<IEditorPaneRegistry>(EditorExtensions.Editors)
+	.registerEditorPane(EditorPaneDescriptor.create(NotebookEditor, NotebookEditor.ID, NotebookEditor.LABEL), [new SyncDescriptor(UntitledNotebookInput), new SyncDescriptor(FileNotebookInput)]);
 
 Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
 	.registerWorkbenchContribution(NotebookThemingContribution, LifecyclePhase.Restored);

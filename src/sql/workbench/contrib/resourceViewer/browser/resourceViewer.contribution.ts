@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { EditorDescriptor, IEditorRegistry } from 'vs/workbench/browser/editor';
+import { EditorPaneDescriptor, IEditorPaneRegistry } from 'vs/workbench/browser/editor';
 import { EditorExtensions } from 'vs/workbench/common/editor';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
@@ -39,14 +39,14 @@ CommandsRegistry.registerCommand({
 	}
 });
 
-const resourceViewerDescriptor = EditorDescriptor.create(
+const resourceViewerDescriptor = EditorPaneDescriptor.create(
 	ResourceViewerEditor,
 	ResourceViewerEditor.ID,
 	'ResourceViewerEditor'
 );
 
-Registry.as<IEditorRegistry>(EditorExtensions.Editors)
-	.registerEditor(resourceViewerDescriptor, [new SyncDescriptor(ResourceViewerInput)]);
+Registry.as<IEditorPaneRegistry>(EditorExtensions.Editors)
+	.registerEditorPane(resourceViewerDescriptor, [new SyncDescriptor(ResourceViewerInput)]);
 
 Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).registerWorkbenchContribution(ResourceViewResourcesExtensionHandler, LifecyclePhase.Ready);
 

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
-import { IEditorDescriptor } from 'vs/workbench/browser/editor';
+import { IEditorPaneDescriptor } from 'vs/workbench/browser/editor';
 import { URI } from 'vs/base/common/uri';
 
 import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
@@ -72,7 +72,7 @@ suite('SQL QueryEditor Tests', () => {
 		});
 
 		// Mock EditorDescriptorService to give us a mock editor description
-		let descriptor: IEditorDescriptor = {
+		let descriptor: IEditorPaneDescriptor = {
 			typeId: 'id',
 			name: 'name',
 			describes: function (obj: any): boolean { return true; },

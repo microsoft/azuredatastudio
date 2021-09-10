@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { QueryPlanInput } from 'sql/workbench/contrib/queryPlan/common/queryPlanInput';
-import { EditorDescriptor, IEditorRegistry } from 'vs/workbench/browser/editor';
+import { EditorPaneDescriptor, IEditorPaneRegistry } from 'vs/workbench/browser/editor';
 import { EditorExtensions } from 'vs/workbench/common/editor';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { Registry } from 'vs/platform/registry/common/platform';
@@ -17,14 +17,14 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 
 // Query Plan editor registration
 
-const queryPlanEditorDescriptor = EditorDescriptor.create(
+const queryPlanEditorDescriptor = EditorPaneDescriptor.create(
 	QueryPlanEditor,
 	QueryPlanEditor.ID,
 	QueryPlanEditor.LABEL
 );
 
-Registry.as<IEditorRegistry>(EditorExtensions.Editors)
-	.registerEditor(queryPlanEditorDescriptor, [new SyncDescriptor(QueryPlanInput)]);
+Registry.as<IEditorPaneRegistry>(EditorExtensions.Editors)
+	.registerEditorPane(queryPlanEditorDescriptor, [new SyncDescriptor(QueryPlanInput)]);
 
 export class QueryPlanEditorOverrideContribution extends Disposable implements IWorkbenchContribution {
 	constructor(
