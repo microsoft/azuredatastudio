@@ -4927,7 +4927,7 @@ declare module 'azdata' {
 
 		export interface NotebookSerializationProvider {
 			readonly providerId: string;
-			getContentManager(notebookUri: vscode.Uri): Thenable<SerializationManager>;
+			getSerializationManager(notebookUri: vscode.Uri): Thenable<SerializationManager>;
 		}
 
 		export interface NotebookExecuteProvider {

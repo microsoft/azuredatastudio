@@ -7,7 +7,7 @@ import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/no
 import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
-import { INotebookParams, INotebookService, INotebookManager, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
+import { INotebookParams, INotebookService, IExecuteManager, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { CellMagicMapper } from 'sql/workbench/contrib/notebook/browser/models/cellMagicMapper';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -38,7 +38,7 @@ export const NOTEBOOKEDITOR_SELECTOR: string = 'notebookeditor-component';
 export class NotebookEditorComponent extends AngularDisposable {
 	private readonly defaultViewMode = ViewMode.Notebook;
 	private profile: IConnectionProfile;
-	private notebookManagers: INotebookManager[] = [];
+	private notebookManagers: IExecuteManager[] = [];
 	private _modelReadyDeferred = new Deferred<NotebookModel>();
 
 	public model: NotebookModel;

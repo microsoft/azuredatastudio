@@ -12,8 +12,8 @@ import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 
 import { MainThreadNotebook } from 'sql/workbench/api/browser/mainThreadNotebook';
 import { NotebookService } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
-import { IExecuteProvider } from 'sql/workbench/services/notebook/browser/notebookService';
-import { INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, INotebookFutureDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IExecuteProvider, ISerializationProvider } from 'sql/workbench/services/notebook/browser/notebookService';
+import { IExecuteManagerDetails, INotebookSessionDetails, INotebookKernelDetails, INotebookFutureDetails, ISerializationManagerDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { LocalContentManager } from 'sql/workbench/services/notebook/common/localContentManager';
 import { TestLifecycleService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
@@ -84,53 +84,70 @@ suite('MainThreadNotebook Tests', () => {
 	});
 
 	suite('getNotebookManager', () => {
-		let managerWithAllFeatures: INotebookManagerDetails;
-		let provider: IExecuteProvider;
+		let serializationManagerWithAllFeatures: ISerializationManagerDetails;
+		let executeManagerWithAllFeatures: IExecuteManagerDetails;
+		let serializationProvider: ISerializationProvider;
+		let executeProvider: IExecuteProvider;
 
 		setup(() => {
-			managerWithAllFeatures = {
-				handle: 2,
+			serializationManagerWithAllFeatures = {
+				handle: 3,
 				hasContentManager: true,
+			};
+			executeManagerWithAllFeatures = {
+				handle: 4,
 				hasServerManager: true
 			};
-			mockNotebookService.setup(s => s.registerExecuteProvider(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns((id, providerImpl) => {
-				provider = providerImpl;
+			mockNotebookService.setup(s => s.registerSerializationProvider(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns((id, providerImpl) => {
+				serializationProvider = providerImpl;
 			});
-			mainThreadNotebook.$registerExecuteProvider(providerId, 1);
+			mainThreadNotebook.$registerSerializationProvider(providerId, 1);
+			mockNotebookService.setup(s => s.registerExecuteProvider(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns((id, providerImpl) => {
+				executeProvider = providerImpl;
+			});
+			mainThreadNotebook.$registerExecuteProvider(providerId, 2);
 
 			// Always return empty specs in this test suite
 			mockProxy.setup(p => p.$refreshSpecs(TypeMoq.It.isAnyNumber())).returns(() => Promise.resolve(undefined));
 		});
 
-		test('should return manager with default content manager & undefined server manager if extension host has none', async () => {
+		test('should return execute manager with undefined server manager if extension host has none', async () => {
 			// Given the extension provider doesn't have acontent or server manager
-			let details: INotebookManagerDetails = {
+			let details: IExecuteManagerDetails = {
 				handle: 2,
-				hasContentManager: false,
 				hasServerManager: false
 			};
-			mockProxy.setup(p => p.$getNotebookManager(TypeMoq.It.isAnyNumber(), TypeMoq.It.isValue(notebookUri)))
+			mockProxy.setup(p => p.$getExecuteManagerDetails(TypeMoq.It.isAnyNumber(), TypeMoq.It.isValue(notebookUri)))
 				.returns(() => Promise.resolve(details));
 
 			// When I get the notebook manager
-			let manager = await provider.getExecuteManager(notebookUri);
+			let manager = await executeProvider.getExecuteManager(notebookUri);
 
-			// Then it should use the built-in content manager
-			assert.ok(manager.contentManager instanceof LocalContentManager);
 			// And it should not define a server manager
 			assert.strictEqual(manager.serverManager, undefined);
 		});
 
-		test('should return manager with a content & server manager if extension host has these', async () => {
+		test('should return serialization manager with a content manager if extension host has these', async () => {
 			// Given the extension provider doesn't have acontent or server manager
-			mockProxy.setup(p => p.$getNotebookManager(TypeMoq.It.isAnyNumber(), TypeMoq.It.isValue(notebookUri)))
-				.returns(() => Promise.resolve(managerWithAllFeatures));
+			mockProxy.setup(p => p.$getSerializationManagerDetails(TypeMoq.It.isAnyNumber(), TypeMoq.It.isValue(notebookUri)))
+				.returns(() => Promise.resolve(serializationManagerWithAllFeatures));
 
 			// When I get the notebook manager
-			let manager = await provider.getExecuteManager(notebookUri);
+			let manager = await serializationProvider.getSerializationManager(notebookUri);
 
-			// Then it shouldn't have wrappers for the content or server manager
+			// Then it shouldn't have wrappers for the content manager
 			assert.ok(!(manager.contentManager instanceof LocalContentManager));
+		});
+
+		test('should return execute manager with a server manager if extension host has these', async () => {
+			// Given the extension provider doesn't have acontent or server manager
+			mockProxy.setup(p => p.$getExecuteManagerDetails(TypeMoq.It.isAnyNumber(), TypeMoq.It.isValue(notebookUri)))
+				.returns(() => Promise.resolve(executeManagerWithAllFeatures));
+
+			// When I get the notebook manager
+			let manager = await executeProvider.getExecuteManager(notebookUri);
+
+			// Then it shouldn't have wrappers for the server manager
 			assert.notStrictEqual(manager.serverManager, undefined);
 		});
 	});
@@ -138,7 +155,10 @@ suite('MainThreadNotebook Tests', () => {
 });
 
 class ExtHostNotebookStub implements ExtHostNotebookShape {
-	$getNotebookManager(providerHandle: number, notebookUri: UriComponents): Thenable<INotebookManagerDetails> {
+	$getSerializationManagerDetails(providerHandle: number, notebookUri: UriComponents): Thenable<ISerializationManagerDetails> {
+		throw new Error('Method not implemented.');
+	}
+	$getExecuteManagerDetails(providerHandle: number, notebookUri: UriComponents): Thenable<IExecuteManagerDetails> {
 		throw new Error('Method not implemented.');
 	}
 	$handleNotebookClosed(notebookUri: UriComponents): void {

@@ -18,9 +18,10 @@ import { ITreeComponentItem } from 'sql/workbench/common/views';
 import { ITaskHandlerDescription } from 'sql/workbench/services/tasks/common/tasks';
 import {
 	IItemConfig, IComponentShape, IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails,
-	IModelViewWizardDetails, IModelViewWizardPageDetails, INotebookManagerDetails, INotebookSessionDetails,
+	IModelViewWizardDetails, IModelViewWizardPageDetails, IExecuteManagerDetails, INotebookSessionDetails,
 	INotebookKernelDetails, INotebookFutureDetails, FutureMessageType, INotebookFutureDone, ISingleNotebookEditOperation,
-	NotebookChangeKind
+	NotebookChangeKind,
+	ISerializationManagerDetails
 } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IUndoStopOptions } from 'vs/workbench/api/common/extHost.protocol';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
@@ -863,7 +864,8 @@ export interface ExtHostNotebookShape {
 	 * Looks up a notebook manager for a given notebook URI
 	 * @returns handle of the manager to be used when sending
 	 */
-	$getNotebookManager(providerHandle: number, notebookUri: UriComponents): Thenable<INotebookManagerDetails>;
+	$getSerializationManagerDetails(providerHandle: number, notebookUri: UriComponents): Thenable<ISerializationManagerDetails>;
+	$getExecuteManagerDetails(providerHandle: number, notebookUri: UriComponents): Thenable<IExecuteManagerDetails>;
 	$handleNotebookClosed(notebookUri: UriComponents): void;
 
 	// Server Manager APIs

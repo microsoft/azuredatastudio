@@ -13,14 +13,15 @@ import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 import { ExtHostNotebook } from 'sql/workbench/api/common/extHostNotebook';
 import { MainThreadNotebookShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { INotebookManagerDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IExecuteManagerDetails, ISerializationManagerDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 suite('ExtHostNotebook Tests', () => {
 
 	let extHostNotebook: ExtHostNotebook;
 	let mockProxy: TypeMoq.Mock<MainThreadNotebookShape>;
 	let notebookUri: URI;
-	let notebookProviderMock: TypeMoq.Mock<ExecuteProviderStub>;
+	let serializationProviderMock: TypeMoq.Mock<SerializationProviderStub>;
+	let executeProviderMock: TypeMoq.Mock<ExecuteProviderStub>;
 	setup(() => {
 		mockProxy = TypeMoq.Mock.ofInstance(<MainThreadNotebookShape>{
 			$registerExecuteProvider: (providerId, handle) => undefined,
@@ -32,14 +33,16 @@ suite('ExtHostNotebook Tests', () => {
 		};
 		extHostNotebook = new ExtHostNotebook(mainContext);
 		notebookUri = URI.parse('file:/user/default/my.ipynb');
-		notebookProviderMock = TypeMoq.Mock.ofType(ExecuteProviderStub, TypeMoq.MockBehavior.Loose);
-		notebookProviderMock.callBase = true;
+		serializationProviderMock = TypeMoq.Mock.ofType(SerializationProviderStub, TypeMoq.MockBehavior.Loose);
+		serializationProviderMock.callBase = true;
+		executeProviderMock = TypeMoq.Mock.ofType(ExecuteProviderStub, TypeMoq.MockBehavior.Loose);
+		executeProviderMock.callBase = true;
 	});
 
 	suite('getNotebookManager', () => {
 		test('Should throw if no matching provider is defined', async () => {
 			try {
-				await extHostNotebook.$getNotebookManager(-1, notebookUri);
+				await extHostNotebook.$getExecuteManagerDetails(-1, notebookUri);
 				assert.fail('expected to throw');
 			} catch (e) { }
 		});
@@ -48,39 +51,51 @@ suite('ExtHostNotebook Tests', () => {
 
 			setup(() => {
 				mockProxy.setup(p =>
-					p.$registerExecuteProvider(TypeMoq.It.isValue(notebookProviderMock.object.providerId), TypeMoq.It.isAnyNumber()))
+					p.$registerExecuteProvider(TypeMoq.It.isValue(executeProviderMock.object.providerId), TypeMoq.It.isAnyNumber()))
 					.returns((providerId, handle) => {
 						providerHandle = handle;
 						return undefined;
 					});
 
 				// Register the provider so we can test behavior with this present
-				extHostNotebook.registerExecuteProvider(notebookProviderMock.object);
+				extHostNotebook.registerExecuteProvider(executeProviderMock.object);
 			});
 
-			test('Should return a notebook manager with correct info on content and server manager existence', async () => {
+			test('Should return a serialization manager with correct info on content manager existence', async () => {
 				// Given the provider returns a manager with no
-				let expectedManager = new NotebookManagerStub();
-				notebookProviderMock.setup(p => p.getExecuteManager(TypeMoq.It.isAny())).returns(() => Promise.resolve(expectedManager));
+				let expectedManager = new SerializationManagerStub();
+				serializationProviderMock.setup(p => p.getSerializationManager(TypeMoq.It.isAny())).returns(() => Promise.resolve(expectedManager));
 
 				// When I call through using the handle provided during registration
-				let managerDetails: INotebookManagerDetails = await extHostNotebook.$getNotebookManager(providerHandle, notebookUri);
+				let managerDetails: ISerializationManagerDetails = await extHostNotebook.$getSerializationManagerDetails(providerHandle, notebookUri);
 
 				// Then I expect the same manager to be returned
 				assert.ok(managerDetails.hasContentManager === false, 'Expect no content manager defined');
+				assert.ok(managerDetails.handle > 0, 'Expect a valid handle defined');
+			});
+
+			test('Should return an execute manager with correct info on server manager existence', async () => {
+				// Given the provider returns a manager with no
+				let expectedManager = new ExecuteManagerStub();
+				executeProviderMock.setup(p => p.getExecuteManager(TypeMoq.It.isAny())).returns(() => Promise.resolve(expectedManager));
+
+				// When I call through using the handle provided during registration
+				let managerDetails: IExecuteManagerDetails = await extHostNotebook.$getExecuteManagerDetails(providerHandle, notebookUri);
+
+				// Then I expect the same manager to be returned
 				assert.ok(managerDetails.hasServerManager === false, 'Expect no server manager defined');
 				assert.ok(managerDetails.handle > 0, 'Expect a valid handle defined');
 			});
 
 			test('Should have a unique handle for each notebook URI', async () => {
 				// Given the we request 2 URIs
-				let expectedManager = new NotebookManagerStub();
-				notebookProviderMock.setup(p => p.getExecuteManager(TypeMoq.It.isAny())).returns(() => Promise.resolve(expectedManager));
+				let expectedManager = new ExecuteManagerStub();
+				executeProviderMock.setup(p => p.getExecuteManager(TypeMoq.It.isAny())).returns(() => Promise.resolve(expectedManager));
 
 				// When I call through using the handle provided during registration
-				let originalManagerDetails = await extHostNotebook.$getNotebookManager(providerHandle, notebookUri);
-				let differentDetails = await extHostNotebook.$getNotebookManager(providerHandle, URI.parse('file://other/file.ipynb'));
-				let sameDetails = await extHostNotebook.$getNotebookManager(providerHandle, notebookUri);
+				let originalManagerDetails = await extHostNotebook.$getExecuteManagerDetails(providerHandle, notebookUri);
+				let differentDetails = await extHostNotebook.$getExecuteManagerDetails(providerHandle, URI.parse('file://other/file.ipynb'));
+				let sameDetails = await extHostNotebook.$getExecuteManagerDetails(providerHandle, notebookUri);
 
 				// Then I expect the 2 different handles in the managers returned.
 				// This is because we can't easily track identity of the managers, so just track which one is assigned to
@@ -96,7 +111,7 @@ suite('ExtHostNotebook Tests', () => {
 		let savedHandle: number = -1;
 		setup(() => {
 			mockProxy.setup(p =>
-				p.$registerExecuteProvider(TypeMoq.It.isValue(notebookProviderMock.object.providerId), TypeMoq.It.isAnyNumber()))
+				p.$registerExecuteProvider(TypeMoq.It.isValue(executeProviderMock.object.providerId), TypeMoq.It.isAnyNumber()))
 				.returns((providerId, handle) => {
 					savedHandle = handle;
 					return undefined;
@@ -104,9 +119,9 @@ suite('ExtHostNotebook Tests', () => {
 		});
 
 		test('Should register with a new handle to the proxy', () => {
-			extHostNotebook.registerExecuteProvider(notebookProviderMock.object);
+			extHostNotebook.registerExecuteProvider(executeProviderMock.object);
 			mockProxy.verify(p =>
-				p.$registerExecuteProvider(TypeMoq.It.isValue(notebookProviderMock.object.providerId),
+				p.$registerExecuteProvider(TypeMoq.It.isValue(executeProviderMock.object.providerId),
 					TypeMoq.It.isAnyNumber()), TypeMoq.Times.once());
 			// It shouldn't unregister until requested
 			mockProxy.verify(p => p.$unregisterExecuteProvider(TypeMoq.It.isValue(savedHandle)), TypeMoq.Times.never());
@@ -114,17 +129,25 @@ suite('ExtHostNotebook Tests', () => {
 		});
 
 		test('Should not call unregister on disposing', () => {
-			let disposable = extHostNotebook.registerExecuteProvider(notebookProviderMock.object);
+			let disposable = extHostNotebook.registerExecuteProvider(executeProviderMock.object);
 			disposable.dispose();
 			mockProxy.verify(p => p.$unregisterExecuteProvider(TypeMoq.It.isValue(savedHandle)), TypeMoq.Times.never());
 		});
 	});
 });
 
+class SerializationProviderStub implements azdata.nb.NotebookSerializationProvider {
+	providerId: string = 'TestProvider';
+
+	getSerializationManager(notebookUri: vscode.Uri): Thenable<azdata.nb.SerializationManager> {
+		throw new Error('Method not implemented.');
+	}
+}
+
 class ExecuteProviderStub implements azdata.nb.NotebookExecuteProvider {
 	providerId: string = 'TestProvider';
 
-	getExecuteManager(notebookUri: vscode.Uri): Thenable<azdata.nb.NotebookManager> {
+	getExecuteManager(notebookUri: vscode.Uri): Thenable<azdata.nb.ExecuteManager> {
 		throw new Error('Method not implemented.');
 	}
 	handleNotebookClosed(notebookUri: vscode.Uri): void {
@@ -132,11 +155,13 @@ class ExecuteProviderStub implements azdata.nb.NotebookExecuteProvider {
 	}
 }
 
-class NotebookManagerStub implements azdata.nb.NotebookManager {
+class SerializationManagerStub implements azdata.nb.SerializationManager {
 	get contentManager(): azdata.nb.ContentManager {
 		return undefined;
 	}
+}
 
+class ExecuteManagerStub implements azdata.nb.ExecuteManager {
 	get sessionManager(): azdata.nb.SessionManager {
 		return undefined;
 	}

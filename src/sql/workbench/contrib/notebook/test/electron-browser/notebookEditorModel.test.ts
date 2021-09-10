@@ -32,7 +32,7 @@ import { TestLifecycleService, TestTextFileService, workbenchInstantiationServic
 import { Range } from 'vs/editor/common/core/range';
 import { nb } from 'azdata';
 import { Emitter } from 'vs/base/common/event';
-import { INotebookEditor, INotebookManager } from 'sql/workbench/services/notebook/browser/notebookService';
+import { INotebookEditor, IExecuteManager } from 'sql/workbench/services/notebook/browser/notebookService';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { IStorageService } from 'vs/platform/storage/common/storage';
@@ -50,7 +50,7 @@ class ServiceAccessor {
 	}
 }
 
-class NotebookManagerStub implements INotebookManager {
+class NotebookManagerStub implements IExecuteManager {
 	providerId: string;
 	contentManager: nb.ContentManager;
 	sessionManager: nb.SessionManager;

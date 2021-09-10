@@ -12,7 +12,7 @@ import { NotebookModelStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { NotebookEditorStub } from 'sql/workbench/contrib/notebook/test/testCommon';
 import { notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
-import { INavigationProvider, INotebookEditor, INotebookManager, INotebookParams, IExecuteProvider, NavigationProviders, SQL_NOTEBOOK_PROVIDER, unsavedBooksContextKey } from 'sql/workbench/services/notebook/browser/notebookService';
+import { INavigationProvider, INotebookEditor, IExecuteManager, INotebookParams, IExecuteProvider, NavigationProviders, SQL_NOTEBOOK_PROVIDER, unsavedBooksContextKey } from 'sql/workbench/services/notebook/browser/notebookService';
 import { FailToSaveTrustState, NotebookService, NotebookServiceNoProviderRegistered, NotebookUriNotDefined, ExecuteProviderDescriptor } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
 import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { Extensions, INotebookProviderRegistry, ExecuteProviderRegistration } from 'sql/workbench/services/notebook/common/notebookRegistry';
@@ -54,7 +54,7 @@ class TestServerManager implements azdata.nb.ServerManager {
 /**
  * TestNotebookManager - creates a NotebookManager object that helps keep track of state needed by testing
  */
-class TestNotebookManager implements INotebookManager {
+class TestNotebookManager implements IExecuteManager {
 	contentManager: undefined;
 	sessionManager: undefined;
 	constructor(
@@ -72,7 +72,7 @@ class TestNotebookProvider implements IExecuteProvider {
 		public manager: TestNotebookManager = new TestNotebookManager(providerId)
 	) { }
 
-	getExecuteManager(uri: URI): Thenable<INotebookManager> {
+	getExecuteManager(uri: URI): Thenable<IExecuteManager> {
 		return Promise.resolve(this.manager);
 	}
 

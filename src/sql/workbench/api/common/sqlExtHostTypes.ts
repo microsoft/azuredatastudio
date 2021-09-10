@@ -551,9 +551,13 @@ export class SqlThemeIcon {
 	}
 }
 
-export interface INotebookManagerDetails {
+export interface ISerializationManagerDetails {
 	handle: number;
 	hasContentManager: boolean;
+}
+
+export interface IExecuteManagerDetails {
+	handle: number;
 	hasServerManager: boolean;
 }
 

@@ -83,7 +83,7 @@ export interface INotebookService {
 	 * @param uri URI for a notebook that is to be opened. Based on this an existing manager may be used, or
 	 * a new one may need to be created
 	 */
-	getOrCreateNotebookManager(providerId: string, uri: URI): Thenable<INotebookManager>;
+	getOrCreateNotebookManager(providerId: string, uri: URI): Thenable<IExecuteManager>;
 
 	addNotebookEditor(editor: INotebookEditor): void;
 
@@ -149,18 +149,22 @@ export interface INotebookService {
 
 export interface IExecuteProvider {
 	readonly providerId: string;
-	getExecuteManager(notebookUri: URI): Thenable<INotebookManager>;
+	getExecuteManager(notebookUri: URI): Thenable<IExecuteManager>;
 	handleNotebookClosed(notebookUri: URI): void;
 }
 
 export interface ISerializationProvider {
 	readonly providerId: string;
-	getContentManager(notebookUri: URI): Thenable<azdata.nb.ContentManager>;
+	getSerializationManager(notebookUri: URI): Thenable<ISerializationManager>;
 }
 
-export interface INotebookManager {
+export interface ISerializationManager {
 	providerId: string;
 	readonly contentManager: azdata.nb.ContentManager;
+}
+
+export interface IExecuteManager {
+	providerId: string;
 	readonly sessionManager: azdata.nb.SessionManager;
 	readonly serverManager: azdata.nb.ServerManager;
 }

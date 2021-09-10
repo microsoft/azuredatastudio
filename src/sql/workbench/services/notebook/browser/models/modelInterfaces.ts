@@ -12,7 +12,7 @@ import { URI } from 'vs/base/common/uri';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 
 import { CellType, NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
-import { INotebookManager, ILanguageMagic } from 'sql/workbench/services/notebook/browser/notebookService';
+import { IExecuteManager, ILanguageMagic } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
@@ -42,7 +42,7 @@ export interface ISingleNotebookEditOperation {
 
 export interface IClientSessionOptions {
 	notebookUri: URI;
-	notebookManager: INotebookManager;
+	notebookManager: IExecuteManager;
 	notificationService: INotificationService;
 	kernelSpec: nb.IKernelSpec;
 }
@@ -256,7 +256,7 @@ export interface INotebookModel {
 	/**
 	 * All notebook managers applicable for a given notebook
 	 */
-	readonly notebookManagers: INotebookManager[];
+	readonly notebookManagers: IExecuteManager[];
 
 	/**
 	 * Event fired on first initialization of the kernel and
@@ -570,7 +570,7 @@ export interface INotebookModelOptions {
 	factory: IModelFactory;
 
 	contentManager: IContentManager;
-	notebookManagers: INotebookManager[];
+	notebookManagers: IExecuteManager[];
 	providerId: string;
 	defaultKernel: nb.IKernelSpec;
 	cellMagicMapper: ICellMagicMapper;

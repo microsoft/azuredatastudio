@@ -14,7 +14,6 @@ import { notebookLanguages, notebookConfigKey, pinnedBooksConfigKey, AUTHTYPE, I
 import { IPrompter, IQuestion, QuestionTypes } from '../prompts/question';
 import { BookTreeItemFormat, BookTreeItemType } from '../book/bookTreeItem';
 import * as loc from './localizedConstants';
-import * as path from 'path';
 
 const localize = nls.loadMessageBundle();
 

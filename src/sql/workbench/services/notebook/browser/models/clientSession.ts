@@ -13,7 +13,7 @@ import { getErrorMessage } from 'vs/base/common/errors';
 
 import { IClientSession, IClientSessionOptions } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { Deferred } from 'sql/base/common/promise';
-import { INotebookManager } from 'sql/workbench/services/notebook/browser/notebookService';
+import { IExecuteManager } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 type KernelChangeHandler = (kernel: nb.IKernelChangedArgs) => Promise<void>;
@@ -46,7 +46,7 @@ export class ClientSession implements IClientSession {
 	private _serverLoadFinished: Promise<void> = Promise.resolve();
 	private _session: nb.ISession | undefined;
 	private isServerStarted: boolean = false;
-	private notebookManager: INotebookManager;
+	private notebookManager: IExecuteManager;
 	private _kernelConfigActions: ((kernelName: string) => Promise<any>)[] = [];
 	private _connectionId: string = '';
 

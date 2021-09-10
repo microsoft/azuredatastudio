@@ -9,7 +9,7 @@ import { URI, UriComponents } from 'vs/base/common/uri';
 import { Registry } from 'vs/platform/registry/common/platform';
 
 import {
-	INotebookService, INotebookManager, IExecuteProvider,
+	INotebookService, IExecuteManager, IExecuteProvider,
 	DEFAULT_NOTEBOOK_FILETYPE, INotebookEditor, SQL_NOTEBOOK_PROVIDER, INavigationProvider, ILanguageMagic, NavigationProviders, unsavedBooksContextKey, ISerializationProvider
 } from 'sql/workbench/services/notebook/browser/notebookService';
 import { RenderMimeRegistry } from 'sql/workbench/services/notebook/browser/outputs/registry';
@@ -137,7 +137,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	private _serializationProviders: Map<string, SerializationProviderDescriptor> = new Map();
 	private _executeProviders: Map<string, ExecuteProviderDescriptor> = new Map();
 	private _navigationProviders: Map<string, INavigationProvider> = new Map();
-	private _managersMap: Map<string, INotebookManager[]> = new Map();
+	private _managersMap: Map<string, IExecuteManager[]> = new Map();
 	private _onNotebookEditorAdd = new Emitter<INotebookEditor>();
 	private _onNotebookEditorRemove = new Emitter<INotebookEditor>();
 	private _onNotebookEditorRename = new Emitter<INotebookEditor>();
@@ -417,12 +417,12 @@ export class NotebookService extends Disposable implements INotebookService {
 		});
 	}
 
-	async getOrCreateNotebookManager(providerId: string, uri: URI): Promise<INotebookManager> {
+	async getOrCreateNotebookManager(providerId: string, uri: URI): Promise<IExecuteManager> {
 		if (!uri) {
 			throw new Error(NotebookUriNotDefined);
 		}
 		let uriString = uri.toString();
-		let managers: INotebookManager[] = this._managersMap.get(uriString);
+		let managers: IExecuteManager[] = this._managersMap.get(uriString);
 		// If manager already exists for a given notebook, return it
 		if (managers) {
 			let index = managers.findIndex(m => m.providerId === providerId);

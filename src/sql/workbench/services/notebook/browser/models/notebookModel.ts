@@ -14,7 +14,7 @@ import { NotebookChangeType, CellType, CellTypes } from 'sql/workbench/services/
 import { KernelsLanguage, nbversion } from 'sql/workbench/services/notebook/common/notebookConstants';
 import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import { INotebookManager, SQL_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
+import { IExecuteManager, SQL_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookContexts } from 'sql/workbench/services/notebook/browser/models/notebookContexts';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { INotification, Severity, INotificationService } from 'vs/platform/notification/common/notification';
@@ -135,7 +135,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._defaultKernel = _notebookOptions.defaultKernel;
 	}
 
-	public get notebookManagers(): INotebookManager[] {
+	public get notebookManagers(): IExecuteManager[] {
 		let notebookManagers = this._notebookOptions.notebookManagers.filter(manager => manager.providerId !== DEFAULT_NOTEBOOK_PROVIDER);
 		if (!notebookManagers.length) {
 			return this._notebookOptions.notebookManagers;
@@ -143,7 +143,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return notebookManagers;
 	}
 
-	public get notebookManager(): INotebookManager | undefined {
+	public get notebookManager(): IExecuteManager | undefined {
 		let manager = this.notebookManagers.find(manager => manager.providerId === this._providerId);
 		if (!manager) {
 			// Note: this seems like a less than ideal scenario. We should ideally pass in the "correct" provider ID and allow there to be a default,
@@ -153,7 +153,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return manager;
 	}
 
-	public getNotebookManager(providerId: string): INotebookManager | undefined {
+	public getNotebookManager(providerId: string): IExecuteManager | undefined {
 		if (providerId) {
 			return this.notebookManagers.find(manager => manager.providerId === providerId);
 		}
@@ -688,7 +688,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._onErrorEmitter.fire({ message: error, severity: Severity.Error });
 	}
 
-	public async startSession(manager: INotebookManager, displayName?: string, setErrorStateOnFail?: boolean, kernelAlias?: string): Promise<void> {
+	public async startSession(manager: IExecuteManager, displayName?: string, setErrorStateOnFail?: boolean, kernelAlias?: string): Promise<void> {
 		if (displayName) {
 			let standardKernel = this._standardKernels.find(kernel => kernel.displayName === displayName);
 			if (standardKernel) {
