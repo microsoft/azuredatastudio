@@ -613,15 +613,6 @@ export namespace LanguageExtensibilityUpdateRequest {
 }
 
 // ------------------------------- <Schema Compare> -----------------------------
-export enum DacExtractTarget {
-	dacpac,
-	file,
-	flat,
-	objectType,
-	schema,
-	schemaObjectType
-}
-
 export interface SchemaCompareParams {
 	operationId: string;
 	sourceEndpointInfo: mssql.SchemaCompareEndpointInfo;
@@ -647,7 +638,7 @@ export interface SchemaComparePublishDatabaseChangesParams {
 export interface SchemaComparePublishProjectChangesParams {
 	operationId: string;
 	targetProjectPath: string;
-	targetFolderStructure: DacExtractTarget;
+	targetFolderStructure: mssql.ExtractTarget;
 	taskExecutionMode: TaskExecutionMode;
 }
 
