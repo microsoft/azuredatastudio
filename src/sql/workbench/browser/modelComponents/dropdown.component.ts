@@ -367,7 +367,7 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 	const errorForegroundColor = theme.getColor(errorForeground);
 	if (errorForegroundColor) {
 		collector.addRule(`
-		.dropdown-error-text {
+		modelview-dropdown .dropdown-error-text {
 			color: ${errorForegroundColor};
 		}
 		`);
@@ -375,7 +375,7 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 	const inputValidationErrorBorderColor = theme.getColor(inputValidationErrorBorder);
 	if (inputValidationErrorBorderColor) {
 		collector.addRule(`
-		.error-dropdown {
+		modelview-dropdown .error-dropdown {
 			border-color: ${inputValidationErrorBorderColor} !important;
 			outline-offset: 2px !important
 		}
