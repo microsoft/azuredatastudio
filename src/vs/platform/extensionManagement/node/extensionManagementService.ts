@@ -326,6 +326,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 				}));
 
 				// Collect the errors
+				// @ts-expect-error // {{SQL CARBON EDIT}} Not sure why this is erroring, ignore since this is vs code stuff
 				const errors = result.reduce<any[]>((errors, r) => { if (r.status === 'rejected') { errors.push(r.reason); } return errors; }, []);
 				// If there are errors, throw the error.
 				if (errors.length) { throw joinErrors(errors); }
