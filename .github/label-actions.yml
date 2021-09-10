@@ -1,3 +1,4 @@
+# actions for Needs Logs label
 Needs Logs:
   comment: "We need more info to debug your particular issue. If you could attach your logs to the issue (ensure no private data is in them), it would help us fix the issue much faster.
 
@@ -26,9 +27,13 @@ There are two types of logs to collect:
 
 - This will open the log folder locally. Please zip up this folder and attach it to the issue."
 
-
+# actions for Out of Scope label
 Out of Scope:
   comment: "Thank you for opening this suggestion!  This enhancement is not planned in our
 medium-term roadmap.  The issue is being closed to reduce active issues to focus on
 enhancements that are being considered for an upcoming release.  We will review closed issues
 with the 'Out of Scope' label when doing long-term planning."
+  close: true
+
+-Out of Scope:
+  reopen: true
