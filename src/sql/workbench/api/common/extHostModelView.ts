@@ -1551,12 +1551,12 @@ class DropDownWrapper extends ComponentWrapper implements azdata.DropDownCompone
 		return emitter && emitter.event;
 	}
 
-	public get editableDropdownPlaceholder(): string | undefined {
-		return this.properties['editableDropdownPlaceholder'];
+	public get placeholder(): string | undefined {
+		return this.properties['placeholder'];
 	}
 
-	public set editableDropdownPlaceholder(v: string) {
-		this.setProperty('editableDropdownPlaceholder', v);
+	public set placeholder(v: string) {
+		this.setProperty('placeholder', v);
 	}
 
 	public get validationErrorMessages(): string[] | undefined {

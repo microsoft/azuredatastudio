@@ -25,7 +25,7 @@ import { localize } from 'vs/nls';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
 import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
-import { errorForeground, inputValidationErrorBorder, selectBorder } from 'vs/platform/theme/common/colorRegistry';
+import { errorForeground, inputValidationErrorBorder } from 'vs/platform/theme/common/colorRegistry';
 
 @Component({
 	selector: 'modelview-dropdown',
@@ -144,19 +144,18 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 		const validationResult = await super.validate();
 		this._changeRef.detectChanges();
 
-		const element = this.editable ? this._editableDropdown.inputElement : this._selectBox.selectElem;
+		const element = this.editable ? this._editableDropdown.input.inputElement : this._selectBox.selectElem;
+		const styleElement = this.editable ? this._editableDropdown.input.element : element; 		// In case of editable dropdown the border and focus styling comes from the parent element 2 levels up
 		if (!validationResult) {
 			element.setAttribute('aria-describedby', this.errorId);
 			element.setAttribute('aria-errormessage', this.errorId);
 			element.setAttribute('aria-invalid', 'true');
-			element.style.borderColor = this.themeService.getColorTheme().getColor(inputValidationErrorBorder).toString();
-			element.style.outlineOffset = '2px';
+			styleElement.classList.add('error-dropdown');
 		} else {
 			element.removeAttribute('aria-describedby');
 			element.removeAttribute('aria-errormessage');
 			element.removeAttribute('aria-invalid');
-			element.style.borderColor = this.themeService.getColorTheme().getColor(selectBorder).toString();
-			element.style.outlineOffset = '-1px'; // Setting the offset to the default value.
+			styleElement.classList.remove('error-dropdown');
 		}
 
 		return validationResult;
@@ -187,7 +186,9 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 			this._editableDropdown.enabled = this.enabled;
 			this._editableDropdown.fireOnTextChange = this.fireOnTextChange;
 
-			this._editableDropdown.input.setPlaceHolder(this.placeholder);
+			if (this.placeholder) {
+				this._editableDropdown.input.setPlaceHolder(this.placeholder);
+			}
 
 			// Add tooltip when editable dropdown is disabled to show overflow text
 			this._editableDropdown.input.setTooltip(!this.enabled ? this._editableDropdown.input.value : '');
@@ -349,11 +350,12 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 	}
 
 	public get validationErrorMessages(): string[] | undefined {
-		let validationErrorMessage = this.getPropertyOrDefault<string[]>((props) => props.validationErrorMessages, undefined);
-		if (this.required && this.editable && (!this._editableDropdown.input.value || this._editableDropdown.input.value === '')) {
+		let validationErrorMessages = this.getPropertyOrDefault<string[]>((props) => props.validationErrorMessages, undefined);
+		// Showing the default error message only when user has set a validation error message for the dropdown.
+		if (this.required && this.editable && validationErrorMessages && (!this._editableDropdown.input.value || this._editableDropdown.input.value === '')) {
 			return [localize('defaultDropdownErrorMessage', "Please fill out this field.")]; // Adding a default error message for required editable dropdowns having an empty value.
 		}
-		return validationErrorMessage;
+		return validationErrorMessages;
 	}
 
 	public get errorId(): string {
@@ -367,6 +369,15 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 		collector.addRule(`
 		.dropdown-error-text {
 			color: ${errorForegroundColor};
+		}
+		`);
+	}
+	const inputValidationErrorBorderColor = theme.getColor(inputValidationErrorBorder);
+	if (inputValidationErrorBorderColor) {
+		collector.addRule(`
+		.error-dropdown {
+			border-color: ${inputValidationErrorBorderColor} !important;
+			outline-offset: 2px !important
 		}
 		`);
 	}
