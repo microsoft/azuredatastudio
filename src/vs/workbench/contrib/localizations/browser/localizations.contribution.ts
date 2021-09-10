@@ -13,7 +13,7 @@ import { ConfigureLocaleAction } from 'vs/workbench/contrib/localizations/browse
 import { ExtensionsRegistry } from 'vs/workbench/services/extensions/common/extensionsRegistry';
 import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import * as platform from 'vs/base/common/platform';
-import { IExtensionManagementService, DidInstallExtensionEvent, IExtensionGalleryService, IGalleryExtension, InstallOperation } from 'vs/platform/extensionManagement/common/extensionManagement';
+import { IExtensionManagementService, IExtensionGalleryService, IGalleryExtension, InstallOperation, InstallExtensionResult } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
 import { IJSONEditingService } from 'vs/workbench/services/configuration/common/jsonEditing';
@@ -48,31 +48,33 @@ export class LocalizationWorkbenchContribution extends Disposable implements IWo
 		super();
 
 		this.checkAndInstall();
-		this._register(this.extensionManagementService.onDidInstallExtension(e => this.onDidInstallExtension(e)));
+		this._register(this.extensionManagementService.onDidInstallExtensions(e => this.onDidInstallExtensions(e)));
 	}
 
-	private onDidInstallExtension(e: DidInstallExtensionEvent): void {
-		if (e.local && e.operation === InstallOperation.Install && e.local.manifest.contributes && e.local.manifest.contributes.localizations && e.local.manifest.contributes.localizations.length) {
-			const locale = e.local.manifest.contributes.localizations[0].languageId;
-			if (platform.language !== locale) {
-				const updateAndRestart = platform.locale !== locale;
-				this.notificationService.prompt(
-					Severity.Info,
+	private onDidInstallExtensions(results: readonly InstallExtensionResult[]): void {
+		for (const e of results) {
+			if (e.local && e.operation === InstallOperation.Install && e.local.manifest.contributes && e.local.manifest.contributes.localizations && e.local.manifest.contributes.localizations.length) {
+				const locale = e.local.manifest.contributes.localizations[0].languageId;
+				if (platform.language !== locale) {
+					const updateAndRestart = platform.locale !== locale;
 					// {{SQL CARBON EDIT}} - Update 'VS Code' to 'Azure Data Studio'
-					updateAndRestart ? locConstants.localizationsContributionUpdateLocale(e.local.manifest.contributes.localizations[0].languageName || e.local.manifest.contributes.localizations[0].languageId)
-						: locConstants.localizationsContributionActivateLanguagePack(e.local.manifest.contributes.localizations[0].languageName || e.local.manifest.contributes.localizations[0].languageId),
-					[{
-						label: updateAndRestart ? localize('changeAndRestart', "Change Language and Restart") : localize('restart', "Restart"),
-						run: () => {
-							const updatePromise = updateAndRestart ? this.jsonEditingService.write(this.environmentService.argvResource, [{ path: ['locale'], value: locale }], true) : Promise.resolve(undefined);
-							updatePromise.then(() => this.hostService.restart(), e => this.notificationService.error(e));
+					this.notificationService.prompt(
+						Severity.Info,
+						updateAndRestart ? locConstants.localizationsContributionUpdateLocale(e.local.manifest.contributes.localizations[0].languageName || e.local.manifest.contributes.localizations[0].languageId)
+							: locConstants.localizationsContributionActivateLanguagePack(e.local.manifest.contributes.localizations[0].languageName || e.local.manifest.contributes.localizations[0].languageId),
+						[{
+							label: updateAndRestart ? localize('changeAndRestart', "Change Language and Restart") : localize('restart', "Restart"),
+							run: () => {
+								const updatePromise = updateAndRestart ? this.jsonEditingService.write(this.environmentService.argvResource, [{ path: ['locale'], value: locale }], true) : Promise.resolve(undefined);
+								updatePromise.then(() => this.hostService.restart(), e => this.notificationService.error(e));
+							}
+						}],
+						{
+							sticky: true,
+							neverShowAgain: { id: 'langugage.update.donotask', isSecondary: true }
 						}
-					}],
-					{
-						sticky: true,
-						neverShowAgain: { id: 'langugage.update.donotask', isSecondary: true }
-					}
-				);
+					);
+				}
 			}
 		}
 	}
