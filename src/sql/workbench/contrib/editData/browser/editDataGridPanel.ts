@@ -509,6 +509,11 @@ export class EditDataGridPanel extends GridParentComponent {
 			this.revertCurrentRow().catch(onUnexpectedError);
 			handled = true;
 		}
+		if (e.ctrlKey && e.keyCode === KeyCode.KEY_0) {
+			this.logService.debug('Command for null insert recognized');
+			handled = true;
+		}
+
 		return handled;
 	}
 
