@@ -34,13 +34,14 @@ export function main(isWeb: boolean = false): void {
 const PLATFORM = '${PLATFORM}';
 const RUNTIME = '${RUNTIME}';
 const VERSION = '${VERSION}';
-const ADS_SQLITE_RELEASE_VERSION = '1.5.0';
+const RELEASE_VERSION = '1.5.0';
 
-const sqliteUrl = `https://github.com/Microsoft/azuredatastudio-sqlite/releases/download/${ADS_SQLITE_RELEASE_VERSION}/azuredatastudio-sqlite-${PLATFORM}-${RUNTIME}-${VERSION}.zip`;
+const sqliteUrl = `https://github.com/Microsoft/azuredatastudio-sqlite/releases/download/${RELEASE_VERSION}/azuredatastudio-sqlite-${PLATFORM}-${RUNTIME}-${VERSION}.zip`;
 
 export async function setup(app: ApplicationOptions): Promise<void> {
 	console.log('*** Downloading test extensions');
-	const requestUrl = sqliteUrl.replace(ADS_SQLITE_RELEASE_VERSION, getADSSqliteReleaseVersionForWeb(app.web || false)).replace(PLATFORM, process.platform).replace(RUNTIME, getRuntime(app.web || app.remote || false)).replace(VERSION, getVersion(app.web || app.remote || false));
+	const releaseVersion = app.web ? '1.6.0' : '1.5.0';
+	const requestUrl = sqliteUrl.replace(RELEASE_VERSION, releaseVersion).replace(PLATFORM, process.platform).replace(RUNTIME, getRuntime(app.web || app.remote || false)).replace(VERSION, getVersion(app.web || app.remote || false));
 	const zip = await fetch(requestUrl);
 	if (!zip) {
 		throw new Error('Could not get extension for current platform');
@@ -76,15 +77,6 @@ export async function setup(app: ApplicationOptions): Promise<void> {
 }
 
 const root = path.dirname(path.dirname(path.dirname(path.dirname(__dirname))));
-
-// Gets the appropriate ADS Sqlite release version for web and non web smoke tests. Web smoke tests are
-// expecting version 1.6.0, and non web smoke tests are expecting version 1.5.0.
-function getADSSqliteReleaseVersionForWeb(web: boolean) {
-	const ADS_SQLITE_RELEASE_VERSION_FOR_WEB = '1.6.0';
-	const sqliteVersion = web ? ADS_SQLITE_RELEASE_VERSION_FOR_WEB : ADS_SQLITE_RELEASE_VERSION;
-
-	return sqliteVersion;
-}
 
 function getRuntime(remote: boolean) {
 	// eslint-disable-next-line no-sync
