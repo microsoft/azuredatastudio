@@ -156,7 +156,7 @@ export function activate() {
 				previewNode.id = 'preview';
 				previewRoot.appendChild(previewNode);
 			} else {
-				previewNode = element.shadowRoot.getElementById('preview')!;
+				previewNode = element.shadowRoot.getElementById('preview')! as HTMLElement; // {{SQL CARBON EDIT}} Cast to fix compilation error
 			}
 
 			const text = outputInfo.text();
