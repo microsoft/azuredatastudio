@@ -534,22 +534,22 @@ export class NodeStub implements Node {
 	get baseURI(): string {
 		throw new Error('Method not implemented.');
 	}
-	get childNodes(): NodeListOf<ChildNode> {
+	get childNodes(): NodeListOf<ChildNode & Node> {
 		throw new Error('Method not implemented.');
 	}
-	get firstChild(): ChildNode {
+	get firstChild(): ChildNode & Node {
 		throw new Error('Method not implemented.');
 	}
 	get isConnected(): boolean {
 		throw new Error('Method not implemented.');
 	}
-	get lastChild(): ChildNode {
+	get lastChild(): ChildNode & Node {
 		throw new Error('Method not implemented.');
 	}
 	get namespaceURI(): string {
 		throw new Error('Method not implemented.');
 	}
-	get nextSibling(): ChildNode {
+	get nextSibling(): ChildNode & Node {
 		throw new Error('Method not implemented.');
 	}
 	get nodeName(): string {
@@ -567,7 +567,7 @@ export class NodeStub implements Node {
 	get parentNode(): Node & ParentNode {
 		throw new Error('Method not implemented.');
 	}
-	get previousSibling(): ChildNode {
+	get previousSibling(): ChildNode & Node {
 		throw new Error('Method not implemented.');
 	}
 	nodeValue: string;
