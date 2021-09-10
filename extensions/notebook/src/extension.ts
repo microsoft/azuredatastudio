@@ -31,6 +31,7 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 
 	const appContext = new AppContext(extensionContext);
 
+	// TODO: Notebook doesn't work without root setting enabled in web mode. Once we start using non-root containers, we can remove this code.
 	const config = vscode.workspace.getConfiguration('notebook');
 	if (vscode.env.uiKind === vscode.UIKind.Web) {
 		await config.update('allowRoot', true, vscode.ConfigurationTarget.Global);
