@@ -9,6 +9,7 @@ import * as utils from '../common/utils';
 import { ShellExecutionHelper } from './shellExecutionHelper';
 
 const autorestPackageVersion = '0.0.2'; // latest version of AutoRest.Sql package on npm
+const autorestPackageName = 'autorest-sql-testing'; // name of AutoRest.Sql package on npm
 
 export class AutorestHelper extends ShellExecutionHelper {
 
@@ -34,11 +35,13 @@ export class AutorestHelper extends ShellExecutionHelper {
 			throw new Error('Autorest tool not found.  Please ensure it\'s accessible from your system path.');
 		}
 
-		// should --clear-output-folder be included? We should always be writing to a folder created just for this, but potentially risky
-		const command = `autorest --use:autorest-sql-testing@${autorestPackageVersion} --input-file="${swaggerPath}" --output-folder="${outputFolder}" --clear-output-folder`;
-
-		const output = await this.runStreamedCommand(command, this._outputChannel);
+		const output = await this.runStreamedCommand(this.constructAutorestCommand(swaggerPath, outputFolder), this._outputChannel);
 
 		return output;
+	}
+
+	public constructAutorestCommand(swaggerPath: string, outputFolder: string): string {
+		// should --clear-output-folder be included? We should always be writing to a folder created just for this, but potentially risky
+		return `autorest --use:${autorestPackageName}@${autorestPackageVersion} --input-file="${swaggerPath}" --output-folder="${outputFolder}" --clear-output-folder`;
 	}
 }

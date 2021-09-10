@@ -412,7 +412,8 @@
     "xml-formatter": "^2.1.0",
     "xmldom": "^0.3.0",
     "generate-password": "^1.6.0",
-    "fs-extra": "^5.0.0"
+    "fs-extra": "^5.0.0",
+    "autorest": "^3.4.0"
   },
   "devDependencies": {
     "@types/mocha": "^5.2.5",

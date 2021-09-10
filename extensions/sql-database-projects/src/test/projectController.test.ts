@@ -678,6 +678,12 @@ describe('ProjectsController', function (): void {
 			should(projFileText).containEql('..\\someFolder\\outsideFolderTest.dacpac');
 		});
 	});
+
+	describe('AutoRest generation', function (): void {
+		it('Should create project from autorest-generated files', async function (): Promise<void> {
+
+		});
+	});
 });
 
 async function setupDeleteExcludeTest(proj: Project): Promise<[FileProjectEntry, ProjectRootTreeItem, FileProjectEntry, FileProjectEntry, FileProjectEntry]> {

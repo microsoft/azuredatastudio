@@ -364,6 +364,11 @@ async-listener@^0.6.0:
     semver "^5.3.0"
     shimmer "^1.1.0"
 
+autorest@^3.4.0:
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/autorest/-/autorest-3.4.0.tgz#e40457cace3b5a9a19b2e087702da49e2bccbc6b"
+  integrity sha512-oOqCkPlRybDADHESHdzn4iWfVQNm2RKIQu0Mp7YzrgJbEVgBqoGQTzE0AfaGw8Q4qBUZ8RztgErZ5jLAsq9kXw==
+
 balanced-match@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.0.tgz#89b4d199ab2bee49de164ea02b89ce462d71b767"
