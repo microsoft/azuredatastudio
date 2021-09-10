@@ -42,6 +42,7 @@ import { IRange } from 'vs/editor/common/core/range';
 import { UntitledQueryEditorInput } from 'sql/base/query/browser/untitledQueryEditorInput';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IEditorOptions } from 'vs/platform/editor/common/editor';
+import { ITextResourceConfigurationService } from 'vs/editor/common/services/textResourceConfigurationService';
 
 const QUERY_EDITOR_VIEW_STATE_PREFERENCE_KEY = 'queryEditorViewState';
 
@@ -107,10 +108,11 @@ export class QueryEditor extends EditorPane {
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@IModeService private readonly modeService: IModeService,
+		@ITextResourceConfigurationService textResourceConfigurationService: ITextResourceConfigurationService
 	) {
 		super(QueryEditor.ID, telemetryService, themeService, storageService);
 
-		this.editorMemento = this.getEditorMemento<IQueryEditorViewState>(editorGroupService, QUERY_EDITOR_VIEW_STATE_PREFERENCE_KEY, 100);
+		this.editorMemento = this.getEditorMemento<IQueryEditorViewState>(editorGroupService, textResourceConfigurationService, QUERY_EDITOR_VIEW_STATE_PREFERENCE_KEY, 100);
 
 		this.queryEditorVisible = queryContext.QueryEditorVisibleContext.bindTo(contextKeyService);
 
@@ -132,8 +134,8 @@ export class QueryEditor extends EditorPane {
 		}
 	}
 
-	protected override getEditorMemento<T>(editorGroupService: IEditorGroupsService, key: string, limit: number = 10): IEditorMemento<T> {
-		return new EditorMemento(this.getId(), key, Object.create(null), limit, editorGroupService); // do not persist in storage as results are never persisted
+	protected override getEditorMemento<T>(editorGroupService: IEditorGroupsService, configurationService: ITextResourceConfigurationService, key: string, limit: number = 10): IEditorMemento<T> {
+		return new EditorMemento(this.getId(), key, Object.create(null), limit, editorGroupService, configurationService); // do not persist in storage as results are never persisted
 	}
 
 	// PUBLIC METHODS ////////////////////////////////////////////////////////////

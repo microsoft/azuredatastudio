@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vs/nls';
@@ -236,6 +236,7 @@ export abstract class AbstractExtensionManagementService extends Disposable impl
 				}));
 
 				// Collect the errors
+				// @ts-expect-error {{SQL CARBON EDIT}} Ignore error since if their code, assuming they're doing the right thing
 				const errors = result.reduce<any[]>((errors, r) => { if (r.status === 'rejected') { errors.push(r.reason); } return errors; }, []);
 				// If there are errors, throw the error.
 				if (errors.length) { throw joinErrors(errors); }
