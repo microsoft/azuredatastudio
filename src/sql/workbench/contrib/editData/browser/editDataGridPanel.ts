@@ -510,7 +510,7 @@ export class EditDataGridPanel extends GridParentComponent {
 			handled = true;
 		}
 		if (e.ctrlKey && e.keyCode === KeyCode.KEY_0) {
-			this.logService.debug('Command for null insert recognized');
+			//TODO - Need to create an insert null function into cell.
 			handled = true;
 		}
 
