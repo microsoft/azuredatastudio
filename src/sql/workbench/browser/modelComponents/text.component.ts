@@ -121,7 +121,9 @@ export default class TextComponent extends TitledComponent<azdata.TextComponentP
 
 	public get textType(): azdata.TextType | undefined {
 		let textType = this.getPropertyOrDefault<azdata.TextType | undefined>(props => props.textType, undefined);
-		textType = (textType === undefined && this.values) ? TextType.UnorderedList : undefined;
+		if (!textType) {
+			textType = (this.values) ? TextType.UnorderedList : undefined;
+		}
 		return textType;
 	}
 
