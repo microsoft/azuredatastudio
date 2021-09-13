@@ -17,7 +17,8 @@ const headerLeft: azdata.CssStyles = {
 	'white-space': 'nowrap',
 	'text-overflow': 'ellipsis',
 	'overflow': 'hidden',
-	'border-bottom': '1px solid'
+	'background': '#FFFFFF',
+	'box-shadow': 'inset 0px -1px 0px #F3F2F1',
 };
 
 const headerRight: azdata.CssStyles = {
@@ -26,7 +27,8 @@ const headerRight: azdata.CssStyles = {
 	'white-space': 'nowrap',
 	'text-overflow': 'ellipsis',
 	'overflow': 'hidden',
-	'border-bottom': '1px solid'
+	'background': '#FFFFFF',
+	'box-shadow': 'inset 0px -1px 0px #F3F2F1',
 };
 
 const styleLeft: azdata.CssStyles = {
@@ -35,6 +37,8 @@ const styleLeft: azdata.CssStyles = {
 	'white-space': 'nowrap',
 	'text-overflow': 'ellipsis',
 	'overflow': 'hidden',
+	'background': '#FFFFFF',
+	'box-shadow': 'inset 0px -1px 0px #F3F2F1',
 };
 
 const styleRight: azdata.CssStyles = {
@@ -43,6 +47,8 @@ const styleRight: azdata.CssStyles = {
 	'white-space': 'nowrap',
 	'text-overflow': 'ellipsis',
 	'overflow': 'hidden',
+	'background': '#FFFFFF',
+	'box-shadow': 'inset 0px -1px 0px #F3F2F1',
 };
 
 export class DatabaseSelectorPage extends MigrationWizardPage {
@@ -251,7 +257,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 						width: 20,
 						isReadOnly: false,
 						showCheckAll: true,
-						headerCssStyles: headerLeft,
+						headerCssStyles: headerLeft
 					},
 					{
 						displayName: constants.DATABASE,
