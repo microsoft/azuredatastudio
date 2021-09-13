@@ -7,7 +7,7 @@ import * as should from 'should';
 import * as path from 'path';
 import * as os from 'os';
 import { createDummyFileStructure } from './testUtils';
-import { exists, trimUri, removeSqlCmdVariableFormatting, formatSqlCmdVariable, isValidSqlCmdVariableName, timeConversion } from '../common/utils';
+import { exists, trimUri, removeSqlCmdVariableFormatting, formatSqlCmdVariable, isValidSqlCmdVariableName, timeConversion, validateSqlServerPortNumber, isEmptyString } from '../common/utils';
 import { Uri } from 'vscode';
 
 describe('Tests to verify utils functions', function (): void {
@@ -87,6 +87,23 @@ describe('Tests to verify utils functions', function (): void {
 		should(timeConversion(                   (59 * 60 * 1000) + (59 * 1000))).equal('59 min, 59 sec');
 		should(timeConversion(                                      (59 * 1000))).equal('59 sec');
 		should(timeConversion(                                      (59))).equal('59 msec');
+	});
+
+	it('Should validate port number correctly', () => {
+		should(validateSqlServerPortNumber('invalid')).equals(false);
+		should(validateSqlServerPortNumber('')).equals(false);
+		should(validateSqlServerPortNumber(undefined)).equals(false);
+		should(validateSqlServerPortNumber('65536')).equals(false);
+		should(validateSqlServerPortNumber('-1')).equals(false);
+		should(validateSqlServerPortNumber('65530')).equals(true);
+		should(validateSqlServerPortNumber('1533')).equals(true);
+	});
+
+	it('Should validate empty string correctly', () => {
+		should(isEmptyString('invalid')).equals(false);
+		should(isEmptyString('')).equals(true);
+		should(isEmptyString(undefined)).equals(true);
+		should(isEmptyString('65536')).equals(false);
 	});
 });
 

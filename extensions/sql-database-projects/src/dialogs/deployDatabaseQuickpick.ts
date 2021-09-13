@@ -5,6 +5,7 @@
 
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
+import * as utils from '../common/utils';
 import { AppSettingType, IDeployAppIntegrationProfile, IDeployProfile, ILocalDbSetting } from '../models/deploy/deployProfile';
 import { Project } from '../models/project';
 import { getPublishDatabaseSettings } from './publishDatabaseQuickpick';
@@ -49,7 +50,7 @@ export async function launchDeployAppIntegrationQuickpick(project: Project): Pro
 					title: constants.enterConnectionStringEnvName,
 					ignoreFocusOut: true,
 					value: constants.defaultConnectionStringEnvVarName,
-					validateInput: input => input === '' ? constants.valueCannotBeEmpty : undefined,
+					validateInput: input => utils.isEmptyString(input) ? constants.valueCannotBeEmpty : undefined,
 					placeHolder: constants.enterConnectionStringEnvNameDescription
 				}
 			);
@@ -69,7 +70,7 @@ export async function launchDeployAppIntegrationQuickpick(project: Project): Pro
 }
 
 /**
- * Create flow for Deploying a database using only VS Code-native APIs such as QuickPick
+ * Create flow for publishing a database to docker container using only VS Code-native APIs such as QuickPick
  */
 export async function launchPublishToDockerContainerQuickpick(project: Project): Promise<IDeployProfile | undefined> {
 
@@ -79,7 +80,7 @@ export async function launchPublishToDockerContainerQuickpick(project: Project):
 		title: constants.enterPortNumber,
 		ignoreFocusOut: true,
 		value: constants.defaultPortNumber,
-		validateInput: input => isNaN(+input) ? constants.portMustBeNumber : undefined
+		validateInput: input => !utils.validateSqlServerPortNumber(input) ? constants.portMustBeNumber : undefined
 	}
 	);
 
@@ -93,6 +94,7 @@ export async function launchPublishToDockerContainerQuickpick(project: Project):
 		title: constants.enterPassword,
 		ignoreFocusOut: true,
 		value: password,
+		validateInput: input => utils.isEmptyString(input) ? constants.valueCannotBeEmpty : undefined,
 		password: true
 	}
 	);

@@ -256,7 +256,7 @@ export class ProjectsController {
 	}
 
 	/**
-	 * Deploys a project
+	 * Publishes a project to docker container
 	 * @param treeNode a treeItem in a project's hierarchy, to be used to obtain a Project
 	 */
 	public async publishToDockerContainer(context: Project | dataworkspace.WorkspaceTreeItem): Promise<void> {

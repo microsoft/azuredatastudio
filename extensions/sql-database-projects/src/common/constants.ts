@@ -128,9 +128,9 @@ export const done = localize('done', "Done");
 export const nameMustNotBeEmpty = localize('nameMustNotBeEmpty', "Name must not be empty");
 
 // Deploy
-export const selectDeployOption = localize('selectDeployOption', "Select where to publish the project to");
-export const deployToExistingServer = localize('deployToExistingServer', "Publish to existing server");
-export const deployToDockerContainer = localize('deployToDockerContainer', "Publish to docker container");
+export const selectPublishOption = localize('selectPublishOption', "Select where to publish the project to");
+export const publishToExistingServer = localize('publishToExistingServer', "Publish to existing server");
+export const publishToDockerContainer = localize('publishToDockerContainer', "Publish to docker container");
 export const enterPortNumber = localize('enterPortNumber', "Enter port number or press enter to use the default value");
 export const enterConnectionStringEnvName = localize('enterConnectionStringEnvName', "Enter connection string environment variable name");
 export const enterConnectionStringTemplate = localize('enterConnectionStringTemplate', "Enter connection string template");
