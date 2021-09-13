@@ -303,9 +303,11 @@ export const postDeployScriptFriendlyName = localize('postDeployScriptFriendlyNa
 export const NetCoreInstallationConfirmation: string = localize('sqlDatabaseProjects.NetCoreInstallationConfirmation', "The .NET Core SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK location in settings if already installed.");
 export function NetCoreSupportedVersionInstallationConfirmation(installedVersion: string) { return localize('sqlDatabaseProjects.NetCoreSupportedVersionInstallationConfirmation', "Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK supported version location in settings if already installed.", installedVersion); }
 export const UpdateNetCoreLocation: string = localize('sqlDatabaseProjects.UpdateNetCoreLocation', "Update Location");
-export const InstallNetCore: string = localize('sqlDatabaseProjects.InstallNetCore', "Install");
-export const DoNotAskAgain: string = localize('sqlDatabaseProjects.doNotAskAgain', "Don't Ask Again");
 export const projectsOutputChannel = localize('sqlDatabaseProjects.outputChannel', "Database Projects");
+
+// Prompt buttons
+export const Install: string = localize('sqlDatabaseProjects.Install', "Install");
+export const DoNotAskAgain: string = localize('sqlDatabaseProjects.doNotAskAgain', "Don't Ask Again");
 
 // SqlProj file XML names
 export const ItemGroup = 'ItemGroup';
@@ -407,6 +409,8 @@ export enum DatabaseProjectItemType {
 
 // AutoRest
 export const autorestPostDeploymentScriptName = 'PostDeploymentScript.sql';
+export const nodeButNotAutorestFound = localize('nodeButNotAutorestFound', "Autorest tool not found in system path, but found Node.js.  Running via npx.  Please execute 'npm install autorest -g' to install permanently.");
+export const nodeNotFound = localize('nodeNotFound', "Neither autorest nor Node.js (npx) found in system path.  Please install Node.js for autorest generation to work.");
 
 // System dbs
 export const systemDbs = ['master', 'msdb', 'tempdb', 'model'];

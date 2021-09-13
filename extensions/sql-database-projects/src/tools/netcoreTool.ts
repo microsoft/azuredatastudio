@@ -11,7 +11,7 @@ import * as semver from 'semver';
 import { isNullOrUndefined } from 'util';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { DoNotAskAgain, InstallNetCore, NetCoreInstallationConfirmation, NetCoreSupportedVersionInstallationConfirmation, UpdateNetCoreLocation } from '../common/constants';
+import { DoNotAskAgain, Install, NetCoreInstallationConfirmation, NetCoreSupportedVersionInstallationConfirmation, UpdateNetCoreLocation } from '../common/constants';
 import * as utils from '../common/utils';
 import { ShellCommandOptions, ShellExecutionHelper } from './shellExecutionHelper';
 const localize = nls.loadMessageBundle();
@@ -62,15 +62,15 @@ export class NetCoreTool extends ShellExecutionHelper {
 	public async showInstallDialog(): Promise<void> {
 		let result;
 		if (this.netCoreInstallState === netCoreInstallState.netCoreNotPresent) {
-			result = await vscode.window.showErrorMessage(NetCoreInstallationConfirmation, UpdateNetCoreLocation, InstallNetCore, DoNotAskAgain);
+			result = await vscode.window.showErrorMessage(NetCoreInstallationConfirmation, UpdateNetCoreLocation, Install, DoNotAskAgain);
 		} else {
-			result = await vscode.window.showErrorMessage(NetCoreSupportedVersionInstallationConfirmation(this.netCoreSdkInstalledVersion!), UpdateNetCoreLocation, InstallNetCore, DoNotAskAgain);
+			result = await vscode.window.showErrorMessage(NetCoreSupportedVersionInstallationConfirmation(this.netCoreSdkInstalledVersion!), UpdateNetCoreLocation, Install, DoNotAskAgain);
 		}
 
 		if (result === UpdateNetCoreLocation) {
 			//open settings
 			await vscode.commands.executeCommand('workbench.action.openGlobalSettings');
-		} else if (result === InstallNetCore) {
+		} else if (result === Install) {
 			//open install link
 			const dotnetcoreURL = 'https://dotnet.microsoft.com/download/dotnet-core/3.1';
 			await vscode.env.openExternal(vscode.Uri.parse(dotnetcoreURL));

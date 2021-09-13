@@ -56,6 +56,7 @@ export class ShellExecutionHelper {
 		child.stderr!.on('data', (data: string | Buffer) => {
 			this.outputDataChunk(data, outputChannel, localize('sqlDatabaseProjects.RunCommand.stderr', "    stderr: "));
 		});
+
 		await child;
 
 		return stdoutData.join('');

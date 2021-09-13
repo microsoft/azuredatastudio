@@ -16,6 +16,7 @@ import { promises as fs } from 'fs';
 import { Project } from '../models/project';
 import * as childProcess from 'child_process';
 import * as fse from 'fs-extra';
+import which = require('which');
 
 export interface ValidationResult {
 	errorMessage: string;
@@ -477,4 +478,18 @@ export async function retry<T>(
 	}
 
 	return undefined;
+}
+
+export async function detectCommandInstallation(command: string): Promise<boolean> {
+	try {
+		const found = await which(command);
+
+		if (found) {
+			return true;
+		}
+	} catch (err) {
+		console.log(getErrorMessage(err));
+	}
+
+	return false;
 }

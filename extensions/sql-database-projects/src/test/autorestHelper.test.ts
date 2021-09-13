@@ -14,7 +14,7 @@ import { promises as fs } from 'fs';
 
 let testContext: TestContext;
 
-describe('Publish profile tests', function (): void {
+describe('Autorest tests', function (): void {
 	beforeEach(function (): void {
 		testContext = createContext();
 	});
@@ -25,18 +25,20 @@ describe('Publish profile tests', function (): void {
 
 	it('Should detect autorest', async function (): Promise<void> {
 		const autorestHelper = new AutorestHelper(testContext.outputChannel);
-		should(await autorestHelper.detectAutorestInstallation()).equal(true, 'autorest command should be found in default path');
+		const executable = await autorestHelper.detectInstallation();
+		should(executable === 'autorest' || executable === 'npx autorest').equal(true, 'autorest command should be found in default path during unit tests');
 	});
 
 	it('Should run an autorest command successfully', async function (): Promise<void> {
 		const autorestHelper = new AutorestHelper(testContext.outputChannel);
 		const dummyFile = path.join(await testUtils.generateTestFolderPath(), 'testoutput.log');
-		sinon.stub(autorestHelper, 'constructAutorestCommand').returns(`autorest -version > ${dummyFile}`);
+		sinon.stub(autorestHelper, 'constructAutorestCommand').returns(`${await autorestHelper.detectInstallation()} --version > ${dummyFile}`);
 
 		try {
-		await autorestHelper.generateAutorestFiles('fakespec.yaml', 'fakePath');
-		const text = await fs.readFile(dummyFile);
-		should(text.toString().includes('AutoRest code generation utility'));
+			await autorestHelper.generateAutorestFiles('fakespec.yaml', 'fakePath');
+			const text = (await fs.readFile(dummyFile)).toString().trim();
+			const expected = 'AutoRest code generation utility';
+			should(text.includes(expected)).equal(true, `Substring not found.  Expected "${expected}" in "${text}"`);
 		} finally {
 			if (await utils.exists(dummyFile)) {
 				await fs.unlink(dummyFile);
@@ -48,6 +50,7 @@ describe('Publish profile tests', function (): void {
 		const expectedOutput = 'autorest --use:autorest-sql-testing@0.0.2 --input-file="/some/path/test.yaml" --output-folder="/some/output/path" --clear-output-folder';
 
 		const autorestHelper = new AutorestHelper(testContext.outputChannel);
-		should(autorestHelper.constructAutorestCommand('/some/path/test.yaml', '/some/output/path')).equal(expectedOutput);
+		const constructedCommand = autorestHelper.constructAutorestCommand((await autorestHelper.detectInstallation())!, '/some/path/test.yaml', '/some/output/path')
+		should(constructedCommand === expectedOutput || constructedCommand === `npx ${expectedOutput}`).equal(true, `Constructed autorest command not formatting as expected:\nActual: ${constructedCommand}\nExpected: [npx ]${expectedOutput}`);
 	});
 });
