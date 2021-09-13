@@ -2,7 +2,7 @@
 	"name": "profiler",
 	"displayName": "%displayName%",
 	"description": "%description%",
-	"version": "0.12.0",
+	"version": "0.12.1",
 	"publisher": "Microsoft",
 	"preview": true,
 	"license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",

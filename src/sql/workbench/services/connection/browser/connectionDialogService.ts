@@ -152,6 +152,16 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		return defaultProvider || Constants.mssqlProviderName;
 	}
 
+	private getDefaultAuthenticationTypeName(): string {
+		let defaultAuthenticationType: string;
+		if (!defaultAuthenticationType && this._configurationService) {
+			defaultAuthenticationType = WorkbenchUtils.getSqlConfigValue<string>(this._configurationService, Constants.defaultAuthenticationType);
+		}
+
+		return defaultAuthenticationType || Constants.sqlLogin;  // as a fallback, default to sql login if the value from settings is not available
+
+	}
+
 	private handleOnConnect(params: INewConnectionParams, profile?: IConnectionProfile): void {
 		this._logService.debug('ConnectionDialogService: onConnect event is received');
 		if (!this._connecting) {
@@ -383,6 +393,14 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		if (model && !model.providerName) {
 			model.providerName = providerName;
 		}
+
+		const defaultAuthenticationType = this.getDefaultAuthenticationTypeName();
+		let authenticationTypeName = model ? model.authenticationType : defaultAuthenticationType;
+		authenticationTypeName = authenticationTypeName ? authenticationTypeName : defaultAuthenticationType;
+		if (model && !model.authenticationType) {
+			model.authenticationType = authenticationTypeName;
+		}
+
 		let newProfile = new ConnectionProfile(this._capabilitiesService, model || providerName);
 		newProfile.saveProfile = true;
 		newProfile.generateNewId();
