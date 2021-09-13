@@ -189,7 +189,6 @@ suite.skip('NotebookService:', function (): void {
 		assert.deepStrictEqual(notebookService.getProvidersForFileType('ipynb'), ['sql'], 'sql provider should be registered for ipynb extension');
 		assert.strictEqual(notebookService.getStandardKernelsForProvider('sql').length, 1, 'SQL kernel should be provided by default');
 		assert.strictEqual(notebookService.getStandardKernelsForProvider('otherProvider'), undefined, 'Other provider should not have kernels since it has not been added as a provider');
-		assert.deepStrictEqual(notebookService.getSupportedFileExtensions(), ['IPYNB'], 'IPYNB file extension should be supported by default');
 		await notebookService.registrationComplete;
 		assert.ok(notebookService.isRegistrationComplete, `notebookService.isRegistrationComplete should be true once its registrationComplete promise is resolved`);
 	});
@@ -208,11 +207,10 @@ suite.skip('NotebookService:', function (): void {
 			provider: 'otherProvider'
 		};
 
-		const notebookRegistry = Registry.as<INotebookProviderRegistry>(Extensions.NotebookProviderContribution);
+		const notebookRegistry = Registry.as<INotebookProviderRegistry>(Extensions.NotebookExecuteProviderContribution);
 		notebookRegistry.registerExecuteProvider(otherProviderRegistration);
 
 		assert.deepStrictEqual(notebookService.getProvidersForFileType('ipynb'), ['sql', 'otherProvider'], 'otherProvider should also be registered for ipynb extension');
-		assert.deepStrictEqual(notebookService.getSupportedFileExtensions(), ['IPYNB'], 'Only IPYNB should be registered as supported file extension');
 		assert.strictEqual(notebookService.getStandardKernelsForProvider('otherProvider').length, 1, 'otherProvider kernel info could not be found');
 		assert.deepStrictEqual(notebookService.getStandardKernelsForProvider('otherProvider')[0], otherProviderRegistration.standardKernels, 'otherProviderRegistration standard kernels does not match');
 	});
@@ -367,7 +365,7 @@ suite.skip('NotebookService:', function (): void {
 			fileExtensions: ['jpeg', 'jpg'],
 			standardKernels: [<azdata.nb.IStandardKernel>{ name: 'kernel1' }, <azdata.nb.IStandardKernel>{ name: 'kernel2' }]
 		};
-		const notebookRegistry = Registry.as<INotebookProviderRegistry>(Extensions.NotebookProviderContribution);
+		const notebookRegistry = Registry.as<INotebookProviderRegistry>(Extensions.NotebookExecuteProviderContribution);
 		notebookRegistry.registerExecuteProvider(notebookProviderRegistration);
 		const managerPromise = notebookService.getOrCreateNotebookManager(providerId, URI.parse('untitled:jpg'));
 		const providerInstance = createRegisteredProviderWithManager({ notebookService, providerId });
@@ -576,7 +574,7 @@ suite.skip('NotebookService:', function (): void {
 });
 
 function unRegisterProviders(notebookService: NotebookService) {
-	const notebookRegistry = Registry.as<INotebookProviderRegistry>(Extensions.NotebookProviderContribution);
+	const notebookRegistry = Registry.as<INotebookProviderRegistry>(Extensions.NotebookExecuteProviderContribution);
 	// unregister all builtin providers
 	for (const providerContribution of notebookRegistry.executeProviders) {
 		notebookService.unregisterExecuteProvider(providerContribution.provider);

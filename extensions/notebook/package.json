@@ -606,7 +606,7 @@
         ]
       }
     ],
-    "notebook.providers": {
+    "notebook.executeProviders": {
       "provider": "jupyter",
       "fileExtensions": [
         "IPYNB"

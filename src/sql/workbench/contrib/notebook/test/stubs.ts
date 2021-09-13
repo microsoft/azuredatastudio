@@ -263,9 +263,6 @@ export class NotebookServiceStub implements INotebookService {
 	getNavigationProvider(notebookUri: URI): INavigationProvider {
 		throw new Error('Method not implemented.');
 	}
-	getSupportedFileExtensions(): string[] {
-		throw new Error('Method not implemented.');
-	}
 	getProvidersForFileType(fileType: string): string[] {
 		return [];
 	}

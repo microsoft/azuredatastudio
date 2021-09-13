@@ -11,7 +11,8 @@ import * as azdata from 'azdata';
 import { Event, Emitter } from 'vs/base/common/event';
 
 export const Extensions = {
-	NotebookProviderContribution: 'notebook.providers',
+	NotebookSerializationProviderContribution: 'notebook.serializationProviders',
+	NotebookExecuteProviderContribution: 'notebook.executeProviders',
 	NotebookLanguageMagicContribution: 'notebook.languagemagics'
 };
 
@@ -26,7 +27,30 @@ export interface ExecuteProviderRegistration {
 	standardKernels: azdata.nb.IStandardKernel | azdata.nb.IStandardKernel[];
 }
 
-let notebookProviderType: IJSONSchema = {
+let serializationProviderType: IJSONSchema = {
+	type: 'object',
+	default: { provider: '', fileExtensions: [] },
+	properties: {
+		provider: {
+			description: localize('carbon.extension.contributes.notebook.provider', "Identifier of the notebook provider."),
+			type: 'string'
+		},
+		fileExtensions: {
+			description: localize('carbon.extension.contributes.notebook.fileExtensions', "What file extensions should be registered to this notebook provider"),
+			oneOf: [
+				{ type: 'string' },
+				{
+					type: 'array',
+					items: {
+						type: 'string'
+					}
+				}
+			]
+		}
+	}
+};
+
+let executeProviderType: IJSONSchema = {
 	type: 'object',
 	default: { provider: '', fileExtensions: [], standardKernels: [] },
 	properties: {
@@ -91,13 +115,23 @@ let notebookProviderType: IJSONSchema = {
 	}
 };
 
-let notebookContrib: IJSONSchema = {
-	description: localize('vscode.extension.contributes.notebook.providers', "Contributes notebook providers."),
+let notebookSerializationContrib: IJSONSchema = {
+	description: localize('vscode.extension.contributes.notebook.serializationProviders', "Contributes notebook serialization providers."),
 	oneOf: [
-		notebookProviderType,
+		serializationProviderType,
 		{
 			type: 'array',
-			items: notebookProviderType
+			items: serializationProviderType
+		}
+	]
+};
+let notebookExecuteContrib: IJSONSchema = {
+	description: localize('vscode.extension.contributes.notebook.executeProviders', "Contributes notebook execute providers."),
+	oneOf: [
+		executeProviderType,
+		{
+			type: 'array',
+			items: executeProviderType
 		}
 	]
 };
@@ -210,10 +244,28 @@ class NotebookProviderRegistry implements INotebookProviderRegistry {
 }
 
 const notebookProviderRegistry = new NotebookProviderRegistry();
-platform.Registry.add(Extensions.NotebookProviderContribution, notebookProviderRegistry);
+platform.Registry.add(Extensions.NotebookSerializationProviderContribution, notebookProviderRegistry);
+platform.Registry.add(Extensions.NotebookExecuteProviderContribution, notebookProviderRegistry);
 
+ExtensionsRegistry.registerExtensionPoint<SerializationProviderRegistration | SerializationProviderRegistration[]>({ extensionPoint: Extensions.NotebookSerializationProviderContribution, jsonSchema: notebookSerializationContrib }).setHandler(extensions => {
 
-ExtensionsRegistry.registerExtensionPoint<ExecuteProviderRegistration | ExecuteProviderRegistration[]>({ extensionPoint: Extensions.NotebookProviderContribution, jsonSchema: notebookContrib }).setHandler(extensions => {
+	function handleExtension(contrib: SerializationProviderRegistration, extension: IExtensionPointUser<any>) {
+		notebookProviderRegistry.registerSerializationProvider(contrib);
+	}
+
+	for (let extension of extensions) {
+		const { value } = extension;
+		if (Array.isArray(value)) {
+			for (let command of value) {
+				handleExtension(command, extension);
+			}
+		} else {
+			handleExtension(value, extension);
+		}
+	}
+});
+
+ExtensionsRegistry.registerExtensionPoint<ExecuteProviderRegistration | ExecuteProviderRegistration[]>({ extensionPoint: Extensions.NotebookExecuteProviderContribution, jsonSchema: notebookExecuteContrib }).setHandler(extensions => {
 
 	function handleExtension(contrib: ExecuteProviderRegistration, extension: IExtensionPointUser<any>) {
 		notebookProviderRegistry.registerExecuteProvider(contrib);

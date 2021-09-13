@@ -80,7 +80,7 @@ export interface TrustedNotebooksMemento {
 	trustedNotebooksCache: TrustedNotebookCache;
 }
 
-const notebookRegistry = Registry.as<INotebookProviderRegistry>(Extensions.NotebookProviderContribution);
+const notebookRegistry = Registry.as<INotebookProviderRegistry>(Extensions.NotebookExecuteProviderContribution);
 
 export class SerializationProviderDescriptor {
 	private _instanceReady = new Deferred<ISerializationProvider>();
@@ -389,10 +389,6 @@ export class NotebookService extends Disposable implements INotebookService {
 			standardKernels = standardKernels.filter(kernel => !kernel.blockedOnSAW);
 		}
 		this._providerToStandardKernels.set(providerUpperCase, standardKernels);
-	}
-
-	getSupportedFileExtensions(): string[] {
-		return Array.from(this._fileToProviders.keys());
 	}
 
 	getProvidersForFileType(fileType: string): string[] {
