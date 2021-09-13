@@ -1384,6 +1384,13 @@ class TextComponentWrapper extends ComponentWrapper implements azdata.TextCompon
 	public set textType(type: azdata.TextType | undefined) {
 		this.setProperty('textType', type);
 	}
+
+	public get values(): string[] {
+		return this.properties['values'];
+	}
+	public set values(v: string[]) {
+		this.setProperty('values', v);
+	}
 }
 
 class ImageComponentWrapper extends ComponentWithIconWrapper implements azdata.ImageComponentProperties {

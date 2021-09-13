@@ -585,7 +585,9 @@ declare module 'azdata' {
 	 */
 	export enum TextType {
 		Normal = 'Normal',
-		Error = 'Error'
+		Error = 'Error',
+		UnorderedList = 'UnorderedList',
+		OrderedList = 'OrderedList'
 	}
 
 	export interface TextComponentProperties {
@@ -598,6 +600,11 @@ declare module 'azdata' {
 		 * The type to display the text as - used to determine the color of the text. Default is Normal.
 		 */
 		textType?: TextType;
+		/**
+		 * Provide text for HTML list. Note: By default the lists will be unordered. To change the list type use textType attribute.
+		 */
+		values?: string[];
+
 	}
 
 	export namespace window {

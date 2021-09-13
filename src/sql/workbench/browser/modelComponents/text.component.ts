@@ -22,7 +22,9 @@ import { errorForeground } from 'vs/platform/theme/common/colorRegistry';
 
 export enum TextType {
 	Normal = 'Normal',
-	Error = 'Error'
+	Error = 'Error',
+	UnorderedList = 'UnorderedList',
+	OrderedList = 'OrderedList'
 }
 
 const errorTextClass = 'error-text';
@@ -30,16 +32,30 @@ const errorTextClass = 'error-text';
 @Component({
 	selector: 'modelview-text',
 	template: `
-	<div *ngIf="showDiv;else noDiv" style="display:flex;flex-flow:row;align-items:center;" [style.width]="getWidth()" [style.height]="getHeight()">
-		<p [title]="title" [ngStyle]="this.CSSStyles" [attr.role]="ariaRole" [attr.aria-hidden]="ariaHidden"></p>
-		<div #textContainer id="textContainer"></div>
-		<span *ngIf="requiredIndicator" style="color:red;margin-left:5px;">*</span>
-		<div *ngIf="description" tabindex="0" class="modelview-text-tooltip" [attr.aria-label]="description" role="img">
-			<div class="modelview-text-tooltip-content" [innerHTML]="description"></div>
+	<div *ngIf="showList;else noList" [style.display]="display" [style.width]="getWidth()" [style.height]="getHeight()" [title]="title" [attr.role]="ariaRole" [attr.aria-hidden]="ariaHidden" [ngStyle]="this.CSSStyles">
+		<div *ngIf="isUnOrderedList;else orderedlist">
+			<ul style="padding-left:0px">
+				<li *ngFor="let v of values">{{v}}</li>
+			</ul>
 		</div>
+		<ng-template #orderedlist>
+			<ol style="padding-left:0px">
+				<li *ngFor="let v of values">{{v}}</li>
+			</ol>
+		</ng-template>
 	</div>
-	<ng-template #noDiv>
-		<div #textContainer id="textContainer" [style.display]="display" [style.width]="getWidth()" [style.height]="getHeight()" [title]="title" [attr.role]="ariaRole" [attr.aria-hidden]="ariaHidden" [ngStyle]="this.CSSStyles"></div>
+	<ng-template #noList>
+		<div *ngIf="showDiv;else noDiv" style="display:flex;flex-flow:row;align-items:center;" [style.width]="getWidth()" [style.height]="getHeight()">
+			<p [title]="title" [ngStyle]="this.CSSStyles" [attr.role]="ariaRole" [attr.aria-hidden]="ariaHidden"></p>
+			<div #textContainer id="textContainer"></div>
+			<span *ngIf="requiredIndicator" style="color:red;margin-left:5px;">*</span>
+			<div *ngIf="description" tabindex="0" class="modelview-text-tooltip" [attr.aria-label]="description" role="img">
+				<div class="modelview-text-tooltip-content" [innerHTML]="description"></div>
+			</div>
+		</div>
+		<ng-template #noDiv>
+			<div #textContainer id="textContainer" [style.display]="display" [style.width]="getWidth()" [style.height]="getHeight()" [title]="title" [attr.role]="ariaRole" [attr.aria-hidden]="ariaHidden" [ngStyle]="this.CSSStyles"></div>
+		</ng-template>
 	</ng-template>`
 })
 export default class TextComponent extends TitledComponent<azdata.TextComponentProperties> implements IComponent, OnDestroy, AfterViewInit {
@@ -104,11 +120,29 @@ export default class TextComponent extends TitledComponent<azdata.TextComponentP
 	}
 
 	public get textType(): azdata.TextType | undefined {
-		return this.getPropertyOrDefault<azdata.TextType | undefined>(props => props.textType, undefined);
+		let textType = this.getPropertyOrDefault<azdata.TextType | undefined>(props => props.textType, undefined);
+		textType = (textType === undefined && this.values) ? TextType.UnorderedList : undefined;
+		return textType;
 	}
 
 	public set textType(newValue: azdata.TextType | undefined) {
 		this.setPropertyFromUI<azdata.TextType | undefined>((properties, value) => { properties.textType = value; }, newValue);
+	}
+
+	public get values(): string[] | undefined {
+		return this.getPropertyOrDefault<string[]>(props => props.values, undefined);
+	}
+
+	public get isUnOrderedList(): boolean | undefined {
+		return this.textType === TextType.UnorderedList;
+	}
+
+	public get showList(): boolean | undefined {
+		if (this.textType === TextType.UnorderedList ||
+			this.textType === TextType.OrderedList) {
+			return true;
+		}
+		return false;
 	}
 
 	public override setProperties(properties: { [key: string]: any; }): void {
