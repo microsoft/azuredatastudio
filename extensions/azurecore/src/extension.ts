@@ -81,6 +81,13 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 	if (!storagePath) {
 		return undefined;
 	}
+
+	// TODO: Since Code Grant auth doesnt work in web mode, enabling Device code auth by default for web mode. We can remove this once we have that working in web mode.
+	const config = vscode.workspace.getConfiguration('accounts.azure.auth');
+	if (vscode.env.uiKind === vscode.UIKind.Web) {
+		await config.update('deviceCode', true, vscode.ConfigurationTarget.Global);
+	}
+
 	updatePiiLoggingLevel();
 
 	// Create the provider service and activate
