@@ -71,7 +71,8 @@ describe('deploy service', function (): void {
 				password: 'PLACEHOLDER',
 				port: 1433,
 				serverName: 'localhost',
-				userName: 'sa'
+				userName: 'sa',
+				dockerBaseImage: 'image'
 			}
 		};
 		const projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
@@ -93,7 +94,8 @@ describe('deploy service', function (): void {
 			password: 'PLACEHOLDER',
 			port: 1433,
 			serverName: 'localhost',
-			userName: 'sa'
+			userName: 'sa',
+			dockerBaseImage: 'image'
 		};
 
 		const deployService = new DeployService(testContext.outputChannel);
@@ -138,7 +140,8 @@ describe('deploy service', function (): void {
 				password: 'PLACEHOLDER',
 				port: 1433,
 				serverName: 'localhost',
-				userName: 'sa'
+				userName: 'sa',
+				dockerBaseImage: 'image'
 			}
 		};
 

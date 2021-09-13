@@ -21,4 +21,5 @@ export interface ILocalDbSetting {
 	userName: string,
 	password: string,
 	dbName: string,
+	dockerBaseImage: string
 }

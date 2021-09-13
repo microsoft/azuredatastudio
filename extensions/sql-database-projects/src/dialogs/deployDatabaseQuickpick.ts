@@ -104,12 +104,27 @@ export async function launchPublishToDockerContainerQuickpick(project: Project):
 		return undefined;
 	}
 
+	let baseImage: string | undefined = '';
+	baseImage = await vscode.window.showInputBox({
+		title: constants.enterBaseImage,
+		ignoreFocusOut: true,
+		value: constants.defaultDockerBaseImage,
+		validateInput: input => utils.isEmptyString(input) ? constants.valueCannotBeEmpty : undefined
+	}
+	);
+
+	// Return when user hits escape
+	if (!baseImage) {
+		return undefined;
+	}
+
 	localDbSetting = {
 		serverName: 'localhost',
 		userName: 'sa',
 		dbName: project.projectFileName,
 		password: password,
 		port: +portNumber,
+		dockerBaseImage: baseImage
 	};
 
 	let deploySettings = await getPublishDatabaseSettings(project, false);
