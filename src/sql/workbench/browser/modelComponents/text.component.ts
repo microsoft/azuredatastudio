@@ -140,11 +140,7 @@ export default class TextComponent extends TitledComponent<azdata.TextComponentP
 	}
 
 	public get showList(): boolean | undefined {
-		if (this.textType === TextType.UnorderedList ||
-			this.textType === TextType.OrderedList) {
-			return true;
-		}
-		return false;
+		return (this.textType === TextType.UnorderedList || this.textType === TextType.OrderedList);
 	}
 
 	public override setProperties(properties: { [key: string]: any; }): void {
