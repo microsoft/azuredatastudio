@@ -7,6 +7,9 @@ export enum AppSettingType {
 export interface IDeployProfile {
 	localDbSetting?: ILocalDbSetting;
 	deploySettings?: IDeploySettings;
+}
+
+export interface IDeployAppIntegrationProfile {
 	envVariableName?: string;
 	appSettingFile?: string;
 	appSettingType: AppSettingType;

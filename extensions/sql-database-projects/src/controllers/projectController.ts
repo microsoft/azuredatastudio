@@ -35,7 +35,7 @@ import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/t
 import { IconPathHelper } from '../common/iconHelper';
 import { DashboardData, PublishData, Status } from '../models/dashboardData/dashboardData';
 import { launchPublishDatabaseQuickpick } from '../dialogs/publishDatabaseQuickpick';
-import { launchDeployDatabaseQuickpick } from '../dialogs/deployDatabaseQuickpick';
+import { launchPublishToDockerContainerQuickpick } from '../dialogs/deployDatabaseQuickpick';
 import { DeployService } from '../models/deploy/deployService';
 import { SqlTargetPlatform } from 'sqldbproj';
 import { createNewProjectFromDatabaseWithQuickpick } from '../dialogs/createProjectFromDatabaseQuickpick';
@@ -256,13 +256,13 @@ export class ProjectsController {
 	}
 
 	/**
-	 * Deploys a project
+	 * Publishes a project to docker container
 	 * @param treeNode a treeItem in a project's hierarchy, to be used to obtain a Project
 	 */
-	public async deployProject(context: Project | dataworkspace.WorkspaceTreeItem): Promise<void> {
+	public async publishToDockerContainer(context: Project | dataworkspace.WorkspaceTreeItem): Promise<void> {
 		const project: Project = this.getProjectFromContext(context);
 		try {
-			let deployProfile = await launchDeployDatabaseQuickpick(project);
+			let deployProfile = await launchPublishToDockerContainerQuickpick(project);
 			if (deployProfile && deployProfile.deploySettings) {
 				let connectionUri: string | undefined;
 				if (deployProfile.localDbSetting) {
@@ -274,10 +274,6 @@ export class ProjectsController {
 				if (deployProfile.deploySettings.connectionUri) {
 					const publishResult = await this.publishOrScriptProject(project, deployProfile.deploySettings, true);
 					if (publishResult && publishResult.success) {
-
-						// Update app settings if requested by user
-						//
-						await this.deployService.updateAppSettings(deployProfile);
 						if (deployProfile.localDbSetting) {
 							await this.deployService.getConnection(deployProfile.localDbSetting, true, deployProfile.localDbSetting.dbName);
 						}
