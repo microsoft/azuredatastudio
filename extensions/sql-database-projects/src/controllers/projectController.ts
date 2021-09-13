@@ -838,43 +838,75 @@ export class ProjectsController {
 	public async generateFromSwagger() {
 		try {
 			// 1. select spec file
+
+			let quickpickSelection = await vscode.window.showQuickPick(
+				[constants.browseEllipsis],
+				{ title: constants.selectSpecFile, ignoreFocusOut: true });
+			if (!quickpickSelection) {
+				return;
+			}
+
 			const filters: { [name: string]: string[] } = {};
-			filters['Swagger/OpenAPI spec'] = ['yaml'];
+			filters['OpenAPI/Swagger spec'] = ['yaml'];
 
 			let uris = await vscode.window.showOpenDialog({
 				canSelectFiles: true,
 				canSelectFolders: false,
 				canSelectMany: false,
-				openLabel: 'Select Swagger/OpenAPI spec file',
-				filters: filters
+				openLabel: constants.selectString,
+				filters: filters,
+				title: constants.selectSpecFile
 			});
 
 			if (!uris) {
 				return;
 			}
 
-			// 2. select location
 			const swaggerPath: string = uris[0].fsPath;
 
-			const folders = await vscode.window.showOpenDialog({
-				canSelectFiles: false,
-				canSelectFolders: true,
-				canSelectMany: false,
-				openLabel: 'Select location for project',
-				defaultUri: vscode.workspace.workspaceFolders?.[0]?.uri
-			});
+			// 2. select location
+			let valid = false;
+			let newProjectFolder: string = '';
+			let outputFolder: string = '';
+			let projectName: string = '';
 
-			if (!folders) {
+			quickpickSelection = await vscode.window.showQuickPick(
+				[constants.browseEllipsis],
+				{ title: constants.selectProjectLocation, ignoreFocusOut: true });
+			if (!quickpickSelection) {
 				return;
 			}
 
-			// 3. create target folder
-			const outputFolder: string = folders[0].fsPath;
-			const projectName: string = path.basename(swaggerPath, '.yaml');
-			const newProjectFolder: string = path.join(outputFolder, projectName);
+			while (!valid) {
+				const folders = await vscode.window.showOpenDialog({
+					canSelectFiles: false,
+					canSelectFolders: true,
+					canSelectMany: false,
+					openLabel: constants.selectString,
+					defaultUri: vscode.workspace.workspaceFolders?.[0]?.uri,
+					title: constants.selectProjectLocation
+				});
 
-			if (await utils.exists(newProjectFolder)) {
-				throw new Error(`Path '${newProjectFolder}' already exists.  Select another location.`);
+				if (!folders) {
+					return;
+				}
+
+				// 3. create target folder
+				outputFolder = folders[0].fsPath;
+				projectName = path.basename(swaggerPath, '.yaml');
+				newProjectFolder = path.join(outputFolder, projectName);
+
+				if (await utils.exists(newProjectFolder)) {
+
+					quickpickSelection = await vscode.window.showQuickPick(
+						[constants.browseEllipsis],
+						{ title: constants.folderAlreadyExistsChooseNewLocation(newProjectFolder), ignoreFocusOut: true });
+					if (!quickpickSelection) {
+						return;
+					}
+				} else {
+					valid = true;
+				}
 			}
 
 			await fs.mkdir(newProjectFolder);

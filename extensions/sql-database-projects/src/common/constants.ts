@@ -411,6 +411,7 @@ export enum DatabaseProjectItemType {
 export const autorestPostDeploymentScriptName = 'PostDeploymentScript.sql';
 export const nodeButNotAutorestFound = localize('nodeButNotAutorestFound', "Autorest tool not found in system path, but found Node.js.  Running via npx.  Please execute 'npm install autorest -g' to install permanently.");
 export const nodeNotFound = localize('nodeNotFound', "Neither autorest nor Node.js (npx) found in system path.  Please install Node.js for autorest generation to work.");
+export const selectSpecFile = localize('selectSpecFile', "Select OpenAPI/Swagger spec file");
 
 // System dbs
 export const systemDbs = ['master', 'msdb', 'tempdb', 'model'];
