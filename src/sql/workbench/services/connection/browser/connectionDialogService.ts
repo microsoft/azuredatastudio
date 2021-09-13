@@ -501,10 +501,10 @@ export class ConnectionDialogService implements IConnectionDialogService {
 
 		let errorMessage = message;
 		if (message.includes('could not translate host name')) {
-			errorMessage = message.concat('\nCauses:\nUsing the wrong hostname or Problems with DNS resolution.\nSuggestions:\nCheck that the server address or hostname is the full address.');
+			errorMessage = message.concat('\nCauses:\nUsing the wrong hostname or problems with DNS resolution.\nSuggestions:\nCheck that the server address or hostname is the full address.');
 		}
-		if (message.includes('could not connect to server: Operation timed out') && message.includes('TCP/IP connections on port')) {
-			errorMessage = message.concat(`Suggestions:\nCheck that the firewall settings allow connections from the user's address.`);
+		if (message.includes('could not connect to server: Operation timed out')) {
+			errorMessage = message.concat(`\nSuggestions:\nCheck that the firewall settings allow connections from the user's address.`);
 		}
 		this._logService.error(errorMessage);
 		this._errorMessageService.showDialog(severity, headerTitle, errorMessage, messageDetails, actions);
