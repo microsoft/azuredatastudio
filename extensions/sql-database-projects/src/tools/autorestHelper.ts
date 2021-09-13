@@ -38,7 +38,7 @@ export class AutorestHelper extends ShellExecutionHelper {
 		return undefined;
 	}
 
-	public async generateAutorestFiles(swaggerPath: string, outputFolder: string): Promise<string | undefined> {
+	public async generateAutorestFiles(specPath: string, outputFolder: string): Promise<string | undefined> {
 		const commandExecutable = await this.detectInstallation();
 
 		if (commandExecutable === undefined) {
@@ -64,7 +64,7 @@ export class AutorestHelper extends ShellExecutionHelper {
 			return;
 		}
 
-		const command = this.constructAutorestCommand(commandExecutable, swaggerPath, outputFolder);
+		const command = this.constructAutorestCommand(commandExecutable, specPath, outputFolder);
 		const output = await this.runStreamedCommand(command, this._outputChannel);
 
 		return output;
