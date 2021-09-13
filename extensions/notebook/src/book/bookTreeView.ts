@@ -737,17 +737,19 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	async onDrop(sources: vscode.TreeDataTransfer, target: BookTreeItem): Promise<void> {
-		TelemetryReporter.sendActionEvent(BookTelemetryView, NbTelemetryActions.DragAndDrop);
-		// gets the tree items that are dragged and dropped
-		let treeItems = JSON.parse(await sources.items.get(this.supportedTypes[0])!.asString()) as BookTreeItem[];
-		let rootItems = this.getLocalRoots(treeItems);
-		rootItems = rootItems.filter(item => item.resourceUri !== target.resourceUri);
-		if (rootItems && target) {
-			let sourcesByBook = this.groupTreeItemsByBookModel(rootItems);
-			const targetBook = this.books.find(book => book.bookPath === target.book.root);
-			for (let [book, items] of sourcesByBook) {
-				this.bookTocManager = new BookTocManager(book, targetBook);
-				await this.bookTocManager.updateBook(items, target);
+		if (target.contextValue === BookTreeItemType.savedBook || target.contextValue === BookTreeItemType.section) {
+			TelemetryReporter.sendActionEvent(BookTelemetryView, NbTelemetryActions.DragAndDrop);
+			// gets the tree items that are dragged and dropped
+			let treeItems = JSON.parse(await sources.items.get(this.supportedTypes[0])!.asString()) as BookTreeItem[];
+			let rootItems = this.getLocalRoots(treeItems);
+			rootItems = rootItems.filter(item => item.resourceUri !== target.resourceUri);
+			if (rootItems && target) {
+				let sourcesByBook = this.groupTreeItemsByBookModel(rootItems);
+				const targetBook = this.books.find(book => book.bookPath === target.book.root);
+				for (let [book, items] of sourcesByBook) {
+					this.bookTocManager = new BookTocManager(book, targetBook);
+					await this.bookTocManager.updateBook(items, target);
+				}
 			}
 		}
 	}
