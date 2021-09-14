@@ -20,7 +20,7 @@ import { getPinnedNotebooks, confirmMessageDialog, getNotebookType, FileExtensio
 import { IBookPinManager, BookPinManager } from './bookPinManager';
 import { BookTocManager, IBookTocManager, quickPickResults } from './bookTocManager';
 import { CreateBookDialog } from '../dialog/createBookDialog';
-import { AddFileDialog } from '../dialog/addFileDialog';
+import { AddTocEntryDialog } from '../dialog/addTocEntryDialog';
 import { getContentPath } from './bookVersionHandler';
 import { TelemetryReporter, BookTelemetryView, NbTelemetryActions } from '../telemetry';
 
@@ -276,14 +276,21 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	async createMarkdownFile(bookItem: BookTreeItem): Promise<void> {
 		const book = this.books.find(b => b.bookPath === bookItem.root);
 		this.bookTocManager = new BookTocManager(book);
-		const dialog = new AddFileDialog(this.bookTocManager, bookItem, FileExtension.Markdown);
+		const dialog = new AddTocEntryDialog(this.bookTocManager, bookItem, FileExtension.Markdown);
 		await dialog.createDialog();
 	}
 
 	async createNotebook(bookItem: BookTreeItem): Promise<void> {
 		const book = this.books.find(b => b.bookPath === bookItem.root);
 		this.bookTocManager = new BookTocManager(book);
-		const dialog = new AddFileDialog(this.bookTocManager, bookItem, FileExtension.Notebook);
+		const dialog = new AddTocEntryDialog(this.bookTocManager, bookItem, FileExtension.Notebook);
+		await dialog.createDialog();
+	}
+
+	async createSection(bookItem: BookTreeItem): Promise<void> {
+		const book = this.books.find(b => b.bookPath === bookItem.root);
+		this.bookTocManager = new BookTocManager(book);
+		const dialog = new AddTocEntryDialog(this.bookTocManager, bookItem, FileExtension.Markdown, true);
 		await dialog.createDialog();
 	}
 
