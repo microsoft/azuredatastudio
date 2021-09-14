@@ -65,7 +65,8 @@ interface NotebookProviderCache {
 }
 
 export interface NotebookProvidersMemento {
-	notebookProviderCache: NotebookProviderCache;
+	notebookSerializationProviderCache: NotebookProviderCache;
+	notebookExecuteProviderCache: NotebookProviderCache;
 }
 
 interface TrustedNotebookMetadata {
@@ -80,7 +81,8 @@ export interface TrustedNotebooksMemento {
 	trustedNotebooksCache: TrustedNotebookCache;
 }
 
-const notebookRegistry = Registry.as<INotebookProviderRegistry>(Extensions.NotebookExecuteProviderContribution);
+const notebookSerializationRegistry = Registry.as<INotebookProviderRegistry>(Extensions.NotebookSerializationProviderContribution);
+const notebookExecuteRegistry = Registry.as<INotebookProviderRegistry>(Extensions.NotebookExecuteProviderContribution);
 
 export class SerializationProviderDescriptor {
 	private _instanceReady = new Deferred<ISerializationProvider>();
@@ -170,25 +172,26 @@ export class NotebookService extends Disposable implements INotebookService {
 		super();
 		this._providersMemento = new Memento('notebookProviders', this._storageService);
 		this._trustedNotebooksMemento = new Memento(TrustedNotebooksMementoId, this._storageService);
-		if (this._storageService !== undefined && this.providersMemento.notebookProviderCache === undefined) {
-			this.providersMemento.notebookProviderCache = <NotebookProviderCache>{};
+		if (this._storageService !== undefined && this.providersMemento.notebookSerializationProviderCache === undefined && this.providersMemento.notebookExecuteProviderCache === undefined) {
+			this.providersMemento.notebookSerializationProviderCache = <NotebookProviderCache>{};
+			this.providersMemento.notebookExecuteProviderCache = <NotebookProviderCache>{};
 		}
-		this._register(notebookRegistry.onNewSerializationRegistration(this.updateRegisteredSerializationProviders, this));
-		this._register(notebookRegistry.onNewExecuteRegistration(this.updateRegisteredExecuteProviders, this));
+		this._register(notebookSerializationRegistry.onNewSerializationRegistration(this.updateRegisteredSerializationProviders, this));
+		this._register(notebookExecuteRegistry.onNewExecuteRegistration(this.updateRegisteredExecuteProviders, this));
 		this.registerBuiltInProvider();
 
 		// If a provider has been already registered, the onNewRegistration event will not have a listener attached yet
 		// So, explicitly updating registered providers here.
-		if (notebookRegistry.serializationProviders.length > 0) {
-			notebookRegistry.serializationProviders.forEach(p => {
+		if (notebookSerializationRegistry.serializationProviders.length > 0) {
+			notebookSerializationRegistry.serializationProviders.forEach(p => {
 				// Don't need to re-register SQL_NOTEBOOK_PROVIDER
 				if (p.provider !== SQL_NOTEBOOK_PROVIDER) {
 					this.updateRegisteredSerializationProviders({ id: p.provider, registration: p });
 				}
 			});
 		}
-		if (notebookRegistry.executeProviders.length > 0) {
-			notebookRegistry.executeProviders.forEach(p => {
+		if (notebookExecuteRegistry.executeProviders.length > 0) {
+			notebookExecuteRegistry.executeProviders.forEach(p => {
 				// Don't need to re-register SQL_NOTEBOOK_PROVIDER
 				if (p.provider !== SQL_NOTEBOOK_PROVIDER) {
 					this.updateRegisteredExecuteProviders({ id: p.provider, registration: p });
@@ -529,7 +532,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	get languageMagics(): ILanguageMagic[] {
-		return notebookRegistry.languageMagics;
+		return notebookExecuteRegistry.languageMagics;
 	}
 
 	// PRIVATE HELPERS /////////////////////////////////////////////////////
@@ -619,12 +622,21 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	private cleanupProviders(): void {
-		let knownProviders = Object.keys(notebookRegistry.executeProviders);
-		let cache = this.providersMemento.notebookProviderCache;
-		for (let key in cache) {
-			if (!knownProviders.some(x => x === key)) {
+		let knownExecuteProviders = Object.keys(notebookExecuteRegistry.executeProviders);
+		let executeCache = this.providersMemento.notebookExecuteProviderCache;
+		for (let key in executeCache) {
+			if (!knownExecuteProviders.some(x => x === key)) {
 				this._executeProviders.delete(key);
-				delete cache[key];
+				delete executeCache[key];
+			}
+		}
+
+		let knownSerializationProviders = Object.keys(notebookSerializationRegistry.serializationProviders);
+		let serializationCache = this.providersMemento.notebookSerializationProviderCache;
+		for (let key in serializationCache) {
+			if (!knownSerializationProviders.some(x => x === key)) {
+				this._serializationProviders.delete(key);
+				delete serializationCache[key];
 			}
 		}
 	}
@@ -632,7 +644,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	private registerBuiltInProvider() {
 		let sqlProvider = new SqlExecuteProvider(this._instantiationService);
 		this.registerExecuteProvider(sqlProvider.providerId, sqlProvider);
-		notebookRegistry.registerExecuteProvider({
+		notebookExecuteRegistry.registerExecuteProvider({
 			provider: sqlProvider.providerId,
 			fileExtensions: DEFAULT_NOTEBOOK_FILETYPE,
 			standardKernels: { name: notebookConstants.SQL, displayName: notebookConstants.SQL, connectionProviderIds: [notebookConstants.SQL_CONNECTION_PROVIDER] }
@@ -640,15 +652,20 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	protected async removeContributedProvidersFromCache(identifier: IExtensionIdentifier, extensionService: IExtensionService): Promise<void> {
-		const notebookProvider = 'notebookProvider';
 		try {
 			const extensionDescriptions = await extensionService.getExtensions();
 			let extensionDescription = extensionDescriptions.find(c => c.identifier.value.toLowerCase() === identifier.id.toLowerCase());
-			if (extensionDescription && extensionDescription.contributes
-				&& extensionDescription.contributes[notebookProvider] //'notebookProvider' isn't a field defined on IExtensionContributions so contributes[notebookProvider] is 'any'. TODO: Code cleanup
-				&& extensionDescription.contributes[notebookProvider].providerId) {
-				let id = extensionDescription.contributes[notebookProvider].providerId;
-				delete this.providersMemento.notebookProviderCache[id];
+			if (extensionDescription && extensionDescription.contributes) {
+				if (extensionDescription.contributes[Extensions.NotebookExecuteProviderContribution]
+					&& extensionDescription.contributes[Extensions.NotebookExecuteProviderContribution].providerId) {
+					let id = extensionDescription.contributes[Extensions.NotebookExecuteProviderContribution].providerId;
+					delete this.providersMemento.notebookExecuteProviderCache[id];
+				}
+				if (extensionDescription.contributes[Extensions.NotebookSerializationProviderContribution]
+					&& extensionDescription.contributes[Extensions.NotebookSerializationProviderContribution].providerId) {
+					let id = extensionDescription.contributes[Extensions.NotebookSerializationProviderContribution].providerId;
+					delete this.providersMemento.notebookSerializationProviderCache[id];
+				}
 			}
 		} catch (err) {
 			onUnexpectedError(err);
