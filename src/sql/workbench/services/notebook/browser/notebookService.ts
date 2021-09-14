@@ -70,7 +70,9 @@ export interface INotebookService {
 
 	getNavigationProvider(notebookUri: URI): INavigationProvider;
 
-	getProvidersForFileType(fileType: string): string[];
+	getSerializationProvidersForFileType(fileType: string): string[];
+
+	getExecuteProvidersForFileType(fileType: string): string[];
 
 	getStandardKernelsForProvider(provider: string): azdata.nb.IStandardKernel[];
 
