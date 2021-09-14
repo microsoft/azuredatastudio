@@ -959,7 +959,7 @@ export class ProjectsController {
 			workspaceApi.showProjectsView();
 			return project;
 		} catch (err) {
-			vscode.window.showErrorMessage(utils.getErrorMessage(err));
+			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
 			return;
 		}
 	}
