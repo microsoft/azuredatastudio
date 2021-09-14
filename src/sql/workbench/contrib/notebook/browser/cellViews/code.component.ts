@@ -280,17 +280,30 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	public horizontalScrollbar(): void {
-		// Get Markdown View Horizontal Scrollbar
-		let horizontalScrollbar: Element = this.codeElement.nativeElement.querySelector('div.invisible.scrollbar.horizontal');
-		horizontalScrollbar.classList.add('markdownScrollbar');
+		if (this._configurationService.getValue('editor.wordWrap') && this.cellModel.cellType !== CellTypes.Code) {
+			// Get Markdown View Horizontal Scrollbar
+			let horizontalScrollbar = this.codeElement.nativeElement.querySelector('div.invisible.scrollbar.horizontal');
 
-		// code-component - scrollable = size of the terminal window
-		let codeComponentHeight = this._editor.scrollHeight;
-		let scrollableHeight = document.getElementsByClassName('scrollable')[0].clientHeight;
-		let scrollbarHeight = codeComponentHeight - scrollableHeight;
-		//let leftStyle = this.codeElement.nativeElement.querySelector('div.margin').offsetWidth;
+			let editorBottomPos = Math.floor(this.codeElement.nativeElement.closest('.show-markdown .editor').getBoundingClientRect().bottom) - Math.floor(this.codeElement.nativeElement.closest('.show-markdown .editor').getBoundingClientRect().top);
+			let viewportHeight = DOM.getTotalHeight(document.querySelector('.scrollable'));
+			let viewportTop = Math.floor(document.querySelector('.scrollable').getBoundingClientRect().top);
+			let viewportLeft = Math.floor(document.querySelector('.scrollable').getBoundingClientRect().left);
+			let marginLeft = DOM.getContentWidth(document.querySelector('div.margin'));
 
-		horizontalScrollbar.setAttribute('style', `bottom: ${scrollbarHeight}px; left: 60px; opacity: 1; position: fixed`);
+			let toolbarOffsetHeight = DOM.getContentHeight(document.querySelector('markdown-toolbar-component')) + DOM.getContentHeight(document.querySelector('cell-toolbar-component'));
+			// Horizontal Scrollbar Values when fixed
+			let horizontalTop = viewportTop + viewportHeight - horizontalScrollbar.scrollHeight - 10;
+			let horizontalScrollbarLeft = viewportLeft + marginLeft;
+
+			// Set the bottom to recognize when the bottom of the active cell is larger than the visible area (viewport)
+			editorBottomPos = editorBottomPos + toolbarOffsetHeight + horizontalScrollbar.scrollHeight;
+
+			if (editorBottomPos >= viewportHeight) {
+				horizontalScrollbar.setAttribute('style', `opacity: 1; position: fixed; left: ${horizontalScrollbarLeft}px; top: ${horizontalTop}px`);
+			} else {
+				horizontalScrollbar.setAttribute('style', `opacity: 1; position: absolute; left: 0; bottom: ${horizontalScrollbar.scrollHeight}px`);
+			}
+		}
 	}
 
 	protected initActionBar() {
