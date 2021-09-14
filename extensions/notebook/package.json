@@ -287,6 +287,10 @@
           "dark": "resources/dark/unpin_inverse.svg",
           "light": "resources/light/unpin.svg"
         }
+      },
+      {
+        "command": "notebook.command.undoNotebookView",
+        "title": "%title.undoNotebookView%"
       }
     ],
     "languages": [
@@ -420,6 +424,10 @@
         },
         {
           "command": "notebook.command.unpinNotebook",
+          "when": "false"
+        },
+        {
+          "command": "notebook.command.undoNotebookView",
           "when": "false"
         }
       ],
@@ -578,6 +586,12 @@
         "command": "notebook.command.addtext",
         "key": "Ctrl+Shift+T",
         "when": "activeEditor == workbench.editor.notebookEditor"
+      },
+      {
+        "command": "notebook.command.undoNotebookView",
+        "key": "ctrl+z",
+        "mac": "cmd+z",
+        "when": "true"
       }
     ],
     "notebook.languagemagics": [

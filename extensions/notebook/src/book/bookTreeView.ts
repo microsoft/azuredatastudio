@@ -7,6 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs-extra';
+import * as yaml from 'js-yaml';
 import * as constants from '../common/constants';
 import { IPrompter } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
@@ -45,6 +46,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	public books: BookModel[] = [];
 	public currentBook: BookModel;
 	supportedTypes = ['text/treeitems'];
+
+	public undoTocFiles: Map<string, string>[] = [];
+	public undoMovedFiles: Map<string, string>[] = [];
 
 	constructor(workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext, openAsUntitled: boolean, view: string, public providerId: string) {
 		this._openAsUntitled = openAsUntitled;
@@ -224,6 +228,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			for (let [bookModel, items] of sourcesByBook) {
 				this.bookTocManager = new BookTocManager(bookModel, targetBookModel);
 				await this.bookTocManager.updateBook(items, targetBookItem, targetSection);
+				this.undoMovedFiles.push(this.bookTocManager.movedFiles);
+				this.undoTocFiles.push(this.bookTocManager.tocFiles);
 			}
 		}
 	}
@@ -749,6 +755,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				for (let [book, items] of sourcesByBook) {
 					this.bookTocManager = new BookTocManager(book, targetBook);
 					await this.bookTocManager.updateBook(items, target);
+					this.undoMovedFiles.push(this.bookTocManager.movedFiles);
+					this.undoTocFiles.push(this.bookTocManager.tocFiles);
 				}
 			}
 		}
@@ -775,6 +783,21 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			}
 		}
 		return localRoots;
+	}
+
+	public async undo(): Promise<void> {
+		let toc = this.undoTocFiles.pop();
+		let files = this.undoMovedFiles.pop();
+		// restore toc files
+
+		for (const [key, value] of files.entries()) {
+			await fs.move(key, value);
+		}
+
+		for (const [key, value] of toc.entries()) {
+			const yamlFile = await yaml.safeLoad(value);
+			await fs.writeFile(key, yaml.safeDump(yamlFile, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
+		}
 	}
 
 	dispose(): void { }

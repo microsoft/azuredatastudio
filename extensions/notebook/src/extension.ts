@@ -80,6 +80,9 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 		let dialog = new RemoteBookDialog(remoteBookController);
 		return dialog.createDialog();
 	}));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.undoNotebookView', async () => {
+		await bookTreeViewProvider.undo();
+	}));
 
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('_notebook.command.new', async (options?: azdata.nb.NotebookShowOptions) => {
 		return appContext.notebookUtils.newNotebook(options);
