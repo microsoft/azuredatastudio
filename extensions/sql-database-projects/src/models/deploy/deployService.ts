@@ -20,6 +20,9 @@ export class DeployService {
 	constructor(private _outputChannel: vscode.OutputChannel) {
 	}
 
+	private DefaultSqlRetryTimeoutInSec: number = 10;
+	private DefaultSqlNumberOfRetries: number = 10;
+
 	private createConnectionStringTemplate(runtime: string | undefined): string {
 		switch (runtime?.toLocaleLowerCase()) {
 			case 'dotnet':
@@ -254,7 +257,7 @@ export class DeployService {
 		return connectionResult ? connectionResult.connectionId : <string>connection;
 	}
 
-	public async getConnection(profile: ILocalDbSetting, savePassword: boolean, database: string, timeoutInSeconds: number = 10): Promise<string | undefined> {
+	public async getConnection(profile: ILocalDbSetting, savePassword: boolean, database: string): Promise<string | undefined> {
 		const getAzdataApi = await utils.getAzdataApi();
 		let connection = await utils.retry(
 			constants.connectingToSqlServerOnDockerMessage,
@@ -264,7 +267,7 @@ export class DeployService {
 			this.validateConnection,
 			this.formatConnectionResult,
 			this._outputChannel,
-			10, timeoutInSeconds);
+			this.DefaultSqlNumberOfRetries, profile.connectionRetryTimeout || this.DefaultSqlRetryTimeoutInSec);
 
 		if (connection) {
 			const connectionResult = <ConnectionResult>connection;
