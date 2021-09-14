@@ -267,7 +267,7 @@ function createOptions(): ApplicationOptions {
 }
 
 before(async function () {
-	this.timeout(2 * 60 * 1000); // allow two minutes for setup
+	this.timeout(6 * 60 * 1000); // allow two minutes for setup
 	await setup();
 	this.defaultOptions = createOptions();
 	await sqlSetup(this.defaultOptions); // {{SQL CARBON EDIT}}
