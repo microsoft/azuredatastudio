@@ -13,7 +13,7 @@ import CodeAdapter from '../prompts/adapter';
 import { BookTreeItem, BookTreeItemType } from '../book/bookTreeItem';
 import { TocEntryPathHandler } from '../book/tocEntryPathHandler';
 
-export class AddFileDialog {
+export class AddTocEntryDialog {
 	private _dialog: azdata.window.Dialog;
 	private readonly _dialogName = 'addNewFileBookTreeViewDialog';
 	public view: azdata.ModelView;
@@ -23,7 +23,7 @@ export class AddFileDialog {
 	private _saveLocationInputBox: azdata.TextComponent;
 	private _prompter: IPrompter;
 
-	constructor(private _tocManager: IBookTocManager, private _bookItem: BookTreeItem, private _extension: FileExtension) {
+	constructor(private _tocManager: IBookTocManager, private _bookItem: BookTreeItem, private _extension: FileExtension, private _isSection?: boolean) {
 		this._prompter = new CodeAdapter();
 	}
 
@@ -45,7 +45,7 @@ export class AddFileDialog {
 	}
 
 	public async createDialog(): Promise<void> {
-		const dialogTitle = this._extension === FileExtension.Notebook ? loc.newNotebook : loc.newMarkdown;
+		const dialogTitle = this._isSection ? loc.newSection : this._extension === FileExtension.Notebook ? loc.newNotebook : loc.newMarkdown;
 		this._dialog = azdata.window.createModelViewDialog(dialogTitle, this._dialogName);
 		this._dialog.registerContent(async view => {
 			this.view = view;
@@ -102,7 +102,7 @@ export class AddFileDialog {
 			const filePath = path.posix.join(dirPath, fileName).concat(this._extension);
 			await this.validatePath(dirPath, fileName.concat(this._extension));
 			const pathDetails = new TocEntryPathHandler(filePath, this._bookItem.rootContentPath, titleName);
-			await this._tocManager.addNewFile(pathDetails, this._bookItem);
+			await this._tocManager.addNewTocEntry(pathDetails, this._bookItem, this._isSection);
 			return true;
 		} catch (error) {
 			this._dialog.message = {
