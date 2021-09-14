@@ -135,7 +135,6 @@ export const mockGetAzureFunctionsResult = {
 export class MockAzureFunctionService implements vscodeMssql.IAzureFunctionsService {
 	addSqlBinding(_: vscodeMssql.BindingType, __: string, ___: string, ____: string, _____: string): Thenable<vscodeMssql.ResultStatus> { return Promise.resolve(mockResultStatus); }
 	getAzureFunctions(_: string): Thenable<vscodeMssql.GetAzureFunctionsResult> { return Promise.resolve(mockGetAzureFunctionsResult); }
-
 }
 
 export function createContext(): TestContext {
