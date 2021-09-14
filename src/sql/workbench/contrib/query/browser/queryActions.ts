@@ -197,7 +197,8 @@ export class RunQueryAction extends QueryTaskbarAction {
 	constructor(
 		editor: QueryEditor,
 		@IQueryModelService protected readonly queryModelService: IQueryModelService,
-		@IConnectionManagementService connectionManagementService: IConnectionManagementService
+		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
+		@ICommandService private readonly commandService?: ICommandService
 	) {
 		super(connectionManagementService, editor, RunQueryAction.ID, RunQueryAction.EnabledClass);
 		this.label = nls.localize('runQueryLabel', "Run");
@@ -205,10 +206,8 @@ export class RunQueryAction extends QueryTaskbarAction {
 
 	public override async run(): Promise<void> {
 		if (!this.editor.isSelectionEmpty()) {
-			if (this.isConnected(this.editor)) {
-				// If we are already connected, run the query
-				this.runQuery(this.editor);
-			} else {
+			const runQueryResult = await this.runQuery(this.editor);
+			if (!runQueryResult) {
 				// If we are not already connected, prompt for connection and run the query if the
 				// connection succeeds. "runQueryOnCompletion=true" will cause the query to run after connection
 				this.connectEditor(this.editor, RunQueryOnConnectionMode.executeQuery, this.editor.getSelection());
@@ -219,10 +218,8 @@ export class RunQueryAction extends QueryTaskbarAction {
 
 	public async runCurrent(): Promise<void> {
 		if (!this.editor.isSelectionEmpty()) {
-			if (this.isConnected(this.editor)) {
-				// If we are already connected, run the query
-				this.runQuery(this.editor, true);
-			} else {
+			const runQueryResult = await this.runQuery(this.editor, true);
+			if (!runQueryResult) {
 				// If we are not already connected, prompt for connection and run the query if the
 				// connection succeeds. "runQueryOnCompletion=true" will cause the query to run after connection
 				this.connectEditor(this.editor, RunQueryOnConnectionMode.executeCurrentQuery, this.editor.getSelection(false));
@@ -231,12 +228,15 @@ export class RunQueryAction extends QueryTaskbarAction {
 		return;
 	}
 
-	public runQuery(editor: QueryEditor, runCurrentStatement: boolean = false) {
+	private async runQuery(editor: QueryEditor, runCurrentStatement: boolean = false): Promise<boolean> {
 		if (!editor) {
 			editor = this.editor;
 		}
 
+		await this.connectionManagementService.refreshAzureAccountTokenIfNecessary(this.editor.input.uri);
 		if (this.isConnected(editor)) {
+			// Hide IntelliSense suggestions list when running query to match SSMS behavior
+			this.commandService?.executeCommand('hideSuggestWidget');
 			// if the selection isn't empty then execute the selection
 			// otherwise, either run the statement or the script depending on parameter
 			let selection = editor.getSelection(false);
@@ -247,7 +247,9 @@ export class RunQueryAction extends QueryTaskbarAction {
 				selection = editor.getSelection();
 				editor.input.runQuery(selection);
 			}
+			return true;
 		}
+		return false;
 	}
 
 	protected isCursorPosition(selection: IRange) {
@@ -304,6 +306,7 @@ export class EstimatedQueryPlanAction extends QueryTaskbarAction {
 
 	public override async run(): Promise<void> {
 		if (!this.editor.isSelectionEmpty()) {
+			await this.connectionManagementService.refreshAzureAccountTokenIfNecessary(this.editor.input.uri);
 			if (this.isConnected(this.editor)) {
 				// If we are already connected, run the query
 				this.runQuery(this.editor);
@@ -343,6 +346,7 @@ export class ActualQueryPlanAction extends QueryTaskbarAction {
 
 	public override async run(): Promise<void> {
 		if (!this.editor.isSelectionEmpty()) {
+			await this.connectionManagementService.refreshAzureAccountTokenIfNecessary(this.editor.input.uri);
 			if (this.isConnected(this.editor)) {
 				// If we are already connected, run the query
 				this.runQuery(this.editor);
@@ -594,6 +598,10 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 			placeholder: this._selectDatabaseString,
 			ariaLabel: this._selectDatabaseString
 		});
+
+		// Allows database selector to commit typed or pasted DB names without the need to click
+		// or press enter to make a selection when focus is moved away from the selector.
+		this._register(this._dropdown.onBlur(() => this.databaseSelected(this._dropdown.value)));
 		this._register(this._dropdown.onValueChange(s => this.databaseSelected(s)));
 		this._register(this._dropdown.onFocus(() => this.onDropdownFocus()));
 		this._register(this.connectionManagementService.onConnectionChanged(params => this.onConnectionChanged(params)));
@@ -648,6 +656,11 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 		if (!dbName) {
 			return;
 		}
+
+		if (dbName === this.getCurrentDatabaseName()) {
+			return;
+		}
+
 		if (!this._editor.input) {
 			this.logService.error('editor input was null');
 			return;

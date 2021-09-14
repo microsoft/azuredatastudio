@@ -1,98 +1,218 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/dacpac/package" source-language="en" datatype="plaintext" target-language="fr">
-    <body>
-      <trans-unit id="dacFx.settings">
-        <source xml:lang="en">Dacpac</source>
-        <target state="translated">Espacement</target>
-      </trans-unit>
-      <trans-unit id="dacFx.defaultSaveLocation">
-        <source xml:lang="en">Full path to folder where .DACPAC and .BACPAC files are saved by default</source>
-        <target state="translated">Chemin d’accès complet du dossier dans lequel . DACPAC et . Les fichiers BACPAC sont enregistrés par défaut</target>
-      </trans-unit>
-    </body>
-  </file>
   <file original="extensions/dacpac/dist/localizedConstants" source-language="en" datatype="plaintext" target-language="fr">
     <body>
-      <trans-unit id="dacFx.targetServer">
-        <source xml:lang="en">Target Server</source>
-        <target state="translated">Serveur cible</target>
-      </trans-unit>
-      <trans-unit id="dacFx.sourceServer">
-        <source xml:lang="en">Source Server</source>
-        <target state="translated">Serveur source</target>
-      </trans-unit>
-      <trans-unit id="dacFx.sourceDatabase">
-        <source xml:lang="en">Source Database</source>
-        <target state="translated">Base de données source</target>
-      </trans-unit>
-      <trans-unit id="dacFx.targetDatabase">
-        <source xml:lang="en">Target Database</source>
-        <target state="translated">Base de données cible</target>
-      </trans-unit>
-      <trans-unit id="dacfx.fileLocation">
-        <source xml:lang="en">File Location</source>
-        <target state="translated">Emplacement de fichier</target>
-      </trans-unit>
-      <trans-unit id="dacfx.selectFile">
-        <source xml:lang="en">Select file</source>
-        <target state="translated">Sélectionner un fichier</target>
-      </trans-unit>
-      <trans-unit id="dacfx.summaryTableTitle">
-        <source xml:lang="en">Summary of settings</source>
-        <target state="translated">Résumé des paramètres</target>
-      </trans-unit>
-      <trans-unit id="dacfx.version">
-        <source xml:lang="en">Version</source>
-        <target state="translated">Version</target>
-      </trans-unit>
-      <trans-unit id="dacfx.setting">
-        <source xml:lang="en">Setting</source>
-        <target state="translated">Paramètre</target>
-      </trans-unit>
-      <trans-unit id="dacfx.value">
-        <source xml:lang="en">Value</source>
-        <target state="translated">Valeur</target>
-      </trans-unit>
       <trans-unit id="dacFx.databaseName">
         <source xml:lang="en">Database Name</source>
         <target state="translated">Nom de la base de données</target>
       </trans-unit>
-      <trans-unit id="dacFxDeploy.openFile">
-        <source xml:lang="en">Open</source>
-        <target state="translated">Ouvrir</target>
+      <trans-unit id="dacFx.deployButton">
+        <source xml:lang="en">Deploy</source>
+        <target state="translated">Déployer</target>
       </trans-unit>
-      <trans-unit id="dacFx.upgradeExistingDatabase">
-        <source xml:lang="en">Upgrade Existing Database</source>
-        <target state="translated">Mettre à niveau la base de données existante</target>
+      <trans-unit id="dacFx.deployConfigPageName">
+        <source xml:lang="en">Select Deploy Dacpac Settings</source>
+        <target state="translated">Sélectionner les paramètres de déploiement Dacpac</target>
+      </trans-unit>
+      <trans-unit id="dacFx.deployDescription">
+        <source xml:lang="en">Deploy a data-tier application .dacpac file to an instance of SQL Server [Deploy Dacpac]</source>
+        <target state="translated">Déployer un fichier .dacpac d'application de couche Données sur une instance de SQL Server [Déployer Dacpac]</target>
+      </trans-unit>
+      <trans-unit id="dacFx.deployPlanPageName">
+        <source xml:lang="en">Review the deploy plan</source>
+        <target state="translated">Examiner le plan de déploiement</target>
+      </trans-unit>
+      <trans-unit id="dacFx.export">
+        <source xml:lang="en">Export</source>
+        <target state="translated">Exporter</target>
+      </trans-unit>
+      <trans-unit id="dacFx.exportConfigPageName">
+        <source xml:lang="en">Select Export Bacpac Settings</source>
+        <target state="translated">Sélectionner les paramètres d'exportation Bacpac</target>
+      </trans-unit>
+      <trans-unit id="dacFx.exportDescription">
+        <source xml:lang="en">Export the schema and data from a database to the logical .bacpac file format [Export Bacpac]</source>
+        <target state="translated">Exporter le schéma et les données d'une base de données au format de fichier logique .bacpac [Exporter Bacpac]</target>
+      </trans-unit>
+      <trans-unit id="dacFx.extract">
+        <source xml:lang="en">Extract</source>
+        <target state="translated">Extraire</target>
+      </trans-unit>
+      <trans-unit id="dacFx.extractConfigPageName">
+        <source xml:lang="en">Select Extract Dacpac Settings</source>
+        <target state="translated">Sélectionner les paramètres d'extraction Dacpac</target>
+      </trans-unit>
+      <trans-unit id="dacFx.extractDescription">
+        <source xml:lang="en">Extract a data-tier application from an instance of SQL Server to a .dacpac file [Extract Dacpac]</source>
+        <target state="translated">Extraire une application de couche Données d'une instance de SQL Server vers un fichier .dacpac [Extraire Dacpac]</target>
+      </trans-unit>
+      <trans-unit id="dacFx.generateScriptButton">
+        <source xml:lang="en">Generate Script</source>
+        <target state="translated">Générer le script</target>
+      </trans-unit>
+      <trans-unit id="dacFx.import">
+        <source xml:lang="en">Import</source>
+        <target state="translated">Importer</target>
+      </trans-unit>
+      <trans-unit id="dacFx.importConfigPageName">
+        <source xml:lang="en">Select Import Bacpac Settings</source>
+        <target state="translated">Sélectionner les paramètres d'importation Bacpac</target>
+      </trans-unit>
+      <trans-unit id="dacFx.importDescription">
+        <source xml:lang="en">Create a database from a .bacpac file [Import Bacpac]</source>
+        <target state="translated">Créer une base de données à partir d'un fichier .bacpac [Importer Bacpac]</target>
       </trans-unit>
       <trans-unit id="dacFx.newDatabase">
         <source xml:lang="en">New Database</source>
         <target state="translated">Nouvelle base de données</target>
       </trans-unit>
-      <trans-unit id="dacfx.dataLossTextWithCount">
-        <source xml:lang="en">{0} of the deploy actions listed may result in data loss. Please ensure you have a backup or snapshot available in the event of an issue with the deployment.</source>
-        <target state="translated">{0} des actions de déploiement listées peuvent entraîner une perte de données. Vérifiez que vous avez une sauvegarde ou un instantané disponible en cas de problème avec le déploiement.</target>
-      </trans-unit>
       <trans-unit id="dacFx.proceedDataLoss">
         <source xml:lang="en">Proceed despite possible data loss</source>
         <target state="translated">Poursuivre malgré le risque de perte de données</target>
       </trans-unit>
-      <trans-unit id="dacfx.noDataLoss">
-        <source xml:lang="en">No data loss will occur from the listed deploy actions.</source>
-        <target state="translated">Aucune perte de données suite aux actions de déploiement listées.</target>
+      <trans-unit id="dacFx.selectOperationPageName">
+        <source xml:lang="en">Select an Operation</source>
+        <target state="translated">Sélectionner une opération</target>
+      </trans-unit>
+      <trans-unit id="dacFx.sourceDatabase">
+        <source xml:lang="en">Source Database</source>
+        <target state="translated">Base de données source</target>
+      </trans-unit>
+      <trans-unit id="dacFx.sourceServer">
+        <source xml:lang="en">Source Server</source>
+        <target state="translated">Serveur source</target>
+      </trans-unit>
+      <trans-unit id="dacFx.summaryPageName">
+        <source xml:lang="en">Summary</source>
+        <target state="translated">Récapitulatif</target>
+      </trans-unit>
+      <trans-unit id="dacFx.targetDatabase">
+        <source xml:lang="en">Target Database</source>
+        <target state="translated">Base de données cible</target>
+      </trans-unit>
+      <trans-unit id="dacFx.targetServer">
+        <source xml:lang="en">Target Server</source>
+        <target state="translated">Serveur cible</target>
+      </trans-unit>
+      <trans-unit id="dacFx.upgradeExistingDatabase">
+        <source xml:lang="en">Upgrade Existing Database</source>
+        <target state="translated">Mettre à niveau la base de données existante</target>
+      </trans-unit>
+      <trans-unit id="dacFx.versionText">
+        <source xml:lang="en">Version (use x.x.x.x where x is a number)</source>
+        <target state="translated">Version (utiliser x.x.x.x où x est un nombre)</target>
+      </trans-unit>
+      <trans-unit id="dacFxDeploy.openFile">
+        <source xml:lang="en">Open</source>
+        <target state="translated">Ouvrir</target>
+      </trans-unit>
+      <trans-unit id="dacfx.dataLoss">
+        <source xml:lang="en">Data Loss</source>
+        <target state="translated">Perte de données</target>
       </trans-unit>
       <trans-unit id="dacfx.dataLossText">
         <source xml:lang="en">The deploy actions may result in data loss. Please ensure you have a backup or snapshot available in the event of an issue with the deployment.</source>
         <target state="translated">Les actions de déploiement peuvent entraîner une perte de données. Vérifiez que vous avez une sauvegarde ou un instantané disponible en cas de problème avec le déploiement.</target>
       </trans-unit>
+      <trans-unit id="dacfx.dataLossTextWithCount">
+        <source xml:lang="en">{0} of the deploy actions listed may result in data loss. Please ensure you have a backup or snapshot available in the event of an issue with the deployment.</source>
+        <target state="translated">{0} des actions de déploiement listées peuvent entraîner une perte de données. Vérifiez que vous avez une sauvegarde ou un instantané disponible en cas de problème avec le déploiement.</target>
+      </trans-unit>
+      <trans-unit id="dacfx.dataLossTooltip">
+        <source xml:lang="en">Operations that may result in data loss are marked with a warning sign</source>
+        <target state="translated">Les opérations pouvant entraîner une perte des données sont marquées d'un signe d'avertissement</target>
+      </trans-unit>
+      <trans-unit id="dacfx.databaseNameExistsErrorMessage">
+        <source xml:lang="en">A database with the same name already exists on the instance of SQL Server</source>
+        <target state="translated">Une base de données portant le même nom existe déjà sur l'instance de SQL Server</target>
+      </trans-unit>
+      <trans-unit id="dacfx.default">
+        <source xml:lang="en">default</source>
+        <target state="translated">par défaut</target>
+      </trans-unit>
+      <trans-unit id="dacfx.deployPlanErrorMessage">
+        <source xml:lang="en">Generating deploy plan failed '{0}'</source>
+        <target state="translated">La génération du plan de déploiement a échoué '{0}'</target>
+      </trans-unit>
+      <trans-unit id="dacfx.deployPlanTableTitle">
+        <source xml:lang="en">Deploy plan operations</source>
+        <target state="translated">Déployer des opérations de plan</target>
+      </trans-unit>
+      <trans-unit id="dacfx.fileLocation">
+        <source xml:lang="en">File Location</source>
+        <target state="translated">Emplacement de fichier</target>
+      </trans-unit>
+      <trans-unit id="dacfx.filenameEndingInPeriodErrorMessage">
+        <source xml:lang="en">File name cannot end with a period</source>
+        <target state="translated">Le nom ne peut pas se terminer par un point</target>
+      </trans-unit>
+      <trans-unit id="dacfx.generateDeployErrorMessage">
+        <source xml:lang="en">Generating deploy script failed '{0}'</source>
+        <target state="translated">Échec de génération du script de déploiement « {0} »</target>
+      </trans-unit>
+      <trans-unit id="dacfx.invalidFileCharsErrorMessage">
+        <source xml:lang="en">Invalid file characters</source>
+        <target state="translated">Caractères de fichier non valides</target>
+      </trans-unit>
+      <trans-unit id="dacfx.noDataLoss">
+        <source xml:lang="en">No data loss will occur from the listed deploy actions.</source>
+        <target state="translated">Aucune perte de données suite aux actions de déploiement listées.</target>
+      </trans-unit>
+      <trans-unit id="dacfx.objecTooltip">
+        <source xml:lang="en">Name of object that will be affected by deployment</source>
+        <target state="translated">Nom de l'objet affecté par le déploiement</target>
+      </trans-unit>
+      <trans-unit id="dacfx.object">
+        <source xml:lang="en">Object</source>
+        <target state="translated">Objet</target>
+      </trans-unit>
       <trans-unit id="dacfx.operation">
         <source xml:lang="en">Operation</source>
         <target state="translated">Opération</target>
       </trans-unit>
+      <trans-unit id="dacfx.operationErrorMessage">
+        <source xml:lang="en">{0} operation failed '{1}'</source>
+        <target state="translated">Échec de l'opération {0} « {1} »</target>
+      </trans-unit>
       <trans-unit id="dacfx.operationTooltip">
         <source xml:lang="en">Operation(Create, Alter, Delete) that will occur during deployment</source>
         <target state="translated">Opération (Créer, Modifier, Supprimer) qui a lieu pendant le déploiement</target>
+      </trans-unit>
+      <trans-unit id="dacfx.reservedValueErrorMessage">
+        <source xml:lang="en">Reserved file name. Choose another name and try again</source>
+        <target state="translated">Nom de fichier réservé. Choisissez un autre nom et réessayez</target>
+      </trans-unit>
+      <trans-unit id="dacfx.reservedWindowsFilenameErrorMessage">
+        <source xml:lang="en">This file name is reserved for use by Windows. Choose another name and try again</source>
+        <target state="translated">Ce nom de fichier est réservé à l’utilisation par Windows. Choisissez un autre nom et essayez à nouveau</target>
+      </trans-unit>
+      <trans-unit id="dacfx.save">
+        <source xml:lang="en">Save</source>
+        <target state="translated">Enregistrer</target>
+      </trans-unit>
+      <trans-unit id="dacfx.scriptGeneratingMessage">
+        <source xml:lang="en">You can view the status of script generation in the Tasks View once the wizard is closed. The generated script will open when complete.</source>
+        <target state="translated">Vous pouvez voir l'état de la génération de script dans la vue Tâches une fois l'Assistant fermé. Le script s'ouvre dès qu'il est généré.</target>
+      </trans-unit>
+      <trans-unit id="dacfx.selectFile">
+        <source xml:lang="en">Select file</source>
+        <target state="translated">Sélectionner un fichier</target>
+      </trans-unit>
+      <trans-unit id="dacfx.setting">
+        <source xml:lang="en">Setting</source>
+        <target state="translated">Paramètre</target>
+      </trans-unit>
+      <trans-unit id="dacfx.summaryTableTitle">
+        <source xml:lang="en">Summary of settings</source>
+        <target state="translated">Résumé des paramètres</target>
+      </trans-unit>
+      <trans-unit id="dacfx.tooLongFilenameErrorMessage">
+        <source xml:lang="en">File name is over 255 characters</source>
+        <target state="translated">Le nom de fichier est supérieur à 255 caractères</target>
+      </trans-unit>
+      <trans-unit id="dacfx.trailingWhitespaceErrorMessage">
+        <source xml:lang="en">File name cannot end with a whitespace</source>
+        <target state="translated">Le nom ne peut pas se terminer par un espace</target>
       </trans-unit>
       <trans-unit id="dacfx.type">
         <source xml:lang="en">Type</source>
@@ -102,157 +222,45 @@
         <source xml:lang="en">Type of object that will be affected by deployment</source>
         <target state="translated">Type de l'objet affecté par le déploiement</target>
       </trans-unit>
-      <trans-unit id="dacfx.object">
-        <source xml:lang="en">Object</source>
-        <target state="translated">Objet</target>
-      </trans-unit>
-      <trans-unit id="dacfx.objecTooltip">
-        <source xml:lang="en">Name of object that will be affected by deployment</source>
-        <target state="translated">Nom de l'objet affecté par le déploiement</target>
-      </trans-unit>
-      <trans-unit id="dacfx.dataLoss">
-        <source xml:lang="en">Data Loss</source>
-        <target state="translated">Perte de données</target>
-      </trans-unit>
-      <trans-unit id="dacfx.dataLossTooltip">
-        <source xml:lang="en">Operations that may result in data loss are marked with a warning sign</source>
-        <target state="translated">Les opérations pouvant entraîner une perte des données sont marquées d'un signe d'avertissement</target>
-      </trans-unit>
-      <trans-unit id="dacfx.save">
-        <source xml:lang="en">Save</source>
-        <target state="translated">Enregistrer</target>
-      </trans-unit>
-      <trans-unit id="dacFx.versionText">
-        <source xml:lang="en">Version (use x.x.x.x where x is a number)</source>
-        <target state="translated">Version (utiliser x.x.x.x où x est un nombre)</target>
-      </trans-unit>
-      <trans-unit id="dacFx.deployDescription">
-        <source xml:lang="en">Deploy a data-tier application .dacpac file to an instance of SQL Server [Deploy Dacpac]</source>
-        <target state="translated">Déployer un fichier .dacpac d'application de couche Données sur une instance de SQL Server [Déployer Dacpac]</target>
-      </trans-unit>
-      <trans-unit id="dacFx.extractDescription">
-        <source xml:lang="en">Extract a data-tier application from an instance of SQL Server to a .dacpac file [Extract Dacpac]</source>
-        <target state="translated">Extraire une application de couche Données d'une instance de SQL Server vers un fichier .dacpac [Extraire Dacpac]</target>
-      </trans-unit>
-      <trans-unit id="dacFx.importDescription">
-        <source xml:lang="en">Create a database from a .bacpac file [Import Bacpac]</source>
-        <target state="translated">Créer une base de données à partir d'un fichier .bacpac [Importer Bacpac]</target>
-      </trans-unit>
-      <trans-unit id="dacFx.exportDescription">
-        <source xml:lang="en">Export the schema and data from a database to the logical .bacpac file format [Export Bacpac]</source>
-        <target state="translated">Exporter le schéma et les données d'une base de données au format de fichier logique .bacpac [Exporter Bacpac]</target>
-      </trans-unit>
-      <trans-unit id="dacfx.wizardTitle">
-        <source xml:lang="en">Data-tier Application Wizard</source>
-        <target state="translated">Assistant de l'application de la couche Données</target>
-      </trans-unit>
-      <trans-unit id="dacFx.selectOperationPageName">
-        <source xml:lang="en">Select an Operation</source>
-        <target state="translated">Sélectionner une opération</target>
-      </trans-unit>
-      <trans-unit id="dacFx.deployConfigPageName">
-        <source xml:lang="en">Select Deploy Dacpac Settings</source>
-        <target state="translated">Sélectionner les paramètres de déploiement Dacpac</target>
-      </trans-unit>
-      <trans-unit id="dacFx.deployPlanPageName">
-        <source xml:lang="en">Review the deploy plan</source>
-        <target state="translated">Examiner le plan de déploiement</target>
-      </trans-unit>
-      <trans-unit id="dacFx.summaryPageName">
-        <source xml:lang="en">Summary</source>
-        <target state="translated">Récapitulatif</target>
-      </trans-unit>
-      <trans-unit id="dacFx.extractConfigPageName">
-        <source xml:lang="en">Select Extract Dacpac Settings</source>
-        <target state="translated">Sélectionner les paramètres d'extraction Dacpac</target>
-      </trans-unit>
-      <trans-unit id="dacFx.importConfigPageName">
-        <source xml:lang="en">Select Import Bacpac Settings</source>
-        <target state="translated">Sélectionner les paramètres d'importation Bacpac</target>
-      </trans-unit>
-      <trans-unit id="dacFx.exportConfigPageName">
-        <source xml:lang="en">Select Export Bacpac Settings</source>
-        <target state="translated">Sélectionner les paramètres d'exportation Bacpac</target>
-      </trans-unit>
-      <trans-unit id="dacFx.deployButton">
-        <source xml:lang="en">Deploy</source>
-        <target state="translated">Déployer</target>
-      </trans-unit>
-      <trans-unit id="dacFx.extract">
-        <source xml:lang="en">Extract</source>
-        <target state="translated">Extraire</target>
-      </trans-unit>
-      <trans-unit id="dacFx.import">
-        <source xml:lang="en">Import</source>
-        <target state="translated">Importer</target>
-      </trans-unit>
-      <trans-unit id="dacFx.export">
-        <source xml:lang="en">Export</source>
-        <target state="translated">Exporter</target>
-      </trans-unit>
-      <trans-unit id="dacFx.generateScriptButton">
-        <source xml:lang="en">Generate Script</source>
-        <target state="translated">Générer le script</target>
-      </trans-unit>
-      <trans-unit id="dacfx.scriptGeneratingMessage">
-        <source xml:lang="en">You can view the status of script generation in the Tasks View once the wizard is closed. The generated script will open when complete.</source>
-        <target state="translated">Vous pouvez voir l'état de la génération de script dans la vue Tâches une fois l'Assistant fermé. Le script s'ouvre dès qu'il est généré.</target>
-      </trans-unit>
-      <trans-unit id="dacfx.default">
-        <source xml:lang="en">default</source>
-        <target state="translated">par défaut</target>
-      </trans-unit>
-      <trans-unit id="dacfx.deployPlanTableTitle">
-        <source xml:lang="en">Deploy plan operations</source>
-        <target state="translated">Déployer des opérations de plan</target>
-      </trans-unit>
-      <trans-unit id="dacfx.databaseNameExistsErrorMessage">
-        <source xml:lang="en">A database with the same name already exists on the instance of SQL Server</source>
-        <target state="translated">Une base de données portant le même nom existe déjà sur l'instance de SQL Server</target>
-      </trans-unit>
       <trans-unit id="dacfx.undefinedFilenameErrorMessage">
         <source xml:lang="en">Undefined name</source>
         <target state="translated">Nom non indéfini</target>
       </trans-unit>
-      <trans-unit id="dacfx.filenameEndingInPeriodErrorMessage">
-        <source xml:lang="en">File name cannot end with a period</source>
-        <target state="translated">Le nom ne peut pas se terminer par un point</target>
+      <trans-unit id="dacfx.value">
+        <source xml:lang="en">Value</source>
+        <target state="translated">Valeur</target>
+      </trans-unit>
+      <trans-unit id="dacfx.version">
+        <source xml:lang="en">Version</source>
+        <target state="translated">Version</target>
       </trans-unit>
       <trans-unit id="dacfx.whitespaceFilenameErrorMessage">
         <source xml:lang="en">File name cannot be whitespace</source>
         <target state="translated">Un nom de fichier ne peut pas être un espace blanc</target>
       </trans-unit>
-      <trans-unit id="dacfx.invalidFileCharsErrorMessage">
-        <source xml:lang="en">Invalid file characters</source>
-        <target state="translated">Caractères de fichier non valides</target>
+      <trans-unit id="dacfx.wizardTitle">
+        <source xml:lang="en">Data-tier Application Wizard</source>
+        <target state="translated">Assistant de l'application de la couche Données</target>
       </trans-unit>
-      <trans-unit id="dacfx.reservedWindowsFilenameErrorMessage">
-        <source xml:lang="en">This file name is reserved for use by Windows. Choose another name and try again</source>
-        <target state="translated">Ce nom de fichier est réservé à l’utilisation par Windows. Choisissez un autre nom et essayez à nouveau</target>
+    </body>
+  </file>
+  <file original="extensions/dacpac/package" source-language="en" datatype="plaintext" target-language="fr">
+    <body>
+      <trans-unit id="dacFx.category">
+        <source xml:lang="en">DacFx</source>
+        <target state="translated">DacFx</target>
       </trans-unit>
-      <trans-unit id="dacfx.reservedValueErrorMessage">
-        <source xml:lang="en">Reserved file name. Choose another name and try again</source>
-        <target state="translated">Nom de fichier réservé. Choisissez un autre nom et réessayez</target>
+      <trans-unit id="dacFx.defaultSaveLocation">
+        <source xml:lang="en">Full path to folder where .DACPAC and .BACPAC files are saved by default</source>
+        <target state="translated">Chemin d’accès complet du dossier dans lequel . DACPAC et . Les fichiers BACPAC sont enregistrés par défaut</target>
       </trans-unit>
-      <trans-unit id="dacfx.trailingWhitespaceErrorMessage">
-        <source xml:lang="en">File name cannot end with a whitespace</source>
-        <target state="translated">Le nom ne peut pas se terminer par un espace</target>
+      <trans-unit id="dacFx.settings">
+        <source xml:lang="en">Dacpac</source>
+        <target state="translated">Espacement</target>
       </trans-unit>
-      <trans-unit id="dacfx.tooLongFilenameErrorMessage">
-        <source xml:lang="en">File name is over 255 characters</source>
-        <target state="translated">Le nom de fichier est supérieur à 255 caractères</target>
-      </trans-unit>
-      <trans-unit id="dacfx.deployPlanErrorMessage">
-        <source xml:lang="en">Generating deploy plan failed '{0}'</source>
-        <target state="translated">La génération du plan de déploiement a échoué '{0}'</target>
-      </trans-unit>
-      <trans-unit id="dacfx.generateDeployErrorMessage">
-        <source xml:lang="en">Generating deploy script failed '{0}'</source>
-        <target state="translated">Échec de génération du script de déploiement « {0} »</target>
-      </trans-unit>
-      <trans-unit id="dacfx.operationErrorMessage">
-        <source xml:lang="en">{0} operation failed '{1}'</source>
-        <target state="translated">Échec de l'opération {0} « {1} »</target>
+      <trans-unit id="dacFx.startTitle">
+        <source xml:lang="en">Data-tier Application Wizard</source>
+        <target state="translated">Assistant de l'application de la couche Données</target>
       </trans-unit>
     </body>
   </file>

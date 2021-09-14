@@ -86,11 +86,11 @@ export class NotebookSearchView extends SearchView {
 		@IStorageService storageService: IStorageService,
 		@IOpenerService openerService: IOpenerService,
 		@ITelemetryService telemetryService: ITelemetryService,
-		@ICommandService readonly commandService: ICommandService,
+		@ICommandService commandService: ICommandService,
 		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
 	) {
 
-		super(options, fileService, editorService, codeEditorService, progressService, notificationService, dialogService, contextViewService, instantiationService, viewDescriptorService, configurationService, contextService, searchWorkbenchService, contextKeyService, replaceService, textFileService, preferencesService, themeService, searchHistoryService, contextMenuService, menuService, accessibilityService, keybindingService, storageService, openerService, telemetryService);
+		super(options, fileService, editorService, codeEditorService, progressService, notificationService, dialogService, commandService, contextViewService, instantiationService, viewDescriptorService, configurationService, contextService, searchWorkbenchService, contextKeyService, replaceService, textFileService, preferencesService, themeService, searchHistoryService, contextMenuService, menuService, accessibilityService, keybindingService, storageService, openerService, telemetryService);
 
 		this.memento = new Memento(this.id, storageService);
 		this.viewletState = this.memento.getMemento(StorageScope.WORKSPACE, StorageTarget.MACHINE);
@@ -164,7 +164,7 @@ export class NotebookSearchView extends SearchView {
 		}
 
 		const actionsPosition = this.searchConfig.actionsPosition;
-		dom.toggleClass(this.getContainer(), SearchView.ACTIONS_RIGHT_CLASS_NAME, actionsPosition === 'right');
+		this.getContainer().classList.toggle(SearchView.ACTIONS_RIGHT_CLASS_NAME, actionsPosition === 'right');
 
 		const messagesSize = this.messagesElement.style.display === 'none' ?
 			0 :
@@ -532,7 +532,7 @@ class ToggleCollapseAndExpandAction extends Action {
 				if (!viewer.isCollapsed(node)) {
 					return true;
 				}
-			} while (node = navigator.next());
+			} while (node = navigator.next()); // eslint-disable-line no-cond-assign
 		}
 		return false;
 	}
@@ -629,7 +629,7 @@ class CollapseDeepestExpandedLevelAction extends Action {
 			let node = navigator.first();
 			let collapseFileMatchLevel = false;
 			if (node instanceof FolderMatch) {
-				while (node = navigator.next()) {
+				while (node = navigator.next()) { // eslint-disable-line no-cond-assign
 					if (node instanceof Match) {
 						collapseFileMatchLevel = true;
 						break;
@@ -643,7 +643,7 @@ class CollapseDeepestExpandedLevelAction extends Action {
 					if (node instanceof FileMatch) {
 						viewer.collapse(node);
 					}
-				} while (node = navigator.next());
+				} while (node = navigator.next()); // eslint-disable-line no-cond-assign
 			} else {
 				viewer.collapseAll();
 			}

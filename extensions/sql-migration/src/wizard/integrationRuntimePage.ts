@@ -19,8 +19,8 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
 	private _form!: azdata.FormBuilder;
 	private _statusLoadingComponent!: azdata.LoadingComponent;
-	private _subscription!: azdata.InputBoxComponent;
-	private _location!: azdata.InputBoxComponent;
+	private _subscription!: azdata.TextComponent;
+	private _location!: azdata.TextComponent;
 	private _resourceGroupDropdown!: azdata.DropDownComponent;
 	private _dmsDropdown!: azdata.DropDownComponent;
 
@@ -163,10 +163,13 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				'font-weight': 'bold',
 			}
 		}).component();
-		this._subscription = this._view.modelBuilder.inputBox().withProps({
+		this._subscription = this._view.modelBuilder.text().withProps({
 			enabled: false,
-			required: true,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
+			CSSStyles: {
+				'font-size': '13px',
+				'margin': '0px 0px'
+			}
 		}).component();
 
 		const locationLabel = this._view.modelBuilder.text().withProps({
@@ -177,10 +180,13 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				'font-weight': 'bold',
 			}
 		}).component();
-		this._location = this._view.modelBuilder.inputBox().withProps({
+		this._location = this._view.modelBuilder.text().withProps({
 			enabled: false,
-			required: true,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
+			CSSStyles: {
+				'font-size': '13px',
+				'margin': '0px 0px'
+			}
 		}).component();
 
 		const resourceGroupLabel = this._view.modelBuilder.text().withProps({

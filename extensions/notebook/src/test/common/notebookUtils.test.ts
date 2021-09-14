@@ -82,7 +82,7 @@ describe('notebookUtils Tests', function (): void {
 				should(azdata.nb.notebookDocuments.find(doc => doc.fileName === notebookUri.fsPath)).not.be.undefined();
 				await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
 			} finally {
-				tryDeleteFile(notebookPath);
+				await tryDeleteFile(notebookPath);
 			}
 		});
 

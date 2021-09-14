@@ -4,214 +4,25 @@
 		{
 			"type": "node",
 			"request": "launch",
-			"name": "Gulp Build",
-			"program": "${workspaceFolder}/node_modules/gulp/bin/gulp.js",
-			"stopOnEntry": true,
-			"args": [
-				"hygiene"
-			]
-		},
-		{
-			"type": "node",
-			"request": "attach",
-			"restart": true,
-			"name": "Attach to Extension Host",
-			"timeout": 30000,
-			"port": 5870,
-			"outFiles": [
-				"${workspaceFolder}/out/**/*.js",
-				"${workspaceFolder}/extensions/*/out/**/*.js"
-			]
-		},
-		{
-			"type": "pwa-chrome",
-			"request": "attach",
-			"name": "Attach to Shared Process",
-			"timeout": 30000,
-			"port": 9222,
-			"urlFilter": "*sharedProcess.html*",
-			"presentation": {
-				"hidden": true
-			}
-		},
-		{
-			"type": "node",
-			"request": "attach",
-			"name": "Attach to Search Process",
-			"port": 5876,
-			"outFiles": [
-				"${workspaceFolder}/out/**/*.js"
-			]
-		},
-		{
-			"type": "node",
-			"request": "attach",
-			"name": "Attach to CLI Process",
-			"port": 5874,
-			"outFiles": [
-				"${workspaceFolder}/out/**/*.js"
-			]
-		},
-		{
-			"type": "node",
-			"request": "attach",
-			"name": "Attach to Main Process",
-			"timeout": 30000,
-			"port": 5875,
-			"outFiles": [
-				"${workspaceFolder}/out/**/*.js"
-			],
-			"presentation": {
-				"hidden": true,
-			}
-		},
-		{
-			"type": "extensionHost",
-			"request": "launch",
-			"name": "VS Code Emmet Tests",
-			"runtimeExecutable": "${execPath}",
-			"args": [
-				"${workspaceFolder}/extensions/emmet/test-fixtures",
-				"--extensionDevelopmentPath=${workspaceFolder}/extensions/emmet",
-				"--extensionTestsPath=${workspaceFolder}/extensions/emmet/out/test"
+			"name": "Launch Azure Data Studio",
+			"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh",
+			"windows": {
+				"runtimeExecutable": "${workspaceFolder}/scripts/sql.bat",
+			},
+			"runtimeArgs": [
+				"--no-cached-data"
 			],
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
 			],
 			"presentation": {
-				"group": "5_tests",
-				"order": 6
-			}
-		},
-		{
-			"type": "extensionHost",
-			"request": "launch",
-			"name": "VS Code Git Tests",
-			"runtimeExecutable": "${execPath}",
-			"args": [
-				"/tmp/my4g9l",
-				"--extensionDevelopmentPath=${workspaceFolder}/extensions/git",
-				"--extensionTestsPath=${workspaceFolder}/extensions/git/out/test"
-			],
-			"outFiles": [
-				"${workspaceFolder}/extensions/git/out/**/*.js"
-			],
-			"presentation": {
-				"group": "5_tests",
-				"order": 6
-			}
-		},
-		{
-			"type": "extensionHost",
-			"request": "launch",
-			"name": "VS Code API Tests (single folder)",
-			"runtimeExecutable": "${execPath}",
-			"args": [
-				// "${workspaceFolder}", // Uncomment for running out of sources.
-				"${workspaceFolder}/extensions/vscode-api-tests/testWorkspace",
-				"--extensionDevelopmentPath=${workspaceFolder}/extensions/vscode-api-tests",
-				"--extensionTestsPath=${workspaceFolder}/extensions/vscode-api-tests/out/singlefolder-tests",
-				"--disable-extensions"
-			],
-			"outFiles": [
-				"${workspaceFolder}/out/**/*.js"
-			],
-			"presentation": {
-				"group": "5_tests",
-				"order": 3
-			}
-		},
-		{
-			"type": "extensionHost",
-			"request": "launch",
-			"name": "VS Code API Tests (workspace)",
-			"runtimeExecutable": "${execPath}",
-			"args": [
-				"${workspaceFolder}/extensions/vscode-api-tests/testworkspace.code-workspace",
-				"--extensionDevelopmentPath=${workspaceFolder}/extensions/vscode-api-tests",
-				"--extensionTestsPath=${workspaceFolder}/extensions/vscode-api-tests/out/workspace-tests"
-			],
-			"outFiles": [
-				"${workspaceFolder}/out/**/*.js"
-			],
-			"presentation": {
-				"group": "5_tests",
-				"order": 4
-			}
-		},
-		{
-			"type": "extensionHost",
-			"request": "launch",
-			"name": "VS Code Tokenizer Tests",
-			"runtimeExecutable": "${execPath}",
-			"args": [
-				"${workspaceFolder}/extensions/vscode-colorize-tests/test",
-				"--extensionDevelopmentPath=${workspaceFolder}/extensions/vscode-colorize-tests",
-				"--extensionTestsPath=${workspaceFolder}/extensions/vscode-colorize-tests/out"
-			],
-			"outFiles": [
-				"${workspaceFolder}/out/**/*.js"
-			],
-			"presentation": {
-				"group": "5_tests",
-				"order": 5
-			}
-		},
-		{
-			"type": "extensionHost",
-			"request": "launch",
-			"name": "VS Code Notebook Tests",
-			"runtimeExecutable": "${execPath}",
-			"args": [
-				"${workspaceFolder}/extensions/vscode-notebook-tests/test",
-				"--extensionDevelopmentPath=${workspaceFolder}/extensions/vscode-notebook-tests",
-				"--extensionTestsPath=${workspaceFolder}/extensions/vscode-notebook-tests/out"
-			],
-			"outFiles": [
-				"${workspaceFolder}/out/**/*.js"
-			],
-			"presentation": {
-				"group": "5_tests",
-				"order": 6
-			}
-		},
-		{
-			"type": "extensionHost",
-			"request": "launch",
-			"name": "VS Code Custom Editor Tests",
-			"runtimeExecutable": "${execPath}",
-			"args": [
-				"${workspaceFolder}/extensions/vscode-custom-editor-tests/test-workspace",
-				"--extensionDevelopmentPath=${workspaceFolder}/extensions/vscode-custom-editor-tests",
-				"--extensionTestsPath=${workspaceFolder}/extensions/vscode-custom-editor-tests/out/test"
-			],
-			"outFiles": [
-				"${workspaceFolder}/out/**/*.js"
-			],
-			"presentation": {
-				"group": "5_tests",
-				"order": 6
+				"group": "0_ads"
 			}
 		},
 		{
 			"type": "pwa-chrome",
-			"request": "attach",
-			"name": "Attach to azuredatastudio",
-			"browserAttachLocation": "workspace",
-			"port": 9222,
-			"trace": true,
-			"outFiles": [
-				"${workspaceFolder}/out/**/*.js"
-			],
-			"resolveSourceMapLocations": [
-				"${workspaceFolder}/out/**/*.js"
-			],
-			"perScriptSourcemaps": "yes"
-		},
-		{
-			"type": "pwa-chrome",
 			"request": "launch",
-			"name": "Launch azuredatastudio",
+			"name": "Launch ADS & Debug Renderer",
 			"windows": {
 				"runtimeExecutable": "${workspaceFolder}/scripts/sql.bat"
 			},
@@ -222,7 +33,7 @@
 				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
 			},
 			"port": 9222,
-			"timeout": 20000,
+			"timeout": 30000,
 			"env": {
 				"VSCODE_EXTHOST_WILL_SEND_SOCKET": null,
 				"VSCODE_SKIP_PRELAUNCH": "1"
@@ -242,97 +53,89 @@
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
 			],
-			"browserLaunchLocation": "workspace"
+			"browserLaunchLocation": "workspace",
+			"presentation": {
+				"group": "1_debug",
+				"order": 2
+			}
 		},
 		{
 			"type": "node",
-			"request": "launch",
-			"name": "Launch ADS (Web) (TBD)",
-			"program": "${workspaceFolder}/resources/web/code-web.js",
+			"request": "attach",
+			"restart": true,
+			"name": "Attach to Extension Host",
+			"timeout": 30000,
+			"port": 5870,
+			"outFiles": [
+				"${workspaceFolder}/out/**/*.js",
+				"${workspaceFolder}/extensions/*/out/**/*.js"
+			],
 			"presentation": {
-				"group": "0_vscode",
+				"group": "2_attach"
+			}
+		},
+		{
+			"type": "pwa-chrome",
+			"request": "attach",
+			"name": "Attach to Shared Process",
+			"timeout": 30000,
+			"port": 9222,
+			"urlFilter": "*sharedProcess.html*",
+			"presentation": {
+				"group": "2_attach"
+			}
+		},
+		{
+			"type": "node",
+			"request": "attach",
+			"name": "Attach to Main Process",
+			"timeout": 30000,
+			"port": 5875,
+			"outFiles": [
+				"${workspaceFolder}/out/**/*.js"
+			],
+			"presentation": {
+				"group": "2_attach"
+			}
+		},
+		{
+			"type": "pwa-chrome",
+			"request": "attach",
+			"name": "Attach to Renderer",
+			"browserAttachLocation": "workspace",
+			"port": 9222,
+			"timeout": 30000,
+			"trace": true,
+			"outFiles": [
+				"${workspaceFolder}/out/**/*.js"
+			],
+			"resolveSourceMapLocations": [
+				"${workspaceFolder}/out/**/*.js"
+			],
+			"perScriptSourcemaps": "yes",
+			"presentation": {
+				"group": "2_attach",
 				"order": 2
 			}
 		},
 		{
 			"type": "node",
 			"request": "launch",
-			"name": "Main Process",
-			"runtimeExecutable": "${workspaceFolder}/scripts/code.sh",
-			"windows": {
-				"runtimeExecutable": "${workspaceFolder}/scripts/code.bat",
-			},
-			"runtimeArgs": [
-				"--no-cached-data"
-			],
-			"outFiles": [
-				"${workspaceFolder}/out/**/*.js"
-			],
-			"presentation": {
-				"group": "1_vscode",
-				"order": 1
-			}
-		},
-		{
-			"type": "pwa-chrome",
-			"request": "launch",
-			"outFiles": [],
-			"perScriptSourcemaps": "yes",
-			"name": "VS Code (Web, Chrome)",
-			"url": "http://localhost:8080",
-			"preLaunchTask": "Run web",
-			"presentation": {
-				"group": "0_vscode",
-				"order": 3
-			}
-		},
-		{
-			"type": "pwa-msedge",
-			"request": "launch",
-			"outFiles": [],
-			"perScriptSourcemaps": "yes",
-			"name": "VS Code (Web, Edge)",
-			"url": "http://localhost:8080",
-			"pauseForSourceMap": false,
-			"preLaunchTask": "Run web",
-			"presentation": {
-				"group": "0_vscode",
-				"order": 3
-			}
-		},
-		{
-			"type": "node",
-			"request": "launch",
-			"name": "Git Unit Tests",
-			"program": "${workspaceFolder}/extensions/git/node_modules/mocha/bin/_mocha",
-			"stopOnEntry": false,
-			"cwd": "${workspaceFolder}/extensions/git",
-			"outFiles": [
-				"${workspaceFolder}/extensions/git/out/**/*.js"
-			],
-			"presentation": {
-				"group": "5_tests",
-				"order": 10
-			}
-		},
-		{
-			"type": "node",
-			"request": "launch",
-			"name": "Launch Smoke Test",
+			"name": "Run Smoke Tests",
 			"program": "${workspaceFolder}/test/smoke/test/index.js",
 			"cwd": "${workspaceFolder}/test/smoke",
 			"env": {
 				"BUILD_ARTIFACTSTAGINGDIRECTORY": "${workspaceFolder}"
 			},
 			"presentation": {
-				"group": "5_tests",
-				"order": 8
+				"group": "3_tests",
+				"order": 5
 			}
 		},
 		{
 			"type": "pwa-node",
 			"request": "launch",
-			"name": "Run Unit Tests",
+			"name": "Run Core Unit Tests",
 			"program": "${workspaceFolder}/test/unit/electron/index.js",
 			"runtimeExecutable": "${workspaceFolder}/.build/electron/Azure Data Studio.app/Contents/MacOS/Electron",
 			"windows": {
@@ -350,19 +153,20 @@
 				"${workspaceFolder}/out/**/*.js"
 			],
 			"cascadeTerminateToConfigurations": [
-				"Attach to azuredatastudio"
+				"Attach to Renderer"
 			],
 			"env": {
 				"MOCHA_COLORS": "true"
 			},
 			"presentation": {
-				"hidden": true
+				"group": "3_tests",
+				"order": 1
 			}
 		},
 		{
 			"type": "pwa-node",
 			"request": "launch",
-			"name": "Run Unit Tests For Current File",
+			"name": "Run Core Unit Tests (Current File)",
 			"program": "${workspaceFolder}/test/unit/electron/index.js",
 			"runtimeExecutable": "${workspaceFolder}/.build/electron/Azure Data Studio.app/Contents/MacOS/Electron",
 			"windows": {
@@ -372,7 +176,7 @@
 				"runtimeExecutable": "${workspaceFolder}/.build/electron/azuredatastudio"
 			},
 			"cascadeTerminateToConfigurations": [
-				"Attach to azuredatastudio"
+				"Attach to Renderer"
 			],
 			"outputCapture": "std",
 			"args": [
@@ -386,6 +190,10 @@
 			],
 			"env": {
 				"MOCHA_COLORS": "true"
+			},
+			"presentation": {
+				"group": "3_tests",
+				"order": 2
 			}
 		},
 		{
@@ -402,7 +210,11 @@
 				"runtimeExecutable": "${workspaceFolder}/scripts/test-extensions-unit.sh"
 			},
 			"webRoot": "${workspaceFolder}",
-			"timeout": 45000
+			"timeout": 45000,
+			"presentation": {
+				"group": "3_tests",
+				"order": 3
+			}
 		},
 		{
 			"type": "chrome",
@@ -418,82 +230,139 @@
 				"runtimeExecutable": "${workspaceFolder}/scripts/sql-test-integration.sh"
 			},
 			"webRoot": "${workspaceFolder}",
-			"timeout": 45000
+			"timeout": 45000,
+			"presentation": {
+				"group": "3_tests",
+				"order": 4
+			}
 		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "Launch Azure Data Studio (Web) (TBD)",
+			"program": "${workspaceFolder}/resources/web/code-web.js",
+			"presentation": {
+				"group": "4_web"
+			}
+		},
+		{
+			"type": "pwa-chrome",
+			"request": "launch",
+			"outFiles": [],
+			"perScriptSourcemaps": "yes",
+			"name": "Launch Azure Data Studio (Web, Chrome)",
+			"url": "http://localhost:8080",
+			"preLaunchTask": "Run web",
+			"presentation": {
+				"group": "4_web"
+			}
+		},
+		{
+			"type": "pwa-msedge",
+			"request": "launch",
+			"outFiles": [],
+			"perScriptSourcemaps": "yes",
+			"name": "Launch Azure Data Studio (Web, Edge)",
+			"url": "http://localhost:8080",
+			"pauseForSourceMap": false,
+			"preLaunchTask": "Run web",
+			"presentation": {
+				"group": "4_web"
+			}
+		}
 	],
 	"compounds": [
 		{
-			"name": "Debug Unit Tests",
+			"name": "Launch ADS & Debug Renderer and Extension Host",
 			"configurations": [
-				"Attach to azuredatastudio",
-				"Run Unit Tests"
-			]
+				"Launch ADS & Debug Renderer",
+				"Attach to Extension Host"
+			],
+			"presentation": {
+				"group": "1_debug",
+				"order": 1
+			}
+		},
+		{
+			"name": "Launch ADS & Debug Extension Host",
+			"configurations": [
+				"Launch Azure Data Studio",
+				"Attach to Extension Host"
+			],
+			"presentation": {
+				"group": "1_debug",
+				"order": 3
+			}
+		},
+		{
+			"name": "Launch ADS & Debug Main, Renderer and Extension Host",
+			"configurations": [
+				"Launch ADS & Debug Renderer",
+				"Attach to Main Process",
+				"Attach to Extension Host"
+			],
+			"presentation": {
+				"group": "1_debug",
+				"order": 4
+			}
+		},
+		{
+			"name": "Launch ADS & Debug All",
+			"stopAll": true,
+			"configurations": [
+				"Launch Azure Data Studio",
+				"Attach to Main Process",
+				"Attach to Extension Host",
+				"Attach to Shared Process",
+				"Attach to Renderer"
+			],
+			"preLaunchTask": "Ensure Prelaunch Dependencies",
+			"presentation": {
+				"group": "1_debug",
+				"order": 5
+			}
+		},
+		{
+			"name": "Attach to Renderer and Extension Host",
+			"configurations": [
+				"Attach to Renderer",
+				"Attach to Extension Host"
+			],
+			"presentation": {
+				"group": "2_attach",
+				"order": 1
+			}
+		},
+		{
+			"name": "Debug Core Unit Tests",
+			"configurations": [
+				"Attach to Renderer",
+				"Run Core Unit Tests"
+			],
+			"presentation": {
+				"group": "3_tests",
+				"order": 6
+			}
 		},
 		{
 			"name": "Debug Extension Unit Tests",
 			"configurations": [
 				"Attach to Extension Host",
 				"Run Extension Unit Tests"
-			]
-		},
-		{
-			"name": "Azure Data Studio",
-			"stopAll": true,
-			"configurations": [
-				"Launch azuredatastudio",
-				"Attach to Main Process",
-				"Attach to Extension Host",
-				"Attach to Shared Process",
 			],
-			"preLaunchTask": "Ensure Prelaunch Dependencies",
 			"presentation": {
-				"group": "0_vscode",
-				"order": 1
+				"group": "3_tests"
 			}
 		},
 		{
-			"name": "Debug azuredatastudio Main, Renderer & Extension Host",
+			"name": "Debug Core Unit Tests (Current File)",
 			"configurations": [
-				"Launch azuredatastudio",
-				"Attach to Main Process",
-				"Attach to Extension Host"
+				"Attach to Renderer",
+				"Run Core Unit Tests (Current File)"
 			],
 			"presentation": {
-				"group": "1_vscode",
-				"order": 3
-			}
-		},
-		{
-			"name": "Debug Renderer and Extension Host processes",
-			"configurations": [
-				"Launch azuredatastudio",
-				"Attach to Extension Host"
-			],
-			"presentation": {
-				"group": "1_vscode",
-				"order": 2
-			}
-		},
-		{
-			"name": "Attach Renderer and Extension Host",
-			"configurations": [
-				"Attach to azuredatastudio",
-				"Attach to Extension Host"
-			],
-			"presentation": {
-				"group": "1_vscode",
-				"order": 2
-			}
-		},
-		{
-			"name": "Debug Unit Tests (Current File)",
-			"configurations": [
-				"Attach to azuredatastudio",
-				"Run Unit Tests For Current File"
-			],
-			"presentation": {
-				"group": "1_vscode",
-				"order": 2
+				"group": "3_tests",
+				"order": 8
 			}
 		}
 	]

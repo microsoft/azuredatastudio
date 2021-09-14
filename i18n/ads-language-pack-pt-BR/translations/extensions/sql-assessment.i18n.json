@@ -8,68 +8,68 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"displayName": "Avaliação do SQL",
-			"description": "A Avaliação do SQL para o Azure Data Studio (Visualização) fornece um mecanismo para avaliar a configuração do SQL Server para práticas recomendadas.",
-			"dashboard.tabName": "Avaliação do SQL"
-		},
-		"dist/localized": {
-			"asmt.section.api.title": "Informações",
-			"asmt.apiversion": "Versão da API",
-			"asmt.rulesetversion": "Conjunto de Regras Padrão",
-			"asmt.section.instance.title": "Detalhes da Instância do SQL Server",
-			"asmt.serverversion": "Versão",
-			"asmt.serveredition": "Edição",
-			"asmt.instancename": "Nome da Instância",
-			"asmt.osversion": "Versão do Sistema Operacional",
-			"asmt.column.target": "Destino",
-			"asmt.column.severity": "Gravidade",
-			"asmt.column.message": "Mensagem",
-			"asmt.column.checkId": "Verificar a ID",
-			"asmt.column.tags": "Rótulos",
-			"asmt.learnMore": "Saiba mais",
-			"asmt.sqlReportTitle": "Relatório de Avaliação do SQL",
-			"asmt.sqlReport.resultForDatabase": "Resultados do banco de dados",
-			"asmt.sqlReport.resultForInstance": "Resultados do servidor",
-			"asmt.sqlReport.Error": "Erro",
-			"asmt.sqlReport.Warning": "Aviso",
-			"asmt.sqlReport.Info": "Informações",
-			"asmt.column.helpLink": "Link de Ajuda",
-			"asmt.sqlReport.severityMsg": "{0}: {1} itens"
-		},
 		"dist/assessmentResultGrid": {
-			"databaseIconLabel": "Banco de dados",
-			"serverIconLabel": "Servidor",
 			"asmt.column.targetType": "Tipo de Destino",
 			"asmt.details.clickHere": "Clique aqui",
-			"asmt.details.toLearnMore": " para saber mais.",
+			"asmt.details.recommendation": "Recomendação",
 			"asmt.details.ruleDescription": "Descrição da Regra",
-			"asmt.details.recommendation": "Recomendação"
+			"asmt.details.toLearnMore": " para saber mais.",
+			"databaseIconLabel": "Banco de dados",
+			"serverIconLabel": "Servidor"
+		},
+		"dist/localized": {
+			"asmt.apiversion": "Versão da API",
+			"asmt.column.checkId": "Verificar a ID",
+			"asmt.column.helpLink": "Link de Ajuda",
+			"asmt.column.message": "Mensagem",
+			"asmt.column.severity": "Gravidade",
+			"asmt.column.tags": "Rótulos",
+			"asmt.column.target": "Destino",
+			"asmt.instancename": "Nome da Instância",
+			"asmt.learnMore": "Saiba mais",
+			"asmt.osversion": "Versão do Sistema Operacional",
+			"asmt.rulesetversion": "Conjunto de Regras Padrão",
+			"asmt.section.api.title": "Informações",
+			"asmt.section.instance.title": "Detalhes da Instância do SQL Server",
+			"asmt.serveredition": "Edição",
+			"asmt.serverversion": "Versão",
+			"asmt.sqlReport.Error": "Erro",
+			"asmt.sqlReport.Info": "Informações",
+			"asmt.sqlReport.Warning": "Aviso",
+			"asmt.sqlReport.resultForDatabase": "Resultados do banco de dados",
+			"asmt.sqlReport.resultForInstance": "Resultados do servidor",
+			"asmt.sqlReport.severityMsg": "{0}: {1} itens",
+			"asmt.sqlReportTitle": "Relatório de Avaliação do SQL"
 		},
 		"dist/tabs/assessmentMainTab": {
-			"invokeAssessmentLabelServer": "Invocar avaliação",
-			"getAssessmentItemsServer": "Exibir regras aplicáveis",
-			"invokeAssessmentLabelDatabase": "Invocar avaliação para {0}",
-			"getAssessmentItemsDatabase": "Exibir regras aplicáveis para {0}",
+			"asmtaction.label.cancel": "Cancelar",
+			"asmtaction.label.open": "Abrir",
+			"asmtaction.openReport": "O relatório foi salvo. Deseja abri-lo?",
 			"btnExportAsScript": "Exportar como Script",
 			"btnGeneratehtmlreport": "Criar Relatório HTML",
-			"asmtaction.openReport": "O relatório foi salvo. Deseja abri-lo?",
-			"asmtaction.label.open": "Abrir",
-			"asmtaction.label.cancel": "Cancelar",
-			"btnViewSamplesShort": "Exibir tudo no GitHub",
 			"btnViewSamples": "Veja todas as regras e saiba mais no GitHub",
+			"btnViewSamplesShort": "Exibir tudo no GitHub",
+			"getAssessmentItemsDatabase": "Exibir regras aplicáveis para {0}",
+			"getAssessmentItemsServer": "Exibir regras aplicáveis",
+			"invokeAssessmentLabelDatabase": "Invocar avaliação para {0}",
+			"invokeAssessmentLabelServer": "Invocar avaliação",
 			"msgBoxAsmtInfo": "Informações de avaliação do SQL",
+			"msgBoxCopied": "Informações de avaliação do SQL copiadas",
 			"msgBoxCopyBtn": "Copiar",
-			"ok": "OK",
-			"msgBoxCopied": "Informações de avaliação do SQL copiadas"
+			"ok": "OK"
 		},
 		"dist/tabs/historyTab": {
 			"asmt.history.back": "<< Voltar",
 			"asmt.history.resultsTitle": "Resultados da avaliação de {0}",
 			"asmt.history.summaryAsmtDate": "Data da avaliação",
 			"asmt.history.summaryError": "Erro",
-			"asmt.history.summaryWarning": "Aviso",
-			"asmt.history.summaryInfo": "Informações"
+			"asmt.history.summaryInfo": "Informações",
+			"asmt.history.summaryWarning": "Aviso"
+		},
+		"package": {
+			"dashboard.tabName": "Avaliação do SQL",
+			"description": "A Avaliação do SQL para o Azure Data Studio (Visualização) fornece um mecanismo para avaliar a configuração do SQL Server para práticas recomendadas.",
+			"displayName": "Avaliação do SQL"
 		}
 	}
 }

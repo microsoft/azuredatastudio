@@ -9,9 +9,9 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"title.sqlServerNotebooks": "SQL Server-Notebooks",
+			"description.sqlserverNotebooks": "Notebooks erleichtern Ihnen den Einstieg in SQL Server sowie in die Fehlerbehebung.",
 			"title.sqlServer2019Book": "Leitfaden zu SQL Server 2019",
-			"description.sqlserverNotebooks": "Notebooks erleichtern Ihnen den Einstieg in SQL Server sowie in die Fehlerbehebung."
+			"title.sqlServerNotebooks": "SQL Server-Notebooks"
 		}
 	}
 }

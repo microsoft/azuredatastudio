@@ -36,7 +36,7 @@ import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/t
 import { IconPathHelper } from '../common/iconHelper';
 import { DashboardData, PublishData, Status } from '../models/dashboardData/dashboardData';
 import { launchPublishDatabaseQuickpick } from '../dialogs/publishDatabaseQuickpick';
-import { launchDeployDatabaseQuickpick } from '../dialogs/deployDatabaseQuickpick';
+import { launchPublishToDockerContainerQuickpick } from '../dialogs/deployDatabaseQuickpick';
 import { DeployService } from '../models/deploy/deployService';
 import { SqlTargetPlatform } from 'sqldbproj';
 import { AutorestHelper } from '../tools/autorestHelper';
@@ -251,22 +251,22 @@ export class ProjectsController {
 
 			const message = utils.getErrorMessage(err);
 			if (err instanceof DotNetError) {
-				vscode.window.showErrorMessage(message);
+				void vscode.window.showErrorMessage(message);
 			} else {
-				vscode.window.showErrorMessage(constants.projBuildFailed(message));
+				void vscode.window.showErrorMessage(constants.projBuildFailed(message));
 			}
 			return '';
 		}
 	}
 
 	/**
-	 * Deploys a project
+	 * Publishes a project to docker container
 	 * @param treeNode a treeItem in a project's hierarchy, to be used to obtain a Project
 	 */
-	public async deployProject(context: Project | dataworkspace.WorkspaceTreeItem): Promise<void> {
+	public async publishToDockerContainer(context: Project | dataworkspace.WorkspaceTreeItem): Promise<void> {
 		const project: Project = this.getProjectFromContext(context);
 		try {
-			let deployProfile = await launchDeployDatabaseQuickpick(project);
+			let deployProfile = await launchPublishToDockerContainerQuickpick(project);
 			if (deployProfile && deployProfile.deploySettings) {
 				let connectionUri: string | undefined;
 				if (deployProfile.localDbSetting) {
@@ -278,23 +278,19 @@ export class ProjectsController {
 				if (deployProfile.deploySettings.connectionUri) {
 					const publishResult = await this.publishOrScriptProject(project, deployProfile.deploySettings, true);
 					if (publishResult && publishResult.success) {
-
-						// Update app settings if requested by user
-						//
-						await this.deployService.updateAppSettings(deployProfile);
 						if (deployProfile.localDbSetting) {
 							await this.deployService.getConnection(deployProfile.localDbSetting, true, deployProfile.localDbSetting.dbName);
 						}
-						vscode.window.showInformationMessage(constants.deployProjectSucceed);
+						void vscode.window.showInformationMessage(constants.deployProjectSucceed);
 					} else {
-						vscode.window.showErrorMessage(constants.deployProjectFailed(publishResult?.errorMessage || ''));
+						void vscode.window.showErrorMessage(constants.deployProjectFailed(publishResult?.errorMessage || ''));
 					}
 				} else {
-					vscode.window.showErrorMessage(constants.deployProjectFailed(constants.deployProjectFailedMessage));
+					void vscode.window.showErrorMessage(constants.deployProjectFailed(constants.deployProjectFailedMessage));
 				}
 			}
 		} catch (error) {
-			vscode.window.showErrorMessage(constants.deployProjectFailed(utils.getErrorMessage(error)));
+			void vscode.window.showErrorMessage(constants.deployProjectFailed(utils.getErrorMessage(error)));
 		}
 		return;
 	}
@@ -322,7 +318,7 @@ export class ProjectsController {
 
 			return publishDatabaseDialog;
 		} else {
-			launchPublishDatabaseQuickpick(project, this);
+			void launchPublishDatabaseQuickpick(project, this);
 			return undefined;
 		}
 	}
@@ -451,7 +447,7 @@ export class ProjectsController {
 				.withAdditionalProperties(props)
 				.send();
 
-			vscode.window.showErrorMessage(utils.getErrorMessage(err));
+			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
 		}
 	}
 
@@ -480,7 +476,7 @@ export class ProjectsController {
 			await project.addFolderItem(relativeFolderPath);
 			this.refreshProjectsTree(treeNode);
 		} catch (err) {
-			vscode.window.showErrorMessage(utils.getErrorMessage(err));
+			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
 		}
 	}
 
@@ -544,7 +540,7 @@ export class ProjectsController {
 			await vscode.commands.executeCommand(constants.vscodeOpenCommand, newEntry.fsUri);
 			treeDataProvider?.notifyTreeDataChanged();
 		} catch (err) {
-			vscode.window.showErrorMessage(utils.getErrorMessage(err));
+			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
 
 			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectTree, TelemetryActions.addItemFromTree)
 				.withAdditionalProperties(telemetryProps)
@@ -564,7 +560,7 @@ export class ProjectsController {
 			await project.exclude(fileEntry);
 		} else {
 			TelemetryReporter.sendErrorEvent(TelemetryViews.ProjectTree, TelemetryActions.excludeFromProject);
-			vscode.window.showErrorMessage(constants.unableToPerformAction(constants.excludeAction, node.projectUri.path));
+			void vscode.window.showErrorMessage(constants.unableToPerformAction(constants.excludeAction, node.projectUri.path));
 		}
 
 		this.refreshProjectsTree(context);
@@ -618,7 +614,7 @@ export class ProjectsController {
 				.withAdditionalProperties({ objectType: node.constructor.name })
 				.send();
 
-			vscode.window.showErrorMessage(constants.unableToPerformAction(constants.deleteAction, node.projectUri.path));
+			void vscode.window.showErrorMessage(constants.unableToPerformAction(constants.deleteAction, node.projectUri.path));
 		}
 	}
 
@@ -674,7 +670,7 @@ export class ProjectsController {
 				const result = await vscode.window.showInformationMessage(constants.reloadProject, constants.yesString, constants.noString);
 
 				if (result === constants.yesString) {
-					this.reloadProject(context);
+					return this.reloadProject(context);
 				}
 			});
 
@@ -687,7 +683,7 @@ export class ProjectsController {
 				}
 			});
 		} catch (err) {
-			vscode.window.showErrorMessage(utils.getErrorMessage(err));
+			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
 		}
 	}
 
@@ -720,7 +716,7 @@ export class ProjectsController {
 
 		if (selectedTargetPlatform) {
 			await project.changeTargetPlatform(constants.targetPlatformToVersion.get(selectedTargetPlatform)!);
-			vscode.window.showInformationMessage(constants.currentTargetPlatform(project.projectFileName, constants.getTargetPlatformFromVersion(project.getProjectTargetVersion())));
+			void vscode.window.showInformationMessage(constants.currentTargetPlatform(project.projectFileName, constants.getTargetPlatformFromVersion(project.getProjectTargetVersion())));
 		}
 	}
 
@@ -735,7 +731,7 @@ export class ProjectsController {
 			const addDatabaseReferenceDialog = this.getAddDatabaseReferenceDialog(project);
 			addDatabaseReferenceDialog.addReference = async (proj, settings) => await this.addDatabaseReferenceCallback(proj, settings, context as dataworkspace.WorkspaceTreeItem);
 
-			addDatabaseReferenceDialog.openDialog();
+			await addDatabaseReferenceDialog.openDialog();
 			return addDatabaseReferenceDialog;
 		} else {
 			const settings = await addDatabaseReferenceQuickpick(project);
@@ -771,7 +767,7 @@ export class ProjectsController {
 				// check for cirular dependency
 				for (let r of projectReferences) {
 					if ((<SqlProjectReferenceProjectEntry>r).projectName === project.projectFileName) {
-						vscode.window.showErrorMessage(constants.cantAddCircularProjectReference(referencedProject?.projectFileName!));
+						void vscode.window.showErrorMessage(constants.cantAddCircularProjectReference(referencedProject?.projectFileName!));
 						return;
 					}
 				}
@@ -788,7 +784,7 @@ export class ProjectsController {
 
 			this.refreshProjectsTree(context);
 		} catch (err) {
-			vscode.window.showErrorMessage(utils.getErrorMessage(err));
+			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
 		}
 	}
 
@@ -821,10 +817,10 @@ export class ProjectsController {
 		telemetryProps.success = result.success.toString();
 
 		if (result.success) {
-			vscode.window.showInformationMessage(constants.externalStreamingJobValidationPassed);
+			void vscode.window.showInformationMessage(constants.externalStreamingJobValidationPassed);
 		}
 		else {
-			vscode.window.showErrorMessage(result.errorMessage);
+			void vscode.window.showErrorMessage(result.errorMessage);
 		}
 
 		TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.runStreamingJobValidation)
@@ -1149,7 +1145,7 @@ export class ProjectsController {
 				await workspaceApi.addProjectsToWorkspace([vscode.Uri.file(newProjFilePath)]);
 			}
 		} catch (err) {
-			vscode.window.showErrorMessage(utils.getErrorMessage(err));
+			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
 		}
 	}
 
@@ -1191,7 +1187,7 @@ export class ProjectsController {
 			if (await utils.exists(absolutePath + constants.sqlFileExtension)) {
 				absolutePath += constants.sqlFileExtension;
 			} else {
-				vscode.window.showErrorMessage(constants.cannotResolvePath(absolutePath));
+				void vscode.window.showErrorMessage(constants.cannotResolvePath(absolutePath));
 				return fileFolderList;
 			}
 		}

@@ -19,12 +19,12 @@ import { ServiceCollection } from 'vs/platform/instantiation/common/serviceColle
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
-import { startsWith } from 'vs/base/common/strings';
 import { Schemas } from 'vs/base/common/network';
 import { URI } from 'vs/base/common/uri';
 import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
+import { ICommandService, NullCommandService } from 'vs/platform/commands/common/commands';
 import { ControlType, IChartOption } from 'sql/workbench/contrib/charts/browser/chartOptions';
 import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
 
@@ -32,21 +32,22 @@ let instantiationService: IInstantiationService;
 
 suite('Cell Model', function (): void {
 	let serviceCollection = new ServiceCollection();
+	serviceCollection.set(ICommandService, NullCommandService);
 	instantiationService = new InstantiationService(serviceCollection, true);
 
 	let factory = new ModelFactory(instantiationService);
 	test('Should set default values if none defined', async function (): Promise<void> {
 		let cell = factory.createCell(undefined, undefined);
-		assert.equal(cell.cellType, CellTypes.Code);
-		assert.equal(cell.source, '');
+		assert.strictEqual(cell.cellType, CellTypes.Code);
+		assert.strictEqual(cell.source, '');
 	});
 
 	test('Should update values', async function (): Promise<void> {
 		let cell = factory.createCell(undefined, undefined);
 		cell.setOverrideLanguage('sql');
-		assert.equal(cell.language, 'sql');
+		assert.strictEqual(cell.language, 'sql');
 		cell.source = 'abcd';
-		assert.equal(JSON.stringify(cell.source), JSON.stringify(['abcd']));
+		assert.strictEqual(JSON.stringify(cell.source), JSON.stringify(['abcd']));
 	});
 
 	test('Should match ICell values if defined', async function (): Promise<void> {
@@ -63,11 +64,11 @@ suite('Cell Model', function (): void {
 			execution_count: 1
 		};
 		let cell = factory.createCell(cellData, undefined);
-		assert.equal(cell.cellType, cellData.cell_type);
-		assert.equal(JSON.stringify(cell.source), JSON.stringify([cellData.source]));
-		assert.equal(cell.outputs.length, 1);
-		assert.equal(cell.outputs[0].output_type, 'stream');
-		assert.equal((<nb.IStreamResult>cell.outputs[0]).text, 'Some output');
+		assert.strictEqual(cell.cellType, cellData.cell_type);
+		assert.strictEqual(JSON.stringify(cell.source), JSON.stringify([cellData.source]));
+		assert.strictEqual(cell.outputs.length, 1);
+		assert.strictEqual(cell.outputs[0].output_type, 'stream');
+		assert.strictEqual((<nb.IStreamResult>cell.outputs[0]).text, 'Some output');
 	});
 
 
@@ -85,7 +86,7 @@ suite('Cell Model', function (): void {
 			mimetype: ''
 		});
 		let cell = factory.createCell(cellData, { notebook: notebookModel, isTrusted: false });
-		assert.equal(cell.language, 'python');
+		assert.strictEqual(cell.language, 'python');
 	});
 
 	test('Should set cell language to python if defined as pyspark in languageInfo', async function (): Promise<void> {
@@ -102,7 +103,7 @@ suite('Cell Model', function (): void {
 			mimetype: ''
 		});
 		let cell = factory.createCell(cellData, { notebook: notebookModel, isTrusted: false });
-		assert.equal(cell.language, 'python');
+		assert.strictEqual(cell.language, 'python');
 	});
 
 	test('Should keep cell language as python if cell has language override', async function (): Promise<void> {
@@ -119,7 +120,7 @@ suite('Cell Model', function (): void {
 			mimetype: ''
 		});
 		let cell = factory.createCell(cellData, { notebook: notebookModel, isTrusted: false });
-		assert.equal(cell.language, 'python');
+		assert.strictEqual(cell.language, 'python');
 	});
 
 	test('Should set cell language to python if no language defined', async function (): Promise<void> {
@@ -136,7 +137,7 @@ suite('Cell Model', function (): void {
 			mimetype: ''
 		});
 		let cell = factory.createCell(cellData, { notebook: notebookModel, isTrusted: false });
-		assert.equal(cell.language, 'python');
+		assert.strictEqual(cell.language, 'python');
 	});
 
 	test('Should allow source of type string[] with length 1', async function (): Promise<void> {
@@ -154,8 +155,8 @@ suite('Cell Model', function (): void {
 		});
 		let cell = factory.createCell(cellData, { notebook: notebookModel, isTrusted: false });
 		assert(Array.isArray(cell.source));
-		assert.equal(cell.source.length, 1);
-		assert.equal(cell.source[0], 'print(1)');
+		assert.strictEqual(cell.source.length, 1);
+		assert.strictEqual(cell.source[0], 'print(1)');
 	});
 
 	test('Should allow source of type string', async function (): Promise<void> {
@@ -173,7 +174,7 @@ suite('Cell Model', function (): void {
 		});
 		let cell = factory.createCell(cellData, { notebook: notebookModel, isTrusted: false });
 		assert(Array.isArray(cell.source));
-		assert.equal(JSON.stringify(cell.source), JSON.stringify(['print(1)']));
+		assert.strictEqual(JSON.stringify(cell.source), JSON.stringify(['print(1)']));
 	});
 
 	test('Should allow source of type string with newline and split it', async function (): Promise<void> {
@@ -191,9 +192,9 @@ suite('Cell Model', function (): void {
 		});
 		let cell = factory.createCell(cellData, { notebook: notebookModel, isTrusted: false });
 		assert(Array.isArray(cell.source));
-		assert.equal(cell.source.length, 2);
-		assert.equal(cell.source[0], 'print(1)\n');
-		assert.equal(cell.source[1], 'print(2)');
+		assert.strictEqual(cell.source.length, 2);
+		assert.strictEqual(cell.source[0], 'print(1)\n');
+		assert.strictEqual(cell.source[1], 'print(2)');
 	});
 
 	test('Should allow source of type string with Windows style newline and split it', async function (): Promise<void> {
@@ -211,9 +212,9 @@ suite('Cell Model', function (): void {
 		});
 		let cell = factory.createCell(cellData, { notebook: notebookModel, isTrusted: false });
 		assert(Array.isArray(cell.source));
-		assert.equal(cell.source.length, 2);
-		assert.equal(cell.source[0], 'print(1)\r\n');
-		assert.equal(cell.source[1], 'print(2)');
+		assert.strictEqual(cell.source.length, 2);
+		assert.strictEqual(cell.source[0], 'print(1)\r\n');
+		assert.strictEqual(cell.source[1], 'print(2)');
 	});
 
 	test('Should allow source of type string[] with length 2', async function (): Promise<void> {
@@ -231,9 +232,9 @@ suite('Cell Model', function (): void {
 		});
 		let cell = factory.createCell(cellData, { notebook: notebookModel, isTrusted: false });
 		assert(Array.isArray(cell.source));
-		assert.equal(cell.source.length, 2);
-		assert.equal(cell.source[0], 'print(1)\n');
-		assert.equal(cell.source[1], 'print(2)');
+		assert.strictEqual(cell.source.length, 2);
+		assert.strictEqual(cell.source[0], 'print(1)\n');
+		assert.strictEqual(cell.source[1], 'print(2)');
 	});
 
 	test('Should allow empty string source', async function (): Promise<void> {
@@ -251,7 +252,7 @@ suite('Cell Model', function (): void {
 		});
 		let cell = factory.createCell(cellData, { notebook: notebookModel, isTrusted: false });
 		assert(Array.isArray(cell.source));
-		assert.equal(JSON.stringify(cell.source), JSON.stringify(['']));
+		assert.strictEqual(JSON.stringify(cell.source), JSON.stringify(['']));
 	});
 
 	test('Should parse metadata\'s hide_input tag correctly', async function (): Promise<void> {
@@ -572,7 +573,7 @@ suite('Cell Model', function (): void {
 			cell.setFuture(future.object);
 
 			// Then I expect outputs to have been cleared
-			assert.equal(outputs.length, 0);
+			assert.strictEqual(outputs.length, 0);
 			assert(!isUndefinedOrNull(onReply));
 			// ... And when I send an IoPub message
 			let message: nb.IIOPubMessage = {
@@ -589,13 +590,13 @@ suite('Cell Model', function (): void {
 			};
 			onIopub.handle(message);
 			// Then I expect an output to be added
-			assert.equal(outputs.length, 1);
-			assert.equal(outputs[0].output_type, 'stream');
+			assert.strictEqual(outputs.length, 1);
+			assert.strictEqual(outputs[0].output_type, 'stream');
 
 			message = objects.deepClone(message);
 			message.header.msg_type = 'display_data';
 			onIopub.handle(message);
-			assert.equal(outputs[1].output_type, 'display_data');
+			assert.strictEqual(outputs[1].output_type, 'display_data');
 		});
 
 		test('stdin should return void if no handler registered', async () => {
@@ -637,8 +638,8 @@ suite('Cell Model', function (): void {
 			await result;
 			// And I expect message to have been passed upstream and no message sent from the cell
 			assert(!isUndefinedOrNull(stdInMessage));
-			assert.equal(stdInMessage.content.prompt, stdInDefaultMessage.content.prompt);
-			assert.equal(stdInMessage.content.password, stdInDefaultMessage.content.password);
+			assert.strictEqual(stdInMessage.content.prompt, stdInDefaultMessage.content.prompt);
+			assert.strictEqual(stdInMessage.content.password, stdInDefaultMessage.content.password);
 			future.verify(f => f.sendInputReply(TypeMoq.It.isAny()), TypeMoq.Times.never());
 		});
 		test('stdin should send default response if there is upstream error', async () => {
@@ -689,7 +690,7 @@ suite('Cell Model', function (): void {
 			onIopub.handle(message);
 			//Output array's length should be 1
 			//'transient' tag should no longer exist in the output
-			assert.equal(outputs.length, 1);
+			assert.strictEqual(outputs.length, 1);
 			assert(isUndefinedOrNull(outputs[0]['transient']));
 		});
 
@@ -711,7 +712,7 @@ suite('Cell Model', function (): void {
 
 			let cell = factory.createCell(undefined, { notebook: notebookModel, isTrusted: false });
 			assert(!isUndefinedOrNull(cell.cellGuid));
-			assert.equal(cell.cellGuid.length, 36);
+			assert.strictEqual(cell.cellGuid.length, 36);
 			let cellJson = cell.toJSON();
 			assert(!isUndefinedOrNull(cellJson.metadata.azdata_cell_guid));
 		});
@@ -740,16 +741,16 @@ suite('Cell Model', function (): void {
 			let cell = factory.createCell(undefined, { notebook: notebookModel, isTrusted: false });
 			let content = JSON.stringify(cell.toJSON(), undefined, '    ');
 			let contentSplit = content.split('\n');
-			assert.equal(contentSplit.length, 9);
-			assert(startsWith(contentSplit[0].trim(), '{'));
-			assert(startsWith(contentSplit[1].trim(), '"cell_type": "code",'));
-			assert(startsWith(contentSplit[2].trim(), '"source": ""'));
-			assert(startsWith(contentSplit[3].trim(), '"metadata": {'));
-			assert(startsWith(contentSplit[4].trim(), '"azdata_cell_guid": "'));
-			assert(startsWith(contentSplit[5].trim(), '}'));
-			assert(startsWith(contentSplit[6].trim(), '"outputs": []'));
-			assert(startsWith(contentSplit[7].trim(), '"execution_count": null'));
-			assert(startsWith(contentSplit[8].trim(), '}'));
+			assert.strictEqual(contentSplit.length, 9);
+			assert(contentSplit[0].trim().startsWith('{'));
+			assert(contentSplit[1].trim().startsWith('"cell_type": "code",'));
+			assert(contentSplit[2].trim().startsWith('"source": ""'));
+			assert(contentSplit[3].trim().startsWith('"metadata": {'));
+			assert(contentSplit[4].trim().startsWith('"azdata_cell_guid": "'));
+			assert(contentSplit[5].trim().startsWith('}'));
+			assert(contentSplit[6].trim().startsWith('"outputs": []'));
+			assert(contentSplit[7].trim().startsWith('"execution_count": null'));
+			assert(contentSplit[8].trim().startsWith('}'));
 		});
 	});
 
@@ -1039,7 +1040,7 @@ suite('Cell Model', function (): void {
 			metadata: { connection_name: connectionName }
 		};
 		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
-		assert.equal(model.savedConnectionName, connectionName);
+		assert.strictEqual(model.savedConnectionName, connectionName);
 	});
 
 	test('Should read attachments name from notebook attachments', async function () {
@@ -1055,10 +1056,10 @@ suite('Cell Model', function (): void {
 			attachments: cellAttachment
 		};
 		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
-		assert.deepEqual(model.attachments, contents.attachments, 'Attachments do not match in cellModel');
+		assert.deepStrictEqual(model.attachments, contents.attachments, 'Attachments do not match in cellModel');
 
 		let serializedCell = model.toJSON();
-		assert.deepEqual(serializedCell.attachments, cellAttachment, 'Cell attachment from JSON is incorrect');
+		assert.deepStrictEqual(serializedCell.attachments, cellAttachment, 'Cell attachment from JSON is incorrect');
 	});
 
 	test('Should not include attachments in notebook json if no attachments exist', async function () {
@@ -1072,10 +1073,10 @@ suite('Cell Model', function (): void {
 			source: ''
 		};
 		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
-		assert.deepEqual(model.attachments, undefined, 'Cell model attachments should return undefined if they do not exist');
+		assert.deepStrictEqual(model.attachments, undefined, 'Cell model attachments should return undefined if they do not exist');
 
 		let serializedCell = model.toJSON();
-		assert.deepEqual(serializedCell.attachments, undefined, 'JSON should not include attachments if attachments do not exist');
+		assert.deepStrictEqual(serializedCell.attachments, undefined, 'JSON should not include attachments if attachments do not exist');
 	});
 
 	test('Should not have cache chart data after new cell created', async function () {
@@ -1089,7 +1090,7 @@ suite('Cell Model', function (): void {
 			source: ''
 		};
 		let cellModel = factory.createCell(contents, { notebook: notebookModel, isTrusted: false }) as CellModel;
-		assert.deepEqual(cellModel.previousChartState, [], 'New cell should have no previous chart state');
+		assert.deepStrictEqual(cellModel.previousChartState, [], 'New cell should have no previous chart state');
 	});
 
 	test('Should not cache chart data after clear output', async function () {
@@ -1123,15 +1124,15 @@ suite('Cell Model', function (): void {
 
 		// When I create a cell
 		let cellModel = factory.createCell(contents, { notebook: notebookModel, isTrusted: false }) as CellModel;
-		assert.deepEqual(cellModel.previousChartState, [], 'New cell should have no previous chart state');
+		assert.deepStrictEqual(cellModel.previousChartState, [], 'New cell should have no previous chart state');
 
 		// When previous chart state exists
 		cellModel[<any>'_previousChartState'] = contents.outputs[0].metadata.azdata_chartOptions;
-		assert.deepEqual(cellModel.previousChartState, contents.outputs[0].metadata.azdata_chartOptions, 'Previous chart state should be returned as is');
+		assert.deepStrictEqual(cellModel.previousChartState, contents.outputs[0].metadata.azdata_chartOptions, 'Previous chart state should be returned as is');
 
 		// When cell outputs are cleared
 		cellModel.clearOutputs();
-		assert.deepEqual(cellModel.previousChartState, [], 'Previous chart state should be erased after clearing outputs');
+		assert.deepStrictEqual(cellModel.previousChartState, [], 'Previous chart state should be erased after clearing outputs');
 
 		// Put previous chart state back
 		cellModel[<any>'_previousChartState'] = contents.outputs[0].metadata.azdata_chartOptions;
@@ -1142,7 +1143,7 @@ suite('Cell Model', function (): void {
 		// When output is generated
 		cellModel.setFuture(future.object);
 		await onIopub.handle({ channel: 'iopub', content: { data: 'Hello' }, type: 'execute_reply', metadata: contents.outputs[0].metadata, header: { msg_type: 'execute_result' } });
-		assert.deepEqual(cellModel.previousChartState, [], 'Previous chart state should not exist after cell source change');
+		assert.deepStrictEqual(cellModel.previousChartState, [], 'Previous chart state should not exist after cell source change');
 
 		// Put previous chart state back
 		cellModel[<any>'_previousChartState'] = contents.outputs[0].metadata.azdata_chartOptions;
@@ -1150,7 +1151,7 @@ suite('Cell Model', function (): void {
 		// When output is generated
 		cellModel.setFuture(future.object);
 		await onIopub.handle({ channel: 'iopub', content: { data: 'Hello' }, type: 'execute_reply', metadata: contents.outputs[0].metadata, header: { msg_type: 'execute_result' } });
-		assert.deepEqual(cellModel.previousChartState, contents.outputs[0].metadata.azdata_chartOptions, 'Previous chart state should exist after output is generated');
+		assert.deepStrictEqual(cellModel.previousChartState, contents.outputs[0].metadata.azdata_chartOptions, 'Previous chart state should exist after output is generated');
 	});
 
 	test('Should read attachments from cell contents', async function () {
@@ -1168,7 +1169,7 @@ suite('Cell Model', function (): void {
 			attachments: attachments
 		};
 		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
-		assert.equal(model.attachments, attachments);
+		assert.strictEqual(model.attachments, attachments);
 	});
 
 	test('addAttachment should add a valid attachment to cell', async function () {
@@ -1188,10 +1189,10 @@ suite('Cell Model', function (): void {
 		};
 		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
 		model.addAttachment('image/png', imageFilebase64Value, 'test.png');
-		assert.deepEqual(model.attachments, attachments);
+		assert.deepStrictEqual(model.attachments, attachments);
 		attachments = { 'test.png': testImageAttachment, 'test1.png': testImageAttachment };
 		model.addAttachment('image/png', imageFilebase64Value, 'test1.png');
-		assert.deepEqual(model.attachments, attachments, 'addAttachment should add unique images');
+		assert.deepStrictEqual(model.attachments, attachments, 'addAttachment should add unique images');
 	});
 
 	test('addAttachment should not add an invalid attachment to cell', async function () {
@@ -1208,7 +1209,7 @@ suite('Cell Model', function (): void {
 		};
 		let cellModel = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
 		cellModel.addAttachment('image/png', imageFilebase64Value, 'test.png');
-		assert.equal(cellModel.attachments, undefined);
+		assert.strictEqual(cellModel.attachments, undefined);
 	});
 
 	test('addAttachment should not add a duplicate attachment to cell', async function () {
@@ -1228,8 +1229,8 @@ suite('Cell Model', function (): void {
 		};
 		let cellModel = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
 		cellModel.addAttachment('image/png', imageFilebase64Value, 'test.png');
-		assert.deepEqual(cellModel.attachments, attachments);
+		assert.deepStrictEqual(cellModel.attachments, attachments);
 		cellModel.addAttachment('image/png', imageFilebase64Value, 'test.png');
-		assert.deepEqual(cellModel.attachments, attachments, 'addAttachment should not add duplicate images');
+		assert.deepStrictEqual(cellModel.attachments, attachments, 'addAttachment should not add duplicate images');
 	});
 });

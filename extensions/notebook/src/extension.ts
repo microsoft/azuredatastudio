@@ -30,6 +30,12 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	IconPathHelper.setExtensionContext(extensionContext);
 
 	const appContext = new AppContext(extensionContext);
+
+	// TODO: Notebook doesn't work without root setting enabled in web mode. Once we start using non-root containers, we can remove this code.
+	const config = vscode.workspace.getConfiguration('notebook');
+	if (vscode.env.uiKind === vscode.UIKind.Web) {
+		await config.update('allowRoot', true, vscode.ConfigurationTarget.Global);
+	}
 	/**
 	 *  									***** IMPORTANT *****
 	 * If changes are made to bookTreeView.openBook, please ensure backwards compatibility with its current state.
@@ -62,8 +68,9 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 		await pinnedBookTreeViewProvider.removeNotebookFromPinnedView(book);
 	}));
 
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.moveTo', async (book: BookTreeItem) => {
-		await bookTreeViewProvider.editBook(book);
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.moveTo', async (firstTreeItem: BookTreeItem, treeItems?: BookTreeItem[]) => {
+		let allTreeItems = treeItems ? [firstTreeItem, ...treeItems] : [firstTreeItem];
+		await bookTreeViewProvider.moveTreeItems(allTreeItems);
 	}));
 
 	let model = new RemoteBookDialogModel();
@@ -71,7 +78,7 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.openRemoteBook', async () => {
 		let dialog = new RemoteBookDialog(remoteBookController);
-		dialog.createDialog();
+		return dialog.createDialog();
 	}));
 
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('_notebook.command.new', async (options?: azdata.nb.NotebookShowOptions) => {
@@ -146,9 +153,9 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 
 	azdata.nb.onDidChangeActiveNotebookEditor(e => {
 		if (e.document.uri.scheme === 'untitled') {
-			providedBookTreeViewProvider.revealDocumentInTreeView(e.document.uri, false, false);
+			void providedBookTreeViewProvider.revealDocumentInTreeView(e.document.uri, false, false);
 		} else {
-			bookTreeViewProvider.revealDocumentInTreeView(e.document.uri, false, false);
+			void bookTreeViewProvider.revealDocumentInTreeView(e.document.uri, false, false);
 		}
 	});
 

@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Nozioni di base sul linguaggio SQL",
-			"description": "Offre la sottolineatura delle sintassi e il match delle parentesi nei file SQL."
+			"description": "Offre la sottolineatura delle sintassi e il match delle parentesi nei file SQL.",
+			"displayName": "Nozioni di base sul linguaggio SQL"
 		}
 	}
 }

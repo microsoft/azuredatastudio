@@ -69,7 +69,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		}
 	}
 
-	private getAuthMethod(account?: azdata.Account): AzureAuth {
+	private getAuthMethod(account?: AzureAccount): AzureAuth {
 		if (this.authMappings.size === 1) {
 			return this.authMappings.values().next().value;
 		}
@@ -82,12 +82,12 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		}
 	}
 
-	initialize(storedAccounts: azdata.Account[]): Thenable<azdata.Account[]> {
+	initialize(storedAccounts: AzureAccount[]): Thenable<AzureAccount[]> {
 		return this._initialize(storedAccounts);
 	}
 
-	private async _initialize(storedAccounts: azdata.Account[]): Promise<azdata.Account[]> {
-		const accounts: azdata.Account[] = [];
+	private async _initialize(storedAccounts: AzureAccount[]): Promise<AzureAccount[]> {
+		const accounts: AzureAccount[] = [];
 		console.log(`Initializing stored accounts ${JSON.stringify(accounts)}`);
 		for (let account of storedAccounts) {
 			const azureAuth = this.getAuthMethod(account);
@@ -103,22 +103,23 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 	}
 
 
-	getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Thenable<MultiTenantTokenResponse | undefined> {
+	getSecurityToken(account: AzureAccount, resource: azdata.AzureResource): Thenable<MultiTenantTokenResponse | undefined> {
 		return this._getSecurityToken(account, resource);
 	}
 
-	getAccountSecurityToken(account: azdata.Account, tenantId: string, resource: azdata.AzureResource): Thenable<Token | undefined> {
+	getAccountSecurityToken(account: AzureAccount, tenantId: string, resource: azdata.AzureResource): Thenable<Token | undefined> {
 		return this._getAccountSecurityToken(account, tenantId, resource);
 	}
 
-	private async _getAccountSecurityToken(account: azdata.Account, tenantId: string, resource: azdata.AzureResource): Promise<Token | undefined> {
+	private async _getAccountSecurityToken(account: AzureAccount, tenantId: string, resource: azdata.AzureResource): Promise<Token | undefined> {
 		await this.initCompletePromise;
-		const azureAuth = this.getAuthMethod(undefined);
+		const azureAuth = this.getAuthMethod(account);
+		Logger.pii(`Getting account security token for ${JSON.stringify(account.key)} (tenant ${tenantId}). Auth Method = ${azureAuth.userFriendlyName}`, [], []);
 		return azureAuth?.getAccountSecurityToken(account, tenantId, resource);
 	}
 
-	private async _getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Promise<MultiTenantTokenResponse | undefined> {
-		vscode.window.showInformationMessage(localize('azure.deprecatedGetSecurityToken', "A call was made to azdata.accounts.getSecurityToken, this method is deprecated and will be removed in future releases. Please use getAccountSecurityToken instead."));
+	private async _getSecurityToken(account: AzureAccount, resource: azdata.AzureResource): Promise<MultiTenantTokenResponse | undefined> {
+		void vscode.window.showInformationMessage(localize('azure.deprecatedGetSecurityToken', "A call was made to azdata.accounts.getSecurityToken, this method is deprecated and will be removed in future releases. Please use getAccountSecurityToken instead."));
 		const azureAccount = account as AzureAccount;
 		const response: MultiTenantTokenResponse = {};
 		for (const tenant of azureAccount.properties.tenants) {
@@ -128,11 +129,11 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		return response;
 	}
 
-	prompt(): Thenable<azdata.Account | azdata.PromptFailedResult> {
+	prompt(): Thenable<AzureAccount | azdata.PromptFailedResult> {
 		return this._prompt();
 	}
 
-	private async _prompt(): Promise<azdata.Account | azdata.PromptFailedResult> {
+	private async _prompt(): Promise<AzureAccount | azdata.PromptFailedResult> {
 		const noAuthSelected = localize('azure.NoAuthMethod.Selected', "No Azure auth method selected. You must select what method of authentication you want to use.");
 		const noAuthAvailable = localize('azure.NoAuthMethod.Available', "No Azure auth method available. You must enable the auth methods in ADS configuration.");
 
@@ -146,7 +147,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 
 		if (this.authMappings.size === 0) {
 			Logger.log('No auth method was enabled.');
-			vscode.window.showErrorMessage(noAuthAvailable);
+			void vscode.window.showErrorMessage(noAuthAvailable);
 			return { canceled: true };
 		}
 
@@ -163,14 +164,14 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 
 		if (!pick) {
 			Logger.log('No auth method was selected.');
-			vscode.window.showErrorMessage(noAuthSelected);
+			void vscode.window.showErrorMessage(noAuthSelected);
 			return { canceled: true };
 		}
 
 		return pick.azureAuth.startLogin();
 	}
 
-	refresh(account: azdata.Account): Thenable<azdata.Account | azdata.PromptFailedResult> {
+	refresh(account: AzureAccount): Thenable<AzureAccount | azdata.PromptFailedResult> {
 		return this.prompt();
 	}
 

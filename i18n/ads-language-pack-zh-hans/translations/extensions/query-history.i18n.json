@@ -9,9 +9,9 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"queryHistory.displayName": "查询历史记录",
-			"queryHistory.description": "查看并运行以前执行的查询",
 			"queryHistory.clear": "清除所有历史记录",
+			"queryHistory.description": "查看并运行以前执行的查询",
+			"queryHistory.displayName": "查询历史记录",
 			"queryHistory.toggleCapture": "切换查询历史记录捕获"
 		}
 	}

@@ -38,7 +38,7 @@ describe('Tools Service Tests', function (): void {
 		tools.forEach(toolInfo => {
 			const tool = toolsService.getToolByName(toolInfo.name);
 			assert(!!tool, `The tool: ${toolInfo.name} is not recognized`);
-			assert.equal(tool!.type, toolInfo.type, 'returned tool name does not match expected value');
+			assert.strictEqual(tool!.type, toolInfo.type, 'returned tool name does not match expected value');
 		});
 	});
 
@@ -53,10 +53,10 @@ describe('Tools Service Tests', function (): void {
 		const iTools: ITool[] = tools.map(toolInfo => {
 			const tool = toolsService.getToolByName(toolInfo.name);
 			assert(!!tool, `The tool: ${toolInfo.name} is not recognized`);
-			assert.equal(tool!.type, toolInfo.type, 'returned notebook name does not match expected value');
+			assert.strictEqual(tool!.type, toolInfo.type, 'returned notebook name does not match expected value');
 			return tool!;
 		});
 		toolsService.toolsForCurrentProvider = iTools;
-		assert.deepEqual(iTools, toolsService.toolsForCurrentProvider, 'toolsForCurrentProvider did not return the value we set');
+		assert.deepStrictEqual(iTools, toolsService.toolsForCurrentProvider, 'toolsForCurrentProvider did not return the value we set');
 	});
 });

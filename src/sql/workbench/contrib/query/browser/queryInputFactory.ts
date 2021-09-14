@@ -8,9 +8,9 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
 import { FILE_EDITOR_INPUT_ID } from 'vs/workbench/contrib/files/common/files';
-import { UntitledQueryEditorInput } from 'sql/workbench/common/editor/query/untitledQueryEditorInput';
-import { FileQueryEditorInput } from 'sql/workbench/contrib/query/common/fileQueryEditorInput';
-import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
+import { UntitledQueryEditorInput } from 'sql/base/query/browser/untitledQueryEditorInput';
+import { FileQueryEditorInput } from 'sql/workbench/contrib/query/browser/fileQueryEditorInput';
+import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/fileEditorInput';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { ILanguageAssociation } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
@@ -56,22 +56,12 @@ export class QueryEditorLanguageAssociation implements ILanguageAssociation {
 				open: false, initalContent: content
 			}) as UntitledQueryEditorInput;
 		}
-		const profile = getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
-		if (profile) {
-			const options: IConnectionCompletionOptions = {
-				params: { connectionType: ConnectionType.editor, runQueryOnCompletion: undefined, input: queryEditorInput },
-				saveTheConnection: false,
-				showDashboard: false,
-				showConnectionDialogOnError: true,
-				showFirewallRuleOnError: true
-			};
-			this.connectionManagementService.connect(profile, queryEditorInput.uri, options).catch(err => onUnexpectedError(err));
-		}
 
+		this.connectInput(queryEditorInput);
 		return queryEditorInput;
 	}
 
-	syncConvertinput(activeEditor: IEditorInput): QueryEditorInput | undefined {
+	syncConvertInput(activeEditor: IEditorInput): QueryEditorInput | undefined {
 		const queryResultsInput = this.instantiationService.createInstance(QueryResultsInput, activeEditor.resource.toString(true));
 		let queryEditorInput: QueryEditorInput;
 		if (activeEditor instanceof FileEditorInput) {
@@ -82,19 +72,26 @@ export class QueryEditorLanguageAssociation implements ILanguageAssociation {
 			return undefined;
 		}
 
-		const profile = getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
-		if (profile) {
-			const options: IConnectionCompletionOptions = {
-				params: { connectionType: ConnectionType.editor, runQueryOnCompletion: undefined, input: queryEditorInput },
-				saveTheConnection: false,
-				showDashboard: false,
-				showConnectionDialogOnError: true,
-				showFirewallRuleOnError: true
-			};
-			this.connectionManagementService.connect(profile, queryEditorInput.uri, options).catch(err => onUnexpectedError(err));
-		}
-
+		this.connectInput(queryEditorInput);
 		return queryEditorInput;
+	}
+
+	private connectInput(queryEditorInput: QueryEditorInput): void {
+		const existingProfile = this.connectionManagementService.getConnectionProfile(queryEditorInput.uri);
+		// Create new connection if only there is no existing connectionProfile with the uri.
+		if (!existingProfile) {
+			const profile = getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
+			if (profile) {
+				const options: IConnectionCompletionOptions = {
+					params: { connectionType: ConnectionType.editor, runQueryOnCompletion: undefined, input: queryEditorInput },
+					saveTheConnection: false,
+					showDashboard: false,
+					showConnectionDialogOnError: true,
+					showFirewallRuleOnError: true
+				};
+				this.connectionManagementService.connect(profile, queryEditorInput.uri, options).catch(err => onUnexpectedError(err));
+			}
+		}
 	}
 
 	createBase(activeEditor: QueryEditorInput): IEditorInput {

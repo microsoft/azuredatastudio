@@ -48,7 +48,7 @@ export class BookModel {
 	public watchTOC(): void {
 		fs.watchFile(this.tableOfContentsPath, async (curr, prev) => {
 			if (curr.mtime > prev.mtime) {
-				this.reinitializeContents();
+				this.reinitializeContents().catch(err => console.error('Error reinitializing book contents ', err));
 			}
 		});
 	}
@@ -126,7 +126,7 @@ export class BookModel {
 		}
 
 		if (await fs.pathExists(this._tableOfContentsPath)) {
-			vscode.commands.executeCommand('setContext', 'bookOpened', true);
+			void vscode.commands.executeCommand('setContext', 'bookOpened', true);
 			this.watchTOC();
 		} else {
 			this._errorMessage = loc.missingTocError;
@@ -322,7 +322,7 @@ export class BookModel {
 					treeItems.push(markdown);
 				} else {
 					this._errorMessage = loc.missingFileError(sections[i].title, book.title);
-					vscode.window.showErrorMessage(this._errorMessage);
+					void vscode.window.showErrorMessage(this._errorMessage);
 				}
 			}
 		}

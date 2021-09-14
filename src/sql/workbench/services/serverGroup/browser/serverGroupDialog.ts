@@ -9,7 +9,7 @@ import { Colorbox } from 'sql/base/browser/ui/colorbox/colorbox';
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import * as DOM from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
+import { KeyCode } from 'vs/base/common/keyCodes';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachInputBoxStyler, attachCheckboxStyler, attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -120,14 +120,8 @@ export class ServerGroupDialog extends Modal {
 		this._serverGroupContainer = DOM.append(body, DOM.$('.group-color-options'));
 		this.fillGroupColors(this._serverGroupContainer);
 
-		DOM.addStandardDisposableListener(body, DOM.EventType.KEY_DOWN, (event: StandardKeyboardEvent) => {
-			if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
-				this.preventDefaultKeyboardEvent(event);
-				this.focusPrevious();
-			} else if (event.equals(KeyCode.Tab)) {
-				this.preventDefaultKeyboardEvent(event);
-				this.focusNext();
-			} else if (event.equals(KeyCode.RightArrow) || event.equals(KeyCode.LeftArrow)) {
+		DOM.addStandardDisposableListener(this._serverGroupContainer, DOM.EventType.KEY_DOWN, (event: StandardKeyboardEvent) => {
+			if (event.equals(KeyCode.RightArrow) || event.equals(KeyCode.LeftArrow)) {
 				this.preventDefaultKeyboardEvent(event);
 				this.focusNextColor(event.equals(KeyCode.RightArrow));
 			}
@@ -137,48 +131,6 @@ export class ServerGroupDialog extends Modal {
 	private preventDefaultKeyboardEvent(e: StandardKeyboardEvent) {
 		e.preventDefault();
 		e.stopPropagation();
-	}
-
-	private isFocusOnColors(): boolean {
-		let result = false;
-		this._colorColorBoxesMap.forEach(({ colorbox: colorbox }) => {
-			if (document.activeElement === colorbox.domNode) {
-				result = true;
-			}
-		});
-
-		return result;
-	}
-
-	private focusNext(): void {
-		const renderedDialog = this.withRenderedDialog;
-		if (renderedDialog.groupNameInputBox.hasFocus()) {
-			renderedDialog.groupDescriptionInputBox.focus();
-		} else if (renderedDialog.groupDescriptionInputBox.hasFocus()) {
-			this._colorColorBoxesMap[this._selectedColorOption ?? 0].colorbox.focus();
-		} else if (this.isFocusOnColors()) {
-			renderedDialog.addServerButton.enabled ? renderedDialog.addServerButton.focus() : renderedDialog.closeButton.focus();
-		} else if (document.activeElement === renderedDialog.addServerButton.element) {
-			renderedDialog.closeButton.focus();
-		}
-		else if (document.activeElement === renderedDialog.closeButton.element) {
-			renderedDialog.groupNameInputBox.focus();
-		}
-	}
-
-	private focusPrevious(): void {
-		const renderedDialog = this.withRenderedDialog;
-		if (document.activeElement === renderedDialog.closeButton.element) {
-			renderedDialog.addServerButton.enabled ? renderedDialog.addServerButton.focus() : this._colorColorBoxesMap[this._selectedColorOption ?? 0].colorbox.focus();
-		} else if (document.activeElement === renderedDialog.addServerButton.element) {
-			this._colorColorBoxesMap[this._selectedColorOption ?? 0].colorbox.focus();
-		} else if (this.isFocusOnColors()) {
-			renderedDialog.groupDescriptionInputBox.focus();
-		} else if (renderedDialog.groupDescriptionInputBox.hasFocus()) {
-			renderedDialog.groupNameInputBox.focus();
-		} else if (renderedDialog.groupNameInputBox.hasFocus()) {
-			renderedDialog.closeButton.focus();
-		}
 	}
 
 	private focusNextColor(moveRight: boolean): void {

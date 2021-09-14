@@ -80,6 +80,7 @@ steps:
 - script: |
     set -e
     yarn sqllint
+    yarn extensions-lint
     yarn gulp hygiene
     yarn strict-vscode
     yarn valid-layers-check
@@ -135,6 +136,15 @@ steps:
     yarn gulp compile-extensions
     yarn gulp package-external-extensions
   displayName: Package External extensions
+
+- script: |
+    set -e
+    node ./node_modules/playwright/install.js
+    VSCODE_REMOTE_SERVER_PATH="$(agent.builddirectory)/vscode-reh-web-linux-x64" \
+    yarn smoketest --web --headless  --screenshots "$(build.artifactstagingdirectory)/smokeshots"
+  displayName: Run smoke tests (Browser)
+  continueOnError: true
+  condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
 - script: |
     set -e

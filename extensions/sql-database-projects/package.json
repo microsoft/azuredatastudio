@@ -2,7 +2,7 @@
   "name": "sql-database-projects",
   "displayName": "SQL Database Projects",
   "description": "The SQL Database Projects extension for Azure Data Studio and VS Code allows users to develop and publish database schemas.",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "publisher": "Microsoft",
   "preview": true,
   "engines": {
@@ -17,6 +17,7 @@
     "onCommand:sqlDatabaseProjects.open",
     "onCommand:sqlDatabaseProjects.createProjectFromDatabase",
     "onCommand:sqlDatabaseProjects.generateProjectFromOpenApiSpec",
+    "onCommand:sqlDatabaseProjects.addSqlBinding",
     "workspaceContains:**/*.sqlproj",
     "onView:dataworkspace.views.main"
   ],
@@ -118,11 +119,6 @@
         "title": "%sqlDatabaseProjects.publish%",
         "category": "%sqlDatabaseProjects.displayName%"
       },
-      {
-				"command": "sqlDatabaseProjects.deployLocal",
-				"title": "%sqlDatabaseProjects.deployLocal%",
-				"category": "%sqlDatabaseProjects.displayName%"
-			},
       {
         "command": "sqlDatabaseProjects.properties",
         "title": "%sqlDatabaseProjects.properties%",
@@ -232,10 +228,6 @@
           "when": "false"
         },
         {
-          "command": "sqlDatabaseProjects.deployLocal",
-          "when": "false"
-        },
-        {
           "command": "sqlDatabaseProjects.properties",
           "when": "false"
         },
@@ -284,11 +276,6 @@
         {
           "command": "sqlDatabaseProjects.publish",
           "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project",
-          "group": "1_dbProjectsFirst@2"
-        },
-        {
-          "command": "sqlDatabaseProjects.deployLocal",
-          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project && !azdataAvailable",
           "group": "1_dbProjectsFirst@2"
         },
         {
@@ -409,14 +396,14 @@
     "@types/which": "^2.0.1",
     "@types/xml-formatter": "^1.1.0",
     "fast-glob": "^3.1.0",
+    "fs-extra": "^5.0.0",
+    "jsonc-parser": "^2.3.1",
     "promisify-child-process": "^3.1.1",
     "vscode-languageclient": "^5.3.0-next.1",
     "vscode-nls": "^4.1.2",
     "which": "^2.0.2",
     "xml-formatter": "^2.1.0",
-    "xmldom": "^0.3.0",
-    "generate-password": "^1.6.0",
-    "fs-extra": "^5.0.0"
+    "xmldom": "^0.3.0"
   },
   "devDependencies": {
     "@types/mocha": "^5.2.5",

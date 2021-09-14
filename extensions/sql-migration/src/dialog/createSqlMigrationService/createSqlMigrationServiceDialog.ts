@@ -21,7 +21,7 @@ export class CreateSqlMigrationServiceDialog {
 
 	private migrationServiceSubscription!: azdata.TextComponent;
 	private migrationServiceResourceGroupDropdown!: azdata.DropDownComponent;
-	private migrationServiceLocation!: azdata.InputBoxComponent;
+	private migrationServiceLocation!: azdata.TextComponent;
 	private migrationServiceNameText!: azdata.InputBoxComponent;
 	private _formSubmitButton!: azdata.ButtonComponent;
 	private _createResourceGroupLink!: azdata.HyperlinkComponent;
@@ -214,19 +214,24 @@ export class CreateSqlMigrationServiceDialog {
 
 		const subscriptionDropdownLabel = this._view.modelBuilder.text().withProps({
 			value: constants.SUBSCRIPTION,
+			description: constants.MIGRATION_SERVICE_SUBSCRIPTION_INFO,
 			CSSStyles: {
 				'font-size': '13px',
 				'font-weight': 'bold'
 			}
 		}).component();
 
-		this.migrationServiceSubscription = this._view.modelBuilder.inputBox().withProps({
-			required: true,
-			enabled: false
+		this.migrationServiceSubscription = this._view.modelBuilder.text().withProps({
+			enabled: false,
+			CSSStyles: {
+				'font-size': '13px',
+				'margin': '0px'
+			}
 		}).component();
 
 		const resourceGroupDropdownLabel = this._view.modelBuilder.text().withProps({
 			value: constants.RESOURCE_GROUP,
+			description: constants.MIGRATION_SERVICE_RESOURCE_GROUP_INFO,
 			requiredIndicator: true,
 			CSSStyles: {
 				'font-size': '13px',
@@ -243,6 +248,7 @@ export class CreateSqlMigrationServiceDialog {
 
 		const migrationServiceNameLabel = this._view.modelBuilder.text().withProps({
 			value: constants.NAME,
+			description: constants.MIGRATION_SERVICE_NAME_INFO,
 			requiredIndicator: true,
 			CSSStyles: {
 				'font-size': '13px',
@@ -277,29 +283,37 @@ export class CreateSqlMigrationServiceDialog {
 
 		const locationDropdownLabel = this._view.modelBuilder.text().withProps({
 			value: constants.LOCATION,
+			description: constants.MIGRATION_SERVICE_LOCATION_INFO,
 			CSSStyles: {
 				'font-size': '13px',
 				'font-weight': 'bold'
 			}
 		}).component();
 
-		this.migrationServiceLocation = this._view.modelBuilder.inputBox().withProps({
-			required: true,
-			enabled: false,
-			value: await this._model.getLocationDisplayName(this._model._targetServerInstance.location)
+		this.migrationServiceLocation = this._view.modelBuilder.text().withProps({
+			value: await this._model.getLocationDisplayName(this._model._targetServerInstance.location),
+			CSSStyles: {
+				'font-size': '13px',
+				'margin': '0px'
+			}
 		}).component();
 
 		const targetlabel = this._view.modelBuilder.text().withProps({
 			value: constants.TARGET,
+			description: constants.MIGRATION_SERVICE_TARGET_INFO,
 			CSSStyles: {
 				'font-size': '13px',
 				'font-weight': 'bold'
 			}
 		}).component();
 
-		const targetText = this._view.modelBuilder.inputBox().withProps({
+		const targetText = this._view.modelBuilder.text().withProps({
 			enabled: false,
-			value: constants.AZURE_SQL
+			value: constants.AZURE_SQL,
+			CSSStyles: {
+				'font-size': '13px',
+				'margin': '0px'
+			}
 		}).component();
 
 		const flexContainer = this._view.modelBuilder.flexContainer().withItems([

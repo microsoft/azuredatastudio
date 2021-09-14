@@ -33,15 +33,15 @@ suite('Connection Utilities tests', () => {
 		let conProfGroupChild = new ConnectionProfileGroup('testGroupChild', conProfGroup, 'testGroupChild', undefined, undefined);
 		conProfGroup.addGroups([conProfGroupChild]);
 		conProfGroupChild.addConnections([connection]);
-		assert.equal(connection, ConnectionUtils.findProfileInGroup(connection, [conProfGroup]));
+		assert.strictEqual(connection, ConnectionUtils.findProfileInGroup(connection, [conProfGroup]));
 	});
 
 	test('getUriPrefix - test if getUriPrefix finds the correct prefix from fake uri name', () => {
 		let testUri = 'test://testpath';
-		assert.equal('test://', ConnectionUtils.getUriPrefix(testUri));
+		assert.strictEqual('test://', ConnectionUtils.getUriPrefix(testUri));
 		let badTestUri = '://>test#%</';
-		assert.equal(ConnectionUtils.uriPrefixes.default, ConnectionUtils.getUriPrefix(badTestUri));
-		assert.equal('', ConnectionUtils.getUriPrefix(undefined));
+		assert.strictEqual(ConnectionUtils.uriPrefixes.default, ConnectionUtils.getUriPrefix(badTestUri));
+		assert.strictEqual('', ConnectionUtils.getUriPrefix(undefined));
 
 	});
 
@@ -61,6 +61,6 @@ suite('Connection Utilities tests', () => {
 		let testTime = '28:06:42.12';
 		let testTimeInMS = 101202012;
 		//should properly return the time in milliseconds.
-		assert.equal(testTimeInMS, ConnectionUtils.parseTimeString(testTime));
+		assert.strictEqual(testTimeInMS, ConnectionUtils.parseTimeString(testTime));
 	});
 });

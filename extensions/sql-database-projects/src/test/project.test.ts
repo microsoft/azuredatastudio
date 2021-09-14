@@ -868,14 +868,14 @@ describe('Project: properties', function (): void {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjectMissingVersionBaseline);
 		const project = await Project.openProject(projFilePath);
 
-		should(() => project.getProjectTargetVersion()).throw("Invalid DSP in .sqlproj file");
+		should(() => project.getProjectTargetVersion()).throw('Invalid DSP in .sqlproj file');
 	});
 
 	it('Should throw on invalid target database version', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjectInvalidVersionBaseline);
 		const project = await Project.openProject(projFilePath);
 
-		should(() => project.getProjectTargetVersion()).throw("Invalid DSP in .sqlproj file");
+		should(() => project.getProjectTargetVersion()).throw('Invalid DSP in .sqlproj file');
 	});
 
 	it('Should read default database collation', async function (): Promise<void> {

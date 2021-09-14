@@ -35,6 +35,7 @@ function buildDriver(browser: playwright.Browser, page: playwright.Page): IDrive
 		getWindowIds: () => {
 			return Promise.resolve([1]);
 		},
+		// {{SQL CARBON EDIT}}
 		capturePage: async () => {
 			const buffer = await page.screenshot();
 			return buffer.toString('base64');

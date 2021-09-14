@@ -318,6 +318,7 @@ export class NotebookFindDecorations implements IDisposable {
 	}
 
 	private static readonly _CURRENT_FIND_MATCH_DECORATION = ModelDecorationOptions.register({
+		description: 'CURRENT_FIND_MATCH_DECORATION',
 		stickiness: TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
 		zIndex: 13,
 		className: 'currentFindMatch',
@@ -333,6 +334,7 @@ export class NotebookFindDecorations implements IDisposable {
 	});
 
 	private static readonly _FIND_MATCH_DECORATION = ModelDecorationOptions.register({
+		description: 'FIND_MATCH_DECORATION',
 		stickiness: TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
 		className: 'findMatch',
 		showIfCollapsed: true,
@@ -347,12 +349,14 @@ export class NotebookFindDecorations implements IDisposable {
 	});
 
 	private static readonly _FIND_MATCH_NO_OVERVIEW_DECORATION = ModelDecorationOptions.register({
+		description: 'FIND_MATCH_NO_OVERVIEW_DECORATION',
 		stickiness: TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
 		className: 'findMatch',
 		showIfCollapsed: true
 	});
 
 	private static readonly _FIND_MATCH_ONLY_OVERVIEW_DECORATION = ModelDecorationOptions.register({
+		description: 'FIND_MATCH_ONLY_OVERVIEW_DECORATION',
 		stickiness: TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
 		overviewRuler: {
 			color: themeColorFromId(overviewRulerFindMatchForeground),
@@ -361,12 +365,14 @@ export class NotebookFindDecorations implements IDisposable {
 	});
 
 	private static readonly _RANGE_HIGHLIGHT_DECORATION = ModelDecorationOptions.register({
+		description: 'RANGE_HIGHLIGHT_DECORATION',
 		stickiness: TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
 		className: 'rangeHighlight',
 		isWholeLine: false
 	});
 
 	private static readonly _FIND_SCOPE_DECORATION = ModelDecorationOptions.register({
+		description: 'FIND_SCOPE_DECORATION',
 		className: 'findScope',
 		isWholeLine: true
 	});

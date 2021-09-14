@@ -146,7 +146,7 @@ describe('BookPinManagerTests', function () {
 			should(isNotebookPinnedBeforeChange).be.false('Notebook should NOT be pinned');
 
 			// mock pin book item from viewlet
-			bookPinManager.pinNotebook(books[0].bookItems[1]);
+			await bookPinManager.pinNotebook(books[0].bookItems[1]);
 
 			let isNotebookPinnedAfterChange = isBookItemPinned(notebookUri);
 			should(isNotebookPinnedAfterChange).be.true('Notebook should be pinned');
@@ -158,7 +158,7 @@ describe('BookPinManagerTests', function () {
 
 			should(isNotebookPinned).be.true('Notebook should be pinned');
 
-			bookPinManager.unpinNotebook(books[0].bookItems[0]);
+			await bookPinManager.unpinNotebook(books[0].bookItems[0]);
 			let isNotebookPinnedAfterChange = isBookItemPinned(notebookUri);
 
 			should(isNotebookPinnedAfterChange).be.false('Notebook should not be pinned after notebook is unpinned');

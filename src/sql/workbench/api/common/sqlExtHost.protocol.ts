@@ -32,7 +32,7 @@ export abstract class ExtHostAccountManagementShape {
 	$autoOAuthCancelled(handle: number): Thenable<void> { throw ni(); }
 	$clear(handle: number, accountKey: azdata.AccountKey): Thenable<void> { throw ni(); }
 	$getSecurityToken(account: azdata.Account, resource?: azdata.AzureResource): Thenable<{}> { throw ni(); }
-	$getAccountSecurityToken(account: azdata.Account, tenant: string, resource?: azdata.AzureResource): Thenable<{ token: string }> { throw ni(); }
+	$getAccountSecurityToken(account: azdata.Account, tenant: string, resource?: azdata.AzureResource): Thenable<azdata.accounts.AccountSecurityToken> { throw ni(); }
 	$initialize(handle: number, restoredAccounts: azdata.Account[]): Thenable<azdata.Account[]> { throw ni(); }
 	$prompt(handle: number): Thenable<azdata.Account | azdata.PromptFailedResult> { throw ni(); }
 	$refresh(handle: number, account: azdata.Account): Thenable<azdata.Account | azdata.PromptFailedResult> { throw ni(); }
@@ -192,6 +192,11 @@ export abstract class ExtHostDataProtocolShape {
 	 * Disposes the cached information regarding a query
 	 */
 	$disposeQuery(handle: number, ownerUri: string): Thenable<void> { throw ni(); }
+
+	/**
+	 * Notifies the client that the URI associated with a connection has changed
+	 */
+	$connectionUriChanged(handle: number, newUri: string, oldUri: string): Thenable<void> { throw ni(); }
 
 	/**
 	 * Refreshes the IntelliSense cache

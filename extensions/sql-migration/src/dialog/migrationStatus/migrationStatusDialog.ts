@@ -14,6 +14,7 @@ import { clearDialogMessage, convertTimeDifferenceToDuration, filterMigrations, 
 import { SqlMigrationServiceDetailsDialog } from '../sqlMigrationService/sqlMigrationServiceDetailsDialog';
 import { ConfirmCutoverDialog } from '../migrationCutover/confirmCutoverDialog';
 import { MigrationCutoverDialogModel } from '../migrationCutover/migrationCutoverDialogModel';
+import { getMigrationTargetType, getMigrationMode } from '../../constants/helper';
 
 const refreshFrequency: SupportedAutoRefreshIntervals = 180000;
 
@@ -53,31 +54,11 @@ export class MigrationStatusDialog {
 		let tab = azdata.window.createTab('');
 		tab.registerContent(async (view: azdata.ModelView) => {
 			this._view = view;
-
-			this._statusDropdown = this._view.modelBuilder.dropDown().withProps({
-				ariaLabel: loc.MIGRATION_STATUS_FILTER,
-				values: this._model.statusDropdownValues,
-				width: '220px'
-			}).component();
-
-			this._disposables.push(this._statusDropdown.onValueChanged((value) => {
-				this.populateMigrationTable();
-			}));
-
-			if (this._filter) {
-				this._statusDropdown.value = (<azdata.CategoryValue[]>this._statusDropdown.values).find((value) => {
-					return value.name === this._filter;
-				});
-			}
-
 			this.registerCommands();
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
 				[
 					{
 						component: this.createSearchAndRefreshContainer()
-					},
-					{
-						component: this._statusDropdown
 					},
 					{
 						component: this.createStatusTable()
@@ -147,6 +128,29 @@ export class MigrationStatusDialog {
 
 		flexContainer.addItem(this._searchBox, {
 			flex: '0'
+		});
+
+		this._statusDropdown = this._view.modelBuilder.dropDown().withProps({
+			ariaLabel: loc.MIGRATION_STATUS_FILTER,
+			values: this._model.statusDropdownValues,
+			width: '220px'
+		}).component();
+
+		this._disposables.push(this._statusDropdown.onValueChanged((value) => {
+			this.populateMigrationTable();
+		}));
+
+		if (this._filter) {
+			this._statusDropdown.value = (<azdata.CategoryValue[]>this._statusDropdown.values).find((value) => {
+				return value.name === this._filter;
+			});
+		}
+
+		flexContainer.addItem(this._statusDropdown, {
+			flex: '0',
+			CSSStyles: {
+				'margin-left': '20px'
+			}
 		});
 
 		flexContainer.addItem(this._refresh, {
@@ -323,8 +327,8 @@ export class MigrationStatusDialog {
 				return [
 					{ value: this._getDatabaserHyperLink(migration) },
 					{ value: this._getMigrationStatus(migration) },
-					{ value: this._getMigrationMode(migration) },
-					{ value: this._getMigrationTargetType(migration) },
+					{ value: getMigrationMode(migration) },
+					{ value: getMigrationTargetType(migration) },
 					{ value: migration.targetManagedInstance.name },
 					{ value: migration.controller.name },
 					{
@@ -401,21 +405,11 @@ export class MigrationStatusDialog {
 		return '---';
 	}
 
-	private _getMigrationTargetType(migration: MigrationContext): string {
-		return migration.targetManagedInstance.type === 'microsoft.sql/managedinstances'
-			? loc.SQL_MANAGED_INSTANCE
-			: loc.SQL_VIRTUAL_MACHINE;
-	}
-
-	private _getMigrationMode(migration: MigrationContext): string {
-		return migration.migrationContext.properties.autoCutoverConfiguration?.autoCutover?.valueOf() ? loc.OFFLINE : loc.ONLINE;
-	}
-
 	private _getMenuCommands(migration: MigrationContext): string[] {
 		const menuCommands: string[] = [];
 		const migrationStatus = migration?.migrationContext?.properties?.migrationStatus;
 
-		if (this._getMigrationMode(migration) === loc.ONLINE &&
+		if (getMigrationMode(migration) === loc.ONLINE &&
 			this.canCutoverMigration(migrationStatus)) {
 			menuCommands.push(MenuCommands.Cutover);
 		}

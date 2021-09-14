@@ -7,7 +7,7 @@ import * as nls from 'vscode-nls';
 import { SqlTargetPlatform } from 'sqldbproj';
 import * as utils from '../common/utils';
 
-const localize = nls.loadMessageBundle();
+export const localize = nls.loadMessageBundle();
 
 // Placeholder values
 export const dataSourcesFileName = 'datasources.json';
@@ -115,25 +115,26 @@ export const selectProfileToUse = localize('selectProfileToUse', "Select publish
 export const selectProfile = localize('selectProfile', "Select Profile");
 export const dontUseProfile = localize('dontUseProfile', "Don't use profile");
 export const browseForProfile = localize('browseForProfile', "Browse for profile");
+export const browseForProfileWithIcon = `$(folder) ${browseForProfile}`;
 export const chooseAction = localize('chooseAction', "Choose action");
 export const chooseSqlcmdVarsToModify = localize('chooseSqlcmdVarsToModify', "Choose SQLCMD variables to modify");
 export const enterNewValueForVar = (varName: string) => localize('enterNewValueForVar', "Enter new value for variable '{0}'", varName);
 export const resetAllVars = localize('resetAllVars', "Reset all variables");
-export const createNew = localize('createNew', "<Create New>");
+export const createNew = localize('createNew', "Create New");
 export const enterNewDatabaseName = localize('enterNewDatabaseName', "Enter new database name");
-export const newDatabaseTitle = (name: string) => localize({ key: 'newDatabaseTitle', comment: ['Name is the name of a new database being created'] }, "{0} (new)", name);
+export const newText = localize('new', "New");
 export const selectDatabase = localize('selectDatabase', "Select database");
 export const done = localize('done', "Done");
 export const nameMustNotBeEmpty = localize('nameMustNotBeEmpty', "Name must not be empty");
 
 // Deploy
-export const selectDeployOption = localize('selectDeployOption', "Select where to deploy the project to");
-export const deployToExistingServer = localize('deployToExistingServer', "Deploy to existing server");
-export const deployToDockerContainer = localize('deployToDockerContainer', "Deploy to docker container");
+export const selectPublishOption = localize('selectPublishOption', "Select where to publish the project to");
+export const publishToExistingServer = localize('publishToExistingServer', "Publish to existing server");
+export const publishToDockerContainer = localize('publishToDockerContainer', "Publish to docker container");
 export const enterPortNumber = localize('enterPortNumber', "Enter port number or press enter to use the default value");
 export const enterConnectionStringEnvName = localize('enterConnectionStringEnvName', "Enter connection string environment variable name");
 export const enterConnectionStringTemplate = localize('enterConnectionStringTemplate', "Enter connection string template");
-export const enterPassword = localize('enterPassword', "Enter password or press enter to use the generated password");
+export const enterPassword = localize('enterPassword', "Enter password");
 export const portMustBeNumber = localize('portMustNotBeNumber', "Port must a be number");
 export const valueCannotBeEmpty = localize('valueCannotBeEmpty', "Value cannot be empty");
 export const dockerImageLabelPrefix = 'source=sqldbproject';
@@ -217,6 +218,7 @@ export const selectFolderStructure = localize('selectFolderStructure', "Select f
 export const folderStructureLabel = localize('folderStructureLabel', "Folder structure");
 export const WorkspaceFileExtension = '.code-workspace';
 export const browseEllipsis = localize('browseEllipsis', "Browse...");
+export const browseEllipsisWithIcon = `$(folder) ${browseEllipsis}`;
 export const selectProjectLocation = localize('selectProjectLocation', "Select project location");
 export const ProjectParentDirectoryNotExistError = (location: string): string => { return localize('dataworkspace.projectParentDirectoryNotExistError', "The selected project location '{0}' does not exist or is not a directory.", location); };
 export const ProjectDirectoryAlreadyExistError = (projectName: string, location: string): string => { return localize('dataworkspace.projectDirectoryAlreadyExistError', "There is already a directory named '{0}' in the selected location: '{1}'.", projectName, location); };
@@ -451,13 +453,20 @@ export function getTargetPlatformFromVersion(version: string): string {
 
 // Insert SQL binding
 export const hostFileName = 'host.json';
+export const sqlExtensionPackageName = 'Microsoft.Azure.WebJobs.Extensions.Sql';
 export const placeHolderObject = '[dbo].[table1]';
+
 export const input = localize('input', "Input");
 export const output = localize('output', "Output");
 export const selectBindingType = localize('selectBindingType', "Select type of binding");
 export const selectAzureFunction = localize('selectAzureFunction', "Select an Azure function in the current file to add SQL binding to");
-export const sqlObjectToQuery = localize('sqlObjectToQuery', "SQL object to query");
+export const sqlTableOrViewToQuery = localize('sqlTableOrViewToQuery', "SQL table or view to query");
 export const sqlTableToUpsert = localize('sqlTableToUpsert', "SQL table to upsert into");
 export const connectionStringSetting = localize('connectionStringSetting', "Connection string setting name");
+export const selectSetting = localize('selectSetting', "Select SQL connection string setting from local.settings.json");
 export const connectionStringSettingPlaceholder = localize('connectionStringSettingPlaceholder', "Connection string setting specified in \"local.settings.json\"");
 export const noAzureFunctionsInFile = localize('noAzureFunctionsInFile', "No Azure functions in the current active file");
+export const noAzureFunctionsProjectsInWorkspace = localize('noAzureFunctionsProjectsInWorkspace', "No Azure functions projects found in the workspace");
+export const addPackage = localize('addPackage', "Add Package");
+export function failedToParse(errorMessage: string) { return localize('failedToParse', 'Failed to parse "{0}": {1}.', azureFunctionLocalSettingsFileName, errorMessage); }
+export function jsonParseError(error: string, line: number, column: number) { return localize('jsonParseError', '{0} near line "{1}", column "{2}"', error, line, column); }

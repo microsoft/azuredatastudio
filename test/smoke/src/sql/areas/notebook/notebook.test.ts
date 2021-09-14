@@ -56,6 +56,7 @@ export function setup() {
 		// Python Notebooks
 
 		it('can open new notebook, configure Python, and execute one cell', async function () {
+			this.timeout(600000); // set timeout to 10 minutes to ensure test does not timeout during python installation
 			const app = this.app as Application;
 			await app.workbench.sqlNotebook.newUntitledNotebook();
 			await app.workbench.sqlNotebook.addCell('code');
@@ -64,7 +65,10 @@ export function setup() {
 
 			await app.workbench.sqlNotebook.notebookToolbar.changeKernel('Python 3');
 			await app.workbench.configurePythonDialog.waitForConfigurePythonDialog();
-			await app.workbench.configurePythonDialog.installPython();
+			await app.workbench.configurePythonDialog.waitForPageOneLoaded();
+			await app.workbench.configurePythonDialog.next();
+			await app.workbench.configurePythonDialog.waitForPageTwoLoaded();
+			await app.workbench.configurePythonDialog.install();
 			await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('Python 3');
 
 			await app.workbench.sqlNotebook.runActiveCell();
@@ -88,7 +92,16 @@ export function setup() {
 
 		afterEach(async function () {
 			const app = this.app as Application;
+			// If the test failed, take a screenshot before closing the active editor.
+			if (this.currentTest!.state === 'failed') {
+				const name = this.currentTest!.fullTitle().replace(/[^a-z0-9\-]/ig, '_');
+				await app.captureScreenshot(`${name} (screenshot before revertAndCloseActiveEditor action)`);
+			}
+
 			await app.workbench.quickaccess.runCommand('workbench.action.revertAndCloseActiveEditor');
+
+			// Close any open wizards
+			await app.code.dispatchKeybinding('escape');
 		});
 
 		describe('Notebook Toolbar Actions', async () => {

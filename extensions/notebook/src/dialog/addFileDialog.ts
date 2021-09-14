@@ -27,12 +27,16 @@ export class AddFileDialog {
 		this._prompter = new CodeAdapter();
 	}
 
+	public get dialog(): azdata.window.Dialog | undefined {
+		return this._dialog;
+	}
+
 	public async validatePath(folderPath: string, fileBasename: string): Promise<void> {
 		const destinationUri = path.join(folderPath, fileBasename);
 		if (await pathExists(destinationUri)) {
 			const doOverwrite = await confirmMessageDialog(this._prompter, loc.confirmOverwrite);
 			if (!doOverwrite) {
-				throw (new Error(loc.msgDuplicadFileName(destinationUri)));
+				throw (new Error(loc.msgDuplicateFileName(destinationUri)));
 			}
 		}
 		if (!(await pathExists(folderPath))) {
@@ -88,16 +92,16 @@ export class AddFileDialog {
 			await this.view.initializeModel(this._formModel);
 		});
 		this._dialog.okButton.label = loc.add;
-		this._dialog.registerCloseValidator(async () => await this.createFile());
+		this._dialog.registerCloseValidator(async () => await this.createFile(this._fileNameInputBox.value, this._titleInputBox.value));
 		azdata.window.openDialog(this._dialog);
 	}
 
-	private async createFile(): Promise<boolean> {
+	public async createFile(fileName: string, titleName: string): Promise<boolean> {
 		try {
 			const dirPath = this._bookItem.contextValue === BookTreeItemType.savedBook ? this._bookItem.rootContentPath : path.dirname(this._bookItem.book.contentPath);
-			const filePath = path.posix.join(dirPath, this._fileNameInputBox.value).concat(this._extension);
-			await this.validatePath(dirPath, this._fileNameInputBox.value.concat(this._extension));
-			const pathDetails = new TocEntryPathHandler(filePath, this._bookItem.rootContentPath, this._titleInputBox.value);
+			const filePath = path.posix.join(dirPath, fileName).concat(this._extension);
+			await this.validatePath(dirPath, fileName.concat(this._extension));
+			const pathDetails = new TocEntryPathHandler(filePath, this._bookItem.rootContentPath, titleName);
 			await this._tocManager.addNewFile(pathDetails, this._bookItem);
 			return true;
 		} catch (error) {

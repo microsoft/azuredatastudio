@@ -8,52 +8,147 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"azure.displayName": "Azure (核心)",
-			"azure.description": "瀏覽並使用 Azure 資源",
-			"azure.title": "Azure",
-			"azure.resource.config.title": "Azure 資源組態",
-			"azure.resource.config.filter.description": "資源篩選條件，每個元素都是以正斜線分隔的帳戶識別碼、訂用帳戶識別碼和名稱",
-			"azure.resource.explorer.title": "Azure",
-			"azure.resource.refreshall.title": "Azure: 重新整理所有帳戶",
-			"azure.resource.refresh.title": "重新整理",
-			"azure.resource.signin.title": "Azure: 登入",
-			"azure.resource.selectsubscriptions.title": "選取訂用帳戶",
-			"azure.resource.startterminal.title": "啟動 Cloud Shell",
-			"azure.resource.connectsqlserver.title": "連線",
-			"azure.resource.connectsqldb.title": "新增至伺服器",
-			"azure.resource.view.title": "Azure (預覽)",
-			"azure.tenant.config.filter.description": "查詢 Azure 資源時要忽略的租用戶識別碼清單。每個項目都是租用戶識別碼。",
-			"accounts.clearTokenCache": "清除 Azure 帳戶權杖快取",
-			"azure.openInAzurePortal.title": "在 Azure 入口網站中開啟",
-			"config.azureAccountConfigurationSection": "Azure 帳戶組態",
-			"config.enablePublicCloudDescription": "是否應啟用 Azure 公用雲端整合",
-			"config.enableUsGovCloudDescription": "是否應啟用 US Government Azure 雲端 (Fairfax) 整合",
-			"config.enableUsNatCloudDescription": "是否應啟用美國國民 Azure 雲端整合",
-			"config.enableChinaCloudDescription": "是否應啟用 Azure 中國整合",
-			"config.enableGermanyCloudDescription": "是否應啟用 Azure 德國整合",
-			"config.azureAuthMethodConfigurationSection": "Azure 驗證方法",
-			"config.azureCodeGrantMethod": "代碼授與方法",
-			"config.azureDeviceCodeMethod": "裝置代碼方法",
-			"config.noSystemKeychain": "停用系統金鑰鏈整合。認證將會儲存於使用者主目錄的一般檔案中。",
-			"config.piiLogging": "是否應在本機主控台檢視中登入個人識別資訊 (PII)"
+		"dist/account-provider/auths/azureAuth": {
+			"azure.accessTokenEmpty": "Microsoft OAuth 未傳回任何存取權杖",
+			"azure.cacheErrorAdd": "將您的帳戶新增至快取時發生錯誤。",
+			"azure.cacheErrorGet": "從快取取得您的帳戶時發生錯誤",
+			"azure.cacheErrorParse": "從快取剖析您的帳戶時發生錯誤",
+			"azure.cacheErrrorRemove": "從快取移除您的帳戶時發生錯誤。",
+			"azure.microsoftAccountDisplayName": "Microsoft 帳戶",
+			"azure.microsoftCorpAccount": "Microsoft Corp.",
+			"azure.noBaseToken": "驗證失敗，或您的權杖已從系統中刪除。請嘗試再次將帳戶新增至 Azure Data Studio。",
+			"azure.noUniqueIdentifier": "使用者在 AAD 中沒有唯一的識別碼",
+			"azure.responseError": "權杖擷取失敗，發生錯誤。請開啟開發人員工具以檢視錯誤",
+			"azure.tenantNotFound": "找不到識別碼為 '{0}' 的指定租用戶。",
+			"azureAuth.unidentifiedError": "Azure 驗證發生無法辨識的錯誤",
+			"azureWorkAccountDisplayName": "公司或學校帳戶",
+			"azurecore.consentDialog.body": "您的租用戶 '{0} ({1})' 需要再次重新驗證，才能存取 {2} 資源。請按 [開啟] 啟動驗證程序。",
+			"azurecore.consentDialog.cancel": "取消",
+			"azurecore.consentDialog.ignore": "忽略租用戶",
+			"azurecore.consentDialog.open": "開啟"
+		},
+		"dist/account-provider/auths/azureAuthCodeGrant": {
+			"azure.azureAuthCodeGrantName": "Azure 驗證碼授與",
+			"azure.serverCouldNotStart": "無法啟動伺服器。這可能是系統的權限發生錯誤或系統不相容。可嘗試從設定啟用裝置代碼驗證。",
+			"azureAuth.nonceError": "因為 nonce 不相符，導致驗證失敗，請關閉 Azure Data Studio，然後再試一次。",
+			"azureAuth.stateError": "因為狀態不相符，導致驗證失敗，請關閉 ADS，然後再試一次。"
+		},
+		"dist/account-provider/auths/azureDeviceCode": {
+			"addAccount": "新增 {0} 帳戶",
+			"azure.azureDeviceCodeAuth": "Azure 裝置代碼",
+			"azure.deviceCodeCheckFail": "嘗試檢查登入結果時發生錯誤",
+			"azure.timeoutDeviceCode": "等候裝置代碼登入發生逾時。"
+		},
+		"dist/account-provider/azureAccountProvider": {
+			"azure.NoAuthMethod.Available": "沒有任何可用的 Azure 驗證方法。您必須在 ADS 組態中啟用驗證方法。",
+			"azure.NoAuthMethod.Selected": "未選取任何 Azure 驗證方法。您必須選取要使用的驗證方法。",
+			"azure.deprecatedGetSecurityToken": "已對 azdata.accounts.getSecurityToken 發出呼叫，此方法已淘汰，並將於日後的版本中移除。請改用 getAccountSecurityToken。"
+		},
+		"dist/account-provider/azureAccountProviderService": {
+			"clearTokenCacheFailure": "無法清除權杖快取",
+			"clearTokenCacheSuccess": "已成功清除權杖快取"
+		},
+		"dist/account-provider/providerSettings": {
+			"chinaCloudDisplayName": "Azure (中國)",
+			"germanyCloud": "Azure (德國)",
+			"publicCloudDisplayName": "Azure",
+			"usGovCloudDisplayName": "Azure (美國政府)",
+			"usNatCloudDisplayName": "Azure (美國國民)"
+		},
+		"dist/azureResource/commands": {
+			"azure.accountNotSelectedError": "您必須選取 Azure 帳戶，此功能才能運作。",
+			"azure.cloudTerminalPreview": "您必須啟用預覽功能，才能使用 Azure Cloud Shell。",
+			"azure.mustPickTenant": "您必須選取租用戶，此功能才能運作。",
+			"azure.noAccountError": "您目前未登入任何 Azure 帳戶，請先登入，然後再試一次。",
+			"azure.noTenants": "需要有租用戶，才能使用此功能。您的 Azure 訂閱似乎沒有任何租用戶。",
+			"azure.pickAnAzureAccount": "選取 Azure 帳戶",
+			"azure.signIn": "登入",
+			"azure.startingCloudShell": "正在啟動 Cloud Shell…"
+		},
+		"dist/azureResource/errors": {
+			"azure.subscriptionError": "無法取得帳戶 {0} 的訂用帳戶。請重新整理該帳戶。"
+		},
+		"dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider": {
+			"azure.resource.providers.AzureMonitorContainerLabel": "Log Analytics 工作區"
+		},
+		"dist/azureResource/providers/database/databaseTreeDataProvider": {
+			"azure.resource.providers.database.treeDataProvider.databaseContainerLabel": "SQL 資料庫"
+		},
+		"dist/azureResource/providers/databaseServer/databaseServerTreeDataProvider": {
+			"azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel": "SQL 伺服器"
+		},
+		"dist/azureResource/providers/kusto/kustoTreeDataProvider": {
+			"azure.resource.providers.KustoContainerLabel": "Azure 資料總管叢集"
+		},
+		"dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider": {
+			"azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel": "PostgreSQL 超大規模資料庫 - Azure Arc"
+		},
+		"dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider": {
+			"azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel": "適用於 PostgreSQL 的 Azure 資料庫伺服器"
+		},
+		"dist/azureResource/providers/sqlinstance/sqlInstanceTreeDataProvider": {
+			"azure.resource.providers.sqlInstanceContainerLabel": "Azure SQL DB 受控執行個體"
+		},
+		"dist/azureResource/providers/sqlinstanceArc/sqlInstanceArcTreeDataProvider": {
+			"azure.resource.providers.sqlInstanceArcContainerLabel": "SQL 受控執行個體 - Azure Arc"
+		},
+		"dist/azureResource/resourceTreeNode": {
+			"azure.resource.resourceTreeNode.noResourcesLabel": "找不到任何資源"
+		},
+		"dist/azureResource/services/subscriptionService": {
+			"azure.resource.tenantSubscriptionsError": "無法取得帳戶 {0} (租用戶 '{1}') 的訂用帳戶。{2}"
+		},
+		"dist/azureResource/services/terminalService": {
+			"azure.cloudShell": "Azure Cloud Shell (預覽) {0} ({1})",
+			"azure.cloudTerminal.ok": "確定",
+			"azure.cloudTerminal.openAzureShell": "開啟 Azure Shell",
+			"azure.coudTerminal.neverUsed": "若您以前未從此帳戶啟動 Azure Cloud Shell，請前往 https://shell.azure.com/ 以開始使用。設定之後，即可在 Azure Data Studio 中直接使用 AzureCloud Shell。",
+			"azure.selectShellType": "選取適用於 Azure Cloud Shell 的 Bash 或 PowerShell",
+			"azure.shellClosed": "Shell 已關閉。\r\n",
+			"azure.shellTypeRequired": "您必須挑選殼層類型"
+		},
+		"dist/azureResource/tree/accountNotSignedInTreeNode": {
+			"azure.resource.tree.accountNotSignedInTreeNode.signInLabel": "登入 Azure…"
+		},
+		"dist/azureResource/tree/accountTreeNode": {
+			"azure.resource.tree.accountTreeNode.noSubscriptionsLabel": "找不到訂用帳戶。",
+			"azure.unableToAccessSubscription": "無法存取訂用帳戶 {0} ({1})。請 [重新整理帳戶](command:azure.resource.signin) 再試一次。{2}"
+		},
+		"dist/azureResource/tree/connectionDialogTreeProvider": {
+			"azure.resource.tree.treeProvider.accountLoadError": "無法載入某些 Azure 帳戶。{0}",
+			"azure.resource.tree.treeProvider.loadingLabel": "正在載入...",
+			"azure.resource.tree.treeProvider.openAccountsDialog": "顯示 Azure 帳戶"
+		},
+		"dist/azureResource/tree/flatAccountTreeNode": {
+			"azure.resource.throttleerror": "已節流來自此帳戶的要求。若要重試，請選取較少的訂閱數目。",
+			"azure.resource.tree.accountTreeNode.title": "{0} ({1}/{2} 個訂閱)",
+			"azure.resource.tree.accountTreeNode.titleLoading": "{0} - 正在載入...",
+			"azure.resource.tree.loadresourceerror": "載入 Azure 資源時發生錯誤: {0}"
+		},
+		"dist/azureResource/tree/subscriptionTreeNode": {
+			"azure.resource.tree.subscriptionTreeNode.noResourcesLabel": "找不到資源。"
+		},
+		"dist/azureResource/tree/treeProvider": {
+			"azure.resource.tree.treeProvider.loadingLabel": "正在載入..."
 		},
 		"dist/azureResource/utils": {
-			"azure.resource.error": "錯誤: {0}",
-			"azure.accounts.getResourceGroups.queryError": "擷取帳戶 {0} ({1}) 訂閱 {2} ({3}) 租用戶 {4} 的資源群組時發生錯誤: {5}",
 			"azure.accounts.getLocations.queryError": "擷取帳戶 {0} ({1}) 訂閱 {2} ({3}) 租用戶 {4} 的位置時發生錯誤: {5}",
-			"azure.accounts.runResourceQuery.errors.invalidQuery": "查詢無效",
+			"azure.accounts.getResourceGroups.queryError": "擷取帳戶 {0} ({1}) 訂閱 {2} ({3}) 租用戶 {4} 的資源群組時發生錯誤: {5}",
+			"azure.accounts.getSelectedSubscriptions.queryError": "擷取帳戶 {0} 的訂閱時發生錯誤: {1}",
 			"azure.accounts.getSubscriptions.queryError": "擷取帳戶 {0} 租用戶 {1} 的訂閱時發生錯誤: {2}",
-			"azure.accounts.getSelectedSubscriptions.queryError": "擷取帳戶 {0} 的訂閱時發生錯誤: {1}"
+			"azure.accounts.runResourceQuery.errors.invalidQuery": "查詢無效",
+			"azure.resource.error": "錯誤: {0}"
 		},
 		"dist/localizedConstants": {
-			"azurecore.extensionName": "Azure 帳戶",
-			"azurecore.requiresReload": "修改此設定需要重新載入視窗，使所有變更生效。",
-			"azurecore.reload": "重新載入",
+			"azure.azureResourcesGridTitle": "Azure 資源 (預覽)",
+			"azure.unableToOpenAzureLink": "無法開啟連結，缺少必要值",
 			"azurecore.australiacentral": "澳洲中部",
 			"azurecore.australiacentral2": "澳洲中部 2",
 			"azurecore.australiaeast": "澳洲東部",
 			"azurecore.australiasoutheast": "澳洲東南部",
+			"azurecore.azureArcPostgres": "已啟用 Azure Arc 的 PostgreSQL 超大規模資料庫",
+			"azurecore.azureArcService": "資料服務 - Azure Arc",
+			"azurecore.azureArcsqlManagedInstance": "SQL 受控執行個體 - Azure Arc",
 			"azurecore.brazilsouth": "巴西南部",
 			"azurecore.brazilsoutheast": "巴西東南部",
 			"azurecore.canadacentral": "加拿大中部",
@@ -65,172 +160,81 @@
 			"azurecore.eastus": "美國東部",
 			"azurecore.eastus2": "美國東部 2",
 			"azurecore.eastus2euap": "美國東部 2 EUAP",
+			"azurecore.extensionName": "Azure 帳戶",
 			"azurecore.francecentral": "法國中部",
 			"azurecore.francesouth": "法國南部",
 			"azurecore.germanynorth": "德國北部",
 			"azurecore.germanywestcentral": "德國中西部",
+			"azurecore.invalidAzureAccount": "帳戶無效",
+			"azurecore.invalidTenant": "訂閱的租用戶無效",
 			"azurecore.japaneast": "日本東部",
 			"azurecore.japanwest": "日本西部",
 			"azurecore.koreacentral": "南韓中部",
 			"azurecore.koreasouth": "南韓南部",
+			"azurecore.location": "位置",
+			"azurecore.name": "名稱",
 			"azurecore.northcentralus": "美國中北部",
 			"azurecore.northeurope": "北歐",
 			"azurecore.norwayeast": "挪威東部",
 			"azurecore.norwaywest": "挪威西部",
+			"azurecore.postgresServer": "適用於 PostgreSQL 的 Azure 資料庫伺服器",
+			"azurecore.reload": "重新載入",
+			"azurecore.requiresReload": "修改此設定需要重新載入視窗，使所有變更生效。",
+			"azurecore.resourceGroup": "資源群組",
+			"azurecore.resourceType": "資源類型",
 			"azurecore.southafricanorth": "南非北部",
 			"azurecore.southafricawest": "南非西部",
 			"azurecore.southcentralus": "美國中南部",
 			"azurecore.southeastasia": "東南亞",
 			"azurecore.southindia": "印度南部",
+			"azurecore.sqlDatabase": "SQL 資料庫",
+			"azurecore.sqlManagedInstance": "SQL 受控執行個體",
+			"azurecore.sqlServer": "SQL 伺服器",
+			"azurecore.sqlServerArc": "SQL Server - Azure Arc",
+			"azurecore.subscription": "訂閱",
 			"azurecore.switzerlandnorth": "瑞士北部",
 			"azurecore.switzerlandwest": "瑞士西部",
+			"azurecore.typeIcon": "類型圖示",
 			"azurecore.uaecentral": "阿拉伯聯合大公國中部",
 			"azurecore.uaenorth": "阿拉伯聯合大公國北部",
 			"azurecore.uksouth": "英國南部",
 			"azurecore.ukwest": "英國西部",
+			"azurecore.unableToFetchToken": "無法取得租用戶 {0} 的權杖",
 			"azurecore.westcentralus": "美國中西部",
 			"azurecore.westeurope": "西歐",
 			"azurecore.westindia": "印度西部",
 			"azurecore.westus": "美國西部",
-			"azurecore.westus2": "美國西部 2",
-			"azurecore.name": "名稱",
-			"azurecore.resourceType": "資源類型",
-			"azurecore.resourceGroup": "資源群組",
-			"azurecore.location": "位置",
-			"azurecore.subscription": "訂閱",
-			"azurecore.typeIcon": "類型圖示",
-			"azurecore.sqlServer": "SQL 伺服器",
-			"azurecore.sqlDatabase": "SQL 資料庫",
-			"azurecore.postgresServer": "適用於 PostgreSQL 的 Azure 資料庫伺服器",
-			"azurecore.sqlManagedInstance": "SQL 受控執行個體",
-			"azurecore.azureArcsqlManagedInstance": "SQL 受控執行個體 - Azure Arc",
-			"azurecore.azureArcService": "資料服務 - Azure Arc",
-			"azurecore.sqlServerArc": "SQL Server - Azure Arc",
-			"azurecore.azureArcPostgres": "已啟用 Azure Arc 的 PostgreSQL 超大規模資料庫",
-			"azure.unableToOpenAzureLink": "無法開啟連結，缺少必要值",
-			"azure.azureResourcesGridTitle": "Azure 資源 (預覽)",
-			"azurecore.invalidAzureAccount": "帳戶無效",
-			"azurecore.invalidTenant": "訂閱的租用戶無效",
-			"azurecore.unableToFetchToken": "無法取得租用戶 {0} 的權杖"
+			"azurecore.westus2": "美國西部 2"
 		},
-		"dist/account-provider/auths/azureAuth": {
-			"azureAuth.unidentifiedError": "Azure 驗證發生無法辨識的錯誤",
-			"azure.tenantNotFound": "找不到識別碼為 '{0}' 的指定租用戶。",
-			"azure.noBaseToken": "驗證失敗，或您的權杖已從系統中刪除。請嘗試再次將帳戶新增至 Azure Data Studio。",
-			"azure.responseError": "權杖擷取失敗，發生錯誤。請開啟開發人員工具以檢視錯誤",
-			"azure.accessTokenEmpty": "Microsoft OAuth 未傳回任何存取權杖",
-			"azure.noUniqueIdentifier": "使用者在 AAD 中沒有唯一的識別碼",
-			"azureWorkAccountDisplayName": "公司或學校帳戶",
-			"azure.cacheErrorAdd": "將您的帳戶新增至快取時發生錯誤。",
-			"azure.cacheErrorGet": "從快取取得您的帳戶時發生錯誤",
-			"azure.cacheErrorParse": "從快取剖析您的帳戶時發生錯誤",
-			"azurecore.consentDialog.open": "開啟",
-			"azurecore.consentDialog.cancel": "取消",
-			"azurecore.consentDialog.ignore": "忽略租用戶",
-			"azurecore.consentDialog.body": "您的租用戶 '{0} ({1})' 需要再次重新驗證，才能存取 {2} 資源。請按 [開啟] 啟動驗證程序。",
-			"azure.microsoftCorpAccount": "Microsoft Corp.",
-			"azure.microsoftAccountDisplayName": "Microsoft 帳戶",
-			"azure.cacheErrrorRemove": "從快取移除您的帳戶時發生錯誤。"
-		},
-		"dist/azureResource/tree/accountTreeNode": {
-			"azure.resource.tree.accountTreeNode.credentialError": "無法取得帳戶 {0} 的認證。請重新整理該帳戶。",
-			"azure.resource.tree.accountTreeNode.noSubscriptionsLabel": "找不到訂用帳戶。"
-		},
-		"dist/azureResource/resourceTreeNode": {
-			"azure.resource.resourceTreeNode.noResourcesLabel": "找不到任何資源"
-		},
-		"dist/azureResource/tree/flatAccountTreeNode": {
-			"azure.resource.tree.accountTreeNode.titleLoading": "{0} - 正在載入...",
-			"azure.resource.tree.accountTreeNode.title": "{0} ({1}/{2} 個訂閱)",
-			"azure.resource.tree.accountTreeNode.credentialError": "無法取得帳戶 {0} 的認證。請前往 [帳戶] 對話方塊並重新整理帳戶。",
-			"azure.resource.throttleerror": "已節流來自此帳戶的要求。若要重試，請選取較少的訂閱數目。",
-			"azure.resource.tree.loadresourceerror": "載入 Azure 資源時發生錯誤: {0}"
-		},
-		"dist/azureResource/tree/accountNotSignedInTreeNode": {
-			"azure.resource.tree.accountNotSignedInTreeNode.signInLabel": "登入 Azure…"
-		},
-		"dist/account-provider/azureAccountProviderService": {
-			"clearTokenCacheSuccess": "已成功清除權杖快取",
-			"clearTokenCacheFailure": "無法清除權杖快取"
-		},
-		"dist/account-provider/providerSettings": {
-			"publicCloudDisplayName": "Azure",
-			"usGovCloudDisplayName": "Azure (美國政府)",
-			"usNatCloudDisplayName": "Azure (美國國民)",
-			"germanyCloud": "Azure (德國)",
-			"chinaCloudDisplayName": "Azure (中國)"
-		},
-		"dist/account-provider/azureAccountProvider": {
-			"azure.deprecatedGetSecurityToken": "已對 azdata.accounts.getSecurityToken 發出呼叫，此方法已淘汰，並將於日後的版本中移除。請改用 getAccountSecurityToken。",
-			"azure.NoAuthMethod.Selected": "未選取任何 Azure 驗證方法。您必須選取要使用的驗證方法。",
-			"azure.NoAuthMethod.Available": "沒有任何可用的 Azure 驗證方法。您必須在 ADS 組態中啟用驗證方法。"
-		},
-		"dist/account-provider/auths/azureAuthCodeGrant": {
-			"azure.serverCouldNotStart": "無法啟動伺服器。這可能是系統的權限發生錯誤或系統不相容。可嘗試從設定啟用裝置代碼驗證。",
-			"azureAuth.nonceError": "因為 nonce 不相符，導致驗證失敗，請關閉 Azure Data Studio，然後再試一次。",
-			"azureAuth.stateError": "因為狀態不相符，導致驗證失敗，請關閉 ADS，然後再試一次。",
-			"azure.azureAuthCodeGrantName": "Azure 驗證碼授與"
-		},
-		"dist/account-provider/auths/azureDeviceCode": {
-			"addAccount": "新增 {0} 帳戶",
-			"azure.timeoutDeviceCode": "等候裝置代碼登入發生逾時。",
-			"azure.deviceCodeCheckFail": "嘗試檢查登入結果時發生錯誤",
-			"azure.azureDeviceCodeAuth": "Azure 裝置代碼"
-		},
-		"dist/azureResource/providers/databaseServer/databaseServerTreeDataProvider": {
-			"azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel": "SQL 伺服器"
-		},
-		"dist/azureResource/providers/database/databaseTreeDataProvider": {
-			"azure.resource.providers.database.treeDataProvider.databaseContainerLabel": "SQL 資料庫"
-		},
-		"dist/azureResource/commands": {
-			"azure.cloudTerminalPreview": "您必須啟用預覽功能，才能使用 Azure Cloud Shell。",
-			"azure.signIn": "登入",
-			"azure.noAccountError": "您目前未登入任何 Azure 帳戶，請先登入，然後再試一次。",
-			"azure.pickAnAzureAccount": "選取 Azure 帳戶",
-			"azure.accountNotSelectedError": "您必須選取 Azure 帳戶，此功能才能運作。",
-			"azure.noTenants": "需要有租用戶，才能使用此功能。您的 Azure 訂閱似乎沒有任何租用戶。",
-			"azure.startingCloudShell": "正在啟動 Cloud Shell…",
-			"azure.mustPickTenant": "您必須選取租用戶，此功能才能運作。",
-			"azure.resource.selectsubscriptions.credentialError": "無法取得帳戶 {0} 的認證。請重新整理該帳戶。"
-		},
-		"dist/azureResource/tree/subscriptionTreeNode": {
-			"azure.resource.tree.subscriptionTreeNode.noResourcesLabel": "找不到資源。"
-		},
-		"dist/azureResource/tree/treeProvider": {
-			"azure.resource.tree.treeProvider.loadingLabel": "正在載入..."
-		},
-		"dist/azureResource/providers/sqlinstance/sqlInstanceTreeDataProvider": {
-			"azure.resource.providers.sqlInstanceContainerLabel": "Azure SQL DB 受控執行個體"
-		},
-		"dist/azureResource/providers/kusto/kustoTreeDataProvider": {
-			"azure.resource.providers.KustoContainerLabel": "Azure 資料總管叢集"
-		},
-		"dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider": {
-			"azure.resource.providers.AzureMonitorContainerLabel": "Log Analytics 工作區"
-		},
-		"dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider": {
-			"azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel": "適用於 PostgreSQL 的 Azure 資料庫伺服器"
-		},
-		"dist/azureResource/services/terminalService": {
-			"azure.coudTerminal.neverUsed": "若您以前未從此帳戶啟動 Azure Cloud Shell，請前往 https://shell.azure.com/ 以開始使用。設定之後，即可在 Azure Data Studio 中直接使用 AzureCloud Shell。",
-			"azure.cloudTerminal.openAzureShell": "開啟 Azure Shell",
-			"azure.cloudTerminal.ok": "確定",
-			"azure.selectShellType": "選取適用於 Azure Cloud Shell 的 Bash 或 PowerShell",
-			"azure.shellTypeRequired": "您必須挑選殼層類型",
-			"azure.cloudShell": "Azure Cloud Shell (預覽) {0} ({1})",
-			"azure.shellClosed": "Shell 已關閉。\r\n"
-		},
-		"dist/azureResource/providers/sqlinstanceArc/sqlInstanceArcTreeDataProvider": {
-			"azure.resource.providers.sqlInstanceArcContainerLabel": "SQL 受控執行個體 - Azure Arc"
-		},
-		"dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider": {
-			"azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel": "PostgreSQL 超大規模資料庫 - Azure Arc"
-		},
-		"dist/azureResource/tree/connectionDialogTreeProvider": {
-			"azure.resource.tree.treeProvider.loadingLabel": "正在載入...",
-			"azure.resource.tree.treeProvider.openAccountsDialog": "顯示 Azure 帳戶",
-			"azure.resource.tree.treeProvider.accountLoadError": "無法載入某些 Azure 帳戶。{0}"
+		"package": {
+			"accounts.clearTokenCache": "清除 Azure 帳戶權杖快取",
+			"azure.description": "瀏覽並使用 Azure 資源",
+			"azure.displayName": "Azure (核心)",
+			"azure.openInAzurePortal.title": "在 Azure 入口網站中開啟",
+			"azure.resource.config.filter.description": "資源篩選條件，每個元素都是以正斜線分隔的帳戶識別碼、訂用帳戶識別碼和名稱",
+			"azure.resource.config.title": "Azure 資源組態",
+			"azure.resource.connectsqldb.title": "新增至伺服器",
+			"azure.resource.connectsqlserver.title": "連線",
+			"azure.resource.explorer.title": "Azure",
+			"azure.resource.refresh.title": "重新整理",
+			"azure.resource.refreshall.title": "Azure: 重新整理所有帳戶",
+			"azure.resource.selectsubscriptions.title": "選取訂用帳戶",
+			"azure.resource.signin.title": "Azure: 登入",
+			"azure.resource.startterminal.title": "啟動 Cloud Shell",
+			"azure.resource.view.title": "Azure (預覽)",
+			"azure.tenant.config.filter.description": "查詢 Azure 資源時要忽略的租用戶識別碼清單。每個項目都是租用戶識別碼。",
+			"azure.title": "Azure",
+			"config.azureAccountConfigurationSection": "Azure 帳戶組態",
+			"config.azureAuthMethodConfigurationSection": "Azure 驗證方法",
+			"config.azureCodeGrantMethod": "代碼授與方法",
+			"config.azureDeviceCodeMethod": "裝置代碼方法",
+			"config.enableChinaCloudDescription": "是否應啟用 Azure 中國整合",
+			"config.enableGermanyCloudDescription": "是否應啟用 Azure 德國整合",
+			"config.enablePublicCloudDescription": "是否應啟用 Azure 公用雲端整合",
+			"config.enableUsGovCloudDescription": "是否應啟用 US Government Azure 雲端 (Fairfax) 整合",
+			"config.enableUsNatCloudDescription": "是否應啟用美國國民 Azure 雲端整合",
+			"config.noSystemKeychain": "停用系統金鑰鏈整合。認證將會儲存於使用者主目錄的一般檔案中。",
+			"config.piiLogging": "是否應在本機主控台檢視中登入個人識別資訊 (PII)"
 		}
 	}
 }

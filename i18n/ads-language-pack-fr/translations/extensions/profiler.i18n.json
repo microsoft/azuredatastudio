@@ -11,13 +11,22 @@
 		"dist/dialogs/profilerCreateSessionDialog": {
 			"createSessionDialog.cancel": "Annuler",
 			"createSessionDialog.create": "Démarrer",
-			"createSessionDialog.title": "Démarrer une nouvelle session Profiler",
-			"createSessionDialog.templatesInvalid": "Liste de modèles non valide, impossible d'ouvrir la boîte de dialogue",
+			"createSessionDialog.createSessionFailed": "La création de session a échoué",
 			"createSessionDialog.dialogOwnerInvalid": "Propriétaire de boîte de dialogue non valide, impossible d'ouvrir la boîte de dialogue",
+			"createSessionDialog.enterSessionName": "Entrez le nom de la session :",
 			"createSessionDialog.invalidProviderType": "Type de fournisseur non valide, impossible d'ouvrir la boîte de dialogue",
-			"createSessionDialog.selectTemplates": "Sélectionnez un modèle de session :",
-			"createSessionDialog.enterSessionName": "Entrez le nom de la session :",
-			"createSessionDialog.createSessionFailed": "La création de session a échoué"
+			"createSessionDialog.selectTemplates": "Sélectionnez un modèle de session :",
+			"createSessionDialog.templatesInvalid": "Liste de modèles non valide, impossible d'ouvrir la boîte de dialogue",
+			"createSessionDialog.title": "Démarrer une nouvelle session Profiler"
+		},
+		"package": {
+			"description": "SQL Server Profiler pour Azure Data Studio",
+			"displayName": "SQL Server Profiler",
+			"profiler.category": "Profileur",
+			"profiler.contributes.title.newProfler": "Lancer Profiler",
+			"profiler.contributes.title.openCreateSessionDialog": "Créer une saison de profileur",
+			"profiler.contributes.title.start": "Démarrer",
+			"profiler.contributes.title.stop": "Arrêter"
 		}
 	}
 }
