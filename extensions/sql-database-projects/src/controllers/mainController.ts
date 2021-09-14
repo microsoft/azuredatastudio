@@ -56,7 +56,7 @@ export default class MainController implements vscode.Disposable {
 		vscode.commands.registerCommand('sqlDatabaseProjects.schemaCompare', async (node: WorkspaceTreeItem) => { await this.projectsController.schemaCompare(node); });
 
 		vscode.commands.registerCommand('sqlDatabaseProjects.createProjectFromDatabase', async (context: azdataType.IConnectionProfile | vscodeMssql.ITreeNodeInfo | undefined) => { await this.projectsController.createProjectFromDatabase(context); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.generateProjectFromSwagger', async () => { await this.projectsController.generateFromSwagger(); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.generateProjectFromOpenApiSpec', async () => { await this.projectsController.generateProjectFromOpenApiSpec(); });
 
 		vscode.commands.registerCommand('sqlDatabaseProjects.newScript', async (node: WorkspaceTreeItem) => { await this.projectsController.addItemPromptFromNode(node, templates.script); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.newPreDeploymentScript', async (node: WorkspaceTreeItem) => { await this.projectsController.addItemPromptFromNode(node, templates.preDeployScript); });

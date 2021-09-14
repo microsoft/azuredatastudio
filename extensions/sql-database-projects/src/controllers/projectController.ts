@@ -835,95 +835,118 @@ export class ProjectsController {
 		return result;
 	}
 
-	public async generateFromSwagger() {
-		try {
-			// 1. select spec file
+	public async selectAutorestSpecFile(): Promise<string | undefined> {
+		let quickpickSelection = await vscode.window.showQuickPick(
+			[constants.browseEllipsis],
+			{ title: constants.selectSpecFile, ignoreFocusOut: true });
+		if (!quickpickSelection) {
+			return;
+		}
 
-			let quickpickSelection = await vscode.window.showQuickPick(
-				[constants.browseEllipsis],
-				{ title: constants.selectSpecFile, ignoreFocusOut: true });
-			if (!quickpickSelection) {
-				return;
-			}
+		const filters: { [name: string]: string[] } = {};
+		filters['OpenAPI/Swagger spec'] = ['yaml'];
 
-			const filters: { [name: string]: string[] } = {};
-			filters['OpenAPI/Swagger spec'] = ['yaml'];
+		let uris = await vscode.window.showOpenDialog({
+			canSelectFiles: true,
+			canSelectFolders: false,
+			canSelectMany: false,
+			openLabel: constants.selectString,
+			filters: filters,
+			title: constants.selectSpecFile
+		});
 
-			let uris = await vscode.window.showOpenDialog({
-				canSelectFiles: true,
-				canSelectFolders: false,
+		if (!uris) {
+			return;
+		}
+
+		return uris[0].fsPath;
+	}
+
+	/**
+	 * @returns \{ newProjectFolder: 'C:\Source\MyProject',
+	 * 			outputFolder: 'C:\Source',
+	 * 			projectName: 'MyProject'}
+	 */
+	public async selectAutorestProjectLocation(specPath: string): Promise<{ newProjectFolder: string, outputFolder: string, projectName: string } | undefined> {
+		let valid = false;
+		let newProjectFolder: string = '';
+		let outputFolder: string = '';
+		let projectName: string = '';
+
+		let quickpickSelection = await vscode.window.showQuickPick(
+			[constants.browseEllipsis],
+			{ title: constants.selectProjectLocation, ignoreFocusOut: true });
+		if (!quickpickSelection) {
+			return;
+		}
+
+		while (!valid) {
+			const folders = await vscode.window.showOpenDialog({
+				canSelectFiles: false,
+				canSelectFolders: true,
 				canSelectMany: false,
 				openLabel: constants.selectString,
-				filters: filters,
-				title: constants.selectSpecFile
+				defaultUri: vscode.workspace.workspaceFolders?.[0]?.uri,
+				title: constants.selectProjectLocation
 			});
 
-			if (!uris) {
+			if (!folders) {
 				return;
 			}
 
-			const swaggerPath: string = uris[0].fsPath;
+			// 3. create target folder
+			outputFolder = folders[0].fsPath;
+			projectName = path.basename(specPath, '.yaml');
+			newProjectFolder = path.join(outputFolder, projectName);
 
-			// 2. select location
-			let valid = false;
-			let newProjectFolder: string = '';
-			let outputFolder: string = '';
-			let projectName: string = '';
+			if (await utils.exists(newProjectFolder)) {
 
-			quickpickSelection = await vscode.window.showQuickPick(
-				[constants.browseEllipsis],
-				{ title: constants.selectProjectLocation, ignoreFocusOut: true });
-			if (!quickpickSelection) {
-				return;
-			}
-
-			while (!valid) {
-				const folders = await vscode.window.showOpenDialog({
-					canSelectFiles: false,
-					canSelectFolders: true,
-					canSelectMany: false,
-					openLabel: constants.selectString,
-					defaultUri: vscode.workspace.workspaceFolders?.[0]?.uri,
-					title: constants.selectProjectLocation
-				});
-
-				if (!folders) {
+				quickpickSelection = await vscode.window.showQuickPick(
+					[constants.browseEllipsis],
+					{ title: constants.folderAlreadyExistsChooseNewLocation(newProjectFolder), ignoreFocusOut: true });
+				if (!quickpickSelection) {
 					return;
 				}
+			} else {
+				valid = true;
+			}
+		}
 
-				// 3. create target folder
-				outputFolder = folders[0].fsPath;
-				projectName = path.basename(swaggerPath, '.yaml');
-				newProjectFolder = path.join(outputFolder, projectName);
+		await fs.mkdir(newProjectFolder);
+		return { newProjectFolder, outputFolder, projectName };
+	}
 
-				if (await utils.exists(newProjectFolder)) {
+	public async generateAutorestFiles(specPath: string, newProjectFolder: string): Promise<void> {
+		await this.autorestHelper.generateAutorestFiles(specPath, newProjectFolder);
+	}
 
-					quickpickSelection = await vscode.window.showQuickPick(
-						[constants.browseEllipsis],
-						{ title: constants.folderAlreadyExistsChooseNewLocation(newProjectFolder), ignoreFocusOut: true });
-					if (!quickpickSelection) {
-						return;
-					}
-				} else {
-					valid = true;
-				}
+	public async generateProjectFromOpenApiSpec(): Promise<Project | undefined> {
+		try {
+			// 1. select spec file
+			const specPath: string | undefined = await this.selectAutorestSpecFile();
+			if (!specPath) {
+				return;
 			}
 
-			await fs.mkdir(newProjectFolder);
+			// 2. select location, make new folder
+			const projectInfo = await this.selectAutorestProjectLocation(specPath!);
+			if (!projectInfo) {
+				return;
+			}
 
-			// 4. run AutoRest to generate .sql files
-			await this.autorestHelper.generateAutorestFiles(swaggerPath, newProjectFolder);
+			// 3. run AutoRest to generate .sql files
+			await this.generateAutorestFiles(specPath, projectInfo.newProjectFolder);
 
-			// 5. create new SQL project
+			// 4. create new SQL project
 			const newProjFilePath = await this.createNewProject({
-				newProjName: projectName,
-				folderUri: vscode.Uri.file(outputFolder),
+				newProjName: projectInfo.projectName,
+				folderUri: vscode.Uri.file(projectInfo.outputFolder),
 				projectTypeId: constants.emptySqlDatabaseProjectTypeId
 			});
 
 			const project = await Project.openProject(newProjFilePath);
 
-			// 6. add generated files to SQL project
+			// 5. add generated files to SQL project
 			let fileFolderList: vscode.Uri[] = await this.getSqlFileList(project.projectFolderPath);
 			await project.addToProject(fileFolderList.filter(f => !f.fsPath.endsWith(constants.autorestPostDeploymentScriptName))); // Add generated file structure to the project
 
@@ -933,13 +956,15 @@ export class ProjectsController {
 				await project.addScriptItem(path.relative(project.projectFolderPath, postDeploymentScript.fsPath), undefined, templates.postDeployScript);
 			}
 
-			// 7. add project to workspace and open
+			// 6. add project to workspace and open
 			const workspaceApi = utils.getDataWorkspaceExtensionApi();
 			await workspaceApi.addProjectsToWorkspace([vscode.Uri.file(newProjFilePath)]);
 
 			workspaceApi.showProjectsView();
+			return project;
 		} catch (err) {
 			vscode.window.showErrorMessage(utils.getErrorMessage(err));
+			return;
 		}
 	}
 
@@ -961,7 +986,7 @@ export class ProjectsController {
 		const entries = await fs.readdir(folder, { withFileTypes: true });
 
 		const folders = entries.filter(dir => dir.isDirectory()).map(dir => path.join(folder, dir.name));
-		const files = entries.filter(file => !file.isDirectory()).map(file => vscode.Uri.file(path.join(folder, file.name)));
+		const files = entries.filter(file => !file.isDirectory() && path.extname(file.name) === '.sql').map(file => vscode.Uri.file(path.join(folder, file.name)));
 
 		for (const folder of folders) {
 			files.push(...await this.getSqlFileList(folder));

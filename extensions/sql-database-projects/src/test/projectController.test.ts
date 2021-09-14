@@ -21,7 +21,7 @@ import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProje
 import { ProjectsController } from '../controllers/projectController';
 import { promises as fs } from 'fs';
 import { createContext, TestContext, mockDacFxResult, mockConnectionProfile } from './testContext';
-import { Project, reservedProjectFolders, SystemDatabase, FileProjectEntry, SystemDatabaseReferenceProjectEntry } from '../models/project';
+import { Project, reservedProjectFolders, SystemDatabase, FileProjectEntry, SystemDatabaseReferenceProjectEntry, EntryType } from '../models/project';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
@@ -429,7 +429,7 @@ describe('ProjectsController', function (): void {
 
 				const proj = await testUtils.createTestProject(baselines.openProjectFileBaseline);
 
-				await projController.object.publishOrScriptProject(proj, { connectionUri: '', databaseName: '' , serverName: ''}, false);
+				await projController.object.publishOrScriptProject(proj, { connectionUri: '', databaseName: '', serverName: '' }, false);
 
 				should(builtDacpacPath).not.equal('', 'built dacpac path should be set');
 				should(publishedDacpacPath).not.equal('', 'published dacpac path should be set');
@@ -665,7 +665,7 @@ describe('ProjectsController', function (): void {
 			// add dacpac reference to something in the a folder outside of the project
 			await projController.addDatabaseReferenceCallback(project1, {
 				databaseName: <string>this.databaseNameTextbox?.value,
-				dacpacFileLocation: vscode.Uri.file(path.join(path.dirname(projFilePath), '..','someFolder', 'outsideFolderTest.dacpac')),
+				dacpacFileLocation: vscode.Uri.file(path.join(path.dirname(projFilePath), '..', 'someFolder', 'outsideFolderTest.dacpac')),
 				suppressMissingDependenciesErrors: false
 			},
 				{ treeDataProvider: new SqlDatabaseProjectTreeViewProvider(), element: undefined });
@@ -681,7 +681,42 @@ describe('ProjectsController', function (): void {
 
 	describe('AutoRest generation', function (): void {
 		it('Should create project from autorest-generated files', async function (): Promise<void> {
+			const parentFolder = await testUtils.generateTestFolderPath();
+			await testUtils.createDummyFileStructure();
+			const specName = 'DummySpec.yaml';
+			const newProjFolder = path.join(parentFolder, path.basename(specName, '.yaml'));
 
+			const projController = TypeMoq.Mock.ofType(ProjectsController);
+			projController.callBase = true;
+
+			projController.setup(x => x.selectAutorestSpecFile()).returns(async () => specName);
+			projController.setup(x => x.selectAutorestProjectLocation(TypeMoq.It.isAny())).returns(async () => {
+				await fs.mkdir(newProjFolder);
+
+				return {
+					newProjectFolder: newProjFolder,
+					outputFolder: parentFolder,
+					projectName: path.basename(specName, '.yaml')
+				};
+			});
+
+			let fileList: vscode.Uri[] = [];
+			projController.setup(x => x.generateAutorestFiles(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(async () => {
+				await testUtils.createDummyFileStructure(true, fileList, newProjFolder);
+				await testUtils.createTestFile('SELECT \'This is a post-deployment script\'', constants.autorestPostDeploymentScriptName, newProjFolder);
+			});
+
+			const project = (await projController.object.generateProjectFromOpenApiSpec())!;
+
+			should(project.postDeployScripts.length).equal(1, `Expected 1 post-deployment script, got ${project?.postDeployScripts.length}`);
+			const actual = path.basename(project.postDeployScripts[0].fsUri.fsPath);
+			should(actual).equal(constants.autorestPostDeploymentScriptName, `Unexpected post-deployment script name: ${actual}, expected ${constants.autorestPostDeploymentScriptName}`);
+
+			const expectedScripts = fileList.filter(f => path.extname(f.fsPath) === '.sql');
+			should(project.files.filter(f => f.type === EntryType.File).length).equal(expectedScripts.length, 'Unexpected number of scripts in project');
+
+			const expectedFolders = fileList.filter(f => path.extname(f.fsPath) === '' && f.fsPath.toUpperCase() !== newProjFolder.toUpperCase());
+			should(project.files.filter(f => f.type === EntryType.Folder).length).equal(expectedFolders.length, 'Unexpected number of folders in project');
 		});
 	});
 });

@@ -897,7 +897,7 @@ describe('Project: properties', function (): void {
 		const project = await Project.openProject(projFilePath);
 
 		should(() => project.getDatabaseDefaultCollation())
-			.throw("Invalid value specified for the property 'DefaultCollation' in .sqlproj file");
+			.throw('Invalid value specified for the property \'DefaultCollation\' in .sqlproj file');
 	});
 });
 

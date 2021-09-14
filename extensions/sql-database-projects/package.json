@@ -16,7 +16,7 @@
     "onCommand:sqlDatabaseProjects.new",
     "onCommand:sqlDatabaseProjects.open",
     "onCommand:sqlDatabaseProjects.createProjectFromDatabase",
-    "onCommand:sqlDatabaseProjects.generateProjectFromSwagger",
+    "onCommand:sqlDatabaseProjects.generateProjectFromOpenApiSpec",
     "workspaceContains:**/*.sqlproj",
     "onView:dataworkspace.views.main"
   ],
@@ -165,8 +165,8 @@
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
-        "command": "sqlDatabaseProjects.generateProjectFromSwagger",
-        "title": "%sqlDatabaseProjects.generateProjectFromSwagger%",
+        "command": "sqlDatabaseProjects.generateProjectFromOpenApiSpec",
+        "title": "%sqlDatabaseProjects.generateProjectFromOpenApiSpec%",
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
