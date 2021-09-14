@@ -35,12 +35,12 @@ const errorTextClass = 'error-text';
 	<div *ngIf="showList;else noList" [style.display]="display" [style.width]="getWidth()" [style.height]="getHeight()" [title]="title" [attr.role]="ariaRole" [attr.aria-hidden]="ariaHidden" [ngStyle]="this.CSSStyles">
 		<div *ngIf="isUnOrderedList;else orderedlist">
 			<ul style="padding-left:0px">
-				<li *ngFor="let v of values">{{v}}</li>
+				<li *ngFor="let v of value">{{v}}</li>
 			</ul>
 		</div>
 		<ng-template #orderedlist>
 			<ol style="padding-left:0px">
-				<li *ngFor="let v of values">{{v}}</li>
+				<li *ngFor="let v of value">{{v}}</li>
 			</ol>
 		</ng-template>
 	</div>
@@ -87,12 +87,12 @@ export default class TextComponent extends TitledComponent<azdata.TextComponentP
 		this.layout();
 	}
 
-	public set value(newValue: string) {
-		this.setPropertyFromUI<string>((properties, value) => { properties.value = value; }, newValue);
+	public set value(newValue: string | string[]) {
+		this.setPropertyFromUI<string | string[]>((properties, value) => { properties.value = value; }, newValue);
 	}
 
-	public get value(): string {
-		return this.getPropertyOrDefault<string>((props) => props.value, '');
+	public get value(): string | string[] {
+		return this.getPropertyOrDefault<string | string[]>((props) => props.value, undefined);
 	}
 
 	public set description(newValue: string) {
@@ -121,18 +121,18 @@ export default class TextComponent extends TitledComponent<azdata.TextComponentP
 
 	public get textType(): azdata.TextType | undefined {
 		let textType = this.getPropertyOrDefault<azdata.TextType | undefined>(props => props.textType, undefined);
-		if (!textType) {
-			textType = (this.values) ? TextType.UnorderedList : undefined;
+		if (!textType && typeof this.value !== 'string') {
+			textType = (this.value) ? TextType.UnorderedList : undefined;
+		}
+		// Throwing an error when a string value is provided for list.
+		if ((textType === TextType.OrderedList || textType === TextType.UnorderedList) && typeof this.value === 'string') {
+			throw new Error(`Invalid type of value provided for the textType ${textType}`);
 		}
 		return textType;
 	}
 
 	public set textType(newValue: azdata.TextType | undefined) {
 		this.setPropertyFromUI<azdata.TextType | undefined>((properties, value) => { properties.textType = value; }, newValue);
-	}
-
-	public get values(): string[] | undefined {
-		return this.getPropertyOrDefault<string[]>(props => props.values, undefined);
 	}
 
 	public get isUnOrderedList(): boolean | undefined {
@@ -155,6 +155,9 @@ export default class TextComponent extends TitledComponent<azdata.TextComponentP
 	}
 
 	public updateText(): void {
+		if (typeof this.value !== 'string') {
+			return;
+		}
 		DOM.clearNode((<HTMLElement>this.textContainer.nativeElement));
 		const links = this.getPropertyOrDefault<azdata.LinkArea[]>((props) => props.links, []);
 		// The text may contain link placeholders so go through and create those and insert them as needed now
@@ -169,7 +172,7 @@ export default class TextComponent extends TitledComponent<azdata.TextComponentP
 
 			// First insert any text from the start of the current string fragment up to the placeholder
 			let curText = text.slice(0, placeholderIndex);
-			if (curText) {
+			if (curText && typeof text === 'string') {
 				const textElement = this.createTextElement();
 				textElement.innerText = text.slice(0, placeholderIndex);
 				(<HTMLElement>this.textContainer.nativeElement).appendChild(textElement);
@@ -195,7 +198,7 @@ export default class TextComponent extends TitledComponent<azdata.TextComponentP
 		}
 
 		// If we have any text left over now insert that in directly
-		if (text) {
+		if (text && typeof text === 'string') {
 			const textElement = this.createTextElement();
 			textElement.innerText = text;
 			(<HTMLElement>this.textContainer.nativeElement).appendChild(textElement);

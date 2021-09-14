@@ -1350,10 +1350,10 @@ class TextComponentWrapper extends ComponentWrapper implements azdata.TextCompon
 		this.properties = {};
 	}
 
-	public get value(): string {
+	public get value(): string | string[] {
 		return this.properties['value'];
 	}
-	public set value(v: string) {
+	public set value(v: string | string[]) {
 		this.setProperty('value', v);
 	}
 
@@ -1383,13 +1383,6 @@ class TextComponentWrapper extends ComponentWrapper implements azdata.TextCompon
 	}
 	public set textType(type: azdata.TextType | undefined) {
 		this.setProperty('textType', type);
-	}
-
-	public get values(): string[] {
-		return this.properties['values'];
-	}
-	public set values(v: string[]) {
-		this.setProperty('values', v);
 	}
 }
 

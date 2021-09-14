@@ -597,14 +597,9 @@ declare module 'azdata' {
 		 */
 		headingLevel?: HeadingLevel;
 		/**
-		 * The type to display the text as - used to determine the color of the text. Default is Normal.
+		 * Sets the type of text box to be displayed
 		 */
 		textType?: TextType;
-		/**
-		 * Provide text for HTML list. Note: By default the lists will be unordered. To change the list type use textType attribute.
-		 */
-		values?: string[];
-
 	}
 
 	export namespace window {

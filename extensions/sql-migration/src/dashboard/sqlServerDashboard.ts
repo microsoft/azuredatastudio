@@ -171,7 +171,7 @@ export class DashboardWidget {
 		const migrateButton = this.createTaskButton(view, migrateButtonMetadata);
 
 		const preRequisiteListElement = view.modelBuilder.text().withProps({
-			values: [
+			value: [
 				loc.PRE_REQ_1,
 				loc.PRE_REQ_2,
 				loc.PRE_REQ_3
