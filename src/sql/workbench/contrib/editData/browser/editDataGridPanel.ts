@@ -509,7 +509,10 @@ export class EditDataGridPanel extends GridParentComponent {
 			handled = true;
 		}
 		if (e.ctrlKey && e.keyCode === KeyCode.KEY_0) {
-			//TODO - Need to create an insert null function into cell.
+			//Replace contents with NULL in cell contents.
+			document.execCommand('selectAll');
+			document.execCommand('delete');
+			document.execCommand('insertText', false, 'NULL');
 			handled = true;
 		}
 
