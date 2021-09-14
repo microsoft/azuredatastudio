@@ -35,10 +35,10 @@ export class DerivedColumnDialog {
 	private _headerInstructionText: azdata.TextComponent;
 	private _bodyInstructionText: azdata.TextComponent;
 
-
 	private _applyButton!: azdata.window.Button;
 	private _transformationTable!: azdata.DeclarativeTableComponent;
 	private _transformationContainer!: azdata.FlexContainer;
+	private _specifyDerivedColumnNameContainer!: azdata.FlexContainer;
 
 	constructor(private _model: ImportDataModel, private _provider: FlatFileProvider) {
 	}
@@ -53,7 +53,6 @@ export class DerivedColumnDialog {
 		);
 		this._dialogObject.customButtons = [this._applyButton];
 		this._applyButton.hidden = false;
-		this._dialogObject.okButton.enabled = false;
 
 		let tab = azdata.window.createTab('');
 		tab.registerContent(async (view: azdata.ModelView) => {
@@ -71,6 +70,7 @@ export class DerivedColumnDialog {
 				columns: [
 					{
 						displayName: '',
+						ariaLabel: constants.selectAllColumns,
 						valueType: azdata.DeclarativeDataType.boolean,
 						isReadOnly: false,
 						showCheckAll: true,
@@ -93,7 +93,6 @@ export class DerivedColumnDialog {
 				}
 			}).component();
 
-			console.log(columnTableData);
 
 			columnTable.onDataChanged(e => {
 				if (e.value) {
@@ -148,15 +147,13 @@ export class DerivedColumnDialog {
 
 			const transformationTableData: azdata.DeclarativeTableCellValue[][] = [];
 			for (let index = 0; index < this._model.proseDataPreview.length; index++) {
-				const tableRow: azdata.DeclarativeTableCellValue[] = [];
 				this._specifyTransformations.push(this._view.modelBuilder.inputBox().withProps({
 					value: '',
 					placeHolder: constants.specifyTransformation
 				}).component());
-				tableRow.push({
+				transformationTableData.push([{
 					value: this._specifyTransformations[index]
-				});
-				transformationTableData.push(tableRow);
+				}]);
 			}
 
 			this._transformationTable = view.modelBuilder.declarativeTable().withProps({
@@ -175,6 +172,8 @@ export class DerivedColumnDialog {
 					'table-layout': 'fixed'
 				},
 				dataValues: transformationTableData
+			}).withValidation(c => {
+				return this.validatePage();
 			}).component();
 
 
@@ -216,30 +215,39 @@ export class DerivedColumnDialog {
 			});
 			specifyDerivedColNameTableData.push(colNameTableRow);
 
-			const specifyDerivedColNameTable = view.modelBuilder.declarativeTable().withProps({
-				columns: [
-					{
-						displayName: constants.specifyDerivedColNameTitle,
-						valueType: azdata.DeclarativeDataType.string,
-						isReadOnly: false,
-						width: '150px',
-						headerCssStyles: headerLeft,
-						rowCssStyles: styleLeft,
-					}
-				],
-				height: '100vh',
-				dataValues: specifyDerivedColNameTableData
+
+			const columnNameText = view.modelBuilder.text().withProps({
+				value: constants.specifyDerivedColNameTitle,
+				requiredIndicator: true,
+				CSSStyles: {
+					'font-size': '13px',
+					'font-weight': 'bold'
+				}
 			}).component();
 
-			specifyDerivedColNameTable.onDataChanged(e => {
-				this.currentDerivedColumnName = specifyDerivedColNameTable.dataValues[0][0].value as string;
-				this.validatePage();
+			const columnNameInput = view.modelBuilder.inputBox().withProps({
+				ariaLabel: constants.specifyDerivedColNameTitle,
+				required: true
+			}).withValidation(c => {
+				return !(c.value === undefined && c.value.length === 0);
+			}).component();
+
+			columnNameInput.onTextChanged(e => {
+				if (e) {
+					this.currentDerivedColumnName = e;
+				}
 			});
+
+			this._specifyDerivedColumnNameContainer = view.modelBuilder.flexContainer().withItems([
+				columnNameText,
+				columnNameInput
+			]).withLayout({
+				width: '500px'
+			}).component();
 
 			this._transformationContainer = view.modelBuilder.flexContainer().withLayout({
 				flexFlow: 'column',
-				width: '700px',
-				height: '100vh'
+				height: '100vh',
 			}).withProps({
 				CSSStyles: {
 					'overflow-y': 'auto',
@@ -259,7 +267,14 @@ export class DerivedColumnDialog {
 
 			this._bodyInstructionText = this._view.modelBuilder.text()
 				.withProps({
-					value: constants.bodyInstructionText,
+					value: [
+						constants.deriverColumnInstruction1,
+						constants.deriverColumnInstruction2,
+						constants.deriverColumnInstruction3,
+						constants.deriverColumnInstruction4,
+						constants.deriverColumnInstruction5,
+					],
+					textType: azdata.TextType.OrderedList,
 					CSSStyles: {
 						'font-size': 'large',
 						'line-height': '22pt',
@@ -271,16 +286,8 @@ export class DerivedColumnDialog {
 			this._transformationContainer.addItem(this._headerInstructionText);
 			this._transformationContainer.addItem(this._bodyInstructionText);
 
-
-			const specifyDerivedColNameContainer = view.modelBuilder.flexContainer().withLayout({
-				flexFlow: 'column',
-				width: '150px'
-			}).component();
-			specifyDerivedColNameContainer.addItem(specifyDerivedColNameTable);
-
 			const flexGrid = view.modelBuilder.flexContainer().withLayout({
 				flexFlow: 'row',
-				height: '800px',
 			}).component();
 			flexGrid.addItem(columnContainer, {
 				flex: '0 0 auto',
@@ -298,13 +305,7 @@ export class DerivedColumnDialog {
 					'height': '100vh'
 				}
 			});
-			flexGrid.addItem(specifyDerivedColNameContainer, {
-				flex: '0 0 auto',
-				CSSStyles: {
-					'margin-left': '10px',
-					'height': '100vh'
-				}
-			});
+
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
 				[
 					{
@@ -355,11 +356,9 @@ export class DerivedColumnDialog {
 	}
 
 	private clearAndAddTransformationContainerComponents(addTable: boolean): void {
-		this._transformationContainer.updateCssStyles({
-			'width': '700px'
-		});
 		this._transformationContainer.clearItems();
 		if (addTable) {
+			this._transformationContainer.addItem(this._specifyDerivedColumnNameContainer);
 			this._transformationContainer.addItem(this._transformationTable);
 		}
 		else {
@@ -368,9 +367,7 @@ export class DerivedColumnDialog {
 		}
 	}
 
-	private validatePage(): void {
-		if (this.currentTransformation.length > 0 && this.currentDerivedColumnName.length > 0) {
-			this._dialogObject.okButton.enabled = true;
-		}
+	private validatePage(): boolean {
+		return this.currentTransformation.length > 0;
 	}
 }

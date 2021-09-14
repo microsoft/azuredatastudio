@@ -64,10 +64,13 @@ export const specifyTransformation = localize('flatFileImport.specifyTransformat
 export const previewTransformation = localize('flatFileImport.previewTransformation', "Preview Transformation");
 export const columnTableTitle = localize('flatFileImport.columnTableTitle', "Column");
 export const headerIntructionText = localize('flatFileImport.headerIntructionText', "Welcome to the Derived Column Tool! To get started, please follow the steps below:");
-export const bodyInstructionText = localize('flatFileImport.bodyInstructionText', "1. Select the columns of data on the left required to derive your new column\n\t\
-2. Select a row and specify an example transformation that you would like applied to the rest of the column\n\t\
-3. Click \"Preview Transformation\" to preview the transformation\n\t\
-4. Refine your transformation until you have the desired column\n\t\
-5. Specify the new derived column\'s name and click \"Done\"");
+export const deriverColumnInstruction1 = localize('flatFileImport.deriverColumnInstruction1', "Select the columns of data on the left required to derive your new column");
+export const deriverColumnInstruction2 = localize('flatFileImport.deriverColumnInstruction2', "Select a row and specify an example transformation that you would like applied to the rest of the column");
+export const deriverColumnInstruction3 = localize('flatFileImport.deriverColumnInstruction3', "Click \"Preview Transformation\" to preview the transformation");
+export const deriverColumnInstruction4 = localize('flatFileImport.deriverColumnInstruction4', "Refine your transformation until you have the desired column");
+export const deriverColumnInstruction5 = localize('flatFileImport.deriverColumnInstruction5', "Specify the new derived column\'s name and click \"Done\"");
+
 // SQL Queries
 export const selectSchemaQuery = `SELECT name FROM sys.schemas`;
+
+export const selectAllColumns = localize('flatFileImport.selectAllColumns', "Select all columns");
