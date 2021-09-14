@@ -84,7 +84,7 @@ describe('Add File Dialog', function () {
 
 		// Error case
 		let mockBookManager = TypeMoq.Mock.ofType<IBookTocManager>();
-		mockBookManager.setup(m => m.addNewTocEntry(TypeMoq.It.isAny(), TypeMoq.It.isAny())).throws(new Error('Expected test error.'));
+		mockBookManager.setup(m => m.addNewTocEntry(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).throws(new Error('Expected test error.'));
 
 		let fileDialog = new AddTocEntryDialog(mockBookManager.object, bookTreeItem, fileExtension);
 		await fileDialog.createDialog();
@@ -97,7 +97,7 @@ describe('Add File Dialog', function () {
 		// Success case
 		let testPathDetails: TocEntryPathHandler[] = [];
 		mockBookManager = TypeMoq.Mock.ofType<IBookTocManager>();
-		mockBookManager.setup(m => m.addNewTocEntry(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((path, item) => { testPathDetails.push(path); return Promise.resolve(); });
+		mockBookManager.setup(m => m.addNewTocEntry(TypeMoq.It.isAny(), TypeMoq.It.isAny(),TypeMoq.It.isAny())).returns((path, item) => { testPathDetails.push(path); return Promise.resolve(); });
 
 		let mockTreeItem = TypeMoq.Mock.ofType<BookTreeItem>();
 		mockTreeItem.setup(i => i.contextValue).returns(() => BookTreeItemType.savedBook);
