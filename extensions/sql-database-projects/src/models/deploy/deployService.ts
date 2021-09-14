@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AppSettingType, IDeployProfile, ILocalDbSetting } from './deployProfile';
+import { AppSettingType, IDeployAppIntegrationProfile, IDeployProfile, ILocalDbSetting } from './deployProfile';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import { Project } from '../project';
 import * as constants from '../../common/constants';
@@ -32,7 +32,7 @@ export class DeployService {
 		return '';
 	}
 
-	private findAppRuntime(profile: IDeployProfile, appSettingContent: any): string | undefined {
+	private findAppRuntime(profile: IDeployAppIntegrationProfile, appSettingContent: any): string | undefined {
 		switch (profile.appSettingType) {
 			case AppSettingType.AzureFunction:
 				return <string>appSettingContent?.Values['FUNCTIONS_WORKER_RUNTIME'];
@@ -41,7 +41,7 @@ export class DeployService {
 		return undefined;
 	}
 
-	public async updateAppSettings(profile: IDeployProfile): Promise<void> {
+	public async updateAppSettings(profile: IDeployAppIntegrationProfile, deployProfile: IDeployProfile | undefined): Promise<void> {
 		// Update app settings
 		//
 		if (!profile.appSettingFile) {
@@ -53,22 +53,22 @@ export class DeployService {
 		let content = JSON.parse(fse.readFileSync(profile.appSettingFile, 'utf8'));
 		if (content && content.Values) {
 			let connectionString: string | undefined = '';
-			if (profile.localDbSetting) {
+			if (deployProfile && deployProfile.localDbSetting) {
 				// Find the runtime and generate the connection string for the runtime
 				//
 				const runtime = this.findAppRuntime(profile, content);
 				let connectionStringTemplate = this.createConnectionStringTemplate(runtime);
 				const macroDict: Record<string, string> = {
-					'SERVER': profile?.localDbSetting?.serverName || '',
-					'PORT': profile?.localDbSetting?.port?.toString() || '',
-					'USER': profile?.localDbSetting?.userName || '',
-					'SA_PASSWORD': profile?.localDbSetting?.password || '',
-					'DATABASE': profile?.localDbSetting?.dbName || '',
+					'SERVER': deployProfile?.localDbSetting?.serverName || '',
+					'PORT': deployProfile?.localDbSetting?.port?.toString() || '',
+					'USER': deployProfile?.localDbSetting?.userName || '',
+					'SA_PASSWORD': deployProfile?.localDbSetting?.password || '',
+					'DATABASE': deployProfile?.localDbSetting?.dbName || '',
 				};
 
 				connectionString = templates.macroExpansion(connectionStringTemplate, macroDict);
-			} else if (profile.deploySettings?.connectionUri) {
-				connectionString = await this.getConnectionString(profile.deploySettings?.connectionUri);
+			} else if (deployProfile?.deploySettings?.connectionUri) {
+				connectionString = await this.getConnectionString(deployProfile?.deploySettings?.connectionUri);
 			}
 
 			if (connectionString && profile.envVariableName) {
@@ -88,8 +88,8 @@ export class DeployService {
 				return undefined;
 			}
 			const projectName = project.projectFileName;
-			const imageLabel = `${constants.dockerImageLabelPrefix}_${projectName}`;
-			const imageName = `${constants.dockerImageNamePrefix}-${projectName}-${UUID.generateUuid().toLowerCase()}`;
+			const imageLabel = `${constants.dockerImageLabelPrefix}_${projectName}`.toLocaleLowerCase();
+			const imageName = `${constants.dockerImageNamePrefix}-${projectName}-${UUID.generateUuid()}`.toLocaleLowerCase();
 			const root = project.projectFolderPath;
 			const mssqlFolderPath = path.join(root, constants.mssqlFolderName);
 			const commandsFolderPath = path.join(mssqlFolderPath, constants.commandsFolderName);

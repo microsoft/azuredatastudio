@@ -66,10 +66,6 @@ describe('deploy service', function (): void {
 	it('Should deploy a database to docker container successfully', async function (): Promise<void> {
 		const testContext = createContext();
 		const deployProfile: IDeployProfile = {
-			appSettingType: AppSettingType.AzureFunction,
-			appSettingFile: '',
-			deploySettings: undefined,
-			envVariableName: '',
 			localDbSetting: {
 				dbName: 'test',
 				password: 'PLACEHOLDER',
@@ -137,10 +133,6 @@ describe('deploy service', function (): void {
 		await fse.writeFile(filePath, settingContent);
 
 		const deployProfile: IDeployProfile = {
-			appSettingType: AppSettingType.AzureFunction,
-			appSettingFile: filePath,
-			deploySettings: undefined,
-			envVariableName: 'SQLConnectionString',
 			localDbSetting: {
 				dbName: 'test',
 				password: 'PLACEHOLDER',
@@ -150,9 +142,14 @@ describe('deploy service', function (): void {
 			}
 		};
 
+		const appInteg = {appSettingType: AppSettingType.AzureFunction,
+			appSettingFile: filePath,
+			deploySettings: undefined,
+			envVariableName: 'SQLConnectionString'};
+
 		const deployService = new DeployService(testContext.outputChannel);
 		sandbox.stub(childProcess, 'exec').yields(undefined, 'id');
-		await deployService.updateAppSettings(deployProfile);
+		await deployService.updateAppSettings(appInteg, deployProfile);
 		let newContent = JSON.parse(fse.readFileSync(filePath, 'utf8'));
 		should(newContent).deepEqual(expected);
 
@@ -184,23 +181,26 @@ describe('deploy service', function (): void {
 		await fse.writeFile(filePath, settingContent);
 
 		const deployProfile: IDeployProfile = {
-			appSettingType: AppSettingType.AzureFunction,
-			appSettingFile: filePath,
+
 			deploySettings: {
 				connectionUri: 'connection',
 				databaseName: 'test',
 				serverName: 'test'
 			},
-			envVariableName: 'SQLConnectionString',
 			localDbSetting: undefined
 		};
 
+		const appInteg = {
+			appSettingType: AppSettingType.AzureFunction,
+			appSettingFile: filePath,
+			envVariableName: 'SQLConnectionString',
+		}
 		const deployService = new DeployService(testContext.outputChannel);
 		let connection = new azdata.connection.ConnectionProfile();
 		sandbox.stub(azdata.connection, 'getConnection').returns(Promise.resolve(connection));
 		sandbox.stub(childProcess, 'exec').yields(undefined, 'id');
 		sandbox.stub(azdata.connection, 'getConnectionString').returns(Promise.resolve('connectionString'));
-		await deployService.updateAppSettings(deployProfile);
+		await deployService.updateAppSettings(appInteg, deployProfile);
 		let newContent = JSON.parse(fse.readFileSync(filePath, 'utf8'));
 		should(newContent).deepEqual(expected);
 
