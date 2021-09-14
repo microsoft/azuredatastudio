@@ -565,7 +565,7 @@ describe('BookTocManagerTests', function () {
 					let toc: JupyterBookSection[] = yaml.safeLoad((await fs.promises.readFile(run.sourceBook.tocPath)).toString());
 					const sectionAIndex = toc.findIndex(entry => entry.title === sectionA.title);
 					let newSectionIndex = -1;
-					let newSection = undefined
+					let newSection = undefined;
 					if (sectionAIndex) {
 						newSectionIndex = toc[sectionAIndex].sections?.findIndex(entry => entry.title === sectionTitle);
 						newSection = toc[sectionAIndex].sections[newSectionIndex];
