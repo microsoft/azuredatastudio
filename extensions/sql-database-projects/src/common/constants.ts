@@ -7,7 +7,7 @@ import * as nls from 'vscode-nls';
 import { SqlTargetPlatform } from 'sqldbproj';
 import * as utils from '../common/utils';
 
-export const localize = nls.loadMessageBundle();
+const localize = nls.loadMessageBundle();
 
 // Placeholder values
 export const dataSourcesFileName = 'datasources.json';
