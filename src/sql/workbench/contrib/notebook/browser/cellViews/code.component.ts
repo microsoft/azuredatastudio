@@ -280,28 +280,33 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	public horizontalScrollbar(): void {
-		if (this._configurationService.getValue('editor.wordWrap') && this.cellModel.cellType !== CellTypes.Code) {
-			// Get Markdown View Horizontal Scrollbar
+		if (this._configurationService.getValue('editor.wordWrap') === 'off' && this.cellModel.cellType !== CellTypes.Code) {
+			// Get Markdown Split View Horizontal Scrollbar
 			let horizontalScrollbar = this.codeElement.nativeElement.querySelector('div.invisible.scrollbar.horizontal');
 
-			let editorBottomPos = Math.floor(this.codeElement.nativeElement.closest('.show-markdown .editor').getBoundingClientRect().bottom) - Math.floor(this.codeElement.nativeElement.closest('.show-markdown .editor').getBoundingClientRect().top);
+			let editorBottomPos = this.codeElement.nativeElement.closest('.show-markdown .editor').getBoundingClientRect().bottom - this.codeElement.nativeElement.closest('.show-markdown .editor').getBoundingClientRect().top;
 			let viewportHeight = DOM.getTotalHeight(document.querySelector('.scrollable'));
-			let viewportTop = Math.floor(document.querySelector('.scrollable').getBoundingClientRect().top);
-			let viewportLeft = Math.floor(document.querySelector('.scrollable').getBoundingClientRect().left);
-			let marginLeft = DOM.getContentWidth(document.querySelector('div.margin'));
+			let viewportTop = document.querySelector('.scrollable').getBoundingClientRect().top;
 
-			let toolbarOffsetHeight = DOM.getContentHeight(document.querySelector('markdown-toolbar-component')) + DOM.getContentHeight(document.querySelector('cell-toolbar-component'));
 			// Horizontal Scrollbar Values when fixed
+			let toolbarOffsetHeight = DOM.getContentHeight(document.querySelector('markdown-toolbar-component')) + DOM.getContentHeight(document.querySelector('cell-toolbar-component'));
 			let horizontalTop = viewportTop + viewportHeight - horizontalScrollbar.scrollHeight - 10;
-			let horizontalScrollbarLeft = viewportLeft + marginLeft;
 
 			// Set the bottom to recognize when the bottom of the active cell is larger than the visible area (viewport)
 			editorBottomPos = editorBottomPos + toolbarOffsetHeight + horizontalScrollbar.scrollHeight;
 
+			// If the Editor of the cell is past the scrollable area we will change the scrollbar to be fixed to the bottom of the visible area (viewport)
 			if (editorBottomPos >= viewportHeight) {
-				horizontalScrollbar.setAttribute('style', `opacity: 1; position: fixed; left: ${horizontalScrollbarLeft}px; top: ${horizontalTop}px`);
+				horizontalScrollbar.style.opacity = 1;
+				horizontalScrollbar.style.position = 'fixed';
+				horizontalScrollbar.style.left = '';
+				horizontalScrollbar.style.top = horizontalTop + 'px';
 			} else {
-				horizontalScrollbar.setAttribute('style', `opacity: 1; position: absolute; left: 0; bottom: ${horizontalScrollbar.scrollHeight}px`);
+				horizontalScrollbar.style.opacity = 1;
+				horizontalScrollbar.style.position = 'absolute';
+				horizontalScrollbar.style.left = 0 + 'px';
+				horizontalScrollbar.style.top = '';
+				horizontalScrollbar.style.bottom = horizontalScrollbar.scrollHeight + 'px';
 			}
 		}
 	}
