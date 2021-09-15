@@ -288,20 +288,21 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			let viewportHeight = DOM.getTotalHeight(document.querySelector('.scrollable'));
 			let viewportTop = document.querySelector('.scrollable').getBoundingClientRect().top;
 
-			// Horizontal Scrollbar Values when fixed
-			let toolbarOffsetHeight = DOM.getContentHeight(document.querySelector('markdown-toolbar-component')) + DOM.getContentHeight(document.querySelector('cell-toolbar-component'));
+			// Horizontal Scrollbar Values used when fixed
 			let horizontalTop = viewportTop + viewportHeight - horizontalScrollbar.scrollHeight - 10;
 
-			// Set the bottom to recognize when the bottom of the active cell is larger than the visible area (viewport)
+			// Set the bottom position of the markdown editor area of the active cell
+			let toolbarOffsetHeight = DOM.getContentHeight(document.querySelector('markdown-toolbar-component')) + DOM.getContentHeight(document.querySelector('cell-toolbar-component'));
 			editorBottomPos = editorBottomPos + toolbarOffsetHeight + horizontalScrollbar.scrollHeight;
 
-			// If the Editor of the cell is past the scrollable area we will change the scrollbar to be fixed to the bottom of the visible area (viewport)
+			// When the editor of the cell is past the scrollable area we will change the horizontal scrollbar to be fixed to the bottom of the visible area (viewport)
 			if (editorBottomPos >= viewportHeight) {
 				horizontalScrollbar.style.opacity = 1;
 				horizontalScrollbar.style.position = 'fixed';
 				horizontalScrollbar.style.left = '';
 				horizontalScrollbar.style.top = horizontalTop + 'px';
 			} else {
+				// When scrollbar is not fixed and cell is still in visible area
 				horizontalScrollbar.style.opacity = 1;
 				horizontalScrollbar.style.position = 'absolute';
 				horizontalScrollbar.style.left = 0 + 'px';
