@@ -5,26 +5,22 @@
 
 import { URI } from 'vs/base/common/uri';
 
+import { ISerializationManager, ISerializationProvider, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
+import { SqlSerializationManager } from 'sql/workbench/services/notebook/browser/sql/sqlSerializationManager';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IExecuteManager, IExecuteProvider, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
-import { SqlExecuteManager } from 'sql/workbench/services/notebook/browser/sql/sqlExecuteManager';
 
-export class SqlExecuteProvider implements IExecuteProvider {
-	private manager: SqlExecuteManager;
+export class SqlSerializationProvider implements ISerializationProvider {
+	private _manager: SqlSerializationManager;
 
 	constructor(instantiationService: IInstantiationService) {
-		this.manager = new SqlExecuteManager(instantiationService);
+		this._manager = new SqlSerializationManager(instantiationService);
 	}
 
 	public get providerId(): string {
 		return SQL_NOTEBOOK_PROVIDER;
 	}
 
-	getExecuteManager(notebookUri: URI): Thenable<IExecuteManager> {
-		return Promise.resolve(this.manager);
-	}
-
-	handleNotebookClosed(notebookUri: URI): void {
-		// No-op
+	getSerializationManager(notebookUri: URI): Thenable<ISerializationManager> {
+		return Promise.resolve(this._manager);
 	}
 }

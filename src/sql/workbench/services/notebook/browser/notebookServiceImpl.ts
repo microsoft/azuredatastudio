@@ -52,6 +52,7 @@ import { isINotebookInput } from 'sql/workbench/services/notebook/browser/interf
 import { INotebookShowOptions } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { NotebookLanguage } from 'sql/workbench/common/constants';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { SqlSerializationProvider } from 'sql/workbench/services/notebook/browser/sql/sqlSerializationProvider';
 
 const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
 
@@ -178,7 +179,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		}
 		this._register(notebookSerializationRegistry.onNewSerializationRegistration(this.updateRegisteredSerializationProviders, this));
 		this._register(notebookExecuteRegistry.onNewExecuteRegistration(this.updateRegisteredExecuteProviders, this));
-		this.registerBuiltInProvider();
+		this.registerBuiltInProviders();
 
 		// If a provider has been already registered, the onNewRegistration event will not have a listener attached yet
 		// So, explicitly updating registered providers here.
@@ -622,16 +623,18 @@ export class NotebookService extends Disposable implements INotebookService {
 		}
 	}
 
-	private registerBuiltInProvider() {
-		let sqlProvider = new SqlExecuteProvider(this._instantiationService);
-		this.registerExecuteProvider(sqlProvider.providerId, sqlProvider);
-
+	private registerBuiltInProviders() {
+		let serializationProvider = new SqlSerializationProvider(this._instantiationService);
+		this.registerSerializationProvider(serializationProvider.providerId, serializationProvider);
 		notebookSerializationRegistry.registerSerializationProvider({
-			provider: sqlProvider.providerId,
+			provider: serializationProvider.providerId,
 			fileExtensions: DEFAULT_NOTEBOOK_FILETYPE
 		});
+
+		let executeProvider = new SqlExecuteProvider(this._instantiationService);
+		this.registerExecuteProvider(executeProvider.providerId, executeProvider);
 		notebookExecuteRegistry.registerExecuteProvider({
-			provider: sqlProvider.providerId,
+			provider: executeProvider.providerId,
 			standardKernels: { name: notebookConstants.SQL, displayName: notebookConstants.SQL, connectionProviderIds: [notebookConstants.SQL_CONNECTION_PROVIDER] }
 		});
 	}
