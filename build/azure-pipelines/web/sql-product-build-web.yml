@@ -99,6 +99,15 @@ steps:
     yarn gulp vscode-reh-web-linux-x64-min
   displayName: Compile
 
+  - script: |
+    set -e
+    node ./node_modules/playwright/install.js
+    VSCODE_REMOTE_SERVER_PATH="$(agent.builddirectory)/vscode-reh-web-linux-x64" \
+    yarn smoketest --build "$(agent.builddirectory)/vscode-reh-web-linux-x64" --web --browser chromium --screenshots "$(build.artifactstagingdirectory)/smokeshots"
+  displayName: Run smoke tests (Browser)
+  continueOnError: true
+  condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+
 # - script: |
 #     set -e
 #     AZURE_STORAGE_ACCOUNT="$(sourcemap-storage-account)" \
@@ -136,15 +145,6 @@ steps:
     yarn gulp compile-extensions
     yarn gulp package-external-extensions
   displayName: Package External extensions
-
-- script: |
-    set -e
-    node ./node_modules/playwright/install.js
-    VSCODE_REMOTE_SERVER_PATH="$(agent.builddirectory)/vscode-reh-web-linux-x64" \
-    yarn smoketest --build "$(agent.builddirectory)/vscode-reh-web-linux-x64" --web --headless --screenshots "$(build.artifactstagingdirectory)/smokeshots"
-  displayName: Run smoke tests (Browser)
-  continueOnError: true
-  condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
 - script: |
     set -e
