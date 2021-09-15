@@ -325,16 +325,6 @@ export class NotebookService extends Disposable implements INotebookService {
 		if (!this._executeProviders.has(p.id)) {
 			this._executeProviders.set(p.id, new ExecuteProviderDescriptor());
 		}
-		if (registration.fileExtensions) {
-			if (Array.isArray(registration.fileExtensions)) {
-				for (let fileType of registration.fileExtensions) {
-					this.addFileExecuteProvider(fileType, registration);
-				}
-			}
-			else {
-				this.addFileExecuteProvider(registration.fileExtensions, registration);
-			}
-		}
 		if (registration.standardKernels) {
 			this.addStandardKernels(registration);
 		}
@@ -396,15 +386,6 @@ export class NotebookService extends Disposable implements INotebookService {
 		}
 		providers.push(provider);
 		this._fileToSerializationProviders.set(fileType.toUpperCase(), providers);
-	}
-
-	private addFileExecuteProvider(fileType: string, provider: ExecuteProviderRegistration) {
-		let providers = this._fileToExecuteProviders.get(fileType.toUpperCase());
-		if (!providers) {
-			providers = [];
-		}
-		providers.push(provider);
-		this._fileToExecuteProviders.set(fileType.toUpperCase(), providers);
 	}
 
 	// Standard kernels are contributed where a list of kernels are defined that can be shown
@@ -644,9 +625,13 @@ export class NotebookService extends Disposable implements INotebookService {
 	private registerBuiltInProvider() {
 		let sqlProvider = new SqlExecuteProvider(this._instantiationService);
 		this.registerExecuteProvider(sqlProvider.providerId, sqlProvider);
+
+		notebookSerializationRegistry.registerSerializationProvider({
+			provider: sqlProvider.providerId,
+			fileExtensions: DEFAULT_NOTEBOOK_FILETYPE
+		});
 		notebookExecuteRegistry.registerExecuteProvider({
 			provider: sqlProvider.providerId,
-			fileExtensions: DEFAULT_NOTEBOOK_FILETYPE,
 			standardKernels: { name: notebookConstants.SQL, displayName: notebookConstants.SQL, connectionProviderIds: [notebookConstants.SQL_CONNECTION_PROVIDER] }
 		});
 	}

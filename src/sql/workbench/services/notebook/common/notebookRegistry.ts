@@ -23,7 +23,6 @@ export interface SerializationProviderRegistration {
 
 export interface ExecuteProviderRegistration {
 	provider: string;
-	fileExtensions: string | string[];
 	standardKernels: azdata.nb.IStandardKernel | azdata.nb.IStandardKernel[];
 }
 
@@ -52,23 +51,11 @@ let serializationProviderType: IJSONSchema = {
 
 let executeProviderType: IJSONSchema = {
 	type: 'object',
-	default: { provider: '', fileExtensions: [], standardKernels: [] },
+	default: { provider: '', standardKernels: [] },
 	properties: {
 		provider: {
 			description: localize('carbon.extension.contributes.notebook.provider', "Identifier of the notebook provider."),
 			type: 'string'
-		},
-		fileExtensions: {
-			description: localize('carbon.extension.contributes.notebook.fileExtensions', "What file extensions should be registered to this notebook provider"),
-			oneOf: [
-				{ type: 'string' },
-				{
-					type: 'array',
-					items: {
-						type: 'string'
-					}
-				}
-			]
 		},
 		standardKernels: {
 			description: localize('carbon.extension.contributes.notebook.standardKernels', "What kernels should be standard with this notebook provider"),
@@ -221,7 +208,7 @@ class NotebookProviderRegistry implements INotebookProviderRegistry {
 
 	public get serializationProviders(): SerializationProviderRegistration[] {
 		let registrationArray: SerializationProviderRegistration[] = [];
-		this._executeProviderRegistration.forEach(p => registrationArray.push(p));
+		this._serializationProviderRegistration.forEach(p => registrationArray.push(p));
 		return registrationArray;
 	}
 

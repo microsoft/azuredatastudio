@@ -617,9 +617,6 @@
     ],
     "notebook.executeProviders": {
       "provider": "jupyter",
-      "fileExtensions": [
-        "IPYNB"
-      ],
       "standardKernels": [
         {
           "name": "pysparkkernel",

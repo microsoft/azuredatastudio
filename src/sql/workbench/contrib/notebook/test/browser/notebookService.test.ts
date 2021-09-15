@@ -198,7 +198,6 @@ suite.skip('NotebookService:', function (): void {
 		assert.deepStrictEqual(notebookService.getExecuteProvidersForFileType('ipynb'), ['sql'], 'sql provider should be registered for ipynb extension');
 
 		const otherProviderRegistration: ExecuteProviderRegistration = {
-			fileExtensions: 'ipynb',
 			standardKernels: {
 				name: 'kernel1',
 				connectionProviderIds: [],
