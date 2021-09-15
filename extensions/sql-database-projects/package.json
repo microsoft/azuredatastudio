@@ -49,6 +49,10 @@
           "sqlDatabaseProjects.nodejsDoNotAsk": {
             "type": "boolean",
             "description": "%sqlDatabaseProjects.nodejsDoNotAsk%"
+          },
+          "sqlDatabaseProjects.autorestSqlVersion": {
+            "type": "string",
+            "description": "%sqlDatabaseProjects.autorestSqlVersion%"
           }
         }
       }
@@ -399,6 +403,7 @@
     "fs-extra": "^5.0.0",
     "jsonc-parser": "^2.3.1",
     "promisify-child-process": "^3.1.1",
+    "semver": "^7.3.5",
     "vscode-languageclient": "^5.3.0-next.1",
     "vscode-nls": "^4.1.2",
     "which": "^2.0.2",
@@ -406,6 +411,7 @@
     "xmldom": "^0.3.0"
   },
   "devDependencies": {
+    "@types/fs-extra": "^5.0.0",
     "@types/mocha": "^5.2.5",
     "@types/sinon": "^9.0.4",
     "@types/xmldom": "^0.1.29",
@@ -417,8 +423,7 @@
     "tslint": "^5.8.0",
     "typemoq": "^2.1.0",
     "typescript": "^2.6.1",
-    "vscodetestcover": "^1.1.0",
-    "@types/fs-extra": "^5.0.0"
+    "vscodetestcover": "^1.1.0"
   },
   "__metadata": {
     "id": "70",

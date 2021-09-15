@@ -50,7 +50,9 @@ describe('Autorest tests', function (): void {
 		const expectedOutput = 'autorest --use:autorest-sql-testing@0.0.2 --input-file="/some/path/test.yaml" --output-folder="/some/output/path" --clear-output-folder';
 
 		const autorestHelper = new AutorestHelper(testContext.outputChannel);
-		const constructedCommand = autorestHelper.constructAutorestCommand((await autorestHelper.detectInstallation())!, '/some/path/test.yaml', '/some/output/path')
+		const constructedCommand = autorestHelper.constructAutorestCommand((await autorestHelper.detectInstallation())!, '/some/path/test.yaml', '/some/output/path');
+
+		// depending on whether the machine running the test has autorest installed or just node, the expected output may differ by just the prefix, hence matching against two options
 		should(constructedCommand === expectedOutput || constructedCommand === `npx ${expectedOutput}`).equal(true, `Constructed autorest command not formatting as expected:\nActual: ${constructedCommand}\nExpected: [npx ]${expectedOutput}`);
 	});
 });

@@ -20,7 +20,7 @@ export class ShellExecutionHelper {
 	}
 
 	/**
-	 * spawns the dotnet command with arguments and redirects the error and output to ADS output channel
+	 * spawns the shell command with arguments and redirects the error and output to ADS output channel
 	 */
 	public async runStreamedCommand(command: string, outputChannel: vscode.OutputChannel, options?: ShellCommandOptions): Promise<string> {
 		const stdoutData: string[] = [];
@@ -40,7 +40,7 @@ export class ShellExecutionHelper {
 		outputChannel.show();
 
 		// Add listeners to print stdout and stderr and exit code
-		child.on('exit', (code: number | null, signal: string | null) => {
+		void child.on('exit', (code: number | null, signal: string | null) => {
 			if (code !== null) {
 				outputChannel.appendLine(localize('sqlDatabaseProjects.RunStreamedCommand.ExitedWithCode', "    >>> {0}    … exited with code: {1}", command, code));
 			} else {

@@ -13,6 +13,7 @@ export const localize = nls.loadMessageBundle();
 export const dataSourcesFileName = 'datasources.json';
 export const sqlprojExtension = '.sqlproj';
 export const sqlFileExtension = '.sql';
+export const yamlFileExtension = '.yaml';
 export const schemaCompareExtensionId = 'microsoft.schema-compare';
 export const master = 'master';
 export const masterDacpac = 'master.dacpac';
@@ -414,6 +415,7 @@ export const autorestPostDeploymentScriptName = 'PostDeploymentScript.sql';
 export const nodeButNotAutorestFound = localize('nodeButNotAutorestFound', "Autorest tool not found in system path, but found Node.js.  Running via npx.  Please execute 'npm install autorest -g' to install permanently.");
 export const nodeNotFound = localize('nodeNotFound', "Neither autorest nor Node.js (npx) found in system path.  Please install Node.js for autorest generation to work.");
 export const selectSpecFile = localize('selectSpecFile', "Select OpenAPI/Swagger spec file");
+export const generatingProjectFailed = localize('generatingProjectFailed', "Generating project via AutoRest failed");
 
 // System dbs
 export const systemDbs = ['master', 'msdb', 'tempdb', 'model'];

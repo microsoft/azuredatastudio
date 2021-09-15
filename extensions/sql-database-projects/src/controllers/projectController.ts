@@ -890,9 +890,8 @@ export class ProjectsController {
 				return;
 			}
 
-			// 3. create target folder
 			outputFolder = folders[0].fsPath;
-			projectName = path.basename(specPath, '.yaml');
+			projectName = path.basename(specPath, constants.yamlFileExtension);
 			newProjectFolder = path.join(outputFolder, projectName);
 
 			if (await utils.exists(newProjectFolder)) {
@@ -959,7 +958,7 @@ export class ProjectsController {
 			workspaceApi.showProjectsView();
 			return project;
 		} catch (err) {
-			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
+			void vscode.window.showErrorMessage(`${constants.generatingProjectFailed}: ${utils.getErrorMessage(err)}`);
 			return;
 		}
 	}

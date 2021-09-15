@@ -6,17 +6,33 @@
 import * as vscode from 'vscode';
 import { DoNotAskAgain, Install, nodeButNotAutorestFound, nodeNotFound } from '../common/constants';
 import * as utils from '../common/utils';
+import * as semver from 'semver';
 import { DBProjectConfigurationKey } from './netcoreTool';
 import { ShellExecutionHelper } from './shellExecutionHelper';
 
-const autorestPackageVersion = '0.0.2'; // latest version of AutoRest.Sql package on npm
 const autorestPackageName = 'autorest-sql-testing'; // name of AutoRest.Sql package on npm
 const nodejsDoNotAskAgainKey: string = 'nodejsDoNotAsk';
+const autorestSqlVersionKey: string = 'autorestSqlVersion';
 
+/**
+ * Helper class for dealing with Autorest generation and detection
+ */
 export class AutorestHelper extends ShellExecutionHelper {
-
 	constructor(_outputChannel: vscode.OutputChannel) {
 		super(_outputChannel);
+	}
+
+	/**
+	 * Checks the workspace configuration to for an AutoRest.Sql override, otherwise latest will be used from NPM
+	 */
+	public get autorestSqlPackageVersion(): string {
+		let configVal: string | undefined = vscode.workspace.getConfiguration(DBProjectConfigurationKey)[autorestSqlVersionKey];
+
+		if (configVal && semver.valid(configVal.trim())) {
+			return configVal.trim();
+		} else {
+			return 'latest';
+		}
 	}
 
 	/**
@@ -38,6 +54,12 @@ export class AutorestHelper extends ShellExecutionHelper {
 		return undefined;
 	}
 
+	/**
+	 * Calls autorest to generate files from the spec, piping standard and error output to the host console
+	 * @param specPath path to the OpenAPI spec file
+	 * @param outputFolder folder in which to generate the .sql script files
+	 * @returns console output from autorest execution
+	 */
 	public async generateAutorestFiles(specPath: string, outputFolder: string): Promise<string | undefined> {
 		const commandExecutable = await this.detectInstallation();
 
@@ -70,8 +92,15 @@ export class AutorestHelper extends ShellExecutionHelper {
 		return output;
 	}
 
-	public constructAutorestCommand(executable: string, swaggerPath: string, outputFolder: string): string {
+	/**
+	 *
+	 * @param executable either "autorest" or "npx autorest", depending on whether autorest is already present in the global cache
+	 * @param specPath path to the OpenAPI spec
+	 * @param outputFolder folder in which to generate the files
+	 * @returns composed command to be executed
+	 */
+	public constructAutorestCommand(executable: string, specPath: string, outputFolder: string): string {
 		// TODO: should --clear-output-folder be included? We should always be writing to a folder created just for this, but potentially risky
-		return `${executable} --use:${autorestPackageName}@${autorestPackageVersion} --input-file="${swaggerPath}" --output-folder="${outputFolder}" --clear-output-folder`;
+		return `${executable} --use:${autorestPackageName}@${this.autorestSqlPackageVersion} --input-file="${specPath}" --output-folder="${outputFolder}" --clear-output-folder`;
 	}
 }
