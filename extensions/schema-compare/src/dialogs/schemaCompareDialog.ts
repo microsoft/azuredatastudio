@@ -9,7 +9,7 @@ import * as loc from '../localizedConstants';
 import * as path from 'path';
 import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
 import { TelemetryReporter, TelemetryViews } from '../telemetry';
-import { getEndpointName, getRootPath, exists } from '../utils';
+import { getEndpointName, getRootPath, exists, getAzdataApi } from '../utils';
 import * as mssql from '../../../mssql';
 
 const titleFontSize: number = 13;
@@ -18,13 +18,16 @@ interface Deferred<T> {
 	resolve: (result: T | Promise<T>) => void;
 	reject: (reason: any) => void;
 }
+
 export class SchemaCompareDialog {
 	public dialog: azdata.window.Dialog;
 	public dialogName: string;
+	private schemaCompareTab: azdata.window.DialogTab;
 	private sourceDacpacRadioButton: azdata.RadioButtonComponent;
 	private sourceDatabaseRadioButton: azdata.RadioButtonComponent;
-	private schemaCompareTab: azdata.window.DialogTab;
+	private sourceProjectRadioButton: azdata.RadioButtonComponent;
 	private sourceDacpacComponent: azdata.FormComponent;
+	private sourceProjectFilePathComponent: azdata.FormComponent;
 	private sourceTextBox: azdata.InputBoxComponent;
 	private sourceFileButton: azdata.ButtonComponent;
 	private sourceServerComponent: azdata.FormComponent;
@@ -32,22 +35,34 @@ export class SchemaCompareDialog {
 	private sourceConnectionButton: azdata.ButtonComponent;
 	private sourceDatabaseComponent: azdata.FormComponent;
 	private sourceDatabaseDropdown: azdata.DropDownComponent;
+	private sourceIsDacpac: boolean;
+	private sourceIsProject: boolean;
+	private sourceIsDatabase: boolean;
+	private sourceDbEditable: string;
+	private sourceDacpacPath: string;
+	private sourceProjectFilePath: string;
 	private targetDacpacComponent: azdata.FormComponent;
+	private targetProjectFilePathComponent: azdata.FormComponent;
+	private targetProjectStructureComponent: azdata.FormComponent;
 	private targetTextBox: azdata.InputBoxComponent;
 	private targetFileButton: azdata.ButtonComponent;
+	private targetStructureDropdown: azdata.DropDownComponent;
 	private targetServerComponent: azdata.FormComponent;
 	protected targetServerDropdown: azdata.DropDownComponent;
 	private targetConnectionButton: azdata.ButtonComponent;
 	private targetDatabaseComponent: azdata.FormComponent;
 	private targetDatabaseDropdown: azdata.DropDownComponent;
-	private formBuilder: azdata.FormBuilder;
-	private sourceIsDacpac: boolean;
+	private targetDacpacPath: string;
+	private targetProjectFilePath: string;
 	private targetIsDacpac: boolean;
-	private connectionId: string;
-	private sourceDbEditable: string;
+	private targetIsDatabase: boolean;
+	private targetIsProject: boolean;
 	private targetDbEditable: string;
 	private previousSource: mssql.SchemaCompareEndpointInfo;
 	private previousTarget: mssql.SchemaCompareEndpointInfo;
+	private formBuilder: azdata.FormBuilder;
+	private connectionId: string;
+	private toDispose: vscode.Disposable[] = [];
 	private initDialogComplete: Deferred<void>;
 	private initDialogPromise: Promise<void> = new Promise<void>((resolve, reject) => this.initDialogComplete = { resolve, reject });
 
@@ -59,6 +74,11 @@ export class SchemaCompareDialog {
 	constructor(private schemaCompareMainWindow: SchemaCompareMainWindow, private view?: azdata.ModelView, private extensionContext?: vscode.ExtensionContext) {
 		this.previousSource = schemaCompareMainWindow.sourceEndpointInfo;
 		this.previousTarget = schemaCompareMainWindow.targetEndpointInfo;
+
+		this.dialog = azdata.window.createModelViewDialog(loc.SchemaCompareLabel);
+		this.dialog.registerCloseValidator(async () => {
+			return this.validate();
+		});
 	}
 
 	protected async initializeDialog(): Promise<void> {
@@ -79,7 +99,7 @@ export class SchemaCompareDialog {
 
 		this.dialog.okButton.label = loc.OkButtonText;
 		this.dialog.okButton.enabled = false;
-		this.dialog.okButton.onClick(async () => await this.execute());
+		this.toDispose.push(this.dialog.okButton.onClick(async () => await this.handleOkButtonClick()));
 
 		this.dialog.cancelButton.label = loc.CancelButtonText;
 		this.dialog.cancelButton.onClick(async () => await this.cancel());
@@ -89,17 +109,7 @@ export class SchemaCompareDialog {
 	}
 
 	public async execute(): Promise<void> {
-		if (this.sourceIsDacpac) {
-			this.schemaCompareMainWindow.sourceEndpointInfo = {
-				endpointType: mssql.SchemaCompareEndpointType.Dacpac,
-				serverDisplayName: '',
-				serverName: '',
-				databaseName: '',
-				ownerUri: '',
-				packageFilePath: this.sourceTextBox.value,
-				connectionDetails: undefined
-			};
-		} else {
+		if (this.sourceIsDatabase) {
 			const sourceServerDropdownValue = this.sourceServerDropdown.value as ConnectionDropdownValue;
 			const ownerUri = await azdata.connection.getUriForConnection(sourceServerDropdownValue.connection.connectionId);
 
@@ -109,23 +119,45 @@ export class SchemaCompareDialog {
 				serverName: sourceServerDropdownValue.name,
 				databaseName: this.sourceDatabaseDropdown.value.toString(),
 				ownerUri: ownerUri,
+				projectFilePath: '',
+				targetScripts: [],
+				folderStructure: '',
 				packageFilePath: '',
+				dataSchemaProvider: '',
 				connectionDetails: undefined,
 				connectionName: sourceServerDropdownValue.connection.options.connectionName
 			};
-		}
-
-		if (this.targetIsDacpac) {
-			this.schemaCompareMainWindow.targetEndpointInfo = {
+		} else if (this.sourceIsDacpac) {
+			this.schemaCompareMainWindow.sourceEndpointInfo = {
 				endpointType: mssql.SchemaCompareEndpointType.Dacpac,
 				serverDisplayName: '',
 				serverName: '',
 				databaseName: '',
 				ownerUri: '',
-				packageFilePath: this.targetTextBox.value,
+				projectFilePath: '',
+				targetScripts: [],
+				folderStructure: '',
+				dataSchemaProvider: '',
+				packageFilePath: this.sourceTextBox.value,
 				connectionDetails: undefined
 			};
 		} else {
+			this.schemaCompareMainWindow.sourceEndpointInfo = {
+				endpointType: mssql.SchemaCompareEndpointType.Project,
+				projectFilePath: this.sourceTextBox.value,
+				targetScripts: await this.getTargetScripts(true),
+				dataSchemaProvider: await this.getDsp(true),
+				folderStructure: '',
+				serverDisplayName: '',
+				serverName: '',
+				databaseName: '',
+				ownerUri: '',
+				packageFilePath: '',
+				connectionDetails: undefined
+			};
+		}
+
+		if (this.targetIsDatabase) {
 			const targetServerDropdownValue = this.targetServerDropdown.value as ConnectionDropdownValue;
 			const ownerUri = await azdata.connection.getUriForConnection(targetServerDropdownValue.connection.connectionId);
 
@@ -135,16 +167,52 @@ export class SchemaCompareDialog {
 				serverName: targetServerDropdownValue.name,
 				databaseName: this.targetDatabaseDropdown.value.toString(),
 				ownerUri: ownerUri,
+				projectFilePath: '',
+				folderStructure: '',
+				targetScripts: [],
 				packageFilePath: '',
+				dataSchemaProvider: '',
 				connectionDetails: undefined,
 				connectionName: targetServerDropdownValue.connection.options.connectionName
+			};
+		} else if (this.targetIsDacpac) {
+			this.schemaCompareMainWindow.targetEndpointInfo = {
+				endpointType: mssql.SchemaCompareEndpointType.Dacpac,
+				serverDisplayName: '',
+				serverName: '',
+				databaseName: '',
+				ownerUri: '',
+				projectFilePath: '',
+				folderStructure: '',
+				targetScripts: [],
+				dataSchemaProvider: '',
+				packageFilePath: this.targetTextBox.value,
+				connectionDetails: undefined
+			};
+		} else {
+			this.schemaCompareMainWindow.targetEndpointInfo = {
+				endpointType: mssql.SchemaCompareEndpointType.Project,
+				projectFilePath: this.targetTextBox.value,
+				folderStructure: this.targetStructureDropdown!.value as string,
+				targetScripts: await this.getTargetScripts(false),
+				dataSchemaProvider: await this.getDsp(false),
+				serverDisplayName: '',
+				serverName: '',
+				databaseName: '',
+				ownerUri: '',
+				packageFilePath: '',
+				connectionDetails: undefined
 			};
 		}
 
 		TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareDialog, 'SchemaCompareStart')
 			.withAdditionalProperties({
 				sourceIsDacpac: this.sourceIsDacpac.toString(),
-				targetIsDacpac: this.targetIsDacpac.toString()
+				targetIsDacpac: this.targetIsDacpac.toString(),
+				sourceIsDatabase: this.sourceIsDatabase.toString(),
+				targetIsDatabase: this.targetIsDatabase.toString(),
+				sourceIsProject: this.sourceIsProject.toString(),
+				targetIsProject: this.targetIsProject.toString()
 			}).send();
 
 		// update source and target values that are displayed
@@ -190,24 +258,52 @@ export class SchemaCompareDialog {
 				this.view = view;
 			}
 
+			let sourceValue = '';
+
+			if (this.schemaCompareMainWindow.sourceEndpointInfo && this.schemaCompareMainWindow.sourceEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Dacpac) {
+				sourceValue = this.schemaCompareMainWindow.sourceEndpointInfo.packageFilePath;
+			} else if (this.schemaCompareMainWindow.sourceEndpointInfo && this.schemaCompareMainWindow.sourceEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Project) {
+				sourceValue = this.schemaCompareMainWindow.sourceEndpointInfo.projectFilePath;
+			}
+
 			this.sourceTextBox = this.view.modelBuilder.inputBox().withProps({
-				value: this.schemaCompareMainWindow.sourceEndpointInfo ? this.schemaCompareMainWindow.sourceEndpointInfo.packageFilePath : '',
+				value: sourceValue,
 				width: this.textBoxWidth,
 				ariaLabel: loc.sourceFile
 			}).component();
 
 			this.sourceTextBox.onTextChanged(async (e) => {
 				this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
+
+				if (this.sourceIsDacpac) {
+					this.sourceDacpacPath = e;
+				} else if (this.sourceIsProject) {
+					this.sourceProjectFilePath = e;
+				}
 			});
 
+			let targetValue = '';
+
+			if (this.schemaCompareMainWindow.targetEndpointInfo && this.schemaCompareMainWindow.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Dacpac) {
+				targetValue = this.schemaCompareMainWindow.targetEndpointInfo.packageFilePath;
+			} else if (this.schemaCompareMainWindow.targetEndpointInfo && this.schemaCompareMainWindow.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Project) {
+				targetValue = this.schemaCompareMainWindow.targetEndpointInfo.projectFilePath;
+			}
+
 			this.targetTextBox = this.view.modelBuilder.inputBox().withProps({
-				value: this.schemaCompareMainWindow.targetEndpointInfo ? this.schemaCompareMainWindow.targetEndpointInfo.packageFilePath : '',
+				value: targetValue,
 				width: this.textBoxWidth,
 				ariaLabel: loc.targetFile
 			}).component();
 
-			this.targetTextBox.onTextChanged(async () => {
+			this.targetTextBox.onTextChanged(async (e) => {
 				this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
+
+				if (this.targetIsDacpac) {
+					this.targetDacpacPath = e;
+				} else if (this.targetIsProject) {
+					this.targetProjectFilePath = e;
+				}
 			});
 
 			this.sourceServerComponent = this.createSourceServerDropdown();
@@ -218,8 +314,13 @@ export class SchemaCompareDialog {
 
 			this.targetDatabaseComponent = this.createTargetDatabaseDropdown();
 
-			this.sourceDacpacComponent = this.createFileBrowser(false, this.schemaCompareMainWindow.sourceEndpointInfo);
-			this.targetDacpacComponent = this.createFileBrowser(true, this.schemaCompareMainWindow.targetEndpointInfo);
+			this.sourceDacpacComponent = this.createFileBrowser(false, true, this.schemaCompareMainWindow.sourceEndpointInfo);
+			this.targetDacpacComponent = this.createFileBrowser(true, true, this.schemaCompareMainWindow.targetEndpointInfo);
+
+			this.sourceProjectFilePathComponent = this.createFileBrowser(false, false, this.schemaCompareMainWindow.sourceEndpointInfo);
+			this.targetProjectFilePathComponent = this.createFileBrowser(true, false, this.schemaCompareMainWindow.targetEndpointInfo);
+
+			this.targetProjectStructureComponent = this.createStructureDropdown();
 
 			let sourceRadioButtons = this.createSourceRadioButtons();
 			let targetRadioButtons = this.createTargetRadioButtons();
@@ -227,17 +328,26 @@ export class SchemaCompareDialog {
 			let sourceComponents = [];
 			let targetComponents = [];
 
-			// start source and target with either dacpac or database selection based on what the previous value was
+			// start source and target with either dacpac, database, or project selection based on what the previous value was
 			if (this.schemaCompareMainWindow.sourceEndpointInfo && this.schemaCompareMainWindow.sourceEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Database) {
 				sourceComponents = [
 					sourceRadioButtons,
 					this.sourceServerComponent,
 					this.sourceDatabaseComponent
 				];
-			} else {
+			} else if (this.schemaCompareMainWindow.sourceEndpointInfo && this.schemaCompareMainWindow.sourceEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Dacpac) {
 				sourceComponents = [
 					sourceRadioButtons,
 					this.sourceDacpacComponent,
+				];
+			} else if (this.schemaCompareMainWindow.sourceEndpointInfo && this.schemaCompareMainWindow.sourceEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Project) {
+				sourceComponents = [
+					sourceRadioButtons,
+					this.sourceProjectFilePathComponent,
+				];
+			} else {
+				sourceComponents = [
+					sourceRadioButtons,
 				];
 			}
 
@@ -247,10 +357,20 @@ export class SchemaCompareDialog {
 					this.targetServerComponent,
 					this.targetDatabaseComponent
 				];
-			} else {
+			} else if (this.schemaCompareMainWindow.targetEndpointInfo && this.schemaCompareMainWindow.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Dacpac) {
 				targetComponents = [
 					targetRadioButtons,
 					this.targetDacpacComponent,
+				];
+			} else if (this.schemaCompareMainWindow.targetEndpointInfo && this.schemaCompareMainWindow.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Project) {
+				targetComponents = [
+					targetRadioButtons,
+					this.targetProjectFilePathComponent,
+					this.targetProjectStructureComponent
+				];
+			} else {
+				targetComponents = [
+					targetRadioButtons,
 				];
 			}
 
@@ -274,17 +394,22 @@ export class SchemaCompareDialog {
 
 			let formModel = this.formBuilder.component();
 			await this.view.initializeModel(formModel);
+
 			if (this.sourceIsDacpac) {
 				await this.sourceDacpacRadioButton.focus();
-			} else {
+			} else if (this.sourceIsDatabase) {
 				await this.sourceDatabaseRadioButton.focus();
+			} else if (this.sourceIsProject) {
+				await this.sourceProjectRadioButton.focus();
 			}
+
 			this.initDialogComplete.resolve();
 		});
 	}
 
-	private createFileBrowser(isTarget: boolean, endpoint: mssql.SchemaCompareEndpointInfo): azdata.FormComponent {
+	private createFileBrowser(isTarget: boolean, dacpac: boolean, endpoint: mssql.SchemaCompareEndpointInfo): azdata.FormComponent {
 		let currentTextbox = isTarget ? this.targetTextBox : this.sourceTextBox;
+
 		if (isTarget) {
 			this.targetFileButton = this.view.modelBuilder.button().withProps({
 				title: loc.selectTargetFile,
@@ -302,8 +427,9 @@ export class SchemaCompareDialog {
 		}
 
 		let currentButton = isTarget ? this.targetFileButton : this.sourceFileButton;
+		const filter = dacpac ? 'dacpac' : 'sqlproj';
 
-		currentButton.onDidClick(async (click) => {
+		currentButton.onDidClick(async () => {
 			// file browser should open where the current dacpac is or the appropriate default folder
 			let rootPath = getRootPath();
 			let defaultUri = endpoint && endpoint.packageFilePath && await exists(endpoint.packageFilePath) ? endpoint.packageFilePath : rootPath;
@@ -316,7 +442,7 @@ export class SchemaCompareDialog {
 					defaultUri: vscode.Uri.file(defaultUri),
 					openLabel: loc.open,
 					filters: {
-						'dacpac Files': ['dacpac'],
+						'Files': [filter],
 					}
 				}
 			);
@@ -336,6 +462,22 @@ export class SchemaCompareDialog {
 		};
 	}
 
+	private createStructureDropdown(): azdata.FormComponent {
+		this.targetStructureDropdown = this.view.modelBuilder.dropDown().withProps({
+			editable: true,
+			fireOnTextChange: true,
+			ariaLabel: loc.targetStructure,
+			width: this.textBoxWidth,
+			values: [loc.file, loc.flat, loc.objectType, loc.schema, loc.schemaObjectType],
+			value: loc.schemaObjectType,
+		}).component();
+
+		return {
+			component: this.targetStructureDropdown,
+			title: loc.StructureDropdownLabel,
+		};
+	}
+
 	private createSourceRadioButtons(): azdata.FormComponent {
 		this.sourceDacpacRadioButton = this.view.modelBuilder.radioButton()
 			.withProps({
@@ -349,11 +491,21 @@ export class SchemaCompareDialog {
 				label: loc.DatabaseRadioButtonLabel
 			}).component();
 
+		this.sourceProjectRadioButton = this.view.modelBuilder.radioButton()
+			.withProps({
+				name: 'source',
+				label: loc.ProjectRadioButtonLabel
+			}).component();
+
 		// show dacpac file browser
 		this.sourceDacpacRadioButton.onDidClick(async () => {
 			this.sourceIsDacpac = true;
+			this.sourceIsDatabase = false;
+			this.sourceIsProject = false;
+			this.sourceTextBox.value = this.sourceDacpacPath;
 			this.formBuilder.removeFormItem(this.sourceServerComponent);
 			this.formBuilder.removeFormItem(this.sourceDatabaseComponent);
+			this.formBuilder.removeFormItem(this.sourceProjectFilePathComponent);
 			this.formBuilder.insertFormItem(this.sourceDacpacComponent, 2, { horizontal: true, titleFontSize: titleFontSize });
 			this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
 		});
@@ -361,24 +513,50 @@ export class SchemaCompareDialog {
 		// show server and db dropdowns
 		this.sourceDatabaseRadioButton.onDidClick(async () => {
 			this.sourceIsDacpac = false;
+			this.sourceIsDatabase = true;
+			this.sourceIsProject = false;
 			this.formBuilder.insertFormItem(this.sourceServerComponent, 2, { horizontal: true, titleFontSize: titleFontSize });
 			this.formBuilder.insertFormItem(this.sourceDatabaseComponent, 3, { horizontal: true, titleFontSize: titleFontSize });
 			this.formBuilder.removeFormItem(this.sourceDacpacComponent);
+			this.formBuilder.removeFormItem(this.sourceProjectFilePathComponent);
 
 			await this.populateServerDropdown(false);
+		});
+
+		// show project directory browser
+		this.sourceProjectRadioButton.onDidClick(async () => {
+			this.sourceIsDacpac = false;
+			this.sourceIsDatabase = false;
+			this.sourceIsProject = true;
+			this.sourceTextBox.value = this.sourceProjectFilePath;
+			this.formBuilder.removeFormItem(this.sourceServerComponent);
+			this.formBuilder.removeFormItem(this.sourceDatabaseComponent);
+			this.formBuilder.removeFormItem(this.sourceDacpacComponent);
+			this.formBuilder.insertFormItem(this.sourceProjectFilePathComponent, 2, { horizontal: true, titleFontSize: titleFontSize });
+			this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
 		});
 
 		// if source is currently a db, show it in the server and db dropdowns
 		if (this.schemaCompareMainWindow.sourceEndpointInfo && this.schemaCompareMainWindow.sourceEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Database) {
 			this.sourceDatabaseRadioButton.checked = true;
 			this.sourceIsDacpac = false;
-		} else {
+			this.sourceIsDatabase = true;
+			this.sourceIsProject = false;
+		} else if (this.schemaCompareMainWindow.sourceEndpointInfo && this.schemaCompareMainWindow.sourceEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Dacpac) {
 			this.sourceDacpacRadioButton.checked = true;
 			this.sourceIsDacpac = true;
+			this.sourceIsDatabase = false;
+			this.sourceIsProject = false;
+		} else if (this.schemaCompareMainWindow.sourceEndpointInfo) {
+			this.sourceProjectRadioButton.checked = true;
+			this.sourceIsDacpac = false;
+			this.sourceIsDatabase = false;
+			this.sourceIsProject = true;
 		}
+
 		let flexRadioButtonsModel = this.view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
-			.withItems([this.sourceDacpacRadioButton, this.sourceDatabaseRadioButton])
+			.withItems([this.sourceDacpacRadioButton, this.sourceProjectRadioButton, this.sourceDatabaseRadioButton])
 			.withProps({ ariaRole: 'radiogroup' })
 			.component();
 
@@ -401,11 +579,22 @@ export class SchemaCompareDialog {
 				label: loc.DatabaseRadioButtonLabel
 			}).component();
 
+		let projectRadioButton = this.view.modelBuilder.radioButton()
+			.withProps({
+				name: 'target',
+				label: loc.ProjectRadioButtonLabel
+			}).component();
+
 		// show dacpac file browser
 		dacpacRadioButton.onDidClick(async () => {
 			this.targetIsDacpac = true;
+			this.targetIsDatabase = false;
+			this.targetIsProject = false;
+			this.targetTextBox.value = this.targetDacpacPath;
 			this.formBuilder.removeFormItem(this.targetServerComponent);
 			this.formBuilder.removeFormItem(this.targetDatabaseComponent);
+			this.formBuilder.removeFormItem(this.targetProjectFilePathComponent);
+			this.formBuilder.removeFormItem(this.targetProjectStructureComponent);
 			this.formBuilder.addFormItem(this.targetDacpacComponent, { horizontal: true, titleFontSize: titleFontSize });
 			this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
 		});
@@ -413,25 +602,52 @@ export class SchemaCompareDialog {
 		// show server and db dropdowns
 		databaseRadioButton.onDidClick(async () => {
 			this.targetIsDacpac = false;
+			this.targetIsDatabase = true;
+			this.targetIsProject = false;
 			this.formBuilder.removeFormItem(this.targetDacpacComponent);
+			this.formBuilder.removeFormItem(this.targetProjectFilePathComponent);
+			this.formBuilder.removeFormItem(this.targetProjectStructureComponent);
 			this.formBuilder.addFormItem(this.targetServerComponent, { horizontal: true, titleFontSize: titleFontSize });
 			this.formBuilder.addFormItem(this.targetDatabaseComponent, { horizontal: true, titleFontSize: titleFontSize });
 
 			await this.populateServerDropdown(true);
 		});
 
+		// show project directory browser
+		projectRadioButton.onDidClick(async () => {
+			this.targetIsDacpac = false;
+			this.targetIsDatabase = false;
+			this.targetIsProject = true;
+			this.targetTextBox.value = this.targetProjectFilePath;
+			this.formBuilder.removeFormItem(this.targetServerComponent);
+			this.formBuilder.removeFormItem(this.targetDatabaseComponent);
+			this.formBuilder.removeFormItem(this.targetDacpacComponent);
+			this.formBuilder.addFormItem(this.targetProjectFilePathComponent, { horizontal: true, titleFontSize: titleFontSize });
+			this.formBuilder.addFormItem(this.targetProjectStructureComponent, { horizontal: true, titleFontSize: titleFontSize });
+			this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
+		});
+
 		// if target is currently a db, show it in the server and db dropdowns
 		if (this.schemaCompareMainWindow.targetEndpointInfo && this.schemaCompareMainWindow.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Database) {
 			databaseRadioButton.checked = true;
 			this.targetIsDacpac = false;
-		} else {
+			this.targetIsDatabase = true;
+			this.targetIsProject = false;
+		} else if (this.schemaCompareMainWindow.targetEndpointInfo && this.schemaCompareMainWindow.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Dacpac) {
 			dacpacRadioButton.checked = true;
 			this.targetIsDacpac = true;
+			this.targetIsDatabase = false;
+			this.targetIsProject = false;
+		} else if (this.schemaCompareMainWindow.targetEndpointInfo) {
+			projectRadioButton.checked = true;
+			this.targetIsDacpac = false;
+			this.targetIsDatabase = false;
+			this.targetIsProject = true;
 		}
 
 		let flexRadioButtonsModel = this.view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
-			.withItems([dacpacRadioButton, databaseRadioButton]
+			.withItems([dacpacRadioButton, projectRadioButton, databaseRadioButton]
 			)
 			.withProps({ ariaRole: 'radiogroup' })
 			.component();
@@ -444,15 +660,100 @@ export class SchemaCompareDialog {
 
 	private async shouldEnableOkayButton(): Promise<boolean> {
 		let sourcefilled = (this.sourceIsDacpac && await this.existsDacpac(this.sourceTextBox.value))
-			|| (!this.sourceIsDacpac && !isNullOrUndefined(this.sourceDatabaseDropdown.value) && this.sourceDatabaseDropdown.values.findIndex(x => this.matchesValue(x, this.sourceDbEditable)) !== -1);
+			|| (this.sourceIsProject && this.existsProjectFile(this.sourceTextBox.value))
+			|| (this.sourceIsDatabase && !isNullOrUndefined(this.sourceDatabaseDropdown.value) && this.sourceDatabaseDropdown.values.findIndex(x => this.matchesValue(x, this.sourceDbEditable)) !== -1);
 		let targetfilled = (this.targetIsDacpac && await this.existsDacpac(this.targetTextBox.value))
-			|| (!this.targetIsDacpac && !isNullOrUndefined(this.targetDatabaseDropdown.value) && this.targetDatabaseDropdown.values.findIndex(x => this.matchesValue(x, this.targetDbEditable)) !== -1);
+			|| (this.targetIsProject && this.existsProjectFile(this.targetTextBox.value))
+			|| (this.targetIsDatabase && !isNullOrUndefined(this.targetDatabaseDropdown.value) && this.targetDatabaseDropdown.values.findIndex(x => this.matchesValue(x, this.targetDbEditable)) !== -1);
 
 		return sourcefilled && targetfilled;
 	}
 
+	public async handleOkButtonClick(): Promise<void> {
+		await this.execute();
+		this.dispose();
+	}
+
+	protected showErrorMessage(message: string): void {
+		this.dialog.message = {
+			text: message,
+			level: getAzdataApi()!.window.MessageLevel.Error
+		};
+	}
+
+	async validate(): Promise<boolean> {
+		try {
+
+			if ((this.sourceIsProject || this.targetIsProject) && !vscode.extensions.getExtension(loc.sqlDatabaseProjectExtensionId)) {
+				this.showErrorMessage(loc.noProjectExtension);
+				return false;
+			}
+
+			if (this.sourceIsProject && this.targetIsProject) {
+				try {
+					await this.getDsp(true);
+				} catch (eSource) {
+					try {
+						await this.getDsp(false);
+					} catch (eTarget) {
+						this.showErrorMessage(loc.dspErrorSourceAndTarget);
+						return false;
+					}
+
+					this.showErrorMessage(loc.dspErrorSource);
+					return false;
+				}
+			}
+
+			if (this.sourceIsProject) {
+				try {
+					await this.getDsp(true);
+				} catch (eSource) {
+					this.showErrorMessage(loc.dspErrorSource);
+					return false;
+				}
+			}
+
+			if (this.targetIsProject) {
+				try {
+					await this.getDsp(false);
+				} catch (eSource) {
+					this.showErrorMessage(loc.dspErrorTarget);
+					return false;
+				}
+			}
+
+			return true;
+		} catch (e) {
+			this.showErrorMessage(e?.message ? e.message : e);
+			return false;
+		}
+	}
+
+	private dispose(): void {
+		this.toDispose.forEach(disposable => disposable.dispose());
+	}
+
 	private async existsDacpac(filename: string): Promise<boolean> {
 		return !isNullOrUndefined(filename) && await exists(filename) && (filename.toLocaleLowerCase().endsWith('.dacpac'));
+	}
+
+	private async existsProjectFile(filename: string): Promise<boolean> {
+		return !isNullOrUndefined(filename) && await exists(filename) && (filename.toLocaleLowerCase().endsWith('.sqlproj'));
+	}
+
+	private async getTargetScripts(source: boolean): Promise<string[]> {
+		const projectFilePath = source ? this.sourceTextBox.value : this.targetTextBox.value;
+		return await vscode.commands.executeCommand(loc.sqlDatabaseProjectsGetTargetScripts, projectFilePath);
+	}
+
+	private async getDsp(source: boolean): Promise<string> {
+		try {
+			const projectFilePath = source ? this.sourceTextBox.value : this.targetTextBox.value;
+			return await vscode.commands.executeCommand(loc.sqlDatabaseProjectsGetDsp, projectFilePath);
+		} catch (e) {
+			throw e;
+		}
 	}
 
 	protected createSourceServerDropdown(): azdata.FormComponent {
@@ -524,9 +825,7 @@ export class SchemaCompareDialog {
 				width: this.textBoxWidth
 			}
 		).component();
-
 		this.targetConnectionButton = this.createConnectionButton(true);
-
 		this.targetServerDropdown.onValueChanged(async (value) => {
 			if (value.selected && this.targetServerDropdown.values.findIndex(x => this.matchesValue(x, value.selected)) === -1) {
 				await this.targetDatabaseDropdown.updateProperties({
@@ -539,10 +838,8 @@ export class SchemaCompareDialog {
 				await this.populateDatabaseDropdown((this.targetServerDropdown.value as ConnectionDropdownValue).connection, true);
 			}
 		});
-
 		// don't await so that dialog loading won't be blocked. Dropdown will show loading indicator until it is populated
 		this.populateServerDropdown(true);
-
 		return {
 			component: this.targetServerDropdown,
 			title: loc.ServerDropdownLabel,

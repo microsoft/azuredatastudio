@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import type * as azdataType from 'azdata'; // eslint-disable-line no-duplicate-imports
 import * as vscode from 'vscode';
 import * as mssql from '../../mssql';
 import * as os from 'os';
@@ -64,8 +65,11 @@ export function getEndpointName(endpoint: mssql.SchemaCompareEndpointInfo): stri
 			return ' ';
 		}
 
-	} else {
+	} else if (endpoint.endpointType === mssql.SchemaCompareEndpointType.Dacpac) {
 		return endpoint.packageFilePath;
+
+	} else {
+		return endpoint.projectFilePath;
 	}
 }
 
@@ -143,4 +147,25 @@ export async function exists(path: string): Promise<boolean> {
 	} catch (e) {
 		return false;
 	}
+}
+
+// Try to load the azdata API - but gracefully handle the failure in case we're running
+// in a context where the API doesn't exist (such as VS Code)
+let azdataApi: typeof azdataType | undefined = undefined;
+try {
+	azdataApi = require('azdata');
+	if (!azdataApi?.version) {
+		// webpacking makes the require return an empty object instead of throwing an error so make sure we clear the var
+		azdataApi = undefined;
+	}
+} catch {
+	// no-op
+}
+
+/**
+ * Gets the azdata API if it's available in the context this extension is running in.
+ * @returns The azdata API if it's available
+ */
+export function getAzdataApi(): typeof azdataType | undefined {
+	return azdataApi;
 }
