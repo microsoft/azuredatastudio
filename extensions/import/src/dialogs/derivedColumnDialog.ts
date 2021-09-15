@@ -146,7 +146,6 @@ export class DerivedColumnDialog {
 			}
 
 			this._transformationTable = view.modelBuilder.declarativeTable().withProps({
-				height: '100%',
 				columns: [
 					{
 						displayName: constants.specifyTransformation,
@@ -160,7 +159,6 @@ export class DerivedColumnDialog {
 				CSSStyles: {
 					'table-layout': 'fixed',
 					'overflow': 'scroll',
-					'height': '800px' // Fitting it to dialog width
 				},
 				width: '800px',
 				dataValues: transformationTableData
