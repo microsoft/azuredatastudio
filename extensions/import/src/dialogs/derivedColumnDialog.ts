@@ -335,7 +335,7 @@ export class DerivedColumnDialog {
 						derivedColumnDataPreview: this.currentTransformation
 					});
 				} catch (e) {
-					console.log(e);
+					console.log(e); // Need to have better error handling for saved transformation. However this seems to be mostly a non-issue.
 				}
 			});
 
