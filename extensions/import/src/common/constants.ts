@@ -69,8 +69,12 @@ export const deriverColumnInstruction2 = localize('flatFileImport.deriverColumnI
 export const deriverColumnInstruction3 = localize('flatFileImport.deriverColumnInstruction3', "Click \"Preview Transformation\" to preview the transformation");
 export const deriverColumnInstruction4 = localize('flatFileImport.deriverColumnInstruction4', "Refine your transformation until you have the desired column");
 export const deriverColumnInstruction5 = localize('flatFileImport.deriverColumnInstruction5', "Specify the new derived column\'s name and click \"Done\"");
-
+export const selectAllColumns = localize('flatFileImport.selectAllColumns', "Select all columns");
+export function specifyTransformationForRow(rowIndex: number): string {
+	return localize('flatFileImport.specifyTransformationForRow', "Specify transformation for row {0}", rowIndex);
+}
+export function selectColumn(colName: string): string {
+	return localize('flatFileImport.selectColumn', "Select column {0}", colName);
+}
 // SQL Queries
 export const selectSchemaQuery = `SELECT name FROM sys.schemas`;
-
-export const selectAllColumns = localize('flatFileImport.selectAllColumns', "Select all columns");

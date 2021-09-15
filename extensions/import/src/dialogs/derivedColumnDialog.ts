@@ -60,7 +60,7 @@ export class DerivedColumnDialog {
 			this._model.originalProseColumns.forEach(c => {
 				const tableRow: azdata.DeclarativeTableCellValue[] = [];
 				tableRow.push(
-					{ value: false },
+					{ value: false, ariaLabel: constants.selectColumn(c.columnName) },
 					{ value: c.columnName }
 				);
 				columnTableData.push(tableRow);
@@ -76,7 +76,7 @@ export class DerivedColumnDialog {
 						showCheckAll: true,
 						width: '20px',
 						headerCssStyles: headerLeft,
-						rowCssStyles: styleLeft
+						rowCssStyles: styleLeft,
 					},
 					{
 						displayName: constants.columnTableTitle,
@@ -84,7 +84,8 @@ export class DerivedColumnDialog {
 						isReadOnly: true,
 						width: '140px',
 						headerCssStyles: headerLeft,
-						rowCssStyles: styleLeft
+						rowCssStyles: styleLeft,
+						ariaLabel: constants.columnTableTitle
 					}
 				],
 				dataValues: columnTableData,
@@ -138,7 +139,8 @@ export class DerivedColumnDialog {
 			for (let index = 0; index < this._model.proseDataPreview.length; index++) {
 				this._specifyTransformations.push(this._view.modelBuilder.inputBox().withProps({
 					value: '',
-					placeHolder: constants.specifyTransformation
+					placeHolder: constants.specifyTransformation,
+					ariaLabel: constants.specifyTransformationForRow(index)
 				}).component());
 				transformationTableData.push([{
 					value: this._specifyTransformations[index]
@@ -149,6 +151,7 @@ export class DerivedColumnDialog {
 				columns: [
 					{
 						displayName: constants.specifyTransformation,
+						ariaLabel: constants.specifyTransformation,
 						valueType: azdata.DeclarativeDataType.component,
 						isReadOnly: false,
 						width: '200px',
