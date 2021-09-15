@@ -146,7 +146,6 @@ export class NotebookService extends Disposable implements INotebookService {
 	private _onNotebookEditorRename = new Emitter<INotebookEditor>();
 	private _editors = new Map<string, INotebookEditor>();
 	private _fileToSerializationProviders = new Map<string, SerializationProviderRegistration[]>();
-	private _fileToExecuteProviders = new Map<string, ExecuteProviderRegistration[]>();
 	private _providerToStandardKernels = new Map<string, nb.IStandardKernel[]>();
 	private _registrationComplete = new Deferred<void>();
 	private _isRegistrationComplete = false;
@@ -411,13 +410,6 @@ export class NotebookService extends Disposable implements INotebookService {
 			standardKernels = standardKernels.filter(kernel => !kernel.blockedOnSAW);
 		}
 		this._providerToStandardKernels.set(providerUpperCase, standardKernels);
-	}
-
-	getExecuteProvidersForFileType(fileType: string): string[] {
-		fileType = fileType.toUpperCase();
-		let providers = this._fileToExecuteProviders.get(fileType);
-
-		return providers ? providers.map(provider => provider.provider) : undefined;
 	}
 
 	getSerializationProvidersForFileType(fileType: string): string[] {

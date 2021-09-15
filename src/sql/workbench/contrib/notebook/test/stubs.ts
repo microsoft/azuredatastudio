@@ -266,9 +266,6 @@ export class NotebookServiceStub implements INotebookService {
 	getSerializationProvidersForFileType(fileType: string): string[] {
 		return [];
 	}
-	getExecuteProvidersForFileType(fileType: string): string[] {
-		return [];
-	}
 	getStandardKernelsForProvider(provider: string): nb.IStandardKernel[] {
 		throw new Error('Method not implemented.');
 	}

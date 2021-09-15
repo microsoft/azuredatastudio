@@ -24,7 +24,7 @@ suite('notebookUtils', function (): void {
 	};
 
 	function setupMockNotebookService() {
-		mockNotebookService.setup(n => n.getExecuteProvidersForFileType(TypeMoq.It.isAnyString()))
+		mockNotebookService.setup(n => n.getSerializationProvidersForFileType(TypeMoq.It.isAnyString()))
 			.returns((fileName, service) => {
 				if (fileName === DEFAULT_NOTEBOOK_FILETYPE) {
 					return [defaultTestProvider];
@@ -69,7 +69,7 @@ suite('notebookUtils', function (): void {
 		result = getProvidersForFileName('test.sql', mockNotebookService.object);
 		assert.deepStrictEqual(result, [testProvider]);
 
-		mockNotebookService.setup(n => n.getExecuteProvidersForFileType(TypeMoq.It.isAnyString()))
+		mockNotebookService.setup(n => n.getSerializationProvidersForFileType(TypeMoq.It.isAnyString()))
 			.returns(() => undefined);
 		result = getProvidersForFileName('test.sql', mockNotebookService.object);
 		assert.deepStrictEqual(result, [DEFAULT_NOTEBOOK_PROVIDER]);

@@ -33,7 +33,7 @@ suite('Notebook Input', function (): void {
 	mockExtensionService.setup(s => s.whenInstalledExtensionsRegistered()).returns(() => Promise.resolve(true));
 
 	const mockNotebookService = TypeMoq.Mock.ofType<INotebookService>(NotebookServiceStub);
-	mockNotebookService.setup(s => s.getExecuteProvidersForFileType(TypeMoq.It.isAny())).returns(() => [testProvider]);
+	mockNotebookService.setup(s => s.getSerializationProvidersForFileType(TypeMoq.It.isAny())).returns(() => [testProvider]);
 	mockNotebookService.setup(s => s.getStandardKernelsForProvider(TypeMoq.It.isAny())).returns(() => {
 		return [{
 			name: 'TestName',

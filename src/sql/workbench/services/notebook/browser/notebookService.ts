@@ -72,8 +72,6 @@ export interface INotebookService {
 
 	getSerializationProvidersForFileType(fileType: string): string[];
 
-	getExecuteProvidersForFileType(fileType: string): string[];
-
 	getStandardKernelsForProvider(provider: string): azdata.nb.IStandardKernel[];
 
 	/**
