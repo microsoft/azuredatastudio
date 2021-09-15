@@ -206,14 +206,6 @@ export class DerivedColumnDialog {
 				this.validatePage();
 			});
 
-			const specifyDerivedColNameTableData: azdata.DeclarativeTableCellValue[][] = [];
-			const colNameTableRow: azdata.DeclarativeTableCellValue[] = [];
-			colNameTableRow.push({
-				value: ''
-			});
-			specifyDerivedColNameTableData.push(colNameTableRow);
-
-
 			const columnNameText = view.modelBuilder.text().withProps({
 				value: constants.specifyDerivedColNameTitle,
 				requiredIndicator: true,
