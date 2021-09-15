@@ -246,13 +246,16 @@ export class FileConfigPage extends ImportPage {
 			return false;
 		}).component();
 
+		this.fileTextBox.onTextChanged(e => {
+			this.model.newFileSelected = true;
+		});
+
 		this.fileButton = this.view.modelBuilder.button().withProps({
 			label: constants.browseFilesText,
 			secondary: true
 		}).component();
 
 		this.fileButton.onDidClick(async (click) => {
-			this.model.transPreviews = [];
 			this.model.newFileSelected = true;
 			let fileUris = await vscode.window.showOpenDialog(
 				{
@@ -428,33 +431,6 @@ export class FileConfigPage extends ImportPage {
 		delete this.model.database;
 		delete this.model.schema;
 	}
-
-	// private async populateTableNames(): Promise<boolean> {
-	// 	this.tableNames = [];
-	// 	let databaseName = (<azdata.CategoryValue>this.databaseDropdown.value).name;
-	//
-	// 	if (!databaseName || databaseName.length === 0) {
-	// 		this.tableNames = [];
-	// 		return false;
-	// 	}
-	//
-	// 	let connectionUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
-	// 	let queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(this.model.server.providerName, azdata.DataProviderType.QueryProvider);
-	// 	let results: azdata.SimpleExecuteResult;
-	//
-	// 	try {
-	// 		//let query = sqlstring.format('USE ?; SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = \'BASE TABLE\'', [databaseName]);
-	// 		//results = await queryProvider.runQueryAndReturn(connectionUri, query);
-	// 	} catch (e) {
-	// 		return false;
-	// 	}
-	//
-	// 	this.tableNames = results.rows.map(row => {
-	// 		return row[0].displayValue;
-	// 	});
-	//
-	// 	return true;
-	// }
 }
 
 

@@ -65,17 +65,18 @@ export class ProsePreviewPage extends ImportPage {
 
 		this.instance.createDerivedColumnButton.onClick(async (e) => {
 			const derivedColumnDialog = new DerivedColumnDialog(this.model, this.provider);
-			const response = await derivedColumnDialog.openDialog();
+			const response = await derivedColumnDialog.createDerivedColumn();
 			if (response) {
-				(<string[]>this.table.columns).push(this.model.derivedColumnName);
-				const newTableData = this.table.data;
-				const newTransformation = this.model.transPreviews[this.model.transPreviews.length - 1];
-				for (let index = 0; index < newTransformation.length; index++) {
-					newTableData[index].push(newTransformation[index]);
-				}
-				this.table.updateProperties({
-					data: newTableData,
+				this.model.proseColumns.push({
+					columnName: response.derivedColumnName,
+					dataType: 'nvarchar(MAX)',
+					primaryKey: false,
+					nullable: true
 				});
+				response.derivedColumnDataPreview.forEach((v, i) => {
+					this.model.proseDataPreview[i].push(v);
+				});
+				this.populateTable(this.model.proseDataPreview, this.model.proseColumns.map(c => c.columnName));
 			}
 		});
 
@@ -112,7 +113,7 @@ export class ProsePreviewPage extends ImportPage {
 		if (this.model.newFileSelected) {
 			this.loading.loading = true;
 			try {
-				proseResult = await this.handleProse();
+				proseResult = await this.learnFile();
 			} catch (ex) {
 				error = ex.toString();
 				this.instance.wizard.message = {
@@ -124,13 +125,7 @@ export class ProsePreviewPage extends ImportPage {
 			this.loading.loading = false;
 		}
 		if (!this.model.newFileSelected || proseResult) {
-			const tempTable = this.model.proseDataPreview;
-			for (let index = 0; index < this.model.transPreviews.length; index++) {
-				for (let index2 = 0; index2 < this.model.proseDataPreview.length; index2++) {
-					tempTable[index2].push(this.model.transPreviews[index][index2]);
-				}
-			}
-			await this.populateTable(tempTable, this.model.proseColumns.map(c => c.columnName));
+			await this.populateTable(this.model.proseDataPreview, this.model.proseColumns.map(c => c.columnName));
 			this.isSuccess = true;
 			if (this.form) {
 				this.resultTextComponent.value = constants.successTitleText;
@@ -149,7 +144,7 @@ export class ProsePreviewPage extends ImportPage {
 
 	override async onPageLeave(): Promise<boolean> {
 		this.instance.createDerivedColumnButton.hidden = true;
-		await this.emptyTable();
+		//await this.emptyTable();
 		return true;
 	}
 
@@ -170,7 +165,7 @@ export class ProsePreviewPage extends ImportPage {
 		});
 	}
 
-	private async handleProse(): Promise<boolean> {
+	private async learnFile(): Promise<boolean> {
 		const response = await this.provider.sendPROSEDiscoveryRequest({
 			filePath: this.model.filePath,
 			tableName: this.model.table,
@@ -222,13 +217,6 @@ export class ProsePreviewPage extends ImportPage {
 			columns: columnHeaders,
 			height: 400,
 			width: '700',
-		});
-	}
-
-	private emptyTable() {
-		this.table.updateProperties({
-			data: [],
-			columns: []
 		});
 	}
 }

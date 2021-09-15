@@ -14,7 +14,7 @@ const headerLeft: azdata.CssStyles = {
 	'white-space': 'nowrap',
 	'text-overflow': 'ellipsis',
 	'overflow': 'hidden',
-	'border-bottom': '1px solid'
+	'border-bottom': '2px solid'
 };
 
 const styleLeft: azdata.CssStyles = {
@@ -43,7 +43,7 @@ export class DerivedColumnDialog {
 	constructor(private _model: ImportDataModel, private _provider: FlatFileProvider) {
 	}
 
-	public openDialog(): Promise<boolean> {
+	public createDerivedColumn(): Promise<DerivedColumnDialogResult | undefined> {
 		this._applyButton = azdata.window.createButton(constants.previewTransformation);
 		this._applyButton.enabled = false;
 		this._dialogObject = azdata.window.createModelViewDialog(
@@ -96,33 +96,23 @@ export class DerivedColumnDialog {
 
 			columnTable.onDataChanged(e => {
 				if (e.value) {
-					this._transformationTable.columns.splice(this._transformationTable.columns.length - 1, 0,
-						{
-							displayName: this._model.proseColumns[e.row].columnName,
-							valueType: azdata.DeclarativeDataType.string,
-							isReadOnly: true,
-							width: '100px',
-							headerCssStyles: headerLeft,
-							rowCssStyles: styleLeft
-						}
-					);
-					for (let index = 0; index < this._model.proseDataPreview.length; index++) {
-						this._transformationTable.dataValues[index].splice(
-							this._transformationTable.dataValues[index].length - 1,
-							0,
-							{ value: this._model.proseDataPreview[index][e.row] }
-						);
-					}
+					// Adding newly selected column to transformation table
+					this._transformationTable.columns.push({
+						displayName: this._model.proseColumns[e.row].columnName,
+						valueType: azdata.DeclarativeDataType.string,
+						isReadOnly: true,
+						width: '100px',
+						headerCssStyles: headerLeft,
+						rowCssStyles: styleLeft
+					});
 
+					this._model.proseDataPreview.forEach((v, i) => {
+						this._transformationTable.dataValues[i].push({ value: v[e.row] });
+					});
 				}
 				else {
-					let removeIndex = 0;
-					for (let index = 0; index < this._transformationTable.columns.length; index++) {
-						if (this._model.proseColumns[e.row].columnName === this._transformationTable.columns[index].displayName) {
-							removeIndex = index;
-							break;
-						}
-					}
+					// Removing unselected column from transformation table
+					let removeIndex = this._transformationTable.columns.findIndex(v => this._model.proseColumns[e.row].columnName === v.displayName);
 					this._transformationTable.columns.splice(removeIndex, 1);
 					for (let index = 0; index < this._model.proseDataPreview.length; index++) {
 						this._transformationTable.dataValues[index].splice(removeIndex, 1);
@@ -136,14 +126,13 @@ export class DerivedColumnDialog {
 
 			const columnContainer = view.modelBuilder.flexContainer().withLayout({
 				flexFlow: 'column',
-				width: '180px',
 				height: '100%'
 			}).withProps({
 				CSSStyles: {
 					'border-right': 'solid 1px'
 				}
 			}).component();
-			columnContainer.addItem(columnTable);
+			columnContainer.addItem(columnTable, { flex: '1 1 auto', CSSStyles: { 'overflow-y': 'hidden' } });
 
 			const transformationTableData: azdata.DeclarativeTableCellValue[][] = [];
 			for (let index = 0; index < this._model.proseDataPreview.length; index++) {
@@ -169,41 +158,50 @@ export class DerivedColumnDialog {
 					}
 				],
 				CSSStyles: {
-					'table-layout': 'fixed'
+					'table-layout': 'fixed',
+					'overflow': 'scroll',
+					'height': '800px' // Fitting it to dialog width
 				},
+				width: '800px',
 				dataValues: transformationTableData
-			}).withValidation(c => {
-				return this.validatePage();
 			}).component();
 
 
 
 
 			this._applyButton.onClick(async e => {
-				const numCols = this._transformationTable.columns.length - 1;
 				const requiredColNames = this._transformationTable.columns.map(v => v.displayName);
-				requiredColNames.splice(-1);
+				requiredColNames.splice(0, 1); // Removing specify transformation column
 				const transExamples: string[] = [];
 				const transExampleIndices: number[] = [];
 
+				// Getting all the example transformations specified by the user
 				this._transformationTable.dataValues.forEach((v, index) => {
-					const example = (<azdata.InputBoxComponent>v[numCols].value).value as string;
+					const example = (<azdata.InputBoxComponent>v[0].value).value as string;
 					if (example !== '') {
 						transExamples.push(example);
 						transExampleIndices.push(index);
 					}
 				});
+
 				if (transExamples.length > 0) {
-					const response = await this._provider.sendLearnTransformationRequest({
-						columnNames: requiredColNames,
-						transformationExamples: transExamples,
-						transformationExampleRowIndices: transExampleIndices
-					});
-					this.currentTransformation = response.transformationPreview;
-					for (let index = 0; index < this.currentTransformation.length; index++) {
-						(<azdata.InputBoxComponent>this._transformationTable.dataValues[index][this._transformationTable.columns.length - 1].value).placeHolder = this.currentTransformation[index];
+					try {
+						const response = await this._provider.sendLearnTransformationRequest({
+							columnNames: requiredColNames,
+							transformationExamples: transExamples,
+							transformationExampleRowIndices: transExampleIndices
+						});
+						this.currentTransformation = response.transformationPreview;
+						this.currentTransformation.forEach((v, i) => {
+							(<azdata.InputBoxComponent>this._transformationTable.dataValues[i][0].value).placeHolder = v;
+						});
+						this.clearAndAddTransformationContainerComponents(true);
+					} catch (e) {
+						this._dialogObject.message = {
+							text: e.toString(),
+							level: azdata.window.MessageLevel.Error
+						};
 					}
-					this.clearAndAddTransformationContainerComponents(true);
 				}
 				this.validatePage();
 			});
@@ -228,13 +226,12 @@ export class DerivedColumnDialog {
 			const columnNameInput = view.modelBuilder.inputBox().withProps({
 				ariaLabel: constants.specifyDerivedColNameTitle,
 				required: true
-			}).withValidation(c => {
-				return !(c.value === undefined && c.value.length === 0);
 			}).component();
 
 			columnNameInput.onTextChanged(e => {
 				if (e) {
 					this.currentDerivedColumnName = e;
+					this.validatePage();
 				}
 			});
 
@@ -247,7 +244,7 @@ export class DerivedColumnDialog {
 
 			this._transformationContainer = view.modelBuilder.flexContainer().withLayout({
 				flexFlow: 'column',
-				height: '100vh',
+				height: '100%',
 			}).withProps({
 				CSSStyles: {
 					'overflow-y': 'auto',
@@ -283,26 +280,31 @@ export class DerivedColumnDialog {
 					}
 				}).component();
 
-			this._transformationContainer.addItem(this._headerInstructionText);
-			this._transformationContainer.addItem(this._bodyInstructionText);
+			this.clearAndAddTransformationContainerComponents(false);
 
 			const flexGrid = view.modelBuilder.flexContainer().withLayout({
 				flexFlow: 'row',
+				height: '100%',
+				width: '100%'
 			}).component();
+
+			/**
+			 * Setting height of the div based on the total viewport height after removing dialog
+			 * header and footer heights. With this the div will occupy the entire page space of the dialog.
+			 */
 			flexGrid.addItem(columnContainer, {
 				flex: '0 0 auto',
 				CSSStyles: {
-					'overflow-y': 'auto',
-					'padding-right': '10px',
-					'height': '100vh'
+					'min-height': 'calc(100vh - 160px)'
 				}
 			});
 			flexGrid.addItem(this._transformationContainer, {
 				flex: '0 0 auto',
 				CSSStyles: {
-					'overflow-y': 'auto',
+					'overflow': 'scroll',
 					'padding-right': '10px',
-					'height': '100vh'
+					'width': '900px',
+					'max-height': 'calc(100vh - 160px)'
 				}
 			});
 
@@ -312,7 +314,6 @@ export class DerivedColumnDialog {
 						component: flexGrid
 					}
 				],
-
 				{
 					horizontal: false
 				}
@@ -333,23 +334,21 @@ export class DerivedColumnDialog {
 		azdata.window.openDialog(this._dialogObject);
 		return new Promise((resolve) => {
 			this._doneEmitter.once('done', async () => {
-				await this._provider.sendSaveTransformationRequest({
-					derivedColumnName: this.currentDerivedColumnName
-				});
-				this._model.transPreviews.push(this.currentTransformation);
-				this._model.derivedColumnName = this.currentDerivedColumnName;
-				this._model.proseColumns.push({
-					columnName: this.currentDerivedColumnName,
-					dataType: 'nvarchar(MAX)',
-					primaryKey: false,
-					nullable: true
-				});
-				resolve(true);
-				azdata.window.closeDialog(this._dialogObject);
+				try {
+					await this._provider.sendSaveTransformationRequest({
+						derivedColumnName: this.currentDerivedColumnName
+					});
+					resolve({
+						derivedColumnName: this.currentDerivedColumnName,
+						derivedColumnDataPreview: this.currentTransformation
+					});
+				} catch (e) {
+					console.log(e);
+				}
 			});
 
 			this._doneEmitter.once('close', async () => {
-				resolve(false);
+				resolve(undefined);
 				azdata.window.closeDialog(this._dialogObject);
 			});
 		});
@@ -358,16 +357,21 @@ export class DerivedColumnDialog {
 	private clearAndAddTransformationContainerComponents(addTable: boolean): void {
 		this._transformationContainer.clearItems();
 		if (addTable) {
-			this._transformationContainer.addItem(this._specifyDerivedColumnNameContainer);
-			this._transformationContainer.addItem(this._transformationTable);
+			this._transformationContainer.addItem(this._specifyDerivedColumnNameContainer, { flex: '0 0 auto' });
+			this._transformationContainer.addItem(this._transformationTable, { flex: '1 1 auto', CSSStyles: { 'overflow': 'scroll' } });
 		}
 		else {
-			this._transformationContainer.addItem(this._headerInstructionText);
-			this._transformationContainer.addItem(this._bodyInstructionText);
+			this._transformationContainer.addItem(this._headerInstructionText, { flex: '0 0 auto' });
+			this._transformationContainer.addItem(this._bodyInstructionText, { flex: '0 0 auto' });
 		}
 	}
 
-	private validatePage(): boolean {
-		return this.currentTransformation.length > 0;
+	private validatePage(): void {
+		this._dialogObject.okButton.enabled = this.currentDerivedColumnName !== undefined && this.currentTransformation.length !== 0;
 	}
+}
+
+export interface DerivedColumnDialogResult {
+	derivedColumnName?: string;
+	derivedColumnDataPreview?: string[];
 }
