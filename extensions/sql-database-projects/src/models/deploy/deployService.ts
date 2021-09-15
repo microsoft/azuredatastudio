@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { AppSettingType, IDeployProfile, ILocalDbSetting } from './deployProfile';
+import { AppSettingType, IDeployAppIntegrationProfile, IDeployProfile, ILocalDbSetting } from './deployProfile';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import { Project } from '../project';
 import * as constants from '../../common/constants';
@@ -20,6 +20,9 @@ export class DeployService {
 	constructor(private _outputChannel: vscode.OutputChannel) {
 	}
 
+	private DefaultSqlRetryTimeoutInSec: number = 10;
+	private DefaultSqlNumberOfRetries: number = 10;
+
 	private createConnectionStringTemplate(runtime: string | undefined): string {
 		switch (runtime?.toLocaleLowerCase()) {
 			case 'dotnet':
@@ -32,7 +35,7 @@ export class DeployService {
 		return '';
 	}
 
-	private findAppRuntime(profile: IDeployProfile, appSettingContent: any): string | undefined {
+	private findAppRuntime(profile: IDeployAppIntegrationProfile, appSettingContent: any): string | undefined {
 		switch (profile.appSettingType) {
 			case AppSettingType.AzureFunction:
 				return <string>appSettingContent?.Values['FUNCTIONS_WORKER_RUNTIME'];
@@ -41,7 +44,7 @@ export class DeployService {
 		return undefined;
 	}
 
-	public async updateAppSettings(profile: IDeployProfile): Promise<void> {
+	public async updateAppSettings(profile: IDeployAppIntegrationProfile, deployProfile: IDeployProfile | undefined): Promise<void> {
 		// Update app settings
 		//
 		if (!profile.appSettingFile) {
@@ -53,22 +56,22 @@ export class DeployService {
 		let content = JSON.parse(fse.readFileSync(profile.appSettingFile, 'utf8'));
 		if (content && content.Values) {
 			let connectionString: string | undefined = '';
-			if (profile.localDbSetting) {
+			if (deployProfile && deployProfile.localDbSetting) {
 				// Find the runtime and generate the connection string for the runtime
 				//
 				const runtime = this.findAppRuntime(profile, content);
 				let connectionStringTemplate = this.createConnectionStringTemplate(runtime);
 				const macroDict: Record<string, string> = {
-					'SERVER': profile?.localDbSetting?.serverName || '',
-					'PORT': profile?.localDbSetting?.port?.toString() || '',
-					'USER': profile?.localDbSetting?.userName || '',
-					'SA_PASSWORD': profile?.localDbSetting?.password || '',
-					'DATABASE': profile?.localDbSetting?.dbName || '',
+					'SERVER': deployProfile?.localDbSetting?.serverName || '',
+					'PORT': deployProfile?.localDbSetting?.port?.toString() || '',
+					'USER': deployProfile?.localDbSetting?.userName || '',
+					'SA_PASSWORD': deployProfile?.localDbSetting?.password || '',
+					'DATABASE': deployProfile?.localDbSetting?.dbName || '',
 				};
 
 				connectionString = templates.macroExpansion(connectionStringTemplate, macroDict);
-			} else if (profile.deploySettings?.connectionUri) {
-				connectionString = await this.getConnectionString(profile.deploySettings?.connectionUri);
+			} else if (deployProfile?.deploySettings?.connectionUri) {
+				connectionString = await this.getConnectionString(deployProfile?.deploySettings?.connectionUri);
 			}
 
 			if (connectionString && profile.envVariableName) {
@@ -88,8 +91,8 @@ export class DeployService {
 				return undefined;
 			}
 			const projectName = project.projectFileName;
-			const imageLabel = `${constants.dockerImageLabelPrefix}_${projectName}`;
-			const imageName = `${constants.dockerImageNamePrefix}-${projectName}-${UUID.generateUuid().toLowerCase()}`;
+			const imageLabel = `${constants.dockerImageLabelPrefix}_${projectName}`.toLocaleLowerCase();
+			const imageName = `${constants.dockerImageNamePrefix}-${projectName}-${UUID.generateUuid()}`.toLocaleLowerCase();
 			const root = project.projectFolderPath;
 			const mssqlFolderPath = path.join(root, constants.mssqlFolderName);
 			const commandsFolderPath = path.join(mssqlFolderPath, constants.commandsFolderName);
@@ -106,7 +109,7 @@ export class DeployService {
 			// Create commands
 			//
 
-			await this.createCommands(mssqlFolderPath, commandsFolderPath, dockerFilePath, startFilePath, imageLabel);
+			await this.createCommands(mssqlFolderPath, commandsFolderPath, dockerFilePath, startFilePath, imageLabel, profile.localDbSetting.dockerBaseImage);
 
 			this.logToOutput(constants.runningDockerMessage);
 			// Building the image and running the docker
@@ -144,7 +147,7 @@ export class DeployService {
 
 	private async buildAndRunDockerContainer(dockerFilePath: string, imageName: string, root: string, profile: ILocalDbSetting, imageLabel: string): Promise<string | undefined> {
 		this.logToOutput('Building docker image ...');
-		await utils.executeCommand(`docker pull ${constants.dockerBaseImage}`, this._outputChannel);
+		await utils.executeCommand(`docker pull ${profile.dockerBaseImage}`, this._outputChannel);
 		await utils.executeCommand(`docker build -f ${dockerFilePath} -t ${imageName} ${root}`, this._outputChannel);
 		await utils.executeCommand(`docker images --filter label=${imageLabel}`, this._outputChannel);
 
@@ -254,7 +257,7 @@ export class DeployService {
 		return connectionResult ? connectionResult.connectionId : <string>connection;
 	}
 
-	public async getConnection(profile: ILocalDbSetting, savePassword: boolean, database: string, timeoutInSeconds: number = 5): Promise<string | undefined> {
+	public async getConnection(profile: ILocalDbSetting, savePassword: boolean, database: string): Promise<string | undefined> {
 		const getAzdataApi = await utils.getAzdataApi();
 		let connection = await utils.retry(
 			constants.connectingToSqlServerOnDockerMessage,
@@ -264,7 +267,7 @@ export class DeployService {
 			this.validateConnection,
 			this.formatConnectionResult,
 			this._outputChannel,
-			5, timeoutInSeconds);
+			this.DefaultSqlNumberOfRetries, profile.connectionRetryTimeout || this.DefaultSqlRetryTimeoutInSec);
 
 		if (connection) {
 			const connectionResult = <ConnectionResult>connection;
@@ -311,7 +314,7 @@ export class DeployService {
 	}
 
 	// Creates command file and docker file needed for deploy operation
-	private async createCommands(mssqlFolderPath: string, commandsFolderPath: string, dockerFilePath: string, startFilePath: string, imageLabel: string): Promise<void> {
+	private async createCommands(mssqlFolderPath: string, commandsFolderPath: string, dockerFilePath: string, startFilePath: string, imageLabel: string, baseImage: string): Promise<void> {
 		// Create mssql folders if doesn't exist
 		//
 		await utils.createFolderIfNotExist(mssqlFolderPath);
@@ -328,7 +331,7 @@ export class DeployService {
 		//
 		await this.createFile(dockerFilePath,
 			`
-FROM ${constants.dockerBaseImage}
+FROM ${baseImage}
 ENV ACCEPT_EULA=Y
 ENV MSSQL_PID=Developer
 LABEL ${imageLabel}

@@ -170,14 +170,14 @@ export class DashboardWidget {
 
 		const migrateButton = this.createTaskButton(view, migrateButtonMetadata);
 
-		const points = `•	${loc.PRE_REQ_1}
-•	${loc.PRE_REQ_2}
-•	${loc.PRE_REQ_3}`;
-
 		const preRequisiteListElement = view.modelBuilder.text().withProps({
-			value: points,
+			value: [
+				loc.PRE_REQ_1,
+				loc.PRE_REQ_2,
+				loc.PRE_REQ_3
+			],
 			CSSStyles: {
-				'padding-left': '15px',
+				'padding-left': '30px',
 				'margin-bottom': '5px',
 				'margin-top': '10px'
 			}
@@ -234,7 +234,12 @@ export class DashboardWidget {
 			title: taskMetaData.title,
 			width: maxWidth,
 			CSSStyles: {
-				'border': '1px solid'
+				'border': '1px solid',
+				'display': 'flex',
+				'flex-direction': 'column',
+				'justify-content': 'flex-start',
+				'border-radius': '4px',
+				'transition': 'all .5s ease',
 			}
 		}).component();
 		this._disposables.push(buttonContainer.onDidClick(async () => {
@@ -389,7 +394,12 @@ export class DashboardWidget {
 				'width': '400px',
 				'border': '1px solid',
 				'margin-top': '10px',
-				'height': '50px'
+				'height': '50px',
+				'display': 'flex',
+				'flex-direction': 'column',
+				'justify-content': 'flex-start',
+				'border-radius': '4px',
+				'transition': 'all .5s ease',
 			}
 		}).component();
 		return {
@@ -617,14 +627,14 @@ export class DashboardWidget {
 			height: 96,
 			CSSStyles: {
 				'opacity': '50%',
-				'margin': '20% auto 10% auto',
+				'margin': '15% auto 10% auto',
 				'filter': 'drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))',
 				'display': 'none'
 			}
 		}).component();
 
 		const addAccountText = view.modelBuilder.text().withProps({
-			value: loc.ADD_ACCOUNT,
+			value: loc.ADD_ACCOUNT_MESSAGE,
 			width: 198,
 			height: 34,
 			CSSStyles: {
@@ -636,6 +646,37 @@ export class DashboardWidget {
 				'display': 'none'
 			}
 		}).component();
+
+		const addAccountButton = view.modelBuilder.button().withProps({
+			label: loc.ADD_ACCOUNT,
+			width: '100px',
+			enabled: true,
+			CSSStyles: {
+				'margin': '5% 40%',
+				'display': 'none'
+			}
+		}).component();
+
+		this._disposables.push(addAccountButton.onDidClick(async (e) => {
+			await vscode.commands.executeCommand('workbench.actions.modal.linkedAccount');
+			addAccountButton.enabled = false;
+			let accounts = await azdata.accounts.getAllAccounts();
+
+			if (accounts.length !== 0) {
+				addAccountImage.updateCssStyles({
+					'display': 'none'
+				});
+				addAccountText.updateCssStyles({
+					'display': 'none'
+				});
+				addAccountButton.updateCssStyles({
+					'display': 'none'
+				});
+				this._migrationStatusCardsContainer.updateCssStyles({ 'visibility': 'visible' });
+				this._viewAllMigrationsButton.updateCssStyles({ 'visibility': 'visible' });
+			}
+			await this.refreshMigrations();
+		}));
 
 		const header = view.modelBuilder.flexContainer().withItems(
 			[
@@ -657,13 +698,11 @@ export class DashboardWidget {
 			addAccountText.updateCssStyles({
 				'display': 'block'
 			});
-			this._migrationStatusCardsContainer.updateCssStyles({
-				'visibility': 'hidden'
+			addAccountButton.updateCssStyles({
+				'display': 'block'
 			});
-			buttonContainer.removeItem(this._viewAllMigrationsButton);
-			refreshButton.updateCssStyles({
-				'float': 'right'
-			});
+			this._migrationStatusCardsContainer.updateCssStyles({ 'visibility': 'hidden' });
+			this._viewAllMigrationsButton.updateCssStyles({ 'visibility': 'hidden' });
 		}
 
 		this._inProgressMigrationButton = this.createStatusCard(
@@ -754,6 +793,7 @@ export class DashboardWidget {
 
 		statusContainer.addItem(addAccountImage, {});
 		statusContainer.addItem(addAccountText, {});
+		statusContainer.addItem(addAccountButton, {});
 
 		statusContainer.addItem(this._migrationStatusCardLoadingContainer, {
 			CSSStyles: {

@@ -193,6 +193,9 @@
     <trans-unit id="newNotebook">
       <source xml:lang="en">New Notebook (Preview)</source>
     </trans-unit>
+    <trans-unit id="newSection">
+      <source xml:lang="en">New Section (Preview)</source>
+    </trans-unit>
     <trans-unit id="noBDCConnectionError">
       <source xml:lang="en">Spark kernels require a connection to a SQL Server Big Data Cluster master instance.</source>
     </trans-unit>
@@ -720,6 +723,9 @@
     </trans-unit>
     <trans-unit id="title.addNotebook">
       <source xml:lang="en">Add Notebook</source>
+    </trans-unit>
+    <trans-unit id="title.addSection">
+      <source xml:lang="en">Add Section</source>
     </trans-unit>
     <trans-unit id="title.analyzeJupyterNotebook">
       <source xml:lang="en">Analyze in Notebook</source>

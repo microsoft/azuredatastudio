@@ -901,5 +901,7 @@ export enum ButtonType {
 
 export enum TextType {
 	Normal = 'Normal',
-	Error = 'Error'
+	Error = 'Error',
+	UnorderedList = 'UnorderedList',
+	OrderedList = 'OrderedList'
 }

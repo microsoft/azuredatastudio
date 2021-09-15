@@ -3434,7 +3434,10 @@ declare module 'azdata' {
 	}
 
 	export interface TextComponentProperties extends ComponentProperties, TitledComponentProperties {
-		value?: string | undefined;
+		/**
+		 * Provide value to be displayed in the text component. An array of value will be displayed as an unordered list.
+		 */
+		value?: string | string[] | undefined;
 		links?: LinkArea[] | undefined;
 		description?: string | undefined;
 		requiredIndicator?: boolean | undefined;
