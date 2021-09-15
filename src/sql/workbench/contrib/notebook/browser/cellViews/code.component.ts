@@ -281,14 +281,15 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 
 	public horizontalScrollbar(): void {
 		if (this._configurationService.getValue('editor.wordWrap') === 'off' && this.cellModel.cellType !== CellTypes.Code) {
-			// Get Markdown Split View Horizontal Scrollbar
+			// Get markdown split view horizontal scrollbar
 			let horizontalScrollbar = this.codeElement.nativeElement.querySelector('div.invisible.scrollbar.horizontal');
 
+			// Compare the editor bottom position to the scrollable area in order to decide whether to make the horizontal scrollbar fixed or absolute
 			let editorBottomPos = this.codeElement.nativeElement.closest('.show-markdown .editor').getBoundingClientRect().bottom - this.codeElement.nativeElement.closest('.show-markdown .editor').getBoundingClientRect().top;
 			let viewportHeight = DOM.getTotalHeight(document.querySelector('.scrollable'));
-			let viewportTop = document.querySelector('.scrollable').getBoundingClientRect().top;
 
-			// Horizontal Scrollbar Values used when fixed
+			// Horizontal scrollbar values used when fixed
+			let viewportTop = document.querySelector('.scrollable').getBoundingClientRect().top;
 			let horizontalTop = viewportTop + viewportHeight - horizontalScrollbar.scrollHeight - 10;
 
 			// Set the bottom position of the markdown editor area of the active cell
