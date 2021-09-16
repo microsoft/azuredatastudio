@@ -615,14 +615,11 @@
         ]
       }
     ],
-    "notebook.serializationProviders": {
+    "notebook.providers": {
       "provider": "jupyter",
       "fileExtensions": [
         "IPYNB"
-      ]
-    },
-    "notebook.executeProviders": {
-      "provider": "jupyter",
+      ],
       "standardKernels": [
         {
           "name": "pysparkkernel",

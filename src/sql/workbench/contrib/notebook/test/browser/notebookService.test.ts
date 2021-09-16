@@ -15,7 +15,7 @@ import { ICellModel } from 'sql/workbench/services/notebook/browser/models/model
 import { INavigationProvider, INotebookEditor, IExecuteManager, INotebookParams, IExecuteProvider, NavigationProviders, SQL_NOTEBOOK_PROVIDER, unsavedBooksContextKey } from 'sql/workbench/services/notebook/browser/notebookService';
 import { FailToSaveTrustState, NotebookService, NotebookServiceNoProviderRegistered, NotebookUriNotDefined, ExecuteProviderDescriptor } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
 import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
-import { INotebookProviderRegistry, ExecuteProviderRegistration, NotebookProviderRegistryId } from 'sql/workbench/services/notebook/common/notebookRegistry';
+import { INotebookProviderRegistry, NotebookProviderRegistryId, ProviderDescriptionRegistration } from 'sql/workbench/services/notebook/common/notebookRegistry';
 import * as TypeMoq from 'typemoq';
 import { errorHandler, onUnexpectedError } from 'vs/base/common/errors';
 import { Emitter, Event } from 'vs/base/common/event';
@@ -197,7 +197,8 @@ suite.skip('NotebookService:', function (): void {
 		await notebookService.registrationComplete;
 		assert.deepStrictEqual(notebookService.getSerializationProvidersForFileType('ipynb'), ['sql'], 'sql provider should be registered for ipynb extension');
 
-		const otherProviderRegistration: ExecuteProviderRegistration = {
+		const otherProviderRegistration: ProviderDescriptionRegistration = {
+			fileExtensions: 'ipynb',
 			standardKernels: {
 				name: 'kernel1',
 				connectionProviderIds: [],
@@ -207,7 +208,7 @@ suite.skip('NotebookService:', function (): void {
 		};
 
 		const notebookRegistry = Registry.as<INotebookProviderRegistry>(NotebookProviderRegistryId);
-		notebookRegistry.registerExecuteProvider(otherProviderRegistration);
+		notebookRegistry.registerProviderDescription(otherProviderRegistration);
 
 		assert.deepStrictEqual(notebookService.getSerializationProvidersForFileType('ipynb'), ['sql', 'otherProvider'], 'otherProvider should also be registered for ipynb extension');
 		assert.strictEqual(notebookService.getStandardKernelsForProvider('otherProvider').length, 1, 'otherProvider kernel info could not be found');
@@ -359,13 +360,13 @@ suite.skip('NotebookService:', function (): void {
 
 	test('test registration of a new provider with multiple filetypes & kernels and verify that corresponding manager is returned by getOrCreateNotebookManager', async () => {
 		const providerId = 'Jpeg';
-		const notebookProviderRegistration = <ExecuteProviderRegistration>{
+		const notebookProviderRegistration = <ProviderDescriptionRegistration>{
 			provider: providerId,
 			fileExtensions: ['jpeg', 'jpg'],
 			standardKernels: [<azdata.nb.IStandardKernel>{ name: 'kernel1' }, <azdata.nb.IStandardKernel>{ name: 'kernel2' }]
 		};
 		const notebookRegistry = Registry.as<INotebookProviderRegistry>(NotebookProviderRegistryId);
-		notebookRegistry.registerExecuteProvider(notebookProviderRegistration);
+		notebookRegistry.registerProviderDescription(notebookProviderRegistration);
 		const managerPromise = notebookService.getOrCreateNotebookManager(providerId, URI.parse('untitled:jpg'));
 		const providerInstance = createRegisteredProviderWithManager({ notebookService, providerId });
 		notebookService.registerExecuteProvider(providerId, providerInstance);
@@ -575,7 +576,8 @@ suite.skip('NotebookService:', function (): void {
 function unRegisterProviders(notebookService: NotebookService) {
 	const notebookRegistry = Registry.as<INotebookProviderRegistry>(NotebookProviderRegistryId);
 	// unregister all builtin providers
-	for (const providerContribution of notebookRegistry.executeProviders) {
+	for (const providerContribution of notebookRegistry.providerDescriptions) {
+		notebookService.unregisterSerializationProvider(providerContribution.provider);
 		notebookService.unregisterExecuteProvider(providerContribution.provider);
 	}
 }

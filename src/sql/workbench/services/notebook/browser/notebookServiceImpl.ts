@@ -14,7 +14,7 @@ import {
 } from 'sql/workbench/services/notebook/browser/notebookService';
 import { RenderMimeRegistry } from 'sql/workbench/services/notebook/browser/outputs/registry';
 import { standardRendererFactories } from 'sql/workbench/services/notebook/browser/outputs/factories';
-import { Extensions, INotebookProviderRegistry, ExecuteProviderRegistration, SerializationProviderRegistration, NotebookProviderRegistryId } from 'sql/workbench/services/notebook/common/notebookRegistry';
+import { Extensions, INotebookProviderRegistry, NotebookProviderRegistryId, ProviderDescriptionRegistration } from 'sql/workbench/services/notebook/common/notebookRegistry';
 import { Emitter, Event } from 'vs/base/common/event';
 import { Memento } from 'vs/workbench/common/memento';
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
@@ -144,7 +144,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	private _onNotebookEditorRemove = new Emitter<INotebookEditor>();
 	private _onNotebookEditorRename = new Emitter<INotebookEditor>();
 	private _editors = new Map<string, INotebookEditor>();
-	private _fileToSerializationProviders = new Map<string, SerializationProviderRegistration[]>();
+	private _fileToProviderDescriptions = new Map<string, ProviderDescriptionRegistration[]>();
 	private _providerToStandardKernels = new Map<string, nb.IStandardKernel[]>();
 	private _registrationComplete = new Deferred<void>();
 	private _isRegistrationComplete = false;
@@ -175,25 +175,16 @@ export class NotebookService extends Disposable implements INotebookService {
 			this.providersMemento.notebookSerializationProviderCache = <NotebookProviderCache>{};
 			this.providersMemento.notebookExecuteProviderCache = <NotebookProviderCache>{};
 		}
-		this._register(notebookRegistry.onNewSerializationRegistration(this.updateRegisteredSerializationProviders, this));
-		this._register(notebookRegistry.onNewExecuteRegistration(this.updateRegisteredExecuteProviders, this));
+		this._register(notebookRegistry.onNewDescriptionRegistration(this.handleNewProviderDescriptions, this));
 		this.registerBuiltInProviders();
 
 		// If a provider has been already registered, the onNewRegistration event will not have a listener attached yet
 		// So, explicitly updating registered providers here.
-		if (notebookRegistry.serializationProviders.length > 0) {
-			notebookRegistry.serializationProviders.forEach(p => {
+		if (notebookRegistry.providerDescriptions.length > 0) {
+			notebookRegistry.providerDescriptions.forEach(p => {
 				// Don't need to re-register SQL_NOTEBOOK_PROVIDER
 				if (p.provider !== SQL_NOTEBOOK_PROVIDER) {
-					this.updateRegisteredSerializationProviders({ id: p.provider, registration: p });
-				}
-			});
-		}
-		if (notebookRegistry.executeProviders.length > 0) {
-			notebookRegistry.executeProviders.forEach(p => {
-				// Don't need to re-register SQL_NOTEBOOK_PROVIDER
-				if (p.provider !== SQL_NOTEBOOK_PROVIDER) {
-					this.updateRegisteredExecuteProviders({ id: p.provider, registration: p });
+					this.handleNewProviderDescriptions({ id: p.provider, registration: p });
 				}
 			});
 		}
@@ -300,7 +291,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		this._registrationComplete.resolve();
 	}
 
-	private updateRegisteredSerializationProviders(p: { id: string; registration: SerializationProviderRegistration }) {
+	private handleNewProviderDescriptions(p: { id: string; registration: ProviderDescriptionRegistration }) {
 		let registration = p.registration;
 
 		if (!this._serializationProviders.has(p.id)) {
@@ -309,18 +300,13 @@ export class NotebookService extends Disposable implements INotebookService {
 		if (registration.fileExtensions) {
 			if (Array.isArray(registration.fileExtensions)) {
 				for (let fileType of registration.fileExtensions) {
-					this.addFileSerializationProvider(fileType, registration);
+					this.addFileProvider(fileType, registration);
 				}
 			}
 			else {
-				this.addFileSerializationProvider(registration.fileExtensions, registration);
+				this.addFileProvider(registration.fileExtensions, registration);
 			}
 		}
-	}
-
-	private updateRegisteredExecuteProviders(p: { id: string; registration: ExecuteProviderRegistration }) {
-		let registration = p.registration;
-
 		if (!this._executeProviders.has(p.id)) {
 			this._executeProviders.set(p.id, new ExecuteProviderDescriptor());
 		}
@@ -378,20 +364,20 @@ export class NotebookService extends Disposable implements INotebookService {
 		return this._registrationComplete.promise;
 	}
 
-	private addFileSerializationProvider(fileType: string, provider: SerializationProviderRegistration) {
-		let providers = this._fileToSerializationProviders.get(fileType.toUpperCase());
+	private addFileProvider(fileType: string, provider: ProviderDescriptionRegistration) {
+		let providers = this._fileToProviderDescriptions.get(fileType.toUpperCase());
 		if (!providers) {
 			providers = [];
 		}
 		providers.push(provider);
-		this._fileToSerializationProviders.set(fileType.toUpperCase(), providers);
+		this._fileToProviderDescriptions.set(fileType.toUpperCase(), providers);
 	}
 
 	// Standard kernels are contributed where a list of kernels are defined that can be shown
 	// in the kernels dropdown list before a SessionManager has been started; this way,
 	// every NotebookProvider doesn't need to have an active SessionManager in order to contribute
 	// kernels to the dropdown
-	private addStandardKernels(provider: ExecuteProviderRegistration) {
+	private addStandardKernels(provider: ProviderDescriptionRegistration) {
 		let providerUpperCase = provider.provider.toUpperCase();
 		let standardKernels = this._providerToStandardKernels.get(providerUpperCase);
 		if (!standardKernels) {
@@ -413,7 +399,7 @@ export class NotebookService extends Disposable implements INotebookService {
 
 	getSerializationProvidersForFileType(fileType: string): string[] {
 		fileType = fileType.toUpperCase();
-		let providers = this._fileToSerializationProviders.get(fileType);
+		let providers = this._fileToProviderDescriptions.get(fileType);
 
 		return providers ? providers.map(provider => provider.provider) : undefined;
 	}
@@ -595,19 +581,18 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	private cleanupProviders(): void {
-		let knownExecuteProviders = Object.keys(notebookRegistry.executeProviders);
+		let knownProviders = notebookRegistry.providerDescriptions.map(d => d.provider);
 		let executeCache = this.providersMemento.notebookExecuteProviderCache;
 		for (let key in executeCache) {
-			if (!knownExecuteProviders.some(x => x === key)) {
+			if (!knownProviders.some(x => x === key)) {
 				this._executeProviders.delete(key);
 				delete executeCache[key];
 			}
 		}
 
-		let knownSerializationProviders = Object.keys(notebookRegistry.serializationProviders);
 		let serializationCache = this.providersMemento.notebookSerializationProviderCache;
 		for (let key in serializationCache) {
-			if (!knownSerializationProviders.some(x => x === key)) {
+			if (!knownProviders.some(x => x === key)) {
 				this._serializationProviders.delete(key);
 				delete serializationCache[key];
 			}
@@ -617,34 +602,28 @@ export class NotebookService extends Disposable implements INotebookService {
 	private registerBuiltInProviders() {
 		let serializationProvider = new SqlSerializationProvider(this._instantiationService);
 		this.registerSerializationProvider(serializationProvider.providerId, serializationProvider);
-		notebookRegistry.registerSerializationProvider({
-			provider: serializationProvider.providerId,
-			fileExtensions: DEFAULT_NOTEBOOK_FILETYPE
-		});
 
 		let executeProvider = new SqlExecuteProvider(this._instantiationService);
 		this.registerExecuteProvider(executeProvider.providerId, executeProvider);
-		notebookRegistry.registerExecuteProvider({
-			provider: executeProvider.providerId,
+
+		notebookRegistry.registerProviderDescription({
+			provider: serializationProvider.providerId,
+			fileExtensions: DEFAULT_NOTEBOOK_FILETYPE,
 			standardKernels: { name: notebookConstants.SQL, displayName: notebookConstants.SQL, connectionProviderIds: [notebookConstants.SQL_CONNECTION_PROVIDER] }
 		});
+
 	}
 
 	protected async removeContributedProvidersFromCache(identifier: IExtensionIdentifier, extensionService: IExtensionService): Promise<void> {
 		try {
 			const extensionDescriptions = await extensionService.getExtensions();
 			let extensionDescription = extensionDescriptions.find(c => c.identifier.value.toLowerCase() === identifier.id.toLowerCase());
-			if (extensionDescription && extensionDescription.contributes) {
-				if (extensionDescription.contributes[Extensions.NotebookExecuteProviderContribution]
-					&& extensionDescription.contributes[Extensions.NotebookExecuteProviderContribution].providerId) {
-					let id = extensionDescription.contributes[Extensions.NotebookExecuteProviderContribution].providerId;
-					delete this.providersMemento.notebookExecuteProviderCache[id];
-				}
-				if (extensionDescription.contributes[Extensions.NotebookSerializationProviderContribution]
-					&& extensionDescription.contributes[Extensions.NotebookSerializationProviderContribution].providerId) {
-					let id = extensionDescription.contributes[Extensions.NotebookSerializationProviderContribution].providerId;
-					delete this.providersMemento.notebookSerializationProviderCache[id];
-				}
+			if (extensionDescription && extensionDescription.contributes
+				&& extensionDescription.contributes[Extensions.NotebookProviderDescriptionContribution]
+				&& extensionDescription.contributes[Extensions.NotebookProviderDescriptionContribution].providerId) {
+				let id = extensionDescription.contributes[Extensions.NotebookProviderDescriptionContribution].providerId;
+				delete this.providersMemento.notebookSerializationProviderCache[id];
+				delete this.providersMemento.notebookExecuteProviderCache[id];
 			}
 		} catch (err) {
 			onUnexpectedError(err);

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
-import { ExtensionsRegistry, IExtensionPointUser } from 'vs/workbench/services/extensions/common/extensionsRegistry';
+import { ExtensionsRegistry } from 'vs/workbench/services/extensions/common/extensionsRegistry';
 import { localize } from 'vs/nls';
 import * as platform from 'vs/platform/registry/common/platform';
 import * as azdata from 'azdata';
@@ -13,24 +13,19 @@ import { Event, Emitter } from 'vs/base/common/event';
 export const NotebookProviderRegistryId = 'notebooks.providers';
 
 export const Extensions = {
-	NotebookSerializationProviderContribution: 'notebook.serializationProviders',
-	NotebookExecuteProviderContribution: 'notebook.executeProviders',
+	NotebookProviderDescriptionContribution: 'notebook.providers',
 	NotebookLanguageMagicContribution: 'notebook.languagemagics'
 };
 
-export interface SerializationProviderRegistration {
+export interface ProviderDescriptionRegistration {
 	provider: string;
 	fileExtensions: string | string[];
-}
-
-export interface ExecuteProviderRegistration {
-	provider: string;
 	standardKernels: azdata.nb.IStandardKernel | azdata.nb.IStandardKernel[];
 }
 
-let serializationProviderType: IJSONSchema = {
+let providerDescriptionType: IJSONSchema = {
 	type: 'object',
-	default: { provider: '', fileExtensions: [] },
+	default: { provider: '', standardKernels: [] },
 	properties: {
 		provider: {
 			description: localize('carbon.extension.contributes.notebook.provider', "Identifier of the notebook provider."),
@@ -47,17 +42,6 @@ let serializationProviderType: IJSONSchema = {
 					}
 				}
 			]
-		}
-	}
-};
-
-let executeProviderType: IJSONSchema = {
-	type: 'object',
-	default: { provider: '', standardKernels: [] },
-	properties: {
-		provider: {
-			description: localize('carbon.extension.contributes.notebook.provider', "Identifier of the notebook provider."),
-			type: 'string'
 		},
 		standardKernels: {
 			description: localize('carbon.extension.contributes.notebook.standardKernels', "What kernels should be standard with this notebook provider"),
@@ -104,23 +88,13 @@ let executeProviderType: IJSONSchema = {
 	}
 };
 
-let notebookSerializationContrib: IJSONSchema = {
-	description: localize('vscode.extension.contributes.notebook.serializationProviders', "Contributes notebook serialization providers."),
+let providerDescriptionContrib: IJSONSchema = {
+	description: localize('vscode.extension.contributes.notebook.providersDescriptions', "Contributes notebook provider descriptions."),
 	oneOf: [
-		serializationProviderType,
+		providerDescriptionType,
 		{
 			type: 'array',
-			items: serializationProviderType
-		}
-	]
-};
-let notebookExecuteContrib: IJSONSchema = {
-	description: localize('vscode.extension.contributes.notebook.executeProviders', "Contributes notebook execute providers."),
-	oneOf: [
-		executeProviderType,
-		{
-			type: 'array',
-			items: executeProviderType
+			items: providerDescriptionType
 		}
 	]
 };
@@ -174,49 +148,30 @@ export interface NotebookLanguageMagicRegistration {
 }
 
 export interface INotebookProviderRegistry {
-	readonly executeProviders: ExecuteProviderRegistration[];
-	readonly serializationProviders: SerializationProviderRegistration[];
+	readonly providerDescriptions: ProviderDescriptionRegistration[];
 	readonly languageMagics: NotebookLanguageMagicRegistration[];
-	readonly onNewSerializationRegistration: Event<{ id: string, registration: SerializationProviderRegistration }>;
-	readonly onNewExecuteRegistration: Event<{ id: string, registration: ExecuteProviderRegistration }>;
 
-	registerSerializationProvider(provider: SerializationProviderRegistration): void;
-	registerExecuteProvider(provider: ExecuteProviderRegistration): void;
+	readonly onNewDescriptionRegistration: Event<{ id: string, registration: ProviderDescriptionRegistration }>;
+
+	registerProviderDescription(provider: ProviderDescriptionRegistration): void;
 	registerNotebookLanguageMagic(magic: NotebookLanguageMagicRegistration): void;
 }
 
 class NotebookProviderRegistry implements INotebookProviderRegistry {
-	private _serializationProviderRegistration = new Map<string, SerializationProviderRegistration>();
-	private _executeProviderRegistration = new Map<string, ExecuteProviderRegistration>();
+	private _providerDescriptionRegistration = new Map<string, ProviderDescriptionRegistration>();
 	private _magicToRegistration = new Map<string, NotebookLanguageMagicRegistration>();
-	private _onNewSerializationRegistration = new Emitter<{ id: string, registration: SerializationProviderRegistration }>();
-	private _onNewExecuteRegistration = new Emitter<{ id: string, registration: ExecuteProviderRegistration }>();
-	public readonly onNewSerializationRegistration: Event<{ id: string, registration: SerializationProviderRegistration }> = this._onNewSerializationRegistration.event;
-	public readonly onNewExecuteRegistration: Event<{ id: string, registration: ExecuteProviderRegistration }> = this._onNewExecuteRegistration.event;
 
-	registerSerializationProvider(registration: SerializationProviderRegistration): void {
-		// Note: this method intentionally overrides default provider for a file type.
-		// This means that any built-in provider will be overridden by registered extensions
-		this._serializationProviderRegistration.set(registration.provider, registration);
-		this._onNewSerializationRegistration.fire({ id: registration.provider, registration: registration });
+	private _onNewDescriptionRegistration = new Emitter<{ id: string, registration: ProviderDescriptionRegistration }>();
+	public readonly onNewDescriptionRegistration: Event<{ id: string, registration: ProviderDescriptionRegistration }> = this._onNewDescriptionRegistration.event;
+
+	registerProviderDescription(registration: ProviderDescriptionRegistration): void {
+		this._providerDescriptionRegistration.set(registration.provider, registration);
+		this._onNewDescriptionRegistration.fire({ id: registration.provider, registration: registration });
 	}
 
-	registerExecuteProvider(registration: ExecuteProviderRegistration): void {
-		// Note: this method intentionally overrides default provider for a file type.
-		// This means that any built-in provider will be overridden by registered extensions
-		this._executeProviderRegistration.set(registration.provider, registration);
-		this._onNewExecuteRegistration.fire({ id: registration.provider, registration: registration });
-	}
-
-	public get serializationProviders(): SerializationProviderRegistration[] {
-		let registrationArray: SerializationProviderRegistration[] = [];
-		this._serializationProviderRegistration.forEach(p => registrationArray.push(p));
-		return registrationArray;
-	}
-
-	public get executeProviders(): ExecuteProviderRegistration[] {
-		let registrationArray: ExecuteProviderRegistration[] = [];
-		this._executeProviderRegistration.forEach(p => registrationArray.push(p));
+	public get providerDescriptions(): ProviderDescriptionRegistration[] {
+		let registrationArray: ProviderDescriptionRegistration[] = [];
+		this._providerDescriptionRegistration.forEach(p => registrationArray.push(p));
 		return registrationArray;
 	}
 
@@ -229,62 +184,33 @@ class NotebookProviderRegistry implements INotebookProviderRegistry {
 		this._magicToRegistration.forEach(p => registrationArray.push(p));
 		return registrationArray;
 	}
-
 }
 
 const notebookProviderRegistry = new NotebookProviderRegistry();
 platform.Registry.add(NotebookProviderRegistryId, notebookProviderRegistry);
 
-ExtensionsRegistry.registerExtensionPoint<SerializationProviderRegistration | SerializationProviderRegistration[]>({ extensionPoint: Extensions.NotebookSerializationProviderContribution, jsonSchema: notebookSerializationContrib }).setHandler(extensions => {
-
-	function handleExtension(contrib: SerializationProviderRegistration, extension: IExtensionPointUser<any>) {
-		notebookProviderRegistry.registerSerializationProvider(contrib);
-	}
-
+ExtensionsRegistry.registerExtensionPoint<ProviderDescriptionRegistration | ProviderDescriptionRegistration[]>({ extensionPoint: Extensions.NotebookProviderDescriptionContribution, jsonSchema: providerDescriptionContrib }).setHandler(extensions => {
 	for (let extension of extensions) {
 		const { value } = extension;
 		if (Array.isArray(value)) {
 			for (let command of value) {
-				handleExtension(command, extension);
+				notebookProviderRegistry.registerProviderDescription(command);
 			}
 		} else {
-			handleExtension(value, extension);
-		}
-	}
-});
-
-ExtensionsRegistry.registerExtensionPoint<ExecuteProviderRegistration | ExecuteProviderRegistration[]>({ extensionPoint: Extensions.NotebookExecuteProviderContribution, jsonSchema: notebookExecuteContrib }).setHandler(extensions => {
-
-	function handleExtension(contrib: ExecuteProviderRegistration, extension: IExtensionPointUser<any>) {
-		notebookProviderRegistry.registerExecuteProvider(contrib);
-	}
-
-	for (let extension of extensions) {
-		const { value } = extension;
-		if (Array.isArray(value)) {
-			for (let command of value) {
-				handleExtension(command, extension);
-			}
-		} else {
-			handleExtension(value, extension);
+			notebookProviderRegistry.registerProviderDescription(value);
 		}
 	}
 });
 
 ExtensionsRegistry.registerExtensionPoint<NotebookLanguageMagicRegistration | NotebookLanguageMagicRegistration[]>({ extensionPoint: Extensions.NotebookLanguageMagicContribution, jsonSchema: languageMagicContrib }).setHandler(extensions => {
-
-	function handleExtension(contrib: NotebookLanguageMagicRegistration, extension: IExtensionPointUser<any>) {
-		notebookProviderRegistry.registerNotebookLanguageMagic(contrib);
-	}
-
 	for (let extension of extensions) {
 		const { value } = extension;
 		if (Array.isArray(value)) {
 			for (let command of value) {
-				handleExtension(command, extension);
+				notebookProviderRegistry.registerNotebookLanguageMagic(command);
 			}
 		} else {
-			handleExtension(value, extension);
+			notebookProviderRegistry.registerNotebookLanguageMagic(value);
 		}
 	}
 });
