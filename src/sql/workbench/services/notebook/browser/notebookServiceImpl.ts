@@ -171,9 +171,13 @@ export class NotebookService extends Disposable implements INotebookService {
 		super();
 		this._providersMemento = new Memento('notebookProviders', this._storageService);
 		this._trustedNotebooksMemento = new Memento(TrustedNotebooksMementoId, this._storageService);
-		if (this._storageService !== undefined && this.providersMemento.notebookSerializationProviderCache === undefined && this.providersMemento.notebookExecuteProviderCache === undefined) {
-			this.providersMemento.notebookSerializationProviderCache = <NotebookProviderCache>{};
-			this.providersMemento.notebookExecuteProviderCache = <NotebookProviderCache>{};
+		if (this._storageService !== undefined) {
+			if (this.providersMemento.notebookSerializationProviderCache === undefined) {
+				this.providersMemento.notebookSerializationProviderCache = <NotebookProviderCache>{};
+			}
+			if (this.providersMemento.notebookExecuteProviderCache === undefined) {
+				this.providersMemento.notebookExecuteProviderCache = <NotebookProviderCache>{};
+			}
 		}
 		this._register(notebookRegistry.onNewDescriptionRegistration(this.handleNewProviderDescriptions, this));
 		this.registerBuiltInProviders();
