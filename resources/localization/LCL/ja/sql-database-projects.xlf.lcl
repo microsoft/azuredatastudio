@@ -1972,9 +1972,7 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.sqlTableOrViewToQuery" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SQL table or view to query]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[クエリを実行する SQL テーブルまたはビュー]]></Val>
-          </Tgt>
+            <Val><![CDATA[クエリ対象の SQL オブジェクト]]></Val>
         </Str>
         <Disp Icon="Str" />
       </Item>
