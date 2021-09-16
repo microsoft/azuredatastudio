@@ -611,7 +611,6 @@ export class NotebookService extends Disposable implements INotebookService {
 			fileExtensions: DEFAULT_NOTEBOOK_FILETYPE,
 			standardKernels: { name: notebookConstants.SQL, displayName: notebookConstants.SQL, connectionProviderIds: [notebookConstants.SQL_CONNECTION_PROVIDER] }
 		});
-
 	}
 
 	protected async removeContributedProvidersFromCache(identifier: IExtensionIdentifier, extensionService: IExtensionService): Promise<void> {
