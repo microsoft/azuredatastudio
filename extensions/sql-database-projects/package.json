@@ -179,7 +179,12 @@
         {
           "command": "sqlDatabaseProjects.createProjectFromDatabase",
           "when": "view == dataworkspace.views.main",
-          "group": "1_currentWorkspace"
+          "group": "1_currentWorkspace@1"
+        },
+        {
+          "command": "sqlDatabaseProjects.generateProjectFromOpenApiSpec",
+          "when": "view == dataworkspace.views.main",
+          "group": "1_currentWorkspace@2"
         }
       ],
       "commandPalette": [
