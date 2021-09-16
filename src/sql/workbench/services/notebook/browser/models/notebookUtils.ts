@@ -23,11 +23,11 @@ export function getProvidersForFileName(fileName: string, notebookService: INote
 	// First try to get provider for actual file type
 	if (fileExt && fileExt.startsWith('.')) {
 		fileExt = fileExt.slice(1, fileExt.length);
-		providers = notebookService.getSerializationProvidersForFileType(fileExt);
+		providers = notebookService.getProvidersForFileType(fileExt);
 	}
 	// Fallback to provider for default file type (assume this is a global handler)
 	if (!providers) {
-		providers = notebookService.getSerializationProvidersForFileType(DEFAULT_NOTEBOOK_FILETYPE);
+		providers = notebookService.getProvidersForFileType(DEFAULT_NOTEBOOK_FILETYPE);
 	}
 	// Finally if all else fails, use the built-in handler
 	if (!providers) {

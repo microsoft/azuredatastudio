@@ -263,7 +263,7 @@ export class NotebookServiceStub implements INotebookService {
 	getNavigationProvider(notebookUri: URI): INavigationProvider {
 		throw new Error('Method not implemented.');
 	}
-	getSerializationProvidersForFileType(fileType: string): string[] {
+	getProvidersForFileType(fileType: string): string[] {
 		return [];
 	}
 	getStandardKernelsForProvider(provider: string): nb.IStandardKernel[] {
