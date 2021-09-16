@@ -14,6 +14,7 @@ import { clearDialogMessage, convertTimeDifferenceToDuration, filterMigrations, 
 import { SqlMigrationServiceDetailsDialog } from '../sqlMigrationService/sqlMigrationServiceDetailsDialog';
 import { ConfirmCutoverDialog } from '../migrationCutover/confirmCutoverDialog';
 import { MigrationCutoverDialogModel } from '../migrationCutover/migrationCutoverDialogModel';
+import { getMigrationTargetType, getMigrationMode } from '../../constants/helper';
 
 const refreshFrequency: SupportedAutoRefreshIntervals = 180000;
 
@@ -326,8 +327,8 @@ export class MigrationStatusDialog {
 				return [
 					{ value: this._getDatabaserHyperLink(migration) },
 					{ value: this._getMigrationStatus(migration) },
-					{ value: this._getMigrationMode(migration) },
-					{ value: this._getMigrationTargetType(migration) },
+					{ value: getMigrationMode(migration) },
+					{ value: getMigrationTargetType(migration) },
 					{ value: migration.targetManagedInstance.name },
 					{ value: migration.controller.name },
 					{
@@ -404,21 +405,11 @@ export class MigrationStatusDialog {
 		return '---';
 	}
 
-	private _getMigrationTargetType(migration: MigrationContext): string {
-		return migration.targetManagedInstance.type === 'microsoft.sql/managedinstances'
-			? loc.SQL_MANAGED_INSTANCE
-			: loc.SQL_VIRTUAL_MACHINE;
-	}
-
-	private _getMigrationMode(migration: MigrationContext): string {
-		return migration.migrationContext.properties.autoCutoverConfiguration?.autoCutover?.valueOf() ? loc.OFFLINE : loc.ONLINE;
-	}
-
 	private _getMenuCommands(migration: MigrationContext): string[] {
 		const menuCommands: string[] = [];
 		const migrationStatus = migration?.migrationContext?.properties?.migrationStatus;
 
-		if (this._getMigrationMode(migration) === loc.ONLINE &&
+		if (getMigrationMode(migration) === loc.ONLINE &&
 			this.canCutoverMigration(migrationStatus)) {
 			menuCommands.push(MenuCommands.Cutover);
 		}

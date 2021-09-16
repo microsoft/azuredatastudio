@@ -505,3 +505,15 @@ export async function getAllProjectsInFolder(folder: vscode.Uri, projectExtensio
 	// glob will return an array of file paths with forward slashes, so they need to be converted back if on windows
 	return (await glob(projFilter)).map(p => vscode.Uri.file(path.resolve(p)));
 }
+
+export function validateSqlServerPortNumber(port: string | undefined): boolean {
+	if (!port) {
+		return false;
+	}
+	const valueAsNum = +port;
+	return !isNaN(valueAsNum) && valueAsNum > 0 && valueAsNum < 65535;
+}
+
+export function isEmptyString(password: string | undefined): boolean {
+	return password === undefined || password === '';
+}

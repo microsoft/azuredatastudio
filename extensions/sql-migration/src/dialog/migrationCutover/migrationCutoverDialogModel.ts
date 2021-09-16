@@ -3,11 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { getMigrationStatus, DatabaseMigration, startMigrationCutover, stopMigration, getMigrationAsyncOperationDetails, AzureAsyncOperationResource, BackupFileInfo } from '../../api/azure';
+import { getMigrationStatus, DatabaseMigration, startMigrationCutover, stopMigration, getMigrationAsyncOperationDetails, AzureAsyncOperationResource, BackupFileInfo, getResourceGroupFromId } from '../../api/azure';
 import { MigrationContext } from '../../models/migrationLocalStorage';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../../telemtery';
 import * as constants from '../../constants/strings';
 import { EOL } from 'os';
+import { getMigrationTargetType, getMigrationMode } from '../../constants/helper';
 
 export class MigrationCutoverDialogModel {
 
@@ -58,8 +59,8 @@ export class MigrationCutoverDialogModel {
 					TelemetryViews.MigrationCutoverDialog,
 					TelemetryAction.CutoverMigration,
 					{
-						'sessionId': this._migration.sessionId!,
-						'migrationEndTime': new Date().toString()
+						...this.getTelemetryProps(this._migration),
+						'migrationEndTime': new Date().toString(),
 					},
 					{}
 				);
@@ -96,7 +97,8 @@ export class MigrationCutoverDialogModel {
 					TelemetryViews.MigrationCutoverDialog,
 					TelemetryAction.CancelMigration,
 					{
-						'sessionId': this._migration.sessionId!,
+						...this.getTelemetryProps(this._migration),
+						'migrationMode': getMigrationMode(this._migration),
 						'cutoverStartTime': cutoverStartTime
 					},
 					{}
@@ -142,5 +144,18 @@ export class MigrationCutoverDialogModel {
 			});
 		});
 		return files;
+	}
+
+	private getTelemetryProps(migration: MigrationContext) {
+		return {
+			'sessionId': migration.sessionId!,
+			'subscriptionId': migration.subscription.id,
+			'resourceGroup': getResourceGroupFromId(migration.targetManagedInstance.id),
+			'sqlServerName': migration.sourceConnectionProfile.serverName,
+			'sourceDatabaseName': migration.migrationContext.properties.sourceDatabaseName,
+			'targetType': getMigrationTargetType(migration),
+			'targetDatabaseName': migration.migrationContext.name,
+			'targetServerName': migration.targetManagedInstance.name,
+		};
 	}
 }

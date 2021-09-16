@@ -229,12 +229,6 @@
     <trans-unit id="deployScriptExists">
       <source xml:lang="en">A {0} script already exists. The new script will not be included in build.</source>
     </trans-unit>
-    <trans-unit id="deployToDockerContainer">
-      <source xml:lang="en">Deploy to docker container</source>
-    </trans-unit>
-    <trans-unit id="deployToExistingServer">
-      <source xml:lang="en">Deploy to existing server</source>
-    </trans-unit>
     <trans-unit id="differentDbDifferentServer">
       <source xml:lang="en">Different database, different server</source>
     </trans-unit>
@@ -271,6 +265,9 @@
     <trans-unit id="emptyProjectTypeDisplayName">
       <source xml:lang="en">SQL Database</source>
     </trans-unit>
+    <trans-unit id="enterBaseImage">
+      <source xml:lang="en">Enter the base SQL Server docker image or press enter to use the default value</source>
+    </trans-unit>
     <trans-unit id="enterConnStringTemplateDescription">
       <source xml:lang="en">Enter a template for SQL connection string</source>
     </trans-unit>
@@ -290,7 +287,7 @@
       <source xml:lang="en">Enter new value for variable '{0}'</source>
     </trans-unit>
     <trans-unit id="enterPassword">
-      <source xml:lang="en">Enter password or press enter to use the generated password</source>
+      <source xml:lang="en">Enter password</source>
     </trans-unit>
     <trans-unit id="enterPortNumber">
       <source xml:lang="en">Enter port number or press enter to use the default value</source>
@@ -318,6 +315,9 @@
     </trans-unit>
     <trans-unit id="extractTargetRequired">
       <source xml:lang="en">Target information for extract is required to create database project.</source>
+    </trans-unit>
+    <trans-unit id="failedToParse">
+      <source xml:lang="en">Failed to parse "{0}": {1}.</source>
     </trans-unit>
     <trans-unit id="file">
       <source xml:lang="en">File</source>
@@ -384,6 +384,9 @@
     </trans-unit>
     <trans-unit id="invalidTargetPlatform">
       <source xml:lang="en">Invalid target platform: {0}. Supported target platforms: {1}</source>
+    </trans-unit>
+    <trans-unit id="jsonParseError">
+      <source xml:lang="en">{0} near line "{1}", column "{2}"</source>
     </trans-unit>
     <trans-unit id="loadProfilePlaceholderText">
       <source xml:lang="en">Load profile...</source>
@@ -505,6 +508,12 @@
     <trans-unit id="publishSettingsFiles">
       <source xml:lang="en">Publish Settings File</source>
     </trans-unit>
+    <trans-unit id="publishToDockerContainer">
+      <source xml:lang="en">Publish to docker container</source>
+    </trans-unit>
+    <trans-unit id="publishToExistingServer">
+      <source xml:lang="en">Publish to existing server</source>
+    </trans-unit>
     <trans-unit id="referenceRadioButtonsGroupTitle">
       <source xml:lang="en">Type</source>
     </trans-unit>
@@ -574,9 +583,6 @@
     <trans-unit id="selectDatabase">
       <source xml:lang="en">Select database</source>
     </trans-unit>
-    <trans-unit id="selectDeployOption">
-      <source xml:lang="en">Select where to deploy the project to</source>
-    </trans-unit>
     <trans-unit id="selectFolderStructure">
       <source xml:lang="en">Select folder structure</source>
     </trans-unit>
@@ -588,6 +594,12 @@
     </trans-unit>
     <trans-unit id="selectProjectLocation">
       <source xml:lang="en">Select project location</source>
+    </trans-unit>
+    <trans-unit id="selectPublishOption">
+      <source xml:lang="en">Select where to publish the project to</source>
+    </trans-unit>
+    <trans-unit id="selectSetting">
+      <source xml:lang="en">Select SQL connection string setting from local.settings.json</source>
     </trans-unit>
     <trans-unit id="selectString">
       <source xml:lang="en">Select</source>
@@ -637,8 +649,8 @@
     <trans-unit id="sqlDatabaseProjects.outputChannel">
       <source xml:lang="en">Database Projects</source>
     </trans-unit>
-    <trans-unit id="sqlObjectToQuery">
-      <source xml:lang="en">SQL object to query</source>
+    <trans-unit id="sqlTableOrViewToQuery">
+      <source xml:lang="en">SQL table or view to query</source>
     </trans-unit>
     <trans-unit id="sqlTableToUpsert">
       <source xml:lang="en">SQL table to upsert into</source>
@@ -748,9 +760,6 @@
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.delete">
       <source xml:lang="en">Delete</source>
-    </trans-unit>
-    <trans-unit id="sqlDatabaseProjects.deployLocal">
-      <source xml:lang="en">Deploy</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.description">
       <source xml:lang="en">Design and publish SQL database schemas</source>

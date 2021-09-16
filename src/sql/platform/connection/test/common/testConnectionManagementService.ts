@@ -306,6 +306,11 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return undefined!;
 	}
 
+	getDefaultAuthenticationTypeId(): string {
+		return undefined!;
+	}
+
+
 	getConnections(activeConnectionsOnly?: boolean): ConnectionProfile[] {
 		return [];
 	}

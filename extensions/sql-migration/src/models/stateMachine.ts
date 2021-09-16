@@ -258,6 +258,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				{
 					'sessionId': this._sessionId,
 					'tenantId': this._azureAccount.properties.tenants[0].id,
+					'subscriptionId': this._targetSubscription?.id,
+					'resourceGroup': this._resourceGroup?.name,
 					'hashedServerName': hashString(this._assessmentApiResponse.assessmentResult.name),
 					'startTime': startTime.toString(),
 					'endTime': endTime.toString(),
@@ -291,6 +293,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					TelemetryAction.DatabaseAssessment,
 					{
 						'sessionId': this._sessionId,
+						'subscriptionId': this._targetSubscription?.id,
+						'resourceGroup': this._resourceGroup?.name,
 						'hashedDatabaseName': hashString(d.name),
 						'compatibilityLevel': d.compatibilityLevel
 					},
@@ -327,6 +331,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				TelemetryAction.DatabaseAssessmentWarning,
 				{
 					'sessionId': this._sessionId,
+					'subscriptionId': this._targetSubscription?.id,
+					'resourceGroup': this._resourceGroup?.name,
 					'warnings': JSON.stringify(databaseWarnings)
 				},
 				{}
@@ -345,6 +351,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				TelemetryAction.DatabaseAssessmentError,
 				{
 					'sessionId': this._sessionId,
+					'subscriptionId': this._targetSubscription?.id,
+					'resourceGroup': this._resourceGroup?.name,
 					'errors': JSON.stringify(databaseErrors)
 				},
 				{}
@@ -924,15 +932,18 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						TelemetryViews.MigrationWizardSummaryPage,
 						TelemetryAction.StartMigration,
 						{
+							'sessionId': this._sessionId,
+							'tenantId': this._azureAccount.properties.tenants[0].id,
+							'subscriptionId': this._targetSubscription?.id,
+							'resourceGroup': this._resourceGroup?.name,
+							'location': this._targetServerInstance.location,
+							'targetType': this._targetType,
 							'hashedServerName': hashString(this._assessmentApiResponse.assessmentResult.name),
 							'hashedDatabaseName': hashString(this._migrationDbs[i]),
 							'migrationMode': isOfflineMigration ? 'offline' : 'online',
-							'sessionId': this._sessionId,
 							'migrationStartTime': new Date().toString(),
 							'targetDatabaseName': this._targetDatabaseNames[i],
 							'serverName': this._targetServerInstance.name,
-							'tenantId': this._azureAccount.properties.tenants[0].id,
-							'location': this._targetServerInstance.location,
 							'sqlMigrationServiceId': Buffer.from(this._sqlMigrationService?.id!).toString('base64'),
 							'irRegistered': (this._nodeNames.length > 0).toString()
 						},
