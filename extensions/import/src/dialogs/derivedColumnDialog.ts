@@ -28,8 +28,8 @@ const styleLeft: azdata.CssStyles = {
 export class DerivedColumnDialog {
 	private _dialogObject: azdata.window.Dialog;
 	private _doneEmitter: EventEmitter = new EventEmitter();
-	private currentTransformation: string[] = [];
-	private currentDerivedColumnName: string = '';
+	private _currentTransformation: string[] = [];
+	private _currentDerivedColumnName!: string;
 	private _view!: azdata.ModelView;
 	private _specifyTransformations: azdata.InputBoxComponent[] = [];
 	private _headerInstructionText: azdata.TextComponent;
@@ -167,9 +167,6 @@ export class DerivedColumnDialog {
 				dataValues: transformationTableData
 			}).component();
 
-
-
-
 			this._applyButton.onClick(async e => {
 				const requiredColNames = this._transformationTable.columns.map(v => v.displayName);
 				requiredColNames.splice(0, 1); // Removing specify transformation column
@@ -192,8 +189,8 @@ export class DerivedColumnDialog {
 							transformationExamples: transExamples,
 							transformationExampleRowIndices: transExampleIndices
 						});
-						this.currentTransformation = response.transformationPreview;
-						this.currentTransformation.forEach((v, i) => {
+						this._currentTransformation = response.transformationPreview;
+						this._currentTransformation.forEach((v, i) => {
 							(<azdata.InputBoxComponent>this._transformationTable.dataValues[i][0].value).placeHolder = v;
 						});
 						this.clearAndAddTransformationContainerComponents(true);
@@ -223,7 +220,7 @@ export class DerivedColumnDialog {
 
 			columnNameInput.onTextChanged(e => {
 				if (e) {
-					this.currentDerivedColumnName = e;
+					this._currentDerivedColumnName = e;
 					this.validatePage();
 				}
 			});
@@ -329,20 +326,21 @@ export class DerivedColumnDialog {
 			this._doneEmitter.once('done', async () => {
 				try {
 					await this._provider.sendSaveTransformationRequest({
-						derivedColumnName: this.currentDerivedColumnName
+						derivedColumnName: this._currentDerivedColumnName
 					});
 					resolve({
-						derivedColumnName: this.currentDerivedColumnName,
-						derivedColumnDataPreview: this.currentTransformation
+						derivedColumnName: this._currentDerivedColumnName,
+						derivedColumnDataPreview: this._currentTransformation
 					});
 				} catch (e) {
-					console.log(e); // Need to have better error handling for saved transformation. However this seems to be mostly a non-issue.
+					console.log(e); // Need to have better error handling for saved transformation.However this seems to be mostly a non-issue.
+
+					resolve(undefined);
 				}
 			});
 
 			this._doneEmitter.once('close', async () => {
 				resolve(undefined);
-				azdata.window.closeDialog(this._dialogObject);
 			});
 		});
 	}
@@ -360,7 +358,7 @@ export class DerivedColumnDialog {
 	}
 
 	private validatePage(): void {
-		this._dialogObject.okButton.enabled = this.currentDerivedColumnName !== undefined && this.currentTransformation.length !== 0;
+		this._dialogObject.okButton.enabled = this._currentDerivedColumnName !== undefined && this._currentTransformation.length !== 0;
 	}
 }
 

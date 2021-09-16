@@ -144,7 +144,6 @@ export class ProsePreviewPage extends ImportPage {
 
 	override async onPageLeave(): Promise<boolean> {
 		this.instance.createDerivedColumnButton.hidden = true;
-		//await this.emptyTable();
 		return true;
 	}
 
