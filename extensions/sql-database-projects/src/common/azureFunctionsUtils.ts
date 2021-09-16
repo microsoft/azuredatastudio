@@ -55,7 +55,7 @@ export async function setLocalAppSetting(projectFolder: string, key: string, val
 
 	settings.Values = settings.Values || {};
 	if (settings.Values[key] === value) {
-		// don't do anything if it's the same as an existing value
+		// don't do anything if it's the same as the existing value
 		return true;
 	} else if (settings.Values[key]) {
 		const result = await vscode.window.showWarningMessage(constants.settingAlreadyExists(key), { modal: true }, constants.yesString);

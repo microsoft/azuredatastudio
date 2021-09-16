@@ -99,7 +99,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 		existingSettings.unshift({ label: constants.createNewLocalAppSetting, isCreateNew: true });
 
 		while (!connectionStringSettingName) {
-			let selectedSetting = await vscode.window.showQuickPick(existingSettings, {
+			const selectedSetting = await vscode.window.showQuickPick(existingSettings, {
 				canPickMany: false,
 				title: constants.selectSetting,
 				ignoreFocusOut: true
@@ -110,7 +110,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 			}
 
 			if (selectedSetting.isCreateNew) {
-				let newConnectionStringSettingName = await vscode.window.showInputBox(
+				const newConnectionStringSettingName = await vscode.window.showInputBox(
 					{
 						title: constants.enterConnectionStringSettingName,
 						ignoreFocusOut: true,
@@ -119,7 +119,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 				) ?? '';
 
 				if (newConnectionStringSettingName) {
-					let newConnectionStringValue = await vscode.window.showInputBox(
+					const newConnectionStringValue = await vscode.window.showInputBox(
 						{
 							title: constants.enterConnectionString,
 							ignoreFocusOut: true,
@@ -133,7 +133,6 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 					}
 
 					const success = await azureFunctionsUtils.setLocalAppSetting(path.dirname(project), newConnectionStringSettingName, newConnectionStringValue);
-
 					if (success) {
 						connectionStringSettingName = newConnectionStringSettingName;
 					}
