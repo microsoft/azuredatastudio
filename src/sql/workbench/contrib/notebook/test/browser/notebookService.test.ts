@@ -15,7 +15,7 @@ import { ICellModel } from 'sql/workbench/services/notebook/browser/models/model
 import { INavigationProvider, INotebookEditor, IExecuteManager, INotebookParams, IExecuteProvider, NavigationProviders, SQL_NOTEBOOK_PROVIDER, unsavedBooksContextKey } from 'sql/workbench/services/notebook/browser/notebookService';
 import { FailToSaveTrustState, NotebookService, NotebookServiceNoProviderRegistered, NotebookUriNotDefined, ExecuteProviderDescriptor } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
 import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
-import { Extensions, INotebookProviderRegistry, ExecuteProviderRegistration, NotebookProviderRegistryId } from 'sql/workbench/services/notebook/common/notebookRegistry';
+import { INotebookProviderRegistry, ExecuteProviderRegistration, NotebookProviderRegistryId } from 'sql/workbench/services/notebook/common/notebookRegistry';
 import * as TypeMoq from 'typemoq';
 import { errorHandler, onUnexpectedError } from 'vs/base/common/errors';
 import { Emitter, Event } from 'vs/base/common/event';
