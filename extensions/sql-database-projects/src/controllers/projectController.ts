@@ -915,6 +915,13 @@ export class ProjectsController {
 		await this.autorestHelper.generateAutorestFiles(specPath, newProjectFolder);
 	}
 
+	public async openProjectInWorkspace(projectFilePath: string): Promise<void> {
+		const workspaceApi = utils.getDataWorkspaceExtensionApi();
+		await workspaceApi.addProjectsToWorkspace([vscode.Uri.file(projectFilePath)]);
+
+		workspaceApi.showProjectsView();
+	}
+
 	public async generateProjectFromOpenApiSpec(): Promise<Project | undefined> {
 		try {
 			// 1. select spec file
@@ -952,10 +959,8 @@ export class ProjectsController {
 			}
 
 			// 6. add project to workspace and open
-			const workspaceApi = utils.getDataWorkspaceExtensionApi();
-			await workspaceApi.addProjectsToWorkspace([vscode.Uri.file(newProjFilePath)]);
+			await this.openProjectInWorkspace(newProjFilePath);
 
-			workspaceApi.showProjectsView();
 			return project;
 		} catch (err) {
 			void vscode.window.showErrorMessage(`${constants.generatingProjectFailed}: ${utils.getErrorMessage(err)}`);

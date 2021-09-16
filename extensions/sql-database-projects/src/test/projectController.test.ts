@@ -685,6 +685,7 @@ describe('ProjectsController', function (): void {
 			await testUtils.createDummyFileStructure();
 			const specName = 'DummySpec.yaml';
 			const newProjFolder = path.join(parentFolder, path.basename(specName, '.yaml'));
+			let fileList: vscode.Uri[] = [];
 
 			const projController = TypeMoq.Mock.ofType(ProjectsController);
 			projController.callBase = true;
@@ -700,11 +701,12 @@ describe('ProjectsController', function (): void {
 				};
 			});
 
-			let fileList: vscode.Uri[] = [];
 			projController.setup(x => x.generateAutorestFiles(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(async () => {
 				await testUtils.createDummyFileStructure(true, fileList, newProjFolder);
 				await testUtils.createTestFile('SELECT \'This is a post-deployment script\'', constants.autorestPostDeploymentScriptName, newProjFolder);
 			});
+
+			projController.setup(x => x.openProjectInWorkspace(TypeMoq.It.isAny())).returns(async () => { });
 
 			const project = (await projController.object.generateProjectFromOpenApiSpec())!;
 

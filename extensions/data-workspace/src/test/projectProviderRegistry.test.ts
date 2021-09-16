@@ -39,6 +39,10 @@ export function createProjectProvider(projectTypes: IProjectType[], projectActio
 }
 
 suite('ProjectProviderRegistry Tests', function (): void {
+	this.beforeEach(() => {
+		ProjectProviderRegistry.clear();
+	});
+
 	test('register and unregister project providers', async () => {
 		const provider1 = createProjectProvider([
 			{
