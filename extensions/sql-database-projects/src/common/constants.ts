@@ -461,5 +461,10 @@ export const connectionStringSettingPlaceholder = localize('connectionStringSett
 export const noAzureFunctionsInFile = localize('noAzureFunctionsInFile', "No Azure functions in the current active file");
 export const noAzureFunctionsProjectsInWorkspace = localize('noAzureFunctionsProjectsInWorkspace', "No Azure functions projects found in the workspace");
 export const addPackage = localize('addPackage', "Add Package");
+export const createNewLocalAppSetting = localize('createNewLocalAppSetting', '$(add) Create new local app setting');
+export const valueMustNotBeEmpty = localize('valueMustNotBeEmpty', "Value must not be empty");
+export const enterConnectionStringSettingName = localize('enterConnectionStringSettingName', "Enter connection string setting name");
+export const enterConnectionString = localize('enterConnectionString', "Enter connection string");
+export function settingAlreadyExists(settingName: string) { return localize('SettingAlreadyExists', 'Local app setting \'{0}\' already exists. Overwrite?', settingName); }
 export function failedToParse(errorMessage: string) { return localize('failedToParse', 'Failed to parse "{0}": {1}.', azureFunctionLocalSettingsFileName, errorMessage); }
 export function jsonParseError(error: string, line: number, column: number) { return localize('jsonParseError', '{0} near line "{1}", column "{2}"', error, line, column); }

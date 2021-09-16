@@ -91,13 +91,60 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 	// TODO: allow new setting name to get added here and added to local.settings.json
 	if (project) {
 		const settings = await azureFunctionsUtils.getLocalSettingsJson(path.join(path.dirname(project!), constants.azureFunctionLocalSettingsFileName));
-		const existingSettings: string[] = settings.Values ? Object.keys(settings.Values) : [];
+		let existingSettings = settings.Values ? Object.keys(settings.Values).map(setting => {
+			return {
+				label: setting
+			} as vscode.QuickPickItem & { isCreateNew?: boolean };
+		}) : [];
+		existingSettings.unshift({ label: constants.createNewLocalAppSetting, isCreateNew: true });
 
-		connectionStringSettingName = await vscode.window.showQuickPick(existingSettings, {
-			canPickMany: false,
-			title: constants.selectSetting,
-			ignoreFocusOut: true
-		});
+		while (!connectionStringSettingName) {
+			let selectedSetting = await vscode.window.showQuickPick(existingSettings, {
+				canPickMany: false,
+				title: constants.selectSetting,
+				ignoreFocusOut: true
+			});
+			if (!selectedSetting) {
+				// User cancelled
+				return;
+			}
+
+			if (selectedSetting.isCreateNew) {
+				let newConnectionStringSettingName = await vscode.window.showInputBox(
+					{
+						title: constants.enterConnectionStringSettingName,
+						ignoreFocusOut: true,
+						validateInput: input => input ? undefined : constants.nameMustNotBeEmpty
+					}
+				) ?? '';
+
+				if (newConnectionStringSettingName) {
+					let newConnectionStringValue = await vscode.window.showInputBox(
+						{
+							title: constants.enterConnectionString,
+							ignoreFocusOut: true,
+							validateInput: input => input ? undefined : constants.valueMustNotBeEmpty
+						}
+					) ?? '';
+
+					if (!newConnectionStringValue) {
+						// go back to select setting quickpick if user escapes from inputting the value in case they changed their mind
+						continue;
+					}
+
+					const success = await azureFunctionsUtils.setLocalAppSetting(path.dirname(project), newConnectionStringSettingName, newConnectionStringValue);
+
+					if (success) {
+						connectionStringSettingName = newConnectionStringSettingName;
+					}
+				}
+				// If user cancels out of this or doesn't want to overwrite an existing setting
+				// just return them to the select setting quickpick in case they changed their mind
+			} else {
+				connectionStringSettingName = selectedSetting.label;
+			}
+		}
+
 	} else {
 		// if no AF project was found or there's more than one AF functions project in the workspace,
 		// ask for the user to input the setting name
