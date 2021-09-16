@@ -15,7 +15,7 @@ import { ICellModel } from 'sql/workbench/services/notebook/browser/models/model
 import { INavigationProvider, INotebookEditor, IExecuteManager, INotebookParams, IExecuteProvider, NavigationProviders, SQL_NOTEBOOK_PROVIDER, unsavedBooksContextKey } from 'sql/workbench/services/notebook/browser/notebookService';
 import { FailToSaveTrustState, NotebookService, NotebookServiceNoProviderRegistered, NotebookUriNotDefined, ExecuteProviderDescriptor } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
 import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
-import { Extensions, INotebookProviderRegistry, ExecuteProviderRegistration } from 'sql/workbench/services/notebook/common/notebookRegistry';
+import { Extensions, INotebookProviderRegistry, ExecuteProviderRegistration, NotebookProviderRegistryId } from 'sql/workbench/services/notebook/common/notebookRegistry';
 import * as TypeMoq from 'typemoq';
 import { errorHandler, onUnexpectedError } from 'vs/base/common/errors';
 import { Emitter, Event } from 'vs/base/common/event';
@@ -206,7 +206,7 @@ suite.skip('NotebookService:', function (): void {
 			provider: 'otherProvider'
 		};
 
-		const notebookRegistry = Registry.as<INotebookProviderRegistry>(Extensions.NotebookExecuteProviderContribution);
+		const notebookRegistry = Registry.as<INotebookProviderRegistry>(NotebookProviderRegistryId);
 		notebookRegistry.registerExecuteProvider(otherProviderRegistration);
 
 		assert.deepStrictEqual(notebookService.getSerializationProvidersForFileType('ipynb'), ['sql', 'otherProvider'], 'otherProvider should also be registered for ipynb extension');
@@ -364,7 +364,7 @@ suite.skip('NotebookService:', function (): void {
 			fileExtensions: ['jpeg', 'jpg'],
 			standardKernels: [<azdata.nb.IStandardKernel>{ name: 'kernel1' }, <azdata.nb.IStandardKernel>{ name: 'kernel2' }]
 		};
-		const notebookRegistry = Registry.as<INotebookProviderRegistry>(Extensions.NotebookExecuteProviderContribution);
+		const notebookRegistry = Registry.as<INotebookProviderRegistry>(NotebookProviderRegistryId);
 		notebookRegistry.registerExecuteProvider(notebookProviderRegistration);
 		const managerPromise = notebookService.getOrCreateNotebookManager(providerId, URI.parse('untitled:jpg'));
 		const providerInstance = createRegisteredProviderWithManager({ notebookService, providerId });
@@ -573,7 +573,7 @@ suite.skip('NotebookService:', function (): void {
 });
 
 function unRegisterProviders(notebookService: NotebookService) {
-	const notebookRegistry = Registry.as<INotebookProviderRegistry>(Extensions.NotebookExecuteProviderContribution);
+	const notebookRegistry = Registry.as<INotebookProviderRegistry>(NotebookProviderRegistryId);
 	// unregister all builtin providers
 	for (const providerContribution of notebookRegistry.executeProviders) {
 		notebookService.unregisterExecuteProvider(providerContribution.provider);

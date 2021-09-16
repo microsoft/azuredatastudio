@@ -10,6 +10,8 @@ import * as platform from 'vs/platform/registry/common/platform';
 import * as azdata from 'azdata';
 import { Event, Emitter } from 'vs/base/common/event';
 
+export const NotebookProviderRegistryId = 'notebooks.providers';
+
 export const Extensions = {
 	NotebookSerializationProviderContribution: 'notebook.serializationProviders',
 	NotebookExecuteProviderContribution: 'notebook.executeProviders',
@@ -231,8 +233,7 @@ class NotebookProviderRegistry implements INotebookProviderRegistry {
 }
 
 const notebookProviderRegistry = new NotebookProviderRegistry();
-platform.Registry.add(Extensions.NotebookSerializationProviderContribution, notebookProviderRegistry);
-platform.Registry.add(Extensions.NotebookExecuteProviderContribution, notebookProviderRegistry);
+platform.Registry.add(NotebookProviderRegistryId, notebookProviderRegistry);
 
 ExtensionsRegistry.registerExtensionPoint<SerializationProviderRegistration | SerializationProviderRegistration[]>({ extensionPoint: Extensions.NotebookSerializationProviderContribution, jsonSchema: notebookSerializationContrib }).setHandler(extensions => {
 

@@ -14,7 +14,7 @@ import {
 } from 'sql/workbench/services/notebook/browser/notebookService';
 import { RenderMimeRegistry } from 'sql/workbench/services/notebook/browser/outputs/registry';
 import { standardRendererFactories } from 'sql/workbench/services/notebook/browser/outputs/factories';
-import { Extensions, INotebookProviderRegistry, ExecuteProviderRegistration, SerializationProviderRegistration } from 'sql/workbench/services/notebook/common/notebookRegistry';
+import { Extensions, INotebookProviderRegistry, ExecuteProviderRegistration, SerializationProviderRegistration, NotebookProviderRegistryId } from 'sql/workbench/services/notebook/common/notebookRegistry';
 import { Emitter, Event } from 'vs/base/common/event';
 import { Memento } from 'vs/workbench/common/memento';
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
@@ -82,8 +82,7 @@ export interface TrustedNotebooksMemento {
 	trustedNotebooksCache: TrustedNotebookCache;
 }
 
-const notebookSerializationRegistry = Registry.as<INotebookProviderRegistry>(Extensions.NotebookSerializationProviderContribution);
-const notebookExecuteRegistry = Registry.as<INotebookProviderRegistry>(Extensions.NotebookExecuteProviderContribution);
+const notebookRegistry = Registry.as<INotebookProviderRegistry>(NotebookProviderRegistryId);
 
 export class SerializationProviderDescriptor {
 	private _instanceReady = new Deferred<ISerializationProvider>();
@@ -176,22 +175,22 @@ export class NotebookService extends Disposable implements INotebookService {
 			this.providersMemento.notebookSerializationProviderCache = <NotebookProviderCache>{};
 			this.providersMemento.notebookExecuteProviderCache = <NotebookProviderCache>{};
 		}
-		this._register(notebookSerializationRegistry.onNewSerializationRegistration(this.updateRegisteredSerializationProviders, this));
-		this._register(notebookExecuteRegistry.onNewExecuteRegistration(this.updateRegisteredExecuteProviders, this));
+		this._register(notebookRegistry.onNewSerializationRegistration(this.updateRegisteredSerializationProviders, this));
+		this._register(notebookRegistry.onNewExecuteRegistration(this.updateRegisteredExecuteProviders, this));
 		this.registerBuiltInProviders();
 
 		// If a provider has been already registered, the onNewRegistration event will not have a listener attached yet
 		// So, explicitly updating registered providers here.
-		if (notebookSerializationRegistry.serializationProviders.length > 0) {
-			notebookSerializationRegistry.serializationProviders.forEach(p => {
+		if (notebookRegistry.serializationProviders.length > 0) {
+			notebookRegistry.serializationProviders.forEach(p => {
 				// Don't need to re-register SQL_NOTEBOOK_PROVIDER
 				if (p.provider !== SQL_NOTEBOOK_PROVIDER) {
 					this.updateRegisteredSerializationProviders({ id: p.provider, registration: p });
 				}
 			});
 		}
-		if (notebookExecuteRegistry.executeProviders.length > 0) {
-			notebookExecuteRegistry.executeProviders.forEach(p => {
+		if (notebookRegistry.executeProviders.length > 0) {
+			notebookRegistry.executeProviders.forEach(p => {
 				// Don't need to re-register SQL_NOTEBOOK_PROVIDER
 				if (p.provider !== SQL_NOTEBOOK_PROVIDER) {
 					this.updateRegisteredExecuteProviders({ id: p.provider, registration: p });
@@ -506,7 +505,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	get languageMagics(): ILanguageMagic[] {
-		return notebookExecuteRegistry.languageMagics;
+		return notebookRegistry.languageMagics;
 	}
 
 	// PRIVATE HELPERS /////////////////////////////////////////////////////
@@ -596,7 +595,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	private cleanupProviders(): void {
-		let knownExecuteProviders = Object.keys(notebookExecuteRegistry.executeProviders);
+		let knownExecuteProviders = Object.keys(notebookRegistry.executeProviders);
 		let executeCache = this.providersMemento.notebookExecuteProviderCache;
 		for (let key in executeCache) {
 			if (!knownExecuteProviders.some(x => x === key)) {
@@ -605,7 +604,7 @@ export class NotebookService extends Disposable implements INotebookService {
 			}
 		}
 
-		let knownSerializationProviders = Object.keys(notebookSerializationRegistry.serializationProviders);
+		let knownSerializationProviders = Object.keys(notebookRegistry.serializationProviders);
 		let serializationCache = this.providersMemento.notebookSerializationProviderCache;
 		for (let key in serializationCache) {
 			if (!knownSerializationProviders.some(x => x === key)) {
@@ -618,14 +617,14 @@ export class NotebookService extends Disposable implements INotebookService {
 	private registerBuiltInProviders() {
 		let serializationProvider = new SqlSerializationProvider(this._instantiationService);
 		this.registerSerializationProvider(serializationProvider.providerId, serializationProvider);
-		notebookSerializationRegistry.registerSerializationProvider({
+		notebookRegistry.registerSerializationProvider({
 			provider: serializationProvider.providerId,
 			fileExtensions: DEFAULT_NOTEBOOK_FILETYPE
 		});
 
 		let executeProvider = new SqlExecuteProvider(this._instantiationService);
 		this.registerExecuteProvider(executeProvider.providerId, executeProvider);
-		notebookExecuteRegistry.registerExecuteProvider({
+		notebookRegistry.registerExecuteProvider({
 			provider: executeProvider.providerId,
 			standardKernels: { name: notebookConstants.SQL, displayName: notebookConstants.SQL, connectionProviderIds: [notebookConstants.SQL_CONNECTION_PROVIDER] }
 		});
