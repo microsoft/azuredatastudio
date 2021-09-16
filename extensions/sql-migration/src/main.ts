@@ -18,6 +18,8 @@ import { SavedAssessmentDialog } from './dialog/assessmentResults/savedAssessmen
 
 class SQLMigration {
 
+	public stateModel!: MigrationStateModel;
+
 	constructor(private readonly context: vscode.ExtensionContext) {
 		NotebookPathHelper.setExtensionContext(context);
 		IconPathHelper.setExtensionContext(context);
@@ -80,7 +82,6 @@ class SQLMigration {
 		let activeConnection = await azdata.connection.getCurrentConnection();
 		let connectionId: string = '';
 		let serverName: string = '';
-		let stateModel: MigrationStateModel;
 		if (!activeConnection) {
 			const connection = await azdata.connection.openConnectionDialog();
 			if (connection) {
@@ -94,16 +95,16 @@ class SQLMigration {
 		if (serverName) {
 			const api = (await vscode.extensions.getExtension(mssql.extension.name)?.activate()) as mssql.IExtension;
 			if (api) {
-				stateModel = new MigrationStateModel(this.context, connectionId, api.sqlMigration);
-				this.context.subscriptions.push(stateModel);
+				this.stateModel = new MigrationStateModel(this.context, connectionId, api.sqlMigration);
+				this.context.subscriptions.push(this.stateModel);
 				let savedInfo = this.checkSavedInfo(serverName);
 				if (savedInfo) {
-					stateModel.savedInfo = savedInfo;
-					stateModel.serverName = serverName;
-					let savedAssessmentDialog = new SavedAssessmentDialog(this.context, stateModel);
+					this.stateModel.savedInfo = savedInfo;
+					this.stateModel.serverName = serverName;
+					let savedAssessmentDialog = new SavedAssessmentDialog(this.context, this.stateModel);
 					await savedAssessmentDialog.openDialog();
 				} else {
-					const wizardController = new WizardController(this.context, stateModel);
+					const wizardController = new WizardController(this.context, this.stateModel);
 					await wizardController.openWizard(connectionId);
 				}
 			}
@@ -115,7 +116,7 @@ class SQLMigration {
 	}
 
 	private checkSavedInfo(serverName: string): SavedInfo | undefined {
-		let savedInfo: SavedInfo | undefined = this.context.globalState.get(`${loc.MEMENTO_STRING}.${serverName}`);
+		let savedInfo: SavedInfo | undefined = this.context.globalState.get(`${this.stateModel.mementoString}.${serverName}`);
 		if (savedInfo) {
 			return savedInfo;
 		} else {

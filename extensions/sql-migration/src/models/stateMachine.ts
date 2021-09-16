@@ -58,6 +58,16 @@ export enum NetworkContainerType {
 	NETWORK_SHARE
 }
 
+export enum Page {
+	AzureAccount,
+	DatabaseSelector,
+	SKURecommendation,
+	MigrationMode,
+	DatabaseBackup,
+	IntegrationRuntime,
+	Summary
+}
+
 export interface DatabaseBackupModel {
 	migrationMode: MigrationMode;
 	networkContainerType: NetworkContainerType;
@@ -158,6 +168,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _assessmentResults!: ServerAssessment;
 	public _runAssessments: boolean = true;
 	private _assessmentApiResponse!: mssql.AssessmentResult;
+	public mementoString: string;
 
 	public _vmDbs: string[] = [];
 	public _miDbs: string[] = [];
@@ -188,6 +199,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		this._databaseBackup = {} as DatabaseBackupModel;
 		this._databaseBackup.networkShare = {} as NetworkShare;
 		this._databaseBackup.blobs = [];
+		this.mementoString = 'sqlMigration.assessmentResults';
 	}
 
 	public get sourceConnectionId(): string {
@@ -987,7 +999,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	}
 
 	//TODO: code this method to save appropriate info for page
-	public saveInfo(serverName: string, currentPage: number): void {
+	public saveInfo(serverName: string, currentPage: Page): void {
 		let saveInfo: SavedInfo;
 		saveInfo = {
 			closedPage: currentPage,
@@ -1005,23 +1017,16 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			databaseAssessment: null
 		};
 		switch (currentPage) {
-			// Summary
-			case 6:
+			case Page.Summary:
 
-			// Integration Runtime
-			case 5:
+			case Page.IntegrationRuntime:
 
-			// Database Backup
-			case 4:
+			case Page.DatabaseBackup:
 
-			// Migration Mode
-			case 3:
+			case Page.MigrationMode:
 				saveInfo.migrationMode = this._databaseBackup.migrationMode;
-
-			// SKU Recommendation
-			case 2:
+			case Page.SKURecommendation:
 				saveInfo.migrationTargetType = this._targetType;
-
 				saveInfo.databaseAssessment = this._databaseAssessment;
 				saveInfo.serverAssessment = this._assessmentResults;
 				saveInfo.migrationDatabases = this._databaseSelection;
@@ -1029,17 +1034,14 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				saveInfo.location = this._location;
 				saveInfo.resourceGroup = this._resourceGroup;
 				saveInfo.targetServerInstance = this._targetServerInstance;
-			// Database Selector
-			case 1:
+			case Page.DatabaseSelector:
 				saveInfo.selectedDatabases = this.databaseSelectorTableValues;
-			// Azure Account
-			case 0:
+			case Page.AzureAccount:
 				saveInfo.azureAccount = deepClone(this._azureAccount);
 				saveInfo.azureTenant = deepClone(this._azureTenant);
-				this.extensionContext.globalState.update(`${constants.MEMENTO_STRING}.${serverName}`, saveInfo);
+				this.extensionContext.globalState.update(`${this.mementoString}.${serverName}`, saveInfo);
 		}
 	}
-
 }
 
 export interface ServerAssessment {

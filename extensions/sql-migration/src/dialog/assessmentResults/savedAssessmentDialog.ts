@@ -9,7 +9,6 @@ import * as constants from '../../constants/strings';
 import { MigrationStateModel } from '../../models/stateMachine';
 import { WizardController } from '../../wizard/wizardController';
 
-
 export class SavedAssessmentDialog {
 
 	private static readonly OkButtonText: string = 'Next';
@@ -20,6 +19,7 @@ export class SavedAssessmentDialog {
 	private _rootContainer!: azdata.FlexContainer;
 	private stateModel: MigrationStateModel;
 	private context: vscode.ExtensionContext;
+	private _disposables: vscode.Disposable[] = [];
 
 	constructor(context: vscode.ExtensionContext, stateModel: MigrationStateModel) {
 		this.stateModel = stateModel;
@@ -32,6 +32,18 @@ export class SavedAssessmentDialog {
 				try {
 					this._rootContainer = this.initializePageContent(view);
 					view.initializeModel(this._rootContainer);
+					this._disposables.push(dialog.okButton.onClick(async e => {
+						await this.execute();
+						this._disposables.forEach(
+							d => { try { d.dispose(); } catch { } }
+						);
+					}));
+					this._disposables.push(dialog.cancelButton.onClick(e => {
+						this.cancel();
+						this._disposables.forEach(
+							d => { try { d.dispose(); } catch { } }
+						);
+					}));
 					resolve();
 				} catch (ex) {
 					reject(ex);
@@ -44,19 +56,11 @@ export class SavedAssessmentDialog {
 		if (!this._isOpen) {
 			this._isOpen = true;
 			this.dialog = azdata.window.createModelViewDialog('Saved Assessment Result', 'Saved Assessment Result', '60%');
-
 			this.dialog.okButton.label = SavedAssessmentDialog.OkButtonText;
-			this.dialog.okButton.onClick(async () => await this.execute());
-
 			this.dialog.cancelButton.label = SavedAssessmentDialog.CancelButtonText;
-			this.dialog.cancelButton.onClick(async () => await this.cancel());
-
 			const dialogSetupPromises: Thenable<void>[] = [];
-
 			dialogSetupPromises.push(this.initializeDialog(this.dialog));
-
 			azdata.window.openDialog(this.dialog);
-
 			await Promise.all(dialogSetupPromises);
 		}
 	}
@@ -74,7 +78,7 @@ export class SavedAssessmentDialog {
 		this._isOpen = false;
 	}
 
-	protected async cancel() {
+	protected cancel() {
 		this._isOpen = false;
 	}
 

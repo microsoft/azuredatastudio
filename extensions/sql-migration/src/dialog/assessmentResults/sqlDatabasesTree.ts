@@ -955,7 +955,7 @@ export class SqlDatabaseTree {
 		}
 		await this._instanceTable.setDataValues(instanceTableValues);
 		if (this._model.resumeAssessment && this._model.savedInfo.closedPage >= 2) {
-			this._databaseTable.setDataValues(this._model.savedInfo.migrationDatabases);
+			await this._databaseTable.setDataValues(this._model.savedInfo.migrationDatabases);
 		} else {
 			await this._databaseTable.setDataValues(this._databaseTableValues);
 		}
