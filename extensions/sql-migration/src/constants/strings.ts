@@ -325,9 +325,9 @@ export const AZURE_SQL_DATABASE_VIRTUAL_MACHINE = localize('sql.migration.azure.
 export const CANCEL_MIGRATION = localize('sql.migration.cancel.migration', "Cancel migration");
 export function ACTIVE_BACKUP_FILES_ITEMS(fileCount: number) {
 	if (fileCount === 1) {
-		return localize('sql.migration.active.backup.files.items', "Active backup files (1 item)");
+		return localize('sql.migration.active.backup.files.items', "Active backup files (Showing 1-1 of 1 file)");
 	} else {
-		return localize('sql.migration.active.backup.files.multiple.items', "Active backup files ({0} items)", fileCount);
+		return localize('sql.migration.active.backup.files.multiple.items', "Active backup files (Showing 1-{0} of {0} files)", fileCount);
 	}
 }
 export const COPY_MIGRATION_DETAILS = localize('sql.migration.copy.migration.details', "Copy migration details");

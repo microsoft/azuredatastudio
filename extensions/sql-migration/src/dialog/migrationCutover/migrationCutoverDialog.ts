@@ -200,7 +200,13 @@ export class MigrationCutoverDialog {
 
 				let formItems = [
 					{ component: this.migrationContainerHeader() },
-					{ component: this._view.modelBuilder.separator().withProps({ width: 1000 }).component() },
+					{
+						component: this._view.modelBuilder.separator().withProps({
+							width: 1000, CSSStyles: {
+								'background': '#DDDDDD'
+							}
+						}).component()
+					},
 					{ component: this.migrationInfoGrid() },
 					{ component: this._view.modelBuilder.separator().withProps({ width: 1000 }).component() },
 					{ component: this._fileCount },
@@ -744,7 +750,8 @@ export class MigrationCutoverDialog {
 			CSSStyles: {
 				'font-weight': 'bold',
 				'margin-bottom': '0',
-				'font-size': '12px'
+				'font-size': '12px',
+				'color': '#595959',
 			}
 		}).component();
 		flexContainer.addItem(labelComponent);
