@@ -4308,6 +4308,59 @@
 					],
 					"statistics": [],
 					"flags": "preview"
+				},
+				{
+					"extensionId": "85",
+					"extensionName": "net-core-3-runtime",
+					"displayName": ".NET Core 3.1 Runtime",
+					"shortDescription": "The .NET Core 3.1 Runtime extension downloads runtime binaries that can be used by other extensions.",
+					"publisher": {
+						"displayName": "Microsoft",
+						"publisherId": "Microsoft",
+						"publisherName": "Microsoft"
+					},
+					"versions": [
+						{
+							"version": "1.0.13",
+							"lastUpdated": "9/16/2021",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://dsct.blob.core.windows.net/extensions/net-core-3-runtime/21259.2/net-core-3-runtime-1.0.13.vsix"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://dsct.blob.core.windows.net/extensions/net-core-3-runtime/21259.2/icon.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://dsct.blob.core.windows.net/extensions/net-core-3-runtime/21259.2/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://dsct.blob.core.windows.net/extensions/net-core-3-runtime/21259.2/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://dsct.blob.core.windows.net/extensions/net-core-3-runtime/21259.2/LICENSE.rtf"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": ">=1.21.0"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
 				}
 			],
 			"resultMetadata": [
@@ -4316,7 +4369,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 71
+							"count": 72
 						}
 					]
 				}
