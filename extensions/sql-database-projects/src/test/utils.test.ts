@@ -106,9 +106,9 @@ describe('Tests to verify utils functions', function (): void {
 		should(isEmptyString('65536')).equals(false);
 	});
 
-	it('Should correctly detect present commands', () => {
-		should(detectCommandInstallation('node')).equal(true, '"node" should have been detected.');
-		should(detectCommandInstallation('bogusFakeCommand')).equal(false, '"bogusFakeCommand" should have been detected.');
+	it('Should correctly detect present commands', async () => {
+		should(await detectCommandInstallation('node')).equal(true, '"node" should have been detected.');
+		should(await detectCommandInstallation('bogusFakeCommand')).equal(false, '"bogusFakeCommand" should have been detected.');
 	});
 });
 

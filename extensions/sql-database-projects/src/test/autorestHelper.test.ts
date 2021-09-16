@@ -47,7 +47,7 @@ describe('Autorest tests', function (): void {
 	});
 
 	it('Should construct a correct autorest command for project generation', async function (): Promise<void> {
-		const expectedOutput = 'autorest --use:autorest-sql-testing@0.0.2 --input-file="/some/path/test.yaml" --output-folder="/some/output/path" --clear-output-folder';
+		const expectedOutput = 'autorest --use:autorest-sql-testing@latest --input-file="/some/path/test.yaml" --output-folder="/some/output/path" --clear-output-folder';
 
 		const autorestHelper = new AutorestHelper(testContext.outputChannel);
 		const constructedCommand = autorestHelper.constructAutorestCommand((await autorestHelper.detectInstallation())!, '/some/path/test.yaml', '/some/output/path');
