@@ -438,14 +438,12 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			'font-size': '13px',
 			'font-weight': 'bold',
 			'text-align': 'left',
-			'background': '#FFFFFF',
 			'box-shadow': 'inset 0px -1px 0px #F3F2F1',
 
 		};
 		const rowCssStyle: azdata.CssStyles = {
 			'border': 'none',
 			'font-size': '13px',
-			'background': '#FFFFFF',
 			'box-shadow': 'inset 0px -1px 0px #F3F2F1',
 		};
 

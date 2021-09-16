@@ -17,7 +17,6 @@ const headerLeft: azdata.CssStyles = {
 	'white-space': 'nowrap',
 	'text-overflow': 'ellipsis',
 	'overflow': 'hidden',
-	'background': '#FFFFFF',
 	'box-shadow': 'inset 0px -1px 0px #F3F2F1',
 };
 
@@ -27,7 +26,6 @@ const headerRight: azdata.CssStyles = {
 	'white-space': 'nowrap',
 	'text-overflow': 'ellipsis',
 	'overflow': 'hidden',
-	'background': '#FFFFFF',
 	'box-shadow': 'inset 0px -1px 0px #F3F2F1',
 };
 
@@ -37,7 +35,6 @@ const styleLeft: azdata.CssStyles = {
 	'white-space': 'nowrap',
 	'text-overflow': 'ellipsis',
 	'overflow': 'hidden',
-	'background': '#FFFFFF',
 	'box-shadow': 'inset 0px -1px 0px #F3F2F1',
 };
 
@@ -47,7 +44,6 @@ const styleRight: azdata.CssStyles = {
 	'white-space': 'nowrap',
 	'text-overflow': 'ellipsis',
 	'overflow': 'hidden',
-	'background': '#FFFFFF',
 	'box-shadow': 'inset 0px -1px 0px #F3F2F1',
 };
 
