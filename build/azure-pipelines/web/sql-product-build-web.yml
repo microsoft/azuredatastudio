@@ -108,7 +108,7 @@ steps:
     set -e
     node ./node_modules/playwright/install.js
     VSCODE_REMOTE_SERVER_PATH="$(agent.builddirectory)/vscode-reh-web-linux-x64" \
-    yarn smoketest --build "$VSCODE_REMOTE_SERVER_PATH" --web --browser chromium --screenshots "$(build.artifactstagingdirectory)/smokeshots"
+    yarn smoketest --web -headless --screenshots "$(build.artifactstagingdirectory)/smokeshots"
   displayName: Run smoke tests (Browser)
   continueOnError: true
   failOnStderr: false
