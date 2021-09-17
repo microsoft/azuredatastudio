@@ -117,6 +117,13 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		this.horizontalScrollbar();
 	}
 
+	@HostListener('window:scroll', [])
+	onScroll(): void {
+		this.horizontalScrollbar();
+		// eslint-disable-next-line no-console
+		console.log('SCROLL BAR');
+	}
+
 	ngOnInit() {
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
@@ -291,14 +298,14 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 	 * or it will set it to the bottom of the markdown editor if it is in the viewport (visible area)
 	 */
 	public horizontalScrollbar(): void {
-		if (this._configurationService.getValue('editor.wordWrap') === 'off' && this.cellModel.cellType !== CellTypes.Code) {
+		if (this._configurationService.getValue('editor.wordWrap') === 'off' && this.cellModel.cellType !== CellTypes.Code && this.cellModel.source[0] !== '') {
 			// Get markdown split view horizontal scrollbar
 			let horizontalScrollbar = this.codeElement.nativeElement.querySelector('div.invisible.scrollbar.horizontal');
 			let markdownEditor: HTMLElement = this.codeElement.nativeElement.closest('.show-markdown .editor');
-			let markdownEditorBottom = markdownEditor.getBoundingClientRect().bottom;
-			let markdownEditorTop = markdownEditor.getBoundingClientRect().top;
+			let markdownEditorBottom = Math.floor(markdownEditor.getBoundingClientRect().bottom);
+			let markdownEditorTop = Math.floor(markdownEditor.getBoundingClientRect().top);
 			let viewport: HTMLElement = document.querySelector('.scrollable');
-			let viewportBottom = viewport.getBoundingClientRect().bottom;
+			let viewportBottom = Math.floor(viewport.getBoundingClientRect().bottom);
 
 			// Compare the editor bottom position to the scrollable area in
 			// order to decide whether to make the horizontal scrollbar fixed or absolute
@@ -307,6 +314,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 
 			// Horizontal scrollbar values used when fixed
 			let viewportTop = document.querySelector('.scrollable').getBoundingClientRect().top;
+			// Have to offset the height based on the contents the multiple horizontal scrollbars that are present in markdown editor and notebook
 			let horizontalTop = viewportTop + viewportHeight - horizontalScrollbar.scrollHeight - horizontalScrollbar.scrollHeight;
 
 			// Set the bottom position of the markdown editor area of the active cell
