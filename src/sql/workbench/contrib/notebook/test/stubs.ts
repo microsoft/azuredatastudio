@@ -8,7 +8,7 @@ import * as vsEvent from 'vs/base/common/event';
 import { INotebookModel, ICellModel, IClientSession, NotebookContentChange, ISingleNotebookEditOperation, MoveDirection, ViewMode } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { INotebookFindModel } from 'sql/workbench/contrib/notebook/browser/models/notebookFindModel';
 import { NotebookChangeType, CellType } from 'sql/workbench/services/notebook/common/contracts';
-import { IExecuteManager, INotebookService, INotebookEditor, ILanguageMagic, IExecuteProvider, INavigationProvider, INotebookParams, INotebookSection, ICellEditorProvider, NotebookRange, ISerializationProvider } from 'sql/workbench/services/notebook/browser/notebookService';
+import { IExecuteManager, INotebookService, INotebookEditor, ILanguageMagic, IExecuteProvider, INavigationProvider, INotebookParams, INotebookSection, ICellEditorProvider, NotebookRange, ISerializationProvider, ISerializationManager } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import { IModelDecorationsChangeAccessor } from 'vs/editor/common/model';
 import { NotebookFindMatch } from 'sql/workbench/contrib/notebook/browser/find/notebookFindDecorations';
@@ -269,7 +269,10 @@ export class NotebookServiceStub implements INotebookService {
 	getStandardKernelsForProvider(provider: string): nb.IStandardKernel[] {
 		throw new Error('Method not implemented.');
 	}
-	getOrCreateNotebookManager(providerId: string, uri: URI): Thenable<IExecuteManager> {
+	getOrCreateSerializationManager(providerId: string, uri: URI): Promise<ISerializationManager> {
+		throw new Error('Method not implemented.');
+	}
+	getOrCreateExecuteManager(providerId: string, uri: URI): Thenable<IExecuteManager> {
 		throw new Error('Method not implemented.');
 	}
 	addNotebookEditor(editor: INotebookEditor): void {

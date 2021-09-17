@@ -74,14 +74,9 @@ export interface INotebookService {
 
 	getStandardKernelsForProvider(provider: string): azdata.nb.IStandardKernel[];
 
-	/**
-	 * Initializes and returns a Notebook manager that can handle all important calls to open, display, and
-	 * run cells in a notebook.
-	 * @param providerId ID for the provider to be used to instantiate a backend notebook service
-	 * @param uri URI for a notebook that is to be opened. Based on this an existing manager may be used, or
-	 * a new one may need to be created
-	 */
-	getOrCreateNotebookManager(providerId: string, uri: URI): Thenable<IExecuteManager>;
+	getOrCreateSerializationManager(providerId: string, uri: URI): Promise<ISerializationManager>;
+
+	getOrCreateExecuteManager(providerId: string, uri: URI): Thenable<IExecuteManager>;
 
 	addNotebookEditor(editor: INotebookEditor): void;
 

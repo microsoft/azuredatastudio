@@ -10,7 +10,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 
 import {
 	INotebookService, IExecuteManager, IExecuteProvider,
-	DEFAULT_NOTEBOOK_FILETYPE, INotebookEditor, SQL_NOTEBOOK_PROVIDER, INavigationProvider, ILanguageMagic, NavigationProviders, unsavedBooksContextKey, ISerializationProvider
+	DEFAULT_NOTEBOOK_FILETYPE, INotebookEditor, SQL_NOTEBOOK_PROVIDER, INavigationProvider, ILanguageMagic, NavigationProviders, unsavedBooksContextKey, ISerializationProvider, ISerializationManager
 } from 'sql/workbench/services/notebook/browser/notebookService';
 import { RenderMimeRegistry } from 'sql/workbench/services/notebook/browser/outputs/registry';
 import { standardRendererFactories } from 'sql/workbench/services/notebook/browser/outputs/factories';
@@ -139,7 +139,8 @@ export class NotebookService extends Disposable implements INotebookService {
 	private _serializationProviders: Map<string, SerializationProviderDescriptor> = new Map();
 	private _executeProviders: Map<string, ExecuteProviderDescriptor> = new Map();
 	private _navigationProviders: Map<string, INavigationProvider> = new Map();
-	private _managersMap: Map<string, IExecuteManager[]> = new Map();
+	private _serializationManagersMap: Map<string, ISerializationManager[]> = new Map();
+	private _executeManagersMap: Map<string, IExecuteManager[]> = new Map();
 	private _onNotebookEditorAdd = new Emitter<INotebookEditor>();
 	private _onNotebookEditorRemove = new Emitter<INotebookEditor>();
 	private _onNotebookEditorRename = new Emitter<INotebookEditor>();
@@ -413,7 +414,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	private shutdown(): void {
-		this._managersMap.forEach(manager => {
+		this._executeManagersMap.forEach(manager => {
 			manager.forEach(m => {
 				if (m.serverManager) {
 					// TODO should this thenable be awaited?
@@ -423,12 +424,12 @@ export class NotebookService extends Disposable implements INotebookService {
 		});
 	}
 
-	async getOrCreateNotebookManager(providerId: string, uri: URI): Promise<IExecuteManager> {
+	async getOrCreateSerializationManager(providerId: string, uri: URI): Promise<ISerializationManager> {
 		if (!uri) {
 			throw new Error(NotebookUriNotDefined);
 		}
 		let uriString = uri.toString();
-		let managers: IExecuteManager[] = this._managersMap.get(uriString);
+		let managers: ISerializationManager[] = this._serializationManagersMap.get(uriString);
 		// If manager already exists for a given notebook, return it
 		if (managers) {
 			let index = managers.findIndex(m => m.providerId === providerId);
@@ -436,11 +437,32 @@ export class NotebookService extends Disposable implements INotebookService {
 				return managers[index];
 			}
 		}
-		let newManager = await this.doWithProvider(providerId, (provider) => provider.getExecuteManager(uri));
+		let newManager = await this.doWithSerializationProvider(providerId, (provider) => provider.getSerializationManager(uri));
 
 		managers = managers || [];
 		managers.push(newManager);
-		this._managersMap.set(uriString, managers);
+		this._serializationManagersMap.set(uriString, managers);
+		return newManager;
+	}
+
+	async getOrCreateExecuteManager(providerId: string, uri: URI): Promise<IExecuteManager> {
+		if (!uri) {
+			throw new Error(NotebookUriNotDefined);
+		}
+		let uriString = uri.toString();
+		let managers: IExecuteManager[] = this._executeManagersMap.get(uriString);
+		// If manager already exists for a given notebook, return it
+		if (managers) {
+			let index = managers.findIndex(m => m.providerId === providerId);
+			if (index >= 0) {
+				return managers[index];
+			}
+		}
+		let newManager = await this.doWithExecuteProvider(providerId, (provider) => provider.getExecuteManager(uri));
+
+		managers = managers || [];
+		managers.push(newManager);
+		this._executeManagersMap.set(uriString, managers);
 		return newManager;
 	}
 
@@ -503,10 +525,10 @@ export class NotebookService extends Disposable implements INotebookService {
 	private sendNotebookCloseToProvider(editor: INotebookEditor): void {
 		let notebookUri = editor.notebookParams.notebookUri;
 		let uriString = notebookUri.toString();
-		let managers = this._managersMap.get(uriString);
+		let managers = this._executeManagersMap.get(uriString);
 		if (managers) {
 			// As we have a manager, we can assume provider is ready
-			this._managersMap.delete(uriString);
+			this._executeManagersMap.delete(uriString);
 			managers.forEach(m => {
 				let provider = this._executeProviders.get(m.providerId);
 				provider.instance.handleNotebookClosed(notebookUri);
@@ -514,13 +536,51 @@ export class NotebookService extends Disposable implements INotebookService {
 		}
 	}
 
-	private async doWithProvider<T>(providerId: string, op: (provider: IExecuteProvider) => Thenable<T>): Promise<T> {
+	private async doWithSerializationProvider<T>(providerId: string, op: (provider: ISerializationProvider) => Thenable<T>): Promise<T> {
 		// Make sure the provider exists before attempting to retrieve accounts
-		let provider: IExecuteProvider = await this.getProviderInstance(providerId);
+		let provider: ISerializationProvider = await this.getSerializationProviderInstance(providerId);
 		return op(provider);
 	}
 
-	private async getProviderInstance(providerId: string, timeout?: number): Promise<IExecuteProvider> {
+	private async doWithExecuteProvider<T>(providerId: string, op: (provider: IExecuteProvider) => Thenable<T>): Promise<T> {
+		// Make sure the provider exists before attempting to retrieve accounts
+		let provider: IExecuteProvider = await this.getExecuteProviderInstance(providerId);
+		return op(provider);
+	}
+
+	private async getSerializationProviderInstance(providerId: string, timeout?: number): Promise<ISerializationProvider> {
+		let providerDescriptor = this._serializationProviders.get(providerId);
+		let instance: ISerializationProvider;
+
+		// Try get from actual provider, waiting on its registration
+		if (providerDescriptor) {
+			if (!providerDescriptor.instance) {
+				// Await extension registration before awaiting provider registration
+				try {
+					await this._extensionService.whenInstalledExtensionsRegistered();
+				} catch (error) {
+					this._logService.error(error);
+				}
+				instance = await this.waitOnSerializationProviderAvailability(providerDescriptor, timeout);
+			} else {
+				instance = providerDescriptor.instance;
+			}
+		}
+
+		// Fall back to default (SQL) if this failed
+		if (!instance) {
+			providerDescriptor = this._serializationProviders.get(SQL_NOTEBOOK_PROVIDER);
+			instance = providerDescriptor ? providerDescriptor.instance : undefined;
+		}
+
+		// Should never happen, but if default wasn't registered we should throw
+		if (!instance) {
+			throw new Error(NotebookServiceNoProviderRegistered);
+		}
+		return instance;
+	}
+
+	private async getExecuteProviderInstance(providerId: string, timeout?: number): Promise<IExecuteProvider> {
 		let providerDescriptor = this._executeProviders.get(providerId);
 		let instance: IExecuteProvider;
 
@@ -533,7 +593,7 @@ export class NotebookService extends Disposable implements INotebookService {
 				} catch (error) {
 					this._logService.error(error);
 				}
-				instance = await this.waitOnProviderAvailability(providerDescriptor, timeout);
+				instance = await this.waitOnExecuteProviderAvailability(providerDescriptor, timeout);
 			} else {
 				instance = providerDescriptor.instance;
 			}
@@ -552,7 +612,17 @@ export class NotebookService extends Disposable implements INotebookService {
 		return instance;
 	}
 
-	private waitOnProviderAvailability(providerDescriptor: ExecuteProviderDescriptor, timeout?: number): Promise<IExecuteProvider> {
+	private waitOnSerializationProviderAvailability(providerDescriptor: SerializationProviderDescriptor, timeout?: number): Promise<ISerializationProvider> {
+		// Wait up to 30 seconds for the provider to be registered
+		timeout = timeout ?? 30000;
+		let promises: Promise<ISerializationProvider>[] = [
+			providerDescriptor.instanceReady,
+			new Promise<ISerializationProvider>((resolve, reject) => setTimeout(() => resolve(undefined), timeout))
+		];
+		return Promise.race(promises);
+	}
+
+	private waitOnExecuteProviderAvailability(providerDescriptor: ExecuteProviderDescriptor, timeout?: number): Promise<IExecuteProvider> {
 		// Wait up to 30 seconds for the provider to be registered
 		timeout = timeout ?? 30000;
 		let promises: Promise<IExecuteProvider>[] = [

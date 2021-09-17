@@ -234,7 +234,7 @@ suite.skip('NotebookService:', function (): void {
 				assert.strictEqual(_error, error, `error object passed to logService.error call must be the one thrown from whenInstalledExtensionsRegistered call`);
 			})
 			.verifiable(TypeMoq.Times.once());
-		await notebookService.getOrCreateNotebookManager(providerId, URI.parse('untitled:uri1'));
+		await notebookService.getOrCreateExecuteManager(providerId, URI.parse('untitled:uri1'));
 		logServiceMock.verifyAll();
 	});
 
@@ -245,7 +245,7 @@ suite.skip('NotebookService:', function (): void {
 		// register the builtin sql provider to be undefined
 		notebookService.registerExecuteProvider(SQL_NOTEBOOK_PROVIDER, undefined);
 		try {
-			await notebookService.getOrCreateNotebookManager('test', URI.parse('untitled:uri1'));
+			await notebookService.getOrCreateExecuteManager('test', URI.parse('untitled:uri1'));
 			throw Error(`${methodName}  did not throw as was expected`);
 		} catch (error) {
 			assert.strictEqual((error as Error).message, NotebookServiceNoProviderRegistered, `${methodName} should throw error with message:${NotebookServiceNoProviderRegistered}' when no providers are registered`);
@@ -254,7 +254,7 @@ suite.skip('NotebookService:', function (): void {
 		// when even the default provider is not registered, method under test throws exception
 		unRegisterProviders(notebookService);
 		try {
-			await notebookService.getOrCreateNotebookManager(SQL_NOTEBOOK_PROVIDER, URI.parse('untitled:uri1'));
+			await notebookService.getOrCreateExecuteManager(SQL_NOTEBOOK_PROVIDER, URI.parse('untitled:uri1'));
 			throw Error(`${methodName} did not throw as was expected`);
 		} catch (error) {
 			assert.strictEqual((error as Error).message, NotebookServiceNoProviderRegistered, `${methodName} should throw error with message:${NotebookServiceNoProviderRegistered}' when no providers are registered`);
@@ -283,7 +283,7 @@ suite.skip('NotebookService:', function (): void {
 	test('verifies return value of getOrCreateNotebookManager', async () => {
 		await notebookService.registrationComplete;
 		try {
-			await notebookService.getOrCreateNotebookManager(SQL_NOTEBOOK_PROVIDER, undefined);
+			await notebookService.getOrCreateExecuteManager(SQL_NOTEBOOK_PROVIDER, undefined);
 			throw new Error('expected exception was not thrown');
 		} catch (error) {
 			assert.strictEqual((error as Error).message, NotebookUriNotDefined, `getOrCreateNotebookManager must throw with UriNotDefined error, when a valid uri is not provided`);
@@ -293,13 +293,13 @@ suite.skip('NotebookService:', function (): void {
 
 		const uri1: URI = URI.parse(`untitled:test1`);
 		const uri2: URI = URI.parse(`untitled:test2`);
-		const result1 = await notebookService.getOrCreateNotebookManager(provider1Id, uri1);
-		const result2 = await notebookService.getOrCreateNotebookManager(provider2Id, uri2);
-		const result1Again = await notebookService.getOrCreateNotebookManager(provider1Id, uri1);
+		const result1 = await notebookService.getOrCreateExecuteManager(provider1Id, uri1);
+		const result2 = await notebookService.getOrCreateExecuteManager(provider2Id, uri2);
+		const result1Again = await notebookService.getOrCreateExecuteManager(provider1Id, uri1);
 		assert.strictEqual(result2, provider2Manager, `the notebook manager for the provider must be the one returned by getNotebookManager of the provider`);
 		assert.notStrictEqual(result1, result2, `different notebookManagers should be returned for different uris`);
 		assert.strictEqual(result1, result1Again, `same notebookManagers should be returned for same uri for builtin providers`);
-		const result2Again = await notebookService.getOrCreateNotebookManager(provider2Id, uri2);
+		const result2Again = await notebookService.getOrCreateExecuteManager(provider2Id, uri2);
 		assert.strictEqual(result2, result2Again, `same notebookManagers should be returned for same uri for custom providers`);
 	});
 
@@ -367,7 +367,7 @@ suite.skip('NotebookService:', function (): void {
 		};
 		const notebookRegistry = Registry.as<INotebookProviderRegistry>(NotebookProviderRegistryId);
 		notebookRegistry.registerProviderDescription(notebookProviderRegistration);
-		const managerPromise = notebookService.getOrCreateNotebookManager(providerId, URI.parse('untitled:jpg'));
+		const managerPromise = notebookService.getOrCreateExecuteManager(providerId, URI.parse('untitled:jpg'));
 		const providerInstance = createRegisteredProviderWithManager({ notebookService, providerId });
 		notebookService.registerExecuteProvider(providerId, providerInstance);
 		const result = await managerPromise;
@@ -608,7 +608,7 @@ async function addManagers({ notebookService, prefix = 'providerId', uriPrefix =
 	for (let i: number = 1; i <= count; i++) {
 		const providerId = `${prefix}${i}`;
 		createRegisteredProviderWithManager({ providerId, notebookService, testProviderManagers });
-		await notebookService.getOrCreateNotebookManager(providerId, URI.parse(`${uriPrefix}${i}`));
+		await notebookService.getOrCreateExecuteManager(providerId, URI.parse(`${uriPrefix}${i}`));
 	}
 	return testProviderManagers;
 }
