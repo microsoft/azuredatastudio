@@ -88,7 +88,6 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 	let connectionStringSettingName;
 
 	// show the settings from project's local.settings.json if there's an AF functions project
-	// TODO: allow new setting name to get added here and added to local.settings.json
 	if (project) {
 		let settings;
 		try {
