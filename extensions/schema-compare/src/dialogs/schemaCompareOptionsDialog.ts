@@ -67,7 +67,7 @@ export class SchemaCompareOptionsDialog {
 		this.schemaComparison.setDeploymentOptions(this.optionsModel.deploymentOptions);
 
 		if (this.optionsChanged) {
-			vscode.window.showWarningMessage(loc.OptionsChangedMessage, loc.YesButtonText, loc.NoButtonText).then((result) => {
+			vscode.window.showWarningMessage(loc.OptionsChangedMessage, { modal: true }, loc.YesButtonText).then((result) => {
 				if (result === loc.YesButtonText) {
 					this.schemaComparison.startCompare();
 				}
