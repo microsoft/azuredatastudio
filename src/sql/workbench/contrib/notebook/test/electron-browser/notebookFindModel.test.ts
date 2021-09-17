@@ -93,7 +93,7 @@ suite('Notebook Find Model', function (): void {
 			notebookUri: defaultUri,
 			factory: new ModelFactory(instantiationService),
 			notebookManagers,
-			contentManager: undefined,
+			contentLoader: undefined,
 			notificationService: notificationService.object,
 			connectionService: queryConnectionService.object,
 			providerId: 'SQL',
@@ -436,7 +436,7 @@ suite('Notebook Find Model', function (): void {
 	async function initNotebookModel(contents: nb.INotebookContents): Promise<void> {
 		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(contents));
-		defaultModelOptions.contentManager = mockContentManager.object;
+		defaultModelOptions.contentLoader = mockContentManager.object;
 		// Initialize the model
 		model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
 		await model.loadContents();

@@ -394,8 +394,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 			let contents: nb.INotebookContents | undefined;
 
-			if (this._notebookOptions && this._notebookOptions.contentManager) {
-				contents = await this._notebookOptions.contentManager.loadContent();
+			if (this._notebookOptions && this._notebookOptions.contentLoader) {
+				contents = await this._notebookOptions.contentLoader.loadContent();
 			}
 			let factory = this._notebookOptions.factory;
 			// if cells already exist, create them with language info (if it is saved)

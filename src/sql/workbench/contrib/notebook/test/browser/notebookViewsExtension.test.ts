@@ -145,7 +145,7 @@ suite('NotebookViews', function (): void {
 			notebookUri: defaultUri,
 			factory: new ModelFactory(instantiationService),
 			notebookManagers,
-			contentManager: undefined,
+			contentLoader: undefined,
 			notificationService: notificationService.object,
 			connectionService: queryConnectionService.object,
 			providerId: 'SQL',
@@ -159,7 +159,7 @@ suite('NotebookViews', function (): void {
 	async function initializeExtension(): Promise<NotebookViewsExtension> {
 		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(initialNotebookContent));
-		defaultModelOptions.contentManager = mockContentManager.object;
+		defaultModelOptions.contentLoader = mockContentManager.object;
 
 		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
 		await model.loadContents();

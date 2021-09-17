@@ -157,7 +157,7 @@ suite('Notebook Editor Model', function (): void {
 			notebookUri: defaultUri,
 			factory: new ModelFactory(instantiationService),
 			notebookManagers,
-			contentManager: undefined,
+			contentLoader: undefined,
 			notificationService: notificationService.object,
 			connectionService: queryConnectionService.object,
 			providerId: 'SQL',

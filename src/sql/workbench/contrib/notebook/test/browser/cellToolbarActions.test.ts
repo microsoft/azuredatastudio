@@ -208,7 +208,7 @@ export async function createandLoadNotebookModel(codeContent?: nb.INotebookConte
 		notebookUri: URI.file('/some/path.ipynb'),
 		factory: new ModelFactory(instantiationService),
 		notebookManagers: [new NotebookManagerStub()],
-		contentManager: mockContentManager.object,
+		contentLoader: mockContentManager.object,
 		notificationService: undefined,
 		connectionService: undefined,
 		providerId: 'SQL',

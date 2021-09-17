@@ -13,7 +13,7 @@ import { IStandardKernelWithProvider, getProvidersForFileName, getStandardKernel
 import { INotebookService, DEFAULT_NOTEBOOK_PROVIDER, IProviderInfo } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITextEditorModel, ITextModelService } from 'vs/editor/common/services/resolverService';
-import { INotebookModel, IContentManager, NotebookContentChange } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { INotebookModel, IContentLoader, NotebookContentChange } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textFileEditorModel';
 import { Schemas } from 'vs/base/common/network';
 import { ITextFileSaveOptions, ITextFileEditorModel } from 'vs/workbench/services/textfile/common/textfiles';
@@ -224,7 +224,7 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 	private readonly _layoutChanged: Emitter<void> = this._register(new Emitter<void>());
 	private _model: NotebookEditorModel;
 	private _untitledEditorModel: IUntitledTextEditorModel;
-	private _contentManager: IContentManager;
+	private _contentManager: IContentLoader;
 	private _providersLoaded: Promise<void>;
 	private _dirtyListener: IDisposable;
 	private _notebookEditorOpenedTimestamp: number;
@@ -274,7 +274,7 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 		return this._notebookFindModel;
 	}
 
-	public get contentManager(): IContentManager {
+	public get contentManager(): IContentLoader {
 		if (!this._contentManager) {
 			this._contentManager = this.instantiationService.createInstance(NotebookEditorContentManager, this);
 		}
@@ -510,7 +510,7 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 	}
 }
 
-export class NotebookEditorContentManager implements IContentManager {
+export class NotebookEditorContentManager implements IContentLoader {
 	constructor(
 		private notebookInput: NotebookInput,
 		@IInstantiationService private readonly instantiationService: IInstantiationService) {

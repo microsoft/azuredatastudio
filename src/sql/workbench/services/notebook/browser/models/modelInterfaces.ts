@@ -551,7 +551,7 @@ export interface IModelFactory {
 	createClientSession(options: IClientSessionOptions): IClientSession;
 }
 
-export interface IContentManager {
+export interface IContentLoader {
 	/**
 	 * This is a specialized method intended to load for a default context - just the current Notebook's URI
 	 */
@@ -569,7 +569,7 @@ export interface INotebookModelOptions {
 	 */
 	factory: IModelFactory;
 
-	contentManager: IContentManager;
+	contentLoader: IContentLoader;
 	notebookManagers: IExecuteManager[];
 	providerId: string;
 	defaultKernel: nb.IKernelSpec;
