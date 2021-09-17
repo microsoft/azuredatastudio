@@ -402,6 +402,10 @@ export class NotebookService extends Disposable implements INotebookService {
 		this._providerToStandardKernels.set(providerUpperCase, standardKernels);
 	}
 
+	getSupportedFileExtensions(): string[] {
+		return Array.from(this._fileToProviderDescriptions.keys());
+	}
+
 	getProvidersForFileType(fileType: string): string[] {
 		fileType = fileType.toUpperCase();
 		let providers = this._fileToProviderDescriptions.get(fileType);
