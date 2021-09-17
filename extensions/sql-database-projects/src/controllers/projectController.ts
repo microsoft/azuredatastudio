@@ -917,6 +917,7 @@ export class ProjectsController {
 
 	public async openProjectInWorkspace(projectFilePath: string): Promise<void> {
 		const workspaceApi = utils.getDataWorkspaceExtensionApi();
+		await workspaceApi.validateWorkspace();
 		await workspaceApi.addProjectsToWorkspace([vscode.Uri.file(projectFilePath)]);
 
 		workspaceApi.showProjectsView();
@@ -977,7 +978,7 @@ export class ProjectsController {
 			case 1:
 				return results[0];
 			default:
-				throw new Error(`Unexpected number of ${constants.autorestPostDeploymentScriptName} files: ${results.length}`);
+				throw new Error(constants.multipleMostDeploymentScripts(results.length));
 		}
 
 	}

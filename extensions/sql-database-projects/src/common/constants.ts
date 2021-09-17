@@ -416,6 +416,7 @@ export const nodeButNotAutorestFound = localize('nodeButNotAutorestFound', "Auto
 export const nodeNotFound = localize('nodeNotFound', "Neither autorest nor Node.js (npx) found in system path.  Please install Node.js for autorest generation to work.");
 export const selectSpecFile = localize('selectSpecFile', "Select OpenAPI/Swagger spec file");
 export const generatingProjectFailed = localize('generatingProjectFailed', "Generating project via AutoRest failed");
+export function multipleMostDeploymentScripts(count: number) { return localize('multipleMostDeploymentScripts', "Unexpected number of {0} files: {1}", autorestPostDeploymentScriptName, count); }
 
 // System dbs
 export const systemDbs = ['master', 'msdb', 'tempdb', 'model'];
