@@ -44,7 +44,6 @@ export class LocalContentManager implements nb.ContentManager {
 
 		// else, fallthrough condition
 		throw new TypeError(localize('nbNotSupported', "This file does not have a valid notebook format"));
-
 	}
 
 	public async getNotebookContents(notebookUri: URI): Promise<nb.INotebookContents> {
@@ -54,28 +53,7 @@ export class LocalContentManager implements nb.ContentManager {
 		// Note: intentionally letting caller handle exceptions
 		let notebookFileBuffer = await this.fileService.readFile(notebookUri);
 		let stringContents = notebookFileBuffer.value.toString();
-		let contents: JSONObject;
-		if (stringContents === '' || stringContents === undefined) {
-			// Empty?
-			return v4.createEmptyNotebook();
-		} else {
-			contents = this.parseFromJson(stringContents);
-		}
-
-		if (contents) {
-			if (contents.nbformat === 4) {
-				return v4.readNotebook(<any>contents);
-			} else if (contents.nbformat === 3) {
-				return v3.readNotebook(<any>contents);
-			}
-			if (contents.nbformat) {
-				throw new TypeError(localize('nbformatNotRecognized', "nbformat v{0}.{1} not recognized", contents.nbformat as any, contents.nbformat_minor as any));
-			}
-		}
-
-		// else, fallthrough condition
-		throw new TypeError(localize('nbNotSupported', "This file does not have a valid notebook format"));
-
+		return this.loadFromContentString(stringContents);
 	}
 
 	public async save(notebookUri: URI, notebook: nb.INotebookContents): Promise<nb.INotebookContents> {

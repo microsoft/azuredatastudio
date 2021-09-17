@@ -17,7 +17,6 @@ import { INotebookModel, IContentLoader, NotebookContentChange } from 'sql/workb
 import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textFileEditorModel';
 import { Schemas } from 'vs/base/common/network';
 import { ITextFileSaveOptions, ITextFileEditorModel } from 'vs/workbench/services/textfile/common/textfiles';
-import { LocalContentManager } from 'sql/workbench/services/notebook/common/localContentManager';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { IDisposable } from 'vs/base/common/lifecycle';
@@ -275,9 +274,6 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 	}
 
 	public get contentLoader(): IContentLoader {
-		if (!this._contentLoader) {
-			this._contentLoader = this.instantiationService.createInstance(NotebookEditorContentLoader, this);
-		}
 		return this._contentLoader;
 	}
 
@@ -438,6 +434,8 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 				let standardKernels = getStandardKernelsForProvider(provider, this.notebookService);
 				this._standardKernels.push(...standardKernels);
 			});
+			let serializationProvider = await this.notebookService.getOrCreateSerializationManager(this._providerId, this._resource);
+			this._contentLoader = this.instantiationService.createInstance(NotebookEditorContentLoader, this, serializationProvider.contentManager);
 		}
 	}
 
@@ -513,14 +511,12 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 export class NotebookEditorContentLoader implements IContentLoader {
 	constructor(
 		private notebookInput: NotebookInput,
-		@IInstantiationService private readonly instantiationService: IInstantiationService) {
+		private contentManager: azdata.nb.ContentManager) {
 	}
 
 	async loadContent(): Promise<azdata.nb.INotebookContents> {
 		let notebookEditorModel = await this.notebookInput.resolve();
-		let contentManager = this.instantiationService.createInstance(LocalContentManager);
-		let contents = await contentManager.loadFromContentString(notebookEditorModel.contentString);
+		let contents = await this.contentManager.getNotebookContents(notebookEditorModel.notebookUri);
 		return contents;
 	}
-
 }
