@@ -90,8 +90,15 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 	// show the settings from project's local.settings.json if there's an AF functions project
 	// TODO: allow new setting name to get added here and added to local.settings.json
 	if (project) {
-		const settings = await azureFunctionsUtils.getLocalSettingsJson(path.join(path.dirname(project!), constants.azureFunctionLocalSettingsFileName));
-		let existingSettings = settings.Values ? Object.keys(settings.Values).map(setting => {
+		let settings;
+		try {
+			settings = await azureFunctionsUtils.getLocalSettingsJson(path.join(path.dirname(project!), constants.azureFunctionLocalSettingsFileName));
+		} catch (e) {
+			void vscode.window.showErrorMessage(e);
+			return;
+		}
+
+		let existingSettings = settings?.Values ? Object.keys(settings.Values).map(setting => {
 			return {
 				label: setting
 			} as vscode.QuickPickItem & { isCreateNew?: boolean };
