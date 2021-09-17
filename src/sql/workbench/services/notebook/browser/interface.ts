@@ -17,7 +17,7 @@ export interface INotebookInput {
 	updateModel(): void;
 	readonly editorOpenedTimestamp: number;
 	readonly layoutChanged: Event<void>;
-	readonly contentManager: IContentLoader;
+	readonly contentLoader: IContentLoader;
 	readonly standardKernels: IStandardKernelWithProvider[];
 }
 

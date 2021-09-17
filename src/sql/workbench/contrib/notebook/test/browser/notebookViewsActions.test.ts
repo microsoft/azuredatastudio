@@ -8,7 +8,7 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
 import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
-import { NotebookEditorContentManager } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
+import { NotebookEditorContentLoader } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { DeleteViewAction, InsertCellAction } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsActions';
 import { SessionManager } from 'sql/workbench/contrib/notebook/test/emptySessionClasses';
 import { NotebookManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
@@ -190,7 +190,7 @@ suite('Notebook Views Actions', function (): void {
 	}
 
 	async function initializeNotebookViewsExtension(contents: nb.INotebookContents): Promise<NotebookViewsExtension> {
-		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(contents));
 		defaultModelOptions.contentLoader = mockContentManager.object;
 

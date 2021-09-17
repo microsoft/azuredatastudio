@@ -105,7 +105,7 @@ export class NotebookEditorComponent extends AngularDisposable {
 			connectionService: this.connectionManagementService,
 			notificationService: this.notificationService,
 			notebookManagers: this.notebookManagers,
-			contentLoader: this._notebookParams.input.contentManager,
+			contentLoader: this._notebookParams.input.contentLoader,
 			cellMagicMapper: new CellMagicMapper(this.notebookService.languageMagics),
 			providerId: 'sql',
 			defaultKernel: this._notebookParams.input.defaultKernel,

@@ -22,7 +22,7 @@ import { IProductService } from 'vs/platform/product/common/productService';
 import { Separator } from 'vs/base/common/actions';
 import { INotebookModelOptions } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
-import { NotebookEditorContentManager } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
+import { NotebookEditorContentLoader } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { URI } from 'vs/base/common/uri';
 import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
 import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
@@ -202,7 +202,7 @@ export async function createandLoadNotebookModel(codeContent?: nb.INotebookConte
 
 	let serviceCollection = new ServiceCollection();
 	let instantiationService = new InstantiationService(serviceCollection, true);
-	let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+	let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
 	mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(codeContent ? codeContent : defaultCodeContent));
 	let defaultModelOptions: INotebookModelOptions = {
 		notebookUri: URI.file('/some/path.ipynb'),

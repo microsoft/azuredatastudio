@@ -224,7 +224,7 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 	private readonly _layoutChanged: Emitter<void> = this._register(new Emitter<void>());
 	private _model: NotebookEditorModel;
 	private _untitledEditorModel: IUntitledTextEditorModel;
-	private _contentManager: IContentLoader;
+	private _contentLoader: IContentLoader;
 	private _providersLoaded: Promise<void>;
 	private _dirtyListener: IDisposable;
 	private _notebookEditorOpenedTimestamp: number;
@@ -274,11 +274,11 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 		return this._notebookFindModel;
 	}
 
-	public get contentManager(): IContentLoader {
-		if (!this._contentManager) {
-			this._contentManager = this.instantiationService.createInstance(NotebookEditorContentManager, this);
+	public get contentLoader(): IContentLoader {
+		if (!this._contentLoader) {
+			this._contentLoader = this.instantiationService.createInstance(NotebookEditorContentLoader, this);
 		}
-		return this._contentManager;
+		return this._contentLoader;
 	}
 
 	public override getName(): string {
@@ -510,7 +510,7 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 	}
 }
 
-export class NotebookEditorContentManager implements IContentLoader {
+export class NotebookEditorContentLoader implements IContentLoader {
 	constructor(
 		private notebookInput: NotebookInput,
 		@IInstantiationService private readonly instantiationService: IInstantiationService) {
