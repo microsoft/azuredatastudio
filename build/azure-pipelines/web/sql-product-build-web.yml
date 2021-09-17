@@ -118,8 +118,7 @@ steps:
     set -e
     node ./node_modules/playwright/install.js
     APP_ROOT=$(Agent.BuildDirectory)/vscode-reh-web-linux-x64
-    APP_NAME="`ls $APP_ROOT | head -n 1`"
-    yarn smoketest --build "$APP_ROOT/$APP_NAME" --web --headless --screenshots "$(Build.ArtifactStagingDirectory)/smokeshots"
+    yarn smoketest --build "$APP_ROOT" --web --headless --screenshots "$(Build.ArtifactStagingDirectory)/smokeshots"
   displayName: Run smoke tests (Browser)
   continueOnError: true
   failOnStderr: false
