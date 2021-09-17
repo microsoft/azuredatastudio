@@ -17,10 +17,11 @@ import { NodeStub, NotebookServiceStub } from 'sql/workbench/contrib/notebook/te
 import { basenameOrAuthority } from 'vs/base/common/resources';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { IExtensionService, NullExtensionService } from 'vs/workbench/services/extensions/common/extensions';
-import { INotebookService, IProviderInfo } from 'sql/workbench/services/notebook/browser/notebookService';
+import { INotebookService, IProviderInfo, ISerializationManager } from 'sql/workbench/services/notebook/browser/notebookService';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { EditorInputCapabilities } from 'vs/workbench/common/editor';
+import { LocalContentManager } from 'sql/workbench/services/notebook/common/localContentManager';
 
 suite('Notebook Input', function (): void {
 	const instantiationService = workbenchInstantiationService();
@@ -39,9 +40,14 @@ suite('Notebook Input', function (): void {
 			name: 'TestName',
 			displayName: 'TestDisplayName',
 			connectionProviderIds: ['TestId'],
-			notebookProvider: 'TestProvider'
+			notebookProvider: testProvider
 		}];
 	});
+	let testManager: ISerializationManager = {
+		providerId: testProvider,
+		contentManager: instantiationService.createInstance(LocalContentManager)
+	};
+	mockNotebookService.setup(s => s.getOrCreateSerializationManager(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(testManager));
 
 	(instantiationService as TestInstantiationService).stub(INotebookService, mockNotebookService.object);
 
@@ -87,10 +93,10 @@ suite('Notebook Input', function (): void {
 		// Notebook URI
 		assert.deepStrictEqual(untitledNotebookInput.notebookUri, untitledUri);
 
-		// Content Manager
+		// Notebook editor timestamp
 		assert.notStrictEqual(untitledNotebookInput.editorOpenedTimestamp, undefined);
 
-		// Notebook editor timestamp
+		// Content Manager
 		assert.notStrictEqual(untitledNotebookInput.contentLoader, undefined);
 
 		// Layout changed event

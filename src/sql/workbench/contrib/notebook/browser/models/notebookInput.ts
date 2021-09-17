@@ -36,6 +36,7 @@ import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/no
 import { INotebookInput } from 'sql/workbench/services/notebook/browser/interface';
 import { EditorModel } from 'vs/workbench/common/editor/editorModel';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
+import { LocalContentManager } from 'sql/workbench/services/notebook/common/localContentManager';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 
@@ -274,6 +275,10 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 	}
 
 	public get contentLoader(): IContentLoader {
+		if (!this._contentLoader) {
+			let contentManager = this.instantiationService.createInstance(LocalContentManager);
+			this._contentLoader = this.instantiationService.createInstance(NotebookEditorContentLoader, this, contentManager);
+		}
 		return this._contentLoader;
 	}
 
