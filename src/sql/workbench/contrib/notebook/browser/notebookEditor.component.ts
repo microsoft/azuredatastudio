@@ -135,7 +135,7 @@ export class NotebookEditorComponent extends AngularDisposable {
 	private async setNotebookManager(): Promise<void> {
 		let providerInfo = await this._notebookParams.providerInfo;
 		for (let providerId of providerInfo.providers) {
-			let notebookManager = await this.notebookService.getOrCreateNotebookManager(providerId, this._notebookParams.notebookUri);
+			let notebookManager = await this.notebookService.getOrCreateExecuteManager(providerId, this._notebookParams.notebookUri);
 			this.notebookManagers.push(notebookManager);
 		}
 	}
