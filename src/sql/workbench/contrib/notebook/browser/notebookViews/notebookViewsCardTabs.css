@@ -1,6 +1,7 @@
 view-card-tabs-component > .tabs-and-actions-container {
 	display: flex;
 	position: relative; /* position tabs border bottom or editor actions (when tabs wrap) relative to this container */
+	border-top: 1px solid;
 }
 
 view-card-tabs-component > .tabs-and-actions-container.tabs-border-bottom::after {
@@ -57,6 +58,8 @@ view-card-tabs-component .tabs-container > .tab {
 	height: 25px;
 	box-sizing: border-box;
 	padding-left: 10px;
+	padding-right: 10px;
+	border-right: 1px solid;
 }
 
 view-card-tabs-component > .tabs-and-actions-container.wrapping .tabs-container > .tab:last-child {

@@ -326,7 +326,7 @@
 }
 .nb-grid-stack > .grid-stack-item .grid-stack-item-content .grid-stack-content-wrapper-inner {
 	overflow-y: auto;
-	height: 100%;
+	height: calc(100% - 25px);
 	cursor: auto;
 }
 .nb-grid-stack > .grid-stack-item .grid-stack-item-content ::-webkit-scrollbar {

@@ -73,7 +73,7 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 		this.createGrid();
 
 		this._loaded = true;
-		//this.detectChanges();
+		this.detectChanges();
 
 		self._grid.on('added', function (e: Event, items: GridStackNode[]) { if (self._gridEnabled) { self.persist('added', items, self._grid, self._items); } });
 		self._grid.on('removed', function (e: Event, items: GridStackNode[]) { if (self._gridEnabled) { self.persist('removed', items, self._grid, self._items); } });
@@ -96,7 +96,6 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 	ngAfterViewChecked() {
 		// If activeView has changed, rebuild the grid
 		if (this.activeView && this.activeView.guid !== this._gridView?.guid) {
-			this._gridView = this.activeView;
 
 			if (!this._grid) {
 				this.createGrid();
@@ -120,6 +119,8 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 
 	private createGrid() {
 		const isNew = this.activeView.isNew;
+
+		this._gridView = this.activeView;
 
 		if (this._grid) {
 			this.destroyGrid();
@@ -244,6 +245,7 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 			const item = items.toArray().find(item => item.metadata.guid === cellId);
 
 			if (item && this.activeView) {
+				/*
 				const update: INotebookViewCard = {
 					guid: this.activeView.guid,
 					x: changedItem.x,
@@ -251,6 +253,7 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 					width: changedItem.w,
 					height: changedItem.h
 				};
+				*/
 
 				/*
 				if (action === 'added') {
@@ -260,7 +263,7 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 				}
 				*/
 
-				this.views.updateCard(item, update, this.activeView);
+				//this.views.updateCard(item, update, this.activeView);
 			}
 		});
 	}

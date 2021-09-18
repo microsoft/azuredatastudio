@@ -5,21 +5,21 @@
 import 'vs/css!./notebookViewsCardTabs';
 import { ChangeDetectorRef, Component, ElementRef, forwardRef, Inject, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
-import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
-import { INotebookView } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
-import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { INotebookView, INotebookViewCard, INotebookViewsTab } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
 import { NotebookViewsCardTabComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCardTab.components';
 import { LocalSelectionTransfer } from 'vs/workbench/browser/dnd';
+import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
+import { TAB_BORDER, EDITOR_GROUP_HEADER_TABS_BACKGROUND } from 'vs/workbench/common/theme';
 
 @Component({
 	selector: 'view-card-tabs-component',
 	templateUrl: decodeURI(require.toUrl('./notebookViewsCardTabs.component.html'))
 })
 export class NotebookViewsCardTabsComponent extends AngularDisposable implements OnInit {
-	@Input() model: NotebookModel;
+	@Input() card: INotebookViewCard;
+	@Input() tabs: INotebookViewsTab[];
 	@Input() activeView: INotebookView;
-	@Input() ready: boolean;
-	@Input() cells: ICellModel[];
+	@Input() activeTab: INotebookViewsTab;
 	@Input() tabTransfer: LocalSelectionTransfer<NotebookViewsCardTabComponent>;
 
 	@ViewChild('templateRef') templateRef: TemplateRef<any>;
@@ -31,41 +31,14 @@ export class NotebookViewsCardTabsComponent extends AngularDisposable implements
 		super();
 	}
 
-	ngOnInit() {
-		//this.initialize();
-	}
+	ngOnInit() { }
 
 	ngAfterViewInit(): void {
 		this.initialize();
 	}
 
 	public initialize(): void {
-		/*
-		// Drop support
-		this._register(new DragAndDropObserver(this._tabsContainer.nativeElement, {
-			onDragEnter: e => {
 
-				// Always enable support to scroll while dragging
-				this._tabsContainer.nativeElement.classList.add('scroll');
-				console.log('onDragEnter');
-			},
-
-			onDragLeave: e => {
-				console.log('onDragLeave');
-				this._tabsContainer.nativeElement.classList.remove('scroll');
-			},
-
-			onDragEnd: e => {
-				console.log('onDragEnd');
-				this._tabsContainer.nativeElement.classList.remove('scroll');
-			},
-
-			onDrop: e => {
-				console.log(e.target);
-				this._tabsContainer.nativeElement.classList.remove('scroll');
-			}
-		}));
-		*/
 		this.detectChanges();
 	}
 
@@ -77,6 +50,9 @@ export class NotebookViewsCardTabsComponent extends AngularDisposable implements
 		this.detectChanges();
 	}
 
+	onSelectedTabChanged(tab: INotebookViewsTab): void {
+	}
+
 	get elementRef(): ElementRef {
 		return this._tabsContainer;
 	}
@@ -85,3 +61,17 @@ export class NotebookViewsCardTabsComponent extends AngularDisposable implements
 		this._changeRef.detectChanges();
 	}
 }
+
+registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
+	const background = theme.getColor(EDITOR_GROUP_HEADER_TABS_BACKGROUND);
+	const border = theme.getColor(TAB_BORDER);
+
+	if (background && border) {
+		collector.addRule(`
+		view-card-tabs-component > .tabs-and-actions-container {
+			border-color: ${border.toString()};
+			background-color: ${background.toString()};
+		}
+		`);
+	}
+});

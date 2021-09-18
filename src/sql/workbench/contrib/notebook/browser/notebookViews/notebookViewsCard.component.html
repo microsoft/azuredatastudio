@@ -19,18 +19,20 @@
 			class="grid-stack-item-content notebook-card"
 		>
 			<div class="grid-stack-content-wrapper">
+				<div>header</div>
 				<div class="grid-stack-content-wrapper-inner">
-					CARD!
 					<div #container>
-						<view-card-tabs-component [tabTransfer]="tabTransfer"></view-card-tabs-component>
+						<div class="card-container">
+							<div *ngIf="cell !== undefined">
+								<views-code-cell-component *ngIf="cell.cellType === 'code'" [cellModel]="cell" [model]="model" [activeCellId]="activeCellId" [visible]="visible">
+								</views-code-cell-component>
+								<text-cell-component *ngIf="cell.cellType === 'markdown'" [cellModel]="cell" [model]="model" [activeCellId]="activeCellId">
+								</text-cell-component>
+							</div>
+						</div>
 					</div>
-					<!--
-					<ng-container *ngFor="let cell of cells">
-						<view-cell-component #wrapper [ready]="loaded" [activeView]="activeView" [meta]="cell.metadata" [cell]="cell" [model]="model" (onChange)="onCellChanged($event)"></view-cell-component>
-						<ng-content *ngTemplateOutlet='wrapper.templateRef'></ng-content>
-					</ng-container>
-					-->
 				</div>
+				<view-card-tabs-component [card]="card" [tabs]="tabs" [activeTab]="activeTab" [activeView]="activeView" [tabTransfer]="tabTransfer"></view-card-tabs-component>
 			</div>
 		</div>
 	</div>

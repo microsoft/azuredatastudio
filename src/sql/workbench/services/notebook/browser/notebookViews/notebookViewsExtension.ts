@@ -62,6 +62,20 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 		this.setCellMetadata(cell, meta);
 	}
 
+	/*
+	public createTab(title: string, view: INotebookView): ITab {
+		const notebookMetadata = this.getNotebookMetadata(this._notebook);
+		if (notebookMetadata) {
+			const viewToUpdate = notebookMetadata.views.findIndex(v => v.guid === view.guid);
+
+			if (viewToUpdate >= 0) {
+				notebookMetadata.views[viewToUpdate] = { ...notebookMetadata.views[viewToUpdate], ...{tabs:[]} };
+				this.setNotebookMetadata(this._notebook, notebookMetadata);
+			}
+		}
+	}
+	*/
+
 	public createNewView(name?: string): INotebookView {
 		const viewName = name || this.generateDefaultViewName();
 

@@ -6,7 +6,7 @@ import 'vs/css!./cellToolbar';
 import { ChangeDetectorRef, Component, ElementRef, forwardRef, Inject, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
-import { INotebookView, INotebookViewCard } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
+import { INotebookView, INotebookViewCard, INotebookViewsTab } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { DEFAULT_VIEW_CARD_HEIGHT, DEFAULT_VIEW_CARD_WIDTH } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewModel';
 import { NotebookViewsCardTabComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCardTab.components';
@@ -27,6 +27,8 @@ export class NotebookViewsCardComponent extends AngularDisposable implements OnI
 	@ViewChild('templateRef') templateRef: TemplateRef<any>;
 	@ViewChild('item', { read: ElementRef }) private _item: ElementRef;
 
+	private _activeTab: INotebookViewsTab;
+
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef
 	) {
@@ -34,14 +36,26 @@ export class NotebookViewsCardComponent extends AngularDisposable implements OnI
 	}
 
 	ngOnInit() {
-		//this.initialize();
-	}
-
-	ngAfterViewInit(): void {
 		this.initialize();
 	}
 
+	ngAfterViewInit(): void {
+		//this.initialize();
+	}
+
 	public initialize(): void {
+		/*
+		if(this.card.guid === '1') {
+			this._tabs = this.cells.slice(0, 2).map((cell) => ({ title: `Tab ${cell.id}`, guid: cell.cellGuid, cell }));
+		}
+
+		if(this.card.guid === '2') {
+			this._tabs = this.cells.slice(2).map((cell) => ({ title: `Tab ${cell.id}`, guid: cell.cellGuid, cell }));
+		}
+		*/
+
+		this._activeTab = this.tabs[0];
+
 		this.detectChanges();
 	}
 
@@ -55,6 +69,18 @@ export class NotebookViewsCardComponent extends AngularDisposable implements OnI
 
 	get elementRef(): ElementRef {
 		return this._item;
+	}
+
+	public get tabs(): INotebookViewsTab[] {
+		return this.card.tabs;
+	}
+
+	public get activeTab(): INotebookViewsTab {
+		return this._activeTab;
+	}
+
+	public get cell(): ICellModel {
+		return this.activeTab?.cell;
 	}
 
 	public get metadata(): INotebookViewCard {

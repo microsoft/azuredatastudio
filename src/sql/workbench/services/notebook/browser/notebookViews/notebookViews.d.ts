@@ -18,6 +18,19 @@ export type CardChangeEvent = {
 	event: CardChangeEventType
 };
 
+export interface INotebookViewsTab {
+	title: string,
+	guid: string,
+	cell: ICellModel
+}
+
+export type TabContentType = 'cell';
+
+export interface TabContent {
+	type: TabContentType,
+	content: any
+}
+
 export interface INotebookViews {
 	onViewDeleted: Event<void>;
 	onActiveViewChanged: Event<void>;
@@ -40,7 +53,6 @@ export interface INotebookView {
 	isNew: boolean;
 
 	cards: INotebookViewCard[];
-
 	cells: Readonly<ICellModel[]>;
 	hiddenCells: Readonly<ICellModel[]>;
 	displayedCells: Readonly<ICellModel[]>;
@@ -50,6 +62,7 @@ export interface INotebookView {
 	getCellMetadata(cell: ICellModel): INotebookViewCell;
 	hideCell(cell: ICellModel): void;
 	moveCell(cell: ICellModel, x: number, y: number): void;
+	moveTab(tab: INotebookViewsTab, index: number, card: INotebookViewCard);
 	compactCells();
 	resizeCell(cell: ICellModel, width: number, height: number): void;
 	getCell(guid: string): Readonly<ICellModel>;
@@ -65,11 +78,7 @@ export interface INotebookViewCard {
 	y?: number;
 	width?: number;
 	height?: number;
-	//cells?: INotebookViewCellT[];
-}
-
-export interface INotebookViewCellT {
-	azdata_cell_guid?: string | undefined
+	tabs?: INotebookViewsTab[];
 }
 
 export interface INotebookViewCell {

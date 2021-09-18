@@ -6,7 +6,7 @@ import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { Emitter } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
-import { INotebookView, INotebookViewCard, INotebookViewCell } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
+import { INotebookView, INotebookViewCard, INotebookViewCell, INotebookViewsTab } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
 import { generateUuid } from 'vs/base/common/uuid';
 
 export const DEFAULT_VIEW_CARD_HEIGHT = 4;
@@ -22,6 +22,7 @@ function cellCollides(c1: INotebookViewCell, c2: INotebookViewCell): boolean {
 export class NotebookViewModel implements INotebookView {
 	private _onDeleted = new Emitter<INotebookView>();
 	private _isNew: boolean = false;
+	private _cards: INotebookViewCard[] = [];
 
 	public readonly guid: string;
 	public readonly onDeleted = this._onDeleted.event;
@@ -44,8 +45,48 @@ export class NotebookViewModel implements INotebookView {
 			this._isNew = isNew;
 		}
 
+		/// Initialize cards
+		/// 0. Check that the cards object is created, or load them
+		/// 1. Create a card per cell
+		/// 2. Create a tab per cell
+		/// 3. Title the tab with a sequential number i.e., Untitled Tab {1,2,3..}
+		if (isNew) {
+			this.initializeCards();
+		}
+		///
+
+
+
 		const cells = this._notebookViews.notebook.cells;
 		cells.forEach((cell, idx) => { this.initializeCell(cell, idx); });
+	}
+
+	public initializeCards() {
+		const cells = this._notebookViews.notebook.cells;
+
+		cells.forEach((cell, idx) => {
+			const newCard: INotebookViewCard = {
+				guid: this.guid,
+				y: idx * DEFAULT_VIEW_CARD_HEIGHT,
+				x: 0,
+				width: DEFAULT_VIEW_CARD_WIDTH,
+				height: DEFAULT_VIEW_CARD_HEIGHT,
+				tabs: []
+			};
+
+			this.createTab(cell, newCard);
+
+			this._cards.push(newCard);
+		});
+	}
+
+	protected createTab(cell: ICellModel, card: INotebookViewCard): void {
+		if (card === undefined) {
+			throw new Error('A card must be specified to create a tab');
+		}
+
+		const newTab: INotebookViewsTab = { title: 'Untitled', guid: generateUuid(), cell };
+		card.tabs.push(newTab);
 	}
 
 	protected initializeCell(cell: ICellModel, idx: number) {
@@ -98,13 +139,22 @@ export class NotebookViewModel implements INotebookView {
 	}
 
 	public get cards(): INotebookViewCard[] {
+		return this._cards;
+		/*
 		return [{
-			guid: '123',
+			guid: '1',
 			x: 0,
 			y: 0,
-			width: 12,
+			width: 6,
+			height: 3
+		}, {
+			guid: '2',
+			x: 6,
+			y: 0,
+			width: 6,
 			height: 3
 		}];
+		*/
 	}
 
 	public get cells(): Readonly<ICellModel[]> {
@@ -181,6 +231,17 @@ export class NotebookViewModel implements INotebookView {
 		});
 	}
 
+	moveTab(tab: INotebookViewsTab, index: number, card: INotebookViewCard): void {
+		for (let c of this.cards) {
+			const i = c.tabs.findIndex(t => t.guid === tab.guid);
+			if (i >= 0) {
+				c.tabs.splice(i, 1);
+				card.tabs.fill(tab, index);
+				break;
+			}
+		}
+	}
+
 	public save() {
 		this._notebookViews.commit();
 	}
@@ -199,6 +260,6 @@ export class NotebookViewModel implements INotebookView {
 	}
 
 	public toJSON() {
-		return { guid: this.guid, name: this._name } as NotebookViewModel;
+		return { guid: this.guid, name: this._name, cards: [] } as NotebookViewModel;
 	}
 }
