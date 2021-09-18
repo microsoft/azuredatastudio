@@ -144,13 +144,20 @@ export class BookTocManager implements IBookTocManager {
 	 * Rewrite the original table of contents of the book, in case of error as well.
 	*/
 	async recovery(): Promise<void> {
-		for (const [key, value] of this.movedFiles.entries()) {
-			await fs.move(value, key);
-		}
+		try {
+			for (const [key, value] of this.movedFiles.entries()) {
+				if (value !== key) {
+					await fs.move(value, key);
+				}
+			}
 
-		for (const [key, value] of this.tocFiles.entries()) {
-			const yamlFile = await yaml.safeLoad(value);
-			await fs.writeFile(key, yaml.safeDump(yamlFile, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
+			for (const [key, value] of this.tocFiles.entries()) {
+				const yamlFile = await yaml.safeLoad(value);
+				await fs.writeFile(key, yaml.safeDump(yamlFile, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
+			}
+		}
+		catch (error) {
+			console.log(error);
 		}
 	}
 
@@ -403,6 +410,10 @@ export class BookTocManager implements IBookTocManager {
 	*/
 	public async updateBook(sources: BookTreeItem[], target: BookTreeItem, section?: JupyterBookSection): Promise<void> {
 		for (let element of sources) {
+			if (this.isDescendant(element, target) || element.book.parent.book.hierarchyId === target.book.hierarchyId) {
+				// no op
+				return;
+			}
 			try {
 				const targetSection = section ? section : (target.contextValue === 'section' ? { file: target.book.page.file, title: target.book.page.title } : undefined);
 				if (element.contextValue === 'section') {
@@ -479,6 +490,10 @@ export class BookTocManager implements IBookTocManager {
 		const findSection = { file: element.book.page.file, title: element.book.page.title };
 		await this.updateTOC(element.book.version, element.tableOfContentsPath, findSection, undefined);
 		await this._sourceBook.reinitializeContents();
+	}
+
+	isDescendant(treeItem: BookTreeItem, targetTreeItem: BookTreeItem): boolean {
+		return treeItem.rootContentPath === targetTreeItem.rootContentPath && targetTreeItem.book.hierarchyId?.includes(treeItem.book.hierarchyId);
 	}
 
 	public get modifiedDir(): Set<string> {

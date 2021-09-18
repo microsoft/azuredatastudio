@@ -243,7 +243,8 @@ export class BookModel {
 					treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
 					isUntitled: this.openAsUntitled,
 					version: book.version,
-					parent: element
+					parent: element,
+					hierarchyId: element.book.hierarchyId ? path.join(element.book.hierarchyId, i.toString()) : i.toString()
 				},
 					{
 						light: this._extensionContext.asAbsolutePath('resources/light/link.svg'),
@@ -269,7 +270,8 @@ export class BookModel {
 						treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
 						isUntitled: this.openAsUntitled,
 						version: book.version,
-						parent: element
+						parent: element,
+						hierarchyId: element.book.hierarchyId ? path.join(element.book.hierarchyId, i.toString()) : i.toString()
 					},
 						{
 							light: this._extensionContext.asAbsolutePath('resources/light/notebook.svg'),
@@ -301,7 +303,8 @@ export class BookModel {
 						treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
 						isUntitled: this.openAsUntitled,
 						version: book.version,
-						parent: element
+						parent: element,
+						hierarchyId: element.book.hierarchyId ? path.join(element.book.hierarchyId, i.toString()) : i.toString()
 					},
 						{
 							light: this._extensionContext.asAbsolutePath('resources/light/markdown.svg'),

@@ -36,6 +36,7 @@ export interface BookTreeItemFormat {
 	version?: BookVersion;
 	parent?: BookTreeItem;
 	hasChildren?: boolean;
+	hierarchyId?: string;
 }
 
 export class BookTreeItem extends vscode.TreeItem {
