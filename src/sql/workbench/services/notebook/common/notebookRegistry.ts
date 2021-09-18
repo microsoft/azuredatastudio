@@ -10,7 +10,7 @@ import * as platform from 'vs/platform/registry/common/platform';
 import * as azdata from 'azdata';
 import { Event, Emitter } from 'vs/base/common/event';
 
-export const NotebookProviderRegistryId = 'notebooks.providers';
+export const NotebookProviderRegistryId = 'notebooks.providers.registry';
 
 export const Extensions = {
 	NotebookProviderDescriptionContribution: 'notebook.providers',
