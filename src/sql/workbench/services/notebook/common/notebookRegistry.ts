@@ -25,7 +25,7 @@ export interface ProviderDescriptionRegistration {
 
 let providerDescriptionType: IJSONSchema = {
 	type: 'object',
-	default: { provider: '', standardKernels: [] },
+	default: { provider: '', fileExtensions: [], standardKernels: [] },
 	properties: {
 		provider: {
 			description: localize('carbon.extension.contributes.notebook.provider', "Identifier of the notebook provider."),
