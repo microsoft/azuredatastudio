@@ -12,7 +12,7 @@ import * as vscode from 'vscode';
 import * as loc from '../common/localizedConstants';
 import { BookModel } from './bookModel';
 import { TocEntryPathHandler } from './tocEntryPathHandler';
-import { FileExtension } from '../common/utils';
+import { FileExtension, BookTreeItemType } from '../common/utils';
 
 export interface IBookTocManager {
 	updateBook(sources: BookTreeItem[], target: BookTreeItem, targetSection?: JupyterBookSection): Promise<void>;
@@ -410,13 +410,13 @@ export class BookTocManager implements IBookTocManager {
 	*/
 	public async updateBook(sources: BookTreeItem[], target: BookTreeItem, section?: JupyterBookSection): Promise<void> {
 		for (let element of sources) {
-			if (this.isDescendant(element, target) || element.book.parent.book.hierarchyId === target.book.hierarchyId) {
+			if (element.contextValue === BookTreeItemType.savedBook || this.isDescendant(element, target) || element.book.parent.book.hierarchyId === target.book.hierarchyId) {
 				// no op
 				return;
 			}
 			try {
-				const targetSection = section ? section : (target.contextValue === 'section' ? { file: target.book.page.file, title: target.book.page.title } : undefined);
-				if (element.contextValue === 'section') {
+				const targetSection = section ? section : (target.contextValue === BookTreeItemType.section ? { file: target.book.page.file, title: target.book.page.title } : undefined);
+				if (element.contextValue === BookTreeItemType.section) {
 					// modify the sourceBook toc and remove the section
 					const findSection: JupyterBookSection = { file: element.book.page.file, title: element.book.page.title };
 					await this.moveSectionFiles(element, target);
@@ -429,7 +429,7 @@ export class BookTocManager implements IBookTocManager {
 					// the notebook is part of a book so we need to modify its toc as well
 					const findSection = { file: element.book.page.file, title: element.book.page.title };
 					await this.moveFile(element, target);
-					if (element.contextValue === 'savedBookNotebook' || element.contextValue === 'Markdown') {
+					if (element.contextValue === BookTreeItemType.savedBookNotebook || element.contextValue === BookTreeItemType.Markdown) {
 						// remove notebook entry from book toc
 						await this.updateTOC(element.book.version, element.tableOfContentsPath, findSection, undefined);
 					} else {
@@ -457,7 +457,7 @@ export class BookTocManager implements IBookTocManager {
 	public async addNewTocEntry(pathDetails: TocEntryPathHandler, bookItem: BookTreeItem, isSection?: boolean): Promise<void> {
 		let findSection: JupyterBookSection | undefined = undefined;
 		await fs.writeFile(pathDetails.filePath, '');
-		if (bookItem.contextValue === 'section') {
+		if (bookItem.contextValue === BookTreeItemType.section) {
 			findSection = { file: bookItem.book.page.file, title: bookItem.book.page.title };
 		}
 		let fileEntryInToc: JupyterBookSection = {

@@ -5,7 +5,7 @@
 
 import * as vscode from 'vscode';
 import * as yaml from 'js-yaml';
-import { BookTreeItem, BookTreeItemType, BookTreeItemFormat } from './bookTreeItem';
+import { BookTreeItem, BookTreeItemFormat } from './bookTreeItem';
 import * as constants from '../common/constants';
 import * as path from 'path';
 import * as fileServices from 'fs';
@@ -13,7 +13,7 @@ import * as fs from 'fs-extra';
 import * as loc from '../common/localizedConstants';
 import { IJupyterBookToc, JupyterBookSection } from '../contracts/content';
 import { convertFrom, getContentPath, BookVersion } from './bookVersionHandler';
-import { debounce, IPinnedNotebook } from '../common/utils';
+import { debounce, IPinnedNotebook, BookTreeItemType } from '../common/utils';
 import { Deferred } from '../common/promise';
 const fsPromises = fileServices.promises;
 const content = 'content';

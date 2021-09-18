@@ -7,22 +7,8 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import { JupyterBookSection, IJupyterBookToc } from '../contracts/content';
 import * as loc from '../common/localizedConstants';
-import { isBookItemPinned, getNotebookType } from '../common/utils';
+import { isBookItemPinned, getNotebookType, BookTreeItemType } from '../common/utils';
 import { BookVersion, getContentPath, getTocPath } from './bookVersionHandler';
-
-export enum BookTreeItemType {
-	Book = 'Book',
-	Notebook = 'Notebook',
-	Markdown = 'Markdown',
-	ExternalLink = 'ExternalLink',
-	providedBook = 'providedBook',
-	savedBook = 'savedBook',
-	unsavedNotebook = 'unsavedNotebook',
-	savedNotebook = 'savedNotebook',
-	pinnedNotebook = 'pinnedNotebook',
-	section = 'section',
-	savedBookNotebook = 'savedBookNotebook'
-}
 
 export interface BookTreeItemFormat {
 	title: string;
