@@ -71,7 +71,9 @@ describe('deploy service', function (): void {
 				password: 'PLACEHOLDER',
 				port: 1433,
 				serverName: 'localhost',
-				userName: 'sa'
+				userName: 'sa',
+				dockerBaseImage: 'image',
+				connectionRetryTimeout: 1
 			}
 		};
 		const projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
@@ -93,7 +95,9 @@ describe('deploy service', function (): void {
 			password: 'PLACEHOLDER',
 			port: 1433,
 			serverName: 'localhost',
-			userName: 'sa'
+			userName: 'sa',
+			dockerBaseImage: 'image',
+			connectionRetryTimeout: 1
 		};
 
 		const deployService = new DeployService(testContext.outputChannel);
@@ -103,7 +107,7 @@ describe('deploy service', function (): void {
 		sandbox.stub(azdata.connection, 'getUriForConnection').returns(Promise.resolve('connection'));
 		sandbox.stub(azdata.tasks, 'startBackgroundOperation').callThrough();
 		sandbox.stub(childProcess, 'exec').yields(undefined, 'id');
-		let connection = await deployService.getConnection(localDbSettings, false, 'master', 2);
+		let connection = await deployService.getConnection(localDbSettings, false, 'master');
 		should(connection).equals('connection');
 	});
 
@@ -138,7 +142,8 @@ describe('deploy service', function (): void {
 				password: 'PLACEHOLDER',
 				port: 1433,
 				serverName: 'localhost',
-				userName: 'sa'
+				userName: 'sa',
+				dockerBaseImage: 'image'
 			}
 		};
 

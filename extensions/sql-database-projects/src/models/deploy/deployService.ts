@@ -20,6 +20,9 @@ export class DeployService {
 	constructor(private _outputChannel: vscode.OutputChannel) {
 	}
 
+	private DefaultSqlRetryTimeoutInSec: number = 10;
+	private DefaultSqlNumberOfRetries: number = 10;
+
 	private createConnectionStringTemplate(runtime: string | undefined): string {
 		switch (runtime?.toLocaleLowerCase()) {
 			case 'dotnet':
@@ -106,7 +109,7 @@ export class DeployService {
 			// Create commands
 			//
 
-			await this.createCommands(mssqlFolderPath, commandsFolderPath, dockerFilePath, startFilePath, imageLabel);
+			await this.createCommands(mssqlFolderPath, commandsFolderPath, dockerFilePath, startFilePath, imageLabel, profile.localDbSetting.dockerBaseImage);
 
 			this.logToOutput(constants.runningDockerMessage);
 			// Building the image and running the docker
@@ -144,7 +147,7 @@ export class DeployService {
 
 	private async buildAndRunDockerContainer(dockerFilePath: string, imageName: string, root: string, profile: ILocalDbSetting, imageLabel: string): Promise<string | undefined> {
 		this.logToOutput('Building docker image ...');
-		await utils.executeCommand(`docker pull ${constants.dockerBaseImage}`, this._outputChannel);
+		await utils.executeCommand(`docker pull ${profile.dockerBaseImage}`, this._outputChannel);
 		await utils.executeCommand(`docker build -f ${dockerFilePath} -t ${imageName} ${root}`, this._outputChannel);
 		await utils.executeCommand(`docker images --filter label=${imageLabel}`, this._outputChannel);
 
@@ -254,7 +257,7 @@ export class DeployService {
 		return connectionResult ? connectionResult.connectionId : <string>connection;
 	}
 
-	public async getConnection(profile: ILocalDbSetting, savePassword: boolean, database: string, timeoutInSeconds: number = 5): Promise<string | undefined> {
+	public async getConnection(profile: ILocalDbSetting, savePassword: boolean, database: string): Promise<string | undefined> {
 		const getAzdataApi = await utils.getAzdataApi();
 		let connection = await utils.retry(
 			constants.connectingToSqlServerOnDockerMessage,
@@ -264,7 +267,7 @@ export class DeployService {
 			this.validateConnection,
 			this.formatConnectionResult,
 			this._outputChannel,
-			5, timeoutInSeconds);
+			this.DefaultSqlNumberOfRetries, profile.connectionRetryTimeout || this.DefaultSqlRetryTimeoutInSec);
 
 		if (connection) {
 			const connectionResult = <ConnectionResult>connection;
@@ -311,7 +314,7 @@ export class DeployService {
 	}
 
 	// Creates command file and docker file needed for deploy operation
-	private async createCommands(mssqlFolderPath: string, commandsFolderPath: string, dockerFilePath: string, startFilePath: string, imageLabel: string): Promise<void> {
+	private async createCommands(mssqlFolderPath: string, commandsFolderPath: string, dockerFilePath: string, startFilePath: string, imageLabel: string, baseImage: string): Promise<void> {
 		// Create mssql folders if doesn't exist
 		//
 		await utils.createFolderIfNotExist(mssqlFolderPath);
@@ -328,7 +331,7 @@ export class DeployService {
 		//
 		await this.createFile(dockerFilePath,
 			`
-FROM ${constants.dockerBaseImage}
+FROM ${baseImage}
 ENV ACCEPT_EULA=Y
 ENV MSSQL_PID=Developer
 LABEL ${imageLabel}
