@@ -78,9 +78,7 @@ export class MigrationCutoverDialogModel {
 		errors.push(this.migrationOpStatus.error?.message);
 		errors.push(this._migration.asyncOperationResult?.error?.message);
 		errors.push(this.migrationStatus.properties.migrationFailureError?.message);
-		return errors
-			.filter((e, i, arr) => e !== undefined && i === arr.indexOf(e))
-			.join(EOL);
+		return errors.join(EOL);
 	}
 
 	public async cancelMigration(): Promise<void> {
