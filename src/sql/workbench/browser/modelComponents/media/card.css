@@ -14,6 +14,10 @@
 	text-align: left;
 	vertical-align: top;
 	border-color: rgb(214, 214, 214);
+	flex-direction: column;
+	justify-content: flex-start;
+	border-radius: 4px;
+	transition: all .5s ease;
 }
 
 .horizontal .model-card .card-content {
