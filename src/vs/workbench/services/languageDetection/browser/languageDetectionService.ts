@@ -77,7 +77,7 @@ export class LanguageDetectionService extends Disposable implements ILanguageDet
 
 	async detectLanguage(content: string): Promise<string | undefined> {
 		if (this._loadFailed) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} Strict nulls
 		}
 
 		let modelOperations: ModelOperations | undefined;
@@ -85,12 +85,12 @@ export class LanguageDetectionService extends Disposable implements ILanguageDet
 			modelOperations = await this.getModelOperations();
 		} catch (e) {
 			this._loadFailed = true;
-			return;
+			return undefined; // {{SQL CARBON EDIT}} Strict nulls
 		}
 
 		const modelResults = await modelOperations.runModel(content);
 		if (!modelResults) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} Strict nulls
 		}
 
 		let { languageId, confidence } = modelResults[0];
@@ -124,7 +124,7 @@ export class LanguageDetectionService extends Disposable implements ILanguageDet
 		}
 
 		if (confidence < LanguageDetectionService.expectedConfidence) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} Strict nulls
 		}
 
 		// TODO: see if there's a better way to do this.

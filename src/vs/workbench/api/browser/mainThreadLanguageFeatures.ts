@@ -807,14 +807,14 @@ export class MainThreadLanguageFeatures implements MainThreadLanguageFeaturesSha
 				if (!supertypes) {
 					return supertypes;
 				}
-				return supertypes.map(MainThreadLanguageFeatures._reviveTypeHierarchyItemDto);
+				return supertypes.map(item => MainThreadLanguageFeatures._reviveTypeHierarchyItemDto(item)) as any; // {{SQL CARBON EDIT}} Cast to any to get around weird compile error - trusting them to do the right thing here
 			},
 			provideSubtypes: async (item, token) => {
 				const subtypes = await this._proxy.$provideTypeHierarchySubtypes(handle, item._sessionId, item._itemId, token);
 				if (!subtypes) {
 					return subtypes;
 				}
-				return subtypes.map(MainThreadLanguageFeatures._reviveTypeHierarchyItemDto);
+				return subtypes.map(MainThreadLanguageFeatures._reviveTypeHierarchyItemDto) as any; // {{SQL CARBON EDIT}} Cast to any to get around weird compile error - trusting them to do the right thing here
 			}
 		}));
 	}

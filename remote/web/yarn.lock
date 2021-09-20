@@ -42,6 +42,11 @@
   resolved "https://registry.yarnpkg.com/@angular/router/-/router-4.1.3.tgz#ddafd46ae7ccc8b1f74904ffb45f394e44625216"
   integrity sha1-3a/UaufMyLH3SQT/tF85TkRiUhY=
 
+"@vscode/vscode-languagedetection@1.0.12":
+  version "1.0.12"
+  resolved "https://registry.yarnpkg.com/@vscode/vscode-languagedetection/-/vscode-languagedetection-1.0.12.tgz#884c080257298b078fdd6dd75c35f8bd42ba83fa"
+  integrity sha512-tiHV6eev2TKgSdpsnVF0wD1Dtk2KqwFdk2TpPDsYdBvP5kjw2KsfSK3l6cPBWqbSdSOSkHk37XvOAhNRKzdlZg==
+
 angular2-grid@2.0.6:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/angular2-grid/-/angular2-grid-2.0.6.tgz#01fe225dc13b2822370b6c61f9a6913b3a26f989"
@@ -202,11 +207,6 @@ iconv-lite-umd@0.6.8:
   resolved "https://registry.yarnpkg.com/iconv-lite-umd/-/iconv-lite-umd-0.6.8.tgz#5ad310ec126b260621471a2d586f7f37b9958ec0"
   integrity sha512-zvXJ5gSwMC9JD3wDzH8CoZGc1pbiJn12Tqjk8BXYCnYz3hYL5GRjHW8LEykjXhV9WgNGI4rgpgHcbIiBfrRq6A==
 
-jschardet@3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/jschardet/-/jschardet-3.0.0.tgz#898d2332e45ebabbdb6bf2feece9feea9a99e882"
-  integrity sha512-lJH6tJ77V8Nzd5QWRkFYCLc13a3vADkh3r/Fi8HupZGWk2OVVDfnZP8V/VgQgZ+lzW0kG2UGb5hFgt3V3ndotQ==
-
 inherits@^2.0.1, inherits@^2.0.3:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/inherits/-/inherits-2.0.4.tgz#0fa2c64f932917c3433a0ded55363aae37416b7c"
@@ -216,6 +216,11 @@ jquery@3.5.0:
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.5.0.tgz#9980b97d9e4194611c36530e7dc46a58d7340fc9"
   integrity sha512-Xb7SVYMvygPxbFMpTFQiHh1J7HClEaThguL15N/Gg37Lri/qKyhRGZYzHRyLH8Stq3Aow0LsHO2O2ci86fCrNQ==
+
+jschardet@3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/jschardet/-/jschardet-3.0.0.tgz#898d2332e45ebabbdb6bf2feece9feea9a99e882"
+  integrity sha512-lJH6tJ77V8Nzd5QWRkFYCLc13a3vADkh3r/Fi8HupZGWk2OVVDfnZP8V/VgQgZ+lzW0kG2UGb5hFgt3V3ndotQ==
 
 lodash.clonedeep@^4.5.0:
   version "4.5.0"

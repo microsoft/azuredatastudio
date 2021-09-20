@@ -77,7 +77,7 @@ function buildPicker(accessor: ServicesAccessor, {
 	if (onlyControllerId !== undefined) {
 		const lookup = profileService.getControllerProfiles(onlyControllerId);
 		if (!lookup) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} Strict nulls
 		}
 
 		pushItems(lookup.profiles);
@@ -110,7 +110,7 @@ CommandsRegistry.registerCommand({
 		const profileService = accessor.get(ITestProfileService);
 		const quickpick = buildPicker(accessor, options);
 		if (!quickpick) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} Strict nulls
 		}
 
 		quickpick.canSelectMany = true;
@@ -141,7 +141,7 @@ CommandsRegistry.registerCommand({
 		const profileService = accessor.get(ITestProfileService);
 		const quickpick = buildPicker(accessor, options);
 		if (!quickpick) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} Strict nulls
 		}
 
 		const pick = await new Promise<ITestRunProfile | undefined>(resolve => {
