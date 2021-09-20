@@ -12,10 +12,11 @@ import * as glob from 'fast-glob';
 import * as dataworkspace from 'dataworkspace';
 import * as mssql from '../../../mssql';
 import * as vscodeMssql from 'vscode-mssql';
-import { promises as fs } from 'fs';
-import { Project } from '../models/project';
 import * as childProcess from 'child_process';
 import * as fse from 'fs-extra';
+import * as which from 'which';
+import { promises as fs } from 'fs';
+import { Project } from '../models/project';
 
 export interface ValidationResult {
 	errorMessage: string;
@@ -487,6 +488,23 @@ export async function retry<T>(
 	}
 
 	return undefined;
+}
+
+/**
+ * Detects whether the specified command-line command is available on the current machine
+ */
+export async function detectCommandInstallation(command: string): Promise<boolean> {
+	try {
+		const found = await which(command);
+
+		if (found) {
+			return true;
+		}
+	} catch (err) {
+		console.log(getErrorMessage(err));
+	}
+
+	return false;
 }
 
 /**
