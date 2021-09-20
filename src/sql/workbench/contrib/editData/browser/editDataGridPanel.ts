@@ -188,8 +188,12 @@ export class EditDataGridPanel extends GridParentComponent {
 			// render line breaks and strips them, updating the value.
 			/* tslint:disable:no-null-keyword */
 			let valueMissing = value === undefined || value === null || (Services.DBCellValue.isDBCellValue(value) && value.isNull);
+			let isStringNull = (Services.DBCellValue.isDBCellValue(value) && !value.isNull && value.displayValue === 'NULL');
 			if (valueMissing) {
 				returnVal = 'NULL';
+			}
+			else if (isStringNull) {
+				returnVal = '\'NULL\'';
 			}
 			else if (Services.DBCellValue.isDBCellValue(value)) {
 				returnVal = this.replaceLinebreaks(value.displayValue);
@@ -1091,9 +1095,13 @@ export class EditDataGridPanel extends GridParentComponent {
 		let cellClasses = 'grid-cell-value-container';
 		/* tslint:disable:no-null-keyword */
 		let valueMissing = value === undefined || value === null || (Services.DBCellValue.isDBCellValue(value) && value.isNull) || value === 'NULL';
+		let isStringNull = (Services.DBCellValue.isDBCellValue(value) && !value.isNull && value.displayValue === 'NULL');
 		if (valueMissing) {
 			valueToDisplay = 'NULL';
 			cellClasses += ' missing-value';
+		}
+		else if (isStringNull) {
+			valueToDisplay = '\'NULL\'';
 		}
 		else if (Services.DBCellValue.isDBCellValue(value)) {
 			valueToDisplay = (value.displayValue + '');
