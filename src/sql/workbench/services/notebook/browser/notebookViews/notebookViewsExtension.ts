@@ -92,9 +92,9 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 	}
 
 	public removeView(guid: string) {
-		let viewToRemove = this._metadata.views.findIndex(view => view.guid === guid);
-		if (viewToRemove !== -1) {
-			let removedView = this._metadata.views.splice(viewToRemove, 1);
+		let viewToRemove = this._metadata?.views.findIndex(view => view.guid === guid);
+		if (viewToRemove >= 0) {
+			let removedView = this._metadata?.views.splice(viewToRemove, 1);
 
 			// Remove view data for each cell
 			if (removedView.length === 1) {
@@ -106,7 +106,7 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 			}
 		}
 
-		if (guid === this._metadata.activeView) {
+		if (guid === this._metadata?.activeView) {
 			this._metadata.activeView = undefined;
 		}
 
@@ -160,12 +160,14 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 	}
 
 	public getActiveView(): INotebookView {
-		return this.getViews().find(view => view.guid === this._metadata.activeView);
+		return this.getViews().find(view => view.guid === this._metadata?.activeView);
 	}
 
 	public setActiveView(view: INotebookView) {
-		this._metadata.activeView = view.guid;
-		this._onActiveViewChanged.fire();
+		if (this._metadata) {
+			this._metadata.activeView = view.guid;
+			this._onActiveViewChanged.fire();
+		}
 	}
 
 	public commit() {
