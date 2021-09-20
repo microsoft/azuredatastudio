@@ -17,13 +17,13 @@ export class PackageHelper {
 
 	/**
 	 * Constructs the parameters for a dotnet add package
-	 * @param projectPath full path to project to add package to
+	 * @param projectUri uri of project to add package to
 	 * @param packageName name of package
 	 * @param packageVersion optional version of package. If none, latest will be pulled in
 	 * @returns string constructed with the arguments for dotnet add package
 	 */
-	public constructAddPackageArguments(projectPath: string, packageName: string, packageVersion?: string): string {
-		projectPath = utils.getQuotedPath(projectPath);
+	public constructAddPackageArguments(projectUri: vscode.Uri, packageName: string, packageVersion?: string): string {
+		const projectPath = utils.getQuotedPath(projectUri.fsPath);
 		if (packageVersion) {
 			return ` add ${projectPath} package ${packageName} -v ${packageVersion}`;
 		} else {
@@ -35,14 +35,14 @@ export class PackageHelper {
 	/**
 	 * Runs dotnet add package to add a package reference to the specified project. If the project already has a package reference
 	 * for this package version, the project file won't get updated
-	 * @param projectPath full path to project to add package to
+	 * @param projectPath uri of project to add package to
 	 * @param packageName name of package
 	 * @param packageVersion optional version of package. If none, latest will be pulled in
 	 */
-	public async addPackage(project: string, packageName: string, packageVersion?: string): Promise<void> {
+	public async addPackage(projectUri: vscode.Uri, packageName: string, packageVersion?: string): Promise<void> {
 		const addOptions: DotNetCommandOptions = {
 			commandTitle: constants.addPackage,
-			argument: this.constructAddPackageArguments(project, packageName, packageVersion)
+			argument: this.constructAddPackageArguments(projectUri, packageName, packageVersion)
 		};
 
 		await this.netCoreTool.runDotnetCommand(addOptions);
@@ -50,13 +50,13 @@ export class PackageHelper {
 
 	/**
 	 * Adds specified package to Azure Functions project the specified file is a part of
-	 * @param filePath full path to file to find the containing AF project of to add package reference to
+	 * @param filePath uri of file to find the containing AF project of to add package reference to
 	 * @param packageName package to add reference to
 	 * @param packageVersion optional version of package. If none, latest will be pulled in
 	 */
-	public async addPackageToAFProjectContainingFile(filePath: string, packageName: string, packageVersion?: string): Promise<void> {
+	public async addPackageToAFProjectContainingFile(fileUri: vscode.Uri, packageName: string, packageVersion?: string): Promise<void> {
 		try {
-			const project = await azureFunctionsUtils.getAFProjectContainingFile(filePath);
+			const project = await azureFunctionsUtils.getAFProjectContainingFile(fileUri);
 
 			// if no AF projects were found, an error gets thrown from getAFProjectContainingFile(). This check is temporary until
 			// multiple AF projects in the workspace is handled. That scenario returns undefined and shows an info message telling the

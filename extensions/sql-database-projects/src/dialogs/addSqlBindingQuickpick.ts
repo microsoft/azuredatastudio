@@ -78,9 +78,9 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 	}
 
 	// 4. ask for connection string setting name
-	let project: string | undefined;
+	let projectUri: vscode.Uri | undefined;
 	try {
-		project = await azureFunctionsUtils.getAFProjectContainingFile(uri.fsPath);
+		projectUri = await azureFunctionsUtils.getAFProjectContainingFile(uri);
 	} catch (e) {
 		// continue even if there's no AF project found. The binding should still be able to be added as long as there was an azure function found in the file earlier
 	}
@@ -88,10 +88,10 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 	let connectionStringSettingName;
 
 	// show the settings from project's local.settings.json if there's an AF functions project
-	if (project) {
+	if (projectUri) {
 		let settings;
 		try {
-			settings = await azureFunctionsUtils.getLocalSettingsJson(path.join(path.dirname(project!), constants.azureFunctionLocalSettingsFileName));
+			settings = await azureFunctionsUtils.getLocalSettingsJson(path.join(path.dirname(projectUri.fsPath!), constants.azureFunctionLocalSettingsFileName));
 		} catch (e) {
 			void vscode.window.showErrorMessage(e);
 			return;
@@ -147,7 +147,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 				}
 
 				try {
-					const success = await azureFunctionsUtils.setLocalAppSetting(path.dirname(project), newConnectionStringSettingName, newConnectionStringValue);
+					const success = await azureFunctionsUtils.setLocalAppSetting(path.dirname(projectUri.fsPath), newConnectionStringSettingName, newConnectionStringValue);
 					if (success) {
 						connectionStringSettingName = newConnectionStringSettingName;
 					}
@@ -196,6 +196,6 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 	}
 
 	// 6. Add sql extension package reference to project. If the reference is already there, it doesn't get added again
-	await packageHelper.addPackageToAFProjectContainingFile(uri.fsPath, constants.sqlExtensionPackageName);
+	await packageHelper.addPackageToAFProjectContainingFile(uri, constants.sqlExtensionPackageName);
 }
 

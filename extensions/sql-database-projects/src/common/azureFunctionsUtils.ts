@@ -74,9 +74,9 @@ export async function setLocalAppSetting(projectFolder: string, key: string, val
 /**
  * Gets the Azure Functions project that contains the given file if the project is open in one of the workspace folders
  * @param filePath file that the containing project needs to be found for
- * @returns filepath of project or undefined if project couldn't be found
+ * @returns uri of project or undefined if project couldn't be found
  */
-export async function getAFProjectContainingFile(filePath: string): Promise<string | undefined> {
+export async function getAFProjectContainingFile(fileUri: vscode.Uri): Promise<vscode.Uri | undefined> {
 	// get functions csprojs in the workspace
 	const projectPromises = vscode.workspace.workspaceFolders?.map(f => utils.getAllProjectsInFolder(f.uri, '.csproj')) ?? [];
 	const functionsProjects = (await Promise.all(projectPromises)).reduce((prev, curr) => prev.concat(curr), []).filter(p => isFunctionProject(path.dirname(p.fsPath)));
@@ -86,12 +86,12 @@ export async function getAFProjectContainingFile(filePath: string): Promise<stri
 		// TODO: figure out which project contains the file
 		// the new style csproj doesn't list all the files in the project anymore, unless the file isn't in the same folder
 		// so we can't rely on using that to check
-		console.error('need to find which project contains the file ' + filePath);
+		console.error('need to find which project contains the file ' + fileUri.fsPath);
 		return undefined;
 	} else if (functionsProjects.length === 0) {
 		throw new Error(constants.noAzureFunctionsProjectsInWorkspace);
 	} else {
-		return functionsProjects[0].fsPath;
+		return functionsProjects[0];
 	}
 }
 
