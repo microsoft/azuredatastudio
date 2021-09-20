@@ -5,13 +5,12 @@
 import * as should from 'should';
 import * as path from 'path';
 import { BookTocManager, hasSections } from '../../book/bookTocManager';
-import { BookTreeItem, BookTreeItemFormat, BookTreeItemType } from '../../book/bookTreeItem';
+import { BookTreeItem, BookTreeItemFormat } from '../../book/bookTreeItem';
 import * as sinon from 'sinon';
 import { IJupyterBookSectionV1, IJupyterBookSectionV2, JupyterBookSection } from '../../contracts/content';
 import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as uuid from 'uuid';
-import { exists } from '../../common/utils';
 import * as rimraf from 'rimraf';
 import { promisify } from 'util';
 import { BookModel } from '../../book/bookModel';
@@ -21,7 +20,7 @@ import { NavigationProviders } from '../../common/constants';
 import { BookVersion } from '../../book/bookVersionHandler';
 import * as yaml from 'js-yaml';
 import { TocEntryPathHandler } from '../../book/tocEntryPathHandler';
-import * as utils from '../../common/utils';
+import { exists, BookTreeItemType, FileExtension, generateGuid } from '../../common/utils';
 
 export function equalTOC(actualToc: IJupyterBookSectionV2[], expectedToc: IJupyterBookSectionV2[]): boolean {
 	for (let [i, section] of actualToc.entries()) {
@@ -556,9 +555,9 @@ describe('BookTocManagerTests', function () {
 
 				it('Add new section', async () => {
 					bookTocManager = new BookTocManager(sourceBookModel);
-					const fileBasename = `addSectionTest-${utils.generateGuid()}`;
+					const fileBasename = `addSectionTest-${generateGuid()}`;
 					const sectionTitle = 'Section Test';
-					const testFilePath = path.join(run.sectionA.sectionRoot, fileBasename).concat(utils.FileExtension.Markdown);
+					const testFilePath = path.join(run.sectionA.sectionRoot, fileBasename).concat(FileExtension.Markdown);
 					await fs.writeFile(testFilePath, '');
 					const pathDetails = new TocEntryPathHandler(testFilePath, run.sourceBook.rootBookFolderPath, sectionTitle);
 					await bookTocManager.addNewTocEntry(pathDetails, sectionA, true);
