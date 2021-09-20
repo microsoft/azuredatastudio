@@ -101,6 +101,8 @@ export class WizardController {
 				}, {});
 		});
 
+		this._wizardObject.doneButton.label = 'Start Migration';
+
 		this._wizardObject.doneButton.onClick(e => {
 			sendSqlMigrationActionEvent(
 				TelemetryViews.SqlMigrationWizard,
