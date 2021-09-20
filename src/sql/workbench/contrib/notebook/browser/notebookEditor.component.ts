@@ -99,6 +99,7 @@ export class NotebookEditorComponent extends AngularDisposable {
 	}
 
 	private async createModelAndLoadContents(): Promise<void> {
+		await this._notebookParams.input.providersLoaded;
 		let model = new NotebookModel({
 			factory: this.modelFactory,
 			notebookUri: this._notebookParams.notebookUri,

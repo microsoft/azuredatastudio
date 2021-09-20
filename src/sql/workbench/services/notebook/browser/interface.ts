@@ -19,6 +19,7 @@ export interface INotebookInput {
 	readonly layoutChanged: Event<void>;
 	readonly contentLoader: IContentLoader;
 	readonly standardKernels: IStandardKernelWithProvider[];
+	readonly providersLoaded: Promise<void>;
 }
 
 export function isINotebookInput(value: any): value is INotebookInput {
@@ -29,7 +30,7 @@ export function isINotebookInput(value: any): value is INotebookInput {
 		typeof value.isDirty === 'function' &&
 		typeof value.layoutChanged === 'function' &&
 		typeof value.editorOpenedTimestamp === 'number' &&
-		typeof value.contentManager === 'object' &&
+		typeof value.contentLoader === 'object' &&
 		typeof value.standardKernels === 'object') {
 		return true;
 	}

@@ -293,6 +293,10 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 		return EditorInputCapabilities.None;
 	}
 
+	public get providersLoaded(): Promise<void> {
+		return this._providersLoaded;
+	}
+
 	public async getProviderInfo(): Promise<IProviderInfo> {
 		await this._providersLoaded;
 		return {
