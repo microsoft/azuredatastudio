@@ -976,4 +976,149 @@ declare module 'azdata' {
 			expiresOn?: number
 		}
 	}
+
+	export enum DataProviderType {
+		TableDesignerProvider = 'TableDesignerProvider'
+	}
+
+	export namespace dataprotocol {
+		export function registerTableDesignerProvider(provider: designers.TableDesignerProvider): vscode.Disposable;
+	}
+
+	export namespace designers {
+		export interface TableDesignerProvider extends DataProvider {
+			getDesignerInfo(connectionInfo: ConnectionInfo, table: TableIdentifier): Promise<TableDesignerInfo>;
+			processTableEdit(connectionInfo: ConnectionInfo, table: TableIdentifier, edit: DesignerEdit): Promise<DesignerEditResult>;
+		}
+
+		export interface TableIdentifier {
+			name: string;
+			schema: string;
+		}
+
+		export interface TableDesignerInfo {
+			view: TableDesignerView;
+			data: DesignerData;
+		}
+
+		export enum TableProperties {
+			Schema = 'schema',
+			Name = 'name',
+			Description = 'description'
+		}
+
+		export enum TableColumnProperties {
+			Name = 'name',
+			Type = 'type',
+			AllowNull = 'allowNull',
+			DefaultValue = 'defaultValue',
+			Length = 'length'
+		}
+
+		export interface TableDesignerView {
+			columnTypes: TableColumnType[];
+			additionalTableProperties?: DesignerComponentType[];
+			addtionalTableColumnProperties?: DesignerComponentType[];
+			addtionalTabs?: DesignerTab[];
+		}
+
+		export interface TableColumnType {
+			/**
+			 * The name of the column type.
+			 */
+			name: string;
+
+			/**
+			 * The display name of the column type.
+			 */
+			displayName: string;
+		}
+
+		export interface DesignerData {
+			[key: string]: InputComponentData | CheckboxComponentData | DropdownComponentData | TableComponentData;
+		}
+
+		export interface ComponentData {
+			enabled?: boolean;
+		}
+
+		export interface InputComponentData extends ComponentData {
+			value: string;
+		}
+
+		export interface CheckboxComponentData extends ComponentData {
+			checked: boolean;
+		}
+
+		export interface DropdownComponentData extends ComponentData {
+			value: string;
+			optionalValues: string[];
+		}
+
+		export interface TableComponentData extends ComponentData {
+			rows: TableComponentRowData[];
+		}
+
+		export interface TableComponentRowData {
+			[key: string]: InputComponentData | CheckboxComponentData | DropdownComponentData;
+		}
+
+		export enum DesignerEditTypes {
+			Add = 0,
+			Remove = 1,
+			Update = 2
+		}
+
+		export interface DesignerEdit {
+			type: DesignerEditTypes;
+			property: string;
+			value: any;
+		}
+
+		export interface DesignerEditResult {
+			data: DesignerData;
+			isValid: boolean;
+			errorMessages?: string[];
+		}
+
+		export interface DesignerTab {
+			title: string;
+			components: DesignerComponentType[];
+		}
+
+		export type DesignerComponentType = InputComponent | CheckboxComponent | DrowdownComponent | TableComponent;
+
+		export type DesignerComponentTypeName = 'input' | 'checkbox' | 'dropdown' | 'table';
+
+		export interface DesignerItemComponent {
+			/**
+			 * The name of the property that the component is bound to.
+			 */
+			property;
+
+			type: DesignerComponentTypeName;
+
+			title?: string;
+
+			ariaLabel?: string;
+		}
+
+		export interface InputComponent extends DesignerItemComponent {
+			placeholder?: string;
+			inputType?: 'text' | 'number';
+		}
+
+		export interface DrowdownComponent extends DesignerItemComponent {
+		}
+
+		export interface CheckboxComponent extends DesignerItemComponent {
+		}
+
+		export interface TableComponent extends DesignerItemComponent {
+			/**
+			 * the name of the properties to be displayed, properties not in this list will be accessible in details view.
+			 */
+			columns: string[];
+		}
+	}
 }

@@ -61,7 +61,7 @@ export class InputBox extends vsInputBox {
 		if (_sqlOptions && _sqlOptions.type === 'textarea') {
 			this._isTextAreaInput = true;
 		}
-		this.required = !!this._sqlOptions.required;
+		this.required = !!this._sqlOptions?.required;
 	}
 
 	public override style(styles: IInputBoxStyles): void {

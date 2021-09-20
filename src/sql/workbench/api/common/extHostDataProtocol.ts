@@ -194,6 +194,12 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return rt;
 	}
 
+	$registerTableDesignerProvider(provider: azdata.designers.TableDesignerProvider): vscode.Disposable {
+		let rt = this.registerProvider(provider, DataProviderType.TableDesignerProvider);
+		this._proxy.$registerTableDesignerProvider(provider.providerId, provider.handle);
+		return rt;
+	}
+
 	// Capabilities Discovery handlers
 	override $getServerCapabilities(handle: number, client: azdata.DataProtocolClientCapabilities): Thenable<azdata.DataProtocolServerCapabilities> {
 		return this._resolveProvider<azdata.CapabilitiesProvider>(handle).getServerCapabilities(client);
@@ -883,5 +889,14 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	public override $getDataGridColumns(handle: number): Thenable<azdata.DataGridColumn[]> {
 		return this._resolveProvider<azdata.DataGridProvider>(handle).getDataGridColumns();
+	}
+
+	// Table Designer
+	public override $getTableDesignerInfo(handle, connectionInfo: azdata.ConnectionInfo, table: azdata.designers.TableIdentifier): Promise<azdata.designers.TableDesignerInfo> {
+		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).getDesignerInfo(connectionInfo, table);
+	}
+
+	public override $processTableDesignerEdit(handle, connectionInfo: azdata.ConnectionInfo, table: azdata.designers.TableIdentifier, edit: azdata.designers.DesignerEdit): Promise<azdata.designers.DesignerEditResult> {
+		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).processTableEdit(connectionInfo, table, edit);
 	}
 }

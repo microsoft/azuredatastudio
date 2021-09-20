@@ -30,6 +30,7 @@ import { IAssessmentService } from 'sql/workbench/services/assessment/common/int
 import { IDataGridProviderService } from 'sql/workbench/services/dataGridProvider/common/dataGridProviderService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { ITableDesignerService } from 'sql/workbench/services/tableDesigner/common/interface';
 
 /**
  * Main thread class for handling data protocol management registration.
@@ -59,7 +60,8 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 		@IFileBrowserService private _fileBrowserService: IFileBrowserService,
 		@IAssessmentService private _assessmentService: IAssessmentService,
 		@IDataGridProviderService private _dataGridProviderService: IDataGridProviderService,
-		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService
+		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
+		@ITableDesignerService private _tableDesignerService: ITableDesignerService
 	) {
 		super();
 		if (extHostContext) {
@@ -501,6 +503,20 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 		this._capabilitiesService.registerProvider(<azdata.CapabilitiesProvider>{
 			getServerCapabilities(client: azdata.DataProtocolClientCapabilities): Thenable<azdata.DataProtocolServerCapabilities> {
 				return self._proxy.$getServerCapabilities(handle, client);
+			}
+		});
+
+		return undefined;
+	}
+
+	$registerTableDesignerProvider(providerId: string, handle: number): Promise<any> {
+		const self = this;
+		this._tableDesignerService.registerProvider(providerId, <azdata.designers.TableDesignerProvider>{
+			getDesignerInfo(connectionInfo, table): Promise<azdata.designers.TableDesignerInfo> {
+				return self._proxy.$getTableDesignerInfo(handle, connectionInfo, table);
+			},
+			processTableEdit(connectionInfo, table, edit): Promise<azdata.designers.DesignerEditResult> {
+				return self._proxy.$processTableDesignerEdit(handle, connectionInfo, table, edit);
 			}
 		});
 

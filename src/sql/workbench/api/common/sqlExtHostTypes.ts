@@ -381,7 +381,8 @@ export enum DataProviderType {
 	SerializationProvider = 'SerializationProvider',
 	IconProvider = 'IconProvider',
 	SqlAssessmentServicesProvider = 'SqlAssessmentServicesProvider',
-	DataGridProvider = 'DataGridProvider'
+	DataGridProvider = 'DataGridProvider',
+	TableDesignerProvider = 'TableDesignerProvider'
 }
 
 export enum DeclarativeDataType {
@@ -900,4 +901,26 @@ export enum TextType {
 	Error = 'Error',
 	UnorderedList = 'UnorderedList',
 	OrderedList = 'OrderedList'
+}
+
+export namespace designers {
+	export enum TableProperties {
+		Schema = 'schema',
+		Name = 'name',
+		Description = 'description'
+	}
+
+	export enum TableColumnProperties {
+		Name = 'name',
+		Type = 'type',
+		AllowNull = 'allowNull',
+		DefaultValue = 'defaultValue',
+		Length = 'length'
+	}
+
+	export enum DesignerEditTypes {
+		Add = 0,
+		Remove = 1,
+		Update = 2
+	}
 }

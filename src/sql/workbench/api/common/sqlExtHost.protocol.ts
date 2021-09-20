@@ -525,6 +525,16 @@ export abstract class ExtHostDataProtocolShape {
 	 * Gets the list of columns for a data grid
 	 */
 	$getDataGridColumns(handle: number): Thenable<azdata.DataGridColumn[]> { throw ni(); }
+
+	/**
+	 * Gets the table designer info for the specified table
+	 */
+	$getTableDesignerInfo(handle, connectionInfo: azdata.ConnectionInfo, table: azdata.designers.TableIdentifier): Promise<azdata.designers.TableDesignerInfo> { throw ni(); }
+
+	/**
+	 * Process the table edit.
+	 */
+	$processTableDesignerEdit(handle, connectionInfo: azdata.ConnectionInfo, table: azdata.designers.TableIdentifier, edit: azdata.designers.DesignerEdit): Promise<azdata.designers.DesignerEditResult> { throw ni(); }
 }
 
 /**
@@ -590,6 +600,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$registerSerializationProvider(providerId: string, handle: number): Promise<any>;
 	$registerSqlAssessmentServicesProvider(providerId: string, handle: number): Promise<any>;
 	$registerDataGridProvider(providerId: string, title: string, handle: number): void;
+	$registerTableDesignerProvider(providerId: string, handle: number): Promise<any>;
 	$unregisterProvider(handle: number): Promise<any>;
 	$onConnectionComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void;
 	$onIntelliSenseCacheComplete(handle: number, connectionUri: string): void;
