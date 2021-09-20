@@ -97,12 +97,16 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 			return;
 		}
 
-		let existingSettings = settings?.Values ? Object.keys(settings.Values).map(setting => {
-			return {
-				label: setting
-			} as vscode.QuickPickItem & { isCreateNew?: boolean };
-		}) : [];
-		existingSettings.unshift({ label: constants.createNewLocalAppSetting, isCreateNew: true });
+		let existingSettings: (vscode.QuickPickItem & { isCreateNew?: boolean })[] = [];
+		if (settings?.Values) {
+			existingSettings = Object.keys(settings.Values).map(setting => {
+				return {
+					label: setting
+				} as vscode.QuickPickItem & { isCreateNew?: boolean };
+			});
+		}
+
+		existingSettings.unshift({ label: constants.createNewLocalAppSettingWithIcon, isCreateNew: true });
 
 		while (!connectionStringSettingName) {
 			const selectedSetting = await vscode.window.showQuickPick(existingSettings, {
@@ -124,24 +128,32 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 					}
 				) ?? '';
 
-				if (newConnectionStringSettingName) {
-					const newConnectionStringValue = await vscode.window.showInputBox(
-						{
-							title: constants.enterConnectionString,
-							ignoreFocusOut: true,
-							validateInput: input => input ? undefined : constants.valueMustNotBeEmpty
-						}
-					) ?? '';
+				if (!newConnectionStringSettingName) {
+					// go back to select setting quickpick if user escapes from inputting the setting name in case they changed their mind
+					continue;
+				}
 
-					if (!newConnectionStringValue) {
-						// go back to select setting quickpick if user escapes from inputting the value in case they changed their mind
-						continue;
+				const newConnectionStringValue = await vscode.window.showInputBox(
+					{
+						title: constants.enterConnectionString,
+						ignoreFocusOut: true,
+						validateInput: input => input ? undefined : constants.valueMustNotBeEmpty
 					}
+				) ?? '';
 
+				if (!newConnectionStringValue) {
+					// go back to select setting quickpick if user escapes from inputting the value in case they changed their mind
+					continue;
+				}
+
+				try {
 					const success = await azureFunctionsUtils.setLocalAppSetting(path.dirname(project), newConnectionStringSettingName, newConnectionStringValue);
 					if (success) {
 						connectionStringSettingName = newConnectionStringSettingName;
 					}
+				} catch (e) {
+					// display error message and show select setting quickpick again
+					void vscode.window.showErrorMessage(e);
 				}
 				// If user cancels out of this or doesn't want to overwrite an existing setting
 				// just return them to the select setting quickpick in case they changed their mind
