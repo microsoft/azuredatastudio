@@ -18,25 +18,35 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 	readonly extension = 'azuredatastudio';
 	override readonly version = 1;
 
-	protected _metadata: INotebookViewMetadata;
+	protected _metadata: INotebookViewMetadata | undefined;
+	private _initialized: boolean = false;
 	private _onViewDeleted = new Emitter<void>();
 	private _onActiveViewChanged = new Emitter<void>();
 
 	constructor(protected _notebook: INotebookModel) {
 		super();
-		this.loadOrInitialize();
+		this.load();
 	}
 
-	public loadOrInitialize() {
-		this._metadata = this.getNotebookMetadata(this._notebook);
+	public load(): void {
+		this._metadata = this.getNotebookMetadata();
+
+		if (this._metadata) {
+			this._metadata.views = this._metadata.views.map(view => NotebookViewModel.load(view.guid, this));
+			this._initialized = true;
+		}
+	}
+
+	public initialize() {
+		this._metadata = this.getNotebookMetadata();
 
 		if (!this._metadata) {
 			this.initializeNotebook();
 			this.initializeCells();
 			this.commit();
-		} else {
-			this._metadata.views = this._metadata.views.map(view => NotebookViewModel.load(view.guid, this));
 		}
+
+		this._initialized = true;
 	}
 
 	protected initializeNotebook() {
@@ -64,6 +74,11 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 
 	public createNewView(name?: string): INotebookView {
 		const viewName = name || this.generateDefaultViewName();
+
+		// If the notebook has not been initialized, do it now
+		if (!this.initialized) {
+			this.initialize();
+		}
 
 		const view = new NotebookViewModel(viewName, this);
 		view.initialize(true);
@@ -129,7 +144,7 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 	}
 
 	public getViews(): INotebookView[] {
-		return this._metadata.views;
+		return this._metadata?.views ?? [];
 	}
 
 	public get metadata(): INotebookViewMetadata {
@@ -138,6 +153,10 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 
 	public getCells(): INotebookViewCellMetadata[] {
 		return this._notebook.cells.map(cell => this.getCellMetadata(cell));
+	}
+
+	public override getNotebookMetadata(): INotebookViewMetadata {
+		return super.getNotebookMetadata(this._notebook);
 	}
 
 	public getActiveView(): INotebookView {
@@ -164,5 +183,9 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 
 	public get onActiveViewChanged(): Event<void> {
 		return this._onActiveViewChanged.event;
+	}
+
+	public get initialized(): boolean {
+		return this._initialized;
 	}
 }
