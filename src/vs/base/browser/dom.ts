@@ -1392,7 +1392,7 @@ const _ttpSafeInnerHtml = window.trustedTypes?.createPolicy('safeInnerHtml', {
 export function safeInnerHtml(node: HTMLElement, value: string): void {
 
 	const options = _extInsaneOptions({
-		allowedTags: ['a', 'button', 'blockquote', 'code', 'div', 'h1', 'h2', 'h3', 'h4', 'i', 'img', 'input', 'label', 'li', 'p', 'pre', 'select', 'small', 'span', 'strong', 'textarea', 'ul', 'ol'], // {{SQL CARBON EDIT}} Add tags for welcome page support
+		allowedTags: ['a', 'button', 'blockquote', 'code', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'i', 'img', 'input', 'label', 'li', 'p', 'pre', 'select', 'small', 'span', 'strong', 'textarea', 'ul', 'ol'],  // {{SQL CARBON EDIT}} Add i & img tags for welcome page support
 		allowedAttributes: {
 			'a': ['href', 'x-dispatch'],
 			'button': ['data-href', 'x-dispatch'],

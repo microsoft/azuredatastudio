@@ -14,15 +14,15 @@ import { IPager, mapPager, singlePagePager } from 'vs/base/common/paging';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import {
 	IExtensionGalleryService, ILocalExtension, IGalleryExtension, IQueryOptions,
-	InstallExtensionEvent, DidUninstallExtensionEvent, IExtensionIdentifier, InstallOperation, DefaultIconPath, InstallOptions, WEB_EXTENSION_TAG, InstallExtensionResult, IExtensionManagementService
-} from 'vs/platform/extensionManagement/common/extensionManagement'; // {{SQL CARBON EDIT}} Add IExtensionManagementService
+	InstallExtensionEvent, DidUninstallExtensionEvent, IExtensionIdentifier, InstallOperation, DefaultIconPath, InstallOptions, WEB_EXTENSION_TAG, InstallExtensionResult
+} from 'vs/platform/extensionManagement/common/extensionManagement';
 import { IWorkbenchExtensionEnablementService, EnablementState, IExtensionManagementServerService, IExtensionManagementServer, IWorkbenchExtensionManagementService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { getGalleryExtensionTelemetryData, getLocalExtensionTelemetryData, areSameExtensions, getMaliciousExtensionsSet, groupByExtension, ExtensionIdentifierWithVersion, getGalleryExtensionId } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { URI } from 'vs/base/common/uri';
-import { IExtension, ExtensionState, IExtensionsWorkbenchService, AutoUpdateConfigurationKey, AutoCheckUpdatesConfigurationKey, HasOutdatedExtensionsContext } from 'vs/workbench/contrib/extensions/common/extensions';
+import { IExtension, ExtensionState, IExtensionsWorkbenchService, AutoUpdateConfigurationKey, AutoCheckUpdatesConfigurationKey, HasOutdatedExtensionsContext, ExtensionEditorTab } from 'vs/workbench/contrib/extensions/common/extensions';
 import { IEditorService, SIDE_GROUP, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
 import { IURLService, IURLHandler, IOpenURLOptions } from 'vs/platform/url/common/url';
 import { ExtensionsInput } from 'vs/workbench/contrib/extensions/common/extensionsInput';
@@ -45,6 +45,9 @@ import { IOpenerService } from 'vs/platform/opener/common/opener'; // {{SQL CARB
 import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { isBoolean } from 'vs/base/common/types';
 import { IExtensionManifestPropertiesService } from 'vs/workbench/services/extensions/common/extensionManifestPropertiesService';
+import { IExtensionService, IExtensionsStatus } from 'vs/workbench/services/extensions/common/extensions';
+import { ExtensionEditor } from 'vs/workbench/contrib/extensions/browser/extensionEditor';
+
 import * as locConstants from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}}
 
 interface IExtensionStateProvider<T> {
@@ -310,6 +313,25 @@ ${this.description}
 		return Promise.reject(new Error('not available'));
 	}
 
+	get categories(): readonly string[] {
+		const { local, gallery } = this;
+		if (local && local.manifest.categories && !this.outdated) {
+			return local.manifest.categories;
+		}
+		if (gallery) {
+			return gallery.categories;
+		}
+		return [];
+	}
+
+	get tags(): readonly string[] {
+		const { gallery } = this;
+		if (gallery) {
+			return gallery.tags.filter(tag => !tag.startsWith('_'));
+		}
+		return [];
+	}
+
 	get dependencies(): string[] {
 		const { local, gallery } = this;
 		if (local && local.manifest.extensionDependencies && !this.outdated) {
@@ -472,7 +494,7 @@ class Extensions extends Disposable {
 				}
 			}
 			this._onChange.fire(!local || !extension ? undefined : { extension, operation: event.operation });
-			if (extension && !extension.gallery) {
+			if (extension && extension.local && !extension.gallery) {
 				this.syncInstalledExtensionWithGallery(extension);
 			}
 		}
@@ -561,9 +583,9 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		@IProductService private readonly productService: IProductService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IOpenerService private readonly openerService: IOpenerService, // {{SQL CARBON EDIT}}
-		@IExtensionManagementService private readonly extensionService: IExtensionManagementService, // {{SQL CARBON EDIT}}
 		@IExtensionManifestPropertiesService private readonly extensionManifestPropertiesService: IExtensionManifestPropertiesService,
 		@ILogService private readonly logService: ILogService,
+		@IExtensionService private readonly extensionService: IExtensionService,
 	) {
 		super();
 		this.hasOutdatedExtensionsContextKey = HasOutdatedExtensionsContext.bindTo(contextKeyService);
@@ -734,8 +756,21 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		return text.substr(0, 350);
 	}
 
-	open(extension: IExtension, { sideByside, preserveFocus, pinned }: { sideByside?: boolean, preserveFocus?: boolean, pinned?: boolean } = { sideByside: false, preserveFocus: false, pinned: false }): Promise<any> {
-		return Promise.resolve(this.editorService.openEditor(this.instantiationService.createInstance(ExtensionsInput, extension), { preserveFocus, pinned }, sideByside ? SIDE_GROUP : ACTIVE_GROUP));
+	async open(extension: IExtension, options?: { sideByside?: boolean, preserveFocus?: boolean, pinned?: boolean, tab?: ExtensionEditorTab }): Promise<void> {
+		const editor = await this.editorService.openEditor(this.instantiationService.createInstance(ExtensionsInput, extension), { preserveFocus: options?.preserveFocus, pinned: options?.pinned }, options?.sideByside ? SIDE_GROUP : ACTIVE_GROUP);
+		if (options?.tab && editor instanceof ExtensionEditor) {
+			await editor.openTab(options.tab);
+		}
+	}
+
+	getExtensionStatus(extension: IExtension): IExtensionsStatus | undefined {
+		const extensionsStatus = this.extensionService.getExtensionsStatus();
+		for (const id of Object.keys(extensionsStatus)) {
+			if (areSameExtensions({ id }, extension.identifier)) {
+				return extensionsStatus[id];
+			}
+		}
+		return undefined;
 	}
 
 	private getPrimaryExtension(extensions: IExtension[]): IExtension {
@@ -1029,7 +1064,7 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 			this.openerService.open(URI.parse(ext.gallery!.assets.downloadPage.uri));
 			return Promise.resolve(undefined);
 		} else {
-			return this.extensionService.installFromGallery(ext.gallery!);
+			return this.extensionManagementService.installFromGallery(ext.gallery!);
 		}
 	}
 	// {{SQL CARBON EDIT}} - End
@@ -1249,7 +1284,7 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 			if (i === extension) {
 				return false;
 			}
-			if (!(i.enablementState === EnablementState.EnabledWorkspace || i.enablementState === EnablementState.EnabledGlobally)) {
+			if (!this.extensionEnablementService.isEnabledEnablementState(i.enablementState)) {
 				return false;
 			}
 			if (extensionsToDisable.indexOf(i) !== -1) {

@@ -61,7 +61,7 @@ export class UserDataAutoSyncEnablementService extends Disposable implements _IU
 		this._register(storageService.onDidChangeValue(e => this.onDidStorageChange(e)));
 	}
 
-	isEnabled(defaultEnablement?: boolean): boolean {
+	isEnabled(): boolean {
 		/* {{SQL CARBON EDIT}} Disable unused sync service
 		switch (this.environmentService.sync) {
 			case 'on':
@@ -69,7 +69,7 @@ export class UserDataAutoSyncEnablementService extends Disposable implements _IU
 			case 'off':
 				return false;
 		}
-		return this.storageService.getBoolean(enablementKey, StorageScope.GLOBAL, !!defaultEnablement);
+		return this.storageService.getBoolean(enablementKey, StorageScope.GLOBAL, false);
 		*/
 		return false;
 	}

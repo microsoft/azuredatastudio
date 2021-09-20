@@ -55,7 +55,18 @@ const argvConfig = configureCommandlineSwitchesSync(args);
 
 // Configure crash reporter
 perf.mark('code/willStartCrashReporter');
-configureCrashReporter();
+// If a crash-reporter-directory is specified we store the crash reports
+// in the specified directory and don't upload them to the crash server.
+//
+// Appcenter crash reporting is enabled if
+// * enable-crash-reporter runtime argument is set to 'true'
+// * --disable-crash-reporter command line parameter is not set
+//
+// Disable crash reporting in all other cases.
+if (args['crash-reporter-directory'] ||
+	(argvConfig['enable-crash-reporter'] && !args['disable-crash-reporter'])) {
+	configureCrashReporter();
+}
 perf.mark('code/didStartCrashReporter');
 
 // Set logs path before app 'ready' event if running portable
@@ -328,8 +339,6 @@ function getArgvConfigPath() {
 
 function configureCrashReporter() {
 
-	// If a crash-reporter-directory is specified we store the crash reports
-	// in the specified directory and don't upload them to the crash server.
 	let crashReporterDirectory = args['crash-reporter-directory'];
 	let submitURL = '';
 	if (crashReporterDirectory) {
@@ -358,11 +367,7 @@ function configureCrashReporter() {
 	// Otherwise we configure the crash reporter from product.json
 	else {
 		const appCenter = product.appCenter;
-		// Disable Appcenter crash reporting if
-		// * --crash-reporter-directory is specified
-		// * enable-crash-reporter runtime argument is set to 'false'
-		// * --disable-crash-reporter command line parameter is set
-		if (appCenter && argvConfig['enable-crash-reporter'] && !args['disable-crash-reporter']) {
+		if (appCenter) {
 			const isWindows = (process.platform === 'win32');
 			const isLinux = (process.platform === 'linux');
 			const isDarwin = (process.platform === 'darwin');
@@ -417,13 +422,23 @@ function configureCrashReporter() {
 	// Start crash reporter for all processes
 	const productName = (product.crashReporter ? product.crashReporter.productName : undefined) || product.nameShort;
 	const companyName = (product.crashReporter ? product.crashReporter.companyName : undefined) || 'Microsoft';
-	crashReporter.start({
-		companyName: companyName,
-		productName: process.env['VSCODE_DEV'] ? `${productName} Dev` : productName,
-		submitURL,
-		uploadToServer: !crashReporterDirectory,
-		compress: true
-	});
+	if (process.env['VSCODE_DEV']) {
+		crashReporter.start({
+			companyName: companyName,
+			productName: `${productName} Dev`,
+			submitURL,
+			uploadToServer: false,
+			compress: true
+		});
+	} else {
+		crashReporter.start({
+			companyName: companyName,
+			productName: productName,
+			submitURL,
+			uploadToServer: !crashReporterDirectory,
+			compress: true
+		});
+	}
 }
 
 /**

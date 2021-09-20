@@ -98,6 +98,7 @@ export class SettingsEditor2 extends EditorPane {
 		`@tag:${WORKSPACE_TRUST_SETTING_TAG}`,
 		'@tag:sync',
 		'@tag:usesOnlineServices',
+		'@tag:telemetry',
 		`@${ID_SETTING_TAG}`,
 		`@${EXTENSION_SETTING_TAG}`,
 		`@${FEATURE_SETTING_TAG}scm`,
@@ -1060,7 +1061,7 @@ export class SettingsEditor2 extends EditorPane {
 			this.tocTreeModel.settingsTreeRoot = this.settingsTreeModel.root as SettingsTreeGroupElement;
 
 			const cachedState = this.restoreCachedState();
-			if (cachedState && cachedState.searchQuery) {
+			if (cachedState && cachedState.searchQuery || !!this.searchWidget.getValue()) {
 				await this.onSearchInputChanged();
 			} else {
 				this.refreshTOCTree();

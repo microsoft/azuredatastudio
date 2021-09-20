@@ -13,7 +13,7 @@ import { isUndefinedOrNull, isNumber } from 'vs/base/common/types';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IConnectionTreeService } from 'sql/workbench/services/connection/common/connectionTreeService';
+import { IConnectionTreeService } from 'sql/workbench/services/connection/common/connectionTreeService'; // {{SQL CARBON EDIT}} Add our tree service
 import { TreeDataTransferConverter } from 'vs/workbench/api/common/shared/treeDataTransfer';
 
 @extHostNamedCustomer(MainContext.MainThreadTreeViews)

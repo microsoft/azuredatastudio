@@ -110,10 +110,7 @@ export const WorkbenchListHasSelectionOrFocus = new RawContextKey<boolean>('list
 export const WorkbenchListDoubleSelection = new RawContextKey<boolean>('listDoubleSelection', false);
 export const WorkbenchListMultiSelection = new RawContextKey<boolean>('listMultiSelection', false);
 export const WorkbenchListSelectionNavigation = new RawContextKey<boolean>('listSelectionNavigation', false);
-export const WorkbenchListSupportsKeyboardNavigation = new RawContextKey<boolean>('listSupportsKeyboardNavigation', true);
 export const WorkbenchListAutomaticKeyboardNavigationKey = 'listAutomaticKeyboardNavigation';
-export const WorkbenchListAutomaticKeyboardNavigation = new RawContextKey<boolean>(WorkbenchListAutomaticKeyboardNavigationKey, true);
-export let didBindWorkbenchListAutomaticKeyboardNavigation = false;
 
 function createScopedContextKeyService(contextKeyService: IContextKeyService, widget: ListWidget): IContextKeyService {
 	const result = contextKeyService.createScoped(widget.getHTMLElement());
@@ -129,8 +126,8 @@ const automaticKeyboardNavigationSettingKey = 'workbench.list.automaticKeyboardN
 const treeIndentKey = 'workbench.tree.indent';
 const treeRenderIndentGuidesKey = 'workbench.tree.renderIndentGuides';
 const listSmoothScrolling = 'workbench.list.smoothScrolling';
-const mouseWheelScrollSensitivity = 'workbench.list.mouseWheelScrollSensitivity';
-const fastScrollSensitivity = 'workbench.list.fastScrollSensitivity';
+const mouseWheelScrollSensitivityKey = 'workbench.list.mouseWheelScrollSensitivity';
+const fastScrollSensitivityKey = 'workbench.list.fastScrollSensitivity';
 const treeExpandMode = 'workbench.tree.expandMode';
 
 function useAltAsMultipleSelectionModifier(configurationService: IConfigurationService): boolean {
@@ -171,21 +168,14 @@ class MultipleSelectionController<T> extends Disposable implements IMultipleSele
 
 function toWorkbenchListOptions<T>(options: IListOptions<T>, configurationService: IConfigurationService, keybindingService: IKeybindingService): [IListOptions<T>, IDisposable] {
 	const disposables = new DisposableStore();
-	const result = { ...options };
-
-	if (!options.multipleSelectionController) {
-		const multipleSelectionController = new MultipleSelectionController(configurationService);
-		result.multipleSelectionController = multipleSelectionController;
-		disposables.add(multipleSelectionController);
-	}
-
-	result.keyboardNavigationDelegate = {
-		mightProducePrintableCharacter(e) {
-			return keybindingService.mightProducePrintableCharacter(e);
-		}
+	const result: IListOptions<T> = {
+		...options,
+		keyboardNavigationDelegate: { mightProducePrintableCharacter(e) { return keybindingService.mightProducePrintableCharacter(e); } },
+		smoothScrolling: Boolean(configurationService.getValue(listSmoothScrolling)),
+		mouseWheelScrollSensitivity: configurationService.getValue<number>(mouseWheelScrollSensitivityKey),
+		fastScrollSensitivity: configurationService.getValue<number>(fastScrollSensitivityKey),
+		multipleSelectionController: options.multipleSelectionController ?? disposables.add(new MultipleSelectionController(configurationService))
 	};
-
-	result.smoothScrolling = Boolean(configurationService.getValue(listSmoothScrolling));
 
 	return [result, disposables];
 }
@@ -292,16 +282,13 @@ export class WorkbenchList<T> extends List<T> {
 				const smoothScrolling = Boolean(configurationService.getValue(listSmoothScrolling));
 				options = { ...options, smoothScrolling };
 			}
-			if (e.affectsConfiguration(mouseWheelScrollSensitivity) || e.affectsConfiguration(fastScrollSensitivity)) {
-				const mwheelScrollSens = configurationService.getValue<number>(mouseWheelScrollSensitivity);
-				const fastScrollSens = configurationService.getValue<number>(fastScrollSensitivity);
-				options = {
-					...options,
-					scrollableElementChangeOptions: {
-						mouseWheelScrollSensitivity: mwheelScrollSens,
-						fastScrollSensitivity: fastScrollSens
-					}
-				};
+			if (e.affectsConfiguration(mouseWheelScrollSensitivityKey)) {
+				const mouseWheelScrollSensitivity = configurationService.getValue<number>(mouseWheelScrollSensitivityKey);
+				options = { ...options, mouseWheelScrollSensitivity };
+			}
+			if (e.affectsConfiguration(fastScrollSensitivityKey)) {
+				const fastScrollSensitivity = configurationService.getValue<number>(fastScrollSensitivityKey);
+				options = { ...options, fastScrollSensitivity };
 			}
 			if (Object.keys(options).length > 0) {
 				this.updateOptions(options);
@@ -420,16 +407,13 @@ export class WorkbenchPagedList<T> extends PagedList<T> {
 				const smoothScrolling = Boolean(configurationService.getValue(listSmoothScrolling));
 				options = { ...options, smoothScrolling };
 			}
-			if (e.affectsConfiguration(mouseWheelScrollSensitivity) || e.affectsConfiguration(fastScrollSensitivity)) {
-				const mwheelScrollSens = configurationService.getValue<number>(mouseWheelScrollSensitivity);
-				const fastScrollSens = configurationService.getValue<number>(fastScrollSensitivity);
-				options = {
-					...options,
-					scrollableElementChangeOptions: {
-						mouseWheelScrollSensitivity: mwheelScrollSens,
-						fastScrollSensitivity: fastScrollSens
-					}
-				};
+			if (e.affectsConfiguration(mouseWheelScrollSensitivityKey)) {
+				const mouseWheelScrollSensitivity = configurationService.getValue<number>(mouseWheelScrollSensitivityKey);
+				options = { ...options, mouseWheelScrollSensitivity };
+			}
+			if (e.affectsConfiguration(fastScrollSensitivityKey)) {
+				const fastScrollSensitivity = configurationService.getValue<number>(fastScrollSensitivityKey);
+				options = { ...options, fastScrollSensitivity };
 			}
 			if (Object.keys(options).length > 0) {
 				this.updateOptions(options);
@@ -572,6 +556,14 @@ export class WorkbenchTable<TRow> extends Table<TRow> {
 			if (e.affectsConfiguration(listSmoothScrolling)) {
 				const smoothScrolling = Boolean(configurationService.getValue(listSmoothScrolling));
 				options = { ...options, smoothScrolling };
+			}
+			if (e.affectsConfiguration(mouseWheelScrollSensitivityKey)) {
+				const mouseWheelScrollSensitivity = configurationService.getValue<number>(mouseWheelScrollSensitivityKey);
+				options = { ...options, mouseWheelScrollSensitivity };
+			}
+			if (e.affectsConfiguration(fastScrollSensitivityKey)) {
+				const fastScrollSensitivity = configurationService.getValue<number>(fastScrollSensitivityKey);
+				options = { ...options, fastScrollSensitivity };
 			}
 			if (Object.keys(options).length > 0) {
 				this.updateOptions(options);
@@ -1045,13 +1037,6 @@ function workbenchTreeDataPreamble<T, TFilterData, TOptions extends IAbstractTre
 	keybindingService: IKeybindingService,
 	accessibilityService: IAccessibilityService,
 ): { options: TOptions, getAutomaticKeyboardNavigation: () => boolean | undefined, disposable: IDisposable } {
-	WorkbenchListSupportsKeyboardNavigation.bindTo(contextKeyService);
-
-	if (!didBindWorkbenchListAutomaticKeyboardNavigation) {
-		WorkbenchListAutomaticKeyboardNavigation.bindTo(contextKeyService);
-		didBindWorkbenchListAutomaticKeyboardNavigation = true;
-	}
-
 	const getAutomaticKeyboardNavigation = () => {
 		// give priority to the context key value to disable this completely
 		let automaticKeyboardNavigation = Boolean(contextKeyService.getContextKeyValue(WorkbenchListAutomaticKeyboardNavigationKey));
@@ -1167,7 +1152,7 @@ class WorkbenchTreeInternals<TInput, T, TFilterData> {
 				this.hasSelectionOrFocus.set(selection.length > 0 || focus.length > 0);
 			}),
 			configurationService.onDidChangeConfiguration(e => {
-				let newOptions: any = {};
+				let newOptions: IAbstractTreeOptionsUpdate = {};
 				if (e.affectsConfiguration(multiSelectModifierSettingKey)) {
 					this._useAltAsMultipleSelectionModifier = useAltAsMultipleSelectionModifier(configurationService);
 				}
@@ -1196,16 +1181,13 @@ class WorkbenchTreeInternals<TInput, T, TFilterData> {
 				if (e.affectsConfiguration(treeExpandMode) && options.expandOnlyOnTwistieClick === undefined) {
 					newOptions = { ...newOptions, expandOnlyOnTwistieClick: configurationService.getValue<'singleClick' | 'doubleClick'>(treeExpandMode) === 'doubleClick' };
 				}
-				if (e.affectsConfiguration(mouseWheelScrollSensitivity) || e.affectsConfiguration(fastScrollSensitivity)) {
-					const mwheelScrollSens = configurationService.getValue<number>(mouseWheelScrollSensitivity);
-					const fastScrollSens = configurationService.getValue<number>(fastScrollSensitivity);
-					newOptions = {
-						...newOptions,
-						scrollableElementChangeOptions: {
-							mouseWheelScrollSensitivity: mwheelScrollSens,
-							fastScrollSensitivity: fastScrollSens
-						}
-					};
+				if (e.affectsConfiguration(mouseWheelScrollSensitivityKey)) {
+					const mouseWheelScrollSensitivity = configurationService.getValue<number>(mouseWheelScrollSensitivityKey);
+					newOptions = { ...newOptions, mouseWheelScrollSensitivity };
+				}
+				if (e.affectsConfiguration(fastScrollSensitivityKey)) {
+					const fastScrollSensitivity = configurationService.getValue<number>(fastScrollSensitivityKey);
+					newOptions = { ...newOptions, fastScrollSensitivity };
 				}
 				if (Object.keys(newOptions).length > 0) {
 					tree.updateOptions(newOptions);
@@ -1301,12 +1283,12 @@ configurationRegistry.registerConfiguration({
 			default: false,
 			description: localize('list smoothScrolling setting', "Controls whether lists and trees have smooth scrolling."),
 		},
-		[mouseWheelScrollSensitivity]: {
+		[mouseWheelScrollSensitivityKey]: {
 			type: 'number',
 			default: 1,
 			description: localize('Mouse Wheel Scroll Sensitivity', "A multiplier to be used on the deltaX and deltaY of mouse wheel scroll events.")
 		},
-		[fastScrollSensitivity]: {
+		[fastScrollSensitivityKey]: {
 			type: 'number',
 			default: 5,
 			description: localize('Fast Scroll Sensitivity', "Scrolling speed multiplier when pressing Alt.")

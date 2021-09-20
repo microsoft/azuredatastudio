@@ -471,7 +471,7 @@ async function webpackExtensions(taskName, isWatch, webpackConfigLocations) {
                     reject();
                 }
                 else {
-                    reporter(stats.toJson());
+                    reporter(stats === null || stats === void 0 ? void 0 : stats.toJson());
                 }
             });
         }
@@ -482,7 +482,7 @@ async function webpackExtensions(taskName, isWatch, webpackConfigLocations) {
                     reject();
                 }
                 else {
-                    reporter(stats.toJson());
+                    reporter(stats === null || stats === void 0 ? void 0 : stats.toJson());
                     resolve();
                 }
             });

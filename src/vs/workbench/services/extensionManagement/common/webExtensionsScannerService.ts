@@ -363,10 +363,10 @@ export class WebExtensionsScannerService extends Disposable implements IWebExten
 	}
 
 	private async toWebExtensionFromGallery(galleryExtension: IGalleryExtension, metadata?: IStringDictionary<any>): Promise<IWebExtension> {
-		const extensionLocation = this.productService.extensionsGallery?.resourceUrlTemplate
-			? URI.parse(format2(this.productService.extensionsGallery.resourceUrlTemplate, { publisher: galleryExtension.publisher, name: galleryExtension.name, version: galleryExtension.version, path: 'extension' }))
-			: joinPath(galleryExtension.assetUri, 'Microsoft.VisualStudio.Code.WebResources', 'extension');
-
+		if (!this.productService.extensionsGallery) {
+			throw new Error('No extension gallery service configured.');
+		}
+		const extensionLocation = URI.parse(format2(this.productService.extensionsGallery.resourceUrlTemplate, { publisher: galleryExtension.publisher, name: galleryExtension.name, version: galleryExtension.version, path: 'extension' }));
 		return this.toWebExtensionFromLocation(extensionLocation, galleryExtension.assets.readme ? URI.parse(galleryExtension.assets.readme.uri) : undefined, galleryExtension.assets.changelog ? URI.parse(galleryExtension.assets.changelog.uri) : undefined, metadata);
 	}
 
@@ -405,13 +405,14 @@ export class WebExtensionsScannerService extends Disposable implements IWebExten
 	}
 
 	private async toScannedExtension(webExtension: IWebExtension, isBuiltin: boolean): Promise<IScannedExtension> {
-		const context = await this.requestService.request({ type: 'GET', url: this.toRequestUrl(joinPath(webExtension.location, 'package.json')) }, CancellationToken.None);
+		const url = this.toRequestUrl(joinPath(webExtension.location, 'package.json'));
+		const context = await this.requestService.request({ type: 'GET', url: url }, CancellationToken.None);
 		if (!isSuccess(context)) {
-			throw new Error(`Error while fetching package.json for extension '${webExtension.identifier.id}'. Server returned ${context.res.statusCode}`);
+			throw new Error(`Error while fetching package.json for the extension '${webExtension.identifier.id}'. Server returned '${context.res.statusCode}' for the request '${url}'`);
 		}
 		const content = await asText(context);
 		if (!content) {
-			throw new Error(`Error while fetching package.json for extension '${webExtension.identifier.id}'. Server returned no content`);
+			throw new Error(`Error while fetching package.json for extension '${webExtension.identifier.id}'. Server returned no content for the request '${url}'`);
 		}
 
 		let manifest: IExtensionManifest = JSON.parse(content);
@@ -462,7 +463,7 @@ export class WebExtensionsScannerService extends Disposable implements IWebExten
 
 	private async withWebExtensions(file: URI | undefined, updateFn?: (extensions: IWebExtension[]) => IWebExtension[]): Promise<IWebExtension[]> {
 		if (!file) {
-			throw new Error('unsupported');
+			return [];
 		}
 		return this.getResourceAccessQueue(file).queue(async () => {
 			let webExtensions: IWebExtension[] = [];

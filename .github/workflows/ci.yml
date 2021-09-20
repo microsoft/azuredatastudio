@@ -111,8 +111,8 @@ jobs:
       #   uses: actions/cache@v2
       #   with:
       #     path: "**/node_modules"
-      #     key: ${{ runner.os }}-cacheNodeModules13-${{ steps.nodeModulesCacheKey.outputs.value }}
-      #     restore-keys: ${{ runner.os }}-cacheNodeModules13-
+      #     key: ${{ runner.os }}-cacheNodeModules14-${{ steps.nodeModulesCacheKey.outputs.value }}
+      #     restore-keys: ${{ runner.os }}-cacheNodeModules14-
       # - name: Get yarn cache directory path
       #   id: yarnCacheDirPath
       #   if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
@@ -181,8 +181,8 @@ jobs:
       #   uses: actions/cache@v2
       #   with:
       #     path: "**/node_modules"
-      #     key: ${{ runner.os }}-cacheNodeModules13-${{ steps.nodeModulesCacheKey.outputs.value }}
-      #     restore-keys: ${{ runner.os }}-cacheNodeModules13-
+      #     key: ${{ runner.os }}-cacheNodeModules14-${{ steps.nodeModulesCacheKey.outputs.value }}
+      #     restore-keys: ${{ runner.os }}-cacheNodeModules14-
       # - name: Get yarn cache directory path
       #   id: yarnCacheDirPath
       #   if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
@@ -195,7 +195,7 @@ jobs:
       #     key: ${{ runner.os }}-yarnCacheDir-${{ steps.nodeModulesCacheKey.outputs.value }}
       #     restore-keys: ${{ runner.os }}-yarnCacheDir-
       - name: Execute yarn
-        if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
+        # if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }} {{SQL CARBON EDIT}} Skip caching for now
         env:
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
           ELECTRON_SKIP_BINARY_DOWNLOAD: 1
@@ -242,7 +242,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: "**/node_modules"
-          key: ${{ runner.os }}-cacheNodeModules13-${{ steps.nodeModulesCacheKey.outputs.value }}
+          key: ${{ runner.os }}-cacheNodeModules14-${{ steps.nodeModulesCacheKey.outputs.value }}
+          restore-keys: ${{ runner.os }}-cacheNodeModules14-
       - name: Get yarn cache directory path
         id: yarnCacheDirPath
         if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
@@ -280,6 +281,17 @@ jobs:
 
       - name: Compile /build/
         run: yarn --cwd build compile
+
+      - name: Run eslint
+        run: yarn eslint
+
+      # {{SQL CARBON EDIT}} Don't need this
+      # - name: Run Monaco Editor Checks
+      #   run: yarn monaco-compile-check
+
+      # {{SQL CARBON EDIT}} Don't need this
+      # - name: Run vscode-dts Compile Checks
+      #   run: yarn vscode-dts-compile-check
 
       - name: Run Trusted Types Checks
         run: yarn tsec-compile-check

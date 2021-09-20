@@ -11,6 +11,7 @@
 		"@angular/platform-browser": "~4.1.3",
 		"@angular/platform-browser-dynamic": "~4.1.3",
 		"@angular/router": "~4.1.3",
+		"@vscode/vscode-languagedetection": "1.0.12",
 		"angular2-grid": "2.0.6",
 		"ansi_up": "^3.0.0",
 		"chart.js": "^2.9.4",
@@ -33,9 +34,9 @@
 		"tas-client-umd": "0.1.4",
 		"vscode-oniguruma": "1.5.1",
 		"vscode-textmate": "5.4.0",
-		"xterm": "4.14.0-beta.5",
+		"xterm": "4.14.0-beta.6",
 		"xterm-addon-search": "0.9.0-beta.3",
 		"xterm-addon-unicode11": "0.3.0-beta.5",
-		"xterm-addon-webgl": "0.12.0-beta.4"
+		"xterm-addon-webgl": "0.12.0-beta.5"
 	}
 }

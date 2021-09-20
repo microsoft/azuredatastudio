@@ -590,6 +590,7 @@
 					"vscode-oniguruma",
 					"iconv-lite-umd",
 					"jschardet",
+					"@vscode/vscode-languagedetection",
 					"@angular/*",
 					"rxjs/**",
 					"sanitize-html",

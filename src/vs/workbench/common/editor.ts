@@ -1093,8 +1093,15 @@ export async function pathsToEditors(paths: IPathData[] | undefined, fileService
 
 	const editors = await Promise.all(paths.map(async path => {
 		const resource = URI.revive(path.fileUri);
-		if (!resource || !fileService.canHandleResource(resource)) {
-			return undefined; // {{SQL CARBON EDIT}} @anthonydresser strict-null-checks
+
+		if (!resource) {
+			return undefined; // {{SQL CARBON EDIT}} Strict null
+		}
+
+		await fileService.activateProvider(resource.scheme);
+
+		if (!fileService.canHandleResource(resource)) {
+			return undefined; // {{SQL CARBON EDIT}} Strict null
 		}
 
 		const exists = (typeof path.exists === 'boolean') ? path.exists : await fileService.exists(resource);

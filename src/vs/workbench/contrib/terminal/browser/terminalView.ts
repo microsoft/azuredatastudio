@@ -33,7 +33,7 @@ import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { TerminalTabbedView } from 'vs/workbench/contrib/terminal/browser/terminalTabbedView';
 import { Codicon } from 'vs/base/common/codicons';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import { renderIcon } from 'vs/base/browser/ui/iconLabel/iconLabels';
+import { renderLabelWithIcons } from 'vs/base/browser/ui/iconLabel/iconLabels';
 import { getColorForSeverity } from 'vs/workbench/contrib/terminal/browser/terminalStatusList';
 import { createAndFillInContextMenuActions, MenuEntryActionViewItem } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { TerminalTabContextMenuGroup } from 'vs/workbench/contrib/terminal/browser/terminalMenus';
@@ -41,7 +41,7 @@ import { DropdownWithPrimaryActionViewItem } from 'vs/platform/actions/browser/d
 import { dispose, IDisposable, toDisposable } from 'vs/base/common/lifecycle';
 import { URI } from 'vs/base/common/uri';
 import { ColorScheme } from 'vs/platform/theme/common/theme';
-import { getColorClass, getUriClasses, separateIconAndText } from 'vs/workbench/contrib/terminal/browser/terminalIcon';
+import { getColorClass, getUriClasses } from 'vs/workbench/contrib/terminal/browser/terminalIcon';
 import { terminalStrings } from 'vs/workbench/contrib/terminal/common/terminalStrings';
 import { withNullAsUndefined } from 'vs/base/common/types';
 import { DataTransfers } from 'vs/base/browser/dnd';
@@ -360,6 +360,7 @@ class SwitchTerminalActionViewItem extends SelectActionViewItem {
 		this._register(_terminalGroupService.onDidChangeGroups(() => this._updateItems(), this));
 		this._register(_terminalService.onDidChangeConnectionState(() => this._updateItems(), this));
 		this._register(_terminalService.onDidChangeAvailableProfiles(() => this._updateItems(), this));
+		this._register(_terminalService.onDidChangeInstancePrimaryStatus(() => this._updateItems(), this));
 		this._register(attachSelectBoxStyler(this.selectBox, this._themeService));
 	}
 
@@ -407,7 +408,7 @@ class SingleTerminalTabActionViewItem extends MenuEntryActionViewItem {
 		@ITerminalGroupService private readonly _terminalGroupService: ITerminalGroupService,
 		@IThemeService private readonly _themeService: IThemeService,
 		@IContextMenuService private readonly _contextMenuService: IContextMenuService,
-		@ICommandService private readonly _commandService: ICommandService
+		@ICommandService private readonly _commandService: ICommandService,
 	) {
 		super(new MenuItemAction(
 			{
@@ -443,11 +444,6 @@ class SingleTerminalTabActionViewItem extends MenuEntryActionViewItem {
 		this._register(toDisposable(() => dispose(this._elementDisposables)));
 	}
 
-	override render(container: HTMLElement): void {
-		super.render(container);
-		container.classList.add('terminal-single-tab');
-	}
-
 	override async onClick(event: MouseEvent): Promise<void> {
 		if (event.altKey && this._menuItemAction.alt) {
 			this._commandService.executeCommand(this._menuItemAction.alt.id, { target: TerminalLocation.TerminalView } as ICreateTerminalOptions);
@@ -473,7 +469,10 @@ class SingleTerminalTabActionViewItem extends MenuEntryActionViewItem {
 			// Middle click kills
 			this._elementDisposables.push(dom.addDisposableListener(this.element, dom.EventType.AUXCLICK, e => {
 				if (e.button === 1) {
-					this._terminalGroupService.activeInstance?.dispose();
+					const instance = this._terminalGroupService.activeInstance;
+					if (instance) {
+						this._terminalService.safeDisposeTerminal(instance);
+					}
 					e.preventDefault();
 				}
 			}));
@@ -505,23 +504,7 @@ class SingleTerminalTabActionViewItem extends MenuEntryActionViewItem {
 				}
 			}
 			label.style.color = colorStyle;
-
-			const elements = new Array<HTMLSpanElement | string>();
-
-			const tabLabel = getSingleTabLabel(instance, ThemeIcon.isThemeIcon(this._commandAction.item.icon) ? this._commandAction.item.icon : undefined);
-
-			// ensures that the icon will always be displayed and allows for truncation of text
-			// to prevent overflow into the actions
-			const iconAndText = separateIconAndText(tabLabel);
-
-			if (iconAndText.icon) {
-				elements.push(renderIcon({ id: iconAndText.icon }));
-				const node = dom.$(`span`);
-				node.classList.add('terminal-label-text');
-				node.innerText = iconAndText.text;
-				elements.push(node);
-				dom.reset(label, ...elements);
-			}
+			dom.reset(label, ...renderLabelWithIcons(getSingleTabLabel(instance, ThemeIcon.isThemeIcon(this._commandAction.item.icon) ? this._commandAction.item.icon : undefined)));
 
 			if (this._altCommand) {
 				label.classList.remove(this._altCommand);
@@ -563,7 +546,7 @@ class SingleTerminalTabActionViewItem extends MenuEntryActionViewItem {
 	}
 }
 
-function getSingleTabLabel(instance: ITerminalInstance | undefined, icon?: ThemeIcon): string {
+function getSingleTabLabel(instance: ITerminalInstance | undefined, icon?: ThemeIcon) {
 	// Don't even show the icon if there is no title as the icon would shift around when the title
 	// is added
 	if (!instance || !instance.title) {
@@ -634,7 +617,7 @@ class TerminalThemeIconStyle extends Themable {
 			const iconClasses = getUriClasses(instance, colorTheme.type);
 			if (uri instanceof URI && iconClasses && iconClasses.length > 1) {
 				css += (
-					`.monaco-workbench .${iconClasses[0]} .monaco-highlighted-label .codicon, .monaco-action-bar .terminal-uri-icon.single-terminal-tab.action-label:not(.alt-command) .codicon` +
+					`.monaco-workbench .${iconClasses[0]} .monaco-highlighted-label .codicon, .monaco-action-bar .terminal-uri-icon.single-terminal-tab.action-label:not(.alt-command) .codicon,` +
 					`{background-image: ${dom.asCSSUrl(uri)};}`
 				);
 			}
