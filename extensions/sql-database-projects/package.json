@@ -16,6 +16,7 @@
     "onCommand:sqlDatabaseProjects.new",
     "onCommand:sqlDatabaseProjects.open",
     "onCommand:sqlDatabaseProjects.createProjectFromDatabase",
+    "onCommand:sqlDatabaseProjects.generateProjectFromOpenApiSpec",
     "onCommand:sqlDatabaseProjects.addSqlBinding",
     "workspaceContains:**/*.sqlproj",
     "onView:dataworkspace.views.main"
@@ -44,6 +45,14 @@
           "sqlDatabaseProjects.netCoreDoNotAsk": {
             "type": "boolean",
             "description": "%sqlDatabaseProjects.netCoreDoNotAsk%"
+          },
+          "sqlDatabaseProjects.nodejsDoNotAsk": {
+            "type": "boolean",
+            "description": "%sqlDatabaseProjects.nodejsDoNotAsk%"
+          },
+          "sqlDatabaseProjects.autorestSqlVersion": {
+            "type": "string",
+            "description": "%sqlDatabaseProjects.autorestSqlVersion%"
           }
         }
       }
@@ -156,6 +165,11 @@
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
+        "command": "sqlDatabaseProjects.generateProjectFromOpenApiSpec",
+        "title": "%sqlDatabaseProjects.generateProjectFromOpenApiSpec%",
+        "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
         "command": "sqlDatabaseProjects.addSqlBinding",
         "title": "%sqlDatabaseProjects.addSqlBinding%"
       }
@@ -165,7 +179,12 @@
         {
           "command": "sqlDatabaseProjects.createProjectFromDatabase",
           "when": "view == dataworkspace.views.main",
-          "group": "1_currentWorkspace"
+          "group": "1_currentWorkspace@1"
+        },
+        {
+          "command": "sqlDatabaseProjects.generateProjectFromOpenApiSpec",
+          "when": "view == dataworkspace.views.main",
+          "group": "1_currentWorkspace@2"
         }
       ],
       "commandPalette": [
@@ -382,20 +401,24 @@
     }
   },
   "dependencies": {
-    "@types/xml-formatter": "^1.1.0",
     "@microsoft/ads-extension-telemetry": "^1.1.5",
     "fast-glob": "^3.1.0",
     "fs-extra": "^5.0.0",
     "jsonc-parser": "^2.3.1",
     "promisify-child-process": "^3.1.1",
+    "semver": "^7.3.5",
     "vscode-languageclient": "^5.3.0-next.1",
     "vscode-nls": "^4.1.2",
+    "which": "^2.0.2",
     "xml-formatter": "^2.1.0",
     "xmldom": "^0.3.0"
   },
   "devDependencies": {
+    "@types/fs-extra": "^5.0.0",
     "@types/mocha": "^5.2.5",
     "@types/sinon": "^9.0.4",
+    "@types/which": "^2.0.1",
+    "@types/xml-formatter": "^1.1.0",
     "@types/xmldom": "^0.1.29",
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.17.0",
@@ -405,8 +428,7 @@
     "tslint": "^5.8.0",
     "typemoq": "^2.1.0",
     "typescript": "^2.6.1",
-    "vscodetestcover": "^1.1.0",
-    "@types/fs-extra": "^5.0.0"
+    "vscodetestcover": "^1.1.0"
   },
   "__metadata": {
     "id": "70",

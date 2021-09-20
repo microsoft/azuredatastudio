@@ -6,7 +6,8 @@ import * as vscode from 'vscode';
 import * as utils from '../common/utils';
 import * as azureFunctionsUtils from '../common/azureFunctionsUtils';
 import * as constants from '../common/constants';
-import { DotNetCommandOptions, NetCoreTool } from './netcoreTool';
+import { NetCoreTool } from './netcoreTool';
+import { ShellCommandOptions } from './shellExecutionHelper';
 
 export class PackageHelper {
 	private netCoreTool: NetCoreTool;
@@ -40,7 +41,7 @@ export class PackageHelper {
 	 * @param packageVersion optional version of package. If none, latest will be pulled in
 	 */
 	public async addPackage(projectUri: vscode.Uri, packageName: string, packageVersion?: string): Promise<void> {
-		const addOptions: DotNetCommandOptions = {
+		const addOptions: ShellCommandOptions = {
 			commandTitle: constants.addPackage,
 			argument: this.constructAddPackageArguments(projectUri, packageName, packageVersion)
 		};

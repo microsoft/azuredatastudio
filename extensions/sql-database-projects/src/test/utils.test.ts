@@ -7,7 +7,7 @@ import * as should from 'should';
 import * as path from 'path';
 import * as os from 'os';
 import { createDummyFileStructure } from './testUtils';
-import { exists, trimUri, removeSqlCmdVariableFormatting, formatSqlCmdVariable, isValidSqlCmdVariableName, timeConversion, validateSqlServerPortNumber, isEmptyString } from '../common/utils';
+import { exists, trimUri, removeSqlCmdVariableFormatting, formatSqlCmdVariable, isValidSqlCmdVariableName, timeConversion, validateSqlServerPortNumber, isEmptyString, detectCommandInstallation } from '../common/utils';
 import { Uri } from 'vscode';
 
 describe('Tests to verify utils functions', function (): void {
@@ -104,6 +104,11 @@ describe('Tests to verify utils functions', function (): void {
 		should(isEmptyString('')).equals(true);
 		should(isEmptyString(undefined)).equals(true);
 		should(isEmptyString('65536')).equals(false);
+	});
+
+	it('Should correctly detect present commands', async () => {
+		should(await detectCommandInstallation('node')).equal(true, '"node" should have been detected.');
+		should(await detectCommandInstallation('bogusFakeCommand')).equal(false, '"bogusFakeCommand" should have been detected.');
 	});
 });
 

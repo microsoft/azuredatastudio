@@ -355,6 +355,9 @@
     <trans-unit id="generateScriptButtonText">
       <source xml:lang="en">Generate Script</source>
     </trans-unit>
+    <trans-unit id="generatingProjectFailed">
+      <source xml:lang="en">Generating project via AutoRest failed</source>
+    </trans-unit>
     <trans-unit id="hr">
       <source xml:lang="en">hr</source>
     </trans-unit>
@@ -403,6 +406,9 @@
     <trans-unit id="msec">
       <source xml:lang="en">msec</source>
     </trans-unit>
+    <trans-unit id="multipleMostDeploymentScripts">
+      <source xml:lang="en">Unexpected number of {0} files: {1}</source>
+    </trans-unit>
     <trans-unit id="multipleSqlProjFilesSelected">
       <source xml:lang="en">Multiple .sqlproj files selected; please select only one.</source>
     </trans-unit>
@@ -438,6 +444,12 @@
     </trans-unit>
     <trans-unit id="noStringDefault">
       <source xml:lang="en">No (default)</source>
+    </trans-unit>
+    <trans-unit id="nodeButNotAutorestFound">
+      <source xml:lang="en">Autorest tool not found in system path, but found Node.js.  Running via npx.  Please execute 'npm install autorest -g' to install permanently.</source>
+    </trans-unit>
+    <trans-unit id="nodeNotFound">
+      <source xml:lang="en">Neither autorest nor Node.js (npx) found in system path.  Please install Node.js for autorest generation to work.</source>
     </trans-unit>
     <trans-unit id="notValidVariableName">
       <source xml:lang="en">The variable name '{0}' is not valid.</source>
@@ -601,6 +613,9 @@
     <trans-unit id="selectSetting">
       <source xml:lang="en">Select SQL connection string setting from local.settings.json</source>
     </trans-unit>
+    <trans-unit id="selectSpecFile">
+      <source xml:lang="en">Select OpenAPI/Swagger spec file</source>
+    </trans-unit>
     <trans-unit id="selectString">
       <source xml:lang="en">Select</source>
     </trans-unit>
@@ -631,7 +646,7 @@
     <trans-unit id="sqlConnectionStringFriendly">
       <source xml:lang="en">SQL connection string</source>
     </trans-unit>
-    <trans-unit id="sqlDatabaseProjects.InstallNetCore">
+    <trans-unit id="sqlDatabaseProjects.Install">
       <source xml:lang="en">Install</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.NetCoreInstallationConfirmation">
@@ -723,6 +738,8 @@
     <trans-unit id="sqlDatabaseProject.RunCommand.ErroredOut">
       <source xml:lang="en">	&gt;&gt;&gt; {0}   … errored out: {1}</source>
     </trans-unit>
+</body></file>
+  <file original="extensions/sql-database-projects/dist/tools/shellExecutionHelper" source-language="en" datatype="plaintext"><body>
     <trans-unit id="sqlDatabaseProjects.RunCommand.stderr">
       <source xml:lang="en">    stderr: </source>
     </trans-unit>
@@ -745,6 +762,9 @@
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.addSqlBinding">
       <source xml:lang="en">Add SQL Binding</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.autorestSqlVersion">
+      <source xml:lang="en">Which version of Autorest.Sql to use from NPM.  Latest will be used if not set.</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.build">
       <source xml:lang="en">Build</source>
@@ -772,6 +792,9 @@
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.exclude">
       <source xml:lang="en">Exclude from project</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.generateProjectFromOpenApiSpec">
+      <source xml:lang="en">Generate SQL Project from OpenAPI/Swagger spec</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.netCoreDoNotAsk">
       <source xml:lang="en">Whether to prompt the user to install .NET Core when not detected.</source>
@@ -808,6 +831,9 @@
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.newView">
       <source xml:lang="en">Add View</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.nodejsDoNotAsk">
+      <source xml:lang="en">Whether to prompt the user to install Node.js when not detected.</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.open">
       <source xml:lang="en">Open Database Project</source>

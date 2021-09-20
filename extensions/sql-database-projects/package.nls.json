@@ -30,10 +30,13 @@
 	"sqlDatabaseProjects.openContainingFolder": "Open Containing Folder",
 	"sqlDatabaseProjects.editProjectFile": "Edit .sqlproj File",
 	"sqlDatabaseProjects.changeTargetPlatform": "Change Target Platform",
+	"sqlDatabaseProjects.generateProjectFromOpenApiSpec": "Generate SQL Project from OpenAPI/Swagger spec",
 
 	"sqlDatabaseProjects.Settings": "Database Projects",
 	"sqlDatabaseProjects.netCoreInstallLocation": "Full path to .NET Core SDK on the machine.",
 	"sqlDatabaseProjects.netCoreDoNotAsk": "Whether to prompt the user to install .NET Core when not detected.",
+	"sqlDatabaseProjects.nodejsDoNotAsk": "Whether to prompt the user to install Node.js when not detected.",
+	"sqlDatabaseProjects.autorestSqlVersion": "Which version of Autorest.Sql to use from NPM.  Latest will be used if not set.",
 	"sqlDatabaseProjects.welcome": "No database projects currently open.\n[New Project](command:sqlDatabaseProjects.new)\n[Open Project](command:sqlDatabaseProjects.open)\n[Create Project From Database](command:sqlDatabaseProjects.importDatabase)",
 
 	"sqlDatabaseProjects.addSqlBinding":"Add SQL Binding"
