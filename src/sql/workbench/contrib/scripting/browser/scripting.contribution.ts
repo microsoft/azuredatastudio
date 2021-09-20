@@ -16,6 +16,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ItemContextKey } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerContext';
 import { EditDataAction } from 'sql/workbench/browser/scriptingActions';
 import { DatabaseEngineEdition } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { azuremonitorLogsProviderName } from 'sql/workbench/common/constants';
 
 //#region -- Data Explorer
 // Script as Create
@@ -101,7 +102,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 	},
 	when: ContextKeyExpr.and(
 		ConnectionContextKey.Provider.notEqualsTo('KUSTO'),
-		ConnectionContextKey.Provider.notEqualsTo('LOGANALYTICS'),
+		ConnectionContextKey.Provider.notEqualsTo(azuremonitorLogsProviderName),
 		ContextKeyExpr.or(
 			TreeNodeContextKey.NodeType.isEqualTo(NodeType.Table),
 			TreeNodeContextKey.NodeType.isEqualTo(NodeType.View)
@@ -118,7 +119,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 	},
 	when: ContextKeyExpr.or(
 		ContextKeyExpr.and(ConnectionContextKey.Provider.isEqualTo('KUSTO'), TreeNodeContextKey.NodeType.isEqualTo(NodeType.Table)),
-		ContextKeyExpr.and(ConnectionContextKey.Provider.isEqualTo('LOGANALYTICS'), TreeNodeContextKey.NodeType.isEqualTo(NodeType.Table)))
+		ContextKeyExpr.and(ConnectionContextKey.Provider.isEqualTo(azuremonitorLogsProviderName), TreeNodeContextKey.NodeType.isEqualTo(NodeType.Table)))
 });
 
 MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
@@ -132,7 +133,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 		ContextKeyExpr.and(
 			TreeNodeContextKey.NodeType.isEqualTo(NodeType.Table),
 			ConnectionContextKey.Provider.notEqualsTo('KUSTO'),
-			ConnectionContextKey.Provider.notEqualsTo('LOGANALYTICS'),
+			ConnectionContextKey.Provider.notEqualsTo(azuremonitorLogsProviderName),
 			MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()),
 			MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlDataWarehouse.toString())
 		)
@@ -148,7 +149,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 	when:
 		ContextKeyExpr.and(
 			ConnectionContextKey.Provider.notEqualsTo('KUSTO'),
-			ConnectionContextKey.Provider.notEqualsTo('LOGANALYTICS'),
+			ConnectionContextKey.Provider.notEqualsTo(azuremonitorLogsProviderName),
 			ContextKeyExpr.or(
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.Table),
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.View),
@@ -228,7 +229,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 	when:
 		ContextKeyExpr.and(
 			ConnectionContextKey.Provider.notEqualsTo('KUSTO'),
-			ConnectionContextKey.Provider.notEqualsTo('LOGANALYTICS'),
+			ConnectionContextKey.Provider.notEqualsTo(azuremonitorLogsProviderName),
 			ContextKeyExpr.or(
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.Table),
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.View),
@@ -288,7 +289,7 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
 	when:
 		ContextKeyExpr.and(
 			ItemContextKey.ConnectionProvider.notEqualsTo('kusto'),
-			ItemContextKey.ConnectionProvider.notEqualsTo('loganalytics'),
+			ItemContextKey.ConnectionProvider.notEqualsTo(azuremonitorLogsProviderName.toLowerCase()),
 			ContextKeyExpr.or(
 				ItemContextKey.ItemType.isEqualTo('view'),
 				ItemContextKey.ItemType.isEqualTo('table')
@@ -306,7 +307,7 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
 		ContextKeyExpr.and(
 			ContextKeyExpr.or(
 				ItemContextKey.ConnectionProvider.isEqualTo('kusto'),
-				ItemContextKey.ConnectionProvider.isEqualTo('loganalytics')
+				ItemContextKey.ConnectionProvider.isEqualTo(azuremonitorLogsProviderName.toLowerCase())
 			),
 			ItemContextKey.ItemType.isEqualTo('table')
 		),
@@ -329,7 +330,7 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
 			ItemContextKey.ItemType.isEqualTo('table'),
 			MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()),
 			ItemContextKey.ConnectionProvider.notEqualsTo('kusto'),
-			ItemContextKey.ConnectionProvider.notEqualsTo('loganalytics'),
+			ItemContextKey.ConnectionProvider.notEqualsTo(azuremonitorLogsProviderName.toLowerCase()),
 			MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlDataWarehouse.toString())
 		),
 	order: 2
@@ -394,7 +395,7 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
 	when: ContextKeyExpr.and(
 		ItemContextKey.ItemType.notEqualsTo('database'),
 		ItemContextKey.ConnectionProvider.notEqualsTo('kusto'),
-		ItemContextKey.ConnectionProvider.notEqualsTo('loganalytics')),
+		ItemContextKey.ConnectionProvider.notEqualsTo(azuremonitorLogsProviderName.toLowerCase())),
 	order: 2
 });
 //#endregion

@@ -24,6 +24,7 @@ import { getCurrentGlobalConnection } from 'sql/workbench/browser/taskUtilities'
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { azuremonitorLogsProviderName } from 'sql/workbench/common/constants';
 
 const defaults: INewSqlEditorOptions = {
 	open: true
@@ -121,7 +122,7 @@ export class QueryEditorService implements IQueryEditorService {
 
 	////// Private functions
 	private createUntitledSqlFilePath(providerName?: string): Promise<string> {
-		if (providerName === 'LOGANALYTICS' || providerName === 'KUSTO') {
+		if (providerName === azuremonitorLogsProviderName || providerName === 'KUSTO') {
 			return this.createPrefixedSqlFilePath('KQLQuery');
 		}
 

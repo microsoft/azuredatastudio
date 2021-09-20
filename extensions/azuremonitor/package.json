@@ -1,7 +1,7 @@
 {
   "name": "azuremonitor",
   "description": "%azuremonitor.description%",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "publisher": "Microsoft",
   "aiKey": "AIF-444c3af9-8e69-4462-ab49-4191e6ad1916",
   "activationEvents": [
@@ -9,7 +9,7 @@
   ],
   "engines": {
     "vscode": "*",
-    "azdata": ">=1.31.0"
+    "azdata": ">=1.33.0"
   },
   "main": "./out/main",
   "repository": {
@@ -19,11 +19,11 @@
   "typings": "./src/azuremonitor",
   "contributes": {
     "connectionProvider": {
-      "providerId": "LOGANALYTICS",
-      "languageMode": "loganalytics",
+      "providerId": "AZUREMONITORLOGS",
+      "languageMode": "azuremonitorlogs",
       "displayName": "%azuremonitor.displayName%",
-      "notebookKernelAlias": "LogAnalytics",
-      "azureResource": "AzureLogAnalytics",
+      "notebookKernelAlias": "AzureMonitorLogs",
+      "azureResource": "AzureMonitorLogs",
       "iconPath": [
         {
           "id": "azuremonitor:cloud",
@@ -127,7 +127,7 @@
       ]
     },
     "dashboard": {
-      "provider": "LOGANALYTICS",
+      "provider": "AZUREMONITORLOGS",
       "flavors": [
         {
           "flavor": "cloud",
@@ -178,20 +178,20 @@
     },
     "languages": [
       {
-        "id": "loganalytics",
+        "id": "azuremonitorlogs",
         "aliases": [
-          "LogAnalytics",
-          "loganalytics"
+          "AzureMonitorLogs",
+          "azuremonitorlogs"
         ],
         "extensions": [
-          ".loganalytics"
+          ".azuremonitorlogs"
         ],
         "configuration": "./language-configuration.json"
       }
     ],
     "grammars": [
       {
-        "language": "loganalytics",
+        "language": "azuremonitorlogs",
         "scopeName": "source.azuremonitor",
         "path": "./syntaxes/azuremonitor.tmLanguage"
       }

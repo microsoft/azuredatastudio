@@ -71,10 +71,10 @@ const publicAzureSettings: ProviderSettings = {
 				endpoint: '499b84ac-1321-427f-aa17-267ca6975798',
 				azureResourceId: AzureResource.AzureDevOps,
 			},
-			azureLogAnalyticsResource: {
+			azureMonitorLogsResource: {
 				id: SettingIds.ala,
 				endpoint: 'https://api.loganalytics.io',
-				azureResourceId: AzureResource.AzureLogAnalytics,
+				azureResourceId: AzureResource.AzureMonitorLogs,
 			},
 			azureStorageResource: {
 				id: SettingIds.storage,
@@ -136,10 +136,10 @@ const usGovAzureSettings: ProviderSettings = {
 				endpoint: 'https://vault.usgovcloudapi.net',
 				azureResourceId: AzureResource.AzureKeyVault
 			},
-			azureLogAnalyticsResource: {
+			azureMonitorLogsResource: {
 				id: SettingIds.ala,
 				endpoint: 'https://api.loganalytics.us',
-				azureResourceId: AzureResource.AzureLogAnalytics,
+				azureResourceId: AzureResource.AzureMonitorLogs,
 			},
 			azureStorageResource: {
 				id: SettingIds.storage,
@@ -195,10 +195,10 @@ const usNatAzureSettings: ProviderSettings = {
 				endpoint: 'https://vault.cloudapi.eaglex.ic.gov',
 				azureResourceId: AzureResource.AzureKeyVault
 			},
-			azureLogAnalyticsResource: {
+			azureMonitorLogsResource: {
 				id: SettingIds.ala,
 				endpoint: 'https://api.loganalytics.azure.eaglex.ic.gov',
-				azureResourceId: AzureResource.AzureLogAnalytics,
+				azureResourceId: AzureResource.AzureMonitorLogs,
 			},
 			azureStorageResource: {
 				id: SettingIds.storage,
@@ -299,10 +299,10 @@ const chinaAzureSettings: ProviderSettings = {
 				endpoint: 'https://vault.azure.cn',
 				azureResourceId: AzureResource.AzureKeyVault
 			},
-			azureLogAnalyticsResource: {
+			azureMonitorLogsResource: {
 				id: SettingIds.ala,
 				endpoint: 'https://api.loganalytics.azure.cn',
-				azureResourceId: AzureResource.AzureLogAnalytics,
+				azureResourceId: AzureResource.AzureMonitorLogs,
 			},
 			azureStorageResource: {
 				id: SettingIds.storage,

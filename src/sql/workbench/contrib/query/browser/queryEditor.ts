@@ -42,6 +42,7 @@ import { IRange } from 'vs/editor/common/core/range';
 import { UntitledQueryEditorInput } from 'sql/base/query/browser/untitledQueryEditorInput';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IEditorOptions } from 'vs/platform/editor/common/editor';
+import { azureMonitorLogsLanguageMode, azuremonitorLogsProviderName } from 'sql/workbench/common/constants';
 
 const QUERY_EDITOR_VIEW_STATE_PREFERENCE_KEY = 'queryEditorViewState';
 
@@ -290,9 +291,9 @@ export class QueryEditor extends EditorPane {
 				{ action: this._listDatabasesAction }
 			];
 		}
-		else if (providerId === 'LOGANALYTICS' || this.modeService.getExtensions('LogAnalytics').indexOf(fileExtension) > -1) {
+		else if (providerId === azuremonitorLogsProviderName || this.modeService.getExtensions(azureMonitorLogsLanguageMode).indexOf(fileExtension) > -1) {
 			if (this.input instanceof UntitledQueryEditorInput) {
-				this.input.setMode('loganalytics');
+				this.input.setMode(azuremonitorLogsProviderName.toLowerCase());
 			}
 
 			content = [

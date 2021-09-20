@@ -29,7 +29,7 @@ export class AzureMonitorTreeDataProvider extends ResourceTreeDataProviderBase<a
 
 	protected getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: AzureAccount): TreeItem {
 		return {
-			id: `LogAnalytics_${databaseServer.id ? databaseServer.id : databaseServer.name}`,
+			id: `AzureMonitorLogs_${databaseServer.id ? databaseServer.id : databaseServer.name}`,
 			label: this.browseConnectionMode ? `${databaseServer.name} (${AzureMonitorTreeDataProvider.containerLabel}, ${databaseServer.subscription.name})` : databaseServer.name,
 			iconPath: {
 				dark: this._extensionContext.asAbsolutePath('resources/dark/azure_monitor_dark.svg'),
@@ -48,7 +48,7 @@ export class AzureMonitorTreeDataProvider extends ResourceTreeDataProviderBase<a
 				savePassword: true,
 				groupFullName: '',
 				groupId: '',
-				providerName: 'LOGANALYTICS',
+				providerName: 'AZUREMONITORLOGS',
 				saveProfile: false,
 				options: {},
 				azureAccount: account.key.accountId,
@@ -56,7 +56,7 @@ export class AzureMonitorTreeDataProvider extends ResourceTreeDataProviderBase<a
 				azureResourceId: databaseServer.id,
 				azurePortalEndpoint: account.properties.providerSettings.settings.portalEndpoint
 			},
-			childProvider: 'LOGANALYTICS',
+			childProvider: 'AZUREMONITORLOGS',
 			type: ExtensionNodeType.Server
 		};
 	}

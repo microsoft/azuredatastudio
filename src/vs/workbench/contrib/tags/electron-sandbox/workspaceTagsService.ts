@@ -158,7 +158,7 @@ const PyMetaModulesToLookFor = [
 const PyModulesToLookFor = [
 	'azure',
 	'azure-appconfiguration',
-	'azure-loganalytics',
+	'azure-azuremonitorlogs',
 	'azure-synapse-nspkg',
 	'azure-synapse-spark',
 	'azure-synapse-artifacts',
@@ -466,7 +466,7 @@ export class WorkspaceTagsService implements IWorkspaceTagsService {
 			"workspace.py.azure-identity" : { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true },
 			"workspace.py.azure-iothub-device-client" : { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true },
 			"workspace.py.azure-keyvault" : { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true },
-			"workspace.py.azure-loganalytics" : { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true },
+			"workspace.py.azure-azuremonitorlogs" : { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true },
 			"workspace.py.azure-mgmt" : { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true },
 			"workspace.py.azure-ml" : { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true },
 			"workspace.py.azure-monitor" : { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true },

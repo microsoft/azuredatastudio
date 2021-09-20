@@ -2310,7 +2310,7 @@ declare module 'azdata' {
 		/**
 		 * Azure Log Analytics
 		 */
-		AzureLogAnalytics = 8,
+		AzureMonitorLogs = 8,
 		/**
 		 * Azure Storage
 		 */
