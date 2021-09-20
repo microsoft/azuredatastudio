@@ -234,7 +234,12 @@ export class DashboardWidget {
 			title: taskMetaData.title,
 			width: maxWidth,
 			CSSStyles: {
-				'border': '1px solid'
+				'border': '1px solid',
+				'display': 'flex',
+				'flex-direction': 'column',
+				'justify-content': 'flex-start',
+				'border-radius': '4px',
+				'transition': 'all .5s ease',
 			}
 		}).component();
 		this._disposables.push(buttonContainer.onDidClick(async () => {
@@ -389,7 +394,12 @@ export class DashboardWidget {
 				'width': '400px',
 				'border': '1px solid',
 				'margin-top': '10px',
-				'height': '50px'
+				'height': '50px',
+				'display': 'flex',
+				'flex-direction': 'column',
+				'justify-content': 'flex-start',
+				'border-radius': '4px',
+				'transition': 'all .5s ease',
 			}
 		}).component();
 		return {
