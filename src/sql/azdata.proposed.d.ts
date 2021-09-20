@@ -585,7 +585,9 @@ declare module 'azdata' {
 	 */
 	export enum TextType {
 		Normal = 'Normal',
-		Error = 'Error'
+		Error = 'Error',
+		UnorderedList = 'UnorderedList',
+		OrderedList = 'OrderedList'
 	}
 
 	export interface TextComponentProperties {
@@ -595,7 +597,7 @@ declare module 'azdata' {
 		 */
 		headingLevel?: HeadingLevel;
 		/**
-		 * The type to display the text as - used to determine the color of the text. Default is Normal.
+		 * Sets the type of text box to be displayed
 		 */
 		textType?: TextType;
 	}

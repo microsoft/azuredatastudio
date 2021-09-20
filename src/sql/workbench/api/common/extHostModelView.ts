@@ -1350,10 +1350,10 @@ class TextComponentWrapper extends ComponentWrapper implements azdata.TextCompon
 		this.properties = {};
 	}
 
-	public get value(): string {
+	public get value(): string | string[] {
 		return this.properties['value'];
 	}
-	public set value(v: string) {
+	public set value(v: string | string[]) {
 		this.setProperty('value', v);
 	}
 
