@@ -684,6 +684,9 @@
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/browser/modelComponents/dropdown.component" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="defaultDropdownErrorMessage">
+      <source xml:lang="en">Please fill out this field.</source>
+    </trans-unit>
     <trans-unit id="loadingCompletedMessage">
       <source xml:lang="en">Loading completed</source>
     </trans-unit>
