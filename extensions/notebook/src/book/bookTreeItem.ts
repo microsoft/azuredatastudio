@@ -59,7 +59,7 @@ export class BookTreeItem extends vscode.TreeItem {
 				this.contextValue = BookTreeItemType.savedBook;
 			}
 		} else {
-			if (book.page && book.page.sections && book.page.sections.length > 0) {
+			if (book.page && book.page.sections) {
 				this.contextValue = BookTreeItemType.section;
 			} else if (book.type === BookTreeItemType.Notebook && !book.tableOfContents.sections) {
 				if (book.isUntitled) {
