@@ -1180,7 +1180,7 @@ class WorkbenchTreeInternals<TInput, T, TFilterData> {
 					newOptions = { ...newOptions, renderIndentGuides };
 				}
 				if (e.affectsConfiguration(listSmoothScrolling)) {
-					const smoothScrolling = Boolean(configurationService.getValue<boolean>(listSmoothScrolling));
+					const smoothScrolling = Boolean(!!configurationService.getValue(listSmoothScrolling));
 					newOptions = { ...newOptions, smoothScrolling };
 				}
 				if (e.affectsConfiguration(keyboardNavigationSettingKey)) {
@@ -1190,7 +1190,7 @@ class WorkbenchTreeInternals<TInput, T, TFilterData> {
 					newOptions = { ...newOptions, automaticKeyboardNavigation: getAutomaticKeyboardNavigation() };
 				}
 				if (e.affectsConfiguration(horizontalScrollingKey) && options.horizontalScrolling === undefined) {
-					const horizontalScrolling = Boolean(configurationService.getValue<boolean>(horizontalScrollingKey));
+					const horizontalScrolling = Boolean(!!configurationService.getValue(horizontalScrollingKey));
 					newOptions = { ...newOptions, horizontalScrolling };
 				}
 				if (e.affectsConfiguration(treeExpandMode) && options.expandOnlyOnTwistieClick === undefined) {
