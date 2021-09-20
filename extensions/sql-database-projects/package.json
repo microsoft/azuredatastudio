@@ -402,8 +402,6 @@
   },
   "dependencies": {
     "@microsoft/ads-extension-telemetry": "^1.1.5",
-    "@types/which": "^2.0.1",
-    "@types/xml-formatter": "^1.1.0",
     "fast-glob": "^3.1.0",
     "fs-extra": "^5.0.0",
     "jsonc-parser": "^2.3.1",
@@ -419,6 +417,8 @@
     "@types/fs-extra": "^5.0.0",
     "@types/mocha": "^5.2.5",
     "@types/sinon": "^9.0.4",
+    "@types/which": "^2.0.1",
+    "@types/xml-formatter": "^1.1.0",
     "@types/xmldom": "^0.1.29",
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.17.0",
