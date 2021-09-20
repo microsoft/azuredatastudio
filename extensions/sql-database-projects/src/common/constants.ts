@@ -135,12 +135,13 @@ export const enterPortNumber = localize('enterPortNumber', "Enter port number or
 export const enterConnectionStringEnvName = localize('enterConnectionStringEnvName', "Enter connection string environment variable name");
 export const enterConnectionStringTemplate = localize('enterConnectionStringTemplate', "Enter connection string template");
 export const enterPassword = localize('enterPassword', "Enter password");
+export const enterBaseImage = localize('enterBaseImage', "Enter the base SQL Server docker image or press enter to use the default value");
 export const portMustBeNumber = localize('portMustNotBeNumber', "Port must a be number");
 export const valueCannotBeEmpty = localize('valueCannotBeEmpty', "Value cannot be empty");
 export const dockerImageLabelPrefix = 'source=sqldbproject';
 export const dockerImageNamePrefix = 'sqldbproject';
 export const connectionNamePrefix = 'SQLDbProject';
-export const dockerBaseImage = 'mcr.microsoft.com/azure-sql-edge:latest';
+export const defaultDockerBaseImage = 'mcr.microsoft.com/mssql/server:2019-latest';
 export const commandsFolderName = 'commands';
 export const mssqlFolderName = '.mssql';
 export const dockerFileName = 'Dockerfile';
