@@ -4363,6 +4363,10 @@
 								{
 									"key": "Microsoft.AzDataEngine",
 									"value": ">=1.21.0"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/Microsoft"
 								}
 							]
 						}
