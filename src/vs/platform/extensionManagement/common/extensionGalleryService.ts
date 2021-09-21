@@ -675,7 +675,6 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		if (extensionPolicy === ExtensionsPolicy.allowMicrosoft) {
 			filteredExtensions = filteredExtensions.filter(ext => ext.publisher && ext.publisher.displayName === 'Microsoft');
 		}
-
 		return { galleryExtensions: filteredExtensions, total: actualTotal };
 	}
 
