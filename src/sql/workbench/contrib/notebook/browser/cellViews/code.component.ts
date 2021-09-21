@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./code';
 
-import { OnInit, Component, Input, Inject, ElementRef, ViewChild, Output, EventEmitter, OnChanges, SimpleChange, forwardRef, ChangeDetectorRef, HostListener } from '@angular/core';
+import { OnInit, Component, Input, Inject, ElementRef, ViewChild, Output, EventEmitter, OnChanges, SimpleChange, forwardRef, ChangeDetectorRef } from '@angular/core';
 
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
 import { ICellModel, CellExecutionState } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
