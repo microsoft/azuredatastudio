@@ -356,7 +356,7 @@
       <source xml:lang="en">Generate Script</source>
     </trans-unit>
     <trans-unit id="generatingProjectFailed">
-      <source xml:lang="en">Generating project via AutoRest failed</source>
+      <source xml:lang="en">Generating project via AutoRest failed: {0}</source>
     </trans-unit>
     <trans-unit id="hr">
       <source xml:lang="en">hr</source>
@@ -633,6 +633,9 @@
     </trans-unit>
     <trans-unit id="sourceDatabase">
       <source xml:lang="en">Source database</source>
+    </trans-unit>
+    <trans-unit id="specSelectionText">
+      <source xml:lang="en">OpenAPI/Swagger spec</source>
     </trans-unit>
     <trans-unit id="sqlCmdTableLabel">
       <source xml:lang="en">SQLCMD Variables</source>
