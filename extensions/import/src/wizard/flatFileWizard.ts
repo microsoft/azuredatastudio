@@ -23,6 +23,7 @@ export class FlatFileWizard {
 	public page3: azdata.window.WizardPage;
 	public page4: azdata.window.WizardPage;
 
+	public createDerivedColumnButton: azdata.window.Button;
 	private importAnotherFileButton: azdata.window.Button;
 
 	constructor(
@@ -89,6 +90,8 @@ export class FlatFileWizard {
 			await summaryPage.start();
 		});
 
+		this.createDerivedColumnButton = azdata.window.createButton(constants.createDerivedColumn);
+		this.createDerivedColumnButton.hidden = true;
 
 		this.importAnotherFileButton = azdata.window.createButton(constants.importNewFileText);
 		this.importAnotherFileButton.onClick(() => {
@@ -99,7 +102,7 @@ export class FlatFileWizard {
 		});
 
 		this.importAnotherFileButton.hidden = true;
-		this.wizard.customButtons = [this.importAnotherFileButton];
+		this.wizard.customButtons = [this.importAnotherFileButton, this.createDerivedColumnButton];
 		this.wizard.onPageChanged(async (event) => {
 			let newPageIdx = event.newPage;
 			let lastPageIdx = event.lastPage;
