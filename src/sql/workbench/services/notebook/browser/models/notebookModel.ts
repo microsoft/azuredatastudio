@@ -712,6 +712,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			if (this.isValidConnection(profile)) {
 				this._activeConnection = profile;
 				this._savedConnectionName = profile.connectionName;
+				kernelAlias = this._currentKernelAlias;
 			}
 
 			clientSession.onKernelChanging(async (e) => {
