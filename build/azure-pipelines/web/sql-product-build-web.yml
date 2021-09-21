@@ -104,16 +104,6 @@ steps:
     yarn gulp compile-extensions
   displayName: Compile Extensions
 
-# - script: |
-#     set -e
-#     node ./node_modules/playwright/install.js
-#     VSCODE_REMOTE_SERVER_PATH="$(Agent.BuildDirectory)/vscode-reh-web-linux-x64" \
-#     yarn smoketest --build "$VSCODE_REMOTE_SERVER_PATH" --web --headless --screenshots "$(build.artifactstagingdirectory)/smokeshots"
-#   displayName: Run smoke tests (Browser)
-#   continueOnError: true
-#   failOnStderr: false
-#   condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
-
 - script: |
     set -e
     node ./node_modules/playwright/install.js
