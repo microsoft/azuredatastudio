@@ -148,9 +148,11 @@ export async function launchPublishToDockerContainerQuickpick(project: Project):
 		return undefined;
 	}
 
-	if (localDbSetting && deploySettings) {
-		deploySettings.serverName = localDbSetting.serverName;
-	}
+	// Server name should be set to localhost
+	deploySettings.serverName = localDbSetting.serverName;
+
+	// Get the database name from deploy settings
+	localDbSetting.dbName = deploySettings.databaseName;
 
 
 	return {

@@ -201,7 +201,7 @@ export class DeployService {
 				providerName: 'MSSQL',
 				saveProfile: false,
 				id: '',
-				connectionName: `${constants.connectionNamePrefix} ${profile.dbName}`,
+				connectionName: `${constants.connectionNamePrefix} ${database}`,
 				options: [],
 				authenticationType: 'SqlLogin'
 			};
