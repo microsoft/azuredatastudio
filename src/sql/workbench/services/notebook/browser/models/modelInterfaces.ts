@@ -256,7 +256,7 @@ export interface INotebookModel {
 	/**
 	 * All notebook managers applicable for a given notebook
 	 */
-	readonly notebookManagers: IExecuteManager[];
+	readonly executeManagers: IExecuteManager[];
 
 	/**
 	 * Event fired on first initialization of the kernel and

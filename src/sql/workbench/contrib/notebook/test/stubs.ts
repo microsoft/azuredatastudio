@@ -47,7 +47,7 @@ export class NotebookModelStub implements INotebookModel {
 	get sessionLoadFinished(): Promise<void> {
 		throw new Error('method not implemented.');
 	}
-	get notebookManagers(): IExecuteManager[] {
+	get executeManagers(): IExecuteManager[] {
 		throw new Error('method not implemented.');
 	}
 	get kernelChanged(): vsEvent.Event<nb.IKernelChangedArgs> {

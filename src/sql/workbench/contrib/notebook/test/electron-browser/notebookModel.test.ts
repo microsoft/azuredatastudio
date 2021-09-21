@@ -295,7 +295,7 @@ suite('notebook model', function (): void {
 		assert.strictEqual(model.notebookManager.providerId, 'SQL', 'Notebook manager provider id incorrect after 2nd model load');
 
 		// Check that the getters return  the correct values
-		assert.strictEqual(model.notebookManagers.length, 2, 'There should be 2 notebook managers');
+		assert.strictEqual(model.executeManagers.length, 2, 'There should be 2 notebook managers');
 		assert(!isUndefinedOrNull(model.getNotebookManager('SQL')), 'SQL notebook manager is not defined');
 		assert(!isUndefinedOrNull(model.getNotebookManager('jupyter')), 'Jupyter notebook manager is not defined');
 		assert(isUndefinedOrNull(model.getNotebookManager('foo')), 'foo notebook manager is incorrectly defined');
@@ -623,7 +623,7 @@ suite('notebook model', function (): void {
 		let model = await loadModelAndStartClientSession(expectedNotebookContent);
 
 		assert.strictEqual(model.inErrorState, false);
-		assert.strictEqual(model.notebookManagers.length, 1);
+		assert.strictEqual(model.executeManagers.length, 1);
 		assert.deepStrictEqual(model.clientSession, mockClientSession);
 	});
 

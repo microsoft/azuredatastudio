@@ -192,7 +192,7 @@ CommandsRegistry.registerCommand({
 				if (model.providerId === 'jupyter' && model.clientSession.isReady) {
 					// Jupyter server needs to be restarted so that the correct Python installation is used
 					if (!jupyterServerRestarted && restartJupyterServer) {
-						let jupyterNotebookManager: IExecuteManager = model.notebookManagers.find(x => x.providerId === 'jupyter');
+						let jupyterNotebookManager: IExecuteManager = model.executeManagers.find(x => x.providerId === 'jupyter');
 						// Shutdown all current Jupyter sessions before stopping the server
 						await jupyterNotebookManager.sessionManager.shutdownAll();
 						// Jupyter session manager needs to be disposed so that a new one is created with the new server info
@@ -223,7 +223,7 @@ CommandsRegistry.registerCommand({
 			if (editor instanceof NotebookInput) {
 				let model: INotebookModel = editor.notebookModel;
 				if (model?.providerId === 'jupyter') {
-					let jupyterNotebookManager: IExecuteManager = model.notebookManagers.find(x => x.providerId === 'jupyter');
+					let jupyterNotebookManager: IExecuteManager = model.executeManagers.find(x => x.providerId === 'jupyter');
 					await jupyterNotebookManager.sessionManager.shutdownAll();
 					jupyterNotebookManager.sessionManager.dispose();
 					await jupyterNotebookManager.serverManager.stopServer();

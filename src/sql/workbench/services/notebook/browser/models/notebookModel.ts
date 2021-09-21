@@ -135,7 +135,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._defaultKernel = _notebookOptions.defaultKernel;
 	}
 
-	public get notebookManagers(): IExecuteManager[] {
+	public get executeManagers(): IExecuteManager[] {
 		let notebookManagers = this._notebookOptions.notebookManagers.filter(manager => manager.providerId !== DEFAULT_NOTEBOOK_PROVIDER);
 		if (!notebookManagers.length) {
 			return this._notebookOptions.notebookManagers;
@@ -144,18 +144,18 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public get notebookManager(): IExecuteManager | undefined {
-		let manager = this.notebookManagers.find(manager => manager.providerId === this._providerId);
+		let manager = this.executeManagers.find(manager => manager.providerId === this._providerId);
 		if (!manager) {
 			// Note: this seems like a less than ideal scenario. We should ideally pass in the "correct" provider ID and allow there to be a default,
 			// instead of assuming in the NotebookModel constructor that the option is either SQL or Jupyter
-			manager = this.notebookManagers.find(manager => manager.providerId === DEFAULT_NOTEBOOK_PROVIDER);
+			manager = this.executeManagers.find(manager => manager.providerId === DEFAULT_NOTEBOOK_PROVIDER);
 		}
 		return manager;
 	}
 
 	public getNotebookManager(providerId: string): IExecuteManager | undefined {
 		if (providerId) {
-			return this.notebookManagers.find(manager => manager.providerId === providerId);
+			return this.executeManagers.find(manager => manager.providerId === providerId);
 		}
 		return undefined;
 	}
@@ -242,7 +242,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			defaultKernel: '',
 			kernels: []
 		};
-		this.notebookManagers.forEach(manager => {
+		this.executeManagers.forEach(manager => {
 			if (manager.sessionManager && manager.sessionManager.specs && manager.sessionManager.specs.kernels) {
 				manager.sessionManager.specs.kernels.forEach(kernel => {
 					specs.kernels.push(kernel);
@@ -1220,8 +1220,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				return providerId;
 			}
 		} else {
-			if (this.notebookManagers?.length) {
-				return this.notebookManagers.map(m => m.providerId).find(p => p !== DEFAULT_NOTEBOOK_PROVIDER && p !== SQL_NOTEBOOK_PROVIDER);
+			if (this.executeManagers?.length) {
+				return this.executeManagers.map(m => m.providerId).find(p => p !== DEFAULT_NOTEBOOK_PROVIDER && p !== SQL_NOTEBOOK_PROVIDER);
 			}
 		}
 		return undefined;
