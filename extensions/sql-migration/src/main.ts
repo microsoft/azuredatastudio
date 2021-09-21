@@ -120,7 +120,7 @@ class SQLMigration {
 		if (savedInfo) {
 			return savedInfo;
 		} else {
-			return;
+			return undefined;
 		}
 	}
 

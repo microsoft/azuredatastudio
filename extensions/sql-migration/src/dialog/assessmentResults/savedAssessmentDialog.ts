@@ -11,8 +11,8 @@ import { WizardController } from '../../wizard/wizardController';
 
 export class SavedAssessmentDialog {
 
-	private static readonly OkButtonText: string = 'Next';
-	private static readonly CancelButtonText: string = 'Cancel';
+	private static readonly OkButtonText: string = constants.NEXT_LABEL;
+	private static readonly CancelButtonText: string = constants.CANCEL_LABEL;
 
 	private _isOpen: boolean = false;
 	private dialog: azdata.window.Dialog | undefined;
@@ -55,7 +55,7 @@ export class SavedAssessmentDialog {
 	public async openDialog(dialogName?: string) {
 		if (!this._isOpen) {
 			this._isOpen = true;
-			this.dialog = azdata.window.createModelViewDialog('Saved Assessment Result', 'Saved Assessment Result', '60%');
+			this.dialog = azdata.window.createModelViewDialog(constants.SAVED_ASSESSMENT_RESULT, constants.SAVED_ASSESSMENT_RESULT, '60%');
 			this.dialog.okButton.label = SavedAssessmentDialog.OkButtonText;
 			this.dialog.cancelButton.label = SavedAssessmentDialog.CancelButtonText;
 			const dialogSetupPromises: Thenable<void>[] = [];

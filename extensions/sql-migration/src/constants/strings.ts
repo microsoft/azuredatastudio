@@ -510,3 +510,9 @@ export function WARNINGS_COUNT(totalCount: number): string {
 export const AUTHENTICATION_TYPE = localize('sql.migration.authentication.type', "Authentication type");
 
 export const REFRESH_BUTTON_LABEL = localize('sql.migration.status.refresh.label', 'Refresh');
+
+// Saved Assessment Dialog
+
+export const NEXT_LABEL = localize('sql.migration.saved.assessment.next', "Next");
+export const CANCEL_LABEL = localize('sql.migration.saved.assessment.cancel', "Cancel");
+export const SAVED_ASSESSMENT_RESULT = localize('sql.migration.saved.assessment.result', "Saved Assessment Result");
