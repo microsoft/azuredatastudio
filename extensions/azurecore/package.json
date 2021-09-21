@@ -334,13 +334,14 @@
     "@azure/arm-subscriptions": "^3.0.0",
     "@azure/storage-blob": "^12.6.0",
     "axios": "^0.21.1",
+    "keytar": "7.2.0",
     "node-fetch": "^2.6.1",
     "qs": "^6.9.1",
     "vscode-nls": "^4.0.0",
     "ws": "^7.2.0"
   },
   "devDependencies": {
-    "@types/keytar": "^4.4.2",
+    "@types/keytar": "^4.4.0",
     "@types/mocha": "^5.2.5",
     "@types/node": "^12.11.7",
     "@types/qs": "^6.9.1",
