@@ -570,7 +570,7 @@ export interface INotebookModelOptions {
 	factory: IModelFactory;
 
 	contentLoader: IContentLoader;
-	notebookManagers: IExecuteManager[];
+	executeManagers: IExecuteManager[];
 	providerId: string;
 	defaultKernel: nb.IKernelSpec;
 	cellMagicMapper: ICellMagicMapper;

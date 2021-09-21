@@ -123,7 +123,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	) {
 		super();
-		if (!_notebookOptions || !_notebookOptions.notebookUri || !_notebookOptions.notebookManagers) {
+		if (!_notebookOptions || !_notebookOptions.notebookUri || !_notebookOptions.executeManagers) {
 			throw new Error('path or notebook service not defined');
 		}
 		this._trustedMode = false;
@@ -136,9 +136,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public get executeManagers(): IExecuteManager[] {
-		let notebookManagers = this._notebookOptions.notebookManagers.filter(manager => manager.providerId !== DEFAULT_NOTEBOOK_PROVIDER);
+		let notebookManagers = this._notebookOptions.executeManagers.filter(manager => manager.providerId !== DEFAULT_NOTEBOOK_PROVIDER);
 		if (!notebookManagers.length) {
-			return this._notebookOptions.notebookManagers;
+			return this._notebookOptions.executeManagers;
 		}
 		return notebookManagers;
 	}
@@ -772,7 +772,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			if (provider && provider !== this._providerId) {
 				this._providerId = provider;
 			} else if (!provider) {
-				this.notebookOptions.notebookManagers.forEach(m => {
+				this.notebookOptions.executeManagers.forEach(m => {
 					if (m.providerId !== SQL_NOTEBOOK_PROVIDER) {
 						// We don't know which provider it is before that provider is chosen to query its specs. Choosing the "last" one registered.
 						this._providerId = m.providerId;

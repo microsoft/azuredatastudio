@@ -207,7 +207,7 @@ export async function createandLoadNotebookModel(codeContent?: nb.INotebookConte
 	let defaultModelOptions: INotebookModelOptions = {
 		notebookUri: URI.file('/some/path.ipynb'),
 		factory: new ModelFactory(instantiationService),
-		notebookManagers: [new NotebookManagerStub()],
+		executeManagers: [new NotebookManagerStub()],
 		contentLoader: mockContentManager.object,
 		notificationService: undefined,
 		connectionService: undefined,

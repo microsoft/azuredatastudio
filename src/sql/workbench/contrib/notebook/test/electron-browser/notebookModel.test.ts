@@ -160,7 +160,7 @@ suite('notebook model', function (): void {
 		defaultModelOptions = {
 			notebookUri: defaultUri,
 			factory: new ModelFactory(instantiationService),
-			notebookManagers,
+			executeManagers: notebookManagers,
 			contentLoader: undefined,
 			notificationService: notificationService.object,
 			connectionService: queryConnectionService.object,
@@ -171,7 +171,7 @@ suite('notebook model', function (): void {
 			capabilitiesService: capabilitiesService
 		};
 		clientSessionOptions = {
-			notebookManager: defaultModelOptions.notebookManagers[0],
+			notebookManager: defaultModelOptions.executeManagers[0],
 			notebookUri: defaultModelOptions.notebookUri,
 			notificationService: notificationService.object,
 			kernelSpec: defaultModelOptions.defaultKernel
@@ -272,7 +272,7 @@ suite('notebook model', function (): void {
 		jupyterNotebookManager.providerId = 'jupyter';
 
 		// Setup 2 notebook managers
-		defaultModelOptions.notebookManagers = [defaultNotebookManager, jupyterNotebookManager];
+		defaultModelOptions.executeManagers = [defaultNotebookManager, jupyterNotebookManager];
 
 		// Change default notebook provider id to jupyter
 		defaultModelOptions.providerId = 'jupyter';
