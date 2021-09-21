@@ -126,6 +126,16 @@
         "command": "mssql.showLogFile",
         "category": "MSSQL",
         "title": "%title.showLogFile%"
+      },
+      {
+        "command": "mssql.newTable",
+        "category": "MSSQL",
+        "title": "%title.newTable%"
+      },
+      {
+        "command": "mssql.designTable",
+        "category": "MSSQL",
+        "title": "%title.designTable%"
       }
     ],
     "outputChannels": [
@@ -474,6 +484,16 @@
           "command": "mssqlCluster.livy.cmd.submitFileToSparkJob",
           "when": "nodeType == mssqlCluster:file && nodeSubType =~/:spark:/",
           "group": "1mssqlCluster@6"
+        },
+        {
+          "command": "mssql.newTable",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && nodePath =~/\/Tables$/",
+          "group": "tableDesigner"
+        },
+        {
+          "command": "mssql.designTable",
+          "when": "connectionProvider == MSSQL && nodeType == Table",
+          "group": "tableDesigner"
         }
       ],
       "notebook/toolbar": [

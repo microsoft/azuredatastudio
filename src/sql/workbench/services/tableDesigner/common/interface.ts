@@ -30,4 +30,12 @@ export interface ITableDesignerService {
 	 * @param providerId The id of the registered provider
 	 */
 	getProvider(providerId: string): TableDesignerProvider;
+
+	/**
+	 * Open a table designer for the given table
+	 * @param providerId The provider id
+	 * @param tableInfo The table information
+	 * @param designerInfo The designer information
+	 */
+	openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, designerInfo: azdata.designers.TableDesignerInfo): Promise<void>;
 }

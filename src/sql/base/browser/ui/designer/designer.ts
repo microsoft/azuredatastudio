@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { DesignerProvider, DesignerTab, InputComponent } from 'sql/base/browser/ui/designer/interfaces';
+import { DesignerComponentInput, DesignerTab, InputComponent } from 'sql/base/browser/ui/designer/interfaces';
 import { IPanelTab, IPanelView, TabbedPanel } from 'sql/base/browser/ui/panel/panel';
 import * as DOM from 'vs/base/browser/dom';
 import { Event } from 'vs/base/common/event';
@@ -28,7 +28,7 @@ export class Designer extends Disposable {
 	private _properties: InputBox;
 
 	private _componentMap: Map<string, any> = new Map<string, any>();
-	private _provider: DesignerProvider;
+	private _input: DesignerComponentInput;
 
 	constructor(private readonly _container: HTMLElement,
 		private readonly _contextViewProvider: IContextViewProvider) {
@@ -86,13 +86,13 @@ export class Designer extends Disposable {
 		this._horizontalSplitView.layout(dimension.width);
 	}
 
-	public async setProvider(provider: DesignerProvider): Promise<void> {
-		this._provider = provider;
+	public async setInput(input: DesignerComponentInput): Promise<void> {
+		this._input = input;
 		await this.initializeDesignerView();
 	}
 
 	private async initializeDesignerView(): Promise<void> {
-		const view = await this._provider.getView();
+		const view = await this._input.getView();
 		this._tabbedPanel.clearTabs();
 		view.tabs.forEach(tab => {
 			this._tabbedPanel.pushTab(this.createTabView(tab));

@@ -5,7 +5,6 @@
 
 import { Designer } from 'sql/base/browser/ui/designer/designer';
 import { TableDesignerInput } from 'sql/workbench/browser/editor/tableDesigner/tableDesignerInput';
-import { TableDesignerProvider } from 'sql/workbench/contrib/tableDesigner/browser/tableDesignerProvider';
 import *  as DOM from 'vs/base/browser/dom';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
@@ -36,8 +35,7 @@ export class TableDesignerEditor extends EditorPane {
 
 	override async setInput(input: TableDesignerInput, options: IEditorOptions | undefined, context: IEditorOpenContext, token: CancellationToken): Promise<void> {
 		await super.setInput(input, options, context, token);
-		const provider = new TableDesignerProvider();
-		this._designer.setProvider(provider);
+		this._designer.setInput(input.getComponentInput());
 	}
 
 	protected createEditor(parent: HTMLElement): void {

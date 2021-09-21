@@ -986,52 +986,50 @@ declare module 'azdata' {
 	}
 
 	export namespace designers {
+
+		export function openTableDesigner(providerId: string, tableInfo: TableInfo, designerInfo: TableDesignerInfo): Promise<void>;
+
 		export interface TableDesignerProvider extends DataProvider {
-			getDesignerInfo(connectionInfo: ConnectionInfo, table: TableIdentifier): Promise<TableDesignerInfo>;
-			processTableEdit(connectionInfo: ConnectionInfo, table: TableIdentifier, edit: DesignerEdit): Promise<DesignerEditResult>;
+			processTableEdit(table: TableInfo, data: DesignerData, edit: DesignerEdit): Promise<DesignerEditResult>;
 		}
 
-		export interface TableIdentifier {
-			name: string;
-			schema: string;
+		/**
+		 * The information of the table.
+		 */
+		export interface TableInfo {
+			server: string;
+			database: string;
+			schema?: string;
+			name?: string;
+			isNewTable: boolean;
+			[key: string]: any;
 		}
 
 		export interface TableDesignerInfo {
 			view: TableDesignerView;
 			data: DesignerData;
+			columnTypes: string[];
 		}
 
 		export enum TableProperties {
-			Schema = 'schema',
+			Columns = 'columns',
+			Description = 'description',
 			Name = 'name',
-			Description = 'description'
+			Schema = 'schema'
 		}
 
 		export enum TableColumnProperties {
-			Name = 'name',
-			Type = 'type',
 			AllowNull = 'allowNull',
 			DefaultValue = 'defaultValue',
-			Length = 'length'
+			Length = 'length',
+			Name = 'name',
+			Type = 'type'
 		}
 
 		export interface TableDesignerView {
-			columnTypes: TableColumnType[];
 			additionalTableProperties?: DesignerComponentType[];
 			addtionalTableColumnProperties?: DesignerComponentType[];
 			addtionalTabs?: DesignerTab[];
-		}
-
-		export interface TableColumnType {
-			/**
-			 * The name of the column type.
-			 */
-			name: string;
-
-			/**
-			 * The display name of the column type.
-			 */
-			displayName: string;
 		}
 
 		export interface DesignerData {
@@ -1052,7 +1050,7 @@ declare module 'azdata' {
 
 		export interface DropdownComponentData extends ComponentData {
 			value: string;
-			optionalValues: string[];
+			optionalValues: CategoryValue[];
 		}
 
 		export interface TableComponentData extends ComponentData {
@@ -1060,7 +1058,7 @@ declare module 'azdata' {
 		}
 
 		export interface TableComponentRowData {
-			[key: string]: InputComponentData | CheckboxComponentData | DropdownComponentData;
+			[key: string]: InputComponentData | CheckboxComponentData | DropdownComponentData | TableComponentData;
 		}
 
 		export enum DesignerEditTypes {
@@ -1086,7 +1084,7 @@ declare module 'azdata' {
 			components: DesignerComponentType[];
 		}
 
-		export type DesignerComponentType = InputComponent | CheckboxComponent | DrowdownComponent | TableComponent;
+		export type DesignerComponentType = InputComponent | CheckboxComponent | DropdownComponent | TableComponent;
 
 		export type DesignerComponentTypeName = 'input' | 'checkbox' | 'dropdown' | 'table';
 
@@ -1108,7 +1106,7 @@ declare module 'azdata' {
 			inputType?: 'text' | 'number';
 		}
 
-		export interface DrowdownComponent extends DesignerItemComponent {
+		export interface DropdownComponent extends DesignerItemComponent {
 		}
 
 		export interface CheckboxComponent extends DesignerItemComponent {
@@ -1119,6 +1117,11 @@ declare module 'azdata' {
 			 * the name of the properties to be displayed, properties not in this list will be accessible in details view.
 			 */
 			columns: string[];
+
+			/**
+				 * the properties of the table data item
+				 */
+			itemProperties: DesignerComponentType[];
 		}
 	}
 }

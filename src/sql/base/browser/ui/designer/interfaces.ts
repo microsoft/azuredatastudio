@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-export interface DesignerProvider {
+export interface DesignerComponentInput {
 	/**
 	 * Gets the designer view specification.
 	 */
@@ -47,7 +47,7 @@ export interface TableComponentData extends ComponentData {
 }
 
 export interface TableComponentRowData {
-	[key: string]: InputComponentData | CheckboxComponentData | DropdownComponentData;
+	[key: string]: InputComponentData | CheckboxComponentData | DropdownComponentData | TableComponentData;
 }
 
 
@@ -77,7 +77,7 @@ export interface DesignerTab {
 	components: DesignerComponentType[];
 }
 
-export type DesignerComponentType = InputComponent | CheckboxComponent | DrowdownComponent | TableComponent;
+export type DesignerComponentType = InputComponent | CheckboxComponent | DropdownComponent | TableComponent;
 
 export type DesignerComponentTypeName = 'input' | 'checkbox' | 'dropdown' | 'table';
 
@@ -99,7 +99,8 @@ export interface InputComponent extends DesignerItemComponent {
 	inputType?: 'text' | 'number';
 }
 
-export interface DrowdownComponent extends DesignerItemComponent {
+export interface DropdownComponent extends DesignerItemComponent {
+	options: string[]
 }
 
 export interface CheckboxComponent extends DesignerItemComponent {
@@ -110,4 +111,9 @@ export interface TableComponent extends DesignerItemComponent {
 	 * the name of the properties to be displayed, properties not in this list will be accessible in details view.
 	 */
 	columns: string[];
+
+	/**
+	 * the properties of the table data item
+	 */
+	itemProperties: DesignerComponentType[];
 }

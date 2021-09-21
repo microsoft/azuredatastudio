@@ -907,7 +907,8 @@ export namespace designers {
 	export enum TableProperties {
 		Schema = 'schema',
 		Name = 'name',
-		Description = 'description'
+		Description = 'description',
+		Columns = 'columns'
 	}
 
 	export enum TableColumnProperties {

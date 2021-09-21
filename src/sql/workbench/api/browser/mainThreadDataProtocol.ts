@@ -512,11 +512,8 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 	$registerTableDesignerProvider(providerId: string, handle: number): Promise<any> {
 		const self = this;
 		this._tableDesignerService.registerProvider(providerId, <azdata.designers.TableDesignerProvider>{
-			getDesignerInfo(connectionInfo, table): Promise<azdata.designers.TableDesignerInfo> {
-				return self._proxy.$getTableDesignerInfo(handle, connectionInfo, table);
-			},
-			processTableEdit(connectionInfo, table, edit): Promise<azdata.designers.DesignerEditResult> {
-				return self._proxy.$processTableDesignerEdit(handle, connectionInfo, table, edit);
+			processTableEdit(table, data, edit): Promise<azdata.designers.DesignerEditResult> {
+				return self._proxy.$processTableDesignerEdit(handle, table, data, edit);
 			}
 		});
 
@@ -630,6 +627,11 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 	// SQL Server Agent handlers
 	public $onJobDataUpdated(handle: Number): void {
 		this._jobManagementService.fireOnDidChange();
+	}
+
+	// Table Designer
+	public $openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, designerInfo: azdata.designers.TableDesignerInfo): void {
+		this._tableDesignerService.openTableDesigner(providerId, tableInfo, designerInfo);
 	}
 
 	public $unregisterProvider(handle: number): Promise<any> {

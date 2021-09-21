@@ -5,8 +5,13 @@
 
 import { TableDesignerProvider, ITableDesignerService } from 'sql/workbench/services/tableDesigner/common/interface';
 import { invalidProvider } from 'sql/base/common/errors';
+import * as azdata from 'azdata';
+import { ACTIVE_GROUP, IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { TableDesignerInput } from 'sql/workbench/browser/editor/tableDesigner/tableDesignerInput';
 
 export class TableDesignerService implements ITableDesignerService {
+
+	constructor(@IEditorService private _editorService: IEditorService) { }
 
 	public _serviceBrand: undefined;
 	private _providers = new Map<string, TableDesignerProvider>();
@@ -31,5 +36,11 @@ export class TableDesignerService implements ITableDesignerService {
 			return provider;
 		}
 		throw invalidProvider(providerId);
+	}
+
+	public async openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, designerInfo: azdata.designers.TableDesignerInfo): Promise<void> {
+		const provider = this.getProvider(providerId);
+		const tableDesignerInput = new TableDesignerInput(provider, tableInfo, designerInfo);
+		await this._editorService.openEditor(tableDesignerInput, { pinned: true }, ACTIVE_GROUP);
 	}
 }

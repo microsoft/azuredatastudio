@@ -569,7 +569,10 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 			const designers: typeof azdata.designers = {
 				TableProperties: sqlExtHostTypes.designers.TableProperties,
 				TableColumnProperties: sqlExtHostTypes.designers.TableColumnProperties,
-				DesignerEditTypes: sqlExtHostTypes.designers.DesignerEditTypes
+				DesignerEditTypes: sqlExtHostTypes.designers.DesignerEditTypes,
+				openTableDesigner(providerId, tableInfo: azdata.designers.TableInfo, designerInfo: azdata.designers.TableDesignerInfo): Promise<void> {
+					return extHostDataProvider.$openTableDesigner(providerId, tableInfo, designerInfo);
+				}
 			};
 
 			return {
