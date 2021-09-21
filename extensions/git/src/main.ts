@@ -190,3 +190,5 @@ export async function activate(context: ExtensionContext): Promise<GitExtension>
 	context.subscriptions.push(registerAPICommands(result));
 	return result;
 }
+
+// {{SQL CARBON EDIT}} - delete unneeded functions at end of file
