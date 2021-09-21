@@ -1768,6 +1768,7 @@ declare module 'vscode' {
 	//#endregion
 
 	//#region https://github.com/microsoft/vscode/issues/107467
+	// todo@API test or tests?
 	export namespace test {
 		/**
 		 * Creates a new test controller.
