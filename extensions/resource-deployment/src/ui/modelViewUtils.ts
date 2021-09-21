@@ -410,8 +410,8 @@ async function hookUpDynamicEnablement(context: WizardPageContext): Promise<void
 }
 
 /**
- * Hooks up the dynamic enablement for fields which use that. This will attach a listener to the target component
- * for when the value changes and update the enabled state of the source component based on the current value
+ * Hooks up the dynamic options for fields which use that. This will attach a listener to the target component
+ * for when the value changes and update the options of the source component based on the current value
  * of the target component.
  *
  * Note that currently this is only supported for Notebook Wizard Pages and only supports direct equals comparison
@@ -427,15 +427,28 @@ async function hookUpDynamicOptions(context: WizardPageContext): Promise<void> {
 		}
 		await Promise.all(section.fields.map(async field => {
 			if (instanceOfDynamicOptionsInfo(field.dynamicOptions)) {
+				const fieldKey = field.variableName || field.label;
+				const fieldComponent = context.inputComponents[fieldKey];
 				const targetComponent = context.inputComponents[field.dynamicOptions.target];
 				if (!targetComponent) {
-					console.error(`Could not find target component ${field.dynamicOptions.target} when hooking up dynamic enablement for ${field.label}`);
+					console.error(`Could not find target component ${field.dynamicOptions.target} when hooking up dynamic options for ${field.label}`);
 					return;
 				}
 				const updateOptions = async () => {
-					const targetComponentValue = await targetComponent.getValue();
-					if (field.dynamicOptions && field.options) {
-						field.options.values = field.dynamicOptions.mappings.find(item => item.selection === targetComponentValue)?.optionsToEnable;
+					const currentValue = await targetComponent.getValue();
+					if (field.dynamicOptions && field.options && fieldComponent) {
+						const targetValueFound = field.dynamicOptions.alternates.find(item => item.selection === currentValue);
+						if (targetValueFound) {
+							(<RadioGroupLoadingComponentBuilder>fieldComponent.component).loadOptions(<OptionsInfo>{
+								values: targetValueFound.alternateValues,
+								defaultValue: targetValueFound.defaultValue
+							});
+						} else {
+							(<RadioGroupLoadingComponentBuilder>fieldComponent.component).loadOptions(<OptionsInfo>{
+								values: field.options.values,
+								defaultValue: (<OptionsInfo>field.options).defaultValue
+							});
+						}
 					}
 				};
 				targetComponent.onValueChanged(() => {
@@ -903,9 +916,10 @@ async function substituteVariableValues(inputComponents: InputComponents, inputV
 }
 
 function processCheckboxField(context: FieldContext): void {
-	const checkbox = createCheckboxInputInfo(context.view, { initialValue: context.fieldInfo.defaultValue! === 'true', label: context.fieldInfo.label, required: context.fieldInfo.required });
-	context.components.push(checkbox.component);
-	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, checkbox);
+	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, cssStyles: context.fieldInfo.labelCSSStyles });
+	const checkbox = createCheckboxInputInfo(context.view, { initialValue: context.fieldInfo.defaultValue! === 'true', label: '', required: context.fieldInfo.required });
+	checkbox.labelComponent = label;
+	addLabelInputPairToContainer(context.view, context.components, label, checkbox.component, context.fieldInfo);
 }
 
 /**

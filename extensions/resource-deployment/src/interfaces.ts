@@ -243,7 +243,7 @@ export function instanceOfDynamicEnablementInfo(obj: any): obj is DynamicEnablem
 }
 
 export function instanceOfDynamicOptionsInfo(obj: any): obj is DynamicOptionsInfo {
-	return (<DynamicOptionsInfo>obj)?.target !== undefined && (<DynamicOptionsInfo>obj)?.mappings !== undefined;
+	return (<DynamicOptionsInfo>obj)?.target !== undefined && (<DynamicOptionsInfo>obj)?.alternates !== undefined;
 }
 
 export interface DialogInfoBase {
@@ -296,12 +296,13 @@ export interface DynamicEnablementInfo {
 
 export interface DynamicOptionsInfo {
 	target: string,
-	mappings: DynamicOptionsMapping[]
+	alternates: DynamicOptionsAlternates[]
 }
 
-export interface DynamicOptionsMapping {
+export interface DynamicOptionsAlternates {
 	selection: string,
-	optionsToEnable: string[]
+	alternateValues: string[],
+	defaultValue: string
 }
 
 export interface ValueProviderInfo {
