@@ -765,6 +765,7 @@ export class ExtensionsListView extends ViewPane {
 	// {{SQL CARBON EDIT}}
 	private getAllMarketplaceModel(query: Query, options: IQueryOptions, token: CancellationToken): Promise<IPagedModel<IExtension>> {
 		const value = query.value.trim().toLowerCase();
+		options.excludeFlags = 'hidden'; // {{SQL CARBON EDIT}} exclude extensions with 'hidden' flag from marketplace query
 		return this.extensionsWorkbenchService.queryLocal()
 			.then(result => result.filter(e => e.type === ExtensionType.User))
 			.then(local => {
