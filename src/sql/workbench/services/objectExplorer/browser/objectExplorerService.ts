@@ -373,6 +373,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	}
 
 	private async callExpandOrRefreshFromProvider(provider: azdata.ObjectExplorerProviderBase, nodeInfo: azdata.ExpandNodeInfo, refresh: boolean = false): Promise<boolean> {
+		await this._connectionManagementService.refreshAzureAccountTokenIfNecessary(Utils.generateUri(this._sessions[nodeInfo.sessionId].connection));
 		if (refresh) {
 			return provider.refreshNode(nodeInfo);
 		} else {
@@ -728,7 +729,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return treeNode;
 	}
 
-	public getSessionConnectionProfile(sessionId: string): azdata.IConnectionProfile {
+	public getSessionConnectionProfile(sessionId: string): IConnectionProfile {
 		return this._sessions[sessionId].connection.toIConnectionProfile();
 	}
 
