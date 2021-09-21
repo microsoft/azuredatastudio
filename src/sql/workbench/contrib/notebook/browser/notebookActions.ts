@@ -376,11 +376,12 @@ export class RunAllCellsAction extends Action {
 	public override async run(context: URI): Promise<void> {
 		try {
 			const editor = this._notebookService.findNotebookEditor(context);
+			await editor.runAllCells();
+
 			const azdata_notebook_guid: string = editor.model.getMetaValue('azdata_notebook_guid');
 			this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.RunAll)
 				.withAdditionalProperties({ azdata_notebook_guid })
 				.send();
-			await editor.runAllCells();
 		} catch (e) {
 			this.notificationService.error(getErrorMessage(e));
 		}
