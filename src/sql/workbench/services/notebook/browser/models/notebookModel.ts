@@ -136,11 +136,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public get executeManagers(): IExecuteManager[] {
-		let notebookManagers = this._notebookOptions.executeManagers.filter(manager => manager.providerId !== DEFAULT_NOTEBOOK_PROVIDER);
-		if (!notebookManagers.length) {
+		let managers = this._notebookOptions.executeManagers.filter(manager => manager.providerId !== DEFAULT_NOTEBOOK_PROVIDER);
+		if (!managers.length) {
 			return this._notebookOptions.executeManagers;
 		}
-		return notebookManagers;
+		return managers;
 	}
 
 	public get executeManager(): IExecuteManager | undefined {

@@ -38,7 +38,7 @@ export const NOTEBOOKEDITOR_SELECTOR: string = 'notebookeditor-component';
 export class NotebookEditorComponent extends AngularDisposable {
 	private readonly defaultViewMode = ViewMode.Notebook;
 	private profile: IConnectionProfile;
-	private notebookManagers: IExecuteManager[] = [];
+	private executeManagers: IExecuteManager[] = [];
 	private _modelReadyDeferred = new Deferred<NotebookModel>();
 
 	public model: NotebookModel;
@@ -105,7 +105,7 @@ export class NotebookEditorComponent extends AngularDisposable {
 			notebookUri: this._notebookParams.notebookUri,
 			connectionService: this.connectionManagementService,
 			notificationService: this.notificationService,
-			executeManagers: this.notebookManagers,
+			executeManagers: this.executeManagers,
 			contentLoader: this._notebookParams.input.contentLoader,
 			cellMagicMapper: new CellMagicMapper(this.notebookService.languageMagics),
 			providerId: 'sql',
@@ -137,7 +137,7 @@ export class NotebookEditorComponent extends AngularDisposable {
 		let providerInfo = await this._notebookParams.providerInfo;
 		for (let providerId of providerInfo.providers) {
 			let notebookManager = await this.notebookService.getOrCreateExecuteManager(providerId, this._notebookParams.notebookUri);
-			this.notebookManagers.push(notebookManager);
+			this.executeManagers.push(notebookManager);
 		}
 	}
 
