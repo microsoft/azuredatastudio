@@ -697,6 +697,13 @@ declare module 'vscode' {
 		 * This property is ignored if the session has no parent session.
 		 */
 		lifecycleManagedByParent?: boolean;
+
+		debugUI?: {
+			/**
+			 * When true, the debug toolbar will not be shown for this session, the window statusbar color will not be changed, and the debug viewlet will not be automatically revealed.
+			 */
+			simple?: boolean;
+		}
 	}
 
 	//#endregion
@@ -1409,36 +1416,6 @@ declare module 'vscode' {
 
 	//#region @https://github.com/microsoft/vscode/issues/123601, notebook messaging
 
-	export interface NotebookRendererMessage<T> {
-		/**
-		 * Editor that sent the message.
-		 */
-		editor: NotebookEditor;
-
-		/**
-		 * Message sent from the webview.
-		 */
-		message: T;
-	}
-
-	/**
-	 * Renderer messaging is used to communicate with a single renderer. It's
-	 * returned from {@link notebooks.createRendererMessaging}.
-	 */
-	export interface NotebookRendererMessaging<TSend = any, TReceive = TSend> {
-		/**
-		 * Events that fires when a message is received from a renderer.
-		 */
-		onDidReceiveMessage: Event<NotebookRendererMessage<TReceive>>;
-
-		/**
-		 * Sends a message to the renderer.
-		 * @param editor Editor to target with the message
-		 * @param message Message to send
-		 */
-		postMessage(editor: NotebookEditor, message: TSend): void;
-	}
-
 	/**
 	 * Represents a script that is loaded into the notebook renderer before rendering output. This allows
 	 * to provide and share functionality for notebook markup and notebook output renderers.
@@ -1494,18 +1471,6 @@ declare module 'vscode' {
 	export namespace notebooks {
 
 		export function createNotebookController(id: string, viewType: string, label: string, handler?: (cells: NotebookCell[], notebook: NotebookDocument, controller: NotebookController) => void | Thenable<void>, rendererScripts?: NotebookRendererScript[]): NotebookController;
-
-		/**
-		 * Creates a new messaging instance used to communicate with a specific
-		 * renderer. The renderer only has access to messaging if `requiresMessaging`
-		 * is set to `always` or `optional` in its `notebookRenderer ` contribution.
-		 *
-		 * @see https://github.com/microsoft/vscode/issues/123601
-		 * @param rendererId The renderer ID to communicate with
-		*/
-		// todo@API can ANY extension talk to renderer or is there a check that the calling extension
-		// declared the renderer in its package.json?
-		export function createRendererMessaging<TSend = any, TReceive = TSend>(rendererId: string): NotebookRendererMessaging<TSend, TReceive>;
 	}
 
 	//#endregion
@@ -1831,6 +1796,7 @@ declare module 'vscode' {
 		 * @param label Human-readable label of the test item.
 		 * @param uri URI this TestItem is associated with. May be a file or directory.
 		 */
+		// todo@API move into TestController
 		export function createTestItem(id: string, label: string, uri?: Uri): TestItem;
 
 		/**
@@ -1903,22 +1869,6 @@ declare module 'vscode' {
 	}
 
 	/**
-	 * Handler called to start a test run. When invoked, the function should
-	 * {@link TestController.createTestRun} at least once, and all tasks
-	 * associated with the run should be created before the function returns
-	 * or the reutrned promise is resolved.
-	 *
-	 * @param request Request information for the test run
-	 * @param cancellationToken Token that signals the used asked to abort the
-	 * test run. If cancellation is requested on this token, all {@link TestRun}
-	 * instances associated with the request will be
-	 * automatically cancelled as well.
-	 */
-	// todo@api We have been there with NotebookCtrl#executeHandler and I believe the recommendation is still not to inline.
-	// At least with that we can still do it later
-	export type TestRunHandler = (request: TestRunRequest, token: CancellationToken) => Thenable<void> | void;
-
-	/**
 	 * A TestRunProfile describes one way to execute tests in a {@link TestController}.
 	 */
 	export interface TestRunProfile {
@@ -1956,10 +1906,10 @@ declare module 'vscode' {
 		configureHandler?: () => void;
 
 		/**
-		 * Starts a test run. When called, the profile should call
-		 * {@link TestController.createTestRun}. All tasks associated with the
-		 * run should be created before the function returns or the reutrned
-		 * promise is resolved.
+		 * Handler called to start a test run. When invoked, the function should
+		 * {@link TestController.createTestRun} at least once, and all tasks
+		 * associated with the run should be created before the function returns
+		 * or the reutrned promise is resolved.
 		 *
 		 * @param request Request information for the test run
 		 * @param cancellationToken Token that signals the used asked to abort the
@@ -1967,7 +1917,7 @@ declare module 'vscode' {
 		 * instances associated with the request will be
 		 * automatically cancelled as well.
 		 */
-		runHandler: TestRunHandler;
+		runHandler: (request: TestRunRequest, token: CancellationToken) => Thenable<void> | void;
 
 		/**
 		 * Deletes the run profile.
@@ -1978,7 +1928,7 @@ declare module 'vscode' {
 	/**
 	 * Entry point to discover and execute tests. It contains {@link items} which
 	 * are used to populate the editor UI, and is associated with
-	 * {@link createRunProfile | run profiles} to allow
+	 * {@link createRunProfile run profiles} to allow
 	 * for tests to be executed.
 	 */
 	export interface TestController {
@@ -2015,7 +1965,7 @@ declare module 'vscode' {
 		 * @param runHandler Function called to start a test run
 		 * @param isDefault Whether this is the default action for the group
 		 */
-		createRunProfile(label: string, group: TestRunProfileGroup, runHandler: TestRunHandler, isDefault?: boolean): TestRunProfile;
+		createRunProfile(label: string, group: TestRunProfileGroup, runHandler: (request: TestRunRequest, token: CancellationToken) => Thenable<void> | void, isDefault?: boolean): TestRunProfile;
 
 		/**
 		 * A function provided by the extension that the editor may call to request
@@ -2039,7 +1989,7 @@ declare module 'vscode' {
 		 * {@link TestRunner} when a request is made to execute tests, and may also
 		 * be called if a test run is detected externally. Once created, tests
 		 * that are included in the results will be moved into the
-		 * {@link TestResultState.Pending} state.
+		 * {@link TestResultState.Pending} state. todo@API there is no Pending
 		 *
 		 * All runs created using the same `request` instance will be grouped
 		 * together. This is useful if, for example, a single suite of tests is
@@ -2073,6 +2023,7 @@ declare module 'vscode' {
 		 * any tests that appear in {@link TestRunRequest.exclude}. If this is
 		 * not given, then the extension should simply run all tests.
 		 */
+		// todo@API "...run all tests." which can mean resolve all tests first
 		include?: TestItem[];
 
 		/**
@@ -2080,6 +2031,7 @@ declare module 'vscode' {
 		 * omitted if no exclusions were requested. Test controllers should not run
 		 * excluded tests or any children of excluded tests.
 		 */
+		// @todo@API say that exclude is more important than include!
 		exclude?: TestItem[];
 
 		/**
@@ -2100,6 +2052,7 @@ declare module 'vscode' {
 	/**
 	 * Options given to {@link TestController.runTests}
 	 */
+	// todo@API add readonly or rw `isPersisted: boolean`
 	export interface TestRun {
 		/**
 		 * The human-readable name of the run. This can be used to
@@ -2124,6 +2077,7 @@ declare module 'vscode' {
 		 * @param state The state to assign to the test
 		 * @param duration Optionally sets how long the test took to run, in milliseconds
 		 */
+		// todo@API clarify duration, either add doc or new composite type
 		setState(test: TestItem, state: TestResultState, duration?: number): void;
 
 		/**
@@ -2135,6 +2089,7 @@ declare module 'vscode' {
 		 * @param test The test to update
 		 * @param message The message to add
 		 */
+		// todo@API can this called many times, should this be part of setState?
 		appendMessage(test: TestItem, message: TestMessage): void;
 
 		/**
@@ -2143,7 +2098,6 @@ declare module 'vscode' {
 		 * such as colors and text styles, are supported.
 		 *
 		 * @param output Output text to append
-		 * @param associateTo Optionally, associate the given segment of output
 		 */
 		appendOutput(output: string): void;
 
@@ -2159,11 +2113,13 @@ declare module 'vscode' {
 	 * Collection of test items, found in {@link TestItem.children} and
 	 * {@link TestController.items}.
 	 */
-	export interface TestItemCollection extends Iterable<TestItem> {
+	export interface TestItemCollection {
 		/**
 		 * Updates the items stored by the collection.
 		 * @param items Items to store, can be an array or other iterable.
 		 */
+		// todo@API no Iterable
+		// todo@API better names: reset, update...
 		set(items: Iterable<TestItem>): void;
 
 		/**
@@ -2226,12 +2182,13 @@ declare module 'vscode' {
 
 		/**
 		 * Indicates whether this test item may have children discovered by resolving.
-		 * If so, it will be shown as expandable in the Test Explorer  view, and
+		 * If so, it will be shown as expandable in the Test Explorer view, and
 		 * expanding the item will cause {@link TestController.resolveChildrenHandler}
 		 * to be invoked with the item.
 		 *
 		 * Default to false.
 		 */
+		// todo@API better names: isLeaf, isLeaf{Type|Node}, canHaveChildren
 		canResolveChildren: boolean;
 
 		/**
@@ -2281,6 +2238,7 @@ declare module 'vscode' {
 	 */
 	export enum TestResultState {
 		// Initial state
+		// todo@API what is this state for? not needed, has no references
 		Unset = 0,
 		// Test will be run, but is not currently running.
 		Queued = 1,
@@ -2319,6 +2277,7 @@ declare module 'vscode' {
 		/**
 		 * Message severity. Defaults to "Error".
 		 */
+		// todo@API maybe not needed? what does it change?
 		severity: TestMessageSeverity;
 
 		/**

@@ -77,6 +77,10 @@ export class ListViewInfoAccessor extends Disposable {
 		super();
 	}
 
+	scrollToBottom() {
+		this.list.scrollToBottom();
+	}
+
 	revealCellRangeInView(range: ICellRange) {
 		return this.list.revealElementsInView(range);
 	}
@@ -1680,6 +1684,10 @@ export class NotebookEditorWidget extends Disposable implements INotebookEditor 
 		});
 	}
 
+	scrollToBottom() {
+		this._listViewInfoAccessor.scrollToBottom();
+	}
+
 	revealCellRangeInView(range: ICellRange) {
 		return this._listViewInfoAccessor.revealCellRangeInView(range);
 	}
@@ -2739,8 +2747,8 @@ export const cellSymbolHighlight = registerColor('notebook.symbolHighlightBackgr
 }, nls.localize('notebook.symbolHighlightBackground', "Background color of highlighted cell"));
 
 export const cellEditorBackground = registerColor('notebook.cellEditorBackground', {
-	light: null,
-	dark: null,
+	light: transparent(foreground, 0.04),
+	dark: transparent(foreground, 0.04),
 	hc: null
 }, nls.localize('notebook.cellEditorBackground', "Cell editor background color."));
 
