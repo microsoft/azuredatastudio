@@ -422,15 +422,15 @@ export async function createFolderIfNotExist(folderPath: string): Promise<void> 
 	}
 }
 
-export async function executeCommand(cmd: string, outputChannel: vscode.OutputChannel, sensitiveData: string[] | undefined = undefined, timeout: number = 5 * 60 * 1000): Promise<string> {
+export async function executeCommand(cmd: string, outputChannel: vscode.OutputChannel, sensitiveData: string[] = [], timeout: number = 5 * 60 * 1000): Promise<string> {
 	return new Promise<string>((resolve, reject) => {
 		if (outputChannel) {
 			let cmdOutputMessage = cmd;
-			if (sensitiveData) {
-				sensitiveData.forEach(element => {
-					cmdOutputMessage = cmdOutputMessage.replace(element, '***');
-				});
-			}
+
+			sensitiveData.forEach(element => {
+				cmdOutputMessage = cmdOutputMessage.replace(element, '***');
+			});
+
 			outputChannel.appendLine(`    > ${cmdOutputMessage}`);
 		}
 		let child = childProcess.exec(cmd, {
