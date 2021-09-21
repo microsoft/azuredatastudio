@@ -111,19 +111,6 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		this._register({ dispose: () => this.updateConnectionState(false) });
 	}
 
-	// On scroll wheel we will have to adjust the horizontal scrollbar
-	@HostListener('document:mousewheel', ['$event'])
-	onDocumentMousewheelEvent(event) {
-		this.horizontalScrollbar();
-	}
-
-	@HostListener('window:scroll', [])
-	onScroll(): void {
-		this.horizontalScrollbar();
-		// eslint-disable-next-line no-console
-		console.log('SCROLL BAR');
-	}
-
 	ngOnInit() {
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
@@ -262,6 +249,9 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			}
 		}));
 		this._register(this.model.layoutChanged(() => this._layoutEmitter.fire(), this));
+		// Handles mouse wheel and scrollbar events
+		this._register(Event.debounce(this.model.onScroll.event, (l, e) => e, 250, /*leading=*/false)
+			(() => this.horizontalScrollbar()));
 		this._register(this.cellModel.onExecutionStateChange(event => {
 			if (event === CellExecutionState.Running && !this.cellModel.stdInVisible) {
 				this.setFocusAndScroll();
