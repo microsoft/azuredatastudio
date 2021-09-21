@@ -653,7 +653,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			// {{SQL CARBON EDIT}} - filter out extensions that match the excludeFlags options
 			const flags = query.criteria.filter(x => x.filterType === FilterType.ExcludeWithFlags).map(v => v.value ? v.value.toLocaleLowerCase() : undefined);
 			if (flags && flags.length > 0) {
-				filteredExtensions = filteredExtensions.filter(e => !e.flags || flags.find(x => x === e.flags) === undefined);
+				filteredExtensions = filteredExtensions.filter(e => !e.flags || flags.find(x => x === e.flags.toLocaleLowerCase()) === undefined);
 			}
 		}
 

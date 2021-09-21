@@ -136,7 +136,11 @@ export interface IQueryOptions {
 	sortBy?: SortBy;
 	sortOrder?: SortOrder;
 	source?: string;
-	excludeFlags?: string; // {{SQL CARBON EDIT}} do not show extensions matching excludeFlags in the marketplace
+	// {{SQL CARBON EDIT}} do not show extensions matching excludeFlags in the marketplace
+	// This field only supports an exact match of a single flag.  It doesn't currently
+	// support setting multiple flags such as "hidden,preview" since this functionality isn't
+	// required by current usage scenarios.
+	excludeFlags?: string;
 }
 
 export const enum StatisticType {
