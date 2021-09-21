@@ -76,12 +76,12 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		return this._withServerManager(managerHandle, (serverManager) => serverManager.stopServer());
 	}
 
-	$getNotebookContents(managerHandle: number, notebookUri: UriComponents): Thenable<azdata.nb.INotebookContents> {
-		return this._withContentManager(managerHandle, (contentManager) => contentManager.getNotebookContents(URI.revive(notebookUri)));
+	$deserializeNotebook(managerHandle: number, contents: string): Thenable<azdata.nb.INotebookContents> {
+		return this._withContentManager(managerHandle, (contentManager) => contentManager.deserializeNotebook(contents));
 	}
 
-	$save(managerHandle: number, notebookUri: UriComponents, notebook: azdata.nb.INotebookContents): Thenable<azdata.nb.INotebookContents> {
-		return this._withContentManager(managerHandle, (contentManager) => contentManager.save(URI.revive(notebookUri), notebook));
+	$serializeNotebook(managerHandle: number, notebook: azdata.nb.INotebookContents): Thenable<string> {
+		return this._withContentManager(managerHandle, (contentManager) => contentManager.serializeNotebook(notebook));
 	}
 
 	$refreshSpecs(managerHandle: number): Thenable<azdata.nb.IAllKernels> {

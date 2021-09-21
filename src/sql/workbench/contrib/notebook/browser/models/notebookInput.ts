@@ -525,7 +525,7 @@ export class NotebookEditorContentLoader implements IContentLoader {
 
 	async loadContent(): Promise<azdata.nb.INotebookContents> {
 		let notebookEditorModel = await this.notebookInput.resolve();
-		let contents = await this.contentManager.getNotebookContents(notebookEditorModel.notebookUri);
+		let contents = await this.contentManager.deserializeNotebook(notebookEditorModel.contentString);
 		return contents;
 	}
 }

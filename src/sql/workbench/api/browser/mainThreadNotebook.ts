@@ -229,12 +229,12 @@ class ContentManagerWrapper implements azdata.nb.ContentManager {
 
 	constructor(private handle: number, private _proxy: Proxies) {
 	}
-	getNotebookContents(notebookUri: URI): Thenable<azdata.nb.INotebookContents> {
-		return this._proxy.ext.$getNotebookContents(this.handle, notebookUri);
+	deserializeNotebook(contents: string): Thenable<azdata.nb.INotebookContents> {
+		return this._proxy.ext.$deserializeNotebook(this.handle, contents);
 	}
 
-	save(path: URI, notebook: azdata.nb.INotebookContents): Thenable<azdata.nb.INotebookContents> {
-		return this._proxy.ext.$save(this.handle, path, notebook);
+	serializeNotebook(notebook: azdata.nb.INotebookContents): Thenable<string> {
+		return this._proxy.ext.$serializeNotebook(this.handle, notebook);
 	}
 }
 

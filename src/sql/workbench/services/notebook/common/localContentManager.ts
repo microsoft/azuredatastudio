@@ -8,37 +8,34 @@
 import { nb } from 'azdata';
 
 import * as json from 'vs/base/common/json';
-import { URI } from 'vs/base/common/uri';
 import { localize } from 'vs/nls';
-import { IFileService } from 'vs/platform/files/common/files';
 
 import { JSONObject } from 'sql/workbench/services/notebook/common/jsonext';
 import { OutputTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { nbversion } from 'sql/workbench/services/notebook/common/notebookConstants';
 import { nbformat } from 'sql/workbench/services/notebook/common/nbformat';
-import { VSBuffer } from 'vs/base/common/buffer';
 
 type MimeBundle = { [key: string]: string | string[] | undefined };
 
 export class LocalContentManager implements nb.ContentManager {
 
-	constructor(@IFileService private readonly fileService: IFileService) { }
+	constructor() { }
 
-	public async loadFromContentString(contentString: string): Promise<nb.INotebookContents> {
-		let contents: JSONObject;
-		if (contentString === '' || contentString === undefined) {
+	public async deserializeNotebook(contents: string): Promise<nb.INotebookContents> {
+		let jsonContents: JSONObject;
+		if (contents === '' || contents === undefined) {
 			return v4.createEmptyNotebook();
 		} else {
-			contents = this.parseFromJson(contentString);
+			jsonContents = this.parseFromJson(contents);
 		}
-		if (contents) {
-			if (contents.nbformat === 4) {
-				return v4.readNotebook(<any>contents);
-			} else if (contents.nbformat === 3) {
-				return v3.readNotebook(<any>contents);
+		if (jsonContents) {
+			if (jsonContents.nbformat === 4) {
+				return v4.readNotebook(<any>jsonContents);
+			} else if (jsonContents.nbformat === 3) {
+				return v3.readNotebook(<any>jsonContents);
 			}
-			if (contents.nbformat) {
-				throw new TypeError(localize('nbformatNotRecognized', "nbformat v{0}.{1} not recognized", contents.nbformat as any, contents.nbformat_minor as any));
+			if (jsonContents.nbformat) {
+				throw new TypeError(localize('nbformatNotRecognized', "nbformat v{0}.{1} not recognized", jsonContents.nbformat as any, jsonContents.nbformat_minor as any));
 			}
 		}
 
@@ -46,21 +43,10 @@ export class LocalContentManager implements nb.ContentManager {
 		throw new TypeError(localize('nbNotSupported', "This file does not have a valid notebook format"));
 	}
 
-	public async getNotebookContents(notebookUri: URI): Promise<nb.INotebookContents> {
-		if (!notebookUri) {
-			return undefined;
-		}
-		// Note: intentionally letting caller handle exceptions
-		let notebookFileBuffer = await this.fileService.readFile(notebookUri);
-		let stringContents = notebookFileBuffer.value.toString();
-		return this.loadFromContentString(stringContents);
-	}
-
-	public async save(notebookUri: URI, notebook: nb.INotebookContents): Promise<nb.INotebookContents> {
+	public async serializeNotebook(notebook: nb.INotebookContents): Promise<string> {
 		// Convert to JSON with pretty-print functionality
 		let contents = JSON.stringify(notebook, undefined, '    ');
-		await this.fileService.writeFile(notebookUri, VSBuffer.fromString(contents));
-		return notebook;
+		return contents;
 	}
 
 	private parseFromJson(contentString: string): JSONObject {

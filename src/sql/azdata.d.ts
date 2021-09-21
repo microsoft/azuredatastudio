@@ -4997,7 +4997,7 @@ declare module 'azdata' {
 			/* Reads contents from a Uri representing a local or remote notebook and returns a
 			 * JSON object containing the cells and metadata about the notebook
 			 */
-			getNotebookContents(notebookUri: vscode.Uri): Thenable<INotebookContents>;
+			deserializeNotebook(contents: string): Thenable<INotebookContents>;
 
 			/**
 			 * Save a file.
@@ -5009,7 +5009,7 @@ declare module 'azdata' {
 			 * @returns A thenable which resolves with the file content model when the
 			 *   file is saved.
 			 */
-			save(notebookUri: vscode.Uri, notebook: INotebookContents): Thenable<INotebookContents>;
+			serializeNotebook(notebook: INotebookContents): Thenable<string>;
 		}
 
 		/**
