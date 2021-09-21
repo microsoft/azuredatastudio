@@ -136,6 +136,7 @@ export interface IQueryOptions {
 	sortBy?: SortBy;
 	sortOrder?: SortOrder;
 	source?: string;
+	excludeFlags?: string; // {{SQL CARBON EDIT}} do not show extensions matching excludeFlags in the marketplace
 }
 
 export const enum StatisticType {
