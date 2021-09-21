@@ -11,31 +11,13 @@ import * as constants from '../constants/strings';
 import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 import { debounce } from '../api/utils';
 
-const headerLeft: azdata.CssStyles = {
-	'border': 'none',
-	'text-align': 'left',
-	'white-space': 'nowrap',
-	'text-overflow': 'ellipsis',
-	'overflow': 'hidden',
-	'box-shadow': 'inset 0px -1px 0px #F3F2F1',
-};
-
-const headerRight: azdata.CssStyles = {
-	'border': 'none',
-	'text-align': 'right',
-	'white-space': 'nowrap',
-	'text-overflow': 'ellipsis',
-	'overflow': 'hidden',
-	'box-shadow': 'inset 0px -1px 0px #F3F2F1',
-};
-
 const styleLeft: azdata.CssStyles = {
 	'border': 'none',
 	'text-align': 'left',
 	'white-space': 'nowrap',
 	'text-overflow': 'ellipsis',
 	'overflow': 'hidden',
-	'box-shadow': 'inset 0px -1px 0px #F3F2F1',
+	'box-shadow': '0px -1px 0px 0px rgba(243, 242, 241, 1) inset'
 };
 
 const styleRight: azdata.CssStyles = {
@@ -44,7 +26,7 @@ const styleRight: azdata.CssStyles = {
 	'white-space': 'nowrap',
 	'text-overflow': 'ellipsis',
 	'overflow': 'hidden',
-	'box-shadow': 'inset 0px -1px 0px #F3F2F1',
+	'box-shadow': '0px -1px 0px 0px rgba(243, 242, 241, 1) inset'
 };
 
 export class DatabaseSelectorPage extends MigrationWizardPage {
@@ -253,7 +235,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 						width: 20,
 						isReadOnly: false,
 						showCheckAll: true,
-						headerCssStyles: headerLeft
+						headerCssStyles: styleLeft
 					},
 					{
 						displayName: constants.DATABASE,
@@ -262,28 +244,28 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 						valueType: azdata.DeclarativeDataType.string,
 						width: '100%',
 						isReadOnly: true,
-						headerCssStyles: headerLeft
+						headerCssStyles: styleLeft
 					},
 					{
 						displayName: constants.STATUS,
 						valueType: azdata.DeclarativeDataType.string,
 						width: 100,
 						isReadOnly: true,
-						headerCssStyles: headerLeft
+						headerCssStyles: styleLeft
 					},
 					{
 						displayName: constants.SIZE,
 						valueType: azdata.DeclarativeDataType.string,
 						width: 125,
 						isReadOnly: true,
-						headerCssStyles: headerRight
+						headerCssStyles: styleRight
 					},
 					{
 						displayName: constants.LAST_BACKUP,
 						valueType: azdata.DeclarativeDataType.string,
 						width: 150,
 						isReadOnly: true,
-						headerCssStyles: headerLeft
+						headerCssStyles: styleLeft
 					}
 				]
 			}
