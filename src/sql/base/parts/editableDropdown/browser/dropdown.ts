@@ -344,8 +344,8 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 	}
 
 	public set value(val: string) {
+		this._input.value = val;
 		if (this._previousValue !== val) {
-			this._input.value = val;
 			this._previousValue = val;
 			this._onValueChange.fire(val);
 		}

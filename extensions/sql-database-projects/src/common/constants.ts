@@ -7,12 +7,13 @@ import * as nls from 'vscode-nls';
 import { SqlTargetPlatform } from 'sqldbproj';
 import * as utils from '../common/utils';
 
-export const localize = nls.loadMessageBundle();
+const localize = nls.loadMessageBundle();
 
 // Placeholder values
 export const dataSourcesFileName = 'datasources.json';
 export const sqlprojExtension = '.sqlproj';
 export const sqlFileExtension = '.sql';
+export const yamlFileExtension = '.yaml';
 export const schemaCompareExtensionId = 'microsoft.schema-compare';
 export const master = 'master';
 export const masterDacpac = 'master.dacpac';
@@ -128,19 +129,20 @@ export const done = localize('done', "Done");
 export const nameMustNotBeEmpty = localize('nameMustNotBeEmpty', "Name must not be empty");
 
 // Deploy
-export const selectDeployOption = localize('selectDeployOption', "Select where to deploy the project to");
-export const deployToExistingServer = localize('deployToExistingServer', "Deploy to existing server");
-export const deployToDockerContainer = localize('deployToDockerContainer', "Deploy to docker container");
+export const selectPublishOption = localize('selectPublishOption', "Select where to publish the project to");
+export const publishToExistingServer = localize('publishToExistingServer', "Publish to existing server");
+export const publishToDockerContainer = localize('publishToDockerContainer', "Publish to docker container");
 export const enterPortNumber = localize('enterPortNumber', "Enter port number or press enter to use the default value");
 export const enterConnectionStringEnvName = localize('enterConnectionStringEnvName', "Enter connection string environment variable name");
 export const enterConnectionStringTemplate = localize('enterConnectionStringTemplate', "Enter connection string template");
-export const enterPassword = localize('enterPassword', "Enter password or press enter to use the generated password");
+export const enterPassword = localize('enterPassword', "Enter password");
+export const enterBaseImage = localize('enterBaseImage', "Enter the base SQL Server docker image or press enter to use the default value");
 export const portMustBeNumber = localize('portMustNotBeNumber', "Port must a be number");
 export const valueCannotBeEmpty = localize('valueCannotBeEmpty', "Value cannot be empty");
 export const dockerImageLabelPrefix = 'source=sqldbproject';
 export const dockerImageNamePrefix = 'sqldbproject';
 export const connectionNamePrefix = 'SQLDbProject';
-export const dockerBaseImage = 'mcr.microsoft.com/azure-sql-edge:latest';
+export const defaultDockerBaseImage = 'mcr.microsoft.com/mssql/server:2019-latest';
 export const commandsFolderName = 'commands';
 export const mssqlFolderName = '.mssql';
 export const dockerFileName = 'Dockerfile';
@@ -305,9 +307,11 @@ export const postDeployScriptFriendlyName = localize('postDeployScriptFriendlyNa
 export const NetCoreInstallationConfirmation: string = localize('sqlDatabaseProjects.NetCoreInstallationConfirmation', "The .NET Core SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK location in settings if already installed.");
 export function NetCoreSupportedVersionInstallationConfirmation(installedVersion: string) { return localize('sqlDatabaseProjects.NetCoreSupportedVersionInstallationConfirmation', "Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK supported version location in settings if already installed.", installedVersion); }
 export const UpdateNetCoreLocation: string = localize('sqlDatabaseProjects.UpdateNetCoreLocation', "Update Location");
-export const InstallNetCore: string = localize('sqlDatabaseProjects.InstallNetCore', "Install");
-export const DoNotAskAgain: string = localize('sqlDatabaseProjects.doNotAskAgain', "Don't Ask Again");
 export const projectsOutputChannel = localize('sqlDatabaseProjects.outputChannel', "Database Projects");
+
+// Prompt buttons
+export const Install: string = localize('sqlDatabaseProjects.Install', "Install");
+export const DoNotAskAgain: string = localize('sqlDatabaseProjects.doNotAskAgain', "Don't Ask Again");
 
 // SqlProj file XML names
 export const ItemGroup = 'ItemGroup';
@@ -406,6 +410,15 @@ export enum DatabaseProjectItemType {
 	reference = 'databaseProject.itemType.reference',
 	dataSourceRoot = 'databaseProject.itemType.dataSourceRoot',
 }
+
+// AutoRest
+export const autorestPostDeploymentScriptName = 'PostDeploymentScript.sql';
+export const nodeButNotAutorestFound = localize('nodeButNotAutorestFound', "Autorest tool not found in system path, but found Node.js.  Running via npx.  Please execute 'npm install autorest -g' to install permanently.");
+export const nodeNotFound = localize('nodeNotFound', "Neither autorest nor Node.js (npx) found in system path.  Please install Node.js for autorest generation to work.");
+export const selectSpecFile = localize('selectSpecFile', "Select OpenAPI/Swagger spec file");
+export function generatingProjectFailed(errorMessage: string) { return localize('generatingProjectFailed', "Generating project via AutoRest failed: {0}", errorMessage); }
+export function multipleMostDeploymentScripts(count: number) { return localize('multipleMostDeploymentScripts', "Unexpected number of {0} files: {1}", autorestPostDeploymentScriptName, count); }
+export const specSelectionText = localize('specSelectionText', "OpenAPI/Swagger spec");
 
 // System dbs
 export const systemDbs = ['master', 'msdb', 'tempdb', 'model'];
