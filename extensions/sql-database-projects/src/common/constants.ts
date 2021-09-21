@@ -131,18 +131,23 @@ export const nameMustNotBeEmpty = localize('nameMustNotBeEmpty', "Name must not 
 // Deploy
 export const selectPublishOption = localize('selectPublishOption', "Select where to publish the project to");
 export const publishToExistingServer = localize('publishToExistingServer', "Publish to existing server");
-export const publishToDockerContainer = localize('publishToDockerContainer', "Publish to docker container");
-export const enterPortNumber = localize('enterPortNumber', "Enter port number or press enter to use the default value");
+export const publishToDockerContainer = localize('publishToDockerContainer', "Publish to new server in a container");
+export const enterPortNumber = localize('enterPortNumber', "Enter SQL server port number or press enter to use the default value");
 export const enterConnectionStringEnvName = localize('enterConnectionStringEnvName', "Enter connection string environment variable name");
 export const enterConnectionStringTemplate = localize('enterConnectionStringTemplate', "Enter connection string template");
-export const enterPassword = localize('enterPassword', "Enter password");
-export const enterBaseImage = localize('enterBaseImage', "Enter the base SQL Server docker image or press enter to use the default value");
+export const enterPassword = localize('enterPassword', "Enter SQL Server admin password");
+export const confirmPassword = localize('confirmPassword', "Confirm SQL server admin password");
+export const selectBaseImage = localize('selectBaseImage', "Select the base SQL Server docker image or press enter to use the default value");
+export const invalidSQLPasswordMessage = localize('invalidSQLPassword', "SQL Server password doesn't meet the password complexity requirement. For more information: https://docs.microsoft.com/sql/relational-databases/security/password-policy");
+export const passwordNotMatch = localize('passwordNotMatch', "SQL Server password doesn't match the confirmation password");
 export const portMustBeNumber = localize('portMustNotBeNumber', "Port must a be number");
 export const valueCannotBeEmpty = localize('valueCannotBeEmpty', "Value cannot be empty");
 export const dockerImageLabelPrefix = 'source=sqldbproject';
 export const dockerImageNamePrefix = 'sqldbproject';
 export const connectionNamePrefix = 'SQLDbProject';
-export const defaultDockerBaseImage = 'mcr.microsoft.com/mssql/server:2019-latest';
+export const sqlServerDockerRegistry = 'mcr.microsoft.com';
+export const sqlServerDockerRepository = 'mssql/server';
+export const azureSqlEdgeDockerRepository = 'azure-sql-edge';
 export const commandsFolderName = 'commands';
 export const mssqlFolderName = '.mssql';
 export const dockerFileName = 'Dockerfile';
@@ -159,12 +164,13 @@ export const deployProjectSucceed = localize('deployProjectSucceed', "Database p
 export const cleaningDockerImagesMessage = localize('cleaningDockerImagesMessage', "Cleaning existing deployments...");
 export const creatingDeploymentSettingsMessage = localize('creatingDeploymentSettingsMessage', "Creating deployment settings ...");
 export const runningDockerMessage = localize('runningDockerMessage', "Building and running the docker container ...");
+export function dockerNotRunningError(error: string) { return localize('dockerNotRunningError', "Failed to verify docker. Please make sure docker is installed and running. Error: '{0}'", error || ''); }
 export const dockerContainerNotRunningErrorMessage = localize('dockerContainerNotRunningErrorMessage', "Docker container is not running");
 export const dockerContainerFailedToRunErrorMessage = localize('dockerContainerFailedToRunErrorMessage', "Failed to run the docker container");
 export const connectingToSqlServerOnDockerMessage = localize('connectingToSqlServerOnDockerMessage', "Connecting to SQL Server on Docker");
 export const deployProjectFailedMessage = localize('deployProjectFailedMessage', "Failed to open a connection to the deployed database'");
 export function taskFailedError(taskName: string, err: string): string { return localize('taskFailedError.error', "Failed to complete task '{0}'. Error: {1}", taskName, err); }
-export function deployProjectFailed(errorMessage: string) { return localize('deployProjectFailed', "Failed to deploy project. Check output pane for more details. {0}", errorMessage); }
+export function publishToContainerFailed(errorMessage: string) { return localize('publishToContainerFailed', "Failed to publish to container. Check output pane for more details. {0}", errorMessage); }
 export function deployAppSettingUpdateFailed(appSetting: string) { return localize('deployAppSettingUpdateFailed', "Failed to update app setting '{0}'", appSetting); }
 export function deployAppSettingUpdating(appSetting: string) { return localize('deployAppSettingUpdating', "Updating app setting: '{0}'", appSetting); }
 export function connectionFailedError(error: string) { return localize('connectionFailedError', "Connection failed error: '{0}'", error); }

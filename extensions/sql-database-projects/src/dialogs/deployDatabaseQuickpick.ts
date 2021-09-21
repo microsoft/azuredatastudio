@@ -94,7 +94,7 @@ export async function launchPublishToDockerContainerQuickpick(project: Project):
 		title: constants.enterPassword,
 		ignoreFocusOut: true,
 		value: password,
-		validateInput: input => utils.isEmptyString(input) ? constants.valueCannotBeEmpty : undefined,
+		validateInput: input => !utils.isValidSQLPassword(input) ? constants.invalidSQLPasswordMessage : undefined,
 		password: true
 	}
 	);
@@ -104,14 +104,28 @@ export async function launchPublishToDockerContainerQuickpick(project: Project):
 		return undefined;
 	}
 
-	let baseImage: string | undefined = '';
-	baseImage = await vscode.window.showInputBox({
-		title: constants.enterBaseImage,
+	let confirmPassword: string | undefined = '';
+	confirmPassword = await vscode.window.showInputBox({
+		title: constants.confirmPassword,
 		ignoreFocusOut: true,
-		value: constants.defaultDockerBaseImage,
-		validateInput: input => utils.isEmptyString(input) ? constants.valueCannotBeEmpty : undefined
+		value: confirmPassword,
+		validateInput: input => input !== password ? constants.passwordNotMatch : undefined,
+		password: true
 	}
 	);
+
+	// Return when user hits escape
+	if (!confirmPassword) {
+		return undefined;
+	}
+
+	const baseImage = await vscode.window.showQuickPick(
+		[
+			`${constants.sqlServerDockerRegistry}/${constants.sqlServerDockerRepository}:2017-latest`,
+			`${constants.sqlServerDockerRegistry}/${constants.sqlServerDockerRepository}:2019-latest`,
+			`${constants.sqlServerDockerRegistry}/${constants.azureSqlEdgeDockerRepository}:latest`
+		],
+		{ title: constants.selectBaseImage, ignoreFocusOut: true });
 
 	// Return when user hits escape
 	if (!baseImage) {

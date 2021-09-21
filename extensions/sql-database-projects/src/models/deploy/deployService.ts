@@ -85,11 +85,23 @@ export class DeployService {
 		}
 	}
 
+	private async verifyDocker(): Promise<void> {
+		try {
+			await utils.executeCommand(`docker version --format {{.Server.APIVersion}}`, this._outputChannel);
+			// TODO verify min version
+		} catch (error) {
+			throw Error(constants.dockerNotRunningError(utils.getErrorMessage(error)));
+		}
+	}
+
 	public async deploy(profile: IDeployProfile, project: Project): Promise<string | undefined> {
 		return await this.executeTask(constants.deployDbTaskName, async () => {
 			if (!profile.localDbSetting) {
 				return undefined;
 			}
+
+			await this.verifyDocker();
+
 			const projectName = project.projectFileName;
 			const imageLabel = `${constants.dockerImageLabelPrefix}_${projectName}`.toLocaleLowerCase();
 			const imageName = `${constants.dockerImageNamePrefix}-${projectName}-${UUID.generateUuid()}`.toLocaleLowerCase();
@@ -146,13 +158,18 @@ export class DeployService {
 	}
 
 	private async buildAndRunDockerContainer(dockerFilePath: string, imageName: string, root: string, profile: ILocalDbSetting, imageLabel: string): Promise<string | undefined> {
+
+		// Sensitive data to remove from output console
+		const sensitiveData = [profile.password];
+
+		// Running commands to build the docker image
 		this.logToOutput('Building docker image ...');
 		await utils.executeCommand(`docker pull ${profile.dockerBaseImage}`, this._outputChannel);
 		await utils.executeCommand(`docker build -f ${dockerFilePath} -t ${imageName} ${root}`, this._outputChannel);
 		await utils.executeCommand(`docker images --filter label=${imageLabel}`, this._outputChannel);
 
 		this.logToOutput('Running docker container ...');
-		await utils.executeCommand(`docker run -p ${profile.port}:1433 -e "MSSQL_SA_PASSWORD=${profile.password}" -d ${imageName}`, this._outputChannel);
+		await utils.executeCommand(`docker run -p ${profile.port}:1433 -e "MSSQL_SA_PASSWORD=${profile.password}" -d ${imageName}`, this._outputChannel, sensitiveData);
 		return await utils.executeCommand(`docker ps -q -a --filter label=${imageLabel} -q`, this._outputChannel);
 	}
 
