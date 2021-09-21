@@ -282,7 +282,7 @@ suite('notebook model', function (): void {
 		await model.loadContents();
 
 		// I expect the default provider to be jupyter
-		assert.strictEqual(model.notebookManager.providerId, 'jupyter', 'Notebook manager provider id incorrect');
+		assert.strictEqual(model.executeManager.providerId, 'jupyter', 'Notebook manager provider id incorrect');
 
 		// Similarly, change default notebook provider id to SQL
 		defaultModelOptions.providerId = 'SQL';
@@ -292,7 +292,7 @@ suite('notebook model', function (): void {
 		await model.loadContents();
 
 		// I expect the default provider to be SQL
-		assert.strictEqual(model.notebookManager.providerId, 'SQL', 'Notebook manager provider id incorrect after 2nd model load');
+		assert.strictEqual(model.executeManager.providerId, 'SQL', 'Notebook manager provider id incorrect after 2nd model load');
 
 		// Check that the getters return  the correct values
 		assert.strictEqual(model.executeManagers.length, 2, 'There should be 2 notebook managers');

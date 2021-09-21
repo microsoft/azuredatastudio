@@ -143,7 +143,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return notebookManagers;
 	}
 
-	public get notebookManager(): IExecuteManager | undefined {
+	public get executeManager(): IExecuteManager | undefined {
 		let manager = this.executeManagers.find(manager => manager.providerId === this._providerId);
 		if (!manager) {
 			// Note: this seems like a less than ideal scenario. We should ideally pass in the "correct" provider ID and allow there to be a default,
@@ -173,7 +173,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public get hasServerManager(): boolean {
 		// If the service has a server manager, then we can show the start button
-		return !!this.notebookManager?.serverManager;
+		return !!this.executeManager?.serverManager;
 	}
 
 	public get contentChanged(): Event<NotebookContentChange> {
@@ -745,7 +745,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		if (this._activeClientSession) {
 			// Old active client sessions have already been shutdown by RESTART_JUPYTER_NOTEBOOK_SESSIONS command
 			this._activeClientSession = undefined;
-			await this.startSession(this.notebookManager, this._selectedKernelDisplayName, true);
+			await this.startSession(this.executeManager, this._selectedKernelDisplayName, true);
 		}
 	}
 
@@ -997,7 +997,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			// Ensure that the kernel we try to switch to is a valid kernel; if not, use the default
 			let kernelSpecs = this.getKernelSpecs();
 			if (kernelSpecs && kernelSpecs.length > 0 && kernelSpecs.findIndex(k => k.display_name === spec.display_name) < 0) {
-				spec = kernelSpecs.find(spec => spec.name === this.notebookManager?.sessionManager.specs.defaultKernel);
+				spec = kernelSpecs.find(spec => spec.name === this.executeManager?.sessionManager.specs.defaultKernel);
 			}
 		}
 		else {
@@ -1094,11 +1094,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public getDisplayNameFromSpecName(kernel: nb.IKernel): string | undefined {
-		let specs = this.notebookManager?.sessionManager.specs;
+		let specs = this.executeManager?.sessionManager.specs;
 		if (!specs || !specs.kernels) {
 			return kernel.name;
 		}
-		let newKernel = this.notebookManager.sessionManager.specs.kernels.find(k => k.name === kernel.name);
+		let newKernel = this.executeManager.sessionManager.specs.kernels.find(k => k.name === kernel.name);
 		let newKernelDisplayName;
 		if (newKernel) {
 			newKernelDisplayName = newKernel.display_name;
@@ -1229,9 +1229,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	// Get kernel specs from current sessionManager
 	private getKernelSpecs(): nb.IKernelSpec[] {
-		if (this.notebookManager && this.notebookManager.sessionManager && this.notebookManager.sessionManager.specs &&
-			this.notebookManager.sessionManager.specs.kernels) {
-			return this.notebookManager.sessionManager.specs.kernels;
+		if (this.executeManager && this.executeManager.sessionManager && this.executeManager.sessionManager.specs &&
+			this.executeManager.sessionManager.specs.kernels) {
+			return this.executeManager.sessionManager.specs.kernels;
 		}
 		return [];
 	}

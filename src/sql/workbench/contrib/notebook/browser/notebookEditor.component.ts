@@ -93,7 +93,7 @@ export class NotebookEditorComponent extends AngularDisposable {
 		await this.model.requestModelLoad();
 		this.detectChanges();
 		this.setContextKeyServiceWithProviderId(this.model.providerId);
-		await this.model.startSession(this.model.notebookManager, undefined, true);
+		await this.model.startSession(this.model.executeManager, undefined, true);
 		this.fillInActionsForCurrentContext();
 		this.detectChanges();
 	}
