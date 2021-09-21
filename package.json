@@ -43,7 +43,7 @@
     "strict-vscode-watch": "node --max_old_space_size=4095 node_modules/typescript/bin/tsc -p src/tsconfig.vscode.json --watch",
     "strict-initialization-watch": "tsc --watch -p src/tsconfig.json --noEmit --strictPropertyInitialization",
     "tsec-compile-check": "node node_modules/tsec/bin/tsec -p src/tsconfig.tsec.json",
-    "vscode-dts-compile-check": "node node_modules/tsec/bin/tsec -p src/tsconfig.vscode-dts.json",
+    "vscode-dts-compile-check": "node node_modules/tsec/bin/tsec -p src/tsconfig.vscode-dts.json && node node_modules/tsec/bin/tsec -p src/tsconfig.vscode-proposed-dts.json",
     "valid-layers-check": "node build/lib/layersChecker.js",
     "update-distro": "node build/npm/update-distro.js",
     "web": "node resources/web/code-web.js",
