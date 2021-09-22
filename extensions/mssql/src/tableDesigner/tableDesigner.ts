@@ -18,22 +18,25 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 				isValid: true,
 				data: data
 			});
+		},
+		getTableDesignerInfo: async (table): Promise<azdata.designers.TableDesignerInfo> => {
+			const data: azdata.designers.DesignerData = {};
+			data[azdata.designers.TableProperties.Name] = <azdata.designers.InputComponentData>{
+				value: 'test'
+			};
+			return {
+				view: {},
+				data: data,
+				columnTypes: ['int']
+			};
 		}
 	});
 
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.newTable', async (context: azdata.ObjectExplorerContext) => {
-		const data: azdata.designers.DesignerData = {};
-		data[azdata.designers.TableProperties.Name] = <azdata.designers.InputComponentData>{
-			value: 'test'
-		};
 		await azdata.designers.openTableDesigner('MSSQL', {
 			server: 'sqltools2017-3',
 			database: 'database',
 			isNewTable: true
-		}, {
-			view: {},
-			data: data,
-			columnTypes: ['int']
 		});
 	}));
 
@@ -46,10 +49,6 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 			server: 'sqltools2017-3',
 			database: 'database',
 			isNewTable: true
-		}, {
-			view: {},
-			data: data,
-			columnTypes: ['int']
 		});
 	}));
 

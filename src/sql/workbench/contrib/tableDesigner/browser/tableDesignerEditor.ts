@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Designer } from 'sql/base/browser/ui/designer/designer';
+import { attachDesignerStyler } from 'sql/platform/theme/common/styler';
 import { TableDesignerInput } from 'sql/workbench/browser/editor/tableDesigner/tableDesignerInput';
 import *  as DOM from 'vs/base/browser/dom';
 import { CancellationToken } from 'vs/base/common/cancellation';
@@ -41,6 +42,7 @@ export class TableDesignerEditor extends EditorPane {
 	protected createEditor(parent: HTMLElement): void {
 		// The editor is only created once per editor group.
 		this._designer = new Designer(parent, this._contextViewService);
+		this._register(attachDesignerStyler(this._designer, this.themeService));
 	}
 
 	layout(dimension: DOM.Dimension): void {

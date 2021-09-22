@@ -2,8 +2,23 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
 .designer-component,
-.designer-component .container {
+.designer-component .container,
+.designer-component .content-container {
 	width: 100%;
 	height: 100%;
+}
+
+.designer-component .content-container {
+	display: flex;
+	flex-direction: column;
+}
+
+.designer-component .top-content-container {
+	flex: 0 0 auto;
+}
+
+.designer-component .tabbed-panel-container {
+	flex: 1 1 auto;
 }

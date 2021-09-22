@@ -38,9 +38,9 @@ export class TableDesignerService implements ITableDesignerService {
 		throw invalidProvider(providerId);
 	}
 
-	public async openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, designerInfo: azdata.designers.TableDesignerInfo): Promise<void> {
+	public async openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo): Promise<void> {
 		const provider = this.getProvider(providerId);
-		const tableDesignerInput = new TableDesignerInput(provider, tableInfo, designerInfo);
+		const tableDesignerInput = new TableDesignerInput(provider, tableInfo);
 		await this._editorService.openEditor(tableDesignerInput, { pinned: true }, ACTIVE_GROUP);
 	}
 }

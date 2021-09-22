@@ -16,10 +16,9 @@ export class TableDesignerInput extends EditorInput {
 	public static ID: string = 'workbench.editorinputs.tableDesignerInput';
 	private _designerComponentInput: TableDesignerComponentInput;
 	constructor(provider: TableDesignerProvider,
-		private _tableInfo: azdata.designers.TableInfo,
-		designerInfo: azdata.designers.TableDesignerInfo) {
+		private _tableInfo: azdata.designers.TableInfo) {
 		super();
-		this._designerComponentInput = new TableDesignerComponentInput(provider, this._tableInfo, designerInfo);
+		this._designerComponentInput = new TableDesignerComponentInput(provider, this._tableInfo);
 	}
 
 	get typeId(): string {

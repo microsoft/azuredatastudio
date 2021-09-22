@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { DesignerData, DesignerEdit, DesignerEditResult, DesignerComponentInput, DesignerView, DesignerTab, DesignerItemComponent, TableComponent, InputComponent, DropdownComponent } from 'sql/base/browser/ui/designer/interfaces';
+import { DesignerData, DesignerEdit, DesignerEditResult, DesignerComponentInput, DesignerView, DesignerTab, UIComponentInfo, TableComponentInfo, InputComponentInfo, DropdownComponentInfo } from 'sql/base/browser/ui/designer/interfaces';
 import { TableDesignerProvider } from 'sql/workbench/services/tableDesigner/common/interface';
 import { localize } from 'vs/nls';
 import { designers } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -15,16 +15,20 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 	private _view: DesignerView;
 
 	constructor(private readonly _provider: TableDesignerProvider,
-		private _tableInfo: azdata.designers.TableInfo,
-		designerInfo: azdata.designers.TableDesignerInfo) {
-		this.initialize(designerInfo);
+		private _tableInfo: azdata.designers.TableInfo) {
 	}
 
 	async getView(): Promise<DesignerView> {
+		if (!this._view) {
+			await this.initialize();
+		}
 		return this._view;
 	}
 
 	async getData(): Promise<DesignerData> {
+		if (!this._data) {
+			await this.initialize();
+		}
 		return this._data;
 	}
 
@@ -39,35 +43,33 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		};
 	}
 
-	private initialize(designerInfo: azdata.designers.TableDesignerInfo): void {
+	private async initialize(): Promise<void> {
+		const designerInfo = await this._provider.getTableDesignerInfo(this._tableInfo);
+
 		this._data = designerInfo.data;
 
-		const generalTabComponents: DesignerItemComponent[] = [];
-		generalTabComponents.push({
-			type: 'input',
-			property: designers.TableProperties.Name
-		});
+		const advancedTabComponents: UIComponentInfo[] = [];
 
-		generalTabComponents.push({
+		advancedTabComponents.push({
 			type: 'input',
 			property: designers.TableProperties.Schema
 		});
 
-		generalTabComponents.push({
+		advancedTabComponents.push({
 			type: 'input',
 			property: designers.TableProperties.Description
 		});
 
 		if (designerInfo.view.additionalTableProperties) {
-			generalTabComponents.push(...designerInfo.view.additionalTableProperties);
+			advancedTabComponents.push(...designerInfo.view.additionalTableProperties);
 		}
 
-		const generalTab = <DesignerTab>{
-			title: localize('tableDesigner.generalTab', "General"),
-			components: generalTabComponents
+		const advancedTab = <DesignerTab>{
+			title: localize('tableDesigner.advancedTab', "Advanced"),
+			components: advancedTabComponents
 		};
 
-		const columnProperties: DesignerItemComponent[] = [];
+		const columnProperties: UIComponentInfo[] = [];
 
 		columnProperties.push(
 			{
@@ -77,7 +79,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		);
 
 		columnProperties.push(
-			<DropdownComponent>{
+			<DropdownComponentInfo>{
 				type: 'dropdown',
 				property: designers.TableColumnProperties.Type,
 				options: designerInfo.columnTypes
@@ -85,7 +87,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		);
 
 		columnProperties.push(
-			<InputComponent>{
+			<InputComponentInfo>{
 				type: 'input',
 				property: designers.TableColumnProperties.Length,
 				inputType: 'number'
@@ -113,7 +115,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		const columnsTab = <DesignerTab>{
 			title: localize('tableDesigner.columnsTabTitle', "Columns"),
 			components: [
-				<TableComponent>{
+				<TableComponentInfo>{
 					type: 'table',
 					property: designers.TableProperties.Columns,
 					columns: [
@@ -128,12 +130,19 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			]
 		};
 
-		const tabs = [generalTab, columnsTab];
+		const tabs = [columnsTab, advancedTab];
 		if (designerInfo.view.addtionalTabs) {
 			tabs.push(...tabs);
 		}
 
-		this._view = { tabs: tabs };
+		this._view = {
+			components: [{
+				type: 'input',
+				property: designers.TableColumnProperties.Name,
+				title: localize('tableDesigner.nameTitle', "Table name")
+			}],
+			tabs: tabs
+		};
 	}
 
 

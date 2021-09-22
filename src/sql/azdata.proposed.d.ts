@@ -987,9 +987,10 @@ declare module 'azdata' {
 
 	export namespace designers {
 
-		export function openTableDesigner(providerId: string, tableInfo: TableInfo, designerInfo: TableDesignerInfo): Promise<void>;
+		export function openTableDesigner(providerId: string, tableInfo: TableInfo): Promise<void>;
 
 		export interface TableDesignerProvider extends DataProvider {
+			getTableDesignerInfo(table: TableInfo): Promise<TableDesignerInfo>;
 			processTableEdit(table: TableInfo, data: DesignerData, edit: DesignerEdit): Promise<DesignerEditResult>;
 		}
 
@@ -1084,11 +1085,11 @@ declare module 'azdata' {
 			components: DesignerComponentType[];
 		}
 
-		export type DesignerComponentType = InputComponent | CheckboxComponent | DropdownComponent | TableComponent;
+		export type DesignerComponentType = InputComponentInfo | CheckboxComponentInfo | DropdownComponentInfo | TableComponentInfo;
 
 		export type DesignerComponentTypeName = 'input' | 'checkbox' | 'dropdown' | 'table';
 
-		export interface DesignerItemComponent {
+		export interface UIComponentInfo {
 			/**
 			 * The name of the property that the component is bound to.
 			 */
@@ -1101,18 +1102,18 @@ declare module 'azdata' {
 			ariaLabel?: string;
 		}
 
-		export interface InputComponent extends DesignerItemComponent {
+		export interface InputComponentInfo extends UIComponentInfo {
 			placeholder?: string;
 			inputType?: 'text' | 'number';
 		}
 
-		export interface DropdownComponent extends DesignerItemComponent {
+		export interface DropdownComponentInfo extends UIComponentInfo {
 		}
 
-		export interface CheckboxComponent extends DesignerItemComponent {
+		export interface CheckboxComponentInfo extends UIComponentInfo {
 		}
 
-		export interface TableComponent extends DesignerItemComponent {
+		export interface TableComponentInfo extends UIComponentInfo {
 			/**
 			 * the name of the properties to be displayed, properties not in this list will be accessible in details view.
 			 */

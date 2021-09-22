@@ -52,6 +52,7 @@ export interface TableComponentRowData {
 
 
 export interface DesignerView {
+	components?: DesignerComponentType[]
 	tabs: DesignerTab[];
 }
 
@@ -77,11 +78,11 @@ export interface DesignerTab {
 	components: DesignerComponentType[];
 }
 
-export type DesignerComponentType = InputComponent | CheckboxComponent | DropdownComponent | TableComponent;
+export type DesignerComponentType = InputComponentInfo | CheckboxComponentInfo | DropdownComponentInfo | TableComponentInfo;
 
 export type DesignerComponentTypeName = 'input' | 'checkbox' | 'dropdown' | 'table';
 
-export interface DesignerItemComponent {
+export interface UIComponentInfo {
 	/**
 	 * The name of the property that the component is bound to.
 	 */
@@ -94,19 +95,19 @@ export interface DesignerItemComponent {
 	ariaLabel?: string;
 }
 
-export interface InputComponent extends DesignerItemComponent {
+export interface InputComponentInfo extends UIComponentInfo {
 	placeholder?: string;
 	inputType?: 'text' | 'number';
 }
 
-export interface DropdownComponent extends DesignerItemComponent {
+export interface DropdownComponentInfo extends UIComponentInfo {
 	options: string[]
 }
 
-export interface CheckboxComponent extends DesignerItemComponent {
+export interface CheckboxComponentInfo extends UIComponentInfo {
 }
 
-export interface TableComponent extends DesignerItemComponent {
+export interface TableComponentInfo extends UIComponentInfo {
 	/**
 	 * the name of the properties to be displayed, properties not in this list will be accessible in details view.
 	 */

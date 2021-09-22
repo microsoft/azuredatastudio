@@ -3,17 +3,24 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { DesignerComponentInput, DesignerTab, InputComponent } from 'sql/base/browser/ui/designer/interfaces';
+import { DesignerComponentInput, DesignerComponentType, DesignerEditTypes, DesignerTab, InputComponentInfo, InputComponentData } from 'sql/base/browser/ui/designer/interfaces';
 import { IPanelTab, IPanelView, TabbedPanel } from 'sql/base/browser/ui/panel/panel';
 import * as DOM from 'vs/base/browser/dom';
 import { Event } from 'vs/base/common/event';
 import { Orientation, Sizing, SplitView } from 'vs/base/browser/ui/splitview/splitview';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
+import { IInputBoxStyles, InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
 import 'vs/css!./media/designer';
+import { ITableStyles } from 'sql/base/browser/ui/table/interfaces';
+import { IDropdownStyles } from 'sql/base/browser/ui/dropdownList/dropdownList';
+import { IThemable } from 'vs/base/common/styler';
+import { ICheckboxStyles } from 'sql/base/browser/ui/checkbox/checkbox';
 
-export class Designer extends Disposable {
+export interface IDesignerStyle extends IInputBoxStyles, ITableStyles, IDropdownStyles, ICheckboxStyles {
+}
+
+export class Designer extends Disposable implements IThemable {
 
 	private _horizontalSplitViewContainer: HTMLElement;
 	private _verticalSplitViewContainer: HTMLElement;
@@ -22,10 +29,10 @@ export class Designer extends Disposable {
 	private _horizontalSplitView: SplitView;
 	private _verticalSplitView: SplitView;
 	private _tabbedPanel: TabbedPanel;
+	private _contentContainer: HTMLElement;
+	private _topContentContainer: HTMLElement;
 	private _propertiesPane: HTMLElement;
-
-	private _editor: InputBox;
-	private _properties: InputBox;
+	private _styles: IDesignerStyle = {};
 
 	private _componentMap: Map<string, any> = new Map<string, any>();
 	private _input: DesignerComponentInput;
@@ -35,13 +42,17 @@ export class Designer extends Disposable {
 		super();
 		this._verticalSplitViewContainer = DOM.$('.designer-component');
 		this._horizontalSplitViewContainer = DOM.$('.container');
-		this._tabbedPanelContainer = DOM.$('.container');
+		this._contentContainer = DOM.$('.content-container');
+		this._topContentContainer = DOM.$('.top-content-container');
+		this._tabbedPanelContainer = DOM.$('.tabbed-panel-container');
 		this._editorContainer = DOM.$('.container');
 		this._propertiesPane = DOM.$('.container');
 		this._verticalSplitView = new SplitView(this._verticalSplitViewContainer, { orientation: Orientation.VERTICAL });
 		this._horizontalSplitView = new SplitView(this._horizontalSplitViewContainer, { orientation: Orientation.HORIZONTAL });
 		this._tabbedPanel = new TabbedPanel(this._tabbedPanelContainer);
 		this._container.appendChild(this._verticalSplitViewContainer);
+		this._contentContainer.appendChild(this._topContentContainer);
+		this._contentContainer.appendChild(this._tabbedPanelContainer);
 		this._verticalSplitView.addView({
 			element: this._horizontalSplitViewContainer,
 			layout: size => {
@@ -60,7 +71,7 @@ export class Designer extends Disposable {
 		}, Sizing.Distribute);
 
 		this._horizontalSplitView.addView({
-			element: this._tabbedPanelContainer,
+			element: this._contentContainer,
 			layout: size => {
 				this._tabbedPanel.layout(new DOM.Dimension(size, DOM.getClientArea(this._horizontalSplitViewContainer).height));
 			},
@@ -77,14 +88,28 @@ export class Designer extends Disposable {
 			onDidChange: Event.None
 		}, Sizing.Distribute);
 
-		this._editor = new InputBox(this._editorContainer, this._contextViewProvider);
-		this._properties = new InputBox(this._propertiesPane, this._contextViewProvider);
+		const editor = DOM.$('div');
+		editor.innerText = 'script pane placeholder';
+		const properties = DOM.$('div');
+		properties.innerText = 'properties pane placeholder';
+		this._editorContainer.appendChild(editor);
+		this._propertiesPane.appendChild(properties);
 	}
 
-	layout(dimension: DOM.Dimension) {
+	public style(styles: IDesignerStyle): void {
+		this._styles = styles;
+		this._componentMap.forEach((value, key, map) => {
+			if (value.style) {
+				value.style(styles);
+			}
+		});
+	}
+
+	public layout(dimension: DOM.Dimension) {
 		this._verticalSplitView.layout(dimension.height);
 		this._horizontalSplitView.layout(dimension.width);
 	}
+
 
 	public async setInput(input: DesignerComponentInput): Promise<void> {
 		this._input = input;
@@ -92,44 +117,68 @@ export class Designer extends Disposable {
 	}
 
 	private async initializeDesignerView(): Promise<void> {
+		DOM.clearNode(this._topContentContainer);
 		const view = await this._input.getView();
+		if (view.components) {
+			view.components.forEach(component => {
+				this.createComponent(this._topContentContainer, component);
+			});
+		}
 		this._tabbedPanel.clearTabs();
 		view.tabs.forEach(tab => {
 			this._tabbedPanel.pushTab(this.createTabView(tab));
 		});
+	}
 
-		this._editor.value = `editor - ${Date.now().toLocaleString()}`;
-		this._properties.value = `properties - ${Date.now().toLocaleString()}`;
+	private async handleEdit(edit): Promise<void> {
+		const result = await this._input.processEdit(edit);
+		const data = await this._input.getData();
+		if (result.isValid) {
+			//TODO: replace with actual implementation
+			this._componentMap['name'].value = (<InputComponentData>data['name']).value;
+		} else {
+			//TODO: add error notification
+		}
 	}
 
 	private createTabView(tab: DesignerTab): IPanelTab {
+		const view = new DesignerTabPanelView(tab, (container, component) => {
+			this.createComponent(container, component);
+		});
 		return {
 			identifier: tab.title,
 			title: tab.title,
-			view: new DesignerTabPanelView(tab, this._componentMap, this._contextViewProvider)
+			view: view
 		};
+	}
+
+	private createComponent(container: HTMLElement, component: DesignerComponentType): void {
+		switch (component.type) {
+			case 'input':
+				const inputComponentSpec = component as InputComponentInfo;
+				const input = new InputBox(container, this._contextViewProvider, {
+					ariaLabel: component.ariaLabel ?? component.title,
+					type: inputComponentSpec.inputType
+				});
+				this._componentMap[component.property] = input;
+				input.onDidChange((newValue) => {
+					this.handleEdit({ type: DesignerEditTypes.Update, property: component.property, value: newValue });
+				});
+				input.style(this._styles);
+				break;
+		}
 	}
 }
 
-class DesignerTabPanelView implements IPanelView {
-	constructor(private readonly _tab: DesignerTab,
-		private readonly componentMap: Map<string, any>,
-		private readonly _contextViewProvider: IContextViewProvider) {
+class DesignerTabPanelView extends Disposable implements IPanelView {
 
+	constructor(private readonly _tab: DesignerTab, private _createComponent: (container: HTMLElement, component: DesignerComponentType) => void) {
+		super();
 	}
 
 	render(container: HTMLElement): void {
 		this._tab.components.forEach(component => {
-			switch (component.type) {
-				case 'input':
-					const inputComponentSpec = component as InputComponent;
-					const input = new InputBox(container, this._contextViewProvider, {
-						ariaLabel: component.ariaLabel ?? component.title,
-						type: inputComponentSpec.inputType
-					});
-					this.componentMap[component.property] = input;
-					break;
-			}
+			this._createComponent(container, component);
 		});
 	}
 

@@ -512,6 +512,9 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 	$registerTableDesignerProvider(providerId: string, handle: number): Promise<any> {
 		const self = this;
 		this._tableDesignerService.registerProvider(providerId, <azdata.designers.TableDesignerProvider>{
+			getTableDesignerInfo(tableInfo: azdata.designers.TableInfo): Promise<azdata.designers.TableDesignerInfo> {
+				return self._proxy.$getTableDesignerInfo(handle, tableInfo);
+			},
 			processTableEdit(table, data, edit): Promise<azdata.designers.DesignerEditResult> {
 				return self._proxy.$processTableDesignerEdit(handle, table, data, edit);
 			}
@@ -630,8 +633,8 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 	}
 
 	// Table Designer
-	public $openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, designerInfo: azdata.designers.TableDesignerInfo): void {
-		this._tableDesignerService.openTableDesigner(providerId, tableInfo, designerInfo);
+	public $openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo): void {
+		this._tableDesignerService.openTableDesigner(providerId, tableInfo);
 	}
 
 	public $unregisterProvider(handle: number): Promise<any> {

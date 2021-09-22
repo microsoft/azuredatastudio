@@ -1024,3 +1024,21 @@ export namespace GetSqlMigrationAssessmentItemsRequest {
 }
 
 // ------------------------------- <Sql Migration> -----------------------------
+
+// ------------------------------- < Table Designer > ------------------------------------
+
+export interface ProcessTableDesignerEditRequestParams {
+	tableInfo: azdata.designers.TableInfo,
+	edit: azdata.designers.DesignerEdit,
+	data: azdata.designers.DesignerData
+}
+
+export namespace GetTableDesignerInfoRequest {
+	export const type = new RequestType<azdata.designers.TableInfo, azdata.designers.TableDesignerInfo, void, void>('tabledesigner/gettabledesignerinfo');
+}
+
+export namespace ProcessTableDesignerEditRequest {
+	export const type = new RequestType<ProcessTableDesignerEditRequestParams, azdata.designers.DesignerEditResult, void, void>('tabledesigner/processedit');
+}
+
+// ------------------------------- < Table Designer > ------------------------------------
