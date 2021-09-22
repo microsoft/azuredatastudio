@@ -31,7 +31,7 @@ export class SavedAssessmentDialog {
 			dialog.registerContent(async (view) => {
 				try {
 					this._rootContainer = this.initializePageContent(view);
-					view.initializeModel(this._rootContainer);
+					await view.initializeModel(this._rootContainer);
 					this._disposables.push(dialog.okButton.onClick(async e => {
 						await this.execute();
 						this._disposables.forEach(
