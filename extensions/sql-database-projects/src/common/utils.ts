@@ -422,10 +422,16 @@ export async function createFolderIfNotExist(folderPath: string): Promise<void> 
 	}
 }
 
-export async function executeCommand(cmd: string, outputChannel: vscode.OutputChannel, timeout: number = 5 * 60 * 1000): Promise<string> {
+export async function executeCommand(cmd: string, outputChannel: vscode.OutputChannel, sensitiveData: string[] = [], timeout: number = 5 * 60 * 1000): Promise<string> {
 	return new Promise<string>((resolve, reject) => {
 		if (outputChannel) {
-			outputChannel.appendLine(`    > ${cmd}`);
+			let cmdOutputMessage = cmd;
+
+			sensitiveData.forEach(element => {
+				cmdOutputMessage = cmdOutputMessage.replace(element, '***');
+			});
+
+			outputChannel.appendLine(`    > ${cmdOutputMessage}`);
 		}
 		let child = childProcess.exec(cmd, {
 			timeout: timeout
@@ -534,4 +540,15 @@ export function validateSqlServerPortNumber(port: string | undefined): boolean {
 
 export function isEmptyString(password: string | undefined): boolean {
 	return password === undefined || password === '';
+}
+
+export function isValidSQLPassword(password: string, userName: string = 'sa'): boolean {
+	// Validate SQL Server password
+	const containsUserName = password && userName !== undefined && password.toUpperCase().includes(userName.toUpperCase());
+	// Instead of using one RegEx, I am separating it to make it more readable.
+	const hasUpperCase = /[A-Z]/.test(password) ? 1 : 0;
+	const hasLowerCase = /[a-z]/.test(password) ? 1 : 0;
+	const hasNumbers = /\d/.test(password) ? 1 : 0;
+	const hasNonAlphas = /\W/.test(password) ? 1 : 0;
+	return !containsUserName && password.length >= 8 && password.length <= 128 && (hasUpperCase + hasLowerCase + hasNumbers + hasNonAlphas >= 3);
 }
