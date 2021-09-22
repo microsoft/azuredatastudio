@@ -105,7 +105,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		@Inject(ILogService) private readonly logService: ILogService
 	) {
 		super();
-		this._register(Event.debounce(this._layoutEmitter.event, (l, e) => e, 250, /*leading=*/false)
+		this._register(Event.debounce(this._layoutEmitter.event, (l, e) => e, 400, /*leading=*/false)
 			(() => this.layout()));
 		// Handle disconnect on removal of the cell, if it was the active cell
 		this._register({ dispose: () => this.updateConnectionState(false) });
@@ -250,8 +250,9 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		}));
 		this._register(this.model.layoutChanged(() => this._layoutEmitter.fire(), this));
 		// Handles mouse wheel and scrollbar events
-		this._register(Event.debounce(this.model.onScroll.event, (l, e) => e, 250, /*leading=*/false)
-			(() => this.horizontalScrollbar()));
+		this._register(Event.debounce(this.model.onScroll.event, (l, e) => e, 250, false)
+			(() => this.horizontalScrollbar()
+			));
 		this._register(this.cellModel.onExecutionStateChange(event => {
 			if (event === CellExecutionState.Running && !this.cellModel.stdInVisible) {
 				this.setFocusAndScroll();
@@ -288,13 +289,14 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 	 * or it will set it to the bottom of the markdown editor if it is in the viewport (visible area)
 	 */
 	public horizontalScrollbar(): void {
-		if (this._configurationService.getValue('editor.wordWrap') === 'off' && this.cellModel.cellType !== CellTypes.Code && this.cellModel.source[0] !== '') {
+		if (this._configurationService.getValue('editor.wordWrap') === 'off' && this.cellModel.cellType !== CellTypes.Code && this.cellModel.source.length > 0) {
 			// Get markdown split view horizontal scrollbar
-			let horizontalScrollbar = this.codeElement.nativeElement.querySelector('div.invisible.scrollbar.horizontal');
+			let horizontalScrollbar: HTMLElement = this.codeElement.nativeElement.querySelector('div.scrollbar.horizontal');
 			let markdownEditor: HTMLElement = this.codeElement.nativeElement.closest('.show-markdown .editor');
+			let viewport: HTMLElement = document.querySelector('.scrollable');
+
 			let markdownEditorBottom = Math.floor(markdownEditor.getBoundingClientRect().bottom);
 			let markdownEditorTop = Math.floor(markdownEditor.getBoundingClientRect().top);
-			let viewport: HTMLElement = document.querySelector('.scrollable');
 			let viewportBottom = Math.floor(viewport.getBoundingClientRect().bottom);
 
 			// Compare the editor bottom position to the scrollable area in
@@ -303,30 +305,30 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			let viewportHeight = DOM.getTotalHeight(viewport);
 
 			// Horizontal scrollbar values used when fixed
-			let viewportTop = document.querySelector('.scrollable').getBoundingClientRect().top;
+			let viewportTop = Math.floor(document.querySelector('.scrollable').getBoundingClientRect().top);
 			// Have to offset the height based on the contents the multiple horizontal scrollbars that are present in markdown editor and notebook
-			let horizontalTop = viewportTop + viewportHeight - horizontalScrollbar.scrollHeight - horizontalScrollbar.scrollHeight;
-
+			let horizontalTop = Math.floor(Math.abs(viewportTop + viewportHeight) - Math.abs(2 * horizontalScrollbar.scrollHeight));
 			// Set the bottom position of the markdown editor area of the active cell
 			let toolbarOffsetHeight = DOM.getContentHeight(document.querySelector('markdown-toolbar-component')) + DOM.getContentHeight(document.querySelector('cell-toolbar-component'));
 			editorArea = editorArea + toolbarOffsetHeight + horizontalScrollbar.scrollHeight;
 
 			// This condition will check to see if the bottom of the editor is in the viewable area (which can change on scrolling)
 			// if it is then we will set the horizontal scrollbar to the bottom of the editor space
-			if (markdownEditorBottom <= viewportBottom) {
+			if (markdownEditorBottom < viewportBottom) {
 				// When scrollbar is not fixed and cell is still in visible area
-				horizontalScrollbar.style.opacity = 1;
+				horizontalScrollbar.style.opacity = '1';
 				horizontalScrollbar.style.position = 'absolute';
-				horizontalScrollbar.style.left = 0 + 'px';
+				horizontalScrollbar.style.left = '0px';
 				horizontalScrollbar.style.top = '';
-				horizontalScrollbar.style.bottom = horizontalScrollbar.scrollHeight + 'px';
+				horizontalScrollbar.style.bottom = horizontalScrollbar.clientHeight + 'px';
 				// This condition checks if bottom of the editor is past the scrollable area (viewport)
 				// we will change the horizontal scrollbar to be fixed to the bottom of the scrollable area (viewport)
-			} else if (editorArea >= viewportHeight) {
-				horizontalScrollbar.style.opacity = 1;
+			} else {
+				horizontalScrollbar.style.opacity = '1';
 				horizontalScrollbar.style.position = 'fixed';
 				horizontalScrollbar.style.left = '';
 				horizontalScrollbar.style.top = horizontalTop + 'px';
+				horizontalScrollbar.style.bottom = '';
 			}
 		}
 	}
