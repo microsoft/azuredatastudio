@@ -1013,15 +1013,15 @@
                         "required": true
                       },
                       {
-                        "label": "%arc.storage-class.data-logs.label%",
-                        "description": "%arc.sql.storage-class.data-logs.description%",
+                        "label": "%arc.storage-class.datalogs.label%",
+                        "description": "%arc.sql.storage-class.datalogs.description%",
                         "variableName": "AZDATA_NB_VAR_SQL_STORAGE_CLASS_DATALOGS",
                         "type": "kube_storage_class",
                         "required": false
                       },
                       {
-                        "label": "%arc.sql.volume.size.data-logs.label%",
-                        "description": "%arc.sql.volume.size.data-logs.description%",
+                        "label": "%arc.sql.volume.size.datalogs.label%",
+                        "description": "%arc.sql.volume.size.datalogs.description%",
                         "variableName": "AZDATA_NB_VAR_SQL_VOLUME_SIZE_DATALOGS",
                         "type": "number",
                         "defaultValue": "5",
