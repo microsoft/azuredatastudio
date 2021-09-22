@@ -95,6 +95,7 @@
 	"arc.sql.storage-class.logs.description": "The storage class to be used for logs (/var/log). If no value is specified, the default storage class will be used.",
 	"arc.postgres.storage-class.logs.description": "The storage class to be used for logs persistent volumes",
 	"arc.storage-class.backups.label": "Storage Class (Backups)",
+	"arc.sql.storage-class.backups.description": "The storage class to be used for backup persistent volumes. If no value is specified, the default storage class will be used.",
 	"arc.cores-limit.label": "Cores Limit",
 	"arc.sql.cores-limit.description": "The cores limit of the managed instance as an integer.",
 	"arc.cores-request.label": "Cores Request",
