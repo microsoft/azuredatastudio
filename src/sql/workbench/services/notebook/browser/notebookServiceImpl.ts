@@ -96,7 +96,7 @@ export class SerializationProviderDescriptor {
 		return this._instanceReady.promise;
 	}
 
-	public get instance(): ISerializationProvider {
+	public get instance(): ISerializationProvider | undefined {
 		return this._instance;
 	}
 	public set instance(value: ISerializationProvider) {
@@ -117,7 +117,7 @@ export class ExecuteProviderDescriptor {
 		return this._instanceReady.promise;
 	}
 
-	public get instance(): IExecuteProvider {
+	public get instance(): IExecuteProvider | undefined {
 		return this._instance;
 	}
 	public set instance(value: IExecuteProvider) {
@@ -533,7 +533,7 @@ export class NotebookService extends Disposable implements INotebookService {
 			this._executeManagersMap.delete(uriString);
 			managers.forEach(m => {
 				let provider = this._executeProviders.get(m.providerId);
-				provider.instance.handleNotebookClosed(notebookUri);
+				provider?.instance?.handleNotebookClosed(notebookUri);
 			});
 		}
 	}
