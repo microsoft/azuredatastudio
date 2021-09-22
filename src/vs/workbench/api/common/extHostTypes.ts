@@ -3281,7 +3281,6 @@ export class PortAttributes {
 
 //#region Testing
 export enum TestResultState {
-	Unset = 0,
 	Queued = 1,
 	Running = 2,
 	Passed = 3,
@@ -3297,7 +3296,7 @@ export enum TestMessageSeverity {
 	Hint = 3
 }
 
-export enum TestRunProfileGroup {
+export enum TestRunProfileKind {
 	Run = 1,
 	Debug = 2,
 	Coverage = 3,
@@ -3314,7 +3313,6 @@ export class TestRunRequest implements vscode.TestRunRequest {
 
 @es5ClassCompat
 export class TestMessage implements vscode.TestMessage {
-	public severity = TestMessageSeverity.Error;
 	public expectedOutput?: string;
 	public actualOutput?: string;
 
