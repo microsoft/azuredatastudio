@@ -151,8 +151,8 @@ export class MenuId {
 	static readonly InteractiveToolbar = new MenuId('InteractiveToolbar');
 	static readonly InteractiveCellTitle = new MenuId('InteractiveCellTitle');
 	static readonly InteractiveCellExecute = new MenuId('InteractiveCellExecute');
+	static readonly InteractiveInputExecute = new MenuId('InteractiveInputExecute');
 	// static readonly NotebookToolbar = new MenuId('NotebookToolbar'); {{SQL CARBON EDIT}} We have our own toolbar
-	static readonly NotebookRightToolbar = new MenuId('NotebookRightToolbar');
 	static readonly NotebookCellTitle = new MenuId('NotebookCellTitle');
 	static readonly NotebookCellInsert = new MenuId('NotebookCellInsert');
 	static readonly NotebookCellBetween = new MenuId('NotebookCellBetween');
