@@ -5,7 +5,7 @@
 
 import { localize } from 'vs/nls';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
-import { Emitter } from 'vs/base/common/event';
+import { Emitter, Event } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import { GroupIdentifier, IRevertOptions, ISaveOptions, IEditorInput, EditorInputCapabilities } from 'vs/workbench/common/editor';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -128,6 +128,9 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	private _state = this._register(new QueryEditorState());
 	public get state(): QueryEditorState { return this._state; }
 
+	public onLanguageChanged: Emitter<string>;
+	public get onLanguageChangedEvent(): Event<string> { return this.onLanguageChanged.event; }
+
 	constructor(
 		private _description: string | undefined,
 		protected _text: AbstractTextResourceEditorInput,
@@ -141,7 +144,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 
 		this._register(this._text);
 		this._register(this._results);
-
+		this.onLanguageChanged = new Emitter<string>();
 		this._text.onDidChangeDirty(() => this._onDidChangeDirty.fire());
 
 		this._register(

@@ -42,6 +42,7 @@ import { IRange } from 'vs/editor/common/core/range';
 import { UntitledQueryEditorInput } from 'sql/base/query/browser/untitledQueryEditorInput';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IEditorOptions } from 'vs/platform/editor/common/editor';
+import { QueryEditorLanguageAssociation } from 'sql/workbench/contrib/query/browser/queryInputFactory';
 
 const QUERY_EDITOR_VIEW_STATE_PREFERENCE_KEY = 'queryEditorViewState';
 
@@ -94,6 +95,9 @@ export class QueryEditor extends EditorPane {
 	private _listDatabasesActionItem: actions.ListDatabasesActionItem;
 	private _toggleSqlcmdMode: actions.ToggleSqlCmdModeAction;
 	private _exportAsNotebookAction: actions.ExportAsNotebookAction;
+
+	// taskbar separator
+	private _separator: HTMLElement;
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -194,6 +198,7 @@ export class QueryEditor extends EditorPane {
 		this._actualQueryPlanAction = this.instantiationService.createInstance(actions.ActualQueryPlanAction, this);
 		this._toggleSqlcmdMode = this.instantiationService.createInstance(actions.ToggleSqlCmdModeAction, this, false);
 		this._exportAsNotebookAction = this.instantiationService.createInstance(actions.ExportAsNotebookAction, this);
+		this._separator = Taskbar.createTaskbarSeparator();
 		this.setTaskbarContent();
 		this._register(this.configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration('workbench.enablePreviewFeatures')) {
@@ -267,7 +272,6 @@ export class QueryEditor extends EditorPane {
 
 	private setTaskbarContent(): void {
 		// Create HTML Elements for the taskbar
-		const separator = Taskbar.createTaskbarSeparator();
 		let content: ITaskbarContent[];
 		const previewFeaturesEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
 		let connectionProfile = this.connectionManagementService.getConnectionProfile(this.input?.uri);
@@ -284,7 +288,7 @@ export class QueryEditor extends EditorPane {
 			content = [
 				{ action: this._runQueryAction },
 				{ action: this._cancelQueryAction },
-				{ element: separator },
+				{ element: this._separator },
 				{ action: this._toggleConnectDatabaseAction },
 				{ action: this._changeConnectionAction },
 				{ action: this._listDatabasesAction }
@@ -298,7 +302,7 @@ export class QueryEditor extends EditorPane {
 			content = [
 				{ action: this._runQueryAction },
 				{ action: this._cancelQueryAction },
-				{ element: separator },
+				{ element: this._separator },
 				{ action: this._toggleConnectDatabaseAction },
 				{ action: this._changeConnectionAction },
 				{ action: this._listDatabasesAction }
@@ -309,14 +313,14 @@ export class QueryEditor extends EditorPane {
 				content = [
 					{ action: this._runQueryAction },
 					{ action: this._cancelQueryAction },
-					{ element: separator },
+					{ element: this._separator },
 					{ action: this._toggleConnectDatabaseAction },
 					{ action: this._changeConnectionAction },
 					{ action: this._listDatabasesAction },
 				];
 
 				if (providerId === 'MSSQL') {
-					content.push({ element: separator },
+					content.push({ element: this._separator },
 						{ action: this._estimatedQueryPlanAction },
 						{ action: this._toggleSqlcmdMode }
 					);
@@ -327,7 +331,7 @@ export class QueryEditor extends EditorPane {
 				content = [
 					{ action: this._runQueryAction },
 					{ action: this._cancelQueryAction },
-					{ element: separator },
+					{ element: this._separator },
 					{ action: this._toggleConnectDatabaseAction },
 					{ action: this._changeConnectionAction },
 					{ action: this._listDatabasesAction }
@@ -372,6 +376,16 @@ export class QueryEditor extends EditorPane {
 			this.currentTextEditor.setInput(newInput.text, options, context, token),
 			this.resultsEditor.setInput(newInput.results, options, context)
 		]);
+
+		// If the new language isn't supported for query editors
+		(newInput as QueryEditorInput).onLanguageChangedEvent((language: string) => {
+			if (!QueryEditorLanguageAssociation.languages.includes(language)) {
+				// remove task bar
+				this.taskbar.setContent([]);
+			} else {
+				this.setTaskbarContent();
+			}
+		});
 
 		this.inputDisposables.clear();
 		this.inputDisposables.add(this.input.state.onChange(c => this.updateState(c)));
