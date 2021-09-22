@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Monokai 佈景主題",
 			"description": "Visual Studio Code 的 Monokai 佈景主題",
+			"displayName": "Monokai 佈景主題",
 			"themeLabel": "Monokai"
 		}
 	}

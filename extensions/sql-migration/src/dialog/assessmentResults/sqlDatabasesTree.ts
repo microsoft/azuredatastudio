@@ -42,12 +42,6 @@ const headerRight: azdata.CssStyles = {
 	'border-bottom': '1px solid'
 };
 
-const blockingIssues: Array<string> = [
-	'MultipleLogFiles',
-	'FileStream',
-	'MIDatabaseSize'
-];
-
 export class SqlDatabaseTree {
 	private _view!: azdata.ModelView;
 	private _instanceTable!: azdata.DeclarativeTableComponent;
@@ -103,8 +97,8 @@ export class SqlDatabaseTree {
 		this._rootContainer.addItem(selectDbMessage, { flex: '1 1 auto' });
 
 		if (this._targetType === MigrationTargetType.SQLMI) {
-			if (!!this._model._assessmentResults?.issues.find(value => blockingIssues.includes(value.ruleId)) ||
-				!!this._model._assessmentResults?.databaseAssessments.find(d => !!d.issues.find(issue => blockingIssues.includes(issue.ruleId)))) {
+			if (!!this._model._assessmentResults?.issues.find(value => value.databaseRestoreFails) ||
+				!!this._model._assessmentResults?.databaseAssessments.find(d => !!d.issues.find(issue => issue.databaseRestoreFails))) {
 				dialog.message = {
 					level: azdata.window.MessageLevel.Warning,
 					text: constants.ASSESSMENT_MIGRATION_WARNING,
@@ -189,8 +183,8 @@ export class SqlDatabaseTree {
 			}
 		).component();
 
-		this._disposables.push(this._databaseTable.onDataChanged(() => {
-			this._databaseCount.updateProperties({
+		this._disposables.push(this._databaseTable.onDataChanged(async () => {
+			await this._databaseCount.updateProperties({
 				'value': constants.DATABASES(this.selectedDbs().length, this._model._databaseAssessment.length)
 			});
 			this._model._databaseSelection = <azdata.DeclarativeTableCellValue[][]>this._databaseTable.dataValues;
@@ -205,10 +199,10 @@ export class SqlDatabaseTree {
 			this._dbName.value = this._dbNames[e.row];
 			this._recommendationTitle.value = constants.ISSUES_COUNT(this._activeIssues.length);
 			this._recommendation.value = constants.ISSUES_DETAILS;
-			this._resultComponent.updateCssStyles({
+			await this._resultComponent.updateCssStyles({
 				'display': 'block'
 			});
-			this._dbMessageContainer.updateCssStyles({
+			await this._dbMessageContainer.updateCssStyles({
 				'display': 'none'
 			});
 			await this.refreshResults();
@@ -303,10 +297,10 @@ export class SqlDatabaseTree {
 		this._disposables.push(this._instanceTable.onRowSelected(async (e) => {
 			this._activeIssues = this._model._assessmentResults?.issues;
 			this._dbName.value = this._serverName;
-			this._resultComponent.updateCssStyles({
+			await this._resultComponent.updateCssStyles({
 				'display': 'block'
 			});
-			this._dbMessageContainer.updateCssStyles({
+			await this._dbMessageContainer.updateCssStyles({
 				'display': 'none'
 			});
 			this._recommendation.value = constants.WARNINGS_DETAILS;
@@ -785,37 +779,37 @@ export class SqlDatabaseTree {
 		if (this._targetType === MigrationTargetType.SQLMI) {
 			if (this._activeIssues.length === 0) {
 				/// show no issues here
-				this._assessmentsTable.updateCssStyles({
+				await this._assessmentsTable.updateCssStyles({
 					'display': 'none',
 					'border-right': 'none'
 				});
-				this._assessmentContainer.updateCssStyles({
+				await this._assessmentContainer.updateCssStyles({
 					'display': 'none'
 				});
-				this._noIssuesContainer.updateCssStyles({
+				await this._noIssuesContainer.updateCssStyles({
 					'display': 'flex'
 				});
 			} else {
-				this._assessmentContainer.updateCssStyles({
+				await this._assessmentContainer.updateCssStyles({
 					'display': 'flex'
 				});
-				this._assessmentsTable.updateCssStyles({
+				await this._assessmentsTable.updateCssStyles({
 					'display': 'flex',
 					'border-right': 'solid 1px'
 				});
-				this._noIssuesContainer.updateCssStyles({
+				await this._noIssuesContainer.updateCssStyles({
 					'display': 'none'
 				});
 			}
 		} else {
-			this._assessmentsTable.updateCssStyles({
+			await this._assessmentsTable.updateCssStyles({
 				'display': 'none',
 				'border-right': 'none'
 			});
-			this._assessmentContainer.updateCssStyles({
+			await this._assessmentContainer.updateCssStyles({
 				'display': 'none'
 			});
-			this._noIssuesContainer.updateCssStyles({
+			await this._noIssuesContainer.updateCssStyles({
 				'display': 'flex'
 			});
 			this._recommendationTitle.value = constants.ASSESSMENT_RESULTS;
@@ -824,8 +818,8 @@ export class SqlDatabaseTree {
 
 		const assessmentResults: azdata.DeclarativeTableCellValue[][] = this._activeIssues
 			.sort((e1, e2) => {
-				if (blockingIssues.includes(e1.ruleId)) { return -1; }
-				if (blockingIssues.includes(e2.ruleId)) { return 1; }
+				if (e1.databaseRestoreFails) { return -1; }
+				if (e2.databaseRestoreFails) { return 1; }
 
 				return e1.checkId.localeCompare(e2.checkId);
 			}).map((v) => [
@@ -833,14 +827,14 @@ export class SqlDatabaseTree {
 					value: this._view.modelBuilder
 						.image()
 						.withProps({
-							iconPath: blockingIssues.includes(v.ruleId)
+							iconPath: v.databaseRestoreFails
 								? IconPathHelper.error
 								: undefined,
 							iconHeight: 16,
 							iconWidth: 16,
 							height: 16,
 							width: 16,
-							title: blockingIssues.includes(v.ruleId)
+							title: v.databaseRestoreFails
 								? constants.ASSESSMENT_BLOCKING_ISSUE_TITLE
 								: '',
 						})
@@ -931,7 +925,7 @@ export class SqlDatabaseTree {
 			this._dbNames = this._model._assessmentResults.databaseAssessments.map(da => da.name);
 			this._model._assessmentResults.databaseAssessments.forEach((db) => {
 				let selectable = true;
-				if (db.issues.find(item => blockingIssues.includes(item.ruleId))) {
+				if (db.issues.find(item => item.databaseRestoreFails)) {
 					selectable = false;
 				}
 				this._databaseTableValues.push(

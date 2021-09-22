@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Bases du langage Windows Bat",
-			"description": "Fournit des extraits de code, la coloration syntaxique, la correspondance des crochets et le repli dans les fichiers de commandes Windows."
+			"description": "Fournit des extraits de code, la coloration syntaxique, la correspondance des crochets et le repli dans les fichiers de commandes Windows.",
+			"displayName": "Bases du langage Windows Bat"
 		}
 	}
 }

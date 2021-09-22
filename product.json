@@ -58,6 +58,7 @@
 		"Microsoft.sql-assessment",
 		"Microsoft.datavirtualization",
 		"Microsoft.sql-database-projects",
+		"Microsoft.sql-migration",
 		"Microsoft.machine-learning",
 		"Redgate.sql-prompt",
 		"Redgate.sql-search",

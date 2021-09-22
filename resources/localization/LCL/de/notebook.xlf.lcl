@@ -459,7 +459,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgDuplicadFileName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.msgDuplicateFileName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[File {0} already exists in the destination folder]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -650,6 +650,15 @@
           <Val><![CDATA[New Notebook (Preview)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Neues Notebook (Vorschau)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/notebook/dist/common/localizedConstants.newSection" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[New Section (Preview)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Neuer Abschnitt (Vorschau)]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2153,6 +2162,15 @@
           <Val><![CDATA[Add Notebook]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Notebook hinzufügen]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/notebook/package.title.addSection" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Add Section]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Abschnitt hinzufügen]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

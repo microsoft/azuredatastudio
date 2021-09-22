@@ -8,16 +8,18 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"displayName": "GitHub 身份验证",
-			"description": "GitHub 身份验证提供程序"
+		"dist/common/keychain": {
+			"keychainWriteError": "将登录信息写入钥匙串失败，错误\"{0}\"。",
+			"troubleshooting": "故障排除指南"
 		},
 		"dist/githubServer": {
-			"signingIn": "$(mark-github)正在登录到 github.com…"
+			"signingIn": "$(mark-github)正在登录到 github.com…",
+			"signingInEnterprise": "$(mark-github)正在登录到 {0}...",
+			"status.git.signIn.name": "GitHub 登录"
 		},
-		"dist/common/keychain": {
-			"troubleshooting": "故障排除指南",
-			"keychainWriteError": "将登录信息写入钥匙串失败，错误\"{0}\"。"
+		"package": {
+			"description": "GitHub 身份验证提供程序",
+			"displayName": "GitHub 身份验证"
 		}
 	}
 }

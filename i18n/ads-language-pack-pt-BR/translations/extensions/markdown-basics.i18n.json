@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Noções Básicas da Linguagem Markdown",
-			"description": "Fornece snippets e realce de sintaxe para Markdown."
+			"description": "Fornece snippets e realce de sintaxe para Markdown.",
+			"displayName": "Noções Básicas da Linguagem Markdown"
 		}
 	}
 }

@@ -92,8 +92,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			width: 130
 		}).component();
 
-		this._disposables.push(refreshAssessmentButton.onDidClick(() => {
-			this.constructDetails();
+		this._disposables.push(refreshAssessmentButton.onDidClick(async () => {
+			await this.constructDetails();
 		}));
 
 		const chooseYourTargetText = this._view.modelBuilder.text().withProps({
@@ -225,10 +225,10 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			});
 		});
 
-		this._disposables.push(this._rbg.onSelectionChanged((value) => {
+		this._disposables.push(this._rbg.onSelectionChanged(async (value) => {
 			if (value) {
 				this.assessmentGroupContainer.display = 'inline';
-				this.changeTargetType(value.cardId);
+				await this.changeTargetType(value.cardId);
 			}
 		}));
 
@@ -433,7 +433,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 	}
 
-	private changeTargetType(newTargetType: string) {
+	private async changeTargetType(newTargetType: string) {
 		// remove assessed databases that have been removed from the source selection list
 		const miDbs = this.migrationStateModel._miDbs.filter(
 			db => this.migrationStateModel._databaseAssessment.findIndex(
@@ -458,7 +458,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		}
 		this.migrationStateModel.refreshDatabaseBackupPage = true;
 		this._targetContainer.display = (this.migrationStateModel._migrationDbs.length === 0) ? 'none' : 'inline';
-		this.populateResourceInstanceDropdown();
+		await this.populateResourceInstanceDropdown();
 	}
 
 	private async constructDetails(): Promise<void> {
@@ -466,8 +466,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			text: '',
 			level: azdata.window.MessageLevel.Error
 		};
-		this._assessmentComponent.updateCssStyles({ display: 'block' });
-		this._formContainer.component().updateCssStyles({ display: 'none' });
+		await this._assessmentComponent.updateCssStyles({ display: 'block' });
+		await this._formContainer.component().updateCssStyles({ display: 'none' });
 
 		this._assessmentLoader.loading = true;
 		const serverName = (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
@@ -509,10 +509,10 @@ errorId: ${e.errorId}
 			console.log(e);
 		}
 
-		this.refreshCardText();
+		await this.refreshCardText();
 		this._assessmentLoader.loading = false;
-		this._assessmentComponent.updateCssStyles({ display: 'none' });
-		this._formContainer.component().updateCssStyles({ display: 'block' });
+		await this._assessmentComponent.updateCssStyles({ display: 'none' });
+		await this._formContainer.component().updateCssStyles({ display: 'block' });
 	}
 
 	private async populateSubscriptionDropdown(): Promise<void> {
@@ -656,14 +656,14 @@ errorId: ${e.errorId}
 		if (this.migrationStateModel._runAssessments) {
 			await this.constructDetails();
 		}
-		this._assessmentComponent.updateCssStyles({
+		await this._assessmentComponent.updateCssStyles({
 			display: 'none'
 		});
-		this._formContainer.component().updateCssStyles({
+		await this._formContainer.component().updateCssStyles({
 			display: 'block'
 		});
 
-		this.populateSubscriptionDropdown();
+		await this.populateSubscriptionDropdown();
 		this.wizard.nextButton.enabled = true;
 	}
 
@@ -681,16 +681,16 @@ errorId: ${e.errorId}
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
 	}
 
-	public refreshDatabaseCount(selectedDbs: string[]): void {
+	public async refreshDatabaseCount(selectedDbs: string[]): Promise<void> {
 		this.wizard.message = {
 			text: '',
 			level: azdata.window.MessageLevel.Error
 		};
 		this.migrationStateModel._migrationDbs = selectedDbs;
-		this.refreshCardText();
+		await this.refreshCardText();
 	}
 
-	public refreshCardText(): void {
+	public async refreshCardText(): Promise<void> {
 		this._rbgLoader.loading = true;
 		if (this._rbg.selectedCardId === MigrationTargetType.SQLMI) {
 			this.migrationStateModel._migrationDbs = this.migrationStateModel._miDbs;
@@ -711,20 +711,20 @@ errorId: ${e.errorId}
 			const vmCardText = constants.CAN_BE_MIGRATED(dbCount, dbCount);
 			this._rbg.cards[1].descriptions[1].textValue = vmCardText;
 
-			this._rbg.updateProperties({
+			await this._rbg.updateProperties({
 				cards: this._rbg.cards
 			});
 		} else {
 			this._rbg.cards[0].descriptions[1].textValue = '';
 			this._rbg.cards[1].descriptions[1].textValue = '';
 
-			this._rbg.updateProperties({
+			await this._rbg.updateProperties({
 				cards: this._rbg.cards
 			});
 		}
 
 		if (this._rbg.selectedCardId) {
-			this.changeTargetType(this._rbg.selectedCardId);
+			await this.changeTargetType(this._rbg.selectedCardId);
 		}
 
 		this._rbgLoader.loading = false;

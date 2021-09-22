@@ -1,18 +1,1641 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/arc/dist/localizedConstants" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="arc.addingWorkerNodes">
+        <source xml:lang="en">adding worker nodes</source>
+        <target state="translated">正在添加工作器节点</target>
+      </trans-unit>
+      <trans-unit id="arc.arcDeploymentDeprecation">
+        <source xml:lang="en">The Arc Deployment extension has been replaced by the Arc extension and has been uninstalled.</source>
+        <target state="translated">Arc 部署扩展已由 Arc 扩展取代，并已卸载。</target>
+      </trans-unit>
+      <trans-unit id="arc.arcResources">
+        <source xml:lang="en">Azure Arc Resources</source>
+        <target state="translated">Azure Arc 资源</target>
+      </trans-unit>
+      <trans-unit id="arc.available">
+        <source xml:lang="en">Available</source>
+        <target state="translated">可用</target>
+      </trans-unit>
+      <trans-unit id="arc.backup">
+        <source xml:lang="en">Backup</source>
+        <target state="translated">备份</target>
+      </trans-unit>
+      <trans-unit id="arc.backupsStorage">
+        <source xml:lang="en">{0} backups</source>
+        <target state="translated">{0} 备份</target>
+      </trans-unit>
+      <trans-unit id="arc.cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">取消</target>
+      </trans-unit>
+      <trans-unit id="arc.clickTheNewSupportRequestButton">
+        <source xml:lang="en">Click the new support request button to file a support request in the Azure Portal.</source>
+        <target state="translated">单击“新建支持请求”按钮可在 Azure 门户中提出支持请求。</target>
+      </trans-unit>
+      <trans-unit id="arc.clickTheTroubleshootButton">
+        <source xml:lang="en">Click the troubleshoot button to open the Azure Arc {0} troubleshooting notebook.</source>
+        <target state="translated">单击“故障排除”按钮以打开 Azure Arc {0} 疑难解答笔记本。</target>
+      </trans-unit>
+      <trans-unit id="arc.compute">
+        <source xml:lang="en">Compute</source>
+        <target state="translated">计算</target>
+      </trans-unit>
+      <trans-unit id="arc.computeAndStorage">
+        <source xml:lang="en">Compute + Storage</source>
+        <target state="translated">计算 + 存储</target>
+      </trans-unit>
+      <trans-unit id="arc.computeAndStorageDescriptionPartFive">
+        <source xml:lang="en">there are sufficient resources available</source>
+        <target state="translated">有足够的资源可用</target>
+      </trans-unit>
+      <trans-unit id="arc.computeAndStorageDescriptionPartFour">
+        <source xml:lang="en">Before doing so, you need to ensure</source>
+        <target state="translated">在执行此操作之前，需要确保</target>
+      </trans-unit>
+      <trans-unit id="arc.computeAndStorageDescriptionPartSix">
+        <source xml:lang="en">in your Kubernetes cluster to honor this configuration.</source>
+        <target state="translated">在你的 Kubernetes 群集中，以接受此配置。</target>
+      </trans-unit>
+      <trans-unit id="arc.computeAndStorageDescriptionPartThree">
+        <source xml:lang="en">without downtime and by</source>
+        <target state="translated">无故障时间和</target>
+      </trans-unit>
+      <trans-unit id="arc.condition">
+        <source xml:lang="en">Condition</source>
+        <target state="translated">条件</target>
+      </trans-unit>
+      <trans-unit id="arc.configurationCoordinatorNode">
+        <source xml:lang="en">Configuration</source>
+        <target state="translated">配置</target>
+      </trans-unit>
+      <trans-unit id="arc.configurationPerNode">
+        <source xml:lang="en">Configuration (per node)</source>
+        <target state="translated">配置(每个节点)</target>
+      </trans-unit>
+      <trans-unit id="arc.confirmNewPassword">
+        <source xml:lang="en">Confirm the new password</source>
+        <target state="translated">确认新密码</target>
+      </trans-unit>
+      <trans-unit id="arc.connecToServer">
+        <source xml:lang="en">Connect to Server</source>
+        <target state="translated">连接到服务器</target>
+      </trans-unit>
+      <trans-unit id="arc.connect">
+        <source xml:lang="en">Connect</source>
+        <target state="translated">连接</target>
+      </trans-unit>
+      <trans-unit id="arc.connectToController">
+        <source xml:lang="en">Connect to Existing Controller</source>
+        <target state="translated">连接到现有控制器</target>
+      </trans-unit>
+      <trans-unit id="arc.connectToControllerFailed">
+        <source xml:lang="en">Could not connect to controller {0}. {1}</source>
+        <target state="translated">无法连接到控制器 {0}。{1}</target>
+      </trans-unit>
+      <trans-unit id="arc.connectToMSSql">
+        <source xml:lang="en">Connect to SQL managed instance - Azure Arc ({0})</source>
+        <target state="translated">连接到 SQL 托管实例 - Azure Arc ({0})</target>
+      </trans-unit>
+      <trans-unit id="arc.connectToMSSqlFailed">
+        <source xml:lang="en">Could not connect to SQL managed instance - Azure Arc Instance {0}. {1}</source>
+        <target state="translated">无法连接到 SQL 托管实例 - Azure Arc 实例 {0}。{1}</target>
+      </trans-unit>
+      <trans-unit id="arc.connectToPGSql">
+        <source xml:lang="en">Connect to PostgreSQL Hyperscale - Azure Arc ({0})</source>
+        <target state="translated">连接到 PostgreSQL 超大规模 - Azure Arc ({0})</target>
+      </trans-unit>
+      <trans-unit id="arc.connectToPGSqlFailed">
+        <source xml:lang="en">Could not connect to PostgreSQL Hyperscale - Azure Arc Instance {0}. {1}</source>
+        <target state="translated">无法连接到 PostgreSQL 超大规模 - Azure Arc 实例 {0}。{1}</target>
+      </trans-unit>
+      <trans-unit id="arc.connectToPostgresDescription">
+        <source xml:lang="en">A connection to the server is required to show and set database engine settings, which will require the PostgreSQL Extension to be installed.</source>
+        <target state="translated">要显示和设置数据库引擎设置，需要连接到服务器，这将需要安装 PostgreSQL 扩展。</target>
+      </trans-unit>
+      <trans-unit id="arc.connectionMode">
+        <source xml:lang="en">Connection Mode</source>
+        <target state="translated">连接模式</target>
+      </trans-unit>
+      <trans-unit id="arc.connectionString">
+        <source xml:lang="en">Connection string for {0}</source>
+        <note>{0} is the name of the type of connection string (e.g. Java)</note>
+        <target state="translated">{0} 的连接字符串</target>
+      </trans-unit>
+      <trans-unit id="arc.connectionStrings">
+        <source xml:lang="en">Connection Strings</source>
+        <target state="translated">连接字符串</target>
+      </trans-unit>
+      <trans-unit id="arc.containerReady">
+        <source xml:lang="en">Pod containers are ready.</source>
+        <target state="translated">Pod 容器已准备就绪。</target>
+      </trans-unit>
+      <trans-unit id="arc.controllerClusterContext">
+        <source xml:lang="en">Cluster Context</source>
+        <target state="translated">群集上下文</target>
+      </trans-unit>
+      <trans-unit id="arc.controllerDashboard">
+        <source xml:lang="en">Azure Arc Data Controller Dashboard (Preview) - {0}</source>
+        <target state="translated">Azure Arc 数据控制器仪表板(预览版) - {0}</target>
+      </trans-unit>
+      <trans-unit id="arc.controllerKubeConfig">
+        <source xml:lang="en">Kube Config File Path</source>
+        <target state="translated">Kube 配置文件路径</target>
+      </trans-unit>
+      <trans-unit id="arc.controllerName">
+        <source xml:lang="en">Name</source>
+        <target state="translated">名称</target>
+      </trans-unit>
+      <trans-unit id="arc.controllerNameDescription">
+        <source xml:lang="en">The name to display in the tree view, this is not applied to the controller itself.</source>
+        <target state="translated">要在树视图中显示的名称，这不会应用于控制器本身。</target>
+      </trans-unit>
+      <trans-unit id="arc.controllerPassword">
+        <source xml:lang="en">Controller Password</source>
+        <target state="translated">控制器密码</target>
+      </trans-unit>
+      <trans-unit id="arc.controllerUrl">
+        <source xml:lang="en">Controller URL</source>
+        <target state="translated">控制器 URL</target>
+      </trans-unit>
+      <trans-unit id="arc.controllerUrlDescription">
+        <source xml:lang="en">The Controller URL is necessary if there are multiple clusters with the same namespace - this should generally not be necessary.</source>
+        <target state="translated">如果存在多个具有相同命名空间的群集，则控制器 URL 是必需的 - 而通常这一点并不是必需的。</target>
+      </trans-unit>
+      <trans-unit id="arc.controllerUrlPlaceholder">
+        <source xml:lang="en">https://&lt;IP or hostname&gt;:&lt;port&gt;</source>
+        <target state="translated">https://&lt;IP or hostname&gt;:&lt;port&gt;</target>
+      </trans-unit>
+      <trans-unit id="arc.controllerUsername">
+        <source xml:lang="en">Controller Username</source>
+        <target state="translated">控制器用户名</target>
+      </trans-unit>
+      <trans-unit id="arc.coordinator">
+        <source xml:lang="en">Coordinator</source>
+        <target state="translated">协调器</target>
+      </trans-unit>
+      <trans-unit id="arc.coordinatorCoresLimit">
+        <source xml:lang="en">Coordinator Node CPU limit</source>
+        <target state="translated">协调器节点 CPU 限制</target>
+      </trans-unit>
+      <trans-unit id="arc.coordinatorCoresRequest">
+        <source xml:lang="en">Coordinator Node CPU request</source>
+        <target state="translated">协调器节点 CPU 请求</target>
+      </trans-unit>
+      <trans-unit id="arc.coordinatorEndpoint">
+        <source xml:lang="en">Coordinator endpoint</source>
+        <target state="translated">协调器终结点</target>
+      </trans-unit>
+      <trans-unit id="arc.coordinatorMemoryLimit">
+        <source xml:lang="en">Coordinator Node Memory limit (in GB)</source>
+        <target state="translated">控制器节点内存限制(GB)</target>
+      </trans-unit>
+      <trans-unit id="arc.coordinatorMemoryRequest">
+        <source xml:lang="en">Coordinator Node Memory request (in GB)</source>
+        <target state="translated">协调器节点内存请求(以 GB 为单位)</target>
+      </trans-unit>
+      <trans-unit id="arc.coordinatorNode">
+        <source xml:lang="en">Coordinator Node</source>
+        <target state="translated">协调器节点</target>
+      </trans-unit>
+      <trans-unit id="arc.coordinatorNodeConfigurationInformation">
+        <source xml:lang="en">You can configure the number of CPU cores and storage size that will apply to the coordinator node. Adjust the number of CPU cores and memory settings for your server group. To reset the requests and/or limits, pass in empty value.</source>
+        <target state="translated">可以配置将应用于协调器节点的 CPU 核心数和存储大小。调整服务器组的 CPU 核心数和内存设置。要重置请求和/或限制，请传入空值。</target>
+      </trans-unit>
+      <trans-unit id="arc.coordinatorNodeParameters">
+        <source xml:lang="en">Coordinator Node Parameters</source>
+        <target state="translated">协调器节点参数</target>
+      </trans-unit>
+      <trans-unit id="arc.coordinatorNodeParametersDescription">
+        <source xml:lang="en"> These server parameters of the Coordinator node can be set to custom (non-default) values. Search to find parameters.</source>
+        <target state="translated"> 协调器节点的这些服务器参数可以设置为自定义(非默认)值。搜索以查找参数。</target>
+      </trans-unit>
+      <trans-unit id="arc.copiedToClipboard">
+        <source xml:lang="en">{0} copied to clipboard</source>
+        <target state="translated">已将 {0} 复制到剪贴板</target>
+      </trans-unit>
+      <trans-unit id="arc.copyConnectionStringToClipboard">
+        <source xml:lang="en">Copy {0} Connection String to clipboard</source>
+        <note>{0} is the name of the type of connection string (e.g. Java)</note>
+        <target state="translated">将 {0} 连接字符串复制到剪贴板</target>
+      </trans-unit>
+      <trans-unit id="arc.copyValueToClipboard">
+        <source xml:lang="en">Copy {0} to clipboard</source>
+        <note>{0} is the name of the type of value being copied (e.g. Coordinator endpoint)</note>
+        <target state="translated">将 {0} 复制到剪贴板</target>
+      </trans-unit>
+      <trans-unit id="arc.coresLimit">
+        <source xml:lang="en">CPU limit</source>
+        <target state="translated">CPU 限制</target>
+      </trans-unit>
+      <trans-unit id="arc.coresRequest">
+        <source xml:lang="en">CPU request</source>
+        <target state="translated">CPU 请求</target>
+      </trans-unit>
+      <trans-unit id="arc.couldNotFindAzureResource">
+        <source xml:lang="en">Could not find Azure resource for {0}</source>
+        <target state="translated">找不到 {0} 的 Azure 资源</target>
+      </trans-unit>
+      <trans-unit id="arc.couldNotFindControllerRegistration">
+        <source xml:lang="en">Could not find controller registration.</source>
+        <target state="translated">找不到控制器注册。</target>
+      </trans-unit>
+      <trans-unit id="arc.createNew">
+        <source xml:lang="en">New Instance</source>
+        <target state="translated">新实例</target>
+      </trans-unit>
+      <trans-unit id="arc.dataController">
+        <source xml:lang="en">Data controller</source>
+        <target state="translated">数据控制器</target>
+      </trans-unit>
+      <trans-unit id="arc.dataControllersType">
+        <source xml:lang="en">Azure Arc Data Controller</source>
+        <target state="translated">Azure Arc 数据控制器</target>
+      </trans-unit>
+      <trans-unit id="arc.dataStorage">
+        <source xml:lang="en">{0} data</source>
+        <target state="translated">{0} 数据</target>
+      </trans-unit>
+      <trans-unit id="arc.databaseCreated">
+        <source xml:lang="en">Database {0} created</source>
+        <target state="translated">已创建数据库 {0}</target>
+      </trans-unit>
+      <trans-unit id="arc.databaseCreationFailed">
+        <source xml:lang="en">Failed to create database {0}. {1}</source>
+        <target state="translated">未能创建数据库 {0}。{1}</target>
+      </trans-unit>
+      <trans-unit id="arc.databaseName">
+        <source xml:lang="en">Database name</source>
+        <target state="translated">数据库名</target>
+      </trans-unit>
+      <trans-unit id="arc.databases">
+        <source xml:lang="en">Databases</source>
+        <target state="translated">数据库</target>
+      </trans-unit>
+      <trans-unit id="arc.defaultControllerName">
+        <source xml:lang="en">arc-dc</source>
+        <target state="translated">arc-dc</target>
+      </trans-unit>
+      <trans-unit id="arc.delete">
+        <source xml:lang="en">Delete</source>
+        <target state="translated">删除</target>
+      </trans-unit>
+      <trans-unit id="arc.deletingInstance">
+        <source xml:lang="en">Deleting instance '{0}'...</source>
+        <target state="translated">正在删除实例“{0}”</target>
+      </trans-unit>
+      <trans-unit id="arc.description">
+        <source xml:lang="en">Description</source>
+        <target state="translated">说明</target>
+      </trans-unit>
+      <trans-unit id="arc.details">
+        <source xml:lang="en">Details</source>
+        <target state="translated">详细信息</target>
+      </trans-unit>
+      <trans-unit id="arc.diagnoseAndSolveProblems">
+        <source xml:lang="en">Diagnose and solve problems</source>
+        <target state="translated">诊断并解决问题</target>
+      </trans-unit>
+      <trans-unit id="arc.direct">
+        <source xml:lang="en">Direct</source>
+        <target state="translated">直接</target>
+      </trans-unit>
+      <trans-unit id="arc.discard">
+        <source xml:lang="en">Discard</source>
+        <target state="translated">放弃</target>
+      </trans-unit>
+      <trans-unit id="arc.drop">
+        <source xml:lang="en">Drop</source>
+        <target state="translated">放置</target>
+      </trans-unit>
+      <trans-unit id="arc.dropMultipleExtensions">
+        <source xml:lang="en">Currently dropping another extension, try again once that is completed.</source>
+        <target state="translated">当前正在删除另一个扩展，请在完成后重试。</target>
+      </trans-unit>
+      <trans-unit id="arc.emergency">
+        <source xml:lang="en">Emergency</source>
+        <target state="translated">紧急</target>
+      </trans-unit>
+      <trans-unit id="arc.endpoint">
+        <source xml:lang="en">Endpoint</source>
+        <target state="translated">终结点</target>
+      </trans-unit>
+      <trans-unit id="arc.enterANonEmptyPassword">
+        <source xml:lang="en">Enter a non empty password or press escape to exit.</source>
+        <target state="translated">输入非空密码或按 Esc 退出。</target>
+      </trans-unit>
+      <trans-unit id="arc.enterNewPassword">
+        <source xml:lang="en">Enter a new password</source>
+        <target state="translated">输入新密码</target>
+      </trans-unit>
+      <trans-unit id="arc.errorConnectingToController">
+        <source xml:lang="en">Error connecting to controller. {0}</source>
+        <target state="translated">连接到控制器时出现错误。{0}</target>
+      </trans-unit>
+      <trans-unit id="arc.errorVerifyingPassword">
+        <source xml:lang="en">Error encountered while verifying password. {0}</source>
+        <target state="translated">验证密码时遇到错误。{0}</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionInstallationFailed">
+        <source xml:lang="en">Failed to install extension {0}.</source>
+        <target state="translated">未能安装扩展 {0}</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionInstalled">
+        <source xml:lang="en">Extension '{0}' has been installed.</source>
+        <target state="translated">已安装扩展“{0}”。</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionName">
+        <source xml:lang="en">Extension name</source>
+        <target state="translated">扩展名</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionsAddDialog">
+        <source xml:lang="en">PostgreSQL provides the ability to extend the functionality of your database by using extensions.</source>
+        <target state="translated">通过使用扩展，PostgreSQL 提供扩展数据库功能的能力。</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionsAddErrorrMessage">
+        <source xml:lang="en">Value should be either of the following: ({0}).</source>
+        <target state="translated">值应为以下值之一: ({0})。</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionsAddFunction">
+        <source xml:lang="en">Some extensions must be loaded into PostgreSQL at startup time before they can be used. To edit, type in comma separated list of valid extensions: ({0}).</source>
+        <target state="translated">某些扩展必须在启动时加载到 PostgreSQL 中，然后才能使用它们。若要编辑，请键入有效扩展列表，以逗号分隔: ({0})。</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionsAddList">
+        <source xml:lang="en">Extensions</source>
+        <target state="translated">扩展</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionsAdded">
+        <source xml:lang="en">Extensions '{0}' added</source>
+        <target state="translated">已添加扩展“{0}”</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionsDescription">
+        <source xml:lang="en">PostgreSQL provides the ability to extend the functionality of your database by using extensions. Extensions allow for bundling multiple related SQL objects together in a single package that can be loaded or removed from your database with a single command. After being loaded in the database, extensions can function like built-in features.</source>
+        <target state="translated">PostgreSQL 提供使用扩展程序扩展数据库功能的能力。扩展允许在单个包中将多个相关的 SQL 对象捆绑在一起，可以使用单个命令从数据库中加载或删除这些对象。在数据库中加载后，扩展可以像内置功能一样运行。</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionsDropped">
+        <source xml:lang="en">Extensions '{0}' dropped</source>
+        <target state="translated">已删除扩展 "{0}"</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionsFunction">
+        <source xml:lang="en">Some extensions must be loaded into PostgreSQL at startup time before they can be used. These preloaded extensions can be viewed and edited  below.</source>
+        <target state="translated">启动时必须将某些扩展加载到 PostgreSQL 中，然后才能使用它们。可在下面查看和编辑这些预加载的扩展。</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionsLearnMore">
+        <source xml:lang="en">Learn more about PostgreSQL extensions.</source>
+        <target state="translated">了解 PostgreSQL 扩展的详细信息。</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionsTableLabel">
+        <source xml:lang="en">Table of preloaded extensions.</source>
+        <target state="translated">预加载扩展的表。</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionsTableLoading">
+        <source xml:lang="en">Table of preloaded extensions are loading.</source>
+        <target state="translated">正在加载预加载扩展的表。</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionsTableLoadingComplete">
+        <source xml:lang="en">Preloaded extensions can now be viewed.</source>
+        <target state="translated">现在可以查看预加载的扩展。</target>
+      </trans-unit>
+      <trans-unit id="arc.externalEndpoint">
+        <source xml:lang="en">External Endpoint</source>
+        <target state="translated">外部终结点</target>
+      </trans-unit>
+      <trans-unit id="arc.failed">
+        <source xml:lang="en">Failed</source>
+        <target state="translated">已失败</target>
+      </trans-unit>
+      <trans-unit id="arc.feedback">
+        <source xml:lang="en">Feedback</source>
+        <target state="translated">反馈</target>
+      </trans-unit>
+      <trans-unit id="arc.fetchConfigFailed">
+        <source xml:lang="en">An unexpected error occurred retrieving the config for '{0}'. {1}</source>
+        <target state="translated">检索“{0}”的配置时出现意外错误。{1}</target>
+      </trans-unit>
+      <trans-unit id="arc.fetchDatabasesFailed">
+        <source xml:lang="en">An unexpected error occurred retrieving the databases for '{0}'. {1}</source>
+        <target state="translated">检索“{0}”的数据库时出现意外错误。{1}</target>
+      </trans-unit>
+      <trans-unit id="arc.fetchEndpointsFailed">
+        <source xml:lang="en">An unexpected error occurred retrieving the endpoints for '{0}'. {1}</source>
+        <target state="translated">检索“{0}”的终结点时发生意外错误。{1}</target>
+      </trans-unit>
+      <trans-unit id="arc.fetchEngineSettingsFailed">
+        <source xml:lang="en">An unexpected error occurred retrieving the engine settings for '{0}'. {1}</source>
+        <target state="translated">检索“{0}”的引擎设置时出现意外错误。{1}</target>
+      </trans-unit>
+      <trans-unit id="arc.fetchRegistrationsFailed">
+        <source xml:lang="en">An unexpected error occurred retrieving the registrations for '{0}'. {1}</source>
+        <target state="translated">检索“{0}”的注册时出现意外错误。{1}</target>
+      </trans-unit>
+      <trans-unit id="arc.fullyQualifiedDomain">
+        <source xml:lang="en">Fully qualified domain</source>
+        <target state="translated">完全限定的域</target>
+      </trans-unit>
+      <trans-unit id="arc.grafanaDashboard">
+        <source xml:lang="en">Grafana Dashboard</source>
+        <target state="translated">Grafana 仪表板</target>
+      </trans-unit>
+      <trans-unit id="arc.grafanaDashboardDescription">
+        <source xml:lang="en">Dashboard for viewing metrics</source>
+        <target state="translated">用于查看指标的仪表板</target>
+      </trans-unit>
+      <trans-unit id="arc.indirect">
+        <source xml:lang="en">Indirect</source>
+        <target state="translated">间接</target>
+      </trans-unit>
+      <trans-unit id="arc.installingExtension">
+        <source xml:lang="en">Installing extension '{0}'...</source>
+        <target state="translated">正在安装扩展“{0}”...</target>
+      </trans-unit>
+      <trans-unit id="arc.instanceDeleted">
+        <source xml:lang="en">Instance '{0}' deleted</source>
+        <target state="translated">已删除实例“{0}”</target>
+      </trans-unit>
+      <trans-unit id="arc.instanceDeletionFailed">
+        <source xml:lang="en">Failed to delete instance {0}. {1}</source>
+        <target state="translated">未能删除实例 {0}。{1}</target>
+      </trans-unit>
+      <trans-unit id="arc.instanceDeletionWarning">
+        <source xml:lang="en">Warning! Deleting an instance is permanent and cannot be undone. To delete the instance '{0}' type the name '{0}' below to proceed.</source>
+        <target state="translated">警告! 删除实例是永久性操作，且无法撤消。要删除实例“{0}”，请在下面键入名称“{0}”以继续。</target>
+      </trans-unit>
+      <trans-unit id="arc.instanceUpdateFailed">
+        <source xml:lang="en">Failed to update instance {0}. {1}</source>
+        <target state="translated">未能更新实例 {0}。{1}</target>
+      </trans-unit>
+      <trans-unit id="arc.instanceUpdated">
+        <source xml:lang="en">Instance '{0}' updated</source>
+        <target state="translated">已更新实例“{0}”</target>
+      </trans-unit>
+      <trans-unit id="arc.invalidConfigPath">
+        <source xml:lang="en">Invalid config path</source>
+        <target state="translated">配置路径无效</target>
+      </trans-unit>
+      <trans-unit id="arc.invalidInstanceDeletionName">
+        <source xml:lang="en">The value '{0}' does not match the instance name. Try again or press escape to exit</source>
+        <target state="translated">值“{0}”与实例名称不匹配。请重试或按 Esc 退出</target>
+      </trans-unit>
+      <trans-unit id="arc.issuesDetected">
+        <source xml:lang="en">Issues Detected</source>
+        <target state="translated">已检测到问题</target>
+      </trans-unit>
+      <trans-unit id="arc.kibanaDashboard">
+        <source xml:lang="en">Kibana Dashboard</source>
+        <target state="translated">Kibana 仪表板</target>
+      </trans-unit>
+      <trans-unit id="arc.kibanaDashboardDescription">
+        <source xml:lang="en">Dashboard for viewing logs</source>
+        <target state="translated">用于查看日志的仪表板</target>
+      </trans-unit>
+      <trans-unit id="arc.lastTransition">
+        <source xml:lang="en">Last transition</source>
+        <target state="translated">上次转换时间</target>
+      </trans-unit>
+      <trans-unit id="arc.learnAboutNodeParameters">
+        <source xml:lang="en">Learn more about database engine settings for Azure Arc-enabled PostgreSQL Hyperscale</source>
+        <target state="translated">详细了解已启用 Azure Arc 的 PostgreSQL 超大规模数据库引擎设置</target>
+      </trans-unit>
+      <trans-unit id="arc.learnAboutPostgresClients">
+        <source xml:lang="en">Learn more about Azure PostgreSQL Hyperscale client interfaces</source>
+        <target state="translated">详细了解 Azure PostgreSQL 超大规模客户端接口</target>
+      </trans-unit>
+      <trans-unit id="arc.learnMore">
+        <source xml:lang="en">Learn More.</source>
+        <target state="translated">了解详细信息。</target>
+      </trans-unit>
+      <trans-unit id="arc.loadExtensions">
+        <source xml:lang="en">Load extensions</source>
+        <target state="translated">加载扩展</target>
+      </trans-unit>
+      <trans-unit id="arc.loading">
+        <source xml:lang="en">Loading...</source>
+        <target state="translated">正在加载...</target>
+      </trans-unit>
+      <trans-unit id="arc.loadingClusterContextCompleted">
+        <source xml:lang="en">Loading cluster contexts completed</source>
+        <target state="translated">已完成加载群集上下文</target>
+      </trans-unit>
+      <trans-unit id="arc.loadingClusterContextsError">
+        <source xml:lang="en">Error loading cluster contexts. {0}</source>
+        <target state="translated">加载群集上下文时出错。{0}</target>
+      </trans-unit>
+      <trans-unit id="arc.logStorage">
+        <source xml:lang="en">{0} log</source>
+        <target state="translated">{0} 日志</target>
+      </trans-unit>
+      <trans-unit id="arc.loginFailed">
+        <source xml:lang="en">Error logging into controller - wrong username or password</source>
+        <target state="translated">登录控制器时出错 - 用户名或密码错误</target>
+      </trans-unit>
+      <trans-unit id="arc.memoryLimit">
+        <source xml:lang="en">Memory limit (in GB)</source>
+        <target state="translated">内存限制(以 GB 为单位)</target>
+      </trans-unit>
+      <trans-unit id="arc.memoryRequest">
+        <source xml:lang="en">Memory request (in GB)</source>
+        <target state="translated">内存请求(以 GB 为单位)</target>
+      </trans-unit>
+      <trans-unit id="arc.miaaAdmin">
+        <source xml:lang="en">Managed instance admin</source>
+        <target state="translated">托管实例管理员</target>
+      </trans-unit>
+      <trans-unit id="arc.miaaComputeAndStorageDescriptionPartOne">
+        <source xml:lang="en">You can scale your Azure SQL managed instance - Azure Arc by</source>
+        <target state="translated">可以通过以下方式缩放 Azure SQL 托管实例 - Azure Arc</target>
+      </trans-unit>
+      <trans-unit id="arc.miaaConnectionRequired">
+        <source xml:lang="en">A connection is required to list the databases on this instance.</source>
+        <target state="translated">需要连接以列出此实例上的数据库。</target>
+      </trans-unit>
+      <trans-unit id="arc.miaaDashboard">
+        <source xml:lang="en">SQL managed instance - Azure Arc Dashboard (Preview) - {0}</source>
+        <target state="translated">SQL 托管实例 - Azure Arc 仪表板(预览) - {0}</target>
+      </trans-unit>
+      <trans-unit id="arc.miaaProviderName">
+        <source xml:lang="en">MSSQL</source>
+        <target state="translated">MSSQL</target>
+      </trans-unit>
+      <trans-unit id="arc.miaaType">
+        <source xml:lang="en">SQL managed instance - Azure Arc</source>
+        <target state="translated">SQL 托管实例 - Azure Arc</target>
+      </trans-unit>
+      <trans-unit id="arc.missingExtension">
+        <source xml:lang="en">The {0} extension is required to view engine settings. Do you wish to install it now?</source>
+        <target state="translated">需要 {0} 扩展才能查看引擎设置。是否要立即安装?</target>
+      </trans-unit>
+      <trans-unit id="arc.monitor">
+        <source xml:lang="en">Monitor</source>
+        <target state="translated">监视器</target>
+      </trans-unit>
+      <trans-unit id="arc.name">
+        <source xml:lang="en">Name</source>
+        <target state="translated">名称</target>
+      </trans-unit>
+      <trans-unit id="arc.namespace">
+        <source xml:lang="en">Namespace</source>
+        <target state="translated">命名空间</target>
+      </trans-unit>
+      <trans-unit id="arc.networking">
+        <source xml:lang="en">Networking</source>
+        <target state="translated">网络</target>
+      </trans-unit>
+      <trans-unit id="arc.newDatabase">
+        <source xml:lang="en">New Database</source>
+        <target state="translated">新建数据库</target>
+      </trans-unit>
+      <trans-unit id="arc.newSupportRequest">
+        <source xml:lang="en">New support request</source>
+        <target state="translated">新建支持请求</target>
+      </trans-unit>
+      <trans-unit id="arc.no">
+        <source xml:lang="en">No</source>
+        <target state="translated">否</target>
+      </trans-unit>
+      <trans-unit id="arc.noExtensions">
+        <source xml:lang="en">No extensions listed in configuration.</source>
+        <target state="translated">配置中未列出任何扩展。</target>
+      </trans-unit>
+      <trans-unit id="arc.noExternalEndpoint">
+        <source xml:lang="en">No External Endpoint has been configured so this information isn't available.</source>
+        <target state="translated">尚未配置外部终结点，此信息不可用。</target>
+      </trans-unit>
+      <trans-unit id="arc.noInstancesAvailable">
+        <source xml:lang="en">No instances available</source>
+        <target state="translated">没有可用的实例</target>
+      </trans-unit>
+      <trans-unit id="arc.noNodeParametersFound">
+        <source xml:lang="en">No worker server parameters found...</source>
+        <target state="translated">找不到工作器服务器参数...</target>
+      </trans-unit>
+      <trans-unit id="arc.noPodIssuesDetected">
+        <source xml:lang="en">There aren’t any known issues affecting this PostgreSQL Hyperscale instance.</source>
+        <target state="translated">没有任何影响此 PostgreSQL 超大规模实例的已知问题。</target>
+      </trans-unit>
+      <trans-unit id="arc.noWorkerPods">
+        <source xml:lang="en">No worker pods in this configuration.</source>
+        <target state="translated">此配置中没有辅助角色 Pod。</target>
+      </trans-unit>
+      <trans-unit id="arc.node">
+        <source xml:lang="en">node</source>
+        <target state="translated">节点</target>
+      </trans-unit>
+      <trans-unit id="arc.nodeConfiguration">
+        <source xml:lang="en">Node configuration</source>
+        <target state="translated">节点配置</target>
+      </trans-unit>
+      <trans-unit id="arc.nodes">
+        <source xml:lang="en">nodes</source>
+        <target state="translated">节点</target>
+      </trans-unit>
+      <trans-unit id="arc.notConfigured">
+        <source xml:lang="en">Not Configured</source>
+        <target state="translated">未配置</target>
+      </trans-unit>
+      <trans-unit id="arc.notReady">
+        <source xml:lang="en">Not Ready</source>
+        <target state="translated">未就绪</target>
+      </trans-unit>
+      <trans-unit id="arc.numVCore">
+        <source xml:lang="en">{0} vCore</source>
+        <target state="translated">{0} 个 vCore</target>
+      </trans-unit>
+      <trans-unit id="arc.numVCores">
+        <source xml:lang="en">{0} vCores</source>
+        <target state="translated">{0} 个 vCore</target>
+      </trans-unit>
+      <trans-unit id="arc.numberOfIssuesDetected">
+        <source xml:lang="en">• {0} ({1} issues)</source>
+        <target state="translated">• {0} ({1} 个问题)</target>
+      </trans-unit>
+      <trans-unit id="arc.off">
+        <source xml:lang="en">Off</source>
+        <target state="translated">关闭</target>
+      </trans-unit>
+      <trans-unit id="arc.offline">
+        <source xml:lang="en">Offline</source>
+        <target state="translated">脱机</target>
+      </trans-unit>
+      <trans-unit id="arc.ok">
+        <source xml:lang="en">Ok</source>
+        <target state="translated">确定</target>
+      </trans-unit>
+      <trans-unit id="arc.on">
+        <source xml:lang="en">On</source>
+        <target state="translated">开</target>
+      </trans-unit>
+      <trans-unit id="arc.online">
+        <source xml:lang="en">Online</source>
+        <target state="translated">联机</target>
+      </trans-unit>
+      <trans-unit id="arc.openDashboardFailed">
+        <source xml:lang="en">Error opening dashboard. {0}</source>
+        <target state="translated">打开仪表板时出错。{0}</target>
+      </trans-unit>
+      <trans-unit id="arc.openInAzurePortal">
+        <source xml:lang="en">Open in Azure Portal</source>
+        <target state="translated">在 Azure 门户中打开</target>
+      </trans-unit>
+      <trans-unit id="arc.overview">
+        <source xml:lang="en">Overview</source>
+        <target state="translated">概述</target>
+      </trans-unit>
+      <trans-unit id="arc.pageDiscardFailed">
+        <source xml:lang="en">Failed to discard user input. {0}</source>
+        <target state="translated">未能放弃用户输入。{0}</target>
+      </trans-unit>
+      <trans-unit id="arc.parameterName">
+        <source xml:lang="en">Parameter Name</source>
+        <target state="translated">参数名</target>
+      </trans-unit>
+      <trans-unit id="arc.password">
+        <source xml:lang="en">Password</source>
+        <target state="translated">密码</target>
+      </trans-unit>
+      <trans-unit id="arc.passwordAcquisitionFailed">
+        <source xml:lang="en">Failed to acquire password. {0}</source>
+        <target state="translated">未能获取密码。{0}</target>
+      </trans-unit>
+      <trans-unit id="arc.passwordReset">
+        <source xml:lang="en">Password reset successfully</source>
+        <target state="translated">已成功重置密码</target>
+      </trans-unit>
+      <trans-unit id="arc.passwordResetFailed">
+        <source xml:lang="en">Failed to reset password. {0}</source>
+        <target state="translated">未能重置密码。{0}</target>
+      </trans-unit>
+      <trans-unit id="arc.passwordToController">
+        <source xml:lang="en">Provide Password to Controller</source>
+        <target state="translated">向控制器提供密码</target>
+      </trans-unit>
+      <trans-unit id="arc.pending">
+        <source xml:lang="en">Pending</source>
+        <target state="translated">挂起</target>
+      </trans-unit>
+      <trans-unit id="arc.pgConnectionRequired">
+        <source xml:lang="en">A connection is required to show and set database engine settings.</source>
+        <target state="translated">需要连接才能显示和设置数据库引擎设置。</target>
+      </trans-unit>
+      <trans-unit id="arc.pgSqlType">
+        <source xml:lang="en">PostgreSQL Hyperscale - Azure Arc</source>
+        <target state="translated">PostgreSQL 超大规模 - Azure Arc</target>
+      </trans-unit>
+      <trans-unit id="arc.podConditionsTable">
+        <source xml:lang="en">Pod conditions table</source>
+        <target state="translated">Pod 条件表</target>
+      </trans-unit>
+      <trans-unit id="arc.podInitialized">
+        <source xml:lang="en">Pod is initialized.</source>
+        <target state="translated">Pod 已初始化。</target>
+      </trans-unit>
+      <trans-unit id="arc.podIssuesDetected">
+        <source xml:lang="en">The pods listed below are experiencing issues that may affect performance or availability.</source>
+        <target state="translated">下面列出的 Pod 遇到可能会影响性能或可用性的问题。</target>
+      </trans-unit>
+      <trans-unit id="arc.podReady">
+        <source xml:lang="en">Pod is ready.</source>
+        <target state="translated">Pod 已准备就绪。</target>
+      </trans-unit>
+      <trans-unit id="arc.podScheduled">
+        <source xml:lang="en">Pod is schedulable.</source>
+        <target state="translated">Pod 是可计划的。</target>
+      </trans-unit>
+      <trans-unit id="arc.podsPresent">
+        <source xml:lang="en">Pods Present</source>
+        <target state="translated">存在 Pod</target>
+      </trans-unit>
+      <trans-unit id="arc.podsReady">
+        <source xml:lang="en">pods ready</source>
+        <target state="translated">Pod 已就绪</target>
+      </trans-unit>
+      <trans-unit id="arc.podsUsedDescription">
+        <source xml:lang="en">Select a pod in the dropdown below for detailed health information.</source>
+        <target state="translated">请在下面的下拉列表中选择一个 Pod，以获取详细的运行状况信息。</target>
+      </trans-unit>
+      <trans-unit id="arc.podsUsedDescriptionAria">
+        <source xml:lang="en">Select a pod in the dropdown below for detailed health information</source>
+        <target state="translated">请在下面的下拉列表中选择一个 Pod，以获取详细的运行状况信息</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.computeAndStorageDescriptionPartTwo">
+        <source xml:lang="en">PostgreSQL Hyperscale server group by</source>
+        <target state="translated">PostgreSQL 超大规模服务器组依据</target>
+      </trans-unit>
+      <trans-unit id="arc.postgresAdminUsername">
+        <source xml:lang="en">Admin username</source>
+        <target state="translated">管理员用户名</target>
+      </trans-unit>
+      <trans-unit id="arc.postgresArcProductName">
+        <source xml:lang="en">Azure Database for PostgreSQL - Azure Arc</source>
+        <target state="translated">Azure Database for PostgreSQL - Azure Arc</target>
+      </trans-unit>
+      <trans-unit id="arc.postgresComputeAndStorageDescriptionPartOne">
+        <source xml:lang="en">You can scale your Azure Arc-enabled</source>
+        <target state="translated">可以缩放已启用的 Azure Arc</target>
+      </trans-unit>
+      <trans-unit id="arc.postgresDashboard">
+        <source xml:lang="en">PostgreSQL Hyperscale - Azure Arc Dashboard (Preview) - {0}</source>
+        <target state="translated">PostgreSQL 超大规模 - Azure Arc 仪表板(预览) - {0}</target>
+      </trans-unit>
+      <trans-unit id="arc.postgresExtension">
+        <source xml:lang="en">microsoft.azuredatastudio-postgresql</source>
+        <target state="translated">microsoft.azuredatastudio-postgresql</target>
+      </trans-unit>
+      <trans-unit id="arc.postgresProviderName">
+        <source xml:lang="en">PGSQL</source>
+        <target state="translated">PGSQL</target>
+      </trans-unit>
+      <trans-unit id="arc.postgresVersion">
+        <source xml:lang="en">PostgreSQL version</source>
+        <target state="translated">PostgreSQL 版本</target>
+      </trans-unit>
+      <trans-unit id="arc.preloaded Extensions">
+        <source xml:lang="en">Preloaded Extensions</source>
+        <target state="translated">预加载的扩展</target>
+      </trans-unit>
+      <trans-unit id="arc.properties">
+        <source xml:lang="en">Properties</source>
+        <target state="translated">属性</target>
+      </trans-unit>
+      <trans-unit id="arc.ram">
+        <source xml:lang="en">RAM</source>
+        <target state="translated">RAM</target>
+      </trans-unit>
+      <trans-unit id="arc.rangeSetting">
+        <source xml:lang="en">Value is expected to be in the range {0} - {1}</source>
+        <target state="translated">值应位于 {0} - {1} 范围内</target>
+      </trans-unit>
+      <trans-unit id="arc.ready">
+        <source xml:lang="en">Ready</source>
+        <target state="translated">准备就绪</target>
+      </trans-unit>
+      <trans-unit id="arc.recovering">
+        <source xml:lang="en">Recovering</source>
+        <target state="translated">正在恢复</target>
+      </trans-unit>
+      <trans-unit id="arc.recoveringPending">
+        <source xml:lang="en">Recovery Pending</source>
+        <target state="translated">恢复挂起</target>
+      </trans-unit>
+      <trans-unit id="arc.refresh">
+        <source xml:lang="en">Refresh</source>
+        <target state="translated">刷新</target>
+      </trans-unit>
+      <trans-unit id="arc.refreshFailed">
+        <source xml:lang="en">Refresh failed. {0}</source>
+        <target state="translated">刷新失败。{0}</target>
+      </trans-unit>
+      <trans-unit id="arc.refreshToEnterCredentials">
+        <source xml:lang="en">Refresh node to enter credentials</source>
+        <target state="translated">刷新节点以输入凭据</target>
+      </trans-unit>
+      <trans-unit id="arc.region">
+        <source xml:lang="en">Region</source>
+        <target state="translated">区域</target>
+      </trans-unit>
+      <trans-unit id="arc.rememberPassword">
+        <source xml:lang="en">Remember Password</source>
+        <target state="translated">记住密码</target>
+      </trans-unit>
+      <trans-unit id="arc.resetAllToDefault">
+        <source xml:lang="en">Reset all to default</source>
+        <target state="translated">全部重置为默认设置</target>
+      </trans-unit>
+      <trans-unit id="arc.resetFailed">
+        <source xml:lang="en">Reset failed. {0}</source>
+        <target state="translated">重置失败。{0}</target>
+      </trans-unit>
+      <trans-unit id="arc.resetPassword">
+        <source xml:lang="en">Reset Password</source>
+        <target state="translated">重置密码</target>
+      </trans-unit>
+      <trans-unit id="arc.resetToDefault">
+        <source xml:lang="en">Reset to default</source>
+        <target state="translated">重置为默认值</target>
+      </trans-unit>
+      <trans-unit id="arc.resourceGroup">
+        <source xml:lang="en">Resource Group</source>
+        <target state="translated">资源组</target>
+      </trans-unit>
+      <trans-unit id="arc.resourceHealth">
+        <source xml:lang="en">Resource health</source>
+        <target state="translated">资源运行状况</target>
+      </trans-unit>
+      <trans-unit id="arc.resourceHealthDescription">
+        <source xml:lang="en">Resource health can tell you if your resource is running as expected.</source>
+        <target state="translated">资源运行状况可以让你了解资源是否按预期运行。</target>
+      </trans-unit>
+      <trans-unit id="arc.restoring">
+        <source xml:lang="en">Restoring</source>
+        <target state="translated">正在还原</target>
+      </trans-unit>
+      <trans-unit id="arc.running">
+        <source xml:lang="en">Running</source>
+        <target state="translated">正在运行</target>
+      </trans-unit>
+      <trans-unit id="arc.save">
+        <source xml:lang="en">Save</source>
+        <target state="translated">保存</target>
+      </trans-unit>
+      <trans-unit id="arc.scalingCompute">
+        <source xml:lang="en">scaling compute vCores and memory.</source>
+        <target state="translated">正在缩放计算 vCore 和内存。</target>
+      </trans-unit>
+      <trans-unit id="arc.searchToFilter">
+        <source xml:lang="en">Search to filter items...</source>
+        <target state="translated">通过搜索对项进行筛选...</target>
+      </trans-unit>
+      <trans-unit id="arc.security">
+        <source xml:lang="en">Security</source>
+        <target state="translated">安全性</target>
+      </trans-unit>
+      <trans-unit id="arc.selectConnectionString">
+        <source xml:lang="en">Select from available client connection strings below.</source>
+        <target state="translated">从下面的可用客户端连接字符串中进行选择。</target>
+      </trans-unit>
+      <trans-unit id="arc.serverEndpoint">
+        <source xml:lang="en">Server Endpoint</source>
+        <target state="translated">服务器终结点</target>
+      </trans-unit>
+      <trans-unit id="arc.serverGroupNodes">
+        <source xml:lang="en">Server group nodes</source>
+        <target state="translated">服务器组节点</target>
+      </trans-unit>
+      <trans-unit id="arc.serverGroupType">
+        <source xml:lang="en">Server group type</source>
+        <target state="translated">服务器组类型</target>
+      </trans-unit>
+      <trans-unit id="arc.serviceEndpoints">
+        <source xml:lang="en">Service endpoints</source>
+        <target state="translated">服务终结点</target>
+      </trans-unit>
+      <trans-unit id="arc.serviceEndpointsTable">
+        <source xml:lang="en">Service endpoints table</source>
+        <target state="translated">服务终结点表</target>
+      </trans-unit>
+      <trans-unit id="arc.settings">
+        <source xml:lang="en">Settings</source>
+        <target state="translated">设置</target>
+      </trans-unit>
+      <trans-unit id="arc.state">
+        <source xml:lang="en">State</source>
+        <target state="translated">状态</target>
+      </trans-unit>
+      <trans-unit id="arc.status">
+        <source xml:lang="en">Status</source>
+        <target state="translated">状态</target>
+      </trans-unit>
+      <trans-unit id="arc.storagePerNode">
+        <source xml:lang="en">storage per node</source>
+        <target state="translated">每个节点的存储</target>
+      </trans-unit>
+      <trans-unit id="arc.subscriptionId">
+        <source xml:lang="en">Subscription ID</source>
+        <target state="translated">订阅 ID</target>
+      </trans-unit>
+      <trans-unit id="arc.supportAndTroubleshooting">
+        <source xml:lang="en">Support + troubleshooting</source>
+        <target state="translated">支持 + 疑难解答</target>
+      </trans-unit>
+      <trans-unit id="arc.supportRequestNote">
+        <source xml:lang="en">Note that the resource configuration must have been uploaded to Azure first in order to open a support request.</source>
+        <target state="translated">请注意，必须先将资源配置上传到 Azure 才能打开支持请求。</target>
+      </trans-unit>
+      <trans-unit id="arc.suspect">
+        <source xml:lang="en">Suspect</source>
+        <target state="translated">可疑</target>
+      </trans-unit>
+      <trans-unit id="arc.thePasswordsDoNotMatch">
+        <source xml:lang="en">The passwords do not match. Confirm the password or press escape to exit.</source>
+        <target state="translated">密码不匹配。确认密码或按 Esc 退出。</target>
+      </trans-unit>
+      <trans-unit id="arc.troubleshoot">
+        <source xml:lang="en">Troubleshoot</source>
+        <target state="translated">疑难解答</target>
+      </trans-unit>
+      <trans-unit id="arc.type">
+        <source xml:lang="en">Type</source>
+        <target state="translated">类型</target>
+      </trans-unit>
+      <trans-unit id="arc.unknown">
+        <source xml:lang="en">Unknown</source>
+        <target state="translated">未知</target>
+      </trans-unit>
+      <trans-unit id="arc.unloadExtensions">
+        <source xml:lang="en">Unload extensions</source>
+        <target state="translated">上传扩展</target>
+      </trans-unit>
+      <trans-unit id="arc.updateExtensionsFailed">
+        <source xml:lang="en">Editing extensions failed. {0}</source>
+        <target state="translated">编辑扩展失败。{0}</target>
+      </trans-unit>
+      <trans-unit id="arc.updated">
+        <source xml:lang="en">Updated {0}</source>
+        <target state="translated">已更新的 {0}</target>
+      </trans-unit>
+      <trans-unit id="arc.updatingInstance">
+        <source xml:lang="en">Updating instance '{0}'...</source>
+        <target state="translated">正在更新实例“{0}”...</target>
+      </trans-unit>
+      <trans-unit id="arc.userCancelledError">
+        <source xml:lang="en">User cancelled the dialog</source>
+        <target state="translated">用户取消了此对话框</target>
+      </trans-unit>
+      <trans-unit id="arc.username">
+        <source xml:lang="en">Username</source>
+        <target state="translated">用户名</target>
+      </trans-unit>
+      <trans-unit id="arc.vCores">
+        <source xml:lang="en">vCores</source>
+        <target state="translated">vCore</target>
+      </trans-unit>
+      <trans-unit id="arc.value">
+        <source xml:lang="en">Value</source>
+        <target state="translated">值</target>
+      </trans-unit>
+      <trans-unit id="arc.worker">
+        <source xml:lang="en">Worker</source>
+        <target state="translated">工作器</target>
+      </trans-unit>
+      <trans-unit id="arc.workerCoresLimit">
+        <source xml:lang="en">Worker Nodes CPU limit</source>
+        <target state="translated">工作节点 CPU 限制</target>
+      </trans-unit>
+      <trans-unit id="arc.workerCoresRequest">
+        <source xml:lang="en">Worker Nodes CPU request</source>
+        <target state="translated">工作节点 CPU 请求</target>
+      </trans-unit>
+      <trans-unit id="arc.workerMemoryLimit">
+        <source xml:lang="en">Worker Nodes Memory limit (in GB)</source>
+        <target state="translated">工作器节点内存限制(以 GB 为单位)</target>
+      </trans-unit>
+      <trans-unit id="arc.workerMemoryRequest">
+        <source xml:lang="en">Worker Nodes Memory request (in GB)</source>
+        <target state="translated">工作器节点内存请求(以 GB 为单位)</target>
+      </trans-unit>
+      <trans-unit id="arc.workerNodeCount">
+        <source xml:lang="en">Worker node count</source>
+        <target state="translated">工作器节点计数</target>
+      </trans-unit>
+      <trans-unit id="arc.workerNodeInformation">
+        <source xml:lang="en">It is possible to scale in and out your server group by reducing or increasing the number of worker nodes. The value must be 0 or greater than 1.</source>
+        <target state="translated">可以通过减少或增加工作器节点数来横向缩减和放大服务器组。值必须为 0 或大于 1。</target>
+      </trans-unit>
+      <trans-unit id="arc.workerNodeParameters">
+        <source xml:lang="en">Worker Node Parameters</source>
+        <target state="translated">工作器节点参数</target>
+      </trans-unit>
+      <trans-unit id="arc.workerNodes">
+        <source xml:lang="en">Worker Nodes</source>
+        <target state="translated">工作器节点</target>
+      </trans-unit>
+      <trans-unit id="arc.workerNodesConfigurationInformation">
+        <source xml:lang="en">You can configure the number of CPU cores and storage size that will apply to all worker nodes. Adjust the number of CPU cores and memory settings for your server group. To reset the requests and/or limits, pass in empty value.</source>
+        <target state="translated">可以配置将应用于所有工作器节点的 CPU 核心数和存储大小。调整服务器组的 CPU 核心数和内存设置。要重置请求和/或限制，请传入空值。</target>
+      </trans-unit>
+      <trans-unit id="arc.workerNodesDescription">
+        <source xml:lang="en">Expand your server group and scale your database by adding worker nodes.</source>
+        <target state="translated">展开服务器组并通过添加工作器节点缩放数据库。</target>
+      </trans-unit>
+      <trans-unit id="arc.workerNodesParametersDescription">
+        <source xml:lang="en"> These server parameters of the Worker nodes can be set to custom (non-default) values. Search to find parameters.</source>
+        <target state="translated"> 工作器节点的这些服务器参数可以设置为自定义(非默认)值。搜索以查找参数。</target>
+      </trans-unit>
+      <trans-unit id="arc.workerOneNodeValidationMessage">
+        <source xml:lang="en">Value of 1 is not supported.</source>
+        <target state="translated">不支持值为 1。</target>
+      </trans-unit>
+      <trans-unit id="arc.yes">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">是</target>
+      </trans-unit>
+      <trans-unit id="button.label">
+        <source xml:lang="en">Select</source>
+        <target state="translated">选择</target>
+      </trans-unit>
+      <trans-unit id="clusterContextConfigNoLongerValid">
+        <source xml:lang="en">The cluster context information specified by config file: {0} and cluster context: {1} is no longer valid. Error is:
+	{2}
+ Do you want to update this information?</source>
+        <target state="translated">配置文件指定的群集上下文信息: {0} 和群集上下文: {1} 不再有效。错误为: 
+&gt;{2}
+ 是否要更新此信息?</target>
+      </trans-unit>
+      <trans-unit id="clusterContextNotFound">
+        <source xml:lang="en">Cluster Context with name: {0} not found in the Kube config file</source>
+        <target state="translated">在 Kube 配置文件中未找到名为 {0} 的群集上下文</target>
+      </trans-unit>
+      <trans-unit id="filePicker.browse">
+        <source xml:lang="en">Browse</source>
+        <target state="translated">浏览</target>
+      </trans-unit>
+      <trans-unit id="getIsPassword.unknownVariableName">
+        <source xml:lang="en">Attempt to get isPassword for unknown variable:{0}</source>
+        <target state="translated">尝试获取未知变量的 isPassword: {0}</target>
+      </trans-unit>
+      <trans-unit id="getVariableValue.unknownVariableName">
+        <source xml:lang="en">Attempt to get variable value for unknown variable:{0}</source>
+        <target state="translated">尝试获取未知变量的变量值: {0}</target>
+      </trans-unit>
+      <trans-unit id="noContextFound">
+        <source xml:lang="en">No 'contexts' found in the config file: {0}</source>
+        <target state="translated">在配置文件中找不到“上下文”: {0}</target>
+      </trans-unit>
+      <trans-unit id="noControllerInfoFound">
+        <source xml:lang="en">Controller Info could not be found with name: {0}</source>
+        <target state="translated">找不到名称为 {0} 的控制器信息</target>
+      </trans-unit>
+      <trans-unit id="noControllersConnected">
+        <source xml:lang="en">No Azure Arc controllers are currently connected. Please run the command: 'Connect to Existing Azure Arc Controller' and then try again</source>
+        <target state="translated">当前未连接 Azure Arc 控制器。请运行命令:“连接到现有Azure Arc控制器”，然后重试</target>
+      </trans-unit>
+      <trans-unit id="noCurrentClusterContext">
+        <source xml:lang="en">No current cluster context was found in the kube config file</source>
+        <target state="translated">在 kube 配置文件中找不到当前群集上下文</target>
+      </trans-unit>
+      <trans-unit id="noCurrentContextFound">
+        <source xml:lang="en">No context is marked as 'current-context' in the config file: {0}</source>
+        <target state="translated">配置文件中没有标记为 “current-context” 的上下文: {0}</target>
+      </trans-unit>
+      <trans-unit id="noNameInContext">
+        <source xml:lang="en">No name field was found in a cluster context in the config file: {0}</source>
+        <target state="translated">在配置文件中的群集上下文中找不到任何名称字段: {0}</target>
+      </trans-unit>
+      <trans-unit id="noPasswordFound">
+        <source xml:lang="en">Password could not be retrieved for controller: {0} and user did not provide a password. Please retry later.</source>
+        <target state="translated">无法检索到控制器的密码: {0}，并且用户未提供密码。请稍后重试。</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/arc/package" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
-      <trans-unit id="arc.displayName">
+      <trans-unit id="arc.agreement">
+        <source xml:lang="en">I accept {0} and {1}.</source>
+        <target state="translated">我接受 {0} 和 {1}。</target>
+      </trans-unit>
+      <trans-unit id="arc.agreement.postgres.terms.conditions">
+        <source xml:lang="en">Azure Arc-enabled PostgreSQL Hyperscale terms and conditions</source>
+        <target state="translated">启用 Azure Arc 的 PostgreSQL 超大规模条款和条件</target>
+      </trans-unit>
+      <trans-unit id="arc.agreement.sql.help.text">
+        <source xml:lang="en">Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}</source>
+        <target state="translated">启用了 Azure Arc 的托管实例提供了 SQL Server 访问和功能兼容性，可以在所选的基础结构上部署。{0}</target>
+      </trans-unit>
+      <trans-unit id="arc.agreement.sql.help.text.learn.more">
+        <source xml:lang="en">Learn more</source>
+        <target state="translated">了解详细信息</target>
+      </trans-unit>
+      <trans-unit id="arc.agreement.sql.help.text.learn.more.ariaLabel">
+        <source xml:lang="en">Learn more about Azure Arc enabled Managed Instance</source>
+        <target state="translated">详细了解已启用 Azure Arc 的托管实例</target>
+      </trans-unit>
+      <trans-unit id="arc.agreement.sql.terms.conditions">
+        <source xml:lang="en">Azure SQL managed instance - Azure Arc terms and conditions</source>
+        <target state="translated">Azure SQL 托管实例 - Azure Arc 条款和条件</target>
+      </trans-unit>
+      <trans-unit id="arc.azure.account">
+        <source xml:lang="en">Azure account</source>
+        <target state="translated">Azure 帐户</target>
+      </trans-unit>
+      <trans-unit id="arc.azure.location">
+        <source xml:lang="en">Azure location</source>
+        <target state="translated">Azure 位置</target>
+      </trans-unit>
+      <trans-unit id="arc.azure.resource.group">
+        <source xml:lang="en">Azure resource group</source>
+        <target state="translated">Azure 资源组</target>
+      </trans-unit>
+      <trans-unit id="arc.azure.section.title">
+        <source xml:lang="en">Azure information</source>
+        <target state="translated">Azure 信息</target>
+      </trans-unit>
+      <trans-unit id="arc.azure.subscription">
+        <source xml:lang="en">Azure subscription</source>
+        <target state="translated">Azure 订阅</target>
+      </trans-unit>
+      <trans-unit id="arc.configuration.title">
         <source xml:lang="en">Azure Arc</source>
         <target state="translated">Azure Arc</target>
+      </trans-unit>
+      <trans-unit id="arc.confirm.password">
+        <source xml:lang="en">Confirm password</source>
+        <target state="translated">确认密码</target>
+      </trans-unit>
+      <trans-unit id="arc.controller">
+        <source xml:lang="en">Target Azure Arc Controller</source>
+        <target state="translated">目标 Azure Arc 控制器</target>
+      </trans-unit>
+      <trans-unit id="arc.cores-limit.label">
+        <source xml:lang="en">Cores Limit</source>
+        <target state="translated">内核限制</target>
+      </trans-unit>
+      <trans-unit id="arc.cores-request.label">
+        <source xml:lang="en">Cores Request</source>
+        <target state="translated">核心请求</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.admin.account.confirm.password">
+        <source xml:lang="en">Confirm password</source>
+        <target state="translated">确认密码</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.admin.account.name">
+        <source xml:lang="en">Data controller login</source>
+        <target state="translated">数据控制器登录</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.admin.account.password">
+        <source xml:lang="en">Password</source>
+        <target state="translated">密码</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.admin.account.title">
+        <source xml:lang="en">Administrator account</source>
+        <target state="translated">管理员帐户</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.agreement">
+        <source xml:lang="en">I accept {0} and {1}.</source>
+        <target state="translated">我接受 {0} 和 {1}。</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.cluster.config.profile">
+        <source xml:lang="en">Config profile</source>
+        <target state="translated">配置文件</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.cluster.config.profile.loading">
+        <source xml:lang="en">Loading config profiles</source>
+        <target state="translated">正在加载配置文件</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.cluster.config.profile.loadingcompleted">
+        <source xml:lang="en">Loading config profiles complete</source>
+        <target state="translated">加载配置文件已完成</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.cluster.config.profile.title">
+        <source xml:lang="en">Choose the config profile</source>
+        <target state="translated">选择配置文件</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.cluster.environment.title">
+        <source xml:lang="en">What is your target existing Kubernetes cluster environment?</source>
+        <target state="translated">你的目标现有 Kubernetes 群集环境是什么?</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.create.azureconfig.title">
+        <source xml:lang="en">Azure Configuration</source>
+        <target state="translated">Azure 配置</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.create.controllerconfig.title">
+        <source xml:lang="en">Controller Configuration</source>
+        <target state="translated">控制器配置</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.create.summary.title">
+        <source xml:lang="en">Review your configuration</source>
+        <target state="translated">查看配置</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.details.description">
+        <source xml:lang="en">Provide a namespace, name and storage class for your Azure Arc data controller. This name will be used to identify your Arc instance for remote management and monitoring.</source>
+        <target state="translated">提供 Azure Arc 数据控制器的命名空间、名称、存储类。此名称将用于标识用于远程管理和监视的 Arc 实例。</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.details.title">
+        <source xml:lang="en">Data controller details</source>
+        <target state="translated">数据控制器详细信息</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.infrastructure">
+        <source xml:lang="en">Infrastructure</source>
+        <target state="translated">基础结构</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.kube.cluster.context">
+        <source xml:lang="en">Cluster context</source>
+        <target state="translated">群集上下文</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.location">
+        <source xml:lang="en">Location</source>
+        <target state="translated">位置</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.name">
+        <source xml:lang="en">Data controller name</source>
+        <target state="translated">数据控制器名称</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.name.validation.description">
+        <source xml:lang="en">Name must consist of lower case alphanumeric characters, '-' or '.', start/end with an alphanumeric character and be 253 characters or less in length.</source>
+        <target state="translated">名称必须包含小写字母数字字符、"-" 或 "。"，以字母数字字符开头/结尾，并且长度不能超过 253 个字符。</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.namespace">
+        <source xml:lang="en">Data controller namespace</source>
+        <target state="translated">数据控制器命名空间</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.namespace.validation.description">
+        <source xml:lang="en">Namespace must consist of lower case alphanumeric characters or '-', start/end with an alphanumeric character, and be 63 characters or fewer in length.</source>
+        <target state="translated">命名空间必须包含小写字母数字字符或 “-”，以字母数字字符开头/结尾，并且长度不能超过 63 个字符。</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.new.wizard.title">
+        <source xml:lang="en">Create Azure Arc data controller</source>
+        <target state="translated">创建 Azure Arc 数据控制器</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.project.details.description">
+        <source xml:lang="en">Select the subscription to manage deployed resources and costs. Use resource groups like folders to organize and manage all your resources.</source>
+        <target state="translated">选择订阅以管理已部署的资源和成本。使用资源组(如文件夹)来整理和管理所有资源。</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.project.details.title">
+        <source xml:lang="en">Azure details</source>
+        <target state="translated">Azure 详细信息</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.readmore">
+        <source xml:lang="en">Read more</source>
+        <target state="translated">阅读更多信息</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.select.cluster.title">
+        <source xml:lang="en">Select from existing Kubernetes clusters</source>
+        <target state="translated">从现有 Kubernetes 群集中选择</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.arc.by.microsoft">
+        <source xml:lang="en">by Microsoft</source>
+        <target state="translated">由 Microsoft 提供</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.arc.data.controller">
+        <source xml:lang="en">Azure Arc data controller</source>
+        <target state="translated">Azure Arc 数据控制器</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.arc.terms.of.use">
+        <source xml:lang="en">Terms of use</source>
+        <target state="translated">使用条款</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.arc.terms.privacy.policy">
+        <source xml:lang="en">Privacy policy</source>
+        <target state="translated">隐私策略</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.arc.terms.separator">
+        <source xml:lang="en">|</source>
+        <target state="translated">|</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.azure">
+        <source xml:lang="en">Azure</source>
+        <target state="translated">Azure</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.cluster.context">
+        <source xml:lang="en">Cluster context</source>
+        <target state="translated">群集上下文</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.controller">
+        <source xml:lang="en">Controller</source>
+        <target state="translated">控制器</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.data.controller.infrastructure">
+        <source xml:lang="en">Data controller infrastructure</source>
+        <target state="translated">数据控制器基础结构</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.data.controller.name">
+        <source xml:lang="en">Data controller name</source>
+        <target state="translated">数据控制器名称</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.data.controller.namespace">
+        <source xml:lang="en">Data controller namespace</source>
+        <target state="translated">数据控制器命名空间</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.estimated.cost.per.month">
+        <source xml:lang="en">Estimated cost per month</source>
+        <target state="translated">每月估计成本</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.free">
+        <source xml:lang="en">Free</source>
+        <target state="translated">免费</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.kube.config.file.path">
+        <source xml:lang="en">Kube config file path</source>
+        <target state="translated">Kube 配置文件路径</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.kubernetes">
+        <source xml:lang="en">Kubernetes</source>
+        <target state="translated">Kubernetes</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.location">
+        <source xml:lang="en">Location</source>
+        <target state="translated">位置</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.profile">
+        <source xml:lang="en">Config profile</source>
+        <target state="translated">配置文件</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.resource.group">
+        <source xml:lang="en">Resource group</source>
+        <target state="translated">资源组</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.subscription">
+        <source xml:lang="en">Subscription</source>
+        <target state="translated">订阅</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.terms">
+        <source xml:lang="en">Terms</source>
+        <target state="translated">条款</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.terms.description">
+        <source xml:lang="en">By clicking 'Script to notebook', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed above; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {0}.</source>
+        <target state="translated">单击“脚本到笔记本”即表示本人: (a) 同意与上面列出的一项或多项市场产品/服务关联的法律条款和一条或多条隐私声明；(b) 授权 Microsoft 按与我的 Azure 订阅相同的账单频率，以我当前的付款方式向我收取使用这项或这些产品/服务所产生的费用；以及 (c) 同意 Microsoft 与这项或这些产品/服务的一个或多个提供商共享我的联系信息、使用情况和交易信息，用于支持、计费和其他交易活动。Microsoft 不提供针对第三方产品/服务的权利。有关其他详细信息，请参阅 {0}</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.terms.link.text">
+        <source xml:lang="en">Azure Marketplace Terms</source>
+        <target state="translated">Azure 市场条款</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.username">
+        <source xml:lang="en">Username</source>
+        <target state="translated">用户名</target>
       </trans-unit>
       <trans-unit id="arc.description">
         <source xml:lang="en">Support for Azure Arc</source>
         <target state="translated">支持 Azure Arc</target>
       </trans-unit>
-      <trans-unit id="arc.configuration.title">
+      <trans-unit id="arc.displayName">
         <source xml:lang="en">Azure Arc</source>
         <target state="translated">Azure Arc</target>
+      </trans-unit>
+      <trans-unit id="arc.memory-limit.label">
+        <source xml:lang="en">Memory Limit</source>
+        <target state="translated">内存限制</target>
+      </trans-unit>
+      <trans-unit id="arc.memory-request.label">
+        <source xml:lang="en">Memory Request</source>
+        <target state="translated">内存请求</target>
+      </trans-unit>
+      <trans-unit id="arc.openDashboard">
+        <source xml:lang="en">Manage</source>
+        <target state="translated">管理</target>
+      </trans-unit>
+      <trans-unit id="arc.password">
+        <source xml:lang="en">Password</source>
+        <target state="translated">密码</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.coordinator.cores.limit.description">
+        <source xml:lang="en">The maximum number of CPU cores for the Postgres instance that can be used on the coordinator node. Fractional cores are supported.</source>
+        <target state="translated">可以在协调器节点上使用的 Postgres 实例的最大 CPU 内核数。支持分数核心。</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.coordinator.cores.limit.label">
+        <source xml:lang="en">CPU limit</source>
+        <target state="translated">CPU 限制</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.coordinator.cores.request.description">
+        <source xml:lang="en">The minimum number of CPU cores that must be available on the coordinator node to schedule the service. Fractional cores are supported.</source>
+        <target state="translated">协调器节点上必须可用的用以安排服务的最小 CPU 核心数。支持分数核心。</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.coordinator.cores.request.label">
+        <source xml:lang="en">CPU request</source>
+        <target state="translated">CPU 请求</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.coordinator.memory.limit.description">
+        <source xml:lang="en">The memory limit of the Postgres instance on the coordinator node in GB.</source>
+        <target state="translated">协调器节点上 Postgres 实例的内存限制(GB)。</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.coordinator.memory.limit.label">
+        <source xml:lang="en">Memory limit (GB)</source>
+        <target state="translated">内存限制(GB)</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.coordinator.memory.request.description">
+        <source xml:lang="en">The memory request of the Postgres instance on the coordinator node in GB.</source>
+        <target state="translated">协调器节点上的 Postgres 实例的内存请求(GB)。</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.coordinator.memory.request.label">
+        <source xml:lang="en">Memory request (GB)</source>
+        <target state="translated">内存请求(GB)</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.engine.version">
+        <source xml:lang="en">Engine Version</source>
+        <target state="translated">引擎版本</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.extensions.description">
+        <source xml:lang="en">A comma-separated list of the Postgres extensions that should be loaded on startup. Please refer to the postgres documentation for supported values.</source>
+        <target state="translated">应在启动时加载的 Postgres 扩展的列表(以逗号分隔)。请参阅 postgres 文档以查找支持的值。</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.extensions.label">
+        <source xml:lang="en">Extensions</source>
+        <target state="translated">扩展</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.name">
+        <source xml:lang="en">Server group name</source>
+        <target state="translated">服务器组名称</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.name.validation.description">
+        <source xml:lang="en">Server group name must consist of lower case alphanumeric characters or '-', start with a letter, end with an alphanumeric character, and be 11 characters or fewer in length.</source>
+        <target state="translated">服务器组名称必须包含小写字母数字字符或 “-”，以字母开头，以字母数字字符结尾，并且长度不能超过 11 个字符。</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.port">
+        <source xml:lang="en">Port</source>
+        <target state="translated">端口</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.volume.size.backups.description">
+        <source xml:lang="en">The size of the storage volume to be used for backups in GB.</source>
+        <target state="translated">用于备份的存储卷大小(GB)。</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.volume.size.backups.label">
+        <source xml:lang="en">Volume Size GB (Backups)</source>
+        <target state="translated">卷大小 GB (备份)</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.volume.size.data.description">
+        <source xml:lang="en">The size of the storage volume to be used for data in GB.</source>
+        <target state="translated">对数据所用的存储量大小(GB)。</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.volume.size.data.label">
+        <source xml:lang="en">Volume Size GB (Data)</source>
+        <target state="translated">卷大小 GB (数据)</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.volume.size.logs.description">
+        <source xml:lang="en">The size of the storage volume to be used for logs in GB.</source>
+        <target state="translated">用于日志的存储卷大小(GB)。</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.volume.size.logs.label">
+        <source xml:lang="en">Volume Size GB (Logs)</source>
+        <target state="translated">卷大小 GB (日志)</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.workers.cores.limit.description">
+        <source xml:lang="en">The maximum number of CPU cores for the Postgres instance that can be used per node. Fractional cores are supported.</source>
+        <target state="translated">每个节点可使用的 Postgres 实例的最大 CPU 内核数。支持分数核心。</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.workers.cores.limit.label">
+        <source xml:lang="en">CPU limit (cores per node)</source>
+        <target state="translated">CPU 限制(每节点核心数)</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.workers.cores.request.description">
+        <source xml:lang="en">The minimum number of CPU cores that must be available per node to schedule the service. Fractional cores are supported.</source>
+        <target state="translated">每个节点上必须可用的用以安排服务的最小 CPU 核心数。支持分数核心。</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.workers.cores.request.label">
+        <source xml:lang="en">CPU request (cores per node)</source>
+        <target state="translated">CPU 请求(每节点核心数)</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.workers.description">
+        <source xml:lang="en">The number of worker nodes to provision in a sharded cluster, or zero (the default) for single-node Postgres.</source>
+        <target state="translated">要在分片群集中设置的辅助角色节点的数量，对于单节点 Postgres，默认为零。</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.workers.label">
+        <source xml:lang="en">Number of workers</source>
+        <target state="translated">工作器数量</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.workers.memory.limit.description">
+        <source xml:lang="en">The memory limit of the Postgres instance per node in GB.</source>
+        <target state="translated">每个节点 Postgres 实例的内存限制(GB)。</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.workers.memory.limit.label">
+        <source xml:lang="en">Memory limit (GB per node)</source>
+        <target state="translated">内存限制(GB/节点)</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.workers.memory.request.description">
+        <source xml:lang="en">The memory request of the Postgres instance per node in GB.</source>
+        <target state="translated">每个节点的 Postgres 实例的内存请求(GB)。</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.workers.memory.request.label">
+        <source xml:lang="en">Memory request (GB per node)</source>
+        <target state="translated">内存请求(每节点 GB)</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.settings.resource.coordinator.title">
+        <source xml:lang="en">Coordinator Node Compute Configuration</source>
+        <target state="translated">协调器节点计算配置</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.settings.resource.worker.title">
+        <source xml:lang="en">Worker Nodes Compute Configuration</source>
+        <target state="translated">工作器节点计算配置</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.settings.section.title">
+        <source xml:lang="en">General settings</source>
+        <target state="translated">常规设置</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.settings.storage.title">
+        <source xml:lang="en">Storage settings</source>
+        <target state="translated">存储设置</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.storage-class.backups.description">
+        <source xml:lang="en">The storage class to be used for backup persistent volumes</source>
+        <target state="translated">要用于备份永久卷的存储类</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.storage-class.data.description">
+        <source xml:lang="en">The storage class to be used for data persistent volumes</source>
+        <target state="translated">要用于数据永久卷的存储类。</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.storage-class.logs.description">
+        <source xml:lang="en">The storage class to be used for logs persistent volumes</source>
+        <target state="translated">要用于日志永久卷的存储类。</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.wizard.page1.title">
+        <source xml:lang="en">Provide Azure enabled PostgreSQL Hyperscale server group parameters</source>
+        <target state="translated">提供启用 Azure 的 PostgreSQL 超大规模服务器组参数</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.wizard.title">
+        <source xml:lang="en">Deploy an Azure Arc-enabled PostgreSQL Hyperscale server group (Preview)</source>
+        <target state="translated">部署已启用 Azure Arc 的 PostgreSQL 超大规模服务器组(预览)</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.connection.settings.section.title">
+        <source xml:lang="en">SQL Connection information</source>
+        <target state="translated">SQL 连接信息</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.cores-limit.description">
+        <source xml:lang="en">The cores limit of the managed instance as an integer.</source>
+        <target state="translated">托管实例的核心限制(整数)。</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.cores-request.description">
+        <source xml:lang="en">The request for cores of the managed instance as an integer.</source>
+        <target state="translated">将托管实例的核心作为整数的请求。</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.instance.name">
+        <source xml:lang="en">Instance name</source>
+        <target state="translated">实例名称</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.instance.settings.section.title">
+        <source xml:lang="en">SQL Instance settings</source>
+        <target state="translated">SQL 实例设置</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.invalid.instance.name">
+        <source xml:lang="en">Instance name must consist of lower case alphanumeric characters or '-', start with a letter, end with an alphanumeric character, and be 13 characters or fewer in length.</source>
+        <target state="translated">实例名称必须包含小写字母数字字符或 "-"，以字母开头，以字母数字字符结尾，并且长度不能超过 13 个字符。</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.invalid.username">
+        <source xml:lang="en">sa username is disabled, please choose another username</source>
+        <target state="translated">sa 用户名已禁用，请选择其他用户名</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.memory-limit.description">
+        <source xml:lang="en">The limit of the capacity of the managed instance as an integer.</source>
+        <target state="translated">托管实例的容量限制(整数)。</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.memory-request.description">
+        <source xml:lang="en">The request for the capacity of the managed instance as an integer amount of memory in GBs.</source>
+        <target state="translated">对托管实例容量的请求(整数内存量，以 GB 为单位)。</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.replicas.description">
+        <source xml:lang="en">The number of SQL Managed Instance replicas that will be deployed in your Kubernetes cluster for high availability purposes</source>
+        <target state="translated">出于高可用性目的将部署在 Kubernetes 群集中的 SQL 托管实例副本数</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.replicas.label">
+        <source xml:lang="en">Replicas</source>
+        <target state="translated">副本</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.storage-class.data.description">
+        <source xml:lang="en">The storage class to be used for data (.mdf)</source>
+        <target state="translated">要用于数据的存储类(.mdf)</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.storage-class.dc.description">
+        <source xml:lang="en">The storage class to be used for all data and logs persistent volumes for all data controller pods that require them.</source>
+        <target state="translated">要用于所有数据的存储类，以及所有需要它们的数据控制器 Pod 的 日志永久卷。</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.storage-class.logs.description">
+        <source xml:lang="en">The storage class to be used for logs (/var/log)</source>
+        <target state="translated">要用于日志的存储类(/var/log)</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.username">
+        <source xml:lang="en">Username</source>
+        <target state="translated">用户名</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.wizard.page1.title">
+        <source xml:lang="en">Provide Azure SQL managed instance parameters</source>
+        <target state="translated">提供 Azure SQL 托管实例参数</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.wizard.title">
+        <source xml:lang="en">Deploy Azure SQL managed instance - Azure Arc (preview)</source>
+        <target state="translated">部署 Azure SQL 托管实例–Azure Arc (预览)</target>
+      </trans-unit>
+      <trans-unit id="arc.storage-class.backups.label">
+        <source xml:lang="en">Storage Class (Backups)</source>
+        <target state="translated">存储类(备份)</target>
+      </trans-unit>
+      <trans-unit id="arc.storage-class.data.label">
+        <source xml:lang="en">Storage Class (Data)</source>
+        <target state="translated">存储类(数据)</target>
+      </trans-unit>
+      <trans-unit id="arc.storage-class.dc.label">
+        <source xml:lang="en">Storage Class</source>
+        <target state="translated">存储类</target>
+      </trans-unit>
+      <trans-unit id="arc.storage-class.logs.label">
+        <source xml:lang="en">Storage Class (Logs)</source>
+        <target state="translated">存储类(日志)</target>
       </trans-unit>
       <trans-unit id="arc.view.title">
         <source xml:lang="en">Azure Arc Controllers</source>
@@ -28,253 +1651,57 @@
         <source xml:lang="en">Loading controllers...</source>
         <target state="translated">正在加载控制器...</target>
       </trans-unit>
-      <trans-unit id="command.createController.title">
-        <source xml:lang="en">Create New Azure Arc Controller</source>
-        <target state="translated">新建 Azure Arc 控制器</target>
-      </trans-unit>
       <trans-unit id="command.connectToController.title">
         <source xml:lang="en">Connect to Existing Azure Arc Controller</source>
         <target state="translated">连接到现有 Azure Arc 控制器</target>
       </trans-unit>
-      <trans-unit id="command.removeController.title">
-        <source xml:lang="en">Remove Controller</source>
-        <target state="translated">删除控制器</target>
-      </trans-unit>
-      <trans-unit id="command.refresh.title">
-        <source xml:lang="en">Refresh</source>
-        <target state="translated">刷新</target>
+      <trans-unit id="command.createController.title">
+        <source xml:lang="en">Create New Azure Arc Controller</source>
+        <target state="translated">新建 Azure Arc 控制器</target>
       </trans-unit>
       <trans-unit id="command.editConnection.title">
         <source xml:lang="en">Edit Connection</source>
         <target state="translated">编辑连接</target>
       </trans-unit>
-      <trans-unit id="arc.openDashboard">
-        <source xml:lang="en">Manage</source>
-        <target state="translated">管理</target>
+      <trans-unit id="command.refresh.title">
+        <source xml:lang="en">Refresh</source>
+        <target state="translated">刷新</target>
       </trans-unit>
-      <trans-unit id="resource.type.azure.arc.display.name">
-        <source xml:lang="en">Azure Arc data controller (preview)</source>
-        <target state="translated">Azure Arc 数据控制器(预览)</target>
+      <trans-unit id="command.removeController.title">
+        <source xml:lang="en">Remove Controller</source>
+        <target state="translated">删除控制器</target>
       </trans-unit>
-      <trans-unit id="resource.type.azure.arc.description">
-        <source xml:lang="en">Creates an Azure Arc data controller</source>
-        <target state="translated">创建 Azure Arc 数据控制器</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.new.wizard.title">
-        <source xml:lang="en">Create Azure Arc data controller</source>
-        <target state="translated">创建 Azure Arc 数据控制器</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.cluster.environment.title">
-        <source xml:lang="en">What is your target existing Kubernetes cluster environment?</source>
-        <target state="translated">你的目标现有 Kubernetes 群集环境是什么?</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.select.cluster.title">
-        <source xml:lang="en">Select from existing Kubernetes clusters</source>
-        <target state="translated">从现有 Kubernetes 群集中选择</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.kube.cluster.context">
-        <source xml:lang="en">Cluster context</source>
-        <target state="translated">群集上下文</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.cluster.config.profile.title">
-        <source xml:lang="en">Choose the config profile</source>
-        <target state="translated">选择配置文件</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.cluster.config.profile">
-        <source xml:lang="en">Config profile</source>
-        <target state="translated">配置文件</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.cluster.config.profile.loading">
-        <source xml:lang="en">Loading config profiles</source>
-        <target state="translated">正在加载配置文件</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.cluster.config.profile.loadingcompleted">
-        <source xml:lang="en">Loading config profiles complete</source>
-        <target state="translated">加载配置文件已完成</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.create.azureconfig.title">
-        <source xml:lang="en">Azure Configuration</source>
-        <target state="translated">Azure 配置</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.create.controllerconfig.title">
-        <source xml:lang="en">Controller Configuration</source>
-        <target state="translated">控制器配置</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.project.details.title">
-        <source xml:lang="en">Azure details</source>
-        <target state="translated">Azure 详细信息</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.project.details.description">
-        <source xml:lang="en">Select the subscription to manage deployed resources and costs. Use resource groups like folders to organize and manage all your resources.</source>
-        <target state="translated">选择订阅以管理已部署的资源和成本。使用资源组(如文件夹)来整理和管理所有资源。</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.details.title">
-        <source xml:lang="en">Data controller details</source>
-        <target state="translated">数据控制器详细信息</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.details.description">
-        <source xml:lang="en">Provide a namespace, name and storage class for your Azure Arc data controller. This name will be used to identify your Arc instance for remote management and monitoring.</source>
-        <target state="translated">提供 Azure Arc 数据控制器的命名空间、名称、存储类。此名称将用于标识用于远程管理和监视的 Arc 实例。</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.namespace">
-        <source xml:lang="en">Data controller namespace</source>
-        <target state="translated">数据控制器命名空间</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.namespace.validation.description">
-        <source xml:lang="en">Namespace must consist of lower case alphanumeric characters or '-', start/end with an alphanumeric character, and be 63 characters or fewer in length.</source>
-        <target state="translated">命名空间必须包含小写字母数字字符或 “-”，以字母数字字符开头/结尾，并且长度不能超过 63 个字符。</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.name">
-        <source xml:lang="en">Data controller name</source>
-        <target state="translated">数据控制器名称</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.name.validation.description">
-        <source xml:lang="en">Name must consist of lower case alphanumeric characters, '-' or '.', start/end with an alphanumeric character and be 253 characters or less in length.</source>
-        <target state="translated">名称必须包含小写字母数字字符、"-" 或 "。"，以字母数字字符开头/结尾，并且长度不能超过 253 个字符。</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.location">
-        <source xml:lang="en">Location</source>
-        <target state="translated">位置</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.infrastructure">
-        <source xml:lang="en">Infrastructure</source>
-        <target state="translated">基础结构</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.admin.account.title">
-        <source xml:lang="en">Administrator account</source>
-        <target state="translated">管理员帐户</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.admin.account.name">
-        <source xml:lang="en">Data controller login</source>
-        <target state="translated">数据控制器登录</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.admin.account.password">
-        <source xml:lang="en">Password</source>
-        <target state="translated">密码</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.admin.account.confirm.password">
-        <source xml:lang="en">Confirm password</source>
-        <target state="translated">确认密码</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.create.summary.title">
-        <source xml:lang="en">Review your configuration</source>
-        <target state="translated">查看配置</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.summary.arc.data.controller">
-        <source xml:lang="en">Azure Arc data controller</source>
-        <target state="translated">Azure Arc 数据控制器</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.summary.estimated.cost.per.month">
-        <source xml:lang="en">Estimated cost per month</source>
-        <target state="translated">每月估计成本</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.summary.arc.by.microsoft">
-        <source xml:lang="en">by Microsoft</source>
-        <target state="translated">由 Microsoft 提供</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.summary.free">
-        <source xml:lang="en">Free</source>
-        <target state="translated">免费</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.summary.arc.terms.of.use">
-        <source xml:lang="en">Terms of use</source>
-        <target state="translated">使用条款</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.summary.arc.terms.separator">
-        <source xml:lang="en">|</source>
-        <target state="translated">|</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.summary.arc.terms.privacy.policy">
-        <source xml:lang="en">Privacy policy</source>
-        <target state="translated">隐私策略</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.summary.terms">
-        <source xml:lang="en">Terms</source>
-        <target state="translated">条款</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.summary.terms.description">
-        <source xml:lang="en">By clicking 'Script to notebook', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed above; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {0}.</source>
-        <target state="translated">单击“脚本到笔记本”即表示本人: (a) 同意与上面列出的一项或多项市场产品/服务关联的法律条款和一条或多条隐私声明；(b) 授权 Microsoft 按与我的 Azure 订阅相同的账单频率，以我当前的付款方式向我收取使用这项或这些产品/服务所产生的费用；以及 (c) 同意 Microsoft 与这项或这些产品/服务的一个或多个提供商共享我的联系信息、使用情况和交易信息，用于支持、计费和其他交易活动。Microsoft 不提供针对第三方产品/服务的权利。有关其他详细信息，请参阅 {0}</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.summary.terms.link.text">
-        <source xml:lang="en">Azure Marketplace Terms</source>
-        <target state="translated">Azure 市场条款</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.summary.kubernetes">
-        <source xml:lang="en">Kubernetes</source>
-        <target state="translated">Kubernetes</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.summary.kube.config.file.path">
-        <source xml:lang="en">Kube config file path</source>
-        <target state="translated">Kube 配置文件路径</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.summary.cluster.context">
-        <source xml:lang="en">Cluster context</source>
-        <target state="translated">群集上下文</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.summary.profile">
-        <source xml:lang="en">Config profile</source>
-        <target state="translated">配置文件</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.summary.username">
-        <source xml:lang="en">Username</source>
-        <target state="translated">用户名</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.summary.azure">
-        <source xml:lang="en">Azure</source>
-        <target state="translated">Azure</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.summary.subscription">
-        <source xml:lang="en">Subscription</source>
-        <target state="translated">订阅</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.summary.resource.group">
-        <source xml:lang="en">Resource group</source>
-        <target state="translated">资源组</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.summary.data.controller.name">
-        <source xml:lang="en">Data controller name</source>
-        <target state="translated">数据控制器名称</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.summary.data.controller.namespace">
-        <source xml:lang="en">Data controller namespace</source>
-        <target state="translated">数据控制器命名空间</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.summary.data.controller.infrastructure">
-        <source xml:lang="en">Data controller infrastructure</source>
-        <target state="translated">数据控制器基础结构</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.summary.controller">
-        <source xml:lang="en">Controller</source>
-        <target state="translated">控制器</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.summary.location">
-        <source xml:lang="en">Location</source>
-        <target state="translated">位置</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.agreement">
-        <source xml:lang="en">I accept {0} and {1}.</source>
-        <target state="translated">我接受 {0} 和 {1}。</target>
-      </trans-unit>
-      <trans-unit id="arc.data.controller.readmore">
-        <source xml:lang="en">Read more</source>
-        <target state="translated">阅读更多信息</target>
-      </trans-unit>
-      <trans-unit id="microsoft.agreement.privacy.statement">
-        <source xml:lang="en">Microsoft Privacy Statement</source>
-        <target state="translated">Microsoft 隐私声明</target>
-      </trans-unit>
-      <trans-unit id="deploy.script.action">
-        <source xml:lang="en">Script to notebook</source>
-        <target state="translated">脚本到笔记本</target>
+      <trans-unit id="cores.limit.greater.than.or.equal.to.requested.cores">
+        <source xml:lang="en">Cores limit must be greater than or equal to requested cores</source>
+        <target state="translated">内核限制必须大于或等于请求内核</target>
       </trans-unit>
       <trans-unit id="deploy.done.action">
         <source xml:lang="en">Deploy</source>
         <target state="translated">部署</target>
       </trans-unit>
-      <trans-unit id="resource.type.arc.sql.display.name">
-        <source xml:lang="en">Azure SQL managed instance - Azure Arc (preview)</source>
-        <target state="translated">Azure SQL 托管实例–Azure Arc (预览)</target>
+      <trans-unit id="deploy.script.action">
+        <source xml:lang="en">Script to notebook</source>
+        <target state="translated">脚本到笔记本</target>
+      </trans-unit>
+      <trans-unit id="memory.limit.greater.than.or.equal.to.requested.memory">
+        <source xml:lang="en">Memory limit must be greater than or equal to requested memory</source>
+        <target state="translated">内存限制必须大于或等于请求内存</target>
+      </trans-unit>
+      <trans-unit id="microsoft.agreement.privacy.statement">
+        <source xml:lang="en">Microsoft Privacy Statement</source>
+        <target state="translated">Microsoft 隐私声明</target>
+      </trans-unit>
+      <trans-unit id="requested.cores.less.than.or.equal.to.cores.limit">
+        <source xml:lang="en">Requested cores must be less than or equal to cores limit</source>
+        <target state="translated">请求的内核数必须小于或等于内核限制</target>
+      </trans-unit>
+      <trans-unit id="requested.memory.less.than.or.equal.to.memory.limit">
+        <source xml:lang="en">Requested memory must be less than or equal to memory limit</source>
+        <target state="translated">请求内存必须小于或等于内存限制</target>
+      </trans-unit>
+      <trans-unit id="resource.type.arc.postgres.description">
+        <source xml:lang="en">Deploy PostgreSQL Hyperscale server groups into an Azure Arc environment</source>
+        <target state="translated">将 PostgreSQL 超大规模服务器组部署到 Azure Arc 环境</target>
       </trans-unit>
       <trans-unit id="resource.type.arc.postgres.display.name">
         <source xml:lang="en">PostgreSQL Hyperscale server groups - Azure Arc (preview)</source>
@@ -284,309 +1711,17 @@
         <source xml:lang="en">Managed SQL Instance service for app developers in a customer-managed environment</source>
         <target state="translated">客户管理的环境中面向应用开发人员的托管 SQL 实例服务</target>
       </trans-unit>
-      <trans-unit id="resource.type.arc.postgres.description">
-        <source xml:lang="en">Deploy PostgreSQL Hyperscale server groups into an Azure Arc environment</source>
-        <target state="translated">将 PostgreSQL 超大规模服务器组部署到 Azure Arc 环境</target>
-      </trans-unit>
-      <trans-unit id="arc.controller">
-        <source xml:lang="en">Target Azure Arc Controller</source>
-        <target state="translated">目标 Azure Arc 控制器</target>
-      </trans-unit>
-      <trans-unit id="arc.sql.wizard.title">
-        <source xml:lang="en">Deploy Azure SQL managed instance - Azure Arc (preview)</source>
-        <target state="translated">部署 Azure SQL 托管实例–Azure Arc (预览)</target>
-      </trans-unit>
-      <trans-unit id="arc.sql.wizard.page1.title">
-        <source xml:lang="en">Provide Azure SQL managed instance parameters</source>
-        <target state="translated">提供 Azure SQL 托管实例参数</target>
-      </trans-unit>
-      <trans-unit id="arc.sql.connection.settings.section.title">
-        <source xml:lang="en">SQL Connection information</source>
-        <target state="translated">SQL 连接信息</target>
-      </trans-unit>
-      <trans-unit id="arc.sql.instance.settings.section.title">
-        <source xml:lang="en">SQL Instance settings</source>
-        <target state="translated">SQL 实例设置</target>
-      </trans-unit>
-      <trans-unit id="arc.azure.section.title">
-        <source xml:lang="en">Azure information</source>
-        <target state="translated">Azure 信息</target>
-      </trans-unit>
-      <trans-unit id="arc.sql.instance.name">
-        <source xml:lang="en">Instance name</source>
-        <target state="translated">实例名称</target>
-      </trans-unit>
-      <trans-unit id="arc.sql.username">
-        <source xml:lang="en">Username</source>
-        <target state="translated">用户名</target>
-      </trans-unit>
-      <trans-unit id="arc.sql.invalid.username">
-        <source xml:lang="en">sa username is disabled, please choose another username</source>
-        <target state="translated">sa 用户名已禁用，请选择其他用户名</target>
-      </trans-unit>
-      <trans-unit id="arc.sql.invalid.instance.name">
-        <source xml:lang="en">Instance name must consist of lower case alphanumeric characters or '-', start with a letter, end with an alphanumeric character, and be 13 characters or fewer in length.</source>
-        <target state="translated">实例名称必须包含小写字母数字字符或 "-"，以字母开头，以字母数字字符结尾，并且长度不能超过 13 个字符。</target>
-      </trans-unit>
-      <trans-unit id="arc.storage-class.dc.label">
-        <source xml:lang="en">Storage Class</source>
-        <target state="translated">存储类</target>
-      </trans-unit>
-      <trans-unit id="arc.sql.storage-class.dc.description">
-        <source xml:lang="en">The storage class to be used for all data and logs persistent volumes for all data controller pods that require them.</source>
-        <target state="translated">要用于所有数据的存储类，以及所有需要它们的数据控制器 Pod 的 日志永久卷。</target>
-      </trans-unit>
-      <trans-unit id="arc.sql.replicas.label">
-        <source xml:lang="en">Replicas</source>
-        <target state="translated">副本</target>
-      </trans-unit>
-      <trans-unit id="arc.sql.replicas.description">
-        <source xml:lang="en">The number of SQL Managed Instance replicas that will be deployed in your Kubernetes cluster for high availability purposes</source>
-        <target state="translated">出于高可用性目的将部署在 Kubernetes 群集中的 SQL 托管实例副本数</target>
-      </trans-unit>
-      <trans-unit id="arc.storage-class.data.label">
-        <source xml:lang="en">Storage Class (Data)</source>
-        <target state="translated">存储类(数据)</target>
-      </trans-unit>
-      <trans-unit id="arc.sql.storage-class.data.description">
-        <source xml:lang="en">The storage class to be used for data (.mdf)</source>
-        <target state="translated">要用于数据的存储类(.mdf)</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.storage-class.data.description">
-        <source xml:lang="en">The storage class to be used for data persistent volumes</source>
-        <target state="translated">要用于数据永久卷的存储类。</target>
-      </trans-unit>
-      <trans-unit id="arc.storage-class.logs.label">
-        <source xml:lang="en">Storage Class (Logs)</source>
-        <target state="translated">存储类(日志)</target>
-      </trans-unit>
-      <trans-unit id="arc.sql.storage-class.logs.description">
-        <source xml:lang="en">The storage class to be used for logs (/var/log)</source>
-        <target state="translated">要用于日志的存储类(/var/log)</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.storage-class.logs.description">
-        <source xml:lang="en">The storage class to be used for logs persistent volumes</source>
-        <target state="translated">要用于日志永久卷的存储类。</target>
-      </trans-unit>
-      <trans-unit id="arc.storage-class.backups.label">
-        <source xml:lang="en">Storage Class (Backups)</source>
-        <target state="translated">存储类(备份)</target>
-      </trans-unit>
-      <trans-unit id="arc.cores-limit.label">
-        <source xml:lang="en">Cores Limit</source>
-        <target state="translated">内核限制</target>
-      </trans-unit>
-      <trans-unit id="arc.sql.cores-limit.description">
-        <source xml:lang="en">The cores limit of the managed instance as an integer.</source>
-        <target state="translated">托管实例的核心限制(整数)。</target>
-      </trans-unit>
-      <trans-unit id="arc.cores-request.label">
-        <source xml:lang="en">Cores Request</source>
-        <target state="translated">核心请求</target>
-      </trans-unit>
-      <trans-unit id="arc.sql.cores-request.description">
-        <source xml:lang="en">The request for cores of the managed instance as an integer.</source>
-        <target state="translated">将托管实例的核心作为整数的请求。</target>
-      </trans-unit>
-      <trans-unit id="arc.memory-limit.label">
-        <source xml:lang="en">Memory Limit</source>
-        <target state="translated">内存限制</target>
-      </trans-unit>
-      <trans-unit id="arc.sql.memory-limit.description">
-        <source xml:lang="en">The limit of the capacity of the managed instance as an integer.</source>
-        <target state="translated">托管实例的容量限制(整数)。</target>
-      </trans-unit>
-      <trans-unit id="arc.memory-request.label">
-        <source xml:lang="en">Memory Request</source>
-        <target state="translated">内存请求</target>
-      </trans-unit>
-      <trans-unit id="arc.sql.memory-request.description">
-        <source xml:lang="en">The request for the capacity of the managed instance as an integer amount of memory in GBs.</source>
-        <target state="translated">对托管实例容量的请求(整数内存量，以 GB 为单位)。</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.storage-class.backups.description">
-        <source xml:lang="en">The storage class to be used for backup persistent volumes</source>
-        <target state="translated">要用于备份永久卷的存储类</target>
-      </trans-unit>
-      <trans-unit id="arc.password">
-        <source xml:lang="en">Password</source>
-        <target state="translated">密码</target>
-      </trans-unit>
-      <trans-unit id="arc.confirm.password">
-        <source xml:lang="en">Confirm password</source>
-        <target state="translated">确认密码</target>
-      </trans-unit>
-      <trans-unit id="arc.azure.account">
-        <source xml:lang="en">Azure account</source>
-        <target state="translated">Azure 帐户</target>
-      </trans-unit>
-      <trans-unit id="arc.azure.subscription">
-        <source xml:lang="en">Azure subscription</source>
-        <target state="translated">Azure 订阅</target>
-      </trans-unit>
-      <trans-unit id="arc.azure.resource.group">
-        <source xml:lang="en">Azure resource group</source>
-        <target state="translated">Azure 资源组</target>
-      </trans-unit>
-      <trans-unit id="arc.azure.location">
-        <source xml:lang="en">Azure location</source>
-        <target state="translated">Azure 位置</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.wizard.title">
-        <source xml:lang="en">Deploy an Azure Arc-enabled PostgreSQL Hyperscale server group (Preview)</source>
-        <target state="translated">部署已启用 Azure Arc 的 PostgreSQL 超大规模服务器组(预览)</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.wizard.page1.title">
-        <source xml:lang="en">Provide Azure enabled PostgreSQL Hyperscale server group parameters</source>
-        <target state="translated">提供启用 Azure 的 PostgreSQL 超大规模服务器组参数</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.settings.section.title">
-        <source xml:lang="en">General settings</source>
-        <target state="translated">常规设置</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.settings.resource.worker.title">
-        <source xml:lang="en">Worker Nodes Compute Configuration</source>
-        <target state="translated">工作器节点计算配置</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.settings.resource.coordinator.title">
-        <source xml:lang="en">Coordinator Node Compute Configuration</source>
-        <target state="translated">协调器节点计算配置</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.settings.storage.title">
-        <source xml:lang="en">Storage settings</source>
-        <target state="translated">存储设置</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.name">
-        <source xml:lang="en">Server group name</source>
-        <target state="translated">服务器组名称</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.name.validation.description">
-        <source xml:lang="en">Server group name must consist of lower case alphanumeric characters or '-', start with a letter, end with an alphanumeric character, and be 11 characters or fewer in length.</source>
-        <target state="translated">服务器组名称必须包含小写字母数字字符或 “-”，以字母开头，以字母数字字符结尾，并且长度不能超过 11 个字符。</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.workers.label">
-        <source xml:lang="en">Number of workers</source>
-        <target state="translated">工作器数量</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.workers.description">
-        <source xml:lang="en">The number of worker nodes to provision in a sharded cluster, or zero (the default) for single-node Postgres.</source>
-        <target state="translated">要在分片群集中设置的辅助角色节点的数量，对于单节点 Postgres，默认为零。</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.port">
-        <source xml:lang="en">Port</source>
-        <target state="translated">端口</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.engine.version">
-        <source xml:lang="en">Engine Version</source>
-        <target state="translated">引擎版本</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.extensions.label">
-        <source xml:lang="en">Extensions</source>
-        <target state="translated">扩展</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.extensions.description">
-        <source xml:lang="en">A comma-separated list of the Postgres extensions that should be loaded on startup. Please refer to the postgres documentation for supported values.</source>
-        <target state="translated">应在启动时加载的 Postgres 扩展的列表(以逗号分隔)。请参阅 postgres 文档以查找支持的值。</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.volume.size.data.label">
-        <source xml:lang="en">Volume Size GB (Data)</source>
-        <target state="translated">卷大小 GB (数据)</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.volume.size.data.description">
-        <source xml:lang="en">The size of the storage volume to be used for data in GB.</source>
-        <target state="translated">对数据所用的存储量大小(GB)。</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.volume.size.logs.label">
-        <source xml:lang="en">Volume Size GB (Logs)</source>
-        <target state="translated">卷大小 GB (日志)</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.volume.size.logs.description">
-        <source xml:lang="en">The size of the storage volume to be used for logs in GB.</source>
-        <target state="translated">用于日志的存储卷大小(GB)。</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.volume.size.backups.label">
-        <source xml:lang="en">Volume Size GB (Backups)</source>
-        <target state="translated">卷大小 GB (备份)</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.volume.size.backups.description">
-        <source xml:lang="en">The size of the storage volume to be used for backups in GB.</source>
-        <target state="translated">用于备份的存储卷大小(GB)。</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.workers.cores.request.label">
-        <source xml:lang="en">CPU request (cores per node)</source>
-        <target state="translated">CPU 请求(每节点核心数)</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.workers.cores.request.description">
-        <source xml:lang="en">The minimum number of CPU cores that must be available per node to schedule the service. Fractional cores are supported.</source>
-        <target state="translated">每个节点上必须可用的用以安排服务的最小 CPU 核心数。支持分数核心。</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.workers.cores.limit.label">
-        <source xml:lang="en">CPU limit (cores per node)</source>
-        <target state="translated">CPU 限制(每节点核心数)</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.workers.cores.limit.description">
-        <source xml:lang="en">The maximum number of CPU cores for the Postgres instance that can be used per node. Fractional cores are supported.</source>
-        <target state="translated">每个节点可使用的 Postgres 实例的最大 CPU 内核数。支持分数核心。</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.workers.memory.request.label">
-        <source xml:lang="en">Memory request (GB per node)</source>
-        <target state="translated">内存请求(每节点 GB)</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.workers.memory.request.description">
-        <source xml:lang="en">The memory request of the Postgres instance per node in GB.</source>
-        <target state="translated">每个节点的 Postgres 实例的内存请求(GB)。</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.workers.memory.limit.label">
-        <source xml:lang="en">Memory limit (GB per node)</source>
-        <target state="translated">内存限制(GB/节点)</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.workers.memory.limit.description">
-        <source xml:lang="en">The memory limit of the Postgres instance per node in GB.</source>
-        <target state="translated">每个节点 Postgres 实例的内存限制(GB)。</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.coordinator.cores.request.label">
-        <source xml:lang="en">CPU request</source>
-        <target state="translated">CPU 请求</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.coordinator.cores.request.description">
-        <source xml:lang="en">The minimum number of CPU cores that must be available on the coordinator node to schedule the service. Fractional cores are supported.</source>
-        <target state="translated">协调器节点上必须可用的用以安排服务的最小 CPU 核心数。支持分数核心。</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.coordinator.cores.limit.label">
-        <source xml:lang="en">CPU limit</source>
-        <target state="translated">CPU 限制</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.coordinator.cores.limit.description">
-        <source xml:lang="en">The maximum number of CPU cores for the Postgres instance that can be used on the coordinator node. Fractional cores are supported.</source>
-        <target state="translated">可以在协调器节点上使用的 Postgres 实例的最大 CPU 内核数。支持分数核心。</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.coordinator.memory.request.label">
-        <source xml:lang="en">Memory request (GB)</source>
-        <target state="translated">内存请求(GB)</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.coordinator.memory.request.description">
-        <source xml:lang="en">The memory request of the Postgres instance on the coordinator node in GB.</source>
-        <target state="translated">协调器节点上的 Postgres 实例的内存请求(GB)。</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.coordinator.memory.limit.label">
-        <source xml:lang="en">Memory limit (GB)</source>
-        <target state="translated">内存限制(GB)</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.server.group.coordinator.memory.limit.description">
-        <source xml:lang="en">The memory limit of the Postgres instance on the coordinator node in GB.</source>
-        <target state="translated">协调器节点上 Postgres 实例的内存限制(GB)。</target>
-      </trans-unit>
-      <trans-unit id="arc.agreement">
-        <source xml:lang="en">I accept {0} and {1}.</source>
-        <target state="translated">我接受 {0} 和 {1}。</target>
-      </trans-unit>
-      <trans-unit id="arc.agreement.sql.terms.conditions">
-        <source xml:lang="en">Azure SQL managed instance - Azure Arc terms and conditions</source>
-        <target state="translated">Azure SQL 托管实例 - Azure Arc 条款和条件</target>
-      </trans-unit>
-      <trans-unit id="arc.agreement.postgres.terms.conditions">
-        <source xml:lang="en">Azure Arc-enabled PostgreSQL Hyperscale terms and conditions</source>
-        <target state="translated">启用 Azure Arc 的 PostgreSQL 超大规模条款和条件</target>
+      <trans-unit id="resource.type.arc.sql.display.name">
+        <source xml:lang="en">Azure SQL managed instance - Azure Arc (preview)</source>
+        <target state="translated">Azure SQL 托管实例–Azure Arc (预览)</target>
+      </trans-unit>
+      <trans-unit id="resource.type.azure.arc.description">
+        <source xml:lang="en">Creates an Azure Arc data controller</source>
+        <target state="translated">创建 Azure Arc 数据控制器</target>
+      </trans-unit>
+      <trans-unit id="resource.type.azure.arc.display.name">
+        <source xml:lang="en">Azure Arc data controller (preview)</source>
+        <target state="translated">Azure Arc 数据控制器(预览)</target>
       </trans-unit>
       <trans-unit id="should.be.integer">
         <source xml:lang="en">Value must be an integer</source>
@@ -595,1145 +1730,6 @@
       <trans-unit id="worker.node.count.should.not.be.one">
         <source xml:lang="en">Value of 1 is not supported.</source>
         <target state="translated">不支持值为 1。</target>
-      </trans-unit>
-      <trans-unit id="requested.cores.less.than.or.equal.to.cores.limit">
-        <source xml:lang="en">Requested cores must be less than or equal to cores limit</source>
-        <target state="translated">请求的内核数必须小于或等于内核限制</target>
-      </trans-unit>
-      <trans-unit id="cores.limit.greater.than.or.equal.to.requested.cores">
-        <source xml:lang="en">Cores limit must be greater than or equal to requested cores</source>
-        <target state="translated">内核限制必须大于或等于请求内核</target>
-      </trans-unit>
-      <trans-unit id="requested.memory.less.than.or.equal.to.memory.limit">
-        <source xml:lang="en">Requested memory must be less than or equal to memory limit</source>
-        <target state="translated">请求内存必须小于或等于内存限制</target>
-      </trans-unit>
-      <trans-unit id="memory.limit.greater.than.or.equal.to.requested.memory">
-        <source xml:lang="en">Memory limit must be greater than or equal to requested memory</source>
-        <target state="translated">内存限制必须大于或等于请求内存</target>
-      </trans-unit>
-      <trans-unit id="arc.agreement.sql.help.text">
-        <source xml:lang="en">Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}</source>
-        <target state="translated">启用了 Azure Arc 的托管实例提供了 SQL Server 访问和功能兼容性，可以在所选的基础结构上部署。{0}</target>
-      </trans-unit>
-      <trans-unit id="arc.agreement.sql.help.text.learn.more">
-        <source xml:lang="en">Learn more</source>
-        <target state="translated">了解详细信息</target>
-      </trans-unit>
-      <trans-unit id="arc.agreement.sql.help.text.learn.more.ariaLabel">
-        <source xml:lang="en">Learn more about Azure Arc enabled Managed Instance</source>
-        <target state="translated">详细了解已启用 Azure Arc 的托管实例</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/arc/dist/localizedConstants" source-language="en" datatype="plaintext" target-language="zh-Hans">
-    <body>
-      <trans-unit id="arc.arcDeploymentDeprecation">
-        <source xml:lang="en">The Arc Deployment extension has been replaced by the Arc extension and has been uninstalled.</source>
-        <target state="translated">Arc 部署扩展已由 Arc 扩展取代，并已卸载。</target>
-      </trans-unit>
-      <trans-unit id="arc.controllerDashboard">
-        <source xml:lang="en">Azure Arc Data Controller Dashboard (Preview) - {0}</source>
-        <target state="translated">Azure Arc 数据控制器仪表板(预览版) - {0}</target>
-      </trans-unit>
-      <trans-unit id="arc.miaaDashboard">
-        <source xml:lang="en">SQL managed instance - Azure Arc Dashboard (Preview) - {0}</source>
-        <target state="translated">SQL 托管实例 - Azure Arc 仪表板(预览) - {0}</target>
-      </trans-unit>
-      <trans-unit id="arc.postgresDashboard">
-        <source xml:lang="en">PostgreSQL Hyperscale - Azure Arc Dashboard (Preview) - {0}</source>
-        <target state="translated">PostgreSQL 超大规模 - Azure Arc 仪表板(预览) - {0}</target>
-      </trans-unit>
-      <trans-unit id="arc.dataControllersType">
-        <source xml:lang="en">Azure Arc Data Controller</source>
-        <target state="translated">Azure Arc 数据控制器</target>
-      </trans-unit>
-      <trans-unit id="arc.pgSqlType">
-        <source xml:lang="en">PostgreSQL Hyperscale - Azure Arc</source>
-        <target state="translated">PostgreSQL 超大规模 - Azure Arc</target>
-      </trans-unit>
-      <trans-unit id="arc.miaaType">
-        <source xml:lang="en">SQL managed instance - Azure Arc</source>
-        <target state="translated">SQL 托管实例 - Azure Arc</target>
-      </trans-unit>
-      <trans-unit id="arc.overview">
-        <source xml:lang="en">Overview</source>
-        <target state="translated">概述</target>
-      </trans-unit>
-      <trans-unit id="arc.connectionStrings">
-        <source xml:lang="en">Connection Strings</source>
-        <target state="translated">连接字符串</target>
-      </trans-unit>
-      <trans-unit id="arc.preloaded Extensions">
-        <source xml:lang="en">Preloaded Extensions</source>
-        <target state="translated">预加载的扩展</target>
-      </trans-unit>
-      <trans-unit id="arc.networking">
-        <source xml:lang="en">Networking</source>
-        <target state="translated">网络</target>
-      </trans-unit>
-      <trans-unit id="arc.properties">
-        <source xml:lang="en">Properties</source>
-        <target state="translated">属性</target>
-      </trans-unit>
-      <trans-unit id="arc.settings">
-        <source xml:lang="en">Settings</source>
-        <target state="translated">设置</target>
-      </trans-unit>
-      <trans-unit id="arc.security">
-        <source xml:lang="en">Security</source>
-        <target state="translated">安全性</target>
-      </trans-unit>
-      <trans-unit id="arc.computeAndStorage">
-        <source xml:lang="en">Compute + Storage</source>
-        <target state="translated">计算 + 存储</target>
-      </trans-unit>
-      <trans-unit id="arc.coordinatorNodeParameters">
-        <source xml:lang="en">Coordinator Node Parameters</source>
-        <target state="translated">协调器节点参数</target>
-      </trans-unit>
-      <trans-unit id="arc.workerNodeParameters">
-        <source xml:lang="en">Worker Node Parameters</source>
-        <target state="translated">工作器节点参数</target>
-      </trans-unit>
-      <trans-unit id="arc.compute">
-        <source xml:lang="en">Compute</source>
-        <target state="translated">计算</target>
-      </trans-unit>
-      <trans-unit id="arc.backup">
-        <source xml:lang="en">Backup</source>
-        <target state="translated">备份</target>
-      </trans-unit>
-      <trans-unit id="arc.newSupportRequest">
-        <source xml:lang="en">New support request</source>
-        <target state="translated">新建支持请求</target>
-      </trans-unit>
-      <trans-unit id="arc.diagnoseAndSolveProblems">
-        <source xml:lang="en">Diagnose and solve problems</source>
-        <target state="translated">诊断并解决问题</target>
-      </trans-unit>
-      <trans-unit id="arc.supportAndTroubleshooting">
-        <source xml:lang="en">Support + troubleshooting</source>
-        <target state="translated">支持 + 疑难解答</target>
-      </trans-unit>
-      <trans-unit id="arc.resourceHealth">
-        <source xml:lang="en">Resource health</source>
-        <target state="translated">资源运行状况</target>
-      </trans-unit>
-      <trans-unit id="arc.parameterName">
-        <source xml:lang="en">Parameter Name</source>
-        <target state="translated">参数名</target>
-      </trans-unit>
-      <trans-unit id="arc.value">
-        <source xml:lang="en">Value</source>
-        <target state="translated">值</target>
-      </trans-unit>
-      <trans-unit id="arc.createNew">
-        <source xml:lang="en">New Instance</source>
-        <target state="translated">新实例</target>
-      </trans-unit>
-      <trans-unit id="arc.delete">
-        <source xml:lang="en">Delete</source>
-        <target state="translated">删除</target>
-      </trans-unit>
-      <trans-unit id="arc.learnMore">
-        <source xml:lang="en">Learn More.</source>
-        <target state="translated">了解详细信息。</target>
-      </trans-unit>
-      <trans-unit id="arc.drop">
-        <source xml:lang="en">Drop</source>
-        <target state="translated">放置</target>
-      </trans-unit>
-      <trans-unit id="arc.save">
-        <source xml:lang="en">Save</source>
-        <target state="translated">保存</target>
-      </trans-unit>
-      <trans-unit id="arc.discard">
-        <source xml:lang="en">Discard</source>
-        <target state="translated">放弃</target>
-      </trans-unit>
-      <trans-unit id="arc.resetPassword">
-        <source xml:lang="en">Reset Password</source>
-        <target state="translated">重置密码</target>
-      </trans-unit>
-      <trans-unit id="arc.loadExtensions">
-        <source xml:lang="en">Load extensions</source>
-        <target state="translated">加载扩展</target>
-      </trans-unit>
-      <trans-unit id="arc.unloadExtensions">
-        <source xml:lang="en">Unload extensions</source>
-        <target state="translated">上传扩展</target>
-      </trans-unit>
-      <trans-unit id="arc.noExtensions">
-        <source xml:lang="en">No extensions listed in configuration.</source>
-        <target state="translated">配置中未列出任何扩展。</target>
-      </trans-unit>
-      <trans-unit id="arc.openInAzurePortal">
-        <source xml:lang="en">Open in Azure Portal</source>
-        <target state="translated">在 Azure 门户中打开</target>
-      </trans-unit>
-      <trans-unit id="arc.resourceGroup">
-        <source xml:lang="en">Resource Group</source>
-        <target state="translated">资源组</target>
-      </trans-unit>
-      <trans-unit id="arc.region">
-        <source xml:lang="en">Region</source>
-        <target state="translated">区域</target>
-      </trans-unit>
-      <trans-unit id="arc.subscriptionId">
-        <source xml:lang="en">Subscription ID</source>
-        <target state="translated">订阅 ID</target>
-      </trans-unit>
-      <trans-unit id="arc.state">
-        <source xml:lang="en">State</source>
-        <target state="translated">状态</target>
-      </trans-unit>
-      <trans-unit id="arc.connectionMode">
-        <source xml:lang="en">Connection Mode</source>
-        <target state="translated">连接模式</target>
-      </trans-unit>
-      <trans-unit id="arc.namespace">
-        <source xml:lang="en">Namespace</source>
-        <target state="translated">命名空间</target>
-      </trans-unit>
-      <trans-unit id="arc.externalEndpoint">
-        <source xml:lang="en">External Endpoint</source>
-        <target state="translated">外部终结点</target>
-      </trans-unit>
-      <trans-unit id="arc.name">
-        <source xml:lang="en">Name</source>
-        <target state="translated">名称</target>
-      </trans-unit>
-      <trans-unit id="arc.type">
-        <source xml:lang="en">Type</source>
-        <target state="translated">类型</target>
-      </trans-unit>
-      <trans-unit id="arc.status">
-        <source xml:lang="en">Status</source>
-        <target state="translated">状态</target>
-      </trans-unit>
-      <trans-unit id="arc.miaaAdmin">
-        <source xml:lang="en">Managed instance admin</source>
-        <target state="translated">托管实例管理员</target>
-      </trans-unit>
-      <trans-unit id="arc.controllerEndpoint">
-        <source xml:lang="en">Controller endpoint</source>
-        <target state="translated">控制器终结点</target>
-      </trans-unit>
-      <trans-unit id="arc.extensionName">
-        <source xml:lang="en">Extension name</source>
-        <target state="translated">扩展名</target>
-      </trans-unit>
-      <trans-unit id="arc.extensionsDescription">
-        <source xml:lang="en">PostgreSQL provides the ability to extend the functionality of your database by using extensions. Extensions allow for bundling multiple related SQL objects together in a single package that can be loaded or removed from your database with a single command. After being loaded in the database, extensions can function like built-in features.</source>
-        <target state="translated">PostgreSQL 提供使用扩展程序扩展数据库功能的能力。扩展允许在单个包中将多个相关的 SQL 对象捆绑在一起，可以使用单个命令从数据库中加载或删除这些对象。在数据库中加载后，扩展可以像内置功能一样运行。</target>
-      </trans-unit>
-      <trans-unit id="arc.extensionsFunction">
-        <source xml:lang="en">Some extensions must be loaded into PostgreSQL at startup time before they can be used. These preloaded extensions can be viewed and edited  below.</source>
-        <target state="translated">启动时必须将某些扩展加载到 PostgreSQL 中，然后才能使用它们。可在下面查看和编辑这些预加载的扩展。</target>
-      </trans-unit>
-      <trans-unit id="arc.extensionsAddFunction">
-        <source xml:lang="en">Some extensions must be loaded into PostgreSQL at startup time before they can be used. To edit, type in comma separated list of valid extensions: ({0}).</source>
-        <target state="translated">某些扩展必须在启动时加载到 PostgreSQL 中，然后才能使用它们。若要编辑，请键入有效扩展列表，以逗号分隔: ({0})。</target>
-      </trans-unit>
-      <trans-unit id="arc.extensionsAddErrorrMessage">
-        <source xml:lang="en">Value should be either of the following: ({0}).</source>
-        <target state="translated">值应为以下值之一: ({0})。</target>
-      </trans-unit>
-      <trans-unit id="arc.extensionsLearnMore">
-        <source xml:lang="en">Learn more about PostgreSQL extensions.</source>
-        <target state="translated">了解 PostgreSQL 扩展的详细信息。</target>
-      </trans-unit>
-      <trans-unit id="arc.extensionsTableLoading">
-        <source xml:lang="en">Table of preloaded extensions are loading.</source>
-        <target state="translated">正在加载预加载扩展的表。</target>
-      </trans-unit>
-      <trans-unit id="arc.extensionsTableLabel">
-        <source xml:lang="en">Table of preloaded extensions.</source>
-        <target state="translated">预加载扩展的表。</target>
-      </trans-unit>
-      <trans-unit id="arc.extensionsTableLoadingComplete">
-        <source xml:lang="en">Preloaded extensions can now be viewed.</source>
-        <target state="translated">现在可以查看预加载的扩展。</target>
-      </trans-unit>
-      <trans-unit id="arc.extensionsAddList">
-        <source xml:lang="en">Extensions</source>
-        <target state="translated">扩展</target>
-      </trans-unit>
-      <trans-unit id="arc.extensionsAddDialog">
-        <source xml:lang="en">PostgreSQL provides the ability to extend the functionality of your database by using extensions.</source>
-        <target state="translated">通过使用扩展，PostgreSQL 提供扩展数据库功能的能力。</target>
-      </trans-unit>
-      <trans-unit id="arc.dataController">
-        <source xml:lang="en">Data controller</source>
-        <target state="translated">数据控制器</target>
-      </trans-unit>
-      <trans-unit id="arc.kibanaDashboard">
-        <source xml:lang="en">Kibana Dashboard</source>
-        <target state="translated">Kibana 仪表板</target>
-      </trans-unit>
-      <trans-unit id="arc.grafanaDashboard">
-        <source xml:lang="en">Grafana Dashboard</source>
-        <target state="translated">Grafana 仪表板</target>
-      </trans-unit>
-      <trans-unit id="arc.kibanaDashboardDescription">
-        <source xml:lang="en">Dashboard for viewing logs</source>
-        <target state="translated">用于查看日志的仪表板</target>
-      </trans-unit>
-      <trans-unit id="arc.grafanaDashboardDescription">
-        <source xml:lang="en">Dashboard for viewing metrics</source>
-        <target state="translated">用于查看指标的仪表板</target>
-      </trans-unit>
-      <trans-unit id="arc.serviceEndpoints">
-        <source xml:lang="en">Service endpoints</source>
-        <target state="translated">服务终结点</target>
-      </trans-unit>
-      <trans-unit id="arc.serviceEndpointsTable">
-        <source xml:lang="en">Service endpoints table</source>
-        <target state="translated">服务终结点表</target>
-      </trans-unit>
-      <trans-unit id="arc.databases">
-        <source xml:lang="en">Databases</source>
-        <target state="translated">数据库</target>
-      </trans-unit>
-      <trans-unit id="arc.endpoint">
-        <source xml:lang="en">Endpoint</source>
-        <target state="translated">终结点</target>
-      </trans-unit>
-      <trans-unit id="arc.description">
-        <source xml:lang="en">Description</source>
-        <target state="translated">说明</target>
-      </trans-unit>
-      <trans-unit id="arc.yes">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">是</target>
-      </trans-unit>
-      <trans-unit id="arc.no">
-        <source xml:lang="en">No</source>
-        <target state="translated">否</target>
-      </trans-unit>
-      <trans-unit id="arc.feedback">
-        <source xml:lang="en">Feedback</source>
-        <target state="translated">反馈</target>
-      </trans-unit>
-      <trans-unit id="arc.selectConnectionString">
-        <source xml:lang="en">Select from available client connection strings below.</source>
-        <target state="translated">从下面的可用客户端连接字符串中进行选择。</target>
-      </trans-unit>
-      <trans-unit id="arc.addingWorkerNodes">
-        <source xml:lang="en">adding worker nodes</source>
-        <target state="translated">正在添加工作器节点</target>
-      </trans-unit>
-      <trans-unit id="arc.workerNodesDescription">
-        <source xml:lang="en">Expand your server group and scale your database by adding worker nodes.</source>
-        <target state="translated">展开服务器组并通过添加工作器节点缩放数据库。</target>
-      </trans-unit>
-      <trans-unit id="arc.workerNodesConfigurationInformation">
-        <source xml:lang="en">You can configure the number of CPU cores and storage size that will apply to all worker nodes. Adjust the number of CPU cores and memory settings for your server group. To reset the requests and/or limits, pass in empty value.</source>
-        <target state="translated">可以配置将应用于所有工作器节点的 CPU 核心数和存储大小。调整服务器组的 CPU 核心数和内存设置。要重置请求和/或限制，请传入空值。</target>
-      </trans-unit>
-      <trans-unit id="arc.coordinatorNodeConfigurationInformation">
-        <source xml:lang="en">You can configure the number of CPU cores and storage size that will apply to the coordinator node. Adjust the number of CPU cores and memory settings for your server group. To reset the requests and/or limits, pass in empty value.</source>
-        <target state="translated">可以配置将应用于协调器节点的 CPU 核心数和存储大小。调整服务器组的 CPU 核心数和内存设置。要重置请求和/或限制，请传入空值。</target>
-      </trans-unit>
-      <trans-unit id="arc.workerNodeInformation">
-        <source xml:lang="en">It is possible to scale in and out your server group by reducing or increasing the number of worker nodes. The value must be 0 or greater than 1.</source>
-        <target state="translated">可以通过减少或增加工作器节点数来横向缩减和放大服务器组。值必须为 0 或大于 1。</target>
-      </trans-unit>
-      <trans-unit id="arc.workerOneNodeValidationMessage">
-        <source xml:lang="en">Value of 1 is not supported.</source>
-        <target state="translated">不支持值为 1。</target>
-      </trans-unit>
-      <trans-unit id="arc.vCores">
-        <source xml:lang="en">vCores</source>
-        <target state="translated">vCore</target>
-      </trans-unit>
-      <trans-unit id="arc.ram">
-        <source xml:lang="en">RAM</source>
-        <target state="translated">RAM</target>
-      </trans-unit>
-      <trans-unit id="arc.refresh">
-        <source xml:lang="en">Refresh</source>
-        <target state="translated">刷新</target>
-      </trans-unit>
-      <trans-unit id="arc.resetAllToDefault">
-        <source xml:lang="en">Reset all to default</source>
-        <target state="translated">全部重置为默认设置</target>
-      </trans-unit>
-      <trans-unit id="arc.resetToDefault">
-        <source xml:lang="en">Reset to default</source>
-        <target state="translated">重置为默认值</target>
-      </trans-unit>
-      <trans-unit id="arc.troubleshoot">
-        <source xml:lang="en">Troubleshoot</source>
-        <target state="translated">疑难解答</target>
-      </trans-unit>
-      <trans-unit id="arc.clickTheNewSupportRequestButton">
-        <source xml:lang="en">Click the new support request button to file a support request in the Azure Portal.</source>
-        <target state="translated">单击“新建支持请求”按钮可在 Azure 门户中提出支持请求。</target>
-      </trans-unit>
-      <trans-unit id="arc.supportRequestNote">
-        <source xml:lang="en">Note that the resource configuration must have been uploaded to Azure first in order to open a support request.</source>
-        <target state="translated">请注意，必须先将资源配置上传到 Azure 才能打开支持请求。</target>
-      </trans-unit>
-      <trans-unit id="arc.running">
-        <source xml:lang="en">Running</source>
-        <target state="translated">正在运行</target>
-      </trans-unit>
-      <trans-unit id="arc.ready">
-        <source xml:lang="en">Ready</source>
-        <target state="translated">准备就绪</target>
-      </trans-unit>
-      <trans-unit id="arc.notReady">
-        <source xml:lang="en">Not Ready</source>
-        <target state="translated">未就绪</target>
-      </trans-unit>
-      <trans-unit id="arc.pending">
-        <source xml:lang="en">Pending</source>
-        <target state="translated">挂起</target>
-      </trans-unit>
-      <trans-unit id="arc.failed">
-        <source xml:lang="en">Failed</source>
-        <target state="translated">已失败</target>
-      </trans-unit>
-      <trans-unit id="arc.unknown">
-        <source xml:lang="en">Unknown</source>
-        <target state="translated">未知</target>
-      </trans-unit>
-      <trans-unit id="arc.direct">
-        <source xml:lang="en">Direct</source>
-        <target state="translated">直接</target>
-      </trans-unit>
-      <trans-unit id="arc.indirect">
-        <source xml:lang="en">Indirect</source>
-        <target state="translated">间接</target>
-      </trans-unit>
-      <trans-unit id="arc.loading">
-        <source xml:lang="en">Loading...</source>
-        <target state="translated">正在加载...</target>
-      </trans-unit>
-      <trans-unit id="arc.refreshToEnterCredentials">
-        <source xml:lang="en">Refresh node to enter credentials</source>
-        <target state="translated">刷新节点以输入凭据</target>
-      </trans-unit>
-      <trans-unit id="arc.noInstancesAvailable">
-        <source xml:lang="en">No instances available</source>
-        <target state="translated">没有可用的实例</target>
-      </trans-unit>
-      <trans-unit id="arc.connecToServer">
-        <source xml:lang="en">Connect to Server</source>
-        <target state="translated">连接到服务器</target>
-      </trans-unit>
-      <trans-unit id="arc.connectToController">
-        <source xml:lang="en">Connect to Existing Controller</source>
-        <target state="translated">连接到现有控制器</target>
-      </trans-unit>
-      <trans-unit id="arc.connectToMSSql">
-        <source xml:lang="en">Connect to SQL managed instance - Azure Arc ({0})</source>
-        <target state="translated">连接到 SQL 托管实例 - Azure Arc ({0})</target>
-      </trans-unit>
-      <trans-unit id="arc.connectToPGSql">
-        <source xml:lang="en">Connect to PostgreSQL Hyperscale - Azure Arc ({0})</source>
-        <target state="translated">连接到 PostgreSQL 超大规模 - Azure Arc ({0})</target>
-      </trans-unit>
-      <trans-unit id="arc.passwordToController">
-        <source xml:lang="en">Provide Password to Controller</source>
-        <target state="translated">向控制器提供密码</target>
-      </trans-unit>
-      <trans-unit id="arc.controllerUrl">
-        <source xml:lang="en">Controller URL</source>
-        <target state="translated">控制器 URL</target>
-      </trans-unit>
-      <trans-unit id="arc.controllerUrlPlaceholder">
-        <source xml:lang="en">https://&lt;IP or hostname&gt;:&lt;port&gt;</source>
-        <target state="translated">https://&lt;IP or hostname&gt;:&lt;port&gt;</target>
-      </trans-unit>
-      <trans-unit id="arc.controllerUrlDescription">
-        <source xml:lang="en">The Controller URL is necessary if there are multiple clusters with the same namespace - this should generally not be necessary.</source>
-        <target state="translated">如果存在多个具有相同命名空间的群集，则控制器 URL 是必需的 - 而通常这一点并不是必需的。</target>
-      </trans-unit>
-      <trans-unit id="arc.serverEndpoint">
-        <source xml:lang="en">Server Endpoint</source>
-        <target state="translated">服务器终结点</target>
-      </trans-unit>
-      <trans-unit id="arc.controllerName">
-        <source xml:lang="en">Name</source>
-        <target state="translated">名称</target>
-      </trans-unit>
-      <trans-unit id="arc.controllerNameDescription">
-        <source xml:lang="en">The name to display in the tree view, this is not applied to the controller itself.</source>
-        <target state="translated">要在树视图中显示的名称，这不会应用于控制器本身。</target>
-      </trans-unit>
-      <trans-unit id="arc.controllerKubeConfig">
-        <source xml:lang="en">Kube Config File Path</source>
-        <target state="translated">Kube 配置文件路径</target>
-      </trans-unit>
-      <trans-unit id="arc.controllerClusterContext">
-        <source xml:lang="en">Cluster Context</source>
-        <target state="translated">群集上下文</target>
-      </trans-unit>
-      <trans-unit id="arc.defaultControllerName">
-        <source xml:lang="en">arc-dc</source>
-        <target state="translated">arc-dc</target>
-      </trans-unit>
-      <trans-unit id="arc.postgresProviderName">
-        <source xml:lang="en">PGSQL</source>
-        <target state="translated">PGSQL</target>
-      </trans-unit>
-      <trans-unit id="arc.miaaProviderName">
-        <source xml:lang="en">MSSQL</source>
-        <target state="translated">MSSQL</target>
-      </trans-unit>
-      <trans-unit id="arc.controllerUsername">
-        <source xml:lang="en">Controller Username</source>
-        <target state="translated">控制器用户名</target>
-      </trans-unit>
-      <trans-unit id="arc.controllerPassword">
-        <source xml:lang="en">Controller Password</source>
-        <target state="translated">控制器密码</target>
-      </trans-unit>
-      <trans-unit id="arc.username">
-        <source xml:lang="en">Username</source>
-        <target state="translated">用户名</target>
-      </trans-unit>
-      <trans-unit id="arc.password">
-        <source xml:lang="en">Password</source>
-        <target state="translated">密码</target>
-      </trans-unit>
-      <trans-unit id="arc.rememberPassword">
-        <source xml:lang="en">Remember Password</source>
-        <target state="translated">记住密码</target>
-      </trans-unit>
-      <trans-unit id="arc.connect">
-        <source xml:lang="en">Connect</source>
-        <target state="translated">连接</target>
-      </trans-unit>
-      <trans-unit id="arc.cancel">
-        <source xml:lang="en">Cancel</source>
-        <target state="translated">取消</target>
-      </trans-unit>
-      <trans-unit id="arc.ok">
-        <source xml:lang="en">Ok</source>
-        <target state="translated">确定</target>
-      </trans-unit>
-      <trans-unit id="arc.on">
-        <source xml:lang="en">On</source>
-        <target state="translated">开</target>
-      </trans-unit>
-      <trans-unit id="arc.off">
-        <source xml:lang="en">Off</source>
-        <target state="translated">关闭</target>
-      </trans-unit>
-      <trans-unit id="arc.notConfigured">
-        <source xml:lang="en">Not Configured</source>
-        <target state="translated">未配置</target>
-      </trans-unit>
-      <trans-unit id="arc.online">
-        <source xml:lang="en">Online</source>
-        <target state="translated">联机</target>
-      </trans-unit>
-      <trans-unit id="arc.offline">
-        <source xml:lang="en">Offline</source>
-        <target state="translated">脱机</target>
-      </trans-unit>
-      <trans-unit id="arc.restoring">
-        <source xml:lang="en">Restoring</source>
-        <target state="translated">正在还原</target>
-      </trans-unit>
-      <trans-unit id="arc.recovering">
-        <source xml:lang="en">Recovering</source>
-        <target state="translated">正在恢复</target>
-      </trans-unit>
-      <trans-unit id="arc.recoveringPending">
-        <source xml:lang="en">Recovery Pending</source>
-        <target state="translated">恢复挂起</target>
-      </trans-unit>
-      <trans-unit id="arc.suspect">
-        <source xml:lang="en">Suspect</source>
-        <target state="translated">可疑</target>
-      </trans-unit>
-      <trans-unit id="arc.emergency">
-        <source xml:lang="en">Emergency</source>
-        <target state="translated">紧急</target>
-      </trans-unit>
-      <trans-unit id="arc.coordinatorEndpoint">
-        <source xml:lang="en">Coordinator endpoint</source>
-        <target state="translated">协调器终结点</target>
-      </trans-unit>
-      <trans-unit id="arc.postgresAdminUsername">
-        <source xml:lang="en">Admin username</source>
-        <target state="translated">管理员用户名</target>
-      </trans-unit>
-      <trans-unit id="arc.nodeConfiguration">
-        <source xml:lang="en">Node configuration</source>
-        <target state="translated">节点配置</target>
-      </trans-unit>
-      <trans-unit id="arc.postgresVersion">
-        <source xml:lang="en">PostgreSQL version</source>
-        <target state="translated">PostgreSQL 版本</target>
-      </trans-unit>
-      <trans-unit id="arc.serverGroupType">
-        <source xml:lang="en">Server group type</source>
-        <target state="translated">服务器组类型</target>
-      </trans-unit>
-      <trans-unit id="arc.serverGroupNodes">
-        <source xml:lang="en">Server group nodes</source>
-        <target state="translated">服务器组节点</target>
-      </trans-unit>
-      <trans-unit id="arc.fullyQualifiedDomain">
-        <source xml:lang="en">Fully qualified domain</source>
-        <target state="translated">完全限定的域</target>
-      </trans-unit>
-      <trans-unit id="arc.postgresArcProductName">
-        <source xml:lang="en">Azure Database for PostgreSQL - Azure Arc</source>
-        <target state="translated">Azure Database for PostgreSQL - Azure Arc</target>
-      </trans-unit>
-      <trans-unit id="arc.coordinator">
-        <source xml:lang="en">Coordinator</source>
-        <target state="translated">协调器</target>
-      </trans-unit>
-      <trans-unit id="arc.worker">
-        <source xml:lang="en">Worker</source>
-        <target state="translated">工作器</target>
-      </trans-unit>
-      <trans-unit id="arc.monitor">
-        <source xml:lang="en">Monitor</source>
-        <target state="translated">监视器</target>
-      </trans-unit>
-      <trans-unit id="arc.available">
-        <source xml:lang="en">Available</source>
-        <target state="translated">可用</target>
-      </trans-unit>
-      <trans-unit id="arc.issuesDetected">
-        <source xml:lang="en">Issues Detected</source>
-        <target state="translated">已检测到问题</target>
-      </trans-unit>
-      <trans-unit id="arc.newDatabase">
-        <source xml:lang="en">New Database</source>
-        <target state="translated">新建数据库</target>
-      </trans-unit>
-      <trans-unit id="arc.databaseName">
-        <source xml:lang="en">Database name</source>
-        <target state="translated">数据库名</target>
-      </trans-unit>
-      <trans-unit id="arc.enterNewPassword">
-        <source xml:lang="en">Enter a new password</source>
-        <target state="translated">输入新密码</target>
-      </trans-unit>
-      <trans-unit id="arc.confirmNewPassword">
-        <source xml:lang="en">Confirm the new password</source>
-        <target state="translated">确认新密码</target>
-      </trans-unit>
-      <trans-unit id="arc.learnAboutPostgresClients">
-        <source xml:lang="en">Learn more about Azure PostgreSQL Hyperscale client interfaces</source>
-        <target state="translated">详细了解 Azure PostgreSQL 超大规模客户端接口</target>
-      </trans-unit>
-      <trans-unit id="arc.coordinatorNodeParametersDescription">
-        <source xml:lang="en"> These server parameters of the Coordinator node can be set to custom (non-default) values. Search to find parameters.</source>
-        <target state="translated"> 协调器节点的这些服务器参数可以设置为自定义(非默认)值。搜索以查找参数。</target>
-      </trans-unit>
-      <trans-unit id="arc.workerNodesParametersDescription">
-        <source xml:lang="en"> These server parameters of the Worker nodes can be set to custom (non-default) values. Search to find parameters.</source>
-        <target state="translated"> 工作器节点的这些服务器参数可以设置为自定义(非默认)值。搜索以查找参数。</target>
-      </trans-unit>
-      <trans-unit id="arc.learnAboutNodeParameters">
-        <source xml:lang="en">Learn more about database engine settings for Azure Arc-enabled PostgreSQL Hyperscale</source>
-        <target state="translated">详细了解已启用 Azure Arc 的 PostgreSQL 超大规模数据库引擎设置</target>
-      </trans-unit>
-      <trans-unit id="arc.noNodeParametersFound">
-        <source xml:lang="en">No worker server parameters found...</source>
-        <target state="translated">找不到工作器服务器参数...</target>
-      </trans-unit>
-      <trans-unit id="arc.searchToFilter">
-        <source xml:lang="en">Search to filter items...</source>
-        <target state="translated">通过搜索对项进行筛选...</target>
-      </trans-unit>
-      <trans-unit id="arc.scalingCompute">
-        <source xml:lang="en">scaling compute vCores and memory.</source>
-        <target state="translated">正在缩放计算 vCore 和内存。</target>
-      </trans-unit>
-      <trans-unit id="arc.postgresComputeAndStorageDescriptionPartOne">
-        <source xml:lang="en">You can scale your Azure Arc-enabled</source>
-        <target state="translated">可以缩放已启用的 Azure Arc</target>
-      </trans-unit>
-      <trans-unit id="arc.miaaComputeAndStorageDescriptionPartOne">
-        <source xml:lang="en">You can scale your Azure SQL managed instance - Azure Arc by</source>
-        <target state="translated">可以通过以下方式缩放 Azure SQL 托管实例 - Azure Arc</target>
-      </trans-unit>
-      <trans-unit id="arc.postgres.computeAndStorageDescriptionPartTwo">
-        <source xml:lang="en">PostgreSQL Hyperscale server group by</source>
-        <target state="translated">PostgreSQL 超大规模服务器组依据</target>
-      </trans-unit>
-      <trans-unit id="arc.computeAndStorageDescriptionPartThree">
-        <source xml:lang="en">without downtime and by</source>
-        <target state="translated">无故障时间和</target>
-      </trans-unit>
-      <trans-unit id="arc.computeAndStorageDescriptionPartFour">
-        <source xml:lang="en">Before doing so, you need to ensure</source>
-        <target state="translated">在执行此操作之前，需要确保</target>
-      </trans-unit>
-      <trans-unit id="arc.computeAndStorageDescriptionPartFive">
-        <source xml:lang="en">there are sufficient resources available</source>
-        <target state="translated">有足够的资源可用</target>
-      </trans-unit>
-      <trans-unit id="arc.resourceHealthDescription">
-        <source xml:lang="en">Resource health can tell you if your resource is running as expected.</source>
-        <target state="translated">资源运行状况可以让你了解资源是否按预期运行。</target>
-      </trans-unit>
-      <trans-unit id="arc.computeAndStorageDescriptionPartSix">
-        <source xml:lang="en">in your Kubernetes cluster to honor this configuration.</source>
-        <target state="translated">在你的 Kubernetes 群集中，以接受此配置。</target>
-      </trans-unit>
-      <trans-unit id="arc.node">
-        <source xml:lang="en">node</source>
-        <target state="translated">节点</target>
-      </trans-unit>
-      <trans-unit id="arc.nodes">
-        <source xml:lang="en">nodes</source>
-        <target state="translated">节点</target>
-      </trans-unit>
-      <trans-unit id="arc.workerNodes">
-        <source xml:lang="en">Worker Nodes</source>
-        <target state="translated">工作器节点</target>
-      </trans-unit>
-      <trans-unit id="arc.coordinatorNode">
-        <source xml:lang="en">Coordinator Node</source>
-        <target state="translated">协调器节点</target>
-      </trans-unit>
-      <trans-unit id="arc.storagePerNode">
-        <source xml:lang="en">storage per node</source>
-        <target state="translated">每个节点的存储</target>
-      </trans-unit>
-      <trans-unit id="arc.workerNodeCount">
-        <source xml:lang="en">Worker node count</source>
-        <target state="translated">工作器节点计数</target>
-      </trans-unit>
-      <trans-unit id="arc.configurationPerNode">
-        <source xml:lang="en">Configuration (per node)</source>
-        <target state="translated">配置(每个节点)</target>
-      </trans-unit>
-      <trans-unit id="arc.configurationCoordinatorNode">
-        <source xml:lang="en">Configuration</source>
-        <target state="translated">配置</target>
-      </trans-unit>
-      <trans-unit id="arc.coresLimit">
-        <source xml:lang="en">CPU limit</source>
-        <target state="translated">CPU 限制</target>
-      </trans-unit>
-      <trans-unit id="arc.workerCoresLimit">
-        <source xml:lang="en">Worker Nodes CPU limit</source>
-        <target state="translated">工作节点 CPU 限制</target>
-      </trans-unit>
-      <trans-unit id="arc.coordinatorCoresLimit">
-        <source xml:lang="en">Coordinator Node CPU limit</source>
-        <target state="translated">协调器节点 CPU 限制</target>
-      </trans-unit>
-      <trans-unit id="arc.coresRequest">
-        <source xml:lang="en">CPU request</source>
-        <target state="translated">CPU 请求</target>
-      </trans-unit>
-      <trans-unit id="arc.workerCoresRequest">
-        <source xml:lang="en">Worker Nodes CPU request</source>
-        <target state="translated">工作节点 CPU 请求</target>
-      </trans-unit>
-      <trans-unit id="arc.coordinatorCoresRequest">
-        <source xml:lang="en">Coordinator Node CPU request</source>
-        <target state="translated">协调器节点 CPU 请求</target>
-      </trans-unit>
-      <trans-unit id="arc.memoryLimit">
-        <source xml:lang="en">Memory limit (in GB)</source>
-        <target state="translated">内存限制(以 GB 为单位)</target>
-      </trans-unit>
-      <trans-unit id="arc.workerMemoryLimit">
-        <source xml:lang="en">Worker Nodes Memory limit (in GB)</source>
-        <target state="translated">工作器节点内存限制(以 GB 为单位)</target>
-      </trans-unit>
-      <trans-unit id="arc.coordinatorMemoryLimit">
-        <source xml:lang="en">Coordinator Node Memory limit (in GB)</source>
-        <target state="translated">控制器节点内存限制(GB)</target>
-      </trans-unit>
-      <trans-unit id="arc.memoryRequest">
-        <source xml:lang="en">Memory request (in GB)</source>
-        <target state="translated">内存请求(以 GB 为单位)</target>
-      </trans-unit>
-      <trans-unit id="arc.workerMemoryRequest">
-        <source xml:lang="en">Worker Nodes Memory request (in GB)</source>
-        <target state="translated">工作器节点内存请求(以 GB 为单位)</target>
-      </trans-unit>
-      <trans-unit id="arc.coordinatorMemoryRequest">
-        <source xml:lang="en">Coordinator Node Memory request (in GB)</source>
-        <target state="translated">协调器节点内存请求(以 GB 为单位)</target>
-      </trans-unit>
-      <trans-unit id="arc.arcResources">
-        <source xml:lang="en">Azure Arc Resources</source>
-        <target state="translated">Azure Arc 资源</target>
-      </trans-unit>
-      <trans-unit id="arc.enterANonEmptyPassword">
-        <source xml:lang="en">Enter a non empty password or press escape to exit.</source>
-        <target state="translated">输入非空密码或按 Esc 退出。</target>
-      </trans-unit>
-      <trans-unit id="arc.thePasswordsDoNotMatch">
-        <source xml:lang="en">The passwords do not match. Confirm the password or press escape to exit.</source>
-        <target state="translated">密码不匹配。确认密码或按 Esc 退出。</target>
-      </trans-unit>
-      <trans-unit id="arc.passwordReset">
-        <source xml:lang="en">Password reset successfully</source>
-        <target state="translated">已成功重置密码</target>
-      </trans-unit>
-      <trans-unit id="arc.condition">
-        <source xml:lang="en">Condition</source>
-        <target state="translated">条件</target>
-      </trans-unit>
-      <trans-unit id="arc.details">
-        <source xml:lang="en">Details</source>
-        <target state="translated">详细信息</target>
-      </trans-unit>
-      <trans-unit id="arc.lastTransition">
-        <source xml:lang="en">Last transition</source>
-        <target state="translated">上次转换时间</target>
-      </trans-unit>
-      <trans-unit id="arc.noExternalEndpoint">
-        <source xml:lang="en">No External Endpoint has been configured so this information isn't available.</source>
-        <target state="translated">尚未配置外部终结点，此信息不可用。</target>
-      </trans-unit>
-      <trans-unit id="arc.noWorkerPods">
-        <source xml:lang="en">No worker pods in this configuration.</source>
-        <target state="translated">此配置中没有辅助角色 Pod。</target>
-      </trans-unit>
-      <trans-unit id="arc.podsReady">
-        <source xml:lang="en">pods ready</source>
-        <target state="translated">Pod 已就绪</target>
-      </trans-unit>
-      <trans-unit id="arc.podsPresent">
-        <source xml:lang="en">Pods Present</source>
-        <target state="translated">存在 Pod</target>
-      </trans-unit>
-      <trans-unit id="arc.podsUsedDescription">
-        <source xml:lang="en">Select a pod in the dropdown below for detailed health information.</source>
-        <target state="translated">请在下面的下拉列表中选择一个 Pod，以获取详细的运行状况信息。</target>
-      </trans-unit>
-      <trans-unit id="arc.podsUsedDescriptionAria">
-        <source xml:lang="en">Select a pod in the dropdown below for detailed health information</source>
-        <target state="translated">请在下面的下拉列表中选择一个 Pod，以获取详细的运行状况信息</target>
-      </trans-unit>
-      <trans-unit id="arc.podConditionsTable">
-        <source xml:lang="en">Pod conditions table</source>
-        <target state="translated">Pod 条件表</target>
-      </trans-unit>
-      <trans-unit id="arc.connectToPostgresDescription">
-        <source xml:lang="en">A connection to the server is required to show and set database engine settings, which will require the PostgreSQL Extension to be installed.</source>
-        <target state="translated">要显示和设置数据库引擎设置，需要连接到服务器，这将需要安装 PostgreSQL 扩展。</target>
-      </trans-unit>
-      <trans-unit id="arc.postgresExtension">
-        <source xml:lang="en">microsoft.azuredatastudio-postgresql</source>
-        <target state="translated">microsoft.azuredatastudio-postgresql</target>
-      </trans-unit>
-      <trans-unit id="arc.podInitialized">
-        <source xml:lang="en">Pod is initialized.</source>
-        <target state="translated">Pod 已初始化。</target>
-      </trans-unit>
-      <trans-unit id="arc.podReady">
-        <source xml:lang="en">Pod is ready.</source>
-        <target state="translated">Pod 已准备就绪。</target>
-      </trans-unit>
-      <trans-unit id="arc.noPodIssuesDetected">
-        <source xml:lang="en">There aren’t any known issues affecting this PostgreSQL Hyperscale instance.</source>
-        <target state="translated">没有任何影响此 PostgreSQL 超大规模实例的已知问题。</target>
-      </trans-unit>
-      <trans-unit id="arc.podIssuesDetected">
-        <source xml:lang="en">The pods listed below are experiencing issues that may affect performance or availability.</source>
-        <target state="translated">下面列出的 Pod 遇到可能会影响性能或可用性的问题。</target>
-      </trans-unit>
-      <trans-unit id="arc.containerReady">
-        <source xml:lang="en">Pod containers are ready.</source>
-        <target state="translated">Pod 容器已准备就绪。</target>
-      </trans-unit>
-      <trans-unit id="arc.podScheduled">
-        <source xml:lang="en">Pod is schedulable.</source>
-        <target state="translated">Pod 是可计划的。</target>
-      </trans-unit>
-      <trans-unit id="arc.loadingClusterContextCompleted">
-        <source xml:lang="en">Loading cluster contexts completed</source>
-        <target state="translated">已完成加载群集上下文</target>
-      </trans-unit>
-      <trans-unit id="arc.rangeSetting">
-        <source xml:lang="en">Value is expected to be in the range {0} - {1}</source>
-        <target state="translated">值应位于 {0} - {1} 范围内</target>
-      </trans-unit>
-      <trans-unit id="arc.databaseCreated">
-        <source xml:lang="en">Database {0} created</source>
-        <target state="translated">已创建数据库 {0}</target>
-      </trans-unit>
-      <trans-unit id="arc.deletingInstance">
-        <source xml:lang="en">Deleting instance '{0}'...</source>
-        <target state="translated">正在删除实例“{0}”</target>
-      </trans-unit>
-      <trans-unit id="arc.installingExtension">
-        <source xml:lang="en">Installing extension '{0}'...</source>
-        <target state="translated">正在安装扩展“{0}”...</target>
-      </trans-unit>
-      <trans-unit id="arc.extensionInstalled">
-        <source xml:lang="en">Extension '{0}' has been installed.</source>
-        <target state="translated">已安装扩展“{0}”。</target>
-      </trans-unit>
-      <trans-unit id="arc.updatingInstance">
-        <source xml:lang="en">Updating instance '{0}'...</source>
-        <target state="translated">正在更新实例“{0}”...</target>
-      </trans-unit>
-      <trans-unit id="arc.instanceDeleted">
-        <source xml:lang="en">Instance '{0}' deleted</source>
-        <target state="translated">已删除实例“{0}”</target>
-      </trans-unit>
-      <trans-unit id="arc.instanceUpdated">
-        <source xml:lang="en">Instance '{0}' updated</source>
-        <target state="translated">已更新实例“{0}”</target>
-      </trans-unit>
-      <trans-unit id="arc.extensionsDropped">
-        <source xml:lang="en">Extensions '{0}' dropped</source>
-        <target state="translated">已删除扩展 "{0}"</target>
-      </trans-unit>
-      <trans-unit id="arc.extensionsAdded">
-        <source xml:lang="en">Extensions '{0}' added</source>
-        <target state="translated">已添加扩展“{0}”</target>
-      </trans-unit>
-      <trans-unit id="arc.copiedToClipboard">
-        <source xml:lang="en">{0} copied to clipboard</source>
-        <target state="translated">已将 {0} 复制到剪贴板</target>
-      </trans-unit>
-      <trans-unit id="arc.clickTheTroubleshootButton">
-        <source xml:lang="en">Click the troubleshoot button to open the Azure Arc {0} troubleshooting notebook.</source>
-        <target state="translated">单击“故障排除”按钮以打开 Azure Arc {0} 疑难解答笔记本。</target>
-      </trans-unit>
-      <trans-unit id="arc.dataStorage">
-        <source xml:lang="en">{0} data</source>
-        <target state="translated">{0} 数据</target>
-      </trans-unit>
-      <trans-unit id="arc.logStorage">
-        <source xml:lang="en">{0} log</source>
-        <target state="translated">{0} 日志</target>
-      </trans-unit>
-      <trans-unit id="arc.backupsStorage">
-        <source xml:lang="en">{0} backups</source>
-        <target state="translated">{0} 备份</target>
-      </trans-unit>
-      <trans-unit id="arc.numVCore">
-        <source xml:lang="en">{0} vCore</source>
-        <target state="translated">{0} 个 vCore</target>
-      </trans-unit>
-      <trans-unit id="arc.numVCores">
-        <source xml:lang="en">{0} vCores</source>
-        <target state="translated">{0} 个 vCore</target>
-      </trans-unit>
-      <trans-unit id="arc.updated">
-        <source xml:lang="en">Updated {0}</source>
-        <target state="translated">已更新的 {0}</target>
-      </trans-unit>
-      <trans-unit id="arc.connectionString">
-        <source xml:lang="en">Connection string for {0}</source>
-        <note>{0} is the name of the type of connection string (e.g. Java)</note>
-        <target state="translated">{0} 的连接字符串</target>
-      </trans-unit>
-      <trans-unit id="arc.copyConnectionStringToClipboard">
-        <source xml:lang="en">Copy {0} Connection String to clipboard</source>
-        <note>{0} is the name of the type of connection string (e.g. Java)</note>
-        <target state="translated">将 {0} 连接字符串复制到剪贴板</target>
-      </trans-unit>
-      <trans-unit id="arc.copyValueToClipboard">
-        <source xml:lang="en">Copy {0} to clipboard</source>
-        <note>{0} is the name of the type of value being copied (e.g. Coordinator endpoint)</note>
-        <target state="translated">将 {0} 复制到剪贴板</target>
-      </trans-unit>
-      <trans-unit id="arc.pgConnectionRequired">
-        <source xml:lang="en">A connection is required to show and set database engine settings.</source>
-        <target state="translated">需要连接才能显示和设置数据库引擎设置。</target>
-      </trans-unit>
-      <trans-unit id="arc.miaaConnectionRequired">
-        <source xml:lang="en">A connection is required to list the databases on this instance.</source>
-        <target state="translated">需要连接以列出此实例上的数据库。</target>
-      </trans-unit>
-      <trans-unit id="arc.couldNotFindControllerRegistration">
-        <source xml:lang="en">Could not find controller registration.</source>
-        <target state="translated">找不到控制器注册。</target>
-      </trans-unit>
-      <trans-unit id="arc.dropMultipleExtensions">
-        <source xml:lang="en">Currently dropping another extension, try again once that is completed.</source>
-        <target state="translated">当前正在删除另一个扩展，请在完成后重试。</target>
-      </trans-unit>
-      <trans-unit id="arc.updateExtensionsFailed">
-        <source xml:lang="en">Editing extensions failed. {0}</source>
-        <target state="translated">编辑扩展失败。{0}</target>
-      </trans-unit>
-      <trans-unit id="arc.refreshFailed">
-        <source xml:lang="en">Refresh failed. {0}</source>
-        <target state="translated">刷新失败。{0}</target>
-      </trans-unit>
-      <trans-unit id="arc.resetFailed">
-        <source xml:lang="en">Reset failed. {0}</source>
-        <target state="translated">重置失败。{0}</target>
-      </trans-unit>
-      <trans-unit id="arc.openDashboardFailed">
-        <source xml:lang="en">Error opening dashboard. {0}</source>
-        <target state="translated">打开仪表板时出错。{0}</target>
-      </trans-unit>
-      <trans-unit id="arc.instanceDeletionFailed">
-        <source xml:lang="en">Failed to delete instance {0}. {1}</source>
-        <target state="translated">未能删除实例 {0}。{1}</target>
-      </trans-unit>
-      <trans-unit id="arc.instanceUpdateFailed">
-        <source xml:lang="en">Failed to update instance {0}. {1}</source>
-        <target state="translated">未能更新实例 {0}。{1}</target>
-      </trans-unit>
-      <trans-unit id="arc.pageDiscardFailed">
-        <source xml:lang="en">Failed to discard user input. {0}</source>
-        <target state="translated">未能放弃用户输入。{0}</target>
-      </trans-unit>
-      <trans-unit id="arc.databaseCreationFailed">
-        <source xml:lang="en">Failed to create database {0}. {1}</source>
-        <target state="translated">未能创建数据库 {0}。{1}</target>
-      </trans-unit>
-      <trans-unit id="arc.connectToControllerFailed">
-        <source xml:lang="en">Could not connect to controller {0}. {1}</source>
-        <target state="translated">无法连接到控制器 {0}。{1}</target>
-      </trans-unit>
-      <trans-unit id="arc.connectToMSSqlFailed">
-        <source xml:lang="en">Could not connect to SQL managed instance - Azure Arc Instance {0}. {1}</source>
-        <target state="translated">无法连接到 SQL 托管实例 - Azure Arc 实例 {0}。{1}</target>
-      </trans-unit>
-      <trans-unit id="arc.connectToPGSqlFailed">
-        <source xml:lang="en">Could not connect to PostgreSQL Hyperscale - Azure Arc Instance {0}. {1}</source>
-        <target state="translated">无法连接到 PostgreSQL 超大规模 - Azure Arc 实例 {0}。{1}</target>
-      </trans-unit>
-      <trans-unit id="arc.missingExtension">
-        <source xml:lang="en">The {0} extension is required to view engine settings. Do you wish to install it now?</source>
-        <target state="translated">需要 {0} 扩展才能查看引擎设置。是否要立即安装?</target>
-      </trans-unit>
-      <trans-unit id="arc.extensionInstallationFailed">
-        <source xml:lang="en">Failed to install extension {0}.</source>
-        <target state="translated">未能安装扩展 {0}</target>
-      </trans-unit>
-      <trans-unit id="arc.fetchConfigFailed">
-        <source xml:lang="en">An unexpected error occurred retrieving the config for '{0}'. {1}</source>
-        <target state="translated">检索“{0}”的配置时出现意外错误。{1}</target>
-      </trans-unit>
-      <trans-unit id="arc.fetchEndpointsFailed">
-        <source xml:lang="en">An unexpected error occurred retrieving the endpoints for '{0}'. {1}</source>
-        <target state="translated">检索“{0}”的终结点时发生意外错误。{1}</target>
-      </trans-unit>
-      <trans-unit id="arc.fetchRegistrationsFailed">
-        <source xml:lang="en">An unexpected error occurred retrieving the registrations for '{0}'. {1}</source>
-        <target state="translated">检索“{0}”的注册时出现意外错误。{1}</target>
-      </trans-unit>
-      <trans-unit id="arc.fetchDatabasesFailed">
-        <source xml:lang="en">An unexpected error occurred retrieving the databases for '{0}'. {1}</source>
-        <target state="translated">检索“{0}”的数据库时出现意外错误。{1}</target>
-      </trans-unit>
-      <trans-unit id="arc.fetchEngineSettingsFailed">
-        <source xml:lang="en">An unexpected error occurred retrieving the engine settings for '{0}'. {1}</source>
-        <target state="translated">检索“{0}”的引擎设置时出现意外错误。{1}</target>
-      </trans-unit>
-      <trans-unit id="arc.numberOfIssuesDetected">
-        <source xml:lang="en">• {0} ({1} issues)</source>
-        <target state="translated">• {0} ({1} 个问题)</target>
-      </trans-unit>
-      <trans-unit id="arc.instanceDeletionWarning">
-        <source xml:lang="en">Warning! Deleting an instance is permanent and cannot be undone. To delete the instance '{0}' type the name '{0}' below to proceed.</source>
-        <target state="translated">警告! 删除实例是永久性操作，且无法撤消。要删除实例“{0}”，请在下面键入名称“{0}”以继续。</target>
-      </trans-unit>
-      <trans-unit id="arc.invalidInstanceDeletionName">
-        <source xml:lang="en">The value '{0}' does not match the instance name. Try again or press escape to exit</source>
-        <target state="translated">值“{0}”与实例名称不匹配。请重试或按 Esc 退出</target>
-      </trans-unit>
-      <trans-unit id="arc.couldNotFindAzureResource">
-        <source xml:lang="en">Could not find Azure resource for {0}</source>
-        <target state="translated">找不到 {0} 的 Azure 资源</target>
-      </trans-unit>
-      <trans-unit id="arc.passwordResetFailed">
-        <source xml:lang="en">Failed to reset password. {0}</source>
-        <target state="translated">未能重置密码。{0}</target>
-      </trans-unit>
-      <trans-unit id="arc.errorConnectingToController">
-        <source xml:lang="en">Error connecting to controller. {0}</source>
-        <target state="translated">连接到控制器时出现错误。{0}</target>
-      </trans-unit>
-      <trans-unit id="arc.passwordAcquisitionFailed">
-        <source xml:lang="en">Failed to acquire password. {0}</source>
-        <target state="translated">未能获取密码。{0}</target>
-      </trans-unit>
-      <trans-unit id="arc.loginFailed">
-        <source xml:lang="en">Error logging into controller - wrong username or password</source>
-        <target state="translated">登录控制器时出错 - 用户名或密码错误</target>
-      </trans-unit>
-      <trans-unit id="arc.errorVerifyingPassword">
-        <source xml:lang="en">Error encountered while verifying password. {0}</source>
-        <target state="translated">验证密码时遇到错误。{0}</target>
-      </trans-unit>
-      <trans-unit id="noControllersConnected">
-        <source xml:lang="en">No Azure Arc controllers are currently connected. Please run the command: 'Connect to Existing Azure Arc Controller' and then try again</source>
-        <target state="translated">当前未连接 Azure Arc 控制器。请运行命令:“连接到现有Azure Arc控制器”，然后重试</target>
-      </trans-unit>
-      <trans-unit id="getVariableValue.unknownVariableName">
-        <source xml:lang="en">Attempt to get variable value for unknown variable:{0}</source>
-        <target state="translated">尝试获取未知变量的变量值: {0}</target>
-      </trans-unit>
-      <trans-unit id="getIsPassword.unknownVariableName">
-        <source xml:lang="en">Attempt to get isPassword for unknown variable:{0}</source>
-        <target state="translated">尝试获取未知变量的 isPassword: {0}</target>
-      </trans-unit>
-      <trans-unit id="noControllerInfoFound">
-        <source xml:lang="en">Controller Info could not be found with name: {0}</source>
-        <target state="translated">找不到名称为 {0} 的控制器信息</target>
-      </trans-unit>
-      <trans-unit id="noPasswordFound">
-        <source xml:lang="en">Password could not be retrieved for controller: {0} and user did not provide a password. Please retry later.</source>
-        <target state="translated">无法检索到控制器的密码: {0}，并且用户未提供密码。请稍后重试。</target>
-      </trans-unit>
-      <trans-unit id="clusterContextNotFound">
-        <source xml:lang="en">Cluster Context with name: {0} not found in the Kube config file</source>
-        <target state="translated">在 Kube 配置文件中未找到名为 {0} 的群集上下文</target>
-      </trans-unit>
-      <trans-unit id="noCurrentClusterContext">
-        <source xml:lang="en">No current cluster context was found in the kube config file</source>
-        <target state="translated">在 kube 配置文件中找不到当前群集上下文</target>
-      </trans-unit>
-      <trans-unit id="filePicker.browse">
-        <source xml:lang="en">Browse</source>
-        <target state="translated">浏览</target>
-      </trans-unit>
-      <trans-unit id="button.label">
-        <source xml:lang="en">Select</source>
-        <target state="translated">选择</target>
-      </trans-unit>
-      <trans-unit id="noContextFound">
-        <source xml:lang="en">No 'contexts' found in the config file: {0}</source>
-        <target state="translated">在配置文件中找不到“上下文”: {0}</target>
-      </trans-unit>
-      <trans-unit id="noCurrentContextFound">
-        <source xml:lang="en">No context is marked as 'current-context' in the config file: {0}</source>
-        <target state="translated">配置文件中没有标记为 “current-context” 的上下文: {0}</target>
-      </trans-unit>
-      <trans-unit id="noNameInContext">
-        <source xml:lang="en">No name field was found in a cluster context in the config file: {0}</source>
-        <target state="translated">在配置文件中的群集上下文中找不到任何名称字段: {0}</target>
-      </trans-unit>
-      <trans-unit id="arc.userCancelledError">
-        <source xml:lang="en">User cancelled the dialog</source>
-        <target state="translated">用户取消了此对话框</target>
-      </trans-unit>
-      <trans-unit id="clusterContextConfigNoLongerValid">
-        <source xml:lang="en">The cluster context information specified by config file: {0} and cluster context: {1} is no longer valid. Error is:
-	{2}
- Do you want to update this information?</source>
-        <target state="translated">配置文件指定的群集上下文信息: {0} 和群集上下文: {1} 不再有效。错误为: 
-&gt;{2}
- 是否要更新此信息?</target>
-      </trans-unit>
-      <trans-unit id="arc.invalidConfigPath">
-        <source xml:lang="en">Invalid config path</source>
-        <target state="translated">配置路径无效</target>
-      </trans-unit>
-      <trans-unit id="arc.loadingClusterContextsError">
-        <source xml:lang="en">Error loading cluster contexts. {0}</source>
-        <target state="translated">加载群集上下文时出错。{0}</target>
       </trans-unit>
     </body>
   </file>

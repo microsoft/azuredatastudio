@@ -15,10 +15,10 @@ import { TocEntryPathHandler } from './tocEntryPathHandler';
 import { FileExtension } from '../common/utils';
 
 export interface IBookTocManager {
-	updateBook(element: BookTreeItem, book: BookTreeItem, targetSection?: JupyterBookSection): Promise<void>;
+	updateBook(sources: BookTreeItem[], target: BookTreeItem, targetSection?: JupyterBookSection): Promise<void>;
 	removeNotebook(element: BookTreeItem): Promise<void>;
 	createBook(bookContentPath: string, contentFolder: string): Promise<void>;
-	addNewFile(pathDetails: TocEntryPathHandler, bookItem: BookTreeItem): Promise<void>;
+	addNewTocEntry(pathDetails: TocEntryPathHandler, bookItem: BookTreeItem, isSection?: boolean): Promise<void>;
 	recovery(): Promise<void>;
 }
 
@@ -339,7 +339,7 @@ export class BookTocManager implements IBookTocManager {
 				this.newSection = sectionTOC;
 			}
 		}
-		this.newSection.title = section.title;
+		this.newSection.title = section.book.title;
 		this.newSection.file = path.posix.join(path.parse(uri).dir, fileName);
 		if (section.sections) {
 			const files = section.sections as JupyterBookSection[];
@@ -366,8 +366,11 @@ export class BookTocManager implements IBookTocManager {
 		const filePath = path.parse(file.book.contentPath);
 		let fileName = undefined;
 		try {
-			this.movedFiles.set(file.book.contentPath, path.join(rootPath, filePath.base));
-			await fs.move(file.book.contentPath, path.join(rootPath, filePath.base), { overwrite: false });
+			// no op if the notebook is already in the dest location
+			if (file.book.contentPath !== path.join(rootPath, filePath.base)) {
+				this.movedFiles.set(file.book.contentPath, path.join(rootPath, filePath.base));
+				await fs.move(file.book.contentPath, path.join(rootPath, filePath.base), { overwrite: false });
+			}
 		} catch (error) {
 			if (error.code === 'EEXIST') {
 				fileName = await this.renameFile(file.book.contentPath, path.join(rootPath, filePath.base));
@@ -394,50 +397,53 @@ export class BookTocManager implements IBookTocManager {
 
 	/**
 	 * Moves the element to the target book's folder and adds it to the table of contents.
-	 * @param element Notebook, Markdown File, or section that will be added to the book.
-	 * @param targetBook Book that will be modified.
-	 * @param targetSection Book section that'll be modified.
+	 * @param sources The tree items that are been moved.
+	 * @param target Target tree item on which the sources will be added
+	 * @param section (Optional) book section that'll be modified. Not required when using drag and drop.
 	*/
-	public async updateBook(element: BookTreeItem, targetItem: BookTreeItem, targetSection?: JupyterBookSection): Promise<void> {
-		try {
-			if (element.contextValue === 'section') {
-				// modify the sourceBook toc and remove the section
-				const findSection: JupyterBookSection = { file: element.book.page.file, title: element.book.page.title };
-				await this.moveSectionFiles(element, targetItem);
-				// remove section from book
-				await this.updateTOC(element.book.version, element.tableOfContentsPath, findSection, undefined);
-				// add section to book
-				await this.updateTOC(targetItem.book.version, targetItem.tableOfContentsPath, targetSection, this.newSection);
-			}
-			else {
-				// the notebook is part of a book so we need to modify its toc as well
-				const findSection = { file: element.book.page.file, title: element.book.page.title };
-				await this.moveFile(element, targetItem);
-				if (element.contextValue === 'savedBookNotebook' || element.contextValue === 'Markdown') {
-					// remove notebook entry from book toc
-					await this.updateTOC(element.book.version, element.tableOfContentsPath, findSection, undefined);
-				} else {
-					// close the standalone notebook, so it doesn't throw an error when we move the notebook to new location.
-					await vscode.commands.executeCommand('notebook.command.closeNotebook', element);
-				}
-				await this.updateTOC(targetItem.book.version, targetItem.tableOfContentsPath, targetSection, this.newSection);
-			}
-		} catch (e) {
-			await this.recovery();
-			void vscode.window.showErrorMessage(loc.editBookError(element.book.contentPath, e instanceof Error ? e.message : e));
-		} finally {
+	public async updateBook(sources: BookTreeItem[], target: BookTreeItem, section?: JupyterBookSection): Promise<void> {
+		for (let element of sources) {
 			try {
-				await this._targetBook.reinitializeContents();
+				const targetSection = section ? section : (target.contextValue === 'section' ? { file: target.book.page.file, title: target.book.page.title } : undefined);
+				if (element.contextValue === 'section') {
+					// modify the sourceBook toc and remove the section
+					const findSection: JupyterBookSection = { file: element.book.page.file, title: element.book.page.title };
+					await this.moveSectionFiles(element, target);
+					// remove section from book
+					await this.updateTOC(element.book.version, element.tableOfContentsPath, findSection, undefined);
+					// add section to book
+					await this.updateTOC(target.book.version, target.tableOfContentsPath, targetSection, this.newSection);
+				}
+				else {
+					// the notebook is part of a book so we need to modify its toc as well
+					const findSection = { file: element.book.page.file, title: element.book.page.title };
+					await this.moveFile(element, target);
+					if (element.contextValue === 'savedBookNotebook' || element.contextValue === 'Markdown') {
+						// remove notebook entry from book toc
+						await this.updateTOC(element.book.version, element.tableOfContentsPath, findSection, undefined);
+					} else {
+						// close the standalone notebook, so it doesn't throw an error when we move the notebook to new location.
+						await vscode.commands.executeCommand('notebook.command.closeNotebook', element);
+					}
+					await this.updateTOC(target.book.version, target.tableOfContentsPath, targetSection, this.newSection);
+				}
+			} catch (e) {
+				await this.recovery();
+				void vscode.window.showErrorMessage(loc.editBookError(element.book.contentPath, e instanceof Error ? e.message : e));
 			} finally {
-				if (this._sourceBook && this._sourceBook.bookPath !== this._targetBook.bookPath) {
-					// refresh source book model to pick up latest changes
-					await this._sourceBook.reinitializeContents();
+				try {
+					await this._targetBook.reinitializeContents();
+				} finally {
+					if (this._sourceBook && this._sourceBook.bookPath !== this._targetBook.bookPath) {
+						// refresh source book model to pick up latest changes
+						await this._sourceBook.reinitializeContents();
+					}
 				}
 			}
 		}
 	}
 
-	public async addNewFile(pathDetails: TocEntryPathHandler, bookItem: BookTreeItem): Promise<void> {
+	public async addNewTocEntry(pathDetails: TocEntryPathHandler, bookItem: BookTreeItem, isSection?: boolean): Promise<void> {
 		let findSection: JupyterBookSection | undefined = undefined;
 		await fs.writeFile(pathDetails.filePath, '');
 		if (bookItem.contextValue === 'section') {
@@ -447,6 +453,11 @@ export class BookTocManager implements IBookTocManager {
 			title: pathDetails.titleInTocEntry,
 			file: pathDetails.fileInTocEntry
 		};
+
+		if (isSection) {
+			fileEntryInToc.sections = [];
+		}
+
 		if (bookItem.book.version === BookVersion.v1) {
 			fileEntryInToc = convertTo(BookVersion.v1, fileEntryInToc);
 		}

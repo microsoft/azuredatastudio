@@ -21,6 +21,9 @@ export const defaultEngine = 'defaultEngine';
 
 export const passwordChars = '***************';
 
+/* default authentication type setting name*/
+export const defaultAuthenticationType = 'defaultAuthenticationType';
+
 /* authentication types */
 export const sqlLogin = 'SqlLogin';
 export const integrated = 'Integrated';

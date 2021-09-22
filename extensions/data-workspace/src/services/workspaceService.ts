@@ -23,7 +23,7 @@ export class WorkspaceService implements IWorkspaceService {
 	private openedProjects: vscode.Uri[] | undefined = undefined;
 
 	constructor() {
-		this.getProjectsInWorkspace(undefined, true);
+		this.getProjectsInWorkspace(undefined, true).catch(err => console.error('Error initializing projects in workspace ', err));
 	}
 
 	get isProjectProviderAvailable(): boolean {
@@ -81,7 +81,7 @@ export class WorkspaceService implements IWorkspaceService {
 		for (const projectFile of projectFiles) {
 			if (previousProjects.includes(projectFile.path)) {
 				projectsAlreadyOpen.push(projectFile.fsPath);
-				vscode.window.showInformationMessage(constants.ProjectAlreadyOpened(projectFile.fsPath));
+				void vscode.window.showInformationMessage(constants.ProjectAlreadyOpened(projectFile.fsPath));
 			}
 			else {
 				newProjectAdded = true;
@@ -206,7 +206,7 @@ export class WorkspaceService implements IWorkspaceService {
 
 		try {
 			// show git output channel
-			vscode.commands.executeCommand('git.showOutput');
+			void vscode.commands.executeCommand('git.showOutput');
 			const repositoryPath = await vscode.window.withProgress(
 				opts,
 				(progress, token) => gitApi.clone(url!, { parentPath: localClonePath!, progress, recursive: true }, token)
@@ -214,9 +214,9 @@ export class WorkspaceService implements IWorkspaceService {
 
 			// get all the project files in the cloned repo and add them to workspace
 			const repoProjects = (await this.getAllProjectsInFolder(vscode.Uri.file(repositoryPath)));
-			this.addProjectsToWorkspace(repoProjects);
+			await this.addProjectsToWorkspace(repoProjects);
 		} catch (e) {
-			vscode.window.showErrorMessage(constants.gitCloneError);
+			void vscode.window.showErrorMessage(constants.gitCloneError);
 			console.error(e);
 		}
 	}

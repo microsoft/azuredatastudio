@@ -8,35 +8,35 @@
 	],
 	"version": "1.0.0",
 	"contents": {
+		"client\\dist\\node/jsonClient": {
+			"configureLimit": "Используйте параметр \"{0}\" для настройки ограничения.",
+			"goToSetting": "Открыть параметры",
+			"json.resolveError": "JSON: Ошибка разрешения схемы",
+			"json.schemaResolutionDisabledMessage": "Скачивание схем отключено. Щелкните, чтобы выполнить настройку.",
+			"json.schemaResolutionErrorMessage": "Не удалось разрешить схему. Щелкните, чтобы повторить попытку.",
+			"jsonserver.name": "Языковой сервер JSON",
+			"ok": "ОК",
+			"schemaDownloadDisabled": "Скачивание схем отключено из-за параметра \"{0}\"",
+			"untitled.schema": "Не удается загрузить {0}",
+			"yes never again": "Больше не показывать"
+		},
 		"package": {
-			"displayName": "Возможности языка JSON",
 			"description": "Предоставляет широкую поддержку языка для файлов JSON.",
+			"displayName": "Возможности языка JSON",
+			"json.clickToRetry": "Щелкните, чтобы повторить попытку.",
+			"json.colorDecorators.enable.deprecationMessage": "Параметр \"json.colorDecorators.enable\" устарел. Теперь вместо него используется параметр \"editor.colorDecorators\".",
+			"json.colorDecorators.enable.desc": "Включает или отключает декораторы цвета",
+			"json.enableSchemaDownload.desc": "Если этот параметр установлен, разрешено получение схем JSON из расположений HTTP и HTTPS.",
+			"json.format.enable.desc": "Включить/отключить модуль форматирования JSON по умолчанию",
+			"json.maxItemsComputed.desc": "Максимальное количество вычисленных символов структуры документа и сворачиваемых областей (ограничено по соображениям производительности).",
+			"json.maxItemsExceededInformation.desc": "Показывать уведомление, если превышено максимальное число символов структуры и областей свертывания.",
+			"json.schemaResolutionErrorMessage": "Не удалось разрешить схему.",
 			"json.schemas.desc": "Связь схем с JSON-файлами в текущем проекте.",
-			"json.schemas.url.desc": "URL-адрес схемы или относительный путь к ней в текущем каталоге",
 			"json.schemas.fileMatch.desc": "Массив шаблонов файлов для проверки соответствия при разрешении файлов JSON в схемы. \"*\" можно использовать в качестве подстановочного знака. Шаблоны исключения также могут быть определены и должны начинаться с \"!\". Файл считается соответствующим, когда есть хотя бы один соответствующий шаблон, а последний соответствующий шаблон не является шаблоном исключения.",
 			"json.schemas.fileMatch.item.desc": "Шаблон файла, который может содержать \"*\" и с которым выполняется сравнение, при разрешении JSON-файлов в схемах.",
 			"json.schemas.schema.desc": "Определение схемы для указанного URL-адреса. Схему необходимо указать только для того, чтобы не обращаться по URL-адресу схемы.",
-			"json.format.enable.desc": "Включить/отключить модуль форматирования JSON по умолчанию",
-			"json.tracing.desc": "Отслеживает связь между VS Code и языковым сервером JSON.",
-			"json.colorDecorators.enable.desc": "Включает или отключает декораторы цвета",
-			"json.colorDecorators.enable.deprecationMessage": "Параметр \"json.colorDecorators.enable\" устарел. Теперь вместо него используется параметр \"editor.colorDecorators\".",
-			"json.schemaResolutionErrorMessage": "Не удалось разрешить схему.",
-			"json.clickToRetry": "Щелкните, чтобы повторить попытку.",
-			"json.maxItemsComputed.desc": "Максимальное количество вычисленных символов структуры документа и сворачиваемых областей (ограничено по соображениям производительности).",
-			"json.maxItemsExceededInformation.desc": "Показывать уведомление, если превышено максимальное число символов структуры и областей свертывания.",
-			"json.enableSchemaDownload.desc": "Если этот параметр установлен, разрешено получение схем JSON из расположений HTTP и HTTPS."
-		},
-		"client\\dist\\node/jsonClient": {
-			"json.resolveError": "JSON: Ошибка разрешения схемы",
-			"jsonserver.name": "Языковой сервер JSON",
-			"untitled.schema": "Не удается загрузить {0}",
-			"schemaDownloadDisabled": "Скачивание схем отключено из-за параметра \"{0}\"",
-			"ok": "ОК",
-			"goToSetting": "Открыть параметры",
-			"yes never again": "Больше не показывать",
-			"configureLimit": "Используйте параметр \"{0}\" для настройки ограничения.",
-			"json.schemaResolutionErrorMessage": "Не удалось разрешить схему. Щелкните, чтобы повторить попытку.",
-			"json.schemaResolutionDisabledMessage": "Скачивание схем отключено. Щелкните, чтобы выполнить настройку."
+			"json.schemas.url.desc": "URL-адрес схемы или относительный путь к ней в текущем каталоге",
+			"json.tracing.desc": "Отслеживает связь между VS Code и языковым сервером JSON."
 		}
 	}
 }

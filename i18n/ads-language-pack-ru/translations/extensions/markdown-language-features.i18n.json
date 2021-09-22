@@ -8,64 +8,65 @@
 	],
 	"version": "1.0.0",
 	"contents": {
+		"dist/features/documentLinkProvider": {
+			"documentLink.tooltip": "перейти по ссылке"
+		},
+		"dist/features/preview": {
+			"lockedPreviewTitle": "[Предварительный просмотр] {0}",
+			"onPreviewStyleLoadError": "Не удалось загрузить 'markdown.styles': {0}",
+			"preview.clickOpenFailed": "Не удалось открыть {0}",
+			"previewTitle": "Открыть {0} для предварительного просмотра"
+		},
+		"dist/features/previewContentProvider": {
+			"preview.notFound": "Не удается найти {0}",
+			"preview.securityMessage.label": "Предупреждение безопасности об отключении содержимого",
+			"preview.securityMessage.text": "Некоторое содержимое в этом документе было отключено",
+			"preview.securityMessage.title": "В предварительном просмотре Markdown было отключено потенциально опасное или ненадежное содержимое. Чтобы разрешить ненадежное содержимое или включить сценарии, измените параметры безопасности предварительного просмотра Markdown"
+		},
+		"dist/security": {
+			"disable.description": "Разрешить все содержимое и выполнение сценариев. Не рекомендуется",
+			"disable.title": "Отключить",
+			"disableSecurityWarning.title": "Отключить предварительный просмотр предупреждений системы безопасности в этой рабочей области",
+			"enableSecurityWarning.title": "Включить предварительный просмотр предупреждений системы безопасности в этой рабочей области",
+			"insecureContent.description": "Включить загрузку содержимого через HTTP",
+			"insecureContent.title": "Разрешить небезопасное содержимое",
+			"insecureLocalContent.description": "Включить загрузку содержимого через HTTP из localhost",
+			"insecureLocalContent.title": "Разрешить небезопасное локальное содержимое",
+			"moreInfo.title": "Дополнительные сведения",
+			"preview.showPreviewSecuritySelector.title": "Установите параметры безопасности для предварительного просмотра Markdown в этой рабочей области",
+			"strict.description": "Загружать только безопасное содержимое",
+			"strict.title": "Строгий",
+			"toggleSecurityWarning.description": "Не влияет на уровень безопасности содержимого"
+		},
 		"package": {
-			"displayName": "Возможности языка Markdown",
+			"configuration.markdown.links.openLocation.beside": "Открытые ссылки рядом с активным редактором.",
+			"configuration.markdown.links.openLocation.currentGroup": "Откройте ссылки в группе активного редактора.",
+			"configuration.markdown.links.openLocation.description": "Определяет, где следует открывать ссылки в файлах Markdown.",
+			"configuration.markdown.preview.openMarkdownLinks.description": "Указывает, как следует открывать ссылки на другие файлы Markdown при предварительном просмотре Markdown.",
+			"configuration.markdown.preview.openMarkdownLinks.inEditor": "Пробовать открывать ссылки в редакторе.",
+			"configuration.markdown.preview.openMarkdownLinks.inPreview": "Пробовать открывать ссылки в окне предварительного просмотра Markdown.",
 			"description": "Предоставляет широкую поддержку языка для Markdown.",
+			"displayName": "Возможности языка Markdown",
 			"markdown.preview.breaks.desc": "Задает способ отрисовки разрывов строк для предварительного просмотра Markdown. Если задано значение true, для каждой новой строки внутри абзацев создается <br>.",
-			"markdown.preview.linkify": "Включить или отключить преобразование текста в URL для предварительного просмотра Markdown.",
-			"markdown.preview.typographer": "Включить или отключить некоторые не зависящие от языка замены и применение кавычек для предварительного просмотра Markdown.",
 			"markdown.preview.doubleClickToSwitchToEditor.desc": "Дважды щелкните в области предварительного просмотра Markdown, чтобы переключиться в редактор.",
 			"markdown.preview.fontFamily.desc": "Определяет семейство шрифтов, используемое в области предварительного просмотра Markdown.",
 			"markdown.preview.fontSize.desc": "Определяет размер шрифта (в пикселях), используемый в области предварительного просмотра Markdown.",
 			"markdown.preview.lineHeight.desc": "Определяет высоту строки, используемую в области предварительного просмотра Markdown. Это значение задается относительно размера шрифта.",
+			"markdown.preview.linkify": "Включить или отключить преобразование текста в URL для предварительного просмотра Markdown.",
 			"markdown.preview.markEditorSelection.desc": "Выделение выбранного в текущем редакторе в предварительном просмотре Markdown.",
+			"markdown.preview.refresh.title": "Обновить область предварительного просмотра",
 			"markdown.preview.scrollEditorWithPreview.desc": "Обновить представление редактора при прокрутке предварительного просмотра Markdown.",
 			"markdown.preview.scrollPreviewWithEditor.desc": "Обновить представление предварительного просмотра при прокрутке редактора Markdown.",
 			"markdown.preview.title": "Открыть область предварительного просмотра",
+			"markdown.preview.toggleLock.title": "Включить/отключить блокировку области предварительного просмотра",
+			"markdown.preview.typographer": "Включить или отключить некоторые не зависящие от языка замены и применение кавычек для предварительного просмотра Markdown.",
 			"markdown.previewSide.title": "Открыть область предварительного просмотра сбоку",
 			"markdown.showLockedPreviewToSide.title": "Открыть заблокированную область предварительного просмотра сбоку",
+			"markdown.showPreviewSecuritySelector.title": "Изменить параметры безопасности для предварительного просмотра",
 			"markdown.showSource.title": "Показать источник",
 			"markdown.styles.dec": "Список URL-адресов или локальных путей к таблицам стилей CSS, используемых из области предварительного просмотра Markdown. Относительные пути интерпретируются относительно папки, открытой в проводнике. Если папка не открыта, они интерпретируются относительно расположения файла Markdown. Все символы \"\\\" должны записываться в виде \"\\\\\".",
-			"markdown.showPreviewSecuritySelector.title": "Изменить параметры безопасности для предварительного просмотра",
 			"markdown.trace.desc": "Включить ведение журнала отладки для расширения Markdown.",
-			"markdown.preview.refresh.title": "Обновить область предварительного просмотра",
-			"markdown.preview.toggleLock.title": "Включить/отключить блокировку области предварительного просмотра",
-			"configuration.markdown.preview.openMarkdownLinks.description": "Указывает, как следует открывать ссылки на другие файлы Markdown при предварительном просмотре Markdown.",
-			"configuration.markdown.preview.openMarkdownLinks.inEditor": "Пробовать открывать ссылки в редакторе.",
-			"configuration.markdown.preview.openMarkdownLinks.inPreview": "Пробовать открывать ссылки в окне предварительного просмотра Markdown.",
-			"configuration.markdown.links.openLocation.description": "Определяет, где следует открывать ссылки в файлах Markdown.",
-			"configuration.markdown.links.openLocation.currentGroup": "Откройте ссылки в группе активного редактора.",
-			"configuration.markdown.links.openLocation.beside": "Открытые ссылки рядом с активным редактором."
-		},
-		"dist/features/documentLinkProvider": {
-			"documentLink.tooltip": "перейти по ссылке"
-		},
-		"dist/features/previewContentProvider": {
-			"preview.securityMessage.text": "Некоторое содержимое в этом документе было отключено",
-			"preview.securityMessage.title": "В предварительном просмотре Markdown было отключено потенциально опасное или ненадежное содержимое. Чтобы разрешить ненадежное содержимое или включить сценарии, измените параметры безопасности предварительного просмотра Markdown",
-			"preview.securityMessage.label": "Предупреждение безопасности об отключении содержимого",
-			"preview.notFound": "Не удается найти {0}"
-		},
-		"dist/features/preview": {
-			"onPreviewStyleLoadError": "Не удалось загрузить 'markdown.styles': {0}",
-			"preview.clickOpenFailed": "Не удалось открыть {0}",
-			"lockedPreviewTitle": "[Предварительный просмотр] {0}",
-			"previewTitle": "Открыть {0} для предварительного просмотра"
-		},
-		"dist/security": {
-			"strict.title": "Строгий",
-			"strict.description": "Загружать только безопасное содержимое",
-			"insecureLocalContent.title": "Разрешить небезопасное локальное содержимое",
-			"insecureLocalContent.description": "Включить загрузку содержимого через HTTP из localhost",
-			"insecureContent.title": "Разрешить небезопасное содержимое",
-			"insecureContent.description": "Включить загрузку содержимого через HTTP",
-			"disable.title": "Отключить",
-			"disable.description": "Разрешить все содержимое и выполнение сценариев. Не рекомендуется",
-			"moreInfo.title": "Дополнительные сведения",
-			"enableSecurityWarning.title": "Включить предварительный просмотр предупреждений системы безопасности в этой рабочей области",
-			"disableSecurityWarning.title": "Отключить предварительный просмотр предупреждений системы безопасности в этой рабочей области",
-			"toggleSecurityWarning.description": "Не влияет на уровень безопасности содержимого",
-			"preview.showPreviewSecuritySelector.title": "Установите параметры безопасности для предварительного просмотра Markdown в этой рабочей области"
+			"workspaceTrust": "Требуется для загрузки стилей, настроенных в рабочей области."
 		}
 	}
 }

@@ -1,10 +1,15 @@
 import * as vscode from 'vscode';
+import * as path from 'path';
 import { BindingType } from 'vscode-mssql';
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
+import * as azureFunctionsUtils from '../common/azureFunctionsUtils';
 import { PackageHelper } from '../tools/packageHelper';
+import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 
 export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, packageHelper: PackageHelper): Promise<void> {
+	TelemetryReporter.sendActionEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.startAddSqlBinding);
+
 	if (!uri) {
 		// this command only shows in the command palette when the active editor is a .cs file, so we can safely assume that's the scenario
 		// when this is called without a uri
@@ -63,7 +68,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 
 	// 3. ask for object name for the binding
 	const objectName = await vscode.window.showInputBox({
-		prompt: selectedBinding.type === BindingType.input ? constants.sqlObjectToQuery : constants.sqlTableToUpsert,
+		prompt: selectedBinding.type === BindingType.input ? constants.sqlTableOrViewToQuery : constants.sqlTableToUpsert,
 		value: constants.placeHolderObject,
 		ignoreFocusOut: true
 	});
@@ -73,27 +78,56 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 	}
 
 	// 4. ask for connection string setting name
-	// TODO: load local settings from local.settings.json like in LocalAppSettingListStep in vscode-azurefunctions repo
-	const connectionStringSetting = await vscode.window.showInputBox({
-		prompt: constants.connectionStringSetting,
-		placeHolder: constants.connectionStringSettingPlaceholder,
-		ignoreFocusOut: true
-	});
+	let project: string | undefined;
+	try {
+		project = await azureFunctionsUtils.getAFProjectContainingFile(uri.fsPath);
+	} catch (e) {
+		// continue even if there's no AF project found. The binding should still be able to be added as long as there was an azure function found in the file earlier
+	}
 
-	if (!connectionStringSetting) {
+	let connectionStringSettingName;
+
+	// show the settings from project's local.settings.json if there's an AF functions project
+	// TODO: allow new setting name to get added here and added to local.settings.json
+	if (project) {
+		const settings = await azureFunctionsUtils.getLocalSettingsJson(path.join(path.dirname(project!), constants.azureFunctionLocalSettingsFileName));
+		const existingSettings: string[] = settings.Values ? Object.keys(settings.Values) : [];
+
+		connectionStringSettingName = await vscode.window.showQuickPick(existingSettings, {
+			canPickMany: false,
+			title: constants.selectSetting,
+			ignoreFocusOut: true
+		});
+	} else {
+		// if no AF project was found or there's more than one AF functions project in the workspace,
+		// ask for the user to input the setting name
+		connectionStringSettingName = await vscode.window.showInputBox({
+			prompt: constants.connectionStringSetting,
+			placeHolder: constants.connectionStringSettingPlaceholder,
+			ignoreFocusOut: true
+		});
+	}
+
+	if (!connectionStringSettingName) {
 		return;
 	}
 
 	// 5. insert binding
 	try {
-		const result = await azureFunctionsService.addSqlBinding(selectedBinding.type, uri.fsPath, azureFunctionName, objectName, connectionStringSetting);
+		const result = await azureFunctionsService.addSqlBinding(selectedBinding.type, uri.fsPath, azureFunctionName, objectName, connectionStringSettingName);
 
 		if (!result.success) {
 			void vscode.window.showErrorMessage(result.errorMessage);
+			TelemetryReporter.sendErrorEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.finishAddSqlBinding);
 			return;
 		}
+
+		TelemetryReporter.createActionEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.finishAddSqlBinding)
+			.withAdditionalProperties({ bindingType: selectedBinding.label })
+			.send();
 	} catch (e) {
 		void vscode.window.showErrorMessage(e);
+		TelemetryReporter.sendErrorEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.finishAddSqlBinding);
 		return;
 	}
 

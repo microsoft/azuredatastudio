@@ -342,6 +342,7 @@ export const YES = localize('sql.migration.yes', "Yes");
 export const NO = localize('sql.migration.no', "No");
 export const EMPTY_TABLE_TEXT = localize('sql.migration.empty.table.text', "No backup files");
 export const EMPTY_TABLE_SUBTEXT = localize('sql.migration.empty.table.subtext', "If results were expected, verify the connection to the SQL Server instance.");
+export const MIGRATION_CUTOVER_ERROR = localize('sql.migration.cutover.error', 'An error occurred while initiating cutover.');
 
 //Migration confirm cutover dialog
 export const COMPLETING_CUTOVER_WARNING = localize('sql.migration.completing.cutover.warning', "Completing cutover without restoring all the backups may result in a data loss.");
@@ -371,6 +372,8 @@ export const FILE_NAME = localize('sql.migration.file.name', "File name");
 export const SIZE_COLUMN_HEADER = localize('sql.migration.size.column.header', "Size");
 export const NO_PENDING_BACKUPS = localize('sql.migration.no.pending.backups', "No pending backups. Click refresh to check current status.");
 //Migration status dialog
+export const ADD_ACCOUNT = localize('sql.migration.status.add.account', "Add account");
+export const ADD_ACCOUNT_MESSAGE = localize('sql.migration.status.add.account.MESSAGE', "Add your Azure account to view existing migrations and their status.");
 export const STATUS_ALL = localize('sql.migration.status.dropdown.all', "Status: All");
 export const STATUS_ONGOING = localize('sql.migration.status.dropdown.ongoing', "Status: Ongoing");
 export const STATUS_COMPLETING = localize('sql.migration.status.dropdown.completing', "Status: Completing");

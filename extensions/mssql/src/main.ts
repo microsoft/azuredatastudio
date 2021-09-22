@@ -40,7 +40,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	let supported = await Utils.verifyPlatform();
 
 	if (!supported) {
-		vscode.window.showErrorMessage('Unsupported platform');
+		void vscode.window.showErrorMessage('Unsupported platform');
 		return undefined;
 	}
 
@@ -87,7 +87,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 			const untitledUri = vscode.Uri.parse(`untitled:${title}`);
 			await azdata.nb.showNotebookDocument(untitledUri, { initialContent: result.content });
 		} catch (err) {
-			vscode.window.showErrorMessage(localize('mssql.errorConvertingToNotebook', "An error occurred converting the SQL document to a Notebook. Error : {0}", err.toString()));
+			void vscode.window.showErrorMessage(localize('mssql.errorConvertingToNotebook', "An error occurred converting the SQL document to a Notebook. Error : {0}", err.toString()));
 		}
 	});
 
@@ -100,7 +100,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 			const result = await appContext.getService<INotebookConvertService>(Constants.NotebookConvertService).convertNotebookToSql(doc.getText());
 			await azdata.queryeditor.openQueryDocument({ content: result.content });
 		} catch (err) {
-			vscode.window.showErrorMessage(localize('mssql.errorConvertingToSQL', "An error occurred converting the Notebook document to SQL. Error : {0}", err.toString()));
+			void vscode.window.showErrorMessage(localize('mssql.errorConvertingToSQL', "An error occurred converting the Notebook document to SQL. Error : {0}", err.toString()));
 		}
 	});
 
@@ -114,7 +114,7 @@ function registerLogCommand(context: vscode.ExtensionContext) {
 		if (choice) {
 			const document = await vscode.workspace.openTextDocument(vscode.Uri.file(path.join(context.logPath, choice)));
 			if (document) {
-				vscode.window.showTextDocument(document);
+				void vscode.window.showTextDocument(document);
 			}
 		}
 	}));
@@ -190,7 +190,7 @@ async function handleNewNotebookTask(oeContext?: azdata.ObjectExplorerContext, p
 		if (hdfsPath.length > 0) {
 			let analyzeCommand = '#' + msgSampleCodeDataFrame + os.EOL + 'df = (spark.read.option("inferSchema", "true")'
 				+ os.EOL + '.option("header", "true")' + os.EOL + '.csv("{0}"))' + os.EOL + 'df.show(10)';
-			editor.edit(editBuilder => {
+			await editor.edit(editBuilder => {
 				editBuilder.replace(0, {
 					cell_type: 'code',
 					source: analyzeCommand.replace('{0}', hdfsPath)
@@ -215,7 +215,7 @@ async function handleOpenNotebookTask(profile: azdata.IConnectionProfile): Promi
 		// Verify this is a .ipynb file since this isn't actually filtered on Mac/Linux
 		if (path.extname(fileUri.fsPath) !== '.ipynb') {
 			// in the future might want additional supported types
-			vscode.window.showErrorMessage(localize('unsupportedFileType', "Only .ipynb Notebooks are supported"));
+			void vscode.window.showErrorMessage(localize('unsupportedFileType', "Only .ipynb Notebooks are supported"));
 		} else {
 			await azdata.nb.showNotebookDocument(fileUri, {
 				connectionProfile: profile,
@@ -229,11 +229,11 @@ async function handleOpenClusterDashboardTask(profile: azdata.IConnectionProfile
 	const serverInfo = await azdata.connection.getServerInfo(profile.id);
 	const controller = Utils.getClusterEndpoints(serverInfo).find(e => e.name === Endpoint.controller);
 	if (!controller) {
-		vscode.window.showErrorMessage(localize('noController', "Could not find the controller endpoint for this instance"));
+		void vscode.window.showErrorMessage(localize('noController', "Could not find the controller endpoint for this instance"));
 		return;
 	}
 
-	vscode.commands.executeCommand('bigDataClusters.command.manageController',
+	void vscode.commands.executeCommand('bigDataClusters.command.manageController',
 		{
 			url: controller.endpoint,
 			auth: profile.authenticationType === 'Integrated' ? AuthType.Integrated : AuthType.Basic,

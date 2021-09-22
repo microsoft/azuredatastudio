@@ -51,6 +51,7 @@ export default class MainController implements vscode.Disposable {
 		const counterHtml = fs.readFileSync(path.join(__dirname, 'counter.html')).toString();
 		this.registerSqlServicesModelView();
 		this.registerSplitPanelModelView();
+		this.registerModelViewDashboardTab();
 
 		azdata.tasks.registerTask('sqlservices.clickTask', (profile) => {
 			vscode.window.showInformationMessage(`Clicked from profile ${profile.serverName}.${profile.databaseName}`);
@@ -736,6 +737,15 @@ export default class MainController implements vscode.Disposable {
 				], { flex: '1 1 50%' })
 				.component();
 			await view.initializeModel(flexModel);
+		});
+	}
+
+	private registerModelViewDashboardTab(): void {
+		azdata.ui.registerModelViewProvider('sqlservices-home', async (view) => {
+			const text = view.modelBuilder.text().withProps({
+				value: 'home tab content place holder'
+			}).component();
+			await view.initializeModel(text);
 		});
 	}
 

@@ -188,9 +188,12 @@ export class EditDataGridPanel extends GridParentComponent {
 			// render line breaks and strips them, updating the value.
 			/* tslint:disable:no-null-keyword */
 			let valueMissing = value === undefined || value === null || (Services.DBCellValue.isDBCellValue(value) && value.isNull);
+			let isStringNull = (Services.DBCellValue.isDBCellValue(value) && !value.isNull && value.displayValue === 'NULL');
 			if (valueMissing) {
-				/* tslint:disable:no-null-keyword */
-				returnVal = null;
+				returnVal = 'NULL';
+			}
+			else if (isStringNull) {
+				returnVal = '\'NULL\'';
 			}
 			else if (Services.DBCellValue.isDBCellValue(value)) {
 				returnVal = this.replaceLinebreaks(value.displayValue);
@@ -509,6 +512,14 @@ export class EditDataGridPanel extends GridParentComponent {
 			this.revertCurrentRow().catch(onUnexpectedError);
 			handled = true;
 		}
+		if (e.ctrlKey && e.keyCode === KeyCode.KEY_0) {
+			//Replace contents with NULL in cell contents.
+			document.execCommand('selectAll');
+			document.execCommand('delete');
+			document.execCommand('insertText', false, 'NULL');
+			handled = true;
+		}
+
 		return handled;
 	}
 
@@ -1083,10 +1094,14 @@ export class EditDataGridPanel extends GridParentComponent {
 		let valueToDisplay = '';
 		let cellClasses = 'grid-cell-value-container';
 		/* tslint:disable:no-null-keyword */
-		let valueMissing = value === undefined || value === null || (Services.DBCellValue.isDBCellValue(value) && value.isNull);
+		let valueMissing = value === undefined || value === null || (Services.DBCellValue.isDBCellValue(value) && value.isNull) || value === 'NULL';
+		let isStringNull = (Services.DBCellValue.isDBCellValue(value) && !value.isNull && value.displayValue === 'NULL');
 		if (valueMissing) {
 			valueToDisplay = 'NULL';
 			cellClasses += ' missing-value';
+		}
+		else if (isStringNull) {
+			valueToDisplay = '\'NULL\'';
 		}
 		else if (Services.DBCellValue.isDBCellValue(value)) {
 			valueToDisplay = (value.displayValue + '');

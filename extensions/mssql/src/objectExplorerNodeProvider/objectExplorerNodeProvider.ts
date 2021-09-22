@@ -82,11 +82,11 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 		} else {
 			setTimeout(() => {
 
-				// Running after promise resolution as we need the Ops Studio-side map to have been updated
+				// Running after promise resolution as we need the ADS-side map to have been updated
 				// Intentionally not awaiting or catching errors.
 				// Any failure in startExpansion should be emitted in the expand complete result
 				// We want this to be async and ideally return true before it completes
-				this.startExpansion(session, nodeInfo, isRefresh);
+				this.startExpansion(session, nodeInfo, isRefresh).catch(err => console.log('Error expanding Object Explorer Node ', err));
 			}, 10);
 		}
 		return true;
@@ -181,14 +181,14 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 	}
 
 	notifyNodeChanged(node: TreeNode): void {
-		this.notifyNodeChangesAsync(node);
+		void this.notifyNodeChangesAsync(node);
 	}
 
 	private async notifyNodeChangesAsync(node: TreeNode): Promise<void> {
 		try {
 			let session = this.getSqlClusterSessionForNode(node);
 			if (!session) {
-				vscode.window.showErrorMessage(localize('sessionNotFound', "Session for node {0} does not exist", node.nodePathValue));
+				void vscode.window.showErrorMessage(localize('sessionNotFound', "Session for node {0} does not exist", node.nodePathValue));
 			} else {
 				let nodeInfo = node.getNodeInfo();
 				let expandInfo: azdata.ExpandNodeInfo = {

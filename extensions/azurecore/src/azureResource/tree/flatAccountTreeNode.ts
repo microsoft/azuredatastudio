@@ -68,7 +68,7 @@ export class FlatAccountTreeNode extends AzureResourceContainerTreeNodeBase {
 
 	public async getChildren(): Promise<TreeNode[]> {
 		if (this._isClearingCache) {
-			this._loader.start();
+			this._loader.start().catch(err => console.error('Error loading Azure FlatAccountTreeNodes ', err));
 			this._isClearingCache = false;
 			return [];
 		} else {
@@ -211,12 +211,12 @@ class FlatAccountTreeNodeLoader {
 			}
 		} catch (error) {
 			if (error instanceof AzureSubscriptionError) {
-				vscode.commands.executeCommand('azure.resource.signin');
+				void vscode.commands.executeCommand('azure.resource.signin');
 			}
 			// http status code 429 means "too many requests"
 			// use a custom error message for azure resource graph api throttling error to make it more actionable for users.
 			const errorMessage = error?.statusCode === 429 ? localize('azure.resource.throttleerror', "Requests from this account have been throttled. To retry, please select a smaller number of subscriptions.") : AzureResourceErrorMessageUtil.getErrorMessage(error);
-			vscode.window.showErrorMessage(localize('azure.resource.tree.loadresourceerror', "An error occurred while loading Azure resources: {0}", errorMessage));
+			void vscode.window.showErrorMessage(localize('azure.resource.tree.loadresourceerror', "An error occurred while loading Azure resources: {0}", errorMessage));
 		}
 
 		this._isLoading = false;

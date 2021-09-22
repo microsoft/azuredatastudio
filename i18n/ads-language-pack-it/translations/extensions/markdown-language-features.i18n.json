@@ -8,64 +8,65 @@
 	],
 	"version": "1.0.0",
 	"contents": {
+		"dist/features/documentLinkProvider": {
+			"documentLink.tooltip": "Visita il collegamento"
+		},
+		"dist/features/preview": {
+			"lockedPreviewTitle": "[Anteprima] {0}",
+			"onPreviewStyleLoadError": "Impossibile caricare 'markdown.styles': {0}",
+			"preview.clickOpenFailed": "Non è stato possibile aprire {0}",
+			"previewTitle": "Anteprima {0}"
+		},
+		"dist/features/previewContentProvider": {
+			"preview.notFound": "{0} non è stato trovato",
+			"preview.securityMessage.label": "Avviso di sicurezza contenuto disabilitato",
+			"preview.securityMessage.text": "Alcuni contenuti sono stati disabilitati in questo documento",
+			"preview.securityMessage.title": "I contenuti potenzialmente non sicuri sono stati disabilitati nell'anteprima Markdown. Modificare l'impostazione di sicurezza dell'anteprima Markdown per consentire la visualizzazione di contenuto non sicuri o abilitare gli script"
+		},
+		"dist/security": {
+			"disable.description": "Consente l'esecuzione di tutti i contenuti e script. Scelta non consigliata",
+			"disable.title": "Disabilita",
+			"disableSecurityWarning.title": "Disabilita anteprima degli avvisi di sicurezza in questa area di lavoro",
+			"enableSecurityWarning.title": "Abilita anteprima degli avvisi di sicurezza in questa area di lavoro",
+			"insecureContent.description": "Consente il caricamento di contenuti tramite HTTP",
+			"insecureContent.title": "Consenti contenuto non protetto",
+			"insecureLocalContent.description": "Consente il caricamento di contenuti tramite HTTP servito da localhost",
+			"insecureLocalContent.title": "Consenti contenuto locale non protetto",
+			"moreInfo.title": "Altre informazioni",
+			"preview.showPreviewSecuritySelector.title": "Seleziona impostazioni di sicurezza per le anteprime Markdown in questa area di lavoro",
+			"strict.description": "Carica solo contenuto protetto",
+			"strict.title": "Strict",
+			"toggleSecurityWarning.description": "Non influisce sul livello di sicurezza del contenuto"
+		},
 		"package": {
-			"displayName": "Funzionalità del linguaggio Markdown",
+			"configuration.markdown.links.openLocation.beside": "Apre i collegamenti accanto all'editor attivo.",
+			"configuration.markdown.links.openLocation.currentGroup": "Apre i collegamenti nel gruppo di editor attivo.",
+			"configuration.markdown.links.openLocation.description": "Controlla dove aprire i collegamenti nei file Markdown.",
+			"configuration.markdown.preview.openMarkdownLinks.description": "Controlla in che modo aprire i collegamenti ad altri file Markdown nell'anteprima Markdown.",
+			"configuration.markdown.preview.openMarkdownLinks.inEditor": "Prova ad aprire i collegamenti nell'editor.",
+			"configuration.markdown.preview.openMarkdownLinks.inPreview": "Prova ad aprire i collegamenti nell'anteprima Markdown.",
 			"description": "Fornisce un supporto avanzato del linguaggio per Markdown.",
+			"displayName": "Funzionalità del linguaggio Markdown",
 			"markdown.preview.breaks.desc": "Imposta il rendering delle interruzioni di riga nell'anteprima Markdown. Se è impostato su 'true', viene creato un tag <br> per i caratteri di nuova riga all'interno di paragrafi.",
-			"markdown.preview.linkify": "Abilita o disabilita la conversione di testo simile a URL in collegamenti nell'anteprima Markdown.",
-			"markdown.preview.typographer": "Abilita o disabilita la sostituzione indipendente dalla lingua e l'adattamento delle virgolette nell'anteprima Markdown.",
 			"markdown.preview.doubleClickToSwitchToEditor.desc": "Fare doppio clic nell'anteprima Markdown per passare all'editor.",
 			"markdown.preview.fontFamily.desc": "Controlla la famiglia di caratteri usata nell'anteprima Markdown.",
 			"markdown.preview.fontSize.desc": "Controlla le dimensioni del carattere in pixel usate nell'anteprima Markdown.",
 			"markdown.preview.lineHeight.desc": "Controlla l'altezza della riga usata nell'anteprima Markdown. Questo numero è relativo alle dimensioni del carattere.",
+			"markdown.preview.linkify": "Abilita o disabilita la conversione di testo simile a URL in collegamenti nell'anteprima Markdown.",
 			"markdown.preview.markEditorSelection.desc": "Contrassegna la selezione dell'editor corrente nell'anteprima Markdown.",
+			"markdown.preview.refresh.title": "Aggiorna anteprima",
 			"markdown.preview.scrollEditorWithPreview.desc": "Quando si scorre un'anteprima Markdown, aggiorna la visualizzazione dell'editor.",
 			"markdown.preview.scrollPreviewWithEditor.desc": "Quando si scorre un editor Markdown, aggiorna la visualizzazione dell'anteprima.",
 			"markdown.preview.title": "Apri anteprima",
+			"markdown.preview.toggleLock.title": "Attiva/Disattiva blocco anteprima",
+			"markdown.preview.typographer": "Abilita o disabilita la sostituzione indipendente dalla lingua e l'adattamento delle virgolette nell'anteprima Markdown.",
 			"markdown.previewSide.title": "Apri anteprima lateralmente",
 			"markdown.showLockedPreviewToSide.title": "Apri anteprima bloccata lateralmente",
+			"markdown.showPreviewSecuritySelector.title": "Modifica impostazioni di sicurezza anteprima",
 			"markdown.showSource.title": "Mostra origine",
 			"markdown.styles.dec": "Elenco di URL o percorsi locali dei fogli di stile CSS da usare dall'anteprima Markdown. I percorsi relativi vengono interpretati come relativi alla cartella aperta nella finestra di esplorazione. Se non è presente alcuna cartella aperta, vengono interpretati come relativi al percorso del file Markdown. Tutti i caratteri '\\' devono essere scritti come '\\\\'.",
-			"markdown.showPreviewSecuritySelector.title": "Modifica impostazioni di sicurezza anteprima",
 			"markdown.trace.desc": "Abilita la registrazione debug per l'estensione Markdown.",
-			"markdown.preview.refresh.title": "Aggiorna anteprima",
-			"markdown.preview.toggleLock.title": "Attiva/Disattiva blocco anteprima",
-			"configuration.markdown.preview.openMarkdownLinks.description": "Controlla in che modo aprire i collegamenti ad altri file Markdown nell'anteprima Markdown.",
-			"configuration.markdown.preview.openMarkdownLinks.inEditor": "Prova ad aprire i collegamenti nell'editor.",
-			"configuration.markdown.preview.openMarkdownLinks.inPreview": "Prova ad aprire i collegamenti nell'anteprima Markdown.",
-			"configuration.markdown.links.openLocation.description": "Controlla dove aprire i collegamenti nei file Markdown.",
-			"configuration.markdown.links.openLocation.currentGroup": "Apre i collegamenti nel gruppo di editor attivo.",
-			"configuration.markdown.links.openLocation.beside": "Apre i collegamenti accanto all'editor attivo."
-		},
-		"dist/features/documentLinkProvider": {
-			"documentLink.tooltip": "Visita il collegamento"
-		},
-		"dist/features/previewContentProvider": {
-			"preview.securityMessage.text": "Alcuni contenuti sono stati disabilitati in questo documento",
-			"preview.securityMessage.title": "I contenuti potenzialmente non sicuri sono stati disabilitati nell'anteprima Markdown. Modificare l'impostazione di sicurezza dell'anteprima Markdown per consentire la visualizzazione di contenuto non sicuri o abilitare gli script",
-			"preview.securityMessage.label": "Avviso di sicurezza contenuto disabilitato",
-			"preview.notFound": "{0} non è stato trovato"
-		},
-		"dist/features/preview": {
-			"onPreviewStyleLoadError": "Impossibile caricare 'markdown.styles': {0}",
-			"preview.clickOpenFailed": "Non è stato possibile aprire {0}",
-			"lockedPreviewTitle": "[Anteprima] {0}",
-			"previewTitle": "Anteprima {0}"
-		},
-		"dist/security": {
-			"strict.title": "Strict",
-			"strict.description": "Carica solo contenuto protetto",
-			"insecureLocalContent.title": "Consenti contenuto locale non protetto",
-			"insecureLocalContent.description": "Consente il caricamento di contenuti tramite HTTP servito da localhost",
-			"insecureContent.title": "Consenti contenuto non protetto",
-			"insecureContent.description": "Consente il caricamento di contenuti tramite HTTP",
-			"disable.title": "Disabilita",
-			"disable.description": "Consente l'esecuzione di tutti i contenuti e script. Scelta non consigliata",
-			"moreInfo.title": "Altre informazioni",
-			"enableSecurityWarning.title": "Abilita anteprima degli avvisi di sicurezza in questa area di lavoro",
-			"disableSecurityWarning.title": "Disabilita anteprima degli avvisi di sicurezza in questa area di lavoro",
-			"toggleSecurityWarning.description": "Non influisce sul livello di sicurezza del contenuto",
-			"preview.showPreviewSecuritySelector.title": "Seleziona impostazioni di sicurezza per le anteprime Markdown in questa area di lavoro"
+			"workspaceTrust": "Necessario per il caricamento degli stili configurati nell'area di lavoro."
 		}
 	}
 }

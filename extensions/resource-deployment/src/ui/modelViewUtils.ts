@@ -1252,7 +1252,7 @@ function createAzureSubscriptionComponent(
 	}
 	subscriptionInputInfo.labelComponent = label;
 	context.fieldInfo.subFields!.push({
-		label: label.value!,
+		label: label.value! as string,
 		variableName: context.fieldInfo.subscriptionVariableName
 	});
 	context.onNewInputComponentCreated(context.fieldInfo.subscriptionVariableName || context.fieldInfo.label, {
@@ -1407,7 +1407,7 @@ function createAzureResourceGroupsComponent(
 	}
 	resourceGroupInputInfo.labelComponent = label;
 	context.fieldInfo.subFields!.push({
-		label: label.value!,
+		label: label.value! as string,
 		variableName: context.fieldInfo.resourceGroupVariableName
 	});
 	const rgValueChangedEmitter = new vscode.EventEmitter<void>();
@@ -1517,7 +1517,7 @@ async function processAzureLocationsField(context: AzureLocationsFieldContext): 
 	context.fieldInfo.subFields = context.fieldInfo.subFields || [];
 	if (context.fieldInfo.locationVariableName) {
 		context.fieldInfo.subFields!.push({
-			label: label.value!,
+			label: label.value! as string,
 			variableName: context.fieldInfo.locationVariableName
 		});
 		context.onNewInputComponentCreated(context.fieldInfo.locationVariableName, locationInputInfo);

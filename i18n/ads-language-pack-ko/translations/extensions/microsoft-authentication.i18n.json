@@ -8,18 +8,18 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"displayName": "Microsoft 계정",
-			"description": "Microsoft 인증 공급자",
-			"signIn": "로그인",
-			"signOut": "로그아웃"
-		},
 		"dist/AADHelper": {
 			"signOut": "저장된 인증 정보를 읽는 데 실패하여 로그아웃되었습니다."
 		},
 		"dist/keychain": {
-			"troubleshooting": "문제 해결 가이드",
-			"keychainWriteError": "'{0}' 오류로 인해 로그인 정보를 키 집합에 쓰지 못했습니다."
+			"keychainWriteError": "'{0}' 오류로 인해 로그인 정보를 키 집합에 쓰지 못했습니다.",
+			"troubleshooting": "문제 해결 가이드"
+		},
+		"package": {
+			"description": "Microsoft 인증 공급자",
+			"displayName": "Microsoft 계정",
+			"signIn": "로그인",
+			"signOut": "로그아웃"
 		}
 	}
 }

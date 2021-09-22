@@ -8,28 +8,46 @@
 	],
 	"version": "1.0.0",
 	"contents": {
+		"dist/codelensProvider": {
+			"acceptBothChanges": "Принять оба изменения",
+			"acceptCurrentChange": "Принять текущее изменение",
+			"acceptIncomingChange": "Принять входящее изменение",
+			"compareChanges": "Сравнить изменения"
+		},
+		"dist/commandHandler": {
+			"compareChangesTitle": "{0}: текущие изменения ⟷ входящие изменения",
+			"cursorNotInConflict": "Курсор не находится на конфликте объединения",
+			"cursorOnCommonAncestorsRange": "Курсор редактора находится в блоке общих предков. Переместите его в блок \"Текущее\" или \"Входящее\"",
+			"cursorOnSplitterRange": "Курсор редактора находится на разделителе блока объединения конфликтов. Переместите его в блок \"Текущее\" или \"Входящее\"",
+			"noConflicts": "Конфликтов объединения в этом файле не обнаружено",
+			"noOtherConflictsInThisFile": "Других конфликтов объединения в этом файле не обнаружено"
+		},
+		"dist/mergeDecorator": {
+			"currentChange": "(текущее изменение)",
+			"incomingChange": "(входящее изменение)"
+		},
 		"package": {
-			"displayName": "Объединить конфликт",
-			"description": "Выделение и команды для внутренних конфликтов слияния.",
-			"command.category": "Объединить конфликт",
+			"command.accept.all-both": "Принять все входящие и текущие",
 			"command.accept.all-current": "Принять все текущие",
 			"command.accept.all-incoming": "Принять все входящие",
-			"command.accept.all-both": "Принять все входящие и текущие",
+			"command.accept.both": "Принять оба",
 			"command.accept.current": "Принять текущее",
 			"command.accept.incoming": "Принять входящее",
 			"command.accept.selection": "Принять выделенное",
-			"command.accept.both": "Принять оба",
+			"command.category": "Объединить конфликт",
+			"command.compare": "Сравнить текущий конфликт",
 			"command.next": "Следующий конфликт",
 			"command.previous": "Предыдущий конфликт",
-			"command.compare": "Сравнить текущий конфликт",
-			"config.title": "Объединить конфликт",
 			"config.autoNavigateNextConflictEnabled": "Следует ли автоматически перейти к следующему конфликту слияния после устранения конфликта слияния.",
 			"config.codeLensEnabled": "Создать Code Lens для блоков объединения конфликтов в редакторе.",
 			"config.decoratorsEnabled": "Создать декораторы для блоков объединения конфликтов в редакторе.",
 			"config.diffViewPosition": "Определяет, где следует открыть представление инструмента сравнения при сравнении изменений в конфликтах слияния.",
-			"config.diffViewPosition.current": "Откройте представление инструмента сравнения в текущей группе редакторов.",
+			"config.diffViewPosition.below": "Откройте представление инструмента сравнения под текущей группой редакторов.",
 			"config.diffViewPosition.beside": "Откройте представление инструмента сравнения рядом с текущей группой редакторов.",
-			"config.diffViewPosition.below": "Откройте представление инструмента сравнения под текущей группой редакторов."
+			"config.diffViewPosition.current": "Откройте представление инструмента сравнения в текущей группе редакторов.",
+			"config.title": "Объединить конфликт",
+			"description": "Выделение и команды для внутренних конфликтов слияния.",
+			"displayName": "Объединить конфликт"
 		}
 	}
 }

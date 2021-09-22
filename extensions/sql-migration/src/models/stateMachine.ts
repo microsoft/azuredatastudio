@@ -294,6 +294,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				{
 					'sessionId': this._sessionId,
 					'tenantId': this._azureAccount.properties.tenants[0].id,
+					'subscriptionId': this._targetSubscription?.id,
+					'resourceGroup': this._resourceGroup?.name,
 					'hashedServerName': hashString(this._assessmentApiResponse.assessmentResult.name),
 					'startTime': startTime.toString(),
 					'endTime': endTime.toString(),
@@ -327,6 +329,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					TelemetryAction.DatabaseAssessment,
 					{
 						'sessionId': this._sessionId,
+						'subscriptionId': this._targetSubscription?.id,
+						'resourceGroup': this._resourceGroup?.name,
 						'hashedDatabaseName': hashString(d.name),
 						'compatibilityLevel': d.compatibilityLevel
 					},
@@ -363,6 +367,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				TelemetryAction.DatabaseAssessmentWarning,
 				{
 					'sessionId': this._sessionId,
+					'subscriptionId': this._targetSubscription?.id,
+					'resourceGroup': this._resourceGroup?.name,
 					'warnings': JSON.stringify(databaseWarnings)
 				},
 				{}
@@ -381,6 +387,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				TelemetryAction.DatabaseAssessmentError,
 				{
 					'sessionId': this._sessionId,
+					'subscriptionId': this._targetSubscription?.id,
+					'resourceGroup': this._resourceGroup?.name,
 					'errors': JSON.stringify(databaseErrors)
 				},
 				{}
@@ -960,15 +968,18 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						TelemetryViews.MigrationWizardSummaryPage,
 						TelemetryAction.StartMigration,
 						{
+							'sessionId': this._sessionId,
+							'tenantId': this._azureAccount.properties.tenants[0].id,
+							'subscriptionId': this._targetSubscription?.id,
+							'resourceGroup': this._resourceGroup?.name,
+							'location': this._targetServerInstance.location,
+							'targetType': this._targetType,
 							'hashedServerName': hashString(this._assessmentApiResponse.assessmentResult.name),
 							'hashedDatabaseName': hashString(this._migrationDbs[i]),
 							'migrationMode': isOfflineMigration ? 'offline' : 'online',
-							'sessionId': this._sessionId,
 							'migrationStartTime': new Date().toString(),
 							'targetDatabaseName': this._targetDatabaseNames[i],
 							'serverName': this._targetServerInstance.name,
-							'tenantId': this._azureAccount.properties.tenants[0].id,
-							'location': this._targetServerInstance.location,
 							'sqlMigrationServiceId': Buffer.from(this._sqlMigrationService?.id!).toString('base64'),
 							'irRegistered': (this._nodeNames.length > 0).toString()
 						},
@@ -976,7 +987,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						}
 					);
 
-					MigrationLocalStorage.saveMigration(
+					await MigrationLocalStorage.saveMigration(
 						currentConnection!,
 						response.databaseMigration,
 						this._targetServerInstance,
@@ -986,20 +997,19 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						response.asyncUrl,
 						this._sessionId
 					);
-					vscode.window.showInformationMessage(localize("sql.migration.starting.migration.message", 'Starting migration for database {0} to {1} - {2}', this._migrationDbs[i], this._targetServerInstance.name, this._targetDatabaseNames[i]));
+					void vscode.window.showInformationMessage(localize("sql.migration.starting.migration.message", 'Starting migration for database {0} to {1} - {2}', this._migrationDbs[i], this._targetServerInstance.name, this._targetDatabaseNames[i]));
 				}
 			} catch (e) {
-				vscode.window.showErrorMessage(
+				void vscode.window.showErrorMessage(
 					localize('sql.migration.starting.migration.error', "An error occurred while starting the migration: '{0}'", e.message));
 				console.log(e);
 			}
 
-			vscode.commands.executeCommand('sqlmigration.refreshMigrationTiles');
+			await vscode.commands.executeCommand('sqlmigration.refreshMigrationTiles');
 		}
 	}
 
-	//TODO: code this method to save appropriate info for page
-	public saveInfo(serverName: string, currentPage: Page): void {
+	public async saveInfo(serverName: string, currentPage: Page): Promise<void> {
 		let saveInfo: SavedInfo;
 		saveInfo = {
 			closedPage: currentPage,
@@ -1039,7 +1049,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			case Page.AzureAccount:
 				saveInfo.azureAccount = deepClone(this._azureAccount);
 				saveInfo.azureTenant = deepClone(this._azureTenant);
-				this.extensionContext.globalState.update(`${this.mementoString}.${serverName}`, saveInfo);
+				await this.extensionContext.globalState.update(`${this.mementoString}.${serverName}`, saveInfo);
 		}
 	}
 }
