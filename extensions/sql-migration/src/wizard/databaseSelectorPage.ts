@@ -288,8 +288,8 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		).component();
 
 		await this._databaseSelectorTable.setDataValues(this._databaseTableValues);
-		this._disposables.push(this._databaseSelectorTable.onDataChanged(() => {
-			this._dbCount.updateProperties({
+		this._disposables.push(this._databaseSelectorTable.onDataChanged(async () => {
+			await this._dbCount.updateProperties({
 				'value': constants.DATABASES_SELECTED(this.selectedDbs().length, this._databaseTableValues.length)
 			});
 		}));

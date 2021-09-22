@@ -50,7 +50,12 @@ export class SummaryPage extends ImportPage {
 
 	async start(): Promise<boolean> {
 		this.table = this.view.modelBuilder.table().component();
-		this.statusText = this.view.modelBuilder.text().component();
+		this.statusText = this.view.modelBuilder.text().withProps({
+			CSSStyles: {
+				'user-select': 'text',
+				'font-size': '13px'
+			}
+		}).component();
 		this.loading = this.view.modelBuilder.loadingComponent().withItem(this.statusText).component();
 
 		this.form = this.view.modelBuilder.formContainer().withFormItems(

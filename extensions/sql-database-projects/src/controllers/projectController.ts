@@ -283,14 +283,14 @@ export class ProjectsController {
 						}
 						void vscode.window.showInformationMessage(constants.deployProjectSucceed);
 					} else {
-						void vscode.window.showErrorMessage(constants.deployProjectFailed(publishResult?.errorMessage || ''));
+						void vscode.window.showErrorMessage(constants.publishToContainerFailed(publishResult?.errorMessage || ''));
 					}
 				} else {
-					void vscode.window.showErrorMessage(constants.deployProjectFailed(constants.deployProjectFailedMessage));
+					void vscode.window.showErrorMessage(constants.publishToContainerFailed(constants.deployProjectFailedMessage));
 				}
 			}
 		} catch (error) {
-			void vscode.window.showErrorMessage(constants.deployProjectFailed(utils.getErrorMessage(error)));
+			void vscode.window.showErrorMessage(constants.publishToContainerFailed(utils.getErrorMessage(error)));
 		}
 		return;
 	}

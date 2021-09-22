@@ -195,6 +195,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.cutover.card">
       <source xml:lang="en">Completing cutover</source>
     </trans-unit>
+    <trans-unit id="sql.migration.cutover.error">
+      <source xml:lang="en">An error occurred while initiating cutover.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.cutover.help.main">
       <source xml:lang="en">Perform the following steps before you complete cutover.</source>
     </trans-unit>
