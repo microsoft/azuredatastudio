@@ -14,7 +14,7 @@ import { NotebookChangeType, CellType, CellTypes } from 'sql/workbench/services/
 import { KernelsLanguage, nbversion } from 'sql/workbench/services/notebook/common/notebookConstants';
 import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import { IExecuteManager, SQL_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
+import { IExecuteManager, SQL_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_PROVIDER, ISerializationManager } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookContexts } from 'sql/workbench/services/notebook/browser/models/notebookContexts';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { INotification, Severity, INotificationService } from 'vs/platform/notification/common/notification';
@@ -133,6 +133,22 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._notebookOptions.layoutChanged(() => this._layoutChanged.fire());
 		}
 		this._defaultKernel = _notebookOptions.defaultKernel;
+	}
+
+	private get serializationManagers(): ISerializationManager[] {
+		let managers = this._notebookOptions.serializationManagers.filter(manager => manager.providerId !== DEFAULT_NOTEBOOK_PROVIDER);
+		if (!managers.length) {
+			return this._notebookOptions.serializationManagers;
+		}
+		return managers;
+	}
+
+	public get serializationManager(): ISerializationManager | undefined {
+		let manager = this.serializationManagers.find(manager => manager.providerId === this._providerId);
+		if (!manager) {
+			manager = this.serializationManagers.find(manager => manager.providerId === DEFAULT_NOTEBOOK_PROVIDER);
+		}
+		return manager;
 	}
 
 	public get executeManagers(): IExecuteManager[] {

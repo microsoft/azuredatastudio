@@ -7,7 +7,7 @@ import { nb } from 'azdata';
 import * as assert from 'assert';
 
 import { URI } from 'vs/base/common/uri';
-import { NotebookManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
+import { ExecuteManagerStub, SerializationManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { IClientSession, INotebookModelOptions } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
@@ -67,8 +67,8 @@ let instantiationService: IInstantiationService;
 let serviceCollection = new ServiceCollection();
 
 suite('Notebook Find Model', function (): void {
-
-	let notebookManagers = [new NotebookManagerStub()];
+	let serializationManagers = [new SerializationManagerStub()];
+	let executeManagers = [new ExecuteManagerStub()];
 	let memento: TypeMoq.Mock<Memento>;
 	let queryConnectionService: TypeMoq.Mock<TestConnectionManagementService>;
 	let defaultModelOptions: INotebookModelOptions;
@@ -92,7 +92,8 @@ suite('Notebook Find Model', function (): void {
 		defaultModelOptions = {
 			notebookUri: defaultUri,
 			factory: new ModelFactory(instantiationService),
-			executeManagers: notebookManagers,
+			serializationManagers: serializationManagers,
+			executeManagers: executeManagers,
 			contentLoader: undefined,
 			notificationService: notificationService.object,
 			connectionService: queryConnectionService.object,

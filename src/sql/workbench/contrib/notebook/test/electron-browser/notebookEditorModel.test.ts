@@ -32,7 +32,7 @@ import { TestLifecycleService, TestTextFileService, workbenchInstantiationServic
 import { Range } from 'vs/editor/common/core/range';
 import { nb } from 'azdata';
 import { Emitter } from 'vs/base/common/event';
-import { INotebookEditor, IExecuteManager } from 'sql/workbench/services/notebook/browser/notebookService';
+import { INotebookEditor, IExecuteManager, ISerializationManager } from 'sql/workbench/services/notebook/browser/notebookService';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { IStorageService } from 'vs/platform/storage/common/storage';
@@ -50,7 +50,12 @@ class ServiceAccessor {
 	}
 }
 
-class NotebookManagerStub implements IExecuteManager {
+class SerializationManagerStub implements ISerializationManager {
+	providerId: string;
+	contentManager: nb.ContentManager;
+}
+
+class ExecuteManagerStub implements IExecuteManager {
 	providerId: string;
 	contentManager: nb.ContentManager;
 	sessionManager: nb.SessionManager;
@@ -62,7 +67,8 @@ let defaultUri = URI.file('/some/path.ipynb');
 // Note: these tests are intentionally written to be extremely brittle and break on any changes to notebook/cell serialization changes.
 // If any of these tests fail, it is likely that notebook editor rehydration will fail with cryptic JSON messages.
 suite('Notebook Editor Model', function (): void {
-	let notebookManagers = [new NotebookManagerStub()];
+	let serializationManagers = [new SerializationManagerStub()];
+	let executeManagers = [new ExecuteManagerStub()];
 	let notebookModel: NotebookModel;
 	const instantiationService: IInstantiationService = workbenchInstantiationService();
 	let accessor: ServiceAccessor;
@@ -156,7 +162,8 @@ suite('Notebook Editor Model', function (): void {
 		defaultModelOptions = {
 			notebookUri: defaultUri,
 			factory: new ModelFactory(instantiationService),
-			executeManagers: notebookManagers,
+			serializationManagers: serializationManagers,
+			executeManagers: executeManagers,
 			contentLoader: undefined,
 			notificationService: notificationService.object,
 			connectionService: queryConnectionService.object,

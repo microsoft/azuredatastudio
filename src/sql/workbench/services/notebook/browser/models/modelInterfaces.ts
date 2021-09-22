@@ -12,7 +12,7 @@ import { URI } from 'vs/base/common/uri';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 
 import { CellType, NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
-import { IExecuteManager, ILanguageMagic } from 'sql/workbench/services/notebook/browser/notebookService';
+import { IExecuteManager, ILanguageMagic, ISerializationManager } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
@@ -254,7 +254,12 @@ export interface INotebookModel {
 	readonly language: string;
 
 	/**
-	 * All notebook managers applicable for a given notebook
+	 * The current serialization manager applicable for a given notebook
+	 */
+	readonly serializationManager: ISerializationManager | undefined;
+
+	/**
+	 * All execute managers applicable for a given notebook
 	 */
 	readonly executeManagers: IExecuteManager[];
 
@@ -570,6 +575,7 @@ export interface INotebookModelOptions {
 	factory: IModelFactory;
 
 	contentLoader: IContentLoader;
+	serializationManagers: ISerializationManager[];
 	executeManagers: IExecuteManager[];
 	providerId: string;
 	defaultKernel: nb.IKernelSpec;

@@ -12,7 +12,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { URI } from 'vs/base/common/uri';
 
-import { NotebookManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
+import { ExecuteManagerStub, SerializationManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
 import { IClientSession, INotebookModelOptions, NotebookContentChange, IClientSessionOptions, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
@@ -138,7 +138,8 @@ let instantiationService: IInstantiationService;
 let configurationService: IConfigurationService;
 
 suite('notebook model', function (): void {
-	let notebookManagers = [new NotebookManagerStub()];
+	let serializationManagers = [new SerializationManagerStub()];
+	let executeManagers = [new ExecuteManagerStub()];
 	let mockSessionManager: TypeMoq.Mock<nb.SessionManager>;
 	let memento: TypeMoq.Mock<Memento>;
 	let queryConnectionService: TypeMoq.Mock<TestConnectionManagementService>;
@@ -146,7 +147,7 @@ suite('notebook model', function (): void {
 	const logService = new NullLogService();
 	setup(() => {
 		mockSessionManager = TypeMoq.Mock.ofType(SessionManager);
-		notebookManagers[0].sessionManager = mockSessionManager.object;
+		executeManagers[0].sessionManager = mockSessionManager.object;
 		sessionReady = new Deferred<void>();
 		notificationService = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService, TypeMoq.MockBehavior.Loose);
 		capabilitiesService = new TestCapabilitiesService();
@@ -160,7 +161,8 @@ suite('notebook model', function (): void {
 		defaultModelOptions = {
 			notebookUri: defaultUri,
 			factory: new ModelFactory(instantiationService),
-			executeManagers: notebookManagers,
+			serializationManagers: serializationManagers,
+			executeManagers: executeManagers,
 			contentLoader: undefined,
 			notificationService: notificationService.object,
 			connectionService: queryConnectionService.object,
@@ -265,10 +267,10 @@ suite('notebook model', function (): void {
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
 		defaultModelOptions.contentLoader = mockContentManager.object;
 
-		let defaultNotebookManager = new NotebookManagerStub();
+		let defaultNotebookManager = new ExecuteManagerStub();
 		defaultNotebookManager.providerId = 'SQL';
 
-		let jupyterNotebookManager = new NotebookManagerStub();
+		let jupyterNotebookManager = new ExecuteManagerStub();
 		jupyterNotebookManager.providerId = 'jupyter';
 
 		// Setup 2 notebook managers
@@ -608,7 +610,7 @@ suite('notebook model', function (): void {
 		await model.requestModelLoad();
 		// starting client session fails at startSessionInstance due to:
 		// Cannot set property 'defaultKernelLoaded' of undefined
-		await assert.rejects(async () => { await model.startSession(notebookManagers[0]); });
+		await assert.rejects(async () => { await model.startSession(executeManagers[0]); });
 		// Then I expect load to succeed
 		assert.strictEqual(model.cells.length, 1);
 		assert(model.clientSession);
@@ -921,7 +923,7 @@ suite('notebook model', function (): void {
 
 		await model.requestModelLoad();
 
-		await model.startSession(notebookManagers[0]);
+		await model.startSession(executeManagers[0]);
 
 		// Then I expect load to succeed
 		assert(!isUndefinedOrNull(model.clientSession), 'clientSession should exist after session is started');

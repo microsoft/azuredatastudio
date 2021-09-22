@@ -14,7 +14,7 @@ export interface INotebookInput {
 	isDirty(): boolean;
 	setDirty(boolean);
 	readonly notebookUri: URI;
-	updateModel(): void;
+	updateModel(): Promise<void>;
 	readonly editorOpenedTimestamp: number;
 	readonly layoutChanged: Event<void>;
 	readonly contentLoader: IContentLoader;

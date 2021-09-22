@@ -7,7 +7,7 @@ import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/no
 import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
-import { INotebookParams, INotebookService, IExecuteManager, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
+import { INotebookParams, INotebookService, IExecuteManager, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER, ISerializationManager } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { CellMagicMapper } from 'sql/workbench/contrib/notebook/browser/models/cellMagicMapper';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -38,6 +38,7 @@ export const NOTEBOOKEDITOR_SELECTOR: string = 'notebookeditor-component';
 export class NotebookEditorComponent extends AngularDisposable {
 	private readonly defaultViewMode = ViewMode.Notebook;
 	private profile: IConnectionProfile;
+	private serializationManagers: ISerializationManager[] = [];
 	private executeManagers: IExecuteManager[] = [];
 	private _modelReadyDeferred = new Deferred<NotebookModel>();
 
@@ -80,7 +81,8 @@ export class NotebookEditorComponent extends AngularDisposable {
 
 	private async doLoad(): Promise<void> {
 		await this.createModelAndLoadContents();
-		await this.setNotebookManager();
+		await this.setSerializationManager();
+		await this.setExecuteManager();
 		await this.loadModel();
 
 		this.setActiveView();
@@ -105,6 +107,7 @@ export class NotebookEditorComponent extends AngularDisposable {
 			notebookUri: this._notebookParams.notebookUri,
 			connectionService: this.connectionManagementService,
 			notificationService: this.notificationService,
+			serializationManagers: this.serializationManagers,
 			executeManagers: this.executeManagers,
 			contentLoader: this._notebookParams.input.contentLoader,
 			cellMagicMapper: new CellMagicMapper(this.notebookService.languageMagics),
@@ -133,11 +136,19 @@ export class NotebookEditorComponent extends AngularDisposable {
 		this.detectChanges();
 	}
 
-	private async setNotebookManager(): Promise<void> {
+	private async setSerializationManager(): Promise<void> {
 		let providerInfo = await this._notebookParams.providerInfo;
 		for (let providerId of providerInfo.providers) {
-			let notebookManager = await this.notebookService.getOrCreateExecuteManager(providerId, this._notebookParams.notebookUri);
-			this.executeManagers.push(notebookManager);
+			let manager = await this.notebookService.getOrCreateSerializationManager(providerId, this._notebookParams.notebookUri);
+			this.serializationManagers.push(manager);
+		}
+	}
+
+	private async setExecuteManager(): Promise<void> {
+		let providerInfo = await this._notebookParams.providerInfo;
+		for (let providerId of providerInfo.providers) {
+			let manager = await this.notebookService.getOrCreateExecuteManager(providerId, this._notebookParams.notebookUri);
+			this.executeManagers.push(manager);
 		}
 	}
 

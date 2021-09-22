@@ -11,7 +11,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { URI } from 'vs/base/common/uri';
 
-import { NotebookManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
+import { ExecuteManagerStub, SerializationManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
 import { INotebookModelOptions } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
@@ -62,7 +62,8 @@ let configurationService: IConfigurationService;
 
 suite('NotebookViews', function (): void {
 	let defaultViewName = 'Default New View';
-	let notebookManagers = [new NotebookManagerStub()];
+	let serializationManagers = [new SerializationManagerStub()];
+	let executeManagers = [new ExecuteManagerStub()];
 	let mockSessionManager: TypeMoq.Mock<nb.SessionManager>;
 	let memento: TypeMoq.Mock<Memento>;
 	let queryConnectionService: TypeMoq.Mock<TestConnectionManagementService>;
@@ -131,7 +132,7 @@ suite('NotebookViews', function (): void {
 
 	function setupServices() {
 		mockSessionManager = TypeMoq.Mock.ofType(SessionManager);
-		notebookManagers[0].sessionManager = mockSessionManager.object;
+		executeManagers[0].sessionManager = mockSessionManager.object;
 		notificationService = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService, TypeMoq.MockBehavior.Loose);
 		capabilitiesService = TypeMoq.Mock.ofType<ICapabilitiesService>(TestCapabilitiesService);
 		memento = TypeMoq.Mock.ofType(Memento, TypeMoq.MockBehavior.Loose, '');
@@ -144,7 +145,8 @@ suite('NotebookViews', function (): void {
 		defaultModelOptions = {
 			notebookUri: defaultUri,
 			factory: new ModelFactory(instantiationService),
-			executeManagers: notebookManagers,
+			serializationManagers: serializationManagers,
+			executeManagers: executeManagers,
 			contentLoader: undefined,
 			notificationService: notificationService.object,
 			connectionService: queryConnectionService.object,

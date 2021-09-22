@@ -47,6 +47,9 @@ export class NotebookModelStub implements INotebookModel {
 	get sessionLoadFinished(): Promise<void> {
 		throw new Error('method not implemented.');
 	}
+	get serializationManager(): ISerializationManager {
+		throw new Error('method not implemented.');
+	}
 	get executeManagers(): IExecuteManager[] {
 		throw new Error('method not implemented.');
 	}
@@ -197,9 +200,13 @@ export class NotebookFindModelStub implements INotebookFindModel {
 	}
 }
 
-export class NotebookManagerStub implements IExecuteManager {
+export class SerializationManagerStub implements ISerializationManager {
 	providerId: string;
 	contentManager: nb.ContentManager;
+}
+
+export class ExecuteManagerStub implements IExecuteManager {
+	providerId: string;
 	sessionManager: nb.SessionManager;
 	serverManager: nb.ServerManager;
 }

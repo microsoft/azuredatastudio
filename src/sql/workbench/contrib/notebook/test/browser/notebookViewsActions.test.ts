@@ -11,7 +11,7 @@ import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTeleme
 import { NotebookEditorContentLoader } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { DeleteViewAction, InsertCellAction } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsActions';
 import { SessionManager } from 'sql/workbench/contrib/notebook/test/emptySessionClasses';
-import { NotebookManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
+import { ExecuteManagerStub, SerializationManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
 import { ICellModel, INotebookModelOptions, ViewMode } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
@@ -58,7 +58,8 @@ let initialNotebookContent: nb.INotebookContents = {
 
 suite('Notebook Views Actions', function (): void {
 	let defaultViewName = 'Default New View';
-	let notebookManagers = [new NotebookManagerStub()];
+	let serializationManagers = [new SerializationManagerStub()];
+	let executeManagers = [new ExecuteManagerStub()];
 	let mockSessionManager: TypeMoq.Mock<nb.SessionManager>;
 	let memento: TypeMoq.Mock<Memento>;
 	let queryConnectionService: TypeMoq.Mock<TestConnectionManagementService>;
@@ -164,7 +165,7 @@ suite('Notebook Views Actions', function (): void {
 
 	function setupServices() {
 		mockSessionManager = TypeMoq.Mock.ofType(SessionManager);
-		notebookManagers[0].sessionManager = mockSessionManager.object;
+		executeManagers[0].sessionManager = mockSessionManager.object;
 		notificationService = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService, TypeMoq.MockBehavior.Loose);
 		capabilitiesService = TypeMoq.Mock.ofType<ICapabilitiesService>(TestCapabilitiesService);
 		memento = TypeMoq.Mock.ofType(Memento, TypeMoq.MockBehavior.Loose, '');
@@ -177,7 +178,8 @@ suite('Notebook Views Actions', function (): void {
 		defaultModelOptions = {
 			notebookUri: defaultUri,
 			factory: new ModelFactory(instantiationService),
-			executeManagers: notebookManagers,
+			serializationManagers: serializationManagers,
+			executeManagers: executeManagers,
 			contentLoader: undefined,
 			notificationService: notificationService.object,
 			connectionService: queryConnectionService.object,
