@@ -204,7 +204,7 @@ suite('Notebook Editor Model', function (): void {
 			cells: [newCell],
 			cellIndex: 0
 		};
-		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellsModified);
+		await notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellsModified);
 		assert(notebookEditorModel.lastEditFullReplacement);
 
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(8), '            "source": [');
@@ -228,7 +228,7 @@ suite('Notebook Editor Model', function (): void {
 			cells: [newCell],
 			cellIndex: 0
 		};
-		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellsModified);
+		await notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellsModified);
 		assert(notebookEditorModel.lastEditFullReplacement);
 
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(25), '            "execution_count": null');
@@ -240,7 +240,7 @@ suite('Notebook Editor Model', function (): void {
 			cellIndex: 0
 		};
 
-		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellExecuted);
+		await notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellExecuted);
 
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(8), '            "source": [');
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(12), '                "azdata_cell_guid": "' + newCell.cellGuid + '"');
@@ -257,7 +257,7 @@ suite('Notebook Editor Model', function (): void {
 			cellIndex: 0
 		};
 
-		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellExecuted);
+		await notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellExecuted);
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(25), '            "execution_count": 10');
 		assert(!notebookEditorModel.lastEditFullReplacement);
 
@@ -268,7 +268,7 @@ suite('Notebook Editor Model', function (): void {
 			cellIndex: 0
 		};
 
-		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellExecuted);
+		await notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellExecuted);
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(25), '            "execution_count": 15');
 		assert(!notebookEditorModel.lastEditFullReplacement);
 
@@ -279,7 +279,7 @@ suite('Notebook Editor Model', function (): void {
 			cellIndex: 0
 		};
 
-		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellExecuted);
+		await notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellExecuted);
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(25), '            "execution_count": 105');
 		assert(!notebookEditorModel.lastEditFullReplacement);
 	});
@@ -296,7 +296,7 @@ suite('Notebook Editor Model', function (): void {
 			cells: [newCell],
 			cellIndex: 0
 		};
-		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellsModified);
+		await notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellsModified);
 		assert(notebookEditorModel.lastEditFullReplacement);
 
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(14), '            "outputs": [');
@@ -307,7 +307,7 @@ suite('Notebook Editor Model', function (): void {
 			cellIndex: 0
 		};
 
-		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellOutputCleared);
+		await notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellOutputCleared);
 
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(8), '            "source": [');
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(12), '                "azdata_cell_guid": "' + newCell.cellGuid + '"');
@@ -330,7 +330,7 @@ suite('Notebook Editor Model', function (): void {
 			cells: [newCell],
 			cellIndex: 0
 		};
-		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellsModified);
+		await notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellsModified);
 		assert(notebookEditorModel.lastEditFullReplacement);
 
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(14), '            "outputs": [');
@@ -349,7 +349,7 @@ suite('Notebook Editor Model', function (): void {
 			}
 		};
 
-		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellSourceUpdated);
+		await notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellSourceUpdated);
 
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(8), '            "source": [');
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(9), '                "This is a test\\n",');
@@ -376,7 +376,7 @@ suite('Notebook Editor Model', function (): void {
 			cells: [newCell],
 			cellIndex: 0
 		};
-		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellsModified);
+		await notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellsModified);
 		assert(notebookEditorModel.lastEditFullReplacement);
 
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(14), '            "outputs": [');
@@ -395,7 +395,7 @@ suite('Notebook Editor Model', function (): void {
 			}
 		};
 
-		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellSourceUpdated);
+		await notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellSourceUpdated);
 
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(8), '            "source": [');
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(9), '                "This is a test"');
@@ -420,7 +420,7 @@ suite('Notebook Editor Model', function (): void {
 			cells: [newCell],
 			cellIndex: 0
 		};
-		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellsModified);
+		await notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellsModified);
 		assert(notebookEditorModel.lastEditFullReplacement);
 
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(14), '            "outputs": [');
@@ -434,7 +434,7 @@ suite('Notebook Editor Model', function (): void {
 			modelContentChangedEvent: undefined
 		};
 
-		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellSourceUpdated);
+		await notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellSourceUpdated);
 
 		assert(!notebookEditorModel.lastEditFullReplacement, 'should not do a full replacement for a source update');
 
@@ -460,7 +460,7 @@ suite('Notebook Editor Model', function (): void {
 			cells: [newCell],
 			cellIndex: 0
 		};
-		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellsModified);
+		await notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellsModified);
 		assert(notebookEditorModel.lastEditFullReplacement);
 
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(14), '            "outputs": [');
@@ -474,7 +474,7 @@ suite('Notebook Editor Model', function (): void {
 			modelContentChangedEvent: undefined
 		};
 
-		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellSourceUpdated);
+		await notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellSourceUpdated);
 
 		assert(!notebookEditorModel.lastEditFullReplacement, 'should not do a full replacement for a source update');
 
@@ -501,7 +501,7 @@ suite('Notebook Editor Model', function (): void {
 			cells: [newCell],
 			cellIndex: 0
 		};
-		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellsModified);
+		await notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellsModified);
 		assert(notebookEditorModel.lastEditFullReplacement);
 
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(8), '            "source": [');
@@ -523,7 +523,7 @@ suite('Notebook Editor Model', function (): void {
 			}
 		};
 
-		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellSourceUpdated);
+		await notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellSourceUpdated);
 		assert(!notebookEditorModel.lastEditFullReplacement);
 
 		contentChange = {
@@ -540,7 +540,7 @@ suite('Notebook Editor Model', function (): void {
 			}
 		};
 
-		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellSourceUpdated);
+		await notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellSourceUpdated);
 
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(8), '            "source": [');
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(9), '                ""');
@@ -565,7 +565,7 @@ suite('Notebook Editor Model', function (): void {
 			cells: [newCell],
 			cellIndex: 0
 		};
-		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellsModified);
+		await notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellsModified);
 
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(14), '            "outputs": [');
 
@@ -583,7 +583,7 @@ suite('Notebook Editor Model', function (): void {
 			}
 		};
 
-		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellSourceUpdated);
+		await notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellSourceUpdated);
 		assert(!notebookEditorModel.lastEditFullReplacement);
 
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(8), '            "source": [');
@@ -607,7 +607,7 @@ suite('Notebook Editor Model', function (): void {
 			}
 		};
 
-		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellSourceUpdated);
+		await notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellSourceUpdated);
 		assert(!notebookEditorModel.lastEditFullReplacement);
 
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(8), '            "source": [');
@@ -637,7 +637,7 @@ suite('Notebook Editor Model', function (): void {
 				cells: [cell],
 				cellIndex: 0
 			};
-			notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellsModified);
+			await notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellsModified);
 			assert(notebookEditorModel.lastEditFullReplacement);
 		}
 
@@ -654,7 +654,7 @@ suite('Notebook Editor Model', function (): void {
 			}
 		};
 
-		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellSourceUpdated);
+		await notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellSourceUpdated);
 		assert(!notebookEditorModel.lastEditFullReplacement);
 
 		for (let i = 0; i < 10; i++) {
@@ -684,7 +684,7 @@ suite('Notebook Editor Model', function (): void {
 			cells: [newCell],
 			cellIndex: 0
 		};
-		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellsModified);
+		await notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellsModified);
 		assert(notebookEditorModel.lastEditFullReplacement);
 
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(14), '            "outputs": [');
@@ -696,7 +696,7 @@ suite('Notebook Editor Model', function (): void {
 			cells: [newCell]
 		};
 
-		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellOutputUpdated);
+		await notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellOutputUpdated);
 
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(8), '            "source": [');
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(12), '                "azdata_cell_guid": "' + newCell.cellGuid + '"');
@@ -721,7 +721,7 @@ suite('Notebook Editor Model', function (): void {
 			cells: [newCell],
 			cellIndex: 0
 		};
-		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellsModified);
+		await notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellsModified);
 		assert(notebookEditorModel.lastEditFullReplacement);
 
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(14), '            "outputs": [');
@@ -735,7 +735,7 @@ suite('Notebook Editor Model', function (): void {
 			cells: [newCell]
 		};
 
-		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellOutputUpdated);
+		await notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellOutputUpdated);
 
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(8), '            "source": [');
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(12), '                "azdata_cell_guid": "' + newCell.cellGuid + '"');
@@ -757,7 +757,7 @@ suite('Notebook Editor Model', function (): void {
 			cells: [newCell]
 		};
 
-		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellOutputUpdated);
+		await notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellOutputUpdated);
 
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(32), '                    "text": "test test test"');
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(33), '                }');
@@ -786,7 +786,7 @@ suite('Notebook Editor Model', function (): void {
 			cellIndex: 0
 		};
 
-		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellsModified);
+		await notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellsModified);
 		assert(notebookEditorModel.lastEditFullReplacement);
 
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(14), '            "outputs": [],');
@@ -799,7 +799,7 @@ suite('Notebook Editor Model', function (): void {
 			cells: [newCell]
 		};
 
-		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellOutputUpdated);
+		await notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellOutputUpdated);
 
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(8), '            "source": [');
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(12), '                "azdata_cell_guid": "' + newCell.cellGuid + '"');
@@ -817,9 +817,9 @@ suite('Notebook Editor Model', function (): void {
 		notebookEditorModel.replaceEntireTextEditorModel(notebookModel, undefined);
 
 		let newCell = notebookModel.addCell(CellTypes.Code);
-		setupTextEditorModelWithEmptyOutputs(notebookEditorModel, newCell);
+		await setupTextEditorModelWithEmptyOutputs(notebookEditorModel, newCell);
 
-		addTextToBeginningOfTextEditorModel(notebookEditorModel, newCell, '"This text is in quotes"');
+		await addTextToBeginningOfTextEditorModel(notebookEditorModel, newCell, '"This text is in quotes"');
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(9), '                "\\"This text is in quotes\\""');
 
 		ensureStaticContentInOneLineCellIsCorrect(notebookEditorModel, newCell);
@@ -832,9 +832,9 @@ suite('Notebook Editor Model', function (): void {
 		notebookEditorModel.replaceEntireTextEditorModel(notebookModel, undefined);
 
 		let newCell = notebookModel.addCell(CellTypes.Code);
-		setupTextEditorModelWithEmptyOutputs(notebookEditorModel, newCell);
+		await setupTextEditorModelWithEmptyOutputs(notebookEditorModel, newCell);
 
-		addTextToBeginningOfTextEditorModel(notebookEditorModel, newCell, '""""""""""');
+		await addTextToBeginningOfTextEditorModel(notebookEditorModel, newCell, '""""""""""');
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(9), '                "\\"\\"\\"\\"\\"\\"\\"\\"\\"\\""');
 
 		ensureStaticContentInOneLineCellIsCorrect(notebookEditorModel, newCell);
@@ -847,9 +847,9 @@ suite('Notebook Editor Model', function (): void {
 		notebookEditorModel.replaceEntireTextEditorModel(notebookModel, undefined);
 
 		let newCell = notebookModel.addCell(CellTypes.Code);
-		setupTextEditorModelWithEmptyOutputs(notebookEditorModel, newCell);
+		await setupTextEditorModelWithEmptyOutputs(notebookEditorModel, newCell);
 
-		addTextToBeginningOfTextEditorModel(notebookEditorModel, newCell, '\\\\\\\\\\');
+		await addTextToBeginningOfTextEditorModel(notebookEditorModel, newCell, '\\\\\\\\\\');
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(9), '                "\\\\\\\\\\\\\\\\\\\\\"');
 
 		ensureStaticContentInOneLineCellIsCorrect(notebookEditorModel, newCell);
@@ -862,9 +862,9 @@ suite('Notebook Editor Model', function (): void {
 		notebookEditorModel.replaceEntireTextEditorModel(notebookModel, undefined);
 
 		let newCell = notebookModel.addCell(CellTypes.Code);
-		setupTextEditorModelWithEmptyOutputs(notebookEditorModel, newCell);
+		await setupTextEditorModelWithEmptyOutputs(notebookEditorModel, newCell);
 
-		addTextToBeginningOfTextEditorModel(notebookEditorModel, newCell, '\"\"\"\"\"\"\"\"\"\"');
+		await addTextToBeginningOfTextEditorModel(notebookEditorModel, newCell, '\"\"\"\"\"\"\"\"\"\"');
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(9), '                "\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\"\\\""');
 
 		ensureStaticContentInOneLineCellIsCorrect(notebookEditorModel, newCell);
@@ -877,9 +877,9 @@ suite('Notebook Editor Model', function (): void {
 		notebookEditorModel.replaceEntireTextEditorModel(notebookModel, undefined);
 
 		let newCell = notebookModel.addCell(CellTypes.Code);
-		setupTextEditorModelWithEmptyOutputs(notebookEditorModel, newCell);
+		await setupTextEditorModelWithEmptyOutputs(notebookEditorModel, newCell);
 
-		addTextToBeginningOfTextEditorModel(notebookEditorModel, newCell, 'this is a long line in a cell test. Everything should serialize correctly! # Comments here: adding more tests is fun?');
+		await addTextToBeginningOfTextEditorModel(notebookEditorModel, newCell, 'this is a long line in a cell test. Everything should serialize correctly! # Comments here: adding more tests is fun?');
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(9), '                "this is a long line in a cell test. Everything should serialize correctly! # Comments here: adding more tests is fun?"');
 
 		ensureStaticContentInOneLineCellIsCorrect(notebookEditorModel, newCell);
@@ -892,9 +892,9 @@ suite('Notebook Editor Model', function (): void {
 		notebookEditorModel.replaceEntireTextEditorModel(notebookModel, undefined);
 
 		let newCell = notebookModel.addCell(CellTypes.Code);
-		setupTextEditorModelWithEmptyOutputs(notebookEditorModel, newCell);
+		await setupTextEditorModelWithEmptyOutputs(notebookEditorModel, newCell);
 
-		addTextToBeginningOfTextEditorModel(notebookEditorModel, newCell, '`~1!2@3#4$5%6^7&8*9(0)-_=+[{]}\\|;:",<.>/?\'');
+		await addTextToBeginningOfTextEditorModel(notebookEditorModel, newCell, '`~1!2@3#4$5%6^7&8*9(0)-_=+[{]}\\|;:",<.>/?\'');
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(9), '                "`~1!2@3#4$5%6^7&8*9(0)-_=+[{]}\\\\|;:\\",<.>/?\'"');
 
 		ensureStaticContentInOneLineCellIsCorrect(notebookEditorModel, newCell);
@@ -907,9 +907,9 @@ suite('Notebook Editor Model', function (): void {
 		notebookEditorModel.replaceEntireTextEditorModel(notebookModel, undefined);
 
 		let newCell = notebookModel.addCell(CellTypes.Code);
-		setupTextEditorModelWithEmptyOutputs(notebookEditorModel, newCell);
+		await setupTextEditorModelWithEmptyOutputs(notebookEditorModel, newCell);
 
-		addTextToBeginningOfTextEditorModel(notebookEditorModel, newCell, '\'\'\'\'');
+		await addTextToBeginningOfTextEditorModel(notebookEditorModel, newCell, '\'\'\'\'');
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(9), '                "\'\'\'\'"');
 
 		ensureStaticContentInOneLineCellIsCorrect(notebookEditorModel, newCell);
@@ -922,9 +922,9 @@ suite('Notebook Editor Model', function (): void {
 		notebookEditorModel.replaceEntireTextEditorModel(notebookModel, undefined);
 
 		let newCell = notebookModel.addCell(CellTypes.Code);
-		setupTextEditorModelWithEmptyOutputs(notebookEditorModel, newCell);
+		await setupTextEditorModelWithEmptyOutputs(notebookEditorModel, newCell);
 
-		addTextToBeginningOfTextEditorModel(notebookEditorModel, newCell, '');
+		await addTextToBeginningOfTextEditorModel(notebookEditorModel, newCell, '');
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(9), '                ""');
 
 		ensureStaticContentInOneLineCellIsCorrect(notebookEditorModel, newCell);
@@ -937,9 +937,9 @@ suite('Notebook Editor Model', function (): void {
 		notebookEditorModel.replaceEntireTextEditorModel(notebookModel, undefined);
 
 		let newCell = notebookModel.addCell(CellTypes.Code);
-		setupTextEditorModelWithEmptyOutputs(notebookEditorModel, newCell);
+		await setupTextEditorModelWithEmptyOutputs(notebookEditorModel, newCell);
 
-		addTextToBeginningOfTextEditorModel(notebookEditorModel, newCell, '"test"' + os.EOL + 'test""');
+		await addTextToBeginningOfTextEditorModel(notebookEditorModel, newCell, '"test"' + os.EOL + 'test""');
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(9), '                "\\"test\\"\\n",');
 
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(8), '            "source": [');
@@ -959,9 +959,9 @@ suite('Notebook Editor Model', function (): void {
 		notebookEditorModel.replaceEntireTextEditorModel(notebookModel, undefined);
 
 		let newCell = notebookModel.addCell(CellTypes.Code);
-		setupTextEditorModelWithEmptyOutputs(notebookEditorModel, newCell);
+		await setupTextEditorModelWithEmptyOutputs(notebookEditorModel, newCell);
 
-		addTextToBeginningOfTextEditorModel(notebookEditorModel, newCell, '"""""test"' + os.EOL + '"""""""test\\""');
+		await addTextToBeginningOfTextEditorModel(notebookEditorModel, newCell, '"""""test"' + os.EOL + '"""""""test\\""');
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(9), '                "\\"\\"\\"\\"\\"test\\"\\n",');
 
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(8), '            "source": [');
@@ -990,7 +990,7 @@ suite('Notebook Editor Model', function (): void {
 		return new NotebookEditorModel(defaultUri, textFileEditorModel, mockNotebookService.object, testResourcePropertiesService);
 	}
 
-	function setupTextEditorModelWithEmptyOutputs(notebookEditorModel: NotebookEditorModel, newCell: ICellModel) {
+	async function setupTextEditorModelWithEmptyOutputs(notebookEditorModel: NotebookEditorModel, newCell: ICellModel) {
 		// clear outputs
 		newCell[<any>'_outputs'] = [];
 
@@ -1000,13 +1000,13 @@ suite('Notebook Editor Model', function (): void {
 			cellIndex: 0
 		};
 
-		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellsModified);
+		await notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellsModified);
 		assert(notebookEditorModel.lastEditFullReplacement);
 
 		assert.strictEqual(notebookEditorModel.editorModel.textEditorModel.getLineContent(14), '            "outputs": [],');
 	}
 
-	function addTextToBeginningOfTextEditorModel(notebookEditorModel: NotebookEditorModel, newCell: ICellModel, textToAdd: string) {
+	async function addTextToBeginningOfTextEditorModel(notebookEditorModel: NotebookEditorModel, newCell: ICellModel, textToAdd: string) {
 		let contentChange: NotebookContentChange = {
 			changeType: NotebookChangeType.CellSourceUpdated,
 			cells: [newCell],
@@ -1021,7 +1021,7 @@ suite('Notebook Editor Model', function (): void {
 			}
 		};
 
-		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellSourceUpdated);
+		await notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellSourceUpdated);
 	}
 
 	function ensureStaticContentInOneLineCellIsCorrect(notebookEditorModel: NotebookEditorModel, newCell: ICellModel) {
