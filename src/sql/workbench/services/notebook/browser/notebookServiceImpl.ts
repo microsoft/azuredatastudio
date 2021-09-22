@@ -297,6 +297,11 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	private handleNewProviderDescriptions(p: { id: string; registration: ProviderDescriptionRegistration }) {
+		// We don't add a SerializationProviderDescriptor here because they don't always get contributed.
+		// Most notebooks will use the builtin provider for .ipynb files.
+		if (!this._executeProviders.has(p.id)) {
+			this._executeProviders.set(p.id, new ExecuteProviderDescriptor());
+		}
 		let registration = p.registration;
 		if (registration.fileExtensions) {
 			if (Array.isArray(registration.fileExtensions)) {
@@ -307,11 +312,6 @@ export class NotebookService extends Disposable implements INotebookService {
 			else {
 				this.addFileProvider(registration.fileExtensions, registration);
 			}
-		}
-		// We don't add a SerializationProviderDescriptor here because they don't always get contributed.
-		// Most notebooks will use the builtin provider for .ipynb files.
-		if (!this._executeProviders.has(p.id)) {
-			this._executeProviders.set(p.id, new ExecuteProviderDescriptor());
 		}
 		if (registration.standardKernels) {
 			this.addStandardKernels(registration);
