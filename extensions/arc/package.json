@@ -1004,11 +1004,29 @@
                         "required": false
                       },
                       {
+                        "label": "%arc.sql.volume.size.data.label%",
+                        "description": "%arc.sql.volume.size.data.description%",
+                        "variableName": "AZDATA_NB_VAR_SQL_VOLUME_SIZE_DATA",
+                        "type": "number",
+                        "defaultValue": "5",
+                        "min": 1,
+                        "required": true
+                      },
+                      {
                         "label": "%arc.storage-class.data-logs.label%",
                         "description": "%arc.sql.storage-class.data-logs.description%",
-                        "variableName": "AZDATA_NB_VAR_SQL_STORAGE_CLASS_DATA_LOGS",
+                        "variableName": "AZDATA_NB_VAR_SQL_STORAGE_CLASS_DATALOGS",
                         "type": "kube_storage_class",
                         "required": false
+                      },
+                      {
+                        "label": "%arc.sql.volume.size.data-logs.label%",
+                        "description": "%arc.sql.volume.size.data-logs.description%",
+                        "variableName": "AZDATA_NB_VAR_SQL_VOLUME_SIZE_DATALOGS",
+                        "type": "number",
+                        "defaultValue": "5",
+                        "min": 1,
+                        "required": true
                       },
                       {
                         "label": "%arc.storage-class.logs.label%",
@@ -1018,11 +1036,29 @@
                         "required": false
                       },
                       {
+                        "label": "%arc.sql.volume.size.logs.label%",
+                        "description": "%arc.sql.volume.size.logs.description%",
+                        "variableName": "AZDATA_NB_VAR_SQL_VOLUME_SIZE_LOGS",
+                        "type": "number",
+                        "defaultValue": "5",
+                        "min": 1,
+                        "required": true
+                      },
+                      {
                         "label": "%arc.storage-class.backups.label%",
                         "description": "%arc.sql.storage-class.backups.description%",
                         "variableName": "AZDATA_NB_VAR_SQL_STORAGE_CLASS_BACKUPS",
                         "type": "kube_storage_class",
                         "required": false
+                      },
+                      {
+                        "label": "%arc.sql.volume.size.backups.label%",
+                        "description": "%arc.sql.volume.size.backups.description%",
+                        "variableName": "AZDATA_NB_VAR_SQL_VOLUME_SIZE_BACKUPS",
+                        "type": "number",
+                        "defaultValue": "5",
+                        "min": 1,
+                        "required": true
                       },
                       {
                         "label": "%arc.cores-request.label%",
