@@ -515,4 +515,4 @@ export const REFRESH_BUTTON_LABEL = localize('sql.migration.status.refresh.label
 
 export const NEXT_LABEL = localize('sql.migration.saved.assessment.next', "Next");
 export const CANCEL_LABEL = localize('sql.migration.saved.assessment.cancel', "Cancel");
-export const SAVED_ASSESSMENT_RESULT = localize('sql.migration.saved.assessment.result', "Saved Assessment Result");
+export const SAVED_ASSESSMENT_RESULT = localize('sql.migration.saved.assessment.result', "Saved assessment result");
