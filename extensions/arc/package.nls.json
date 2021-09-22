@@ -91,6 +91,8 @@
 	"arc.storage-class.data.label": "Storage Class (Data)",
 	"arc.sql.storage-class.data.description": "The storage class to be used for data (.mdf). If no value is specified, the default storage class will be used.",
 	"arc.postgres.storage-class.data.description": "The storage class to be used for data persistent volumes",
+	"arc.storage-class.data-logs.label": "Storage Class (Database logs)",
+	"arc.sql.storage-class.data-logs.description": "The storage class to be used for database logs (.ldf). If no value is specified, the default storage class will be used.",
 	"arc.storage-class.logs.label": "Storage Class (Logs)",
 	"arc.sql.storage-class.logs.description": "The storage class to be used for logs (/var/log). If no value is specified, the default storage class will be used.",
 	"arc.postgres.storage-class.logs.description": "The storage class to be used for logs persistent volumes",

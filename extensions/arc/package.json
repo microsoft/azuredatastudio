@@ -1004,6 +1004,13 @@
                         "required": false
                       },
                       {
+                        "label": "%arc.storage-class.data-logs.label%",
+                        "description": "%arc.sql.storage-class.data-logs.description%",
+                        "variableName": "AZDATA_NB_VAR_SQL_STORAGE_CLASS_DATA_LOGS",
+                        "type": "kube_storage_class",
+                        "required": false
+                      },
+                      {
                         "label": "%arc.storage-class.logs.label%",
                         "description": "%arc.sql.storage-class.logs.description%",
                         "variableName": "AZDATA_NB_VAR_SQL_STORAGE_CLASS_LOGS",
@@ -1031,13 +1038,6 @@
                             "description": "%requested.cores.less.than.or.equal.to.cores.limit%"
                           }
                         ]
-                      },
-                      {
-                        "label": "%arc.storage-class.backups.label%",
-                        "description": "%arc.sql.storage-class.backups.description%",
-                        "variableName": "AZDATA_NB_VAR_SQL_STORAGE_CLASS_BACKUPS",
-                        "type": "kube_storage_class",
-                        "required": false
                       },
                       {
                         "label": "%arc.cores-limit.label%",
