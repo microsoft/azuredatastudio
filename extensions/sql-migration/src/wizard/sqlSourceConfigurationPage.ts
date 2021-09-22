@@ -60,7 +60,7 @@ export class SqlSourceConfigurationPage extends MigrationWizardPage {
 		const username = results.rows[0][0].displayValue;
 		this.migrationStateModel._authenticationType = connectionProfile.authenticationType === 'SqlLogin' ? MigrationSourceAuthenticationType.Sql : connectionProfile.authenticationType === 'Integrated' ? MigrationSourceAuthenticationType.Integrated : undefined!;
 
-		const sourceCredText = createHeadingTextComponent(this._view, constants.SOURCE_CREDENTIALS);
+		const sourceCredText = await createHeadingTextComponent(this._view, constants.SOURCE_CREDENTIALS);
 
 		const enterYourCredText = createLabelTextComponent(
 			this._view,

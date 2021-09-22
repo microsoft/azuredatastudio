@@ -65,8 +65,8 @@ export class CreateResourceGroupDialog {
 				return valid;
 			}).component();
 
-			this._disposables.push(resourceGroupName.onTextChanged(e => {
-				errorBox.updateCssStyles({
+			this._disposables.push(resourceGroupName.onTextChanged(async e => {
+				await errorBox.updateCssStyles({
 					'display': 'none'
 				});
 			}));
@@ -78,7 +78,7 @@ export class CreateResourceGroupDialog {
 			}).component();
 
 			this._disposables.push(okButton.onDidClick(async e => {
-				errorBox.updateCssStyles({
+				await errorBox.updateCssStyles({
 					'display': 'none'
 				});
 				okButton.enabled = false;
@@ -88,12 +88,12 @@ export class CreateResourceGroupDialog {
 					const resourceGroup = await createResourceGroup(this._azureAccount, this._subscription, resourceGroupName.value!, this._location);
 					this._creationEvent.emit('done', resourceGroup);
 				} catch (e) {
-					errorBox.updateCssStyles({
+					await errorBox.updateCssStyles({
 						'display': 'inline'
 					});
 					errorBox.text = e.toString();
 					cancelButton.enabled = true;
-					resourceGroupName.validate();
+					await resourceGroupName.validate();
 				} finally {
 					loading.loading = false;
 				}
@@ -182,8 +182,8 @@ export class CreateResourceGroupDialog {
 					d => { try { d.dispose(); } catch { } });
 			}));
 
-			return view.initializeModel(form).then(v => {
-				resourceGroupName.focus();
+			return view.initializeModel(form).then(async v => {
+				await resourceGroupName.focus();
 			});
 		});
 		this._dialogObject.okButton.label = constants.APPLY;

@@ -183,8 +183,8 @@ export class SqlDatabaseTree {
 			}
 		).component();
 
-		this._disposables.push(this._databaseTable.onDataChanged(() => {
-			this._databaseCount.updateProperties({
+		this._disposables.push(this._databaseTable.onDataChanged(async () => {
+			await this._databaseCount.updateProperties({
 				'value': constants.DATABASES(this.selectedDbs().length, this._model._databaseAssessment.length)
 			});
 		}));
@@ -198,10 +198,10 @@ export class SqlDatabaseTree {
 			this._dbName.value = this._dbNames[e.row];
 			this._recommendationTitle.value = constants.ISSUES_COUNT(this._activeIssues.length);
 			this._recommendation.value = constants.ISSUES_DETAILS;
-			this._resultComponent.updateCssStyles({
+			await this._resultComponent.updateCssStyles({
 				'display': 'block'
 			});
-			this._dbMessageContainer.updateCssStyles({
+			await this._dbMessageContainer.updateCssStyles({
 				'display': 'none'
 			});
 			await this.refreshResults();
@@ -296,10 +296,10 @@ export class SqlDatabaseTree {
 		this._disposables.push(this._instanceTable.onRowSelected(async (e) => {
 			this._activeIssues = this._model._assessmentResults?.issues;
 			this._dbName.value = this._serverName;
-			this._resultComponent.updateCssStyles({
+			await this._resultComponent.updateCssStyles({
 				'display': 'block'
 			});
-			this._dbMessageContainer.updateCssStyles({
+			await this._dbMessageContainer.updateCssStyles({
 				'display': 'none'
 			});
 			this._recommendation.value = constants.WARNINGS_DETAILS;
@@ -778,37 +778,37 @@ export class SqlDatabaseTree {
 		if (this._targetType === MigrationTargetType.SQLMI) {
 			if (this._activeIssues.length === 0) {
 				/// show no issues here
-				this._assessmentsTable.updateCssStyles({
+				await this._assessmentsTable.updateCssStyles({
 					'display': 'none',
 					'border-right': 'none'
 				});
-				this._assessmentContainer.updateCssStyles({
+				await this._assessmentContainer.updateCssStyles({
 					'display': 'none'
 				});
-				this._noIssuesContainer.updateCssStyles({
+				await this._noIssuesContainer.updateCssStyles({
 					'display': 'flex'
 				});
 			} else {
-				this._assessmentContainer.updateCssStyles({
+				await this._assessmentContainer.updateCssStyles({
 					'display': 'flex'
 				});
-				this._assessmentsTable.updateCssStyles({
+				await this._assessmentsTable.updateCssStyles({
 					'display': 'flex',
 					'border-right': 'solid 1px'
 				});
-				this._noIssuesContainer.updateCssStyles({
+				await this._noIssuesContainer.updateCssStyles({
 					'display': 'none'
 				});
 			}
 		} else {
-			this._assessmentsTable.updateCssStyles({
+			await this._assessmentsTable.updateCssStyles({
 				'display': 'none',
 				'border-right': 'none'
 			});
-			this._assessmentContainer.updateCssStyles({
+			await this._assessmentContainer.updateCssStyles({
 				'display': 'none'
 			});
-			this._noIssuesContainer.updateCssStyles({
+			await this._noIssuesContainer.updateCssStyles({
 				'display': 'flex'
 			});
 			this._recommendationTitle.value = constants.ASSESSMENT_RESULTS;

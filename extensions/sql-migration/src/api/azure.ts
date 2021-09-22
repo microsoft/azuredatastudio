@@ -547,7 +547,7 @@ export interface TargetLocation {
 
 export interface BackupFileInfo {
 	fileName: string;
-	status: 'Arrived' | 'Uploading' | 'Uploaded' | 'Restoring' | 'Restored' | 'Cancelled' | 'Ignored';
+	status: 'Arrived' | 'Uploading' | 'Uploaded' | 'Restoring' | 'Restored' | 'Canceled' | 'Ignored';
 	totalSize: number;
 	dataRead: number;
 	dataWritten: number;
