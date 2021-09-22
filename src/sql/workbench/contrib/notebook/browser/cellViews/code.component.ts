@@ -300,7 +300,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			let viewportHeight = DOM.getTotalHeight(viewport);
 			let viewportTop = Math.floor(document.querySelector('.scrollable').getBoundingClientRect().top);
 
-			// Have to offset the height based on the contents the multiple horizontal scrollbars that are present in markdown editor and notebook
+			// Have to offset the height based on the contents viewport and the additional scrollbars that are present in markdown editor and notebook
 			let horizontalTop = Math.floor(Math.abs(viewportTop + viewportHeight) - Math.abs(2 * horizontalScrollbar.scrollHeight));
 
 			// This condition will check to see if the bottom of the editor is in the scrollable area (viewport)
