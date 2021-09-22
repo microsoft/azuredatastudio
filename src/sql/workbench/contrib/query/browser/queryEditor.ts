@@ -378,7 +378,7 @@ export class QueryEditor extends EditorPane {
 		]);
 
 		// If the new language isn't supported for query editors
-		(newInput as QueryEditorInput).onLanguageChangedEvent((language: string) => {
+		newInput.onLanguageChangedEvent((language: string) => {
 			if (!QueryEditorLanguageAssociation.languages.includes(language)) {
 				// remove task bar
 				this.taskbar.setContent([]);
