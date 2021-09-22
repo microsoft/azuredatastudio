@@ -111,7 +111,6 @@ steps:
     xvfb-run yarn smoketest --build "$(Agent.BuildDirectory)/vscode-reh-web-linux-x64" --web --headless --screenshots "$(Build.ArtifactStagingDirectory)/smokeshots"
   displayName: Run smoke tests (Browser)
   continueOnError: true
-  failOnStderr: false
   condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
 # - script: |
