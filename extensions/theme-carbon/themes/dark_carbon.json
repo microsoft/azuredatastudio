@@ -52,7 +52,6 @@
 		"inputValidation.errorBorder": "#b62e00",
 
 		//List and trees
-		"list.activeSelectionBackground": "#3062d6",
 		"list.hoverBackground": "#444444",
 		"pickerGroup.border": "#0078d7",
 		"input.placeholderForeground": "#a6a6a6",
