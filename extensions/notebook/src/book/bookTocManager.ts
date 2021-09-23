@@ -18,7 +18,7 @@ export interface IBookTocManager {
 	updateBook(sources: BookTreeItem[], target: BookTreeItem, targetSection?: JupyterBookSection): Promise<void>;
 	removeNotebook(element: BookTreeItem): Promise<void>;
 	createBook(bookContentPath: string, contentFolder: string): Promise<void>;
-	addNewFile(pathDetails: TocEntryPathHandler, bookItem: BookTreeItem): Promise<void>;
+	addNewTocEntry(pathDetails: TocEntryPathHandler, bookItem: BookTreeItem, isSection?: boolean): Promise<void>;
 	recovery(): Promise<void>;
 	movedFiles: Map<string, string>;
 	tocFiles: Map<string, string>;
@@ -417,7 +417,7 @@ export class BookTocManager implements IBookTocManager {
 		}
 	}
 
-	public async addNewFile(pathDetails: TocEntryPathHandler, bookItem: BookTreeItem): Promise<void> {
+	public async addNewTocEntry(pathDetails: TocEntryPathHandler, bookItem: BookTreeItem, isSection?: boolean): Promise<void> {
 		let findSection: JupyterBookSection | undefined = undefined;
 		await fs.writeFile(pathDetails.filePath, '');
 		if (bookItem.contextValue === 'section') {
@@ -427,6 +427,11 @@ export class BookTocManager implements IBookTocManager {
 			title: pathDetails.titleInTocEntry,
 			file: pathDetails.fileInTocEntry
 		};
+
+		if (isSection) {
+			fileEntryInToc.sections = [];
+		}
+
 		if (bookItem.book.version === BookVersion.v1) {
 			fileEntryInToc = convertTo(BookVersion.v1, fileEntryInToc);
 		}

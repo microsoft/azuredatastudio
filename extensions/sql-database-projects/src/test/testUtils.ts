@@ -42,7 +42,7 @@ export async function createTestDataSources(contents: string, folderPath?: strin
 }
 
 export async function generateTestFolderPath(): Promise<string> {
-	const folderPath = path.join(os.tmpdir(), `TestRun_${new Date().getTime()}`);
+	const folderPath = path.join(os.tmpdir(), 'ADS_Tests', `TestRun_${new Date().getTime()}`);
 	await fs.mkdir(folderPath, { recursive: true });
 
 	return folderPath;

@@ -20,6 +20,8 @@ import { BookTreeViewProvider } from '../../book/bookTreeView';
 import { NavigationProviders } from '../../common/constants';
 import { BookVersion } from '../../book/bookVersionHandler';
 import * as yaml from 'js-yaml';
+import { TocEntryPathHandler } from '../../book/tocEntryPathHandler';
+import * as utils from '../../common/utils';
 
 export function equalTOC(actualToc: IJupyterBookSectionV2[], expectedToc: IJupyterBookSectionV2[]): boolean {
 	for (let [i, section] of actualToc.entries()) {
@@ -550,6 +552,26 @@ describe('BookTocManagerTests', function () {
 					await bookTocManager.cleanUp(path.dirname(notebook.book.contentPath));
 					const listFiles = await fs.promises.readdir(run.sourceBook.bookContentFolderPath);
 					should(JSON.stringify(listFiles).includes('test')).be.true('Empty directories within the moving element directory are not deleted');
+				});
+
+				it('Add new section', async () => {
+					bookTocManager = new BookTocManager(sourceBookModel);
+					const fileBasename = `addSectionTest-${utils.generateGuid()}`;
+					const sectionTitle = 'Section Test';
+					const testFilePath = path.join(run.sectionA.sectionRoot, fileBasename).concat(utils.FileExtension.Markdown);
+					await fs.writeFile(testFilePath, '');
+					const pathDetails = new TocEntryPathHandler(testFilePath, run.sourceBook.rootBookFolderPath, sectionTitle);
+					await bookTocManager.addNewTocEntry(pathDetails, sectionA, true);
+					let toc: JupyterBookSection[] = yaml.safeLoad((await fs.promises.readFile(run.sourceBook.tocPath)).toString());
+					const sectionAIndex = toc.findIndex(entry => entry.title === sectionA.title);
+					let newSectionIndex = -1;
+					let newSection = undefined;
+					if (sectionAIndex) {
+						newSectionIndex = toc[sectionAIndex].sections?.findIndex(entry => entry.title === sectionTitle);
+						newSection = toc[sectionAIndex].sections[newSectionIndex];
+					}
+					should(newSectionIndex).not.be.equal(-1, 'The new section should exist in the toc file');
+					should(newSection.sections).not.undefined();
 				});
 
 				afterEach(async function (): Promise<void> {

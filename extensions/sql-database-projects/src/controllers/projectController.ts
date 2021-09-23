@@ -24,7 +24,8 @@ import { IDeploySettings } from '../models/IDeploySettings';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { ImportDataModel } from '../models/api/import';
-import { NetCoreTool, DotNetCommandOptions, DotNetError } from '../tools/netcoreTool';
+import { NetCoreTool, DotNetError } from '../tools/netcoreTool';
+import { ShellCommandOptions } from '../tools/shellExecutionHelper';
 import { BuildHelper } from '../tools/buildHelper';
 import { readPublishProfile } from '../models/publishProfile/publishProfile';
 import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialog';
@@ -35,9 +36,10 @@ import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/t
 import { IconPathHelper } from '../common/iconHelper';
 import { DashboardData, PublishData, Status } from '../models/dashboardData/dashboardData';
 import { launchPublishDatabaseQuickpick } from '../dialogs/publishDatabaseQuickpick';
-import { launchDeployDatabaseQuickpick } from '../dialogs/deployDatabaseQuickpick';
+import { launchPublishToDockerContainerQuickpick } from '../dialogs/deployDatabaseQuickpick';
 import { DeployService } from '../models/deploy/deployService';
 import { SqlTargetPlatform } from 'sqldbproj';
+import { AutorestHelper } from '../tools/autorestHelper';
 import { createNewProjectFromDatabaseWithQuickpick } from '../dialogs/createProjectFromDatabaseQuickpick';
 import { addDatabaseReferenceQuickpick } from '../dialogs/addDatabaseReferenceQuickpick';
 
@@ -67,6 +69,7 @@ export class ProjectsController {
 	private buildInfo: DashboardData[] = [];
 	private publishInfo: PublishData[] = [];
 	private deployService: DeployService;
+	private autorestHelper: AutorestHelper;
 
 	projFileWatchers = new Map<string, vscode.FileSystemWatcher>();
 
@@ -74,6 +77,7 @@ export class ProjectsController {
 		this.netCoreTool = new NetCoreTool(outputChannel);
 		this.buildHelper = new BuildHelper();
 		this.deployService = new DeployService(outputChannel);
+		this.autorestHelper = new AutorestHelper(outputChannel);
 	}
 
 	public getDashboardPublishData(projectFile: string): (string | dataworkspace.IconCellValue)[][] {
@@ -215,7 +219,7 @@ export class ProjectsController {
 		// Check mssql extension for project dlls (tracking issue #10273)
 		await this.buildHelper.createBuildDirFolder();
 
-		const options: DotNetCommandOptions = {
+		const options: ShellCommandOptions = {
 			commandTitle: 'Build',
 			workingDirectory: project.projectFolderPath,
 			argument: this.buildHelper.constructBuildArguments(project.projectFilePath, this.buildHelper.extensionBuildDirPath)
@@ -256,13 +260,13 @@ export class ProjectsController {
 	}
 
 	/**
-	 * Deploys a project
+	 * Publishes a project to docker container
 	 * @param treeNode a treeItem in a project's hierarchy, to be used to obtain a Project
 	 */
-	public async deployProject(context: Project | dataworkspace.WorkspaceTreeItem): Promise<void> {
+	public async publishToDockerContainer(context: Project | dataworkspace.WorkspaceTreeItem): Promise<void> {
 		const project: Project = this.getProjectFromContext(context);
 		try {
-			let deployProfile = await launchDeployDatabaseQuickpick(project);
+			let deployProfile = await launchPublishToDockerContainerQuickpick(project);
 			if (deployProfile && deployProfile.deploySettings) {
 				let connectionUri: string | undefined;
 				if (deployProfile.localDbSetting) {
@@ -274,23 +278,19 @@ export class ProjectsController {
 				if (deployProfile.deploySettings.connectionUri) {
 					const publishResult = await this.publishOrScriptProject(project, deployProfile.deploySettings, true);
 					if (publishResult && publishResult.success) {
-
-						// Update app settings if requested by user
-						//
-						await this.deployService.updateAppSettings(deployProfile);
 						if (deployProfile.localDbSetting) {
 							await this.deployService.getConnection(deployProfile.localDbSetting, true, deployProfile.localDbSetting.dbName);
 						}
 						void vscode.window.showInformationMessage(constants.deployProjectSucceed);
 					} else {
-						void vscode.window.showErrorMessage(constants.deployProjectFailed(publishResult?.errorMessage || ''));
+						void vscode.window.showErrorMessage(constants.publishToContainerFailed(publishResult?.errorMessage || ''));
 					}
 				} else {
-					void vscode.window.showErrorMessage(constants.deployProjectFailed(constants.deployProjectFailedMessage));
+					void vscode.window.showErrorMessage(constants.publishToContainerFailed(constants.deployProjectFailedMessage));
 				}
 			}
 		} catch (error) {
-			void vscode.window.showErrorMessage(constants.deployProjectFailed(utils.getErrorMessage(error)));
+			void vscode.window.showErrorMessage(constants.publishToContainerFailed(utils.getErrorMessage(error)));
 		}
 		return;
 	}
@@ -829,6 +829,175 @@ export class ProjectsController {
 			.send();
 
 		return result;
+	}
+
+	public async selectAutorestSpecFile(): Promise<string | undefined> {
+		let quickpickSelection = await vscode.window.showQuickPick(
+			[constants.browseEllipsis],
+			{ title: constants.selectSpecFile, ignoreFocusOut: true });
+		if (!quickpickSelection) {
+			return;
+		}
+
+		const filters: { [name: string]: string[] } = {};
+		filters[constants.specSelectionText] = ['yaml'];
+
+		let uris = await vscode.window.showOpenDialog({
+			canSelectFiles: true,
+			canSelectFolders: false,
+			canSelectMany: false,
+			openLabel: constants.selectString,
+			filters: filters,
+			title: constants.selectSpecFile
+		});
+
+		if (!uris) {
+			return;
+		}
+
+		return uris[0].fsPath;
+	}
+
+	/**
+	 * @returns \{ newProjectFolder: 'C:\Source\MyProject',
+	 * 			outputFolder: 'C:\Source',
+	 * 			projectName: 'MyProject'}
+	 */
+	public async selectAutorestProjectLocation(specPath: string): Promise<{ newProjectFolder: string, outputFolder: string, projectName: string } | undefined> {
+		let valid = false;
+		let newProjectFolder: string = '';
+		let outputFolder: string = '';
+		let projectName: string = '';
+
+		let quickpickSelection = await vscode.window.showQuickPick(
+			[constants.browseEllipsis],
+			{ title: constants.selectProjectLocation, ignoreFocusOut: true });
+		if (!quickpickSelection) {
+			return;
+		}
+
+		while (!valid) {
+			const folders = await vscode.window.showOpenDialog({
+				canSelectFiles: false,
+				canSelectFolders: true,
+				canSelectMany: false,
+				openLabel: constants.selectString,
+				defaultUri: vscode.workspace.workspaceFolders?.[0]?.uri,
+				title: constants.selectProjectLocation
+			});
+
+			if (!folders) {
+				return;
+			}
+
+			outputFolder = folders[0].fsPath;
+			projectName = path.basename(specPath, constants.yamlFileExtension);
+			newProjectFolder = path.join(outputFolder, projectName);
+
+			if (await utils.exists(newProjectFolder)) {
+
+				quickpickSelection = await vscode.window.showQuickPick(
+					[constants.browseEllipsis],
+					{ title: constants.folderAlreadyExistsChooseNewLocation(newProjectFolder), ignoreFocusOut: true });
+				if (!quickpickSelection) {
+					return;
+				}
+			} else {
+				valid = true;
+			}
+		}
+
+		await fs.mkdir(newProjectFolder);
+		return { newProjectFolder, outputFolder, projectName };
+	}
+
+	public async generateAutorestFiles(specPath: string, newProjectFolder: string): Promise<void> {
+		await this.autorestHelper.generateAutorestFiles(specPath, newProjectFolder);
+	}
+
+	public async openProjectInWorkspace(projectFilePath: string): Promise<void> {
+		const workspaceApi = utils.getDataWorkspaceExtensionApi();
+		await workspaceApi.validateWorkspace();
+		await workspaceApi.addProjectsToWorkspace([vscode.Uri.file(projectFilePath)]);
+
+		workspaceApi.showProjectsView();
+	}
+
+	public async generateProjectFromOpenApiSpec(): Promise<Project | undefined> {
+		try {
+			// 1. select spec file
+			const specPath: string | undefined = await this.selectAutorestSpecFile();
+			if (!specPath) {
+				return;
+			}
+
+			// 2. select location, make new folder
+			const projectInfo = await this.selectAutorestProjectLocation(specPath!);
+			if (!projectInfo) {
+				return;
+			}
+
+			// 3. run AutoRest to generate .sql files
+			await this.generateAutorestFiles(specPath, projectInfo.newProjectFolder);
+
+			// 4. create new SQL project
+			const newProjFilePath = await this.createNewProject({
+				newProjName: projectInfo.projectName,
+				folderUri: vscode.Uri.file(projectInfo.outputFolder),
+				projectTypeId: constants.emptySqlDatabaseProjectTypeId
+			});
+
+			const project = await Project.openProject(newProjFilePath);
+
+			// 5. add generated files to SQL project
+			let fileFolderList: vscode.Uri[] = await this.getSqlFileList(project.projectFolderPath);
+			await project.addToProject(fileFolderList.filter(f => !f.fsPath.endsWith(constants.autorestPostDeploymentScriptName))); // Add generated file structure to the project
+
+			const postDeploymentScript: vscode.Uri | undefined = this.findPostDeploymentScript(fileFolderList);
+
+			if (postDeploymentScript) {
+				await project.addScriptItem(path.relative(project.projectFolderPath, postDeploymentScript.fsPath), undefined, templates.postDeployScript);
+			}
+
+			// 6. add project to workspace and open
+			await this.openProjectInWorkspace(newProjFilePath);
+
+			return project;
+		} catch (err) {
+			void vscode.window.showErrorMessage(constants.generatingProjectFailed(utils.getErrorMessage(err)));
+			return;
+		}
+	}
+
+	private findPostDeploymentScript(files: vscode.Uri[]): vscode.Uri | undefined {
+		// Locate the post-deployment script generated by autorest, if one exists.
+		// It's only generated if enums are present in spec, b/c the enum values need to be inserted into the generated table.
+		// Because autorest is executed via command rather than API, we can't easily "receive" the name of the script,
+		// so we're stuck just matching on a file name.
+		const results = files.filter(f => f.fsPath.endsWith(constants.autorestPostDeploymentScriptName));
+
+		switch (results.length) {
+			case 0:
+				return undefined;
+			case 1:
+				return results[0];
+			default:
+				throw new Error(constants.multipleMostDeploymentScripts(results.length));
+		}
+
+	}
+
+	private async getSqlFileList(folder: string): Promise<vscode.Uri[]> {
+		const entries = await fs.readdir(folder, { withFileTypes: true });
+
+		const folders = entries.filter(dir => dir.isDirectory()).map(dir => path.join(folder, dir.name));
+		const files = entries.filter(file => !file.isDirectory() && path.extname(file.name) === '.sql').map(file => vscode.Uri.file(path.join(folder, file.name)));
+
+		for (const folder of folders) {
+			files.push(...await this.getSqlFileList(folder));
+		}
+
+		return files;
 	}
 
 	//#region Helper methods

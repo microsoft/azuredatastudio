@@ -89,7 +89,7 @@ export class AssessmentResultsDialog {
 		} else {
 			this._model._miDbs = this._tree.selectedDbs();
 		}
-		this._skuRecommendationPage.refreshCardText();
+		await this._skuRecommendationPage.refreshCardText();
 		this.model.refreshDatabaseBackupPage = true;
 		this._isOpen = false;
 	}
