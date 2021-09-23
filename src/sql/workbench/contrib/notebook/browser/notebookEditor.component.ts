@@ -101,7 +101,7 @@ export class NotebookEditorComponent extends AngularDisposable {
 	}
 
 	private async createModelAndLoadContents(): Promise<void> {
-		await this._notebookParams.input.providersLoaded;
+		let providerInfo = await this._notebookParams.providerInfo;
 		let model = new NotebookModel({
 			factory: this.modelFactory,
 			notebookUri: this._notebookParams.notebookUri,
@@ -111,7 +111,7 @@ export class NotebookEditorComponent extends AngularDisposable {
 			executeManagers: this.executeManagers,
 			contentLoader: this._notebookParams.input.contentLoader,
 			cellMagicMapper: new CellMagicMapper(this.notebookService.languageMagics),
-			providerId: 'sql',
+			providerId: providerInfo.providerId,
 			defaultKernel: this._notebookParams.input.defaultKernel,
 			layoutChanged: this._notebookParams.input.layoutChanged,
 			capabilitiesService: this.capabilitiesService,
