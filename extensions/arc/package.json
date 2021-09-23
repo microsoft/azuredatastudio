@@ -1014,14 +1014,14 @@
                         "description": "%arc.sql.storage-class.data.description%",
                         "variableName": "AZDATA_NB_VAR_SQL_STORAGE_CLASS_DATA",
                         "type": "kube_storage_class",
-                        "required": true
+                        "required": false
                       },
                       {
                         "label": "%arc.storage-class.logs.label%",
                         "description": "%arc.sql.storage-class.logs.description%",
                         "variableName": "AZDATA_NB_VAR_SQL_STORAGE_CLASS_LOGS",
                         "type": "kube_storage_class",
-                        "required": true
+                        "required": false
                       },
                       {
                         "label": "%arc.cores-request.label%",

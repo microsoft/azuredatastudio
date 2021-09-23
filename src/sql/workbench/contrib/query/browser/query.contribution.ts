@@ -150,7 +150,7 @@ actionRegistry.registerWorkbenchAction(
 		CopyQueryWithResultsKeyboardAction,
 		CopyQueryWithResultsKeyboardAction.ID,
 		CopyQueryWithResultsKeyboardAction.LABEL,
-		{ primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_C }
+		{ primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyMod.CtrlCmd | KeyCode.KEY_V) }
 	),
 	CopyQueryWithResultsKeyboardAction.LABEL
 );

@@ -27,27 +27,27 @@ describe('PackageHelper tests', function (): void {
 
 	it('Should construct correct add Package Arguments', function (): void {
 		const packageHelper = new PackageHelper( vscode.window.createOutputChannel('db project test'));
-		const projectPath = 'dummy\\project\\path.csproj';
-		const result = packageHelper.constructAddPackageArguments(projectPath, constants.sqlExtensionPackageName);
+		const projectUri = vscode.Uri.file('dummy\\project\\path.csproj');
+		const result = packageHelper.constructAddPackageArguments(projectUri, constants.sqlExtensionPackageName);
 
 		if (os.platform() === 'win32') {
-			should(result).equal(` add "dummy\\\\project\\\\path.csproj" package ${constants.sqlExtensionPackageName} --prerelease`);
+			should(result).equal(` add "\\\\dummy\\\\project\\\\path.csproj" package ${constants.sqlExtensionPackageName} --prerelease`);
 		}
 		else {
-			should(result).equal(` add "dummy/project/path.csproj" package ${constants.sqlExtensionPackageName} --prerelease`);
+			should(result).equal(` add "/dummy/project/path.csproj" package ${constants.sqlExtensionPackageName} --prerelease`);
 		}
 	});
 
 	it('Should construct correct add Package Arguments with version', function (): void {
 		const packageHelper = new PackageHelper( vscode.window.createOutputChannel('db project test'));
-		const projectPath = 'dummy\\project\\path.csproj';
-		const result = packageHelper.constructAddPackageArguments(projectPath, constants.sqlExtensionPackageName, constants.VersionNumber);
+		const projectUri = vscode.Uri.file('dummy\\project\\path.csproj');
+		const result = packageHelper.constructAddPackageArguments(projectUri, constants.sqlExtensionPackageName, constants.VersionNumber);
 
 		if (os.platform() === 'win32') {
-			should(result).equal(` add "dummy\\\\project\\\\path.csproj" package ${constants.sqlExtensionPackageName} -v ${constants.VersionNumber}`);
+			should(result).equal(` add "\\\\dummy\\\\project\\\\path.csproj" package ${constants.sqlExtensionPackageName} -v ${constants.VersionNumber}`);
 		}
 		else {
-			should(result).equal(` add "dummy/project/path.csproj" package ${constants.sqlExtensionPackageName} -v ${constants.VersionNumber}`);
+			should(result).equal(` add "/dummy/project/path.csproj" package ${constants.sqlExtensionPackageName} -v ${constants.VersionNumber}`);
 		}
 	});
 
@@ -55,7 +55,7 @@ describe('PackageHelper tests', function (): void {
 		sinon.stub(azureFunctionUtils, 'getAFProjectContainingFile').resolves(undefined);
 		const spy = sinon.spy(vscode.window, 'showInformationMessage');
 
-		await packageHelper.addPackageToAFProjectContainingFile('', constants.sqlExtensionPackageName);
+		await packageHelper.addPackageToAFProjectContainingFile(vscode.Uri.file(''), constants.sqlExtensionPackageName);
 		should(spy.calledOnce).be.true('showInformationMessage should have been called exactly once');
 	});
 });
