@@ -16,6 +16,11 @@ export function WIZARD_TITLE(instanceName: string): string {
 }
 // //#endregion
 
+// Resume Migration Dialog
+export const RESUME_TITLE = localize('sql.migration.resume.title', "Run migration workflow again");
+export const START_MIGRATION = localize('sql.migration.resume.start', "Start with migration assessment again (recommended)");
+export const CONTINUE_MIGRATION = localize('sql.migration.resume.contine', "Continue last migration attempt...");
+
 // Assessments Progress Page
 export const ASSESSMENT_BLOCKING_ISSUE_TITLE = localize('sql.migration.assessments.blocking.issue', 'This is a blocking issue that will prevent the database migration from succeeding.');
 export const ASSESSMENT_IN_PROGRESS = localize('sql.migration.assessment.in.progress', "Assessment in progress");
@@ -455,6 +460,7 @@ export const SQL_MIGRATION_SERVICE_DETAILS_AUTH_KEYS_TITLE = localize('sql.migra
 export const SQL_MIGRATION_SERVICE_DETAILS_STATUS_UNAVAILABLE = localize('sql.migration.service.details.status.unavailable', "-- unavailable --");
 
 //Source Credentials page.
+export const SAVE_AND_CLOSE = localize('sql.migration.save.close', "Save and close");
 export const SOURCE_CONFIGURATION = localize('sql.migration.source.configuration', "Source configuration");
 export const SOURCE_CREDENTIALS = localize('sql.migration.source.credentials', "Source credentials");
 export const ENTER_YOUR_SQL_CREDS = localize('sql.migration.enter.your.sql.cred', "Enter the credentials for the source SQL Server instance. These credentials will be used while migrating databases to Azure SQL.");
@@ -507,3 +513,9 @@ export function WARNINGS_COUNT(totalCount: number): string {
 export const AUTHENTICATION_TYPE = localize('sql.migration.authentication.type', "Authentication type");
 
 export const REFRESH_BUTTON_LABEL = localize('sql.migration.status.refresh.label', 'Refresh');
+
+// Saved Assessment Dialog
+
+export const NEXT_LABEL = localize('sql.migration.saved.assessment.next', "Next");
+export const CANCEL_LABEL = localize('sql.migration.saved.assessment.cancel', "Cancel");
+export const SAVED_ASSESSMENT_RESULT = localize('sql.migration.saved.assessment.result', "Saved assessment result");
