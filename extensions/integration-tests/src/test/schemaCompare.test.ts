@@ -54,6 +54,10 @@ suite('Schema compare integration test suite @DacFx@', () => {
 			serverName: '',
 			databaseName: '',
 			ownerUri: '',
+			projectFilePath: '',
+			folderStructure: '',
+			targetScripts: [],
+			dataSchemaProvider: '',
 			connectionDetails: undefined
 		};
 		let target: mssql.SchemaCompareEndpointInfo = {
@@ -63,6 +67,10 @@ suite('Schema compare integration test suite @DacFx@', () => {
 			serverName: '',
 			databaseName: '',
 			ownerUri: '',
+			projectFilePath: '',
+			folderStructure: '',
+			targetScripts: [],
+			dataSchemaProvider: '',
 			connectionDetails: undefined
 		};
 
@@ -114,6 +122,10 @@ suite('Schema compare integration test suite @DacFx@', () => {
 				serverName: server.serverName,
 				databaseName: sourceDB,
 				ownerUri: ownerUri,
+				projectFilePath: '',
+				folderStructure: '',
+				targetScripts: [],
+				dataSchemaProvider: '',
 				connectionDetails: undefined
 			};
 			let target: mssql.SchemaCompareEndpointInfo = {
@@ -123,6 +135,10 @@ suite('Schema compare integration test suite @DacFx@', () => {
 				serverName: server.serverName,
 				databaseName: targetDB,
 				ownerUri: ownerUri,
+				projectFilePath: '',
+				folderStructure: '',
+				targetScripts: [],
+				dataSchemaProvider: '',
 				connectionDetails: undefined
 			};
 
@@ -179,6 +195,10 @@ suite('Schema compare integration test suite @DacFx@', () => {
 				serverName: '',
 				databaseName: '',
 				ownerUri: ownerUri,
+				projectFilePath: '',
+				folderStructure: '',
+				targetScripts: [],
+				dataSchemaProvider: '',
 				connectionDetails: undefined
 			};
 			let target: mssql.SchemaCompareEndpointInfo = {
@@ -188,6 +208,10 @@ suite('Schema compare integration test suite @DacFx@', () => {
 				serverName: server.serverName,
 				databaseName: targetDB,
 				ownerUri: ownerUri,
+				projectFilePath: '',
+				folderStructure: '',
+				targetScripts: [],
+				dataSchemaProvider: '',
 				connectionDetails: undefined
 			};
 
@@ -231,6 +255,10 @@ suite('Schema compare integration test suite @DacFx@', () => {
 			serverName: '',
 			databaseName: '',
 			ownerUri: '',
+			projectFilePath: '',
+			folderStructure: '',
+			targetScripts: [],
+			dataSchemaProvider: '',
 			connectionDetails: undefined
 		};
 		let target: mssql.SchemaCompareEndpointInfo = {
@@ -240,6 +268,10 @@ suite('Schema compare integration test suite @DacFx@', () => {
 			serverName: '',
 			databaseName: '',
 			ownerUri: '',
+			projectFilePath: '',
+			folderStructure: '',
+			targetScripts: [],
+			dataSchemaProvider: '',
 			connectionDetails: undefined
 		};
 
@@ -297,6 +329,10 @@ suite('Schema compare integration test suite @DacFx@', () => {
 				serverName: '',
 				databaseName: '',
 				ownerUri: ownerUri,
+				projectFilePath: '',
+				folderStructure: '',
+				targetScripts: [],
+				dataSchemaProvider: '',
 				connectionDetails: undefined
 			};
 			const target: mssql.SchemaCompareEndpointInfo = {
@@ -306,6 +342,10 @@ suite('Schema compare integration test suite @DacFx@', () => {
 				serverName: server.serverName,
 				databaseName: targetDB,
 				ownerUri: ownerUri,
+				projectFilePath: '',
+				folderStructure: '',
+				targetScripts: [],
+				dataSchemaProvider: '',
 				connectionDetails: undefined
 			};
 
@@ -323,7 +363,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 			assertIncludeExcludeResult(includeResult, true, 0, 0);
 
 			//publish the updated changes. Function1 should not be added to the target database
-			const publishChangesResult = await schemaCompareService.schemaComparePublishChanges(schemaCompareResult.operationId, server.serverName, targetDB, azdata.TaskExecutionMode.execute);
+			const publishChangesResult = await schemaCompareService.schemaComparePublishDatabaseChanges(schemaCompareResult.operationId, server.serverName, targetDB, azdata.TaskExecutionMode.execute);
 			assert(publishChangesResult.success === true, `Publish changes should complete successfully. But it failed with error : ${publishChangesResult.errorMessage}`);
 
 			//verify table Table3 is added
@@ -372,6 +412,10 @@ suite('Schema compare integration test suite @DacFx@', () => {
 				serverName: '',
 				databaseName: '',
 				ownerUri: ownerUri,
+				projectFilePath: '',
+				folderStructure: '',
+				targetScripts: [],
+				dataSchemaProvider: '',
 				connectionDetails: undefined
 			};
 			const target: mssql.SchemaCompareEndpointInfo = {
@@ -381,6 +425,10 @@ suite('Schema compare integration test suite @DacFx@', () => {
 				serverName: server.serverName,
 				databaseName: targetDB,
 				ownerUri: ownerUri,
+				projectFilePath: '',
+				folderStructure: '',
+				targetScripts: [],
+				dataSchemaProvider: '',
 				connectionDetails: undefined
 			};
 
@@ -390,7 +438,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 			assertSchemaCompareResult(schemaCompareResult, operationId, 4);
 
 			//publish all the changes
-			const publishChangesResult = await schemaCompareService.schemaComparePublishChanges(schemaCompareResult.operationId, server.serverName, targetDB, azdata.TaskExecutionMode.execute);
+			const publishChangesResult = await schemaCompareService.schemaComparePublishDatabaseChanges(schemaCompareResult.operationId, server.serverName, targetDB, azdata.TaskExecutionMode.execute);
 			assert(publishChangesResult.success === true, `Publish changes should complete successfully. But it failed with error : ${publishChangesResult.errorMessage}`);
 
 			//verify table Table3 is added
@@ -435,6 +483,10 @@ suite('Schema compare integration test suite @DacFx@', () => {
 				serverName: '',
 				databaseName: '',
 				ownerUri: ownerUri,
+				projectFilePath: '',
+				folderStructure: '',
+				targetScripts: [],
+				dataSchemaProvider: '',
 				connectionDetails: undefined
 			};
 			const target: mssql.SchemaCompareEndpointInfo = {
@@ -444,6 +496,10 @@ suite('Schema compare integration test suite @DacFx@', () => {
 				serverName: server.serverName,
 				databaseName: targetDB,
 				ownerUri: ownerUri,
+				projectFilePath: '',
+				folderStructure: '',
+				targetScripts: [],
+				dataSchemaProvider: '',
 				connectionDetails: undefined
 			};
 
