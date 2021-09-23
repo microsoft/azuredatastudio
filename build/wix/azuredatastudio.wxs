@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension" xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
+  <?include $(sys.CURRENTDIR)includes\azuredatastudio-variables.wxi ?>	
+
+  <Product Id="$(var.ProductId)" Name="$(var.ProductNameWithVersion)" Language="$(var.ProductLanguage)" Version="$(var.ProductVersion)" Manufacturer="$(var.ProductManufacturerLong)" UpgradeCode="$(var.ProductUpgradeCode)">
+    <Package Description="!(loc.PackageDescription)" Manufacturer="$(var.ProductManufacturerLong)" InstallerVersion="200" Compressed="yes" />
+    <Media Id="1" Cabinet="Data1.cab" EmbedCab="yes" CompressionLevel="high" />
+    <Property Id="ARPHELPLINK" Value="!(loc.ProductHelpLink)" />
+    <Property Id="ARPURLINFOABOUT" Value="!(loc.ProductUrlInfoAbout)" />
+    <Property Id="ARPURLUPDATEINFO" Value="!(loc.ProductUrlUpdateInfo)" />
+    <Property Id="ALLUSERS" Value="1" />
+    <Property Id="ARPPRODUCTICON" Value="code.ico" />
+    <SetProperty Id="ARPINSTALLLOCATION" Value="[APPLICATIONFOLDER]" After="CostFinalize" />
+    <!-- <Icon Id="code.ico" SourceFile="$(var.ReproDir)\resources\win32\code.ico" /> -->
+    <Icon Id="code.ico" SourceFile="$(var.SetupResourcesDir)\code.ico" />
+
+    <!-- Microsoft .NET Framework 4.5.2 is required for azuredatastudio. If you are using Windows 7, please make sure .NET Framework 4.5.2 is installed. -->
+    <PropertyRef Id='WIX_IS_NETFRAMEWORK_452_OR_LATER_INSTALLED' />
+	<Condition Message="!(loc.MinimumNetFramworkRequired)">
+      <![CDATA[Installed OR WIX_IS_NETFRAMEWORK_452_OR_LATER_INSTALLED]]>
+    </Condition>
+
+    <!-- Windows 7 or later is required. -->
+    <Condition Message="!(loc.OSVersionRequired)"><![CDATA[Installed OR VersionNT >= 601]]></Condition>
+
+    <Upgrade Id="$(var.ProductUpgradeCode)">
+      <UpgradeVersion OnlyDetect="yes" Minimum="$(var.ProductVersion)" Property="NEWPRODUCTFOUND" IncludeMinimum="no" />
+      <UpgradeVersion Minimum="$(var.RTMProductVersion)" IncludeMinimum="yes" Maximum="$(var.ProductVersion)" Property="UPGRADEFOUND" IncludeMaximum="no" MigrateFeatures="yes" />
+    </Upgrade>
+    <CustomAction Id="PreventDowngrading" Error="!(loc.NewerVersionInstalled)" />
+
+    <!-- WixUI_Advanced defaults to wrong per user install location "[LocalAppDataFolder]", https://sourceforge.net/p/wix/feature-requests/656/ -->
+    <CustomAction Id="WixSetDefaultPerUserFolderRoaming" Property="WixPerUserFolder" Value="[AppDataFolder]Apps\[ApplicationFolderName]" Execute="immediate"/>
+    <!-- WixUI_Advanced defaults to "[ProgramFilesFolder][ApplicationFolderName]" what is wrong for x64 applications. Fix the path with an override. https://github.com/wixtoolset/issues/issues/5908 -->
+    <CustomAction Id="WixSetDefaultPerMachineFolderPerArch" Property="WixPerMachineFolder" Value="[$(var.ProgramFilesFolder)][ApplicationFolderName]" Execute="immediate"/>
+
+    <InstallExecuteSequence>
+      <Custom Action="WixSetDefaultPerUserFolderRoaming" Before="WixSetPerUserFolder" />
+      <Custom Action="WixSetDefaultPerMachineFolderPerArch" Before="WixSetPerMachineFolder" />
+      <Custom Action="PreventDowngrading" After="FindRelatedProducts">NEWPRODUCTFOUND</Custom>
+      <!--
+        In general it seems very hard to track what files may have changed
+        between azuredatastudio versions. As files are crawled with heat and GUIDs
+        are automatically generated some MSI "optimization" features are not
+        available. But no real problem, it only takes some more seconds to
+        upgrade between versions.
+
+        What need to be done is scheduling a full uninstall before a re-install.
+        Therefore the benefit of file installation deltas usable with
+        After="InstallFinalize" cannot used.
+
+        Normally only changed files are installed and outdated files are purged
+        on InstallFinalize what can speed up the setup file copy process.
+      -->
+      <RemoveExistingProducts After="InstallInitialize" />
+    </InstallExecuteSequence>
+    <InstallUISequence>
+      <Custom Action="WixSetDefaultPerUserFolderRoaming" Before="WixSetPerUserFolder" />
+      <Custom Action="WixSetDefaultPerMachineFolderPerArch" Before="WixSetPerMachineFolder" />
+      <Custom Action="PreventDowngrading" After="FindRelatedProducts">NEWPRODUCTFOUND</Custom>
+    </InstallUISequence>
+
+    <!--
+      RemoveFolderEx requires that we "remember" the path for uninstall.
+      This workaround is only required for the uninstall.
+    -->
+    <Property Id="APPLICATIONFOLDER">
+      <RegistrySearch Id="APPLICATIONFOLDER_REGSEARCH" Root="HKLM" Key="SOFTWARE\$(var.ProductManufacturerShort)\$(var.AppName)" Name="Path" Type="raw" Win64="$(var.Win64)" />
+    </Property>
+
+    <!-- Define the directory structure -->
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="$(var.ProgramFilesFolder)">
+        <Directory Id="APPLICATIONFOLDER" Name="$(var.AppFolderName)">
+          <Component Id="CleanupMainApplicationFolder" Guid="*">
+            <RegistryValue Root="HKLM" Key="SOFTWARE\$(var.ProductManufacturerShort)\$(var.AppName)" Name="Path" Type="string" Value="[APPLICATIONFOLDER]" KeyPath="yes" />
+            <!-- We need to use APPLICATIONFOLDER variable here or RemoveFolderEx will not remove on "install". -->
+            <util:RemoveFolderEx On="uninstall" Property="APPLICATIONFOLDER" />
+          </Component>
+
+          <Component Id="AddFileTypeAssociationIPYNB" Guid="CBF07E61-D9C5-49BE-A553-2B6840C32518">
+            <RegistryValue Root="HKLM" Key="SOFTWARE\$(var.ProductManufacturerShort)\$(var.AppName)\Components\FileTypeAssociations" Name="ipynb" Type="integer" Value="1" />
+            <ProgId Id="$(var.AppCodeName).ipynb" Description="IPYNB" Icon="IPYNB.ICO">
+              <Extension Id="ipynb">
+                <Verb Id="open" Command="&amp;Open" Argument="&quot;%1&quot;" TargetFile="AZUREDATASTUDIO.EXE" />
+              </Extension>
+            </ProgId>
+          </Component>
+          <Component Id="AddFileTypeAssociationSQL" Guid="540C2181-11B4-4C35-A5F5-BF65EECB229E">
+            <RegistryValue Root="HKLM" Key="SOFTWARE\$(var.ProductManufacturerShort)\$(var.AppName)\Components\FileTypeAssociations" Name="sql" Type="integer" Value="1" />
+            <ProgId Id="$(var.AppCodeName).sql" Description="SQL" Icon="SQL.ICO">
+              <Extension Id="sql">
+                <Verb Id="open" Command="&amp;Open" Argument="&quot;%1&quot;" TargetFile="AZUREDATASTUDIO.EXE" />
+              </Extension>
+            </ProgId>
+          </Component>
+
+          <Component Id="AddFileTypeAssociationAzureDataStudioSourceFile" Guid="*">
+            <RegistryValue Root="HKCR" Key="AzureDataStudioSourceFile" Value="AzureDataStudio" Type="string" Action="write" />
+            <RegistryValue Root="HKCR" Key="AzureDataStudioSourceFile\DefaultIcon" Value="[#CODE_FILE.ICO]" Type="string" Action="write" />
+            <RegistryValue Root="HKCR" Key="AzureDataStudioSourceFile\shell\open\command" Value="&quot;[APPLICATIONFOLDER]azuredatastudio.exe&quot; &quot;%1&quot;" Type="string" Action="write" />
+          </Component>
+          <!-- <Component Id="AddContextMenuFiles" Guid="*">
+            <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\*\shell\$(var.AppCodeName)" Value="Open with Azure Data Studio" Type="string" Action="write" />
+            <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\*\shell\$(var.AppCodeName)" Name="Icon" Value="[APPLICATIONFOLDER]azuredatastudio.exe" Type="string" Action="write" />
+            <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\*\shell\$(var.AppCodeName)\command" Value="&quot;[APPLICATIONFOLDER]azuredatastudio.exe&quot; &quot;%1&quot;" Type="string" Action="write" />
+          </Component> -->
+          <Component Id="AddToEnvironmentPath" Guid="{8DBFED5E-EF80-4CC8-9BCC-81E816F56F92}">
+            <RegistryValue Root="HKLM" Key="SOFTWARE\$(var.ProductManufacturerShort)\$(var.AppName)\Components" Name="EnvironmentPath" Type="integer" Value="1" />
+            <Environment Id="PATH" Name="PATH" Value="[APPLICATIONFOLDER]bin" Permanent="yes" Part="last" Action="set" System="yes" />
+          </Component>
+        </Directory>
+      </Directory>
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="AzureDataStudioProgramMenuFolder" Name="$(var.AppName)">
+          <Component Id="StartMenuShortcut" Guid="*">
+            <Shortcut Id="AzureDataStudioStartMenuShortcut" Advertise="no" Name="$(var.AppName)" Directory="AzureDataStudioProgramMenuFolder" Target="[APPLICATIONFOLDER]azuredatastudio.exe" WorkingDirectory="APPLICATIONFOLDER" />
+            <RemoveFolder Id="AzureDataStudioProgramMenuFolder" On="uninstall" />
+            <RegistryValue Root="HKCU" Key="Software\$(var.ProductManufacturerShort)\$(var.AppName)\Components" Name="StartMenuShortcutInstalled" Type="integer" Value="1" KeyPath="yes" />
+          </Component>
+        </Directory>
+      </Directory>
+      <Directory Id="DesktopFolder">
+        <Component Id="DesktopShortcut" Guid="*">
+          <Shortcut Id="AzureDataStudioDesktopShortcut" Advertise="no" Name="$(var.AppName)" Directory="DesktopFolder" Target="[APPLICATIONFOLDER]azuredatastudio.exe" WorkingDirectory="APPLICATIONFOLDER" />
+          <RegistryValue Root="HKCU" Key="Software\$(var.ProductManufacturerShort)\$(var.AppName)\Components" Name="DesktopShortcutInstalled" Type="integer" Value="1" KeyPath="yes" />
+        </Component>
+      </Directory>
+    </Directory>
+
+    <!-- List of features to install -->
+    <Feature Id="MainApplication" ConfigurableDirectory="APPLICATIONFOLDER" Level="1" Title="$(var.AppName)" Absent="disallow" Display="expand" AllowAdvertise="no" InstallDefault="local">
+      <ComponentRef Id="CleanupMainApplicationFolder" />
+      <ComponentGroupRef Id="AppFiles" />
+
+      <Feature Id="FeatureStartmenuShortcut" Title="!(loc.FeatureStartMenuShortcutTitle)" Description="!(loc.FeatureStartMenuShortcutDescription)" Level="1" Absent="allow" AllowAdvertise="no" InstallDefault="followParent">
+        <ComponentRef Id="StartMenuShortcut" />
+      </Feature>
+      <Feature Id="FeatureDesktopShortcut" Title="!(loc.FeatureDesktopShortcutTitle)" Description="!(loc.FeatureDesktopShortcutDescription)" Level="2" Absent="allow" AllowAdvertise="no" InstallDefault="followParent">
+        <ComponentRef Id="DesktopShortcut" />
+      </Feature>
+      <Feature Id="FeatureFileTypeAssociations" Title="!(loc.FeatureFileTypeAssociationsTitle)" Description="!(loc.FeatureFileTypeAssociationsDescription)" Level="2" Absent="allow" AllowAdvertise="no" InstallDefault="followParent">
+        <ComponentRef Id="AddFileTypeAssociationAzureDataStudioSourceFile" />
+
+        <Feature Id="FeatureFileTypeAssocSQL" Title=".sql" Description="SQL" Level="2" Absent="allow" AllowAdvertise="no" InstallDefault="followParent">
+          <ComponentRef Id="AddFileTypeAssociationSQL" />
+        </Feature>
+        <Feature Id="FeatureFileTypeAssocSVG" Title=".ipynb" Description="IPYNB" Level="2" Absent="allow" AllowAdvertise="no" InstallDefault="followParent">
+          <ComponentRef Id="AddFileTypeAssociationIPYNB" />
+        </Feature>
+      </Feature>
+      <!-- <Feature Id="FeatureAddContextMenuFiles" Title="!(loc.FeatureAddContextMenuFilesTitle)" Description="!(loc.FeatureAddContextMenuFilesDescription)" Level="2" Absent="allow" AllowAdvertise="no" InstallDefault="followParent">
+        <ComponentRef Id="AddContextMenuFiles" />
+      </Feature> -->
+      <Feature Id="FeatureEnvironment" Title="!(loc.FeatureEnvironmentTitle)" Description="!(loc.FeatureEnvironmentDescription)" Level="1" Absent="allow" AllowAdvertise="no" InstallDefault="followParent">
+        <ComponentRef Id="AddToEnvironmentPath" />
+      </Feature>
+    </Feature>
+
+    <!-- Path to license file will be overridden via light.exe in other languages than "en-us". -->
+    <!-- <WixVariable Id="WixUILicenseRtf" Value="$(var.SetupResourcesDir)\licenses\license.$(var.Culture).rtf" /> -->
+    <WixVariable Id="WixUIBannerBmp" Value="$(var.SetupResourcesDir)\wix-banner.bmp" />
+    <WixVariable Id="WixUIDialogBmp" Value="$(var.SetupResourcesDir)\wix-dialog.bmp" />
+
+    <Property Id="ApplicationFolderName" Value="$(var.AppFolderName)" />
+    <Property Id="WixAppFolder" Value="WixPerMachineFolder" />
+    <UI>
+      <UIRef Id="WixUI_Advanced" />
+      <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="LaunchApplication">WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 and NOT Installed</Publish>
+    </UI>
+
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX" Value="1" />
+    <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="!(loc.LaunchApplication)" />
+    <Property Id="WixShellExecTarget" Value="[#AZUREDATASTUDIO.EXE]" />
+    <CustomAction Id="LaunchApplication" BinaryKey="WixCA" DllEntry="WixShellExec" Impersonate="yes" />
+  </Product>
+</Wix>

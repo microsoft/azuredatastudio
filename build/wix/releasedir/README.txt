@@ -1,0 +1,1 @@
+MSI release files will be placed into this folder.
