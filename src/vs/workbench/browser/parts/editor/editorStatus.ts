@@ -57,6 +57,7 @@ import { SideBySideEditorInput } from 'vs/workbench/common/editor/sideBySideEdit
 
 // {{SQL CARBON EDIT}}
 import { setMode } from 'sql/workbench/browser/parts/editor/editorStatusModeSelect'; // {{SQL CARBON EDIT}}
+import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
 
 class SideBySideEditorEncodingSupport implements IEncodingSupport {
 	constructor(private primary: IEncodingSupport, private secondary: IEncodingSupport) { }
@@ -1183,6 +1184,12 @@ export class ChangeModeAction extends Action {
 		// Change mode for active editor
 		const activeEditor = this.editorService.activeEditor;
 		if (activeEditor) {
+			// {{SQL CARBON EDIT}}
+			// Remove the task bar from query editor, if the language
+			// isn't one of the supported ones for query editors
+			if (activeEditor instanceof QueryEditorInput) {
+				activeEditor.onLanguageChanged.fire(pick.label);
+			}
 			const modeSupport = toEditorWithModeSupport(activeEditor);
 			if (modeSupport) {
 
