@@ -5,8 +5,10 @@
 
 'use strict';
 
-const path = require('path');
-const fs = require('fs');
+import * as path from 'path';
+import * as url from 'url';
+import * as fs from 'fs';
+import got from 'got';
 
 /**
  * This file is for validating the extension gallery files to ensure that they adhere to the expected schema defined in
@@ -37,7 +39,7 @@ const fs = require('fs');
  *    }[];
  * }
  */
-function validateExtensionGallery(path) {
+async function validateExtensionGallery(path) {
     let galleryJson;
     try {
         galleryJson = JSON.parse(fs.readFileSync(path).toString());
@@ -47,7 +49,7 @@ function validateExtensionGallery(path) {
     if (!galleryJson.results || !galleryJson.results[0]) {
         throw new Error(`${path} - results invalid`);
     }
-    validateResults(path, galleryJson.results[0]);
+    await validateResults(path, galleryJson.results[0]);
 }
 
 /**
@@ -63,11 +65,13 @@ function validateExtensionGallery(path) {
  *     }[]
  * }
  */
-function validateResults(path, resultsJson) {
+async function validateResults(path, resultsJson) {
     if (!resultsJson.extensions || !resultsJson.extensions.length) {
         throw new Error(`${path} - No extensions\n${JSON.stringify(resultsJson)}`)
     }
-    resultsJson.extensions.forEach(extension => validateExtension(path, extension));
+    for (const extension of resultsJson.extensions) {
+        await validateExtension(path, extension);
+    }
 
     if (!resultsJson.resultMetadata || !resultsJson.resultMetadata.length) {
         throw new Error(`${path} - No resultMetadata\n${JSON.stringify(resultsJson)}`)
@@ -88,7 +92,7 @@ function validateResults(path, resultsJson) {
  * 	flags: string;
  * }
  */
-function validateExtension(path, extensionJson) {
+async function validateExtension(path, extensionJson) {
     if (!extensionJson.extensionId) {
         throw new Error(`${path} - No extensionId\n${JSON.stringify(extensionJson)}`)
     }
@@ -109,7 +113,9 @@ function validateExtension(path, extensionJson) {
     if (!extensionJson.versions || !extensionJson.versions.length) {
         throw new Error(`${path} - Invalid versions\n${JSON.stringify(extensionJson)}`)
     }
-    extensionJson.versions.forEach(version => validateVersion(path, extensionName, version));
+    for (const version of extensionJson.versions) {
+        await validateVersion(path, extensionName, version);
+    }
 
     if (!extensionJson.statistics || extensionJson.statistics.length === undefined) {
         throw new Error(`${path} - Invalid statistics\n${JSON.stringify(extensionJson)}`)
@@ -149,7 +155,7 @@ function validateExtensionStatistics(path, extensionName, extensionStatisticsJso
  *     properties?: IRawGalleryExtensionProperty[];
  * }
  */
-function validateVersion(path, extensionName, extensionVersionJson) {
+async function validateVersion(path, extensionName, extensionVersionJson) {
     if (!extensionVersionJson.version) {
         throw new Error(`${path} - ${extensionName} - No version\n${JSON.stringify(extensionVersionJson)}`)
     }
@@ -165,7 +171,12 @@ function validateVersion(path, extensionName, extensionVersionJson) {
     if (!extensionVersionJson.files || !extensionVersionJson.files[0]) {
         throw new Error(`${path} - ${extensionName} - Invalid version files\n${JSON.stringify(extensionVersionJson)}`)
     }
-    extensionVersionJson.files.forEach(file => validateExtensionFile(path, extensionName, file));
+
+    validateHasRequiredAssets(path, extensionName, extensionVersionJson.files);
+
+    for (const file of extensionVersionJson.files) {
+        await validateExtensionFile(path, extensionName, file);
+    }
     if (extensionVersionJson.properties && extensionVersionJson.properties.length) {
         extensionVersionJson.properties.forEach(property => validateExtensionProperty(path, extensionName, property));
         const azdataEngineVersion = extensionVersionJson.properties.find(property => property.key === 'Microsoft.AzDataEngine' && (property.value.startsWith('>=') || property.value === '*'))
@@ -178,6 +189,49 @@ function validateVersion(path, extensionName, extensionVersionJson) {
         }
     } else {
         throw new Error(`${path} - ${extensionName} - No properties, extensions must have an AzDataEngine version defined`)
+    }
+}
+
+/**
+ * Validates that an extension version has the expected files for displaying in the gallery.
+ * There are some existing 3rd party extensions that don't have all the files, but that's ok for now.
+ * Going forward all new extensions should provide these files.
+ */
+function validateHasRequiredAssets(path, extensionName, filesJson) {
+    // VSIXPackage or DownloadPage
+    const vsixFile = filesJson.find(file => file.assetType === 'Microsoft.VisualStudio.Services.VSIXPackage');
+    const downloadPageFile = filesJson.find(file => file.assetType === 'Microsoft.SQLOps.DownloadPage');
+    if (vsixFile && downloadPageFile) {
+        throw new Error(`${path} - ${extensionName} - Can not have both VSIXPackage and DownloadPage file`);
+    } else if (!vsixFile && !downloadPageFile) {
+        throw new Error(`${path} - ${extensionName} - Must have file with either VSIXPackage or DownloadPage assetType`);
+    }
+
+    // Icon
+    const iconFile = filesJson.find(file => file.assetType === 'Microsoft.VisualStudio.Services.Icons.Default');
+    const noIconExtensions = ['poor-sql-formatter', 'qpi']; // Not all 3rd party extensions have icons so allow existing ones to pass for now
+    if (!iconFile && noIconExtensions.find(ext => ext === extensionName) === undefined) {
+        throw new Error(`${path} - ${extensionName} - Must have an icon file`);
+    }
+
+    // Details
+    const detailsFile = filesJson.find(file => file.assetType === 'Microsoft.VisualStudio.Services.Content.Details');
+    if (!detailsFile) {
+        throw new Error(`${path} - ${extensionName} - Must have a details file (README)`);
+    }
+
+    // Manifest
+    const noManifestExtensions = ['plan-explorer', 'sql-prompt']; // Not all 3rd party extensions have manifests so allow existing ones to pass for now
+    const manifestFile = filesJson.find(file => file.assetType === 'Microsoft.VisualStudio.Code.Manifest');
+    if (!manifestFile && noManifestExtensions.find(ext => ext === extensionName) === undefined) {
+        throw new Error(`${path} - ${extensionName} - Must have a manifest file (package.json)`);
+    }
+
+    // License
+    const noLicenseExtensions = ['sp_executesqlToSQL', 'simple-data-scripter', 'db-snapshot-creator']; // Not all 3rd party extensions have license files to link to so allow existing ones to pass for now
+    const licenseFile = filesJson.find(file => file.assetType === 'Microsoft.VisualStudio.Services.Content.License');
+    if (!licenseFile && noLicenseExtensions.find(ext => ext === extensionName) === undefined) {
+        throw new Error(`${path} - ${extensionName} - Must have a license file`);
     }
 }
 
@@ -203,13 +257,27 @@ function validateExtensionProperty(path, extensionName, extensionPropertyJson) {
  *     assetType: string;
  *     source: string;
  * }
+ * Will also validate that the source URL provided is valid.
  */
-function validateExtensionFile(path, extensionName, extensionFileJson) {
+async function validateExtensionFile(path, extensionName, extensionFileJson) {
     if (!extensionFileJson.assetType) {
         throw new Error(`${path} - ${extensionName} - No assetType\n${JSON.stringify(extensionFileJson)}`)
     }
     if (!extensionFileJson.source) {
         throw new Error(`${path} - ${extensionName} - No source\n${JSON.stringify(extensionFileJson)}`)
+    }
+    // Waka-time link is hitting rate limit for the download link so just ignore this one for now. 
+    if (extensionName === 'vscode-wakatime' && extensionFileJson.assetType === 'Microsoft.SQLOps.DownloadPage') {
+        return;
+    }
+    // Validate the source URL
+    try {
+        const response = await got(extensionFileJson.source);
+        if (response.statusCode !== 200) {
+            throw new Error(`${response.statusCode}: ${response.statusMessage}`);
+        }
+    } catch (err) {
+        throw new Error(`${path} - ${extensionName} - Error fetching ${extensionFileJson.assetType} with URL ${extensionFileJson.source}. ${err}`);
     }
 }
 
@@ -243,5 +311,8 @@ function validateResultMetadata(path, extensionCount, resultMetadataJson) {
     })
 }
 
-validateExtensionGallery(path.join(__dirname, '..', 'extensionsGallery.json'));
-validateExtensionGallery(path.join(__dirname, '..', 'extensionsGallery-insider.json'));
+const dirname = path.dirname(url.fileURLToPath(import.meta.url));
+await Promise.all([
+    validateExtensionGallery(path.join(dirname, '..', 'extensionsGallery.json')),
+    validateExtensionGallery(path.join(dirname, '..', 'extensionsGallery-insider.json'))
+]);

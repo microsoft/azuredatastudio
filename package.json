@@ -1,0 +1,6 @@
+{
+  "type": "module",
+  "devDependencies": {
+    "got": "^11.8.2"
+  }
+}
