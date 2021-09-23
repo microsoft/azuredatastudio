@@ -41,6 +41,7 @@ export type InputComponentInfo<T extends InputComponent> = {
 	getValue: () => Promise<InputValueType>;
 	setValue: (value: InputValueType) => void;
 	getDisplayValue?: () => Promise<string>;
+	setOptions?: (options: OptionsInfo) => void;
 	onValueChanged: vscode.Event<void>;
 	isPassword?: boolean
 };
@@ -436,15 +437,15 @@ async function hookUpDynamicOptions(context: WizardPageContext): Promise<void> {
 				}
 				const updateOptions = async () => {
 					const currentValue = await targetComponent.getValue();
-					if (field.dynamicOptions && field.options && fieldComponent) {
+					if (field.dynamicOptions && field.options && fieldComponent && fieldComponent.setOptions) {
 						const targetValueFound = field.dynamicOptions.alternates.find(item => item.selection === currentValue);
 						if (targetValueFound) {
-							(<RadioGroupLoadingComponentBuilder>fieldComponent.component).loadOptions(<OptionsInfo>{
+							fieldComponent.setOptions(<OptionsInfo>{
 								values: targetValueFound.alternateValues,
 								defaultValue: targetValueFound.defaultValue
 							});
 						} else {
-							(<RadioGroupLoadingComponentBuilder>fieldComponent.component).loadOptions(<OptionsInfo>{
+							fieldComponent.setOptions(<OptionsInfo>{
 								values: field.options.values,
 								defaultValue: (<OptionsInfo>field.options).defaultValue
 							});
@@ -914,7 +915,10 @@ async function substituteVariableValues(inputComponents: InputComponents, inputV
 	);
 	return inputValue;
 }
-
+/**
+ * Renders a label on the left and a checkbox with an empty string label on the right, for use under page sections.
+ * @param context The context to use to create the field
+ */
 function processCheckboxField(context: FieldContext): void {
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, cssStyles: context.fieldInfo.labelCSSStyles });
 	const checkbox = createCheckboxInputInfo(context.view, { initialValue: context.fieldInfo.defaultValue! === 'true', label: '', required: context.fieldInfo.required });
@@ -1078,7 +1082,8 @@ async function createRadioOptions(context: FieldContext, getRadioButtonInfo?: ((
 		component: radioGroupLoadingComponentBuilder,
 		labelComponent: label,
 		getValue: async (): Promise<InputValueType> => radioGroupLoadingComponentBuilder.value,
-		setValue: (value: InputValueType) => { throw new Error('Setting value of radio group isn\'t currently supported'); },
+		setValue: (_value: InputValueType) => { throw new Error('Setting value of radio group isn\'t currently supported'); },
+		setOptions: (optionsInfo: OptionsInfo) => { radioGroupLoadingComponentBuilder.loadOptions(optionsInfo); },
 		getDisplayValue: async (): Promise<string> => radioGroupLoadingComponentBuilder.displayValue,
 		onValueChanged: radioGroupLoadingComponentBuilder.onValueChanged,
 	});
