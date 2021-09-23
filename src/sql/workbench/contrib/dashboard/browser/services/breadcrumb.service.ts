@@ -12,6 +12,7 @@ import { MenuItem, IBreadcrumbService } from 'sql/base/browser/ui/breadcrumb/int
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 import * as nls from 'vs/nls';
+import { azuremonitorLogsProviderName } from 'sql/workbench/common/constants';
 
 export enum BreadcrumbClass {
 	DatabasePage,
@@ -61,7 +62,7 @@ export class BreadcrumbService implements IBreadcrumbService {
 	}
 
 	private getDbBreadcrumb(profile: ConnectionProfile): MenuItem {
-		let defaultDatabaseName = profile.providerName === 'LOGANALYTICS' ? 'workspace-name' : 'database-name';
+		let defaultDatabaseName = profile.providerName === azuremonitorLogsProviderName ? 'workspace-name' : 'database-name';
 
 		return {
 			label: profile.databaseName ? profile.databaseName : defaultDatabaseName,

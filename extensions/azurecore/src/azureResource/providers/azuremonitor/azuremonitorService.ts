@@ -15,7 +15,7 @@ export interface AzureMonitorGraphData extends GraphData {
 	};
 }
 
-const instanceQuery = `where type == "${azureResource.AzureResourceType.logAnalytics}"`;
+const instanceQuery = `where type == "${azureResource.AzureResourceType.azureMonitorLogs}"`;
 
 export class AzureMonitorResourceService extends ResourceServiceBase<AzureMonitorGraphData, azureResource.AzureResourceDatabaseServer> {
 

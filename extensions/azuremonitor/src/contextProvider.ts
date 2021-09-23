@@ -6,6 +6,7 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 
 import * as types from './types';
+import { providerId } from './constants';
 
 export enum BuiltInCommands {
 	SetContext = 'setContext',
@@ -41,7 +42,7 @@ export default class ContextProvider {
 		let edition: number | undefined;
 		let isCluster: boolean = false;
 		let serverMajorVersion: number | undefined;
-		if (e.profile.providerName.toLowerCase() === 'loganalytics' && !types.isUndefinedOrNull(e.serverInfo) && !types.isUndefinedOrNull(e.serverInfo.engineEditionId)) {
+		if (e.profile.providerName.toLowerCase() === providerId.toLowerCase() && !types.isUndefinedOrNull(e.serverInfo) && !types.isUndefinedOrNull(e.serverInfo.engineEditionId)) {
 			if (isCloudEditions.some(i => i === e.serverInfo.engineEditionId)) {
 				iscloud = true;
 			} else {

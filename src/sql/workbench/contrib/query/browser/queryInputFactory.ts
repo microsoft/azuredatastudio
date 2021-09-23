@@ -23,6 +23,7 @@ import { IFileService } from 'vs/platform/files/common/files';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
+import { azureMonitorLogsLanguageMode, kustoLanguageMode, sqlLanguageMode } from 'sql/workbench/common/constants';
 
 const editorInputFactoryRegistry = Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories);
 
@@ -32,7 +33,7 @@ export class QueryEditorLanguageAssociation implements ILanguageAssociation {
 	 * The language IDs that are associated with the query editor. These are case sensitive for comparing with what's
 	 * registered in the ModeService registry.
 	 */
-	static readonly languages = ['Kusto', 'LogAnalytics', 'SQL'];	//TODO Add language id here for new languages supported in query editor. Make it easier to contribute new extension's languageID
+	static readonly languages = [kustoLanguageMode, azureMonitorLogsLanguageMode, sqlLanguageMode];	//TODO Add language id here for new languages supported in query editor. Make it easier to contribute new extension's languageID
 
 
 	constructor(@IInstantiationService private readonly instantiationService: IInstantiationService,

@@ -129,7 +129,7 @@ function generateHandleServerProviderEvent() {
 
 function getClientOptions(_context: AppContext): ClientOptions {
 	return {
-		documentSelector: ['loganalytics'],
+		documentSelector: [Constants.providerId.toLowerCase()],
 		synchronize: {
 			configurationSection: Constants.extensionConfigSectionName
 		},

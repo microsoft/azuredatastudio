@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 export const serviceName = 'AzureMonitor Tools Service';
-export const providerId = 'LOGANALYTICS';
+export const providerId = 'AZUREMONITORLOGS';
 export const serviceCrashLink = 'https://github.com/Microsoft/azuredatastudio/issues';
 export const extensionConfigSectionName = 'azuremonitor';
 
@@ -14,7 +14,7 @@ export const integratedAuth = 'integrated';
 export const serverPropName = 'server';
 export const userPropName = 'user';
 export const passwordPropName = 'password';
-export const azuremonitorProviderName = 'LOGANALYTICS';
+export const azuremonitorProviderName = 'AZUREMONITORLOGS';
 
 // SERVICE NAMES //////////////////////////////////////////////////////////
 export const ObjectExplorerService = 'objectexplorer';
