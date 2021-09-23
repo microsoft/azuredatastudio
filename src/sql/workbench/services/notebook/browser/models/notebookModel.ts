@@ -80,6 +80,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _trustedMode: boolean;
 	private _onActiveCellChanged = new Emitter<ICellModel | undefined>();
 	private _onCellTypeChanged = new Emitter<ICellModel>();
+	private _onScrollEmitter = new Emitter<void>();
 
 	private _cells: ICellModel[] | undefined;
 	private _defaultLanguageInfo: nb.ILanguageInfo | undefined;
@@ -211,6 +212,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public get contextsChanged(): Event<void> {
 		return this._contextsChangedEmitter.event;
+	}
+
+	public get onScroll(): Emitter<void> {
+		return this._onScrollEmitter;
 	}
 
 	public get contextsLoading(): Event<void> {

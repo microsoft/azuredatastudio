@@ -249,6 +249,9 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			}
 		}));
 		this._register(this.model.layoutChanged(() => this._layoutEmitter.fire(), this));
+		// Handles mouse wheel and scrollbar events
+		this._register(Event.debounce(this.model.onScroll.event, (l, e) => e, 250, /*leading=*/false)
+			(() => this.horizontalScrollbar()));
 		this._register(this.cellModel.onExecutionStateChange(event => {
 			if (event === CellExecutionState.Running && !this.cellModel.stdInVisible) {
 				this.setFocusAndScroll();
@@ -264,7 +267,6 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			}
 			this._layoutEmitter.fire();
 		}));
-
 		this.layout();
 
 		if (this._cellModel.isCollapsed) {
@@ -277,6 +279,48 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			DOM.getContentWidth(this.codeElement.nativeElement),
 			DOM.getContentHeight(this.codeElement.nativeElement)));
 		this._editor.setHeightToScrollHeight(false, this._cellModel.isCollapsed);
+		this.horizontalScrollbar();
+	}
+
+	/**
+	 * Horizontal Scrollbar function will ensure we only calculate and trigger this if word wrap is off and it is a markdown cell
+	 * This will adjust the horizontal scrollbar to either a fixed position at the bottom of the viewport (visible area)
+	 * or it will set it to the bottom of the markdown editor if it is in the viewport (visible area)
+	 */
+	public horizontalScrollbar(): void {
+		if (this._configurationService.getValue('editor.wordWrap') === 'off' && this.cellModel.cellType !== CellTypes.Code && this.cellModel.source.length > 0) {
+			// Get markdown split view horizontal scrollbar
+			let horizontalScrollbar: HTMLElement = this.codeElement.nativeElement.querySelector('div.scrollbar.horizontal');
+			let viewport: HTMLElement = document.querySelector('.scrollable');
+			let markdownEditor: HTMLElement = this.codeElement.nativeElement.closest('.show-markdown .editor');
+
+			//Get values based on current context of the editor and ADS window
+			let markdownEditorBottom = Math.floor(markdownEditor.getBoundingClientRect().bottom);
+			let viewportBottom = Math.floor(viewport.getBoundingClientRect().bottom);
+			let viewportHeight = DOM.getTotalHeight(viewport);
+			let viewportTop = Math.floor(document.querySelector('.scrollable').getBoundingClientRect().top);
+
+			// Have to offset the height based on the contents viewport and the additional scrollbars that are present in markdown editor and notebook
+			let horizontalTop = Math.floor(Math.abs(viewportTop + viewportHeight) - Math.abs(2 * horizontalScrollbar.scrollHeight));
+
+			// This condition will check to see if the bottom of the editor is in the scrollable area (viewport)
+			// if it is then we will set the horizontal scrollbar to the bottom of the editor space
+			if (markdownEditorBottom < viewportBottom) {
+				horizontalScrollbar.style.opacity = '1';
+				horizontalScrollbar.style.position = 'absolute';
+				horizontalScrollbar.style.left = '0px';
+				horizontalScrollbar.style.top = '';
+				horizontalScrollbar.style.bottom = horizontalScrollbar.clientHeight + 'px';
+				// This condition checks if bottom of the editor is not within the scrollable area (viewport)
+				// we will change the horizontal scrollbar to be fixed to the bottom of the scrollable area (viewport)
+			} else {
+				horizontalScrollbar.style.opacity = '1';
+				horizontalScrollbar.style.position = 'fixed';
+				horizontalScrollbar.style.left = '';
+				horizontalScrollbar.style.top = horizontalTop + 'px';
+				horizontalScrollbar.style.bottom = '';
+			}
+		}
 	}
 
 	protected initActionBar() {
