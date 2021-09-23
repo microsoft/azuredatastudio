@@ -1,0 +1,37 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+.selectable-card {
+	position: relative;
+	display: inline-block;
+	height: auto;
+	min-height: 100px;
+	width: 100%;
+	border-width: 1px;
+	border-style: solid;
+	text-align: left;
+	vertical-align: top;
+	border-color: rgb(214, 214, 214);
+	overflow: hidden;
+}
+
+.selectable-card-indicator-container {
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	overflow: hidden;
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	border-width: 1px;
+	border-style: solid;
+}
+
+
+.selectable-card-indicator {
+	margin: 4px;
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+}
