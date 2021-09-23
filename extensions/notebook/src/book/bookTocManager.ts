@@ -144,20 +144,13 @@ export class BookTocManager implements IBookTocManager {
 	 * Rewrite the original table of contents of the book, in case of error as well.
 	*/
 	async recovery(): Promise<void> {
-		try {
-			for (const [key, value] of this.movedFiles.entries()) {
-				if (value !== key) {
-					await fs.move(value, key);
-				}
-			}
-
-			for (const [key, value] of this.tocFiles.entries()) {
-				const yamlFile = await yaml.safeLoad(value);
-				await fs.writeFile(key, yaml.safeDump(yamlFile, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
-			}
+		for (const [key, value] of this.movedFiles.entries()) {
+			await fs.move(value, key);
 		}
-		catch (error) {
-			console.log(error);
+
+		for (const [key, value] of this.tocFiles.entries()) {
+			const yamlFile = await yaml.safeLoad(value);
+			await fs.writeFile(key, yaml.safeDump(yamlFile, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
 		}
 	}
 
@@ -292,8 +285,10 @@ export class BookTocManager implements IBookTocManager {
 				} catch (error) {
 					if (error.code === 'EEXIST') {
 						fileName = await this.renameFile(path.join(this.sourceBookContentPath, elem.file).concat('.ipynb'), path.join(this.targetBookContentPath, elem.file).concat('.ipynb'));
+					} else if (error.code === 'ENOENT') {
+						this.movedFiles.delete(path.join(this.sourceBookContentPath, elem.file).concat('.ipynb'));
 					}
-					else if (error.code !== 'ENOENT') {
+					else {
 						throw (error);
 					}
 				}
@@ -303,8 +298,10 @@ export class BookTocManager implements IBookTocManager {
 				} catch (error) {
 					if (error.code === 'EEXIST') {
 						fileName = await this.renameFile(path.join(this.sourceBookContentPath, elem.file).concat('.md'), path.join(this.targetBookContentPath, elem.file).concat('.md'));
+					} else if (error.code === 'ENOENT') {
+						this.movedFiles.delete(path.join(this.sourceBookContentPath, elem.file).concat('.md'));
 					}
-					else if (error.code !== 'ENOENT') {
+					else {
 						throw (error);
 					}
 				}
@@ -373,7 +370,7 @@ export class BookTocManager implements IBookTocManager {
 		const filePath = path.parse(file.book.contentPath);
 		let fileName = undefined;
 		try {
-			// no op if the notebook is already in the dest location
+			// TODO: no op if the notebook is already in the dest location
 			if (file.book.contentPath !== path.join(rootPath, filePath.base)) {
 				this.movedFiles.set(file.book.contentPath, path.join(rootPath, filePath.base));
 				await fs.move(file.book.contentPath, path.join(rootPath, filePath.base), { overwrite: false });
@@ -410,7 +407,7 @@ export class BookTocManager implements IBookTocManager {
 	*/
 	public async updateBook(sources: BookTreeItem[], target: BookTreeItem, section?: JupyterBookSection): Promise<void> {
 		for (let element of sources) {
-			if (element.contextValue === BookTreeItemType.savedBook || this.isDescendant(element, target) || element.book.parent.book.hierarchyId === target.book.hierarchyId) {
+			if (element.contextValue === BookTreeItemType.savedBook || this.isDescendant(element, target) || this.isParent(element, target, section)) {
 				// no op
 				return;
 			}
@@ -492,8 +489,26 @@ export class BookTocManager implements IBookTocManager {
 		await this._sourceBook.reinitializeContents();
 	}
 
+	/**
+	 * Checks that the targetTreeItem is descendant of the tree item used by the onDrop method.
+	 * @param treeItem The moving element when using dnd.
+	 * @param targetTreeItem The target element where the moving element is dropped.
+	*/
 	isDescendant(treeItem: BookTreeItem, targetTreeItem: BookTreeItem): boolean {
 		return treeItem.rootContentPath === targetTreeItem.rootContentPath && targetTreeItem.book.hierarchyId?.includes(treeItem.book.hierarchyId);
+	}
+
+	/**
+	 * Checks that the book tree item is the parent of the passed element used by the onDrop and the moveTo method.
+	 * @param treeItem The child of the parent tree item.
+	 * @param parentTreeItem The parent of the passed element or the Saved Book tree item.
+	 * @param section (Optional) In case the parentTreeItem is the saved book, verify that the passed Jupyter Book Section is the parent of the treeItem.
+	*/
+	isParent(treeItem: BookTreeItem, parentTreeItem: BookTreeItem, section?: JupyterBookSection): boolean {
+		if (section) {
+			return section.title === treeItem.book.parent?.title && section.file === treeItem.book.parent?.uri;
+		}
+		return JSON.stringify(treeItem.book.parent) === JSON.stringify(parentTreeItem);
 	}
 
 	public get modifiedDir(): Set<string> {
