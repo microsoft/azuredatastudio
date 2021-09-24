@@ -75,6 +75,7 @@ export interface DesignerEditResult {
 
 export interface DesignerTab {
 	title: string;
+	labelOnTop?: boolean;
 	components: DesignerComponentType[];
 }
 
@@ -86,13 +87,17 @@ export interface UIComponentInfo {
 	/**
 	 * The name of the property that the component is bound to.
 	 */
-	property;
+	property: string;
 
 	type: DesignerComponentTypeName;
 
 	title?: string;
 
 	ariaLabel?: string;
+
+	width?: number;
+
+	description?: string;
 }
 
 export interface InputComponentInfo extends UIComponentInfo {

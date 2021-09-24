@@ -52,11 +52,13 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 
 		advancedTabComponents.push({
 			type: 'input',
+			title: localize('tableDesigner.schemaTitle', "Schema"),
 			property: designers.TableProperties.Schema
 		});
 
 		advancedTabComponents.push({
 			type: 'input',
+			title: localize('tableDesigner.descriptionTitle', "Description"),
 			property: designers.TableProperties.Description
 		});
 
@@ -74,6 +76,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		columnProperties.push(
 			{
 				type: 'input',
+				title: localize('tableDesigner.columnNameTitle', "Name"),
 				property: designers.TableColumnProperties.Name
 			}
 		);
@@ -81,7 +84,9 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		columnProperties.push(
 			<DropdownComponentInfo>{
 				type: 'dropdown',
+				title: localize('tableDesigner.columnTypeTitle', "Type"),
 				property: designers.TableColumnProperties.Type,
+
 				options: designerInfo.columnTypes
 			}
 		);
@@ -89,6 +94,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		columnProperties.push(
 			<InputComponentInfo>{
 				type: 'input',
+				title: localize('tableDesigner.columnLengthTitle', "Length"),
 				property: designers.TableColumnProperties.Length,
 				inputType: 'number'
 			}
@@ -97,6 +103,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		columnProperties.push(
 			{
 				type: 'input',
+				title: localize('tableDesigner.columnDefaultValueTitle', "Default Value"),
 				property: designers.TableColumnProperties.DefaultValue
 			}
 		);
@@ -104,6 +111,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		columnProperties.push(
 			{
 				type: 'checkbox',
+				title: localize('tableDesigner.columnAllowNullTitle', "Allow Null"),
 				property: designers.TableColumnProperties.AllowNull
 			}
 		);
@@ -139,7 +147,8 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			components: [{
 				type: 'input',
 				property: designers.TableColumnProperties.Name,
-				title: localize('tableDesigner.nameTitle', "Table name")
+				title: localize('tableDesigner.nameTitle', "Table name"),
+				width: 200
 			}],
 			tabs: tabs
 		};

@@ -1082,6 +1082,10 @@ declare module 'azdata' {
 
 		export interface DesignerTab {
 			title: string;
+			/**
+			 * Whether the label should be place on top of the component or on the left side of component. Default value is false.
+			 */
+			labelOnTop?: boolean;
 			components: DesignerComponentType[];
 		}
 
@@ -1093,13 +1097,15 @@ declare module 'azdata' {
 			/**
 			 * The name of the property that the component is bound to.
 			 */
-			property;
+			property: string;
 
 			type: DesignerComponentTypeName;
 
 			title?: string;
 
 			ariaLabel?: string;
+
+			description?: string;
 		}
 
 		export interface InputComponentInfo extends UIComponentInfo {

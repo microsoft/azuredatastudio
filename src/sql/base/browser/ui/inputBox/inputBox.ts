@@ -171,4 +171,9 @@ export class InputBox extends vsInputBox {
 		}
 		return undefined;
 	}
+
+	public override set width(width: number) {
+		super.width = width;
+		this.element.style.width = 'fit-content';
+	}
 }

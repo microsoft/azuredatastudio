@@ -3,9 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.designer-component,
-.designer-component .container,
-.designer-component .content-container {
+.designer-component, .designer-component .container {
 	width: 100%;
 	height: 100%;
 }
@@ -13,12 +11,41 @@
 .designer-component .content-container {
 	display: flex;
 	flex-direction: column;
+	border-right-width: 1px;
+	border-right-style: solid;
+	width: 100%;
+	height: 100%;
 }
 
 .designer-component .top-content-container {
 	flex: 0 0 auto;
 }
 
+.designer-component .editor-container {
+	border-top-width: 1px;
+	border-top-style: solid;
+	width: 100%;
+	height: 100%;
+}
+
 .designer-component .tabbed-panel-container {
 	flex: 1 1 auto;
+	overflow: hidden;
+}
+
+.designer-component .properties-container {
+	width: 100%;
+	height: 100%;
+}
+
+.designer-component .components-grid {
+	display: grid;
+	grid-template-columns: max-content auto; /* label, component*/
+	grid-gap: 5px;
+	padding: 5px;
+	align-content: start;
+}
+
+.designer-component .components-grid .full-row {
+	grid-area: span 1 / span 2; /* spans 1 row and 2 columns*/
 }

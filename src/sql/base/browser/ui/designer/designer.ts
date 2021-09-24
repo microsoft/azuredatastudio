@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { DesignerComponentInput, DesignerComponentType, DesignerEditTypes, DesignerTab, InputComponentInfo, InputComponentData } from 'sql/base/browser/ui/designer/interfaces';
-import { IPanelTab, IPanelView, TabbedPanel } from 'sql/base/browser/ui/panel/panel';
+import { IPanelTab, IPanelView, ITabbedPanelStyles, TabbedPanel } from 'sql/base/browser/ui/panel/panel';
 import * as DOM from 'vs/base/browser/dom';
 import { Event } from 'vs/base/common/event';
 import { Orientation, Sizing, SplitView } from 'vs/base/browser/ui/splitview/splitview';
@@ -17,7 +17,7 @@ import { IDropdownStyles } from 'sql/base/browser/ui/dropdownList/dropdownList';
 import { IThemable } from 'vs/base/common/styler';
 import { ICheckboxStyles } from 'sql/base/browser/ui/checkbox/checkbox';
 
-export interface IDesignerStyle extends IInputBoxStyles, ITableStyles, IDropdownStyles, ICheckboxStyles {
+export interface IDesignerStyle extends ITabbedPanelStyles, IInputBoxStyles, ITableStyles, IDropdownStyles, ICheckboxStyles {
 }
 
 export class Designer extends Disposable implements IThemable {
@@ -43,10 +43,10 @@ export class Designer extends Disposable implements IThemable {
 		this._verticalSplitViewContainer = DOM.$('.designer-component');
 		this._horizontalSplitViewContainer = DOM.$('.container');
 		this._contentContainer = DOM.$('.content-container');
-		this._topContentContainer = DOM.$('.top-content-container');
+		this._topContentContainer = DOM.$('.top-content-container.components-grid');
 		this._tabbedPanelContainer = DOM.$('.tabbed-panel-container');
-		this._editorContainer = DOM.$('.container');
-		this._propertiesPane = DOM.$('.container');
+		this._editorContainer = DOM.$('.editor-container');
+		this._propertiesPane = DOM.$('.properties-container.components-grid');
 		this._verticalSplitView = new SplitView(this._verticalSplitViewContainer, { orientation: Orientation.VERTICAL });
 		this._horizontalSplitView = new SplitView(this._horizontalSplitViewContainer, { orientation: Orientation.HORIZONTAL });
 		this._tabbedPanel = new TabbedPanel(this._tabbedPanelContainer);
@@ -56,6 +56,7 @@ export class Designer extends Disposable implements IThemable {
 		this._verticalSplitView.addView({
 			element: this._horizontalSplitViewContainer,
 			layout: size => {
+				this.layoutTabbedPanel();
 			},
 			minimumSize: 100,
 			maximumSize: Number.POSITIVE_INFINITY,
@@ -73,7 +74,7 @@ export class Designer extends Disposable implements IThemable {
 		this._horizontalSplitView.addView({
 			element: this._contentContainer,
 			layout: size => {
-				this._tabbedPanel.layout(new DOM.Dimension(size, DOM.getClientArea(this._horizontalSplitViewContainer).height));
+				this.layoutTabbedPanel();
 			},
 			minimumSize: 100,
 			maximumSize: Number.POSITIVE_INFINITY,
@@ -103,6 +104,13 @@ export class Designer extends Disposable implements IThemable {
 				value.style(styles);
 			}
 		});
+		this._verticalSplitView.style({
+			separatorBorder: styles.borderColor
+		});
+
+		this._horizontalSplitView.style({
+			separatorBorder: styles.borderColor
+		});
 	}
 
 	public layout(dimension: DOM.Dimension) {
@@ -128,6 +136,11 @@ export class Designer extends Disposable implements IThemable {
 		view.tabs.forEach(tab => {
 			this._tabbedPanel.pushTab(this.createTabView(tab));
 		});
+		this.layoutTabbedPanel();
+	}
+
+	private layoutTabbedPanel() {
+		this._tabbedPanel.layout(new DOM.Dimension(this._tabbedPanelContainer.clientWidth, this._tabbedPanelContainer.clientHeight));
 	}
 
 	private async handleEdit(edit): Promise<void> {
@@ -152,19 +165,25 @@ export class Designer extends Disposable implements IThemable {
 		};
 	}
 
-	private createComponent(container: HTMLElement, component: DesignerComponentType): void {
+	private createComponent(container: HTMLElement, component: DesignerComponentType, labelOnTop?: boolean): void {
+		const componentContainerClass = labelOnTop ? '.full-row' : '';
+		container.appendChild(DOM.$(componentContainerClass)).innerText = component.title;
+		const componentDiv = container.appendChild(DOM.$(componentContainerClass));
 		switch (component.type) {
 			case 'input':
 				const inputComponentSpec = component as InputComponentInfo;
-				const input = new InputBox(container, this._contextViewProvider, {
+				const input = new InputBox(componentDiv, this._contextViewProvider, {
 					ariaLabel: component.ariaLabel ?? component.title,
-					type: inputComponentSpec.inputType
+					type: inputComponentSpec.inputType,
 				});
-				this._componentMap[component.property] = input;
+				this._componentMap.set(component.property, input);
 				input.onDidChange((newValue) => {
 					this.handleEdit({ type: DesignerEditTypes.Update, property: component.property, value: newValue });
 				});
 				input.style(this._styles);
+				if (component.width !== undefined) {
+					input.width = component.width;
+				}
 				break;
 		}
 	}
@@ -172,13 +191,14 @@ export class Designer extends Disposable implements IThemable {
 
 class DesignerTabPanelView extends Disposable implements IPanelView {
 
-	constructor(private readonly _tab: DesignerTab, private _createComponent: (container: HTMLElement, component: DesignerComponentType) => void) {
+	constructor(private readonly _tab: DesignerTab, private _createComponent: (container: HTMLElement, component: DesignerComponentType, labelOnTop?: boolean) => void) {
 		super();
 	}
 
 	render(container: HTMLElement): void {
+		const componentsContainer = container.appendChild(DOM.$('.components-grid'));
 		this._tab.components.forEach(component => {
-			this._createComponent(container, component);
+			this._createComponent(componentsContainer, component, this._tab.labelOnTop);
 		});
 	}
 
