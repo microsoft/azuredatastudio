@@ -714,7 +714,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		if (this._defaultKernel) {
 			let clientSession = this._notebookOptions.factory.createClientSession({
 				notebookUri: this._notebookOptions.notebookUri,
-				notebookManager: manager,
+				executeManager: manager,
 				notificationService: this._notebookOptions.notificationService,
 				kernelSpec: this._defaultKernel
 			});

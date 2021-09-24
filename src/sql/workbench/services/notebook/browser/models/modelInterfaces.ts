@@ -42,7 +42,7 @@ export interface ISingleNotebookEditOperation {
 
 export interface IClientSessionOptions {
 	notebookUri: URI;
-	notebookManager: IExecuteManager;
+	executeManager: IExecuteManager;
 	notificationService: INotificationService;
 	kernelSpec: nb.IKernelSpec;
 }

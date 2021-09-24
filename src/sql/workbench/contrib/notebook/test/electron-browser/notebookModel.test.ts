@@ -173,7 +173,7 @@ suite('notebook model', function (): void {
 			capabilitiesService: capabilitiesService
 		};
 		clientSessionOptions = {
-			notebookManager: defaultModelOptions.executeManagers[0],
+			executeManager: defaultModelOptions.executeManagers[0],
 			notebookUri: defaultModelOptions.notebookUri,
 			notificationService: notificationService.object,
 			kernelSpec: defaultModelOptions.defaultKernel

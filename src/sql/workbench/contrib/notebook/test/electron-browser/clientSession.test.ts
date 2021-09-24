@@ -33,7 +33,7 @@ suite('Client Session', function (): void {
 		notificationService = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService, TypeMoq.MockBehavior.Loose);
 
 		session = new ClientSession({
-			notebookManager: notebookManager,
+			executeManager: notebookManager,
 			notebookUri: path,
 			notificationService: notificationService.object,
 			kernelSpec: { name: 'python', display_name: 'Python 3', language: 'python' }
@@ -169,7 +169,7 @@ suite('Client Session', function (): void {
 
 		let remoteSession = new ClientSession({
 			kernelSpec: { name: 'python', display_name: 'Python 3', language: 'python' },
-			notebookManager: newNotebookManager,
+			executeManager: newNotebookManager,
 			notebookUri: path,
 			notificationService: notificationService.object
 		});
