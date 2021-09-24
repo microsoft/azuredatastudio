@@ -34,12 +34,12 @@ export class SavedAssessmentDialog {
 					await view.initializeModel(this._rootContainer);
 					this._disposables.push(dialog.okButton.onClick(async e => {
 						await this.execute();
-						this._disposables.forEach(
-							d => { try { d.dispose(); } catch { } }
-						);
 					}));
 					this._disposables.push(dialog.cancelButton.onClick(e => {
 						this.cancel();
+					}));
+
+					this._disposables.push(view.onClosed(e => {
 						this._disposables.forEach(
 							d => { try { d.dispose(); } catch { } }
 						);

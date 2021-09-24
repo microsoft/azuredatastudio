@@ -25,7 +25,7 @@ export class WizardController {
 		this._model = model;
 	}
 
-	public async openWizard(connectionId: string, page?: number): Promise<void> {
+	public async openWizard(connectionId: string): Promise<void> {
 		const api = (await vscode.extensions.getExtension(mssql.extension.name)?.activate()) as mssql.IExtension;
 		if (api) {
 			this.extensionContext.subscriptions.push(this._model);
