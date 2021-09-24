@@ -401,19 +401,9 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 		let conn = this._sessions[sessionId].connection;
 		try {
-			// const rootNode = this._activeObjectExplorerNodes[conn.id];
 			await this._connectionManagementService.addSavedPassword(conn);
 			await this.closeSession(providerId, this.getSession(sessionId));
 			await this.createNewSession(providerId, conn);
-			// TODO reconstruct tree
-			// this._activeObjectExplorerNodes[conn.id] = rootNode;
-			// let queue: TreeNode [] = [];
-			// queue.push(rootNode);
-			// while (queue.length > 0) {
-			// 	let curr = queue.shift();
-			// 	curr = await this.refreshNodeInView(conn.id, curr.nodePath);
-			// 	curr?.children?.forEach(node => queue.push(node));
-			// }
 		} catch (err) {
 			this.sendUpdateNodeEvent(conn, err);
 			throw err;
