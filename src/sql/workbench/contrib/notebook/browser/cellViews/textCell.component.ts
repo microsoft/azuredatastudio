@@ -263,15 +263,27 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				let outputElement = <HTMLElement>this.output.nativeElement;
 				outputElement.innerHTML = this.markdownResult.element.innerHTML;
 				this.addUndoElement(outputElement.innerHTML);
-				// Find cell editor provider via cell guid
+				// Find cell editor provider via cell guid to get markdown editor height
 				let cellEditorProvider = this.markdowncodeCell.find(c => c.cellGuid() === this.cellModel.cellGuid);
-				if (cellEditorProvider) {
+				if (cellEditorProvider && this.markdownMode) {
 					let editor = cellEditorProvider.getEditor() as QueryTextEditor;
+					// setting the editor height as maxHeight for preview
 					let cellDimension = editor._dimension;
 					outputElement.style.maxHeight = cellDimension.height.toString() + 'px';
 					outputElement.style.overflowY = 'scroll';
+				} else {
+					if (document.querySelector('.notebook-preview.actionselect')) {
+						let selectedCell = document.querySelector('.notebook-preview.actionselect');
+						// when cell is only in preview use the actual height of the rendered elements instead
+						if (selectedCell === outputElement) {
+							let height = 0;
+							for (let child of selectedCell.children) {
+								height += child.scrollHeight;
+							}
+							outputElement.style.minHeight = height.toString() + 'px';
+						}
+					}
 				}
-
 				outputElement.style.lineHeight = this.markdownPreviewLineHeight.toString();
 				this.cellModel.renderedOutputTextContent = this.getRenderedTextOutput();
 				outputElement.focus();
@@ -416,7 +428,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		if (this.previewMode && !this.markdownMode) {
 			let outputElement = this.output?.nativeElement as HTMLElement;
 			if (outputElement) {
-				outputElement.focus();
+				this.updatePreview();
 			}
 		}
 	}
