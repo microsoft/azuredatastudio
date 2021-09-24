@@ -41,7 +41,7 @@ suite('ExtHostNotebook Tests', () => {
 		executeProviderMock.callBase = true;
 	});
 
-	suite('getNotebookManager', () => {
+	suite('get notebook managers', () => {
 		test('Should throw if no matching serialization provider is defined', async () => {
 			try {
 				await extHostNotebook.$getSerializationManagerDetails(-1, notebookUri);
