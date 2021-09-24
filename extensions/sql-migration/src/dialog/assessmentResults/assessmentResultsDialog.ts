@@ -32,6 +32,9 @@ export class AssessmentResultsDialog {
 
 	constructor(public ownerUri: string, public model: MigrationStateModel, public title: string, private _skuRecommendationPage: SKURecommendationPage, private _targetType: MigrationTargetType) {
 		this._model = model;
+		if (this._model.resumeAssessment && this._model.savedInfo.closedPage >= 2) {
+			this._model._databaseAssessment = <string[]>this._model.savedInfo.databaseAssessment;
+		}
 		this._tree = new SqlDatabaseTree(this._model, this._targetType);
 	}
 
