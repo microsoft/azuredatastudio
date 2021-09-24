@@ -10,7 +10,7 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import { AddTocEntryDialog } from '../../dialog/addTocEntryDialog';
 import { IBookTocManager } from '../../book/bookTocManager';
-import { BookTreeItem, BookTreeItemFormat, BookTreeItemType } from '../../book/bookTreeItem';
+import { BookTreeItem, BookTreeItemFormat } from '../../book/bookTreeItem';
 import * as utils from '../../common/utils';
 import * as sinon from 'sinon';
 import { TocEntryPathHandler } from '../../book/tocEntryPathHandler';
@@ -27,7 +27,7 @@ describe('Add File Dialog', function () {
 		bookTocManager = mockBookManager.object;
 
 		let mockTreeItem = TypeMoq.Mock.ofType<BookTreeItem>();
-		mockTreeItem.setup(i => i.contextValue).returns(() => BookTreeItemType.savedBook);
+		mockTreeItem.setup(i => i.contextValue).returns(() => utils.BookTreeItemType.savedBook);
 		mockTreeItem.setup(i => i.rootContentPath).returns(() => '');
 
 		let mockItemFormat = TypeMoq.Mock.ofType<BookTreeItemFormat>();
@@ -100,7 +100,7 @@ describe('Add File Dialog', function () {
 		mockBookManager.setup(m => m.addNewTocEntry(TypeMoq.It.isAny(), TypeMoq.It.isAny(),TypeMoq.It.isAny())).returns((path, item) => { testPathDetails.push(path); return Promise.resolve(); });
 
 		let mockTreeItem = TypeMoq.Mock.ofType<BookTreeItem>();
-		mockTreeItem.setup(i => i.contextValue).returns(() => BookTreeItemType.savedBook);
+		mockTreeItem.setup(i => i.contextValue).returns(() => utils.BookTreeItemType.savedBook);
 		mockTreeItem.setup(i => i.rootContentPath).returns(() => testDir);
 
 		fileDialog = new AddTocEntryDialog(mockBookManager.object, mockTreeItem.object, fileExtension);
