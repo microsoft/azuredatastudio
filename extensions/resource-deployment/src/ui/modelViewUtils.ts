@@ -11,7 +11,7 @@ import { IOptionsSourceProvider } from 'resource-deployment';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { getDateTimeString, getErrorMessage, isUserCancelledError, throwUnless } from '../common/utils';
-import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, FilePickerFieldInfo, InitialVariableValues, instanceOfDynamicEnablementInfo, IOptionsSource, KubeClusterContextFieldInfo, LabelPosition, NoteBookEnvironmentVariablePrefix, OptionsInfo, OptionsType, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles } from '../interfaces';
+import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, FilePickerFieldInfo, InitialVariableValues, instanceOfDynamicEnablementInfo, instanceOfDynamicOptionsInfo, IOptionsSource, KubeClusterContextFieldInfo, LabelPosition, NoteBookEnvironmentVariablePrefix, OptionsInfo, OptionsType, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles } from '../interfaces';
 import * as loc from '../localizedConstants';
 import { apiService } from '../services/apiService';
 import { valueProviderService } from '../services/valueProviderService';
@@ -41,6 +41,7 @@ export type InputComponentInfo<T extends InputComponent> = {
 	getValue: () => Promise<InputValueType>;
 	setValue: (value: InputValueType) => void;
 	getDisplayValue?: () => Promise<string>;
+	setOptions?: (options: OptionsInfo) => void;
 	onValueChanged: vscode.Event<void>;
 	isPassword?: boolean
 };
@@ -341,6 +342,7 @@ export function initializeWizardPage(context: WizardPageContext): void {
 			});
 		}));
 		await hookUpDynamicEnablement(context);
+		await hookUpDynamicOptions(context);
 		await hookUpValueProviders(context);
 		const formBuilder = view.modelBuilder.formContainer().withFormItems(
 			sections.map(section => { return { title: '', component: section }; }),
@@ -407,6 +409,58 @@ async function hookUpDynamicEnablement(context: WizardPageContext): Promise<void
 		}));
 	}));
 }
+
+/**
+ * Hooks up the dynamic options for fields which use that. This will attach a listener to the target component
+ * for when the value changes and update the options of the source component based on the current value
+ * of the target component.
+ *
+ * Note that currently this is only supported for Notebook Wizard Pages and only supports direct equals comparison
+ * for the value currently selected.
+ *
+ * Additionally this only supports hooking up components that are on the same page.
+ * @param context The page context
+ */
+async function hookUpDynamicOptions(context: WizardPageContext): Promise<void> {
+	await Promise.all(context.pageInfo.sections.map(async section => {
+		if (!section.fields) {
+			return;
+		}
+		await Promise.all(section.fields.map(async field => {
+			if (instanceOfDynamicOptionsInfo(field.dynamicOptions)) {
+				const fieldKey = field.variableName || field.label;
+				const fieldComponent = context.inputComponents[fieldKey];
+				const targetComponent = context.inputComponents[field.dynamicOptions.target];
+				if (!targetComponent) {
+					console.error(`Could not find target component ${field.dynamicOptions.target} when hooking up dynamic options for ${field.label}`);
+					return;
+				}
+				const updateOptions = async () => {
+					const currentValue = await targetComponent.getValue();
+					if (field.dynamicOptions && field.options && fieldComponent && fieldComponent.setOptions) {
+						const targetValueFound = field.dynamicOptions.alternates.find(item => item.selection === currentValue);
+						if (targetValueFound) {
+							fieldComponent.setOptions(<OptionsInfo>{
+								values: targetValueFound.alternateValues,
+								defaultValue: targetValueFound.defaultValue
+							});
+						} else {
+							fieldComponent.setOptions(<OptionsInfo>{
+								values: field.options.values,
+								defaultValue: (<OptionsInfo>field.options).defaultValue
+							});
+						}
+					}
+				};
+				targetComponent.onValueChanged(() => {
+					updateOptions();
+				});
+				await updateOptions();
+			}
+		}));
+	}));
+}
+
 
 async function hookUpValueProviders(context: WizardPageContext): Promise<void> {
 	await Promise.all(context.pageInfo.sections.map(async section => {
@@ -861,11 +915,16 @@ async function substituteVariableValues(inputComponents: InputComponents, inputV
 	);
 	return inputValue;
 }
-
+/**
+ * Renders a label on the left and a checkbox with an empty string label on the right, for use under page sections.
+ * @param context The context to use to create the field
+ */
 function processCheckboxField(context: FieldContext): void {
-	const checkbox = createCheckboxInputInfo(context.view, { initialValue: context.fieldInfo.defaultValue! === 'true', label: context.fieldInfo.label, required: context.fieldInfo.required });
-	context.components.push(checkbox.component);
+	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, cssStyles: context.fieldInfo.labelCSSStyles });
+	const checkbox = createCheckboxInputInfo(context.view, { initialValue: context.fieldInfo.defaultValue! === 'true', label: '', required: context.fieldInfo.required });
+	checkbox.labelComponent = label;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, checkbox);
+	addLabelInputPairToContainer(context.view, context.components, label, checkbox.component, context.fieldInfo);
 }
 
 /**
@@ -1024,7 +1083,8 @@ async function createRadioOptions(context: FieldContext, getRadioButtonInfo?: ((
 		component: radioGroupLoadingComponentBuilder,
 		labelComponent: label,
 		getValue: async (): Promise<InputValueType> => radioGroupLoadingComponentBuilder.value,
-		setValue: (value: InputValueType) => { throw new Error('Setting value of radio group isn\'t currently supported'); },
+		setValue: (_value: InputValueType) => { throw new Error('Setting value of radio group isn\'t currently supported'); },
+		setOptions: (optionsInfo: OptionsInfo) => { radioGroupLoadingComponentBuilder.loadOptions(optionsInfo); },
 		getDisplayValue: async (): Promise<string> => radioGroupLoadingComponentBuilder.displayValue,
 		onValueChanged: radioGroupLoadingComponentBuilder.onValueChanged,
 	});
