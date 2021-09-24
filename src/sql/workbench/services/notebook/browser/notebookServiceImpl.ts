@@ -86,10 +86,14 @@ const notebookRegistry = Registry.as<INotebookProviderRegistry>(NotebookProvider
 
 export class SerializationProviderDescriptor {
 	private _instanceReady = new Deferred<ISerializationProvider>();
-	constructor(private _instance?: ISerializationProvider) {
+	constructor(private readonly _providerId: string, private _instance?: ISerializationProvider) {
 		if (_instance) {
 			this._instanceReady.resolve(_instance);
 		}
+	}
+
+	public get providerId(): string {
+		return this._providerId;
 	}
 
 	public get instanceReady(): Promise<ISerializationProvider> {
@@ -107,10 +111,14 @@ export class SerializationProviderDescriptor {
 
 export class ExecuteProviderDescriptor {
 	private _instanceReady = new Deferred<IExecuteProvider>();
-	constructor(private _instance?: IExecuteProvider) {
+	constructor(private readonly _providerId: string, private _instance?: IExecuteProvider) {
 		if (_instance) {
 			this._instanceReady.resolve(_instance);
 		}
+	}
+
+	public get providerId(): string {
+		return this._providerId;
 	}
 
 	public get instanceReady(): Promise<IExecuteProvider> {
@@ -298,10 +306,10 @@ export class NotebookService extends Disposable implements INotebookService {
 
 	private handleNewProviderDescriptions(p: { id: string; registration: ProviderDescriptionRegistration }) {
 		if (!this._serializationProviders.has(p.id)) {
-			this._serializationProviders.set(p.id, new SerializationProviderDescriptor());
+			this._serializationProviders.set(p.id, new SerializationProviderDescriptor(p.id));
 		}
 		if (!this._executeProviders.has(p.id)) {
-			this._executeProviders.set(p.id, new ExecuteProviderDescriptor());
+			this._executeProviders.set(p.id, new ExecuteProviderDescriptor(p.id));
 		}
 		let registration = p.registration;
 		if (registration.fileExtensions) {
@@ -325,7 +333,7 @@ export class NotebookService extends Disposable implements INotebookService {
 			// Update, which will resolve the promise for anyone waiting on the instance to be registered
 			providerDescriptor.instance = instance;
 		} else {
-			this._serializationProviders.set(providerId, new SerializationProviderDescriptor(instance));
+			this._serializationProviders.set(providerId, new SerializationProviderDescriptor(providerId, instance));
 		}
 	}
 
@@ -335,7 +343,7 @@ export class NotebookService extends Disposable implements INotebookService {
 			// Update, which will resolve the promise for anyone waiting on the instance to be registered
 			providerDescriptor.instance = instance;
 		} else {
-			this._executeProviders.set(providerId, new ExecuteProviderDescriptor(instance));
+			this._executeProviders.set(providerId, new ExecuteProviderDescriptor(providerId, instance));
 		}
 	}
 
@@ -615,22 +623,28 @@ export class NotebookService extends Disposable implements INotebookService {
 		return instance;
 	}
 
-	private waitOnSerializationProviderAvailability(providerDescriptor: SerializationProviderDescriptor, timeout?: number): Promise<ISerializationProvider> {
-		// Wait up to 30 seconds for the provider to be registered
-		timeout = timeout ?? 30000;
+	private waitOnSerializationProviderAvailability(providerDescriptor: SerializationProviderDescriptor, timeout?: number): Promise<ISerializationProvider | undefined> {
+		// Wait up to 5 seconds for the provider to be registered
+		timeout = timeout ?? 5000;
 		let promises: Promise<ISerializationProvider>[] = [
 			providerDescriptor.instanceReady,
-			new Promise<ISerializationProvider>((resolve, reject) => setTimeout(() => resolve(undefined), timeout))
+			new Promise<ISerializationProvider>((resolve, reject) => setTimeout(() => {
+				this._serializationProviders.delete(providerDescriptor.providerId);
+				return resolve(undefined);
+			}, timeout))
 		];
 		return Promise.race(promises);
 	}
 
-	private waitOnExecuteProviderAvailability(providerDescriptor: ExecuteProviderDescriptor, timeout?: number): Promise<IExecuteProvider> {
-		// Wait up to 30 seconds for the provider to be registered
-		timeout = timeout ?? 30000;
+	private waitOnExecuteProviderAvailability(providerDescriptor: ExecuteProviderDescriptor, timeout?: number): Promise<IExecuteProvider | undefined> {
+		// Wait up to 5 seconds for the provider to be registered
+		timeout = timeout ?? 5000;
 		let promises: Promise<IExecuteProvider>[] = [
 			providerDescriptor.instanceReady,
-			new Promise<IExecuteProvider>((resolve, reject) => setTimeout(() => resolve(undefined), timeout))
+			new Promise<IExecuteProvider>((resolve, reject) => setTimeout(() => {
+				this._executeProviders.delete(providerDescriptor.providerId);
+				return resolve(undefined);
+			}, timeout))
 		];
 		return Promise.race(promises);
 	}

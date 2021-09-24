@@ -82,9 +82,11 @@ class TestNotebookProvider implements IExecuteProvider {
 }
 
 suite('ProviderDescriptor:', () => {
-	test('Verifies varies getter setters of Provider Descriptor', async () => {
+	test('Verifies various getters & setters for Execute Provider Descriptor', async () => {
+		const providerId = 'TestId';
 		const notebookProvider = <IExecuteProvider>{};
-		const providerDescriptor = new ExecuteProviderDescriptor(notebookProvider);
+		const providerDescriptor = new ExecuteProviderDescriptor(providerId, notebookProvider);
+		assert.strictEqual(providerDescriptor.providerId, providerId, 'providerDescriptor providerId should return correct provider ID');
 		assert.strictEqual(providerDescriptor.instance, notebookProvider, `providerDescriptor instance should be the value passed into the constructor`);
 		const providerInstancePromise = providerDescriptor.instanceReady;
 		assert.notStrictEqual(providerInstancePromise, undefined, `providerDescriptor instanceReady should not return an undefined promise object`);
@@ -92,9 +94,9 @@ suite('ProviderDescriptor:', () => {
 		assert.strictEqual(result, notebookProvider, `instanceReady property of the providerDescriptor should resolve with notebookProvider object that it was constructed with`);
 
 		providerDescriptor.instance = undefined;
-		assert.strictEqual(providerDescriptor.instance, undefined, `provider.Descriptor instance should be undefined when we set it explicitly to undefined`);
+		assert.strictEqual(providerDescriptor.instance, undefined, `providerDescriptor instance should be undefined when we set it explicitly to undefined`);
 		providerDescriptor.instance = notebookProvider;
-		assert.strictEqual(providerDescriptor.instance, notebookProvider, `provider.Descriptor instance should be instance: ${notebookProvider} that we explicitly set it to`);
+		assert.strictEqual(providerDescriptor.instance, notebookProvider, `providerDescriptor instance should be instance: ${notebookProvider} that we explicitly set it to`);
 	});
 });
 
