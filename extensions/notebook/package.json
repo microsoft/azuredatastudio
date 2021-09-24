@@ -600,7 +600,7 @@
         "command": "notebook.command.undoNotebookView",
         "key": "ctrl+z",
         "mac": "cmd+z",
-        "when": "true"
+        "when": "focusedView"
       }
     ],
     "notebook.languagemagics": [

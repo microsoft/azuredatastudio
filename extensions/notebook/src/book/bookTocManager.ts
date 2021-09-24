@@ -350,22 +350,19 @@ export class BookTocManager implements IBookTocManager {
 	async moveFile(file: BookTreeItem, book: BookTreeItem): Promise<void> {
 		const rootPath = book.rootContentPath;
 		const filePath = path.parse(file.book.contentPath);
-		// no op if the notebook is already in the dest location
-		if (file.book.contentPath !== path.join(rootPath, filePath.base)) {
-			let fileName = await this.move(file.book.contentPath, path.join(rootPath, filePath.base));
-			if (this._sourceBook) {
-				const sectionTOC = this._sourceBook.bookItems[0].findChildSection(file.uri);
-				if (sectionTOC) {
-					this.newSection = sectionTOC;
-				}
+		let fileName = await this.move(file.book.contentPath, path.join(rootPath, filePath.base));
+		if (this._sourceBook) {
+			const sectionTOC = this._sourceBook.bookItems[0].findChildSection(file.uri);
+			if (sectionTOC) {
+				this.newSection = sectionTOC;
 			}
-			fileName = fileName === undefined ? filePath.name : path.parse(fileName).name;
-			this.newSection.file = path.posix.join(path.posix.sep, fileName);
-			this.newSection.title = file.book.title;
-			if (book.book.version === BookVersion.v1) {
-				// here we only convert if is v1 because we are already using the v2 notation for every book that we read.
-				this.newSection = convertTo(book.book.version, this.newSection);
-			}
+		}
+		fileName = fileName === undefined ? filePath.name : path.parse(fileName).name;
+		this.newSection.file = path.posix.join(path.posix.sep, fileName);
+		this.newSection.title = file.book.title;
+		if (book.book.version === BookVersion.v1) {
+			// here we only convert if is v1 because we are already using the v2 notation for every book that we read.
+			this.newSection = convertTo(book.book.version, this.newSection);
 		}
 	}
 

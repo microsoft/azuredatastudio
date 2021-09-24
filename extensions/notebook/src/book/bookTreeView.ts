@@ -793,17 +793,22 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	public async undo(): Promise<void> {
-		let toc = this.undoTocFiles.pop();
-		let files = this.undoMovedFiles.pop();
-		// restore toc files
-
-		for (const [key, value] of files.entries()) {
-			await fs.move(key, value);
-		}
-
-		for (const [key, value] of toc.entries()) {
-			const yamlFile = await yaml.safeLoad(value);
-			await fs.writeFile(key, yaml.safeDump(yamlFile, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
+		if (this.undoTocFiles?.length > 0 && this.undoMovedFiles?.length > 0) {
+			try {
+				let toc = this.undoTocFiles.pop();
+				let files = this.undoMovedFiles.pop();
+				// restore toc files
+				for (const [key, value] of files.entries()) {
+					await fs.move(key, value);
+				}
+				for (const [key, value] of toc.entries()) {
+					const yamlFile = await yaml.safeLoad(value);
+					await fs.writeFile(key, yaml.safeDump(yamlFile, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
+				}
+			}
+			catch (error) {
+				console.log(error);
+			}
 		}
 	}
 
