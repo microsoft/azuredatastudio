@@ -57,7 +57,33 @@ suite('MainThreadNotebook Tests', () => {
 		mainThreadNotebook = new MainThreadNotebook(extContext, mockNotebookService.object, instantiationService);
 	});
 
-	suite('On registering a provider', () => {
+	suite('On registering a serialization provider', () => {
+		let provider: ISerializationProvider;
+		setup(() => {
+			mockNotebookService.setup(s => s.registerSerializationProvider(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns((id, providerImpl) => {
+				provider = providerImpl;
+			});
+		});
+
+		test('should call through to notebook service', () => {
+			// When I register a provider
+			mainThreadNotebook.$registerSerializationProvider(providerId, 1);
+			// Then I expect a provider implementation to be passed to the service
+			mockNotebookService.verify(s => s.registerSerializationProvider(TypeMoq.It.isAnyString(), TypeMoq.It.isAny()), TypeMoq.Times.once());
+			assert.strictEqual(provider.providerId, providerId);
+		});
+		test('should unregister in service', () => {
+			// Given we have a provider
+			mainThreadNotebook.$registerSerializationProvider(providerId, 1);
+			// When I unregister a provider twice
+			mainThreadNotebook.$unregisterSerializationProvider(1);
+			mainThreadNotebook.$unregisterSerializationProvider(1);
+			// Then I expect it to be unregistered in the service just 1 time
+			mockNotebookService.verify(s => s.unregisterSerializationProvider(TypeMoq.It.isValue(providerId)), TypeMoq.Times.once());
+		});
+	});
+
+	suite('On registering an execute provider', () => {
 		let provider: IExecuteProvider;
 		setup(() => {
 			mockNotebookService.setup(s => s.registerExecuteProvider(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns((id, providerImpl) => {
@@ -83,7 +109,7 @@ suite('MainThreadNotebook Tests', () => {
 		});
 	});
 
-	suite('getNotebookManager', () => {
+	suite('get notebook managers', () => {
 		let serializationManagerWithAllFeatures: ISerializationManagerDetails;
 		let executeManagerWithAllFeatures: IExecuteManagerDetails;
 		let serializationProvider: ISerializationProvider;
