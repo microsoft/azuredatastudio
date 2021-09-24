@@ -12,8 +12,8 @@ import { NotebookModelStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { NotebookEditorStub } from 'sql/workbench/contrib/notebook/test/testCommon';
 import { notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
-import { INavigationProvider, INotebookEditor, IExecuteManager, INotebookParams, IExecuteProvider, NavigationProviders, SQL_NOTEBOOK_PROVIDER, unsavedBooksContextKey } from 'sql/workbench/services/notebook/browser/notebookService';
-import { FailToSaveTrustState, NotebookService, NotebookServiceNoProviderRegistered, NotebookUriNotDefined, ExecuteProviderDescriptor } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
+import { INavigationProvider, INotebookEditor, IExecuteManager, INotebookParams, IExecuteProvider, NavigationProviders, SQL_NOTEBOOK_PROVIDER, unsavedBooksContextKey, ISerializationProvider, ISerializationManager } from 'sql/workbench/services/notebook/browser/notebookService';
+import { FailToSaveTrustState, NotebookService, NotebookServiceNoProviderRegistered, NotebookUriNotDefined, ExecuteProviderDescriptor, SerializationProviderDescriptor } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
 import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { INotebookProviderRegistry, NotebookProviderRegistryId, ProviderDescriptionRegistration } from 'sql/workbench/services/notebook/common/notebookRegistry';
 import * as TypeMoq from 'typemoq';
@@ -36,9 +36,15 @@ import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/commo
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 
-/**
- * class to mock azdata.nb.ServerManager object
- */
+class TestContentManager implements azdata.nb.ContentManager {
+	deserializeNotebook(contents: string): Thenable<azdata.nb.INotebookContents> {
+		throw new Error('Method not implemented.');
+	}
+	serializeNotebook(notebook: azdata.nb.INotebookContents): Thenable<string> {
+		throw new Error('Method not implemented.');
+	}
+}
+
 class TestServerManager implements azdata.nb.ServerManager {
 	isStarted: boolean = true; //by default our mock creates ServerManager in started mode.
 	onServerStarted: Event<void>;
@@ -48,14 +54,16 @@ class TestServerManager implements azdata.nb.ServerManager {
 	async stopServer(): Promise<void> {
 		this.isStarted = false;
 	}
-
 }
 
-/**
- * TestNotebookManager - creates a NotebookManager object that helps keep track of state needed by testing
- */
-class TestNotebookManager implements IExecuteManager {
-	contentManager: undefined;
+class TestSerializationManager implements ISerializationManager {
+	constructor(
+		public providerId: string = 'providerId1',
+		public contentManager: TestContentManager = new TestContentManager()
+	) { }
+}
+
+class TestExecuteManager implements IExecuteManager {
 	sessionManager: undefined;
 	constructor(
 		public providerId: string = 'providerId1',
@@ -63,13 +71,21 @@ class TestNotebookManager implements IExecuteManager {
 	) { }
 }
 
-/**
- * * TestNotebookProvider - creates a NotebookManager object that helps keep track of state needed by testing
- */
-class TestNotebookProvider implements IExecuteProvider {
+class TestSerializationProvider implements ISerializationProvider {
 	constructor(
 		public providerId: string = 'providerId1',
-		public manager: TestNotebookManager = new TestNotebookManager(providerId)
+		public manager: TestSerializationManager = new TestSerializationManager(providerId)
+	) { }
+
+	getSerializationManager(notebookUri: URI): Thenable<ISerializationManager> {
+		return Promise.resolve(this.manager);
+	}
+}
+
+class TestExecuteProvider implements IExecuteProvider {
+	constructor(
+		public providerId: string = 'providerId1',
+		public manager: TestExecuteManager = new TestExecuteManager(providerId)
 	) { }
 
 	getExecuteManager(uri: URI): Thenable<IExecuteManager> {
@@ -82,6 +98,23 @@ class TestNotebookProvider implements IExecuteProvider {
 }
 
 suite('ProviderDescriptor:', () => {
+	test('Verifies various getters & setters for Serialization Provider Descriptor', async () => {
+		const providerId = 'TestId';
+		const notebookProvider = <ISerializationProvider>{};
+		const providerDescriptor = new SerializationProviderDescriptor(providerId, notebookProvider);
+		assert.strictEqual(providerDescriptor.providerId, providerId, 'providerDescriptor providerId should return correct provider ID');
+		assert.strictEqual(providerDescriptor.instance, notebookProvider, `providerDescriptor instance should be the value passed into the constructor`);
+		const providerInstancePromise = providerDescriptor.instanceReady;
+		assert.notStrictEqual(providerInstancePromise, undefined, `providerDescriptor instanceReady should not return an undefined promise object`);
+		const result = await providerInstancePromise;
+		assert.strictEqual(result, notebookProvider, `instanceReady property of the providerDescriptor should resolve with notebookProvider object that it was constructed with`);
+
+		providerDescriptor.instance = undefined;
+		assert.strictEqual(providerDescriptor.instance, undefined, `providerDescriptor instance should be undefined when we set it explicitly to undefined`);
+		providerDescriptor.instance = notebookProvider;
+		assert.strictEqual(providerDescriptor.instance, notebookProvider, `providerDescriptor instance should be instance: ${notebookProvider} that we explicitly set it to`);
+	});
+
 	test('Verifies various getters & setters for Execute Provider Descriptor', async () => {
 		const providerId = 'TestId';
 		const notebookProvider = <IExecuteProvider>{};
@@ -225,9 +258,26 @@ suite.skip('NotebookService:', function (): void {
 		assert.strictEqual(notebookService['_store']['_isDisposed'], true, `underlying disposable store object should be disposed state`);
 	});
 
-	test('verify that getOrCreateNotebookManager does not throw when extensionService.whenInstalledExtensionRegistered() throws', async () => {
+	test('verify that getOrCreateSerializationManager does not throw when extensionService.whenInstalledExtensionRegistered() throws', async () => {
 		const providerId = 'providerId1';
-		createRegisteredProviderWithManager({ notebookService, providerId });
+		createExecuteProviderWithManager({ notebookService, providerId });
+		notebookService.registerSerializationProvider(providerId, undefined);
+		//verify method under test logs error and does not throw when extensionService.whenInstalledExtensionRegistered() throws
+		const error: Error = new Error('Extension Registration Failed');
+		extensionServiceMock.setup(x => x.whenInstalledExtensionsRegistered()).throws(error);
+
+		logServiceMock.setup(x => x.error(TypeMoq.It.isAny()))
+			.returns((_error: string | Error, ...args: any[]) => {
+				assert.strictEqual(_error, error, `error object passed to logService.error call must be the one thrown from whenInstalledExtensionsRegistered call`);
+			})
+			.verifiable(TypeMoq.Times.once());
+		await notebookService.getOrCreateSerializationManager(providerId, URI.parse('untitled:uri1'));
+		logServiceMock.verifyAll();
+	});
+
+	test('verify that getOrCreateExecuteManager does not throw when extensionService.whenInstalledExtensionRegistered() throws', async () => {
+		const providerId = 'providerId1';
+		createExecuteProviderWithManager({ notebookService, providerId });
 		notebookService.registerExecuteProvider(providerId, undefined);
 		//verify method under test logs error and does not throw when extensionService.whenInstalledExtensionRegistered() throws
 		const error: Error = new Error('Extension Registration Failed');
@@ -242,9 +292,30 @@ suite.skip('NotebookService:', function (): void {
 		logServiceMock.verifyAll();
 	});
 
+	test('verify that getOrCreateSerializationManager throws when no providers are registered', async () => {
+		const methodName = 'getOrCreateSerializationManager';
 
-	test('verify that getOrCreateNotebookManager throws when no providers are registered', async () => {
-		const methodName = 'getOrCreateNotebookManager';
+		// register the builtin sql provider to be undefined
+		notebookService.registerSerializationProvider(SQL_NOTEBOOK_PROVIDER, undefined);
+		try {
+			await notebookService.getOrCreateSerializationManager('test', URI.parse('untitled:uri1'));
+			throw Error(`${methodName}  did not throw as was expected`);
+		} catch (error) {
+			assert.strictEqual((error as Error).message, NotebookServiceNoProviderRegistered, `${methodName} should throw error with message:${NotebookServiceNoProviderRegistered}' when no providers are registered`);
+		}
+
+		// when even the default provider is not registered, method under test throws exception
+		unRegisterProviders(notebookService);
+		try {
+			await notebookService.getOrCreateSerializationManager(SQL_NOTEBOOK_PROVIDER, URI.parse('untitled:uri1'));
+			throw Error(`${methodName} did not throw as was expected`);
+		} catch (error) {
+			assert.strictEqual((error as Error).message, NotebookServiceNoProviderRegistered, `${methodName} should throw error with message:${NotebookServiceNoProviderRegistered}' when no providers are registered`);
+		}
+	});
+
+	test('verify that getOrCreateExecuteManager throws when no providers are registered', async () => {
+		const methodName = 'getOrCreateExecuteManager';
 
 		// register the builtin sql provider to be undefined
 		notebookService.registerExecuteProvider(SQL_NOTEBOOK_PROVIDER, undefined);
@@ -284,27 +355,50 @@ suite.skip('NotebookService:', function (): void {
 		assert.strictEqual(result, provider1, `${methodName} must return the provider that we registered with netbookService for the provider id: ${provider1.providerId}`);
 	});
 
-	test('verifies return value of getOrCreateNotebookManager', async () => {
+	test('verifies return value of getOrCreateSerializationManager', async () => {
+		await notebookService.registrationComplete;
+		try {
+			await notebookService.getOrCreateSerializationManager(SQL_NOTEBOOK_PROVIDER, undefined);
+			throw new Error('expected exception was not thrown');
+		} catch (error) {
+			assert.strictEqual((error as Error).message, NotebookUriNotDefined, `getOrCreateSerializationManager must throw with UriNotDefined error, when a valid uri is not provided`);
+		}
+		const provider1Id = SQL_NOTEBOOK_PROVIDER;
+		const { providerId: provider2Id, manager: provider2Manager } = createExecuteProviderWithManager({ providerId: 'provider2Id', notebookService });
+
+		const uri1: URI = URI.parse(`untitled:test1`);
+		const uri2: URI = URI.parse(`untitled:test2`);
+		const result1 = await notebookService.getOrCreateSerializationManager(provider1Id, uri1);
+		const result2 = await notebookService.getOrCreateSerializationManager(provider2Id, uri2);
+		const result1Again = await notebookService.getOrCreateSerializationManager(provider1Id, uri1);
+		assert.strictEqual(result2, provider2Manager, `the serialization manager for the provider must be the one returned by getSerializationManager of the provider`);
+		assert.notStrictEqual(result1, result2, `different serialization managers should be returned for different uris`);
+		assert.strictEqual(result1, result1Again, `same serialization managers should be returned for same uri for builtin providers`);
+		const result2Again = await notebookService.getOrCreateSerializationManager(provider2Id, uri2);
+		assert.strictEqual(result2, result2Again, `same serialization managers should be returned for same uri for custom providers`);
+	});
+
+	test('verifies return value of getOrCreateExecuteManager', async () => {
 		await notebookService.registrationComplete;
 		try {
 			await notebookService.getOrCreateExecuteManager(SQL_NOTEBOOK_PROVIDER, undefined);
 			throw new Error('expected exception was not thrown');
 		} catch (error) {
-			assert.strictEqual((error as Error).message, NotebookUriNotDefined, `getOrCreateNotebookManager must throw with UriNotDefined error, when a valid uri is not provided`);
+			assert.strictEqual((error as Error).message, NotebookUriNotDefined, `getOrCreateExecuteManager must throw with UriNotDefined error, when a valid uri is not provided`);
 		}
 		const provider1Id = SQL_NOTEBOOK_PROVIDER;
-		const { providerId: provider2Id, manager: provider2Manager } = createRegisteredProviderWithManager({ providerId: 'provider2Id', notebookService });
+		const { providerId: provider2Id, manager: provider2Manager } = createExecuteProviderWithManager({ providerId: 'provider2Id', notebookService });
 
 		const uri1: URI = URI.parse(`untitled:test1`);
 		const uri2: URI = URI.parse(`untitled:test2`);
 		const result1 = await notebookService.getOrCreateExecuteManager(provider1Id, uri1);
 		const result2 = await notebookService.getOrCreateExecuteManager(provider2Id, uri2);
 		const result1Again = await notebookService.getOrCreateExecuteManager(provider1Id, uri1);
-		assert.strictEqual(result2, provider2Manager, `the notebook manager for the provider must be the one returned by getNotebookManager of the provider`);
-		assert.notStrictEqual(result1, result2, `different notebookManagers should be returned for different uris`);
-		assert.strictEqual(result1, result1Again, `same notebookManagers should be returned for same uri for builtin providers`);
+		assert.strictEqual(result2, provider2Manager, `the execute manager for the provider must be the one returned by getExecuteManager of the provider`);
+		assert.notStrictEqual(result1, result2, `different execute managers should be returned for different uris`);
+		assert.strictEqual(result1, result1Again, `same execute managers should be returned for same uri for builtin providers`);
 		const result2Again = await notebookService.getOrCreateExecuteManager(provider2Id, uri2);
-		assert.strictEqual(result2, result2Again, `same notebookManagers should be returned for same uri for custom providers`);
+		assert.strictEqual(result2, result2Again, `same execute managers should be returned for same uri for custom providers`);
 	});
 
 	test('verifies add/remove/find/list/renameNotebookEditor methods and corresponding events', async () => {
@@ -362,7 +456,7 @@ suite.skip('NotebookService:', function (): void {
 		assert.strictEqual(editorsRemoved, 1, `onNotebookEditorRemove should have been called that increments editorsRemoved value`);
 	});
 
-	test('test registration of a new provider with multiple filetypes & kernels and verify that corresponding manager is returned by getOrCreateNotebookManager', async () => {
+	test('test registration of a new serialization provider with multiple filetypes & kernels and verify that corresponding manager is returned by getOrCreateSerializationManager methods', async () => {
 		const providerId = 'Jpeg';
 		const notebookProviderRegistration = <ProviderDescriptionRegistration>{
 			provider: providerId,
@@ -371,15 +465,34 @@ suite.skip('NotebookService:', function (): void {
 		};
 		const notebookRegistry = Registry.as<INotebookProviderRegistry>(NotebookProviderRegistryId);
 		notebookRegistry.registerProviderDescription(notebookProviderRegistration);
-		const managerPromise = notebookService.getOrCreateExecuteManager(providerId, URI.parse('untitled:jpg'));
-		const providerInstance = createRegisteredProviderWithManager({ notebookService, providerId });
-		notebookService.registerExecuteProvider(providerId, providerInstance);
-		const result = await managerPromise;
+
+		const serializationManagerPromise = notebookService.getOrCreateSerializationManager(providerId, URI.parse('untitled:jpg'));
+		const serializationProviderInstance = createSerializationProviderWithManager({ notebookService, providerId });
+		notebookService.registerSerializationProvider(providerId, serializationProviderInstance);
+		const serializationResult = await serializationManagerPromise;
 
 		// verify result
-		assert.strictEqual(result, providerInstance.manager, `createRegisteredProviderWithManager must return the manager corresponding to INotebookProvider that we registered`);
+		assert.strictEqual(serializationResult, serializationProviderInstance.manager, `createSerializationProviderWithManager must return the serialization manager corresponding to ISerializationProvider that we registered`);
 	});
 
+	test('test registration of a new execute provider with multiple filetypes & kernels and verify that corresponding manager is returned by getOrCreateExecuteManager methods', async () => {
+		const providerId = 'Jpeg';
+		const notebookProviderRegistration = <ProviderDescriptionRegistration>{
+			provider: providerId,
+			fileExtensions: ['jpeg', 'jpg'],
+			standardKernels: [<azdata.nb.IStandardKernel>{ name: 'kernel1' }, <azdata.nb.IStandardKernel>{ name: 'kernel2' }]
+		};
+		const notebookRegistry = Registry.as<INotebookProviderRegistry>(NotebookProviderRegistryId);
+		notebookRegistry.registerProviderDescription(notebookProviderRegistration);
+
+		const executeManagerPromise = notebookService.getOrCreateExecuteManager(providerId, URI.parse('untitled:jpg'));
+		const executeProviderInstance = createExecuteProviderWithManager({ notebookService, providerId });
+		notebookService.registerExecuteProvider(providerId, executeProviderInstance);
+		const executeResult = await executeManagerPromise;
+
+		// verify result
+		assert.strictEqual(executeResult, executeProviderInstance.manager, `createExecuteProviderWithManager must return the execute manager corresponding to IExecuteProvider that we registered`);
+	});
 
 	test('verify that firing of extensionService.onDidUninstallExtension event calls removeContributedProvidersFromCache', async () => {
 		const methodName = 'removeContributedProvidersFromCache';
@@ -482,7 +595,7 @@ suite.skip('NotebookService:', function (): void {
 		}
 	});
 
-	suite(`serialization tests`, () => {
+	suite(`serialization state tests`, () => {
 		for (const isTrusted of [true, false, undefined]) {
 			for (const isModelTrusted of [true, false]) {
 				if (isTrusted !== undefined && !isModelTrusted) {
@@ -598,8 +711,17 @@ function setTrustedSetup(notebookService: NotebookService) {
 	return notebookUri;
 }
 
-function createRegisteredProviderWithManager({ notebookService, providerId = 'providerId', testProviderManagers = undefined }: { providerId?: string; notebookService: NotebookService; testProviderManagers?: TestNotebookProvider[] }): TestNotebookProvider {
-	const provider = new TestNotebookProvider(providerId);
+function createSerializationProviderWithManager({ notebookService, providerId = 'providerId', testProviderManagers = undefined }: { providerId?: string; notebookService: NotebookService; testProviderManagers?: TestSerializationProvider[] }): TestSerializationProvider {
+	const provider = new TestSerializationProvider(providerId);
+	notebookService.registerSerializationProvider(providerId, provider);
+	if (testProviderManagers !== undefined) {
+		testProviderManagers.push(provider);
+	}
+	return provider;
+}
+
+function createExecuteProviderWithManager({ notebookService, providerId = 'providerId', testProviderManagers = undefined }: { providerId?: string; notebookService: NotebookService; testProviderManagers?: TestExecuteProvider[] }): TestExecuteProvider {
+	const provider = new TestExecuteProvider(providerId);
 	notebookService.registerExecuteProvider(providerId, provider);
 	if (testProviderManagers !== undefined) {
 		testProviderManagers.push(provider);
@@ -607,11 +729,13 @@ function createRegisteredProviderWithManager({ notebookService, providerId = 'pr
 	return provider;
 }
 
-async function addManagers({ notebookService, prefix = 'providerId', uriPrefix = 'id', count = 1 }: { notebookService: NotebookService; prefix?: string; uriPrefix?: string; count?: number; }): Promise<TestNotebookProvider[]> {
+async function addManagers({ notebookService, prefix = 'providerId', uriPrefix = 'id', count = 1 }: { notebookService: NotebookService; prefix?: string; uriPrefix?: string; count?: number; }): Promise<TestExecuteProvider[]> {
 	const testProviderManagers = [];
 	for (let i: number = 1; i <= count; i++) {
 		const providerId = `${prefix}${i}`;
-		createRegisteredProviderWithManager({ providerId, notebookService, testProviderManagers });
+		createSerializationProviderWithManager({ providerId, notebookService, testProviderManagers });
+		createExecuteProviderWithManager({ providerId, notebookService, testProviderManagers });
+		await notebookService.getOrCreateSerializationManager(providerId, URI.parse(`${uriPrefix}${i}`));
 		await notebookService.getOrCreateExecuteManager(providerId, URI.parse(`${uriPrefix}${i}`));
 	}
 	return testProviderManagers;
