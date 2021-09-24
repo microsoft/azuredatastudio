@@ -37,6 +37,7 @@ export class QueryTextEditor extends BaseTextEditor {
 	private _hideLineNumbers: boolean;
 	private _scrollbarHeight: number;
 	private _lineHeight: number;
+	private _shouldAddHorizontalScrollbarHeight: boolean = false;
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -123,6 +124,10 @@ export class QueryTextEditor extends BaseTextEditor {
 		return editorWidget.getScrollHeight();
 	}
 
+	public get shouldAddHorizontalScrollbar(): boolean {
+		return this._shouldAddHorizontalScrollbarHeight;
+	}
+
 	public setHeightToScrollHeight(configChanged?: boolean, isEditorCollapsed?: boolean,) {
 		let editorWidget = this.getControl() as ICodeEditor;
 		let layoutInfo = editorWidget.getLayoutInfo();
@@ -146,7 +151,6 @@ export class QueryTextEditor extends BaseTextEditor {
 		// number of lines that wrap). Finally, viewportColumn is calculated on editor resizing automatically; we can use it to ensure
 		// that the viewportColumn will always be greater than any character's column in an editor.
 		let numberWrappedLines = 0;
-		let shouldAddHorizontalScrollbarHeight = false;
 		if (!this._lineHeight || configChanged) {
 			this._lineHeight = editorWidget.getOption(EditorOption.lineHeight) || 18;
 		}
@@ -162,14 +166,14 @@ export class QueryTextEditor extends BaseTextEditor {
 			for (let line = 1; line <= lineCount; line++) {
 				// The horizontal scrollbar always appears 1 column past the viewport column when word wrap is disabled
 				if (editorWidgetModel.getLineMaxColumn(line) >= layoutInfo.viewportColumn + 1) {
-					shouldAddHorizontalScrollbarHeight = true;
+					this._shouldAddHorizontalScrollbarHeight = true;
 					break;
 				}
 			}
 		}
 		let editorHeightUsingLines = this._lineHeight * (lineCount + numberWrappedLines);
 		let editorHeightUsingMinHeight = Math.max(Math.min(editorHeightUsingLines, this._maxHeight), this._minHeight);
-		editorHeightUsingMinHeight = shouldAddHorizontalScrollbarHeight ? editorHeightUsingMinHeight + this._scrollbarHeight : editorHeightUsingMinHeight;
+		editorHeightUsingMinHeight = this._shouldAddHorizontalScrollbarHeight ? editorHeightUsingMinHeight + this._scrollbarHeight : editorHeightUsingMinHeight;
 		this.setHeight(editorHeightUsingMinHeight);
 	}
 
