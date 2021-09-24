@@ -923,6 +923,7 @@ function processCheckboxField(context: FieldContext): void {
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth, cssStyles: context.fieldInfo.labelCSSStyles });
 	const checkbox = createCheckboxInputInfo(context.view, { initialValue: context.fieldInfo.defaultValue! === 'true', label: '', required: context.fieldInfo.required });
 	checkbox.labelComponent = label;
+	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, checkbox);
 	addLabelInputPairToContainer(context.view, context.components, label, checkbox.component, context.fieldInfo);
 }
 
