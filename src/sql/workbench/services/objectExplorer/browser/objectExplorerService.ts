@@ -769,7 +769,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return treeNode;
 	}
 
-	public getSessionConnectionProfile(sessionId: string): IConnectionProfile {
+	public getSessionConnectionProfile(sessionId: string): azdata.IConnectionProfile {
 		return this._sessions[sessionId].connection.toIConnectionProfile();
 	}
 
