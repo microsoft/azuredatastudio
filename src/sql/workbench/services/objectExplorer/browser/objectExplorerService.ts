@@ -373,7 +373,6 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	}
 
 	private async callExpandOrRefreshFromProvider(provider: azdata.ObjectExplorerProviderBase, nodeInfo: azdata.ExpandNodeInfo, refresh: boolean = false): Promise<boolean> {
-		await this._connectionManagementService.refreshAzureAccountTokenIfNecessary(Utils.generateUri(this._sessions[nodeInfo.sessionId].connection));
 		if (refresh) {
 			return provider.refreshNode(nodeInfo);
 		} else {
@@ -381,11 +380,52 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		}
 	}
 
-	private expandOrRefreshNode(
+	public isSessionRefreshNeeded(sessionStatus: SessionStatus): boolean {
+		const conn = sessionStatus.connection;
+		const expiry = conn.options.expiresOn;
+		if (typeof expiry === 'number' && !Number.isNaN(expiry)) {
+			const currentTime = new Date().getTime() / 1000;
+			const maxTolerance = 2 * 60; // two minutes
+			if (expiry - currentTime < maxTolerance) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public async refreshSessionIfNecessary(providerId: string, sessionId: string): Promise<void> {
+		if (!this.isSessionRefreshNeeded(this._sessions[sessionId])) {
+			return;
+		}
+
+		let conn = this._sessions[sessionId].connection;
+		try {
+			// const rootNode = this._activeObjectExplorerNodes[conn.id];
+			await this._connectionManagementService.addSavedPassword(conn);
+			await this.closeSession(providerId, this.getSession(sessionId));
+			await this.createNewSession(providerId, conn);
+			// TODO reconstruct tree
+			// this._activeObjectExplorerNodes[conn.id] = rootNode;
+			// let queue: TreeNode [] = [];
+			// queue.push(rootNode);
+			// while (queue.length > 0) {
+			// 	let curr = queue.shift();
+			// 	curr = await this.refreshNodeInView(conn.id, curr.nodePath);
+			// 	curr?.children?.forEach(node => queue.push(node));
+			// }
+		} catch (err) {
+			this.sendUpdateNodeEvent(conn, err);
+			throw err;
+		}
+		return;
+	}
+
+	private async expandOrRefreshNode(
 		providerId: string,
 		session: azdata.ObjectExplorerSession,
 		nodePath: string,
 		refresh: boolean = false): Promise<azdata.ObjectExplorerExpandInfo> {
+		await this.refreshSessionIfNecessary(providerId, session.sessionId);
 		let self = this;
 		return new Promise<azdata.ObjectExplorerExpandInfo>((resolve, reject) => {
 			if (session.sessionId! in self._sessions && self._sessions[session.sessionId!]) {

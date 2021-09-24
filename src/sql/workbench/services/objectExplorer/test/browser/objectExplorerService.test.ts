@@ -26,6 +26,8 @@ suite('SQL Object Explorer Service tests', () => {
 	let connectionManagementService: TypeMoq.Mock<TestConnectionManagementService>;
 	let connection: ConnectionProfile;
 	let connectionToFail: ConnectionProfile;
+	let expiredConnection: ConnectionProfile;
+	let validConnection: ConnectionProfile;
 	let conProfGroup: ConnectionProfileGroup;
 	let objectExplorerService: ObjectExplorerService;
 	let objectExplorerSession: azdata.ObjectExplorerSession;
@@ -253,6 +255,39 @@ suite('SQL Object Explorer Service tests', () => {
 			id: 'testID2'
 		});
 		conProfGroup = new ConnectionProfileGroup('testGroup', undefined, 'testGroup', undefined, undefined);
+
+		expiredConnection = new ConnectionProfile(capabilitiesService, {
+			connectionName: 'expiredName',
+			savePassword: false,
+			groupFullName: 'expiredGroup',
+			serverName: 'expiredServerName',
+			databaseName: 'expiredDatabaseName',
+			authenticationType: 'inetgrated',
+			password: 'expired',
+			userName: 'expiredUsername',
+			groupId: undefined,
+			providerName: mssqlProviderName,
+			options: { 'expiresOn': 0 },
+			saveProfile: true,
+			id: 'expiredId'
+		});
+
+		validConnection = new ConnectionProfile(capabilitiesService, {
+			connectionName: 'validName',
+			savePassword: false,
+			groupFullName: 'validGroup',
+			serverName: 'validServerName',
+			databaseName: 'validDatabaseName',
+			authenticationType: 'inetgrated',
+			password: 'valid',
+			userName: 'validUsername',
+			groupId: undefined,
+			providerName: mssqlProviderName,
+			options: { 'expiresOn': new Date().getTime() / 1000 + 7200 },
+			saveProfile: true,
+			id: 'validId'
+		});
+
 		conProfGroup.connections = [connection];
 		connectionManagementService = TypeMoq.Mock.ofType(TestConnectionManagementService, TypeMoq.MockBehavior.Strict);
 		connectionManagementService.setup(x => x.getConnectionGroups()).returns(() => [conProfGroup]);
@@ -676,5 +711,18 @@ suite('SQL Object Explorer Service tests', () => {
 
 		// Then refresh gets called on the node
 		sqlOEProvider.verify(x => x.refreshNode(TypeMoq.It.is(x => x.nodePath === tablesNodePath)), TypeMoq.Times.once());
+	});
+
+	test('isSessionRefreshNeeded checks if a session refresh is needed', async () => {
+		let expiredSessionStatus = {
+			nodes: {},
+			connection: expiredConnection,
+		};
+		let validSessionStatus = {
+			nodes: {},
+			connection: validConnection,
+		};
+		assert.strictEqual(objectExplorerService.isSessionRefreshNeeded(expiredSessionStatus), true);
+		assert.strictEqual(objectExplorerService.isSessionRefreshNeeded(validSessionStatus), false);
 	});
 });
