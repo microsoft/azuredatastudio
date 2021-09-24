@@ -195,6 +195,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.cutover.card">
       <source xml:lang="en">Completing cutover</source>
     </trans-unit>
+    <trans-unit id="sql.migration.cutover.error">
+      <source xml:lang="en">An error occurred while initiating cutover.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.cutover.help.main">
       <source xml:lang="en">Perform the following steps before you complete cutover.</source>
     </trans-unit>
@@ -874,6 +877,9 @@ This may take some time.</source>
       <source xml:lang="en">Status</source>
     </trans-unit>
     <trans-unit id="sql.migration.status.add.account">
+      <source xml:lang="en">Add account</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.status.add.account.MESSAGE">
       <source xml:lang="en">Add your Azure account to view existing migrations and their status.</source>
     </trans-unit>
     <trans-unit id="sql.migration.status.canceling">

@@ -22,7 +22,9 @@ import { errorForeground } from 'vs/platform/theme/common/colorRegistry';
 
 export enum TextType {
 	Normal = 'Normal',
-	Error = 'Error'
+	Error = 'Error',
+	UnorderedList = 'UnorderedList',
+	OrderedList = 'OrderedList'
 }
 
 const errorTextClass = 'error-text';
@@ -30,16 +32,30 @@ const errorTextClass = 'error-text';
 @Component({
 	selector: 'modelview-text',
 	template: `
-	<div *ngIf="showDiv;else noDiv" style="display:flex;flex-flow:row;align-items:center;" [style.width]="getWidth()" [style.height]="getHeight()">
-		<p [title]="title" [ngStyle]="this.CSSStyles" [attr.role]="ariaRole" [attr.aria-hidden]="ariaHidden"></p>
-		<div #textContainer id="textContainer"></div>
-		<span *ngIf="requiredIndicator" style="color:red;margin-left:5px;">*</span>
-		<div *ngIf="description" tabindex="0" class="modelview-text-tooltip" [attr.aria-label]="description" role="img">
-			<div class="modelview-text-tooltip-content" [innerHTML]="description"></div>
+	<div *ngIf="showList;else noList" [style.display]="display" [style.width]="getWidth()" [style.height]="getHeight()" [title]="title" [attr.role]="ariaRole" [attr.aria-hidden]="ariaHidden" [ngStyle]="this.CSSStyles">
+		<div *ngIf="isUnOrderedList;else orderedlist">
+			<ul style="padding-left:0px">
+				<li *ngFor="let v of value">{{v}}</li>
+			</ul>
 		</div>
+		<ng-template #orderedlist>
+			<ol style="padding-left:0px">
+				<li *ngFor="let v of value">{{v}}</li>
+			</ol>
+		</ng-template>
 	</div>
-	<ng-template #noDiv>
-		<div #textContainer id="textContainer" [style.display]="display" [style.width]="getWidth()" [style.height]="getHeight()" [title]="title" [attr.role]="ariaRole" [attr.aria-hidden]="ariaHidden" [ngStyle]="this.CSSStyles"></div>
+	<ng-template #noList>
+		<div *ngIf="showDiv;else noDiv" style="display:flex;flex-flow:row;align-items:center;" [style.width]="getWidth()" [style.height]="getHeight()">
+			<p [title]="title" [ngStyle]="this.CSSStyles" [attr.role]="ariaRole" [attr.aria-hidden]="ariaHidden"></p>
+			<div #textContainer id="textContainer"></div>
+			<span *ngIf="requiredIndicator" style="color:red;margin-left:5px;">*</span>
+			<div *ngIf="description" tabindex="0" class="modelview-text-tooltip" [attr.aria-label]="description" role="img">
+				<div class="modelview-text-tooltip-content" [innerHTML]="description"></div>
+			</div>
+		</div>
+		<ng-template #noDiv>
+			<div #textContainer id="textContainer" [style.display]="display" [style.width]="getWidth()" [style.height]="getHeight()" [title]="title" [attr.role]="ariaRole" [attr.aria-hidden]="ariaHidden" [ngStyle]="this.CSSStyles"></div>
+		</ng-template>
 	</ng-template>`
 })
 export default class TextComponent extends TitledComponent<azdata.TextComponentProperties> implements IComponent, OnDestroy, AfterViewInit {
@@ -71,12 +87,12 @@ export default class TextComponent extends TitledComponent<azdata.TextComponentP
 		this.layout();
 	}
 
-	public set value(newValue: string) {
-		this.setPropertyFromUI<string>((properties, value) => { properties.value = value; }, newValue);
+	public set value(newValue: string | string[]) {
+		this.setPropertyFromUI<string | string[]>((properties, value) => { properties.value = value; }, newValue);
 	}
 
-	public get value(): string {
-		return this.getPropertyOrDefault<string>((props) => props.value, '');
+	public get value(): string | string[] {
+		return this.getPropertyOrDefault<string | string[]>((props) => props.value, undefined);
 	}
 
 	public set description(newValue: string) {
@@ -104,11 +120,27 @@ export default class TextComponent extends TitledComponent<azdata.TextComponentP
 	}
 
 	public get textType(): azdata.TextType | undefined {
-		return this.getPropertyOrDefault<azdata.TextType | undefined>(props => props.textType, undefined);
+		let textType = this.getPropertyOrDefault<azdata.TextType | undefined>(props => props.textType, undefined);
+		if (!textType && typeof this.value !== 'string') {
+			textType = (this.value) ? TextType.UnorderedList : undefined;
+		}
+		// Throwing an error when a string value is provided for list.
+		if ((textType === TextType.OrderedList || textType === TextType.UnorderedList) && typeof this.value === 'string') {
+			throw new Error(`Invalid type of value provided for the textType ${textType}`);
+		}
+		return textType;
 	}
 
 	public set textType(newValue: azdata.TextType | undefined) {
 		this.setPropertyFromUI<azdata.TextType | undefined>((properties, value) => { properties.textType = value; }, newValue);
+	}
+
+	public get isUnOrderedList(): boolean | undefined {
+		return this.textType === TextType.UnorderedList;
+	}
+
+	public get showList(): boolean | undefined {
+		return (this.textType === TextType.UnorderedList || this.textType === TextType.OrderedList);
 	}
 
 	public override setProperties(properties: { [key: string]: any; }): void {
@@ -123,6 +155,9 @@ export default class TextComponent extends TitledComponent<azdata.TextComponentP
 	}
 
 	public updateText(): void {
+		if (typeof this.value !== 'string') {
+			return;
+		}
 		DOM.clearNode((<HTMLElement>this.textContainer.nativeElement));
 		const links = this.getPropertyOrDefault<azdata.LinkArea[]>((props) => props.links, []);
 		// The text may contain link placeholders so go through and create those and insert them as needed now
@@ -137,7 +172,7 @@ export default class TextComponent extends TitledComponent<azdata.TextComponentP
 
 			// First insert any text from the start of the current string fragment up to the placeholder
 			let curText = text.slice(0, placeholderIndex);
-			if (curText) {
+			if (curText && typeof text === 'string') {
 				const textElement = this.createTextElement();
 				textElement.innerText = text.slice(0, placeholderIndex);
 				(<HTMLElement>this.textContainer.nativeElement).appendChild(textElement);
@@ -163,7 +198,7 @@ export default class TextComponent extends TitledComponent<azdata.TextComponentP
 		}
 
 		// If we have any text left over now insert that in directly
-		if (text) {
+		if (text && typeof text === 'string') {
 			const textElement = this.createTextElement();
 			textElement.innerText = text;
 			(<HTMLElement>this.textContainer.nativeElement).appendChild(textElement);

@@ -13,6 +13,12 @@
     <trans-unit id="flatFileImport.columnName">
       <source xml:lang="en">Column Name</source>
     </trans-unit>
+    <trans-unit id="flatFileImport.columnTableTitle">
+      <source xml:lang="en">Column</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.createDerivedColumn">
+      <source xml:lang="en">Create derived column</source>
+    </trans-unit>
     <trans-unit id="flatFileImport.dataType">
       <source xml:lang="en">Data Type</source>
     </trans-unit>
@@ -22,11 +28,29 @@
     <trans-unit id="flatFileImport.databaseName">
       <source xml:lang="en">Database name</source>
     </trans-unit>
+    <trans-unit id="flatFileImport.deriverColumnInstruction1">
+      <source xml:lang="en">Select the columns of data on the left required to derive your new column</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.deriverColumnInstruction2">
+      <source xml:lang="en">Select a row and specify an example transformation that you would like applied to the rest of the column</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.deriverColumnInstruction3">
+      <source xml:lang="en">Click "Preview Transformation" to preview the transformation</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.deriverColumnInstruction4">
+      <source xml:lang="en">Refine your transformation until you have the desired column</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.deriverColumnInstruction5">
+      <source xml:lang="en">Specify the new derived column's name and click "Done"</source>
+    </trans-unit>
     <trans-unit id="flatFileImport.fileImport">
       <source xml:lang="en">File to be imported</source>
     </trans-unit>
     <trans-unit id="flatFileImport.fileTextboxTitle">
       <source xml:lang="en">Location of the file to be imported</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.headerIntructionText">
+      <source xml:lang="en">Welcome to the Derived Column Tool! To get started, please follow the steps below:</source>
     </trans-unit>
     <trans-unit id="flatFileImport.importData">
       <source xml:lang="en">Import Data</source>
@@ -58,6 +82,9 @@
     <trans-unit id="flatFileImport.page4Name">
       <source xml:lang="en">Summary</source>
     </trans-unit>
+    <trans-unit id="flatFileImport.previewTransformation">
+      <source xml:lang="en">Preview Transformation</source>
+    </trans-unit>
     <trans-unit id="flatFileImport.primaryKey">
       <source xml:lang="en">Primary Key</source>
     </trans-unit>
@@ -73,11 +100,26 @@
     <trans-unit id="flatFileImport.schemaTextboxTitle">
       <source xml:lang="en">Table schema</source>
     </trans-unit>
+    <trans-unit id="flatFileImport.selectAllColumns">
+      <source xml:lang="en">Select all columns</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.selectColumn">
+      <source xml:lang="en">Select column {0}</source>
+    </trans-unit>
     <trans-unit id="flatFileImport.serverDropdownTitle">
       <source xml:lang="en">Server the database is in</source>
     </trans-unit>
     <trans-unit id="flatFileImport.serverName">
       <source xml:lang="en">Server name</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.specifyDerivedColNameTitle">
+      <source xml:lang="en">Column Name</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.specifyTransformation">
+      <source xml:lang="en">Specify Transformation</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.specifyTransformationForRow">
+      <source xml:lang="en">Specify transformation for row {0}</source>
     </trans-unit>
     <trans-unit id="flatFileImport.success.norows">
       <source xml:lang="en">✔ You have successfully inserted the data into a table.</source>

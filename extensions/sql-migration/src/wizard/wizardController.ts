@@ -30,7 +30,7 @@ export class WizardController {
 		if (api) {
 			this._model = new MigrationStateModel(this.extensionContext, connectionId, api.sqlMigration);
 			this.extensionContext.subscriptions.push(this._model);
-			this.createWizard(this._model);
+			await this.createWizard(this._model);
 		}
 	}
 
@@ -95,8 +95,8 @@ export class WizardController {
 				TelemetryViews.SqlMigrationWizard,
 				TelemetryAction.PageButtonClick,
 				{
-					'sessionId': this._model._sessionId,
-					'buttonPressed': 'cancel',
+					...this.getTelemetryProps(),
+					'buttonPressed': TelemetryAction.Cancel,
 					'pageTitle': this._wizardObject.pages[this._wizardObject.currentPage].title
 				}, {});
 		});
@@ -106,24 +106,33 @@ export class WizardController {
 				TelemetryViews.SqlMigrationWizard,
 				TelemetryAction.PageButtonClick,
 				{
-					'sessionId': this._model._sessionId,
-					'buttonPressed': 'done',
+					...this.getTelemetryProps(),
+					'buttonPressed': TelemetryAction.Done,
 					'pageTitle': this._wizardObject.pages[this._wizardObject.currentPage].title
 				}, {});
 		});
 	}
 
 	private async sendPageButtonClickEvent(pageChangeInfo: azdata.window.WizardPageChangeInfo) {
-		const buttonPressed = pageChangeInfo.newPage > pageChangeInfo.lastPage ? 'next' : 'prev';
-		const pageTitle = this._wizardObject.pages[pageChangeInfo.lastPage].title;
+		const buttonPressed = pageChangeInfo.newPage > pageChangeInfo.lastPage ? TelemetryAction.Next : TelemetryAction.Prev;
+		const pageTitle = this._wizardObject.pages[pageChangeInfo.lastPage]?.title;
 		sendSqlMigrationActionEvent(
 			TelemetryViews.SqlMigrationWizard,
 			TelemetryAction.PageButtonClick,
 			{
-				'sessionId': this._model._sessionId,
+				...this.getTelemetryProps(),
 				'buttonPressed': buttonPressed,
 				'pageTitle': pageTitle
 			}, {});
+	}
+
+	private getTelemetryProps() {
+		return {
+			'sessionId': this._model._sessionId,
+			'subscriptionId': this._model._targetSubscription?.id,
+			'resourceGroup': this._model._resourceGroup?.name,
+			'targetType': this._model._targetType,
+		};
 	}
 }
 
@@ -161,15 +170,14 @@ export function createInformationRow(view: azdata.ModelView, label: string, valu
 		.component();
 }
 
-export function createHeadingTextComponent(view: azdata.ModelView, value: string): azdata.TextComponent {
+export async function createHeadingTextComponent(view: azdata.ModelView, value: string): Promise<azdata.TextComponent> {
 	const component = createTextCompononent(view, value);
-	component.updateCssStyles({
+	await component.updateCssStyles({
 		'font-size': '13px',
 		'font-weight': 'bold',
 	});
 	return component;
 }
-
 
 export function createLabelTextComponent(view: azdata.ModelView, value: string, styles: { [key: string]: string; } = { 'width': '300px' }): azdata.TextComponent {
 	const component = createTextCompononent(view, value, styles);
