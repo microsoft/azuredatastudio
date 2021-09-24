@@ -372,7 +372,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		}
 	}
 
-	private async callExpandOrRefreshFromProvider(provider: azdata.ObjectExplorerProviderBase, nodeInfo: azdata.ExpandNodeInfo, refresh: boolean = false): Promise<boolean> {
+	private async callExpandOrRefreshFromProvider(provider: azdata.ObjectExplorerProviderBase, nodeInfo: azdata.ExpandNodeInfo, sessionProviderId: string, refresh: boolean = false): Promise<boolean> {
+		await this.refreshSessionIfNecessary(sessionProviderId, nodeInfo.sessionId);
 		if (refresh) {
 			return provider.refreshNode(nodeInfo);
 		} else {
@@ -420,12 +421,11 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return;
 	}
 
-	private async expandOrRefreshNode(
+	private expandOrRefreshNode(
 		providerId: string,
 		session: azdata.ObjectExplorerSession,
 		nodePath: string,
 		refresh: boolean = false): Promise<azdata.ObjectExplorerExpandInfo> {
-		await this.refreshSessionIfNecessary(providerId, session.sessionId);
 		let self = this;
 		return new Promise<azdata.ObjectExplorerExpandInfo>((resolve, reject) => {
 			if (session.sessionId! in self._sessions && self._sessions[session.sessionId!]) {
@@ -465,11 +465,11 @@ export class ObjectExplorerService implements IObjectExplorerService {
 						}
 					});
 					if (newRequest) {
-						allProviders.forEach(provider => {
-							self.callExpandOrRefreshFromProvider(provider, {
+						allProviders.forEach(p => {
+							self.callExpandOrRefreshFromProvider(p, {
 								sessionId: session.sessionId!,
 								nodePath: nodePath
-							}, refresh).then(isExpanding => {
+							}, providerId, refresh).then(isExpanding => {
 								if (!isExpanding) {
 									// The provider stated it's not going to expand the node, therefore do not need to track when merging results
 									let emptyResult: azdata.ObjectExplorerExpandInfo = {
@@ -478,7 +478,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 										nodes: [],
 										sessionId: session.sessionId
 									};
-									resultMap.set(provider.providerId, emptyResult);
+									resultMap.set(p.providerId, emptyResult);
 								}
 							}, error => {
 								reject(error);
