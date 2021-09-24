@@ -276,11 +276,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 						let selectedCell = document.querySelector('.notebook-preview.actionselect');
 						// when cell is only in preview use the actual height of the rendered elements instead
 						if (selectedCell === outputElement) {
-							let height = 0;
-							for (let child of selectedCell.children) {
-								height += child.scrollHeight;
-							}
-							outputElement.style.minHeight = height.toString() + 'px';
+							outputElement.style.maxHeight = 'none';
 						}
 					}
 				}
