@@ -303,18 +303,19 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			// Have to offset the height based on the contents viewport and the additional scrollbars that are present in markdown editor and notebook
 			let horizontalTop = Math.floor(Math.abs(viewportTop + viewportHeight) - Math.abs(2 * horizontalScrollbar.scrollHeight));
 
+			// Set opacity for both fixed and absolute
+			horizontalScrollbar.style.opacity = '1';
+
 			// This condition will check to see if the bottom of the editor is in the scrollable area (viewport)
 			// if it is then we will set the horizontal scrollbar to the bottom of the editor space
 			if (markdownEditorBottom < viewportBottom) {
-				horizontalScrollbar.style.opacity = '1';
 				horizontalScrollbar.style.position = 'absolute';
 				horizontalScrollbar.style.left = '0px';
 				horizontalScrollbar.style.top = '';
-				horizontalScrollbar.style.bottom = horizontalScrollbar.clientHeight + 'px';
+				horizontalScrollbar.style.bottom = '0px';
 				// This condition checks if bottom of the editor is not within the scrollable area (viewport)
 				// we will change the horizontal scrollbar to be fixed to the bottom of the scrollable area (viewport)
 			} else {
-				horizontalScrollbar.style.opacity = '1';
 				horizontalScrollbar.style.position = 'fixed';
 				horizontalScrollbar.style.left = '';
 				horizontalScrollbar.style.top = horizontalTop + 'px';
