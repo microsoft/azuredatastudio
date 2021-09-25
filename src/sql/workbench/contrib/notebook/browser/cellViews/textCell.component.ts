@@ -32,7 +32,6 @@ import { NotebookRange, ICellEditorProvider, INotebookService } from 'sql/workbe
 import { HTMLMarkdownConverter } from 'sql/workbench/contrib/notebook/browser/htmlMarkdownConverter';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 
-
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
 const findHighlightClass = 'rangeHighlight';
