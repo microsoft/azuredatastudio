@@ -35,6 +35,42 @@
 		return true;
 	}
 
+	/** @type {Promise<void> | undefined} */
+	let resolvedEnv = undefined;
+
+	/**
+	 * If VSCode is not run from a terminal, we should resolve additional
+	 * shell specific environment from the OS shell to ensure we are seeing
+	 * all development related environment variables. We do this from the
+	 * main process because it may involve spawning a shell.
+	 *
+	 * @param {{[key: string]: string}} userEnv
+	 * @returns {Promise<void>}
+	 */
+	function resolveEnv(userEnv) {
+		if (!resolvedEnv) {
+
+			// Apply `userEnv` directly
+			Object.assign(process.env, userEnv);
+
+			// Resolve `shellEnv` from the main side
+			resolvedEnv = new Promise(function (resolve) {
+				ipcRenderer.once('vscode:acceptShellEnv', function (event, shellEnv) {
+
+					// Assign all keys of the shell environment to our process environment
+					// But make sure that the user environment wins in the end
+					Object.assign(process.env, shellEnv, userEnv);
+
+					resolve();
+				});
+
+				ipcRenderer.send('vscode:fetchShellEnv');
+			});
+		}
+
+		return resolvedEnv;
+	}
+
 	/**
 	 * @param {string} key the name of the process argument to parse
 	 * @returns {string | undefined}
@@ -127,21 +163,12 @@
 	// ###                                                                 ###
 	// #######################################################################
 
-	/**
-	 * @type {import('../electron-sandbox/globals')}
-	 */
 	const globals = {
 
 		/**
 		 * A minimal set of methods exposed from Electron's `ipcRenderer`
 		 * to support communication to main process.
-		 *
-		 * @typedef {import('../electron-sandbox/electronTypes').IpcRenderer} IpcRenderer
-		 * @typedef {import('electron').IpcRendererEvent} IpcRendererEvent
-		 *
-		 * @type {IpcRenderer}
 		 */
-
 		ipcRenderer: {
 
 			/**
@@ -151,6 +178,17 @@
 			send(channel, ...args) {
 				if (validateIPC(channel)) {
 					ipcRenderer.send(channel, ...args);
+				}
+			},
+
+			/**
+			 * @param {string} channel
+			 * @param {any} message
+			 * @param {MessagePort[]} transfer
+			 */
+			postMessage(channel, message, transfer) {
+				if (validateIPC(channel)) {
+					ipcRenderer.postMessage(channel, message, transfer);
 				}
 			},
 
@@ -167,78 +205,37 @@
 
 			/**
 			 * @param {string} channel
-			 * @param {(event: IpcRendererEvent, ...args: any[]) => void} listener
-			 * @returns {IpcRenderer}
+			 * @param {(event: import('electron').IpcRendererEvent, ...args: any[]) => void} listener
 			 */
 			on(channel, listener) {
 				if (validateIPC(channel)) {
 					ipcRenderer.on(channel, listener);
-
-					return this;
 				}
 			},
 
 			/**
 			 * @param {string} channel
-			 * @param {(event: IpcRendererEvent, ...args: any[]) => void} listener
-			 * @returns {IpcRenderer}
+			 * @param {(event: import('electron').IpcRendererEvent, ...args: any[]) => void} listener
 			 */
 			once(channel, listener) {
 				if (validateIPC(channel)) {
 					ipcRenderer.once(channel, listener);
-
-					return this;
 				}
 			},
 
 			/**
 			 * @param {string} channel
-			 * @param {(event: IpcRendererEvent, ...args: any[]) => void} listener
-			 * @returns {IpcRenderer}
+			 * @param {(event: import('electron').IpcRendererEvent, ...args: any[]) => void} listener
 			 */
 			removeListener(channel, listener) {
 				if (validateIPC(channel)) {
 					ipcRenderer.removeListener(channel, listener);
-
-					return this;
-				}
-			}
-		},
-
-		/**
-		 * @type {import('../electron-sandbox/globals').IpcMessagePort}
-		 */
-		ipcMessagePort: {
-
-			/**
-			 * @param {string} channelRequest
-			 * @param {string} channelResponse
-			 * @param {string} requestNonce
-			 */
-			connect(channelRequest, channelResponse, requestNonce) {
-				if (validateIPC(channelRequest) && validateIPC(channelResponse)) {
-					const responseListener = (/** @type {IpcRendererEvent} */ e, /** @type {string} */ responseNonce) => {
-						// validate that the nonce from the response is the same
-						// as when requested. and if so, use `postMessage` to
-						// send the `MessagePort` safely over, even when context
-						// isolation is enabled
-						if (requestNonce === responseNonce) {
-							ipcRenderer.off(channelResponse, responseListener);
-							window.postMessage(requestNonce, '*', e.ports);
-						}
-					};
-
-					// request message port from main and await result
-					ipcRenderer.on(channelResponse, responseListener);
-					ipcRenderer.send(channelRequest, requestNonce);
 				}
 			}
 		},
 
 		/**
 		 * Support for subset of methods of Electron's `webFrame` type.
-		 *
-		 * @type {import('../electron-sandbox/electronTypes').WebFrame}
 		 */
 		webFrame: {
 
@@ -254,8 +251,6 @@
 
 		/**
 		 * Support for subset of methods of Electron's `crashReporter` type.
-		 *
-		 * @type {import('../electron-sandbox/electronTypes').CrashReporter}
 		 */
 		crashReporter: {
 
@@ -273,10 +268,6 @@
 		 *
 		 * Note: when `sandbox` is enabled, the only properties available
 		 * are https://github.com/electron/electron/blob/master/docs/api/process.md#sandbox
-		 *
-		 * @typedef {import('../electron-sandbox/globals').ISandboxNodeProcess} ISandboxNodeProcess
-		 *
-		 * @type {ISandboxNodeProcess}
 		 */
 		process: {
 			get platform() { return process.platform; },
@@ -285,20 +276,13 @@
 			get versions() { return process.versions; },
 			get type() { return 'renderer'; },
 			get execPath() { return process.execPath; },
-			get sandboxed() { return process.sandboxed; },
 
 			/**
-			 * @returns {string}
+			 * @param {{[key: string]: string}} userEnv
+			 * @returns {Promise<void>}
 			 */
-			cwd() {
-				return process.env['VSCODE_CWD'] || process.execPath.substr(0, process.execPath.lastIndexOf(process.platform === 'win32' ? '\\' : '/'));
-			},
-
-			/**
-			 * @returns {Promise<typeof process.env>}
-			 */
-			shellEnv() {
-				return resolveShellEnv;
+			resolveEnv(userEnv) {
+				return resolveEnv(userEnv);
 			},
 
 			/**
@@ -310,48 +294,20 @@
 
 			/**
 			 * @param {string} type
-			 * @param {Function} callback
-			 * @returns {ISandboxNodeProcess}
+			 * @param {() => void} callback
 			 */
 			on(type, callback) {
 				if (validateProcessEventType(type)) {
-					// @ts-ignore
 					process.on(type, callback);
-
-					return this;
 				}
 			}
 		},
 
 		/**
 		 * Some information about the context we are running in.
-		 *
-		 * @type {import('../electron-sandbox/globals').ISandboxContext}
 		 */
 		context: {
-
-			/**
-			 * A configuration object made accessible from the main side
-			 * to configure the sandbox browser window.
-			 *
-			 * Note: intentionally not using a getter here because the
-			 * actual value will be set after `resolveConfiguration`
-			 * has finished.
-			 *
-			 * @returns {ISandboxConfiguration | undefined}
-			 */
-			configuration() {
-				return configuration;
-			},
-
-			/**
-			 * Allows to await the resolution of the configuration object.
-			 *
-			 * @returns {Promise<ISandboxConfiguration>}
-			 */
-			async resolveConfiguration() {
-				return resolveConfiguration;
-			}
+			get sandbox() { return process.sandboxed; }
 		}
 	};
 

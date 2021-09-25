@@ -46,7 +46,7 @@ class TestView extends Disposable implements IView {
 
 }
 
-suite.skip('ScrollableView', () => { // TODO chgagnon Fix these tests
+suite('ScrollableView', () => {
 	let container: HTMLElement;
 
 	setup(() => {
