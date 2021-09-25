@@ -32,6 +32,7 @@ import { NotebookRange, ICellEditorProvider, INotebookService } from 'sql/workbe
 import { HTMLMarkdownConverter } from 'sql/workbench/contrib/notebook/browser/htmlMarkdownConverter';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 
+
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
 const findHighlightClass = 'rangeHighlight';
@@ -104,6 +105,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	public doubleClickEditEnabled: boolean;
 	private _highlightRange: NotebookRange;
 	private _isFindActive: boolean = false;
+	private readonly _editorOffset = 50;
+	private readonly _editorHeight = document.querySelector('.editor-container').clientHeight;
 
 	private readonly _undoStack: RichTextEditStack;
 	private readonly _redoStack: RichTextEditStack;
@@ -268,17 +271,13 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				if (cellEditorProvider && this.markdownMode) {
 					let editor = cellEditorProvider.getEditor() as QueryTextEditor;
 					// setting the editor height as maxHeight for preview
-					let cellDimension = editor._dimension;
-					outputElement.style.maxHeight = cellDimension.height.toString() + 'px';
+					outputElement.style.minHeight = (editor.scrollHeight + this._editorOffset).toString() + 'px';
+					outputElement.style.maxHeight = this._editorHeight.toString() + 'px';
 					outputElement.style.overflowY = 'scroll';
-				} else {
-					if (document.querySelector('.notebook-preview.actionselect')) {
-						let selectedCell = document.querySelector('.notebook-preview.actionselect');
-						// when cell is only in preview use the actual height of the rendered elements instead
-						if (selectedCell === outputElement) {
-							outputElement.style.maxHeight = 'none';
-						}
-					}
+				}
+				else {
+					// when cell is only in preview use the actual height of the rendered elements instead
+					outputElement.style.maxHeight = 'none';
 				}
 				outputElement.style.lineHeight = this.markdownPreviewLineHeight.toString();
 				this.cellModel.renderedOutputTextContent = this.getRenderedTextOutput();
@@ -424,7 +423,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		if (this.previewMode && !this.markdownMode) {
 			let outputElement = this.output?.nativeElement as HTMLElement;
 			if (outputElement) {
-				this.updatePreview();
+				outputElement.style.maxHeight = 'none';
+				outputElement.focus();
 			}
 		}
 	}
