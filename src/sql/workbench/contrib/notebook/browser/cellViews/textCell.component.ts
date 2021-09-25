@@ -104,7 +104,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	public doubleClickEditEnabled: boolean;
 	private _highlightRange: NotebookRange;
 	private _isFindActive: boolean = false;
-	private readonly _editorOffset = 50;
 	private readonly _editorHeight = document.querySelector('.editor-container').clientHeight;
 
 	private readonly _undoStack: RichTextEditStack;
@@ -270,7 +269,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				if (cellEditorProvider && this.markdownMode) {
 					let editor = cellEditorProvider.getEditor() as QueryTextEditor;
 					// setting the editor height as maxHeight for preview
-					outputElement.style.minHeight = (editor.scrollHeight + this._editorOffset).toString() + 'px';
+					outputElement.style.minHeight = editor.scrollHeight.toString() + 'px';
 					outputElement.style.maxHeight = this._editorHeight.toString() + 'px';
 					outputElement.style.overflowY = 'scroll';
 				}
