@@ -151,6 +151,7 @@ export class QueryTextEditor extends BaseTextEditor {
 		// number of lines that wrap). Finally, viewportColumn is calculated on editor resizing automatically; we can use it to ensure
 		// that the viewportColumn will always be greater than any character's column in an editor.
 		let numberWrappedLines = 0;
+		this._shouldAddHorizontalScrollbarHeight = false;
 		if (!this._lineHeight || configChanged) {
 			this._lineHeight = editorWidget.getOption(EditorOption.lineHeight) || 18;
 		}
