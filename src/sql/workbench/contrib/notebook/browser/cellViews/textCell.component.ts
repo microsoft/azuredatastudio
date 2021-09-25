@@ -275,10 +275,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 					outputElement.style.maxHeight = this._editorHeight.toString() + 'px';
 					outputElement.style.overflowY = 'scroll';
 				}
-				else {
-					// when cell is only in preview use the actual height of the rendered elements instead
-					outputElement.style.maxHeight = 'none';
-				}
 				outputElement.style.lineHeight = this.markdownPreviewLineHeight.toString();
 				this.cellModel.renderedOutputTextContent = this.getRenderedTextOutput();
 				outputElement.focus();
