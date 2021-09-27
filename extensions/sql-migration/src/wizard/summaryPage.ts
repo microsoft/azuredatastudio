@@ -56,8 +56,8 @@ export class SummaryPage extends MigrationWizardPage {
 			}
 		}).component();
 
-		this._disposables.push(targetDatabaseHyperlink.onDidClick(e => {
-			targetDatabaseSummary.initialize();
+		this._disposables.push(targetDatabaseHyperlink.onDidClick(async e => {
+			await targetDatabaseSummary.initialize();
 		}));
 
 		const targetDatabaseRow = this._view.modelBuilder.flexContainer()
@@ -85,26 +85,26 @@ export class SummaryPage extends MigrationWizardPage {
 
 		this._flexContainer.addItems(
 			[
-				createHeadingTextComponent(this._view, constants.ACCOUNTS_SELECTION_PAGE_TITLE, true),
+				await createHeadingTextComponent(this._view, constants.ACCOUNTS_SELECTION_PAGE_TITLE),
 				createInformationRow(this._view, constants.ACCOUNTS_SELECTION_PAGE_TITLE, this.migrationStateModel._azureAccount.displayInfo.displayName),
 
-				createHeadingTextComponent(this._view, constants.SOURCE_DATABASES),
+				await createHeadingTextComponent(this._view, constants.SOURCE_DATABASES),
 				targetDatabaseRow,
 
-				createHeadingTextComponent(this._view, constants.SKU_RECOMMENDATION_PAGE_TITLE),
+				await createHeadingTextComponent(this._view, constants.SKU_RECOMMENDATION_PAGE_TITLE),
 				createInformationRow(this._view, constants.SKU_RECOMMENDATION_PAGE_TITLE, (this.migrationStateModel._targetType === MigrationTargetType.SQLVM) ? constants.SUMMARY_VM_TYPE : constants.SUMMARY_MI_TYPE),
 				createInformationRow(this._view, constants.SUBSCRIPTION, this.migrationStateModel._targetSubscription.name),
 				createInformationRow(this._view, constants.LOCATION, await this.migrationStateModel.getLocationDisplayName(this.migrationStateModel._targetServerInstance.location)),
 				createInformationRow(this._view, constants.RESOURCE_GROUP, getResourceGroupFromId(this.migrationStateModel._targetServerInstance.id)),
 				createInformationRow(this._view, (this.migrationStateModel._targetType === MigrationTargetType.SQLVM) ? constants.SUMMARY_VM_TYPE : constants.SUMMARY_MI_TYPE, await this.migrationStateModel.getLocationDisplayName(this.migrationStateModel._targetServerInstance.name!)),
 
-				createHeadingTextComponent(this._view, constants.DATABASE_BACKUP_MIGRATION_MODE_LABEL),
+				await createHeadingTextComponent(this._view, constants.DATABASE_BACKUP_MIGRATION_MODE_LABEL),
 				createInformationRow(this._view, constants.MODE, this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.ONLINE ? constants.DATABASE_BACKUP_MIGRATION_MODE_ONLINE_LABEL : constants.DATABASE_BACKUP_MIGRATION_MODE_OFFLINE_LABEL),
 
-				createHeadingTextComponent(this._view, constants.DATABASE_BACKUP_PAGE_TITLE),
+				await createHeadingTextComponent(this._view, constants.DATABASE_BACKUP_PAGE_TITLE),
 				await this.createNetworkContainerRows(),
 
-				createHeadingTextComponent(this._view, constants.IR_PAGE_TITLE),
+				await createHeadingTextComponent(this._view, constants.IR_PAGE_TITLE),
 				createInformationRow(this._view, constants.SUBSCRIPTION, this.migrationStateModel._targetSubscription.name),
 				createInformationRow(this._view, constants.LOCATION, this.migrationStateModel._sqlMigrationService?.location!),
 				createInformationRow(this._view, constants.RESOURCE_GROUP, this.migrationStateModel._sqlMigrationService?.properties?.resourceGroup!),
@@ -138,7 +138,7 @@ export class SummaryPage extends MigrationWizardPage {
 						createInformationRow(this._view, constants.BACKUP_LOCATION, constants.NETWORK_SHARE),
 						createInformationRow(this._view, constants.NETWORK_SHARE, this.migrationStateModel._databaseBackup.networkShare.networkShareLocation),
 						createInformationRow(this._view, constants.USER_ACCOUNT, this.migrationStateModel._databaseBackup.networkShare.windowsUser),
-						createHeadingTextComponent(this._view, constants.AZURE_STORAGE_ACCOUNT_TO_UPLOAD_BACKUPS),
+						await createHeadingTextComponent(this._view, constants.AZURE_STORAGE_ACCOUNT_TO_UPLOAD_BACKUPS),
 						createInformationRow(this._view, constants.SUBSCRIPTION, this.migrationStateModel._databaseBackup.subscription.name),
 						createInformationRow(this._view, constants.LOCATION, this.migrationStateModel._databaseBackup.networkShare.storageAccount.location),
 						createInformationRow(this._view, constants.RESOURCE_GROUP, this.migrationStateModel._databaseBackup.networkShare.storageAccount.resourceGroup!),

@@ -10,10 +10,11 @@ import { MigrationContext, MigrationLocalStorage, MigrationStatus } from '../../
 import { MigrationCutoverDialog } from '../migrationCutover/migrationCutoverDialog';
 import { AdsMigrationStatus, MigrationStatusDialogModel } from './migrationStatusDialogModel';
 import * as loc from '../../constants/strings';
-import { clearDialogMessage, convertTimeDifferenceToDuration, filterMigrations, getMigrationStatusImage, SupportedAutoRefreshIntervals } from '../../api/utils';
+import { clearDialogMessage, convertTimeDifferenceToDuration, displayDialogErrorMessage, filterMigrations, getMigrationStatusImage, SupportedAutoRefreshIntervals } from '../../api/utils';
 import { SqlMigrationServiceDetailsDialog } from '../sqlMigrationService/sqlMigrationServiceDetailsDialog';
 import { ConfirmCutoverDialog } from '../migrationCutover/confirmCutoverDialog';
 import { MigrationCutoverDialogModel } from '../migrationCutover/migrationCutoverDialogModel';
+import { getMigrationTargetType, getMigrationMode } from '../../constants/helper';
 
 const refreshFrequency: SupportedAutoRefreshIntervals = 180000;
 
@@ -102,8 +103,8 @@ export class MigrationStatusDialog {
 			width: '360px'
 		}).component();
 
-		this._disposables.push(this._searchBox.onTextChanged((value) => {
-			this.populateMigrationTable();
+		this._disposables.push(this._searchBox.onTextChanged(async (value) => {
+			await this.populateMigrationTable();
 		}));
 
 		this._refresh = this._view.modelBuilder.button().withProps({
@@ -135,8 +136,8 @@ export class MigrationStatusDialog {
 			width: '220px'
 		}).component();
 
-		this._disposables.push(this._statusDropdown.onValueChanged((value) => {
-			this.populateMigrationTable();
+		this._disposables.push(this._statusDropdown.onValueChanged(async (value) => {
+			await this.populateMigrationTable();
 		}));
 
 		if (this._filter) {
@@ -203,16 +204,14 @@ export class MigrationStatusDialog {
 						await cutoverDialogModel.fetchStatus();
 						const dialog = new ConfirmCutoverDialog(cutoverDialogModel);
 						await dialog.initialize();
+						if (cutoverDialogModel.CutoverError) {
+							displayDialogErrorMessage(this._dialogObject, loc.MIGRATION_CUTOVER_ERROR, cutoverDialogModel.CutoverError);
+						}
 					} else {
 						await vscode.window.showInformationMessage(loc.MIGRATION_CANNOT_CUTOVER);
 					}
 				} catch (e) {
-					this._dialogObject.message = {
-						text: loc.MIGRATION_STATUS_REFRESH_ERROR,
-						description: e.message,
-						level: azdata.window.MessageLevel.Error
-					};
-
+					displayDialogErrorMessage(this._dialogObject, loc.MIGRATION_CUTOVER_ERROR, e);
 					console.log(e);
 				}
 			}));
@@ -272,12 +271,7 @@ export class MigrationStatusDialog {
 
 					await vscode.window.showInformationMessage(loc.DETAILS_COPIED);
 				} catch (e) {
-					this._dialogObject.message = {
-						text: loc.MIGRATION_STATUS_REFRESH_ERROR,
-						description: e.message,
-						level: azdata.window.MessageLevel.Error
-					};
-
+					displayDialogErrorMessage(this._dialogObject, loc.MIGRATION_STATUS_REFRESH_ERROR, e);
 					console.log(e);
 				}
 			}));
@@ -289,23 +283,22 @@ export class MigrationStatusDialog {
 					clearDialogMessage(this._dialogObject);
 					const migration = this._model._migrations.find(migration => migration.migrationContext.id === migrationId);
 					if (this.canCancelMigration(migration?.migrationContext.properties.migrationStatus)) {
-						vscode.window.showInformationMessage(loc.CANCEL_MIGRATION_CONFIRMATION, loc.YES, loc.NO).then(async (v) => {
+						void vscode.window.showInformationMessage(loc.CANCEL_MIGRATION_CONFIRMATION, loc.YES, loc.NO).then(async (v) => {
 							if (v === loc.YES) {
 								const cutoverDialogModel = new MigrationCutoverDialogModel(migration!);
 								await cutoverDialogModel.fetchStatus();
 								await cutoverDialogModel.cancelMigration();
+
+								if (cutoverDialogModel.CancelMigrationError) {
+									displayDialogErrorMessage(this._dialogObject, loc.MIGRATION_CANNOT_CANCEL, cutoverDialogModel.CancelMigrationError);
+								}
 							}
 						});
 					} else {
 						await vscode.window.showInformationMessage(loc.MIGRATION_CANNOT_CANCEL);
 					}
 				} catch (e) {
-					this._dialogObject.message = {
-						text: loc.MIGRATION_CANCELLATION_ERROR,
-						description: e.message,
-						level: azdata.window.MessageLevel.Error
-					};
-
+					displayDialogErrorMessage(this._dialogObject, loc.MIGRATION_CANCELLATION_ERROR, e);
 					console.log(e);
 				}
 			}));
@@ -326,8 +319,8 @@ export class MigrationStatusDialog {
 				return [
 					{ value: this._getDatabaserHyperLink(migration) },
 					{ value: this._getMigrationStatus(migration) },
-					{ value: this._getMigrationMode(migration) },
-					{ value: this._getMigrationTargetType(migration) },
+					{ value: getMigrationMode(migration) },
+					{ value: getMigrationTargetType(migration) },
 					{ value: migration.targetManagedInstance.name },
 					{ value: migration.controller.name },
 					{
@@ -404,21 +397,11 @@ export class MigrationStatusDialog {
 		return '---';
 	}
 
-	private _getMigrationTargetType(migration: MigrationContext): string {
-		return migration.targetManagedInstance.type === 'microsoft.sql/managedinstances'
-			? loc.SQL_MANAGED_INSTANCE
-			: loc.SQL_VIRTUAL_MACHINE;
-	}
-
-	private _getMigrationMode(migration: MigrationContext): string {
-		return migration.migrationContext.properties.autoCutoverConfiguration?.autoCutover?.valueOf() ? loc.OFFLINE : loc.ONLINE;
-	}
-
 	private _getMenuCommands(migration: MigrationContext): string[] {
 		const menuCommands: string[] = [];
 		const migrationStatus = migration?.migrationContext?.properties?.migrationStatus;
 
-		if (this._getMigrationMode(migration) === loc.ONLINE &&
+		if (getMigrationMode(migration) === loc.ONLINE &&
 			this.canCutoverMigration(migrationStatus)) {
 			menuCommands.push(MenuCommands.Cutover);
 		}
@@ -517,12 +500,7 @@ export class MigrationStatusDialog {
 			this._model._migrations = await MigrationLocalStorage.getMigrationsBySourceConnections(currentConnection, true);
 			await this.populateMigrationTable();
 		} catch (e) {
-			this._dialogObject.message = {
-				text: loc.MIGRATION_STATUS_REFRESH_ERROR,
-				description: e.message,
-				level: azdata.window.MessageLevel.Error
-			};
-
+			displayDialogErrorMessage(this._dialogObject, loc.MIGRATION_STATUS_REFRESH_ERROR, e);
 			console.log(e);
 		} finally {
 			this.isRefreshing = false;

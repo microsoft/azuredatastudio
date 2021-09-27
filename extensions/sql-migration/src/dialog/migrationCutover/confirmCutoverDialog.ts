@@ -114,9 +114,9 @@ export class ConfirmCutoverDialog {
 
 			this._dialogObject.okButton.enabled = false;
 			this._dialogObject.okButton.label = constants.COMPLETE_CUTOVER;
-			this._disposables.push(this._dialogObject.okButton.onClick((e) => {
-				this.migrationCutoverModel.startCutover();
-				vscode.window.showInformationMessage(constants.CUTOVER_IN_PROGRESS(this.migrationCutoverModel._migration.migrationContext.properties.sourceDatabaseName));
+			this._disposables.push(this._dialogObject.okButton.onClick(async (e) => {
+				await this.migrationCutoverModel.startCutover();
+				void vscode.window.showInformationMessage(constants.CUTOVER_IN_PROGRESS(this.migrationCutoverModel._migration.migrationContext.properties.sourceDatabaseName));
 			}));
 
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
@@ -231,14 +231,14 @@ export class ConfirmCutoverDialog {
 			if (expanded) {
 				containerHeading.iconPath = IconPathHelper.expandButtonClosed;
 				containerHeading.iconHeight = 12;
-				fileTable.updateCssStyles({
+				await fileTable.updateCssStyles({
 					'display': 'none'
 				});
 
 			} else {
 				containerHeading.iconPath = IconPathHelper.expandButtonOpen;
 				containerHeading.iconHeight = 8;
-				fileTable.updateCssStyles({
+				await fileTable.updateCssStyles({
 					'display': 'inline'
 				});
 			}

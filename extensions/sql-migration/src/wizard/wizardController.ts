@@ -22,16 +22,15 @@ export const WIZARD_INPUT_COMPONENT_WIDTH = '600px';
 export class WizardController {
 	private _wizardObject!: azdata.window.Wizard;
 	private _model!: MigrationStateModel;
-	constructor(private readonly extensionContext: vscode.ExtensionContext) {
-
+	constructor(private readonly extensionContext: vscode.ExtensionContext, model: MigrationStateModel) {
+		this._model = model;
 	}
 
 	public async openWizard(connectionId: string): Promise<void> {
 		const api = (await vscode.extensions.getExtension(mssql.extension.name)?.activate()) as mssql.IExtension;
 		if (api) {
-			this._model = new MigrationStateModel(this.extensionContext, connectionId, api.sqlMigration);
 			this.extensionContext.subscriptions.push(this._model);
-			this.createWizard(this._model);
+			await this.createWizard(this._model);
 		}
 	}
 
@@ -40,6 +39,8 @@ export class WizardController {
 		this._wizardObject = azdata.window.createWizard(loc.WIZARD_TITLE(serverName), 'MigrationWizard', 'wide');
 		this._wizardObject.generateScriptButton.enabled = false;
 		this._wizardObject.generateScriptButton.hidden = true;
+		const saveAndCloseButton = azdata.window.createButton(loc.SAVE_AND_CLOSE);
+		this._wizardObject.customButtons = [saveAndCloseButton];
 		const skuRecommendationPage = new SKURecommendationPage(this._wizardObject, stateModel);
 		const migrationModePage = new MigrationModePage(this._wizardObject, stateModel);
 		const databaseSelectorPage = new DatabaseSelectorPage(this._wizardObject, stateModel);
@@ -63,8 +64,11 @@ export class WizardController {
 		const wizardSetupPromises: Thenable<void>[] = [];
 		wizardSetupPromises.push(...pages.map(p => p.registerWizardContent()));
 		wizardSetupPromises.push(this._wizardObject.open());
+		if (this._model.resumeAssessment) {
+			wizardSetupPromises.push(this._wizardObject.setCurrentPage(this._model.savedInfo.closedPage));
+		}
 
-		this.extensionContext.subscriptions.push(this._wizardObject.onPageChanged(async (pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
+		this._model.extensionContext.subscriptions.push(this._wizardObject.onPageChanged(async (pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
 			const newPage = pageChangeInfo.newPage;
 			const lastPage = pageChangeInfo.lastPage;
 			this.sendPageButtonClickEvent(pageChangeInfo).catch(e => console.log(e));
@@ -83,21 +87,25 @@ export class WizardController {
 		});
 
 		await Promise.all(wizardSetupPromises);
-		this.extensionContext.subscriptions.push(this._wizardObject.onPageChanged(async (pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
+		this._model.extensionContext.subscriptions.push(this._wizardObject.onPageChanged(async (pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
 			await pages[0].onPageEnter(pageChangeInfo);
 		}));
 
-		this.extensionContext.subscriptions.push(this._wizardObject.doneButton.onClick(async (e) => {
+		this._model.extensionContext.subscriptions.push(this._wizardObject.doneButton.onClick(async (e) => {
 			await stateModel.startMigration();
 		}));
+		saveAndCloseButton.onClick(async () => {
+			await stateModel.saveInfo(serverName, this._wizardObject.currentPage);
+			await this._wizardObject.close();
+		});
 
 		this._wizardObject.cancelButton.onClick(e => {
 			sendSqlMigrationActionEvent(
 				TelemetryViews.SqlMigrationWizard,
 				TelemetryAction.PageButtonClick,
 				{
-					'sessionId': this._model._sessionId,
-					'buttonPressed': 'cancel',
+					...this.getTelemetryProps(),
+					'buttonPressed': TelemetryAction.Cancel,
 					'pageTitle': this._wizardObject.pages[this._wizardObject.currentPage].title
 				}, {});
 		});
@@ -107,24 +115,33 @@ export class WizardController {
 				TelemetryViews.SqlMigrationWizard,
 				TelemetryAction.PageButtonClick,
 				{
-					'sessionId': this._model._sessionId,
-					'buttonPressed': 'done',
+					...this.getTelemetryProps(),
+					'buttonPressed': TelemetryAction.Done,
 					'pageTitle': this._wizardObject.pages[this._wizardObject.currentPage].title
 				}, {});
 		});
 	}
 
 	private async sendPageButtonClickEvent(pageChangeInfo: azdata.window.WizardPageChangeInfo) {
-		const buttonPressed = pageChangeInfo.newPage > pageChangeInfo.lastPage ? 'next' : 'prev';
-		const pageTitle = this._wizardObject.pages[pageChangeInfo.lastPage].title;
+		const buttonPressed = pageChangeInfo.newPage > pageChangeInfo.lastPage ? TelemetryAction.Next : TelemetryAction.Prev;
+		const pageTitle = this._wizardObject.pages[pageChangeInfo.lastPage]?.title;
 		sendSqlMigrationActionEvent(
 			TelemetryViews.SqlMigrationWizard,
 			TelemetryAction.PageButtonClick,
 			{
-				'sessionId': this._model._sessionId,
+				...this.getTelemetryProps(),
 				'buttonPressed': buttonPressed,
 				'pageTitle': pageTitle
 			}, {});
+	}
+
+	private getTelemetryProps() {
+		return {
+			'sessionId': this._model._sessionId,
+			'subscriptionId': this._model._targetSubscription?.id,
+			'resourceGroup': this._model._resourceGroup?.name,
+			'targetType': this._model._targetType,
+		};
 	}
 }
 
@@ -154,9 +171,9 @@ export function createInformationRow(view: azdata.ModelView, label: string, valu
 			]).component();
 }
 
-export function createHeadingTextComponent(view: azdata.ModelView, value: string, firstElement: boolean = false): azdata.TextComponent {
+export async function createHeadingTextComponent(view: azdata.ModelView, value: string, firstElement: boolean = false): Promise<azdata.TextComponent> {
 	const component = createTextComponent(view, value);
-	component.updateCssStyles({
+	await component.updateCssStyles({
 		...styles.LABEL_CSS,
 		'margin-top': firstElement ? '0' : '20px'
 	});

@@ -7,13 +7,13 @@ import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import * as cp from 'promisify-child-process';
 import * as semver from 'semver';
 import { isNullOrUndefined } from 'util';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { DoNotAskAgain, InstallNetCore, NetCoreInstallationConfirmation, NetCoreSupportedVersionInstallationConfirmation, UpdateNetCoreLocation } from '../common/constants';
+import { DoNotAskAgain, Install, NetCoreInstallationConfirmation, NetCoreSupportedVersionInstallationConfirmation, UpdateNetCoreLocation } from '../common/constants';
 import * as utils from '../common/utils';
+import { ShellCommandOptions, ShellExecutionHelper } from './shellExecutionHelper';
 const localize = nls.loadMessageBundle();
 
 export const DBProjectConfigurationKey: string = 'sqlDatabaseProjects';
@@ -33,13 +33,7 @@ export const enum netCoreInstallState {
 
 const dotnet = os.platform() === 'win32' ? 'dotnet.exe' : 'dotnet';
 
-export interface DotNetCommandOptions {
-	workingDirectory?: string;
-	additionalEnvironmentVariables?: NodeJS.ProcessEnv;
-	commandTitle?: string;
-	argument?: string;
-}
-export class NetCoreTool {
+export class NetCoreTool extends ShellExecutionHelper {
 
 	private osPlatform: string = os.platform();
 	private netCoreSdkInstalledVersion: string | undefined;
@@ -61,22 +55,22 @@ export class NetCoreTool {
 		return true;
 	}
 
-
-	constructor(private _outputChannel: vscode.OutputChannel) {
+	constructor(_outputChannel: vscode.OutputChannel) {
+		super(_outputChannel);
 	}
 
 	public async showInstallDialog(): Promise<void> {
 		let result;
 		if (this.netCoreInstallState === netCoreInstallState.netCoreNotPresent) {
-			result = await vscode.window.showErrorMessage(NetCoreInstallationConfirmation, UpdateNetCoreLocation, InstallNetCore, DoNotAskAgain);
+			result = await vscode.window.showErrorMessage(NetCoreInstallationConfirmation, UpdateNetCoreLocation, Install, DoNotAskAgain);
 		} else {
-			result = await vscode.window.showErrorMessage(NetCoreSupportedVersionInstallationConfirmation(this.netCoreSdkInstalledVersion!), UpdateNetCoreLocation, InstallNetCore, DoNotAskAgain);
+			result = await vscode.window.showErrorMessage(NetCoreSupportedVersionInstallationConfirmation(this.netCoreSdkInstalledVersion!), UpdateNetCoreLocation, Install, DoNotAskAgain);
 		}
 
 		if (result === UpdateNetCoreLocation) {
 			//open settings
 			await vscode.commands.executeCommand('workbench.action.openGlobalSettings');
-		} else if (result === InstallNetCore) {
+		} else if (result === Install) {
 			//open install link
 			const dotnetcoreURL = 'https://dotnet.microsoft.com/download/dotnet-core/3.1';
 			await vscode.env.openExternal(vscode.Uri.parse(dotnetcoreURL));
@@ -183,7 +177,7 @@ export class NetCoreTool {
 		}
 	}
 
-	public async runDotnetCommand(options: DotNetCommandOptions): Promise<string> {
+	public async runDotnetCommand(options: ShellCommandOptions): Promise<string> {
 		if (options && options.commandTitle !== undefined && options.commandTitle !== null) {
 			this._outputChannel.appendLine(`\t[ ${options.commandTitle} ]`);
 		}
@@ -205,53 +199,6 @@ export class NetCoreTool {
 			this._outputChannel.append(localize('sqlDatabaseProject.RunCommand.ErroredOut', "\t>>> {0}   … errored out: {1}", command, utils.getErrorMessage(error))); //errors are localized in our code where emitted, other errors are pass through from external components that are not easily localized
 			throw error;
 		}
-	}
-
-	// spawns the dotnet command with arguments and redirects the error and output to ADS output channel
-	public async runStreamedCommand(command: string, outputChannel: vscode.OutputChannel, options?: DotNetCommandOptions): Promise<string> {
-		const stdoutData: string[] = [];
-		outputChannel.appendLine(`    > ${command}`);
-
-		const spawnOptions = {
-			cwd: options && options.workingDirectory,
-			env: Object.assign({}, process.env, options && options.additionalEnvironmentVariables),
-			encoding: 'utf8',
-			maxBuffer: 10 * 1024 * 1024, // 10 Mb of output can be captured.
-			shell: true,
-			detached: false,
-			windowsHide: true
-		};
-
-		const child = cp.spawn(command, [], spawnOptions);
-		outputChannel.show();
-
-		// Add listeners to print stdout and stderr and exit code
-		void child.on('exit', (code: number | null, signal: string | null) => {
-			if (code !== null) {
-				outputChannel.appendLine(localize('sqlDatabaseProjects.RunStreamedCommand.ExitedWithCode', "    >>> {0}    … exited with code: {1}", command, code));
-			} else {
-				outputChannel.appendLine(localize('sqlDatabaseProjects.RunStreamedCommand.ExitedWithSignal', "    >>> {0}   … exited with signal: {1}", command, signal));
-			}
-		});
-
-		child.stdout!.on('data', (data: string | Buffer) => {
-			stdoutData.push(data.toString());
-			this.outputDataChunk(data, outputChannel, localize('sqlDatabaseProjects.RunCommand.stdout', "    stdout: "));
-		});
-
-		child.stderr!.on('data', (data: string | Buffer) => {
-			this.outputDataChunk(data, outputChannel, localize('sqlDatabaseProjects.RunCommand.stderr', "    stderr: "));
-		});
-		await child;
-
-		return stdoutData.join('');
-	}
-
-	private outputDataChunk(data: string | Buffer, outputChannel: vscode.OutputChannel, header: string): void {
-		data.toString().split(/\r?\n/)
-			.forEach(line => {
-				outputChannel.appendLine(header + line);
-			});
 	}
 }
 

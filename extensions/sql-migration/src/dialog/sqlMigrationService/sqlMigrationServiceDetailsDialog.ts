@@ -243,9 +243,9 @@ export class SqlMigrationServiceDetailsDialog {
 			})
 			.component();
 
-		this._disposables.push(copyKey1Button.onDidClick((e) => {
-			vscode.env.clipboard.writeText(keys.authKey1);
-			vscode.window.showInformationMessage(constants.SERVICE_KEY1_COPIED_HELP);
+		this._disposables.push(copyKey1Button.onDidClick(async (e) => {
+			await vscode.env.clipboard.writeText(keys.authKey1);
+			void vscode.window.showInformationMessage(constants.SERVICE_KEY1_COPIED_HELP);
 		}));
 
 		const copyKey2Button = view.modelBuilder
@@ -259,9 +259,9 @@ export class SqlMigrationServiceDetailsDialog {
 			})
 			.component();
 
-		this._disposables.push(copyKey2Button.onDidClick((e) => {
-			vscode.env.clipboard.writeText(keys.authKey2);
-			vscode.window.showInformationMessage(constants.SERVICE_KEY2_COPIED_HELP);
+		this._disposables.push(copyKey2Button.onDidClick(async (e) => {
+			await vscode.env.clipboard.writeText(keys.authKey2);
+			void vscode.window.showInformationMessage(constants.SERVICE_KEY2_COPIED_HELP);
 		}));
 
 		const refreshKey1Button = view.modelBuilder
@@ -290,7 +290,7 @@ export class SqlMigrationServiceDetailsDialog {
 		this._disposables.push(refreshKey2Button.onDidClick(
 			async (e) => await this._regenerateAuthKey(view, migrationContext, AUTH_KEY2)));
 
-		this._migrationServiceAuthKeyTable.updateProperties({
+		await this._migrationServiceAuthKeyTable.updateProperties({
 			dataValues: [
 				[
 					{ value: constants.SERVICE_KEY1_LABEL },

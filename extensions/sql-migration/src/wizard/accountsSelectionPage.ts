@@ -34,6 +34,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 			}).component()
 		};
 
+		this.wizard.customButtons[0].enabled = true;
 		const form = view.modelBuilder.formContainer()
 			.withFormItems(
 				[
@@ -102,13 +103,21 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 					this.migrationStateModel._accountTenants = selectedAzureAccount.properties.tenants;
 					this._accountTenantDropdown.values = await this.migrationStateModel.getTenantValues();
 					selectDropDownIndex(this._accountTenantDropdown, 0);
-					this._accountTenantFlexContainer.updateCssStyles({
+					await this._accountTenantFlexContainer.updateCssStyles({
 						'display': 'inline'
 					});
 				} else {
-					this._accountTenantFlexContainer.updateCssStyles({
+					await this._accountTenantFlexContainer.updateCssStyles({
 						'display': 'none'
 					});
+					if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= 0) {
+						(<azdata.CategoryValue[]>this._azureAccountsDropdown.values)?.forEach((account, index) => {
+							if (account.name === this.migrationStateModel.savedInfo.azureAccount?.displayInfo.userId) {
+								selectDropDownIndex(this._azureAccountsDropdown, index);
+							}
+						});
+					}
+
 				}
 				this.migrationStateModel._subscriptions = undefined!;
 				this.migrationStateModel._targetSubscription = undefined!;
@@ -133,7 +142,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 			this.wizard.message = {
 				text: ''
 			};
-			this._azureAccountsDropdown.validate();
+			await this._azureAccountsDropdown.validate();
 		}));
 
 		const flexContainer = view.modelBuilder.flexContainer()
@@ -175,12 +184,17 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 			 * All azure requests will only run on this tenant from now on
 			 */
 			const selectedIndex = findDropDownItemIndex(this._accountTenantDropdown, value);
+			const selectedTenant = this.migrationStateModel.getTenant(selectedIndex);
+			this.migrationStateModel._azureTenant = deepClone(selectedTenant);
 			if (selectedIndex > -1) {
 				this.migrationStateModel._azureAccount.properties.tenants = [this.migrationStateModel.getTenant(selectedIndex)];
 				this.migrationStateModel._subscriptions = undefined!;
 				this.migrationStateModel._targetSubscription = undefined!;
 				this.migrationStateModel._databaseBackup.subscription = undefined!;
 			}
+			const selectedAzureAccount = this.migrationStateModel.getAccount(selectedIndex);
+			this.migrationStateModel._azureAccount = deepClone(selectedAzureAccount);
+
 		}));
 
 		this._accountTenantFlexContainer = view.modelBuilder.flexContainer()
