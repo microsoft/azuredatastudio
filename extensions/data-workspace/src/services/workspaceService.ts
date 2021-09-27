@@ -282,7 +282,7 @@ export class WorkspaceService implements IWorkspaceService {
 					projectType: path.extname(projectFile.fsPath)
 				}).send();
 
-			let excludedProjects = this.getWorkspaceConfigurationValue<string[]>(ExcludedProjectsConfigurationName);
+			const excludedProjects = this.getWorkspaceConfigurationValue<string[]>(ExcludedProjectsConfigurationName);
 			excludedProjects.push(vscode.workspace.asRelativePath(projectFile.fsPath));
 			await this.setWorkspaceConfigurationValue(ExcludedProjectsConfigurationName, [...new Set(excludedProjects)]);
 			this._onDidWorkspaceProjectsChange.fire();
