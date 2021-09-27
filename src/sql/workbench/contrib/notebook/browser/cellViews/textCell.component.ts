@@ -267,9 +267,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				// Find cell editor provider via cell guid to get markdown editor height
 				let cellEditorProvider = this.markdowncodeCell.find(c => c.cellGuid() === this.cellModel.cellGuid);
 				if (cellEditorProvider && this.markdownMode) {
-					let editor = cellEditorProvider.getEditor() as QueryTextEditor;
+					let markdownEditor = cellEditorProvider.getEditor();
 					// setting the editor height as maxHeight for preview
-					outputElement.style.minHeight = editor.scrollHeight.toString() + 'px';
+					outputElement.style.minHeight = markdownEditor.scrollHeight.toString() + 'px';
 					outputElement.style.maxHeight = this._editorHeight.toString() + 'px';
 					outputElement.style.overflowY = 'scroll';
 				}
