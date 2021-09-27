@@ -309,15 +309,13 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			// Set opacity for both fixed and absolute
 			horizontalScrollbar.style.opacity = '1';
 
-			// This condition will check to see if the bottom of the editor is in the scrollable area (viewport)
-			// if it is then we will set the horizontal scrollbar to the bottom of the editor space
+			// If the bottom of the editor is in the viewport, then set the horizontal scrollbar to the bottom of the editor space
 			if (markdownEditorBottom < viewportBottom) {
 				horizontalScrollbar.style.position = 'absolute';
 				horizontalScrollbar.style.left = '0px';
 				horizontalScrollbar.style.top = '';
 				horizontalScrollbar.style.bottom = '0px';
-				// This condition checks if bottom of the editor is not within the scrollable area (viewport)
-				// we will change the horizontal scrollbar to be fixed to the bottom of the scrollable area (viewport)
+				// If the bottom of the editor is not in the viewport, then set the horizontal scrollbar to the bottom of the viewport
 			} else {
 				horizontalScrollbar.style.position = 'fixed';
 				horizontalScrollbar.style.left = '';
@@ -325,6 +323,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 				horizontalScrollbar.style.bottom = '';
 			}
 		} else {
+			// If horizontal scrollbar is not needed then set do not show it
 			horizontalScrollbar.style.opacity = '0';
 		}
 	}
