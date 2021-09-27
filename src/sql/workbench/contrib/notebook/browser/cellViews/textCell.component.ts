@@ -103,7 +103,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	public doubleClickEditEnabled: boolean;
 	private _highlightRange: NotebookRange;
 	private _isFindActive: boolean = false;
-	private readonly _editorHeight = document.querySelector('.editor-container').clientHeight;
+	private _editorHeight: number;
+	private readonly _markdownMaxHeight = 4000;
 
 	private readonly _undoStack: RichTextEditStack;
 	private readonly _redoStack: RichTextEditStack;
@@ -177,6 +178,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	ngOnInit() {
+		this._editorHeight = document.querySelector('.editor-container').clientHeight;
 		this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
@@ -263,14 +265,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				let outputElement = <HTMLElement>this.output.nativeElement;
 				outputElement.innerHTML = this.markdownResult.element.innerHTML;
 				this.addUndoElement(outputElement.innerHTML);
-				// Find cell editor provider via cell guid to get markdown editor height
-				let cellEditorProvider = this.markdowncodeCell.find(c => c.cellGuid() === this.cellModel.cellGuid);
-				if (cellEditorProvider && this.markdownMode) {
-					let markdownEditor = cellEditorProvider.getEditor();
-					// setting the editor height as maxHeight for preview
-					outputElement.style.minHeight = markdownEditor.scrollHeight.toString() + 'px';
-					outputElement.style.maxHeight = this._editorHeight.toString() + 'px';
-					outputElement.style.overflowY = 'scroll';
+				if (this.markdownMode) {
+					this.setSplitViewHeight();
 				}
 				outputElement.style.lineHeight = this.markdownPreviewLineHeight.toString();
 				this.cellModel.renderedOutputTextContent = this.getRenderedTextOutput();
@@ -279,6 +275,23 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 					this.addDecoration();
 				}
 			}
+		}
+	}
+
+	private setSplitViewHeight(): void {
+		// Set the same height for markdown editor and preview
+		this.setMarkdownEditorHeight(this._editorHeight);
+		let outputElement = <HTMLElement>this.output.nativeElement;
+		outputElement.style.maxHeight = this._editorHeight.toString() + 'px';
+		outputElement.style.overflowY = 'scroll';
+	}
+
+	private setMarkdownEditorHeight(height: number): void {
+		// Find cell editor provider via cell guid to set markdown editor max height
+		let cellEditorProvider = this.markdowncodeCell.find(c => c.cellGuid() === this.cellModel.cellGuid);
+		let markdownEditor = cellEditorProvider?.getEditor();
+		if (markdownEditor) {
+			markdownEditor.setMaximumHeight(height);
 		}
 	}
 
@@ -413,12 +426,18 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	private focusIfPreviewMode(): void {
-		if (this.previewMode && !this.markdownMode) {
-			let outputElement = this.output?.nativeElement as HTMLElement;
-			if (outputElement) {
-				outputElement.style.maxHeight = 'none';
-				outputElement.focus();
+		if (this.previewMode) {
+			if (!this.markdownMode) {
+				let outputElement = this.output?.nativeElement as HTMLElement;
+				if (outputElement) {
+					outputElement.style.maxHeight = 'unset';
+					outputElement.focus();
+				}
+			} else {
+				this.setSplitViewHeight();
 			}
+		} else {
+			this.setMarkdownEditorHeight(this._markdownMaxHeight);
 		}
 	}
 
