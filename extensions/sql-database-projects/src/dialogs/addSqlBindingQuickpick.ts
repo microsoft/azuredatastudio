@@ -14,6 +14,16 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 		// this command only shows in the command palette when the active editor is a .cs file, so we can safely assume that's the scenario
 		// when this is called without a uri
 		uri = vscode.window.activeTextEditor!.document.uri;
+
+		if (vscode.window.activeTextEditor!.document.isDirty) {
+			const result = await vscode.window.showWarningMessage(constants.saveChangesInFile, { modal: true }, constants.save);
+
+			if (result !== constants.save) {
+				return;
+			}
+
+			await vscode.window.activeTextEditor?.document.save();
+		}
 	}
 
 	// get all the Azure functions in the file
