@@ -132,6 +132,16 @@ suite('Local Content Manager', function (): void {
 		assert.strictEqual(content.cells.length, 0, 'Notebook should be empty, so the number of cells should be 0');
 	});
 
+	test('Should return undefined if notebook contents are undefined', async function (): Promise<void> {
+		let strContent = await contentManager.serializeNotebook(undefined);
+		assert.strictEqual(strContent, undefined);
+	});
+
+	test('Should return stringified version of notebook contents', async function (): Promise<void> {
+		let strContent = await contentManager.serializeNotebook(expectedNotebookContent);
+		assert.strictEqual(strContent, JSON.stringify(expectedNotebookContent, undefined, '    '));
+	});
+
 	test('Should create a markdown cell', async function (): Promise<void> {
 		let expectedNotebookMarkdownContent: nb.INotebookContents = {
 			cells: [{
