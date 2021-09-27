@@ -15,6 +15,7 @@
 	border-right-style: solid;
 	width: 100%;
 	height: 100%;
+	overflow: hidden;
 }
 
 .designer-component .top-content-container {
@@ -38,12 +39,17 @@
 	height: 100%;
 }
 
+.designer-component .component-label {
+	vertical-align: middle;
+}
+
 .designer-component .components-grid {
 	display: grid;
 	grid-template-columns: max-content auto; /* label, component*/
 	grid-gap: 5px;
 	padding: 5px;
 	align-content: start;
+	box-sizing: border-box;
 }
 
 .designer-component .components-grid .full-row {

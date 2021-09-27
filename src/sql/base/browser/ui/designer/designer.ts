@@ -3,8 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { DesignerComponentInput, DesignerComponentType, DesignerEditTypes, DesignerTab, InputComponentInfo, InputComponentData } from 'sql/base/browser/ui/designer/interfaces';
-import { IPanelTab, IPanelView, ITabbedPanelStyles, TabbedPanel } from 'sql/base/browser/ui/panel/panel';
+import { DesignerComponentInput, DesignerComponentType, DesignerEditTypes, DesignerTab, InputComponentInfo, InputComponentData, TableComponentInfo, TableComponentData, DesignerEdit, TableComponentRowData, CheckboxComponentData } from 'sql/base/browser/ui/designer/interfaces';
+import { IPanelTab, ITabbedPanelStyles, TabbedPanel } from 'sql/base/browser/ui/panel/panel';
 import * as DOM from 'vs/base/browser/dom';
 import { Event } from 'vs/base/common/event';
 import { Orientation, Sizing, SplitView } from 'vs/base/browser/ui/splitview/splitview';
@@ -15,10 +15,19 @@ import 'vs/css!./media/designer';
 import { ITableStyles } from 'sql/base/browser/ui/table/interfaces';
 import { IDropdownStyles } from 'sql/base/browser/ui/dropdownList/dropdownList';
 import { IThemable } from 'vs/base/common/styler';
-import { ICheckboxStyles } from 'sql/base/browser/ui/checkbox/checkbox';
+import { Checkbox, ICheckboxStyles } from 'sql/base/browser/ui/checkbox/checkbox';
+import { Table } from 'sql/base/browser/ui/table/table';
+import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
+import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
+import { localize } from 'vs/nls';
+import { TableCellEditor } from 'sql/base/browser/ui/table/tableCellEditor';
+import { CheckBoxColumn } from 'sql/base/browser/ui/table/plugins/checkboxColumn.plugin';
+import { DesignerTabPanelView } from 'sql/base/browser/ui/designer/designerTabPanelView';
 
 export interface IDesignerStyle extends ITabbedPanelStyles, IInputBoxStyles, ITableStyles, IDropdownStyles, ICheckboxStyles {
 }
+
+export type DesignerUIComponents = InputBox | Checkbox | Table<Slick.SlickData> | SelectBox;
 
 export class Designer extends Disposable implements IThemable {
 
@@ -33,13 +42,36 @@ export class Designer extends Disposable implements IThemable {
 	private _topContentContainer: HTMLElement;
 	private _propertiesPane: HTMLElement;
 	private _styles: IDesignerStyle = {};
-
-	private _componentMap: Map<string, any> = new Map<string, any>();
+	private _supressEditProcessing: boolean = false;
+	private _componentMap = new Map<string, { defintion: DesignerComponentType, component: DesignerUIComponents }>();
 	private _input: DesignerComponentInput;
+	private _tableCellEditor: TableCellEditor;
 
 	constructor(private readonly _container: HTMLElement,
 		private readonly _contextViewProvider: IContextViewProvider) {
 		super();
+		this._tableCellEditor = new TableCellEditor(
+			{
+				valueGetter: (item, column): string => {
+					return item[column.field].value;
+				},
+				valueSetter: async (context: string, row: number, item: TableComponentRowData, column: Slick.Column<Slick.SlickData>, value: string): Promise<void> => {
+
+					await this.handleEdit({
+						type: DesignerEditTypes.Update,
+						property: {
+							parent: context,
+							row: row,
+							property: column.field
+						},
+						value: value
+					});
+				},
+				editorStyler: (component) => {
+					component.style(this._styles);
+				}
+			}, this._contextViewProvider
+		);
 		this._verticalSplitViewContainer = DOM.$('.designer-component');
 		this._horizontalSplitViewContainer = DOM.$('.container');
 		this._contentContainer = DOM.$('.content-container');
@@ -100,8 +132,8 @@ export class Designer extends Disposable implements IThemable {
 	public style(styles: IDesignerStyle): void {
 		this._styles = styles;
 		this._componentMap.forEach((value, key, map) => {
-			if (value.style) {
-				value.style(styles);
+			if (value.component.style) {
+				value.component.style(styles);
 			}
 		});
 		this._verticalSplitView.style({
@@ -137,18 +169,48 @@ export class Designer extends Disposable implements IThemable {
 			this._tabbedPanel.pushTab(this.createTabView(tab));
 		});
 		this.layoutTabbedPanel();
+		this.setComponentValues();
 	}
 
 	private layoutTabbedPanel() {
 		this._tabbedPanel.layout(new DOM.Dimension(this._tabbedPanelContainer.clientWidth, this._tabbedPanelContainer.clientHeight));
 	}
 
-	private async handleEdit(edit): Promise<void> {
-		const result = await this._input.processEdit(edit);
+	private async setComponentValues(): Promise<void> {
+		this._supressEditProcessing = true;
 		const data = await this._input.getData();
+		// data[ScriptPropertyName] -- todo- set the script editor
+		this._componentMap.forEach((value, key) => {
+			switch (value.defintion.type) {
+				case 'input':
+					const input = value.component as InputBox;
+					const inputData = data[key] as InputComponentData;
+					input.setEnabled(inputData.enabled ?? true);
+					input.value = inputData.value?.toString() ?? '';
+					break;
+				case 'table':
+					const table = value.component as Table<Slick.SlickData>;
+					const tableDataView = table.getData() as TableDataView<Slick.SlickData>;
+					tableDataView.clear();
+					tableDataView.push((data[key] as TableComponentData).rows);
+					table.rerenderGrid();
+					break;
+			}
+		});
+		this._supressEditProcessing = false;
+	}
+
+	private async handleEdit(edit: DesignerEdit): Promise<void> {
+		if (this._supressEditProcessing) {
+			return;
+		}
+
+		const result = await this._input.processEdit(edit);
+
 		if (result.isValid) {
-			//TODO: replace with actual implementation
-			this._componentMap['name'].value = (<InputComponentData>data['name']).value;
+			this._supressEditProcessing = true;
+			await this.setComponentValues();
+			this._supressEditProcessing = false;
 		} else {
 			//TODO: add error notification
 		}
@@ -156,7 +218,7 @@ export class Designer extends Disposable implements IThemable {
 
 	private createTabView(tab: DesignerTab): IPanelTab {
 		const view = new DesignerTabPanelView(tab, (container, component) => {
-			this.createComponent(container, component);
+			return this.createComponent(container, component);
 		});
 		return {
 			identifier: tab.title,
@@ -165,18 +227,22 @@ export class Designer extends Disposable implements IThemable {
 		};
 	}
 
-	private createComponent(container: HTMLElement, component: DesignerComponentType, labelOnTop?: boolean): void {
-		const componentContainerClass = labelOnTop ? '.full-row' : '';
-		container.appendChild(DOM.$(componentContainerClass)).innerText = component.title;
+	private createComponent(container: HTMLElement, component: DesignerComponentType, labelOnTop?: boolean): DesignerUIComponents {
+		const componentContainerClass = labelOnTop || component.type === 'table' ? '.full-row' : '';
+		const labelContainer = container.appendChild(DOM.$(componentContainerClass));
+		labelContainer.appendChild(DOM.$('span.component-label')).innerText = component.title ?? '';
 		const componentDiv = container.appendChild(DOM.$(componentContainerClass));
 		switch (component.type) {
 			case 'input':
-				const inputComponentSpec = component as InputComponentInfo;
+				const inputDefinition = component as InputComponentInfo;
 				const input = new InputBox(componentDiv, this._contextViewProvider, {
 					ariaLabel: component.ariaLabel ?? component.title,
-					type: inputComponentSpec.inputType,
+					type: inputDefinition.inputType,
 				});
-				this._componentMap.set(component.property, input);
+				this._componentMap.set(component.property, {
+					defintion: inputDefinition,
+					component: input
+				});
 				input.onDidChange((newValue) => {
 					this.handleEdit({ type: DesignerEditTypes.Update, property: component.property, value: newValue });
 				});
@@ -184,25 +250,62 @@ export class Designer extends Disposable implements IThemable {
 				if (component.width !== undefined) {
 					input.width = component.width;
 				}
-				break;
+				return input;
+			case 'table':
+				const tableDefinition = component as TableComponentInfo;
+				const table = new Table(componentDiv, {
+					dataProvider: new TableDataView()
+				}, {
+					editable: true,
+					autoEdit: true,
+					dataItemColumnValueExtractor: (data: any, column: Slick.Column<Slick.SlickData>): string => {
+						return data[column.field].value;
+					}
+				}
+				);
+				table.columns = tableDefinition.columns.map(propName => {
+					const propertyDefinition = tableDefinition.itemProperties.find(item => item.property === propName);
+					switch (propertyDefinition.type) {
+						case 'checkbox':
+							const checkboxColumn = new CheckBoxColumn({
+								field: propertyDefinition.property,
+								name: propertyDefinition.title,
+								cellValueExtractor: (value: CheckboxComponentData) => { return value.value; },
+								width: propertyDefinition.width
+							});
+							table.registerPlugin(checkboxColumn);
+							checkboxColumn.onChange(async (e) => {
+								await this.handleEdit({
+									type: DesignerEditTypes.Update,
+									property: {
+										parent: tableDefinition.property,
+										row: e.row,
+										property: propertyDefinition.property
+									},
+									value: e.value
+								});
+							});
+							return checkboxColumn.definition;
+						default:
+							const inputDefinition = propertyDefinition as InputComponentInfo;
+							return {
+								name: propertyDefinition.title,
+								field: propertyDefinition.property,
+								editor: this._tableCellEditor.getTextEditorClass(component.property, inputDefinition.inputType),
+								width: propertyDefinition.width
+							};
+					}
+				});
+				table.style(this._styles);
+				table.layout(new DOM.Dimension(container.clientWidth, container.clientHeight));
+				table.grid.onBeforeEditCell.subscribe((e, data): boolean => {
+					let enabled = data.item[data.column.field].enabled;
+					return enabled !== false;
+				});
+				this._componentMap.set(component.property, { defintion: tableDefinition, component: table });
+				return table;
+			default:
+				throw new Error(localize('tableDesigner.unknownComponentType', "The component type: {0} is not supported", component.type));
 		}
-	}
-}
-
-class DesignerTabPanelView extends Disposable implements IPanelView {
-
-	constructor(private readonly _tab: DesignerTab, private _createComponent: (container: HTMLElement, component: DesignerComponentType, labelOnTop?: boolean) => void) {
-		super();
-	}
-
-	render(container: HTMLElement): void {
-		const componentsContainer = container.appendChild(DOM.$('.components-grid'));
-		this._tab.components.forEach(component => {
-			this._createComponent(componentsContainer, component, this._tab.labelOnTop);
-		});
-	}
-
-	layout(dimension: DOM.Dimension): void {
-
 	}
 }

@@ -25,16 +25,18 @@ export interface DesignerData {
 	[key: string]: InputComponentData | CheckboxComponentData | DropdownComponentData | TableComponentData;
 }
 
+export const ScriptPropertyName = 'script';
+
 export interface ComponentData {
 	enabled?: boolean;
 }
 
 export interface InputComponentData extends ComponentData {
-	value: string;
+	value: string | number;
 }
 
 export interface CheckboxComponentData extends ComponentData {
-	checked: boolean;
+	value: boolean;
 }
 
 export interface DropdownComponentData extends ComponentData {
@@ -64,7 +66,7 @@ export enum DesignerEditTypes {
 
 export interface DesignerEdit {
 	type: DesignerEditTypes;
-	property: string;
+	property: string | { parent: string, row: number, property: string };
 	value: any;
 }
 
@@ -98,6 +100,8 @@ export interface UIComponentInfo {
 	width?: number;
 
 	description?: string;
+
+	group?: string;
 }
 
 export interface InputComponentInfo extends UIComponentInfo {

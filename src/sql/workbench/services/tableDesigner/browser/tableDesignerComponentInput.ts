@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { DesignerData, DesignerEdit, DesignerEditResult, DesignerComponentInput, DesignerView, DesignerTab, UIComponentInfo, TableComponentInfo, InputComponentInfo, DropdownComponentInfo } from 'sql/base/browser/ui/designer/interfaces';
+import { DesignerData, DesignerEdit, DesignerEditResult, DesignerComponentInput, DesignerView, DesignerTab, UIComponentInfo, TableComponentInfo, InputComponentInfo, DropdownComponentInfo, InputComponentData } from 'sql/base/browser/ui/designer/interfaces';
 import { TableDesignerProvider } from 'sql/workbench/services/tableDesigner/common/interface';
 import { localize } from 'vs/nls';
 import { designers } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -47,6 +47,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		const designerInfo = await this._provider.getTableDesignerInfo(this._tableInfo);
 
 		this._data = designerInfo.data;
+		this.setDefaultData();
 
 		const advancedTabComponents: UIComponentInfo[] = [];
 
@@ -77,7 +78,8 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			{
 				type: 'input',
 				title: localize('tableDesigner.columnNameTitle', "Name"),
-				property: designers.TableColumnProperties.Name
+				property: designers.TableColumnProperties.Name,
+				width: 150
 			}
 		);
 
@@ -86,7 +88,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				type: 'dropdown',
 				title: localize('tableDesigner.columnTypeTitle', "Type"),
 				property: designers.TableColumnProperties.Type,
-
+				width: 75,
 				options: designerInfo.columnTypes
 			}
 		);
@@ -96,7 +98,8 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				type: 'input',
 				title: localize('tableDesigner.columnLengthTitle', "Length"),
 				property: designers.TableColumnProperties.Length,
-				inputType: 'number'
+				inputType: 'number',
+				width: 75
 			}
 		);
 
@@ -104,7 +107,8 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			{
 				type: 'input',
 				title: localize('tableDesigner.columnDefaultValueTitle', "Default Value"),
-				property: designers.TableColumnProperties.DefaultValue
+				property: designers.TableColumnProperties.DefaultValue,
+				width: 150
 			}
 		);
 
@@ -154,5 +158,16 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		};
 	}
 
+	private setDefaultData(): void {
+		const properties = Object.keys(this._data);
+		this.setDefaultInputData(properties, designers.TableProperties.Name);
+		this.setDefaultInputData(properties, designers.TableProperties.Schema);
+		this.setDefaultInputData(properties, designers.TableProperties.Description);
+	}
 
+	private setDefaultInputData(allProperties: string[], property: string): void {
+		if (allProperties.indexOf(property) === -1) {
+			this._data[property] = <InputComponentData>{};
+		}
+	}
 }

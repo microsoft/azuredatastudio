@@ -1042,11 +1042,11 @@ declare module 'azdata' {
 		}
 
 		export interface InputComponentData extends ComponentData {
-			value: string;
+			value: string | number;
 		}
 
 		export interface CheckboxComponentData extends ComponentData {
-			checked: boolean;
+			value: boolean;
 		}
 
 		export interface DropdownComponentData extends ComponentData {
@@ -1070,7 +1070,7 @@ declare module 'azdata' {
 
 		export interface DesignerEdit {
 			type: DesignerEditTypes;
-			property: string;
+			property: string | { parent: string, row: number, property: string };
 			value: any;
 		}
 
@@ -1106,6 +1106,8 @@ declare module 'azdata' {
 			ariaLabel?: string;
 
 			description?: string;
+
+			group?: string;
 		}
 
 		export interface InputComponentInfo extends UIComponentInfo {
