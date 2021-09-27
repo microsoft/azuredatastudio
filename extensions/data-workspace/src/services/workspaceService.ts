@@ -98,9 +98,9 @@ export class WorkspaceService implements IWorkspaceService {
 
 		// 3. Check if the project was previously excluded and remove it from the list of excluded projects if it was
 		const excludedProjects = this.getWorkspaceConfigurationValue<string[]>(ExcludedProjectsConfigurationName);
-		const updatedExcludedProjects = excludedProjects.filter(excludedProj => !projectFiles.find(newProj => newProj.fsPath === excludedProj));
+		const updatedExcludedProjects = excludedProjects.filter(excludedProj => !projectFiles.find(newProj => vscode.workspace.asRelativePath(newProj) === excludedProj));
 		if (excludedProjects.length !== updatedExcludedProjects.length) {
-			await this.setWorkspaceConfigurationValue(ExcludedProjectsConfigurationName, excludedProjects);
+			await this.setWorkspaceConfigurationValue(ExcludedProjectsConfigurationName, updatedExcludedProjects);
 		}
 
 		// 4. If any new projects are detected, fire event to refresh projects tree
@@ -138,7 +138,7 @@ export class WorkspaceService implements IWorkspaceService {
 
 		// remove excluded projects specified in workspace file
 		const excludedProjects = this.getWorkspaceConfigurationValue<string[]>(ExcludedProjectsConfigurationName);
-		this.openedProjects = this.openedProjects.filter(project => !excludedProjects.find(excludedProject => excludedProject === project.fsPath));
+		this.openedProjects = this.openedProjects.filter(project => !excludedProjects.find(excludedProject => excludedProject === vscode.workspace.asRelativePath(project)));
 
 		// filter by specified extension
 		if (ext) {
@@ -283,7 +283,7 @@ export class WorkspaceService implements IWorkspaceService {
 				}).send();
 
 			let excludedProjects = this.getWorkspaceConfigurationValue<string[]>(ExcludedProjectsConfigurationName);
-			excludedProjects.push(projectFile.fsPath);
+			excludedProjects.push(vscode.workspace.asRelativePath(projectFile.fsPath));
 			await this.setWorkspaceConfigurationValue(ExcludedProjectsConfigurationName, [...new Set(excludedProjects)]);
 			this._onDidWorkspaceProjectsChange.fire();
 		}
