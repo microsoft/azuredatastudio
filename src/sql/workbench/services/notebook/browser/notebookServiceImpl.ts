@@ -50,7 +50,7 @@ import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editor
 import { IEditorInput, IEditorPane } from 'vs/workbench/common/editor';
 import { isINotebookInput } from 'sql/workbench/services/notebook/browser/interface';
 import { INotebookShowOptions } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { NotebookLanguage } from 'sql/workbench/common/constants';
+import { JUPYTER_PROVIDER_ID, NotebookLanguage } from 'sql/workbench/common/constants';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { SqlSerializationProvider } from 'sql/workbench/services/notebook/browser/sql/sqlSerializationProvider';
 
@@ -305,7 +305,8 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	private handleNewProviderDescriptions(p: { id: string; registration: ProviderDescriptionRegistration }) {
-		if (!this._serializationProviders.has(p.id)) {
+		// Skip adding a Serialization descriptor for Jupyter, since we use the default notebook Serialization provider for jupyter
+		if (!this._serializationProviders.has(p.id) && p.id !== JUPYTER_PROVIDER_ID) {
 			this._serializationProviders.set(p.id, new SerializationProviderDescriptor(p.id));
 		}
 		if (!this._executeProviders.has(p.id)) {
@@ -624,8 +625,8 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	private waitOnSerializationProviderAvailability(providerDescriptor: SerializationProviderDescriptor, timeout?: number): Promise<ISerializationProvider | undefined> {
-		// Wait up to 5 seconds for the provider to be registered
-		timeout = timeout ?? 5000;
+		// Wait up to 10 seconds for the provider to be registered
+		timeout = timeout ?? 10000;
 		let promises: Promise<ISerializationProvider>[] = [
 			providerDescriptor.instanceReady,
 			new Promise<ISerializationProvider>((resolve, reject) => setTimeout(() => {
@@ -637,8 +638,8 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	private waitOnExecuteProviderAvailability(providerDescriptor: ExecuteProviderDescriptor, timeout?: number): Promise<IExecuteProvider | undefined> {
-		// Wait up to 5 seconds for the provider to be registered
-		timeout = timeout ?? 5000;
+		// Wait up to 10 seconds for the provider to be registered
+		timeout = timeout ?? 10000;
 		let promises: Promise<IExecuteProvider>[] = [
 			providerDescriptor.instanceReady,
 			new Promise<IExecuteProvider>((resolve, reject) => setTimeout(() => {
