@@ -577,7 +577,7 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 	public static ID = 'listDatabaseQueryActionItem';
 
 	public actionRunner: IActionRunner;
-	private _currentDatabaseName: string;
+	private _currentQueryTarget: string;
 	private _isConnected: boolean;
 	private _databaseListDropdown: HTMLElement;
 	private _dropdown: Dropdown;
@@ -601,8 +601,8 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 
 		// Allows database selector to commit typed or pasted DB names without the need to click
 		// or press enter to make a selection when focus is moved away from the selector.
-		this._register(this._dropdown.onBlur(() => this.databaseSelected(this._dropdown.value)));
-		this._register(this._dropdown.onValueChange(s => this.databaseSelected(s)));
+		this._register(this._dropdown.onBlur(() => this.queryTargetSelected(this._dropdown.value)));
+		this._register(this._dropdown.onValueChange(s => this.queryTargetSelected(s)));
 		this._register(this._dropdown.onFocus(() => this.onDropdownFocus()));
 		this._register(this.connectionManagementService.onConnectionChanged(params => this.onConnectionChanged(params)));
 	}
@@ -637,27 +637,27 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 
 	// EVENT HANDLERS FROM EDITOR //////////////////////////////////////////
 	public onConnected(): void {
-		let dbName = this.getCurrentDatabaseName();
-		this.updateConnection(dbName);
+		let queryTarget = this.getCurrentQueryTarget();
+		this.updateConnection(queryTarget);
 	}
 
 	public onDisconnect(): void {
 		this._isConnected = false;
-		this._currentDatabaseName = undefined;
+		this._currentQueryTarget = undefined;
 
 		this._dropdown.enabled = false;
 		this._dropdown.value = '';
 	}
 
 	// PRIVATE HELPERS /////////////////////////////////////////////////////
-	private databaseSelected(dbName: string): void {
+	private queryTargetSelected(dbName: string): void {
 		// If dbName is blank (this can happen for example when setting the box value to empty when disconnecting)
 		// then just no-op, there's nothing we can do.
 		if (!dbName) {
 			return;
 		}
 
-		if (dbName === this.getCurrentDatabaseName()) {
+		if (dbName === this.getCurrentQueryTarget()) {
 			return;
 		}
 
@@ -680,7 +680,7 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 			.then(
 				result => {
 					if (!result) {
-						this.resetDatabaseName();
+						this.resetQueryTarget();
 						this.notificationService.notify({
 							severity: Severity.Error,
 							message: nls.localize('changeDatabase.failed', "Failed to change database")
@@ -688,7 +688,7 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 					}
 				},
 				error => {
-					this.resetDatabaseName();
+					this.resetQueryTarget();
 					this.notificationService.notify({
 						severity: Severity.Error,
 						message: nls.localize('changeDatabase.failedWithError', "Failed to change database: {0}", getErrorMessage(error))
@@ -723,7 +723,7 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 		return dbName;
 	}
 
-	private getCurrentDatabaseName(): string | undefined {
+	private getCurrentQueryTarget(): string | undefined {
 		if (!this._editor.input) {
 			this.logService.error('editor input was null');
 			return undefined;
@@ -736,14 +736,16 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 				if (this.isDWGen3Database(profile.id)) {
 					return this.removePoolInstanceName(profile.databaseName);
 				}
-				return profile.databaseName;
+
+				// use server name if provider doesn't have databases
+				return profile.databaseName ?? profile.serverName;
 			}
 		}
 		return undefined;
 	}
 
-	private resetDatabaseName() {
-		this._dropdown.value = this.getCurrentDatabaseName();
+	private resetQueryTarget() {
+		this._dropdown.value = this.getCurrentQueryTarget();
 	}
 
 	private onConnectionChanged(connParams: IConnectionParams): void {
@@ -761,7 +763,8 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 			return;
 		}
 
-		this.updateConnection(connParams.connectionProfile.databaseName);
+		// use server name if provider doesn't have databases
+		this.updateConnection(connParams.connectionProfile.databaseName ?? connParams.connectionProfile.serverName);
 	}
 
 	private onDropdownFocus(): void {
@@ -793,14 +796,14 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 		return [];
 	}
 
-	private updateConnection(databaseName: string): void {
+	private updateConnection(queryTarget: string): void {
 		this._isConnected = true;
-		this._currentDatabaseName = databaseName;
+		this._currentQueryTarget = queryTarget;
 		// Set the value immediately to the initial database so the user can see that, and then
 		// populate the list with just that value to avoid displaying an error while we load
 		// the full list of databases
-		this._dropdown.value = databaseName;
-		this._dropdown.values = [databaseName];
+		this._dropdown.value = queryTarget;
+		this._dropdown.values = [queryTarget];
 		this._dropdown.enabled = true;
 		this.getDatabaseNames().then(databaseNames => {
 			this._dropdown.values = databaseNames;
@@ -809,7 +812,7 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 
 	// TESTING PROPERTIES //////////////////////////////////////////////////
 	public get currentDatabaseName(): string {
-		return this._currentDatabaseName;
+		return this._currentQueryTarget;
 	}
 
 }

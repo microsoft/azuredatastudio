@@ -40,7 +40,7 @@ export class DashboardComponent extends AngularDisposable implements OnInit {
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
 		const profile: IConnectionProfile = this._bootstrapService.getOriginalConnectionProfile();
-		if (profile && (!profile.databaseName || Utils.isMaster(profile))) {
+		if (profile && (!profile.databaseName || Utils.isMaster(profile))) { // profile.options['database'] &&
 			// Route to the server page as this is the default database
 			this._router.navigate(['server-dashboard']).catch(onUnexpectedError);
 		}
