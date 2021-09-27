@@ -370,9 +370,9 @@ export class BookTocManager implements IBookTocManager {
 		const filePath = path.parse(file.book.contentPath);
 		let fileName = undefined;
 		try {
-			// TODO: no op if the notebook is already in the dest location
+			// no op if the notebook is already in the dest location
+			this.movedFiles.set(file.book.contentPath, path.join(rootPath, filePath.base));
 			if (file.book.contentPath !== path.join(rootPath, filePath.base)) {
-				this.movedFiles.set(file.book.contentPath, path.join(rootPath, filePath.base));
 				await fs.move(file.book.contentPath, path.join(rootPath, filePath.base), { overwrite: false });
 			}
 		} catch (error) {
@@ -408,7 +408,7 @@ export class BookTocManager implements IBookTocManager {
 	public async updateBook(sources: BookTreeItem[], target: BookTreeItem, section?: JupyterBookSection): Promise<void> {
 		for (let element of sources) {
 			if (element.contextValue === BookTreeItemType.savedBook || this.isDescendant(element, target) || this.isParent(element, target, section)) {
-				// no op
+				// no op if the moving element is a book, the target dest is descendant of the moving element, the target dest is already the moving element parent
 				return;
 			}
 			try {
