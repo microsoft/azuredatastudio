@@ -40,7 +40,7 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 	protected _activeCell: ICellModel;
 
 	protected _options: INotebookViewsGridOptions = {
-		cellHeight: 60
+		cellHeight: 30
 	};;
 
 	constructor(
@@ -89,9 +89,6 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 				this._grid = undefined;
 			}
 		}
-		if (this.activeView && this.activeView.guid !== this._gridView?.guid) {
-			this.activeView.initialize();
-		}
 
 		if (this.model?.activeCell?.id !== this._activeCell?.id) {
 			this._activeCell = this.model.activeCell;
@@ -102,7 +99,6 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 	ngAfterViewChecked() {
 		// If activeView has changed, rebuild the grid
 		if (this.activeView && this.activeView.guid !== this._gridView?.guid) {
-			this._gridView = this.activeView;
 
 			if (!this._grid) {
 				this.createGrid();
@@ -119,6 +115,7 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 
 	private destroyGrid() {
 		if (this._grid) {
+			this._loaded = false;
 			this._gridEnabled = false;
 			this._grid.destroy(false);
 		}
@@ -126,6 +123,7 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 
 	private createGrid() {
 		const isNew = this.activeView.isNew;
+		this._gridView = this.activeView;
 
 		if (this._grid) {
 			this.destroyGrid();
@@ -140,14 +138,14 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 			alwaysShowResizeHandle: false,
 			styleInHead: true,
 			margin: 2,
+			cellHeight: this._options.cellHeight,
 			staticGrid: false,
 		});
 
+
 		this._gridEnabled = true;
 
-		if (isNew) {
-			this.updateGrid();
-		}
+		this.updateGrid();
 	}
 
 	/**
@@ -161,11 +159,13 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 		this._grid.batchUpdate();
 		this.activeView.cells.forEach(cell => {
 			const el = this._grid.getGridItems().find(x => x.getAttribute('data-cell-id') === cell.cellGuid);
-			const cellData = this.activeView.getCellMetadata(cell);
-			this._grid.update(el, { x: cellData.x, y: cellData.y, w: cellData.width, h: cellData.height });
+			if (el) {
+				const cellData = this.activeView.getCellMetadata(cell);
+				this._grid.update(el, { x: cellData.x, y: cellData.y, w: cellData.width, h: cellData.height });
 
-			if (cellData?.hidden) {
-				this._grid.removeWidget(el, false); // Do not trigger event for batch update
+				if (cellData?.hidden) {
+					this._grid.removeWidget(el, false); // Do not trigger event for batch update
+				}
 			}
 		});
 		this._grid.commit();
