@@ -243,9 +243,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			this.onContentChanged.emit();
 			this.checkForLanguageMagics();
 			// When content is updated we have to also update the horizontal scrollbar
-			if (this._editor.shouldAddHorizontalScrollbar) {
-				this.horizontalScrollbar();
-			}
+			this.horizontalScrollbar();
 		}));
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration('editor.wordWrap') || e.affectsConfiguration('editor.fontSize')) {
@@ -293,9 +291,9 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 	 */
 	public horizontalScrollbar(): void {
 		let showScrollbar: boolean = this._editor.shouldAddHorizontalScrollbar;
+		let horizontalScrollbar: HTMLElement = this.codeElement.nativeElement.querySelector('div.scrollbar.horizontal');
 		if (this._configurationService.getValue('editor.wordWrap') === 'off' && this.cellModel.cellType !== CellTypes.Code && this.cellModel.source.length > 0 && showScrollbar) {
 			// Get markdown split view horizontal scrollbar
-			let horizontalScrollbar: HTMLElement = this.codeElement.nativeElement.querySelector('div.scrollbar.horizontal');
 			let viewport: HTMLElement = document.querySelector('.scrollable');
 			let markdownEditor: HTMLElement = this.codeElement.nativeElement.closest('.show-markdown .editor');
 
@@ -326,6 +324,8 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 				horizontalScrollbar.style.top = horizontalTop + 'px';
 				horizontalScrollbar.style.bottom = '';
 			}
+		} else {
+			horizontalScrollbar.style.opacity = '0';
 		}
 	}
 
