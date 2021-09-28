@@ -431,6 +431,9 @@ import 'vs/workbench/contrib/workspace/browser/workspace.contribution';
 // Workspaces
 import 'vs/workbench/contrib/workspaces/browser/workspaces.contribution';
 
+// List
+import 'vs/workbench/contrib/list/browser/list.contribution';
+
 //#endregion
 
 //#region -- contributions

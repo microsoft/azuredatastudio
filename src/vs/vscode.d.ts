@@ -11551,12 +11551,13 @@ declare module 'vscode' {
 	 */
 	export interface NotebookRendererMessaging {
 		/**
-		 * Events that fires when a message is received from a renderer.
+		 * An event that fires when a message is received from a renderer.
 		 */
 		readonly onDidReceiveMessage: Event<{ editor: NotebookEditor, message: any }>;
 
 		/**
-		 * Sends a message to the renderer.
+		 * Send a message to one or all renderer.
+		 *
 		 * @param message Message to send
 		 * @param editor Editor to target with the message. If not provided, the
 		 * message is sent to all renderers.
@@ -12302,8 +12303,11 @@ declare module 'vscode' {
 		export function registerNotebookCellStatusBarItemProvider(notebookType: string, provider: NotebookCellStatusBarItemProvider): Disposable;
 
 		/**
-		 * Creates a new messaging instance used to communicate with a specific renderer defined in this extension's package.json. The renderer only
-		 * has access to messaging if `requiresMessaging` is set to `always` or `optional` in its `notebookRenderer ` contribution.
+		 * Creates a new messaging instance used to communicate with a specific renderer.
+		 *
+		 * * *Note 1:* Extensions can only create renderer that they have defined in their `package.json`-file
+		 * * *Note 2:* A renderer only has access to messaging if `requiresMessaging` is set to `always` or `optional` in
+		 * its `notebookRenderer` contribution.
 		 *
 		 * @param rendererId The renderer ID to communicate with
 		 * @returns A new notebook renderer messaging object.
@@ -13807,7 +13811,7 @@ declare module 'vscode' {
 	}
 
 	/**
-	 * The kind of executions that {@link TestRunProfile | TestRunProfiles} control.
+	 * The kind of executions that {@link TestRunProfile TestRunProfiles} control.
 	 */
 	export enum TestRunProfileKind {
 		Run = 1,
@@ -13881,7 +13885,7 @@ declare module 'vscode' {
 	 */
 	export interface TestController {
 		/**
-		 * The ID of the controller passed in {@link vscode.tests.createTestController}.
+		 * The id of the controller passed in {@link vscode.tests.createTestController}.
 		 * This must be globally unique.
 		 */
 		readonly id: string;
@@ -14167,7 +14171,7 @@ declare module 'vscode' {
 		 * expanding the item will cause {@link TestController.resolveHandler}
 		 * to be invoked with the item.
 		 *
-		 * Default to false.
+		 * Default to `false`.
 		 */
 		canResolveChildren: boolean;
 

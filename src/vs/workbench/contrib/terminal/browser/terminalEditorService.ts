@@ -18,7 +18,7 @@ import { TerminalEditorInput } from 'vs/workbench/contrib/terminal/browser/termi
 import { DeserializedTerminalEditorInput } from 'vs/workbench/contrib/terminal/browser/terminalEditorSerializer';
 import { getInstanceFromResource, parseTerminalUri } from 'vs/workbench/contrib/terminal/browser/terminalUri';
 import { ILocalTerminalService, IOffProcessTerminalService } from 'vs/workbench/contrib/terminal/common/terminal';
-import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorService, SIDE_GROUP } from 'vs/workbench/services/editor/common/editorService';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
 import { ILifecycleService } from 'vs/workbench/services/lifecycle/common/lifecycle';
 
@@ -73,7 +73,13 @@ export class TerminalEditorService extends Disposable implements ITerminalEditor
 			// add any terminal editors created via the editor service split command
 			const knownIds = this.instances.map(i => i.instanceId);
 			const terminalEditors = this._getActiveTerminalEditors();
-			const unknownEditor = terminalEditors.find(input => !knownIds.includes((input as any).terminalInstance.instanceId));
+			const unknownEditor = terminalEditors.find(input => {
+				const inputId = input instanceof TerminalEditorInput ? input.terminalInstance?.instanceId : undefined;
+				if (inputId === undefined) {
+					return false;
+				}
+				return !knownIds.includes(inputId);
+			});
 			if (unknownEditor instanceof TerminalEditorInput && unknownEditor.terminalInstance) {
 				this._editorInputs.set(unknownEditor.terminalInstance.resource.path, unknownEditor);
 				this.instances.push(unknownEditor.terminalInstance);
@@ -152,14 +158,12 @@ export class TerminalEditorService extends Disposable implements ITerminalEditor
 		this._onDidChangeActiveInstance.fire(this.activeInstance);
 	}
 
-	async openEditor(instance: ITerminalInstance): Promise<void> {
+	async openEditor(instance: ITerminalInstance, sideGroup: boolean = false): Promise<void> {
 		const input = this.getOrCreateEditorInput(instance);
 		const editorPane: IEditorPane | undefined = await this._editorService.openEditor(input, {
 			pinned: true,
 			forceReload: true
-		},
-			input.group
-		);
+		}, sideGroup ? SIDE_GROUP : input.group);
 		input.setGroup(editorPane?.group);
 	}
 
