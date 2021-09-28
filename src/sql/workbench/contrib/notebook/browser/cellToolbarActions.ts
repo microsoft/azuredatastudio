@@ -64,7 +64,8 @@ export class SplitCellAction extends CellActionBase {
 		id: string,
 		label: string,
 		cssClass: string,
-		@INotificationService notificationService: INotificationService
+		@INotificationService notificationService: INotificationService,
+		@INotebookService private notebookService: INotebookService,
 	) {
 		super(id, label, cssClass, notificationService);
 		this._cssClass = cssClass;
@@ -76,7 +77,7 @@ export class SplitCellAction extends CellActionBase {
 		let index = model.cells.findIndex((cell) => cell.id === context.cell.id);
 		if (context instanceof CellContext) {
 			if (context?.model) {
-				context.model.splitCell(this.cellType, index);
+				context.model.splitCell(this.cellType, index, this.notebookService);
 			}
 		}
 		return Promise.resolve();

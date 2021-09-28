@@ -121,7 +121,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		@IAdsTelemetryService private readonly adstelemetryService: IAdsTelemetryService,
 		@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
 		@IConfigurationService private configurationService: IConfigurationService,
-		@INotebookService private notebookService: INotebookService,
 		@ICapabilitiesService private _capabilitiesService?: ICapabilitiesService
 	) {
 		super();
@@ -528,12 +527,12 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this.insertCell(cell, index);
 	}
 
-	public splitCell(cellType: CellType, index?: number): ICellModel | undefined {
+	public splitCell(cellType: CellType, index?: number, notebookService?: INotebookService): ICellModel | undefined {
 		if (this.inErrorState) {
 			return undefined;
 		}
 
-		let cellEditors = this.notebookService.findNotebookEditor(this.notebookUri).cellEditors;
+		let cellEditors = notebookService.findNotebookEditor(this.notebookUri).cellEditors;
 		let edindex = cellEditors.findIndex(x => x.cellGuid() === this.cells[index - 1].cellGuid);
 		let currentCellEditor = cellEditors[edindex].getEditor();
 		//Only split the cell if the markdown editor is open.
