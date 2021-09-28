@@ -57,7 +57,6 @@ class SerializationManagerStub implements ISerializationManager {
 
 class ExecuteManagerStub implements IExecuteManager {
 	providerId: string;
-	contentManager: nb.ContentManager;
 	sessionManager: nb.SessionManager;
 	serverManager: nb.ServerManager;
 }
