@@ -291,6 +291,10 @@ export class SchemaCompareMainWindow {
 					operationId: this.comparisonResult.operationId
 				}).send();
 			vscode.window.showErrorMessage(loc.compareErrorMessage(this.comparisonResult?.errorMessage));
+
+			// reset state so a new comparison can be made
+			this.resetWindow();
+
 			return;
 		}
 		TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaComparisonFinished')
@@ -647,7 +651,18 @@ export class SchemaCompareMainWindow {
 		});
 	}
 
-	public async cancelCompare() {
+	/**
+	 * Resets state of buttons and text to initial state before a comparison is started/completed
+	 */
+	public resetWindow(): void {
+		// clean the pane
+		this.flexModel.removeItem(this.loader);
+		this.flexModel.removeItem(this.waitText);
+		this.flexModel.addItem(this.startText, { CSSStyles: { 'margin': 'auto' } });
+		this.resetButtons(ResetButtonState.beforeCompareStart);
+	}
+
+	public async cancelCompare(): Promise<void> {
 
 		TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareCancelStarted')
 			.withAdditionalProperties({
@@ -655,11 +670,7 @@ export class SchemaCompareMainWindow {
 				'operationId': this.operationId
 			}).send();
 
-		// clean the pane
-		this.flexModel.removeItem(this.loader);
-		this.flexModel.removeItem(this.waitText);
-		this.flexModel.addItem(this.startText, { CSSStyles: { 'margin': 'auto' } });
-		this.resetButtons(ResetButtonState.beforeCompareStart);
+		this.resetWindow();
 
 		// cancel compare
 		if (this.operationId) {
