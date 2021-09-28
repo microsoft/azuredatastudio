@@ -96,7 +96,7 @@ suite('Notebook Input', function (): void {
 		// Notebook editor timestamp
 		assert.notStrictEqual(untitledNotebookInput.editorOpenedTimestamp, undefined);
 
-		// Content Manager
+		// Content Loader
 		assert.notStrictEqual(untitledNotebookInput.contentLoader, undefined);
 
 		// Layout changed event
