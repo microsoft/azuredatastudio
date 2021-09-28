@@ -23,6 +23,7 @@ import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvent
 import type { FutureInternal } from 'sql/workbench/services/notebook/browser/interfaces';
 import { ICellValue, ResultSetSummary } from 'sql/workbench/services/query/common/query';
 import { QueryResultId } from 'sql/workbench/services/notebook/browser/models/cell';
+import { IPosition } from 'vs/editor/common/core/position';
 
 export enum ViewMode {
 	Notebook,
@@ -543,6 +544,15 @@ export interface ICellModel {
 	 * Returns the name of the attachment added to metadata.
 	 */
 	addAttachment(mimeType: string, base64Encoding: string, name: string): string;
+	richTextCursorPosition: ICaretPosition;
+	markdownCursorPosition: IPosition;
+}
+
+export interface ICaretPosition {
+	startElementNodes: any;
+	startOffset: number;
+	endElementNodes: any;
+	endOffset: number;
 }
 
 export interface IModelFactory {

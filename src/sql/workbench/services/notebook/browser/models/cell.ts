@@ -12,7 +12,7 @@ import { localize } from 'vs/nls';
 import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import { CellTypes, CellType, NotebookChangeType, TextCellEditModes } from 'sql/workbench/services/notebook/common/contracts';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
-import { ICellModel, IOutputChangedEvent, CellExecutionState, ICellModelOptions, ITableUpdatedEvent, CellEditModes } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { ICellModel, IOutputChangedEvent, CellExecutionState, ICellModelOptions, ITableUpdatedEvent, CellEditModes, ICaretPosition } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
@@ -31,6 +31,7 @@ import { Disposable } from 'vs/base/common/lifecycle';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { IInsightOptions } from 'sql/workbench/common/editor/query/chartState';
+import { IPosition } from 'vs/editor/common/core/position';
 
 let modelId = 0;
 const ads_execute_command = 'ads_execute_command';
@@ -85,6 +86,8 @@ export class CellModel extends Disposable implements ICellModel {
 	private _outputCounter = 0; // When re-executing the same cell, ensure that we apply chart options in the same order
 	private _attachments: nb.ICellAttachments | undefined;
 	private _preventNextChartCache: boolean = false;
+	private _richTextCursorPosition: ICaretPosition;
+	private _markdownCursorPosition: IPosition;
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
@@ -143,6 +146,22 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public get metadata(): any {
 		return this._metadata;
+	}
+
+	public get markdownCursorPosition(): IPosition {
+		return this._markdownCursorPosition;
+	}
+
+	public set markdownCursorPosition(pos: IPosition) {
+		this._markdownCursorPosition = pos;
+	}
+
+	public get richTextCursorPosition(): ICaretPosition {
+		return this._richTextCursorPosition;
+	}
+
+	public set richTextCursorPosition(pos: ICaretPosition) {
+		this._richTextCursorPosition = pos;
 	}
 
 	public get attachments(): nb.ICellAttachments | undefined {

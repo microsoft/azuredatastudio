@@ -23,7 +23,7 @@ import { IMarkdownRenderResult } from 'vs/editor/browser/core/markdownRenderer';
 
 import { NotebookMarkdownRenderer } from 'sql/workbench/contrib/notebook/browser/outputs/notebookMarkdown';
 import { CellView } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
-import { CellEditModes, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { ICaretPosition, CellEditModes, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { ISanitizer, defaultSanitizer } from 'sql/workbench/services/notebook/browser/outputs/sanitizer';
 import { CodeComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/code.component';
@@ -192,10 +192,43 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			this._changeRef.detectChanges();
 		}));
 		this._register(this.cellModel.onCellPreviewModeChanged(preview => {
+			// On preview mode change, get the cursor position (get the position only when the selection node is a text node)
+			if (!preview && window.getSelection() && window.getSelection().focusNode?.nodeName === '#text' && window.getSelection().getRangeAt(0)) {
+				let selection = window.getSelection().getRangeAt(0);
+
+				let startElementNodes = [];
+				let startNode = selection.startContainer;
+				let endNode = selection.endContainer;
+				while (startNode !== this.output.nativeElement) {
+					startElementNodes.push(this.getNodeIndex(startNode));
+					startNode = startNode.parentNode;
+				}
+				let endElementNodes = [];
+				while (endNode !== this.output.nativeElement) {
+					endElementNodes.push(this.getNodeIndex(endNode));
+					endNode = endNode.parentNode;
+				}
+				// Create cursor position
+				let cursorPosition: ICaretPosition = {
+					startElementNodes: startElementNodes,
+					startOffset: selection.startOffset,
+					endElementNodes: endElementNodes,
+					endOffset: selection.endOffset
+				};
+				this.cellModel.richTextCursorPosition = cursorPosition;
+			}
 			this.previewMode = preview;
 			this.focusIfPreviewMode();
 		}));
 		this._register(this.cellModel.onCellMarkdownModeChanged(markdown => {
+			if (!markdown && window.getSelection() && window.getSelection().getRangeAt(0)) {
+				let editorControl = this.cellEditors.length > 0 ? this.cellEditors[0].getEditor().getControl() : undefined;
+				if (editorControl) {
+					let selection = editorControl.getSelections()[0];
+
+					this.cellModel.markdownCursorPosition = selection.getPosition();
+				}
+			}
 			this.markdownMode = markdown;
 			this.focusIfPreviewMode();
 		}));
@@ -215,6 +248,11 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				break;
 			}
 		}
+	}
+
+	getNodeIndex(n) {
+		let i = 0; while (n = n.previousSibling) { i++; }
+		return i;
 	}
 
 	public cellGuid(): string {
@@ -408,6 +446,25 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			let outputElement = this.output?.nativeElement as HTMLElement;
 			if (outputElement) {
 				outputElement.focus();
+			}
+			// Move cursor to the last known location
+			if (this.cellModel.richTextCursorPosition) {
+				let selection = window.getSelection();
+				selection.removeAllRanges();
+				let startContainers = this.cellModel.richTextCursorPosition.startElementNodes; let x = startContainers.length;
+				let outputElement: any = this.output.nativeElement;
+				while (x--) {
+					outputElement = outputElement.childNodes[startContainers[x]];
+				}
+				startContainers = this.cellModel.richTextCursorPosition.endElementNodes; x = startContainers.length;
+				let endContainers: any = this.output.nativeElement;
+				while (x--) {
+					endContainers = endContainers.childNodes[startContainers[x]];
+				}
+				let range = new Range();
+				range.setStart(outputElement, this.cellModel.richTextCursorPosition.startOffset);
+				range.setEnd(endContainers, this.cellModel.richTextCursorPosition.endOffset);
+				selection.addRange(range);
 			}
 		}
 	}
