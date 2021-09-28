@@ -668,6 +668,7 @@ commandsExtensionPoint.setHandler(extensions => {
 		bucket.push({
 			id: command,
 			title,
+			source: extension.description.displayName ?? extension.description.name,
 			shortTitle: extension.description.enableProposedApi ? shortTitle : undefined,
 			category,
 			precondition: ContextKeyExpr.deserialize(enablement),
