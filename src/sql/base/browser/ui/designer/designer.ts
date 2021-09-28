@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { DesignerComponentInput, DesignerComponentType, DesignerEditTypes, DesignerTab, InputComponentInfo, InputComponentData, TableComponentInfo, TableComponentData, DesignerEdit, TableComponentRowData, CheckboxComponentData } from 'sql/base/browser/ui/designer/interfaces';
+import { DesignerComponentInput, DesignerComponentType, DesignerEditTypes, DesignerTab, InputComponentInfo, InputComponentData, TableComponentInfo, TableComponentData, DesignerEdit, TableComponentRowData, CheckboxComponentData, DropdownComponentInfo } from 'sql/base/browser/ui/designer/interfaces';
 import { IPanelTab, ITabbedPanelStyles, TabbedPanel } from 'sql/base/browser/ui/panel/panel';
 import * as DOM from 'vs/base/browser/dom';
 import { Event } from 'vs/base/common/event';
@@ -13,18 +13,22 @@ import { IInputBoxStyles, InputBox } from 'sql/base/browser/ui/inputBox/inputBox
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
 import 'vs/css!./media/designer';
 import { ITableStyles } from 'sql/base/browser/ui/table/interfaces';
-import { IDropdownStyles } from 'sql/base/browser/ui/dropdownList/dropdownList';
 import { IThemable } from 'vs/base/common/styler';
 import { Checkbox, ICheckboxStyles } from 'sql/base/browser/ui/checkbox/checkbox';
 import { Table } from 'sql/base/browser/ui/table/table';
-import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
+import { ISelectBoxStyles, SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { localize } from 'vs/nls';
 import { TableCellEditor } from 'sql/base/browser/ui/table/tableCellEditor';
 import { CheckBoxColumn } from 'sql/base/browser/ui/table/plugins/checkboxColumn.plugin';
 import { DesignerTabPanelView } from 'sql/base/browser/ui/designer/designerTabPanelView';
 
-export interface IDesignerStyle extends ITabbedPanelStyles, IInputBoxStyles, ITableStyles, IDropdownStyles, ICheckboxStyles {
+export interface IDesignerStyle {
+	tabbedPanelStyles?: ITabbedPanelStyles;
+	inputBoxStyles?: IInputBoxStyles;
+	tableStyles?: ITableStyles;
+	selectBoxStyles?: ISelectBoxStyles;
+	checkboxStyles?: ICheckboxStyles;
 }
 
 export type DesignerUIComponents = InputBox | Checkbox | Table<Slick.SlickData> | SelectBox;
@@ -67,8 +71,11 @@ export class Designer extends Disposable implements IThemable {
 						value: value
 					});
 				},
+				optionsGetter: (item, column): string[] => {
+					return item[column.field].options;
+				},
 				editorStyler: (component) => {
-					component.style(this._styles);
+					this.styleComponent(component);
 				}
 			}, this._contextViewProvider
 		);
@@ -129,19 +136,32 @@ export class Designer extends Disposable implements IThemable {
 		this._propertiesPane.appendChild(properties);
 	}
 
+	private styleComponent(component: TabbedPanel | InputBox | Checkbox | Table<Slick.SlickData> | SelectBox): void {
+		if (component instanceof InputBox) {
+			component.style(this._styles.inputBoxStyles);
+		} else if (component instanceof Checkbox) {
+			component.style(this._styles.checkboxStyles);
+		} else if (component instanceof TabbedPanel) {
+			component.style(this._styles.tabbedPanelStyles);
+		} else if (component instanceof Table) {
+			component.style(this._styles.tableStyles);
+		} else {
+			component.style(this._styles.selectBoxStyles);
+		}
+	}
 	public style(styles: IDesignerStyle): void {
 		this._styles = styles;
 		this._componentMap.forEach((value, key, map) => {
 			if (value.component.style) {
-				value.component.style(styles);
+				this.styleComponent(value.component);
 			}
 		});
 		this._verticalSplitView.style({
-			separatorBorder: styles.borderColor
+			separatorBorder: styles.selectBoxStyles.selectBorder
 		});
 
 		this._horizontalSplitView.style({
-			separatorBorder: styles.borderColor
+			separatorBorder: styles.selectBoxStyles.selectBorder
 		});
 	}
 
@@ -246,7 +266,7 @@ export class Designer extends Disposable implements IThemable {
 				input.onDidChange((newValue) => {
 					this.handleEdit({ type: DesignerEditTypes.Update, property: component.property, value: newValue });
 				});
-				input.style(this._styles);
+				this.styleComponent(input);
 				if (component.width !== undefined) {
 					input.width = component.width;
 				}
@@ -286,6 +306,14 @@ export class Designer extends Disposable implements IThemable {
 								});
 							});
 							return checkboxColumn.definition;
+						case 'dropdown':
+							const dropdownDefinition = propertyDefinition as DropdownComponentInfo;
+							return {
+								name: propertyDefinition.title,
+								field: propertyDefinition.property,
+								editor: this._tableCellEditor.getSelectBoxEditorClass(component.property, dropdownDefinition.options),
+								width: propertyDefinition.width
+							};
 						default:
 							const inputDefinition = propertyDefinition as InputComponentInfo;
 							return {
@@ -296,7 +324,7 @@ export class Designer extends Disposable implements IThemable {
 							};
 					}
 				});
-				table.style(this._styles);
+				this.styleComponent(table);
 				table.layout(new DOM.Dimension(container.clientWidth, container.clientHeight));
 				table.grid.onBeforeEditCell.subscribe((e, data): boolean => {
 					let enabled = data.item[data.column.field].enabled;

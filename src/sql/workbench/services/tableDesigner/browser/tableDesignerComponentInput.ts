@@ -98,7 +98,6 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				type: 'input',
 				title: localize('tableDesigner.columnLengthTitle', "Length"),
 				property: designers.TableColumnProperties.Length,
-				inputType: 'number',
 				width: 75
 			}
 		);
@@ -115,8 +114,8 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		columnProperties.push(
 			{
 				type: 'checkbox',
-				title: localize('tableDesigner.columnAllowNullTitle', "Allow Null"),
-				property: designers.TableColumnProperties.AllowNull
+				title: localize('tableDesigner.columnAllowNullTitle', "Allow Nulls"),
+				property: designers.TableColumnProperties.AllowNulls
 			}
 		);
 
@@ -135,7 +134,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 						designers.TableColumnProperties.Type,
 						designers.TableColumnProperties.Length,
 						designers.TableColumnProperties.DefaultValue,
-						designers.TableColumnProperties.AllowNull
+						designers.TableColumnProperties.AllowNulls
 					],
 					itemProperties: columnProperties
 				}

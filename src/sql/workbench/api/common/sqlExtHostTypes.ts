@@ -914,7 +914,7 @@ export namespace designers {
 	export enum TableColumnProperties {
 		Name = 'name',
 		Type = 'type',
-		AllowNull = 'allowNull',
+		AllowNulls = 'allowNulls',
 		DefaultValue = 'defaultValue',
 		Length = 'length'
 	}

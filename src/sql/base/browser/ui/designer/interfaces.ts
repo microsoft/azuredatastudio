@@ -41,7 +41,7 @@ export interface CheckboxComponentData extends ComponentData {
 
 export interface DropdownComponentData extends ComponentData {
 	value: string;
-	optionalValues: string[];
+	optional: string[];
 }
 
 export interface TableComponentData extends ComponentData {

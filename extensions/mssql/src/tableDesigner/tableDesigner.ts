@@ -32,16 +32,16 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 			column1[azdata.designers.TableColumnProperties.Name] = <azdata.designers.InputComponentData>{
 				value: 'column1'
 			};
-			column1[azdata.designers.TableColumnProperties.Type] = <azdata.designers.InputComponentData>{
-				value: 'type1'
+			column1[azdata.designers.TableColumnProperties.Type] = <azdata.designers.DropdownComponentData>{
+				value: 'nvarchar'
 			};
 			column1[azdata.designers.TableColumnProperties.Length] = <azdata.designers.InputComponentData>{
-				value: 100
+				value: '100'
 			};
 			column1[azdata.designers.TableColumnProperties.DefaultValue] = <azdata.designers.InputComponentData>{
 				value: ''
 			};
-			column1[azdata.designers.TableColumnProperties.AllowNull] = <azdata.designers.CheckboxComponentData>{
+			column1[azdata.designers.TableColumnProperties.AllowNulls] = <azdata.designers.CheckboxComponentData>{
 				value: true
 			};
 			const columns = <azdata.designers.TableComponentData>{
@@ -54,7 +54,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 			return {
 				view: {},
 				data: data,
-				columnTypes: ['int']
+				columnTypes: ['int', 'bigint', 'nvarchar']
 			};
 		}
 	});

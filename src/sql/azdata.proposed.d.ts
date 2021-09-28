@@ -1020,7 +1020,7 @@ declare module 'azdata' {
 		}
 
 		export enum TableColumnProperties {
-			AllowNull = 'allowNull',
+			AllowNulls = 'allowNulls',
 			DefaultValue = 'defaultValue',
 			Length = 'length',
 			Name = 'name',
@@ -1051,7 +1051,7 @@ declare module 'azdata' {
 
 		export interface DropdownComponentData extends ComponentData {
 			value: string;
-			optionalValues: CategoryValue[];
+			options: CategoryValue[];
 		}
 
 		export interface TableComponentData extends ComponentData {

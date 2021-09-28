@@ -8,7 +8,7 @@ import * as colors from './colors';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import * as cr from 'vs/platform/theme/common/colorRegistry';
 import * as sqlcr from 'sql/platform/theme/common/colorRegistry';
-import { attachStyler, defaultListStyles, IColorMapping, IStyleOverrides } from 'vs/platform/theme/common/styler';
+import { attachStyler, computeStyles, defaultListStyles, IColorMapping, IStyleOverrides } from 'vs/platform/theme/common/styler';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IThemable } from 'vs/base/common/styler';
 
@@ -52,7 +52,7 @@ export interface IInputBoxStyleOverrides extends IStyleOverrides {
 	inputValidationErrorBackground?: cr.ColorIdentifier
 }
 
-export const defaultInputBoxStyle: IInputBoxStyleOverrides = {
+export const defaultInputBoxStyleOverrides: IInputBoxStyleOverrides = {
 	inputBackground: cr.inputBackground,
 	inputForeground: cr.inputForeground,
 	disabledInputBackground: colors.disabledInputBackground,
@@ -67,7 +67,7 @@ export const defaultInputBoxStyle: IInputBoxStyleOverrides = {
 };
 
 export function attachInputBoxStyler(widget: IThemable, themeService: IThemeService, style?: IInputBoxStyleOverrides): IDisposable {
-	return attachStyler(themeService, { ...defaultInputBoxStyle, ...(style || {}) }, widget);
+	return attachStyler(themeService, { ...defaultInputBoxStyleOverrides, ...(style || {}) }, widget);
 }
 
 export interface ISelectBoxStyleOverrides extends IStyleOverrides {
@@ -352,7 +352,7 @@ export function attachInfoButtonStyler(widget: IThemable, themeService: IThemeSe
 
 export function attachTableFilterStyler(widget: IThemable, themeService: IThemeService): IDisposable {
 	return attachStyler(themeService, {
-		...defaultInputBoxStyle,
+		...defaultInputBoxStyleOverrides,
 		buttonForeground: cr.buttonForeground,
 		buttonBackground: cr.buttonBackground,
 		buttonHoverBackground: cr.buttonHoverBackground,
@@ -371,13 +371,20 @@ export function attachTableFilterStyler(widget: IThemable, themeService: IThemeS
 	}, widget);
 }
 
-export interface IDesignerStyleOverrides extends IInputBoxStyleOverrides, IDropdownStyleOverrides, ITableStyleOverrides { }
+export function attachDesignerStyler(widget: any, themeService: IThemeService): IDisposable {
+	function applyStyles(): void {
+		const colorTheme = themeService.getColorTheme();
+		const inputStyles = computeStyles(colorTheme, defaultInputBoxStyleOverrides);
+		const selectBoxStyles = computeStyles(colorTheme, defaultSelectBoxStyleOverrides);
+		const tableStyles = computeStyles(colorTheme, defaultTableStyleOverrides);
+		widget.style({
+			inputBoxStyles: inputStyles,
+			selectBoxStyles: selectBoxStyles,
+			tableStyles: tableStyles
+		});
+	}
 
-export function attachDesignerStyler(widget: IThemable, themeService: IThemeService, style?: IDesignerStyleOverrides): IDisposable {
-	return attachStyler(themeService, {
-		...defaultInputBoxStyle,
-		...defaultDropdownStyle,
-		...defaultTableStyleOverrides,
-		...(style || {})
-	}, widget);
+	applyStyles();
+
+	return themeService.onDidColorThemeChange(applyStyles);
 }
