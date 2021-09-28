@@ -528,9 +528,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this.insertCell(cell, index);
 	}
 
-	public splitCell(cellType: CellType, index?: number): ICellModel {
+	public splitCell(cellType: CellType, index?: number): ICellModel | undefined {
 		if (this.inErrorState) {
-			return null;
+			return undefined;
 		}
 
 		let cellEditors = this.notebookService.findNotebookEditor(this.notebookUri).cellEditors;
@@ -607,8 +607,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return null;
 	}
 
-	public insertCell(cell: ICellModel, index?: number): ICellModel {
-
+	public insertCell(cell: ICellModel, index?: number): ICellModel | undefined {
+		if (this.inErrorState) {
+			return undefined;
+		}
 		if (index !== undefined && index !== null && index >= 0 && index < this._cells.length) {
 			this._cells.splice(index, 0, cell);
 		} else {
