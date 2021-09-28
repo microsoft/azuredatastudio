@@ -276,17 +276,15 @@ export class WorkspaceService implements IWorkspaceService {
 	 * @param projectFile uri of project to remove from projects viewlet
 	 */
 	async removeProject(projectFile: vscode.Uri): Promise<void> {
-		if (vscode.workspace.workspaceFile) {
-			TelemetryReporter.createActionEvent(TelemetryViews.WorkspaceTreePane, TelemetryActions.ProjectRemovedFromWorkspace)
-				.withAdditionalProperties({
-					projectType: path.extname(projectFile.fsPath)
-				}).send();
+		TelemetryReporter.createActionEvent(TelemetryViews.WorkspaceTreePane, TelemetryActions.ProjectRemovedFromWorkspace)
+			.withAdditionalProperties({
+				projectType: path.extname(projectFile.fsPath)
+			}).send();
 
-			const excludedProjects = this.getWorkspaceConfigurationValue<string[]>(ExcludedProjectsConfigurationName);
-			excludedProjects.push(vscode.workspace.asRelativePath(projectFile.fsPath));
-			await this.setWorkspaceConfigurationValue(ExcludedProjectsConfigurationName, [...new Set(excludedProjects)]);
-			this._onDidWorkspaceProjectsChange.fire();
-		}
+		const excludedProjects = this.getWorkspaceConfigurationValue<string[]>(ExcludedProjectsConfigurationName);
+		excludedProjects.push(vscode.workspace.asRelativePath(projectFile.fsPath));
+		await this.setWorkspaceConfigurationValue(ExcludedProjectsConfigurationName, [...new Set(excludedProjects)]);
+		this._onDidWorkspaceProjectsChange.fire();
 	}
 
 	getWorkspaceConfigurationValue<T>(configurationName: string): T {

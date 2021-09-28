@@ -12,5 +12,6 @@
 	"open-existing-command": "Open existing",
 	"projects.defaultProjectSaveLocation": "Full path to folder where new projects are saved by default.",
 	"projects.showNotAddedProjectsInWorkspacePrompt": "Always show information message when the current workspace folders contain projects that have not been added to the workspace's projects.",
-	"manage-project-command": "Manage"
+	"manage-project-command": "Manage",
+	"projects.excludedProjectsDescription": "List of projects in the workspace to exclude from the projects viewlet"
 }

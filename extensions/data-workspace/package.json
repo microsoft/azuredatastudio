@@ -29,7 +29,7 @@
           "dataworkspace.excludedProjects": {
             "type": "array",
             "default": [],
-            "description": ""
+            "description": "%projects.excludedProjectsDescription%"
           },
           "projects.defaultProjectSaveLocation": {
             "type": "string",
