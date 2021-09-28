@@ -11,7 +11,7 @@
 		"@angular/platform-browser": "~4.1.3",
 		"@angular/platform-browser-dynamic": "~4.1.3",
 		"@angular/router": "~4.1.3",
-		"@vscode/vscode-languagedetection": "1.0.12",
+		"@vscode/vscode-languagedetection": "1.0.13",
 		"angular2-grid": "2.0.6",
 		"ansi_up": "^3.0.0",
 		"chart.js": "^2.9.4",

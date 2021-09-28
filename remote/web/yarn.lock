@@ -42,10 +42,10 @@
   resolved "https://registry.yarnpkg.com/@angular/router/-/router-4.1.3.tgz#ddafd46ae7ccc8b1f74904ffb45f394e44625216"
   integrity sha1-3a/UaufMyLH3SQT/tF85TkRiUhY=
 
-"@vscode/vscode-languagedetection@1.0.12":
-  version "1.0.12"
-  resolved "https://registry.yarnpkg.com/@vscode/vscode-languagedetection/-/vscode-languagedetection-1.0.12.tgz#884c080257298b078fdd6dd75c35f8bd42ba83fa"
-  integrity sha512-tiHV6eev2TKgSdpsnVF0wD1Dtk2KqwFdk2TpPDsYdBvP5kjw2KsfSK3l6cPBWqbSdSOSkHk37XvOAhNRKzdlZg==
+"@vscode/vscode-languagedetection@1.0.13":
+  version "1.0.13"
+  resolved "https://registry.yarnpkg.com/@vscode/vscode-languagedetection/-/vscode-languagedetection-1.0.13.tgz#1af4c6473d3f971121c4fbc7f14292779ef4588f"
+  integrity sha512-mIWgBE79ECB3raUtXHjiamDIPOESq/2nYogldOrmwpIfSssXeA3LOe0PjjNW7vuY7kisD/AvEviNlpjWr+mVBg==
 
 angular2-grid@2.0.6:
   version "2.0.6"
