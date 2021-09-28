@@ -175,7 +175,7 @@ export function registerTerminalActions() {
 				event = eventOrOptionsOrProfile;
 				options = profile ? { config: profile } : undefined;
 			} else {
-				options = convertOptionsOrProfileToOptions(eventOrOptionsOrProfile);
+				options = convertOptionsOrProfileToOptions(eventOrOptionsOrProfile as ICreateTerminalOptions | ITerminalProfile); // {{SQL CARBON EDIT}} Fix typing compile error
 			}
 
 			const folders = workspaceContextService.getWorkspace().folders;
@@ -2102,7 +2102,7 @@ export function refreshTerminalActions(detectedProfiles: ITerminalProfile[]) {
 				event = eventOrOptionsOrProfile;
 				options = profile ? { config: profile } : undefined;
 			} else {
-				options = convertOptionsOrProfileToOptions(eventOrOptionsOrProfile);
+				options = convertOptionsOrProfileToOptions(eventOrOptionsOrProfile as ICreateTerminalOptions | ITerminalProfile); // {{SQL CARBON EDIT}} Fix typing compile error
 			}
 
 			const folders = workspaceContextService.getWorkspace().folders;
