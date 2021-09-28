@@ -451,19 +451,21 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			if (this.cellModel.richTextCursorPosition) {
 				let selection = window.getSelection();
 				selection.removeAllRanges();
-				let startContainers = this.cellModel.richTextCursorPosition.startElementNodes; let x = startContainers.length;
-				let outputElement: any = this.output.nativeElement;
-				while (x--) {
-					outputElement = outputElement.childNodes[startContainers[x]];
+				let startContainers = this.cellModel.richTextCursorPosition.startElementNodes;
+				let depthToNode = startContainers.length;
+				let startNodeElement: any = this.output.nativeElement;
+				while (depthToNode--) {
+					startNodeElement = startNodeElement.childNodes[startContainers[depthToNode]];
 				}
-				startContainers = this.cellModel.richTextCursorPosition.endElementNodes; x = startContainers.length;
-				let endContainers: any = this.output.nativeElement;
-				while (x--) {
-					endContainers = endContainers.childNodes[startContainers[x]];
+				startContainers = this.cellModel.richTextCursorPosition.endElementNodes;
+				depthToNode = startContainers.length;
+				let endNodeElement: any = this.output.nativeElement;
+				while (depthToNode--) {
+					endNodeElement = endNodeElement.childNodes[startContainers[depthToNode]];
 				}
 				let range = new Range();
-				range.setStart(outputElement, this.cellModel.richTextCursorPosition.startOffset);
-				range.setEnd(endContainers, this.cellModel.richTextCursorPosition.endOffset);
+				range.setStart(startNodeElement, this.cellModel.richTextCursorPosition.startOffset);
+				range.setEnd(endNodeElement, this.cellModel.richTextCursorPosition.endOffset);
 				selection.addRange(range);
 			}
 		}
