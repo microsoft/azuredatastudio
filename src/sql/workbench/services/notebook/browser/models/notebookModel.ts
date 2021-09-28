@@ -14,7 +14,7 @@ import { NotebookChangeType, CellType, CellTypes } from 'sql/workbench/services/
 import { KernelsLanguage, nbversion } from 'sql/workbench/services/notebook/common/notebookConstants';
 import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import { INotebookManager, SQL_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
+import { INotebookManager, SQL_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_PROVIDER, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookContexts } from 'sql/workbench/services/notebook/browser/models/notebookContexts';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { INotification, Severity, INotificationService } from 'vs/platform/notification/common/notification';
@@ -32,6 +32,7 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { values } from 'vs/base/common/collections';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { isUUID } from 'vs/base/common/uuid';
+import { TextModel } from 'vs/editor/common/model/textModel';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -120,8 +121,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		@IAdsTelemetryService private readonly adstelemetryService: IAdsTelemetryService,
 		@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
 		@IConfigurationService private configurationService: IConfigurationService,
+		@INotebookService private notebookService: INotebookService,
 		@ICapabilitiesService private _capabilitiesService?: ICapabilitiesService
-
 	) {
 		super();
 		if (!_notebookOptions || !_notebookOptions.notebookUri || !_notebookOptions.notebookManagers) {
@@ -518,11 +519,95 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._cells.findIndex(cell => cell.equals(cellModel));
 	}
 
-	public addCell(cellType: CellType, index?: number): ICellModel | undefined {
+	public addCell(cellType: CellType, index?: number): ICellModel {
 		if (this.inErrorState) {
-			return undefined;
+			return null;
 		}
+
 		let cell = this.createCell(cellType);
+		return this.insertCell(cell, index);
+	}
+
+	public splitCell(cellType: CellType, index?: number): ICellModel {
+		if (this.inErrorState) {
+			return null;
+		}
+
+		let cellEditors = this.notebookService.findNotebookEditor(this.notebookUri).cellEditors;
+		let edindex = cellEditors.findIndex(x => x.cellGuid() === this.cells[index - 1].cellGuid);
+		let currentCellEditor = cellEditors[edindex].getEditor();
+		//Only split the cell if the markdown editor is open.
+		//TODO: Need to handle splitting of cell if the selection is on webview
+		if (currentCellEditor) {
+			let model = currentCellEditor.getControl().getModel() as TextModel;
+			let range = model.getFullModelRange();
+			let selection = currentCellEditor.getControl().getSelection();
+			let source = this.cells[index - 1].source;
+			let newcell = null, tailcell = null, partial = null;
+
+			//Get selection value from current cell
+			let newcellcontent = model.getValueInRange(selection);
+
+			//Get content after selection
+			let tailrange = range.setStartPosition(selection.endLineNumber, selection.endColumn);
+			let tailcellcontent = model.getValueInRange(tailrange);
+
+			//Get content before selection
+			let headrange = range.setEndPosition(selection.startLineNumber, selection.startColumn);
+			let headcontent = model.getValueInRange(headrange);
+
+			//Set content before selection if the selection is not the same as original content
+			if (headcontent.length) {
+				let headsource = source.slice(range.startLineNumber - 1, selection.startLineNumber - 1);
+				if (selection.startColumn > 1) {
+					partial = source.slice(selection.startLineNumber - 1, selection.startLineNumber)[0].slice(0, selection.startColumn - 1);
+					headsource = headsource.concat(partial.toString());
+				}
+				this.cells[index - 1].source = headsource;
+			}
+
+			if (tailcellcontent.length) {
+				//tail cell will be of original cell type.
+				tailcell = this.createCell(this._cells[index - 1].cellType);
+				let tailsource = source.slice(tailrange.startLineNumber - 1) as string[];
+				if (selection.endColumn > 1) {
+					partial = source.slice(tailrange.startLineNumber - 1, tailrange.startLineNumber)[0].slice(tailrange.startColumn - 1);
+					tailsource.splice(0, 1, partial);
+				}
+				tailcell.source = tailsource;
+				this.insertCell(tailcell, index);
+			}
+
+			if (newcellcontent.length) {
+				newcell = this.createCell(cellType);
+				let newsource = source.slice(selection.startLineNumber - 1, selection.endLineNumber) as string[];
+				if (selection.startColumn > 1) {
+					partial = source.slice(selection.startLineNumber - 1)[0].slice(selection.startColumn - 1);
+					newsource.splice(0, 1, partial);
+				}
+				if (selection.endColumn !== source[selection.endLineNumber - 1].length) {
+					let splicestart = 0;
+					if (selection.startLineNumber === selection.endLineNumber) {
+						splicestart = selection.startColumn - 1;
+					}
+					let partial = source.slice(selection.endLineNumber - 1, selection.endLineNumber)[0].slice(splicestart, selection.endColumn - 1);
+					newsource.splice(newsource.length - 1, 1, partial);
+				}
+				newcell.source = newsource;
+				this.insertCell(newcell, index);
+			}
+
+			//Delete the original cell if the selection begins at the start
+			if (!headcontent.length) {
+				this.deleteCell(this.cells[index - 1]);
+			}
+			//return inserted cell
+			return newcell ? newcell : tailcell;
+		}
+		return null;
+	}
+
+	public insertCell(cell: ICellModel, index?: number): ICellModel {
 
 		if (index !== undefined && index !== null && index >= 0 && index < this._cells.length) {
 			this._cells.splice(index, 0, cell);
@@ -532,7 +617,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 		// Set newly created cell as active cell
 		this.updateActiveCell(cell);
-		cell.isEditMode = true;
+
 		this._contentChangedEmitter.fire({
 			changeType: NotebookChangeType.CellsModified,
 			cells: [cell],
