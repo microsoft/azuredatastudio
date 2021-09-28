@@ -150,7 +150,7 @@ export class Project implements ISqlProject {
 			}
 
 			if (preDeployScriptCount > 1 || postDeployScriptCount > 1) {
-				window.showWarningMessage(constants.prePostDeployCount, constants.okString);
+				void window.showWarningMessage(constants.prePostDeployCount, constants.okString);
 			}
 
 			// find all none-deployment scripts to include
@@ -630,7 +630,7 @@ export class Project implements ISqlProject {
 			itemGroup = this.findOrCreateItemGroup(xmlTag, prePostScriptExist);
 
 			if (prePostScriptExist.scriptExist === true) {
-				window.showInformationMessage(constants.deployScriptExists(xmlTag));
+				void window.showInformationMessage(constants.deployScriptExists(xmlTag));
 				xmlTag = constants.None;	// Add only one pre-deploy and post-deploy script. All additional ones get added in the same item group with None tag
 			}
 		}

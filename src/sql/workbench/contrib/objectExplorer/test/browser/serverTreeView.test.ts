@@ -84,8 +84,8 @@ suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 
 	test('isObjectExplorerConnectionUri', async () => {
 		let connectionUriFalse = serverTreeView.isObjectExplorerConnectionUri('123');
-		assert.equal(false, connectionUriFalse);
-		assert.equal(true, serverTreeView.isObjectExplorerConnectionUri('connection:123'));
+		assert.strictEqual(false, connectionUriFalse);
+		assert.strictEqual(true, serverTreeView.isObjectExplorerConnectionUri('connection:123'));
 	});
 
 	test('setExpandedState', async () => {

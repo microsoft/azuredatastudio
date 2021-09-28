@@ -30,6 +30,12 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	IconPathHelper.setExtensionContext(extensionContext);
 
 	const appContext = new AppContext(extensionContext);
+
+	// TODO: Notebook doesn't work without root setting enabled in web mode. Once we start using non-root containers, we can remove this code.
+	const config = vscode.workspace.getConfiguration('notebook');
+	if (vscode.env.uiKind === vscode.UIKind.Web) {
+		await config.update('allowRoot', true, vscode.ConfigurationTarget.Global);
+	}
 	/**
 	 *  									***** IMPORTANT *****
 	 * If changes are made to bookTreeView.openBook, please ensure backwards compatibility with its current state.
@@ -51,6 +57,7 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.removeNotebook', (book: BookTreeItem) => bookTreeViewProvider.removeNotebook(book)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.addNotebook', (book: BookTreeItem) => bookTreeViewProvider.createNotebook(book)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.addMarkdown', (book: BookTreeItem) => bookTreeViewProvider.createMarkdownFile(book)));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.addSection', (book: BookTreeItem) => bookTreeViewProvider.createSection(book)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.createBook', () => bookTreeViewProvider.createBook()));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.openNotebookFolder', (folderPath?: string, urlToOpen?: string, showPreview?: boolean) => bookTreeViewProvider.openNotebookFolder(folderPath, urlToOpen, showPreview)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.pinNotebook', async (book: BookTreeItem) => {
@@ -62,8 +69,9 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 		await pinnedBookTreeViewProvider.removeNotebookFromPinnedView(book);
 	}));
 
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.moveTo', async (book: BookTreeItem) => {
-		await bookTreeViewProvider.editBook(book);
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.moveTo', async (firstTreeItem: BookTreeItem, treeItems?: BookTreeItem[]) => {
+		let allTreeItems = treeItems ? [firstTreeItem, ...treeItems] : [firstTreeItem];
+		await bookTreeViewProvider.moveTreeItems(allTreeItems);
 	}));
 
 	let model = new RemoteBookDialogModel();
@@ -71,7 +79,7 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.openRemoteBook', async () => {
 		let dialog = new RemoteBookDialog(remoteBookController);
-		dialog.createDialog();
+		return dialog.createDialog();
 	}));
 
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('_notebook.command.new', async (options?: azdata.nb.NotebookShowOptions) => {
@@ -146,9 +154,9 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 
 	azdata.nb.onDidChangeActiveNotebookEditor(e => {
 		if (e.document.uri.scheme === 'untitled') {
-			providedBookTreeViewProvider.revealDocumentInTreeView(e.document.uri, false, false);
+			void providedBookTreeViewProvider.revealDocumentInTreeView(e.document.uri, false, false);
 		} else {
-			bookTreeViewProvider.revealDocumentInTreeView(e.document.uri, false, false);
+			void bookTreeViewProvider.revealDocumentInTreeView(e.document.uri, false, false);
 		}
 	});
 

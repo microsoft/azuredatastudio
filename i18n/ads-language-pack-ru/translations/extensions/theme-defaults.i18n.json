@@ -9,13 +9,13 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Темы по умолчанию",
-			"description": "Темная и светлая темы Visual Studio по умолчанию",
-			"darkPlusColorThemeLabel": "Темная+ (темная по умолчанию)",
-			"lightPlusColorThemeLabel": "Светлая+ (светлая по умолчанию)",
 			"darkColorThemeLabel": "Темная (Visual Studio)",
-			"lightColorThemeLabel": "Светлая (Visual Studio)",
+			"darkPlusColorThemeLabel": "Темная+ (темная по умолчанию)",
+			"description": "Темная и светлая темы Visual Studio по умолчанию",
+			"displayName": "Темы по умолчанию",
 			"hcColorThemeLabel": "Высокая контрастность",
+			"lightColorThemeLabel": "Светлая (Visual Studio)",
+			"lightPlusColorThemeLabel": "Светлая+ (светлая по умолчанию)",
 			"minimalIconThemeLabel": "Минимальная (Visual Studio Code)"
 		}
 	}

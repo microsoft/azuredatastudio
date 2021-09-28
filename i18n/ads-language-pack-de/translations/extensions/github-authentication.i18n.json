@@ -8,16 +8,18 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"displayName": "GitHub-Authentifizierung",
-			"description": "GitHub-Authentifizierungsanbieter"
+		"dist/common/keychain": {
+			"keychainWriteError": "Das Schreiben von Anmeldeinformationen in den Schlüsselbund ist mit dem Fehler \"{0}\" fehlgeschlagen.",
+			"troubleshooting": "Leitfaden zur Fehlerbehebung"
 		},
 		"dist/githubServer": {
-			"signingIn": "$(mark-github) Anmeldung bei github.com..."
+			"signingIn": "$(mark-github) Anmeldung bei github.com...",
+			"signingInEnterprise": "$(mark-github) Anmeldung bei {0}...",
+			"status.git.signIn.name": "GitHub-Anmeldung"
 		},
-		"dist/common/keychain": {
-			"troubleshooting": "Leitfaden zur Fehlerbehebung",
-			"keychainWriteError": "Das Schreiben von Anmeldeinformationen in den Schlüsselbund ist mit dem Fehler \"{0}\" fehlgeschlagen."
+		"package": {
+			"description": "GitHub-Authentifizierungsanbieter",
+			"displayName": "GitHub-Authentifizierung"
 		}
 	}
 }

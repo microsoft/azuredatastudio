@@ -246,7 +246,7 @@ class HdfsFileSource implements IFileSource {
 							'########################### ' + localize('maxSizeNotice', "NOTICE: This file has been truncated at {0} for preview. ", bytes(maxBytes)) + '############################### \r\n' +
 							'#################################################################################################################### \r\n';
 						data.splice(0, 0, Buffer.from(previewNote, 'utf-8'));
-						vscode.window.showWarningMessage(localize('maxSizeReached', "The file has been truncated at {0} for preview.", bytes(maxBytes)));
+						void vscode.window.showWarningMessage(localize('maxSizeReached', "The file has been truncated at {0} for preview.", bytes(maxBytes)));
 						resolve(Buffer.concat(data));
 					} else {
 						reject(error);

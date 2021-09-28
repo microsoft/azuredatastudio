@@ -196,7 +196,7 @@ suite('TreeModel', () => {
 
 	test('setInput, getInput', () => {
 		model.setInput(SAMPLE.ONE);
-		assert.equal(model.getInput(), SAMPLE.ONE);
+		assert.strictEqual(model.getInput(), SAMPLE.ONE);
 	});
 
 	test('refresh() refreshes all', () => {
@@ -208,7 +208,7 @@ suite('TreeModel', () => {
 			counter.listen(model.onDidRefreshItemChildren); // 1
 			return model.refresh(null);
 		}).then(() => {
-			assert.equal(counter.count, 8);
+			assert.strictEqual(counter.count, 8);
 		});
 	});
 
@@ -221,7 +221,7 @@ suite('TreeModel', () => {
 			counter.listen(model.onDidRefreshItemChildren); // 1
 			return model.refresh(SAMPLE.AB);
 		}).then(() => {
-			assert.equal(counter.count, 8);
+			assert.strictEqual(counter.count, 8);
 		});
 	});
 
@@ -234,7 +234,7 @@ suite('TreeModel', () => {
 			counter.listen(model.onDidRefreshItemChildren); // 1
 			return model.refresh(SAMPLE.AB, false);
 		}).then(() => {
-			assert.equal(counter.count, 5);
+			assert.strictEqual(counter.count, 5);
 		});
 	});
 
@@ -247,7 +247,7 @@ suite('TreeModel', () => {
 			counter.listen(model.onDidRefreshItemChildren); // 0
 			return model.refresh(SAMPLE.AB.children[0]);
 		}).then(() => {
-			assert.equal(counter.count, 3);
+			assert.strictEqual(counter.count, 3);
 		});
 	});
 
@@ -262,7 +262,7 @@ suite('TreeModel', () => {
 				return model.refresh(SAMPLE.AB.children[0]);
 			});
 		}).then(() => {
-			assert.equal(counter.count, 7);
+			assert.strictEqual(counter.count, 7);
 		});
 	});
 
@@ -272,7 +272,7 @@ suite('TreeModel', () => {
 				counter.listen(model.onRefresh); // 1
 				counter.listen(model.onDidRefresh); // 1
 				counter.listen(model.onDidRefreshItem, item => { // 1
-					assert.equal(item.id, 'a');
+					assert.strictEqual(item.id, 'a');
 					counter.up();
 				});
 				counter.listen(model.onRefreshItemChildren); // 1
@@ -280,7 +280,7 @@ suite('TreeModel', () => {
 				return model.refresh(SAMPLE.AB.children[0], false);
 			});
 		}).then(() => {
-			assert.equal(counter.count, 6);
+			assert.strictEqual(counter.count, 6);
 		});
 	});
 
@@ -289,14 +289,14 @@ suite('TreeModel', () => {
 			return model.expandAll(['a', 'c']).then(() => {
 				counter.listen(model.onDidRefreshItem, item => {
 					switch (item.id) {
-						case 'ROOT': assert.equal(item.getDepth(), 0); break;
-						case 'a': assert.equal(item.getDepth(), 1); break;
-						case 'aa': assert.equal(item.getDepth(), 2); break;
-						case 'ab': assert.equal(item.getDepth(), 2); break;
-						case 'b': assert.equal(item.getDepth(), 1); break;
-						case 'c': assert.equal(item.getDepth(), 1); break;
-						case 'ca': assert.equal(item.getDepth(), 2); break;
-						case 'cb': assert.equal(item.getDepth(), 2); break;
+						case 'ROOT': assert.strictEqual(item.getDepth(), 0); break;
+						case 'a': assert.strictEqual(item.getDepth(), 1); break;
+						case 'aa': assert.strictEqual(item.getDepth(), 2); break;
+						case 'ab': assert.strictEqual(item.getDepth(), 2); break;
+						case 'b': assert.strictEqual(item.getDepth(), 1); break;
+						case 'c': assert.strictEqual(item.getDepth(), 1); break;
+						case 'ca': assert.strictEqual(item.getDepth(), 2); break;
+						case 'cb': assert.strictEqual(item.getDepth(), 2); break;
 						default: return;
 					}
 					counter.up();
@@ -305,7 +305,7 @@ suite('TreeModel', () => {
 				return model.refresh();
 			});
 		}).then(() => {
-			assert.equal(counter.count, 16);
+			assert.strictEqual(counter.count, 16);
 		});
 	});
 
@@ -349,10 +349,10 @@ suite('TreeModel - TreeNavigator', () => {
 	test('next()', () => {
 		return model.setInput(SAMPLE.AB).then(() => {
 			const nav = model.getNavigator();
-			assert.equal(nav.next()!.id, 'a');
-			assert.equal(nav.next()!.id, 'b');
-			assert.equal(nav.next()!.id, 'c');
-			assert.equal(nav.next() && false, null);
+			assert.strictEqual(nav.next()!.id, 'a');
+			assert.strictEqual(nav.next()!.id, 'b');
+			assert.strictEqual(nav.next()!.id, 'c');
+			assert.strictEqual(nav.next() && false, null);
 		});
 	});
 
@@ -363,10 +363,10 @@ suite('TreeModel - TreeNavigator', () => {
 			nav.next();
 			nav.next();
 
-			assert.equal(nav.next()!.id, 'c');
-			assert.equal(nav.previous()!.id, 'b');
-			assert.equal(nav.previous()!.id, 'a');
-			assert.equal(nav.previous() && false, null);
+			assert.strictEqual(nav.next()!.id, 'c');
+			assert.strictEqual(nav.previous()!.id, 'b');
+			assert.strictEqual(nav.previous()!.id, 'a');
+			assert.strictEqual(nav.previous() && false, null);
 		});
 	});
 
@@ -375,22 +375,22 @@ suite('TreeModel - TreeNavigator', () => {
 			return model.expandAll([{ id: 'a' }, { id: 'c' }]).then(() => {
 				const nav = model.getNavigator();
 
-				assert.equal(nav.next()!.id, 'a');
-				assert.equal(nav.next()!.id, 'aa');
-				assert.equal(nav.parent()!.id, 'a');
+				assert.strictEqual(nav.next()!.id, 'a');
+				assert.strictEqual(nav.next()!.id, 'aa');
+				assert.strictEqual(nav.parent()!.id, 'a');
 
-				assert.equal(nav.next()!.id, 'aa');
-				assert.equal(nav.next()!.id, 'ab');
-				assert.equal(nav.parent()!.id, 'a');
+				assert.strictEqual(nav.next()!.id, 'aa');
+				assert.strictEqual(nav.next()!.id, 'ab');
+				assert.strictEqual(nav.parent()!.id, 'a');
 
-				assert.equal(nav.next()!.id, 'aa');
-				assert.equal(nav.next()!.id, 'ab');
-				assert.equal(nav.next()!.id, 'b');
-				assert.equal(nav.next()!.id, 'c');
-				assert.equal(nav.next()!.id, 'ca');
-				assert.equal(nav.parent()!.id, 'c');
+				assert.strictEqual(nav.next()!.id, 'aa');
+				assert.strictEqual(nav.next()!.id, 'ab');
+				assert.strictEqual(nav.next()!.id, 'b');
+				assert.strictEqual(nav.next()!.id, 'c');
+				assert.strictEqual(nav.next()!.id, 'ca');
+				assert.strictEqual(nav.parent()!.id, 'c');
 
-				assert.equal(nav.parent() && false, null);
+				assert.strictEqual(nav.parent() && false, null);
 			});
 		});
 	});
@@ -399,9 +399,9 @@ suite('TreeModel - TreeNavigator', () => {
 		return model.setInput(SAMPLE.AB).then(() => {
 			const nav = model.getNavigator(SAMPLE.AB.children[0]);
 			return model.expand({ id: 'a' }).then(() => {
-				assert.equal(nav.next()!.id, 'aa');
-				assert.equal(nav.next()!.id, 'ab');
-				assert.equal(nav.next() && false, null);
+				assert.strictEqual(nav.next()!.id, 'aa');
+				assert.strictEqual(nav.next()!.id, 'ab');
+				assert.strictEqual(nav.next() && false, null);
 			});
 		});
 	});
@@ -410,10 +410,10 @@ suite('TreeModel - TreeNavigator', () => {
 		return model.setInput(SAMPLE.AB).then(() => {
 			const nav = model.getNavigator(SAMPLE.AB.children[0]);
 			return model.expand({ id: 'a' }).then(() => {
-				assert.equal(nav.next()!.id, 'aa');
-				assert.equal(nav.next()!.id, 'ab');
-				assert.equal(nav.previous()!.id, 'aa');
-				assert.equal(nav.previous() && false, null);
+				assert.strictEqual(nav.next()!.id, 'aa');
+				assert.strictEqual(nav.next()!.id, 'ab');
+				assert.strictEqual(nav.previous()!.id, 'aa');
+				assert.strictEqual(nav.previous() && false, null);
 			});
 		});
 	});
@@ -423,9 +423,9 @@ suite('TreeModel - TreeNavigator', () => {
 			return model.expandAll([{ id: 'a' }, { id: 'c' }]).then(() => {
 				const nav = model.getNavigator(SAMPLE.AB.children[0]);
 
-				assert.equal(nav.next()!.id, 'aa');
-				assert.equal(nav.next()!.id, 'ab');
-				assert.equal(nav.parent() && false, null);
+				assert.strictEqual(nav.next()!.id, 'aa');
+				assert.strictEqual(nav.next()!.id, 'ab');
+				assert.strictEqual(nav.parent() && false, null);
 			});
 		});
 	});
@@ -434,11 +434,11 @@ suite('TreeModel - TreeNavigator', () => {
 		return model.setInput(SAMPLE.AB).then(() => {
 			const nav = model.getNavigator(SAMPLE.AB.children[0], false);
 			return model.expand({ id: 'a' }).then(() => {
-				assert.equal(nav.next()!.id, 'aa');
-				assert.equal(nav.next()!.id, 'ab');
-				assert.equal(nav.next()!.id, 'b');
-				assert.equal(nav.next()!.id, 'c');
-				assert.equal(nav.next() && false, null);
+				assert.strictEqual(nav.next()!.id, 'aa');
+				assert.strictEqual(nav.next()!.id, 'ab');
+				assert.strictEqual(nav.next()!.id, 'b');
+				assert.strictEqual(nav.next()!.id, 'c');
+				assert.strictEqual(nav.next() && false, null);
 			});
 		});
 	});
@@ -447,15 +447,15 @@ suite('TreeModel - TreeNavigator', () => {
 		return model.setInput(SAMPLE.AB).then(() => {
 			const nav = model.getNavigator(SAMPLE.AB.children[0], false);
 			return model.expand({ id: 'a' }).then(() => {
-				assert.equal(nav.next()!.id, 'aa');
-				assert.equal(nav.next()!.id, 'ab');
-				assert.equal(nav.next()!.id, 'b');
-				assert.equal(nav.next()!.id, 'c');
-				assert.equal(nav.previous()!.id, 'b');
-				assert.equal(nav.previous()!.id, 'ab');
-				assert.equal(nav.previous()!.id, 'aa');
-				assert.equal(nav.previous()!.id, 'a');
-				assert.equal(nav.previous() && false, null);
+				assert.strictEqual(nav.next()!.id, 'aa');
+				assert.strictEqual(nav.next()!.id, 'ab');
+				assert.strictEqual(nav.next()!.id, 'b');
+				assert.strictEqual(nav.next()!.id, 'c');
+				assert.strictEqual(nav.previous()!.id, 'b');
+				assert.strictEqual(nav.previous()!.id, 'ab');
+				assert.strictEqual(nav.previous()!.id, 'aa');
+				assert.strictEqual(nav.previous()!.id, 'a');
+				assert.strictEqual(nav.previous() && false, null);
 			});
 		});
 	});
@@ -465,10 +465,10 @@ suite('TreeModel - TreeNavigator', () => {
 			return model.expandAll([{ id: 'a' }, { id: 'c' }]).then(() => {
 				const nav = model.getNavigator(SAMPLE.AB.children[0], false);
 
-				assert.equal(nav.next()!.id, 'aa');
-				assert.equal(nav.next()!.id, 'ab');
-				assert.equal(nav.parent()!.id, 'a');
-				assert.equal(nav.parent() && false, null);
+				assert.strictEqual(nav.next()!.id, 'aa');
+				assert.strictEqual(nav.next()!.id, 'ab');
+				assert.strictEqual(nav.parent()!.id, 'a');
+				assert.strictEqual(nav.parent() && false, null);
 			});
 		});
 	});
@@ -478,9 +478,9 @@ suite('TreeModel - TreeNavigator', () => {
 			return model.expand(SAMPLE.DEEP.children[0]).then(() => {
 				return model.expand(SAMPLE.DEEP.children[0].children[0]).then(() => {
 					const nav = model.getNavigator(SAMPLE.DEEP.children[0].children[0]);
-					assert.equal(nav.next()!.id, 'xa');
-					assert.equal(nav.next()!.id, 'xb');
-					assert.equal(nav.next() && false, null);
+					assert.strictEqual(nav.next()!.id, 'xa');
+					assert.strictEqual(nav.next()!.id, 'xb');
+					assert.strictEqual(nav.next() && false, null);
 				});
 			});
 		});
@@ -491,10 +491,10 @@ suite('TreeModel - TreeNavigator', () => {
 			return model.expand(SAMPLE.DEEP.children[0]).then(() => {
 				return model.expand(SAMPLE.DEEP.children[0].children[0]).then(() => {
 					const nav = model.getNavigator(SAMPLE.DEEP.children[0].children[0]);
-					assert.equal(nav.next()!.id, 'xa');
-					assert.equal(nav.next()!.id, 'xb');
-					assert.equal(nav.previous()!.id, 'xa');
-					assert.equal(nav.previous() && false, null);
+					assert.strictEqual(nav.next()!.id, 'xa');
+					assert.strictEqual(nav.next()!.id, 'xb');
+					assert.strictEqual(nav.previous()!.id, 'xa');
+					assert.strictEqual(nav.previous() && false, null);
 				});
 			});
 		});
@@ -504,7 +504,7 @@ suite('TreeModel - TreeNavigator', () => {
 		return model.setInput(SAMPLE.AB).then(() => {
 			return model.expandAll([{ id: 'a' }, { id: 'c' }]).then(() => {
 				const nav = model.getNavigator();
-				assert.equal(nav.last()!.id, 'cb');
+				assert.strictEqual(nav.last()!.id, 'cb');
 			});
 		});
 	});
@@ -529,45 +529,45 @@ suite('TreeModel - Expansion', () => {
 	test('collapse, expand', () => {
 		return model.setInput(SAMPLE.AB).then(() => {
 			counter.listen(model.onExpandItem, (e) => {
-				assert.equal(e.item.id, 'a');
+				assert.strictEqual(e.item.id, 'a');
 				const nav = model.getNavigator(e.item);
-				assert.equal(nav.next() && false, null);
+				assert.strictEqual(nav.next() && false, null);
 			});
 
 			counter.listen(model.onDidExpandItem, (e) => {
-				assert.equal(e.item.id, 'a');
+				assert.strictEqual(e.item.id, 'a');
 				const nav = model.getNavigator(e.item);
-				assert.equal(nav.next()!.id, 'aa');
-				assert.equal(nav.next()!.id, 'ab');
-				assert.equal(nav.next() && false, null);
+				assert.strictEqual(nav.next()!.id, 'aa');
+				assert.strictEqual(nav.next()!.id, 'ab');
+				assert.strictEqual(nav.next() && false, null);
 			});
 
 			assert(!model.isExpanded(SAMPLE.AB.children[0]));
 
 			let nav = model.getNavigator();
-			assert.equal(nav.next()!.id, 'a');
-			assert.equal(nav.next()!.id, 'b');
-			assert.equal(nav.next()!.id, 'c');
-			assert.equal(nav.next() && false, null);
+			assert.strictEqual(nav.next()!.id, 'a');
+			assert.strictEqual(nav.next()!.id, 'b');
+			assert.strictEqual(nav.next()!.id, 'c');
+			assert.strictEqual(nav.next() && false, null);
 
-			assert.equal(model.getExpandedElements().length, 0);
+			assert.strictEqual(model.getExpandedElements().length, 0);
 
 			return model.expand(SAMPLE.AB.children[0]).then(() => {
 				assert(model.isExpanded(SAMPLE.AB.children[0]));
 
 				nav = model.getNavigator();
-				assert.equal(nav.next()!.id, 'a');
-				assert.equal(nav.next()!.id, 'aa');
-				assert.equal(nav.next()!.id, 'ab');
-				assert.equal(nav.next()!.id, 'b');
-				assert.equal(nav.next()!.id, 'c');
-				assert.equal(nav.next() && false, null);
+				assert.strictEqual(nav.next()!.id, 'a');
+				assert.strictEqual(nav.next()!.id, 'aa');
+				assert.strictEqual(nav.next()!.id, 'ab');
+				assert.strictEqual(nav.next()!.id, 'b');
+				assert.strictEqual(nav.next()!.id, 'c');
+				assert.strictEqual(nav.next() && false, null);
 
 				const expandedElements = model.getExpandedElements();
-				assert.equal(expandedElements.length, 1);
-				assert.equal(expandedElements[0].id, 'a');
+				assert.strictEqual(expandedElements.length, 1);
+				assert.strictEqual(expandedElements[0].id, 'a');
 
-				assert.equal(counter.count, 2);
+				assert.strictEqual(counter.count, 2);
 			});
 		});
 	});
@@ -627,18 +627,18 @@ suite('TreeModel - Expansion', () => {
 			assert(!model.isExpanded(SAMPLE.AB.children[0]));
 
 			let nav = model.getNavigator();
-			assert.equal(nav.next()!.id, 'a');
-			assert.equal(nav.next()!.id, 'b');
-			assert.equal(nav.next()!.id, 'c');
-			assert.equal(nav.next() && false, null);
+			assert.strictEqual(nav.next()!.id, 'a');
+			assert.strictEqual(nav.next()!.id, 'b');
+			assert.strictEqual(nav.next()!.id, 'c');
+			assert.strictEqual(nav.next() && false, null);
 
 			const f: () => void = counter.listen(model.onRefreshItemChildren, (e) => {
-				assert.equal(e.item.id, 'a');
+				assert.strictEqual(e.item.id, 'a');
 				f();
 			});
 
 			const g: () => void = counter.listen(model.onDidRefreshItemChildren, (e) => {
-				assert.equal(e.item.id, 'a');
+				assert.strictEqual(e.item.id, 'a');
 				g();
 			});
 
@@ -646,14 +646,14 @@ suite('TreeModel - Expansion', () => {
 				assert(model.isExpanded(SAMPLE.AB.children[0]));
 
 				nav = model.getNavigator();
-				assert.equal(nav.next()!.id, 'a');
-				assert.equal(nav.next()!.id, 'aa');
-				assert.equal(nav.next()!.id, 'ab');
-				assert.equal(nav.next()!.id, 'b');
-				assert.equal(nav.next()!.id, 'c');
-				assert.equal(nav.next() && false, null);
+				assert.strictEqual(nav.next()!.id, 'a');
+				assert.strictEqual(nav.next()!.id, 'aa');
+				assert.strictEqual(nav.next()!.id, 'ab');
+				assert.strictEqual(nav.next()!.id, 'b');
+				assert.strictEqual(nav.next()!.id, 'c');
+				assert.strictEqual(nav.next() && false, null);
 
-				assert.equal(counter.count, 2);
+				assert.strictEqual(counter.count, 2);
 			});
 		});
 	});
@@ -662,12 +662,12 @@ suite('TreeModel - Expansion', () => {
 		return model.setInput(SAMPLE.AB).then(() => {
 			return model.collapseAll([{ id: 'a' }, { id: 'b' }, { id: 'c' }]).then(() => {
 				const nav = model.getNavigator();
-				assert.equal(nav.next()!.id, 'a');
-				assert.equal(nav.next()!.id, 'b');
-				assert.equal(nav.next()!.id, 'c');
-				assert.equal(nav.previous()!.id, 'b');
-				assert.equal(nav.previous()!.id, 'a');
-				assert.equal(nav.previous() && false, null);
+				assert.strictEqual(nav.next()!.id, 'a');
+				assert.strictEqual(nav.next()!.id, 'b');
+				assert.strictEqual(nav.next()!.id, 'c');
+				assert.strictEqual(nav.previous()!.id, 'b');
+				assert.strictEqual(nav.previous()!.id, 'a');
+				assert.strictEqual(nav.previous() && false, null);
 			});
 		});
 	});
@@ -735,21 +735,21 @@ suite('TreeModel - Filter', () => {
 
 			return model.expandAll([{ id: 'a' }, { id: 'c' }]).then(() => {
 				const nav = model.getNavigator();
-				assert.equal(nav.next()!.id, 'a');
-				assert.equal(nav.next()!.id, 'aa');
-				assert.equal(nav.next()!.id, 'ab');
-				assert.equal(nav.next()!.id, 'b');
-				assert.equal(nav.next()!.id, 'c');
-				assert.equal(nav.next()!.id, 'ca');
-				assert.equal(nav.next()!.id, 'cb');
+				assert.strictEqual(nav.next()!.id, 'a');
+				assert.strictEqual(nav.next()!.id, 'aa');
+				assert.strictEqual(nav.next()!.id, 'ab');
+				assert.strictEqual(nav.next()!.id, 'b');
+				assert.strictEqual(nav.next()!.id, 'c');
+				assert.strictEqual(nav.next()!.id, 'ca');
+				assert.strictEqual(nav.next()!.id, 'cb');
 
-				assert.equal(nav.previous()!.id, 'ca');
-				assert.equal(nav.previous()!.id, 'c');
-				assert.equal(nav.previous()!.id, 'b');
-				assert.equal(nav.previous()!.id, 'ab');
-				assert.equal(nav.previous()!.id, 'aa');
-				assert.equal(nav.previous()!.id, 'a');
-				assert.equal(nav.previous() && false, null);
+				assert.strictEqual(nav.previous()!.id, 'ca');
+				assert.strictEqual(nav.previous()!.id, 'c');
+				assert.strictEqual(nav.previous()!.id, 'b');
+				assert.strictEqual(nav.previous()!.id, 'ab');
+				assert.strictEqual(nav.previous()!.id, 'aa');
+				assert.strictEqual(nav.previous()!.id, 'a');
+				assert.strictEqual(nav.previous() && false, null);
 			});
 		});
 	});
@@ -760,7 +760,7 @@ suite('TreeModel - Filter', () => {
 		return model.setInput(SAMPLE.AB).then(() => {
 			return model.refresh().then(() => {
 				const nav = model.getNavigator();
-				assert.equal(nav.next() && false, null);
+				assert.strictEqual(nav.next() && false, null);
 			});
 		});
 	});
@@ -773,12 +773,12 @@ suite('TreeModel - Filter', () => {
 			return model.expand({ id: 'a' }).then(() => {
 
 				const nav = model.getNavigator();
-				assert.equal(nav.next()!.id, 'a');
-				assert.equal(nav.next()!.id, 'aa');
-				assert.equal(nav.next()!.id, 'ab');
-				assert.equal(nav.previous()!.id, 'aa');
-				assert.equal(nav.previous()!.id, 'a');
-				assert.equal(nav.previous() && false, null);
+				assert.strictEqual(nav.next()!.id, 'a');
+				assert.strictEqual(nav.next()!.id, 'aa');
+				assert.strictEqual(nav.next()!.id, 'ab');
+				assert.strictEqual(nav.previous()!.id, 'aa');
+				assert.strictEqual(nav.previous()!.id, 'a');
+				assert.strictEqual(nav.previous() && false, null);
 			});
 		});
 	});
@@ -790,11 +790,11 @@ suite('TreeModel - Filter', () => {
 		return model.setInput(SAMPLE.AB).then(() => {
 			return model.expand({ id: 'a' }).then(() => {
 				const nav = model.getNavigator();
-				assert.equal(nav.next()!.id, 'a');
-				assert.equal(nav.next()!.id, 'aa');
-				assert.equal(nav.next()!.id, 'b');
-				assert.equal(nav.next()!.id, 'c');
-				assert.equal(nav.next() && false, null);
+				assert.strictEqual(nav.next()!.id, 'a');
+				assert.strictEqual(nav.next()!.id, 'aa');
+				assert.strictEqual(nav.next()!.id, 'b');
+				assert.strictEqual(nav.next()!.id, 'c');
+				assert.strictEqual(nav.next() && false, null);
 			});
 		});
 	});
@@ -807,14 +807,14 @@ suite('TreeModel - Filter', () => {
 			return model.expand({ id: 'c' }).then(() => {
 
 				const nav = model.getNavigator();
-				assert.equal(nav.next()!.id, 'b');
-				assert.equal(nav.next()!.id, 'c');
-				assert.equal(nav.next()!.id, 'ca');
-				assert.equal(nav.next()!.id, 'cb');
-				assert.equal(nav.previous()!.id, 'ca');
-				assert.equal(nav.previous()!.id, 'c');
-				assert.equal(nav.previous()!.id, 'b');
-				assert.equal(nav.previous() && false, null);
+				assert.strictEqual(nav.next()!.id, 'b');
+				assert.strictEqual(nav.next()!.id, 'c');
+				assert.strictEqual(nav.next()!.id, 'ca');
+				assert.strictEqual(nav.next()!.id, 'cb');
+				assert.strictEqual(nav.previous()!.id, 'ca');
+				assert.strictEqual(nav.previous()!.id, 'c');
+				assert.strictEqual(nav.previous()!.id, 'b');
+				assert.strictEqual(nav.previous() && false, null);
 			});
 		});
 	});
@@ -827,14 +827,14 @@ suite('TreeModel - Filter', () => {
 			return model.expand({ id: 'c' }).then(() => {
 
 				const nav = model.getNavigator();
-				assert.equal(nav.next()!.id, 'b');
-				assert.equal(nav.next()!.id, 'c');
-				assert.equal(nav.next()!.id, 'ca');
-				assert.equal(nav.next()!.id, 'cb');
-				assert.equal(nav.previous()!.id, 'ca');
-				assert.equal(nav.previous()!.id, 'c');
-				assert.equal(nav.previous()!.id, 'b');
-				assert.equal(nav.previous() && false, null);
+				assert.strictEqual(nav.next()!.id, 'b');
+				assert.strictEqual(nav.next()!.id, 'c');
+				assert.strictEqual(nav.next()!.id, 'ca');
+				assert.strictEqual(nav.next()!.id, 'cb');
+				assert.strictEqual(nav.previous()!.id, 'ca');
+				assert.strictEqual(nav.previous()!.id, 'c');
+				assert.strictEqual(nav.previous()!.id, 'b');
+				assert.strictEqual(nav.previous() && false, null);
 			});
 		});
 	});
@@ -845,8 +845,8 @@ suite('TreeModel - Filter', () => {
 
 		return model.setInput(SAMPLE.AB).then(() => {
 			const nav = model.getNavigator({ id: 'c' }, false);
-			assert.equal(nav.previous()!.id, 'a');
-			assert.equal(nav.previous() && false, null);
+			assert.strictEqual(nav.previous()!.id, 'a');
+			assert.strictEqual(nav.previous() && false, null);
 		});
 	});
 });
@@ -869,96 +869,96 @@ suite('TreeModel - Traits', () => {
 
 	test('Selection', () => {
 		return model.setInput(SAMPLE.AB).then(() => {
-			assert.equal(model.getSelection().length, 0);
+			assert.strictEqual(model.getSelection().length, 0);
 			model.select(SAMPLE.AB.children[1]);
 			assert(model.isSelected(SAMPLE.AB.children[1]));
-			assert.equal(model.getSelection().length, 1);
+			assert.strictEqual(model.getSelection().length, 1);
 			model.select(SAMPLE.AB.children[0]);
 			assert(model.isSelected(SAMPLE.AB.children[0]));
-			assert.equal(model.getSelection().length, 2);
+			assert.strictEqual(model.getSelection().length, 2);
 			model.select(SAMPLE.AB.children[2]);
 			assert(model.isSelected(SAMPLE.AB.children[2]));
-			assert.equal(model.getSelection().length, 3);
+			assert.strictEqual(model.getSelection().length, 3);
 			model.deselect(SAMPLE.AB.children[0]);
 			assert(!model.isSelected(SAMPLE.AB.children[0]));
-			assert.equal(model.getSelection().length, 2);
+			assert.strictEqual(model.getSelection().length, 2);
 			model.setSelection([]);
 			assert(!model.isSelected(SAMPLE.AB.children[0]));
 			assert(!model.isSelected(SAMPLE.AB.children[1]));
 			assert(!model.isSelected(SAMPLE.AB.children[2]));
-			assert.equal(model.getSelection().length, 0);
+			assert.strictEqual(model.getSelection().length, 0);
 			model.selectAll([SAMPLE.AB.children[0], SAMPLE.AB.children[1], SAMPLE.AB.children[2]]);
-			assert.equal(model.getSelection().length, 3);
+			assert.strictEqual(model.getSelection().length, 3);
 			model.select(SAMPLE.AB.children[0]);
-			assert.equal(model.getSelection().length, 3);
+			assert.strictEqual(model.getSelection().length, 3);
 			model.deselectAll([SAMPLE.AB.children[0], SAMPLE.AB.children[1], SAMPLE.AB.children[2]]);
-			assert.equal(model.getSelection().length, 0);
+			assert.strictEqual(model.getSelection().length, 0);
 			model.deselect(SAMPLE.AB.children[0]);
-			assert.equal(model.getSelection().length, 0);
+			assert.strictEqual(model.getSelection().length, 0);
 
 			model.setSelection([SAMPLE.AB.children[0]]);
-			assert.equal(model.getSelection().length, 1);
+			assert.strictEqual(model.getSelection().length, 1);
 			assert(model.isSelected(SAMPLE.AB.children[0]));
 			assert(!model.isSelected(SAMPLE.AB.children[1]));
 			assert(!model.isSelected(SAMPLE.AB.children[2]));
 
 			model.setSelection([SAMPLE.AB.children[0], SAMPLE.AB.children[1], SAMPLE.AB.children[2]]);
-			assert.equal(model.getSelection().length, 3);
+			assert.strictEqual(model.getSelection().length, 3);
 			assert(model.isSelected(SAMPLE.AB.children[0]));
 			assert(model.isSelected(SAMPLE.AB.children[1]));
 			assert(model.isSelected(SAMPLE.AB.children[2]));
 
 			model.setSelection([SAMPLE.AB.children[1], SAMPLE.AB.children[2]]);
-			assert.equal(model.getSelection().length, 2);
+			assert.strictEqual(model.getSelection().length, 2);
 			assert(!model.isSelected(SAMPLE.AB.children[0]));
 			assert(model.isSelected(SAMPLE.AB.children[1]));
 			assert(model.isSelected(SAMPLE.AB.children[2]));
 
 			model.setSelection([]);
-			assert.deepEqual(model.getSelection(), []);
-			assert.equal(model.getSelection().length, 0);
+			assert.deepStrictEqual(model.getSelection(), []);
+			assert.strictEqual(model.getSelection().length, 0);
 			assert(!model.isSelected(SAMPLE.AB.children[0]));
 			assert(!model.isSelected(SAMPLE.AB.children[1]));
 			assert(!model.isSelected(SAMPLE.AB.children[2]));
 
 			model.selectNext();
-			assert.equal(model.getSelection().length, 1);
+			assert.strictEqual(model.getSelection().length, 1);
 			assert(model.isSelected(SAMPLE.AB.children[0]));
 
 			model.selectNext();
-			assert.equal(model.getSelection().length, 1);
+			assert.strictEqual(model.getSelection().length, 1);
 			assert(model.isSelected(SAMPLE.AB.children[1]));
 
 			model.selectNext();
-			assert.equal(model.getSelection().length, 1);
+			assert.strictEqual(model.getSelection().length, 1);
 			assert(model.isSelected(SAMPLE.AB.children[2]));
 
 			model.selectNext();
-			assert.equal(model.getSelection().length, 1);
+			assert.strictEqual(model.getSelection().length, 1);
 			assert(model.isSelected(SAMPLE.AB.children[2]));
 
 			model.selectPrevious();
-			assert.equal(model.getSelection().length, 1);
+			assert.strictEqual(model.getSelection().length, 1);
 			assert(model.isSelected(SAMPLE.AB.children[1]));
 
 			model.selectPrevious();
-			assert.equal(model.getSelection().length, 1);
+			assert.strictEqual(model.getSelection().length, 1);
 			assert(model.isSelected(SAMPLE.AB.children[0]));
 
 			model.selectPrevious();
-			assert.equal(model.getSelection().length, 1);
+			assert.strictEqual(model.getSelection().length, 1);
 			assert(model.isSelected(SAMPLE.AB.children[0]));
 
 			model.selectNext(2);
-			assert.equal(model.getSelection().length, 1);
+			assert.strictEqual(model.getSelection().length, 1);
 			assert(model.isSelected(SAMPLE.AB.children[2]));
 
 			model.selectPrevious(4);
-			assert.equal(model.getSelection().length, 1);
+			assert.strictEqual(model.getSelection().length, 1);
 			assert(model.isSelected(SAMPLE.AB.children[0]));
 
-			assert.equal(model.isSelected(SAMPLE.AB.children[0]), true);
-			assert.equal(model.isSelected(SAMPLE.AB.children[2]), false);
+			assert.strictEqual(model.isSelected(SAMPLE.AB.children[0]), true);
+			assert.strictEqual(model.isSelected(SAMPLE.AB.children[2]), false);
 		});
 	});
 
@@ -1028,8 +1028,8 @@ suite('TreeModel - Traits', () => {
 			assert(model.getFocus());
 			assert(model.isFocused(SAMPLE.AB.children[0]));
 
-			assert.equal(model.isFocused(SAMPLE.AB.children[0]), true);
-			assert.equal(model.isFocused(SAMPLE.AB.children[2]), false);
+			assert.strictEqual(model.isFocused(SAMPLE.AB.children[0]), true);
+			assert.strictEqual(model.isFocused(SAMPLE.AB.children[2]), false);
 
 			model.focusFirst();
 			assert(model.isFocused(SAMPLE.AB.children[0]));
@@ -1064,8 +1064,8 @@ suite('TreeModel - Traits', () => {
 			assert(!model.isHighlighted(SAMPLE.AB.children[1]));
 			assert(!model.isHighlighted(SAMPLE.AB.children[2]));
 
-			assert.equal(model.isHighlighted(SAMPLE.AB.children[0]), true);
-			assert.equal(model.isHighlighted(SAMPLE.AB.children[2]), false);
+			assert.strictEqual(model.isHighlighted(SAMPLE.AB.children[0]), true);
+			assert.strictEqual(model.isHighlighted(SAMPLE.AB.children[2]), false);
 
 			model.setHighlight();
 			assert(!model.getHighlight());
@@ -1170,12 +1170,12 @@ suite('TreeModel - Dynamic data model', () => {
 				const items = ['baby', 'son', 'daughter', 'father'];
 				let times = 0;
 				counter.listen(model.onDidDisposeItem, item => {
-					assert.equal(items[times++], item.id);
+					assert.strictEqual(items[times++], item.id);
 				});
 
 				return model.refresh().then(() => {
-					assert.equal(times, items.length);
-					assert.equal(counter.count, 4);
+					assert.strictEqual(times, items.length);
+					assert.strictEqual(counter.count, 4);
 				});
 			});
 		});
@@ -1188,17 +1188,17 @@ suite('TreeModel - Dynamic data model', () => {
 
 		return model.setInput('root').then(() => {
 			let nav = model.getNavigator();
-			assert.equal(nav.next()!.id, 'super');
-			assert.equal(nav.next()!.id, 'hyper');
-			assert.equal(nav.next()!.id, 'mega');
-			assert.equal(nav.next() && false, null);
+			assert.strictEqual(nav.next()!.id, 'super');
+			assert.strictEqual(nav.next()!.id, 'hyper');
+			assert.strictEqual(nav.next()!.id, 'mega');
+			assert.strictEqual(nav.next() && false, null);
 
 			dataModel.removeChild('root', 'hyper');
 			return model.refresh().then(() => {
 				nav = model.getNavigator();
-				assert.equal(nav.next()!.id, 'super');
-				assert.equal(nav.next()!.id, 'mega');
-				assert.equal(nav.next() && false, null);
+				assert.strictEqual(nav.next()!.id, 'super');
+				assert.strictEqual(nav.next()!.id, 'mega');
+				assert.strictEqual(nav.next() && false, null);
 
 				dataModel.addChild('mega', 'micro');
 				dataModel.addChild('mega', 'nano');
@@ -1207,18 +1207,18 @@ suite('TreeModel - Dynamic data model', () => {
 				return model.refresh().then(() => {
 					return model.expand('mega').then(() => {
 						nav = model.getNavigator();
-						assert.equal(nav.next()!.id, 'super');
-						assert.equal(nav.next()!.id, 'mega');
-						assert.equal(nav.next()!.id, 'micro');
-						assert.equal(nav.next()!.id, 'nano');
-						assert.equal(nav.next()!.id, 'pico');
-						assert.equal(nav.next() && false, null);
+						assert.strictEqual(nav.next()!.id, 'super');
+						assert.strictEqual(nav.next()!.id, 'mega');
+						assert.strictEqual(nav.next()!.id, 'micro');
+						assert.strictEqual(nav.next()!.id, 'nano');
+						assert.strictEqual(nav.next()!.id, 'pico');
+						assert.strictEqual(nav.next() && false, null);
 
 						model.collapse('mega');
 						nav = model.getNavigator();
-						assert.equal(nav.next()!.id, 'super');
-						assert.equal(nav.next()!.id, 'mega');
-						assert.equal(nav.next() && false, null);
+						assert.strictEqual(nav.next()!.id, 'super');
+						assert.strictEqual(nav.next()!.id, 'mega');
+						assert.strictEqual(nav.next() && false, null);
 					});
 				});
 			});
@@ -1238,13 +1238,13 @@ suite('TreeModel - Dynamic data model', () => {
 			return model.expand('super').then(() => {
 
 				let nav = model.getNavigator();
-				assert.equal(nav.next()!.id, 'super');
-				assert.equal(nav.next()!.id, 'apples');
-				assert.equal(nav.next()!.id, 'bananas');
-				assert.equal(nav.next()!.id, 'pears');
-				assert.equal(nav.next()!.id, 'hyper');
-				assert.equal(nav.next()!.id, 'mega');
-				assert.equal(nav.next() && false, null);
+				assert.strictEqual(nav.next()!.id, 'super');
+				assert.strictEqual(nav.next()!.id, 'apples');
+				assert.strictEqual(nav.next()!.id, 'bananas');
+				assert.strictEqual(nav.next()!.id, 'pears');
+				assert.strictEqual(nav.next()!.id, 'hyper');
+				assert.strictEqual(nav.next()!.id, 'mega');
+				assert.strictEqual(nav.next() && false, null);
 
 				dataModel.move('bananas', 'super', 'hyper');
 				dataModel.move('apples', 'super', 'mega');
@@ -1253,13 +1253,13 @@ suite('TreeModel - Dynamic data model', () => {
 
 					return model.expandAll(['hyper', 'mega']).then(() => {
 						nav = model.getNavigator();
-						assert.equal(nav.next()!.id, 'super');
-						assert.equal(nav.next()!.id, 'pears');
-						assert.equal(nav.next()!.id, 'hyper');
-						assert.equal(nav.next()!.id, 'bananas');
-						assert.equal(nav.next()!.id, 'mega');
-						assert.equal(nav.next()!.id, 'apples');
-						assert.equal(nav.next() && false, null);
+						assert.strictEqual(nav.next()!.id, 'super');
+						assert.strictEqual(nav.next()!.id, 'pears');
+						assert.strictEqual(nav.next()!.id, 'hyper');
+						assert.strictEqual(nav.next()!.id, 'bananas');
+						assert.strictEqual(nav.next()!.id, 'mega');
+						assert.strictEqual(nav.next()!.id, 'apples');
+						assert.strictEqual(nav.next() && false, null);
 					});
 				});
 			});
@@ -1277,20 +1277,20 @@ suite('TreeModel - Dynamic data model', () => {
 					let times = 0;
 					let listener = dataModel.onGetChildren((element) => {
 						times++;
-						assert.equal(element, 'grandfather');
+						assert.strictEqual(element, 'grandfather');
 					});
 
 					return model.refresh('grandfather').then(() => {
-						assert.equal(times, 1);
+						assert.strictEqual(times, 1);
 						listener.dispose();
 
 						listener = dataModel.onGetChildren((element) => {
 							times++;
-							assert.equal(element, 'father');
+							assert.strictEqual(element, 'father');
 						});
 
 						return model.expand('father').then(() => {
-							assert.equal(times, 2);
+							assert.strictEqual(times, 2);
 							listener.dispose();
 						});
 					});
@@ -1310,11 +1310,11 @@ suite('TreeModel - Dynamic data model', () => {
 				return model.expand('mother').then(() => {
 
 					let nav = model.getNavigator();
-					assert.equal(nav.next()!.id, 'father');
-					assert.equal(nav.next()!.id, 'son');
-					assert.equal(nav.next()!.id, 'mother');
-					assert.equal(nav.next()!.id, 'daughter');
-					assert.equal(nav.next() && false, null);
+					assert.strictEqual(nav.next()!.id, 'father');
+					assert.strictEqual(nav.next()!.id, 'son');
+					assert.strictEqual(nav.next()!.id, 'mother');
+					assert.strictEqual(nav.next()!.id, 'daughter');
+					assert.strictEqual(nav.next() && false, null);
 
 					dataModel.removeChild('father', 'son');
 					dataModel.removeChild('mother', 'daughter');
@@ -1329,23 +1329,23 @@ suite('TreeModel - Dynamic data model', () => {
 					const gotListener = dataModel.onDidGetChildren((element) => { gotTimes++; });
 
 					const p1 = model.refresh('father');
-					assert.equal(getTimes, 1);
-					assert.equal(gotTimes, 0);
+					assert.strictEqual(getTimes, 1);
+					assert.strictEqual(gotTimes, 0);
 
 					const p2 = model.refresh('mother');
-					assert.equal(getTimes, 2);
-					assert.equal(gotTimes, 0);
+					assert.strictEqual(getTimes, 2);
+					assert.strictEqual(gotTimes, 0);
 
 					return Promise.all([p1, p2]).then(() => {
-						assert.equal(getTimes, 2);
-						assert.equal(gotTimes, 2);
+						assert.strictEqual(getTimes, 2);
+						assert.strictEqual(gotTimes, 2);
 
 						nav = model.getNavigator();
-						assert.equal(nav.next()!.id, 'father');
-						assert.equal(nav.next()!.id, 'brother');
-						assert.equal(nav.next()!.id, 'mother');
-						assert.equal(nav.next()!.id, 'sister');
-						assert.equal(nav.next() && false, null);
+						assert.strictEqual(nav.next()!.id, 'father');
+						assert.strictEqual(nav.next()!.id, 'brother');
+						assert.strictEqual(nav.next()!.id, 'mother');
+						assert.strictEqual(nav.next()!.id, 'sister');
+						assert.strictEqual(nav.next() && false, null);
 
 						getListener.dispose();
 						gotListener.dispose();
@@ -1364,10 +1364,10 @@ suite('TreeModel - Dynamic data model', () => {
 			return model.expand('grandfather').then(() => {
 				return model.expand('father').then(() => {
 					let nav = model.getNavigator();
-					assert.equal(nav.next()!.id, 'grandfather');
-					assert.equal(nav.next()!.id, 'father');
-					assert.equal(nav.next()!.id, 'son');
-					assert.equal(nav.next() && false, null);
+					assert.strictEqual(nav.next()!.id, 'grandfather');
+					assert.strictEqual(nav.next()!.id, 'father');
+					assert.strictEqual(nav.next()!.id, 'son');
+					assert.strictEqual(nav.next() && false, null);
 
 					let refreshTimes = 0;
 					counter.listen(model.onDidRefreshItem, (e) => { refreshTimes++; });
@@ -1383,48 +1383,48 @@ suite('TreeModel - Dynamic data model', () => {
 
 					model.refresh('grandfather').then(() => {
 						// just a single get
-						assert.equal(refreshTimes, 1); // (+1) grandfather
-						assert.equal(getTimes, 1);
-						assert.equal(gotTimes, 0);
+						assert.strictEqual(refreshTimes, 1); // (+1) grandfather
+						assert.strictEqual(getTimes, 1);
+						assert.strictEqual(gotTimes, 0);
 
 						// unblock the first get
 						p1Completes.shift()!();
 
 						// once the first get is unblocked, the second get should appear
-						assert.equal(refreshTimes, 2); // (+1) first father refresh
-						assert.equal(getTimes, 2);
-						assert.equal(gotTimes, 1);
+						assert.strictEqual(refreshTimes, 2); // (+1) first father refresh
+						assert.strictEqual(getTimes, 2);
+						assert.strictEqual(gotTimes, 1);
 
 						let p2Complete: () => void;
 						dataModel.promiseFactory = () => { return new Promise<void>((c) => { p2Complete = c; }); };
 						const p2 = model.refresh('father');
 
 						// same situation still
-						assert.equal(refreshTimes, 3); // (+1) second father refresh
-						assert.equal(getTimes, 2);
-						assert.equal(gotTimes, 1);
+						assert.strictEqual(refreshTimes, 3); // (+1) second father refresh
+						assert.strictEqual(getTimes, 2);
+						assert.strictEqual(gotTimes, 1);
 
 						// unblock the second get
 						p1Completes.shift()!();
 
 						// the third get should have appeared, it should've been waiting for the second one
-						assert.equal(refreshTimes, 4); // (+1) first son request
-						assert.equal(getTimes, 3);
-						assert.equal(gotTimes, 2);
+						assert.strictEqual(refreshTimes, 4); // (+1) first son request
+						assert.strictEqual(getTimes, 3);
+						assert.strictEqual(gotTimes, 2);
 
 						p2Complete!();
 
 						// all good
-						assert.equal(refreshTimes, 5); // (+1) second son request
-						assert.equal(getTimes, 3);
-						assert.equal(gotTimes, 3);
+						assert.strictEqual(refreshTimes, 5); // (+1) second son request
+						assert.strictEqual(getTimes, 3);
+						assert.strictEqual(gotTimes, 3);
 
 						return p2.then(() => {
 							nav = model.getNavigator();
-							assert.equal(nav.next()!.id, 'grandfather');
-							assert.equal(nav.next()!.id, 'father');
-							assert.equal(nav.next()!.id, 'son');
-							assert.equal(nav.next() && false, null);
+							assert.strictEqual(nav.next()!.id, 'grandfather');
+							assert.strictEqual(nav.next()!.id, 'father');
+							assert.strictEqual(nav.next()!.id, 'son');
+							assert.strictEqual(nav.next() && false, null);
 
 							getListener.dispose();
 							gotListener.dispose();
@@ -1618,7 +1618,7 @@ suite('TreeModel - bugs', () => {
 			listeners = null;
 			model.dispose();
 
-			assert.equal(counter.count, 0);
+			assert.strictEqual(counter.count, 0);
 		});
 	});
 
@@ -1642,9 +1642,9 @@ suite('TreeModel - bugs', () => {
 		await model.expand('father');
 
 		let nav = model.getNavigator();
-		assert.equal(nav.next()!.id, 'father');
-		assert.equal(nav.next()!.id, 'son');
-		assert.equal(nav.next(), null);
+		assert.strictEqual(nav.next()!.id, 'father');
+		assert.strictEqual(nav.next()!.id, 'son');
+		assert.strictEqual(nav.next(), null);
 
 		await model.collapse('father');
 		isSonVisible = false;
@@ -1653,8 +1653,8 @@ suite('TreeModel - bugs', () => {
 		await model.expand('father');
 
 		nav = model.getNavigator();
-		assert.equal(nav.next()!.id, 'father');
-		assert.equal(nav.next(), null);
+		assert.strictEqual(nav.next()!.id, 'father');
+		assert.strictEqual(nav.next(), null);
 
 		counter.dispose();
 		model.dispose();

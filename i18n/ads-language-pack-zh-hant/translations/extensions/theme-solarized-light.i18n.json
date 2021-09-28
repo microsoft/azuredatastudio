@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Solarized 淺色佈景主題",
 			"description": "Visual Studio Code 的 Solarized 淺色佈景主題",
+			"displayName": "Solarized 淺色佈景主題",
 			"themeLabel": "Solarized 淺色"
 		}
 	}

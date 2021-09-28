@@ -9,9 +9,9 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"queryHistory.displayName": "Журнал запросов",
-			"queryHistory.description": "Просмотр и запуск ранее выполненных запросов",
 			"queryHistory.clear": "Очистить весь журнал",
+			"queryHistory.description": "Просмотр и запуск ранее выполненных запросов",
+			"queryHistory.displayName": "Журнал запросов",
 			"queryHistory.toggleCapture": "Включить или отключить ведение Журнала запросов"
 		}
 	}

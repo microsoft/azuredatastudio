@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Seti 檔案圖式佈景主題",
 			"description": "以 Seti UI 檔案圖示為範本製作的檔案圖示佈景主題",
+			"displayName": "Seti 檔案圖式佈景主題",
 			"themeLabel": "Seti (Visual Studio Code)"
 		}
 	}

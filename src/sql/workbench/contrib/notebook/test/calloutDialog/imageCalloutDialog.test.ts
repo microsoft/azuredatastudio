@@ -48,9 +48,9 @@ suite('Image Callout Dialog', function (): void {
 		imageCalloutDialog.cancel();
 		let result = await deferred.promise;
 
-		assert.equal(result.imagePath, undefined, 'ImagePath must be undefined');
-		assert.equal(result.embedImage, undefined, 'EmbedImage must be undefined');
-		assert.equal(result.insertEscapedMarkdown, '', 'Markdown not returned correctly');
+		assert.strictEqual(result.imagePath, undefined, 'ImagePath must be undefined');
+		assert.strictEqual(result.embedImage, undefined, 'EmbedImage must be undefined');
+		assert.strictEqual(result.insertEscapedMarkdown, '', 'Markdown not returned correctly');
 	});
 
 	test('Should return expected values on insert', async function (): Promise<void> {
@@ -69,9 +69,9 @@ suite('Image Callout Dialog', function (): void {
 		// And insert the dialog
 		imageCalloutDialog.insert();
 		let result = await deferred.promise;
-		assert.equal(result.imagePath, sampleImageFileUrl.fsPath, 'ImagePath not returned correctly');
-		assert.equal(result.embedImage, false, 'EmbedImage not returned correctly');
-		assert.equal(result.insertEscapedMarkdown, `![](${result.imagePath})`, 'Markdown not returned correctly');
+		assert.strictEqual(result.imagePath, sampleImageFileUrl.fsPath, 'ImagePath not returned correctly');
+		assert.strictEqual(result.embedImage, false, 'EmbedImage not returned correctly');
+		assert.strictEqual(result.insertEscapedMarkdown, `![](${result.imagePath})`, 'Markdown not returned correctly');
 	});
 
 	test('Should return expected values on insert when imageName has space', async function (): Promise<void> {
@@ -91,9 +91,9 @@ suite('Image Callout Dialog', function (): void {
 		// And insert the dialog
 		imageCalloutDialog.insert();
 		let result = await deferred.promise;
-		assert.equal(result.imagePath, sampleImageFileUrl.fsPath, 'imagePath not returned correctly');
-		assert.equal(result.embedImage, false, 'embedImage not returned correctly');
-		assert.equal(result.insertEscapedMarkdown, `![](${result.imagePath.replace(' ', '&#32;')})`, 'Markdown not returned correctly');
+		assert.strictEqual(result.imagePath, sampleImageFileUrl.fsPath, 'imagePath not returned correctly');
+		assert.strictEqual(result.embedImage, false, 'embedImage not returned correctly');
+		assert.strictEqual(result.insertEscapedMarkdown, `![](${result.imagePath.replace(' ', '&#32;')})`, 'Markdown not returned correctly');
 	});
 
 	test('Should return expected values on insert when add as attachment is set', async function (): Promise<void> {
@@ -115,9 +115,9 @@ suite('Image Callout Dialog', function (): void {
 		// And insert the dialog
 		imageCalloutDialog.insert();
 		let result = await deferred.promise;
-		assert.equal(result.imagePath, sampleImageFileUrl.fsPath, 'imagePath not returned correctly');
-		assert.equal(result.embedImage, true, 'embedImage not returned correctly');
-		assert.equal(result.insertEscapedMarkdown, `![${imageName}](attachment:${imageName})`, 'Markdown not returned correctly');
+		assert.strictEqual(result.imagePath, sampleImageFileUrl.fsPath, 'imagePath not returned correctly');
+		assert.strictEqual(result.embedImage, true, 'embedImage not returned correctly');
+		assert.strictEqual(result.insertEscapedMarkdown, `![${imageName}](attachment:${imageName})`, 'Markdown not returned correctly');
 	});
 
 	test('Should return expected values on insert when imageName has space and add attachment is set', async function (): Promise<void> {
@@ -139,9 +139,9 @@ suite('Image Callout Dialog', function (): void {
 		// And insert the dialog
 		imageCalloutDialog.insert();
 		let result = await deferred.promise;
-		assert.equal(result.imagePath, sampleImageFileUrl.fsPath, 'imagePath not returned correctly');
-		assert.equal(result.embedImage, true, 'embedImage not returned correctly');
-		assert.equal(result.insertEscapedMarkdown, `![${imageName}](attachment:${imageName.replace(' ', '')})`, 'Markdown not returned correctly');
+		assert.strictEqual(result.imagePath, sampleImageFileUrl.fsPath, 'imagePath not returned correctly');
+		assert.strictEqual(result.embedImage, true, 'embedImage not returned correctly');
+		assert.strictEqual(result.insertEscapedMarkdown, `![${imageName}](attachment:${imageName.replace(' ', '')})`, 'Markdown not returned correctly');
 	});
 
 });

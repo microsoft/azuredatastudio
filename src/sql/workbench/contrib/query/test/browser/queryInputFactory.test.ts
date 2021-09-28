@@ -19,7 +19,7 @@ import { TestConnectionManagementService } from 'sql/platform/connection/test/co
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConnectionManagementService, IConnectionCompletionOptions, IConnectionCallbacks, IConnectionResult } from 'sql/platform/connection/common/connectionManagement';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { UntitledQueryEditorInput } from 'sql/workbench/common/editor/query/untitledQueryEditorInput';
+import { UntitledQueryEditorInput } from 'sql/base/query/browser/untitledQueryEditorInput';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { isThenable } from 'vs/base/common/async';
@@ -44,11 +44,11 @@ suite('Query Input Factory', () => {
 		instantiationService.stub(IEditorService, editorService);
 		const queryEditorLanguageAssociation = instantiationService.createInstance(QueryEditorLanguageAssociation);
 		const input = createFileInput(URI.file('/test/file.sql'), undefined, undefined, undefined);
-		await queryEditorLanguageAssociation.convertInput(input);
-		assert(connectionManagementService.numberConnects === 1, 'Convert input should have called connect when active OE connection exists');
+		queryEditorLanguageAssociation.syncConvertInput(input);
+		assert(connectionManagementService.numberConnects === 1, 'Sync convert input should have called connect when active OE connection exists');
 	});
 
-	test('query editor input is connected if global connection exists (OE)', async () => {
+	test('async query editor input is connected if global connection exists (OE)', async () => {
 		const editorService = new MockEditorService();
 		instantiationService = workbenchInstantiationService();
 		const connectionManagementService = new MockConnectionManagementService();
@@ -60,25 +60,108 @@ suite('Query Input Factory', () => {
 		const response = queryEditorLanguageAssociation.convertInput(input);
 		assert(isThenable(response));
 		await response;
-		assert(connectionManagementService.numberConnects === 1, 'Convert input should have called connect when active OE connection exists');
+		assert(connectionManagementService.numberConnects === 1, 'Async convert input should have called connect when active OE connection exists');
 	});
+
+	test('only one sync query editor input can call connect with a unique uri when global connection exists (OE)', () => {
+		const editorService = new MockEditorService();
+		instantiationService = workbenchInstantiationService();
+		const connectionManagementService = new MockConnectionManagementService();
+		instantiationService.stub(IObjectExplorerService, new MockObjectExplorerService());
+		instantiationService.stub(IConnectionManagementService, connectionManagementService);
+		instantiationService.stub(IEditorService, editorService);
+		const queryEditorLanguageAssociation = instantiationService.createInstance(QueryEditorLanguageAssociation);
+		const input1 = createFileInput(URI.file('/test/file.sql'), undefined, undefined, undefined);
+		const input2 = createFileInput(URI.file('/test/file.sql'), undefined, undefined, undefined);
+		queryEditorLanguageAssociation.syncConvertInput(input1);
+		queryEditorLanguageAssociation.syncConvertInput(input2);
+		let connProfile = connectionManagementService.getConnectionProfile('file:///test/file.sql');
+		assert(connProfile !== undefined, 'connection profile should not be undefined');
+		assert(connectionManagementService.numberConnects === 1, 'Sync convert input should have called connect only once for one URI');
+	});
+
+	test('sync query editor inputs can be connected one after the other with different uris when global connection exists (OE)', () => {
+		const editorService = new MockEditorService();
+		instantiationService = workbenchInstantiationService();
+		const connectionManagementService = new MockConnectionManagementService();
+		instantiationService.stub(IObjectExplorerService, new MockObjectExplorerService());
+		instantiationService.stub(IConnectionManagementService, connectionManagementService);
+		instantiationService.stub(IEditorService, editorService);
+		const queryEditorLanguageAssociation = instantiationService.createInstance(QueryEditorLanguageAssociation);
+		const input1 = createFileInput(URI.file('/test/file1.sql'), undefined, undefined, undefined);
+		const input2 = createFileInput(URI.file('/test/file2.sql'), undefined, undefined, undefined);
+		queryEditorLanguageAssociation.syncConvertInput(input1);
+		queryEditorLanguageAssociation.syncConvertInput(input2);
+		let connProfile1 = connectionManagementService.getConnectionProfile('file:///test/file1.sql');
+		assert(connProfile1 !== undefined, 'connection profile should not be undefined');
+		let connProfile2 = connectionManagementService.getConnectionProfile('file:///test/file2.sql');
+		assert(connProfile2 !== undefined, 'connection profile should not be undefined');
+		assert(connProfile2 !== connProfile1, 'connection profiles should be different for two uris');
+		assert(connectionManagementService.numberConnects === 2, 'Sync convert input should have called connect two times when we have two different URIs');
+	});
+
+	test('only one async query editor input can call connect with a unique uri when global connection exists (OE)', async () => {
+		const editorService = new MockEditorService();
+		instantiationService = workbenchInstantiationService();
+		const connectionManagementService = new MockConnectionManagementService();
+		instantiationService.stub(IObjectExplorerService, new MockObjectExplorerService());
+		instantiationService.stub(IConnectionManagementService, connectionManagementService);
+		instantiationService.stub(IEditorService, editorService);
+		const queryEditorLanguageAssociation = instantiationService.createInstance(QueryEditorLanguageAssociation);
+		const input1 = createFileInput(URI.file('/test/file.sql'), undefined, undefined, undefined);
+		const input2 = createFileInput(URI.file('/test/file.sql'), undefined, undefined, undefined);
+		const response1 = queryEditorLanguageAssociation.convertInput(input1);
+		assert(isThenable(response1));
+		await response1;
+		const response2 = queryEditorLanguageAssociation.convertInput(input2);
+		assert(isThenable(response2));
+		await response2;
+		let connProfile = connectionManagementService.getConnectionProfile('file:///test/file.sql');
+		assert(connProfile !== undefined, 'connection profile should not be undefined');
+		assert(connectionManagementService.numberConnects === 1, 'Async convert input should have called connect only once for one URI');
+	});
+
+	test('async query editor inputs can be connected one after the other with different uris when global connection exists (OE)', async () => {
+		const editorService = new MockEditorService();
+		instantiationService = workbenchInstantiationService();
+		const connectionManagementService = new MockConnectionManagementService();
+		instantiationService.stub(IObjectExplorerService, new MockObjectExplorerService());
+		instantiationService.stub(IConnectionManagementService, connectionManagementService);
+		instantiationService.stub(IEditorService, editorService);
+		const queryEditorLanguageAssociation = instantiationService.createInstance(QueryEditorLanguageAssociation);
+		const input1 = createFileInput(URI.file('/test/file1.sql'), undefined, undefined, undefined);
+		const input2 = createFileInput(URI.file('/test/file2.sql'), undefined, undefined, undefined);
+		const response1 = queryEditorLanguageAssociation.convertInput(input1);
+		assert(isThenable(response1));
+		await response1;
+		const response2 = queryEditorLanguageAssociation.convertInput(input2);
+		assert(isThenable(response2));
+		await response2;
+		let connProfile1 = connectionManagementService.getConnectionProfile('file:///test/file1.sql');
+		assert(connProfile1 !== undefined, 'connection profile 1 should not be undefined');
+		let connProfile2 = connectionManagementService.getConnectionProfile('file:///test/file2.sql');
+		assert(connProfile2 !== undefined, 'connection profile 2 should not be undefined');
+		assert(connProfile2 !== connProfile1, 'connection profiles should be different for two uris');
+		assert(connectionManagementService.numberConnects === 2, 'Async convert input should have called connect two times when we have two different URIs');
+	});
+
 
 	test('sync query editor input is connected if global connection exists (Editor)', () => {
 		instantiationService = workbenchInstantiationService();
-		const editorService = new MockEditorService(instantiationService);
+		const editorService = new MockEditorService(instantiationService); // Create working Editor Service.
 		const connectionManagementService = new MockConnectionManagementService();
 		instantiationService.stub(IObjectExplorerService, new MockObjectExplorerService());
 		instantiationService.stub(IConnectionManagementService, connectionManagementService);
 		instantiationService.stub(IEditorService, editorService);
 		const queryEditorLanguageAssociation = instantiationService.createInstance(QueryEditorLanguageAssociation);
 		const input = createFileInput(URI.file('/test/file.sql'), undefined, undefined, undefined);
-		queryEditorLanguageAssociation.convertInput(input);
-		assert(connectionManagementService.numberConnects === 1, 'Convert input should have called connect when active editor connection exists');
+		queryEditorLanguageAssociation.syncConvertInput(input);
+		assert(connectionManagementService.numberConnects === 1, 'Sync convert input should have called connect when active editor connection exists');
 	});
 
-	test('query editor input is connected if global connection exists (Editor)', async () => {
+	test('async query editor input is connected if global connection exists (Editor)', async () => {
 		instantiationService = workbenchInstantiationService();
-		const editorService = new MockEditorService(instantiationService);
+		const editorService = new MockEditorService(instantiationService); // Create working Editor Service.
 		const connectionManagementService = new MockConnectionManagementService();
 		instantiationService.stub(IObjectExplorerService, new MockObjectExplorerService());
 		instantiationService.stub(IConnectionManagementService, connectionManagementService);
@@ -88,12 +171,12 @@ suite('Query Input Factory', () => {
 		const response = queryEditorLanguageAssociation.convertInput(input);
 		assert(isThenable(response));
 		await response;
-		assert(connectionManagementService.numberConnects === 1, 'Convert input should have called connect when active editor connection exists');
+		assert(connectionManagementService.numberConnects === 1, 'Async convert input should have called connect when active editor connection exists');
 	});
 
 	test('untitled query editor input is connected if global connection exists (Editor)', async () => {
 		const instantiationService = workbenchInstantiationService();
-		const editorService = new MockEditorService(instantiationService);
+		const editorService = new MockEditorService(instantiationService); // Create working Editor Service.
 		const connectionManagementService = new MockConnectionManagementService();
 		instantiationService.stub(IObjectExplorerService, new MockObjectExplorerService());
 		instantiationService.stub(IConnectionManagementService, connectionManagementService);
@@ -112,7 +195,90 @@ suite('Query Input Factory', () => {
 		assert(isThenable(response));
 		await response;
 		assert(newsqlEditorStub.calledWithExactly({ resource: undefined, open: false, initalContent: '' }));
-		assert(connectionManagementService.numberConnects === 1, 'Convert input should have called connect when active editor connection exists');
+		assert(connectionManagementService.numberConnects === 1, 'Async convert input should have called connect only once for one URI');
+	});
+
+	test('only one sync query editor input can call connect with a unique uri when global connection exists (Editor)', () => {
+		instantiationService = workbenchInstantiationService();
+		const editorService = new MockEditorService(instantiationService);
+		const connectionManagementService = new MockConnectionManagementService();
+		instantiationService.stub(IObjectExplorerService, new MockObjectExplorerService());
+		instantiationService.stub(IConnectionManagementService, connectionManagementService);
+		instantiationService.stub(IEditorService, editorService);
+		const queryEditorLanguageAssociation = instantiationService.createInstance(QueryEditorLanguageAssociation);
+		const input1 = createFileInput(URI.file('/test/file.sql'), undefined, undefined, undefined);
+		const input2 = createFileInput(URI.file('/test/file.sql'), undefined, undefined, undefined);
+		queryEditorLanguageAssociation.syncConvertInput(input1);
+		queryEditorLanguageAssociation.syncConvertInput(input2);
+		let connProfile = connectionManagementService.getConnectionProfile('file:///test/file.sql');
+		assert(connProfile !== undefined, 'connection profile should not be undefined');
+		assert(connectionManagementService.numberConnects === 1, 'Sync convert input should have called connect only once for one URI');
+	});
+
+	test('sync query editor inputs can be connected one after the other with different uris when global connection exists (Editor)', () => {
+		instantiationService = workbenchInstantiationService();
+		const editorService = new MockEditorService(instantiationService);
+		const connectionManagementService = new MockConnectionManagementService();
+		instantiationService.stub(IObjectExplorerService, new MockObjectExplorerService());
+		instantiationService.stub(IConnectionManagementService, connectionManagementService);
+		instantiationService.stub(IEditorService, editorService);
+		const queryEditorLanguageAssociation = instantiationService.createInstance(QueryEditorLanguageAssociation);
+		const input1 = createFileInput(URI.file('/test/file1.sql'), undefined, undefined, undefined);
+		const input2 = createFileInput(URI.file('/test/file2.sql'), undefined, undefined, undefined);
+		queryEditorLanguageAssociation.syncConvertInput(input1);
+		queryEditorLanguageAssociation.syncConvertInput(input2);
+		let connProfile1 = connectionManagementService.getConnectionProfile('file:///test/file1.sql');
+		assert(connProfile1 !== undefined, 'connection profile 1 should not be undefined');
+		let connProfile2 = connectionManagementService.getConnectionProfile('file:///test/file2.sql');
+		assert(connProfile2 !== undefined, 'connection profile 2 should not be undefined');
+		assert(connProfile2 !== connProfile1, 'connection profiles should be different for two uris');
+		assert(connectionManagementService.numberConnects === 2, 'Sync convert input should have called connect two times when we have two different URIs');
+	});
+
+
+	test('only one async query editor input can call connect with a unique uri when global connection exists (Editor)', async () => {
+		instantiationService = workbenchInstantiationService();
+		const editorService = new MockEditorService(instantiationService);
+		const connectionManagementService = new MockConnectionManagementService();
+		instantiationService.stub(IObjectExplorerService, new MockObjectExplorerService());
+		instantiationService.stub(IConnectionManagementService, connectionManagementService);
+		instantiationService.stub(IEditorService, editorService);
+		const queryEditorLanguageAssociation = instantiationService.createInstance(QueryEditorLanguageAssociation);
+		const input1 = createFileInput(URI.file('/test/file.sql'), undefined, undefined, undefined);
+		const input2 = createFileInput(URI.file('/test/file.sql'), undefined, undefined, undefined);
+		const response1 = queryEditorLanguageAssociation.convertInput(input1);
+		assert(isThenable(response1));
+		await response1;
+		const response2 = queryEditorLanguageAssociation.convertInput(input2);
+		assert(isThenable(response2));
+		await response2;
+		let connProfile = connectionManagementService.getConnectionProfile('file:///test/file.sql');
+		assert(connProfile !== undefined, 'connection profile should not be undefined');
+		assert(connectionManagementService.numberConnects === 1, 'Async convert input should have called connect only once for one URI');
+	});
+
+	test('async query editor input can be connected one after the other when global connection exists (Editor)', async () => {
+		instantiationService = workbenchInstantiationService();
+		const editorService = new MockEditorService(instantiationService);
+		const connectionManagementService = new MockConnectionManagementService();
+		instantiationService.stub(IObjectExplorerService, new MockObjectExplorerService());
+		instantiationService.stub(IConnectionManagementService, connectionManagementService);
+		instantiationService.stub(IEditorService, editorService);
+		const queryEditorLanguageAssociation = instantiationService.createInstance(QueryEditorLanguageAssociation);
+		const input1 = createFileInput(URI.file('/test/file1.sql'), undefined, undefined, undefined);
+		const input2 = createFileInput(URI.file('/test/file2.sql'), undefined, undefined, undefined);
+		const response1 = queryEditorLanguageAssociation.convertInput(input1);
+		assert(isThenable(response1));
+		await response1;
+		const response2 = queryEditorLanguageAssociation.convertInput(input2);
+		assert(isThenable(response2));
+		await response2;
+		let connProfile1 = connectionManagementService.getConnectionProfile('file:///test/file1.sql');
+		assert(connProfile1 !== undefined, 'connection profile 1 should not be undefined');
+		let connProfile2 = connectionManagementService.getConnectionProfile('file:///test/file2.sql');
+		assert(connProfile2 !== undefined, 'connection profile 2 should not be undefined');
+		assert(connProfile2 !== connProfile1, 'connection profiles should be different for two uris');
+		assert(connectionManagementService.numberConnects === 2, 'Async convert input should have called connect two times when we have two different URIs');
 	});
 
 	test('sync query editor input is not connected if no global connection exists', () => {
@@ -124,7 +290,7 @@ suite('Query Input Factory', () => {
 		const queryEditorLanguageAssociation = instantiationService.createInstance(QueryEditorLanguageAssociation);
 		const input = createFileInput(URI.file('/test/file.sql'), undefined, undefined, undefined);
 		queryEditorLanguageAssociation.syncConvertInput(input);
-		assert(connectionManagementService.numberConnects === 0, 'Convert input should not have been called connect when no global connections exist');
+		assert(connectionManagementService.numberConnects === 0, 'Sync convert input should not have been called connect when no global connections exist');
 	});
 
 	test('async query editor input is not connected if no global connection exists', async () => {
@@ -138,7 +304,7 @@ suite('Query Input Factory', () => {
 		const response = queryEditorLanguageAssociation.convertInput(input);
 		assert(isThenable(response));
 		await response;
-		assert(connectionManagementService.numberConnects === 0, 'Convert input should not have been called connect when no global connections exist');
+		assert(connectionManagementService.numberConnects === 0, 'Async convert input should not have been called connect when no global connections exist');
 	});
 
 	test('uses existing resource if provided', async () => {
@@ -205,16 +371,20 @@ class MockConnectionManagementService extends TestConnectionManagementService {
 
 	public numberConnects = 0;
 
+	public connectionProfiles = new Map();
+
 	public override isProfileConnected(connectionProfile: IConnectionProfile): boolean {
 		return true;
 	}
 
 	public override connect(connection: IConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult> {
 		this.numberConnects++;
+		this.connectionProfiles.set(uri, connection);
 		return Promise.resolve(undefined);
 	}
 
 	public override getConnectionProfile(fileUri: string): IConnectionProfile {
-		return <IConnectionProfile>{}; // Not actually used so fine to cast
+		let element = this.connectionProfiles.get(fileUri);
+		return <IConnectionProfile>element;
 	}
 }

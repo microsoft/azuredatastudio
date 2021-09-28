@@ -8,38 +8,36 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"displayName": "GitHub",
-			"description": "GitHub",
-			"config.gitAuthentication": "VS Code 内で Git コマンドの自動 GitHub 認証を有効にするかどうかを制御します。",
-			"welcome.publishFolder": "このフォルダーを GitHub リポジトリに直接公開することもできます。公開後、Git と GitHub を利用したソース管理機能にアクセスできるようになります。\r\n[$(github) GitHub に公開](command:github.publish)",
-			"welcome.publishWorkspaceFolder": "ワークスペース フォルダーを GitHub リポジトリに直接公開することもできます。公開後、Git と GitHub を利用したソース管理機能にアクセスできるようになります。\r\n[$(github) GitHub に公開](command:github.publish)"
-		},
 		"dist/publish": {
-			"pick folder": "GitHub に発行するフォルダーを選択します",
 			"ignore": "どのファイルをリポジトリに含めるかを選択します。",
+			"openingithub": "GitHub 上で開く",
+			"pick folder": "GitHub に発行するフォルダーを選択します",
+			"publishing_done": "GitHub に '{0}' リポジトリが正常に発行されました。",
+			"publishing_firstcommit": "最初のコミットを作成しています",
 			"publishing_private": "プライベート GitHub リポジトリへ発行しています",
 			"publishing_public": "パブリック GitHub リポジトリへ発行しています",
-			"publishing_firstcommit": "最初のコミットを作成しています",
-			"publishing_uploading": "ファイルをアップロードしています",
-			"openingithub": "GitHub 上で開く",
-			"publishing_done": "GitHub に '{0}' リポジトリが正常に発行されました。"
+			"publishing_uploading": "ファイルをアップロードしています"
 		},
 		"dist/pushErrorHandler": {
-			"ok": "OK",
-			"fork unable": "GitHub で '{0}/{1}' にプッシュするためのアクセス許可がありません。",
 			"create a fork": "フォークの作成",
-			"no": "いいえ",
-			"fork": "GitHub で '{0}/{1}' にプッシュするためのアクセス許可がありません。代わりに、フォークを作成してそれにプッシュしますか?",
 			"create fork": "GitHub フォークの作成",
-			"forking": "'{0}/{1}' をフォークしています...",
-			"forking_pushing": "変更をプッシュしています...",
-			"openingithub": "GitHub 上で開く",
-			"createpr": "PR の作成",
-			"forking_done": "フォーク '{0}' が GitHub で正常に作成されました。",
 			"createghpr": "GitHub pull request を作成しています...",
-			"openpr": "PR を開く",
-			"donepr": "PR '{0}/{1}#{2}' が GitHub で正常に作成されました。"
+			"createpr": "PR の作成",
+			"donepr": "PR '{0}/{1}#{2}' が GitHub で正常に作成されました。",
+			"fork": "GitHub で '{0}/{1}' にプッシュするためのアクセス許可がありません。代わりに、フォークを作成してそれにプッシュしますか?",
+			"forking": "'{0}/{1}' をフォークしています...",
+			"forking_done": "フォーク '{0}' が GitHub で正常に作成されました。",
+			"forking_pushing": "変更をプッシュしています...",
+			"no": "いいえ",
+			"openingithub": "GitHub 上で開く",
+			"openpr": "PR を開く"
+		},
+		"package": {
+			"config.gitAuthentication": "VS Code 内で Git コマンドの自動 GitHub 認証を有効にするかどうかを制御します。",
+			"description": "GitHub",
+			"displayName": "GitHub",
+			"welcome.publishFolder": "このフォルダーを GitHub リポジトリに直接公開することもできます。公開後、Git と GitHub を利用したソース管理機能にアクセスできるようになります。\r\n[$(github) GitHub に公開](command:github.publish)",
+			"welcome.publishWorkspaceFolder": "ワークスペース フォルダーを GitHub リポジトリに直接公開することもできます。公開後、Git と GitHub を利用したソース管理機能にアクセスできるようになります。\r\n[$(github) GitHub に公開](command:github.publish)"
 		}
 	}
 }

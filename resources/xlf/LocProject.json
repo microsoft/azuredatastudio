@@ -28,12 +28,6 @@
           "OutputPath": "resources\\xlf"
         },
 		{
-          "SourceFile": "resources\\xlf\\en\\azdata.xlf",
-          "LclFile": "resources\\localization\\LCL\\{Lang}\\azdata.xlf.lcl",
-          "CopyOption": "LangIDOnPath",
-          "OutputPath": "resources\\xlf"
-        },
-		{
           "SourceFile": "resources\\xlf\\en\\azurecore.xlf",
           "LclFile": "resources\\localization\\LCL\\{Lang}\\azurecore.xlf.lcl",
           "CopyOption": "LangIDOnPath",
@@ -126,6 +120,12 @@
 		{
           "SourceFile": "resources\\xlf\\en\\schema-compare.xlf",
           "LclFile": "resources\\localization\\LCL\\{Lang}\\schema-compare.xlf.lcl",
+          "CopyOption": "LangIDOnPath",
+          "OutputPath": "resources\\xlf"
+        },
+		{
+          "SourceFile": "resources\\xlf\\en\\server-report.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\server-report.xlf.lcl",
           "CopyOption": "LangIDOnPath",
           "OutputPath": "resources\\xlf"
         },

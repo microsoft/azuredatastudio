@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Основы языка Markdown",
-			"description": "Предоставляет фрагменты кода и подсветку синтаксиса для файлов Markdown."
+			"description": "Предоставляет фрагменты кода и подсветку синтаксиса для файлов Markdown.",
+			"displayName": "Основы языка Markdown"
 		}
 	}
 }

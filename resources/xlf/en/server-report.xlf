@@ -4,14 +4,14 @@
     <trans-unit id="XEventsFailed">
       <source xml:lang="en">XEvents operation failed.</source>
     </trans-unit>
-    <trans-unit id="XEventsStarted">
-      <source xml:lang="en">XEvents sessions started for PageContention and ObjectContention.</source>
-    </trans-unit>
     <trans-unit id="XEventsNotSupported">
       <source xml:lang="en">XEvents sessions not supported.</source>
+    </trans-unit>
+    <trans-unit id="XEventsStarted">
+      <source xml:lang="en">XEvents sessions started for PageContention and ObjectContention.</source>
     </trans-unit>
     <trans-unit id="XEventsStopped">
       <source xml:lang="en">XEvents sessions PageContention and ObjectContention removed.</source>
     </trans-unit>
-  </body></file>
+</body></file>
 </xliff>

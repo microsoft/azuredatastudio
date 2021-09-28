@@ -8,68 +8,68 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"displayName": "SQL Assessment",
-			"description": "SQL Assessment pour Azure Data Studio (préversion) offre un mécanisme d’évaluation de la configuration des SQL Server pour les meilleures pratiques.",
-			"dashboard.tabName": "SQL Assessment"
-		},
-		"dist/localized": {
-			"asmt.section.api.title": "Informations",
-			"asmt.apiversion": "Version d'API",
-			"asmt.rulesetversion": "Ensemble de règles par défaut",
-			"asmt.section.instance.title": "Détails de l'instance SQL Server",
-			"asmt.serverversion": "Version",
-			"asmt.serveredition": "Édition",
-			"asmt.instancename": "Nom d'instance",
-			"asmt.osversion": "Version de système d'exploitation",
-			"asmt.column.target": "Cible",
-			"asmt.column.severity": "Gravité",
-			"asmt.column.message": "Message",
-			"asmt.column.checkId": "Vérifier l'ID",
-			"asmt.column.tags": "Étiquettes",
-			"asmt.learnMore": "En savoir plus",
-			"asmt.sqlReportTitle": "Rapport SQL Assessment",
-			"asmt.sqlReport.resultForDatabase": "Résultats pour la base de données",
-			"asmt.sqlReport.resultForInstance": "Résultats pour le serveur",
-			"asmt.sqlReport.Error": "Erreur",
-			"asmt.sqlReport.Warning": "Avertissement",
-			"asmt.sqlReport.Info": "Informations",
-			"asmt.column.helpLink": "Lien d'aide",
-			"asmt.sqlReport.severityMsg": "{0} : {1} élément(s)"
-		},
 		"dist/assessmentResultGrid": {
-			"databaseIconLabel": "Base de données",
-			"serverIconLabel": "Serveur",
 			"asmt.column.targetType": "Type de cible",
 			"asmt.details.clickHere": "Cliquez ici",
-			"asmt.details.toLearnMore": " pour en savoir plus.",
+			"asmt.details.recommendation": "Recommandation",
 			"asmt.details.ruleDescription": "Description de la règle",
-			"asmt.details.recommendation": "Recommandation"
+			"asmt.details.toLearnMore": " pour en savoir plus.",
+			"databaseIconLabel": "Base de données",
+			"serverIconLabel": "Serveur"
+		},
+		"dist/localized": {
+			"asmt.apiversion": "Version d'API",
+			"asmt.column.checkId": "Vérifier l'ID",
+			"asmt.column.helpLink": "Lien d'aide",
+			"asmt.column.message": "Message",
+			"asmt.column.severity": "Gravité",
+			"asmt.column.tags": "Étiquettes",
+			"asmt.column.target": "Cible",
+			"asmt.instancename": "Nom d'instance",
+			"asmt.learnMore": "En savoir plus",
+			"asmt.osversion": "Version de système d'exploitation",
+			"asmt.rulesetversion": "Ensemble de règles par défaut",
+			"asmt.section.api.title": "Informations",
+			"asmt.section.instance.title": "Détails de l'instance SQL Server",
+			"asmt.serveredition": "Édition",
+			"asmt.serverversion": "Version",
+			"asmt.sqlReport.Error": "Erreur",
+			"asmt.sqlReport.Info": "Informations",
+			"asmt.sqlReport.Warning": "Avertissement",
+			"asmt.sqlReport.resultForDatabase": "Résultats pour la base de données",
+			"asmt.sqlReport.resultForInstance": "Résultats pour le serveur",
+			"asmt.sqlReport.severityMsg": "{0} : {1} élément(s)",
+			"asmt.sqlReportTitle": "Rapport SQL Assessment"
 		},
 		"dist/tabs/assessmentMainTab": {
-			"invokeAssessmentLabelServer": "Appeler l'évaluation",
-			"getAssessmentItemsServer": "Voir les règles applicables",
-			"invokeAssessmentLabelDatabase": "Appeler l'évaluation pour {0}",
-			"getAssessmentItemsDatabase": "Voir les règles applicables à {0}",
+			"asmtaction.label.cancel": "Annuler",
+			"asmtaction.label.open": "Ouvrir",
+			"asmtaction.openReport": "Le rapport a été enregistré. Voulez-vous l'ouvrir ?",
 			"btnExportAsScript": "Exporter sous forme de script",
 			"btnGeneratehtmlreport": "Créer un rapport HTML",
-			"asmtaction.openReport": "Le rapport a été enregistré. Voulez-vous l'ouvrir ?",
-			"asmtaction.label.open": "Ouvrir",
-			"asmtaction.label.cancel": "Annuler",
-			"btnViewSamplesShort": "Afficher tout sur GitHub",
 			"btnViewSamples": "Voir toutes les règles et en savoir plus sur GitHub",
+			"btnViewSamplesShort": "Afficher tout sur GitHub",
+			"getAssessmentItemsDatabase": "Voir les règles applicables à {0}",
+			"getAssessmentItemsServer": "Voir les règles applicables",
+			"invokeAssessmentLabelDatabase": "Appeler l'évaluation pour {0}",
+			"invokeAssessmentLabelServer": "Appeler l'évaluation",
 			"msgBoxAsmtInfo": "Informations de SQL Assessment",
+			"msgBoxCopied": "Informations de SQL Assessment copiées",
 			"msgBoxCopyBtn": "Copier",
-			"ok": "OK",
-			"msgBoxCopied": "Informations de SQL Assessment copiées"
+			"ok": "OK"
 		},
 		"dist/tabs/historyTab": {
 			"asmt.history.back": "<< Retour",
 			"asmt.history.resultsTitle": "Résultats de l’évaluation à partir de {0}",
 			"asmt.history.summaryAsmtDate": "Date d’évaluation",
 			"asmt.history.summaryError": "Erreur",
-			"asmt.history.summaryWarning": "Avertissement",
-			"asmt.history.summaryInfo": "Informations"
+			"asmt.history.summaryInfo": "Informations",
+			"asmt.history.summaryWarning": "Avertissement"
+		},
+		"package": {
+			"dashboard.tabName": "SQL Assessment",
+			"description": "SQL Assessment pour Azure Data Studio (préversion) offre un mécanisme d’évaluation de la configuration des SQL Server pour les meilleures pratiques.",
+			"displayName": "SQL Assessment"
 		}
 	}
 }

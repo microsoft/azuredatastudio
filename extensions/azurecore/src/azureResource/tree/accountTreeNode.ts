@@ -44,7 +44,7 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 
 			if (this._isClearingCache) {
 				subscriptions = await this._subscriptionService.getSubscriptions(this.account);
-				this.updateCache<azureResource.AzureResourceSubscription[]>(subscriptions);
+				await this.updateCache<azureResource.AzureResourceSubscription[]>(subscriptions);
 				this._isClearingCache = false;
 			} else {
 				subscriptions = await this.getCachedSubscriptions();
@@ -77,7 +77,7 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 						errMsg = AzureResourceErrorMessageUtil.getErrorMessage(err);
 					}
 					if (!token) {
-						vscode.window.showWarningMessage(localize('azure.unableToAccessSubscription', "Unable to access subscription {0} ({1}). Please [refresh the account](command:azure.resource.signin) to try again. {2}", s.name, s.id, errMsg));
+						void vscode.window.showWarningMessage(localize('azure.unableToAccessSubscription', "Unable to access subscription {0} ({1}). Please [refresh the account](command:azure.resource.signin) to try again. {2}", s.name, s.id, errMsg));
 						return false;
 					}
 					return true;
@@ -91,7 +91,7 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 			}
 		} catch (error) {
 			if (error instanceof AzureSubscriptionError) {
-				vscode.commands.executeCommand('azure.resource.signin');
+				void vscode.commands.executeCommand('azure.resource.signin');
 			}
 			return [AzureResourceMessageTreeNode.create(AzureResourceErrorMessageUtil.getErrorMessage(error), this)];
 		}

@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "XML 언어 기능",
-			"description": "XML에 대한 다양한 언어 지원을 제공합니다."
+			"description": "XML에 대한 다양한 언어 지원을 제공합니다.",
+			"displayName": "XML 언어 기능"
 		}
 	}
 }

@@ -80,6 +80,7 @@ steps:
 - script: |
     set -e
     yarn sqllint
+    yarn extensions-lint
     yarn gulp hygiene
     yarn strict-vscode
     yarn valid-layers-check
@@ -97,6 +98,20 @@ steps:
     yarn gulp vscode-reh-web-linux-x64-yarnrc-extensions
     yarn gulp vscode-reh-web-linux-x64-min
   displayName: Compile
+
+- script: |
+    set -e
+    yarn gulp compile-extensions
+  displayName: Compile Extensions
+
+- script: |
+    set -e
+    node ./node_modules/playwright/install.js
+    APP_ROOT=$(Agent.BuildDirectory)/vscode-reh-web-linux-x64
+    xvfb-run yarn smoketest --build "$(Agent.BuildDirectory)/vscode-reh-web-linux-x64" --web --headless --screenshots "$(Build.ArtifactStagingDirectory)/smokeshots"
+  displayName: Run smoke tests (Browser)
+  continueOnError: true
+  condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
 # - script: |
 #     set -e

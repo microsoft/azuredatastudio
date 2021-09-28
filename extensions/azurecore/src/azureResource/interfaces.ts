@@ -33,7 +33,7 @@ export interface IAzureResourceCacheService {
 
 	get<T>(key: string): T | undefined;
 
-	update<T>(key: string, value: T): void;
+	update<T>(key: string, value: T): Promise<void>;
 }
 
 

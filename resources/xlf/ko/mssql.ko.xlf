@@ -1,14 +1,930 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/mssql/dist/dashboard/serviceEndpoints" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="copyText">
+        <source xml:lang="en">Copy</source>
+        <target state="translated">복사</target>
+      </trans-unit>
+      <trans-unit id="endpoint.appproxy">
+        <source xml:lang="en">Application Proxy</source>
+        <target state="translated">애플리케이션 프록시</target>
+      </trans-unit>
+      <trans-unit id="endpoint.controller">
+        <source xml:lang="en">Cluster Management Service</source>
+        <target state="translated">클러스터 관리 서비스</target>
+      </trans-unit>
+      <trans-unit id="endpoint.gateway">
+        <source xml:lang="en">Gateway to access HDFS files, Spark</source>
+        <target state="translated">HDFS 파일에 액세스하기 위한 게이트웨이, Spark</target>
+      </trans-unit>
+      <trans-unit id="endpoint.grafana">
+        <source xml:lang="en">Metrics Dashboard</source>
+        <target state="translated">메트릭 대시보드</target>
+      </trans-unit>
+      <trans-unit id="endpoint.kibana">
+        <source xml:lang="en">Log Search Dashboard</source>
+        <target state="translated">로그 검색 대시보드</target>
+      </trans-unit>
+      <trans-unit id="endpoint.livy">
+        <source xml:lang="en">Proxy for running Spark statements, jobs, applications</source>
+        <target state="translated">Spark 문, 작업, 애플리케이션 실행을 위한 프록시</target>
+      </trans-unit>
+      <trans-unit id="endpoint.managementproxy">
+        <source xml:lang="en">Management Proxy</source>
+        <target state="translated">관리 프록시</target>
+      </trans-unit>
+      <trans-unit id="endpoint.mgmtproxy">
+        <source xml:lang="en">Management Proxy</source>
+        <target state="translated">관리 프록시</target>
+      </trans-unit>
+      <trans-unit id="endpoint.sparkHistory">
+        <source xml:lang="en">Spark Jobs Management and Monitoring Dashboard</source>
+        <target state="translated">Spark 작업 관리 및 모니터링 대시보드</target>
+      </trans-unit>
+      <trans-unit id="endpoint.sqlServerEndpoint">
+        <source xml:lang="en">SQL Server Master Instance Front-End</source>
+        <target state="translated">SQL Server 마스터 인스턴스 프런트 엔드</target>
+      </trans-unit>
+      <trans-unit id="endpoint.webhdfs">
+        <source xml:lang="en">HDFS File System Proxy</source>
+        <target state="translated">HDFS 파일 시스템 프록시</target>
+      </trans-unit>
+      <trans-unit id="endpoint.yarnHistory">
+        <source xml:lang="en">Spark Diagnostics and Monitoring Dashboard</source>
+        <target state="translated">Spark 진단 및 모니터링 대시보드</target>
+      </trans-unit>
+      <trans-unit id="grafana">
+        <source xml:lang="en">Metrics Dashboard</source>
+        <target state="translated">메트릭 대시보드</target>
+      </trans-unit>
+      <trans-unit id="kibana">
+        <source xml:lang="en">Log Search Dashboard</source>
+        <target state="translated">로그 검색 대시보드</target>
+      </trans-unit>
+      <trans-unit id="sparkHistory">
+        <source xml:lang="en">Spark Jobs Management and Monitoring Dashboard</source>
+        <target state="translated">Spark 작업 관리 및 모니터링 대시보드</target>
+      </trans-unit>
+      <trans-unit id="yarnHistory">
+        <source xml:lang="en">Spark Diagnostics and Monitoring Dashboard</source>
+        <target state="translated">Spark 진단 및 모니터링 대시보드</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/mssql/dist/features" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="mssql.canceledLinkedAzureAccountSelection">
+        <source xml:lang="en">Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account was selected. Please retry the query and select a linked Azure account when prompted.</source>
+        <target state="translated">Azure Data Studio는 Always Encrypted의 열 마스터 키에 액세스하려면 Azure Key Vault에 연결해야 하지만, 연결된 Azure 계정을 선택하지 않았습니다. 쿼리를 다시 시도하고 메시지가 표시되면 연결된 Azure 계정을 선택하세요.</target>
+      </trans-unit>
+      <trans-unit id="mssql.chooseLinkedAzureAccount">
+        <source xml:lang="en">Please select a linked Azure account:</source>
+        <target state="translated">연결된 Azure 계정을 선택하세요.</target>
+      </trans-unit>
+      <trans-unit id="mssql.insufficientlyPrivelagedAzureAccount">
+        <source xml:lang="en">The configured Azure account for {0} does not have sufficient permissions for Azure Key Vault to access a column master key for Always Encrypted.</source>
+        <target state="translated">{0}에 대해 구성된 Azure 계정에 Always Encrypted의 열 마스터 키에 액세스할 수 있는 Azure Key Vault에 대한 권한이 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="mssql.missingLinkedAzureAccount">
+        <source xml:lang="en">Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account is available. Please add a linked Azure account and retry the query.</source>
+        <target state="translated">Azure Data Studio는 Always Encrypted의 열 마스터 키에 액세스하려면 Azure Key Vault에 연결해야 하지만, 연결된 Azure 계정을 사용할 수 없습니다. 연결된 Azure 계정을 추가하고 쿼리를 다시 시도하세요.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/mssql/dist/hdfs/hdfsModel" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="mssql.recursivePermissionOpError">
+        <source xml:lang="en">Error applying permission changes: {0}</source>
+        <target state="translated">권한 변경 내용 적용 오류: {0}</target>
+      </trans-unit>
+      <trans-unit id="mssql.recursivePermissionOpProgress">
+        <source xml:lang="en">Applying permission changes to '{0}'.</source>
+        <target state="translated">권한 변경 내용을 '{0}'에 적용하는 중입니다.</target>
+      </trans-unit>
+      <trans-unit id="mssql.recursivePermissionOpStarted">
+        <source xml:lang="en">Applying permission changes recursively under '{0}'</source>
+        <target state="translated">'{0}'에서 권한 변경 내용을 재귀적으로 적용하는 중</target>
+      </trans-unit>
+      <trans-unit id="mssql.recursivePermissionOpSucceeded">
+        <source xml:lang="en">Permission changes applied successfully.</source>
+        <target state="translated">권한 변경 내용을 적용했습니다.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/mssql/dist/hdfs/webhdfs" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="webhdfs.httpError400">
+        <source xml:lang="en">Bad Request</source>
+        <target state="translated">잘못된 요청</target>
+      </trans-unit>
+      <trans-unit id="webhdfs.httpError401">
+        <source xml:lang="en">Unauthorized</source>
+        <target state="translated">권한 없음</target>
+      </trans-unit>
+      <trans-unit id="webhdfs.httpError403">
+        <source xml:lang="en">Forbidden</source>
+        <target state="translated">금지됨</target>
+      </trans-unit>
+      <trans-unit id="webhdfs.httpError404">
+        <source xml:lang="en">Not Found</source>
+        <target state="translated">찾을 수 없음</target>
+      </trans-unit>
+      <trans-unit id="webhdfs.httpError500">
+        <source xml:lang="en">Internal Server Error</source>
+        <target state="translated">내부 서버 오류</target>
+      </trans-unit>
+      <trans-unit id="webhdfs.invalidDataStructure">
+        <source xml:lang="en">Invalid Data Structure</source>
+        <target state="translated">잘못된 데이터 구조</target>
+      </trans-unit>
+      <trans-unit id="webhdfs.missingProperties">
+        <source xml:lang="en">Unable to create WebHDFS client due to missing options: ${0}</source>
+        <target state="translated">누락된 옵션으로 인해 WebHDFS 클라이언트를 만들 수 없습니다. ${0}</target>
+      </trans-unit>
+      <trans-unit id="webhdfs.undefinedArgument">
+        <source xml:lang="en">'${0}' is undefined.</source>
+        <target state="translated">'${0}'이(가) 정의되지 않았습니다.</target>
+      </trans-unit>
+      <trans-unit id="webhdfs.unexpectedRedirect">
+        <source xml:lang="en">Unexpected Redirect</source>
+        <target state="translated">예기치 않은 리디렉션</target>
+      </trans-unit>
+      <trans-unit id="webhdfs.unknownError">
+        <source xml:lang="en">Unknown Error</source>
+        <target state="translated">알 수 없는 오류</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/mssql/dist/localizedConstants" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="msgMissingNodeContext">
+        <source xml:lang="en">Node Command called without any node passed</source>
+        <target state="translated">노드가 전달되지 않고 호출된 노드 명령</target>
+      </trans-unit>
+      <trans-unit id="mssql.accessHeader">
+        <source xml:lang="en">Access</source>
+        <target state="translated">액세스</target>
+      </trans-unit>
+      <trans-unit id="mssql.addLabel">
+        <source xml:lang="en">Add</source>
+        <target state="translated">추가</target>
+      </trans-unit>
+      <trans-unit id="mssql.addUserOrGroup">
+        <source xml:lang="en">Add User or Group</source>
+        <target state="translated">사용자 또는 그룹 추가</target>
+      </trans-unit>
+      <trans-unit id="mssql.apply">
+        <source xml:lang="en">Apply</source>
+        <target state="translated">적용</target>
+      </trans-unit>
+      <trans-unit id="mssql.applyRecursively">
+        <source xml:lang="en">Apply Recursively</source>
+        <target state="translated">재귀적으로 적용</target>
+      </trans-unit>
+      <trans-unit id="mssql.defaultHeader">
+        <source xml:lang="en">Default</source>
+        <target state="translated">기본값</target>
+      </trans-unit>
+      <trans-unit id="mssql.defaultUserAndGroups">
+        <source xml:lang="en">Default User and Groups</source>
+        <target state="translated">기본 사용자 및 그룹</target>
+      </trans-unit>
+      <trans-unit id="mssql.delete">
+        <source xml:lang="en">Delete</source>
+        <target state="translated">삭제</target>
+      </trans-unit>
+      <trans-unit id="mssql.enterNamePlaceholder">
+        <source xml:lang="en">Enter name</source>
+        <target state="translated">이름 입력</target>
+      </trans-unit>
+      <trans-unit id="mssql.errorApplyingAclChanges">
+        <source xml:lang="en">Unexpected error occurred while applying changes : {0}</source>
+        <target state="translated">변경 내용을 적용하는 동안 예기치 않은 오류가 발생했습니다. {0}</target>
+      </trans-unit>
+      <trans-unit id="mssql.everyone">
+        <source xml:lang="en">Everyone else</source>
+        <target state="translated">모든 사용자</target>
+      </trans-unit>
+      <trans-unit id="mssql.executeHeader">
+        <source xml:lang="en">Execute</source>
+        <target state="translated">실행</target>
+      </trans-unit>
+      <trans-unit id="mssql.group">
+        <source xml:lang="en">Group</source>
+        <target state="translated">그룹</target>
+      </trans-unit>
+      <trans-unit id="mssql.groupLabel">
+        <source xml:lang="en">Group</source>
+        <target state="translated">그룹</target>
+      </trans-unit>
+      <trans-unit id="mssql.inheritDefaultsLabel">
+        <source xml:lang="en">Inherit Defaults</source>
+        <target state="translated">기본값 상속</target>
+      </trans-unit>
+      <trans-unit id="mssql.locationTitle">
+        <source xml:lang="en">Location : </source>
+        <target state="translated">위치: </target>
+      </trans-unit>
+      <trans-unit id="mssql.manageAccessTitle">
+        <source xml:lang="en">Manage Access</source>
+        <target state="translated">액세스 관리</target>
+      </trans-unit>
+      <trans-unit id="mssql.namedUsersAndGroups">
+        <source xml:lang="en">Named Users and Groups</source>
+        <target state="translated">명명된 사용자 및 그룹</target>
+      </trans-unit>
+      <trans-unit id="mssql.owner">
+        <source xml:lang="en">Owner</source>
+        <target state="translated">소유자</target>
+      </trans-unit>
+      <trans-unit id="mssql.ownerPostfix">
+        <source xml:lang="en"> - Owner</source>
+        <target state="translated"> - 소유자</target>
+      </trans-unit>
+      <trans-unit id="mssql.owningGroupPostfix">
+        <source xml:lang="en"> - Owning Group</source>
+        <target state="translated"> - 소유 그룹</target>
+      </trans-unit>
+      <trans-unit id="mssql.permissionsTitle">
+        <source xml:lang="en">Permissions</source>
+        <target state="translated">권한</target>
+      </trans-unit>
+      <trans-unit id="mssql.readHeader">
+        <source xml:lang="en">Read</source>
+        <target state="translated">읽기</target>
+      </trans-unit>
+      <trans-unit id="mssql.stickyHeader">
+        <source xml:lang="en">Sticky Bit</source>
+        <target state="translated">고정 비트</target>
+      </trans-unit>
+      <trans-unit id="mssql.userLabel">
+        <source xml:lang="en">User</source>
+        <target state="translated">사용자</target>
+      </trans-unit>
+      <trans-unit id="mssql.userOrGroupIcon">
+        <source xml:lang="en">User or Group Icon</source>
+        <target state="translated">사용자 또는 그룹 아이콘</target>
+      </trans-unit>
+      <trans-unit id="mssql.writeHeader">
+        <source xml:lang="en">Write</source>
+        <target state="translated">쓰기</target>
+      </trans-unit>
+      <trans-unit id="sparkConnectionRequired">
+        <source xml:lang="en">Please connect to the Spark cluster before View {0} History.</source>
+        <target state="translated">{0} 기록을 보려면 먼저 Spark 클러스터에 연결하세요.</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.GetApplicationIdFailed">
+        <source xml:lang="en">Get Application Id Failed. {0}</source>
+        <target state="translated">애플리케이션 ID를 가져오지 못했습니다. {0}</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.LocalFileDestinationHint">
+        <source xml:lang="en">Local file will be uploaded to HDFS. </source>
+        <target state="translated">로컬 파일이 HDFS에 업로드됩니다. </target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.LocalFileNotExisted">
+        <source xml:lang="en">Local file {0} does not existed. </source>
+        <target state="translated">로컬 파일 {0}이(가) 없습니다. </target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.NoSqlBigDataClusterFound">
+        <source xml:lang="en">No SQL Server Big Data Cluster found.</source>
+        <target state="translated">SQL Server 빅 데이터 클러스터를 찾을 수 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.PrepareSubmitJob">
+        <source xml:lang="en">Submitting job {0} ... </source>
+        <target state="translated">{0} 작업을 제출하는 중... </target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.PrepareUploadingFile">
+        <source xml:lang="en">Uploading file from local {0} to HDFS folder: {1}</source>
+        <target state="translated">로컬 {0}에서 HDFS 폴더로 파일 업로드 중: {1}</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.SparkHistoryLinkMessage">
+        <source xml:lang="en">Spark History Url: {0} </source>
+        <target state="translated">Spark 기록 URL: {0} </target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.SubmissionEndMessage">
+        <source xml:lang="en">.......................... Submit Spark Job End ............................</source>
+        <target state="translated">.......................... Spark 작업 제출 종료 ................................................</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.SubmitJobFailed">
+        <source xml:lang="en">Spark Job Submission Failed. {0} </source>
+        <target state="translated">Spark 작업 {0}을(를) 제출하지 못했습니다. </target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.SubmitJobFinished">
+        <source xml:lang="en">The Spark Job has been submitted.</source>
+        <target state="translated">Spark 작업을 제출했습니다.</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.UploadingFileFailed">
+        <source xml:lang="en">Upload file to cluster Failed. {0}</source>
+        <target state="translated">클러스터에 파일을 업로드하지 못했습니다. {0}</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.UploadingFileSucceeded">
+        <source xml:lang="en">Upload file to cluster Succeeded!</source>
+        <target state="translated">클러스터에 파일을 업로드했습니다.</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.YarnUIMessage">
+        <source xml:lang="en">YarnUI Url: {0} </source>
+        <target state="translated">YarnUI URL: {0} </target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/mssql/dist/main" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="msgSampleCodeDataFrame">
+        <source xml:lang="en">This sample code loads the file into a data frame and shows the first 10 results.</source>
+        <target state="translated">이 샘플 코드는 파일을 데이터 프레임에 로드하고 처음 10개의 결과를 표시합니다.</target>
+      </trans-unit>
+      <trans-unit id="mssql.errorConvertingToNotebook">
+        <source xml:lang="en">An error occurred converting the SQL document to a Notebook. Error : {0}</source>
+        <target state="translated">SQL 문서를 Notebook으로 변환하는 동안 오류가 발생했습니다. 오류: {0}</target>
+      </trans-unit>
+      <trans-unit id="mssql.errorConvertingToSQL">
+        <source xml:lang="en">An error occurred converting the Notebook document to SQL. Error : {0}</source>
+        <target state="translated">Notebook 문서를 SQL로 변환하는 동안 오류가 발생했습니다. 오류: {0}</target>
+      </trans-unit>
+      <trans-unit id="noController">
+        <source xml:lang="en">Could not find the controller endpoint for this instance</source>
+        <target state="translated">이 인스턴스의 컨트롤러 엔드포인트를 찾을 수 없음</target>
+      </trans-unit>
+      <trans-unit id="notebookFileType">
+        <source xml:lang="en">Notebooks</source>
+        <target state="translated">Notebook</target>
+      </trans-unit>
+      <trans-unit id="unsupportedFileType">
+        <source xml:lang="en">Only .ipynb Notebooks are supported</source>
+        <target state="translated">.ipynb Notebook만 지원됩니다.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/mssql/dist/objectExplorerNodeProvider/cancelableStream" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="streamCanceled">
+        <source xml:lang="en">Stream operation canceled by the user</source>
+        <target state="translated">사용자가 취소한 스트림 작업</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/mssql/dist/objectExplorerNodeProvider/command" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="cancel">
+        <source xml:lang="en">Cancel operation?</source>
+        <target state="translated">작업 취소 여부</target>
+      </trans-unit>
+      <trans-unit id="cancelTooltip">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">취소</target>
+      </trans-unit>
+      <trans-unit id="mssql.searchServers">
+        <source xml:lang="en">Search Server Names</source>
+        <target state="translated">서버 이름 검색</target>
+      </trans-unit>
+      <trans-unit id="progress">
+        <source xml:lang="en">$(sync~spin) {0}...</source>
+        <target state="translated">$(sync~spin) {0}...</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/mssql/dist/objectExplorerNodeProvider/connection" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="connectionInfoOptionsMissingProperties">
+        <source xml:lang="en">Some missing properties in connectionInfo.options: {0}</source>
+        <target state="translated">connectionInfo.options에서 일부 속성이 누락되었습니다. {0}</target>
+      </trans-unit>
+      <trans-unit id="connectionInfoOptionsUndefined">
+        <source xml:lang="en">ConnectionInfo.options is undefined.</source>
+        <target state="translated">ConnectionInfo.options가 정의되지 않았습니다.</target>
+      </trans-unit>
+      <trans-unit id="connectionInfoUndefined">
+        <source xml:lang="en">ConnectionInfo is undefined.</source>
+        <target state="translated">ConnectionInfo가 정의되지 않았습니다.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/mssql/dist/objectExplorerNodeProvider/fileSources" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="maxSizeNotice">
+        <source xml:lang="en">NOTICE: This file has been truncated at {0} for preview. </source>
+        <target state="translated">알림: 이 파일은 미리 보기를 위해 {0}에서 잘렸습니다. </target>
+      </trans-unit>
+      <trans-unit id="maxSizeReached">
+        <source xml:lang="en">The file has been truncated at {0} for preview.</source>
+        <target state="translated">이 파일은 미리 보기를 위해 {0}에서 잘렸습니다.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/mssql/dist/objectExplorerNodeProvider/hdfsCommands" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="allFiles">
+        <source xml:lang="en">All Files</source>
+        <target state="translated">모든 파일</target>
+      </trans-unit>
+      <trans-unit id="copyPathError">
+        <source xml:lang="en">Error on copying path: {0}</source>
+        <target state="translated">경로 복사 오류: {0}</target>
+      </trans-unit>
+      <trans-unit id="deleteError">
+        <source xml:lang="en">Error on deleting files: {0}</source>
+        <target state="translated">파일 삭제 오류: {0}</target>
+      </trans-unit>
+      <trans-unit id="enterDirName">
+        <source xml:lang="en">Enter directory name</source>
+        <target state="translated">디렉터리 이름 입력</target>
+      </trans-unit>
+      <trans-unit id="lblUploadFiles">
+        <source xml:lang="en">Upload</source>
+        <target state="translated">업로드</target>
+      </trans-unit>
+      <trans-unit id="makingDir">
+        <source xml:lang="en">Creating directory</source>
+        <target state="translated">디렉터리를 만드는 중</target>
+      </trans-unit>
+      <trans-unit id="manageAccessError">
+        <source xml:lang="en">An unexpected error occurred while opening the Manage Access dialog: {0}</source>
+        <target state="translated">액세스 관리 대화 상자를 여는 동안 예기치 않은 오류가 발생했습니다. {0}</target>
+      </trans-unit>
+      <trans-unit id="mkDirError">
+        <source xml:lang="en">Error on making directory: {0}</source>
+        <target state="translated">디렉터리 만들기 오류: {0}</target>
+      </trans-unit>
+      <trans-unit id="mkdirCanceled">
+        <source xml:lang="en">Operation was canceled</source>
+        <target state="translated">작업이 취소되었습니다.</target>
+      </trans-unit>
+      <trans-unit id="msgDeleteFile">
+        <source xml:lang="en">Are you sure you want to delete this file?</source>
+        <target state="translated">이 파일을 삭제하시겠습니까?</target>
+      </trans-unit>
+      <trans-unit id="msgDeleteFolder">
+        <source xml:lang="en">Are you sure you want to delete this folder and its contents?</source>
+        <target state="translated">이 폴더와 해당 내용을 삭제하시겠습니까?</target>
+      </trans-unit>
+      <trans-unit id="previewError">
+        <source xml:lang="en">Error on previewing file: {0}</source>
+        <target state="translated">파일 미리 보기 오류: {0}</target>
+      </trans-unit>
+      <trans-unit id="previewing">
+        <source xml:lang="en">Generating preview</source>
+        <target state="translated">미리 보기 생성 중</target>
+      </trans-unit>
+      <trans-unit id="saveCanceled">
+        <source xml:lang="en">Save operation was canceled</source>
+        <target state="translated">저장 작업이 취소되었습니다.</target>
+      </trans-unit>
+      <trans-unit id="saveError">
+        <source xml:lang="en">Error on saving file: {0}</source>
+        <target state="translated">파일 저장 오류: {0}</target>
+      </trans-unit>
+      <trans-unit id="saving">
+        <source xml:lang="en">Saving HDFS Files</source>
+        <target state="translated">HDFS 파일 저장 중</target>
+      </trans-unit>
+      <trans-unit id="uploadCanceled">
+        <source xml:lang="en">Upload operation was canceled</source>
+        <target state="translated">업로드 작업이 취소되었습니다.</target>
+      </trans-unit>
+      <trans-unit id="uploadError">
+        <source xml:lang="en">Error uploading files: {0}</source>
+        <target state="translated">파일 업로드 오류: {0}</target>
+      </trans-unit>
+      <trans-unit id="uploading">
+        <source xml:lang="en">Uploading files to HDFS</source>
+        <target state="translated">HDFS로 파일 업로드 중</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/mssql/dist/objectExplorerNodeProvider/hdfsProvider" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="errDeleteConnectionNode">
+        <source xml:lang="en">Cannot delete a connection. Only subfolders and files can be deleted.</source>
+        <target state="translated">연결을 삭제할 수 없습니다. 하위 폴더와 파일만 삭제할 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="errorExpanding">
+        <source xml:lang="en">Error: {0}</source>
+        <target state="translated">오류: {0}</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/mssql/dist/objectExplorerNodeProvider/objectExplorerNodeProvider" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="hdfsFolder">
+        <source xml:lang="en">HDFS</source>
+        <target state="translated">HDFS</target>
+      </trans-unit>
+      <trans-unit id="notifyError">
+        <source xml:lang="en">Error notifying of node change: {0}</source>
+        <target state="translated">노드 변경 알리기 오류: {0}</target>
+      </trans-unit>
+      <trans-unit id="prmptPwd">
+        <source xml:lang="en">Please provide the password to connect to HDFS:</source>
+        <target state="translated">HDFS에 연결하려면 암호를 제공하세요.</target>
+      </trans-unit>
+      <trans-unit id="promptUsername">
+        <source xml:lang="en">Please provide the username to connect to HDFS:</source>
+        <target state="translated">HDFS에 연결하려면 사용자 이름을 제공하세요.</target>
+      </trans-unit>
+      <trans-unit id="rootLabel">
+        <source xml:lang="en">Root</source>
+        <target state="translated">루트</target>
+      </trans-unit>
+      <trans-unit id="sessionNotFound">
+        <source xml:lang="en">Session for node {0} does not exist</source>
+        <target state="translated">{0} 노드의 세션이 없습니다.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/mssql/dist/prompts/confirm" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="msgNo">
+        <source xml:lang="en">No</source>
+        <target state="translated">아니요</target>
+      </trans-unit>
+      <trans-unit id="msgYes">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">예</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/mssql/dist/sparkFeature/dialog/dialogCommands" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="errorNotSqlBigDataCluster">
+        <source xml:lang="en">The selected server does not belong to a SQL Server Big Data Cluster</source>
+        <target state="translated">선택한 서버가 SQL Server 빅 데이터 클러스터에 속하지 않습니다.</target>
+      </trans-unit>
+      <trans-unit id="selectOtherServer">
+        <source xml:lang="en">Select other SQL Server</source>
+        <target state="translated">다른 SQL Server 선택</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.GetFilePathFromSelectedNodeFailed">
+        <source xml:lang="en">Error Get File Path: {0}</source>
+        <target state="translated">파일 경로 가져오기 오류: {0}</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.NoSqlSelected">
+        <source xml:lang="en">No SQL Server is selected.</source>
+        <target state="translated">SQL Server를 선택하지 않았습니다.</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.PleaseSelectSqlWithCluster">
+        <source xml:lang="en">Please select SQL Server with Big Data Cluster.</source>
+        <target state="translated">빅 데이터 클러스터가 있는 SQL Server를 선택하세요.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkAdvancedTab" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="sparkJobSubmission.AdvancedTabName">
+        <source xml:lang="en">ADVANCED</source>
+        <target state="translated">고급</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.ReferenceFilesList">
+        <source xml:lang="en">Reference Files</source>
+        <target state="translated">참조 파일</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.ReferenceFilesListTooltip">
+        <source xml:lang="en">Files to be placed in executor working directory. The file path needs to be an HDFS Path. Multiple paths should be split by semicolon(;)</source>
+        <target state="translated">실행기 작업 디렉터리에 배치할 파일입니다. 파일 경로는 HDFS 경로여야 합니다. 여러 경로는 세미콜론(;)으로 구분해야 합니다.</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.ReferenceJarList">
+        <source xml:lang="en">Reference Jars</source>
+        <target state="translated">참조 Jar</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.ReferenceJarListToolTip">
+        <source xml:lang="en">Jars to be placed in executor working directory. The Jar path needs to be an HDFS Path. Multiple paths should be split by semicolon (;)</source>
+        <target state="translated">실행기 작업 디렉터리에 배치할 Jar입니다. Jar 경로는 HDFS 경로여야 합니다. 여러 경로는 세미콜론(;)으로 구분해야 합니다.</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.ReferencePyList">
+        <source xml:lang="en">Reference py Files</source>
+        <target state="translated">참조 py 파일</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.ReferencePyListTooltip">
+        <source xml:lang="en">Py Files to be placed in executor working directory. The file path needs to be an HDFS Path. Multiple paths should be split by semicolon(;)</source>
+        <target state="translated">실행기 작업 디렉터리에 배치할 Py 파일입니다. 파일 경로는 HDFS 경로여야 합니다. 여러 경로는 세미콜론(;)으로 구분해야 합니다.</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.configValues">
+        <source xml:lang="en">Configuration Values</source>
+        <target state="translated">구성 값</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.configValuesTooltip">
+        <source xml:lang="en">List of name value pairs containing Spark configuration values. Encoded as JSON dictionary. Example: '{"name":"value", "name2":"value2"}'.</source>
+        <target state="translated">Spark 구성 값을 포함하는 이름 값 쌍 목록입니다. JSON 사전으로 인코딩됩니다. 예: '{"name":"value", "name2":"value2"}'.</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.driverCores">
+        <source xml:lang="en">Driver Cores</source>
+        <target state="translated">드라이버 코어</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.driverCoresTooltip">
+        <source xml:lang="en">Amount of CPU cores to allocate to the driver.</source>
+        <target state="translated">드라이버에 할당할 CPU 코어 양입니다.</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.driverMemory">
+        <source xml:lang="en">Driver Memory</source>
+        <target state="translated">드라이버 메모리</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.driverMemoryTooltip">
+        <source xml:lang="en">Amount of memory to allocate to the driver. Specify units as part of value. Example 512M or 2G.</source>
+        <target state="translated">드라이버에 할당할 메모리의 양입니다. 값의 일부로 단위를 지정합니다. 예를 들면 512M 또는 2G입니다.</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.executorCores">
+        <source xml:lang="en">Executor Cores</source>
+        <target state="translated">실행기 코어</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.executorCoresTooltip">
+        <source xml:lang="en">Amount of CPU cores to allocate to the executor.</source>
+        <target state="translated">실행기에 할당할 CPU 코어 양입니다.</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.executorCount">
+        <source xml:lang="en">Executor Count</source>
+        <target state="translated">실행기 수</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.executorCountTooltip">
+        <source xml:lang="en">Number of instances of the executor to run.</source>
+        <target state="translated">실행할 실행기 인스턴스의 수입니다.</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.executorMemory">
+        <source xml:lang="en">Executor Memory</source>
+        <target state="translated">실행기 메모리</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.executorMemoryTooltip">
+        <source xml:lang="en">Amount of memory to allocate to the executor. Specify units as part of value. Example 512M or 2G.</source>
+        <target state="translated">실행기에 할당할 메모리의 양입니다. 값의 일부로 단위를 지정합니다. 예를 들면 512M 또는 2G입니다.</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.queueName">
+        <source xml:lang="en">Queue Name</source>
+        <target state="translated">큐 이름</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.queueNameTooltip">
+        <source xml:lang="en">Name of the Spark queue to execute the session in.</source>
+        <target state="translated">세션을 실행할 Spark 큐의 이름입니다.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkConfigurationTab" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="sparkJobSubmission.Arguments">
+        <source xml:lang="en">Arguments</source>
+        <target state="translated">인수</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.ArgumentsTooltip">
+        <source xml:lang="en">Command line arguments used in your main class, multiple arguments should be split by space.</source>
+        <target state="translated">주 클래스에 사용되는 명령줄 인수입니다. 여러 인수는 공백으로 구분해야 합니다.</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.FilePathPlaceHolder">
+        <source xml:lang="en">Path to a .jar or .py file</source>
+        <target state="translated">.jar 또는 .py 파일의 경로</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.GeneralTabName">
+        <source xml:lang="en">GENERAL</source>
+        <target state="translated">일반</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.HDFSFileNotExisted">
+        <source xml:lang="en">The specified HDFS file does not exist. </source>
+        <target state="translated">지정된 HDFS 파일이 없습니다. </target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.HDFSFileNotExistedWithPath">
+        <source xml:lang="en">{0} does not exist in Cluster or exception thrown. </source>
+        <target state="translated">{0}이(가) 클러스터에 없거나 예외가 throw되었습니다. </target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.JobName">
+        <source xml:lang="en">Job Name</source>
+        <target state="translated">작업 이름</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.JobNamePlaceHolder">
+        <source xml:lang="en">Enter a name ...</source>
+        <target state="translated">이름 입력...</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.LocalFileDestinationHintWithPath">
+        <source xml:lang="en">The selected local file will be uploaded to HDFS: {0}</source>
+        <target state="translated">선택한 로컬 파일이 HDFS에 업로드됩니다. {0}</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.MainClass">
+        <source xml:lang="en">Main Class</source>
+        <target state="translated">주 클래스</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.MainFilePath">
+        <source xml:lang="en">JAR/py File</source>
+        <target state="translated">JAR/py 파일</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.NotSpecifyJARPYPath">
+        <source xml:lang="en">Property JAR/py File is not specified.</source>
+        <target state="translated">속성 JAR/py 파일을 지정하지 않았습니다.</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.NotSpecifyJobName">
+        <source xml:lang="en">Property Job Name is not specified.</source>
+        <target state="translated">속성 작업 이름을 지정하지 않았습니다.</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.NotSpecifyMainClass">
+        <source xml:lang="en">Property Main Class is not specified.</source>
+        <target state="translated">속성 주 클래스를 지정하지 않았습니다.</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.SelectFileError">
+        <source xml:lang="en">Error in locating the file due to Error: {0}</source>
+        <target state="translated">오류로 인한 파일 찾기 오류: {0}</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.SparkCluster">
+        <source xml:lang="en">Spark Cluster</source>
+        <target state="translated">Spark 클러스터</target>
+      </trans-unit>
+      <trans-unit id="sparkSelectLocalFile">
+        <source xml:lang="en">Select</source>
+        <target state="translated">선택</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkJobSubmissionDialog" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="sparkJobSubmission.DialogCancelButton">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">취소</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.DialogSubmitButton">
+        <source xml:lang="en">Submit</source>
+        <target state="translated">제출</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.DialogTitleNewJob">
+        <source xml:lang="en">New Job</source>
+        <target state="translated">새 작업</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.SparkJobSubmissionDialogInitializeError">
+        <source xml:lang="en">Parameters for SparkJobSubmissionDialog is illegal</source>
+        <target state="translated">SparkJobSubmissionDialog에 대한 매개 변수가 잘못되었습니다.</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.SubmissionStartMessage">
+        <source xml:lang="en">.......................... Submit Spark Job Start ..........................</source>
+        <target state="translated">.......................... Spark 작업 제출 시작 ...................................</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.SubmitSparkJob">
+        <source xml:lang="en">{0} Spark Job Submission:</source>
+        <target state="translated">{0} Spark 작업 제출:</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkJobSubmissionModel" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="sparkJobSubmission.GetApplicationIdTimeOut">
+        <source xml:lang="en">Get Application Id time out. {0}[Log]   {1}</source>
+        <target state="translated">애플리케이션 ID 시간 제한을 가져옵니다. {0}[로그]   {1}</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.LivyBatchIdIsInvalid">
+        <source xml:lang="en">livyBatchId is invalid. </source>
+        <target state="translated">livyBatchId가 잘못되었습니다. </target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.PathNotSpecified.">
+        <source xml:lang="en">Property Path is not specified. </source>
+        <target state="translated">속성 경로를 지정하지 않았습니다. </target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.SparkJobSubmissionModelInitializeError">
+        <source xml:lang="en">Parameters for SparkJobSubmissionModel is illegal</source>
+        <target state="translated">SparkJobSubmissionModel의 매개 변수가 잘못되었습니다.</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.localFileOrFolderNotSpecified.">
+        <source xml:lang="en">Property localFilePath or hdfsFolderPath is not specified. </source>
+        <target state="translated">localFilePath 또는 hdfsFolderPath 속성을 지정하지 않았습니다. </target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.submissionArgsIsInvalid">
+        <source xml:lang="en">submissionArgs is invalid. </source>
+        <target state="translated">submissionArgs가 잘못되었습니다. </target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkJobSubmissionService" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="sparkJobSubmission.LivyNoBatchIdReturned">
+        <source xml:lang="en">No Spark job batch id is returned from response.{0}[Error] {1}</source>
+        <target state="translated">응답에서 Spark 작업 일괄 처리 ID가 반환되지 않았습니다. {0}[오류] {1}</target>
+      </trans-unit>
+      <trans-unit id="sparkJobSubmission.LivyNoLogReturned">
+        <source xml:lang="en">No log is returned within response.{0}[Error] {1}</source>
+        <target state="translated">응답 내에 로그가 반환되지 않았습니다. {0}[오류] {1}</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/mssql/dist/sqlClusterLookUp" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="bdcConnectError">
+        <source xml:lang="en">Error: {0}. </source>
+        <target state="translated">오류: {0}. </target>
+      </trans-unit>
+      <trans-unit id="promptBDCPassword">
+        <source xml:lang="en">Please provide the password to connect to the BDC Controller</source>
+        <target state="translated">BDC 컨트롤러에 연결하려면 암호를 제공하세요.</target>
+      </trans-unit>
+      <trans-unit id="promptBDCUsername">
+        <source xml:lang="en">{0}Please provide the username to connect to the BDC Controller:</source>
+        <target state="translated">{0}BDC 컨트롤러에 연결하려면 사용자 이름을 제공하세요.</target>
+      </trans-unit>
+      <trans-unit id="usernameAndPasswordRequired">
+        <source xml:lang="en">Username and password are required</source>
+        <target state="translated">사용자 이름과 암호가 필요합니다.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/mssql/dist/sqlToolsServer" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="downloadServiceDoneChannelMsg">
+        <source xml:lang="en">Done installing {0}</source>
+        <target state="translated">{0} 설치 완료</target>
+      </trans-unit>
+      <trans-unit id="downloadingServiceChannelMsg">
+        <source xml:lang="en">Downloading {0}</source>
+        <target state="translated">{0} 다운로드 중</target>
+      </trans-unit>
+      <trans-unit id="downloadingServiceSizeChannelMsg">
+        <source xml:lang="en">({0} KB)</source>
+        <target state="translated">({0}KB)</target>
+      </trans-unit>
+      <trans-unit id="downloadingServiceStatusMsg">
+        <source xml:lang="en">Downloading {0}</source>
+        <target state="translated">{0} 다운로드 중</target>
+      </trans-unit>
+      <trans-unit id="entryExtractedChannelMsg">
+        <source xml:lang="en">Extracted {0} ({1}/{2})</source>
+        <target state="translated">추출된 {0}({1}/{2})</target>
+      </trans-unit>
+      <trans-unit id="failedToStartServiceErrorMsg">
+        <source xml:lang="en">Failed to start {0}</source>
+        <target state="translated">{0}을(를) 시작하지 못함</target>
+      </trans-unit>
+      <trans-unit id="installedServiceChannelMsg">
+        <source xml:lang="en">Installed {0}</source>
+        <target state="translated">설치된 {0}</target>
+      </trans-unit>
+      <trans-unit id="installingServiceChannelMsg">
+        <source xml:lang="en">Installing {0} to {1}</source>
+        <target state="translated">{1}에 {0} 설치 중</target>
+      </trans-unit>
+      <trans-unit id="installingServiceStatusMsg">
+        <source xml:lang="en">Installing {0}</source>
+        <target state="translated">{0} 설치 중</target>
+      </trans-unit>
+      <trans-unit id="serviceStartedStatusMsg">
+        <source xml:lang="en">{0} Started</source>
+        <target state="translated">{0}이(가) 시작됨</target>
+      </trans-unit>
+      <trans-unit id="startingServiceStatusMsg">
+        <source xml:lang="en">Starting {0}</source>
+        <target state="translated">{0}을(를) 시작하는 중</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/mssql/dist/telemetry" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="serviceCrashMessage">
+        <source xml:lang="en">{0} component exited unexpectedly. Please restart Azure Data Studio.</source>
+        <target state="translated">{0} 구성 요소가 예기치 않게 종료되었습니다. Azure Data Studio를 다시 시작하세요.</target>
+      </trans-unit>
+      <trans-unit id="viewKnownIssuesText">
+        <source xml:lang="en">View Known Issues</source>
+        <target state="translated">알려진 문제 보기</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/mssql/package" source-language="en" datatype="plaintext" target-language="ko">
     <body>
+      <trans-unit id="cloud.databaseProperties.azureEdition">
+        <source xml:lang="en">Edition</source>
+        <target state="translated">버전</target>
+      </trans-unit>
+      <trans-unit id="cloud.databaseProperties.compatibilityLevel">
+        <source xml:lang="en">Compatibility Level</source>
+        <target state="translated">호환성 수준</target>
+      </trans-unit>
+      <trans-unit id="cloud.databaseProperties.owner">
+        <source xml:lang="en">Owner</source>
+        <target state="translated">소유자</target>
+      </trans-unit>
+      <trans-unit id="cloud.databaseProperties.serviceLevelObjective">
+        <source xml:lang="en">Pricing Tier</source>
+        <target state="translated">가격 책정 계층</target>
+      </trans-unit>
+      <trans-unit id="cloud.serverProperties.serverEdition">
+        <source xml:lang="en">Type</source>
+        <target state="translated">형식</target>
+      </trans-unit>
+      <trans-unit id="cloud.serverProperties.serverVersion">
+        <source xml:lang="en">Version</source>
+        <target state="translated">버전</target>
+      </trans-unit>
+      <trans-unit id="databasesListProperties.lastBackup">
+        <source xml:lang="en">Last backup</source>
+        <target state="translated">마지막 백업</target>
+      </trans-unit>
+      <trans-unit id="databasesListProperties.name">
+        <source xml:lang="en">Name</source>
+        <target state="translated">이름</target>
+      </trans-unit>
+      <trans-unit id="databasesListProperties.size">
+        <source xml:lang="en">Size (MB)</source>
+        <target state="translated">크기(MB)</target>
+      </trans-unit>
+      <trans-unit id="databasesListProperties.status">
+        <source xml:lang="en">Status</source>
+        <target state="translated">상태</target>
+      </trans-unit>
+      <trans-unit id="json.format.enable.desc">
+        <source xml:lang="en">Enable/disable default JSON formatter (requires restart)</source>
+        <target state="translated">기본 JSON 포맷터 사용/사용 안 함(다시 시작해야 함)</target>
+      </trans-unit>
       <trans-unit id="json.schemas.desc">
         <source xml:lang="en">Associate schemas to JSON files in the current project</source>
         <target state="translated">현재 프로젝트에서 스키마를 JSON 파일에 연결</target>
-      </trans-unit>
-      <trans-unit id="json.schemas.url.desc">
-        <source xml:lang="en">A URL to a schema or a relative path to a schema in the current directory</source>
-        <target state="translated">현재 디렉터리에 있는 스키마의 URL 또는 상대 경로</target>
       </trans-unit>
       <trans-unit id="json.schemas.fileMatch.desc">
         <source xml:lang="en">An array of file patterns to match against when resolving JSON files to schemas.</source>
@@ -22,107 +938,325 @@
         <source xml:lang="en">The schema definition for the given URL. The schema only needs to be provided to avoid accesses to the schema URL.</source>
         <target state="translated">지정된 URL의 스키마 정의입니다. 스키마는 스키마 URL에 대한 액세스 방지를 위해서만 제공해야 합니다.</target>
       </trans-unit>
-      <trans-unit id="json.format.enable.desc">
-        <source xml:lang="en">Enable/disable default JSON formatter (requires restart)</source>
-        <target state="translated">기본 JSON 포맷터 사용/사용 안 함(다시 시작해야 함)</target>
+      <trans-unit id="json.schemas.url.desc">
+        <source xml:lang="en">A URL to a schema or a relative path to a schema in the current directory</source>
+        <target state="translated">현재 디렉터리에 있는 스키마의 URL 또는 상대 경로</target>
       </trans-unit>
-      <trans-unit id="mssqlCluster.uploadFiles">
-        <source xml:lang="en">Upload files</source>
-        <target state="translated">파일 업로드</target>
+      <trans-unit id="mssql.configuration.title">
+        <source xml:lang="en">MSSQL configuration</source>
+        <target state="translated">MSSQL 구성</target>
       </trans-unit>
-      <trans-unit id="mssqlCluster.mkdir">
-        <source xml:lang="en">New directory</source>
-        <target state="translated">새 디렉터리</target>
+      <trans-unit id="mssql.connectionOptions.applicationIntent.description">
+        <source xml:lang="en">Declares the application workload type when connecting to a server</source>
+        <target state="translated">서버에 연결할 때 애플리케이션 워크로드 형식을 선언합니다.</target>
       </trans-unit>
-      <trans-unit id="mssqlCluster.deleteFiles">
-        <source xml:lang="en">Delete</source>
-        <target state="translated">삭제</target>
+      <trans-unit id="mssql.connectionOptions.applicationIntent.displayName">
+        <source xml:lang="en">Application intent</source>
+        <target state="translated">애플리케이션 의도</target>
       </trans-unit>
-      <trans-unit id="mssqlCluster.previewFile">
-        <source xml:lang="en">Preview</source>
-        <target state="translated">미리 보기</target>
+      <trans-unit id="mssql.connectionOptions.applicationName.description">
+        <source xml:lang="en">The name of the application</source>
+        <target state="translated">애플리케이션의 이름</target>
       </trans-unit>
-      <trans-unit id="mssqlCluster.saveFile">
-        <source xml:lang="en">Save</source>
-        <target state="translated">저장</target>
+      <trans-unit id="mssql.connectionOptions.applicationName.displayName">
+        <source xml:lang="en">Application name</source>
+        <target state="translated">애플리케이션 이름</target>
       </trans-unit>
-      <trans-unit id="mssqlCluster.copyPath">
-        <source xml:lang="en">Copy Path</source>
-        <target state="translated">경로 복사</target>
+      <trans-unit id="mssql.connectionOptions.asynchronousProcessing.description">
+        <source xml:lang="en">When true, enables usage of the Asynchronous functionality in the .Net Framework Data Provider</source>
+        <target state="translated">true인 경우 .NET Framework 데이터 공급자에서 비동기 기능의 사용을 활성화합니다.</target>
       </trans-unit>
-      <trans-unit id="mssqlCluster.manageAccess">
-        <source xml:lang="en">Manage Access</source>
-        <target state="translated">액세스 관리</target>
+      <trans-unit id="mssql.connectionOptions.asynchronousProcessing.displayName">
+        <source xml:lang="en">Asynchronous processing</source>
+        <target state="translated">비동기 처리</target>
       </trans-unit>
-      <trans-unit id="notebook.command.new">
-        <source xml:lang="en">New Notebook</source>
-        <target state="translated">새 Notebook</target>
+      <trans-unit id="mssql.connectionOptions.attachDbFilename.displayName">
+        <source xml:lang="en">Attach DB filename</source>
+        <target state="translated">DB 파일 이름 연결</target>
       </trans-unit>
-      <trans-unit id="notebook.command.open">
-        <source xml:lang="en">Open Notebook</source>
-        <target state="translated">Notebook 열기</target>
+      <trans-unit id="mssql.connectionOptions.attachedDBFileName.description">
+        <source xml:lang="en">The name of the primary file, including the full path name, of an attachable database</source>
+        <target state="translated">연결할 수 있는 데이터베이스의 기본 파일 이름(전체 경로 이름 포함)</target>
       </trans-unit>
-      <trans-unit id="tab.bigDataClusterDescription">
-        <source xml:lang="en">Tasks and information about your SQL Server Big Data Cluster</source>
-        <target state="translated">SQL Server 빅 데이터 클러스터에 대한 작업 및 정보</target>
+      <trans-unit id="mssql.connectionOptions.attachedDBFileName.displayName">
+        <source xml:lang="en">Attached DB file name</source>
+        <target state="translated">연결된 DB 파일 이름</target>
       </trans-unit>
-      <trans-unit id="title.bigDataCluster">
-        <source xml:lang="en">SQL Server Big Data Cluster</source>
-        <target state="translated">SQL Server 빅 데이터 클러스터</target>
+      <trans-unit id="mssql.connectionOptions.authType.categoryValues.azureMFA">
+        <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
+        <target state="translated">Azure Active Directory - MFA가 지원되는 유니버설</target>
       </trans-unit>
-      <trans-unit id="title.submitSparkJob">
-        <source xml:lang="en">Submit Spark Job</source>
-        <target state="translated">Spark 작업 제출</target>
+      <trans-unit id="mssql.connectionOptions.authType.categoryValues.integrated">
+        <source xml:lang="en">Windows Authentication</source>
+        <target state="translated">Windows 인증</target>
       </trans-unit>
-      <trans-unit id="title.newSparkJob">
-        <source xml:lang="en">New Spark Job</source>
-        <target state="translated">새 Spark 작업</target>
+      <trans-unit id="mssql.connectionOptions.authType.categoryValues.sqlLogin">
+        <source xml:lang="en">SQL Login</source>
+        <target state="translated">SQL 로그인</target>
       </trans-unit>
-      <trans-unit id="title.openSparkHistory">
-        <source xml:lang="en">View Spark History</source>
-        <target state="translated">Spark 기록 보기</target>
+      <trans-unit id="mssql.connectionOptions.authType.description">
+        <source xml:lang="en">Specifies the method of authenticating with SQL Server</source>
+        <target state="translated">SQL Server로 인증하는 방법을 지정합니다.</target>
       </trans-unit>
-      <trans-unit id="title.openYarnHistory">
-        <source xml:lang="en">View Yarn History</source>
-        <target state="translated">Yarn 기록 보기</target>
+      <trans-unit id="mssql.connectionOptions.authType.displayName">
+        <source xml:lang="en">Authentication type</source>
+        <target state="translated">인증 유형</target>
       </trans-unit>
-      <trans-unit id="title.tasks">
-        <source xml:lang="en">Tasks</source>
-        <target state="translated">작업</target>
+      <trans-unit id="mssql.connectionOptions.columnEncryptionSetting.description">
+        <source xml:lang="en">Enables or disables Always Encrypted for the connection</source>
+        <target state="translated">연결에 Always Encrypted 기능 사용 또는 사용 안 함</target>
       </trans-unit>
-      <trans-unit id="title.installPackages">
-        <source xml:lang="en">Install Packages</source>
-        <target state="translated">패키지 설치</target>
+      <trans-unit id="mssql.connectionOptions.columnEncryptionSetting.displayName">
+        <source xml:lang="en">Always Encrypted</source>
+        <target state="translated">Always Encrypted</target>
       </trans-unit>
-      <trans-unit id="title.configurePython">
-        <source xml:lang="en">Configure Python for Notebooks</source>
-        <target state="translated">Notebook용 Python 구성</target>
+      <trans-unit id="mssql.connectionOptions.connectRetryCount.description">
+        <source xml:lang="en">Number of attempts to restore connection</source>
+        <target state="translated">연결 복구 시도의 횟수</target>
       </trans-unit>
-      <trans-unit id="title.openClusterDashboard">
-        <source xml:lang="en">Cluster
-Dashboard</source>
-        <target state="translated">클러스터
-대시보드</target>
+      <trans-unit id="mssql.connectionOptions.connectRetryCount.displayName">
+        <source xml:lang="en">Connect retry count</source>
+        <target state="translated">연결 다시 시도 횟수</target>
       </trans-unit>
-      <trans-unit id="title.searchServers">
-        <source xml:lang="en">Search: Servers</source>
-        <target state="translated">검색: 서버</target>
+      <trans-unit id="mssql.connectionOptions.connectRetryInterval.description">
+        <source xml:lang="en">Delay between attempts to restore connection</source>
+        <target state="translated">연결 복구 시도 간 지연 시간</target>
       </trans-unit>
-      <trans-unit id="title.clearSearchServerResult">
-        <source xml:lang="en">Search: Clear Search Server Results</source>
-        <target state="translated">검색: 검색 서버 결과 지우기</target>
+      <trans-unit id="mssql.connectionOptions.connectRetryInterval.displayName">
+        <source xml:lang="en">Connect retry interval</source>
+        <target state="translated">연결 다시 시도 간격</target>
       </trans-unit>
-      <trans-unit id="title.endpoints">
-        <source xml:lang="en">Service Endpoints</source>
-        <target state="translated">서비스 엔드포인트</target>
+      <trans-unit id="mssql.connectionOptions.connectTimeout.description">
+        <source xml:lang="en">The length of time (in seconds) to wait for a connection to the server before terminating the attempt and generating an error</source>
+        <target state="translated">연결 시도를 중단하고 오류를 생성하기 전 서버에 연결될 때까지의 대기 시간(초)입니다.</target>
       </trans-unit>
-      <trans-unit id="title.books">
-        <source xml:lang="en">Notebooks</source>
-        <target state="translated">Notebook</target>
+      <trans-unit id="mssql.connectionOptions.connectTimeout.displayName">
+        <source xml:lang="en">Connect timeout</source>
+        <target state="translated">연결 시간 제한</target>
       </trans-unit>
-      <trans-unit id="title.showLogFile">
-        <source xml:lang="en">Show Log File</source>
-        <target state="translated">로그 파일 표시</target>
+      <trans-unit id="mssql.connectionOptions.connectionName.description">
+        <source xml:lang="en">Custom name of the connection</source>
+        <target state="translated">연결의 사용자 지정 이름</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.connectionName.displayName">
+        <source xml:lang="en">Name (optional)</source>
+        <target state="translated">이름(옵션)</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.contextConnection.description">
+        <source xml:lang="en">When true, indicates the connection should be from the SQL server context. Available only when running in the SQL Server process</source>
+        <target state="translated">true인 경우 연결이 SQL Server 컨텍스트에서 시작되어야 함을 나타냅니다. SQL Server 프로세스에서 실행 중인 경우에만 사용할 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.contextConnection.displayName">
+        <source xml:lang="en">Context connection</source>
+        <target state="translated">컨텍스트 연결</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.currentLanguage.description">
+        <source xml:lang="en">The SQL Server language record name</source>
+        <target state="translated">SQL Server 언어 레코드 이름</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.currentLanguage.displayName">
+        <source xml:lang="en">Current language</source>
+        <target state="translated">현재 언어</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.databaseName.description">
+        <source xml:lang="en">The name of the initial catalog or database int the data source</source>
+        <target state="translated">데이터 원본에 있는 초기 카탈로그 또는 데이터베이스의 이름</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.databaseName.displayName">
+        <source xml:lang="en">Database</source>
+        <target state="translated">데이터베이스</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.AAS">
+        <source xml:lang="en">Azure Attestation</source>
+        <target state="translated">Azure Attestation</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.HGS">
+        <source xml:lang="en">Host Guardian Service</source>
+        <target state="translated">호스트 보호 서비스</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.description">
+        <source xml:lang="en">Specifies a protocol for attesting a server-side enclave used with Always Encrypted with secure enclaves</source>
+        <target state="translated">보안 enclave를 사용한 Always Encrypted와 함께 사용되는 서버 쪽 enclave를 증명하기 위한 프로토콜 지정</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.displayName">
+        <source xml:lang="en">Attestation Protocol</source>
+        <target state="translated">증명 프로토콜</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.enclaveAttestationUrl.description">
+        <source xml:lang="en">Specifies an endpoint for attesting a server-side enclave used with Always Encrypted with secure enclaves</source>
+        <target state="translated">보안 enclave를 사용한 Always Encrypted와 함께 사용되는 서버 쪽 enclave를 증명하기 위한 엔드포인트 지정</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.enclaveAttestationUrl.displayName">
+        <source xml:lang="en">Enclave Attestation URL</source>
+        <target state="translated">Enclave 증명 URL</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.encrypt.description">
+        <source xml:lang="en">When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed</source>
+        <target state="translated">true인 경우 서버에 인증서가 설치되어 있으면 SQL Server는 클라이언트와 서버 간에 전송된 모든 데이터에 대해 SSL 암호화를 사용합니다.</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.encrypt.displayName">
+        <source xml:lang="en">Encrypt</source>
+        <target state="translated">암호화</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.failoverPartner.description">
+        <source xml:lang="en">The name or network address of the instance of SQL Server that acts as a failover partner</source>
+        <target state="translated">장애 조치(failover) 파트너 역할을 하는 SQL Server 인스턴스의 이름 또는 네트워크 주소</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.failoverPartner.displayName">
+        <source xml:lang="en">Failover partner</source>
+        <target state="translated">장애 조치(failover) 파트너</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.groupName.advanced">
+        <source xml:lang="en">Advanced</source>
+        <target state="translated">고급</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.groupName.connectionResiliency">
+        <source xml:lang="en">Connection Resiliency</source>
+        <target state="translated">연결 복구</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.groupName.context">
+        <source xml:lang="en">Context</source>
+        <target state="translated">컨텍스트</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.groupName.initialization">
+        <source xml:lang="en">Initialization</source>
+        <target state="translated">초기화</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.groupName.pooling">
+        <source xml:lang="en">Pooling</source>
+        <target state="translated">풀링</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.groupName.replication">
+        <source xml:lang="en">Replication</source>
+        <target state="translated">복제</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.groupName.security">
+        <source xml:lang="en">Security</source>
+        <target state="translated">보안</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.groupName.source">
+        <source xml:lang="en">Source</source>
+        <target state="translated">원본</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.loadBalanceTimeout.description">
+        <source xml:lang="en">The minimum amount of time (in seconds) for this connection to live in the pool before being destroyed</source>
+        <target state="translated">이 연결이 제거되기 전에 풀에서 활성화되어 있는 최소 시간(초)입니다.</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.loadBalanceTimeout.displayName">
+        <source xml:lang="en">Load balance timeout</source>
+        <target state="translated">부하 분산 시간 제한</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.maxPoolSize.description">
+        <source xml:lang="en">The maximum number of connections allowed in the pool</source>
+        <target state="translated">풀에서 허용되는 최대 연결 수</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.maxPoolSize.displayName">
+        <source xml:lang="en">Max pool size</source>
+        <target state="translated">최대 풀 크기</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.minPoolSize.description">
+        <source xml:lang="en">The minimum number of connections allowed in the pool</source>
+        <target state="translated">풀에서 허용되는 최소 연결 수</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.minPoolSize.displayName">
+        <source xml:lang="en">Min pool size</source>
+        <target state="translated">최소 풀 크기</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.multiSubnetFailover.displayName">
+        <source xml:lang="en">Multi subnet failover</source>
+        <target state="translated">다중 서브넷 장애 조치(failover)</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.multipleActiveResultSets.description">
+        <source xml:lang="en">When true, multiple result sets can be returned and read from one connection</source>
+        <target state="translated">true인 경우 한 연결에서 여러 결과 집합을 반환하고 읽을 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.multipleActiveResultSets.displayName">
+        <source xml:lang="en">Multiple active result sets</source>
+        <target state="translated">여러 개의 활성 결과 집합</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.packetSize.description">
+        <source xml:lang="en">Size in bytes of the network packets used to communicate with an instance of SQL Server</source>
+        <target state="translated">SQL Server 인스턴스와 통신하는 데 사용되는 네트워크 패킷의 크기(바이트)</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.packetSize.displayName">
+        <source xml:lang="en">Packet size</source>
+        <target state="translated">패킷 크기</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.password.description">
+        <source xml:lang="en">Indicates the password to be used when connecting to the data source</source>
+        <target state="translated">데이터 원본에 연결할 때 사용할 암호를 나타냅니다.</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.password.displayName">
+        <source xml:lang="en">Password</source>
+        <target state="translated">암호</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.persistSecurityInfo.description">
+        <source xml:lang="en">When false, security-sensitive information, such as the password, is not returned as part of the connection</source>
+        <target state="translated">false이면 보안상 중요한 정보(예: 암호)를 연결의 일부로 반환하지 않습니다.</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.persistSecurityInfo.displayName">
+        <source xml:lang="en">Persist security info</source>
+        <target state="translated">보안 정보 유지</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.pooling.description">
+        <source xml:lang="en">When true, the connection object is drawn from the appropriate pool, or if necessary, is created and added to the appropriate pool</source>
+        <target state="translated">true이면 해당 풀에서 연결 개체를 끌어 오거나 필요한 경우 연결 개체를 만들어 해당 풀에 추가합니다.</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.pooling.displayName">
+        <source xml:lang="en">Pooling</source>
+        <target state="translated">풀링</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.port.displayName">
+        <source xml:lang="en">Port</source>
+        <target state="translated">포트</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.replication.description">
+        <source xml:lang="en">Used by SQL Server in Replication</source>
+        <target state="translated">복제에서 SQL Server가 사용합니다.</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.replication.displayName">
+        <source xml:lang="en">Replication</source>
+        <target state="translated">복제</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.serverName.description">
+        <source xml:lang="en">Name of the SQL Server instance</source>
+        <target state="translated">SQL Server 인스턴스의 이름</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.serverName.displayName">
+        <source xml:lang="en">Server</source>
+        <target state="translated">서버</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.trustServerCertificate.description">
+        <source xml:lang="en">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate</source>
+        <target state="translated">true(및 encrypt=true)인 경우 SQL Server는 서버 인증서의 유효성을 검사하지 않고 클라이언트와 서버 간에 전송된 모든 데이터에 대해 SSL 암호화를 사용합니다.</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.trustServerCertificate.displayName">
+        <source xml:lang="en">Trust server certificate</source>
+        <target state="translated">서버 인증서 신뢰</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.typeSystemVersion.description">
+        <source xml:lang="en">Indicates which server type system the provider will expose through the DataReader</source>
+        <target state="translated">공급자가 DataReader를 통해 공개할 서버 유형 시스템을 나타냄</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.typeSystemVersion.displayName">
+        <source xml:lang="en">Type system version</source>
+        <target state="translated">형식 시스템 버전</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.userName.description">
+        <source xml:lang="en">Indicates the user ID to be used when connecting to the data source</source>
+        <target state="translated">데이터 원본에 연결할 때 사용할 사용자 ID를 나타냅니다.</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.userName.displayName">
+        <source xml:lang="en">User name</source>
+        <target state="translated">사용자 이름</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.workstationId.description">
+        <source xml:lang="en">The name of the workstation connecting to SQL Server</source>
+        <target state="translated">SQL Server에 연결하는 워크스테이션의 이름</target>
+      </trans-unit>
+      <trans-unit id="mssql.connectionOptions.workstationId.displayName">
+        <source xml:lang="en">Workstation Id</source>
+        <target state="translated">워크스테이션 ID</target>
       </trans-unit>
       <trans-unit id="mssql.disabled">
         <source xml:lang="en">Disabled</source>
@@ -139,18 +1273,6 @@ Dashboard</source>
       <trans-unit id="mssql.exportSqlAsNotebook">
         <source xml:lang="en">Export SQL as Notebook</source>
         <target state="translated">SQL을 Notebook으로 내보내기</target>
-      </trans-unit>
-      <trans-unit id="mssql.configuration.title">
-        <source xml:lang="en">MSSQL configuration</source>
-        <target state="translated">MSSQL 구성</target>
-      </trans-unit>
-      <trans-unit id="mssql.query.displayBitAsNumber">
-        <source xml:lang="en">Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false'</source>
-        <target state="translated">BIT 열을 숫자(1 또는 0)로 표시할지 여부. False이면 BIT 열을 'true' 또는 'false'로 표시합니다.</target>
-      </trans-unit>
-      <trans-unit id="mssql.query.maxXmlCharsToStore">
-        <source xml:lang="en">Number of XML characters to store after running a query</source>
-        <target state="translated">쿼리를 실행한 후 저장할 XML 문자 수</target>
       </trans-unit>
       <trans-unit id="mssql.format.alignColumnDefinitionsInColumns">
         <source xml:lang="en">Should column definitions be aligned?</source>
@@ -172,53 +1294,101 @@ Dashboard</source>
         <source xml:lang="en">Should references to objects in a select statements be split into separate lines? E.g. for 'SELECT C1, C2 FROM T1' both C1 and C2 will be on separate lines</source>
         <target state="translated">Select 문에서 개체에 대한 참조를 별도 줄에 분할할지 여부(예: 'SELECT C1, C2 FROM T1'의 경우 C1 및 C2를 별도의 줄에 표시함)</target>
       </trans-unit>
-      <trans-unit id="mssql.logDebugInfo">
-        <source xml:lang="en">[Optional] Log debug output to the console (View -&gt; Output) and then select appropriate output channel from the dropdown</source>
-        <target state="translated">[옵션] 디버그 출력을 콘솔에 로깅한 다음(보기 -&gt; 출력), 드롭다운에서 해당 출력 채널을 선택합니다.</target>
-      </trans-unit>
-      <trans-unit id="mssql.tracingLevel">
-        <source xml:lang="en">[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information</source>
-        <target state="translated">[옵션] 백 엔드 서비스의 로그 수준입니다. Azure Data Studio는 시작할 때마다 파일 이름을 생성하며 파일이 이미 있으면 로그 항목이 해당 파일에 추가됩니다. 이전 로그 파일을 정리하려면 logRetentionMinutes 및 logFilesRemovalLimit 설정을 참조하세요. 기본 tracingLevel에서는 많은 양의 로그가 기록되지 않습니다. 세부 정보 표시를 변경하면 로깅이 광범위해지고 로그의 디스크 공간 요구 사항이 커질 수 있습니다. 오류이면 중요가 포함되고 경고이면 오류가 포함되고 정보이면 경고가 포함되고 세부 정보 표시이면 정보가 포함됩니다.</target>
-      </trans-unit>
-      <trans-unit id="mssql.logRetentionMinutes">
-        <source xml:lang="en">Number of minutes to retain log files for backend services. Default is 1 week.</source>
-        <target state="translated">백 엔드 서비스의 로그 파일을 유지하는 시간(분)입니다. 기본값은 1주일입니다.</target>
-      </trans-unit>
-      <trans-unit id="mssql.logFilesRemovalLimit">
-        <source xml:lang="en">Maximum number of old files to remove upon startup that have expired mssql.logRetentionMinutes. Files that do not get cleaned up due to this limitation get cleaned up next time Azure Data Studio starts up.</source>
-        <target state="translated">시작 시 제거하려고 하며 mssql.logRetentionMinutes가 만료된 이전 파일의 최대 수입니다. 이 제한으로 인해 정리되지 않은 파일은 다음에 Azure Data Studio를 시작할 때 정리됩니다.</target>
-      </trans-unit>
-      <trans-unit id="mssql.intelliSense.enableIntelliSense">
-        <source xml:lang="en">Should IntelliSense be enabled</source>
-        <target state="translated">IntelliSense 사용 여부</target>
+      <trans-unit id="mssql.ignorePlatformWarning">
+        <source xml:lang="en">[Optional] Do not show unsupported platform warnings</source>
+        <target state="translated">[옵션] 지원되지 않는 플랫폼 경고 표시 안 함</target>
       </trans-unit>
       <trans-unit id="mssql.intelliSense.enableErrorChecking">
         <source xml:lang="en">Should IntelliSense error checking be enabled</source>
         <target state="translated">IntelliSense 오류 검사 사용 여부</target>
       </trans-unit>
-      <trans-unit id="mssql.intelliSense.enableSuggestions">
-        <source xml:lang="en">Should IntelliSense suggestions be enabled</source>
-        <target state="translated">IntelliSense 제안 사용 여부</target>
+      <trans-unit id="mssql.intelliSense.enableIntelliSense">
+        <source xml:lang="en">Should IntelliSense be enabled</source>
+        <target state="translated">IntelliSense 사용 여부</target>
       </trans-unit>
       <trans-unit id="mssql.intelliSense.enableQuickInfo">
         <source xml:lang="en">Should IntelliSense quick info be enabled</source>
         <target state="translated">IntelliSense 빠른 정보 사용 여부</target>
       </trans-unit>
+      <trans-unit id="mssql.intelliSense.enableSuggestions">
+        <source xml:lang="en">Should IntelliSense suggestions be enabled</source>
+        <target state="translated">IntelliSense 제안 사용 여부</target>
+      </trans-unit>
       <trans-unit id="mssql.intelliSense.lowerCaseSuggestions">
         <source xml:lang="en">Should IntelliSense suggestions be lowercase</source>
         <target state="translated">IntelliSense 제안을 소문자로 표시할지 여부</target>
       </trans-unit>
-      <trans-unit id="mssql.query.setRowCount">
-        <source xml:lang="en">Maximum number of rows to return before the server stops processing your query.</source>
-        <target state="translated">서버가 쿼리 처리를 중지하기 전에 반환할 최대 행 수입니다.</target>
+      <trans-unit id="mssql.logDebugInfo">
+        <source xml:lang="en">[Optional] Log debug output to the console (View -&gt; Output) and then select appropriate output channel from the dropdown</source>
+        <target state="translated">[옵션] 디버그 출력을 콘솔에 로깅한 다음(보기 -&gt; 출력), 드롭다운에서 해당 출력 채널을 선택합니다.</target>
       </trans-unit>
-      <trans-unit id="mssql.query.textSize">
-        <source xml:lang="en">Maximum size of text and ntext data returned from a SELECT statement</source>
-        <target state="translated">SELECT 문에서 반환되는 text 및 ntext 데이터의 최대 크기</target>
+      <trans-unit id="mssql.logFilesRemovalLimit">
+        <source xml:lang="en">Maximum number of old files to remove upon startup that have expired mssql.logRetentionMinutes. Files that do not get cleaned up due to this limitation get cleaned up next time Azure Data Studio starts up.</source>
+        <target state="translated">시작 시 제거하려고 하며 mssql.logRetentionMinutes가 만료된 이전 파일의 최대 수입니다. 이 제한으로 인해 정리되지 않은 파일은 다음에 Azure Data Studio를 시작할 때 정리됩니다.</target>
+      </trans-unit>
+      <trans-unit id="mssql.logRetentionMinutes">
+        <source xml:lang="en">Number of minutes to retain log files for backend services. Default is 1 week.</source>
+        <target state="translated">백 엔드 서비스의 로그 파일을 유지하는 시간(분)입니다. 기본값은 1주일입니다.</target>
+      </trans-unit>
+      <trans-unit id="mssql.provider.displayName">
+        <source xml:lang="en">Microsoft SQL Server</source>
+        <target state="translated">Microsoft SQL Server</target>
+      </trans-unit>
+      <trans-unit id="mssql.query.alwaysEncryptedParameterization">
+        <source xml:lang="en">Enable Parameterization for Always Encrypted</source>
+        <target state="translated">Always Encrypted에 매개 변수화 사용</target>
+      </trans-unit>
+      <trans-unit id="mssql.query.ansiDefaults">
+        <source xml:lang="en">Enable SET ANSI_DEFAULTS</source>
+        <target state="translated">SET ANSI_DEFAULTS 사용</target>
+      </trans-unit>
+      <trans-unit id="mssql.query.ansiNullDefaultOn">
+        <source xml:lang="en">Enable SET ANSI_NULL_DFLT_ON</source>
+        <target state="translated">SET ANSI_NULL_DFLT_ON 사용</target>
+      </trans-unit>
+      <trans-unit id="mssql.query.ansiNulls">
+        <source xml:lang="en">Enable SET ANSI_NULLS</source>
+        <target state="translated">SET ANSI_NULLS 사용</target>
+      </trans-unit>
+      <trans-unit id="mssql.query.ansiPadding">
+        <source xml:lang="en">Enable SET ANSI_PADDING</source>
+        <target state="translated">SET ANSI_PADDING 사용</target>
+      </trans-unit>
+      <trans-unit id="mssql.query.ansiWarnings">
+        <source xml:lang="en">Enable SET ANSI_WARNINGS</source>
+        <target state="translated">SET ANSI_WARNINGS 사용</target>
+      </trans-unit>
+      <trans-unit id="mssql.query.arithAbort">
+        <source xml:lang="en">Enable SET ARITHABORT option</source>
+        <target state="translated">SET ARITHABORT 옵션 사용</target>
+      </trans-unit>
+      <trans-unit id="mssql.query.cursorCloseOnCommit">
+        <source xml:lang="en">Enable SET CURSOR_CLOSE_ON_COMMIT</source>
+        <target state="translated">SET CURSOR_CLOSE_ON_COMMIT 사용</target>
+      </trans-unit>
+      <trans-unit id="mssql.query.deadlockPriority">
+        <source xml:lang="en">Enable SET DEADLOCK_PRIORITY option</source>
+        <target state="translated">SET DEADLOCK_PRIORITY 옵션 사용</target>
+      </trans-unit>
+      <trans-unit id="mssql.query.displayBitAsNumber">
+        <source xml:lang="en">Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false'</source>
+        <target state="translated">BIT 열을 숫자(1 또는 0)로 표시할지 여부. False이면 BIT 열을 'true' 또는 'false'로 표시합니다.</target>
       </trans-unit>
       <trans-unit id="mssql.query.executionTimeout">
         <source xml:lang="en">An execution time-out of 0 indicates an unlimited wait (no time-out)</source>
         <target state="translated">실행 시간 제한이 0이면 무제한 대기(시간 제한 없음)를 나타냅니다.</target>
+      </trans-unit>
+      <trans-unit id="mssql.query.implicitTransactions">
+        <source xml:lang="en">Enable SET IMPLICIT_TRANSACTIONS</source>
+        <target state="translated">SET IMPLICIT_TRANSACTIONS 사용</target>
+      </trans-unit>
+      <trans-unit id="mssql.query.lockTimeout">
+        <source xml:lang="en">Enable SET LOCK TIMEOUT option (in milliseconds)</source>
+        <target state="translated">SET LOCK TIMEOUT 옵션 사용(밀리초)</target>
+      </trans-unit>
+      <trans-unit id="mssql.query.maxXmlCharsToStore">
+        <source xml:lang="en">Number of XML characters to store after running a query</source>
+        <target state="translated">쿼리를 실행한 후 저장할 XML 문자 수</target>
       </trans-unit>
       <trans-unit id="mssql.query.noCount">
         <source xml:lang="en">Enable SET NOCOUNT option</source>
@@ -232,81 +1402,85 @@ Dashboard</source>
         <source xml:lang="en">Enable SET PARSEONLY option</source>
         <target state="translated">SET PARSEONLY 옵션 사용</target>
       </trans-unit>
-      <trans-unit id="mssql.query.arithAbort">
-        <source xml:lang="en">Enable SET ARITHABORT option</source>
-        <target state="translated">SET ARITHABORT 옵션 사용</target>
-      </trans-unit>
-      <trans-unit id="mssql.query.statisticsTime">
-        <source xml:lang="en">Enable SET STATISTICS TIME option</source>
-        <target state="translated">SET STATISTICS TIME 옵션 사용</target>
-      </trans-unit>
-      <trans-unit id="mssql.query.statisticsIO">
-        <source xml:lang="en">Enable SET STATISTICS IO option</source>
-        <target state="translated">SET STATISTICS IO 옵션 사용</target>
-      </trans-unit>
-      <trans-unit id="mssql.query.xactAbortOn">
-        <source xml:lang="en">Enable SET XACT_ABORT ON option</source>
-        <target state="translated">SET XACT_ABORT ON 옵션 사용</target>
-      </trans-unit>
-      <trans-unit id="mssql.query.transactionIsolationLevel">
-        <source xml:lang="en">Enable SET TRANSACTION ISOLATION LEVEL option</source>
-        <target state="translated">SET TRANSACTION ISOLATION LEVEL 옵션 사용</target>
-      </trans-unit>
-      <trans-unit id="mssql.query.deadlockPriority">
-        <source xml:lang="en">Enable SET DEADLOCK_PRIORITY option</source>
-        <target state="translated">SET DEADLOCK_PRIORITY 옵션 사용</target>
-      </trans-unit>
-      <trans-unit id="mssql.query.lockTimeout">
-        <source xml:lang="en">Enable SET LOCK TIMEOUT option (in milliseconds)</source>
-        <target state="translated">SET LOCK TIMEOUT 옵션 사용(밀리초)</target>
-      </trans-unit>
       <trans-unit id="mssql.query.queryGovernorCostLimit">
         <source xml:lang="en">Enable SET QUERY_GOVERNOR_COST_LIMIT</source>
         <target state="translated">SET QUERY_GOVERNOR_COST_LIMIT 사용</target>
-      </trans-unit>
-      <trans-unit id="mssql.query.ansiDefaults">
-        <source xml:lang="en">Enable SET ANSI_DEFAULTS</source>
-        <target state="translated">SET ANSI_DEFAULTS 사용</target>
       </trans-unit>
       <trans-unit id="mssql.query.quotedIdentifier">
         <source xml:lang="en">Enable SET QUOTED_IDENTIFIER</source>
         <target state="translated">SET QUOTED_IDENTIFIER 사용</target>
       </trans-unit>
-      <trans-unit id="mssql.query.ansiNullDefaultOn">
-        <source xml:lang="en">Enable SET ANSI_NULL_DFLT_ON</source>
-        <target state="translated">SET ANSI_NULL_DFLT_ON 사용</target>
+      <trans-unit id="mssql.query.setRowCount">
+        <source xml:lang="en">Maximum number of rows to return before the server stops processing your query.</source>
+        <target state="translated">서버가 쿼리 처리를 중지하기 전에 반환할 최대 행 수입니다.</target>
       </trans-unit>
-      <trans-unit id="mssql.query.implicitTransactions">
-        <source xml:lang="en">Enable SET IMPLICIT_TRANSACTIONS</source>
-        <target state="translated">SET IMPLICIT_TRANSACTIONS 사용</target>
+      <trans-unit id="mssql.query.statisticsIO">
+        <source xml:lang="en">Enable SET STATISTICS IO option</source>
+        <target state="translated">SET STATISTICS IO 옵션 사용</target>
       </trans-unit>
-      <trans-unit id="mssql.query.cursorCloseOnCommit">
-        <source xml:lang="en">Enable SET CURSOR_CLOSE_ON_COMMIT</source>
-        <target state="translated">SET CURSOR_CLOSE_ON_COMMIT 사용</target>
+      <trans-unit id="mssql.query.statisticsTime">
+        <source xml:lang="en">Enable SET STATISTICS TIME option</source>
+        <target state="translated">SET STATISTICS TIME 옵션 사용</target>
       </trans-unit>
-      <trans-unit id="mssql.query.ansiPadding">
-        <source xml:lang="en">Enable SET ANSI_PADDING</source>
-        <target state="translated">SET ANSI_PADDING 사용</target>
+      <trans-unit id="mssql.query.textSize">
+        <source xml:lang="en">Maximum size of text and ntext data returned from a SELECT statement</source>
+        <target state="translated">SELECT 문에서 반환되는 text 및 ntext 데이터의 최대 크기</target>
       </trans-unit>
-      <trans-unit id="mssql.query.ansiWarnings">
-        <source xml:lang="en">Enable SET ANSI_WARNINGS</source>
-        <target state="translated">SET ANSI_WARNINGS 사용</target>
+      <trans-unit id="mssql.query.transactionIsolationLevel">
+        <source xml:lang="en">Enable SET TRANSACTION ISOLATION LEVEL option</source>
+        <target state="translated">SET TRANSACTION ISOLATION LEVEL 옵션 사용</target>
       </trans-unit>
-      <trans-unit id="mssql.query.ansiNulls">
-        <source xml:lang="en">Enable SET ANSI_NULLS</source>
-        <target state="translated">SET ANSI_NULLS 사용</target>
+      <trans-unit id="mssql.query.xactAbortOn">
+        <source xml:lang="en">Enable SET XACT_ABORT ON option</source>
+        <target state="translated">SET XACT_ABORT ON 옵션 사용</target>
       </trans-unit>
-      <trans-unit id="mssql.query.alwaysEncryptedParameterization">
-        <source xml:lang="en">Enable Parameterization for Always Encrypted</source>
-        <target state="translated">Always Encrypted에 매개 변수화 사용</target>
+      <trans-unit id="mssql.tracingLevel">
+        <source xml:lang="en">[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information</source>
+        <target state="translated">[옵션] 백 엔드 서비스의 로그 수준입니다. Azure Data Studio는 시작할 때마다 파일 이름을 생성하며 파일이 이미 있으면 로그 항목이 해당 파일에 추가됩니다. 이전 로그 파일을 정리하려면 logRetentionMinutes 및 logFilesRemovalLimit 설정을 참조하세요. 기본 tracingLevel에서는 많은 양의 로그가 기록되지 않습니다. 세부 정보 표시를 변경하면 로깅이 광범위해지고 로그의 디스크 공간 요구 사항이 커질 수 있습니다. 오류이면 중요가 포함되고 경고이면 오류가 포함되고 정보이면 경고가 포함되고 세부 정보 표시이면 정보가 포함됩니다.</target>
       </trans-unit>
-      <trans-unit id="mssql.ignorePlatformWarning">
-        <source xml:lang="en">[Optional] Do not show unsupported platform warnings</source>
-        <target state="translated">[옵션] 지원되지 않는 플랫폼 경고 표시 안 함</target>
+      <trans-unit id="mssqlCluster.copyPath">
+        <source xml:lang="en">Copy Path</source>
+        <target state="translated">경로 복사</target>
       </trans-unit>
-      <trans-unit id="onprem.databaseProperties.recoveryModel">
-        <source xml:lang="en">Recovery Model</source>
-        <target state="translated">복구 모델</target>
+      <trans-unit id="mssqlCluster.deleteFiles">
+        <source xml:lang="en">Delete</source>
+        <target state="translated">삭제</target>
+      </trans-unit>
+      <trans-unit id="mssqlCluster.manageAccess">
+        <source xml:lang="en">Manage Access</source>
+        <target state="translated">액세스 관리</target>
+      </trans-unit>
+      <trans-unit id="mssqlCluster.mkdir">
+        <source xml:lang="en">New directory</source>
+        <target state="translated">새 디렉터리</target>
+      </trans-unit>
+      <trans-unit id="mssqlCluster.previewFile">
+        <source xml:lang="en">Preview</source>
+        <target state="translated">미리 보기</target>
+      </trans-unit>
+      <trans-unit id="mssqlCluster.saveFile">
+        <source xml:lang="en">Save</source>
+        <target state="translated">저장</target>
+      </trans-unit>
+      <trans-unit id="mssqlCluster.uploadFiles">
+        <source xml:lang="en">Upload files</source>
+        <target state="translated">파일 업로드</target>
+      </trans-unit>
+      <trans-unit id="notebook.command.new">
+        <source xml:lang="en">New Notebook</source>
+        <target state="translated">새 Notebook</target>
+      </trans-unit>
+      <trans-unit id="notebook.command.open">
+        <source xml:lang="en">Open Notebook</source>
+        <target state="translated">Notebook 열기</target>
+      </trans-unit>
+      <trans-unit id="objectsListProperties.name">
+        <source xml:lang="en">Name</source>
+        <target state="translated">이름</target>
+      </trans-unit>
+      <trans-unit id="onprem.databaseProperties.compatibilityLevel">
+        <source xml:lang="en">Compatibility Level</source>
+        <target state="translated">호환성 수준</target>
       </trans-unit>
       <trans-unit id="onprem.databaseProperties.lastBackupDate">
         <source xml:lang="en">Last Database Backup</source>
@@ -316,21 +1490,13 @@ Dashboard</source>
         <source xml:lang="en">Last Log Backup</source>
         <target state="translated">마지막 로그 백업</target>
       </trans-unit>
-      <trans-unit id="onprem.databaseProperties.compatibilityLevel">
-        <source xml:lang="en">Compatibility Level</source>
-        <target state="translated">호환성 수준</target>
-      </trans-unit>
       <trans-unit id="onprem.databaseProperties.owner">
         <source xml:lang="en">Owner</source>
         <target state="translated">소유자</target>
       </trans-unit>
-      <trans-unit id="onprem.serverProperties.serverVersion">
-        <source xml:lang="en">Version</source>
-        <target state="translated">버전</target>
-      </trans-unit>
-      <trans-unit id="onprem.serverProperties.serverEdition">
-        <source xml:lang="en">Edition</source>
-        <target state="translated">버전</target>
+      <trans-unit id="onprem.databaseProperties.recoveryModel">
+        <source xml:lang="en">Recovery Model</source>
+        <target state="translated">복구 모델</target>
       </trans-unit>
       <trans-unit id="onprem.serverProperties.machineName">
         <source xml:lang="en">Computer Name</source>
@@ -340,1209 +1506,75 @@ Dashboard</source>
         <source xml:lang="en">OS Version</source>
         <target state="translated">OS 버전</target>
       </trans-unit>
-      <trans-unit id="cloud.databaseProperties.azureEdition">
+      <trans-unit id="onprem.serverProperties.serverEdition">
         <source xml:lang="en">Edition</source>
         <target state="translated">버전</target>
       </trans-unit>
-      <trans-unit id="cloud.databaseProperties.serviceLevelObjective">
-        <source xml:lang="en">Pricing Tier</source>
-        <target state="translated">가격 책정 계층</target>
-      </trans-unit>
-      <trans-unit id="cloud.databaseProperties.compatibilityLevel">
-        <source xml:lang="en">Compatibility Level</source>
-        <target state="translated">호환성 수준</target>
-      </trans-unit>
-      <trans-unit id="cloud.databaseProperties.owner">
-        <source xml:lang="en">Owner</source>
-        <target state="translated">소유자</target>
-      </trans-unit>
-      <trans-unit id="cloud.serverProperties.serverVersion">
+      <trans-unit id="onprem.serverProperties.serverVersion">
         <source xml:lang="en">Version</source>
         <target state="translated">버전</target>
       </trans-unit>
-      <trans-unit id="cloud.serverProperties.serverEdition">
-        <source xml:lang="en">Type</source>
-        <target state="translated">형식</target>
-      </trans-unit>
-      <trans-unit id="mssql.provider.displayName">
-        <source xml:lang="en">Microsoft SQL Server</source>
-        <target state="translated">Microsoft SQL Server</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.connectionName.displayName">
-        <source xml:lang="en">Name (optional)</source>
-        <target state="translated">이름(옵션)</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.connectionName.description">
-        <source xml:lang="en">Custom name of the connection</source>
-        <target state="translated">연결의 사용자 지정 이름</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.serverName.displayName">
-        <source xml:lang="en">Server</source>
-        <target state="translated">서버</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.serverName.description">
-        <source xml:lang="en">Name of the SQL Server instance</source>
-        <target state="translated">SQL Server 인스턴스의 이름</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.databaseName.displayName">
-        <source xml:lang="en">Database</source>
-        <target state="translated">데이터베이스</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.databaseName.description">
-        <source xml:lang="en">The name of the initial catalog or database int the data source</source>
-        <target state="translated">데이터 원본에 있는 초기 카탈로그 또는 데이터베이스의 이름</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.authType.displayName">
-        <source xml:lang="en">Authentication type</source>
-        <target state="translated">인증 유형</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.authType.description">
-        <source xml:lang="en">Specifies the method of authenticating with SQL Server</source>
-        <target state="translated">SQL Server로 인증하는 방법을 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.authType.categoryValues.sqlLogin">
-        <source xml:lang="en">SQL Login</source>
-        <target state="translated">SQL 로그인</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.authType.categoryValues.integrated">
-        <source xml:lang="en">Windows Authentication</source>
-        <target state="translated">Windows 인증</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.authType.categoryValues.azureMFA">
-        <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
-        <target state="translated">Azure Active Directory - MFA가 지원되는 유니버설</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.userName.displayName">
-        <source xml:lang="en">User name</source>
-        <target state="translated">사용자 이름</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.userName.description">
-        <source xml:lang="en">Indicates the user ID to be used when connecting to the data source</source>
-        <target state="translated">데이터 원본에 연결할 때 사용할 사용자 ID를 나타냅니다.</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.password.displayName">
-        <source xml:lang="en">Password</source>
-        <target state="translated">암호</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.password.description">
-        <source xml:lang="en">Indicates the password to be used when connecting to the data source</source>
-        <target state="translated">데이터 원본에 연결할 때 사용할 암호를 나타냅니다.</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.applicationIntent.displayName">
-        <source xml:lang="en">Application intent</source>
-        <target state="translated">애플리케이션 의도</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.applicationIntent.description">
-        <source xml:lang="en">Declares the application workload type when connecting to a server</source>
-        <target state="translated">서버에 연결할 때 애플리케이션 워크로드 형식을 선언합니다.</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.asynchronousProcessing.displayName">
-        <source xml:lang="en">Asynchronous processing</source>
-        <target state="translated">비동기 처리</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.asynchronousProcessing.description">
-        <source xml:lang="en">When true, enables usage of the Asynchronous functionality in the .Net Framework Data Provider</source>
-        <target state="translated">true인 경우 .NET Framework 데이터 공급자에서 비동기 기능의 사용을 활성화합니다.</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.connectTimeout.displayName">
-        <source xml:lang="en">Connect timeout</source>
-        <target state="translated">연결 시간 제한</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.connectTimeout.description">
-        <source xml:lang="en">The length of time (in seconds) to wait for a connection to the server before terminating the attempt and generating an error</source>
-        <target state="translated">연결 시도를 중단하고 오류를 생성하기 전 서버에 연결될 때까지의 대기 시간(초)입니다.</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.currentLanguage.displayName">
-        <source xml:lang="en">Current language</source>
-        <target state="translated">현재 언어</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.currentLanguage.description">
-        <source xml:lang="en">The SQL Server language record name</source>
-        <target state="translated">SQL Server 언어 레코드 이름</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.columnEncryptionSetting.displayName">
-        <source xml:lang="en">Always Encrypted</source>
-        <target state="translated">Always Encrypted</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.columnEncryptionSetting.description">
-        <source xml:lang="en">Enables or disables Always Encrypted for the connection</source>
-        <target state="translated">연결에 Always Encrypted 기능 사용 또는 사용 안 함</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.displayName">
-        <source xml:lang="en">Attestation Protocol</source>
-        <target state="translated">증명 프로토콜</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.description">
-        <source xml:lang="en">Specifies a protocol for attesting a server-side enclave used with Always Encrypted with secure enclaves</source>
-        <target state="translated">보안 enclave를 사용한 Always Encrypted와 함께 사용되는 서버 쪽 enclave를 증명하기 위한 프로토콜 지정</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.AAS">
-        <source xml:lang="en">Azure Attestation</source>
-        <target state="translated">Azure Attestation</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.HGS">
-        <source xml:lang="en">Host Guardian Service</source>
-        <target state="translated">호스트 보호 서비스</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.enclaveAttestationUrl.displayName">
-        <source xml:lang="en">Enclave Attestation URL</source>
-        <target state="translated">Enclave 증명 URL</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.enclaveAttestationUrl.description">
-        <source xml:lang="en">Specifies an endpoint for attesting a server-side enclave used with Always Encrypted with secure enclaves</source>
-        <target state="translated">보안 enclave를 사용한 Always Encrypted와 함께 사용되는 서버 쪽 enclave를 증명하기 위한 엔드포인트 지정</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.encrypt.displayName">
-        <source xml:lang="en">Encrypt</source>
-        <target state="translated">암호화</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.encrypt.description">
-        <source xml:lang="en">When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed</source>
-        <target state="translated">true인 경우 서버에 인증서가 설치되어 있으면 SQL Server는 클라이언트와 서버 간에 전송된 모든 데이터에 대해 SSL 암호화를 사용합니다.</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.persistSecurityInfo.displayName">
-        <source xml:lang="en">Persist security info</source>
-        <target state="translated">보안 정보 유지</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.persistSecurityInfo.description">
-        <source xml:lang="en">When false, security-sensitive information, such as the password, is not returned as part of the connection</source>
-        <target state="translated">false이면 보안상 중요한 정보(예: 암호)를 연결의 일부로 반환하지 않습니다.</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.trustServerCertificate.displayName">
-        <source xml:lang="en">Trust server certificate</source>
-        <target state="translated">서버 인증서 신뢰</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.trustServerCertificate.description">
-        <source xml:lang="en">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate</source>
-        <target state="translated">true(및 encrypt=true)인 경우 SQL Server는 서버 인증서의 유효성을 검사하지 않고 클라이언트와 서버 간에 전송된 모든 데이터에 대해 SSL 암호화를 사용합니다.</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.attachedDBFileName.displayName">
-        <source xml:lang="en">Attached DB file name</source>
-        <target state="translated">연결된 DB 파일 이름</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.attachedDBFileName.description">
-        <source xml:lang="en">The name of the primary file, including the full path name, of an attachable database</source>
-        <target state="translated">연결할 수 있는 데이터베이스의 기본 파일 이름(전체 경로 이름 포함)</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.contextConnection.displayName">
-        <source xml:lang="en">Context connection</source>
-        <target state="translated">컨텍스트 연결</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.contextConnection.description">
-        <source xml:lang="en">When true, indicates the connection should be from the SQL server context. Available only when running in the SQL Server process</source>
-        <target state="translated">true인 경우 연결이 SQL Server 컨텍스트에서 시작되어야 함을 나타냅니다. SQL Server 프로세스에서 실행 중인 경우에만 사용할 수 있습니다.</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.port.displayName">
-        <source xml:lang="en">Port</source>
-        <target state="translated">포트</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.connectRetryCount.displayName">
-        <source xml:lang="en">Connect retry count</source>
-        <target state="translated">연결 다시 시도 횟수</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.connectRetryCount.description">
-        <source xml:lang="en">Number of attempts to restore connection</source>
-        <target state="translated">연결 복구 시도의 횟수</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.connectRetryInterval.displayName">
-        <source xml:lang="en">Connect retry interval</source>
-        <target state="translated">연결 다시 시도 간격</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.connectRetryInterval.description">
-        <source xml:lang="en">Delay between attempts to restore connection</source>
-        <target state="translated">연결 복구 시도 간 지연 시간</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.applicationName.displayName">
-        <source xml:lang="en">Application name</source>
-        <target state="translated">애플리케이션 이름</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.applicationName.description">
-        <source xml:lang="en">The name of the application</source>
-        <target state="translated">애플리케이션의 이름</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.workstationId.displayName">
-        <source xml:lang="en">Workstation Id</source>
-        <target state="translated">워크스테이션 ID</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.workstationId.description">
-        <source xml:lang="en">The name of the workstation connecting to SQL Server</source>
-        <target state="translated">SQL Server에 연결하는 워크스테이션의 이름</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.pooling.displayName">
-        <source xml:lang="en">Pooling</source>
-        <target state="translated">풀링</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.pooling.description">
-        <source xml:lang="en">When true, the connection object is drawn from the appropriate pool, or if necessary, is created and added to the appropriate pool</source>
-        <target state="translated">true이면 해당 풀에서 연결 개체를 끌어 오거나 필요한 경우 연결 개체를 만들어 해당 풀에 추가합니다.</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.maxPoolSize.displayName">
-        <source xml:lang="en">Max pool size</source>
-        <target state="translated">최대 풀 크기</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.maxPoolSize.description">
-        <source xml:lang="en">The maximum number of connections allowed in the pool</source>
-        <target state="translated">풀에서 허용되는 최대 연결 수</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.minPoolSize.displayName">
-        <source xml:lang="en">Min pool size</source>
-        <target state="translated">최소 풀 크기</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.minPoolSize.description">
-        <source xml:lang="en">The minimum number of connections allowed in the pool</source>
-        <target state="translated">풀에서 허용되는 최소 연결 수</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.loadBalanceTimeout.displayName">
-        <source xml:lang="en">Load balance timeout</source>
-        <target state="translated">부하 분산 시간 제한</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.loadBalanceTimeout.description">
-        <source xml:lang="en">The minimum amount of time (in seconds) for this connection to live in the pool before being destroyed</source>
-        <target state="translated">이 연결이 제거되기 전에 풀에서 활성화되어 있는 최소 시간(초)입니다.</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.replication.displayName">
-        <source xml:lang="en">Replication</source>
-        <target state="translated">복제</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.replication.description">
-        <source xml:lang="en">Used by SQL Server in Replication</source>
-        <target state="translated">복제에서 SQL Server가 사용합니다.</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.attachDbFilename.displayName">
-        <source xml:lang="en">Attach DB filename</source>
-        <target state="translated">DB 파일 이름 연결</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.failoverPartner.displayName">
-        <source xml:lang="en">Failover partner</source>
-        <target state="translated">장애 조치(failover) 파트너</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.failoverPartner.description">
-        <source xml:lang="en">The name or network address of the instance of SQL Server that acts as a failover partner</source>
-        <target state="translated">장애 조치(failover) 파트너 역할을 하는 SQL Server 인스턴스의 이름 또는 네트워크 주소</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.multiSubnetFailover.displayName">
-        <source xml:lang="en">Multi subnet failover</source>
-        <target state="translated">다중 서브넷 장애 조치(failover)</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.multipleActiveResultSets.displayName">
-        <source xml:lang="en">Multiple active result sets</source>
-        <target state="translated">여러 개의 활성 결과 집합</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.multipleActiveResultSets.description">
-        <source xml:lang="en">When true, multiple result sets can be returned and read from one connection</source>
-        <target state="translated">true인 경우 한 연결에서 여러 결과 집합을 반환하고 읽을 수 있습니다.</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.packetSize.displayName">
-        <source xml:lang="en">Packet size</source>
-        <target state="translated">패킷 크기</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.packetSize.description">
-        <source xml:lang="en">Size in bytes of the network packets used to communicate with an instance of SQL Server</source>
-        <target state="translated">SQL Server 인스턴스와 통신하는 데 사용되는 네트워크 패킷의 크기(바이트)</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.typeSystemVersion.displayName">
-        <source xml:lang="en">Type system version</source>
-        <target state="translated">형식 시스템 버전</target>
-      </trans-unit>
-      <trans-unit id="mssql.connectionOptions.typeSystemVersion.description">
-        <source xml:lang="en">Indicates which server type system the provider will expose through the DataReader</source>
-        <target state="translated">공급자가 DataReader를 통해 공개할 서버 유형 시스템을 나타냄</target>
-      </trans-unit>
-      <trans-unit id="databasesListProperties.name">
-        <source xml:lang="en">Name</source>
-        <target state="translated">이름</target>
-      </trans-unit>
-      <trans-unit id="databasesListProperties.status">
-        <source xml:lang="en">Status</source>
-        <target state="translated">상태</target>
-      </trans-unit>
-      <trans-unit id="databasesListProperties.size">
-        <source xml:lang="en">Size (MB)</source>
-        <target state="translated">크기(MB)</target>
-      </trans-unit>
-      <trans-unit id="databasesListProperties.lastBackup">
-        <source xml:lang="en">Last backup</source>
-        <target state="translated">마지막 백업</target>
-      </trans-unit>
-      <trans-unit id="objectsListProperties.name">
-        <source xml:lang="en">Name</source>
-        <target state="translated">이름</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/mssql/dist/localizedConstants" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="msgMissingNodeContext">
-        <source xml:lang="en">Node Command called without any node passed</source>
-        <target state="translated">노드가 전달되지 않고 호출된 노드 명령</target>
-      </trans-unit>
-      <trans-unit id="mssql.manageAccessTitle">
-        <source xml:lang="en">Manage Access</source>
-        <target state="translated">액세스 관리</target>
-      </trans-unit>
-      <trans-unit id="mssql.locationTitle">
-        <source xml:lang="en">Location : </source>
-        <target state="translated">위치: </target>
-      </trans-unit>
-      <trans-unit id="mssql.permissionsTitle">
-        <source xml:lang="en">Permissions</source>
-        <target state="translated">권한</target>
-      </trans-unit>
-      <trans-unit id="mssql.ownerPostfix">
-        <source xml:lang="en"> - Owner</source>
-        <target state="translated"> - 소유자</target>
-      </trans-unit>
-      <trans-unit id="mssql.owner">
-        <source xml:lang="en">Owner</source>
-        <target state="translated">소유자</target>
-      </trans-unit>
-      <trans-unit id="mssql.group">
-        <source xml:lang="en">Group</source>
-        <target state="translated">그룹</target>
-      </trans-unit>
-      <trans-unit id="mssql.owningGroupPostfix">
-        <source xml:lang="en"> - Owning Group</source>
-        <target state="translated"> - 소유 그룹</target>
-      </trans-unit>
-      <trans-unit id="mssql.everyone">
-        <source xml:lang="en">Everyone else</source>
-        <target state="translated">모든 사용자</target>
-      </trans-unit>
-      <trans-unit id="mssql.userLabel">
-        <source xml:lang="en">User</source>
-        <target state="translated">사용자</target>
-      </trans-unit>
-      <trans-unit id="mssql.groupLabel">
-        <source xml:lang="en">Group</source>
-        <target state="translated">그룹</target>
-      </trans-unit>
-      <trans-unit id="mssql.accessHeader">
-        <source xml:lang="en">Access</source>
-        <target state="translated">액세스</target>
-      </trans-unit>
-      <trans-unit id="mssql.defaultHeader">
-        <source xml:lang="en">Default</source>
-        <target state="translated">기본값</target>
-      </trans-unit>
-      <trans-unit id="mssql.delete">
-        <source xml:lang="en">Delete</source>
-        <target state="translated">삭제</target>
-      </trans-unit>
-      <trans-unit id="mssql.stickyHeader">
-        <source xml:lang="en">Sticky Bit</source>
-        <target state="translated">고정 비트</target>
-      </trans-unit>
-      <trans-unit id="mssql.inheritDefaultsLabel">
-        <source xml:lang="en">Inherit Defaults</source>
-        <target state="translated">기본값 상속</target>
-      </trans-unit>
-      <trans-unit id="mssql.readHeader">
-        <source xml:lang="en">Read</source>
-        <target state="translated">읽기</target>
-      </trans-unit>
-      <trans-unit id="mssql.writeHeader">
-        <source xml:lang="en">Write</source>
-        <target state="translated">쓰기</target>
-      </trans-unit>
-      <trans-unit id="mssql.executeHeader">
-        <source xml:lang="en">Execute</source>
-        <target state="translated">실행</target>
-      </trans-unit>
-      <trans-unit id="mssql.addUserOrGroup">
-        <source xml:lang="en">Add User or Group</source>
-        <target state="translated">사용자 또는 그룹 추가</target>
-      </trans-unit>
-      <trans-unit id="mssql.enterNamePlaceholder">
-        <source xml:lang="en">Enter name</source>
-        <target state="translated">이름 입력</target>
-      </trans-unit>
-      <trans-unit id="mssql.addLabel">
-        <source xml:lang="en">Add</source>
-        <target state="translated">추가</target>
-      </trans-unit>
-      <trans-unit id="mssql.namedUsersAndGroups">
-        <source xml:lang="en">Named Users and Groups</source>
-        <target state="translated">명명된 사용자 및 그룹</target>
-      </trans-unit>
-      <trans-unit id="mssql.defaultUserAndGroups">
-        <source xml:lang="en">Default User and Groups</source>
-        <target state="translated">기본 사용자 및 그룹</target>
-      </trans-unit>
-      <trans-unit id="mssql.userOrGroupIcon">
-        <source xml:lang="en">User or Group Icon</source>
-        <target state="translated">사용자 또는 그룹 아이콘</target>
-      </trans-unit>
-      <trans-unit id="mssql.apply">
-        <source xml:lang="en">Apply</source>
-        <target state="translated">적용</target>
-      </trans-unit>
-      <trans-unit id="mssql.applyRecursively">
-        <source xml:lang="en">Apply Recursively</source>
-        <target state="translated">재귀적으로 적용</target>
-      </trans-unit>
-      <trans-unit id="mssql.errorApplyingAclChanges">
-        <source xml:lang="en">Unexpected error occurred while applying changes : {0}</source>
-        <target state="translated">변경 내용을 적용하는 동안 예기치 않은 오류가 발생했습니다. {0}</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.LocalFileDestinationHint">
-        <source xml:lang="en">Local file will be uploaded to HDFS. </source>
-        <target state="translated">로컬 파일이 HDFS에 업로드됩니다. </target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.SubmissionEndMessage">
-        <source xml:lang="en">.......................... Submit Spark Job End ............................</source>
-        <target state="translated">.......................... Spark 작업 제출 종료 ................................................</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.PrepareUploadingFile">
-        <source xml:lang="en">Uploading file from local {0} to HDFS folder: {1}</source>
-        <target state="translated">로컬 {0}에서 HDFS 폴더로 파일 업로드 중: {1}</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.UploadingFileSucceeded">
-        <source xml:lang="en">Upload file to cluster Succeeded!</source>
-        <target state="translated">클러스터에 파일을 업로드했습니다.</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.UploadingFileFailed">
-        <source xml:lang="en">Upload file to cluster Failed. {0}</source>
-        <target state="translated">클러스터에 파일을 업로드하지 못했습니다. {0}</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.PrepareSubmitJob">
-        <source xml:lang="en">Submitting job {0} ... </source>
-        <target state="translated">{0} 작업을 제출하는 중... </target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.SubmitJobFinished">
-        <source xml:lang="en">The Spark Job has been submitted.</source>
-        <target state="translated">Spark 작업을 제출했습니다.</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.SubmitJobFailed">
-        <source xml:lang="en">Spark Job Submission Failed. {0} </source>
-        <target state="translated">Spark 작업 {0}을(를) 제출하지 못했습니다. </target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.YarnUIMessage">
-        <source xml:lang="en">YarnUI Url: {0} </source>
-        <target state="translated">YarnUI URL: {0} </target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.SparkHistoryLinkMessage">
-        <source xml:lang="en">Spark History Url: {0} </source>
-        <target state="translated">Spark 기록 URL: {0} </target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.GetApplicationIdFailed">
-        <source xml:lang="en">Get Application Id Failed. {0}</source>
-        <target state="translated">애플리케이션 ID를 가져오지 못했습니다. {0}</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.LocalFileNotExisted">
-        <source xml:lang="en">Local file {0} does not existed. </source>
-        <target state="translated">로컬 파일 {0}이(가) 없습니다. </target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.NoSqlBigDataClusterFound">
-        <source xml:lang="en">No SQL Server Big Data Cluster found.</source>
-        <target state="translated">SQL Server 빅 데이터 클러스터를 찾을 수 없습니다.</target>
-      </trans-unit>
-      <trans-unit id="sparkConnectionRequired">
-        <source xml:lang="en">Please connect to the Spark cluster before View {0} History.</source>
-        <target state="translated">{0} 기록을 보려면 먼저 Spark 클러스터에 연결하세요.</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/mssql/dist/objectExplorerNodeProvider/fileSources" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="maxSizeNotice">
-        <source xml:lang="en">NOTICE: This file has been truncated at {0} for preview. </source>
-        <target state="translated">알림: 이 파일은 미리 보기를 위해 {0}에서 잘렸습니다. </target>
-      </trans-unit>
-      <trans-unit id="maxSizeReached">
-        <source xml:lang="en">The file has been truncated at {0} for preview.</source>
-        <target state="translated">이 파일은 미리 보기를 위해 {0}에서 잘렸습니다.</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/mssql/dist/objectExplorerNodeProvider/command" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="progress">
-        <source xml:lang="en">$(sync~spin) {0}...</source>
-        <target state="translated">$(sync~spin) {0}...</target>
-      </trans-unit>
-      <trans-unit id="cancelTooltip">
-        <source xml:lang="en">Cancel</source>
-        <target state="translated">취소</target>
-      </trans-unit>
-      <trans-unit id="cancel">
-        <source xml:lang="en">Cancel operation?</source>
-        <target state="translated">작업 취소 여부</target>
-      </trans-unit>
-      <trans-unit id="mssql.searchServers">
-        <source xml:lang="en">Search Server Names</source>
-        <target state="translated">서버 이름 검색</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkJobSubmissionService" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="sparkJobSubmission.LivyNoBatchIdReturned">
-        <source xml:lang="en">No Spark job batch id is returned from response.{0}[Error] {1}</source>
-        <target state="translated">응답에서 Spark 작업 일괄 처리 ID가 반환되지 않았습니다. {0}[오류] {1}</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.LivyNoLogReturned">
-        <source xml:lang="en">No log is returned within response.{0}[Error] {1}</source>
-        <target state="translated">응답 내에 로그가 반환되지 않았습니다. {0}[오류] {1}</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/mssql/dist/sqlClusterLookUp" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="promptBDCUsername">
-        <source xml:lang="en">{0}Please provide the username to connect to the BDC Controller:</source>
-        <target state="translated">{0}BDC 컨트롤러에 연결하려면 사용자 이름을 제공하세요.</target>
-      </trans-unit>
-      <trans-unit id="promptBDCPassword">
-        <source xml:lang="en">Please provide the password to connect to the BDC Controller</source>
-        <target state="translated">BDC 컨트롤러에 연결하려면 암호를 제공하세요.</target>
-      </trans-unit>
-      <trans-unit id="bdcConnectError">
-        <source xml:lang="en">Error: {0}. </source>
-        <target state="translated">오류: {0}. </target>
-      </trans-unit>
-      <trans-unit id="usernameAndPasswordRequired">
-        <source xml:lang="en">Username and password are required</source>
-        <target state="translated">사용자 이름과 암호가 필요합니다.</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/mssql/dist/objectExplorerNodeProvider/hdfsCommands" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="allFiles">
-        <source xml:lang="en">All Files</source>
-        <target state="translated">모든 파일</target>
-      </trans-unit>
-      <trans-unit id="lblUploadFiles">
-        <source xml:lang="en">Upload</source>
-        <target state="translated">업로드</target>
-      </trans-unit>
-      <trans-unit id="uploading">
-        <source xml:lang="en">Uploading files to HDFS</source>
-        <target state="translated">HDFS로 파일 업로드 중</target>
-      </trans-unit>
-      <trans-unit id="uploadCanceled">
-        <source xml:lang="en">Upload operation was canceled</source>
-        <target state="translated">업로드 작업이 취소되었습니다.</target>
-      </trans-unit>
-      <trans-unit id="uploadError">
-        <source xml:lang="en">Error uploading files: {0}</source>
-        <target state="translated">파일 업로드 오류: {0}</target>
-      </trans-unit>
-      <trans-unit id="makingDir">
-        <source xml:lang="en">Creating directory</source>
-        <target state="translated">디렉터리를 만드는 중</target>
-      </trans-unit>
-      <trans-unit id="mkdirCanceled">
-        <source xml:lang="en">Operation was canceled</source>
-        <target state="translated">작업이 취소되었습니다.</target>
-      </trans-unit>
-      <trans-unit id="mkDirError">
-        <source xml:lang="en">Error on making directory: {0}</source>
-        <target state="translated">디렉터리 만들기 오류: {0}</target>
-      </trans-unit>
-      <trans-unit id="enterDirName">
-        <source xml:lang="en">Enter directory name</source>
-        <target state="translated">디렉터리 이름 입력</target>
-      </trans-unit>
-      <trans-unit id="deleteError">
-        <source xml:lang="en">Error on deleting files: {0}</source>
-        <target state="translated">파일 삭제 오류: {0}</target>
-      </trans-unit>
-      <trans-unit id="msgDeleteFolder">
-        <source xml:lang="en">Are you sure you want to delete this folder and its contents?</source>
-        <target state="translated">이 폴더와 해당 내용을 삭제하시겠습니까?</target>
-      </trans-unit>
-      <trans-unit id="msgDeleteFile">
-        <source xml:lang="en">Are you sure you want to delete this file?</source>
-        <target state="translated">이 파일을 삭제하시겠습니까?</target>
-      </trans-unit>
-      <trans-unit id="saving">
-        <source xml:lang="en">Saving HDFS Files</source>
-        <target state="translated">HDFS 파일 저장 중</target>
-      </trans-unit>
-      <trans-unit id="saveCanceled">
-        <source xml:lang="en">Save operation was canceled</source>
-        <target state="translated">저장 작업이 취소되었습니다.</target>
-      </trans-unit>
-      <trans-unit id="saveError">
-        <source xml:lang="en">Error on saving file: {0}</source>
-        <target state="translated">파일 저장 오류: {0}</target>
-      </trans-unit>
-      <trans-unit id="previewing">
-        <source xml:lang="en">Generating preview</source>
-        <target state="translated">미리 보기 생성 중</target>
-      </trans-unit>
-      <trans-unit id="previewError">
-        <source xml:lang="en">Error on previewing file: {0}</source>
-        <target state="translated">파일 미리 보기 오류: {0}</target>
-      </trans-unit>
-      <trans-unit id="copyPathError">
-        <source xml:lang="en">Error on copying path: {0}</source>
-        <target state="translated">경로 복사 오류: {0}</target>
-      </trans-unit>
-      <trans-unit id="manageAccessError">
-        <source xml:lang="en">An unexpected error occurred while opening the Manage Access dialog: {0}</source>
-        <target state="translated">액세스 관리 대화 상자를 여는 동안 예기치 않은 오류가 발생했습니다. {0}</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/mssql/dist/hdfs/webhdfs" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="webhdfs.invalidDataStructure">
-        <source xml:lang="en">Invalid Data Structure</source>
-        <target state="translated">잘못된 데이터 구조</target>
-      </trans-unit>
-      <trans-unit id="webhdfs.missingProperties">
-        <source xml:lang="en">Unable to create WebHDFS client due to missing options: ${0}</source>
-        <target state="translated">누락된 옵션으로 인해 WebHDFS 클라이언트를 만들 수 없습니다. ${0}</target>
-      </trans-unit>
-      <trans-unit id="webhdfs.undefinedArgument">
-        <source xml:lang="en">'${0}' is undefined.</source>
-        <target state="translated">'${0}'이(가) 정의되지 않았습니다.</target>
-      </trans-unit>
-      <trans-unit id="webhdfs.httpError400">
-        <source xml:lang="en">Bad Request</source>
-        <target state="translated">잘못된 요청</target>
-      </trans-unit>
-      <trans-unit id="webhdfs.httpError401">
-        <source xml:lang="en">Unauthorized</source>
-        <target state="translated">권한 없음</target>
-      </trans-unit>
-      <trans-unit id="webhdfs.httpError403">
-        <source xml:lang="en">Forbidden</source>
-        <target state="translated">금지됨</target>
-      </trans-unit>
-      <trans-unit id="webhdfs.httpError404">
-        <source xml:lang="en">Not Found</source>
-        <target state="translated">찾을 수 없음</target>
-      </trans-unit>
-      <trans-unit id="webhdfs.httpError500">
-        <source xml:lang="en">Internal Server Error</source>
-        <target state="translated">내부 서버 오류</target>
-      </trans-unit>
-      <trans-unit id="webhdfs.unknownError">
-        <source xml:lang="en">Unknown Error</source>
-        <target state="translated">알 수 없는 오류</target>
-      </trans-unit>
-      <trans-unit id="webhdfs.unexpectedRedirect">
-        <source xml:lang="en">Unexpected Redirect</source>
-        <target state="translated">예기치 않은 리디렉션</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/mssql/dist/objectExplorerNodeProvider/connection" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="connectionInfoUndefined">
-        <source xml:lang="en">ConnectionInfo is undefined.</source>
-        <target state="translated">ConnectionInfo가 정의되지 않았습니다.</target>
-      </trans-unit>
-      <trans-unit id="connectionInfoOptionsUndefined">
-        <source xml:lang="en">ConnectionInfo.options is undefined.</source>
-        <target state="translated">ConnectionInfo.options가 정의되지 않았습니다.</target>
-      </trans-unit>
-      <trans-unit id="connectionInfoOptionsMissingProperties">
-        <source xml:lang="en">Some missing properties in connectionInfo.options: {0}</source>
-        <target state="translated">connectionInfo.options에서 일부 속성이 누락되었습니다. {0}</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/mssql/dist/telemetry" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="viewKnownIssuesText">
-        <source xml:lang="en">View Known Issues</source>
-        <target state="translated">알려진 문제 보기</target>
-      </trans-unit>
-      <trans-unit id="serviceCrashMessage">
-        <source xml:lang="en">{0} component exited unexpectedly. Please restart Azure Data Studio.</source>
-        <target state="translated">{0} 구성 요소가 예기치 않게 종료되었습니다. Azure Data Studio를 다시 시작하세요.</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/mssql/dist/main" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="msgSampleCodeDataFrame">
-        <source xml:lang="en">This sample code loads the file into a data frame and shows the first 10 results.</source>
-        <target state="translated">이 샘플 코드는 파일을 데이터 프레임에 로드하고 처음 10개의 결과를 표시합니다.</target>
-      </trans-unit>
-      <trans-unit id="mssql.errorConvertingToNotebook">
-        <source xml:lang="en">An error occurred converting the SQL document to a Notebook. Error : {0}</source>
-        <target state="translated">SQL 문서를 Notebook으로 변환하는 동안 오류가 발생했습니다. 오류: {0}</target>
-      </trans-unit>
-      <trans-unit id="mssql.errorConvertingToSQL">
-        <source xml:lang="en">An error occurred converting the Notebook document to SQL. Error : {0}</source>
-        <target state="translated">Notebook 문서를 SQL로 변환하는 동안 오류가 발생했습니다. 오류: {0}</target>
-      </trans-unit>
-      <trans-unit id="notebookFileType">
+      <trans-unit id="tab.bigDataClusterDescription">
+        <source xml:lang="en">Tasks and information about your SQL Server Big Data Cluster</source>
+        <target state="translated">SQL Server 빅 데이터 클러스터에 대한 작업 및 정보</target>
+      </trans-unit>
+      <trans-unit id="title.bigDataCluster">
+        <source xml:lang="en">SQL Server Big Data Cluster</source>
+        <target state="translated">SQL Server 빅 데이터 클러스터</target>
+      </trans-unit>
+      <trans-unit id="title.books">
         <source xml:lang="en">Notebooks</source>
         <target state="translated">Notebook</target>
       </trans-unit>
-      <trans-unit id="unsupportedFileType">
-        <source xml:lang="en">Only .ipynb Notebooks are supported</source>
-        <target state="translated">.ipynb Notebook만 지원됩니다.</target>
-      </trans-unit>
-      <trans-unit id="noController">
-        <source xml:lang="en">Could not find the controller endpoint for this instance</source>
-        <target state="translated">이 인스턴스의 컨트롤러 엔드포인트를 찾을 수 없음</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/mssql/dist/hdfs/hdfsModel" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="mssql.recursivePermissionOpStarted">
-        <source xml:lang="en">Applying permission changes recursively under '{0}'</source>
-        <target state="translated">'{0}'에서 권한 변경 내용을 재귀적으로 적용하는 중</target>
-      </trans-unit>
-      <trans-unit id="mssql.recursivePermissionOpSucceeded">
-        <source xml:lang="en">Permission changes applied successfully.</source>
-        <target state="translated">권한 변경 내용을 적용했습니다.</target>
-      </trans-unit>
-      <trans-unit id="mssql.recursivePermissionOpProgress">
-        <source xml:lang="en">Applying permission changes to '{0}'.</source>
-        <target state="translated">권한 변경 내용을 '{0}'에 적용하는 중입니다.</target>
-      </trans-unit>
-      <trans-unit id="mssql.recursivePermissionOpError">
-        <source xml:lang="en">Error applying permission changes: {0}</source>
-        <target state="translated">권한 변경 내용 적용 오류: {0}</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/mssql/dist/prompts/confirm" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="msgYes">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">예</target>
-      </trans-unit>
-      <trans-unit id="msgNo">
-        <source xml:lang="en">No</source>
-        <target state="translated">아니요</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/mssql/dist/sparkFeature/dialog/dialogCommands" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="selectOtherServer">
-        <source xml:lang="en">Select other SQL Server</source>
-        <target state="translated">다른 SQL Server 선택</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.PleaseSelectSqlWithCluster">
-        <source xml:lang="en">Please select SQL Server with Big Data Cluster.</source>
-        <target state="translated">빅 데이터 클러스터가 있는 SQL Server를 선택하세요.</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.NoSqlSelected">
-        <source xml:lang="en">No SQL Server is selected.</source>
-        <target state="translated">SQL Server를 선택하지 않았습니다.</target>
-      </trans-unit>
-      <trans-unit id="errorNotSqlBigDataCluster">
-        <source xml:lang="en">The selected server does not belong to a SQL Server Big Data Cluster</source>
-        <target state="translated">선택한 서버가 SQL Server 빅 데이터 클러스터에 속하지 않습니다.</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.GetFilePathFromSelectedNodeFailed">
-        <source xml:lang="en">Error Get File Path: {0}</source>
-        <target state="translated">파일 경로 가져오기 오류: {0}</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkJobSubmissionDialog" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="sparkJobSubmission.SparkJobSubmissionDialogInitializeError">
-        <source xml:lang="en">Parameters for SparkJobSubmissionDialog is illegal</source>
-        <target state="translated">SparkJobSubmissionDialog에 대한 매개 변수가 잘못되었습니다.</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.DialogTitleNewJob">
-        <source xml:lang="en">New Job</source>
-        <target state="translated">새 작업</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.DialogCancelButton">
-        <source xml:lang="en">Cancel</source>
-        <target state="translated">취소</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.DialogSubmitButton">
-        <source xml:lang="en">Submit</source>
-        <target state="translated">제출</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.SubmitSparkJob">
-        <source xml:lang="en">{0} Spark Job Submission:</source>
-        <target state="translated">{0} Spark 작업 제출:</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.SubmissionStartMessage">
-        <source xml:lang="en">.......................... Submit Spark Job Start ..........................</source>
-        <target state="translated">.......................... Spark 작업 제출 시작 ...................................</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkJobSubmissionModel" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="sparkJobSubmission.SparkJobSubmissionModelInitializeError">
-        <source xml:lang="en">Parameters for SparkJobSubmissionModel is illegal</source>
-        <target state="translated">SparkJobSubmissionModel의 매개 변수가 잘못되었습니다.</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.submissionArgsIsInvalid">
-        <source xml:lang="en">submissionArgs is invalid. </source>
-        <target state="translated">submissionArgs가 잘못되었습니다. </target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.LivyBatchIdIsInvalid">
-        <source xml:lang="en">livyBatchId is invalid. </source>
-        <target state="translated">livyBatchId가 잘못되었습니다. </target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.GetApplicationIdTimeOut">
-        <source xml:lang="en">Get Application Id time out. {0}[Log]   {1}</source>
-        <target state="translated">애플리케이션 ID 시간 제한을 가져옵니다. {0}[로그]   {1}</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.localFileOrFolderNotSpecified.">
-        <source xml:lang="en">Property localFilePath or hdfsFolderPath is not specified. </source>
-        <target state="translated">localFilePath 또는 hdfsFolderPath 속성을 지정하지 않았습니다. </target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.PathNotSpecified.">
-        <source xml:lang="en">Property Path is not specified. </source>
-        <target state="translated">속성 경로를 지정하지 않았습니다. </target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkConfigurationTab" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="sparkJobSubmission.GeneralTabName">
-        <source xml:lang="en">GENERAL</source>
-        <target state="translated">일반</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.JobNamePlaceHolder">
-        <source xml:lang="en">Enter a name ...</source>
-        <target state="translated">이름 입력...</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.JobName">
-        <source xml:lang="en">Job Name</source>
-        <target state="translated">작업 이름</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.SparkCluster">
-        <source xml:lang="en">Spark Cluster</source>
-        <target state="translated">Spark 클러스터</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.FilePathPlaceHolder">
-        <source xml:lang="en">Path to a .jar or .py file</source>
-        <target state="translated">.jar 또는 .py 파일의 경로</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.LocalFileDestinationHintWithPath">
-        <source xml:lang="en">The selected local file will be uploaded to HDFS: {0}</source>
-        <target state="translated">선택한 로컬 파일이 HDFS에 업로드됩니다. {0}</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.MainFilePath">
-        <source xml:lang="en">JAR/py File</source>
-        <target state="translated">JAR/py 파일</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.MainClass">
-        <source xml:lang="en">Main Class</source>
-        <target state="translated">주 클래스</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.Arguments">
-        <source xml:lang="en">Arguments</source>
-        <target state="translated">인수</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.ArgumentsTooltip">
-        <source xml:lang="en">Command line arguments used in your main class, multiple arguments should be split by space.</source>
-        <target state="translated">주 클래스에 사용되는 명령줄 인수입니다. 여러 인수는 공백으로 구분해야 합니다.</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.NotSpecifyJobName">
-        <source xml:lang="en">Property Job Name is not specified.</source>
-        <target state="translated">속성 작업 이름을 지정하지 않았습니다.</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.NotSpecifyJARPYPath">
-        <source xml:lang="en">Property JAR/py File is not specified.</source>
-        <target state="translated">속성 JAR/py 파일을 지정하지 않았습니다.</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.NotSpecifyMainClass">
-        <source xml:lang="en">Property Main Class is not specified.</source>
-        <target state="translated">속성 주 클래스를 지정하지 않았습니다.</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.HDFSFileNotExistedWithPath">
-        <source xml:lang="en">{0} does not exist in Cluster or exception thrown. </source>
-        <target state="translated">{0}이(가) 클러스터에 없거나 예외가 throw되었습니다. </target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.HDFSFileNotExisted">
-        <source xml:lang="en">The specified HDFS file does not exist. </source>
-        <target state="translated">지정된 HDFS 파일이 없습니다. </target>
-      </trans-unit>
-      <trans-unit id="sparkSelectLocalFile">
-        <source xml:lang="en">Select</source>
-        <target state="translated">선택</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.SelectFileError">
-        <source xml:lang="en">Error in locating the file due to Error: {0}</source>
-        <target state="translated">오류로 인한 파일 찾기 오류: {0}</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkAdvancedTab" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="sparkJobSubmission.AdvancedTabName">
-        <source xml:lang="en">ADVANCED</source>
-        <target state="translated">고급</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.ReferenceJarList">
-        <source xml:lang="en">Reference Jars</source>
-        <target state="translated">참조 Jar</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.ReferenceJarListToolTip">
-        <source xml:lang="en">Jars to be placed in executor working directory. The Jar path needs to be an HDFS Path. Multiple paths should be split by semicolon (;)</source>
-        <target state="translated">실행기 작업 디렉터리에 배치할 Jar입니다. Jar 경로는 HDFS 경로여야 합니다. 여러 경로는 세미콜론(;)으로 구분해야 합니다.</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.ReferencePyList">
-        <source xml:lang="en">Reference py Files</source>
-        <target state="translated">참조 py 파일</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.ReferencePyListTooltip">
-        <source xml:lang="en">Py Files to be placed in executor working directory. The file path needs to be an HDFS Path. Multiple paths should be split by semicolon(;)</source>
-        <target state="translated">실행기 작업 디렉터리에 배치할 Py 파일입니다. 파일 경로는 HDFS 경로여야 합니다. 여러 경로는 세미콜론(;)으로 구분해야 합니다.</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.ReferenceFilesList">
-        <source xml:lang="en">Reference Files</source>
-        <target state="translated">참조 파일</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.ReferenceFilesListTooltip">
-        <source xml:lang="en">Files to be placed in executor working directory. The file path needs to be an HDFS Path. Multiple paths should be split by semicolon(;)</source>
-        <target state="translated">실행기 작업 디렉터리에 배치할 파일입니다. 파일 경로는 HDFS 경로여야 합니다. 여러 경로는 세미콜론(;)으로 구분해야 합니다.</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.driverMemory">
-        <source xml:lang="en">Driver Memory</source>
-        <target state="translated">드라이버 메모리</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.driverMemoryTooltip">
-        <source xml:lang="en">Amount of memory to allocate to the driver. Specify units as part of value. Example 512M or 2G.</source>
-        <target state="translated">드라이버에 할당할 메모리의 양입니다. 값의 일부로 단위를 지정합니다. 예를 들면 512M 또는 2G입니다.</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.driverCores">
-        <source xml:lang="en">Driver Cores</source>
-        <target state="translated">드라이버 코어</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.driverCoresTooltip">
-        <source xml:lang="en">Amount of CPU cores to allocate to the driver.</source>
-        <target state="translated">드라이버에 할당할 CPU 코어 양입니다.</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.executorMemory">
-        <source xml:lang="en">Executor Memory</source>
-        <target state="translated">실행기 메모리</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.executorMemoryTooltip">
-        <source xml:lang="en">Amount of memory to allocate to the executor. Specify units as part of value. Example 512M or 2G.</source>
-        <target state="translated">실행기에 할당할 메모리의 양입니다. 값의 일부로 단위를 지정합니다. 예를 들면 512M 또는 2G입니다.</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.executorCores">
-        <source xml:lang="en">Executor Cores</source>
-        <target state="translated">실행기 코어</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.executorCoresTooltip">
-        <source xml:lang="en">Amount of CPU cores to allocate to the executor.</source>
-        <target state="translated">실행기에 할당할 CPU 코어 양입니다.</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.executorCount">
-        <source xml:lang="en">Executor Count</source>
-        <target state="translated">실행기 수</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.executorCountTooltip">
-        <source xml:lang="en">Number of instances of the executor to run.</source>
-        <target state="translated">실행할 실행기 인스턴스의 수입니다.</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.queueName">
-        <source xml:lang="en">Queue Name</source>
-        <target state="translated">큐 이름</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.queueNameTooltip">
-        <source xml:lang="en">Name of the Spark queue to execute the session in.</source>
-        <target state="translated">세션을 실행할 Spark 큐의 이름입니다.</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.configValues">
-        <source xml:lang="en">Configuration Values</source>
-        <target state="translated">구성 값</target>
-      </trans-unit>
-      <trans-unit id="sparkJobSubmission.configValuesTooltip">
-        <source xml:lang="en">List of name value pairs containing Spark configuration values. Encoded as JSON dictionary. Example: '{"name":"value", "name2":"value2"}'.</source>
-        <target state="translated">Spark 구성 값을 포함하는 이름 값 쌍 목록입니다. JSON 사전으로 인코딩됩니다. 예: '{"name":"value", "name2":"value2"}'.</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/mssql/dist/objectExplorerNodeProvider/objectExplorerNodeProvider" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="promptUsername">
-        <source xml:lang="en">Please provide the username to connect to HDFS:</source>
-        <target state="translated">HDFS에 연결하려면 사용자 이름을 제공하세요.</target>
-      </trans-unit>
-      <trans-unit id="prmptPwd">
-        <source xml:lang="en">Please provide the password to connect to HDFS:</source>
-        <target state="translated">HDFS에 연결하려면 암호를 제공하세요.</target>
-      </trans-unit>
-      <trans-unit id="sessionNotFound">
-        <source xml:lang="en">Session for node {0} does not exist</source>
-        <target state="translated">{0} 노드의 세션이 없습니다.</target>
-      </trans-unit>
-      <trans-unit id="notifyError">
-        <source xml:lang="en">Error notifying of node change: {0}</source>
-        <target state="translated">노드 변경 알리기 오류: {0}</target>
-      </trans-unit>
-      <trans-unit id="hdfsFolder">
-        <source xml:lang="en">HDFS</source>
-        <target state="translated">HDFS</target>
-      </trans-unit>
-      <trans-unit id="rootLabel">
-        <source xml:lang="en">Root</source>
-        <target state="translated">루트</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/mssql/dist/objectExplorerNodeProvider/hdfsProvider" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="errorExpanding">
-        <source xml:lang="en">Error: {0}</source>
-        <target state="translated">오류: {0}</target>
-      </trans-unit>
-      <trans-unit id="errDeleteConnectionNode">
-        <source xml:lang="en">Cannot delete a connection. Only subfolders and files can be deleted.</source>
-        <target state="translated">연결을 삭제할 수 없습니다. 하위 폴더와 파일만 삭제할 수 있습니다.</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/mssql/dist/objectExplorerNodeProvider/cancelableStream" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="streamCanceled">
-        <source xml:lang="en">Stream operation canceled by the user</source>
-        <target state="translated">사용자가 취소한 스트림 작업</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/mssql/dist/dashboard/serviceEndpoints" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="grafana">
-        <source xml:lang="en">Metrics Dashboard</source>
-        <target state="translated">메트릭 대시보드</target>
-      </trans-unit>
-      <trans-unit id="kibana">
-        <source xml:lang="en">Log Search Dashboard</source>
-        <target state="translated">로그 검색 대시보드</target>
-      </trans-unit>
-      <trans-unit id="sparkHistory">
-        <source xml:lang="en">Spark Jobs Management and Monitoring Dashboard</source>
-        <target state="translated">Spark 작업 관리 및 모니터링 대시보드</target>
-      </trans-unit>
-      <trans-unit id="yarnHistory">
-        <source xml:lang="en">Spark Diagnostics and Monitoring Dashboard</source>
-        <target state="translated">Spark 진단 및 모니터링 대시보드</target>
-      </trans-unit>
-      <trans-unit id="copyText">
-        <source xml:lang="en">Copy</source>
-        <target state="translated">복사</target>
-      </trans-unit>
-      <trans-unit id="endpoint.appproxy">
-        <source xml:lang="en">Application Proxy</source>
-        <target state="translated">애플리케이션 프록시</target>
-      </trans-unit>
-      <trans-unit id="endpoint.controller">
-        <source xml:lang="en">Cluster Management Service</source>
-        <target state="translated">클러스터 관리 서비스</target>
-      </trans-unit>
-      <trans-unit id="endpoint.gateway">
-        <source xml:lang="en">Gateway to access HDFS files, Spark</source>
-        <target state="translated">HDFS 파일에 액세스하기 위한 게이트웨이, Spark</target>
-      </trans-unit>
-      <trans-unit id="endpoint.managementproxy">
-        <source xml:lang="en">Management Proxy</source>
-        <target state="translated">관리 프록시</target>
-      </trans-unit>
-      <trans-unit id="endpoint.mgmtproxy">
-        <source xml:lang="en">Management Proxy</source>
-        <target state="translated">관리 프록시</target>
-      </trans-unit>
-      <trans-unit id="endpoint.sqlServerEndpoint">
-        <source xml:lang="en">SQL Server Master Instance Front-End</source>
-        <target state="translated">SQL Server 마스터 인스턴스 프런트 엔드</target>
-      </trans-unit>
-      <trans-unit id="endpoint.grafana">
-        <source xml:lang="en">Metrics Dashboard</source>
-        <target state="translated">메트릭 대시보드</target>
-      </trans-unit>
-      <trans-unit id="endpoint.kibana">
-        <source xml:lang="en">Log Search Dashboard</source>
-        <target state="translated">로그 검색 대시보드</target>
-      </trans-unit>
-      <trans-unit id="endpoint.yarnHistory">
-        <source xml:lang="en">Spark Diagnostics and Monitoring Dashboard</source>
-        <target state="translated">Spark 진단 및 모니터링 대시보드</target>
-      </trans-unit>
-      <trans-unit id="endpoint.sparkHistory">
-        <source xml:lang="en">Spark Jobs Management and Monitoring Dashboard</source>
-        <target state="translated">Spark 작업 관리 및 모니터링 대시보드</target>
-      </trans-unit>
-      <trans-unit id="endpoint.webhdfs">
-        <source xml:lang="en">HDFS File System Proxy</source>
-        <target state="translated">HDFS 파일 시스템 프록시</target>
-      </trans-unit>
-      <trans-unit id="endpoint.livy">
-        <source xml:lang="en">Proxy for running Spark statements, jobs, applications</source>
-        <target state="translated">Spark 문, 작업, 애플리케이션 실행을 위한 프록시</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/mssql/dist/sqlToolsServer" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="serviceStartedStatusMsg">
-        <source xml:lang="en">{0} Started</source>
-        <target state="translated">{0}이(가) 시작됨</target>
-      </trans-unit>
-      <trans-unit id="startingServiceStatusMsg">
-        <source xml:lang="en">Starting {0}</source>
-        <target state="translated">{0}을(를) 시작하는 중</target>
-      </trans-unit>
-      <trans-unit id="failedToStartServiceErrorMsg">
-        <source xml:lang="en">Failed to start {0}</source>
-        <target state="translated">{0}을(를) 시작하지 못함</target>
-      </trans-unit>
-      <trans-unit id="installingServiceChannelMsg">
-        <source xml:lang="en">Installing {0} to {1}</source>
-        <target state="translated">{1}에 {0} 설치 중</target>
-      </trans-unit>
-      <trans-unit id="installingServiceStatusMsg">
-        <source xml:lang="en">Installing {0}</source>
-        <target state="translated">{0} 설치 중</target>
-      </trans-unit>
-      <trans-unit id="installedServiceChannelMsg">
-        <source xml:lang="en">Installed {0}</source>
-        <target state="translated">설치된 {0}</target>
-      </trans-unit>
-      <trans-unit id="downloadingServiceChannelMsg">
-        <source xml:lang="en">Downloading {0}</source>
-        <target state="translated">{0} 다운로드 중</target>
-      </trans-unit>
-      <trans-unit id="downloadingServiceSizeChannelMsg">
-        <source xml:lang="en">({0} KB)</source>
-        <target state="translated">({0}KB)</target>
-      </trans-unit>
-      <trans-unit id="downloadingServiceStatusMsg">
-        <source xml:lang="en">Downloading {0}</source>
-        <target state="translated">{0} 다운로드 중</target>
-      </trans-unit>
-      <trans-unit id="downloadServiceDoneChannelMsg">
-        <source xml:lang="en">Done installing {0}</source>
-        <target state="translated">{0} 설치 완료</target>
-      </trans-unit>
-      <trans-unit id="entryExtractedChannelMsg">
-        <source xml:lang="en">Extracted {0} ({1}/{2})</source>
-        <target state="translated">추출된 {0}({1}/{2})</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/mssql/dist/features" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="mssql.missingLinkedAzureAccount">
-        <source xml:lang="en">Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account is available. Please add a linked Azure account and retry the query.</source>
-        <target state="translated">Azure Data Studio는 Always Encrypted의 열 마스터 키에 액세스하려면 Azure Key Vault에 연결해야 하지만, 연결된 Azure 계정을 사용할 수 없습니다. 연결된 Azure 계정을 추가하고 쿼리를 다시 시도하세요.</target>
-      </trans-unit>
-      <trans-unit id="mssql.chooseLinkedAzureAccount">
-        <source xml:lang="en">Please select a linked Azure account:</source>
-        <target state="translated">연결된 Azure 계정을 선택하세요.</target>
-      </trans-unit>
-      <trans-unit id="mssql.canceledLinkedAzureAccountSelection">
-        <source xml:lang="en">Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account was selected. Please retry the query and select a linked Azure account when prompted.</source>
-        <target state="translated">Azure Data Studio는 Always Encrypted의 열 마스터 키에 액세스하려면 Azure Key Vault에 연결해야 하지만, 연결된 Azure 계정을 선택하지 않았습니다. 쿼리를 다시 시도하고 메시지가 표시되면 연결된 Azure 계정을 선택하세요.</target>
-      </trans-unit>
-      <trans-unit id="mssql.insufficientlyPrivelagedAzureAccount">
-        <source xml:lang="en">The configured Azure account for {0} does not have sufficient permissions for Azure Key Vault to access a column master key for Always Encrypted.</source>
-        <target state="translated">{0}에 대해 구성된 Azure 계정에 Always Encrypted의 열 마스터 키에 액세스할 수 있는 Azure Key Vault에 대한 권한이 없습니다.</target>
+      <trans-unit id="title.clearSearchServerResult">
+        <source xml:lang="en">Search: Clear Search Server Results</source>
+        <target state="translated">검색: 검색 서버 결과 지우기</target>
+      </trans-unit>
+      <trans-unit id="title.configurePython">
+        <source xml:lang="en">Configure Python for Notebooks</source>
+        <target state="translated">Notebook용 Python 구성</target>
+      </trans-unit>
+      <trans-unit id="title.endpoints">
+        <source xml:lang="en">Service Endpoints</source>
+        <target state="translated">서비스 엔드포인트</target>
+      </trans-unit>
+      <trans-unit id="title.installPackages">
+        <source xml:lang="en">Install Packages</source>
+        <target state="translated">패키지 설치</target>
+      </trans-unit>
+      <trans-unit id="title.newSparkJob">
+        <source xml:lang="en">New Spark Job</source>
+        <target state="translated">새 Spark 작업</target>
+      </trans-unit>
+      <trans-unit id="title.openClusterDashboard">
+        <source xml:lang="en">Cluster
+Dashboard</source>
+        <target state="translated">클러스터
+대시보드</target>
+      </trans-unit>
+      <trans-unit id="title.openSparkHistory">
+        <source xml:lang="en">View Spark History</source>
+        <target state="translated">Spark 기록 보기</target>
+      </trans-unit>
+      <trans-unit id="title.openYarnHistory">
+        <source xml:lang="en">View Yarn History</source>
+        <target state="translated">Yarn 기록 보기</target>
+      </trans-unit>
+      <trans-unit id="title.searchServers">
+        <source xml:lang="en">Search: Servers</source>
+        <target state="translated">검색: 서버</target>
+      </trans-unit>
+      <trans-unit id="title.showLogFile">
+        <source xml:lang="en">Show Log File</source>
+        <target state="translated">로그 파일 표시</target>
+      </trans-unit>
+      <trans-unit id="title.submitSparkJob">
+        <source xml:lang="en">Submit Spark Job</source>
+        <target state="translated">Spark 작업 제출</target>
+      </trans-unit>
+      <trans-unit id="title.tasks">
+        <source xml:lang="en">Tasks</source>
+        <target state="translated">작업</target>
       </trans-unit>
     </body>
   </file>

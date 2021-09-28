@@ -1,176 +1,177 @@
 {
-  "name": "sql-migration",
-  "displayName": "%displayName%",
-  "description": "%description%",
-  "version": "0.1.8",
-  "publisher": "Microsoft",
-  "preview": true,
-  "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
-  "icon": "images/extension.png",
-  "aiKey": "AIF-37eefaf0-8022-4671-a3fb-64752724682e",
-  "engines": {
-    "vscode": "*",
-    "azdata": ">=1.29.0"
-  },
-  "activationEvents": [
-    "onDashboardOpen",
-    "onCommand:sqlmigration.start",
-    "onCommand:sqlmigration.newsupportrequest",
-    "onCommand:sqlmigration.sendfeedback",
-    "onCommand:sqlmigration.openNotebooks"
-  ],
-  "main": "./out/main",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Microsoft/azuredatastudio.git"
-  },
-  "extensionDependencies": [
-    "Microsoft.mssql"
-  ],
-  "contributes": {
-    "commands": [
-      {
-        "command": "sqlmigration.start",
-        "title": "%start-migration-command%",
-        "category": "%migration-command-category%",
-        "icon": "./images/migration.svg"
-      },
-      {
-        "command": "sqlmigration.newsupportrequest",
-        "title": "%new-support-request-command%",
-        "category": "%migration-command-category%",
-        "icon": "./images/newSupportRequest.svg"
-      },
-      {
-        "command": "sqlmigration.sendfeedback",
-        "title": "%send-feedback-command%",
-        "category": "%migration-command-category%",
-        "icon": "./images/sendFeedback.svg"
-      },
-      {
-        "command": "sqlmigration.openNotebooks",
-        "title": "%migration-notebook-command-title%",
-        "category": "%migration-command-category%"
-      },
-      {
-        "command": "sqlmigration.cutover",
-        "title": "%complete-cutover-menu%",
-        "category": "%migration-context-menu-category%"
-      },
-      {
-        "command": "sqlmigration.view.database",
-        "title": "%database-details-menu%",
-        "category": "%migration-context-menu-category%"
-      },
-      {
-        "command": "sqlmigration.view.target",
-        "title": "%view-target-menu%",
-        "category": "%migration-context-menu-category%"
-      },
-      {
-        "command": "sqlmigration.view.service",
-        "title": "%view-service-menu%",
-        "category": "%migration-context-menu-category%"
-      },
-      {
-        "command": "sqlmigration.copy.migration",
-        "title": "%copy-migration-menu%",
-        "category": "%migration-context-menu-category%"
-      },
-      {
-        "command": "sqlmigration.cancel.migration",
-        "title": "%cancel-migration-menu%",
-        "category": "%migration-context-menu-category%"
-      }
-    ],
-    "menu": {
-      "commandPalette": [
-        {
-          "command": "sqlmigration.newsupportrequest",
-          "when": "false"
-        },
-        {
-          "command": "sqlmigration.sendfeedback",
-          "when": "false"
-        },
-        {
-          "command": "sqlmigration.cutover",
-          "when": "false"
-        },
-        {
-          "command": "sqlmigration.view.database",
-          "when": "false"
-        },
-        {
-          "command": "sqlmigration.view.target",
-          "when": "false"
-        },
-        {
-          "command": "sqlmigration.view.service",
-          "when": "false"
-        },
-        {
-          "command": "sqlmigration.copy.migration",
-          "when": "false"
-        },
-        {
-          "command": "sqlmigration.cancel.migration",
-          "when": "false"
-        }
-      ]
-    },
-    "dashboard.tabs": [
-      {
-        "id": "migration-dashboard",
-        "description": "%migration-dashboard-title%",
-        "provider": "MSSQL",
-        "title": "%migration-dashboard-title%",
-        "icon": {
-          "light": "./images/migration.svg",
-          "dark": "./images/migration.svg"
-        },
-        "when": "connectionProvider == 'MSSQL' && !mssql:iscloud  && mssql:engineedition != 8",
-        "container": {
-          "grid-container": [
-            {
-              "name": "",
-              "row": 0,
-              "col": 0,
-              "widget": {
-                "tasks-widget": [
-                  "sqlmigration.start",
-                  "sqlmigration.newsupportrequest",
-                  "sqlmigration.sendfeedback"
-                ]
-              }
-            },
-            {
-              "name": "",
-              "row": 0,
-              "col": 1,
-              "rowspan": 2.5,
-              "colspan": 3.5,
-              "widget": {
-                "modelview": {
-                  "id": "migration.dashboard"
-                }
-              }
-            }
-          ]
-        }
-      }
-    ]
-  },
-  "dependencies": {
-    "@microsoft/ads-extension-telemetry": "^1.1.3",
-    "uuid": "^8.3.2",
-    "vscode-nls": "^4.1.2"
-  },
-  "__metadata": {
-    "publisherDisplayName": "Microsoft",
-    "publisherId": "Microsoft"
-  },
-  "devDependencies": {
-    "@types/uuid": "^8.3.1"
-  }
+	"name": "sql-migration",
+	"displayName": "%displayName%",
+	"description": "%description%",
+	"version": "0.1.8",
+	"publisher": "Microsoft",
+	"preview": true,
+	"license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
+	"icon": "images/extension.png",
+	"aiKey": "AIF-37eefaf0-8022-4671-a3fb-64752724682e",
+	"engines": {
+		"vscode": "*",
+		"azdata": ">=1.29.0"
+	},
+	"activationEvents": [
+		"onDashboardOpen",
+		"onCommand:sqlmigration.start",
+		"onCommand:sqlmigration.newsupportrequest",
+		"onCommand:sqlmigration.sendfeedback",
+		"onCommand:sqlmigration.openNotebooks"
+	],
+	"main": "./out/main",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Microsoft/azuredatastudio.git"
+	},
+	"extensionDependencies": [
+		"Microsoft.mssql"
+	],
+	"contributes": {
+		"commands": [
+			{
+				"command": "sqlmigration.start",
+				"title": "%start-migration-command%",
+				"category": "%migration-command-category%",
+				"icon": "./images/migration.svg"
+			},
+			{
+				"command": "sqlmigration.newsupportrequest",
+				"title": "%new-support-request-command%",
+				"category": "%migration-command-category%",
+				"icon": "./images/newSupportRequest.svg"
+			},
+			{
+				"command": "sqlmigration.sendfeedback",
+				"title": "%send-feedback-command%",
+				"category": "%migration-command-category%",
+				"icon": "./images/sendFeedback.svg"
+			},
+			{
+				"command": "sqlmigration.openNotebooks",
+				"title": "%migration-notebook-command-title%",
+				"category": "%migration-command-category%"
+			},
+			{
+				"command": "sqlmigration.cutover",
+				"title": "%complete-cutover-menu%",
+				"category": "%migration-context-menu-category%"
+			},
+			{
+				"command": "sqlmigration.view.database",
+				"title": "%database-details-menu%",
+				"category": "%migration-context-menu-category%"
+			},
+			{
+				"command": "sqlmigration.view.target",
+				"title": "%view-target-menu%",
+				"category": "%migration-context-menu-category%"
+			},
+			{
+				"command": "sqlmigration.view.service",
+				"title": "%view-service-menu%",
+				"category": "%migration-context-menu-category%"
+			},
+			{
+				"command": "sqlmigration.copy.migration",
+				"title": "%copy-migration-menu%",
+				"category": "%migration-context-menu-category%"
+			},
+			{
+				"command": "sqlmigration.cancel.migration",
+				"title": "%cancel-migration-menu%",
+				"category": "%migration-context-menu-category%"
+			}
+		],
+		"menu": {
+			"commandPalette": [
+				{
+					"command": "sqlmigration.newsupportrequest",
+					"when": "false"
+				},
+				{
+					"command": "sqlmigration.sendfeedback",
+					"when": "false"
+				},
+				{
+					"command": "sqlmigration.cutover",
+					"when": "false"
+				},
+				{
+					"command": "sqlmigration.view.database",
+					"when": "false"
+				},
+				{
+					"command": "sqlmigration.view.target",
+					"when": "false"
+				},
+				{
+					"command": "sqlmigration.view.service",
+					"when": "false"
+				},
+				{
+					"command": "sqlmigration.copy.migration",
+					"when": "false"
+				},
+				{
+					"command": "sqlmigration.cancel.migration",
+					"when": "false"
+				}
+			]
+		},
+		"dashboard.tabs": [
+			{
+				"id": "migration-dashboard",
+				"description": "%migration-dashboard-title%",
+				"provider": "MSSQL",
+				"title": "%migration-dashboard-title%",
+				"icon": {
+					"light": "./images/migration.svg",
+					"dark": "./images/migration.svg"
+				},
+				"when": "connectionProvider == 'MSSQL' && !mssql:iscloud  && mssql:engineedition != 8",
+				"container": {
+					"grid-container": [
+						{
+							"name": "",
+							"row": 0,
+							"col": 0,
+							"widget": {
+								"tasks-widget": [
+									"sqlmigration.start",
+									"sqlmigration.newsupportrequest",
+									"sqlmigration.sendfeedback"
+								]
+							}
+						},
+						{
+							"name": "",
+							"row": 0,
+							"col": 1,
+							"rowspan": 2.5,
+							"colspan": 3.5,
+							"widget": {
+								"modelview": {
+									"id": "migration.dashboard"
+								}
+							}
+						}
+					]
+				}
+			}
+		]
+	},
+	"dependencies": {
+		"@microsoft/ads-extension-telemetry": "^1.1.3",
+		"uuid": "^8.3.2",
+		"vscode-nls": "^4.1.2"
+	},
+	"__metadata": {
+		"publisherDisplayName": "Microsoft",
+		"publisherId": "Microsoft",
+		"id": "81"
+	},
+	"devDependencies": {
+		"@types/uuid": "^8.3.1"
+	}
 }

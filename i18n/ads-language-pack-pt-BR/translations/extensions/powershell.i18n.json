@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Noções Básicas da Linguagem PowerShell",
-			"description": "Fornece snippets, realce de sintaxe, correspondência de colchetes e dobragem em arquivos PowerShell."
+			"description": "Fornece snippets, realce de sintaxe, correspondência de colchetes e dobragem em arquivos PowerShell.",
+			"displayName": "Noções Básicas da Linguagem PowerShell"
 		}
 	}
 }

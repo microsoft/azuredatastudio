@@ -104,7 +104,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 				if (loginComplete) {
 					loginComplete.reject(ex);
 				} else {
-					vscode.window.showErrorMessage(ex.getPrintableString());
+					void vscode.window.showErrorMessage(ex.getPrintableString());
 				}
 			}
 			Logger.error(ex);
@@ -139,7 +139,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			return await this.hydrateAccount(tokenResult, this.getTokenClaims(tokenResult.token));
 		} catch (ex) {
 			if (ex instanceof AzureAuthError) {
-				vscode.window.showErrorMessage(ex.getPrintableString());
+				void vscode.window.showErrorMessage(ex.getPrintableString());
 			}
 			Logger.error(ex);
 			account.isStale = true;
@@ -184,17 +184,20 @@ export abstract class AzureAuth implements vscode.Disposable {
 			const currentTime = new Date().getTime() / 1000;
 
 			let accessToken = cachedTokens.accessToken;
+			let expiresOn = Number(cachedTokens.expiresOn);
 			const remainingTime = expiry - currentTime;
 			const maxTolerance = 2 * 60; // two minutes
 
 			if (remainingTime < maxTolerance) {
 				const result = await this.refreshToken(tenant, resource, cachedTokens.refreshToken);
 				accessToken = result.accessToken;
+				expiresOn = Number(result.expiresOn);
 			}
 			// Let's just return here.
 			if (accessToken) {
 				return {
 					...accessToken,
+					expiresOn: expiresOn,
 					tokenType: 'Bearer'
 				};
 			}
@@ -214,6 +217,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		if (result.accessToken) {
 			return {
 				...result.accessToken,
+				expiresOn: Number(result.expiresOn),
 				tokenType: 'Bearer'
 			};
 		}
@@ -616,7 +620,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			return this.deleteAccountCache(account);
 		} catch (ex) {
 			const msg = localize('azure.cacheErrrorRemove', "Error when removing your account from the cache.");
-			vscode.window.showErrorMessage(msg);
+			void vscode.window.showErrorMessage(msg);
 			Logger.error('Error when removing tokens.', ex);
 		}
 	}
@@ -673,6 +677,11 @@ export interface Token extends AccountKey {
 	 * Access token
 	 */
 	token: string;
+
+	/**
+	 * Access token expiry timestamp
+	 */
+	expiresOn?: number;
 
 	/**
 	 * TokenType

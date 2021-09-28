@@ -9,11 +9,11 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Kit de Ferramentas de Nuvem Híbrida do SQL do Azure",
+			"books-preview-category": "Jupyter Books",
 			"description": "Abre o Livro Jupyter do Kit de Ferramentas de Nuvem Híbrida do SQL do Azure",
-			"title.openJupyterBook": "Abrir o Livro Jupyter do Kit de Ferramentas de Nuvem Híbrida do SQL do Azure",
+			"displayName": "Kit de Ferramentas de Nuvem Híbrida do SQL do Azure",
 			"title.cloudHybridBooks": "Kit de Ferramentas de Nuvem Híbrida do SQL do Azure",
-			"books-preview-category": "Jupyter Books"
+			"title.openJupyterBook": "Abrir o Livro Jupyter do Kit de Ferramentas de Nuvem Híbrida do SQL do Azure"
 		}
 	}
 }
