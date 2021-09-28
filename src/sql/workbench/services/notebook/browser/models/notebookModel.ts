@@ -519,9 +519,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._cells.findIndex(cell => cell.equals(cellModel));
 	}
 
-	public addCell(cellType: CellType, index?: number): ICellModel {
+	public addCell(cellType: CellType, index?: number): ICellModel | undefined {
 		if (this.inErrorState) {
-			return null;
+			return undefined;
 		}
 
 		let cell = this.createCell(cellType);
