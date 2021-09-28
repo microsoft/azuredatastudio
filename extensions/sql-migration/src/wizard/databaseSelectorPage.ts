@@ -97,7 +97,6 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			|| assessedDatabases.length !== selectedDatabases.length
 			|| assessedDatabases.some(db => selectedDatabases.indexOf(db) < 0);
 
-		this.migrationStateModel._databaseAssessment = selectedDatabases;
 		this.wizard.message = {
 			text: '',
 			level: azdata.window.MessageLevel.Error
@@ -279,11 +278,17 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			}
 		).component();
 
-		await this._databaseSelectorTable.setDataValues(this._databaseTableValues);
-		this._disposables.push(this._databaseSelectorTable.onDataChanged(() => {
-			this._dbCount.updateProperties({
+		if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= 1) {
+			await this._databaseSelectorTable.setDataValues(this.migrationStateModel.savedInfo.selectedDatabases);
+		} else {
+			await this._databaseSelectorTable.setDataValues(this._databaseTableValues);
+		}
+		this._disposables.push(this._databaseSelectorTable.onDataChanged(async () => {
+			await this._dbCount.updateProperties({
 				'value': constants.DATABASES_SELECTED(this.selectedDbs().length, this._databaseTableValues.length)
 			});
+			this.migrationStateModel._databaseAssessment = this.selectedDbs();
+			this.migrationStateModel.databaseSelectorTableValues = <azdata.DeclarativeTableCellValue[][]>this._databaseSelectorTable.dataValues;
 		}));
 		const flex = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',

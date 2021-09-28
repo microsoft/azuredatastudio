@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Noções Básicas da Linguagem Bat do Windows",
-			"description": "Fornece snippets, realce de sintaxe, correspondência de colchetes e dobragem em arquivos em lotes do Windows."
+			"description": "Fornece snippets, realce de sintaxe, correspondência de colchetes e dobragem em arquivos em lotes do Windows.",
+			"displayName": "Noções Básicas da Linguagem Bat do Windows"
 		}
 	}
 }

@@ -2,61 +2,57 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file original="extensions/asde-deployment/package" source-language="en" datatype="plaintext" target-language="ja">
     <body>
-      <trans-unit id="extension-displayName">
-        <source xml:lang="en">Azure SQL Edge Deployment Extension</source>
-        <target state="translated">Azure SQL Edge デプロイ拡張機能</target>
+      <trans-unit id="azure-info-section-title">
+        <source xml:lang="en">Azure information</source>
+        <target state="translated">Azure 情報</target>
       </trans-unit>
-      <trans-unit id="extension-description">
-        <source xml:lang="en">Provides a notebook-based experience to deploy Azure SQL Edge</source>
-        <target state="translated">Azure SQL Edge をデプロイするためのノートブック ベースのエクスペリエンスを提供します</target>
+      <trans-unit id="azure_location">
+        <source xml:lang="en">Location</source>
+        <target state="translated">場所</target>
       </trans-unit>
-      <trans-unit id="docker-container-name-field">
-        <source xml:lang="en">Container name</source>
-        <target state="translated">コンテナー名</target>
+      <trans-unit id="azure_resource_group">
+        <source xml:lang="en">Resource group</source>
+        <target state="translated">リソース グループ</target>
       </trans-unit>
-      <trans-unit id="docker-sql-password-field">
-        <source xml:lang="en">Azure SQL Edge instance (sa) password</source>
-        <target state="translated">Azure SQL Edge インスタンス (sa) のパスワード</target>
+      <trans-unit id="azure_subscription_id">
+        <source xml:lang="en">Subscription id</source>
+        <target state="translated">サブスクリプション ID</target>
+      </trans-unit>
+      <trans-unit id="device-id">
+        <source xml:lang="en">Device ID</source>
+        <target state="translated">デバイス ID</target>
+      </trans-unit>
+      <trans-unit id="device-ip-address">
+        <source xml:lang="en">Device IP Address</source>
+        <target state="translated">デバイスの IP アドレス</target>
+      </trans-unit>
+      <trans-unit id="device-ip-address-description">
+        <source xml:lang="en">Will be used to connect to the Azure SQL Edge instance after deployment</source>
+        <target state="translated">デプロイ後に Azure SQL Edge インスタンスに接続するために使用されます</target>
+      </trans-unit>
+      <trans-unit id="device-target-condition">
+        <source xml:lang="en">Target condition</source>
+        <target state="translated">ターゲットの条件</target>
+      </trans-unit>
+      <trans-unit id="device-target-condition-learn-more">
+        <source xml:lang="en">Learn more about target condition</source>
+        <target state="translated">ターゲット条件についての詳細情報</target>
       </trans-unit>
       <trans-unit id="docker-confirm-sql-password-field">
         <source xml:lang="en">Confirm password</source>
         <target state="translated">パスワードの確認</target>
       </trans-unit>
-      <trans-unit id="docker-sql-port-field">
-        <source xml:lang="en">Azure SQL Edge Port</source>
-        <target state="translated">Azure SQL Edge Port</target>
+      <trans-unit id="docker-container-name-field">
+        <source xml:lang="en">Container name</source>
+        <target state="translated">コンテナー名</target>
       </trans-unit>
-      <trans-unit id="microsoft-privacy-statement">
-        <source xml:lang="en">Microsoft Privacy Statement</source>
-        <target state="translated">Microsoft プライバシー ステートメント</target>
+      <trans-unit id="docker-imagetag-field">
+        <source xml:lang="en">Image tag</source>
+        <target state="translated">イメージ タグ</target>
       </trans-unit>
-      <trans-unit id="resource-type-sql-edge-display-name">
-        <source xml:lang="en">Azure SQL Edge</source>
-        <target state="translated">Azure SQL Edge</target>
-      </trans-unit>
-      <trans-unit id="resource-type-sql-edge-description">
-        <source xml:lang="en">Azure SQL Edge (Preview) is an optimized relational database engine geared for IoT and IoT Edge deployments.</source>
-        <target state="translated">Azure SQL Edge (プレビュー) は、IoT と IoT Edge のデプロイ用に最適化されたリレーショナル データベース エンジンです。</target>
-      </trans-unit>
-      <trans-unit id="sql-edge-type-display-name">
-        <source xml:lang="en">Deployment target</source>
-        <target state="translated">デプロイ ターゲット</target>
-      </trans-unit>
-      <trans-unit id="sql-edge-local-display-name">
-        <source xml:lang="en">Local container instance</source>
-        <target state="translated">ローカル コンテナー インスタンス</target>
-      </trans-unit>
-      <trans-unit id="sql-edge-remote-display-name">
-        <source xml:lang="en">Remote container instance</source>
-        <target state="translated">リモート コンテナー インスタンス</target>
-      </trans-unit>
-      <trans-unit id="sql-edge-local-title">
-        <source xml:lang="en">Deploy Azure SQL Edge container instance on local machine</source>
-        <target state="translated">ローカル コンピューターに Azure SQL Edge コンテナー インスタンスをデプロイします</target>
-      </trans-unit>
-      <trans-unit id="docker-settings-section-title">
-        <source xml:lang="en">Docker settings</source>
-        <target state="translated">Docker 設定</target>
+      <trans-unit id="docker-password-field">
+        <source xml:lang="en">Password</source>
+        <target state="translated">パスワード</target>
       </trans-unit>
       <trans-unit id="docker-registry-field">
         <source xml:lang="en">Registry</source>
@@ -66,17 +62,21 @@
         <source xml:lang="en">Repository</source>
         <target state="translated">リポジトリ</target>
       </trans-unit>
-      <trans-unit id="docker-imagetag-field">
-        <source xml:lang="en">Image tag</source>
-        <target state="translated">イメージ タグ</target>
+      <trans-unit id="docker-settings-section-title">
+        <source xml:lang="en">Docker settings</source>
+        <target state="translated">Docker 設定</target>
+      </trans-unit>
+      <trans-unit id="docker-sql-password-field">
+        <source xml:lang="en">Azure SQL Edge instance (sa) password</source>
+        <target state="translated">Azure SQL Edge インスタンス (sa) のパスワード</target>
+      </trans-unit>
+      <trans-unit id="docker-sql-port-field">
+        <source xml:lang="en">Azure SQL Edge Port</source>
+        <target state="translated">Azure SQL Edge Port</target>
       </trans-unit>
       <trans-unit id="docker-username-field">
         <source xml:lang="en">Username</source>
         <target state="translated">ユーザー名</target>
-      </trans-unit>
-      <trans-unit id="docker-password-field">
-        <source xml:lang="en">Password</source>
-        <target state="translated">パスワード</target>
       </trans-unit>
       <trans-unit id="edge-agreement">
         <source xml:lang="en">I accept {0} and {1}.</source>
@@ -86,13 +86,9 @@
         <source xml:lang="en">Microsoft Azure SQL Edge License Agreement</source>
         <target state="translated">Microsoft Azure SQL Edge License Agreement</target>
       </trans-unit>
-      <trans-unit id="sql-edge-remote-title">
-        <source xml:lang="en">Deploy Azure SQL Edge container instance on remote machine</source>
-        <target state="translated">リモートコンピューターに Azure SQL Edge コンテナー インスタンスをデプロイします</target>
-      </trans-unit>
-      <trans-unit id="remote-info-section-title">
-        <source xml:lang="en">Target machine information</source>
-        <target state="translated">対象コンピューターの情報</target>
+      <trans-unit id="edge-remote-password-field">
+        <source xml:lang="en">Password</source>
+        <target state="translated">パスワード</target>
       </trans-unit>
       <trans-unit id="edge-remote-target-field">
         <source xml:lang="en">Name or IP address</source>
@@ -102,13 +98,65 @@
         <source xml:lang="en">Username</source>
         <target state="translated">ユーザー名</target>
       </trans-unit>
-      <trans-unit id="edge-remote-password-field">
-        <source xml:lang="en">Password</source>
-        <target state="translated">パスワード</target>
+      <trans-unit id="extension-description">
+        <source xml:lang="en">Provides a notebook-based experience to deploy Azure SQL Edge</source>
+        <target state="translated">Azure SQL Edge をデプロイするためのノートブック ベースのエクスペリエンスを提供します</target>
+      </trans-unit>
+      <trans-unit id="extension-displayName">
+        <source xml:lang="en">Azure SQL Edge Deployment Extension</source>
+        <target state="translated">Azure SQL Edge デプロイ拡張機能</target>
+      </trans-unit>
+      <trans-unit id="iot-hub-name">
+        <source xml:lang="en">IoT Hub name</source>
+        <target state="translated">IoT ハブ名</target>
+      </trans-unit>
+      <trans-unit id="microsoft-privacy-statement">
+        <source xml:lang="en">Microsoft Privacy Statement</source>
+        <target state="translated">Microsoft プライバシー ステートメント</target>
+      </trans-unit>
+      <trans-unit id="package-files">
+        <source xml:lang="en">SQL Server Package files</source>
+        <target state="translated">パッケージ ファイルの SQL Server</target>
+      </trans-unit>
+      <trans-unit id="package_path">
+        <source xml:lang="en">Package file</source>
+        <target state="translated">パッケージ ファイル</target>
+      </trans-unit>
+      <trans-unit id="package_path_description">
+        <source xml:lang="en">Path of the SQL Server package file(dacpac, bacpac) or compressed package file.</source>
+        <target state="translated">SQL Server パッケージ ファイル (dacpac、bacpac) または圧縮されたパッケージファイルのパス。</target>
+      </trans-unit>
+      <trans-unit id="remote-info-section-title">
+        <source xml:lang="en">Target machine information</source>
+        <target state="translated">対象コンピューターの情報</target>
+      </trans-unit>
+      <trans-unit id="resource-type-sql-edge-description">
+        <source xml:lang="en">Azure SQL Edge (Preview) is an optimized relational database engine geared for IoT and IoT Edge deployments.</source>
+        <target state="translated">Azure SQL Edge (プレビュー) は、IoT と IoT Edge のデプロイ用に最適化されたリレーショナル データベース エンジンです。</target>
+      </trans-unit>
+      <trans-unit id="resource-type-sql-edge-display-name">
+        <source xml:lang="en">Azure SQL Edge</source>
+        <target state="translated">Azure SQL Edge</target>
       </trans-unit>
       <trans-unit id="sql-edge-azure-display-name">
         <source xml:lang="en">New Azure IoT Hub and VM (password authentication)</source>
         <target state="translated">新しい Azure IoT Hub と VM (パスワード認証)</target>
+      </trans-unit>
+      <trans-unit id="sql-edge-azure-multi-device-display-name">
+        <source xml:lang="en">Multiple devices of an Azure IoT Hub</source>
+        <target state="translated">Azure IoT Hub の複数のデバイス</target>
+      </trans-unit>
+      <trans-unit id="sql-edge-azure-multi-device-title">
+        <source xml:lang="en">Deploy Azure SQL Edge to multiple Azure IoT devices</source>
+        <target state="translated">Azure SQL Edge を複数の Azure IoT デバイスにデプロイする</target>
+      </trans-unit>
+      <trans-unit id="sql-edge-azure-single-device-display-name">
+        <source xml:lang="en">Existing device of an Azure IoT Hub</source>
+        <target state="translated">Azure IoT Hub の既存のデバイス</target>
+      </trans-unit>
+      <trans-unit id="sql-edge-azure-single-device-title">
+        <source xml:lang="en">Deploy Azure SQL Edge to an existing device</source>
+        <target state="translated">Azure SQL Edge を既存のデバイスにデプロイします</target>
       </trans-unit>
       <trans-unit id="sql-edge-azure-sshkey-display-name">
         <source xml:lang="en">New Azure IoT Hub and VM (ssh public key authentication)</source>
@@ -118,17 +166,29 @@
         <source xml:lang="en">Deploy Azure SQL Edge to a new Azure VM via IoT hub</source>
         <target state="translated">IoT hub を使用して Azure SQL Edge を新しい Azure VM にデプロイします</target>
       </trans-unit>
-      <trans-unit id="azure_subscription_id">
-        <source xml:lang="en">Subscription id</source>
-        <target state="translated">サブスクリプション ID</target>
+      <trans-unit id="sql-edge-local-display-name">
+        <source xml:lang="en">Local container instance</source>
+        <target state="translated">ローカル コンテナー インスタンス</target>
       </trans-unit>
-      <trans-unit id="azure_resource_group">
-        <source xml:lang="en">Resource group</source>
-        <target state="translated">リソース グループ</target>
+      <trans-unit id="sql-edge-local-title">
+        <source xml:lang="en">Deploy Azure SQL Edge container instance on local machine</source>
+        <target state="translated">ローカル コンピューターに Azure SQL Edge コンテナー インスタンスをデプロイします</target>
       </trans-unit>
-      <trans-unit id="azure_location">
-        <source xml:lang="en">Location</source>
-        <target state="translated">場所</target>
+      <trans-unit id="sql-edge-remote-display-name">
+        <source xml:lang="en">Remote container instance</source>
+        <target state="translated">リモート コンテナー インスタンス</target>
+      </trans-unit>
+      <trans-unit id="sql-edge-remote-title">
+        <source xml:lang="en">Deploy Azure SQL Edge container instance on remote machine</source>
+        <target state="translated">リモートコンピューターに Azure SQL Edge コンテナー インスタンスをデプロイします</target>
+      </trans-unit>
+      <trans-unit id="sql-edge-type-display-name">
+        <source xml:lang="en">Deployment target</source>
+        <target state="translated">デプロイ ターゲット</target>
+      </trans-unit>
+      <trans-unit id="sqlserver-info-section-title">
+        <source xml:lang="en">Azure SQL Edge information</source>
+        <target state="translated">Azure SQL Edge 情報</target>
       </trans-unit>
       <trans-unit id="vm_admin">
         <source xml:lang="en">VM admin username</source>
@@ -145,66 +205,6 @@
       <trans-unit id="vm_password_validation_error_message">
         <source xml:lang="en">VM password must be 12 to 123 characters in length and consists of upper case characters, lower case characters, numbers and special characters.</source>
         <target state="translated">VM パスワードは、12 ~ 123 文字の長さで、大文字、小文字、数字、特殊文字で構成されている必要があります。</target>
-      </trans-unit>
-      <trans-unit id="package_path">
-        <source xml:lang="en">Package file</source>
-        <target state="translated">パッケージ ファイル</target>
-      </trans-unit>
-      <trans-unit id="package_path_description">
-        <source xml:lang="en">Path of the SQL Server package file(dacpac, bacpac) or compressed package file.</source>
-        <target state="translated">SQL Server パッケージ ファイル (dacpac、bacpac) または圧縮されたパッケージファイルのパス。</target>
-      </trans-unit>
-      <trans-unit id="azure-info-section-title">
-        <source xml:lang="en">Azure information</source>
-        <target state="translated">Azure 情報</target>
-      </trans-unit>
-      <trans-unit id="sqlserver-info-section-title">
-        <source xml:lang="en">Azure SQL Edge information</source>
-        <target state="translated">Azure SQL Edge 情報</target>
-      </trans-unit>
-      <trans-unit id="package-files">
-        <source xml:lang="en">SQL Server Package files</source>
-        <target state="translated">パッケージ ファイルの SQL Server</target>
-      </trans-unit>
-      <trans-unit id="sql-edge-azure-single-device-display-name">
-        <source xml:lang="en">Existing device of an Azure IoT Hub</source>
-        <target state="translated">Azure IoT Hub の既存のデバイス</target>
-      </trans-unit>
-      <trans-unit id="sql-edge-azure-single-device-title">
-        <source xml:lang="en">Deploy Azure SQL Edge to an existing device</source>
-        <target state="translated">Azure SQL Edge を既存のデバイスにデプロイします</target>
-      </trans-unit>
-      <trans-unit id="iot-hub-name">
-        <source xml:lang="en">IoT Hub name</source>
-        <target state="translated">IoT ハブ名</target>
-      </trans-unit>
-      <trans-unit id="device-id">
-        <source xml:lang="en">Device ID</source>
-        <target state="translated">デバイス ID</target>
-      </trans-unit>
-      <trans-unit id="device-ip-address">
-        <source xml:lang="en">Device IP Address</source>
-        <target state="translated">デバイスの IP アドレス</target>
-      </trans-unit>
-      <trans-unit id="device-ip-address-description">
-        <source xml:lang="en">Will be used to connect to the Azure SQL Edge instance after deployment</source>
-        <target state="translated">デプロイ後に Azure SQL Edge インスタンスに接続するために使用されます</target>
-      </trans-unit>
-      <trans-unit id="sql-edge-azure-multi-device-display-name">
-        <source xml:lang="en">Multiple devices of an Azure IoT Hub</source>
-        <target state="translated">Azure IoT Hub の複数のデバイス</target>
-      </trans-unit>
-      <trans-unit id="sql-edge-azure-multi-device-title">
-        <source xml:lang="en">Deploy Azure SQL Edge to multiple Azure IoT devices</source>
-        <target state="translated">Azure SQL Edge を複数の Azure IoT デバイスにデプロイする</target>
-      </trans-unit>
-      <trans-unit id="device-target-condition">
-        <source xml:lang="en">Target condition</source>
-        <target state="translated">ターゲットの条件</target>
-      </trans-unit>
-      <trans-unit id="device-target-condition-learn-more">
-        <source xml:lang="en">Learn more about target condition</source>
-        <target state="translated">ターゲット条件についての詳細情報</target>
       </trans-unit>
       <trans-unit id="vm_ssh_public_key">
         <source xml:lang="en">SSH public key</source>

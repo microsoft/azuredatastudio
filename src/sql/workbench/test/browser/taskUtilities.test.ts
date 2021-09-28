@@ -27,7 +27,7 @@ suite('TaskUtilities', function () {
 
 		// If I call getCurrentGlobalConnection, it should return the expected server profile
 		let actualProfile = TaskUtilities.getCurrentGlobalConnection(mockObjectExplorerService.object, mockConnectionManagementService.object, mockWorkbenchEditorService.object);
-		assert.equal(actualProfile, expectedProfile);
+		assert.strictEqual(actualProfile, expectedProfile);
 	});
 
 	test('getCurrentGlobalConnection returns the selected OE database if a database or its children is selected', () => {
@@ -45,13 +45,13 @@ suite('TaskUtilities', function () {
 
 		// If I call getCurrentGlobalConnection, it should return the expected database profile
 		let actualProfile = TaskUtilities.getCurrentGlobalConnection(mockObjectExplorerService.object, mockConnectionManagementService.object, mockWorkbenchEditorService.object);
-		assert.equal(actualProfile.databaseName, dbName);
-		assert.notEqual(actualProfile.id, serverProfile.id);
+		assert.strictEqual(actualProfile.databaseName, dbName);
+		assert.notStrictEqual(actualProfile.id, serverProfile.id);
 		// Other connection attributes still match
-		assert.equal(actualProfile.authenticationType, serverProfile.authenticationType);
-		assert.equal(actualProfile.password, serverProfile.password);
-		assert.equal(actualProfile.serverName, serverProfile.serverName);
-		assert.equal(actualProfile.userName, serverProfile.userName);
+		assert.strictEqual(actualProfile.authenticationType, serverProfile.authenticationType);
+		assert.strictEqual(actualProfile.password, serverProfile.password);
+		assert.strictEqual(actualProfile.serverName, serverProfile.serverName);
+		assert.strictEqual(actualProfile.userName, serverProfile.userName);
 	});
 
 	test('getCurrentGlobalConnection returns the connection from the active tab, if there is one and OE is not focused', () => {
@@ -76,11 +76,11 @@ suite('TaskUtilities', function () {
 
 		// If I call getCurrentGlobalConnection, it should return the expected profile from the active tab
 		let actualProfile = TaskUtilities.getCurrentGlobalConnection(mockObjectExplorerService.object, mockConnectionManagementService.object, mockWorkbenchEditorService.object);
-		assert.equal(actualProfile.databaseName, tabProfile.databaseName);
-		assert.equal(actualProfile.authenticationType, tabProfile.authenticationType);
-		assert.equal(actualProfile.password, tabProfile.password);
-		assert.equal(actualProfile.serverName, tabProfile.serverName);
-		assert.equal(actualProfile.userName, tabProfile.userName);
+		assert.strictEqual(actualProfile.databaseName, tabProfile.databaseName);
+		assert.strictEqual(actualProfile.authenticationType, tabProfile.authenticationType);
+		assert.strictEqual(actualProfile.password, tabProfile.password);
+		assert.strictEqual(actualProfile.serverName, tabProfile.serverName);
+		assert.strictEqual(actualProfile.userName, tabProfile.userName);
 	});
 
 	test('getCurrentGlobalConnection returns the connection from OE if there is no active tab, even if OE is not focused', () => {
@@ -97,6 +97,6 @@ suite('TaskUtilities', function () {
 
 		// If I call getCurrentGlobalConnection, it should return the expected profile from OE
 		let actualProfile = TaskUtilities.getCurrentGlobalConnection(mockObjectExplorerService.object, mockConnectionManagementService.object, mockWorkbenchEditorService.object);
-		assert.equal(actualProfile, oeProfile);
+		assert.strictEqual(actualProfile, oeProfile);
 	});
 });

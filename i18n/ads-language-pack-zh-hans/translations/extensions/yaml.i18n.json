@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "YAML 语言基础功能",
-			"description": "在 YAML 文件中提供语法高亮和括号匹配功能。"
+			"description": "在 YAML 文件中提供语法高亮和括号匹配功能。",
+			"displayName": "YAML 语言基础功能"
 		}
 	}
 }

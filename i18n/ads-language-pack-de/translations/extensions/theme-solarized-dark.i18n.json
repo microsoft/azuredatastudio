@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Dunkles Solarisationsdesign",
 			"description": "Dunkles Solarisationsdesign für Visual Studio Code",
+			"displayName": "Dunkles Solarisationsdesign",
 			"themeLabel": "Solarisation dunkel"
 		}
 	}

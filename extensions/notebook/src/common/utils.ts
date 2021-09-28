@@ -465,7 +465,7 @@ export function getPinnedNotebooks(): IPinnedNotebook[] {
 	});
 	if (updateFormat) {
 		//Need to modify the format of how pinnedNotebooks are stored for users that used the September release version.
-		setPinnedBookPathsInConfig(pinnedBookDirectories);
+		setPinnedBookPathsInConfig(pinnedBookDirectories).catch(err => console.error('Error setting pinned notebook paths in config ', err));
 	}
 	return pinnedBookDirectories;
 }

@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Bases du langage JSON",
-			"description": "Fournit la coloration syntaxique et la mise en correspondance des crochets dans les fichiers JSON."
+			"description": "Fournit la coloration syntaxique et la mise en correspondance des crochets dans les fichiers JSON.",
+			"displayName": "Bases du langage JSON"
 		}
 	}
 }

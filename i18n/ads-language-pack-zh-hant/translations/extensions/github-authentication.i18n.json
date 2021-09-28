@@ -8,16 +8,18 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"displayName": "GitHub 驗證",
-			"description": "GitHub 驗證提供者"
+		"dist/common/keychain": {
+			"keychainWriteError": "將登入資訊寫入 Keychain 失敗，錯誤為 '{0}'。",
+			"troubleshooting": "疑難排解指南"
 		},
 		"dist/githubServer": {
-			"signingIn": "$(mark-github) 正在登入 github.com..."
+			"signingIn": "$(mark-github) 正在登入 github.com...",
+			"signingInEnterprise": "$(mark-github) 正在登入 {0}...",
+			"status.git.signIn.name": "GitHub 登入"
 		},
-		"dist/common/keychain": {
-			"troubleshooting": "疑難排解指南",
-			"keychainWriteError": "將登入資訊寫入 Keychain 失敗，錯誤為 '{0}'。"
+		"package": {
+			"description": "GitHub 驗證提供者",
+			"displayName": "GitHub 驗證"
 		}
 	}
 }

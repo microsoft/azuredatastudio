@@ -8,68 +8,68 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"displayName": "Оценка SQL",
-			"description": "Оценка SQL для Azure Data Studio (предварительная версия) предоставляет механизм оценки конфигурации SQL Server на соответствие рекомендациям.",
-			"dashboard.tabName": "Оценка SQL"
-		},
-		"dist/localized": {
-			"asmt.section.api.title": "Информация",
-			"asmt.apiversion": "Версия API",
-			"asmt.rulesetversion": "Набор правил по умолчанию",
-			"asmt.section.instance.title": "Сведения об экземпляре SQL Server",
-			"asmt.serverversion": "Версия",
-			"asmt.serveredition": "Выпуск",
-			"asmt.instancename": "Имя экземпляра",
-			"asmt.osversion": "Версия ОС",
-			"asmt.column.target": "Целевой объект",
-			"asmt.column.severity": "Серьезность",
-			"asmt.column.message": "Сообщение",
-			"asmt.column.checkId": "Проверьте ИД",
-			"asmt.column.tags": "Теги",
-			"asmt.learnMore": "Подробнее",
-			"asmt.sqlReportTitle": "Отчет об оценке SQL",
-			"asmt.sqlReport.resultForDatabase": "Результаты для базы данных",
-			"asmt.sqlReport.resultForInstance": "Результаты для сервера",
-			"asmt.sqlReport.Error": "Ошибка",
-			"asmt.sqlReport.Warning": "Предупреждение",
-			"asmt.sqlReport.Info": "Сведения",
-			"asmt.column.helpLink": "Ссылка на справку",
-			"asmt.sqlReport.severityMsg": "{0}, элементов: {1}"
-		},
 		"dist/assessmentResultGrid": {
-			"databaseIconLabel": "База данных",
-			"serverIconLabel": "Сервер",
 			"asmt.column.targetType": "Конечный тип",
 			"asmt.details.clickHere": "Щелкните здесь",
-			"asmt.details.toLearnMore": " для получения дополнительных сведений.",
+			"asmt.details.recommendation": "Рекомендация",
 			"asmt.details.ruleDescription": "Описание правила",
-			"asmt.details.recommendation": "Рекомендация"
+			"asmt.details.toLearnMore": " для получения дополнительных сведений.",
+			"databaseIconLabel": "База данных",
+			"serverIconLabel": "Сервер"
+		},
+		"dist/localized": {
+			"asmt.apiversion": "Версия API",
+			"asmt.column.checkId": "Проверьте ИД",
+			"asmt.column.helpLink": "Ссылка на справку",
+			"asmt.column.message": "Сообщение",
+			"asmt.column.severity": "Серьезность",
+			"asmt.column.tags": "Теги",
+			"asmt.column.target": "Целевой объект",
+			"asmt.instancename": "Имя экземпляра",
+			"asmt.learnMore": "Подробнее",
+			"asmt.osversion": "Версия ОС",
+			"asmt.rulesetversion": "Набор правил по умолчанию",
+			"asmt.section.api.title": "Информация",
+			"asmt.section.instance.title": "Сведения об экземпляре SQL Server",
+			"asmt.serveredition": "Выпуск",
+			"asmt.serverversion": "Версия",
+			"asmt.sqlReport.Error": "Ошибка",
+			"asmt.sqlReport.Info": "Сведения",
+			"asmt.sqlReport.Warning": "Предупреждение",
+			"asmt.sqlReport.resultForDatabase": "Результаты для базы данных",
+			"asmt.sqlReport.resultForInstance": "Результаты для сервера",
+			"asmt.sqlReport.severityMsg": "{0}, элементов: {1}",
+			"asmt.sqlReportTitle": "Отчет об оценке SQL"
 		},
 		"dist/tabs/assessmentMainTab": {
-			"invokeAssessmentLabelServer": "Вызвать оценку",
-			"getAssessmentItemsServer": "Просмотреть применимые правила",
-			"invokeAssessmentLabelDatabase": "Вызвать оценку для {0}",
-			"getAssessmentItemsDatabase": "Просмотреть применимые правила для {0}",
+			"asmtaction.label.cancel": "Отмена",
+			"asmtaction.label.open": "Открыть",
+			"asmtaction.openReport": "Отчет сохранен. Вы хотите открыть его?",
 			"btnExportAsScript": "Экспортировать как сценарий",
 			"btnGeneratehtmlreport": "Создать отчет в формате HTML",
-			"asmtaction.openReport": "Отчет сохранен. Вы хотите открыть его?",
-			"asmtaction.label.open": "Открыть",
-			"asmtaction.label.cancel": "Отмена",
-			"btnViewSamplesShort": "Просмотреть все на GitHub",
 			"btnViewSamples": "Просмотреть все правила и дополнительные сведения в GitHub",
+			"btnViewSamplesShort": "Просмотреть все на GitHub",
+			"getAssessmentItemsDatabase": "Просмотреть применимые правила для {0}",
+			"getAssessmentItemsServer": "Просмотреть применимые правила",
+			"invokeAssessmentLabelDatabase": "Вызвать оценку для {0}",
+			"invokeAssessmentLabelServer": "Вызвать оценку",
 			"msgBoxAsmtInfo": "Сведения об оценке SQL",
+			"msgBoxCopied": "Сведения об оценке SQL скопированы",
 			"msgBoxCopyBtn": "Копировать",
-			"ok": "ОК",
-			"msgBoxCopied": "Сведения об оценке SQL скопированы"
+			"ok": "ОК"
 		},
 		"dist/tabs/historyTab": {
 			"asmt.history.back": "<< Назад",
 			"asmt.history.resultsTitle": "Результаты оценки из {0}",
 			"asmt.history.summaryAsmtDate": "Дата оценки",
 			"asmt.history.summaryError": "Ошибка",
-			"asmt.history.summaryWarning": "Предупреждение",
-			"asmt.history.summaryInfo": "Сведения"
+			"asmt.history.summaryInfo": "Сведения",
+			"asmt.history.summaryWarning": "Предупреждение"
+		},
+		"package": {
+			"dashboard.tabName": "Оценка SQL",
+			"description": "Оценка SQL для Azure Data Studio (предварительная версия) предоставляет механизм оценки конфигурации SQL Server на соответствие рекомендациям.",
+			"displayName": "Оценка SQL"
 		}
 	}
 }

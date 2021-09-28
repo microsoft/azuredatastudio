@@ -454,6 +454,7 @@ h6:hover .jp-InternalAnchorLink {
  */
 output-component .jp-RenderedHTMLCommon > *:last-child {
 	margin-bottom: 0.5em;
+	overflow-x: scroll;
 }
 
 /*-----------------------------------------------------------------------------

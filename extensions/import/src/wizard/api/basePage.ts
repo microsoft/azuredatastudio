@@ -91,7 +91,7 @@ export abstract class BasePage {
 		return values;
 	}
 
-	public async getDatabaseValues(): Promise<{ displayName: string, name: string }[]> {
+	public async getDatabaseValues(): Promise<azdata.CategoryValue[]> {
 		let idx = -1;
 		let count = -1;
 		let values = (await azdata.connection.listDatabases(this.model.server.connectionId)).map(db => {

@@ -2,25 +2,25 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file original="extensions/azurehybridtoolkit/package" source-language="en" datatype="plaintext" target-language="it">
     <body>
-      <trans-unit id="displayName">
-        <source xml:lang="en">Azure SQL Hybrid Cloud Toolkit</source>
-        <target state="translated">Azure SQL Hybrid Cloud Toolkit</target>
+      <trans-unit id="books-preview-category">
+        <source xml:lang="en">Jupyter Books</source>
+        <target state="translated">Book di Jupyter</target>
       </trans-unit>
       <trans-unit id="description">
         <source xml:lang="en">Opens up Azure SQL Hybrid Cloud Toolkit Jupyter Book</source>
         <target state="translated">Apre il book di Jupyter di Azure SQL Hybrid Cloud Toolkit</target>
       </trans-unit>
-      <trans-unit id="title.openJupyterBook">
-        <source xml:lang="en">Open Azure SQL Hybrid Cloud Toolkit Jupyter Book</source>
-        <target state="translated">Apri book di Jupyter di Azure SQL Hybrid Cloud Toolkit</target>
+      <trans-unit id="displayName">
+        <source xml:lang="en">Azure SQL Hybrid Cloud Toolkit</source>
+        <target state="translated">Azure SQL Hybrid Cloud Toolkit</target>
       </trans-unit>
       <trans-unit id="title.cloudHybridBooks">
         <source xml:lang="en">Azure SQL Hybrid Cloud Toolkit</source>
         <target state="translated">Azure SQL Hybrid Cloud Toolkit</target>
       </trans-unit>
-      <trans-unit id="books-preview-category">
-        <source xml:lang="en">Jupyter Books</source>
-        <target state="translated">Book di Jupyter</target>
+      <trans-unit id="title.openJupyterBook">
+        <source xml:lang="en">Open Azure SQL Hybrid Cloud Toolkit Jupyter Book</source>
+        <target state="translated">Apri book di Jupyter di Azure SQL Hybrid Cloud Toolkit</target>
       </trans-unit>
     </body>
   </file>

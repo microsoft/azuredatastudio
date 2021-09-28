@@ -95,7 +95,7 @@ export function registerServiceEndpoints(context: vscode.ExtensionContext): void
 				const copyValueCell = view.modelBuilder.button().component();
 				copyValueCell.iconPath = { light: context.asAbsolutePath('resources/light/copy.png'), dark: context.asAbsolutePath('resources/dark/copy_inverse.png') };
 				copyValueCell.onDidClick(() => {
-					vscode.env.clipboard.writeText(endpointInfo.endpoint);
+					void vscode.env.clipboard.writeText(endpointInfo.endpoint);
 				});
 				copyValueCell.title = localize("copyText", "Copy");
 				copyValueCell.iconHeight = '14px';

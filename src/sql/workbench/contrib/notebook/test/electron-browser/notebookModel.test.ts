@@ -208,7 +208,7 @@ suite('notebook model', function (): void {
 		await model.loadContents();
 
 		// Then I expect to have 0 code cell as the contents
-		assert.equal(model.cells.length, 0);
+		assert.strictEqual(model.cells.length, 0);
 
 		// And Trust should be true by default if there are no cells
 		assert(model.trustedMode);
@@ -238,9 +238,9 @@ suite('notebook model', function (): void {
 		// When I initalize the model
 		// Then it should throw
 		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
-		assert.equal(model.inErrorState, false);
+		assert.strictEqual(model.inErrorState, false);
 		await assert.rejects(async () => { await model.loadContents(); });
-		assert.equal(model.inErrorState, true);
+		assert.strictEqual(model.inErrorState, true);
 	});
 
 	test('Should convert cell info to CellModels', async function (): Promise<void> {
@@ -254,9 +254,9 @@ suite('notebook model', function (): void {
 		await model.loadContents();
 
 		// Then I expect all cells to be in the model
-		assert.equal(model.cells.length, 2);
-		assert.deepEqual(model.cells[0].source, expectedNotebookContent.cells[0].source);
-		assert.deepEqual(model.cells[1].source, expectedNotebookContent.cells[1].source);
+		assert.strictEqual(model.cells.length, 2);
+		assert.deepStrictEqual(model.cells[0].source, expectedNotebookContent.cells[0].source);
+		assert.deepStrictEqual(model.cells[1].source, expectedNotebookContent.cells[1].source);
 	});
 
 	test('Should handle multiple notebook managers', async function (): Promise<void> {
@@ -282,7 +282,7 @@ suite('notebook model', function (): void {
 		await model.loadContents();
 
 		// I expect the default provider to be jupyter
-		assert.equal(model.notebookManager.providerId, 'jupyter', 'Notebook manager provider id incorrect');
+		assert.strictEqual(model.notebookManager.providerId, 'jupyter', 'Notebook manager provider id incorrect');
 
 		// Similarly, change default notebook provider id to SQL
 		defaultModelOptions.providerId = 'SQL';
@@ -292,18 +292,18 @@ suite('notebook model', function (): void {
 		await model.loadContents();
 
 		// I expect the default provider to be SQL
-		assert.equal(model.notebookManager.providerId, 'SQL', 'Notebook manager provider id incorrect after 2nd model load');
+		assert.strictEqual(model.notebookManager.providerId, 'SQL', 'Notebook manager provider id incorrect after 2nd model load');
 
 		// Check that the getters return  the correct values
-		assert.equal(model.notebookManagers.length, 2, 'There should be 2 notebook managers');
+		assert.strictEqual(model.notebookManagers.length, 2, 'There should be 2 notebook managers');
 		assert(!isUndefinedOrNull(model.getNotebookManager('SQL')), 'SQL notebook manager is not defined');
 		assert(!isUndefinedOrNull(model.getNotebookManager('jupyter')), 'Jupyter notebook manager is not defined');
 		assert(isUndefinedOrNull(model.getNotebookManager('foo')), 'foo notebook manager is incorrectly defined');
 
 		// Check other properties to ensure that they're returning as expected
 		// No server manager was passed into the notebook manager stub, so expect hasServerManager to return false
-		assert.equal(model.hasServerManager, false, 'Notebook model should not have a server manager');
-		assert.equal(model.notebookUri, defaultModelOptions.notebookUri, 'Notebook model has incorrect URI');
+		assert.strictEqual(model.hasServerManager, false, 'Notebook model should not have a server manager');
+		assert.strictEqual(model.notebookUri, defaultModelOptions.notebookUri, 'Notebook model has incorrect URI');
 	});
 
 	test('Should set active cell correctly', async function (): Promise<void> {
@@ -328,39 +328,39 @@ suite('notebook model', function (): void {
 		model.contentChanged(c => notebookContentChange = c);
 
 		// Then I expect all cells to be in the model
-		assert.equal(model.cells.length, 2, 'Cell count in notebook model is not correct');
+		assert.strictEqual(model.cells.length, 2, 'Cell count in notebook model is not correct');
 
 		// Set the first cell as active
 		model.updateActiveCell(model.cells[0]);
-		assert.deepEqual(model.activeCell, model.cells[0], 'Active cell does not match the first cell');
-		assert.deepEqual(model.activeCell, activeCellFromEvent, 'Active cell returned from the event does not match');
-		assert.equal(activeCellChangeCount, 1, 'Active cell change count is incorrect');
+		assert.deepStrictEqual(model.activeCell, model.cells[0], 'Active cell does not match the first cell');
+		assert.deepStrictEqual(model.activeCell, activeCellFromEvent, 'Active cell returned from the event does not match');
+		assert.strictEqual(activeCellChangeCount, 1, 'Active cell change count is incorrect');
 		assert(isUndefinedOrNull(notebookContentChange), 'Content change should be undefined');
 
 
 		// Set the second cell as active
 		model.updateActiveCell(model.cells[1]);
-		assert.deepEqual(model.activeCell, model.cells[1], 'Active cell does not match expected value');
-		assert.deepEqual(model.activeCell, activeCellFromEvent, 'Active cell returned from the event does not match (2nd)');
-		assert.equal(activeCellChangeCount, 2, 'Active cell change count is incorrect; should be 2');
+		assert.deepStrictEqual(model.activeCell, model.cells[1], 'Active cell does not match expected value');
+		assert.deepStrictEqual(model.activeCell, activeCellFromEvent, 'Active cell returned from the event does not match (2nd)');
+		assert.strictEqual(activeCellChangeCount, 2, 'Active cell change count is incorrect; should be 2');
 
 		// Delete the active cell
 		model.deleteCell(model.cells[1]);
 		assert(isUndefinedOrNull(model.activeCell), 'Active cell should be undefined after active cell is deleted');
-		assert.deepEqual(model.activeCell, activeCellFromEvent, 'Active cell should match value from event');
-		assert.equal(activeCellChangeCount, 3, 'Active cell change count is incorrect; should be 3');
+		assert.deepStrictEqual(model.activeCell, activeCellFromEvent, 'Active cell should match value from event');
+		assert.strictEqual(activeCellChangeCount, 3, 'Active cell change count is incorrect; should be 3');
 
 		// Set the remaining cell as active
 		model.updateActiveCell(model.cells[0]);
-		assert.deepEqual(model.activeCell, activeCellFromEvent, 'Active cell should match value from event');
-		assert.equal(activeCellChangeCount, 4, 'Active cell change count is incorrect; should be 4');
+		assert.deepStrictEqual(model.activeCell, activeCellFromEvent, 'Active cell should match value from event');
+		assert.strictEqual(activeCellChangeCount, 4, 'Active cell change count is incorrect; should be 4');
 
 		// Add new cell
 		let newCell = model.addCell(CellTypes.Code, 0);
 
 		// Ensure new cell is active cell
-		assert.deepEqual(model.activeCell, newCell, 'Active cell does not match newly created cell');
-		assert.equal(activeCellChangeCount, 5, 'Active cell change count is incorrect; should be 5');
+		assert.deepStrictEqual(model.activeCell, newCell, 'Active cell does not match newly created cell');
+		assert.strictEqual(activeCellChangeCount, 5, 'Active cell change count is incorrect; should be 5');
 	});
 
 	test('Should set notebook parameter and injected parameter cell correctly', async function (): Promise<void> {
@@ -373,22 +373,22 @@ suite('notebook model', function (): void {
 		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
 		await model.loadContents();
 
-		assert.equal(model.notebookUri, defaultModelOptions.notebookUri, 'Notebook model has incorrect URI');
-		assert.equal(model.cells.length, 2, 'Cell count in notebook model is not correct');
+		assert.strictEqual(model.notebookUri, defaultModelOptions.notebookUri, 'Notebook model has incorrect URI');
+		assert.strictEqual(model.cells.length, 2, 'Cell count in notebook model is not correct');
 
 		// Set parameter cell and injected parameters cell
 		let notebookParamsCell = model.cells[0];
 		let notebookInjectedParamsCell = model.cells[1];
 
 		// Parameters Cell Validation
-		assert.equal(model.cells.indexOf(notebookParamsCell), 0, 'Notebook parameters cell should be first cell in notebook');
-		assert.equal(notebookParamsCell.isParameter, true, 'Notebook parameters cell should be tagged parameter');
-		assert.equal(notebookParamsCell.isInjectedParameter, false, 'Notebook parameters cell should not be tagged injected parameter');
+		assert.strictEqual(model.cells.indexOf(notebookParamsCell), 0, 'Notebook parameters cell should be first cell in notebook');
+		assert.strictEqual(notebookParamsCell.isParameter, true, 'Notebook parameters cell should be tagged parameter');
+		assert.strictEqual(notebookParamsCell.isInjectedParameter, false, 'Notebook parameters cell should not be tagged injected parameter');
 
 		// Injected Parameters Cell Validation
-		assert.equal(model.cells.indexOf(notebookInjectedParamsCell), 1, 'Notebook injected parameters cell should be second cell in notebook');
-		assert.equal(notebookInjectedParamsCell.isParameter, false, 'Notebook injected parameters cell should not be tagged parameter cell');
-		assert.equal(notebookInjectedParamsCell.isInjectedParameter, true, 'Notebook injected parameters cell should be tagged injected parameter');
+		assert.strictEqual(model.cells.indexOf(notebookInjectedParamsCell), 1, 'Notebook injected parameters cell should be second cell in notebook');
+		assert.strictEqual(notebookInjectedParamsCell.isParameter, false, 'Notebook injected parameters cell should not be tagged parameter cell');
+		assert.strictEqual(notebookInjectedParamsCell.isInjectedParameter, true, 'Notebook injected parameters cell should be tagged injected parameter');
 	});
 
 	test('Should set notebookUri parameters to new cell correctly', async function (): Promise<void> {
@@ -401,14 +401,14 @@ suite('notebook model', function (): void {
 		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
 		await model.loadContents();
 
-		assert.equal(model.notebookUri, defaultModelOptions.notebookUri, 'Notebook model has incorrect URI');
-		assert.equal(model.cells.length, 2, 'Cell count in notebook model is not correct');
+		assert.strictEqual(model.notebookUri, defaultModelOptions.notebookUri, 'Notebook model has incorrect URI');
+		assert.strictEqual(model.cells.length, 2, 'Cell count in notebook model is not correct');
 
 		// Validate notebookUri parameter cell is set as the only parameter cell
 		let notebookUriParamsCell = model.cells[0];
-		assert.equal(model.cells.indexOf(notebookUriParamsCell), 0, 'NotebookURI parameters cell should be first cell in notebook');
-		assert.equal(notebookUriParamsCell.isParameter, true, 'NotebookURI parameters cell should be tagged parameter');
-		assert.equal(notebookUriParamsCell.isInjectedParameter, false, 'NotebookURI parameters Cell should not be injected parameter');
+		assert.strictEqual(model.cells.indexOf(notebookUriParamsCell), 0, 'NotebookURI parameters cell should be first cell in notebook');
+		assert.strictEqual(notebookUriParamsCell.isParameter, true, 'NotebookURI parameters cell should be tagged parameter');
+		assert.strictEqual(notebookUriParamsCell.isInjectedParameter, false, 'NotebookURI parameters Cell should not be injected parameter');
 	});
 
 	test('Should set notebookUri parameters to new cell after parameters cell correctly', async function (): Promise<void> {
@@ -425,14 +425,14 @@ suite('notebook model', function (): void {
 		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
 		await model.loadContents();
 
-		assert.equal(model.notebookUri, defaultModelOptions.notebookUri, 'Notebook model has incorrect URI');
-		assert.equal(model.cells.length, 2, 'Cell count in notebook model is not correct');
+		assert.strictEqual(model.notebookUri, defaultModelOptions.notebookUri, 'Notebook model has incorrect URI');
+		assert.strictEqual(model.cells.length, 2, 'Cell count in notebook model is not correct');
 
 		// Validate notebookUri parameter cell is set as injected parameter
 		let notebookUriParamsCell = model.cells[1];
-		assert.equal(model.cells.indexOf(notebookUriParamsCell), 1, 'NotebookURI parameters cell should be second cell in notebook');
-		assert.equal(notebookUriParamsCell.isParameter, false, 'NotebookURI parameters cell should not be tagged parameter cell');
-		assert.equal(notebookUriParamsCell.isInjectedParameter, true, 'NotebookURI parameters Cell should be injected parameter');
+		assert.strictEqual(model.cells.indexOf(notebookUriParamsCell), 1, 'NotebookURI parameters cell should be second cell in notebook');
+		assert.strictEqual(notebookUriParamsCell.isParameter, false, 'NotebookURI parameters cell should not be tagged parameter cell');
+		assert.strictEqual(notebookUriParamsCell.isInjectedParameter, true, 'NotebookURI parameters Cell should be injected parameter');
 	});
 
 	test('Should set notebookUri parameters to new cell after injected parameters cell correctly', async function (): Promise<void> {
@@ -446,14 +446,14 @@ suite('notebook model', function (): void {
 		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
 		await model.loadContents();
 
-		assert.equal(model.notebookUri, defaultModelOptions.notebookUri, 'Notebook model has incorrect URI');
-		assert.equal(model.cells.length, 3, 'Cell count in notebook model is not correct');
+		assert.strictEqual(model.notebookUri, defaultModelOptions.notebookUri, 'Notebook model has incorrect URI');
+		assert.strictEqual(model.cells.length, 3, 'Cell count in notebook model is not correct');
 
 		// Validate notebookUri parameter cell is set as an injected parameter after parameter and injected parameter cells
 		let notebookUriParamsCell = model.cells[2];
-		assert.equal(model.cells.indexOf(notebookUriParamsCell), 2, 'NotebookURI parameters cell should be third cell in notebook');
-		assert.equal(notebookUriParamsCell.isParameter, false, 'NotebookURI parameters cell should not be tagged parameter cell');
-		assert.equal(notebookUriParamsCell.isInjectedParameter, true, 'NotebookURI parameters Cell should be injected parameter');
+		assert.strictEqual(model.cells.indexOf(notebookUriParamsCell), 2, 'NotebookURI parameters cell should be third cell in notebook');
+		assert.strictEqual(notebookUriParamsCell.isParameter, false, 'NotebookURI parameters cell should not be tagged parameter cell');
+		assert.strictEqual(notebookUriParamsCell.isInjectedParameter, true, 'NotebookURI parameters Cell should be injected parameter');
 	});
 
 	test('Should move first cell below second cell correctly', async function (): Promise<void> {
@@ -465,15 +465,15 @@ suite('notebook model', function (): void {
 		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
 		await model.loadContents();
 
-		assert.equal(model.notebookUri, defaultModelOptions.notebookUri, 'Notebook model has incorrect URI');
-		assert.equal(model.cells.length, 2, 'Cell count in notebook model is not correct');
+		assert.strictEqual(model.notebookUri, defaultModelOptions.notebookUri, 'Notebook model has incorrect URI');
+		assert.strictEqual(model.cells.length, 2, 'Cell count in notebook model is not correct');
 
 		let firstCell = model.cells[0];
 		let secondCell = model.cells[1];
 		// Move First Cell down
 		model.moveCell(firstCell, 1);
-		assert.equal(model.cells.indexOf(firstCell), 1, 'First Cell did not move down correctly');
-		assert.equal(model.cells.indexOf(secondCell), 0, 'Second Cell did not move up correctly');
+		assert.strictEqual(model.cells.indexOf(firstCell), 1, 'First Cell did not move down correctly');
+		assert.strictEqual(model.cells.indexOf(secondCell), 0, 'Second Cell did not move up correctly');
 	});
 
 	test('Should move second cell up above the first cell correctly', async function (): Promise<void> {
@@ -485,15 +485,15 @@ suite('notebook model', function (): void {
 		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
 		await model.loadContents();
 
-		assert.equal(model.notebookUri, defaultModelOptions.notebookUri, 'Notebook model has incorrect URI');
-		assert.equal(model.cells.length, 2, 'Cell count in notebook model is not correct');
+		assert.strictEqual(model.notebookUri, defaultModelOptions.notebookUri, 'Notebook model has incorrect URI');
+		assert.strictEqual(model.cells.length, 2, 'Cell count in notebook model is not correct');
 
 		let firstCell = model.cells[0];
 		let secondCell = model.cells[1];
 		// Move Second Cell up
 		model.moveCell(secondCell, 0);
-		assert.equal(model.cells.indexOf(firstCell), 1, 'First Cell did not move down correctly');
-		assert.equal(model.cells.indexOf(secondCell), 0, 'Second Cell did not move up correctly');
+		assert.strictEqual(model.cells.indexOf(firstCell), 1, 'First Cell did not move down correctly');
+		assert.strictEqual(model.cells.indexOf(secondCell), 0, 'Second Cell did not move up correctly');
 	});
 
 	test('Should delete cells correctly', async function (): Promise<void> {
@@ -513,38 +513,38 @@ suite('notebook model', function (): void {
 		model.contentChanged(c => notebookContentChange = c);
 
 		// Then I expect all cells to be in the model
-		assert.equal(model.cells.length, 2, 'Cell count in model is incorrect');
+		assert.strictEqual(model.cells.length, 2, 'Cell count in model is incorrect');
 
-		assert.equal(model.findCellIndex(model.cells[0]), 0, 'findCellIndex returned wrong cell info for first cell');
-		assert.equal(model.findCellIndex(model.cells[1]), 1, 'findCellIndex returned wrong cell info for second cell');
+		assert.strictEqual(model.findCellIndex(model.cells[0]), 0, 'findCellIndex returned wrong cell info for first cell');
+		assert.strictEqual(model.findCellIndex(model.cells[1]), 1, 'findCellIndex returned wrong cell info for second cell');
 		// Delete the first cell
 		model.deleteCell(model.cells[0]);
-		assert.equal(model.cells.length, 1, 'Cell model length should be 1 after cell deletion');
-		assert.deepEqual(model.cells[0].source, expectedNotebookContent.cells[1].source, 'Expected cell source is incorrect');
-		assert.equal(model.findCellIndex(model.cells[0]), 0, 'findCellIndex returned wrong cell info for only remaining cell');
-		assert.equal(notebookContentChange.changeType, NotebookChangeType.CellsModified, 'notebookContentChange changeType is incorrect');
-		assert.equal(notebookContentChange.isDirty, true, 'notebookContentChange should set dirty flag');
-		assert.equal(model.activeCell, undefined, 'active cell is not undefined');
+		assert.strictEqual(model.cells.length, 1, 'Cell model length should be 1 after cell deletion');
+		assert.deepStrictEqual(model.cells[0].source, expectedNotebookContent.cells[1].source, 'Expected cell source is incorrect');
+		assert.strictEqual(model.findCellIndex(model.cells[0]), 0, 'findCellIndex returned wrong cell info for only remaining cell');
+		assert.strictEqual(notebookContentChange.changeType, NotebookChangeType.CellsModified, 'notebookContentChange changeType is incorrect');
+		assert.strictEqual(notebookContentChange.isDirty, true, 'notebookContentChange should set dirty flag');
+		assert.strictEqual(model.activeCell, undefined, 'active cell is not undefined');
 
 		// Delete the remaining cell
 		notebookContentChange = undefined;
 		model.deleteCell(model.cells[0]);
-		assert.equal(model.cells.length, 0, 'There should be no cells tracked in the notebook model');
-		assert.equal(model.findCellIndex(model.cells[0]), -1, 'findCellIndex is incorrectly finding a deleted cell');
-		assert.equal(errorCount, 0, 'There should be no errors after deleting a cell that exists');
-		assert.equal(notebookContentChange.changeType, NotebookChangeType.CellsModified, 'notebookContentChange changeType should indicate CellsModified');
-		assert.equal(model.activeCell, undefined, 'Active cell should be undefined');
+		assert.strictEqual(model.cells.length, 0, 'There should be no cells tracked in the notebook model');
+		assert.strictEqual(model.findCellIndex(model.cells[0]), -1, 'findCellIndex is incorrectly finding a deleted cell');
+		assert.strictEqual(errorCount, 0, 'There should be no errors after deleting a cell that exists');
+		assert.strictEqual(notebookContentChange.changeType, NotebookChangeType.CellsModified, 'notebookContentChange changeType should indicate CellsModified');
+		assert.strictEqual(model.activeCell, undefined, 'Active cell should be undefined');
 
 		// Try deleting the cell again
 		notebookContentChange = undefined;
 		model.deleteCell(model.cells[0]);
-		assert.equal(errorCount, 1, 'The model should record an error after trying to delete a cell that does not exist');
+		assert.strictEqual(errorCount, 1, 'The model should record an error after trying to delete a cell that does not exist');
 		assert(isUndefinedOrNull(notebookContentChange), 'There should be no content change after an error is recorded');
 
 		// Try deleting as notebook model is in error state
 		notebookContentChange = undefined;
 		model.deleteCell(model.cells[0]);
-		assert.equal(errorCount, 2, 'Error count should be 2 after trying to delete a cell that does not exist a second time');
+		assert.strictEqual(errorCount, 2, 'Error count should be 2 after trying to delete a cell that does not exist a second time');
 		assert(isUndefinedOrNull(notebookContentChange), 'There still should be no content change after an error is recorded');
 	});
 
@@ -562,7 +562,7 @@ suite('notebook model', function (): void {
 
 		model.cells[0].metadata = { 'test-field': 'test-value' };
 		assert(!isUndefinedOrNull(notebookContentChange));
-		assert.equal(notebookContentChange.changeType, NotebookChangeType.CellMetadataUpdated, 'notebookContentChange changeType should indicate ');
+		assert.strictEqual(notebookContentChange.changeType, NotebookChangeType.CellMetadataUpdated, 'notebookContentChange changeType should indicate ');
 	});
 
 	test('Should set cell language correctly after cell type conversion', async function (): Promise<void> {
@@ -579,18 +579,18 @@ suite('notebook model', function (): void {
 		let firstCell = model.cells[0];
 		let secondCell = model.cells[1];
 
-		assert.equal(firstCell.cellType, CellTypes.Code, 'Initial cell type for first cell should be code');
-		assert.equal(firstCell.language, 'sql', 'Initial language should be sql for first cell');
+		assert.strictEqual(firstCell.cellType, CellTypes.Code, 'Initial cell type for first cell should be code');
+		assert.strictEqual(firstCell.language, 'sql', 'Initial language should be sql for first cell');
 
 		model.convertCellType(firstCell);
-		assert.equal(firstCell.cellType, CellTypes.Markdown, 'Failed to convert cell type after conversion');
-		assert.equal(firstCell.language, 'markdown', 'Language should be markdown for text cells');
-		assert.deepEqual(newCell, firstCell);
+		assert.strictEqual(firstCell.cellType, CellTypes.Markdown, 'Failed to convert cell type after conversion');
+		assert.strictEqual(firstCell.language, 'markdown', 'Language should be markdown for text cells');
+		assert.deepStrictEqual(newCell, firstCell);
 
 		model.convertCellType(secondCell);
-		assert.equal(secondCell.cellType, CellTypes.Code, 'Failed to convert second cell type');
-		assert.equal(secondCell.language, 'sql', 'Language should be sql again for second cell');
-		assert.deepEqual(newCell, secondCell);
+		assert.strictEqual(secondCell.cellType, CellTypes.Code, 'Failed to convert second cell type');
+		assert.strictEqual(secondCell.language, 'sql', 'Language should be sql again for second cell');
+		assert.deepStrictEqual(newCell, secondCell);
 	});
 
 	test('Should load contents but then go to error state if client session startup fails', async function (): Promise<void> {
@@ -610,21 +610,21 @@ suite('notebook model', function (): void {
 		// Cannot set property 'defaultKernelLoaded' of undefined
 		await assert.rejects(async () => { await model.startSession(notebookManagers[0]); });
 		// Then I expect load to succeed
-		assert.equal(model.cells.length, 1);
+		assert.strictEqual(model.cells.length, 1);
 		assert(model.clientSession);
 		// but on server load completion I expect error state to be set
 		// Note: do not expect serverLoad event to throw even if failed
 		await model.sessionLoadFinished;
-		assert.equal(model.inErrorState, false);
-		assert.equal(sessionFired, false);
+		assert.strictEqual(model.inErrorState, false);
+		assert.strictEqual(sessionFired, false);
 	});
 
 	test('Should not be in error state if client session initialization succeeds', async function (): Promise<void> {
 		let model = await loadModelAndStartClientSession(expectedNotebookContent);
 
-		assert.equal(model.inErrorState, false);
-		assert.equal(model.notebookManagers.length, 1);
-		assert.deepEqual(model.clientSession, mockClientSession);
+		assert.strictEqual(model.inErrorState, false);
+		assert.strictEqual(model.notebookManagers.length, 1);
+		assert.deepStrictEqual(model.clientSession, mockClientSession);
 	});
 
 	test('Should notify on trust set', async function () {
@@ -643,7 +643,7 @@ suite('notebook model', function (): void {
 		// Then content changed notification should be sent
 		assert(model.trustedMode);
 		assert(!isUndefinedOrNull(actualChanged));
-		assert.equal(actualChanged.changeType, NotebookChangeType.TrustChanged);
+		assert.strictEqual(actualChanged.changeType, NotebookChangeType.TrustChanged);
 	});
 
 	test('Should close active session when closed', async function () {
@@ -656,7 +656,7 @@ suite('notebook model', function (): void {
 		// Ensure client session is cleaned up
 		assert(isUndefinedOrNull(model.clientSession), 'clientSession is not cleaned up properly');
 		// Ensure session is no longer ready
-		assert.equal(model.isSessionReady, false, 'session is incorrectly showing as ready');
+		assert.strictEqual(model.isSessionReady, false, 'session is incorrectly showing as ready');
 	});
 
 	test('Should disconnect when connection profile created by notebook', async function () {
@@ -722,7 +722,7 @@ suite('notebook model', function (): void {
 		let expectedAlias = ['fakeAlias'];
 		let kernelAliases = model.kernelAliases;
 
-		assert.equal(kernelAliases.length, 1);
+		assert.strictEqual(kernelAliases.length, 1);
 		assert(kernelAliases.includes(expectedAlias[0]));
 
 		// // After client session is started, ensure context isn't null/undefined
@@ -748,8 +748,8 @@ suite('notebook model', function (): void {
 		let doChangeKernelStub = sinon.spy(model, 'doChangeKernel' as keyof NotebookModel);
 
 		model.changeKernel(notebookKernelAlias);
-		assert.equal(model.selectedKernelDisplayName, notebookKernelAlias);
-		assert.equal(model.currentKernelAlias, notebookKernelAlias);
+		assert.strictEqual(model.selectedKernelDisplayName, notebookKernelAlias);
+		assert.strictEqual(model.currentKernelAlias, notebookKernelAlias);
 		sinon.assert.calledWith(doChangeKernelStub, model.kernelAliases[0]);
 		doChangeKernelStub.restore();
 
@@ -776,8 +776,8 @@ suite('notebook model', function (): void {
 
 		// Change kernel first to alias kernel and then connect to SQL connection
 		model.changeKernel(notebookKernelAlias);
-		assert.equal(model.selectedKernelDisplayName, notebookKernelAlias);
-		assert.equal(model.currentKernelAlias, notebookKernelAlias);
+		assert.strictEqual(model.selectedKernelDisplayName, notebookKernelAlias);
+		assert.strictEqual(model.currentKernelAlias, notebookKernelAlias);
 		sinon.assert.called(doChangeKernelStub);
 		doChangeKernelStub.restore();
 
@@ -785,8 +785,8 @@ suite('notebook model', function (): void {
 		await changeContextWithConnectionProfile(model);
 		let expectedKernel = 'SQL';
 		model.changeKernel(expectedKernel);
-		assert.equal(model.selectedKernelDisplayName, expectedKernel);
-		assert.equal(model.currentKernelAlias, undefined);
+		assert.strictEqual(model.selectedKernelDisplayName, expectedKernel);
+		assert.strictEqual(model.currentKernelAlias, undefined);
 		sinon.assert.called(doChangeKernelStub);
 		doChangeKernelStub.restore();
 
@@ -838,7 +838,7 @@ suite('notebook model', function (): void {
 		await model.loadContents();
 
 		// I expect the saved connection name to be read
-		assert.equal(model.savedConnectionName, connectionName);
+		assert.strictEqual(model.savedConnectionName, connectionName);
 
 		// When I request a connection
 		let spy = sinon.stub(model, 'changeContext').returns(Promise.resolve());
@@ -867,21 +867,21 @@ suite('notebook model', function (): void {
 		await model.loadContents();
 
 		// I expect multiConnectionMode to be set to true
-		assert.equal(model.multiConnectionMode, true, 'multi_connection_mode not read correctly from notebook metadata');
+		assert.strictEqual(model.multiConnectionMode, true, 'multi_connection_mode not read correctly from notebook metadata');
 
 		// When I change multiConnectionMode to false
 		model.multiConnectionMode = false;
 
 		// I expect multi_connection_mode to not be in the notebook metadata
 		let output: nb.INotebookContents = model.toJSON();
-		assert.equal(output.metadata['multi_connection_mode'], undefined, 'multi_connection_mode saved in notebook metadata when it should not be');
+		assert.strictEqual(output.metadata['multi_connection_mode'], undefined, 'multi_connection_mode saved in notebook metadata when it should not be');
 
 		// When I change multiConnectionMode to true
 		model.multiConnectionMode = true;
 
 		// I expect multi_connection_mode to be in the notebook metadata
 		output = model.toJSON();
-		assert.equal(output.metadata['multi_connection_mode'], true, 'multi_connection_mode not saved correctly to notebook metadata');
+		assert.strictEqual(output.metadata['multi_connection_mode'], true, 'multi_connection_mode not saved correctly to notebook metadata');
 	});
 
 	test('Should keep kernel alias as language info kernel alias name even if kernel spec is seralized as SQL', async function () {
@@ -900,7 +900,7 @@ suite('notebook model', function (): void {
 		await model.requestModelLoad();
 
 		// Check to see if language info is set to kernel alias
-		assert.equal(model.languageInfo.name, 'fake', 'Notebook language info is not set properly');
+		assert.strictEqual(model.languageInfo.name, 'fake', 'Notebook language info is not set properly');
 	});
 
 	async function loadModelAndStartClientSession(notebookContent: nb.INotebookContents): Promise<NotebookModel> {
@@ -926,7 +926,7 @@ suite('notebook model', function (): void {
 		// Then I expect load to succeed
 		assert(!isUndefinedOrNull(model.clientSession), 'clientSession should exist after session is started');
 
-		assert.deepEqual(actualSession, mockClientSession, 'session returned is not the expected object');
+		assert.deepStrictEqual(actualSession, mockClientSession, 'session returned is not the expected object');
 
 		// but on server load completion I expect error state to be set
 		// Note: do not expect serverLoad event to throw even if failed

@@ -430,6 +430,17 @@ declare module 'azdata' {
 		enabled?: boolean;
 	}
 
+	export interface DropDownProperties {
+		/**
+		 * Adds a short hint that describes the expected value for the editable dropdown
+		 */
+		placeholder?: string;
+		/**
+		 * Define error messages to show when custom validation fails. Note: For empty required dropdowns we use a default error message.
+		 */
+		validationErrorMessages?: string[];
+	}
+
 	/**
 	 * Panel component with tabs
 	 */
@@ -574,7 +585,9 @@ declare module 'azdata' {
 	 */
 	export enum TextType {
 		Normal = 'Normal',
-		Error = 'Error'
+		Error = 'Error',
+		UnorderedList = 'UnorderedList',
+		OrderedList = 'OrderedList'
 	}
 
 	export interface TextComponentProperties {
@@ -584,7 +597,7 @@ declare module 'azdata' {
 		 */
 		headingLevel?: HeadingLevel;
 		/**
-		 * The type to display the text as - used to determine the color of the text. Default is Normal.
+		 * Sets the type of text box to be displayed
 		 */
 		textType?: TextType;
 	}
@@ -767,6 +780,13 @@ declare module 'azdata' {
 		delete?: boolean;
 	}
 
+	export enum CardType {
+		/**
+		 * Card with the icon as a background image
+		 */
+		Image = 'Image'
+	}
+
 	export namespace workspace {
 		/**
 		 * Creates and enters a workspace at the specified location
@@ -927,5 +947,33 @@ declare module 'azdata' {
 		 * Specify the icon for the node. The value could the path to the icon or and ADS icon defined in {@link SqlThemeIcon}.
 		 */
 		icon?: IconPath | SqlThemeIcon;
+	}
+
+	export interface ObjectMetadata {
+		/*
+		 * Parent object name for subobjects such as triggers, indexes, etc.
+		 */
+		parentName?: string;
+
+		/*
+		 * Parent object type name, such as Table, View, etc.
+		 */
+		parentTypeName?: string;
+	}
+
+	export interface QueryProvider {
+		/**
+		 * Notify clients that the URI for a connection has been changed.
+		 */
+		connectionUriChanged(newUri: string, oldUri: string): Thenable<void>;
+	}
+
+	export namespace accounts {
+		export interface AccountSecurityToken {
+			/**
+			 * Access token expiry timestamp
+			 */
+			expiresOn?: number
+		}
 	}
 }

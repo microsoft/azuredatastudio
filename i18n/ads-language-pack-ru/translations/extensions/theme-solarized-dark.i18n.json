@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Солнечная темная тема",
 			"description": "Солнечная темная тема для Visual Studio Code",
+			"displayName": "Солнечная темная тема",
 			"themeLabel": "Солнечная темная"
 		}
 	}

@@ -52,6 +52,16 @@
     ],
     "dashboard.tabs": [
       {
+        "id": "sqlservices-home",
+        "isHomeTab": true,
+        "description": "",
+        "title": "Home",
+        "provider": "TESTPROVIDER",
+        "container": {
+          "modelview-container": null
+        }
+      },
+      {
         "id": "sqlservices.tab",
         "title": "sqlservices",
         "icon": {
@@ -59,6 +69,7 @@
           "dark": "./out/src/media/insights_inverse.svg"
         },
         "description": "Shows available services running in the SQL Server instance",
+        "provider": "*",
         "container": {
           "nav-section": [
             {
@@ -211,7 +222,8 @@
   "dependencies": {
     "fs-extra": "^5.0.0",
     "handlebars": "^4.7.7",
-    "vscode-nls": "^4.0.0"
+    "vscode-nls": "^4.0.0",
+    "uuid": "^8.3.0"
   },
   "devDependencies": {
     "@types/node": "^7.0.43",
@@ -227,7 +239,8 @@
     "tslint": "^3.14.0",
     "typescript": "^4.1.0-dev.20200824",
     "url-parse": "^1.5.0",
-    "vsce": "^1.57.1"
+    "vsce": "^1.57.1",
+    "@types/uuid": "^8.3.0"
   },
   "repository": {
     "type": "git",

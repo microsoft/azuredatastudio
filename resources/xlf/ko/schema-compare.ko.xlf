@@ -1,622 +1,22 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/schema-compare/package" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="displayName">
-        <source xml:lang="en">SQL Server Schema Compare</source>
-        <target state="translated">SQL Server 스키마 비교</target>
-      </trans-unit>
-      <trans-unit id="description">
-        <source xml:lang="en">SQL Server Schema Compare for Azure Data Studio supports comparing the schemas of databases and dacpacs.</source>
-        <target state="translated">Azure Data Studio에 대한 SQL Server 스키마 비교는 데이터베이스 및 Dacpac의 스키마 비교를 지원합니다.</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.start">
-        <source xml:lang="en">Schema Compare</source>
-        <target state="translated">스키마 비교</target>
-      </trans-unit>
-    </body>
-  </file>
   <file original="extensions/schema-compare/dist/localizedConstants" source-language="en" datatype="plaintext" target-language="ko">
     <body>
-      <trans-unit id="schemaCompareDialog.ok">
-        <source xml:lang="en">OK</source>
-        <target state="translated">확인</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.cancel">
-        <source xml:lang="en">Cancel</source>
-        <target state="translated">취소</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.SourceTitle">
-        <source xml:lang="en">Source</source>
-        <target state="translated">원본</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.TargetTitle">
-        <source xml:lang="en">Target</source>
-        <target state="translated">대상</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.fileTextBoxLabel">
-        <source xml:lang="en">File</source>
-        <target state="translated">파일</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.dacpacRadioButtonLabel">
-        <source xml:lang="en">Data-tier Application File (.dacpac)</source>
-        <target state="translated">데이터 계층 애플리케이션 파일(.dacpac)</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.databaseButtonLabel">
-        <source xml:lang="en">Database</source>
-        <target state="translated">데이터베이스</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.radioButtonsLabel">
-        <source xml:lang="en">Type</source>
-        <target state="translated">형식</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.serverDropdownTitle">
-        <source xml:lang="en">Server</source>
-        <target state="translated">서버</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.databaseDropdownTitle">
-        <source xml:lang="en">Database</source>
-        <target state="translated">데이터베이스</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.dialogTitle">
-        <source xml:lang="en">Schema Compare</source>
-        <target state="translated">스키마 비교</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.differentSourceMessage">
-        <source xml:lang="en">A different source schema has been selected. Compare to see the comparison?</source>
-        <target state="translated">다른 원본 스키마를 선택했습니다. 비교를 확인하려면 비교를 누르세요.</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.differentTargetMessage">
-        <source xml:lang="en">A different target schema has been selected. Compare to see the comparison?</source>
-        <target state="translated">다른 대상 스키마를 선택했습니다. 비교를 확인하려면 비교를 누르세요.</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.differentSourceTargetMessage">
-        <source xml:lang="en">Different source and target schemas have been selected. Compare to see the comparison?</source>
-        <target state="translated">다른 원본 및 대상 스키마를 선택했습니다. 비교를 확인하려면 비교를 누르세요.</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.Yes">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">예</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.No">
-        <source xml:lang="en">No</source>
-        <target state="translated">아니요</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.sourceTextBox">
-        <source xml:lang="en">Source file</source>
-        <target state="translated">원본 파일</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.targetTextBox">
-        <source xml:lang="en">Target file</source>
-        <target state="translated">대상 파일</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.sourceDatabaseDropdown">
-        <source xml:lang="en">Source Database</source>
-        <target state="translated">원본 데이터베이스</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.targetDatabaseDropdown">
-        <source xml:lang="en">Target Database</source>
-        <target state="translated">대상 데이터베이스</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.sourceServerDropdown">
-        <source xml:lang="en">Source Server</source>
-        <target state="translated">원본 서버</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.targetServerDropdown">
-        <source xml:lang="en">Target Server</source>
-        <target state="translated">대상 서버</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.defaultUser">
-        <source xml:lang="en">default</source>
-        <target state="translated">기본값</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.openFile">
-        <source xml:lang="en">Open</source>
-        <target state="translated">열기</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.selectSourceFile">
-        <source xml:lang="en">Select source file</source>
-        <target state="translated">원본 파일 선택</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.selectTargetFile">
-        <source xml:lang="en">Select target file</source>
-        <target state="translated">대상 파일 선택</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompareOptionsDialog.Reset">
-        <source xml:lang="en">Reset</source>
-        <target state="translated">다시 설정</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareOptions.RecompareMessage">
-        <source xml:lang="en">Options have changed. Recompare to see the comparison?</source>
-        <target state="translated">옵션이 변경되었습니다. 비교를 확인하려면 다시 비교를 누르세요.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.SchemaCompareOptionsDialogLabel">
-        <source xml:lang="en">Schema Compare Options</source>
-        <target state="translated">스키마 비교 옵션</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.GeneralOptionsLabel">
-        <source xml:lang="en">General Options</source>
-        <target state="translated">일반 옵션</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.ObjectTypesOptionsLabel">
-        <source xml:lang="en">Include Object Types</source>
-        <target state="translated">개체 유형 포함</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.CompareDetailsTitle">
-        <source xml:lang="en">Compare Details</source>
-        <target state="translated">세부 정보 비교</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.ApplyConfirmation">
-        <source xml:lang="en">Are you sure you want to update the target?</source>
-        <target state="translated">대상을 업데이트하시겠습니까?</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.RecompareToRefresh">
-        <source xml:lang="en">Press Compare to refresh the comparison.</source>
-        <target state="translated">비교를 눌러 비교를 새로 고칩니다.</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.generateScriptEnabledButton">
-        <source xml:lang="en">Generate script to deploy changes to target</source>
-        <target state="translated">대상에 변경 내용을 배포하는 스크립트 생성</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.generateScriptNoChanges">
-        <source xml:lang="en">No changes to script</source>
-        <target state="translated">스크립트 변경 내용 없음</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.applyButtonEnabledTitle">
-        <source xml:lang="en">Apply changes to target</source>
-        <target state="translated">대상에 변경 내용 적용</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.applyNoChanges">
-        <source xml:lang="en">No changes to apply</source>
-        <target state="translated">적용할 변경 내용 없음</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.includeExcludeInfoMessage">
-        <source xml:lang="en">Please note that include/exclude operations can take a moment to calculate affected dependencies</source>
-        <target state="translated">포함/제외 작업은 영향을 받는 종속성을 계산하는 데 잠시 걸릴 수 있습니다.</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.deleteAction">
-        <source xml:lang="en">Delete</source>
-        <target state="translated">삭제</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.changeAction">
-        <source xml:lang="en">Change</source>
-        <target state="translated">변경</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.addAction">
-        <source xml:lang="en">Add</source>
-        <target state="translated">추가</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.differencesTableTitle">
-        <source xml:lang="en">Comparison between Source and Target</source>
-        <target state="translated">원본과 대상 간의 비교</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.waitText">
-        <source xml:lang="en">Initializing Comparison. This might take a moment.</source>
-        <target state="translated">비교를 초기화하는 중입니다. 시간이 약간 걸릴 수 있습니다.</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.startText">
-        <source xml:lang="en">To compare two schemas, first select a source schema and target schema, then press Compare.</source>
-        <target state="translated">두 스키마를 비교하려면 먼저 원본 스키마 및 대상 스키마를 선택한 다음, 비교를 누릅니다.</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.noDifferences">
-        <source xml:lang="en">No schema differences were found.</source>
-        <target state="translated">스키마 차이를 찾을 수 없습니다.</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.typeColumn">
-        <source xml:lang="en">Type</source>
-        <target state="translated">형식</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.sourceNameColumn">
-        <source xml:lang="en">Source Name</source>
-        <target state="translated">원본 이름</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.includeColumnName">
-        <source xml:lang="en">Include</source>
-        <target state="translated">포함</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.actionColumn">
-        <source xml:lang="en">Action</source>
-        <target state="translated">작업</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.targetNameColumn">
-        <source xml:lang="en">Target Name</source>
-        <target state="translated">대상 이름</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.generateScriptButtonDisabledTitle">
-        <source xml:lang="en">Generate script is enabled when the target is a database</source>
-        <target state="translated">대상이 데이터베이스이면 스크립트 생성이 사용하도록 설정됩니다.</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.applyButtonDisabledTitle">
-        <source xml:lang="en">Apply is enabled when the target is a database</source>
-        <target state="translated">대상이 데이터베이스이면 적용이 사용하도록 설정됩니다.</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.cannotExcludeMessageWithDependent">
-        <source xml:lang="en">Cannot exclude {0}. Included dependents exist, such as {1}</source>
-        <target state="translated">{0}을(를) 제외할 수 없습니다. {1} 같은 포함된 종속 항목이 있습니다.</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.cannotIncludeMessageWithDependent">
-        <source xml:lang="en">Cannot include {0}. Excluded dependents exist, such as {1}</source>
-        <target state="translated">{0}을(를) 포함할 수 없습니다. {1} 같은 제외된 종속 항목이 있습니다.</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.cannotExcludeMessage">
-        <source xml:lang="en">Cannot exclude {0}. Included dependents exist</source>
-        <target state="translated">{0}을(를) 제외할 수 없습니다. 포함된 종속 항목이 있습니다.</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.cannotIncludeMessage">
-        <source xml:lang="en">Cannot include {0}. Excluded dependents exist</source>
-        <target state="translated">{0}을(를) 포함할 수 없습니다. 제외된 종속 항목이 있습니다.</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.compareButton">
-        <source xml:lang="en">Compare</source>
-        <target state="translated">비교</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.cancelCompareButton">
-        <source xml:lang="en">Stop</source>
-        <target state="translated">중지</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.generateScriptButton">
-        <source xml:lang="en">Generate script</source>
-        <target state="translated">스크립트 생성</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.optionsButton">
-        <source xml:lang="en">Options</source>
-        <target state="translated">옵션</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.updateButton">
-        <source xml:lang="en">Apply</source>
-        <target state="translated">적용</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.switchDirectionButton">
-        <source xml:lang="en">Switch direction</source>
-        <target state="translated">방향 전환</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.switchButtonTitle">
-        <source xml:lang="en">Switch source and target</source>
-        <target state="translated">원본과 대상 전환</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.sourceButtonTitle">
-        <source xml:lang="en">Select Source</source>
-        <target state="translated">원본 선택</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.targetButtonTitle">
-        <source xml:lang="en">Select Target</source>
-        <target state="translated">대상 선택</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.openScmpButton">
-        <source xml:lang="en">Open .scmp file</source>
-        <target state="translated">.scmp 파일 열기</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.openScmpButtonTitle">
-        <source xml:lang="en">Load source, target, and options saved in an .scmp file</source>
-        <target state="translated">.scmp 파일에 저장된 원본, 대상 및 옵션 로드</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.saveScmpButton">
-        <source xml:lang="en">Save .scmp file</source>
-        <target state="translated">.scmp 파일 저장</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.saveScmpButtonTitle">
-        <source xml:lang="en">Save source and target, options, and excluded elements</source>
-        <target state="translated">원본 및 대상, 옵션 및 제외된 요소 저장</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.saveFile">
-        <source xml:lang="en">Save</source>
-        <target state="translated">저장</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.GetConnectionString">
-        <source xml:lang="en">Do you want to connect to {0}?</source>
-        <target state="translated">{0}에 연결하시겠습니까?</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.selectConnection">
-        <source xml:lang="en">Select connection</source>
-        <target state="translated">연결 선택</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreTableOptions">
-        <source xml:lang="en">Ignore Table Options</source>
-        <target state="translated">테이블 옵션 무시</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreSemicolonBetweenStatements">
-        <source xml:lang="en">Ignore Semicolon Between Statements</source>
-        <target state="translated">문 사이의 세미콜론 무시</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreRouteLifetime">
-        <source xml:lang="en">Ignore Route Lifetime</source>
-        <target state="translated">경로 수명 무시</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreRoleMembership">
-        <source xml:lang="en">Ignore Role Membership</source>
-        <target state="translated">역할 멤버 자격 무시</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreQuotedIdentifiers">
-        <source xml:lang="en">Ignore Quoted Identifiers</source>
-        <target state="translated">따옴표 붙은 식별자 무시</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnorePermissions">
-        <source xml:lang="en">Ignore Permissions</source>
-        <target state="translated">사용 권한 무시</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnorePartitionSchemes">
-        <source xml:lang="en">Ignore Partition Schemes</source>
-        <target state="translated">파티션 구성표 무시</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreObjectPlacementOnPartitionScheme">
-        <source xml:lang="en">Ignore Object Placement On Partition Scheme</source>
-        <target state="translated">파티션 구성표에서 개체 배치 무시</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreNotForReplication">
-        <source xml:lang="en">Ignore Not For Replication</source>
-        <target state="translated">복제용 아님 무시</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreLoginSids">
-        <source xml:lang="en">Ignore Login Sids</source>
-        <target state="translated">로그인 SID 무시</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreLockHintsOnIndexes">
-        <source xml:lang="en">Ignore Lock Hints On Indexes</source>
-        <target state="translated">인덱스의 잠금 힌트 무시</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreKeywordCasing">
-        <source xml:lang="en">Ignore Keyword Casing</source>
-        <target state="translated">키워드 대/소문자 무시</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreIndexPadding">
-        <source xml:lang="en">Ignore Index Padding</source>
-        <target state="translated">인덱스 패딩 무시</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreIndexOptions">
-        <source xml:lang="en">Ignore Index Options</source>
-        <target state="translated">인덱스 옵션 무시</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreIncrement">
-        <source xml:lang="en">Ignore Increment</source>
-        <target state="translated">증분 무시</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreIdentitySeed">
-        <source xml:lang="en">Ignore Identity Seed</source>
-        <target state="translated">ID 시드 무시</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreUserSettingsObjects">
-        <source xml:lang="en">Ignore User Settings Objects</source>
-        <target state="translated">사용자 설정 개체 무시</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreFullTextCatalogFilePath">
-        <source xml:lang="en">Ignore Full Text Catalog FilePath</source>
-        <target state="translated">전체 텍스트 카탈로그 파일 경로 무시</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreWhitespace">
-        <source xml:lang="en">Ignore Whitespace</source>
-        <target state="translated">공백 무시</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreWithNocheckOnForeignKeys">
-        <source xml:lang="en">Ignore With Nocheck On ForeignKeys</source>
-        <target state="translated">외래 키의 WITH NOCHECK 무시</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.VerifyCollationCompatibility">
-        <source xml:lang="en">Verify Collation Compatibility</source>
-        <target state="translated">데이터 정렬 호환성 확인</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.UnmodifiableObjectWarnings">
-        <source xml:lang="en">Unmodifiable Object Warnings</source>
-        <target state="translated">수정할 수 없는 개체 경고</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.TreatVerificationErrorsAsWarnings">
-        <source xml:lang="en">Treat Verification Errors As Warnings</source>
-        <target state="translated">확인 오류를 경고로 처리</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.ScriptRefreshModule">
-        <source xml:lang="en">Script Refresh Module</source>
-        <target state="translated">스크립트 새로 고침 모듈</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.ScriptNewConstraintValidation">
-        <source xml:lang="en">Script New Constraint Validation</source>
-        <target state="translated">스크립트 새 제약 조건 유효성 검사</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.ScriptFileSize">
-        <source xml:lang="en">Script File Size</source>
-        <target state="translated">스크립트 파일 크기</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.ScriptDeployStateChecks">
-        <source xml:lang="en">Script Deploy StateChecks</source>
-        <target state="translated">스크립트 배포 StateChecks</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.ScriptDatabaseOptions">
-        <source xml:lang="en">Script Database Options</source>
-        <target state="translated">스크립트 데이터베이스 옵션</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.ScriptDatabaseCompatibility">
-        <source xml:lang="en">Script Database Compatibility</source>
-        <target state="translated">스크립트 데이터베이스 호환성</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.ScriptDatabaseCollation">
-        <source xml:lang="en">Script Database Collation</source>
-        <target state="translated">스크립트 데이터베이스 데이터 정렬</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.RunDeploymentPlanExecutors">
-        <source xml:lang="en">Run Deployment Plan Executors</source>
-        <target state="translated">배포 계획 실행기 실행</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.RegisterDataTierApplication">
-        <source xml:lang="en">Register DataTier Application</source>
-        <target state="translated">DataTier 애플리케이션 등록</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.PopulateFilesOnFileGroups">
-        <source xml:lang="en">Populate Files On File Groups</source>
-        <target state="translated">파일 그룹에 파일 채우기</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.NoAlterStatementsToChangeClrTypes">
-        <source xml:lang="en">No Alter Statements To Change Clr Types</source>
-        <target state="translated">CLR 유형을 변경하기 위한 Alter 문 사용 안 함</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IncludeTransactionalScripts">
-        <source xml:lang="en">Include Transactional Scripts</source>
-        <target state="translated">트랜잭션 스크립트 포함</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IncludeCompositeObjects">
-        <source xml:lang="en">Include Composite Objects</source>
-        <target state="translated">복합 개체 포함</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.AllowUnsafeRowLevelSecurityDataMovement">
-        <source xml:lang="en">Allow Unsafe Row Level Security Data Movement</source>
-        <target state="translated">안전하지 않은 행 수준 보안 데이터 이동 허용</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreWithNocheckOnCheckConstraints">
-        <source xml:lang="en">Ignore With No check On Check Constraints</source>
-        <target state="translated">CHECK 제약 조건의 WITH NOCHECK 무시</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreFillFactor">
-        <source xml:lang="en">Ignore Fill Factor</source>
-        <target state="translated">채우기 비율 무시</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreFileSize">
-        <source xml:lang="en">Ignore File Size</source>
-        <target state="translated">파일 크기 무시</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreFilegroupPlacement">
-        <source xml:lang="en">Ignore Filegroup Placement</source>
-        <target state="translated">파일 그룹 배치 무시</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.DoNotAlterReplicatedObjects">
-        <source xml:lang="en">Do Not Alter Replicated Objects</source>
-        <target state="translated">복제된 개체 변경 안 함</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.DoNotAlterChangeDataCaptureObjects">
-        <source xml:lang="en">Do Not Alter Change Data Capture Objects</source>
-        <target state="translated">변경 데이터 캡처 개체 변경 안 함</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.DisableAndReenableDdlTriggers">
-        <source xml:lang="en">Disable And Reenable Ddl Triggers</source>
-        <target state="translated">DDL 트리거를 해제한 후 다시 설정</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.DeployDatabaseInSingleUserMode">
-        <source xml:lang="en">Deploy Database In Single User Mode</source>
-        <target state="translated">단일 사용자 모드에서 데이터베이스 배포</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.CreateNewDatabase">
-        <source xml:lang="en">Create New Database</source>
-        <target state="translated">새 데이터베이스 만들기</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.CompareUsingTargetCollation">
-        <source xml:lang="en">Compare Using Target Collation</source>
-        <target state="translated">대상 데이터 정렬을 사용하여 비교</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.CommentOutSetVarDeclarations">
-        <source xml:lang="en">Comment Out Set Var Declarations</source>
-        <target state="translated">Set Var 선언을 주석으로 처리</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.BlockWhenDriftDetected">
-        <source xml:lang="en">Block When Drift Detected</source>
-        <target state="translated">드리프트 검색 시 차단</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.BlockOnPossibleDataLoss">
-        <source xml:lang="en">Block On Possible Data Loss</source>
-        <target state="translated">데이터 손실 가능성이 있는 경우 차단</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.BackupDatabaseBeforeChanges">
-        <source xml:lang="en">Backup Database Before Changes</source>
-        <target state="translated">변경하기 전에 데이터베이스 백업</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.AllowIncompatiblePlatform">
-        <source xml:lang="en">Allow Incompatible Platform</source>
-        <target state="translated">호환되지 않는 플랫폼 허용</target>
+      <trans-unit id="SchemaCompare.Aggregates">
+        <source xml:lang="en">Aggregates</source>
+        <target state="translated">집계</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.AllowDropBlockingAssemblies">
         <source xml:lang="en">Allow Drop Blocking Assemblies</source>
         <target state="translated">차단 어셈블리 삭제 허용</target>
       </trans-unit>
-      <trans-unit id="SchemaCompare.DropConstraintsNotInSource">
-        <source xml:lang="en">Drop Constraints Not In Source</source>
-        <target state="translated">원본에 없는 제약 조건 삭제</target>
+      <trans-unit id="SchemaCompare.AllowIncompatiblePlatform">
+        <source xml:lang="en">Allow Incompatible Platform</source>
+        <target state="translated">호환되지 않는 플랫폼 허용</target>
       </trans-unit>
-      <trans-unit id="SchemaCompare.DropDmlTriggersNotInSource">
-        <source xml:lang="en">Drop Dml Triggers Not In Source</source>
-        <target state="translated">원본에 없는 DML 트리거 삭제</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.DropExtendedPropertiesNotInSource">
-        <source xml:lang="en">Drop Extended Properties Not In Source</source>
-        <target state="translated">원본에 없는 확장 속성 삭제</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.DropIndexesNotInSource">
-        <source xml:lang="en">Drop Indexes Not In Source</source>
-        <target state="translated">원본에 없는 인덱스 삭제</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreFileAndLogFilePath">
-        <source xml:lang="en">Ignore File And Log File Path</source>
-        <target state="translated">파일 및 로그 파일 경로 무시</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreExtendedProperties">
-        <source xml:lang="en">Ignore Extended Properties</source>
-        <target state="translated">확장 속성 무시</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreDmlTriggerState">
-        <source xml:lang="en">Ignore Dml Trigger State</source>
-        <target state="translated">DML 트리거 상태 무시</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreDmlTriggerOrder">
-        <source xml:lang="en">Ignore Dml Trigger Order</source>
-        <target state="translated">DML 트리거 순서 무시</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreDefaultSchema">
-        <source xml:lang="en">Ignore Default Schema</source>
-        <target state="translated">기본 스키마 무시</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreDdlTriggerState">
-        <source xml:lang="en">Ignore Ddl Trigger State</source>
-        <target state="translated">DDL 트리거 상태 무시</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreDdlTriggerOrder">
-        <source xml:lang="en">Ignore Ddl Trigger Order</source>
-        <target state="translated">Ddl 트리거 순서 무시</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreCryptographicProviderFilePath">
-        <source xml:lang="en">Ignore Cryptographic Provider FilePath</source>
-        <target state="translated">암호화 공급자 파일 경로 무시</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.VerifyDeployment">
-        <source xml:lang="en">Verify Deployment</source>
-        <target state="translated">배포 확인</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreComments">
-        <source xml:lang="en">Ignore Comments</source>
-        <target state="translated">주석 무시</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreColumnCollation">
-        <source xml:lang="en">Ignore Column Collation</source>
-        <target state="translated">열 데이터 정렬 무시</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreAuthorizer">
-        <source xml:lang="en">Ignore Authorizer</source>
-        <target state="translated">권한 부여자 무시</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreAnsiNulls">
-        <source xml:lang="en">Ignore AnsiNulls</source>
-        <target state="translated">AnsiNulls 무시</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.GenerateSmartDefaults">
-        <source xml:lang="en">Generate SmartDefaults</source>
-        <target state="translated">SmartDefaults 생성</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.DropStatisticsNotInSource">
-        <source xml:lang="en">Drop Statistics Not In Source</source>
-        <target state="translated">원본에 없는 통계 삭제</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.DropRoleMembersNotInSource">
-        <source xml:lang="en">Drop Role Members Not In Source</source>
-        <target state="translated">원본에 없는 역할 멤버 삭제</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.DropPermissionsNotInSource">
-        <source xml:lang="en">Drop Permissions Not In Source</source>
-        <target state="translated">원본에 없는 사용 권한 삭제</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.DropObjectsNotInSource">
-        <source xml:lang="en">Drop Objects Not In Source</source>
-        <target state="translated">원본에 없는 개체 삭제</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.IgnoreColumnOrder">
-        <source xml:lang="en">Ignore Column Order</source>
-        <target state="translated">열 순서 무시</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Aggregates">
-        <source xml:lang="en">Aggregates</source>
-        <target state="translated">집계</target>
+      <trans-unit id="SchemaCompare.AllowUnsafeRowLevelSecurityDataMovement">
+        <source xml:lang="en">Allow Unsafe Row Level Security Data Movement</source>
+        <target state="translated">안전하지 않은 행 수준 보안 데이터 이동 허용</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.ApplicationRoles">
         <source xml:lang="en">Application Roles</source>
@@ -634,6 +34,22 @@
         <source xml:lang="en">Asymmetric Keys</source>
         <target state="translated">비대칭 키</target>
       </trans-unit>
+      <trans-unit id="SchemaCompare.Audits">
+        <source xml:lang="en">Audits</source>
+        <target state="translated">감사</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.BackupDatabaseBeforeChanges">
+        <source xml:lang="en">Backup Database Before Changes</source>
+        <target state="translated">변경하기 전에 데이터베이스 백업</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.BlockOnPossibleDataLoss">
+        <source xml:lang="en">Block On Possible Data Loss</source>
+        <target state="translated">데이터 손실 가능성이 있는 경우 차단</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.BlockWhenDriftDetected">
+        <source xml:lang="en">Block When Drift Detected</source>
+        <target state="translated">드리프트 검색 시 차단</target>
+      </trans-unit>
       <trans-unit id="SchemaCompare.BrokerPriorities">
         <source xml:lang="en">Broker Priorities</source>
         <target state="translated">Broker 우선 순위</target>
@@ -641,6 +57,10 @@
       <trans-unit id="SchemaCompare.Certificates">
         <source xml:lang="en">Certificates</source>
         <target state="translated">인증서</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ClrUserDefinedTypes">
+        <source xml:lang="en">Clr User Defined Types</source>
+        <target state="translated">CLR 사용자 정의 형식</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.ColumnEncryptionKeys">
         <source xml:lang="en">Column Encryption Keys</source>
@@ -650,9 +70,37 @@
         <source xml:lang="en">Column Master Keys</source>
         <target state="translated">열 마스터 키</target>
       </trans-unit>
+      <trans-unit id="SchemaCompare.CommentOutSetVarDeclarations">
+        <source xml:lang="en">Comment Out Set Var Declarations</source>
+        <target state="translated">Set Var 선언을 주석으로 처리</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.CompareUsingTargetCollation">
+        <source xml:lang="en">Compare Using Target Collation</source>
+        <target state="translated">대상 데이터 정렬을 사용하여 비교</target>
+      </trans-unit>
       <trans-unit id="SchemaCompare.Contracts">
         <source xml:lang="en">Contracts</source>
         <target state="translated">계약</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.CreateNewDatabase">
+        <source xml:lang="en">Create New Database</source>
+        <target state="translated">새 데이터베이스 만들기</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Credentials">
+        <source xml:lang="en">Credentials</source>
+        <target state="translated">자격 증명</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.CryptographicProviders">
+        <source xml:lang="en">Cryptographic Providers</source>
+        <target state="translated">암호화 공급자</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.DatabaseAuditSpecifications">
+        <source xml:lang="en">Database Audit Specifications</source>
+        <target state="translated">데이터베이스 감사 사양</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.DatabaseEncryptionKeys">
+        <source xml:lang="en">Database Encryption Keys</source>
+        <target state="translated">데이터베이스 암호화 키</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.DatabaseOptions">
         <source xml:lang="en">Database Options</source>
@@ -662,6 +110,10 @@
         <source xml:lang="en">Database Roles</source>
         <target state="translated">데이터베이스 역할</target>
       </trans-unit>
+      <trans-unit id="SchemaCompare.DatabaseScopedCredentials">
+        <source xml:lang="en">Database Scoped Credentials</source>
+        <target state="translated">데이터베이스 범위 자격 증명</target>
+      </trans-unit>
       <trans-unit id="SchemaCompare.DatabaseTriggers">
         <source xml:lang="en">Database Triggers</source>
         <target state="translated">데이터베이스 트리거</target>
@@ -669,6 +121,374 @@
       <trans-unit id="SchemaCompare.Defaults">
         <source xml:lang="en">Defaults</source>
         <target state="translated">기본값</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.DeployDatabaseInSingleUserMode">
+        <source xml:lang="en">Deploy Database In Single User Mode</source>
+        <target state="translated">단일 사용자 모드에서 데이터베이스 배포</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.AllowDropBlockingAssemblies">
+        <source xml:lang="en">This property is used by SqlClr deployment to cause any blocking assemblies to be dropped as part of the deployment plan. By default, any blocking/referencing assemblies will block an assembly update if the referencing assembly needs to be dropped.</source>
+        <target state="translated">이 속성은 SqlClr 배포 시 배포 계획의 일부로 차단 어셈블리를 삭제하기 위해 사용됩니다. 기본적으로 참조 어셈블리를 삭제해야 하는 경우 모든 차단/참조 어셈블리는 어셈블리 업데이트를 차단합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.AllowIncompatiblePlatform">
+        <source xml:lang="en">Specifies whether to attempt the action despite incompatible SQL Server platforms.</source>
+        <target state="translated">SQL Server 플랫폼이 호환되지 않아도 동작을 시도할지 여부를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.AllowUnsafeRowLevelSecurityDataMovement">
+        <source xml:lang="en">Do not block data motion on a table which has Row Level Security if this property is set to true. Default is false.</source>
+        <target state="translated">이 속성을 True로 설정하면 행 수준 보안이 설정된 테이블에서 데이터 이동을 차단하지 않습니다. 기본값은 False입니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.BackupDatabaseBeforeChanges">
+        <source xml:lang="en">Backups the database before deploying any changes.</source>
+        <target state="translated">변경 내용을 배포하기 전에 데이터베이스를 백업합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.BlockOnPossibleDataLoss">
+        <source xml:lang="en">Specifies that the publish episode should be terminated if there is a possibility of data loss resulting from the publish operation.</source>
+        <target state="translated">게시 작업으로 인한 데이터 손실 가능성이 있는 경우 게시 에피소드를 종료할지 여부를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.BlockWhenDriftDetected">
+        <source xml:lang="en">Specifies whether to block updating a database whose schema no longer matches its registration or is unregistered.</source>
+        <target state="translated">데이터베이스 스키마가 해당 등록과 더 이상 일치하지 않거나 등록 취소된 경우 이 데이터베이스 업데이트를 차단할지 여부를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.CommentOutSetVarDeclarations">
+        <source xml:lang="en">Specifies whether the declaration of SETVAR variables should be commented out in the generated publish script. You might choose to do this if you plan to specify the values on the command line when you publish by using a tool such as SQLCMD.EXE.</source>
+        <target state="translated">생성된 게시 스크립트에서 SETVAR 변수 선언을 주석으로 처리할지 여부를 지정합니다. SQLCMD.EXE와 같은 도구를 사용하여 게시할 때 명령줄에서 해당 값을 지정하려는 경우 이렇게 하도록 선택할 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.CompareUsingTargetCollation">
+        <source xml:lang="en">This setting dictates how the database's collation is handled during deployment; by default the target database's collation will be updated if it does not match the collation specified by the source.  When this option is set, the target database's (or server's) collation should be used.</source>
+        <target state="translated">이 설정은 배포하는 동안 데이터베이스의 데이터 정렬을 처리하는 방법을 지정합니다. 기본적으로 대상 데이터베이스의 데이터 정렬이 원본에서 지정한 데이터 정렬과 일치하지 않으면 업데이트됩니다. 이 옵션을 설정하면 대상 데이터베이스(또는 서버) 데이터 정렬을 사용해야 합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.CreateNewDatabase">
+        <source xml:lang="en">Specifies whether the target database should be updated or whether it should be dropped and re-created when you publish to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 대상 데이터베이스를 업데이트할지 또는 삭제한 후 다시 만들지를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.DeployDatabaseInSingleUserMode">
+        <source xml:lang="en">If true, the database is set to Single User Mode before deploying.</source>
+        <target state="translated">true이면 배포하기 전에 데이터베이스가 단일 사용자 모드로 설정됩니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.DisableAndReenableDdlTriggers">
+        <source xml:lang="en">Specifies whether Data Definition Language (DDL) triggers are disabled at the beginning of the publish process and re-enabled at the end of the publish action.</source>
+        <target state="translated">게시 프로세스가 시작될 때 DDL(데이터 정의 언어) 트리거를 해제하고 게시 작업이 끝날 때 다시 설정할지 여부를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.DoNotAlterChangeDataCaptureObjects">
+        <source xml:lang="en">If true, Change Data Capture objects are not altered.</source>
+        <target state="translated">true이면 변경 데이터 캡처 개체가 변경되지 않습니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.DoNotAlterReplicatedObjects">
+        <source xml:lang="en">Specifies whether objects that are replicated are identified during verification.</source>
+        <target state="translated">확인하는 동안 복제된 개체를 식별할지 여부를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.DropConstraintsNotInSource">
+        <source xml:lang="en">Specifies whether constraints that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 데이터베이스 스냅샷(.dacpac) 파일에 없는 제약 조건을 대상 데이터베이스에서 삭제할지 여부를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.DropDmlTriggersNotInSource">
+        <source xml:lang="en">Specifies whether DML triggers that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 데이터베이스 스냅샷(.dacpac) 파일에 없는 DML 트리거를 대상 데이터베이스에서 삭제할지 여부를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.DropExtendedPropertiesNotInSource">
+        <source xml:lang="en">Specifies whether extended properties that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 데이터베이스 스냅샷(.dacpac) 파일에 없는 확장 속성을 대상 데이터베이스에서 삭제할지 여부를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.DropIndexesNotInSource">
+        <source xml:lang="en">Specifies whether indexes that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 데이터베이스 스냅샷(.dacpac) 파일에 없는 인덱스를 대상 데이터베이스에서 삭제할지 여부를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.DropObjectsNotInSource">
+        <source xml:lang="en">Specifies whether objects that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.  This value takes precedence over DropExtendedProperties.</source>
+        <target state="translated">데이터베이스에 게시할 때 데이터베이스 스냅샷 파일(.dacpac)에 없는 개체를 대상 데이터베이스에서 삭제할지 여부를 지정합니다. 이 값이 DropExtendedProperties보다 우선합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.DropPermissionsNotInSource">
+        <source xml:lang="en">Specifies whether permissions that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish updates to a database.</source>
+        <target state="translated">데이터베이스에 업데이트를 게시할 때 데이터베이스 스냅샷(.dacpac) 파일에 없는 사용 권한을 대상 데이터베이스에서 삭제할지 여부를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.DropRoleMembersNotInSource">
+        <source xml:lang="en">Specifies whether role members that are not defined in the database snapshot (.dacpac) file will be dropped from the target database when you publish updates to a database.&lt;/</source>
+        <target state="translated">데이터베이스에 업데이트를 게시할 때 데이터베이스 스냅샷(.dacpac) 파일에 정의되지 않은 역할 멤버가 대상 데이터베이스에서 삭제되는지 여부를 지정합니다.&lt;/</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.DropStatisticsNotInSource">
+        <source xml:lang="en">Specifies whether statistics that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 데이터베이스 스냅샷(.dacpac) 파일에 없는 통계를 대상 데이터베이스에서 삭제할지 여부를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.GenerateSmartDefaults">
+        <source xml:lang="en">Automatically provides a default value when updating a table that contains data with a column that does not allow null values.</source>
+        <target state="translated">Null 값을 허용하지 않는 열이 있는 데이터 테이블을 업데이트할 때 기본값을 자동으로 제공합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreAnsiNulls">
+        <source xml:lang="en">Specifies whether differences in the ANSI NULLS setting should be ignored or updated when you publish to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 ANSI NULLS 설정 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreAuthorizer">
+        <source xml:lang="en">Specifies whether differences in the Authorizer should be ignored or updated when you publish to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 권한 부여자의 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreColumnCollation">
+        <source xml:lang="en">Specifies whether differences in the column collations should be ignored or updated when you publish to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 열 데이터 정렬의 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreColumnOrder">
+        <source xml:lang="en">Specifies whether differences in table column order should be ignored or updated when you publish to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 테이블 열 순서의 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreComments">
+        <source xml:lang="en">Specifies whether differences in the comments should be ignored or updated when you publish to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 주석의 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreCryptographicProviderFilePath">
+        <source xml:lang="en">Specifies whether differences in the file path for the cryptographic provider should be ignored or updated when you publish to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 암호화 공급자에 대한 파일 경로의 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreDdlTriggerOrder">
+        <source xml:lang="en">Specifies whether differences in the order of Data Definition Language (DDL) triggers should be ignored or updated when you publish to a database or server.</source>
+        <target state="translated">데이터베이스 또는 서버에 게시할 때 DDL(데이터 정의 언어) 트리거 순서의 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreDdlTriggerState">
+        <source xml:lang="en">Specifies whether differences in the enabled or disabled state of Data Definition Language (DDL) triggers should be ignored or updated when you publish to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 DDL(데이터 정의 언어) 트리거 사용/사용 안 함 상태의 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreDefaultSchema">
+        <source xml:lang="en">Specifies whether differences in the default schema should be ignored or updated when you publish to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 기본 스키마의 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreDmlTriggerOrder">
+        <source xml:lang="en">Specifies whether differences in the order of Data Manipulation Language (DML) triggers should be ignored or updated when you publish to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 DML(데이터 조작 언어) 트리거 순서의 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreDmlTriggerState">
+        <source xml:lang="en">Specifies whether differences in the enabled or disabled state of DML triggers should be ignored or updated when you publish to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 DML 트리거 사용/사용 안 함 상태의 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreExtendedProperties">
+        <source xml:lang="en">Specifies whether extended properties should be ignored.</source>
+        <target state="translated">확장 속성을 무시할지 여부를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreFileAndLogFilePath">
+        <source xml:lang="en">Specifies whether differences in the paths for files and log files should be ignored or updated when you publish to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 파일 및 로그 파일에 대한 경로 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreFileSize">
+        <source xml:lang="en">Specifies whether differences in the file sizes should be ignored or whether a warning should be issued when you publish to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 파일 크기 차이를 무시할지 또는 경고를 발생시킬지를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreFilegroupPlacement">
+        <source xml:lang="en">Specifies whether differences in the placement of objects in FILEGROUPs should be ignored or updated when you publish to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 FILEGROUP에서의 개체 배치 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreFillFactor">
+        <source xml:lang="en">Specifies whether differences in the fill factor for index storage should be ignored or whether a warning should be issued when you publish to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 인덱스 스토리지의 채우기 비율 차이를 무시할지 또는 경고를 발생시킬지 여부를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreFullTextCatalogFilePath">
+        <source xml:lang="en">Specifies whether differences in the file path for the full-text catalog should be ignored or whether a warning should be issued when you publish to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 전체 텍스트 카탈로그의 파일 경로 차이를 무시할지 또는 경고가 발생하도록 할지를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreIdentitySeed">
+        <source xml:lang="en">Specifies whether differences in the seed for an identity column should be ignored or updated when you publish updates to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 ID 열의 시드 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreIncrement">
+        <source xml:lang="en">Specifies whether differences in the increment for an identity column should be ignored or updated when you publish to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 ID 열의 증분 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreIndexOptions">
+        <source xml:lang="en">Specifies whether differences in the index options should be ignored or updated when you publish to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 인덱스 옵션 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreIndexPadding">
+        <source xml:lang="en">Specifies whether differences in the index padding should be ignored or updated when you publish to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 인덱스 패딩 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreKeywordCasing">
+        <source xml:lang="en">Specifies whether differences in the casing of keywords should be ignored or updated when you publish to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 키워드의 대/소문자 구분 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreLockHintsOnIndexes">
+        <source xml:lang="en">Specifies whether differences in the lock hints on indexes should be ignored or updated when you publish to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 인덱스의 잠금 힌트 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreLoginSids">
+        <source xml:lang="en">Specifies whether differences in the security identification number (SID) should be ignored or updated when you publish to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 SID(보안 ID)의 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreNotForReplication">
+        <source xml:lang="en">Specifies whether the not for replication settings should be ignored or updated when you publish to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 복제용 아님 설정을 무시할지 또는 업데이트할지를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreObjectPlacementOnPartitionScheme">
+        <source xml:lang="en">Specifies whether an object's placement on a partition scheme should be ignored or updated when you publish to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 파티션 구성표의 개체 배치를 무시할지 또는 업데이트할지를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnorePartitionSchemes">
+        <source xml:lang="en">Specifies whether differences in partition schemes and functions should be ignored or updated when you publish to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 파티션 구성표와 함수의 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnorePermissions">
+        <source xml:lang="en">Specifies whether permissions should be ignored.</source>
+        <target state="translated">사용 권한을 무시할지 여부를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreQuotedIdentifiers">
+        <source xml:lang="en">Specifies whether differences in the quoted identifiers setting should be ignored or updated when you publish to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 따옴표 붙은 식별자 설정 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreRoleMembership">
+        <source xml:lang="en">Specifies whether differences in the role membership of logins should be ignored or updated when you publish to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 로그인의 역할 멤버 자격 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreRouteLifetime">
+        <source xml:lang="en">Specifies whether differences in the amount of time that SQL Server retains the route in the routing table should be ignored or updated when you publish to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 SQL Server가 라우팅 테이블에 경로를 유지하는 기간 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreSemicolonBetweenStatements">
+        <source xml:lang="en">Specifies whether differences in the semi-colons between T-SQL statements will be ignored or updated when you publish to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 T-SQL 문 사이의 세미콜론 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreTableOptions">
+        <source xml:lang="en">Specifies whether differences in the table options will be ignored or updated when you publish to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 테이블 옵션의 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreUserSettingsObjects">
+        <source xml:lang="en">Specifies whether differences in the user settings objects will be ignored or updated when you publish to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 사용자 설정 개체의 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreWhitespace">
+        <source xml:lang="en">Specifies whether differences in white space will be ignored or updated when you publish to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 공백의 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreWithNocheckOnCheckConstraints">
+        <source xml:lang="en">Specifies whether differences in the value of the WITH NOCHECK clause for check constraints will be ignored or updated when you publish to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 CHECK 제약 조건의 WITH NOCHECK 절 값의 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IgnoreWithNocheckOnForeignKeys">
+        <source xml:lang="en">Specifies whether differences in the value of the WITH NOCHECK clause for foreign keys will be ignored or updated when you publish to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 외래 키의 WITH NOCHECK 절 값 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IncludeCompositeObjects">
+        <source xml:lang="en">Include all composite elements as part of a single publish operation.</source>
+        <target state="translated">모든 복합 요소를 단일 게시 작업의 일부로 포함합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.IncludeTransactionalScripts">
+        <source xml:lang="en">Specifies whether transactional statements should be used where possible when you publish to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 가능한 경우 트랜잭션 문을 사용할지 여부를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.NoAlterStatementsToChangeClrTypes">
+        <source xml:lang="en">Specifies that publish should always drop and re-create an assembly if there is a difference instead of issuing an ALTER ASSEMBLY statement</source>
+        <target state="translated">ALTER ASSEMBLY 문을 실행하는 대신, 차이가 있는 경우 게시에서 항상 어셈블리를 삭제했다가 다시 만들도록 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.PopulateFilesOnFileGroups">
+        <source xml:lang="en">Specifies whether a new file is also created when a new FileGroup is created in the target database.</source>
+        <target state="translated">대상 데이터베이스에 새 파일 그룹을 만들 때 새 파일도 만들어지는지 여부를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.RegisterDataTierApplication">
+        <source xml:lang="en">Specifies whether the schema is registered with the database server.</source>
+        <target state="translated">스키마가 데이터베이스 서버에 등록되는지 여부를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.RunDeploymentPlanExecutors">
+        <source xml:lang="en">Specifies whether DeploymentPlanExecutor contributors should be run when other operations are executed.</source>
+        <target state="translated">다른 작업을 실행할 때 DeploymentPlanExecutor 기여자를 실행할지 여부를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.ScriptDatabaseCollation">
+        <source xml:lang="en">Specifies whether differences in the database collation should be ignored or updated when you publish to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 데이터베이스 데이터 정렬의 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.ScriptDatabaseCompatibility">
+        <source xml:lang="en">Specifies whether differences in the database compatibility should be ignored or updated when you publish to a database.</source>
+        <target state="translated">데이터베이스에 게시할 때 데이터베이스 호환성 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.ScriptDatabaseOptions">
+        <source xml:lang="en">Specifies whether target database properties should be set or updated as part of the publish action.</source>
+        <target state="translated">게시 동작의 일부로 대상 데이터베이스 속성을 설정할지 또는 업데이트할지를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.ScriptDeployStateChecks">
+        <source xml:lang="en">Specifies whether statements are generated in the publish script to verify that the database name and server name match the names specified in the database project.</source>
+        <target state="translated">데이터베이스 이름 및 서버 이름이 데이터베이스 프로젝트에 지정된 이름과 일치하는지 확인하는 문을 게시 스크립트에 생성할지 여부를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.ScriptFileSize">
+        <source xml:lang="en">Controls whether size is specified when adding a file to a filegroup.</source>
+        <target state="translated">파일 그룹에 파일을 추가할 때 크기를 지정할지 여부를 제어합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.ScriptNewConstraintValidation">
+        <source xml:lang="en">At the end of publish all of the constraints will be verified as one set, avoiding data errors caused by a check or foreign key constraint in the middle of publish. If set to False, your constraints will be published without checking the corresponding data.</source>
+        <target state="translated">게시가 끝나면 모든 제약 조건을 하나의 세트로 확인하여 게시 중에 CHECK 또는 FOREIGN KEY 제약 조건으로 인한 데이터 오류를 방지합니다. False로 설정하면 해당 데이터를 검사하지 않고 제약 조건이 게시됩니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.ScriptRefreshModule">
+        <source xml:lang="en">Include refresh statements at the end of the publish script.</source>
+        <target state="translated">게시 스크립트의 끝에 새로 고침 문을 포함합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.TreatVerificationErrorsAsWarnings">
+        <source xml:lang="en">Specifies whether errors encountered during publish verification should be treated as warnings. The check is performed against the generated deployment plan before the plan is executed against your target database. Plan verification detects problems such as the loss of target-only objects (such as indexes) that must be dropped to make a change. Verification will also detect situations where dependencies (such as a table or view) exist because of a reference to a composite project, but do not exist in the target database. You might choose to do this to get a complete list of all issues, instead of having the publish action stop on the first error.</source>
+        <target state="translated">게시 확인 중 발생한 오류를 경고로 처리할지 여부를 지정합니다. 생성된 배포 계획이 대상 데이터베이스를 대상으로 실행되기 전에 이 계획을 대상으로 검사가 수행됩니다. 계획 확인에서는 변경하기 위해 삭제해야 하는 대상 전용 개체(예: 인덱스) 손실과 같은 문제를 검색합니다. 또한 확인에서는 복합 프로젝트에 대한 참조로 인해 종속성(예: 테이블 또는 뷰)이 존재하지만 대상 데이터베이스에는 이와 같은 종속성이 존재하지 않는 상황을 검색합니다. 첫 번째 오류에서 게시 작업을 중지하는 대신 모든 문제의 전체 목록을 가져오려면 이 작업을 수행하도록 선택할 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.UnmodifiableObjectWarnings">
+        <source xml:lang="en">Specifies whether warnings should be generated when differences are found in objects that cannot be modified, for example, if the file size or file paths were different for a file.</source>
+        <target state="translated">예를 들어, 한 파일의 파일 크기나 파일 경로가 다른 경우처럼 수정할 수 없는 개체에서 차이가 발견될 경우 경고를 생성할지 여부를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.VerifyCollationCompatibility">
+        <source xml:lang="en">Specifies whether collation compatibility is verified.</source>
+        <target state="translated">데이터 정렬 호환성을 확인할지 여부를 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Description.VerifyDeployment">
+        <source xml:lang="en">Specifies whether checks should be performed before publishing that will stop the publish action if issues are present that might block successful publishing. For example, your publish action might stop if you have foreign keys on the target database that do not exist in the database project, and that will cause errors when you publish.</source>
+        <target state="translated">게시 전에 검사를 수행할지 여부를 지정합니다. 검사 중 성공적인 게시를 차단할 수 있는 문제가 발생하면 게시 작업이 중지될 수 있습니다. 예를 들어 데이터베이스 프로젝트에 없고 게시할 때 오류를 발생시키는 외래 키가 대상 데이터베이스에 있을 경우 게시 작업이 중지될 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.DisableAndReenableDdlTriggers">
+        <source xml:lang="en">Disable And Reenable Ddl Triggers</source>
+        <target state="translated">DDL 트리거를 해제한 후 다시 설정</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.DoNotAlterChangeDataCaptureObjects">
+        <source xml:lang="en">Do Not Alter Change Data Capture Objects</source>
+        <target state="translated">변경 데이터 캡처 개체 변경 안 함</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.DoNotAlterReplicatedObjects">
+        <source xml:lang="en">Do Not Alter Replicated Objects</source>
+        <target state="translated">복제된 개체 변경 안 함</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.DropConstraintsNotInSource">
+        <source xml:lang="en">Drop Constraints Not In Source</source>
+        <target state="translated">원본에 없는 제약 조건 삭제</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.DropDmlTriggersNotInSource">
+        <source xml:lang="en">Drop Dml Triggers Not In Source</source>
+        <target state="translated">원본에 없는 DML 트리거 삭제</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.DropExtendedPropertiesNotInSource">
+        <source xml:lang="en">Drop Extended Properties Not In Source</source>
+        <target state="translated">원본에 없는 확장 속성 삭제</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.DropIndexesNotInSource">
+        <source xml:lang="en">Drop Indexes Not In Source</source>
+        <target state="translated">원본에 없는 인덱스 삭제</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.DropObjectsNotInSource">
+        <source xml:lang="en">Drop Objects Not In Source</source>
+        <target state="translated">원본에 없는 개체 삭제</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.DropPermissionsNotInSource">
+        <source xml:lang="en">Drop Permissions Not In Source</source>
+        <target state="translated">원본에 없는 사용 권한 삭제</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.DropRoleMembersNotInSource">
+        <source xml:lang="en">Drop Role Members Not In Source</source>
+        <target state="translated">원본에 없는 역할 멤버 삭제</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.DropStatisticsNotInSource">
+        <source xml:lang="en">Drop Statistics Not In Source</source>
+        <target state="translated">원본에 없는 통계 삭제</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Endpoints">
+        <source xml:lang="en">Endpoints</source>
+        <target state="translated">엔드포인트</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ErrorMessages">
+        <source xml:lang="en">Error Messages</source>
+        <target state="translated">오류 메시지</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.EventNotifications">
+        <source xml:lang="en">Event Notifications</source>
+        <target state="translated">이벤트 알림</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.EventSessions">
+        <source xml:lang="en">Event Sessions</source>
+        <target state="translated">이벤트 세션</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.ExtendedProperties">
         <source xml:lang="en">Extended Properties</source>
@@ -682,17 +502,21 @@
         <source xml:lang="en">External File Formats</source>
         <target state="translated">외부 파일 형식</target>
       </trans-unit>
-      <trans-unit id="SchemaCompare.ExternalStreams">
-        <source xml:lang="en">External Streams</source>
-        <target state="translated">외부 스트림</target>
-      </trans-unit>
       <trans-unit id="SchemaCompare.ExternalStreamingJobs">
         <source xml:lang="en">External Streaming Jobs</source>
         <target state="translated">외부 스트리밍 작업</target>
       </trans-unit>
+      <trans-unit id="SchemaCompare.ExternalStreams">
+        <source xml:lang="en">External Streams</source>
+        <target state="translated">외부 스트림</target>
+      </trans-unit>
       <trans-unit id="SchemaCompare.ExternalTables">
         <source xml:lang="en">External Tables</source>
         <target state="translated">외부 테이블</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.FileTables">
+        <source xml:lang="en">File Tables</source>
+        <target state="translated">파일 테이블</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Filegroups">
         <source xml:lang="en">Filegroups</source>
@@ -702,10 +526,6 @@
         <source xml:lang="en">Files</source>
         <target state="translated">파일</target>
       </trans-unit>
-      <trans-unit id="SchemaCompare.FileTables">
-        <source xml:lang="en">File Tables</source>
-        <target state="translated">파일 테이블</target>
-      </trans-unit>
       <trans-unit id="SchemaCompare.FullTextCatalogs">
         <source xml:lang="en">Full Text Catalogs</source>
         <target state="translated">전체 텍스트 카탈로그</target>
@@ -714,9 +534,197 @@
         <source xml:lang="en">Full Text Stoplists</source>
         <target state="translated">전체 텍스트 중지 목록</target>
       </trans-unit>
+      <trans-unit id="SchemaCompare.GeneralOptionsLabel">
+        <source xml:lang="en">General Options</source>
+        <target state="translated">일반 옵션</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.GenerateSmartDefaults">
+        <source xml:lang="en">Generate SmartDefaults</source>
+        <target state="translated">SmartDefaults 생성</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreAnsiNulls">
+        <source xml:lang="en">Ignore AnsiNulls</source>
+        <target state="translated">AnsiNulls 무시</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreAuthorizer">
+        <source xml:lang="en">Ignore Authorizer</source>
+        <target state="translated">권한 부여자 무시</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreColumnCollation">
+        <source xml:lang="en">Ignore Column Collation</source>
+        <target state="translated">열 데이터 정렬 무시</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreColumnOrder">
+        <source xml:lang="en">Ignore Column Order</source>
+        <target state="translated">열 순서 무시</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreComments">
+        <source xml:lang="en">Ignore Comments</source>
+        <target state="translated">주석 무시</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreCryptographicProviderFilePath">
+        <source xml:lang="en">Ignore Cryptographic Provider FilePath</source>
+        <target state="translated">암호화 공급자 파일 경로 무시</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreDdlTriggerOrder">
+        <source xml:lang="en">Ignore Ddl Trigger Order</source>
+        <target state="translated">Ddl 트리거 순서 무시</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreDdlTriggerState">
+        <source xml:lang="en">Ignore Ddl Trigger State</source>
+        <target state="translated">DDL 트리거 상태 무시</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreDefaultSchema">
+        <source xml:lang="en">Ignore Default Schema</source>
+        <target state="translated">기본 스키마 무시</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreDmlTriggerOrder">
+        <source xml:lang="en">Ignore Dml Trigger Order</source>
+        <target state="translated">DML 트리거 순서 무시</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreDmlTriggerState">
+        <source xml:lang="en">Ignore Dml Trigger State</source>
+        <target state="translated">DML 트리거 상태 무시</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreExtendedProperties">
+        <source xml:lang="en">Ignore Extended Properties</source>
+        <target state="translated">확장 속성 무시</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreFileAndLogFilePath">
+        <source xml:lang="en">Ignore File And Log File Path</source>
+        <target state="translated">파일 및 로그 파일 경로 무시</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreFileSize">
+        <source xml:lang="en">Ignore File Size</source>
+        <target state="translated">파일 크기 무시</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreFilegroupPlacement">
+        <source xml:lang="en">Ignore Filegroup Placement</source>
+        <target state="translated">파일 그룹 배치 무시</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreFillFactor">
+        <source xml:lang="en">Ignore Fill Factor</source>
+        <target state="translated">채우기 비율 무시</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreFullTextCatalogFilePath">
+        <source xml:lang="en">Ignore Full Text Catalog FilePath</source>
+        <target state="translated">전체 텍스트 카탈로그 파일 경로 무시</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreIdentitySeed">
+        <source xml:lang="en">Ignore Identity Seed</source>
+        <target state="translated">ID 시드 무시</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreIncrement">
+        <source xml:lang="en">Ignore Increment</source>
+        <target state="translated">증분 무시</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreIndexOptions">
+        <source xml:lang="en">Ignore Index Options</source>
+        <target state="translated">인덱스 옵션 무시</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreIndexPadding">
+        <source xml:lang="en">Ignore Index Padding</source>
+        <target state="translated">인덱스 패딩 무시</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreKeywordCasing">
+        <source xml:lang="en">Ignore Keyword Casing</source>
+        <target state="translated">키워드 대/소문자 무시</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreLockHintsOnIndexes">
+        <source xml:lang="en">Ignore Lock Hints On Indexes</source>
+        <target state="translated">인덱스의 잠금 힌트 무시</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreLoginSids">
+        <source xml:lang="en">Ignore Login Sids</source>
+        <target state="translated">로그인 SID 무시</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreNotForReplication">
+        <source xml:lang="en">Ignore Not For Replication</source>
+        <target state="translated">복제용 아님 무시</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreObjectPlacementOnPartitionScheme">
+        <source xml:lang="en">Ignore Object Placement On Partition Scheme</source>
+        <target state="translated">파티션 구성표에서 개체 배치 무시</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnorePartitionSchemes">
+        <source xml:lang="en">Ignore Partition Schemes</source>
+        <target state="translated">파티션 구성표 무시</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnorePermissions">
+        <source xml:lang="en">Ignore Permissions</source>
+        <target state="translated">사용 권한 무시</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreQuotedIdentifiers">
+        <source xml:lang="en">Ignore Quoted Identifiers</source>
+        <target state="translated">따옴표 붙은 식별자 무시</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreRoleMembership">
+        <source xml:lang="en">Ignore Role Membership</source>
+        <target state="translated">역할 멤버 자격 무시</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreRouteLifetime">
+        <source xml:lang="en">Ignore Route Lifetime</source>
+        <target state="translated">경로 수명 무시</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreSemicolonBetweenStatements">
+        <source xml:lang="en">Ignore Semicolon Between Statements</source>
+        <target state="translated">문 사이의 세미콜론 무시</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreTableOptions">
+        <source xml:lang="en">Ignore Table Options</source>
+        <target state="translated">테이블 옵션 무시</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreUserSettingsObjects">
+        <source xml:lang="en">Ignore User Settings Objects</source>
+        <target state="translated">사용자 설정 개체 무시</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreWhitespace">
+        <source xml:lang="en">Ignore Whitespace</source>
+        <target state="translated">공백 무시</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreWithNocheckOnCheckConstraints">
+        <source xml:lang="en">Ignore With No check On Check Constraints</source>
+        <target state="translated">CHECK 제약 조건의 WITH NOCHECK 무시</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IgnoreWithNocheckOnForeignKeys">
+        <source xml:lang="en">Ignore With Nocheck On ForeignKeys</source>
+        <target state="translated">외래 키의 WITH NOCHECK 무시</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IncludeCompositeObjects">
+        <source xml:lang="en">Include Composite Objects</source>
+        <target state="translated">복합 개체 포함</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.IncludeTransactionalScripts">
+        <source xml:lang="en">Include Transactional Scripts</source>
+        <target state="translated">트랜잭션 스크립트 포함</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.LinkedServerLogins">
+        <source xml:lang="en">Linked Server Logins</source>
+        <target state="translated">연결된 서버 로그인</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.LinkedServers">
+        <source xml:lang="en">Linked Servers</source>
+        <target state="translated">연결된 서버</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Logins">
+        <source xml:lang="en">Logins</source>
+        <target state="translated">로그인</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.MasterKeys">
+        <source xml:lang="en">Master Keys</source>
+        <target state="translated">마스터 키</target>
+      </trans-unit>
       <trans-unit id="SchemaCompare.MessageTypes">
         <source xml:lang="en">Message Types</source>
         <target state="translated">메시지 유형</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.NoAlterStatementsToChangeClrTypes">
+        <source xml:lang="en">No Alter Statements To Change Clr Types</source>
+        <target state="translated">CLR 유형을 변경하기 위한 Alter 문 사용 안 함</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ObjectTypesOptionsLabel">
+        <source xml:lang="en">Include Object Types</source>
+        <target state="translated">개체 유형 포함</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.PartitionFunctions">
         <source xml:lang="en">Partition Functions</source>
@@ -730,9 +738,17 @@
         <source xml:lang="en">Permissions</source>
         <target state="translated">권한</target>
       </trans-unit>
+      <trans-unit id="SchemaCompare.PopulateFilesOnFileGroups">
+        <source xml:lang="en">Populate Files On File Groups</source>
+        <target state="translated">파일 그룹에 파일 채우기</target>
+      </trans-unit>
       <trans-unit id="SchemaCompare.Queues">
         <source xml:lang="en">Queues</source>
         <target state="translated">큐</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.RegisterDataTierApplication">
+        <source xml:lang="en">Register DataTier Application</source>
+        <target state="translated">DataTier 애플리케이션 등록</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.RemoteServiceBindings">
         <source xml:lang="en">Remote Service Bindings</source>
@@ -742,13 +758,53 @@
         <source xml:lang="en">Role Membership</source>
         <target state="translated">역할 멤버 자격</target>
       </trans-unit>
+      <trans-unit id="SchemaCompare.Routes">
+        <source xml:lang="en">Routes</source>
+        <target state="translated">경로</target>
+      </trans-unit>
       <trans-unit id="SchemaCompare.Rules">
         <source xml:lang="en">Rules</source>
         <target state="translated">규칙</target>
       </trans-unit>
+      <trans-unit id="SchemaCompare.RunDeploymentPlanExecutors">
+        <source xml:lang="en">Run Deployment Plan Executors</source>
+        <target state="translated">배포 계획 실행기 실행</target>
+      </trans-unit>
       <trans-unit id="SchemaCompare.ScalarValuedFunctions">
         <source xml:lang="en">Scalar Valued Functions</source>
         <target state="translated">스칼라 반환 함수</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.SchemaCompareOptionsDialogLabel">
+        <source xml:lang="en">Schema Compare Options</source>
+        <target state="translated">스키마 비교 옵션</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ScriptDatabaseCollation">
+        <source xml:lang="en">Script Database Collation</source>
+        <target state="translated">스크립트 데이터베이스 데이터 정렬</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ScriptDatabaseCompatibility">
+        <source xml:lang="en">Script Database Compatibility</source>
+        <target state="translated">스크립트 데이터베이스 호환성</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ScriptDatabaseOptions">
+        <source xml:lang="en">Script Database Options</source>
+        <target state="translated">스크립트 데이터베이스 옵션</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ScriptDeployStateChecks">
+        <source xml:lang="en">Script Deploy StateChecks</source>
+        <target state="translated">스크립트 배포 StateChecks</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ScriptFileSize">
+        <source xml:lang="en">Script File Size</source>
+        <target state="translated">스크립트 파일 크기</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ScriptNewConstraintValidation">
+        <source xml:lang="en">Script New Constraint Validation</source>
+        <target state="translated">스크립트 새 제약 조건 유효성 검사</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ScriptRefreshModule">
+        <source xml:lang="en">Script Refresh Module</source>
+        <target state="translated">스크립트 새로 고침 모듈</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.SearchPropertyLists">
         <source xml:lang="en">Search Property Lists</source>
@@ -761,6 +817,22 @@
       <trans-unit id="SchemaCompare.Sequences">
         <source xml:lang="en">Sequences</source>
         <target state="translated">시퀀스</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ServerAuditSpecifications">
+        <source xml:lang="en">Server Audit Specifications</source>
+        <target state="translated">서버 감사 사양</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ServerRoleMembership">
+        <source xml:lang="en">Server Role Membership</source>
+        <target state="translated">서버 역할 멤버 자격</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ServerRoles">
+        <source xml:lang="en">Server Roles</source>
+        <target state="translated">서버 역할</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ServerTriggers">
+        <source xml:lang="en">Server Triggers</source>
+        <target state="translated">서버 트리거</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Services">
         <source xml:lang="en">Services</source>
@@ -782,13 +854,21 @@
         <source xml:lang="en">Synonyms</source>
         <target state="translated">동의어</target>
       </trans-unit>
+      <trans-unit id="SchemaCompare.TableValuedFunctions">
+        <source xml:lang="en">Table Valued Functions</source>
+        <target state="translated">테이블 반환 함수</target>
+      </trans-unit>
       <trans-unit id="SchemaCompare.Tables">
         <source xml:lang="en">Tables</source>
         <target state="translated">테이블</target>
       </trans-unit>
-      <trans-unit id="SchemaCompare.TableValuedFunctions">
-        <source xml:lang="en">Table Valued Functions</source>
-        <target state="translated">테이블 반환 함수</target>
+      <trans-unit id="SchemaCompare.TreatVerificationErrorsAsWarnings">
+        <source xml:lang="en">Treat Verification Errors As Warnings</source>
+        <target state="translated">확인 오류를 경고로 처리</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.UnmodifiableObjectWarnings">
+        <source xml:lang="en">Unmodifiable Object Warnings</source>
+        <target state="translated">수정할 수 없는 개체 경고</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.UserDefinedDataTypes">
         <source xml:lang="en">User Defined Data Types</source>
@@ -798,13 +878,17 @@
         <source xml:lang="en">User Defined Table Types</source>
         <target state="translated">사용자 정의 테이블 형식</target>
       </trans-unit>
-      <trans-unit id="SchemaCompare.ClrUserDefinedTypes">
-        <source xml:lang="en">Clr User Defined Types</source>
-        <target state="translated">CLR 사용자 정의 형식</target>
-      </trans-unit>
       <trans-unit id="SchemaCompare.Users">
         <source xml:lang="en">Users</source>
         <target state="translated">사용자</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.VerifyCollationCompatibility">
+        <source xml:lang="en">Verify Collation Compatibility</source>
+        <target state="translated">데이터 정렬 호환성 확인</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.VerifyDeployment">
+        <source xml:lang="en">Verify Deployment</source>
+        <target state="translated">배포 확인</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Views">
         <source xml:lang="en">Views</source>
@@ -814,409 +898,325 @@
         <source xml:lang="en">Xml Schema Collections</source>
         <target state="translated">XML 스키마 컬렉션</target>
       </trans-unit>
-      <trans-unit id="SchemaCompare.Audits">
-        <source xml:lang="en">Audits</source>
-        <target state="translated">감사</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Credentials">
-        <source xml:lang="en">Credentials</source>
-        <target state="translated">자격 증명</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.CryptographicProviders">
-        <source xml:lang="en">Cryptographic Providers</source>
-        <target state="translated">암호화 공급자</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.DatabaseAuditSpecifications">
-        <source xml:lang="en">Database Audit Specifications</source>
-        <target state="translated">데이터베이스 감사 사양</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.DatabaseEncryptionKeys">
-        <source xml:lang="en">Database Encryption Keys</source>
-        <target state="translated">데이터베이스 암호화 키</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.DatabaseScopedCredentials">
-        <source xml:lang="en">Database Scoped Credentials</source>
-        <target state="translated">데이터베이스 범위 자격 증명</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Endpoints">
-        <source xml:lang="en">Endpoints</source>
-        <target state="translated">엔드포인트</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.ErrorMessages">
-        <source xml:lang="en">Error Messages</source>
-        <target state="translated">오류 메시지</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.EventNotifications">
-        <source xml:lang="en">Event Notifications</source>
-        <target state="translated">이벤트 알림</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.EventSessions">
-        <source xml:lang="en">Event Sessions</source>
-        <target state="translated">이벤트 세션</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.LinkedServerLogins">
-        <source xml:lang="en">Linked Server Logins</source>
-        <target state="translated">연결된 서버 로그인</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.LinkedServers">
-        <source xml:lang="en">Linked Servers</source>
-        <target state="translated">연결된 서버</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Logins">
-        <source xml:lang="en">Logins</source>
-        <target state="translated">로그인</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.MasterKeys">
-        <source xml:lang="en">Master Keys</source>
-        <target state="translated">마스터 키</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Routes">
-        <source xml:lang="en">Routes</source>
-        <target state="translated">경로</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.ServerAuditSpecifications">
-        <source xml:lang="en">Server Audit Specifications</source>
-        <target state="translated">서버 감사 사양</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.ServerRoleMembership">
-        <source xml:lang="en">Server Role Membership</source>
-        <target state="translated">서버 역할 멤버 자격</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.ServerRoles">
-        <source xml:lang="en">Server Roles</source>
-        <target state="translated">서버 역할</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.ServerTriggers">
-        <source xml:lang="en">Server Triggers</source>
-        <target state="translated">서버 트리거</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreTableOptions">
-        <source xml:lang="en">Specifies whether differences in the table options will be ignored or updated when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 테이블 옵션의 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreSemicolonBetweenStatements">
-        <source xml:lang="en">Specifies whether differences in the semi-colons between T-SQL statements will be ignored or updated when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 T-SQL 문 사이의 세미콜론 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreRouteLifetime">
-        <source xml:lang="en">Specifies whether differences in the amount of time that SQL Server retains the route in the routing table should be ignored or updated when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 SQL Server가 라우팅 테이블에 경로를 유지하는 기간 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreRoleMembership">
-        <source xml:lang="en">Specifies whether differences in the role membership of logins should be ignored or updated when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 로그인의 역할 멤버 자격 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreQuotedIdentifiers">
-        <source xml:lang="en">Specifies whether differences in the quoted identifiers setting should be ignored or updated when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 따옴표 붙은 식별자 설정 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnorePermissions">
-        <source xml:lang="en">Specifies whether permissions should be ignored.</source>
-        <target state="translated">사용 권한을 무시할지 여부를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnorePartitionSchemes">
-        <source xml:lang="en">Specifies whether differences in partition schemes and functions should be ignored or updated when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 파티션 구성표와 함수의 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreObjectPlacementOnPartitionScheme">
-        <source xml:lang="en">Specifies whether an object's placement on a partition scheme should be ignored or updated when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 파티션 구성표의 개체 배치를 무시할지 또는 업데이트할지를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreNotForReplication">
-        <source xml:lang="en">Specifies whether the not for replication settings should be ignored or updated when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 복제용 아님 설정을 무시할지 또는 업데이트할지를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreLoginSids">
-        <source xml:lang="en">Specifies whether differences in the security identification number (SID) should be ignored or updated when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 SID(보안 ID)의 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreLockHintsOnIndexes">
-        <source xml:lang="en">Specifies whether differences in the lock hints on indexes should be ignored or updated when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 인덱스의 잠금 힌트 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreKeywordCasing">
-        <source xml:lang="en">Specifies whether differences in the casing of keywords should be ignored or updated when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 키워드의 대/소문자 구분 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreIndexPadding">
-        <source xml:lang="en">Specifies whether differences in the index padding should be ignored or updated when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 인덱스 패딩 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreIndexOptions">
-        <source xml:lang="en">Specifies whether differences in the index options should be ignored or updated when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 인덱스 옵션 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreIncrement">
-        <source xml:lang="en">Specifies whether differences in the increment for an identity column should be ignored or updated when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 ID 열의 증분 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreIdentitySeed">
-        <source xml:lang="en">Specifies whether differences in the seed for an identity column should be ignored or updated when you publish updates to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 ID 열의 시드 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreUserSettingsObjects">
-        <source xml:lang="en">Specifies whether differences in the user settings objects will be ignored or updated when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 사용자 설정 개체의 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreFullTextCatalogFilePath">
-        <source xml:lang="en">Specifies whether differences in the file path for the full-text catalog should be ignored or whether a warning should be issued when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 전체 텍스트 카탈로그의 파일 경로 차이를 무시할지 또는 경고가 발생하도록 할지를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreWhitespace">
-        <source xml:lang="en">Specifies whether differences in white space will be ignored or updated when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 공백의 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreWithNocheckOnForeignKeys">
-        <source xml:lang="en">Specifies whether differences in the value of the WITH NOCHECK clause for foreign keys will be ignored or updated when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 외래 키의 WITH NOCHECK 절 값 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.VerifyCollationCompatibility">
-        <source xml:lang="en">Specifies whether collation compatibility is verified.</source>
-        <target state="translated">데이터 정렬 호환성을 확인할지 여부를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.UnmodifiableObjectWarnings">
-        <source xml:lang="en">Specifies whether warnings should be generated when differences are found in objects that cannot be modified, for example, if the file size or file paths were different for a file.</source>
-        <target state="translated">예를 들어, 한 파일의 파일 크기나 파일 경로가 다른 경우처럼 수정할 수 없는 개체에서 차이가 발견될 경우 경고를 생성할지 여부를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.TreatVerificationErrorsAsWarnings">
-        <source xml:lang="en">Specifies whether errors encountered during publish verification should be treated as warnings. The check is performed against the generated deployment plan before the plan is executed against your target database. Plan verification detects problems such as the loss of target-only objects (such as indexes) that must be dropped to make a change. Verification will also detect situations where dependencies (such as a table or view) exist because of a reference to a composite project, but do not exist in the target database. You might choose to do this to get a complete list of all issues, instead of having the publish action stop on the first error.</source>
-        <target state="translated">게시 확인 중 발생한 오류를 경고로 처리할지 여부를 지정합니다. 생성된 배포 계획이 대상 데이터베이스를 대상으로 실행되기 전에 이 계획을 대상으로 검사가 수행됩니다. 계획 확인에서는 변경하기 위해 삭제해야 하는 대상 전용 개체(예: 인덱스) 손실과 같은 문제를 검색합니다. 또한 확인에서는 복합 프로젝트에 대한 참조로 인해 종속성(예: 테이블 또는 뷰)이 존재하지만 대상 데이터베이스에는 이와 같은 종속성이 존재하지 않는 상황을 검색합니다. 첫 번째 오류에서 게시 작업을 중지하는 대신 모든 문제의 전체 목록을 가져오려면 이 작업을 수행하도록 선택할 수 있습니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.ScriptRefreshModule">
-        <source xml:lang="en">Include refresh statements at the end of the publish script.</source>
-        <target state="translated">게시 스크립트의 끝에 새로 고침 문을 포함합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.ScriptNewConstraintValidation">
-        <source xml:lang="en">At the end of publish all of the constraints will be verified as one set, avoiding data errors caused by a check or foreign key constraint in the middle of publish. If set to False, your constraints will be published without checking the corresponding data.</source>
-        <target state="translated">게시가 끝나면 모든 제약 조건을 하나의 세트로 확인하여 게시 중에 CHECK 또는 FOREIGN KEY 제약 조건으로 인한 데이터 오류를 방지합니다. False로 설정하면 해당 데이터를 검사하지 않고 제약 조건이 게시됩니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.ScriptFileSize">
-        <source xml:lang="en">Controls whether size is specified when adding a file to a filegroup.</source>
-        <target state="translated">파일 그룹에 파일을 추가할 때 크기를 지정할지 여부를 제어합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.ScriptDeployStateChecks">
-        <source xml:lang="en">Specifies whether statements are generated in the publish script to verify that the database name and server name match the names specified in the database project.</source>
-        <target state="translated">데이터베이스 이름 및 서버 이름이 데이터베이스 프로젝트에 지정된 이름과 일치하는지 확인하는 문을 게시 스크립트에 생성할지 여부를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.ScriptDatabaseOptions">
-        <source xml:lang="en">Specifies whether target database properties should be set or updated as part of the publish action.</source>
-        <target state="translated">게시 동작의 일부로 대상 데이터베이스 속성을 설정할지 또는 업데이트할지를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.ScriptDatabaseCompatibility">
-        <source xml:lang="en">Specifies whether differences in the database compatibility should be ignored or updated when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 데이터베이스 호환성 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.ScriptDatabaseCollation">
-        <source xml:lang="en">Specifies whether differences in the database collation should be ignored or updated when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 데이터베이스 데이터 정렬의 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.RunDeploymentPlanExecutors">
-        <source xml:lang="en">Specifies whether DeploymentPlanExecutor contributors should be run when other operations are executed.</source>
-        <target state="translated">다른 작업을 실행할 때 DeploymentPlanExecutor 기여자를 실행할지 여부를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.RegisterDataTierApplication">
-        <source xml:lang="en">Specifies whether the schema is registered with the database server.</source>
-        <target state="translated">스키마가 데이터베이스 서버에 등록되는지 여부를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.PopulateFilesOnFileGroups">
-        <source xml:lang="en">Specifies whether a new file is also created when a new FileGroup is created in the target database.</source>
-        <target state="translated">대상 데이터베이스에 새 파일 그룹을 만들 때 새 파일도 만들어지는지 여부를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.NoAlterStatementsToChangeClrTypes">
-        <source xml:lang="en">Specifies that publish should always drop and re-create an assembly if there is a difference instead of issuing an ALTER ASSEMBLY statement</source>
-        <target state="translated">ALTER ASSEMBLY 문을 실행하는 대신, 차이가 있는 경우 게시에서 항상 어셈블리를 삭제했다가 다시 만들도록 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IncludeTransactionalScripts">
-        <source xml:lang="en">Specifies whether transactional statements should be used where possible when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 가능한 경우 트랜잭션 문을 사용할지 여부를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IncludeCompositeObjects">
-        <source xml:lang="en">Include all composite elements as part of a single publish operation.</source>
-        <target state="translated">모든 복합 요소를 단일 게시 작업의 일부로 포함합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.AllowUnsafeRowLevelSecurityDataMovement">
-        <source xml:lang="en">Do not block data motion on a table which has Row Level Security if this property is set to true. Default is false.</source>
-        <target state="translated">이 속성을 True로 설정하면 행 수준 보안이 설정된 테이블에서 데이터 이동을 차단하지 않습니다. 기본값은 False입니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreWithNocheckOnCheckConstraints">
-        <source xml:lang="en">Specifies whether differences in the value of the WITH NOCHECK clause for check constraints will be ignored or updated when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 CHECK 제약 조건의 WITH NOCHECK 절 값의 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreFillFactor">
-        <source xml:lang="en">Specifies whether differences in the fill factor for index storage should be ignored or whether a warning should be issued when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 인덱스 스토리지의 채우기 비율 차이를 무시할지 또는 경고를 발생시킬지 여부를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreFileSize">
-        <source xml:lang="en">Specifies whether differences in the file sizes should be ignored or whether a warning should be issued when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 파일 크기 차이를 무시할지 또는 경고를 발생시킬지를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreFilegroupPlacement">
-        <source xml:lang="en">Specifies whether differences in the placement of objects in FILEGROUPs should be ignored or updated when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 FILEGROUP에서의 개체 배치 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.DoNotAlterReplicatedObjects">
-        <source xml:lang="en">Specifies whether objects that are replicated are identified during verification.</source>
-        <target state="translated">확인하는 동안 복제된 개체를 식별할지 여부를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.DoNotAlterChangeDataCaptureObjects">
-        <source xml:lang="en">If true, Change Data Capture objects are not altered.</source>
-        <target state="translated">true이면 변경 데이터 캡처 개체가 변경되지 않습니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.DisableAndReenableDdlTriggers">
-        <source xml:lang="en">Specifies whether Data Definition Language (DDL) triggers are disabled at the beginning of the publish process and re-enabled at the end of the publish action.</source>
-        <target state="translated">게시 프로세스가 시작될 때 DDL(데이터 정의 언어) 트리거를 해제하고 게시 작업이 끝날 때 다시 설정할지 여부를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.DeployDatabaseInSingleUserMode">
-        <source xml:lang="en">If true, the database is set to Single User Mode before deploying.</source>
-        <target state="translated">true이면 배포하기 전에 데이터베이스가 단일 사용자 모드로 설정됩니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.CreateNewDatabase">
-        <source xml:lang="en">Specifies whether the target database should be updated or whether it should be dropped and re-created when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 대상 데이터베이스를 업데이트할지 또는 삭제한 후 다시 만들지를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.CompareUsingTargetCollation">
-        <source xml:lang="en">This setting dictates how the database's collation is handled during deployment; by default the target database's collation will be updated if it does not match the collation specified by the source.  When this option is set, the target database's (or server's) collation should be used.</source>
-        <target state="translated">이 설정은 배포하는 동안 데이터베이스의 데이터 정렬을 처리하는 방법을 지정합니다. 기본적으로 대상 데이터베이스의 데이터 정렬이 원본에서 지정한 데이터 정렬과 일치하지 않으면 업데이트됩니다. 이 옵션을 설정하면 대상 데이터베이스(또는 서버) 데이터 정렬을 사용해야 합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.CommentOutSetVarDeclarations">
-        <source xml:lang="en">Specifies whether the declaration of SETVAR variables should be commented out in the generated publish script. You might choose to do this if you plan to specify the values on the command line when you publish by using a tool such as SQLCMD.EXE.</source>
-        <target state="translated">생성된 게시 스크립트에서 SETVAR 변수 선언을 주석으로 처리할지 여부를 지정합니다. SQLCMD.EXE와 같은 도구를 사용하여 게시할 때 명령줄에서 해당 값을 지정하려는 경우 이렇게 하도록 선택할 수 있습니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.BlockWhenDriftDetected">
-        <source xml:lang="en">Specifies whether to block updating a database whose schema no longer matches its registration or is unregistered.</source>
-        <target state="translated">데이터베이스 스키마가 해당 등록과 더 이상 일치하지 않거나 등록 취소된 경우 이 데이터베이스 업데이트를 차단할지 여부를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.BlockOnPossibleDataLoss">
-        <source xml:lang="en">Specifies that the publish episode should be terminated if there is a possibility of data loss resulting from the publish operation.</source>
-        <target state="translated">게시 작업으로 인한 데이터 손실 가능성이 있는 경우 게시 에피소드를 종료할지 여부를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.BackupDatabaseBeforeChanges">
-        <source xml:lang="en">Backups the database before deploying any changes.</source>
-        <target state="translated">변경 내용을 배포하기 전에 데이터베이스를 백업합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.AllowIncompatiblePlatform">
-        <source xml:lang="en">Specifies whether to attempt the action despite incompatible SQL Server platforms.</source>
-        <target state="translated">SQL Server 플랫폼이 호환되지 않아도 동작을 시도할지 여부를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.AllowDropBlockingAssemblies">
-        <source xml:lang="en">This property is used by SqlClr deployment to cause any blocking assemblies to be dropped as part of the deployment plan. By default, any blocking/referencing assemblies will block an assembly update if the referencing assembly needs to be dropped.</source>
-        <target state="translated">이 속성은 SqlClr 배포 시 배포 계획의 일부로 차단 어셈블리를 삭제하기 위해 사용됩니다. 기본적으로 참조 어셈블리를 삭제해야 하는 경우 모든 차단/참조 어셈블리는 어셈블리 업데이트를 차단합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.DropConstraintsNotInSource">
-        <source xml:lang="en">Specifies whether constraints that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 데이터베이스 스냅샷(.dacpac) 파일에 없는 제약 조건을 대상 데이터베이스에서 삭제할지 여부를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.DropDmlTriggersNotInSource">
-        <source xml:lang="en">Specifies whether DML triggers that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 데이터베이스 스냅샷(.dacpac) 파일에 없는 DML 트리거를 대상 데이터베이스에서 삭제할지 여부를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.DropExtendedPropertiesNotInSource">
-        <source xml:lang="en">Specifies whether extended properties that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 데이터베이스 스냅샷(.dacpac) 파일에 없는 확장 속성을 대상 데이터베이스에서 삭제할지 여부를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.DropIndexesNotInSource">
-        <source xml:lang="en">Specifies whether indexes that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 데이터베이스 스냅샷(.dacpac) 파일에 없는 인덱스를 대상 데이터베이스에서 삭제할지 여부를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreFileAndLogFilePath">
-        <source xml:lang="en">Specifies whether differences in the paths for files and log files should be ignored or updated when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 파일 및 로그 파일에 대한 경로 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreExtendedProperties">
-        <source xml:lang="en">Specifies whether extended properties should be ignored.</source>
-        <target state="translated">확장 속성을 무시할지 여부를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreDmlTriggerState">
-        <source xml:lang="en">Specifies whether differences in the enabled or disabled state of DML triggers should be ignored or updated when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 DML 트리거 사용/사용 안 함 상태의 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreDmlTriggerOrder">
-        <source xml:lang="en">Specifies whether differences in the order of Data Manipulation Language (DML) triggers should be ignored or updated when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 DML(데이터 조작 언어) 트리거 순서의 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreDefaultSchema">
-        <source xml:lang="en">Specifies whether differences in the default schema should be ignored or updated when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 기본 스키마의 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreDdlTriggerState">
-        <source xml:lang="en">Specifies whether differences in the enabled or disabled state of Data Definition Language (DDL) triggers should be ignored or updated when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 DDL(데이터 정의 언어) 트리거 사용/사용 안 함 상태의 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreDdlTriggerOrder">
-        <source xml:lang="en">Specifies whether differences in the order of Data Definition Language (DDL) triggers should be ignored or updated when you publish to a database or server.</source>
-        <target state="translated">데이터베이스 또는 서버에 게시할 때 DDL(데이터 정의 언어) 트리거 순서의 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreCryptographicProviderFilePath">
-        <source xml:lang="en">Specifies whether differences in the file path for the cryptographic provider should be ignored or updated when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 암호화 공급자에 대한 파일 경로의 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.VerifyDeployment">
-        <source xml:lang="en">Specifies whether checks should be performed before publishing that will stop the publish action if issues are present that might block successful publishing. For example, your publish action might stop if you have foreign keys on the target database that do not exist in the database project, and that will cause errors when you publish.</source>
-        <target state="translated">게시 전에 검사를 수행할지 여부를 지정합니다. 검사 중 성공적인 게시를 차단할 수 있는 문제가 발생하면 게시 작업이 중지될 수 있습니다. 예를 들어 데이터베이스 프로젝트에 없고 게시할 때 오류를 발생시키는 외래 키가 대상 데이터베이스에 있을 경우 게시 작업이 중지될 수 있습니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreComments">
-        <source xml:lang="en">Specifies whether differences in the comments should be ignored or updated when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 주석의 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreColumnCollation">
-        <source xml:lang="en">Specifies whether differences in the column collations should be ignored or updated when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 열 데이터 정렬의 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreAuthorizer">
-        <source xml:lang="en">Specifies whether differences in the Authorizer should be ignored or updated when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 권한 부여자의 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreAnsiNulls">
-        <source xml:lang="en">Specifies whether differences in the ANSI NULLS setting should be ignored or updated when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 ANSI NULLS 설정 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.GenerateSmartDefaults">
-        <source xml:lang="en">Automatically provides a default value when updating a table that contains data with a column that does not allow null values.</source>
-        <target state="translated">Null 값을 허용하지 않는 열이 있는 데이터 테이블을 업데이트할 때 기본값을 자동으로 제공합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.DropStatisticsNotInSource">
-        <source xml:lang="en">Specifies whether statistics that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 데이터베이스 스냅샷(.dacpac) 파일에 없는 통계를 대상 데이터베이스에서 삭제할지 여부를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.DropRoleMembersNotInSource">
-        <source xml:lang="en">Specifies whether role members that are not defined in the database snapshot (.dacpac) file will be dropped from the target database when you publish updates to a database.&lt;/</source>
-        <target state="translated">데이터베이스에 업데이트를 게시할 때 데이터베이스 스냅샷(.dacpac) 파일에 정의되지 않은 역할 멤버가 대상 데이터베이스에서 삭제되는지 여부를 지정합니다.&lt;/</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.DropPermissionsNotInSource">
-        <source xml:lang="en">Specifies whether permissions that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish updates to a database.</source>
-        <target state="translated">데이터베이스에 업데이트를 게시할 때 데이터베이스 스냅샷(.dacpac) 파일에 없는 사용 권한을 대상 데이터베이스에서 삭제할지 여부를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.DropObjectsNotInSource">
-        <source xml:lang="en">Specifies whether objects that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.  This value takes precedence over DropExtendedProperties.</source>
-        <target state="translated">데이터베이스에 게시할 때 데이터베이스 스냅샷 파일(.dacpac)에 없는 개체를 대상 데이터베이스에서 삭제할지 여부를 지정합니다. 이 값이 DropExtendedProperties보다 우선합니다.</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompare.Description.IgnoreColumnOrder">
-        <source xml:lang="en">Specifies whether differences in table column order should be ignored or updated when you publish to a database.</source>
-        <target state="translated">데이터베이스에 게시할 때 테이블 열 순서의 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.compareErrorMessage">
-        <source xml:lang="en">Schema Compare failed: {0}</source>
-        <target state="translated">스키마 비교 실패: {0}</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.saveScmpErrorMessage">
-        <source xml:lang="en">Save scmp failed: '{0}'</source>
-        <target state="translated">scmp 저장 실패: '{0}'</target>
+      <trans-unit id="SchemaCompareOptionsDialog.Reset">
+        <source xml:lang="en">Reset</source>
+        <target state="translated">다시 설정</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.ApplyConfirmation">
+        <source xml:lang="en">Are you sure you want to update the target?</source>
+        <target state="translated">대상을 업데이트하시겠습니까?</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.CompareDetailsTitle">
+        <source xml:lang="en">Compare Details</source>
+        <target state="translated">세부 정보 비교</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.GetConnectionString">
+        <source xml:lang="en">Do you want to connect to {0}?</source>
+        <target state="translated">{0}에 연결하시겠습니까?</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.RecompareToRefresh">
+        <source xml:lang="en">Press Compare to refresh the comparison.</source>
+        <target state="translated">비교를 눌러 비교를 새로 고칩니다.</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.actionColumn">
+        <source xml:lang="en">Action</source>
+        <target state="translated">작업</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.addAction">
+        <source xml:lang="en">Add</source>
+        <target state="translated">추가</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.applyButtonDisabledTitle">
+        <source xml:lang="en">Apply is enabled when the target is a database</source>
+        <target state="translated">대상이 데이터베이스이면 적용이 사용하도록 설정됩니다.</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.applyButtonEnabledTitle">
+        <source xml:lang="en">Apply changes to target</source>
+        <target state="translated">대상에 변경 내용 적용</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.applyNoChanges">
+        <source xml:lang="en">No changes to apply</source>
+        <target state="translated">적용할 변경 내용 없음</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.cancelCompareButton">
+        <source xml:lang="en">Stop</source>
+        <target state="translated">중지</target>
       </trans-unit>
       <trans-unit id="schemaCompare.cancelErrorMessage">
         <source xml:lang="en">Cancel schema compare failed: '{0}'</source>
         <target state="translated">스키마 비교 취소 실패: '{0}'</target>
       </trans-unit>
+      <trans-unit id="schemaCompare.cannotExcludeMessage">
+        <source xml:lang="en">Cannot exclude {0}. Included dependents exist</source>
+        <target state="translated">{0}을(를) 제외할 수 없습니다. 포함된 종속 항목이 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.cannotExcludeMessageWithDependent">
+        <source xml:lang="en">Cannot exclude {0}. Included dependents exist, such as {1}</source>
+        <target state="translated">{0}을(를) 제외할 수 없습니다. {1} 같은 포함된 종속 항목이 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.cannotIncludeMessage">
+        <source xml:lang="en">Cannot include {0}. Excluded dependents exist</source>
+        <target state="translated">{0}을(를) 포함할 수 없습니다. 제외된 종속 항목이 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.cannotIncludeMessageWithDependent">
+        <source xml:lang="en">Cannot include {0}. Excluded dependents exist, such as {1}</source>
+        <target state="translated">{0}을(를) 포함할 수 없습니다. {1} 같은 제외된 종속 항목이 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.changeAction">
+        <source xml:lang="en">Change</source>
+        <target state="translated">변경</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.compareButton">
+        <source xml:lang="en">Compare</source>
+        <target state="translated">비교</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.compareErrorMessage">
+        <source xml:lang="en">Schema Compare failed: {0}</source>
+        <target state="translated">스키마 비교 실패: {0}</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.dacpacRadioButtonLabel">
+        <source xml:lang="en">Data-tier Application File (.dacpac)</source>
+        <target state="translated">데이터 계층 애플리케이션 파일(.dacpac)</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.databaseButtonLabel">
+        <source xml:lang="en">Database</source>
+        <target state="translated">데이터베이스</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.deleteAction">
+        <source xml:lang="en">Delete</source>
+        <target state="translated">삭제</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.dialogTitle">
+        <source xml:lang="en">Schema Compare</source>
+        <target state="translated">스키마 비교</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.differencesTableTitle">
+        <source xml:lang="en">Comparison between Source and Target</source>
+        <target state="translated">원본과 대상 간의 비교</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.generateScriptButton">
+        <source xml:lang="en">Generate script</source>
+        <target state="translated">스크립트 생성</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.generateScriptButtonDisabledTitle">
+        <source xml:lang="en">Generate script is enabled when the target is a database</source>
+        <target state="translated">대상이 데이터베이스이면 스크립트 생성이 사용하도록 설정됩니다.</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.generateScriptEnabledButton">
+        <source xml:lang="en">Generate script to deploy changes to target</source>
+        <target state="translated">대상에 변경 내용을 배포하는 스크립트 생성</target>
+      </trans-unit>
       <trans-unit id="schemaCompare.generateScriptErrorMessage">
         <source xml:lang="en">Generate script failed: '{0}'</source>
         <target state="translated">스크립트 생성 실패: '{0}'</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.generateScriptNoChanges">
+        <source xml:lang="en">No changes to script</source>
+        <target state="translated">스크립트 변경 내용 없음</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.includeColumnName">
+        <source xml:lang="en">Include</source>
+        <target state="translated">포함</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.includeExcludeInfoMessage">
+        <source xml:lang="en">Please note that include/exclude operations can take a moment to calculate affected dependencies</source>
+        <target state="translated">포함/제외 작업은 영향을 받는 종속성을 계산하는 데 잠시 걸릴 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.noDifferences">
+        <source xml:lang="en">No schema differences were found.</source>
+        <target state="translated">스키마 차이를 찾을 수 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.openFile">
+        <source xml:lang="en">Open</source>
+        <target state="translated">열기</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.openScmpButton">
+        <source xml:lang="en">Open .scmp file</source>
+        <target state="translated">.scmp 파일 열기</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.openScmpButtonTitle">
+        <source xml:lang="en">Load source, target, and options saved in an .scmp file</source>
+        <target state="translated">.scmp 파일에 저장된 원본, 대상 및 옵션 로드</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.openScmpErrorMessage">
+        <source xml:lang="en">Open scmp failed: '{0}'</source>
+        <target state="translated">scmp 열기 실패: '{0}'</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.optionsButton">
+        <source xml:lang="en">Options</source>
+        <target state="translated">옵션</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.radioButtonsLabel">
+        <source xml:lang="en">Type</source>
+        <target state="translated">형식</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.saveFile">
+        <source xml:lang="en">Save</source>
+        <target state="translated">저장</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.saveScmpButton">
+        <source xml:lang="en">Save .scmp file</source>
+        <target state="translated">.scmp 파일 저장</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.saveScmpButtonTitle">
+        <source xml:lang="en">Save source and target, options, and excluded elements</source>
+        <target state="translated">원본 및 대상, 옵션 및 제외된 요소 저장</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.saveScmpErrorMessage">
+        <source xml:lang="en">Save scmp failed: '{0}'</source>
+        <target state="translated">scmp 저장 실패: '{0}'</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.selectConnection">
+        <source xml:lang="en">Select connection</source>
+        <target state="translated">연결 선택</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.selectSourceFile">
+        <source xml:lang="en">Select source file</source>
+        <target state="translated">원본 파일 선택</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.selectTargetFile">
+        <source xml:lang="en">Select target file</source>
+        <target state="translated">대상 파일 선택</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.sourceButtonTitle">
+        <source xml:lang="en">Select Source</source>
+        <target state="translated">원본 선택</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.sourceNameColumn">
+        <source xml:lang="en">Source Name</source>
+        <target state="translated">원본 이름</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.startText">
+        <source xml:lang="en">To compare two schemas, first select a source schema and target schema, then press Compare.</source>
+        <target state="translated">두 스키마를 비교하려면 먼저 원본 스키마 및 대상 스키마를 선택한 다음, 비교를 누릅니다.</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.switchButtonTitle">
+        <source xml:lang="en">Switch source and target</source>
+        <target state="translated">원본과 대상 전환</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.switchDirectionButton">
+        <source xml:lang="en">Switch direction</source>
+        <target state="translated">방향 전환</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.targetButtonTitle">
+        <source xml:lang="en">Select Target</source>
+        <target state="translated">대상 선택</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.targetNameColumn">
+        <source xml:lang="en">Target Name</source>
+        <target state="translated">대상 이름</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.typeColumn">
+        <source xml:lang="en">Type</source>
+        <target state="translated">형식</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.updateButton">
+        <source xml:lang="en">Apply</source>
+        <target state="translated">적용</target>
       </trans-unit>
       <trans-unit id="schemaCompare.updateErrorMessage">
         <source xml:lang="en">Schema Compare Apply failed '{0}'</source>
         <target state="translated">스키마 비교 적용 실패 '{0}'</target>
       </trans-unit>
-      <trans-unit id="schemaCompare.openScmpErrorMessage">
-        <source xml:lang="en">Open scmp failed: '{0}'</source>
-        <target state="translated">scmp 열기 실패: '{0}'</target>
+      <trans-unit id="schemaCompare.waitText">
+        <source xml:lang="en">Initializing Comparison. This might take a moment.</source>
+        <target state="translated">비교를 초기화하는 중입니다. 시간이 약간 걸릴 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.No">
+        <source xml:lang="en">No</source>
+        <target state="translated">아니요</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.SourceTitle">
+        <source xml:lang="en">Source</source>
+        <target state="translated">원본</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.TargetTitle">
+        <source xml:lang="en">Target</source>
+        <target state="translated">대상</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.Yes">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">예</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">취소</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.databaseDropdownTitle">
+        <source xml:lang="en">Database</source>
+        <target state="translated">데이터베이스</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.defaultUser">
+        <source xml:lang="en">default</source>
+        <target state="translated">기본값</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.differentSourceMessage">
+        <source xml:lang="en">A different source schema has been selected. Compare to see the comparison?</source>
+        <target state="translated">다른 원본 스키마를 선택했습니다. 비교를 확인하려면 비교를 누르세요.</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.differentSourceTargetMessage">
+        <source xml:lang="en">Different source and target schemas have been selected. Compare to see the comparison?</source>
+        <target state="translated">다른 원본 및 대상 스키마를 선택했습니다. 비교를 확인하려면 비교를 누르세요.</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.differentTargetMessage">
+        <source xml:lang="en">A different target schema has been selected. Compare to see the comparison?</source>
+        <target state="translated">다른 대상 스키마를 선택했습니다. 비교를 확인하려면 비교를 누르세요.</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.fileTextBoxLabel">
+        <source xml:lang="en">File</source>
+        <target state="translated">파일</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.ok">
+        <source xml:lang="en">OK</source>
+        <target state="translated">확인</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.serverDropdownTitle">
+        <source xml:lang="en">Server</source>
+        <target state="translated">서버</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.sourceDatabaseDropdown">
+        <source xml:lang="en">Source Database</source>
+        <target state="translated">원본 데이터베이스</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.sourceServerDropdown">
+        <source xml:lang="en">Source Server</source>
+        <target state="translated">원본 서버</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.sourceTextBox">
+        <source xml:lang="en">Source file</source>
+        <target state="translated">원본 파일</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.targetDatabaseDropdown">
+        <source xml:lang="en">Target Database</source>
+        <target state="translated">대상 데이터베이스</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.targetServerDropdown">
+        <source xml:lang="en">Target Server</source>
+        <target state="translated">대상 서버</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.targetTextBox">
+        <source xml:lang="en">Target file</source>
+        <target state="translated">대상 파일</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareOptions.RecompareMessage">
+        <source xml:lang="en">Options have changed. Recompare to see the comparison?</source>
+        <target state="translated">옵션이 변경되었습니다. 비교를 확인하려면 다시 비교를 누르세요.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/schema-compare/package" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="description">
+        <source xml:lang="en">SQL Server Schema Compare for Azure Data Studio supports comparing the schemas of databases and dacpacs.</source>
+        <target state="translated">Azure Data Studio에 대한 SQL Server 스키마 비교는 데이터베이스 및 Dacpac의 스키마 비교를 지원합니다.</target>
+      </trans-unit>
+      <trans-unit id="displayName">
+        <source xml:lang="en">SQL Server Schema Compare</source>
+        <target state="translated">SQL Server 스키마 비교</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.start">
+        <source xml:lang="en">Schema Compare</source>
+        <target state="translated">스키마 비교</target>
       </trans-unit>
     </body>
   </file>

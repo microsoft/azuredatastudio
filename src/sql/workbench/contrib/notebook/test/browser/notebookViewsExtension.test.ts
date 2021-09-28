@@ -76,14 +76,14 @@ suite('NotebookViews', function (): void {
 	});
 
 	test('create new view', async function (): Promise<void> {
-		assert.equal(notebookViews.getViews().length, 0, 'notebook should not initially generate any views');
+		assert.strictEqual(notebookViews.getViews().length, 0, 'notebook should not initially generate any views');
 
 		let newView = notebookViews.createNewView(defaultViewName);
 		let cellsWithMatchingGuid = newView.cells.filter(cell => newView.getCellMetadata(cell).guid === newView.guid);
 
-		assert.equal(newView.name, defaultViewName, 'view was not created with its given name');
-		assert.equal(newView.cells.length, 2, 'view did not contain the same number of cells as the notebook used to create it');
-		assert.equal(cellsWithMatchingGuid.length, newView.cells.length, 'cell metadata was not created for all cells in view');
+		assert.strictEqual(newView.name, defaultViewName, 'view was not created with its given name');
+		assert.strictEqual(newView.cells.length, 2, 'view did not contain the same number of cells as the notebook used to create it');
+		assert.strictEqual(cellsWithMatchingGuid.length, newView.cells.length, 'cell metadata was not created for all cells in view');
 	});
 
 	test('remove view', async function (): Promise<void> {
@@ -93,23 +93,23 @@ suite('NotebookViews', function (): void {
 
 		let cellsWithNewView = notebookViews.getCells().filter(cell => cell.views.find(v => v.guid === newView.guid));
 
-		assert.equal(notebookViews.getViews().length, 0, 'view not removed from notebook metadata');
-		assert.equal(cellsWithNewView.length, 0, 'view not removed from cells');
+		assert.strictEqual(notebookViews.getViews().length, 0, 'view not removed from notebook metadata');
+		assert.strictEqual(cellsWithNewView.length, 0, 'view not removed from cells');
 	});
 
 	test('default view name', async function (): Promise<void> {
 		let newView = notebookViews.createNewView();
-		assert.equal(newView.name, NotebookViewsExtension.defaultViewName);
+		assert.strictEqual(newView.name, NotebookViewsExtension.defaultViewName);
 
 		let newView1 = notebookViews.createNewView();
-		assert.equal(newView1.name, `${NotebookViewsExtension.defaultViewName} 1`);
+		assert.strictEqual(newView1.name, `${NotebookViewsExtension.defaultViewName} 1`);
 	});
 
 	test('active view', async function (): Promise<void> {
 		let newView = notebookViews.createNewView();
 		notebookViews.setActiveView(newView);
 
-		assert.equal(notebookViews.getActiveView(), newView);
+		assert.strictEqual(notebookViews.getActiveView(), newView);
 	});
 
 	test('update cell', async function (): Promise<void> {

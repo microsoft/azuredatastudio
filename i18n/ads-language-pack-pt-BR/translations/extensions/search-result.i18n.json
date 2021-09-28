@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Resultado da Pesquisa",
-			"description": "Fornece recursos de linguagem e realce de sintaxe para resultados da pesquisa com guias."
+			"description": "Fornece recursos de linguagem e realce de sintaxe para resultados da pesquisa com guias.",
+			"displayName": "Resultado da Pesquisa"
 		}
 	}
 }

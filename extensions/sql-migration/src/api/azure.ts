@@ -312,6 +312,7 @@ export async function getMigrationStatus(account: azdata.Account, subscription: 
 	if (migration.properties) {
 		migrationUpdate.properties.sourceDatabaseName = migration.properties.sourceDatabaseName;
 		migrationUpdate.properties.backupConfiguration = migration.properties.backupConfiguration;
+		migrationUpdate.properties.autoCutoverConfiguration = migration.properties.autoCutoverConfiguration;
 	}
 
 	return migrationUpdate;
@@ -546,7 +547,7 @@ export interface TargetLocation {
 
 export interface BackupFileInfo {
 	fileName: string;
-	status: 'Arrived' | 'Uploading' | 'Uploaded' | 'Restoring' | 'Restored' | 'Cancelled' | 'Ignored';
+	status: 'Arrived' | 'Uploading' | 'Uploaded' | 'Restoring' | 'Restored' | 'Canceled' | 'Ignored';
 	totalSize: number;
 	dataRead: number;
 	dataWritten: number;

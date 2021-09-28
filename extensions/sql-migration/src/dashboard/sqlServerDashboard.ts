@@ -77,10 +77,12 @@ export class DashboardWidget {
 			const header = this.createHeader(view);
 			container.addItem(header, {
 				CSSStyles: {
-					'background-image': `url(${vscode.Uri.file(<string>IconPathHelper.migrationDashboardHeaderBackground.light)})`,
-					'width': '870px',
-					'height': '260px',
-					'background-size': '100%',
+					'background-image': `
+						url(${vscode.Uri.file(<string>IconPathHelper.migrationDashboardHeaderBackground.light)}),
+						linear-gradient(0deg, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0) 100%)
+					`,
+					'background-repeat': 'no-repeat',
+					'background-position': '91.06% 100%'
 				}
 			});
 
@@ -103,7 +105,7 @@ export class DashboardWidget {
 			}));
 
 			await view.initializeModel(container);
-			this.refreshMigrations();
+			await this.refreshMigrations();
 		});
 	}
 
@@ -168,14 +170,14 @@ export class DashboardWidget {
 
 		const migrateButton = this.createTaskButton(view, migrateButtonMetadata);
 
-		const points = `•	${loc.PRE_REQ_1}
-•	${loc.PRE_REQ_2}
-•	${loc.PRE_REQ_3}`;
-
 		const preRequisiteListElement = view.modelBuilder.text().withProps({
-			value: points,
+			value: [
+				loc.PRE_REQ_1,
+				loc.PRE_REQ_2,
+				loc.PRE_REQ_3
+			],
 			CSSStyles: {
-				'padding-left': '15px',
+				'padding-left': '30px',
 				'margin-bottom': '5px',
 				'margin-top': '10px'
 			}
@@ -232,7 +234,12 @@ export class DashboardWidget {
 			title: taskMetaData.title,
 			width: maxWidth,
 			CSSStyles: {
-				'border': '1px solid'
+				'border': '1px solid',
+				'display': 'flex',
+				'flex-direction': 'column',
+				'justify-content': 'flex-start',
+				'border-radius': '4px',
+				'transition': 'all .5s ease',
 			}
 		}).component();
 		this._disposables.push(buttonContainer.onDidClick(async () => {
@@ -260,7 +267,7 @@ export class DashboardWidget {
 		this._viewAllMigrationsButton.enabled = false;
 		this._migrationStatusCardLoadingContainer.loading = true;
 		try {
-			this.setCurrentMigrations(await this.getMigrations());
+			await this.setCurrentMigrations(await this.getMigrations());
 			const migrations = await this.getCurrentMigrations();
 			const inProgressMigrations = filterMigrations(migrations, AdsMigrationStatus.ONGOING);
 			let warningCount = 0;
@@ -387,7 +394,12 @@ export class DashboardWidget {
 				'width': '400px',
 				'border': '1px solid',
 				'margin-top': '10px',
-				'height': '50px'
+				'height': '50px',
+				'display': 'flex',
+				'flex-direction': 'column',
+				'justify-content': 'flex-start',
+				'border-radius': '4px',
+				'transition': 'all .5s ease',
 			}
 		}).component();
 		return {
@@ -607,6 +619,65 @@ export class DashboardWidget {
 			}
 		});
 
+		const addAccountImage = view.modelBuilder.image().withProps({
+			iconPath: IconPathHelper.addAzureAccount,
+			iconHeight: 100,
+			iconWidth: 100,
+			width: 96,
+			height: 96,
+			CSSStyles: {
+				'opacity': '50%',
+				'margin': '15% auto 10% auto',
+				'filter': 'drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))',
+				'display': 'none'
+			}
+		}).component();
+
+		const addAccountText = view.modelBuilder.text().withProps({
+			value: loc.ADD_ACCOUNT_MESSAGE,
+			width: 198,
+			height: 34,
+			CSSStyles: {
+				'font-family': 'Segoe UI',
+				'font-size': '12px',
+				'margin': 'auto',
+				'text-align': 'center',
+				'line-height': '16px',
+				'display': 'none'
+			}
+		}).component();
+
+		const addAccountButton = view.modelBuilder.button().withProps({
+			label: loc.ADD_ACCOUNT,
+			width: '100px',
+			enabled: true,
+			CSSStyles: {
+				'margin': '5% 40%',
+				'display': 'none'
+			}
+		}).component();
+
+		this._disposables.push(addAccountButton.onDidClick(async (e) => {
+			await vscode.commands.executeCommand('workbench.actions.modal.linkedAccount');
+			addAccountButton.enabled = false;
+			let accounts = await azdata.accounts.getAllAccounts();
+
+			if (accounts.length !== 0) {
+				await addAccountImage.updateCssStyles({
+					'display': 'none'
+				});
+				await addAccountText.updateCssStyles({
+					'display': 'none'
+				});
+				await addAccountButton.updateCssStyles({
+					'display': 'none'
+				});
+				await this._migrationStatusCardsContainer.updateCssStyles({ 'visibility': 'visible' });
+				await this._viewAllMigrationsButton.updateCssStyles({ 'visibility': 'visible' });
+			}
+			await this.refreshMigrations();
+		}));
+
 		const header = view.modelBuilder.flexContainer().withItems(
 			[
 				statusContainerTitle,
@@ -617,6 +688,22 @@ export class DashboardWidget {
 		}).component();
 
 		this._migrationStatusCardsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
+
+		let accounts = await azdata.accounts.getAllAccounts();
+
+		if (accounts.length === 0) {
+			await addAccountImage.updateCssStyles({
+				'display': 'block'
+			});
+			await addAccountText.updateCssStyles({
+				'display': 'block'
+			});
+			await addAccountButton.updateCssStyles({
+				'display': 'block'
+			});
+			await this._migrationStatusCardsContainer.updateCssStyles({ 'visibility': 'hidden' });
+			await this._viewAllMigrationsButton.updateCssStyles({ 'visibility': 'hidden' });
+		}
 
 		this._inProgressMigrationButton = this.createStatusCard(
 			IconPathHelper.inProgressMigration,
@@ -687,7 +774,7 @@ export class DashboardWidget {
 			loc.MIGRATION_NOT_STARTED
 		);
 		this._disposables.push(this._notStartedMigrationCard.container.onDidClick((e) => {
-			vscode.window.showInformationMessage('Feature coming soon');
+			void vscode.window.showInformationMessage('Feature coming soon');
 		}));
 
 		this._migrationStatusCardLoadingContainer = view.modelBuilder.loadingComponent().withItem(this._migrationStatusCardsContainer).component();
@@ -703,6 +790,10 @@ export class DashboardWidget {
 			}
 		}
 		);
+
+		statusContainer.addItem(addAccountImage, {});
+		statusContainer.addItem(addAccountText, {});
+		statusContainer.addItem(addAccountButton, {});
 
 		statusContainer.addItem(this._migrationStatusCardLoadingContainer, {
 			CSSStyles: {

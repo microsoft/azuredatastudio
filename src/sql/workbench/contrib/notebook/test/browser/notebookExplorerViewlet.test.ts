@@ -60,7 +60,7 @@ suite('Notebook Explorer Views', () => {
 		let retrieved = Platform.Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).getView('notebookView-test-1');
 		assert(d === retrieved, 'Could not register view :' + d.id + 'Retrieved: ' + retrieved);
 		let newCount = Platform.Registry.as<IViewsRegistry>(ViewContainerExtensions.ViewsRegistry).getViews(NOTEBOOK_VIEW_CONTAINER).length;
-		assert.equal(oldcount + 1, newCount, 'View registration failed');
+		assert.strictEqual(oldcount + 1, newCount, 'View registration failed');
 
 
 	});
@@ -89,7 +89,7 @@ suite('Notebook Explorer Views', () => {
 		Platform.Registry.as<ViewletRegistry>(Extensions.Viewlets).registerViewlet(v1Duplicate);
 
 		let newCount = Platform.Registry.as<ViewletRegistry>(Extensions.Viewlets).getViewlets().length;
-		assert.equal(oldCount, newCount, 'Duplicate registration of views.');
+		assert.strictEqual(oldCount, newCount, 'Duplicate registration of views.');
 
 	});
 

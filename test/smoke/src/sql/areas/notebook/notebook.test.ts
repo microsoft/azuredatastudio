@@ -56,6 +56,7 @@ export function setup() {
 		// Python Notebooks
 
 		it('can open new notebook, configure Python, and execute one cell', async function () {
+			this.timeout(600000); // set timeout to 10 minutes to ensure test does not timeout during python installation
 			const app = this.app as Application;
 			await app.workbench.sqlNotebook.newUntitledNotebook();
 			await app.workbench.sqlNotebook.addCell('code');
@@ -96,7 +97,11 @@ export function setup() {
 				const name = this.currentTest!.fullTitle().replace(/[^a-z0-9\-]/ig, '_');
 				await app.captureScreenshot(`${name} (screenshot before revertAndCloseActiveEditor action)`);
 			}
+
 			await app.workbench.quickaccess.runCommand('workbench.action.revertAndCloseActiveEditor');
+
+			// Close any open wizards
+			await app.code.dispatchKeybinding('escape');
 		});
 
 		describe('Notebook Toolbar Actions', async () => {

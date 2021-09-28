@@ -67,7 +67,7 @@ export class ManageAccessDialog {
 					azdata.window.closeDialog(this.dialog);
 					await this.hdfsModel.apply(true);
 				} catch (err) {
-					vscode.window.showErrorMessage(loc.errorApplyingAclChanges(err instanceof HdfsError ? err.message : err));
+					void vscode.window.showErrorMessage(loc.errorApplyingAclChanges(err instanceof HdfsError ? err.message : err));
 				}
 			});
 			this.dialog.customButtons = [this.applyRecursivelyButton];
@@ -76,7 +76,7 @@ export class ManageAccessDialog {
 					await this.hdfsModel.apply();
 					return true;
 				} catch (err) {
-					vscode.window.showErrorMessage(loc.errorApplyingAclChanges(err instanceof HdfsError ? err.message : err));
+					void vscode.window.showErrorMessage(loc.errorApplyingAclChanges(err instanceof HdfsError ? err.message : err));
 				}
 				return false;
 			});
@@ -331,7 +331,7 @@ export class ManageAccessDialog {
 
 			this.rootLoadingComponent.loading = false;
 
-			this.addUserOrGroupInput.focus();
+			void this.addUserOrGroupInput.focus();
 		});
 	}
 
