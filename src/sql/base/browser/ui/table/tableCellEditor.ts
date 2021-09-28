@@ -120,10 +120,10 @@ export class TableCellEditor {
 				const container = DOM.$('');
 				this._args.container.appendChild(container);
 				this._selectBox = new SelectBox([], undefined, self._contextViewProvider);
-
 				container.style.height = '100%';
 				container.style.width = '100%';
 				this._selectBox.render(container);
+				this._selectBox.selectElem.style.height = '100%';
 				self._options.editorStyler(this._selectBox);
 				this._selectBox.focus();
 			}

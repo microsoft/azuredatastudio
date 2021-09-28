@@ -55,3 +55,8 @@
 .designer-component .components-grid .full-row {
 	grid-area: span 1 / span 2; /* spans 1 row and 2 columns*/
 }
+
+.designer-component .monaco-table .slick-cell.editable {
+	padding: 0px;
+	border-width: 0px;
+}

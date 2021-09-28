@@ -11,24 +11,25 @@ import * as DOM from 'vs/base/browser/dom';
 import { DesignerUIComponents } from 'sql/base/browser/ui/designer/designer';
 
 export class DesignerTabPanelView extends Disposable implements IPanelView {
-
-	private tables: Table<Slick.SlickData>[] = [];
+	private _componentsContainer: HTMLElement;
+	private _tables: Table<Slick.SlickData>[] = [];
 	constructor(private readonly _tab: DesignerTab, private _createComponent: (container: HTMLElement, component: DesignerComponentType, labelOnTop?: boolean) => DesignerUIComponents) {
 		super();
-	}
-
-	render(container: HTMLElement): void {
-		const componentsContainer = container.appendChild(DOM.$('.components-grid'));
+		this._componentsContainer = DOM.$('.components-grid');
 		this._tab.components.forEach(componentDefition => {
-			const component = this._createComponent(componentsContainer, componentDefition, this._tab.labelOnTop);
+			const component = this._createComponent(this._componentsContainer, componentDefition, this._tab.labelOnTop);
 			if (componentDefition.type === 'table') {
-				this.tables.push(component as Table<Slick.SlickData>);
+				this._tables.push(component as Table<Slick.SlickData>);
 			}
 		});
 	}
 
+	render(container: HTMLElement): void {
+		container.appendChild(this._componentsContainer);
+	}
+
 	layout(dimension: DOM.Dimension): void {
-		this.tables.forEach(table => {
+		this._tables.forEach(table => {
 			table.layout(new DOM.Dimension(dimension.width - 10, dimension.height - 20));
 		});
 	}
