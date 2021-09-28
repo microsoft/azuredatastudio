@@ -1283,7 +1283,7 @@
     "find-remove": "1.2.1",
     "request": "^2.88.0",
     "request-light": "^0.3.0",
-    "@microsoft/ads-service-downloader": "0.2.2",
+    "@microsoft/ads-service-downloader": "0.2.3",
     "stream-meter": "^1.0.4",
     "through2": "^3.0.1",
     "tough-cookie": "^3.0.1",
