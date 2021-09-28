@@ -12,7 +12,7 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 
 export interface CheckBoxCellValue {
 	enabled?: boolean;
-	checked: boolean;
+	value: boolean;
 }
 
 export interface CheckBoxChangedEventArgs<T extends Slick.SlickData> {
@@ -53,7 +53,9 @@ export class CheckBoxColumn<T extends Slick.SlickData> implements Slick.Plugin<T
 			formatter: (row: number, cell: number, value: any, columnDef: Slick.Column<T>, dataContext: T): string => {
 				const cellValue = dataContext[columnDef.field] as CheckBoxCellValue;
 				const escapedTitle = escape(columnDef.name ?? '');
-				return `<input type="checkbox" tabindex=-1 title="${escapedTitle}" aria-label="${escapedTitle} ${cellValue.enabled === false ? '' : 'disabled'}" checked="${cellValue.checked}"/>`;
+				const disabledAttribute = cellValue.enabled === false ? 'disabled' : '';
+				const checkedAttribute = cellValue.value ? 'checked' : '';
+				return `<input type="checkbox" tabindex=-1 title="${escapedTitle}" aria-label="${escapedTitle}" ${checkedAttribute} ${disabledAttribute}/>`;
 			},
 			field: this.options.field,
 			name: this.options.name,

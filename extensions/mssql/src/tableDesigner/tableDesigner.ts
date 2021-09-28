@@ -44,9 +44,46 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 			column1[azdata.designers.TableColumnProperties.AllowNulls] = <azdata.designers.CheckboxComponentData>{
 				value: true
 			};
+
+			const column2 = <azdata.designers.TableComponentRowData>{};
+			column2[azdata.designers.TableColumnProperties.Name] = <azdata.designers.InputComponentData>{
+				value: 'column2'
+			};
+			column2[azdata.designers.TableColumnProperties.Type] = <azdata.designers.DropdownComponentData>{
+				value: 'int'
+			};
+			column2[azdata.designers.TableColumnProperties.Length] = <azdata.designers.InputComponentData>{
+				value: ''
+			};
+			column2[azdata.designers.TableColumnProperties.DefaultValue] = <azdata.designers.InputComponentData>{
+				value: ''
+			};
+			column2[azdata.designers.TableColumnProperties.AllowNulls] = <azdata.designers.CheckboxComponentData>{
+				value: false
+			};
+
+			const column3 = <azdata.designers.TableComponentRowData>{};
+			column3[azdata.designers.TableColumnProperties.Name] = <azdata.designers.InputComponentData>{
+				value: 'column3'
+			};
+			column3[azdata.designers.TableColumnProperties.Type] = <azdata.designers.DropdownComponentData>{
+				value: 'int'
+			};
+			column3[azdata.designers.TableColumnProperties.Length] = <azdata.designers.InputComponentData>{
+				value: ''
+			};
+			column3[azdata.designers.TableColumnProperties.DefaultValue] = <azdata.designers.InputComponentData>{
+				value: ''
+			};
+			column3[azdata.designers.TableColumnProperties.AllowNulls] = <azdata.designers.CheckboxComponentData>{
+				value: false
+			};
+
 			const columns = <azdata.designers.TableComponentData>{
 				rows: [
-					column1
+					column1,
+					column2,
+					column3
 				]
 			};
 
