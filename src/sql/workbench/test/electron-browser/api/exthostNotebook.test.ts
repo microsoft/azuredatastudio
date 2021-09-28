@@ -90,8 +90,8 @@ suite('ExtHostNotebook Tests', () => {
 				assert.ok(managerDetails.handle > 0, 'Expect a valid handle defined');
 			});
 
-			test('Should return an execute manager with correct info on server manager existence', async () => {
-				// Given the provider returns a manager with no
+			test('Should return an execute manager with correct info on whether server manager exists', async () => {
+				// An execute manager with no server manager
 				let expectedManager = new ExecuteManagerStub();
 				executeProviderMock.setup(p => p.getExecuteManager(TypeMoq.It.isAny())).returns(() => Promise.resolve(expectedManager));
 
