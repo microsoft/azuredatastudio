@@ -166,7 +166,7 @@ suite('MainThreadNotebook Tests', () => {
 		});
 
 		test('should return execute manager with a server manager if extension host has these', async () => {
-			// Given the extension provider doesn't have acontent or server manager
+			// Given the extension provider doesn't have a content or server manager
 			mockProxy.setup(p => p.$getExecuteManagerDetails(TypeMoq.It.isAnyNumber(), TypeMoq.It.isValue(notebookUri)))
 				.returns(() => Promise.resolve(executeManagerWithAllFeatures));
 
