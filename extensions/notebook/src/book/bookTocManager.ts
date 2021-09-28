@@ -19,6 +19,7 @@ export interface IBookTocManager {
 	removeNotebook(element: BookTreeItem): Promise<void>;
 	createBook(bookContentPath: string, contentFolder: string): Promise<void>;
 	addNewTocEntry(pathDetails: TocEntryPathHandler, bookItem: BookTreeItem, isSection?: boolean): Promise<void>;
+	usingDragAndDrop(isDnd: boolean): void;
 	recovery(): Promise<void>;
 }
 
@@ -41,6 +42,7 @@ export class BookTocManager implements IBookTocManager {
 	public tocFiles: Map<string, string> = new Map<string, string>();
 	private sourceBookContentPath: string;
 	private targetBookContentPath: string;
+	private _usingDragAndDrop: boolean = false;
 
 	constructor(private _sourceBook?: BookModel, private _targetBook?: BookModel) {
 		this._targetBook?.unwatchTOC();
@@ -407,7 +409,7 @@ export class BookTocManager implements IBookTocManager {
 	*/
 	public async updateBook(sources: BookTreeItem[], target: BookTreeItem, section?: JupyterBookSection): Promise<void> {
 		for (let element of sources) {
-			if (element.contextValue === BookTreeItemType.savedBook || this.isDescendant(element, target) || this.isParent(element, target, section)) {
+			if (element.contextValue === BookTreeItemType.savedBook || this.isParent(element, target, section) || this.isDescendant(element, target)) {
 				// no op if the moving element is a book, the target dest is descendant of the moving element, the target dest is already the moving element parent
 				return;
 			}
@@ -495,7 +497,7 @@ export class BookTocManager implements IBookTocManager {
 	 * @param targetTreeItem The target element where the moving element is dropped.
 	*/
 	isDescendant(treeItem: BookTreeItem, targetTreeItem: BookTreeItem): boolean {
-		return treeItem.rootContentPath === targetTreeItem.rootContentPath && targetTreeItem.book.hierarchyId?.includes(treeItem.book.hierarchyId);
+		return this._usingDragAndDrop && treeItem.rootContentPath === targetTreeItem.rootContentPath && targetTreeItem.book.hierarchyId?.includes(treeItem.book.hierarchyId);
 	}
 
 	/**
@@ -509,6 +511,10 @@ export class BookTocManager implements IBookTocManager {
 			return section.title === treeItem.book.parent?.title && section.file === treeItem.book.parent?.uri;
 		}
 		return JSON.stringify(treeItem.book.parent) === JSON.stringify(parentTreeItem);
+	}
+
+	public usingDragAndDrop(isDnd: boolean) {
+		this._usingDragAndDrop = isDnd;
 	}
 
 	public get modifiedDir(): Set<string> {
