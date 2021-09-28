@@ -68,7 +68,12 @@
 		}
 
 		try {
-			if (validateIPC(windowConfigIpcChannel)) {
+			/**
+			 * Only want to call ipcRenderer.invoke when the IPC channel isn't for testing because it causes ADS scrollable
+			 * view tests to timeout and fail. This could be a result of the way the basic 'ISandboxConfiguration' is setup
+			 * in test/unit/electron/index.js in the app.on('ready') callback.
+			 */
+			if (validateIPC(windowConfigIpcChannel) && !windowConfigIpcChannel.includes('test-vscode-window-config')) {
 
 				// Resolve configuration from electron-main
 				configuration = await ipcRenderer.invoke(windowConfigIpcChannel);
