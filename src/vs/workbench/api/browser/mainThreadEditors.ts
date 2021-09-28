@@ -138,7 +138,7 @@ export class MainThreadTextEditors implements MainThreadTextEditorsShape {
 	async $tryShowTextDocument(resource: UriComponents, options: ITextDocumentShowOptions): Promise<string | undefined> {
 		const uri = URI.revive(resource);
 
-		let notebookFileTypes = this._notebookService.getSupportedFileExtensions().map(s => s.toLowerCase());
+		let notebookFileTypes = this._notebookService.getSupportedFileExtensions().map(s => s.toLowerCase()); // {{SQL CARBON EDIT}}
 
 		const editorOptions: ITextEditorOptions = {
 			preserveFocus: options.preserveFocus,
