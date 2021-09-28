@@ -223,9 +223,9 @@ export class QueryEditor extends EditorPane {
 			this._changeConnectionAction.enabled = this.input.state.connected;
 			this.setTaskbarContent();
 			if (this.input.state.connected) {
-				this.listDatabasesActionItem.onConnected();
+				this.listDatabasesActionItem?.onConnected();
 			} else {
-				this.listDatabasesActionItem.onDisconnect();
+				this.listDatabasesActionItem?.onDisconnect();
 			}
 		}
 
@@ -260,17 +260,16 @@ export class QueryEditor extends EditorPane {
 	 */
 	private _getActionItemForAction(action: IAction): IActionViewItem {
 		if (action.id === actions.ListDatabasesAction.ID) {
-			return this.listDatabasesActionItem;
+			if (!this._listDatabasesActionItem) {
+				this._listDatabasesActionItem = this.instantiationService.createInstance(actions.ListDatabasesActionItem, this, action);
+				this._register(this._listDatabasesActionItem.attachStyler(this.themeService));
+			}
 		}
 
 		return null;
 	}
 
-	private get listDatabasesActionItem(): actions.ListDatabasesActionItem {
-		if (!this._listDatabasesActionItem) {
-			this._listDatabasesActionItem = this.instantiationService.createInstance(actions.ListDatabasesActionItem, this);
-			this._register(this._listDatabasesActionItem.attachStyler(this.themeService));
-		}
+	private get listDatabasesActionItem(): actions.ListDatabasesActionItem | undefined {
 		return this._listDatabasesActionItem;
 	}
 
