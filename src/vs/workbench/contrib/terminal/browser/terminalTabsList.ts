@@ -47,7 +47,7 @@ import { ILifecycleService } from 'vs/workbench/services/lifecycle/common/lifecy
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IProcessDetails } from 'vs/platform/terminal/common/terminalProcess';
 import { TerminalContextKeys } from 'vs/workbench/contrib/terminal/common/terminalContextKey';
-import { parseTerminalUri } from 'vs/workbench/contrib/terminal/browser/terminalUri';
+import { getTerminalResourcesFromDragEvent, parseTerminalUri } from 'vs/workbench/contrib/terminal/browser/terminalUri';
 
 const $ = DOM.$;
 
@@ -620,18 +620,14 @@ class TerminalTabsDragAndDrop implements IListDragAndDrop<ITerminalInstance> {
 
 		let sourceInstances: ITerminalInstance[] | undefined;
 		let promises: Promise<IProcessDetails | undefined>[] = [];
-		const resources = originalEvent.dataTransfer?.getData(DataTransfers.TERMINALS);
+		const resources = getTerminalResourcesFromDragEvent(originalEvent);
 		if (resources) {
-			const json = JSON.parse(resources);
-			for (const entry of json) {
-				const uri = URI.parse(entry);
-
+			for (const uri of resources) {
 				const instance = this._terminalService.getInstanceFromResource(uri);
 				if (instance) {
 					sourceInstances = [instance];
 					this._terminalService.moveToTerminalView(instance);
 				} else if (this._offProcessTerminalService) {
-					// why is this undefined
 					const terminalIdentifier = parseTerminalUri(uri);
 					if (terminalIdentifier.instanceId) {
 						promises.push(this._offProcessTerminalService.requestDetachInstance(terminalIdentifier.workspaceId, terminalIdentifier.instanceId));
@@ -640,9 +636,12 @@ class TerminalTabsDragAndDrop implements IListDragAndDrop<ITerminalInstance> {
 			}
 			let processes = await Promise.all(promises);
 			processes = processes.filter(p => p !== undefined);
+			let lastInstance: ITerminalInstance | undefined;
 			for (const attachPersistentProcess of processes) {
-				const instance = this._terminalService.createTerminal({ config: { attachPersistentProcess } });
-				this._terminalService.setActiveInstance(instance);
+				lastInstance = this._terminalService.createTerminal({ config: { attachPersistentProcess } });
+			}
+			if (lastInstance) {
+				this._terminalService.setActiveInstance(lastInstance);
 			}
 			return;
 		}

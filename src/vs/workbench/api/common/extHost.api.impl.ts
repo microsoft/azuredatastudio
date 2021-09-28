@@ -509,6 +509,10 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			registerTypeHierarchyProvider(selector: vscode.DocumentSelector, provider: vscode.TypeHierarchyProvider): vscode.Disposable {
 				checkProposedApiEnabled(extension);
 				return extHostLanguageFeatures.registerTypeHierarchyProvider(extension, selector, provider);
+			},
+			createLanguageStatusItem(selector: vscode.DocumentSelector): vscode.LanguageStatusItem {
+				checkProposedApiEnabled(extension);
+				return extHostLanguages.createLanguageStatusItem(selector);
 			}
 		};
 
@@ -1316,7 +1320,8 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			StatementCoverage: extHostTypes.StatementCoverage,
 			BranchCoverage: extHostTypes.BranchCoverage,
 			FunctionCoverage: extHostTypes.FunctionCoverage,
-			WorkspaceTrustState: extHostTypes.WorkspaceTrustState
+			WorkspaceTrustState: extHostTypes.WorkspaceTrustState,
+			LanguageStatusSeverity: extHostTypes.LanguageStatusSeverity,
 		};
 	};
 }
