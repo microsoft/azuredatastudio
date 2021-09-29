@@ -110,7 +110,7 @@
       <source xml:lang="en">Remote git repository</source>
     </trans-unit>
     <trans-unit id="dataworkspace.restartConfirmation">
-      <source xml:lang="en">Azure Data Studio needs to be restarted for the project to be created and added to the workspace, do this now?</source>
+      <source xml:lang="en">Azure Data Studio needs to be restarted for the project to be added to the workspace. Restart now?</source>
     </trans-unit>
     <trans-unit id="dataworkspace.select">
       <source xml:lang="en">Select</source>
@@ -186,6 +186,9 @@ To learn more about projects [read our docs](https://aka.ms/azuredatastudio-proj
     </trans-unit>
     <trans-unit id="projects.defaultProjectSaveLocation">
       <source xml:lang="en">Full path to folder where new projects are saved by default.</source>
+    </trans-unit>
+    <trans-unit id="projects.excludedProjectsDescription">
+      <source xml:lang="en">List of projects in the workspace to exclude from the projects viewlet</source>
     </trans-unit>
     <trans-unit id="projects.showNotAddedProjectsInWorkspacePrompt">
       <source xml:lang="en">Always show information message when the current workspace folders contain projects that have not been added to the workspace's projects.</source>
