@@ -6,6 +6,7 @@
 import { CreateComponentFunc, DesignerUIComponent, SetComponentValueFunc } from 'sql/base/browser/ui/designer/designer';
 import { DesignerComponentType, DesignerData, DesignerEditIdentifier, InputComponentData, NameProperty } from 'sql/base/browser/ui/designer/interfaces';
 import * as DOM from 'vs/base/browser/dom';
+import { equals } from 'vs/base/common/objects';
 import { localize } from 'vs/nls';
 
 export type PropertiesPaneObjectContext = {
@@ -33,7 +34,8 @@ export class DesignerPropertiesPane {
 	}
 
 	public show(item: ObjectInfo): void {
-		if (item.context !== this._currentContext) {
+		if (!equals(item.context, this._currentContext)) {
+			this._currentContext = item.context;
 			this._componentMap.forEach((value) => {
 				value.component.dispose();
 			});
