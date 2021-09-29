@@ -22,7 +22,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 				return;
 			}
 
-			await vscode.window.activeTextEditor?.document.save();
+			await vscode.window.activeTextEditor!.document.save();
 		}
 	}
 
