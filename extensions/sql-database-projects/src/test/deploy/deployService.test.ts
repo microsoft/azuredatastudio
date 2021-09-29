@@ -88,6 +88,27 @@ describe('deploy service', function (): void {
 
 	});
 
+	it('Should deploy fails if docker is not running', async function (): Promise<void> {
+		const testContext = createContext();
+		const deployProfile: IDeployProfile = {
+			localDbSetting: {
+				dbName: 'test',
+				password: 'PLACEHOLDER',
+				port: 1433,
+				serverName: 'localhost',
+				userName: 'sa',
+				dockerBaseImage: 'image',
+				connectionRetryTimeout: 1
+			}
+		};
+		const projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const project1 = await Project.openProject(vscode.Uri.file(projFilePath).fsPath);
+		const deployService = new DeployService(testContext.outputChannel);
+		sandbox.stub(azdata.tasks, 'startBackgroundOperation').callThrough();
+		sandbox.stub(childProcess, 'exec').throws('error');
+		await should(deployService.deploy(deployProfile, project1)).rejected();
+	});
+
 	it('Should retry connecting to the server', async function (): Promise<void> {
 		const testContext = createContext();
 		const localDbSettings = {
