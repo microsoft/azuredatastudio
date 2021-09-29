@@ -952,7 +952,7 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.enterPortNumber" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enter SQL server port number or press enter to use the default value]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
+          <Tgt Cat="Text" Stat="Update" Orig="New">
             <Val><![CDATA[Geben Sie die SQL Server-Portnummer ein, oder drücken Sie die Eingabetaste, um den Standardwert zu verwenden]]></Val>
           </Tgt>
           <Prev Cat="Text">
@@ -1675,7 +1675,7 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.publishToDockerContainer" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Publish to new server in a container]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
+          <Tgt Cat="Text" Stat="Update" Orig="New">
             <Val><![CDATA[Veröffentlichen auf einem neuen Server in einem Container]]></Val>
           </Tgt>
           <Prev Cat="Text">
