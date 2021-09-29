@@ -549,6 +549,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				let source = this.cells[index].source;
 				let newcell = null, tailcell = null, partial = null;
 				let newcellindex = index;
+				let tailcellindex = index;
 
 				//Get selection value from current cell
 				let newcellcontent = model.getValueInRange(selection);
@@ -600,16 +601,25 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						tailsource.splice(0, 1, partial);
 					}
 					tailcell.source = tailsource;
-					newcellindex++;
-					this.insertCell(tailcell, newcellindex);
+					tailcellindex = newcellindex + 1;
+					this.insertCell(tailcell, tailcellindex);
 				}
 
 				//Delete the original cell if the selection begins at the start
 				if (!headcontent.length) {
 					this.deleteCell(this.cells[index]);
 				}
+				let activecell = newcell ? newcell : tailcell;
+				let activecellindex = newcell ? newcellindex : tailcellindex;
+				this.updateActiveCell(activecell);
+
+				this._contentChangedEmitter.fire({
+					changeType: NotebookChangeType.CellsModified,
+					cells: [activecell],
+					cellIndex: activecellindex
+				});
 				//return inserted cell
-				return newcell ? newcell : tailcell;
+				return activecell;
 			}
 		}
 		return null;
