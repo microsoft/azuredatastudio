@@ -91,6 +91,9 @@
     <trans-unit id="cleaningDockerImagesMessage">
       <source xml:lang="en">Cleaning existing deployments...</source>
     </trans-unit>
+    <trans-unit id="confirmPassword">
+      <source xml:lang="en">Confirm SQL server admin password</source>
+    </trans-unit>
     <trans-unit id="connectingToSqlServerOnDockerMessage">
       <source xml:lang="en">Connecting to SQL Server on Docker</source>
     </trans-unit>
@@ -217,9 +220,6 @@
     <trans-unit id="deployDbTaskName">
       <source xml:lang="en">Deploying SQL Db Project Locally</source>
     </trans-unit>
-    <trans-unit id="deployProjectFailed">
-      <source xml:lang="en">Failed to deploy project. Check output pane for more details. {0}</source>
-    </trans-unit>
     <trans-unit id="deployProjectFailedMessage">
       <source xml:lang="en">Failed to open a connection to the deployed database'</source>
     </trans-unit>
@@ -247,6 +247,9 @@
     <trans-unit id="dockerLogMessage">
       <source xml:lang="en">Docker logs: '{0}'</source>
     </trans-unit>
+    <trans-unit id="dockerNotRunningError">
+      <source xml:lang="en">Failed to verify docker. Please make sure docker is installed and running. Error: '{0}'</source>
+    </trans-unit>
     <trans-unit id="done">
       <source xml:lang="en">Done</source>
     </trans-unit>
@@ -264,9 +267,6 @@
     </trans-unit>
     <trans-unit id="emptyProjectTypeDisplayName">
       <source xml:lang="en">SQL Database</source>
-    </trans-unit>
-    <trans-unit id="enterBaseImage">
-      <source xml:lang="en">Enter the base SQL Server docker image or press enter to use the default value</source>
     </trans-unit>
     <trans-unit id="enterConnStringTemplateDescription">
       <source xml:lang="en">Enter a template for SQL connection string</source>
@@ -287,10 +287,10 @@
       <source xml:lang="en">Enter new value for variable '{0}'</source>
     </trans-unit>
     <trans-unit id="enterPassword">
-      <source xml:lang="en">Enter password</source>
+      <source xml:lang="en">Enter SQL Server admin password</source>
     </trans-unit>
     <trans-unit id="enterPortNumber">
-      <source xml:lang="en">Enter port number or press enter to use the default value</source>
+      <source xml:lang="en">Enter SQL server port number or press enter to use the default value</source>
     </trans-unit>
     <trans-unit id="enterSystemDbName">
       <source xml:lang="en">Enter a database name for this system database</source>
@@ -382,6 +382,9 @@
     <trans-unit id="invalidPropertyValue">
       <source xml:lang="en">Invalid value specified for the property '{0}' in .sqlproj file</source>
     </trans-unit>
+    <trans-unit id="invalidSQLPassword">
+      <source xml:lang="en">SQL Server password doesn't meet the password complexity requirement. For more information see https://docs.microsoft.com/sql/relational-databases/security/password-policy</source>
+    </trans-unit>
     <trans-unit id="invalidSqlConnectionString">
       <source xml:lang="en">Invalid SQL connection string</source>
     </trans-unit>
@@ -469,6 +472,9 @@
     <trans-unit id="parentTreeItemUnknown">
       <source xml:lang="en">Cannot access parent of provided tree item</source>
     </trans-unit>
+    <trans-unit id="passwordNotMatch">
+      <source xml:lang="en">SQL Server password doesn't match the confirmation password</source>
+    </trans-unit>
     <trans-unit id="portMustNotBeNumber">
       <source xml:lang="en">Port must a be number</source>
     </trans-unit>
@@ -520,8 +526,11 @@
     <trans-unit id="publishSettingsFiles">
       <source xml:lang="en">Publish Settings File</source>
     </trans-unit>
+    <trans-unit id="publishToContainerFailed">
+      <source xml:lang="en">Failed to publish to container. Check output pane for more details. {0}</source>
+    </trans-unit>
     <trans-unit id="publishToDockerContainer">
-      <source xml:lang="en">Publish to docker container</source>
+      <source xml:lang="en">Publish to new server in a container</source>
     </trans-unit>
     <trans-unit id="publishToExistingServer">
       <source xml:lang="en">Publish to existing server</source>
@@ -582,6 +591,9 @@
     </trans-unit>
     <trans-unit id="selectAzureFunction">
       <source xml:lang="en">Select an Azure function in the current file to add SQL binding to</source>
+    </trans-unit>
+    <trans-unit id="selectBaseImage">
+      <source xml:lang="en">Select the base SQL Server docker image</source>
     </trans-unit>
     <trans-unit id="selectBindingType">
       <source xml:lang="en">Select type of binding</source>
