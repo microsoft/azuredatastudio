@@ -484,6 +484,8 @@ export const createNewLocalAppSettingWithIcon = `$(add) ${createNewLocalAppSetti
 export const valueMustNotBeEmpty = localize('valueMustNotBeEmpty', "Value must not be empty");
 export const enterConnectionStringSettingName = localize('enterConnectionStringSettingName', "Enter connection string setting name");
 export const enterConnectionString = localize('enterConnectionString', "Enter connection string");
+export const saveChangesInFile = localize('saveChangesInFile', "There are unsaved changes in the current file. Save now?");
+export const save = localize('save', "Save");
 export function settingAlreadyExists(settingName: string) { return localize('SettingAlreadyExists', 'Local app setting \'{0}\' already exists. Overwrite?', settingName); }
 export function failedToParse(errorMessage: string) { return localize('failedToParse', 'Failed to parse "{0}": {1}.', azureFunctionLocalSettingsFileName, errorMessage); }
 export function jsonParseError(error: string, line: number, column: number) { return localize('jsonParseError', '{0} near line "{1}", column "{2}"', error, line, column); }
