@@ -244,7 +244,7 @@ export class BookModel {
 					isUntitled: this.openAsUntitled,
 					version: book.version,
 					parent: element,
-					hierarchyId: element.book.hierarchyId ? path.join(element.book.hierarchyId, i.toString()) : i.toString()
+					hierarchyId: this.setHierarchyId(i, element.book.hierarchyId)
 				},
 					{
 						light: this._extensionContext.asAbsolutePath('resources/light/link.svg'),
@@ -271,7 +271,7 @@ export class BookModel {
 						isUntitled: this.openAsUntitled,
 						version: book.version,
 						parent: element,
-						hierarchyId: element.book.hierarchyId ? path.join(element.book.hierarchyId, i.toString()) : i.toString()
+						hierarchyId: this.setHierarchyId(i, element.book.hierarchyId)
 					},
 						{
 							light: this._extensionContext.asAbsolutePath('resources/light/notebook.svg'),
@@ -304,7 +304,7 @@ export class BookModel {
 						isUntitled: this.openAsUntitled,
 						version: book.version,
 						parent: element,
-						hierarchyId: element.book.hierarchyId ? path.join(element.book.hierarchyId, i.toString()) : i.toString()
+						hierarchyId: this.setHierarchyId(i, element.book.hierarchyId)
 					},
 						{
 							light: this._extensionContext.asAbsolutePath('resources/light/markdown.svg'),
@@ -332,6 +332,10 @@ export class BookModel {
 		element.hasChildren = treeItems.length > 0;
 		this.bookItems = treeItems;
 		return treeItems;
+	}
+
+	private setHierarchyId(iteration: number, hierarchyId?: string): string {
+		return hierarchyId ? path.join(hierarchyId, iteration.toString()) : iteration.toString();
 	}
 
 	/**

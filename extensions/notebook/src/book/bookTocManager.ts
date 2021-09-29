@@ -19,8 +19,8 @@ export interface IBookTocManager {
 	removeNotebook(element: BookTreeItem): Promise<void>;
 	createBook(bookContentPath: string, contentFolder: string): Promise<void>;
 	addNewTocEntry(pathDetails: TocEntryPathHandler, bookItem: BookTreeItem, isSection?: boolean): Promise<void>;
-	usingDragAndDrop(isDnd: boolean): void;
 	recovery(): Promise<void>;
+	enableDnd: boolean;
 }
 
 export interface quickPickResults {
@@ -42,7 +42,7 @@ export class BookTocManager implements IBookTocManager {
 	public tocFiles: Map<string, string> = new Map<string, string>();
 	private sourceBookContentPath: string;
 	private targetBookContentPath: string;
-	private _usingDragAndDrop: boolean = false;
+	private _enableDnd: boolean = false;
 
 	constructor(private _sourceBook?: BookModel, private _targetBook?: BookModel) {
 		this._targetBook?.unwatchTOC();
@@ -281,13 +281,16 @@ export class BookTocManager implements IBookTocManager {
 		for (const elem of files) {
 			if (elem.file) {
 				let fileName = undefined;
+				// the toc does not provide the extension of the file, so we need to try for notebooks and markdown
 				try {
 					this.movedFiles.set(path.join(this.sourceBookContentPath, elem.file).concat('.ipynb'), path.join(this.targetBookContentPath, elem.file).concat('.ipynb'));
 					await fs.move(path.join(this.sourceBookContentPath, elem.file).concat('.ipynb'), path.join(this.targetBookContentPath, elem.file).concat('.ipynb'), { overwrite: false });
 				} catch (error) {
 					if (error.code === 'EEXIST') {
+						// if the file already exists in destination, then rename it before moving it.
 						fileName = await this.renameFile(path.join(this.sourceBookContentPath, elem.file).concat('.ipynb'), path.join(this.targetBookContentPath, elem.file).concat('.ipynb'));
 					} else if (error.code === 'ENOENT') {
+						// if it doesnt exist then remove it from movedFiles
 						this.movedFiles.delete(path.join(this.sourceBookContentPath, elem.file).concat('.ipynb'));
 					}
 					else {
@@ -299,8 +302,10 @@ export class BookTocManager implements IBookTocManager {
 					await fs.move(path.join(this.sourceBookContentPath, elem.file).concat('.md'), path.join(this.targetBookContentPath, elem.file).concat('.md'), { overwrite: false });
 				} catch (error) {
 					if (error.code === 'EEXIST') {
+						// if the file already exists in destination, then rename it before moving it.
 						fileName = await this.renameFile(path.join(this.sourceBookContentPath, elem.file).concat('.md'), path.join(this.targetBookContentPath, elem.file).concat('.md'));
 					} else if (error.code === 'ENOENT') {
+						// if it doesnt exist then remove it from movedFiles
 						this.movedFiles.delete(path.join(this.sourceBookContentPath, elem.file).concat('.md'));
 					}
 					else {
@@ -497,7 +502,7 @@ export class BookTocManager implements IBookTocManager {
 	 * @param targetTreeItem The target element where the moving element is dropped.
 	*/
 	isDescendant(treeItem: BookTreeItem, targetTreeItem: BookTreeItem): boolean {
-		return this._usingDragAndDrop && treeItem.rootContentPath === targetTreeItem.rootContentPath && targetTreeItem.book.hierarchyId?.includes(treeItem.book.hierarchyId);
+		return this._enableDnd && treeItem.rootContentPath === targetTreeItem.rootContentPath && targetTreeItem.book.hierarchyId?.includes(treeItem.book.hierarchyId);
 	}
 
 	/**
@@ -508,13 +513,18 @@ export class BookTocManager implements IBookTocManager {
 	*/
 	isParent(treeItem: BookTreeItem, parentTreeItem: BookTreeItem, section?: JupyterBookSection): boolean {
 		if (section) {
-			return section.title === treeItem.book.parent?.title && section.file === treeItem.book.parent?.uri;
+			return section.file === treeItem.book.parent?.uri;
 		}
-		return JSON.stringify(treeItem.book.parent) === JSON.stringify(parentTreeItem);
+
+		return treeItem.book.parent?.uri === parentTreeItem.uri &&
+			treeItem.book.parent?.rootContentPath === parentTreeItem.rootContentPath &&
+			treeItem.book.parent?.contextValue === parentTreeItem.contextValue &&
+			treeItem.book.parent?.sections.length === parentTreeItem.sections.length &&
+			treeItem.book.parent?.book.contentPath === parentTreeItem.book.contentPath;
 	}
 
-	public usingDragAndDrop(isDnd: boolean) {
-		this._usingDragAndDrop = isDnd;
+	public set enableDnd(useDnd: boolean) {
+		this._enableDnd = useDnd;
 	}
 
 	public get modifiedDir(): Set<string> {

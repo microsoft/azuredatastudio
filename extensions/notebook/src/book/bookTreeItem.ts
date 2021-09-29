@@ -22,6 +22,11 @@ export interface BookTreeItemFormat {
 	version?: BookVersion;
 	parent?: BookTreeItem;
 	hasChildren?: boolean;
+	/**
+	 * Use to identify the hierarchy of nested book tree items.
+	 * For instance, the hierarchyId of the first node would be "0" and its children would have
+	 * a hierarchyId starting with "0/"
+	 */
 	hierarchyId?: string;
 }
 

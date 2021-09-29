@@ -566,7 +566,7 @@ describe('BookTocManagerTests', function () {
 					notebook1.book.hierarchyId = '0/1';
 					sectionA.rootContentPath = run.sectionA.contentFolder;
 					notebook1.rootContentPath = run.sectionA.contentFolder;
-					bookTocManager.usingDragAndDrop(true);
+					bookTocManager.enableDnd = true;
 					let isDescendant = bookTocManager.isDescendant(sectionA, notebook1);
 					should(isDescendant).be.true('Notebook 1 is descendant of Section A');
 					isDescendant = bookTocManager.isDescendant(sectionB, notebook1);

@@ -755,7 +755,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				const targetBook = this.books.find(book => book.bookPath === target.book.root);
 				for (let [book, items] of sourcesByBook) {
 					this.bookTocManager = new BookTocManager(book, targetBook);
-					this.bookTocManager.usingDragAndDrop(true);
+					this.bookTocManager.enableDnd = true;
 					await this.bookTocManager.updateBook(items, target);
 				}
 			}
