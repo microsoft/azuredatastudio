@@ -106,7 +106,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		this._subscription.value = this.migrationStateModel._targetSubscription.name;
 		this._location.value = await getLocationDisplayName(this.migrationStateModel._targetServerInstance.location);
 		this._dmsInfoContainer.display = (this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE && this.migrationStateModel._sqlMigrationService) ? 'inline' : 'none';
-		this.loadResourceGroupDropdown();
+		await this.loadResourceGroupDropdown();
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
 				this.wizard.message = {
@@ -337,7 +337,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 
 		this._disposables.push(this._copy1.onDidClick(async (e) => {
 			await vscode.env.clipboard.writeText(<string>this._authKeyTable.dataValues![0][1].value);
-			vscode.window.showInformationMessage(constants.SERVICE_KEY1_COPIED_HELP);
+			void vscode.window.showInformationMessage(constants.SERVICE_KEY1_COPIED_HELP);
 		}));
 
 		this._copy2 = this._view.modelBuilder.button().withProps({
@@ -348,7 +348,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 
 		this._disposables.push(this._copy2.onDidClick(async (e) => {
 			await vscode.env.clipboard.writeText(<string>this._authKeyTable.dataValues![1][1].value);
-			vscode.window.showInformationMessage(constants.SERVICE_KEY2_COPIED_HELP);
+			void vscode.window.showInformationMessage(constants.SERVICE_KEY2_COPIED_HELP);
 		}));
 
 		this._refresh1 = this._view.modelBuilder.button().withProps({
@@ -500,12 +500,12 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 
 				const state = migrationService.properties.integrationRuntimeState;
 				if (state === 'Online') {
-					this._dmsStatusInfoBox.updateProperties(<azdata.InfoBoxComponentProperties>{
+					await this._dmsStatusInfoBox.updateProperties(<azdata.InfoBoxComponentProperties>{
 						text: constants.SERVICE_READY(this.migrationStateModel._sqlMigrationService!.name, this.migrationStateModel._nodeNames.join(', ')),
 						style: 'success'
 					});
 				} else {
-					this._dmsStatusInfoBox.updateProperties(<azdata.InfoBoxComponentProperties>{
+					await this._dmsStatusInfoBox.updateProperties(<azdata.InfoBoxComponentProperties>{
 						text: constants.SERVICE_NOT_READY(this.migrationStateModel._sqlMigrationService!.name),
 						style: 'error'
 					});

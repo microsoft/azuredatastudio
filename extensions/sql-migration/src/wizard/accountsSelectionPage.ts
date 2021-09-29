@@ -88,11 +88,11 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 					this.migrationStateModel._accountTenants = selectedAzureAccount.properties.tenants;
 					this._accountTenantDropdown.values = await this.migrationStateModel.getTenantValues();
 					selectDropDownIndex(this._accountTenantDropdown, 0);
-					this._accountTenantFlexContainer.updateCssStyles({
+					await this._accountTenantFlexContainer.updateCssStyles({
 						'display': 'inline'
 					});
 				} else {
-					this._accountTenantFlexContainer.updateCssStyles({
+					await this._accountTenantFlexContainer.updateCssStyles({
 						'display': 'none'
 					});
 				}
@@ -119,7 +119,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 			this.wizard.message = {
 				text: ''
 			};
-			this._azureAccountsDropdown.validate();
+			await this._azureAccountsDropdown.validate();
 		}));
 
 		const flexContainer = view.modelBuilder.flexContainer()

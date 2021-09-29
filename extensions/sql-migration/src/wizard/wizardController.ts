@@ -30,7 +30,7 @@ export class WizardController {
 		if (api) {
 			this._model = new MigrationStateModel(this.extensionContext, connectionId, api.sqlMigration);
 			this.extensionContext.subscriptions.push(this._model);
-			this.createWizard(this._model);
+			await this.createWizard(this._model);
 		}
 	}
 
@@ -170,15 +170,14 @@ export function createInformationRow(view: azdata.ModelView, label: string, valu
 		.component();
 }
 
-export function createHeadingTextComponent(view: azdata.ModelView, value: string): azdata.TextComponent {
+export async function createHeadingTextComponent(view: azdata.ModelView, value: string): Promise<azdata.TextComponent> {
 	const component = createTextCompononent(view, value);
-	component.updateCssStyles({
+	await component.updateCssStyles({
 		'font-size': '13px',
 		'font-weight': 'bold',
 	});
 	return component;
 }
-
 
 export function createLabelTextComponent(view: azdata.ModelView, value: string, styles: { [key: string]: string; } = { 'width': '300px' }): azdata.TextComponent {
 	const component = createTextCompononent(view, value, styles);
