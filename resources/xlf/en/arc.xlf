@@ -1197,13 +1197,13 @@
       <source xml:lang="en">Replicas</source>
     </trans-unit>
     <trans-unit id="arc.sql.storage-class.data.description">
-      <source xml:lang="en">The storage class to be used for data (.mdf)</source>
+      <source xml:lang="en">The storage class to be used for data (.mdf). If no value is specified, the default storage class will be used.</source>
     </trans-unit>
     <trans-unit id="arc.sql.storage-class.dc.description">
       <source xml:lang="en">The storage class to be used for all data and logs persistent volumes for all data controller pods that require them.</source>
     </trans-unit>
     <trans-unit id="arc.sql.storage-class.logs.description">
-      <source xml:lang="en">The storage class to be used for logs (/var/log)</source>
+      <source xml:lang="en">The storage class to be used for logs (/var/log). If no value is specified, the default storage class will be used.</source>
     </trans-unit>
     <trans-unit id="arc.sql.username">
       <source xml:lang="en">Username</source>
