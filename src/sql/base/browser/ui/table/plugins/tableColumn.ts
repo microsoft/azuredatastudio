@@ -55,7 +55,7 @@ export abstract class BaseClickableColumn<T extends Slick.SlickData> implements 
 		}
 	}
 
-	protected handleClick(args: Slick.OnClickEventArgs<T>): void {
+	private handleClick(args: Slick.OnClickEventArgs<T>): void {
 		if (this.isCurrentColumn(args.cell)) {
 			// SlickGrid will automatically set active cell on mouse click event,
 			// during the process of setting active cell, blur event will be triggered and handled in a setTimeout block,
@@ -67,7 +67,7 @@ export abstract class BaseClickableColumn<T extends Slick.SlickData> implements 
 		}
 	}
 
-	protected handleKeyboardEvent(e: KeyboardEvent, args: Slick.OnKeyDownEventArgs<T>): void {
+	private handleKeyboardEvent(e: KeyboardEvent, args: Slick.OnKeyDownEventArgs<T>): void {
 		let event = new StandardKeyboardEvent(e);
 		if ((event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) && this.isCurrentColumn(args.cell)) {
 			event.stopPropagation();
@@ -92,7 +92,7 @@ export abstract class BaseClickableColumn<T extends Slick.SlickData> implements 
 		}
 	}
 
-	protected isCurrentColumn(columnIndex: number): boolean {
+	private isCurrentColumn(columnIndex: number): boolean {
 		return this._grid.getColumns()[columnIndex]?.id === this.definition.id;
 	}
 }
