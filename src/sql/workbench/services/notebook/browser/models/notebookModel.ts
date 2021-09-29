@@ -533,7 +533,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 
 		let cellEditors = notebookService.findNotebookEditor(this.notebookUri).cellEditors;
-		let edindex = cellEditors.findIndex(x => x.cellGuid() === this.cells[index - 1].cellGuid);
+		let edindex = cellEditors.findIndex(x => x.cellGuid() === this.cells[index].cellGuid);
 		let currentCellEditor = cellEditors[edindex].getEditor();
 		//Only split the cell if the markdown editor is open.
 		//TODO: Need to handle splitting of cell if the selection is on webview
