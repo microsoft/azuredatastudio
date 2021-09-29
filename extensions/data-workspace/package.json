@@ -26,10 +26,10 @@
       {
         "title": "Projects",
         "properties": {
-          "dataworkspace.projects": {
+          "dataworkspace.excludedProjects": {
             "type": "array",
             "default": [],
-            "description": ""
+            "description": "%projects.excludedProjectsDescription%"
           },
           "projects.defaultProjectSaveLocation": {
             "type": "string",
@@ -67,6 +67,10 @@
         "title": "%close-workspace-command%",
         "category": "",
         "icon": "$(close)"
+      },
+      {
+        "command": "projects.removeProject",
+        "title": "%remove-project-command%"
       },
       {
         "command": "projects.manageProject",
@@ -109,6 +113,10 @@
           "when": "false"
         },
         {
+          "command": "projects.removeProject",
+          "when": "false"
+        },
+        {
           "command": "projects.openExisting"
         },
         {
@@ -121,6 +129,11 @@
           "command": "projects.manageProject",
           "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project && azdataAvailable",
           "group": "0_projectsFirst@1"
+        },
+        {
+          "command": "projects.removeProject",
+          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project",
+          "group": "9_dbProjectsLast@9"
         }
       ]
     },
