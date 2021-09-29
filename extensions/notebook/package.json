@@ -291,6 +291,22 @@
           "dark": "resources/dark/unpin_inverse.svg",
           "light": "resources/light/unpin.svg"
         }
+      },
+      {
+        "command": "notebook.command.boldText",
+        "title": "%notebook.command.boldText%"
+      },
+      {
+        "command": "notebook.command.italicizeText",
+        "title": "%notebook.command.italicizeText%"
+      },
+      {
+        "command": "notebook.command.underlineText",
+        "title": "%notebook.command.underlineText%"
+      },
+      {
+        "command": "notebook.command.codeBlock",
+        "title": "%notebook.command.codeBlock%"
       }
     ],
     "languages": [
@@ -425,6 +441,22 @@
         {
           "command": "notebook.command.unpinNotebook",
           "when": "false"
+        },
+        {
+          "command": "notebook.command.boldText",
+          "when": "activeEditor == workbench.editor.notebookEditor && editorLangId == markdown"
+        },
+        {
+          "command": "notebook.command.italicizeText",
+          "when": "activeEditor == workbench.editor.notebookEditor && editorLangId == markdown"
+        },
+        {
+          "command": "notebook.command.underlineText",
+          "when": "activeEditor == workbench.editor.notebookEditor && editorLangId == markdown"
+        },
+        {
+          "command": "notebook.command.codeBlock",
+          "when": "activeEditor == workbench.editor.notebookEditor && editorLangId == markdown"
         }
       ],
       "touchBar": [
@@ -587,6 +619,26 @@
         "command": "notebook.command.addtext",
         "key": "Ctrl+Shift+T",
         "when": "activeEditor == workbench.editor.notebookEditor"
+      },
+      {
+        "command": "notebook.command.boldText",
+        "key": "Ctrl+B",
+        "when": "activeEditor == workbench.editor.notebookEditor && editorLangId == markdown"
+      },
+      {
+        "command": "notebook.command.italicizeText",
+        "key": "Ctrl+I",
+        "when": "activeEditor == workbench.editor.notebookEditor && editorLangId == markdown"
+      },
+      {
+        "command": "notebook.command.underlineText",
+        "key": "Ctrl+U",
+        "when": "activeEditor == workbench.editor.notebookEditor && editorLangId == markdown"
+      },
+      {
+        "command": "notebook.command.codeBlock",
+        "key": "Ctrl+c",
+        "when": "activeEditor == workbench.editor.notebookEditor && editorLangId == markdown"
       }
     ],
     "notebook.languagemagics": [

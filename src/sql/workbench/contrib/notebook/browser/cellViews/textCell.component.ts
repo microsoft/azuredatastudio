@@ -70,17 +70,33 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	@HostListener('document:keydown', ['$event'])
 	onkeydown(e: KeyboardEvent) {
 		if (DOM.getActiveElement() === this.output?.nativeElement && this.isActive() && this.cellModel?.currentMode === CellEditModes.WYSIWYG) {
-			// select the active .
+			// Select all text
 			if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
 				preventDefaultAndExecCommand(e, 'selectAll');
+				// Redo text
 			} else if ((e.metaKey && e.shiftKey && e.key === 'z') || (e.ctrlKey && e.key === 'y') && !this.markdownMode) {
 				this.redoRichTextChange();
+				// Undo text
 			} else if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
 				this.undoRichTextChange();
+				// Outdent text
 			} else if (e.shiftKey && e.key === 'Tab') {
 				preventDefaultAndExecCommand(e, 'outdent');
+				// Indent text
 			} else if (e.key === 'Tab') {
 				preventDefaultAndExecCommand(e, 'indent');
+				// Bold text
+			} else if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+				preventDefaultAndExecCommand(e, 'bold');
+				// Italicize text
+			} else if ((e.ctrlKey || e.metaKey) && e.key === 'i') {
+				preventDefaultAndExecCommand(e, 'italic');
+				// Underline text
+			} else if ((e.ctrlKey || e.metaKey) && e.key === 'u') {
+				preventDefaultAndExecCommand(e, 'underline');
+				// Code Block
+			} else if (e.ctrlKey && e.key === 'c') {
+				preventDefaultAndExecCommand(e, 'formatBlock', false, 'pre');
 			}
 		}
 	}
@@ -554,10 +570,10 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	}
 }
 
-function preventDefaultAndExecCommand(e: KeyboardEvent, commandId: string) {
+function preventDefaultAndExecCommand(e: KeyboardEvent, commandId: string, showUI?: boolean, value?: string) {
 	// use preventDefault() to avoid invoking the editor's select all
 	e.preventDefault();
-	document.execCommand(commandId);
+	document.execCommand(commandId, showUI, value);
 }
 
 /**
