@@ -904,14 +904,15 @@ export enum TextType {
 }
 
 export namespace designers {
-	export enum TableProperties {
+	export enum TableProperty {
 		Schema = 'schema',
 		Name = 'name',
 		Description = 'description',
-		Columns = 'columns'
+		Columns = 'columns',
+		Script = 'script'
 	}
 
-	export enum TableColumnProperties {
+	export enum TableColumnProperty {
 		Name = 'name',
 		Type = 'type',
 		AllowNulls = 'allowNulls',
@@ -919,7 +920,7 @@ export namespace designers {
 		Length = 'length'
 	}
 
-	export enum DesignerEditTypes {
+	export enum DesignerEditType {
 		Add = 0,
 		Remove = 1,
 		Update = 2

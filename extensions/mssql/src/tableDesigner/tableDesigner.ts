@@ -13,9 +13,9 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 	azdata.dataprotocol.registerTableDesignerProvider({
 		providerId: 'MSSQL',
 		processTableEdit: (table, data, edit): Promise<azdata.designers.DesignerEditResult> => {
-			if (edit.property === azdata.designers.TableProperties.Name) {
-				(<azdata.designers.InputComponentData>data[azdata.designers.TableProperties.Description]).value = `description of table ${edit.value}`;
-				(<azdata.designers.InputComponentData>data[azdata.designers.TableProperties.Name]).value = edit.value;
+			if (edit.property === azdata.designers.TableProperty.Name) {
+				(<azdata.designers.InputComponentData>data[azdata.designers.TableProperty.Description]).value = `description of table ${edit.value}`;
+				(<azdata.designers.InputComponentData>data[azdata.designers.TableProperty.Name]).value = edit.value;
 			}
 			return Promise.resolve({
 				isValid: true,
@@ -24,58 +24,58 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 		},
 		getTableDesignerInfo: async (table): Promise<azdata.designers.TableDesignerInfo> => {
 			const data: azdata.designers.DesignerData = {};
-			data[azdata.designers.TableProperties.Name] = <azdata.designers.InputComponentData>{
+			data[azdata.designers.TableProperty.Name] = <azdata.designers.InputComponentData>{
 				value: 'test'
 			};
 
 			const column1 = <azdata.designers.TableComponentRowData>{};
-			column1[azdata.designers.TableColumnProperties.Name] = <azdata.designers.InputComponentData>{
+			column1[azdata.designers.TableProperty.Name] = <azdata.designers.InputComponentData>{
 				value: 'column1'
 			};
-			column1[azdata.designers.TableColumnProperties.Type] = <azdata.designers.DropdownComponentData>{
+			column1[azdata.designers.TableColumnProperty.Type] = <azdata.designers.DropdownComponentData>{
 				value: 'nvarchar'
 			};
-			column1[azdata.designers.TableColumnProperties.Length] = <azdata.designers.InputComponentData>{
+			column1[azdata.designers.TableColumnProperty.Length] = <azdata.designers.InputComponentData>{
 				value: '100'
 			};
-			column1[azdata.designers.TableColumnProperties.DefaultValue] = <azdata.designers.InputComponentData>{
+			column1[azdata.designers.TableColumnProperty.DefaultValue] = <azdata.designers.InputComponentData>{
 				value: ''
 			};
-			column1[azdata.designers.TableColumnProperties.AllowNulls] = <azdata.designers.CheckboxComponentData>{
+			column1[azdata.designers.TableColumnProperty.AllowNulls] = <azdata.designers.CheckboxComponentData>{
 				value: true
 			};
 
 			const column2 = <azdata.designers.TableComponentRowData>{};
-			column2[azdata.designers.TableColumnProperties.Name] = <azdata.designers.InputComponentData>{
+			column2[azdata.designers.TableColumnProperty.Name] = <azdata.designers.InputComponentData>{
 				value: 'column2'
 			};
-			column2[azdata.designers.TableColumnProperties.Type] = <azdata.designers.DropdownComponentData>{
+			column2[azdata.designers.TableColumnProperty.Type] = <azdata.designers.DropdownComponentData>{
 				value: 'int'
 			};
-			column2[azdata.designers.TableColumnProperties.Length] = <azdata.designers.InputComponentData>{
+			column2[azdata.designers.TableColumnProperty.Length] = <azdata.designers.InputComponentData>{
 				value: ''
 			};
-			column2[azdata.designers.TableColumnProperties.DefaultValue] = <azdata.designers.InputComponentData>{
+			column2[azdata.designers.TableColumnProperty.DefaultValue] = <azdata.designers.InputComponentData>{
 				value: ''
 			};
-			column2[azdata.designers.TableColumnProperties.AllowNulls] = <azdata.designers.CheckboxComponentData>{
+			column2[azdata.designers.TableColumnProperty.AllowNulls] = <azdata.designers.CheckboxComponentData>{
 				value: false
 			};
 
 			const column3 = <azdata.designers.TableComponentRowData>{};
-			column3[azdata.designers.TableColumnProperties.Name] = <azdata.designers.InputComponentData>{
+			column3[azdata.designers.TableColumnProperty.Name] = <azdata.designers.InputComponentData>{
 				value: 'column3'
 			};
-			column3[azdata.designers.TableColumnProperties.Type] = <azdata.designers.DropdownComponentData>{
+			column3[azdata.designers.TableColumnProperty.Type] = <azdata.designers.DropdownComponentData>{
 				value: 'int'
 			};
-			column3[azdata.designers.TableColumnProperties.Length] = <azdata.designers.InputComponentData>{
+			column3[azdata.designers.TableColumnProperty.Length] = <azdata.designers.InputComponentData>{
 				value: ''
 			};
-			column3[azdata.designers.TableColumnProperties.DefaultValue] = <azdata.designers.InputComponentData>{
+			column3[azdata.designers.TableColumnProperty.DefaultValue] = <azdata.designers.InputComponentData>{
 				value: ''
 			};
-			column3[azdata.designers.TableColumnProperties.AllowNulls] = <azdata.designers.CheckboxComponentData>{
+			column3[azdata.designers.TableColumnProperty.AllowNulls] = <azdata.designers.CheckboxComponentData>{
 				value: false
 			};
 
@@ -87,7 +87,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 				]
 			};
 
-			data[azdata.designers.TableProperties.Columns] = columns;
+			data[azdata.designers.TableProperty.Columns] = columns;
 			return {
 				view: {},
 				data: data,
@@ -105,10 +105,6 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 	}));
 
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.designTable', async (context: azdata.ObjectExplorerContext) => {
-		const data: azdata.designers.DesignerData = {};
-		data[azdata.designers.TableProperties.Name] = <azdata.designers.InputComponentData>{
-			value: 'test'
-		};
 		const nameParts = context.nodeInfo.label.split('.');
 		await azdata.designers.openTableDesigner('MSSQL', {
 			server: context.connectionProfile.serverName,

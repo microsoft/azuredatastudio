@@ -5,6 +5,11 @@
 
 export interface DesignerComponentInput {
 	/**
+	 * Gets the object type display name.
+	 */
+
+	readonly objectType: string;
+	/**
 	 * Gets the designer view specification.
 	 */
 	getView(): Promise<DesignerView>;
@@ -21,11 +26,12 @@ export interface DesignerComponentInput {
 	processEdit(edit: DesignerEdit): Promise<DesignerEditResult>;
 }
 
+export const NameProperty = 'name';
+export const ScriptProperty = 'script';
+
 export interface DesignerData {
 	[key: string]: InputComponentData | CheckboxComponentData | DropdownComponentData | TableComponentData;
 }
-
-export const ScriptPropertyName = 'script';
 
 export interface ComponentData {
 	enabled?: boolean;
@@ -41,7 +47,7 @@ export interface CheckboxComponentData extends ComponentData {
 
 export interface DropdownComponentData extends ComponentData {
 	value: string;
-	optional: string[];
+	options: string[];
 }
 
 export interface TableComponentData extends ComponentData {
@@ -58,17 +64,19 @@ export interface DesignerView {
 	tabs: DesignerTab[];
 }
 
-export enum DesignerEditTypes {
+export enum DesignerEditType {
 	Add = 0,
 	Remove = 1,
 	Update = 2
 }
 
 export interface DesignerEdit {
-	type: DesignerEditTypes;
-	property: string | { parent: string, row: number, property: string };
+	type: DesignerEditType;
+	property: DesignerEditIdentifier;
 	value: any;
 }
+
+export type DesignerEditIdentifier = string | { parentProperty: string, index: number, property: string };
 
 export interface DesignerEditResult {
 	isValid: boolean;
@@ -81,11 +89,11 @@ export interface DesignerTab {
 	components: DesignerComponentType[];
 }
 
-export type DesignerComponentType = InputComponentInfo | CheckboxComponentInfo | DropdownComponentInfo | TableComponentInfo;
+export type DesignerComponentType = InputComponentDefinition | CheckboxComponentDefinition | DropdownComponentDefinition | TableComponentDefinition;
 
 export type DesignerComponentTypeName = 'input' | 'checkbox' | 'dropdown' | 'table';
 
-export interface UIComponentInfo {
+export interface ComponentDefinition {
 	/**
 	 * The name of the property that the component is bound to.
 	 */
@@ -104,19 +112,18 @@ export interface UIComponentInfo {
 	group?: string;
 }
 
-export interface InputComponentInfo extends UIComponentInfo {
+export interface InputComponentDefinition extends ComponentDefinition {
 	placeholder?: string;
 	inputType?: 'text' | 'number';
 }
 
-export interface DropdownComponentInfo extends UIComponentInfo {
+export interface DropdownComponentDefinition extends ComponentDefinition {
 	options: string[]
 }
-
-export interface CheckboxComponentInfo extends UIComponentInfo {
+export interface CheckboxComponentDefinition extends ComponentDefinition {
 }
 
-export interface TableComponentInfo extends UIComponentInfo {
+export interface TableComponentDefinition extends ComponentDefinition {
 	/**
 	 * the name of the properties to be displayed, properties not in this list will be accessible in details view.
 	 */
@@ -126,4 +133,9 @@ export interface TableComponentInfo extends UIComponentInfo {
 	 * the properties of the table data item
 	 */
 	itemProperties: DesignerComponentType[];
+
+	/**
+	 * The display name of the object type
+	 */
+	objectType: string;
 }

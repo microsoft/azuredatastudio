@@ -12,7 +12,7 @@ export interface ITableCellEditorOptions {
 	editorStyler: (component: InputBox | SelectBox) => void
 }
 
-export class TableCellEditor {
+export class TableCellEditorFactory {
 	private _options: ITableCellEditorOptions;
 
 	constructor(options: ITableCellEditorOptions, private _contextViewProvider: IContextViewProvider) {

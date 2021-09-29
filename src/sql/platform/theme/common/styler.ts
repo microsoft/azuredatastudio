@@ -377,10 +377,12 @@ export function attachDesignerStyler(widget: any, themeService: IThemeService): 
 		const inputStyles = computeStyles(colorTheme, defaultInputBoxStyleOverrides);
 		const selectBoxStyles = computeStyles(colorTheme, defaultSelectBoxStyleOverrides);
 		const tableStyles = computeStyles(colorTheme, defaultTableStyleOverrides);
+		const checkboxStyles = computeStyles(colorTheme, defaultCheckboxStyleOverrides);
 		widget.style({
 			inputBoxStyles: inputStyles,
 			selectBoxStyles: selectBoxStyles,
-			tableStyles: tableStyles
+			tableStyles: tableStyles,
+			checkboxStyles: checkboxStyles
 		});
 	}
 

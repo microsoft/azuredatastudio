@@ -3,21 +3,21 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { DesignerComponentType, DesignerTab } from 'sql/base/browser/ui/designer/interfaces';
+import { DesignerTab } from 'sql/base/browser/ui/designer/interfaces';
 import { IPanelView } from 'sql/base/browser/ui/panel/panel';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { Disposable } from 'vs/base/common/lifecycle';
 import * as DOM from 'vs/base/browser/dom';
-import { DesignerUIComponents } from 'sql/base/browser/ui/designer/designer';
+import { CreateComponentFunc } from 'sql/base/browser/ui/designer/designer';
 
 export class DesignerTabPanelView extends Disposable implements IPanelView {
 	private _componentsContainer: HTMLElement;
 	private _tables: Table<Slick.SlickData>[] = [];
-	constructor(private readonly _tab: DesignerTab, private _createComponent: (container: HTMLElement, component: DesignerComponentType, labelOnTop?: boolean) => DesignerUIComponents) {
+	constructor(private readonly _tab: DesignerTab, private _createComponent: CreateComponentFunc) {
 		super();
 		this._componentsContainer = DOM.$('.components-grid');
 		this._tab.components.forEach(componentDefition => {
-			const component = this._createComponent(this._componentsContainer, componentDefition, this._tab.labelOnTop);
+			const component = this._createComponent(this._componentsContainer, componentDefition, componentDefition.property, this._tab.labelOnTop);
 			if (componentDefition.type === 'table') {
 				this._tables.push(component as Table<Slick.SlickData>);
 			}

@@ -37,6 +37,19 @@
 .designer-component .properties-container {
 	width: 100%;
 	height: 100%;
+	overflow-x: hidden;
+	overflow-y: auto;
+	display: flex;
+	flex-direction: column;
+}
+
+.designer-component .properties-container .title-container {
+	padding-left: 5px;
+	flex: 0 0 auto;
+}
+
+.designer-component .properties-container .content-container {
+	flex: 1 1 auto;
 }
 
 .designer-component .component-label {

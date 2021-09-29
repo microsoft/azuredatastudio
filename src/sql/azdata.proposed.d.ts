@@ -1012,14 +1012,15 @@ declare module 'azdata' {
 			columnTypes: string[];
 		}
 
-		export enum TableProperties {
+		export enum TableProperty {
 			Columns = 'columns',
 			Description = 'description',
 			Name = 'name',
-			Schema = 'schema'
+			Schema = 'schema',
+			Script = 'script'
 		}
 
-		export enum TableColumnProperties {
+		export enum TableColumnProperty {
 			AllowNulls = 'allowNulls',
 			DefaultValue = 'defaultValue',
 			Length = 'length',
@@ -1051,7 +1052,7 @@ declare module 'azdata' {
 
 		export interface DropdownComponentData extends ComponentData {
 			value: string;
-			options: CategoryValue[];
+			options: string[];
 		}
 
 		export interface TableComponentData extends ComponentData {
@@ -1062,17 +1063,19 @@ declare module 'azdata' {
 			[key: string]: InputComponentData | CheckboxComponentData | DropdownComponentData | TableComponentData;
 		}
 
-		export enum DesignerEditTypes {
+		export enum DesignerEditType {
 			Add = 0,
 			Remove = 1,
 			Update = 2
 		}
 
 		export interface DesignerEdit {
-			type: DesignerEditTypes;
-			property: string | { parent: string, row: number, property: string };
+			type: DesignerEditType;
+			property: DesignerEditIdentifier;
 			value: any;
 		}
+
+		export type DesignerEditIdentifier = string | { parentProperty: string, index: number, property: string };
 
 		export interface DesignerEditResult {
 			data: DesignerData;
@@ -1089,11 +1092,11 @@ declare module 'azdata' {
 			components: DesignerComponentType[];
 		}
 
-		export type DesignerComponentType = InputComponentInfo | CheckboxComponentInfo | DropdownComponentInfo | TableComponentInfo;
+		export type DesignerComponentType = InputComponentDefinition | CheckboxComponentDefinition | DropdownComponentDefinition | TableComponentDefinition;
 
 		export type DesignerComponentTypeName = 'input' | 'checkbox' | 'dropdown' | 'table';
 
-		export interface UIComponentInfo {
+		export interface ComponentDefinition {
 			/**
 			 * The name of the property that the component is bound to.
 			 */
@@ -1105,31 +1108,34 @@ declare module 'azdata' {
 
 			ariaLabel?: string;
 
+			width?: number;
+
 			description?: string;
 
 			group?: string;
 		}
 
-		export interface InputComponentInfo extends UIComponentInfo {
+		export interface InputComponentDefinition extends ComponentDefinition {
 			placeholder?: string;
 			inputType?: 'text' | 'number';
 		}
 
-		export interface DropdownComponentInfo extends UIComponentInfo {
+		export interface DropdownComponentDefinition extends ComponentDefinition {
+			options: string[]
 		}
 
-		export interface CheckboxComponentInfo extends UIComponentInfo {
+		export interface CheckboxComponentDefinition extends ComponentDefinition {
 		}
 
-		export interface TableComponentInfo extends UIComponentInfo {
+		export interface TableComponentDefinition extends ComponentDefinition {
 			/**
 			 * the name of the properties to be displayed, properties not in this list will be accessible in details view.
 			 */
 			columns: string[];
 
 			/**
-				 * the properties of the table data item
-				 */
+			 * the properties of the table data item
+			 */
 			itemProperties: DesignerComponentType[];
 		}
 	}
