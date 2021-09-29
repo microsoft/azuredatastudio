@@ -33,6 +33,8 @@ import { values } from 'vs/base/common/collections';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { isUUID } from 'vs/base/common/uuid';
 import { TextModel } from 'vs/editor/common/model/textModel';
+import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
+import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -532,76 +534,83 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			return undefined;
 		}
 
-		let cellEditors = notebookService.findNotebookEditor(this.notebookUri).cellEditors;
-		let edindex = cellEditors.findIndex(x => x.cellGuid() === this.cells[index].cellGuid);
-		let currentCellEditor = cellEditors[edindex].getEditor();
+		let notebookEditor = notebookService.findNotebookEditor(this.notebookUri);
+		let cellEditorProvider = notebookEditor.cellEditors.find(e => e.cellGuid() === this.cells[index].cellGuid);
 		//Only split the cell if the markdown editor is open.
 		//TODO: Need to handle splitting of cell if the selection is on webview
-		if (currentCellEditor) {
-			let model = currentCellEditor.getControl().getModel() as TextModel;
-			let range = model.getFullModelRange();
-			let selection = currentCellEditor.getControl().getSelection();
-			let source = this.cells[index - 1].source;
-			let newcell = null, tailcell = null, partial = null;
+		if (cellEditorProvider) {
+			let editor = cellEditorProvider.getEditor() as QueryTextEditor;
+			if (editor) {
+				let editorControl = editor.getControl() as CodeEditorWidget;
 
-			//Get selection value from current cell
-			let newcellcontent = model.getValueInRange(selection);
+				let model = editorControl.getModel() as TextModel;
+				let range = model.getFullModelRange();
+				let selection = editorControl.getSelection();
+				let source = this.cells[index].source;
+				let newcell = null, tailcell = null, partial = null;
+				let newcellindex = index;
 
-			//Get content after selection
-			let tailrange = range.setStartPosition(selection.endLineNumber, selection.endColumn);
-			let tailcellcontent = model.getValueInRange(tailrange);
+				//Get selection value from current cell
+				let newcellcontent = model.getValueInRange(selection);
 
-			//Get content before selection
-			let headrange = range.setEndPosition(selection.startLineNumber, selection.startColumn);
-			let headcontent = model.getValueInRange(headrange);
+				//Get content after selection
+				let tailrange = range.setStartPosition(selection.endLineNumber, selection.endColumn);
+				let tailcellcontent = model.getValueInRange(tailrange);
 
-			//Set content before selection if the selection is not the same as original content
-			if (headcontent.length) {
-				let headsource = source.slice(range.startLineNumber - 1, selection.startLineNumber - 1);
-				if (selection.startColumn > 1) {
-					partial = source.slice(selection.startLineNumber - 1, selection.startLineNumber)[0].slice(0, selection.startColumn - 1);
-					headsource = headsource.concat(partial.toString());
-				}
-				this.cells[index - 1].source = headsource;
-			}
+				//Get content before selection
+				let headrange = range.setEndPosition(selection.startLineNumber, selection.startColumn);
+				let headcontent = model.getValueInRange(headrange);
 
-			if (tailcellcontent.length) {
-				//tail cell will be of original cell type.
-				tailcell = this.createCell(this._cells[index - 1].cellType);
-				let tailsource = source.slice(tailrange.startLineNumber - 1) as string[];
-				if (selection.endColumn > 1) {
-					partial = source.slice(tailrange.startLineNumber - 1, tailrange.startLineNumber)[0].slice(tailrange.startColumn - 1);
-					tailsource.splice(0, 1, partial);
-				}
-				tailcell.source = tailsource;
-				this.insertCell(tailcell, index);
-			}
-
-			if (newcellcontent.length) {
-				newcell = this.createCell(cellType);
-				let newsource = source.slice(selection.startLineNumber - 1, selection.endLineNumber) as string[];
-				if (selection.startColumn > 1) {
-					partial = source.slice(selection.startLineNumber - 1)[0].slice(selection.startColumn - 1);
-					newsource.splice(0, 1, partial);
-				}
-				if (selection.endColumn !== source[selection.endLineNumber - 1].length) {
-					let splicestart = 0;
-					if (selection.startLineNumber === selection.endLineNumber) {
-						splicestart = selection.startColumn - 1;
+				//Set content before selection if the selection is not the same as original content
+				if (headcontent.length) {
+					let headsource = source.slice(range.startLineNumber - 1, selection.startLineNumber - 1);
+					if (selection.startColumn > 1) {
+						partial = source.slice(selection.startLineNumber - 1, selection.startLineNumber)[0].slice(0, selection.startColumn - 1);
+						headsource = headsource.concat(partial.toString());
 					}
-					let partial = source.slice(selection.endLineNumber - 1, selection.endLineNumber)[0].slice(splicestart, selection.endColumn - 1);
-					newsource.splice(newsource.length - 1, 1, partial);
+					this.cells[index].source = headsource;
 				}
-				newcell.source = newsource;
-				this.insertCell(newcell, index);
-			}
 
-			//Delete the original cell if the selection begins at the start
-			if (!headcontent.length) {
-				this.deleteCell(this.cells[index - 1]);
+				if (newcellcontent.length) {
+					newcell = this.createCell(cellType);
+					let newsource = source.slice(selection.startLineNumber - 1, selection.endLineNumber) as string[];
+					if (selection.startColumn > 1) {
+						partial = source.slice(selection.startLineNumber - 1)[0].slice(selection.startColumn - 1);
+						newsource.splice(0, 1, partial);
+					}
+					if (selection.endColumn !== source[selection.endLineNumber - 1].length) {
+						let splicestart = 0;
+						if (selection.startLineNumber === selection.endLineNumber) {
+							splicestart = selection.startColumn - 1;
+						}
+						let partial = source.slice(selection.endLineNumber - 1, selection.endLineNumber)[0].slice(splicestart, selection.endColumn - 1);
+						newsource.splice(newsource.length - 1, 1, partial);
+					}
+					newcell.source = newsource;
+					newcellindex++;
+					this.insertCell(newcell, newcellindex);
+				}
+
+				if (tailcellcontent.length) {
+					//tail cell will be of original cell type.
+					tailcell = this.createCell(this._cells[index].cellType);
+					let tailsource = source.slice(tailrange.startLineNumber - 1) as string[];
+					if (selection.endColumn > 1) {
+						partial = source.slice(tailrange.startLineNumber - 1, tailrange.startLineNumber)[0].slice(tailrange.startColumn - 1);
+						tailsource.splice(0, 1, partial);
+					}
+					tailcell.source = tailsource;
+					newcellindex++;
+					this.insertCell(tailcell, newcellindex);
+				}
+
+				//Delete the original cell if the selection begins at the start
+				if (!headcontent.length) {
+					this.deleteCell(this.cells[index]);
+				}
+				//return inserted cell
+				return newcell ? newcell : tailcell;
 			}
-			//return inserted cell
-			return newcell ? newcell : tailcell;
 		}
 		return null;
 	}
