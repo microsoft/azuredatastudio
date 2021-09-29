@@ -19,7 +19,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 	}
 
 	get objectType(): string {
-		return localize('tableDesigner.tableObjectType', "Type");
+		return localize('tableDesigner.tableObjectType', "Table");
 	}
 
 	async getView(): Promise<DesignerView> {
@@ -55,10 +55,11 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 
 		const advancedTabComponents: ComponentDefinition[] = [];
 
-		advancedTabComponents.push({
-			type: 'input',
+		advancedTabComponents.push(<azdata.designers.DropdownComponentDefinition>{
+			type: 'dropdown',
 			title: localize('tableDesigner.schemaTitle', "Schema"),
-			property: designers.TableProperty.Schema
+			property: designers.TableProperty.Schema,
+			options: designerInfo.schemas
 		});
 
 		advancedTabComponents.push({

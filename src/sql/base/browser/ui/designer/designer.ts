@@ -22,7 +22,7 @@ import { localize } from 'vs/nls';
 import { TableCellEditorFactory } from 'sql/base/browser/ui/table/tableCellEditorFactory';
 import { CheckBoxColumn } from 'sql/base/browser/ui/table/plugins/checkboxColumn.plugin';
 import { DesignerTabPanelView } from 'sql/base/browser/ui/designer/designerTabPanelView';
-import { DesignerPropertiesPane } from 'sql/base/browser/ui/designer/designerPropertiesPane';
+import { DesignerPropertiesPane, PropertiesPaneObjectContext } from 'sql/base/browser/ui/designer/designerPropertiesPane';
 
 export interface IDesignerStyle {
 	tabbedPanelStyles?: ITabbedPanelStyles;
@@ -101,7 +101,7 @@ export class Designer extends Disposable implements IThemable {
 			layout: size => {
 				this.layoutTabbedPanel();
 			},
-			minimumSize: 100,
+			minimumSize: 200,
 			maximumSize: Number.POSITIVE_INFINITY,
 			onDidChange: Event.None
 		}, Sizing.Distribute);
@@ -119,7 +119,7 @@ export class Designer extends Disposable implements IThemable {
 			layout: size => {
 				this.layoutTabbedPanel();
 			},
-			minimumSize: 100,
+			minimumSize: 200,
 			maximumSize: Number.POSITIVE_INFINITY,
 			onDidChange: Event.None
 		}, Sizing.Distribute);
@@ -127,7 +127,7 @@ export class Designer extends Disposable implements IThemable {
 		this._horizontalSplitView.addView({
 			element: this._propertiesPaneContainer,
 			layout: size => { },
-			minimumSize: 100,
+			minimumSize: 200,
 			maximumSize: Number.POSITIVE_INFINITY,
 			onDidChange: Event.None
 		}, Sizing.Distribute);
@@ -136,6 +136,8 @@ export class Designer extends Disposable implements IThemable {
 			return this.createComponent(container, component, identifier, labelOnTop, false, false);
 		}, (definition, component, data) => {
 			this.setComponentValue(definition, component, data);
+		}, (component) => {
+			this.styleComponent(component);
 		});
 		const editor = DOM.$('div');
 		editor.innerText = 'script pane placeholder';
@@ -162,6 +164,7 @@ export class Designer extends Disposable implements IThemable {
 				this.styleComponent(value.component);
 			}
 		});
+		this._propertiesPane.style();
 		this._verticalSplitView.style({
 			separatorBorder: styles.selectBoxStyles.selectBorder
 		});
@@ -183,6 +186,7 @@ export class Designer extends Disposable implements IThemable {
 	}
 
 	private async initializeDesignerView(): Promise<void> {
+		this._propertiesPane.clear();
 		DOM.clearNode(this._topContentContainer);
 		const view = await this._input.getView();
 		if (view.components) {
@@ -208,21 +212,66 @@ export class Designer extends Disposable implements IThemable {
 		this._componentMap.forEach((value) => {
 			this.setComponentValue(value.defintion, value.component, data);
 		});
+
+		let type: string;
+		let components: DesignerComponentType[];
+		let inputData: DesignerData;
+		let context: PropertiesPaneObjectContext;
+		const currentContext = this._propertiesPane.context;
+		if (currentContext === 'root' || currentContext === undefined) {
+			context = 'root';
+			components = [];
+			this._componentMap.forEach(value => {
+				components.push(value.defintion);
+			});
+			type = this._input.objectType;
+			inputData = data;
+		} else {
+			context = currentContext;
+			const tableData = data[currentContext.parentProperty] as TableComponentData;
+			const tableDefinition = this._componentMap.get(currentContext.parentProperty).defintion as TableComponentDefinition;
+			inputData = tableData.rows[currentContext.index] as DesignerData;
+			components = tableDefinition.itemProperties;
+			type = tableDefinition.objectType;
+		}
+		this._propertiesPane.show({
+			context: context,
+			type: type,
+			components: components,
+			data: inputData
+		});
 	}
 
 	private async handleEdit(edit: DesignerEdit): Promise<void> {
 		if (this._supressEditProcessing) {
 			return;
 		}
-
+		await this.applyEdit(edit);
 		const result = await this._input.processEdit(edit);
-
 		if (result.isValid) {
 			this._supressEditProcessing = true;
 			await this.updateComponentValues();
 			this._supressEditProcessing = false;
 		} else {
 			//TODO: add error notification
+		}
+	}
+
+	private async applyEdit(edit: DesignerEdit): Promise<void> {
+		const data = await this._input.getData();
+		switch (edit.type) {
+			case DesignerEditType.Update:
+				if (typeof edit.property === 'string') {
+					const propertyValue = data[edit.property] as InputComponentData | DropdownComponentData | CheckboxComponentData;
+					propertyValue.value = edit.value;
+				} else {
+					const parentPropertyValue = data[edit.property.parentProperty] as TableComponentData;
+					const propertyValue = parentPropertyValue.rows[edit.property.index][edit.property.property] as InputComponentData | DropdownComponentData | CheckboxComponentData;
+					propertyValue.value = edit.value;
+				}
+				break;
+			default:
+				break;
 		}
 	}
 
@@ -310,12 +359,19 @@ export class Designer extends Disposable implements IThemable {
 				const dropdownDefinition = componentDefinition as DropdownComponentDefinition;
 				const dropdown = new SelectBox(dropdownDefinition.options, undefined, this._contextViewProvider, undefined);
 				dropdown.render(componentDiv);
+				dropdown.selectElem.style.height = '25px';
+				dropdown.onDidSelect((e) => {
+					this.handleEdit({ type: DesignerEditType.Update, property: editIdentifier, value: e.selected });
+				});
 				component = dropdown;
 				break;
 			case 'checkbox':
 				const checkboxDefinition = componentDefinition as CheckboxComponentDefinition;
 				const checkbox = new Checkbox(componentDiv, {
 					label: checkboxDefinition.title
+				});
+				checkbox.onChange(newValue => {
+					this.handleEdit({ type: DesignerEditType.Update, property: editIdentifier, value: newValue });
 				});
 				component = checkbox;
 				break;

@@ -1010,6 +1010,7 @@ declare module 'azdata' {
 			view: TableDesignerView;
 			data: DesignerData;
 			columnTypes: string[];
+			schemas: string[];
 		}
 
 		export enum TableProperty {

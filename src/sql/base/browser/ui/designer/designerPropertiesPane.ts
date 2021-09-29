@@ -9,13 +9,13 @@ import * as DOM from 'vs/base/browser/dom';
 import { equals } from 'vs/base/common/objects';
 import { localize } from 'vs/nls';
 
-export type PropertiesPaneObjectContext = {
+export type PropertiesPaneObjectContext = 'root' | {
 	parentProperty: string;
 	index: number;
 };
 
 export interface ObjectInfo {
-	context?: PropertiesPaneObjectContext
+	context: PropertiesPaneObjectContext;
 	type: string;
 	components: DesignerComponentType[];
 	data: DesignerData;
@@ -27,24 +27,40 @@ export class DesignerPropertiesPane {
 	private _currentContext?: PropertiesPaneObjectContext;
 	private _componentMap = new Map<string, { defintion: DesignerComponentType, component: DesignerUIComponent }>();
 
-	constructor(container: HTMLElement, private _createComponent: CreateComponentFunc, private _setComponentValue: SetComponentValueFunc) {
+	constructor(container: HTMLElement, private _createComponent: CreateComponentFunc, private _setComponentValue: SetComponentValueFunc, private _styleComponent: (component: DesignerUIComponent) => void) {
 		const titleContainer = container.appendChild(DOM.$('.title-container'));
-		this._titleElement = titleContainer.appendChild(DOM.$('h2'));
-		this._contentElement = container.appendChild(DOM.$('.content-container.components-grid'));
+		this._titleElement = titleContainer.appendChild(DOM.$('div'));
+		this._contentElement = container.appendChild(DOM.$('.properties-content.components-grid'));
+		this._titleElement.innerText = localize('tableDesigner.propertiesPaneTitle', "Properties");
+	}
+
+	public get context(): PropertiesPaneObjectContext | undefined {
+		return this._currentContext;
+	}
+
+	public clear(): void {
+		this._componentMap.forEach((value) => {
+			value.component.dispose();
+		});
+		this._componentMap.clear();
+		DOM.clearNode(this._contentElement);
+		this._currentContext = undefined;
+	}
+
+	public style() {
+		this._componentMap.forEach((value) => {
+			this._styleComponent(value.component);
+		});
 	}
 
 	public show(item: ObjectInfo): void {
 		if (!equals(item.context, this._currentContext)) {
+			this.clear();
 			this._currentContext = item.context;
-			this._componentMap.forEach((value) => {
-				value.component.dispose();
-			});
-			this._componentMap.clear();
-			DOM.clearNode(this._contentElement);
 			item.components.forEach((value) => {
 				// Table component is not supported in the properties pane.
 				if (value.type !== 'table') {
-					const editIdentifier: DesignerEditIdentifier = this._currentContext === undefined ? value.property : {
+					const editIdentifier: DesignerEditIdentifier = this._currentContext === 'root' ? value.property : {
 						parentProperty: this._currentContext.parentProperty,
 						index: this._currentContext.index,
 						property: value.property
@@ -59,7 +75,7 @@ export class DesignerPropertiesPane {
 		}
 		const name = (<InputComponentData>item.data[NameProperty])?.value ?? '';
 		this._titleElement.innerText = localize({
-			key: 'tableDesigner.propertiesPaneTitle',
+			key: 'tableDesigner.propertiesPaneTitleWithContext',
 			comment: ['{0} is the place holder for object type', '{1} is the place holder for object name']
 		}, "Properties - {0} {1}", item.type, name);
 		this._componentMap.forEach((value) => {

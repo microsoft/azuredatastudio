@@ -13,9 +13,24 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 	azdata.dataprotocol.registerTableDesignerProvider({
 		providerId: 'MSSQL',
 		processTableEdit: (table, data, edit): Promise<azdata.designers.DesignerEditResult> => {
-			if (edit.property === azdata.designers.TableProperty.Name) {
-				(<azdata.designers.InputComponentData>data[azdata.designers.TableProperty.Description]).value = `description of table ${edit.value}`;
-				(<azdata.designers.InputComponentData>data[azdata.designers.TableProperty.Name]).value = edit.value;
+			if (typeof edit.property === 'string') {
+				if (edit.property === azdata.designers.TableProperty.Name) {
+					(<azdata.designers.InputComponentData>data[azdata.designers.TableProperty.Description]).value = `description of table ${edit.value}`;
+				}
+			} else {
+				if (edit.property.parentProperty === azdata.designers.TableProperty.Columns) {
+					if (edit.property.property === azdata.designers.TableColumnProperty.Type && edit.value === 'int') {
+						const tableData = data[azdata.designers.TableProperty.Columns] as azdata.designers.TableComponentData;
+						const columnData = tableData.rows[edit.property.index];
+						const lengthProperty = columnData[azdata.designers.TableColumnProperty.Length] as azdata.designers.InputComponentData;
+						const typeProperty = columnData[azdata.designers.TableColumnProperty.Type] as azdata.designers.DropdownComponentData;
+						const allowNullsProperty = columnData[azdata.designers.TableColumnProperty.AllowNulls] as azdata.designers.CheckboxComponentData;
+						lengthProperty.value = '';
+						lengthProperty.enabled = false;
+						typeProperty.enabled = false;
+						allowNullsProperty.enabled = false;
+					}
+				}
 			}
 			return Promise.resolve({
 				isValid: true,
@@ -91,7 +106,8 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 			return {
 				view: {},
 				data: data,
-				columnTypes: ['int', 'bigint', 'nvarchar']
+				columnTypes: ['int', 'bigint', 'nvarchar'],
+				schemas: ['dbo', 'sys', 'sales']
 			};
 		}
 	});
