@@ -244,7 +244,7 @@ export class BookModel {
 					isUntitled: this.openAsUntitled,
 					version: book.version,
 					parent: element,
-					hierarchyId: this.setHierarchyId(i, element.book.hierarchyId)
+					hierarchyId: this.generateHierarchyId(i, element.book.hierarchyId)
 				},
 					{
 						light: this._extensionContext.asAbsolutePath('resources/light/link.svg'),
@@ -271,7 +271,7 @@ export class BookModel {
 						isUntitled: this.openAsUntitled,
 						version: book.version,
 						parent: element,
-						hierarchyId: this.setHierarchyId(i, element.book.hierarchyId)
+						hierarchyId: this.generateHierarchyId(i, element.book.hierarchyId)
 					},
 						{
 							light: this._extensionContext.asAbsolutePath('resources/light/notebook.svg'),
@@ -304,7 +304,7 @@ export class BookModel {
 						isUntitled: this.openAsUntitled,
 						version: book.version,
 						parent: element,
-						hierarchyId: this.setHierarchyId(i, element.book.hierarchyId)
+						hierarchyId: this.generateHierarchyId(i, element.book.hierarchyId)
 					},
 						{
 							light: this._extensionContext.asAbsolutePath('resources/light/markdown.svg'),
@@ -334,8 +334,13 @@ export class BookModel {
 		return treeItems;
 	}
 
-	private setHierarchyId(iteration: number, hierarchyId?: string): string {
-		return hierarchyId ? path.join(hierarchyId, iteration.toString()) : iteration.toString();
+	/**
+	 * Creates a hierarchyId used to identify a tree item's descendants.
+	 * @param treeItemIndex - tree item index based on the book toc. This index is generated when loading a section.
+	 * @param hierarchyId (Optional) - hierarchyId of the parent element
+	 */
+	private generateHierarchyId(treeItemIndex: number, hierarchyId?: string): string {
+		return hierarchyId ? hierarchyId.concat('/', treeItemIndex.toString()) : treeItemIndex.toString();
 	}
 
 	/**
