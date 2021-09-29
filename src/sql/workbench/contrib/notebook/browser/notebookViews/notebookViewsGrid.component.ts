@@ -88,9 +88,6 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 				this._grid = undefined;
 			}
 		}
-		if (this.activeView && this.activeView.guid !== this._gridView?.guid) {
-			this.activeView.initialize();
-		}
 	}
 
 	ngAfterViewChecked() {
@@ -119,7 +116,6 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 
 	private createGrid() {
 		const isNew = this.activeView.isNew;
-
 		this._gridView = this.activeView;
 
 		if (this._grid) {
@@ -140,14 +136,12 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 
 		this._gridEnabled = true;
 
-		if (isNew) {
-			this.updateGrid();
-		}
+		//this.updateGrid();
 	}
 
 	/**
 	 * Updates the grid layout based on changes to the view model
-	 */
+	 *
 	private updateGrid(): void {
 		if (!this._grid || !this.activeView) {
 			return;
@@ -165,6 +159,7 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 		});
 		this._grid.commit();
 	}
+	*/
 
 	private resizeCells(): void {
 		this._items.forEach((i: NotebookViewsCardComponent) => {
