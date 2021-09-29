@@ -213,12 +213,20 @@ export class SKURecommendationPage extends MigrationWizardPage {
 						textStyles: {
 							'font-size': '14px',
 							'font-weight': 'bold'
+						},
+						linkStyles: {
+							'border-radius': '4px',
+							'transition': 'all .5s ease'
 						}
 					},
 					{
 						textValue: '',
 						textStyles: {
 							'font-size': '13px',
+						},
+						linkStyles: {
+							'border-radius': '4px',
+							'transition': 'all .5s ease'
 						}
 					}
 				]
