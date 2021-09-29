@@ -42,11 +42,41 @@ export async function getLocalSettingsJson(localSettingsPath: string): Promise<I
 }
 
 /**
+ * Adds a new setting to a project's local.settings.json file
+ * modified from setLocalAppSetting code from vscode-azurefunctions extension
+ * @param projectFolder full path to project folder
+ * @param key Key of the new setting
+ * @param value Value of the new setting
+ * @returns true if successful adding the new setting, false if unsuccessful
+ */
+export async function setLocalAppSetting(projectFolder: string, key: string, value: string): Promise<boolean> {
+	const localSettingsPath: string = path.join(projectFolder, constants.azureFunctionLocalSettingsFileName);
+	const settings: ILocalSettingsJson = await getLocalSettingsJson(localSettingsPath);
+
+	settings.Values = settings.Values || {};
+	if (settings.Values[key] === value) {
+		// don't do anything if it's the same as the existing value
+		return true;
+	} else if (settings.Values[key]) {
+		const result = await vscode.window.showWarningMessage(constants.settingAlreadyExists(key), { modal: true }, constants.yesString);
+		if (result !== constants.yesString) {
+			// key already exists and user doesn't want to overwrite it
+			return false;
+		}
+	}
+
+	settings.Values[key] = value;
+	await fse.writeJson(localSettingsPath, settings, { spaces: 2 });
+
+	return true;
+}
+
+/**
  * Gets the Azure Functions project that contains the given file if the project is open in one of the workspace folders
  * @param filePath file that the containing project needs to be found for
- * @returns filepath of project or undefined if project couldn't be found
+ * @returns uri of project or undefined if project couldn't be found
  */
-export async function getAFProjectContainingFile(filePath: string): Promise<string | undefined> {
+export async function getAFProjectContainingFile(fileUri: vscode.Uri): Promise<vscode.Uri | undefined> {
 	// get functions csprojs in the workspace
 	const projectPromises = vscode.workspace.workspaceFolders?.map(f => utils.getAllProjectsInFolder(f.uri, '.csproj')) ?? [];
 	const functionsProjects = (await Promise.all(projectPromises)).reduce((prev, curr) => prev.concat(curr), []).filter(p => isFunctionProject(path.dirname(p.fsPath)));
@@ -56,12 +86,12 @@ export async function getAFProjectContainingFile(filePath: string): Promise<stri
 		// TODO: figure out which project contains the file
 		// the new style csproj doesn't list all the files in the project anymore, unless the file isn't in the same folder
 		// so we can't rely on using that to check
-		console.error('need to find which project contains the file ' + filePath);
+		console.error('need to find which project contains the file ' + fileUri.fsPath);
 		return undefined;
 	} else if (functionsProjects.length === 0) {
 		throw new Error(constants.noAzureFunctionsProjectsInWorkspace);
 	} else {
-		return functionsProjects[0].fsPath;
+		return functionsProjects[0];
 	}
 }
 
