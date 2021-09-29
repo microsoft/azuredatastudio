@@ -1085,7 +1085,7 @@ export class ProfilerFeature extends SqlOpsFeature<undefined> {
 
 /**
  * Table Designer Feature
- * TODO: Move to data protocol client once stablized
+ * TODO: Move this feature to data protocol client repo once stablized
  */
 export class TableDesignerFeature extends SqlOpsFeature<undefined> {
 	private static readonly messagesTypes: RPCMessageType[] = [

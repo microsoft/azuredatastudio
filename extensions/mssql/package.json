@@ -492,16 +492,6 @@
           "command": "mssqlCluster.livy.cmd.submitFileToSparkJob",
           "when": "nodeType == mssqlCluster:file && nodeSubType =~/:spark:/",
           "group": "1mssqlCluster@6"
-        },
-        {
-          "command": "mssql.newTable",
-          "when": "connectionProvider == MSSQL && nodeType == Folder && nodePath =~/\/Tables$/",
-          "group": "0_query"
-        },
-        {
-          "command": "mssql.designTable",
-          "when": "connectionProvider == MSSQL && nodeType == Table",
-          "group": "0_query@3"
         }
       ],
       "notebook/toolbar": [
