@@ -4,24 +4,26 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
-import { ExtensionsRegistry, IExtensionPointUser } from 'vs/workbench/services/extensions/common/extensionsRegistry';
+import { ExtensionsRegistry } from 'vs/workbench/services/extensions/common/extensionsRegistry';
 import { localize } from 'vs/nls';
 import * as platform from 'vs/platform/registry/common/platform';
 import * as azdata from 'azdata';
 import { Event, Emitter } from 'vs/base/common/event';
 
+export const NotebookProviderRegistryId = 'notebooks.providers.registry';
+
 export const Extensions = {
-	NotebookProviderContribution: 'notebook.providers',
+	NotebookProviderDescriptionContribution: 'notebook.providers',
 	NotebookLanguageMagicContribution: 'notebook.languagemagics'
 };
 
-export interface NotebookProviderRegistration {
+export interface ProviderDescriptionRegistration {
 	provider: string;
 	fileExtensions: string | string[];
 	standardKernels: azdata.nb.IStandardKernel | azdata.nb.IStandardKernel[];
 }
 
-let notebookProviderType: IJSONSchema = {
+let providerDescriptionType: IJSONSchema = {
 	type: 'object',
 	default: { provider: '', fileExtensions: [], standardKernels: [] },
 	properties: {
@@ -86,13 +88,13 @@ let notebookProviderType: IJSONSchema = {
 	}
 };
 
-let notebookContrib: IJSONSchema = {
-	description: localize('vscode.extension.contributes.notebook.providers', "Contributes notebook providers."),
+let providerDescriptionContrib: IJSONSchema = {
+	description: localize('vscode.extension.contributes.notebook.providersDescriptions', "Contributes notebook provider descriptions."),
 	oneOf: [
-		notebookProviderType,
+		providerDescriptionType,
 		{
 			type: 'array',
-			items: notebookProviderType
+			items: providerDescriptionType
 		}
 	]
 };
@@ -146,81 +148,69 @@ export interface NotebookLanguageMagicRegistration {
 }
 
 export interface INotebookProviderRegistry {
-	readonly providers: NotebookProviderRegistration[];
+	readonly providerDescriptions: ProviderDescriptionRegistration[];
 	readonly languageMagics: NotebookLanguageMagicRegistration[];
-	readonly onNewRegistration: Event<{ id: string, registration: NotebookProviderRegistration }>;
 
-	registerNotebookProvider(provider: NotebookProviderRegistration): void;
+	readonly onNewDescriptionRegistration: Event<{ id: string, registration: ProviderDescriptionRegistration }>;
+
+	registerProviderDescription(provider: ProviderDescriptionRegistration): void;
 	registerNotebookLanguageMagic(magic: NotebookLanguageMagicRegistration): void;
 }
 
 class NotebookProviderRegistry implements INotebookProviderRegistry {
-	private providerIdToRegistration = new Map<string, NotebookProviderRegistration>();
-	private magicToRegistration = new Map<string, NotebookLanguageMagicRegistration>();
-	private _onNewRegistration = new Emitter<{ id: string, registration: NotebookProviderRegistration }>();
-	public readonly onNewRegistration: Event<{ id: string, registration: NotebookProviderRegistration }> = this._onNewRegistration.event;
+	private _providerDescriptionRegistration = new Map<string, ProviderDescriptionRegistration>();
+	private _magicToRegistration = new Map<string, NotebookLanguageMagicRegistration>();
 
-	registerNotebookProvider(registration: NotebookProviderRegistration): void {
-		// Note: this method intentionally overrides default provider for a file type.
-		// This means that any built-in provider will be overridden by registered extensions
-		this.providerIdToRegistration.set(registration.provider, registration);
-		this._onNewRegistration.fire({ id: registration.provider, registration: registration });
+	private _onNewDescriptionRegistration = new Emitter<{ id: string, registration: ProviderDescriptionRegistration }>();
+	public readonly onNewDescriptionRegistration: Event<{ id: string, registration: ProviderDescriptionRegistration }> = this._onNewDescriptionRegistration.event;
+
+	registerProviderDescription(registration: ProviderDescriptionRegistration): void {
+		this._providerDescriptionRegistration.set(registration.provider, registration);
+		this._onNewDescriptionRegistration.fire({ id: registration.provider, registration: registration });
 	}
 
-	public get providers(): NotebookProviderRegistration[] {
-		let registrationArray: NotebookProviderRegistration[] = [];
-		this.providerIdToRegistration.forEach(p => registrationArray.push(p));
+	public get providerDescriptions(): ProviderDescriptionRegistration[] {
+		let registrationArray: ProviderDescriptionRegistration[] = [];
+		this._providerDescriptionRegistration.forEach(p => registrationArray.push(p));
 		return registrationArray;
 	}
 
 	registerNotebookLanguageMagic(magicRegistration: NotebookLanguageMagicRegistration): void {
-		this.magicToRegistration.set(magicRegistration.magic, magicRegistration);
+		this._magicToRegistration.set(magicRegistration.magic, magicRegistration);
 	}
 
 	public get languageMagics(): NotebookLanguageMagicRegistration[] {
 		let registrationArray: NotebookLanguageMagicRegistration[] = [];
-		this.magicToRegistration.forEach(p => registrationArray.push(p));
+		this._magicToRegistration.forEach(p => registrationArray.push(p));
 		return registrationArray;
 	}
-
 }
 
 const notebookProviderRegistry = new NotebookProviderRegistry();
-platform.Registry.add(Extensions.NotebookProviderContribution, notebookProviderRegistry);
+platform.Registry.add(NotebookProviderRegistryId, notebookProviderRegistry);
 
-
-ExtensionsRegistry.registerExtensionPoint<NotebookProviderRegistration | NotebookProviderRegistration[]>({ extensionPoint: Extensions.NotebookProviderContribution, jsonSchema: notebookContrib }).setHandler(extensions => {
-
-	function handleExtension(contrib: NotebookProviderRegistration, extension: IExtensionPointUser<any>) {
-		notebookProviderRegistry.registerNotebookProvider(contrib);
-	}
-
+ExtensionsRegistry.registerExtensionPoint<ProviderDescriptionRegistration | ProviderDescriptionRegistration[]>({ extensionPoint: Extensions.NotebookProviderDescriptionContribution, jsonSchema: providerDescriptionContrib }).setHandler(extensions => {
 	for (let extension of extensions) {
 		const { value } = extension;
 		if (Array.isArray(value)) {
 			for (let command of value) {
-				handleExtension(command, extension);
+				notebookProviderRegistry.registerProviderDescription(command);
 			}
 		} else {
-			handleExtension(value, extension);
+			notebookProviderRegistry.registerProviderDescription(value);
 		}
 	}
 });
 
 ExtensionsRegistry.registerExtensionPoint<NotebookLanguageMagicRegistration | NotebookLanguageMagicRegistration[]>({ extensionPoint: Extensions.NotebookLanguageMagicContribution, jsonSchema: languageMagicContrib }).setHandler(extensions => {
-
-	function handleExtension(contrib: NotebookLanguageMagicRegistration, extension: IExtensionPointUser<any>) {
-		notebookProviderRegistry.registerNotebookLanguageMagic(contrib);
-	}
-
 	for (let extension of extensions) {
 		const { value } = extension;
 		if (Array.isArray(value)) {
 			for (let command of value) {
-				handleExtension(command, extension);
+				notebookProviderRegistry.registerNotebookLanguageMagic(command);
 			}
 		} else {
-			handleExtension(value, extension);
+			notebookProviderRegistry.registerNotebookLanguageMagic(value);
 		}
 	}
 });
