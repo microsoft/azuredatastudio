@@ -241,6 +241,7 @@ export const IMPACT = localize('sql.migration.impact', "Impact");
 export const ALL_FIELDS_REQUIRED = localize('sql.migration.all.fields.required', 'All fields are required.');
 
 //Summary Page
+export const START_MIGRATION_TEXT = localize('sql.migration.start.migration.button', "Start migration");
 export const SUMMARY_PAGE_TITLE = localize('sql.migration.summary.page.title', "Summary");
 export const SUMMARY_MI_TYPE = localize('sql.migration.summary.mi.type', "Azure SQL Managed Instance");
 export const SUMMARY_VM_TYPE = localize('sql.migration.summary.vm.type', "SQL Server on Azure Virtual Machine");
@@ -257,7 +258,6 @@ export const MODE = localize('sql.migration.mode', "Mode");
 export const BACKUP_LOCATION = localize('sql.migration.backup.location', "Backup location");
 export const AZURE_STORAGE_ACCOUNT_TO_UPLOAD_BACKUPS = localize('sql.migration.azure.storage.account.to.upload.backups', "Azure Storage account to upload backups");
 export const SHIR = localize('sql.migration.shir', "Self-hosted integration runtime node");
-export const START_MIGRATION = localize('sql.migration.start.migration', "Start migration");
 export const DATABASE_TO_BE_MIGRATED = localize('sql.migration.database.to.be.migrated', "Database to be migrated");
 export function COUNT_DATABASES(count: number): string {
 	return (count === 1) ? localize('sql.migration.count.database.single', "{0} database", count) : localize('sql.migration.count.database.multiple', "{0} databases", count);
