@@ -7,7 +7,7 @@ import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/no
 import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
-import { INotebookParams, INotebookService, INotebookManager, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
+import { INotebookParams, INotebookService, IExecuteManager, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER, ISerializationManager } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { CellMagicMapper } from 'sql/workbench/contrib/notebook/browser/models/cellMagicMapper';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -38,7 +38,8 @@ export const NOTEBOOKEDITOR_SELECTOR: string = 'notebookeditor-component';
 export class NotebookEditorComponent extends AngularDisposable {
 	private readonly defaultViewMode = ViewMode.Notebook;
 	private profile: IConnectionProfile;
-	private notebookManagers: INotebookManager[] = [];
+	private serializationManagers: ISerializationManager[] = [];
+	private executeManagers: IExecuteManager[] = [];
 	private _modelReadyDeferred = new Deferred<NotebookModel>();
 
 	public model: NotebookModel;
@@ -80,7 +81,8 @@ export class NotebookEditorComponent extends AngularDisposable {
 
 	private async doLoad(): Promise<void> {
 		await this.createModelAndLoadContents();
-		await this.setNotebookManager();
+		await this.setSerializationManager();
+		await this.setExecuteManager();
 		await this.loadModel();
 
 		this.setActiveView();
@@ -93,21 +95,23 @@ export class NotebookEditorComponent extends AngularDisposable {
 		await this.model.requestModelLoad();
 		this.detectChanges();
 		this.setContextKeyServiceWithProviderId(this.model.providerId);
-		await this.model.startSession(this.model.notebookManager, undefined, true);
+		await this.model.startSession(this.model.executeManager, undefined, true);
 		this.fillInActionsForCurrentContext();
 		this.detectChanges();
 	}
 
 	private async createModelAndLoadContents(): Promise<void> {
+		let providerInfo = await this._notebookParams.providerInfo;
 		let model = new NotebookModel({
 			factory: this.modelFactory,
 			notebookUri: this._notebookParams.notebookUri,
 			connectionService: this.connectionManagementService,
 			notificationService: this.notificationService,
-			notebookManagers: this.notebookManagers,
-			contentManager: this._notebookParams.input.contentManager,
+			serializationManagers: this.serializationManagers,
+			executeManagers: this.executeManagers,
+			contentLoader: this._notebookParams.input.contentLoader,
 			cellMagicMapper: new CellMagicMapper(this.notebookService.languageMagics),
-			providerId: 'sql',
+			providerId: providerInfo.providerId,
 			defaultKernel: this._notebookParams.input.defaultKernel,
 			layoutChanged: this._notebookParams.input.layoutChanged,
 			capabilitiesService: this.capabilitiesService,
@@ -132,11 +136,19 @@ export class NotebookEditorComponent extends AngularDisposable {
 		this.detectChanges();
 	}
 
-	private async setNotebookManager(): Promise<void> {
+	private async setSerializationManager(): Promise<void> {
 		let providerInfo = await this._notebookParams.providerInfo;
 		for (let providerId of providerInfo.providers) {
-			let notebookManager = await this.notebookService.getOrCreateNotebookManager(providerId, this._notebookParams.notebookUri);
-			this.notebookManagers.push(notebookManager);
+			let manager = await this.notebookService.getOrCreateSerializationManager(providerId, this._notebookParams.notebookUri);
+			this.serializationManagers.push(manager);
+		}
+	}
+
+	private async setExecuteManager(): Promise<void> {
+		let providerInfo = await this._notebookParams.providerInfo;
+		for (let providerId of providerInfo.providers) {
+			let manager = await this.notebookService.getOrCreateExecuteManager(providerId, this._notebookParams.notebookUri);
+			this.executeManagers.push(manager);
 		}
 	}
 
