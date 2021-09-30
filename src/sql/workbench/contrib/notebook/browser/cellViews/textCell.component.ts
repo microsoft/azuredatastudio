@@ -572,6 +572,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 function preventDefaultAndExecCommand(e: KeyboardEvent, commandId: string, showUI?: boolean, value?: string) {
 	// use preventDefault() to avoid invoking the editor's select all
+	e.stopPropagation();
 	e.preventDefault();
 	document.execCommand(commandId, showUI, value);
 }

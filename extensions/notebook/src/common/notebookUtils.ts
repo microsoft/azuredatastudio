@@ -112,7 +112,7 @@ export class NotebookUtils {
 	}
 
 	public async toggleMarkdownStyle(style: string, showUI?: boolean, value?: string): Promise<void> {
-		return vscode.commands.executeCommand(style);
+		return vscode.commands.executeCommand(style, showUI, value);
 	}
 
 	public async analyzeNotebook(oeContext?: azdata.ObjectExplorerContext): Promise<void> {
