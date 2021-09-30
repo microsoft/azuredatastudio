@@ -189,6 +189,10 @@ suite('Notebook Actions', function (): void {
 	});
 
 	test('Run All Cells Action', async function (): Promise<void> {
+		const testNotebookModel = TypeMoq.Mock.ofType<INotebookModel>(NotebookModelStub);
+		testNotebookModel.setup(x => x.getMetaValue(TypeMoq.It.isAny())).returns(() => undefined);
+		mockNotebookEditor.setup(x => x.model).returns(() => testNotebookModel.object);
+
 		let mockNotification = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService);
 		mockNotification.setup(n => n.notify(TypeMoq.It.isAny()));
 

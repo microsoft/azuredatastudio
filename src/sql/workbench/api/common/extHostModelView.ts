@@ -1350,10 +1350,10 @@ class TextComponentWrapper extends ComponentWrapper implements azdata.TextCompon
 		this.properties = {};
 	}
 
-	public get value(): string {
+	public get value(): string | string[] {
 		return this.properties['value'];
 	}
-	public set value(v: string) {
+	public set value(v: string | string[]) {
 		this.setProperty('value', v);
 	}
 
@@ -1549,6 +1549,22 @@ class DropDownWrapper extends ComponentWrapper implements azdata.DropDownCompone
 	public get onValueChanged(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
+	}
+
+	public get placeholder(): string | undefined {
+		return this.properties['placeholder'];
+	}
+
+	public set placeholder(v: string) {
+		this.setProperty('placeholder', v);
+	}
+
+	public get validationErrorMessages(): string[] | undefined {
+		return this.properties['validationErrorMessages'];
+	}
+
+	public set validationErrorMessages(v: string[]) {
+		this.setProperty('validationErrorMessages', v);
 	}
 }
 

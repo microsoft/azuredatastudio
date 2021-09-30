@@ -97,6 +97,15 @@ export class MigrationModePage extends MigrationWizardPage {
 			}
 		}).component();
 
+		if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= 3) {
+			if (this.migrationStateModel.savedInfo.migrationMode === MigrationMode.ONLINE) {
+				onlineButton.checked = true;
+				offlineButton.checked = false;
+			} else {
+				onlineButton.checked = false;
+				offlineButton.checked = true;
+			}
+		}
 
 		this._disposables.push(offlineButton.onDidChangeCheckedState((e) => {
 			if (e) {

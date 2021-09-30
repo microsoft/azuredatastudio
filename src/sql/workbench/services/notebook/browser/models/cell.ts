@@ -580,8 +580,9 @@ export class CellModel extends Disposable implements ICellModel {
 			this._outputCounter = 0;
 			// Hide IntelliSense suggestions list when running cell to match SSMS behavior
 			this._commandService.executeCommand('hideSuggestWidget');
+			const azdata_notebook_guid: string = this.notebookModel.getMetaValue('azdata_notebook_guid');
 			this._telemetryService?.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.RunCell)
-				.withAdditionalProperties({ cell_language: kernel.name })
+				.withAdditionalProperties({ cell_language: kernel.name, azdata_cell_guid: this._cellGuid, azdata_notebook_guid })
 				.send();
 			// If cell is currently running and user clicks the stop/cancel button, call kernel.interrupt()
 			// This matches the same behavior as JupyterLab

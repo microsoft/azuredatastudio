@@ -542,6 +542,10 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			.withPage(1, pageSize)
 			.withFilter(FilterType.Target, 'Microsoft.VisualStudio.Code');
 
+		if (options.excludeFlags) {
+			query = query.withFilter(FilterType.ExcludeWithFlags, options.excludeFlags); // {{SQL CARBON EDIT}} exclude extensions matching excludeFlags options
+		}
+
 		if (text) {
 			// Use category filter instead of "category:themes"
 			text = text.replace(/\bcategory:("([^"]*)"|([^"]\S*))(\s+|\b|$)/g, (_, quotedCategory, category) => {
@@ -644,6 +648,12 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 						filteredExtensions = filteredExtensions.filter(e => ExtensionGalleryService.isMatchingExtension(e, searchText));
 					}
 				});
+			}
+
+			// {{SQL CARBON EDIT}} - filter out extensions that match the excludeFlags options
+			const flags = query.criteria.filter(x => x.filterType === FilterType.ExcludeWithFlags).map(v => v.value ? v.value.toLocaleLowerCase() : undefined);
+			if (flags && flags.length > 0) {
+				filteredExtensions = filteredExtensions.filter(e => !e.flags || flags.find(x => x === e.flags.toLocaleLowerCase()) === undefined);
 			}
 		}
 
@@ -811,7 +821,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		*/
 		const log = (duration: number) => this.telemetryService.publicLog('galleryService:downloadVSIX', { ...data, duration });
 
-		// {{SQL Carbon Edit}} - Don't append install or update on to the URL
+		// {{SQL CARBON EDIT}} - Don't append install or update on to the URL
 		// const operationParam = operation === InstallOperation.Install ? 'install' : operation === InstallOperation.Update ? 'update' : '';
 		const operationParam = undefined;
 		const downloadAsset = operationParam ? {

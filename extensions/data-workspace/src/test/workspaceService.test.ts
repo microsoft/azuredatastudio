@@ -45,7 +45,7 @@ suite('WorkspaceService', function (): void {
 	test('getProjectsInWorkspace', async () => {
 		// No workspace is loaded
 		let projects = await service.getProjectsInWorkspace(undefined, true);
-		should.strictEqual(projects.length, 0, 'no projects should be returned when no workspace is loaded');
+		should.strictEqual(projects.length, 0, `no projects should be returned when no workspace is loaded, but found ${projects.map(p => p.fsPath).join(', ')}`);
 
 		// No projects are present in the workspace file
 		const workspaceFoldersStub = sinon.stub(vscode.workspace, 'workspaceFolders').value([]);

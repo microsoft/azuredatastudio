@@ -551,9 +551,13 @@ export class SqlThemeIcon {
 	}
 }
 
-export interface INotebookManagerDetails {
+export interface ISerializationManagerDetails {
 	handle: number;
 	hasContentManager: boolean;
+}
+
+export interface IExecuteManagerDetails {
+	handle: number;
 	hasServerManager: boolean;
 }
 
@@ -897,5 +901,7 @@ export enum ButtonType {
 
 export enum TextType {
 	Normal = 'Normal',
-	Error = 'Error'
+	Error = 'Error',
+	UnorderedList = 'UnorderedList',
+	OrderedList = 'OrderedList'
 }

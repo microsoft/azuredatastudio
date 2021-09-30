@@ -49,6 +49,7 @@
 	"title.removeNotebook": "Remove Notebook",
 	"title.addNotebook": "Add Notebook",
 	"title.addMarkdown": "Add Markdown File",
+	"title.addSection": "Add Section",
 	"title.revealInBooksViewlet": "Reveal in Books",
 	"title.createJupyterBook": "Create Jupyter Book",
 	"title.openNotebookFolder": "Open Notebooks in Folder",

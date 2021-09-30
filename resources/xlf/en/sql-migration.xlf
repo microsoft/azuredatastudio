@@ -195,6 +195,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.cutover.card">
       <source xml:lang="en">Completing cutover</source>
     </trans-unit>
+    <trans-unit id="sql.migration.cutover.error">
+      <source xml:lang="en">An error occurred while initiating cutover.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.cutover.help.main">
       <source xml:lang="en">Perform the following steps before you complete cutover.</source>
     </trans-unit>
@@ -693,8 +696,29 @@ This may take some time.</source>
     <trans-unit id="sql.migration.resourceGroups">
       <source xml:lang="en">Resource group</source>
     </trans-unit>
+    <trans-unit id="sql.migration.resume.contine">
+      <source xml:lang="en">Continue last migration attempt...</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.resume.start">
+      <source xml:lang="en">Start with migration assessment again (recommended)</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.resume.title">
+      <source xml:lang="en">Run migration workflow again</source>
+    </trans-unit>
     <trans-unit id="sql.migration.rg.created">
       <source xml:lang="en">Resource group created</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.save.close">
+      <source xml:lang="en">Save and close</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.saved.assessment.cancel">
+      <source xml:lang="en">Cancel</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.saved.assessment.next">
+      <source xml:lang="en">Next</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.saved.assessment.result">
+      <source xml:lang="en">Saved assessment result</source>
     </trans-unit>
     <trans-unit id="sql.migration.search">
       <source xml:lang="en">Search</source>
@@ -874,6 +898,9 @@ This may take some time.</source>
       <source xml:lang="en">Status</source>
     </trans-unit>
     <trans-unit id="sql.migration.status.add.account">
+      <source xml:lang="en">Add account</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.status.add.account.MESSAGE">
       <source xml:lang="en">Add your Azure account to view existing migrations and their status.</source>
     </trans-unit>
     <trans-unit id="sql.migration.status.canceling">
