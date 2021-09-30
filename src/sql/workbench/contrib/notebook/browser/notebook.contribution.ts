@@ -53,7 +53,7 @@ import { ImageMimeTypes, TextCellEditModes } from 'sql/workbench/services/notebo
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
-import { INotebookManager } from 'sql/workbench/services/notebook/browser/notebookService';
+import { IExecuteManager } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookExplorerViewletViewsContribution } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { ContributedEditorPriority, IEditorOverrideService } from 'vs/workbench/services/editor/common/editorOverrideService';
@@ -62,6 +62,7 @@ import { IModeService } from 'vs/editor/common/services/modeService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
 import { useNewMarkdownRendererKey } from 'sql/workbench/contrib/notebook/common/notebookCommon';
+import { JUPYTER_PROVIDER_ID } from 'sql/workbench/common/constants';
 
 Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories)
 	.registerEditorInputSerializer(FileNotebookInput.ID, FileNoteBookEditorInputSerializer);
@@ -189,10 +190,10 @@ CommandsRegistry.registerCommand({
 		for (let editor of editors) {
 			if (editor instanceof NotebookInput) {
 				let model: INotebookModel = editor.notebookModel;
-				if (model.providerId === 'jupyter' && model.clientSession.isReady) {
+				if (model.providerId === JUPYTER_PROVIDER_ID && model.clientSession.isReady) {
 					// Jupyter server needs to be restarted so that the correct Python installation is used
 					if (!jupyterServerRestarted && restartJupyterServer) {
-						let jupyterNotebookManager: INotebookManager = model.notebookManagers.find(x => x.providerId === 'jupyter');
+						let jupyterNotebookManager: IExecuteManager = model.executeManagers.find(x => x.providerId === JUPYTER_PROVIDER_ID);
 						// Shutdown all current Jupyter sessions before stopping the server
 						await jupyterNotebookManager.sessionManager.shutdownAll();
 						// Jupyter session manager needs to be disposed so that a new one is created with the new server info
@@ -222,8 +223,8 @@ CommandsRegistry.registerCommand({
 		for (let editor of editors) {
 			if (editor instanceof NotebookInput) {
 				let model: INotebookModel = editor.notebookModel;
-				if (model?.providerId === 'jupyter') {
-					let jupyterNotebookManager: INotebookManager = model.notebookManagers.find(x => x.providerId === 'jupyter');
+				if (model?.providerId === JUPYTER_PROVIDER_ID) {
+					let jupyterNotebookManager: IExecuteManager = model.executeManagers.find(x => x.providerId === JUPYTER_PROVIDER_ID);
 					await jupyterNotebookManager.sessionManager.shutdownAll();
 					jupyterNotebookManager.sessionManager.dispose();
 					await jupyterNotebookManager.serverManager.stopServer();

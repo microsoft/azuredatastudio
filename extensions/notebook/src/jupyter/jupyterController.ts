@@ -19,7 +19,6 @@ import { IPrompter, IQuestion, QuestionTypes } from '../prompts/question';
 import { AppContext } from '../common/appContext';
 import { LocalJupyterServerManager, ServerInstanceFactory } from './jupyterServerManager';
 import { NotebookCompletionItemProvider } from '../intellisense/completionItemProvider';
-import { JupyterNotebookProvider } from './jupyterNotebookProvider';
 import { ConfigurePythonWizard } from '../dialog/configurePython/configurePythonWizard';
 import CodeAdapter from '../prompts/adapter';
 import { ManagePackagesDialog } from '../dialog/managePackages/managePackagesDialog';
@@ -28,6 +27,7 @@ import { LocalPipPackageManageProvider } from './localPipPackageManageProvider';
 import { LocalCondaPackageManageProvider } from './localCondaPackageManageProvider';
 import { ManagePackagesDialogModel, ManagePackageDialogOptions } from '../dialog/managePackages/managePackagesDialogModel';
 import { PyPiClient } from './pypiClient';
+import { JupyterExecuteProvider } from './jupyterExecuteProvider';
 
 let untitledCounter = 0;
 
@@ -37,7 +37,7 @@ export class JupyterController {
 	private _packageManageProviders = new Map<string, IPackageManageProvider>();
 
 	private prompter: IPrompter;
-	private _notebookProvider: JupyterNotebookProvider;
+	private _executeProvider: JupyterExecuteProvider;
 
 	constructor(private appContext: AppContext) {
 		this.prompter = new CodeAdapter();
@@ -47,8 +47,8 @@ export class JupyterController {
 		return this.appContext && this.appContext.extensionContext;
 	}
 
-	public get notebookProvider(): JupyterNotebookProvider {
-		return this._notebookProvider;
+	public get executeProvider(): JupyterExecuteProvider {
+		return this._executeProvider;
 	}
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
@@ -79,21 +79,19 @@ export class JupyterController {
 		let supportedFileFilter: vscode.DocumentFilter[] = [
 			{ scheme: 'untitled', language: '*' }
 		];
-		this.registerNotebookProvider();
-		this.extensionContext.subscriptions.push(vscode.languages.registerCompletionItemProvider(supportedFileFilter, new NotebookCompletionItemProvider(this._notebookProvider), '.'));
 
-		this.registerDefaultPackageManageProviders();
-		return true;
-	}
-
-	private registerNotebookProvider(): void {
-		this._notebookProvider = new JupyterNotebookProvider((documentUri: vscode.Uri) => new LocalJupyterServerManager({
+		this._executeProvider = new JupyterExecuteProvider((documentUri: vscode.Uri) => new LocalJupyterServerManager({
 			documentPath: documentUri.fsPath,
 			jupyterInstallation: this._jupyterInstallation,
 			extensionContext: this.extensionContext,
 			factory: this._serverInstanceFactory
 		}));
-		azdata.nb.registerNotebookProvider(this._notebookProvider);
+		azdata.nb.registerExecuteProvider(this._executeProvider);
+
+		this.extensionContext.subscriptions.push(vscode.languages.registerCompletionItemProvider(supportedFileFilter, new NotebookCompletionItemProvider(this._executeProvider), '.'));
+
+		this.registerDefaultPackageManageProviders();
+		return true;
 	}
 
 	private saveProfileAndCreateNotebook(profile: azdata.IConnectionProfile): Promise<void> {

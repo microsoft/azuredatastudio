@@ -11,8 +11,8 @@ import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { Event, Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 
-import { INotebookService, INotebookProvider, INotebookManager } from 'sql/workbench/services/notebook/browser/notebookService';
-import { INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, FutureMessageType, INotebookFutureDetails, INotebookFutureDone } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { INotebookService, IExecuteProvider, IExecuteManager, ISerializationProvider, ISerializationManager } from 'sql/workbench/services/notebook/browser/notebookService';
+import { IExecuteManagerDetails, INotebookSessionDetails, INotebookKernelDetails, FutureMessageType, INotebookFutureDetails, INotebookFutureDone, ISerializationManagerDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { LocalContentManager } from 'sql/workbench/services/notebook/common/localContentManager';
 import { Deferred } from 'sql/base/common/promise';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -22,7 +22,8 @@ import type { FutureInternal } from 'sql/workbench/services/notebook/browser/int
 export class MainThreadNotebook extends Disposable implements MainThreadNotebookShape {
 
 	private _proxy: ExtHostNotebookShape;
-	private _providers = new Map<number, NotebookProviderWrapper>();
+	private _serializationProviders = new Map<number, SerializationProviderWrapper>();
+	private _executeProviders = new Map<number, ExecuteProviderWrapper>();
 	private _futures = new Map<number, FutureWrapper>();
 
 	constructor(
@@ -45,22 +46,41 @@ export class MainThreadNotebook extends Disposable implements MainThreadNotebook
 	}
 
 	//#region Extension host callable methods
-	public $registerNotebookProvider(providerId: string, handle: number): void {
+	public $registerSerializationProvider(providerId: string, handle: number): void {
 		let proxy: Proxies = {
 			main: this,
 			ext: this._proxy
 		};
-		let notebookProvider = this.instantiationService.createInstance(NotebookProviderWrapper, proxy, providerId, handle);
-		this._providers.set(handle, notebookProvider);
-		this.notebookService.registerProvider(providerId, notebookProvider);
+		let notebookProvider = this.instantiationService.createInstance(SerializationProviderWrapper, proxy, providerId, handle);
+		this._serializationProviders.set(handle, notebookProvider);
+		this.notebookService.registerSerializationProvider(providerId, notebookProvider);
 	}
 
-	public $unregisterNotebookProvider(handle: number): void {
-		let registration = this._providers.get(handle);
+	public $registerExecuteProvider(providerId: string, handle: number): void {
+		let proxy: Proxies = {
+			main: this,
+			ext: this._proxy
+		};
+		let notebookProvider = this.instantiationService.createInstance(ExecuteProviderWrapper, proxy, providerId, handle);
+		this._executeProviders.set(handle, notebookProvider);
+		this.notebookService.registerExecuteProvider(providerId, notebookProvider);
+	}
+
+	public $unregisterSerializationProvider(handle: number): void {
+		let registration = this._serializationProviders.get(handle);
 		if (registration) {
-			this.notebookService.unregisterProvider(registration.providerId);
+			this.notebookService.unregisterSerializationProvider(registration.providerId);
 			registration.dispose();
-			this._providers.delete(handle);
+			this._serializationProviders.delete(handle);
+		}
+	}
+
+	public $unregisterExecuteProvider(handle: number): void {
+		let registration = this._executeProviders.get(handle);
+		if (registration) {
+			this.notebookService.unregisterExecuteProvider(registration.providerId);
+			registration.dispose();
+			this._executeProviders.delete(handle);
 		}
 	}
 
@@ -86,8 +106,8 @@ interface Proxies {
 	ext: ExtHostNotebookShape;
 }
 
-class NotebookProviderWrapper extends Disposable implements INotebookProvider {
-	private _notebookUriToManagerMap = new Map<string, NotebookManagerWrapper>();
+class SerializationProviderWrapper extends Disposable implements ISerializationProvider {
+	private _notebookUriToManagerMap = new Map<string, SerializationManagerWrapper>();
 
 	constructor(
 		private _proxy: Proxies,
@@ -98,16 +118,45 @@ class NotebookProviderWrapper extends Disposable implements INotebookProvider {
 		super();
 	}
 
-	getNotebookManager(notebookUri: URI): Thenable<INotebookManager> {
+	getSerializationManager(notebookUri: URI): Thenable<ISerializationManager> {
 		// TODO must call through to setup in the extension host
-		return this.doGetNotebookManager(notebookUri);
+		return this.doGetSerializationManager(notebookUri);
 	}
 
-	private async doGetNotebookManager(notebookUri: URI): Promise<INotebookManager> {
+	private async doGetSerializationManager(notebookUri: URI): Promise<ISerializationManager> {
 		let uriString = notebookUri.toString();
 		let manager = this._notebookUriToManagerMap.get(uriString);
 		if (!manager) {
-			manager = this.instantiationService.createInstance(NotebookManagerWrapper, this._proxy, this.providerId, notebookUri);
+			manager = this.instantiationService.createInstance(SerializationManagerWrapper, this._proxy, this.providerId, notebookUri);
+			await manager.initialize(this.providerHandle);
+			this._notebookUriToManagerMap.set(uriString, manager);
+		}
+		return manager;
+	}
+}
+
+class ExecuteProviderWrapper extends Disposable implements IExecuteProvider {
+	private _notebookUriToManagerMap = new Map<string, ExecuteManagerWrapper>();
+
+	constructor(
+		private _proxy: Proxies,
+		public readonly providerId: string,
+		public readonly providerHandle: number,
+		@IInstantiationService private readonly instantiationService: IInstantiationService
+	) {
+		super();
+	}
+
+	getExecuteManager(notebookUri: URI): Thenable<IExecuteManager> {
+		// TODO must call through to setup in the extension host
+		return this.doGetExecuteManager(notebookUri);
+	}
+
+	private async doGetExecuteManager(notebookUri: URI): Promise<IExecuteManager> {
+		let uriString = notebookUri.toString();
+		let manager = this._notebookUriToManagerMap.get(uriString);
+		if (!manager) {
+			manager = this.instantiationService.createInstance(ExecuteManagerWrapper, this._proxy, this.providerId, notebookUri);
 			await manager.initialize(this.providerHandle);
 			this._notebookUriToManagerMap.set(uriString, manager);
 		}
@@ -120,11 +169,9 @@ class NotebookProviderWrapper extends Disposable implements INotebookProvider {
 	}
 }
 
-class NotebookManagerWrapper implements INotebookManager {
-	private _sessionManager: azdata.nb.SessionManager;
+class SerializationManagerWrapper implements ISerializationManager {
 	private _contentManager: azdata.nb.ContentManager;
-	private _serverManager: azdata.nb.ServerManager;
-	private managerDetails: INotebookManagerDetails;
+	private managerDetails: ISerializationManagerDetails;
 
 	constructor(private _proxy: Proxies,
 		public readonly providerId: string,
@@ -132,10 +179,35 @@ class NotebookManagerWrapper implements INotebookManager {
 		@IInstantiationService private readonly instantiationService: IInstantiationService
 	) { }
 
-	public async initialize(providerHandle: number): Promise<NotebookManagerWrapper> {
-		this.managerDetails = await this._proxy.ext.$getNotebookManager(providerHandle, this.notebookUri);
+	public async initialize(providerHandle: number): Promise<SerializationManagerWrapper> {
+		this.managerDetails = await this._proxy.ext.$getSerializationManagerDetails(providerHandle, this.notebookUri);
 		let managerHandle = this.managerDetails.handle;
 		this._contentManager = this.managerDetails.hasContentManager ? new ContentManagerWrapper(managerHandle, this._proxy) : this.instantiationService.createInstance(LocalContentManager);
+		return this;
+	}
+
+	public get contentManager(): azdata.nb.ContentManager {
+		return this._contentManager;
+	}
+
+	public get managerHandle(): number {
+		return this.managerDetails.handle;
+	}
+}
+
+class ExecuteManagerWrapper implements IExecuteManager {
+	private _sessionManager: azdata.nb.SessionManager;
+	private _serverManager: azdata.nb.ServerManager;
+	private managerDetails: IExecuteManagerDetails;
+
+	constructor(private _proxy: Proxies,
+		public readonly providerId: string,
+		private notebookUri: URI
+	) { }
+
+	public async initialize(providerHandle: number): Promise<ExecuteManagerWrapper> {
+		this.managerDetails = await this._proxy.ext.$getExecuteManagerDetails(providerHandle, this.notebookUri);
+		let managerHandle = this.managerDetails.handle;
 		this._serverManager = this.managerDetails.hasServerManager ? new ServerManagerWrapper(managerHandle, this._proxy) : undefined;
 		this._sessionManager = new SessionManagerWrapper(managerHandle, this._proxy);
 		return this;
@@ -143,9 +215,6 @@ class NotebookManagerWrapper implements INotebookManager {
 
 	public get sessionManager(): azdata.nb.SessionManager {
 		return this._sessionManager;
-	}
-	public get contentManager(): azdata.nb.ContentManager {
-		return this._contentManager;
 	}
 	public get serverManager(): azdata.nb.ServerManager {
 		return this._serverManager;
@@ -160,12 +229,12 @@ class ContentManagerWrapper implements azdata.nb.ContentManager {
 
 	constructor(private handle: number, private _proxy: Proxies) {
 	}
-	getNotebookContents(notebookUri: URI): Thenable<azdata.nb.INotebookContents> {
-		return this._proxy.ext.$getNotebookContents(this.handle, notebookUri);
+	deserializeNotebook(contents: string): Thenable<azdata.nb.INotebookContents> {
+		return this._proxy.ext.$deserializeNotebook(this.handle, contents);
 	}
 
-	save(path: URI, notebook: azdata.nb.INotebookContents): Thenable<azdata.nb.INotebookContents> {
-		return this._proxy.ext.$save(this.handle, path, notebook);
+	serializeNotebook(notebook: azdata.nb.INotebookContents): Thenable<string> {
+		return this._proxy.ext.$serializeNotebook(this.handle, notebook);
 	}
 }
 
