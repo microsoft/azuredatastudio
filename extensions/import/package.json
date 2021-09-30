@@ -38,8 +38,8 @@
 		"keybindings": [
 			{
 				"command": "flatFileImport.start",
-				"key": "ctrl+d",
-				"mac": "ctrl+d"
+				"key": "ctrl+i",
+				"mac": "ctrl+i"
 			}
 		],
 		"menus": {
