@@ -551,6 +551,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				let newcellindex = index;
 				let tailcellindex = index;
 
+				// Save UI state
+				let showMarkdown = this.cells[index].showMarkdown;
+				let showPreview = this.cells[index].showPreview;
+
 				//Get selection value from current cell
 				let newcellcontent = model.getValueInRange(selection);
 
@@ -611,13 +615,17 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				}
 				let activecell = newcell ? newcell : tailcell;
 				let activecellindex = newcell ? newcellindex : tailcellindex;
-				this.updateActiveCell(activecell);
 
+				//make new cell Active
+				this.updateActiveCell(activecell);
 				this._contentChangedEmitter.fire({
 					changeType: NotebookChangeType.CellsModified,
 					cells: [activecell],
 					cellIndex: activecellindex
 				});
+				activecell.showMarkdown = showMarkdown;
+				activecell.showPreview = showPreview;
+
 				//return inserted cell
 				return activecell;
 			}
