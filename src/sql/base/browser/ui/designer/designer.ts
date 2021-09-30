@@ -199,7 +199,7 @@ export class Designer extends Disposable implements IThemable {
 			this._tabbedPanel.pushTab(this.createTabView(tab));
 		});
 		this.layoutTabbedPanel();
-		this.updateComponentValues();
+		await this.updateComponentValues();
 	}
 
 	private layoutTabbedPanel() {
@@ -347,8 +347,8 @@ export class Designer extends Disposable implements IThemable {
 					ariaLabel: componentDefinition.ariaLabel ?? componentDefinition.title,
 					type: inputDefinition.inputType,
 				});
-				input.onDidChange((newValue) => {
-					this.handleEdit({ type: DesignerEditType.Update, property: editIdentifier, value: newValue });
+				input.onDidChange(async (newValue) => {
+					await this.handleEdit({ type: DesignerEditType.Update, property: editIdentifier, value: newValue });
 				});
 				if (setWidth && componentDefinition.width !== undefined) {
 					input.width = componentDefinition.width;
@@ -360,8 +360,8 @@ export class Designer extends Disposable implements IThemable {
 				const dropdown = new SelectBox(dropdownDefinition.options, undefined, this._contextViewProvider, undefined);
 				dropdown.render(componentDiv);
 				dropdown.selectElem.style.height = '25px';
-				dropdown.onDidSelect((e) => {
-					this.handleEdit({ type: DesignerEditType.Update, property: editIdentifier, value: e.selected });
+				dropdown.onDidSelect(async (e) => {
+					await this.handleEdit({ type: DesignerEditType.Update, property: editIdentifier, value: e.selected });
 				});
 				component = dropdown;
 				break;
@@ -370,8 +370,8 @@ export class Designer extends Disposable implements IThemable {
 				const checkbox = new Checkbox(componentDiv, {
 					label: checkboxDefinition.title
 				});
-				checkbox.onChange(newValue => {
-					this.handleEdit({ type: DesignerEditType.Update, property: editIdentifier, value: newValue });
+				checkbox.onChange(async (newValue) => {
+					await this.handleEdit({ type: DesignerEditType.Update, property: editIdentifier, value: newValue });
 				});
 				component = checkbox;
 				break;
