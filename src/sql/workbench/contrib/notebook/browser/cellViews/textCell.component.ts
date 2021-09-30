@@ -95,7 +95,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			} else if ((e.ctrlKey || e.metaKey) && e.key === 'u') {
 				preventDefaultAndExecCommand(e, 'underline');
 				// Code Block
-			} else if (e.ctrlKey && e.shiftKey && e.key === 'k') {
+			} else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'k') {
 				preventDefaultAndExecCommand(e, 'formatBlock', false, 'pre');
 			}
 		}
