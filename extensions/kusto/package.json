@@ -1,6 +1,6 @@
 {
   "name": "kusto",
-  "version": "0.5.6",
+  "version": "0.5.7",
   "publisher": "Microsoft",
   "aiKey": "AIF-444c3af9-8e69-4462-ab49-4191e6ad1916",
   "activationEvents": [
