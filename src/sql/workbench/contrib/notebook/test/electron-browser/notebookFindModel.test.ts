@@ -7,7 +7,7 @@ import { nb } from 'azdata';
 import * as assert from 'assert';
 
 import { URI } from 'vs/base/common/uri';
-import { NotebookManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
+import { ExecuteManagerStub, SerializationManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { IClientSession, INotebookModelOptions } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
@@ -26,7 +26,7 @@ import { ServiceCollection } from 'vs/platform/instantiation/common/serviceColle
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { ClientSession } from 'sql/workbench/services/notebook/browser/models/clientSession';
 import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
-import { NotebookEditorContentManager } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
+import { NotebookEditorContentLoader } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookMarkdownRenderer } from 'sql/workbench/contrib/notebook/browser/outputs/notebookMarkdown';
 import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
@@ -67,8 +67,8 @@ let instantiationService: IInstantiationService;
 let serviceCollection = new ServiceCollection();
 
 suite('Notebook Find Model', function (): void {
-
-	let notebookManagers = [new NotebookManagerStub()];
+	let serializationManagers = [new SerializationManagerStub()];
+	let executeManagers = [new ExecuteManagerStub()];
 	let memento: TypeMoq.Mock<Memento>;
 	let queryConnectionService: TypeMoq.Mock<TestConnectionManagementService>;
 	let defaultModelOptions: INotebookModelOptions;
@@ -92,8 +92,9 @@ suite('Notebook Find Model', function (): void {
 		defaultModelOptions = {
 			notebookUri: defaultUri,
 			factory: new ModelFactory(instantiationService),
-			notebookManagers,
-			contentManager: undefined,
+			serializationManagers: serializationManagers,
+			executeManagers: executeManagers,
+			contentLoader: undefined,
 			notificationService: notificationService.object,
 			connectionService: queryConnectionService.object,
 			providerId: 'SQL',
@@ -434,9 +435,9 @@ suite('Notebook Find Model', function (): void {
 
 
 	async function initNotebookModel(contents: nb.INotebookContents): Promise<void> {
-		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(contents));
-		defaultModelOptions.contentManager = mockContentManager.object;
+		defaultModelOptions.contentLoader = mockContentManager.object;
 		// Initialize the model
 		model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService, undefined);
 		await model.loadContents();

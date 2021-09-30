@@ -546,8 +546,11 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				showNotebookDocument(uri: vscode.Uri, showOptions: azdata.nb.NotebookShowOptions) {
 					return extHostNotebookDocumentsAndEditors.showNotebookDocument(uri, showOptions);
 				},
-				registerNotebookProvider(provider: azdata.nb.NotebookProvider): vscode.Disposable {
-					return extHostNotebook.registerNotebookProvider(provider);
+				registerSerializationProvider(provider: azdata.nb.NotebookSerializationProvider): vscode.Disposable {
+					return extHostNotebook.registerSerializationProvider(provider);
+				},
+				registerExecuteProvider(provider: azdata.nb.NotebookExecuteProvider): vscode.Disposable {
+					return extHostNotebook.registerExecuteProvider(provider);
 				},
 				registerNavigationProvider(provider: azdata.nb.NavigationProvider): vscode.Disposable {
 					return extHostNotebookDocumentsAndEditors.registerNavigationProvider(provider);

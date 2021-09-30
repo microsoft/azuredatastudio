@@ -11,7 +11,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { URI } from 'vs/base/common/uri';
 
-import { NotebookManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
+import { ExecuteManagerStub, SerializationManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
 import { INotebookModelOptions } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
@@ -24,7 +24,7 @@ import { InstantiationService } from 'vs/platform/instantiation/common/instantia
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { NullLogService } from 'vs/platform/log/common/log';
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
-import { NotebookEditorContentManager } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
+import { NotebookEditorContentLoader } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { SessionManager } from 'sql/workbench/contrib/notebook/test/emptySessionClasses';
 import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
@@ -62,7 +62,8 @@ let configurationService: IConfigurationService;
 
 suite('NotebookViews', function (): void {
 	let defaultViewName = 'Default New View';
-	let notebookManagers = [new NotebookManagerStub()];
+	let serializationManagers = [new SerializationManagerStub()];
+	let executeManagers = [new ExecuteManagerStub()];
 	let mockSessionManager: TypeMoq.Mock<nb.SessionManager>;
 	let memento: TypeMoq.Mock<Memento>;
 	let queryConnectionService: TypeMoq.Mock<TestConnectionManagementService>;
@@ -131,7 +132,7 @@ suite('NotebookViews', function (): void {
 
 	function setupServices() {
 		mockSessionManager = TypeMoq.Mock.ofType(SessionManager);
-		notebookManagers[0].sessionManager = mockSessionManager.object;
+		executeManagers[0].sessionManager = mockSessionManager.object;
 		notificationService = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService, TypeMoq.MockBehavior.Loose);
 		capabilitiesService = TypeMoq.Mock.ofType<ICapabilitiesService>(TestCapabilitiesService);
 		memento = TypeMoq.Mock.ofType(Memento, TypeMoq.MockBehavior.Loose, '');
@@ -144,8 +145,9 @@ suite('NotebookViews', function (): void {
 		defaultModelOptions = {
 			notebookUri: defaultUri,
 			factory: new ModelFactory(instantiationService),
-			notebookManagers,
-			contentManager: undefined,
+			serializationManagers: serializationManagers,
+			executeManagers: executeManagers,
+			contentLoader: undefined,
 			notificationService: notificationService.object,
 			connectionService: queryConnectionService.object,
 			providerId: 'SQL',
@@ -157,9 +159,9 @@ suite('NotebookViews', function (): void {
 	}
 
 	async function initializeExtension(): Promise<NotebookViewsExtension> {
-		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(initialNotebookContent));
-		defaultModelOptions.contentManager = mockContentManager.object;
+		defaultModelOptions.contentLoader = mockContentManager.object;
 
 		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService, undefined);
 		await model.loadContents();

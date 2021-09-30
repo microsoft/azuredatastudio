@@ -14,7 +14,7 @@ import { NotebookChangeType, CellType, CellTypes } from 'sql/workbench/services/
 import { KernelsLanguage, nbversion } from 'sql/workbench/services/notebook/common/notebookConstants';
 import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import { INotebookManager, SQL_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_PROVIDER, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
+import { IExecuteManager, SQL_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_PROVIDER, ISerializationManager, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookContexts } from 'sql/workbench/services/notebook/browser/models/notebookContexts';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { INotification, Severity, INotificationService } from 'vs/platform/notification/common/notification';
@@ -126,7 +126,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		@ICapabilitiesService private _capabilitiesService?: ICapabilitiesService
 	) {
 		super();
-		if (!_notebookOptions || !_notebookOptions.notebookUri || !_notebookOptions.notebookManagers) {
+		if (!_notebookOptions || !_notebookOptions.notebookUri || !_notebookOptions.executeManagers) {
 			throw new Error('path or notebook service not defined');
 		}
 		this._trustedMode = false;
@@ -138,27 +138,43 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._defaultKernel = _notebookOptions.defaultKernel;
 	}
 
-	public get notebookManagers(): INotebookManager[] {
-		let notebookManagers = this._notebookOptions.notebookManagers.filter(manager => manager.providerId !== DEFAULT_NOTEBOOK_PROVIDER);
-		if (!notebookManagers.length) {
-			return this._notebookOptions.notebookManagers;
+	private get serializationManagers(): ISerializationManager[] {
+		let managers = this._notebookOptions.serializationManagers.filter(manager => manager.providerId !== DEFAULT_NOTEBOOK_PROVIDER);
+		if (!managers.length) {
+			return this._notebookOptions.serializationManagers;
 		}
-		return notebookManagers;
+		return managers;
 	}
 
-	public get notebookManager(): INotebookManager | undefined {
-		let manager = this.notebookManagers.find(manager => manager.providerId === this._providerId);
+	public get serializationManager(): ISerializationManager | undefined {
+		let manager = this.serializationManagers.find(manager => manager.providerId === this._providerId);
 		if (!manager) {
-			// Note: this seems like a less than ideal scenario. We should ideally pass in the "correct" provider ID and allow there to be a default,
-			// instead of assuming in the NotebookModel constructor that the option is either SQL or Jupyter
-			manager = this.notebookManagers.find(manager => manager.providerId === DEFAULT_NOTEBOOK_PROVIDER);
+			manager = this.serializationManagers.find(manager => manager.providerId === DEFAULT_NOTEBOOK_PROVIDER);
 		}
 		return manager;
 	}
 
-	public getNotebookManager(providerId: string): INotebookManager | undefined {
+	public get executeManagers(): IExecuteManager[] {
+		let managers = this._notebookOptions.executeManagers.filter(manager => manager.providerId !== DEFAULT_NOTEBOOK_PROVIDER);
+		if (!managers.length) {
+			return this._notebookOptions.executeManagers;
+		}
+		return managers;
+	}
+
+	public get executeManager(): IExecuteManager | undefined {
+		let manager = this.executeManagers.find(manager => manager.providerId === this._providerId);
+		if (!manager) {
+			// Note: this seems like a less than ideal scenario. We should ideally pass in the "correct" provider ID and allow there to be a default,
+			// instead of assuming in the NotebookModel constructor that the option is either SQL or Jupyter
+			manager = this.executeManagers.find(manager => manager.providerId === DEFAULT_NOTEBOOK_PROVIDER);
+		}
+		return manager;
+	}
+
+	public getExecuteManager(providerId: string): IExecuteManager | undefined {
 		if (providerId) {
-			return this.notebookManagers.find(manager => manager.providerId === providerId);
+			return this.executeManagers.find(manager => manager.providerId === providerId);
 		}
 		return undefined;
 	}
@@ -176,7 +192,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public get hasServerManager(): boolean {
 		// If the service has a server manager, then we can show the start button
-		return !!this.notebookManager?.serverManager;
+		return !!this.executeManager?.serverManager;
 	}
 
 	public get contentChanged(): Event<NotebookContentChange> {
@@ -249,7 +265,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			defaultKernel: '',
 			kernels: []
 		};
-		this.notebookManagers.forEach(manager => {
+		this.executeManagers.forEach(manager => {
 			if (manager.sessionManager && manager.sessionManager.specs && manager.sessionManager.specs.kernels) {
 				manager.sessionManager.specs.kernels.forEach(kernel => {
 					specs.kernels.push(kernel);
@@ -401,8 +417,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 			let contents: nb.INotebookContents | undefined;
 
-			if (this._notebookOptions && this._notebookOptions.contentManager) {
-				contents = await this._notebookOptions.contentManager.loadContent();
+			if (this._notebookOptions && this._notebookOptions.contentLoader) {
+				contents = await this._notebookOptions.contentLoader.loadContent();
 			}
 			let factory = this._notebookOptions.factory;
 			// if cells already exist, create them with language info (if it is saved)
@@ -806,7 +822,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._onErrorEmitter.fire({ message: error, severity: Severity.Error });
 	}
 
-	public async startSession(manager: INotebookManager, displayName?: string, setErrorStateOnFail?: boolean, kernelAlias?: string): Promise<void> {
+	public async startSession(manager: IExecuteManager, displayName?: string, setErrorStateOnFail?: boolean, kernelAlias?: string): Promise<void> {
 		if (displayName) {
 			let standardKernel = this._standardKernels.find(kernel => kernel.displayName === displayName);
 			if (standardKernel) {
@@ -816,7 +832,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		if (this._defaultKernel) {
 			let clientSession = this._notebookOptions.factory.createClientSession({
 				notebookUri: this._notebookOptions.notebookUri,
-				notebookManager: manager,
+				executeManager: manager,
 				notificationService: this._notebookOptions.notificationService,
 				kernelSpec: this._defaultKernel
 			});
@@ -863,7 +879,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		if (this._activeClientSession) {
 			// Old active client sessions have already been shutdown by RESTART_JUPYTER_NOTEBOOK_SESSIONS command
 			this._activeClientSession = undefined;
-			await this.startSession(this.notebookManager, this._selectedKernelDisplayName, true);
+			await this.startSession(this.executeManager, this._selectedKernelDisplayName, true);
 		}
 	}
 
@@ -890,7 +906,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			if (provider && provider !== this._providerId) {
 				this._providerId = provider;
 			} else if (!provider) {
-				this.notebookOptions.notebookManagers.forEach(m => {
+				this.notebookOptions.executeManagers.forEach(m => {
 					if (m.providerId !== SQL_NOTEBOOK_PROVIDER) {
 						// We don't know which provider it is before that provider is chosen to query its specs. Choosing the "last" one registered.
 						this._providerId = m.providerId;
@@ -1115,7 +1131,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			// Ensure that the kernel we try to switch to is a valid kernel; if not, use the default
 			let kernelSpecs = this.getKernelSpecs();
 			if (kernelSpecs && kernelSpecs.length > 0 && kernelSpecs.findIndex(k => k.display_name === spec.display_name) < 0) {
-				spec = kernelSpecs.find(spec => spec.name === this.notebookManager?.sessionManager.specs.defaultKernel);
+				spec = kernelSpecs.find(spec => spec.name === this.executeManager?.sessionManager.specs.defaultKernel);
 			}
 		}
 		else {
@@ -1212,11 +1228,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public getDisplayNameFromSpecName(kernel: nb.IKernel): string | undefined {
-		let specs = this.notebookManager?.sessionManager.specs;
+		let specs = this.executeManager?.sessionManager.specs;
 		if (!specs || !specs.kernels) {
 			return kernel.name;
 		}
-		let newKernel = this.notebookManager.sessionManager.specs.kernels.find(k => k.name === kernel.name);
+		let newKernel = this.executeManager.sessionManager.specs.kernels.find(k => k.name === kernel.name);
 		let newKernelDisplayName;
 		if (newKernel) {
 			newKernelDisplayName = newKernel.display_name;
@@ -1315,7 +1331,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				this._onProviderIdChanged.fire(this._providerId);
 
 				await this.shutdownActiveSession();
-				let manager = this.getNotebookManager(providerId);
+				let manager = this.getExecuteManager(providerId);
 				if (manager) {
 					await this.startSession(manager, displayName, false, kernelAlias);
 				} else {
@@ -1338,8 +1354,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				return providerId;
 			}
 		} else {
-			if (this.notebookManagers?.length) {
-				return this.notebookManagers.map(m => m.providerId).find(p => p !== DEFAULT_NOTEBOOK_PROVIDER && p !== SQL_NOTEBOOK_PROVIDER);
+			if (this.executeManagers?.length) {
+				return this.executeManagers.map(m => m.providerId).find(p => p !== DEFAULT_NOTEBOOK_PROVIDER && p !== SQL_NOTEBOOK_PROVIDER);
 			}
 		}
 		return undefined;
@@ -1347,9 +1363,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	// Get kernel specs from current sessionManager
 	private getKernelSpecs(): nb.IKernelSpec[] {
-		if (this.notebookManager && this.notebookManager.sessionManager && this.notebookManager.sessionManager.specs &&
-			this.notebookManager.sessionManager.specs.kernels) {
-			return this.notebookManager.sessionManager.specs.kernels;
+		if (this.executeManager && this.executeManager.sessionManager && this.executeManager.sessionManager.specs &&
+			this.executeManager.sessionManager.specs.kernels) {
+			return this.executeManager.sessionManager.specs.kernels;
 		}
 		return [];
 	}

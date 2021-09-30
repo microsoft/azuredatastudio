@@ -22,14 +22,14 @@ import { IProductService } from 'vs/platform/product/common/productService';
 import { Separator } from 'vs/base/common/actions';
 import { INotebookModelOptions } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
-import { NotebookEditorContentManager } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
+import { NotebookEditorContentLoader } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { URI } from 'vs/base/common/uri';
 import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
 import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { nb } from 'azdata';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
-import { NotebookManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
+import { ExecuteManagerStub, SerializationManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
 
 suite('CellToolbarActions', function (): void {
 	suite('removeDuplicatedAndStartingSeparators', function (): void {
@@ -202,13 +202,14 @@ export async function createandLoadNotebookModel(codeContent?: nb.INotebookConte
 
 	let serviceCollection = new ServiceCollection();
 	let instantiationService = new InstantiationService(serviceCollection, true);
-	let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+	let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
 	mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(codeContent ? codeContent : defaultCodeContent));
 	let defaultModelOptions: INotebookModelOptions = {
 		notebookUri: URI.file('/some/path.ipynb'),
 		factory: new ModelFactory(instantiationService),
-		notebookManagers: [new NotebookManagerStub()],
-		contentManager: mockContentManager.object,
+		serializationManagers: [new SerializationManagerStub()],
+		executeManagers: [new ExecuteManagerStub()],
+		contentLoader: mockContentManager.object,
 		notificationService: undefined,
 		connectionService: undefined,
 		providerId: 'SQL',
