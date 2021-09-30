@@ -457,7 +457,7 @@ export class MigrationStatusDialog {
 			});
 		const tab: azdata.window.DialogTab = azdata.window.createTab('');
 		tab.registerContent(async view => {
-			const warningContentContainer = view.modelBuilder.divContainer().withProps({}).component();
+			const warningContentContainer = view.modelBuilder.divContainer().component();
 			const messageTextComponent = view.modelBuilder.text().withProps({
 				value: calloutMessageText,
 				CSSStyles: {
@@ -519,6 +519,7 @@ export class MigrationStatusDialog {
 			const migrationWarningCount = this._view.modelBuilder.hyperlink()
 				.withProps({
 					label: loc.STATUS_WARNING_COUNT(status, count) ?? '',
+					ariaLabel: loc.ERROR,
 					url: '',
 					height: statusImageSize,
 					CSSStyles: statusCellStyles,
@@ -529,7 +530,7 @@ export class MigrationStatusDialog {
 				migrationWarningCount
 			]);
 
-			migrationWarningCount.onDidClick(async () => {
+			this._disposables.push(migrationWarningCount.onDidClick(async () => {
 				const cutoverDialogModel = new MigrationCutoverDialogModel(migration!);
 				const errors = await cutoverDialogModel.fetchErrors();
 				this.openCalloutDialog(
@@ -540,7 +541,7 @@ export class MigrationStatusDialog {
 					'input-table-row-dialog',
 					errors
 				);
-			});
+			}));
 		}
 
 		return control;
