@@ -637,7 +637,7 @@
       },
       {
         "command": "notebook.command.codeBlock",
-        "key": "Ctrl+c",
+        "key": "Ctrl+Shift+K",
         "when": "activeEditor == workbench.editor.notebookEditor && editorLangId == markdown"
       }
     ],
