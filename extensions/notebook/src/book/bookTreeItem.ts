@@ -7,22 +7,8 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import { JupyterBookSection, IJupyterBookToc } from '../contracts/content';
 import * as loc from '../common/localizedConstants';
-import { isBookItemPinned, getNotebookType } from '../common/utils';
+import { isBookItemPinned, getNotebookType, BookTreeItemType } from '../common/utils';
 import { BookVersion, getContentPath, getTocPath } from './bookVersionHandler';
-
-export enum BookTreeItemType {
-	Book = 'Book',
-	Notebook = 'Notebook',
-	Markdown = 'Markdown',
-	ExternalLink = 'ExternalLink',
-	providedBook = 'providedBook',
-	savedBook = 'savedBook',
-	unsavedNotebook = 'unsavedNotebook',
-	savedNotebook = 'savedNotebook',
-	pinnedNotebook = 'pinnedNotebook',
-	section = 'section',
-	savedBookNotebook = 'savedBookNotebook'
-}
 
 export interface BookTreeItemFormat {
 	title: string;
@@ -36,6 +22,12 @@ export interface BookTreeItemFormat {
 	version?: BookVersion;
 	parent?: BookTreeItem;
 	hasChildren?: boolean;
+	/**
+	 * Use to identify the hierarchy of nested book tree items.
+	 * For instance, the hierarchyId of the first node would be "0" and its children would have
+	 * a hierarchyId starting with "0/"
+	 */
+	hierarchyId?: string;
 }
 
 export class BookTreeItem extends vscode.TreeItem {
