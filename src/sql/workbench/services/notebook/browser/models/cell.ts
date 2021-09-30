@@ -85,6 +85,7 @@ export class CellModel extends Disposable implements ICellModel {
 	private _outputCounter = 0; // When re-executing the same cell, ensure that we apply chart options in the same order
 	private _attachments: nb.ICellAttachments | undefined;
 	private _preventNextChartCache: boolean = false;
+	public lastEditMode: string;
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
@@ -226,8 +227,13 @@ export class CellModel extends Disposable implements ICellModel {
 	public set isEditMode(isEditMode: boolean) {
 		this._isEditMode = isEditMode;
 		if (this._isEditMode) {
-			this.showPreview = this._defaultTextEditMode !== TextCellEditModes.Markdown;
-			this.showMarkdown = this._defaultTextEditMode !== TextCellEditModes.RichText;
+			if (this.lastEditMode) {
+				this.showPreview = this.lastEditMode !== TextCellEditModes.Markdown;
+				this.showMarkdown = this.lastEditMode !== TextCellEditModes.RichText;
+			} else {
+				this.showPreview = this._defaultTextEditMode !== TextCellEditModes.Markdown;
+				this.showMarkdown = this._defaultTextEditMode !== TextCellEditModes.RichText;
+			}
 		}
 		this._onCellModeChanged.fire(this._isEditMode);
 		// Note: this does not require a notebook update as it does not change overall state
@@ -311,6 +317,9 @@ export class CellModel extends Disposable implements ICellModel {
 			this._source = newSource;
 			this.sendChangeToNotebook(NotebookChangeType.CellSourceUpdated);
 			this.cellSourceChanged = true;
+			if (this.isEditMode) {
+				this.lastEditMode = this._showPreview && this._showMarkdown ? TextCellEditModes.SplitView : (this._showMarkdown ? TextCellEditModes.Markdown : TextCellEditModes.RichText);
+			}
 		}
 		this._modelContentChangedEvent = undefined;
 		this._preventNextChartCache = true;

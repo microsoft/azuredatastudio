@@ -548,6 +548,7 @@ export interface ICellModel {
 	 * Returns the name of the attachment added to metadata.
 	 */
 	addAttachment(mimeType: string, base64Encoding: string, name: string): string;
+	lastEditMode: string;
 }
 
 export interface IModelFactory {
