@@ -221,7 +221,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			this.focusIfPreviewMode();
 		}));
 		this._register(this.cellModel.onCellMarkdownModeChanged(markdown => {
-			if (!markdown && window.getSelection() && window.getSelection().getRangeAt(0)) {
+			if (!markdown) {
 				let editorControl = this.cellEditors.length > 0 ? this.cellEditors[0].getEditor().getControl() : undefined;
 				if (editorControl) {
 					let selection = editorControl.getSelections()[0];
@@ -450,23 +450,26 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			// Move cursor to the last known location
 			if (this.cellModel.richTextCursorPosition) {
 				let selection = window.getSelection();
-				selection.removeAllRanges();
-				let startContainers = this.cellModel.richTextCursorPosition.startElementNodes;
-				let depthToNode = startContainers.length;
+				let htmlNodes = this.cellModel.richTextCursorPosition.startElementNodes;
+				let depthToNode = htmlNodes.length;
 				let startNodeElement: any = this.output.nativeElement;
-				while (depthToNode--) {
-					startNodeElement = startNodeElement.childNodes[startContainers[depthToNode]];
+				while (depthToNode-- && startNodeElement) {
+					startNodeElement = startNodeElement.childNodes[htmlNodes[depthToNode]];
 				}
-				startContainers = this.cellModel.richTextCursorPosition.endElementNodes;
-				depthToNode = startContainers.length;
+				htmlNodes = this.cellModel.richTextCursorPosition.endElementNodes;
+				depthToNode = htmlNodes.length;
 				let endNodeElement: any = this.output.nativeElement;
-				while (depthToNode--) {
-					endNodeElement = endNodeElement.childNodes[startContainers[depthToNode]];
+				while (depthToNode-- && endNodeElement) {
+					endNodeElement = endNodeElement?.childNodes[htmlNodes[depthToNode]];
 				}
-				let range = new Range();
-				range.setStart(startNodeElement, this.cellModel.richTextCursorPosition.startOffset);
-				range.setEnd(endNodeElement, this.cellModel.richTextCursorPosition.endOffset);
-				selection.addRange(range);
+				// check to see if the nodes exist and set the cursor
+				if (startNodeElement && endNodeElement) {
+					selection.removeAllRanges();
+					let range = document.createRange();
+					range.setStart(startNodeElement, this.cellModel.richTextCursorPosition.startOffset);
+					range.setEnd(endNodeElement, this.cellModel.richTextCursorPosition.endOffset);
+					selection.addRange(range);
+				}
 			}
 		}
 	}
