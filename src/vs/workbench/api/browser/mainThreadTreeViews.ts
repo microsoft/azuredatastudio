@@ -198,14 +198,14 @@ export class TreeViewDataProvider implements ITreeViewDataProvider {
 		this.hasResolve = this._proxy.$hasResolve(this.treeViewId);
 	}
 
-	getChildren(treeItem?: ITreeItem): Promise<ITreeItem[]> {
-		return Promise.resolve(this._proxy.$getChildren(this.treeViewId, treeItem ? treeItem.handle : undefined)
+	getChildren(treeItem?: ITreeItem): Promise<ITreeItem[] | undefined> {
+		return this._proxy.$getChildren(this.treeViewId, treeItem ? treeItem.handle : undefined)
 			.then(
 				children => this.postGetChildren(children),
 				err => {
 					this.notificationService.error(err);
 					return [];
-				}));
+				});
 	}
 
 	getItemsToRefresh(itemsToRefreshByHandle: { [treeItemHandle: string]: ITreeItem }): ITreeItem[] {
@@ -242,8 +242,11 @@ export class TreeViewDataProvider implements ITreeViewDataProvider {
 		return this.itemsMap.size === 0;
 	}
 
-	protected async postGetChildren(elements: ITreeItem[]): Promise<ITreeItem[]> { // {{SQL CARBON EDIT}} For use by Component Tree View
-		const result: ITreeItem[] = []; // {{SQL CARBON EDIT}}
+	public async postGetChildren(elements: ITreeItem[] | undefined): Promise<ITreeItem[] | undefined> { // {{SQL CARBON EDIT}} For use by Component Tree View
+		if (elements === undefined) {
+			return undefined;
+		}
+		const result: ITreeItem[] = []; // {{SQL CARBON EDIT}} Use generic type for component tree view
 		const hasResolve = await this.hasResolve;
 		if (elements) {
 			for (const element of elements) {

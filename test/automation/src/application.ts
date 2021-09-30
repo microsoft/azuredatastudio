@@ -70,14 +70,9 @@ export class Application {
 		return this._userDataPath;
 	}
 
-	async start(expectWalkthroughPart = true): Promise<any> {
+	async start(): Promise<any> {
 		await this._start();
 		await this.code.waitForElement('.object-explorer-view'); // {{SQL CARBON EDIT}} We have a different startup view
-
-		// https://github.com/microsoft/vscode/issues/118748
-		// if (expectWalkthroughPart) {
-		// 	await this.code.waitForElement(`.editor-instance > div > div.welcomePageFocusElement[tabIndex="0"]`);
-		// }
 	}
 
 	async restart(options: { workspaceOrFolder?: string, extraArgs?: string[] }): Promise<any> {

@@ -44,10 +44,6 @@
 	margin-right: 4px;
 }
 
-.extensions-viewlet > .extensions .extension-list-item .monaco-action-bar .action-label.icon {
-	padding: 1px 2px;
-}
-
 .extensions-viewlet > .extensions .extension-view-header .monaco-action-bar .action-item > .action-label.icon.codicon {
 	vertical-align: middle;
 	line-height: 22px;
@@ -61,11 +57,6 @@
 .extension-editor .details .monaco-action-bar .monaco-dropdown,
 .extensions-viewlet > .extensions .monaco-action-bar .monaco-dropdown {
 	width: 0px;
-}
-
-.extensions-viewlet > .extensions .extension-list-item .monaco-action-bar > .actions-container > .action-item.action-dropdown-item,
-.extensions-viewlet > .extensions .extension-list-item .monaco-action-bar > .actions-container > .action-item:not(.action-dropdown-item) > .extension-action {
-	margin-left: 6px;
 }
 
 .extensions-viewlet > .extensions .extensions-list.hidden,

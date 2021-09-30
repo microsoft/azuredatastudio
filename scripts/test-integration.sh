@@ -43,6 +43,7 @@ else
 				# compile-extension:css-language-features-server \
 				# compile-extension:html-language-features-server \
 				# compile-extension:json-language-features-server \
+				# compile-extension:ipynb \
 				# compile-extension-media
 
 
@@ -97,6 +98,10 @@ after_suite
 
 "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS $ROOT/extensions/azurecore/test-fixtures --extensionDevelopmentPath=$ROOT/extensions/azurecore --extensionTestsPath=$ROOT/extensions/azurecore/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
 after_suite
+
+# "$INTEGRATION_TEST_ELECTRON_PATH" $LINUX_EXTRA_ARGS $(mktemp -d 2>/dev/null) --extensionDevelopmentPath=$ROOT/extensions/ipynb --extensionTestsPath=$ROOT/extensions/ipynb/out/test $ALL_PLATFORMS_API_TESTS_EXTRA_ARGS
+# after_suite
+
 
 # Tests standalone (CommonJS)
 # cd $ROOT/extensions/css-language-features/server && $ROOT/scripts/node-electron.sh test/index.js

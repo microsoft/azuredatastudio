@@ -27,8 +27,13 @@
 	</body>
 
 	<!-- Startup (do not modify order of script tags!) -->
+	<script src="./static/out/vs/loader.js"></script>
+	<script src="./static/out/vs/webPackagePaths.js"></script>
 	<script>
-		self.require = {
+		Object.keys(self.webPackagePaths).map(function (key, index) {
+			self.webPackagePaths[key] = `${window.location.origin}/static/remote/web/node_modules/${key}/${self.webPackagePaths[key]}`;
+		});
+		require.config({
 			baseUrl: `${window.location.origin}/static/out`,
 			recordStats: true,
 			trustedTypesPolicy: window.trustedTypes?.createPolicy('amdLoader', {
@@ -39,63 +44,8 @@
 					throw new Error(`Invalid script url: ${value}`)
 				}
 			}),
-			paths: {
-				'@vscode/vscode-languagedetection': `${window.location.origin}/static/remote/web/node_modules/@vscode/vscode-languagedetection/dist/lib/index.js`,
-				'vscode-textmate': `${window.location.origin}/static/remote/web/node_modules/vscode-textmate/release/main`,
-				'vscode-oniguruma': `${window.location.origin}/static/remote/web/node_modules/vscode-oniguruma/release/main`,
-				'xterm': `${window.location.origin}/static/remote/web/node_modules/xterm/lib/xterm.js`,
-				'xterm-addon-search': `${window.location.origin}/static/remote/web/node_modules/xterm-addon-search/lib/xterm-addon-search.js`,
-				'xterm-addon-unicode11': `${window.location.origin}/static/remote/web/node_modules/xterm-addon-unicode11/lib/xterm-addon-unicode11.js`,
-				'xterm-addon-webgl': `${window.location.origin}/static/remote/web/node_modules/xterm-addon-webgl/lib/xterm-addon-webgl.js`,
-				'@angular/core': `${window.location.origin}/static/remote/web/node_modules/@angular/core/bundles/core.umd.js`,
-				'@angular/common': `${window.location.origin}/static/remote/web/node_modules/@angular/common/bundles/common.umd.js`,
-				'@angular/compiler': `${window.location.origin}/static/remote/web/node_modules/@angular/compiler/bundles/compiler.umd.js`,
-				'@angular/platform-browser': `${window.location.origin}/static/remote/web/node_modules/@angular/platform-browser/bundles/platform-browser.umd.js`,
-				'@angular/platform-browser-dynamic': `${window.location.origin}/static/remote/web/node_modules/@angular/platform-browser-dynamic/bundles/platform-browser-dynamic.umd.js`,
-				'@angular/platform-browser/animations': `${window.location.origin}/static/remote/web/node_modules/@angular/platform-browser/bundles/platform-browser-animations.umd.js`,
-				'@angular/forms': `${window.location.origin}/static/remote/web/node_modules/@angular/forms/bundles/forms.umd.js`,
-				'@angular/http': `${window.location.origin}/static/remote/web/node_modules/@angular/http/bundles/http.umd.js`,
-				'@angular/router': `${window.location.origin}/static/remote/web/node_modules/@angular/router/bundles/router.umd.js`,
-				'@angular/animations': `${window.location.origin}/static/remote/web/node_modules/@angular/animations/bundles/animations.umd.n.js`,
-				'angular2-grid': `${window.location.origin}/static/remote/web/node_modules/angular2-grid/bundles/NgGrid.umd.js`,
-				'angular2-slickgrid': `${window.location.origin}/static/remote/web/node_modules/angular2-slickgrid/out/bundles/angular2-slickgrid.umd.js`,
-				'chart.js':  `${window.location.origin}/static/remote/web/node_modules/chart.js/dist/Chart.bundle.min.js`,
-				'html-query-plan': `${window.location.origin}/static/remote/web/node_modules/html-query-plan/dist/index.min.js`,
-				'html-to-image': `${window.location.origin}/static/remote/web/node_modules/html-to-image/dist/html-to-image.js`,
-				'ng2-charts': `${window.location.origin}/static/remote/web/node_modules/ng2-charts/bundles/ng2-charts.umd.js`,
-				'rxjs/Observable': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?0`,
-				'rxjs/observable/merge': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?1`,
-				'rxjs/operator/share': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?2`,
-				'rxjs/Subject': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?3`,
-				'rxjs/observable/forkJoin': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?4`,
-				'rxjs/operator/map': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?5`,
-				'rxjs/observable/fromPromise': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?6`,
-				'rxjs/add/observable/fromPromise': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?7`,
-				'rxjs/BehaviorSubject': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?8`,
-				'rxjs/observable/from': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?9`,
-				'rxjs/operator/concatMap': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?10`,
-				'rxjs/observable/of': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?11`,
-				'rxjs/operator/every': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?12`,
-				'rxjs/operator/first': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?13`,
-				'rxjs/operator/mergeMap': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?14`,
-				'rxjs/operator/reduce': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?15`,
-				'rxjs/operator/catch': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?16`,
-				'rxjs/operator/concatAll': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?17`,
-				'rxjs/util/EmptyError': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?18`,
-				'rxjs/operator/last': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?19`,
-				'rxjs/operator/mergeAll': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?20`,
-				'rxjs/operator/filter': `${window.location.origin}/static/remote/web/node_modules/rxjs/bundles/Rx.min.js?21`,
-				'sanitize-html': `${window.location.origin}/static/remote/web/node_modules/sanitize-html/dist/sanitize-html.js`,
-				'ansi_up': `${window.location.origin}/static/remote/web/node_modules/ansi_up/ansi_up.js`,
-				'tas-client-umd': `${window.location.origin}/static/remote/web/node_modules/tas-client-umd/lib/tas-client-umd.js`,
-				'iconv-lite-umd': `${window.location.origin}/static/remote/web/node_modules/iconv-lite-umd/lib/iconv-lite-umd.js`,
-				'jschardet': `${window.location.origin}/static/remote/web/node_modules/jschardet/dist/jschardet.min.js`,
-				'turndown': `${window.location.origin}/static/remote/web/node_modules/turndown/lib/turndown.browser.umd.js`,
-				'mark.js': `${window.location.origin}/static/remote/web/node_modules/mark.js/dist/mark.min.js`,
-				'gridstack': `${window.location.origin}/static/node_modules/gridstack/dist/gridstack-h5.js`,
-				'plotly.js-dist-min': `${window.location.origin}/static/node_modules/plotly.js-dist-min/plotly.min.js`
-			}
-		};
+			paths: self.webPackagePaths
+		});
 	</script>
 	<script src="./static/remote/web/node_modules/jquery/dist/jquery.min.js"></script>
 	<script src="./static/remote/web/node_modules/slickgrid/lib/jquery.event.drag-2.3.0.js"></script>
@@ -106,8 +56,7 @@
 	<script src="./static/remote/web/node_modules/slickgrid/plugins/slick.cellrangedecorator.js"></script>
 	<script src="./static/remote/web/node_modules/zone.js/dist/zone.min.js"></script>
 	<script src="./static/remote/web/node_modules/reflect-metadata/Reflect.js"></script>
-	<script src="./static/out/vs/base/common/performance.js"></script>
-	<script src="./static/out/vs/loader.js"></script>
+
 	<script>
 		performance.mark('code/willLoadWorkbenchMain');
 	</script>

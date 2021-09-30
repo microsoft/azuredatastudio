@@ -134,7 +134,7 @@
 				"restrictions": [
 					"vs/nls",
 					"**/{vs,sql}/base/{common,node}/**",
-					"*" // node modules
+					"@vscode/*", "*" // node modules
 				]
 			},
 			{
@@ -176,7 +176,7 @@
 					"vs/nls",
 					"**/{vs,sql}/base/{common,node}/**",
 					"**/{vs,sql}/base/parts/*/{common,node}/**",
-					"*" // node modules
+					"@vscode/*", "*" // node modules
 				]
 			},
 			{
@@ -195,7 +195,7 @@
 					"vs/css!./**/*",
 					"**/{vs,sql}/base/{common,browser,node,electron-sandbox,electron-browser}/**",
 					"**/{vs,sql}/base/parts/*/{common,browser,node,electron-sandbox,electron-browser}/**",
-					"*" // node modules
+					"@vscode/*", "*" // node modules
 				]
 			},
 			{
@@ -204,7 +204,7 @@
 					"vs/nls",
 					"**/{vs,sql}/base/{common,node,electron-main}/**",
 					"**/{vs,sql}/base/parts/*/{common,node,electron-main}/**",
-					"*" // node modules
+					"@vscode/*", "*" // node modules
 				]
 			},
 			{
@@ -252,7 +252,7 @@
 					"**/{vs,sql}/base/{common,node}/**",
 					"**/{vs,sql}/base/parts/*/{common,node}/**",
 					"**/{vs,sql}/platform/*/{common,node}/**",
-					"*" // node modules
+					"@vscode/*", "*" // node modules
 				]
 			},
 			{
@@ -274,7 +274,7 @@
 					"**/{vs,sql}/base/{common,browser,node,electron-sandbox,electron-browser}/**",
 					"**/{vs,sql}/base/parts/*/{common,browser,node,electron-sandbox,electron-browser}/**",
 					"**/{vs,sql}/platform/*/{common,browser,node,electron-sandbox,electron-browser}/**",
-					"*" // node modules
+					"@vscode/*", "*" // node modules
 				]
 			},
 			{
@@ -285,8 +285,7 @@
 					"**/{vs,sql}/base/{common,node,electron-main}/**",
 					"**/{vs,sql}/base/parts/*/{common,node,electron-main}/**",
 					"**/{vs,sql}/platform/*/{common,node,electron-main}/**",
-					"**/{vs,sql}/code/**",
-					"*" // node modules
+					"@vscode/*", "*" // node modules
 				]
 			},
 			{
@@ -521,7 +520,7 @@
 					"**/{vs,sql}/workbench/{common,browser,node,electron-sandbox,electron-browser}/**",
 					"**/{vs,sql}/workbench/api/{common,browser,node,electron-sandbox,electron-browser}/**",
 					"**/{vs,sql}/workbench/services/*/{common,browser,node,electron-sandbox,electron-browser}/**",
-					"*" // node modules
+					"@vscode/*", "*" // node modules
 				]
 			},
 			{
@@ -536,7 +535,7 @@
 					"vs/workbench/contrib/files/browser/editors/fileEditorInput",
 					"**/{vs,sql}/workbench/services/**",
 					"**/{vs,sql}/workbench/test/**",
-					"*" // node modules
+					"@vscode/*", "*" // node modules
 				]
 			},
 			{
@@ -594,7 +593,8 @@
 					"@angular/*",
 					"rxjs/**",
 					"sanitize-html",
-					"ansi_up"
+					"ansi_up",
+					"@microsoft/applicationinsights-web"
 				]
 			},
 			{
@@ -607,7 +607,7 @@
 					"**/{vs,sql}/workbench/{common,node}/**",
 					"**/{vs,sql}/workbench/api/{common,node}/**",
 					"**/{vs,sql}/workbench/services/**/{common,node}/**",
-					"*" // node modules
+					"@vscode/*", "*" // node modules
 				]
 			},
 			{
@@ -638,7 +638,7 @@
 					"**/{vs,sql}/workbench/{common,browser,node,electron-sandbox,electron-browser}/**",
 					"**/{vs,sql}/workbench/api/{common,browser,node,electron-sandbox,electron-browser}/**",
 					"**/{vs,sql}/workbench/services/**/{common,browser,node,electron-sandbox,electron-browser}/**",
-					"*" // node modules
+					"@vscode/*", "*" // node modules
 				]
 			},
 			{
@@ -776,7 +776,7 @@
 					"**/{vs,sql}/workbench/api/{common,node}/**",
 					"**/{vs,sql}/workbench/services/**/{common,node}/**",
 					"**/{vs,sql}/workbench/contrib/**/{common,node}/**",
-					"*" // node modules
+					"@vscode/*", "*" // node modules
 				]
 			},
 			{
@@ -809,7 +809,7 @@
 					"**/{vs,sql}/workbench/api/{common,browser,node,electron-sandbox,electron-browser}/**",
 					"**/{vs,sql}/workbench/services/**/{common,browser,node,electron-sandbox,electron-browser}/**",
 					"**/{vs,sql}/workbench/contrib/**/{common,browser,node,electron-sandbox,electron-browser}/**",
-					"*" // node modules
+					"@vscode/*", "*" // node modules
 				]
 			},
 			{
@@ -832,7 +832,7 @@
 					"**/{vs,sql}/base/parts/**/{common,node}/**",
 					"**/{vs,sql}/platform/**/{common,node}/**",
 					"**/{vs,sql}/code/**/{common,node}/**",
-					"*" // node modules
+					"@vscode/*", "*" // node modules
 				]
 			},
 			{
@@ -844,7 +844,7 @@
 					"**/{vs,sql}/base/parts/**/{common,browser,node,electron-sandbox,electron-browser}/**",
 					"**/{vs,sql}/platform/**/{common,browser,node,electron-sandbox,electron-browser}/**",
 					"**/{vs,sql}/code/**/{common,browser,node,electron-sandbox,electron-browser}/**",
-					"*" // node modules
+					"@vscode/*", "*" // node modules
 				]
 			},
 			{
@@ -855,7 +855,7 @@
 					"**/{vs,sql}/base/parts/**/{common,node,electron-main}/**",
 					"**/{vs,sql}/platform/**/{common,node,electron-main}/**",
 					"**/{vs,sql}/code/**/{common,node,electron-main}/**",
-					"*" // node modules
+					"@vscode/*", "*" // node modules
 				]
 			},
 			{
@@ -867,8 +867,7 @@
 					"**/{vs,sql}/platform/**/{common,node}/**",
 					"**/{vs,sql}/workbench/**/{common,node}/**",
 					"**/{vs,sql}/server/**",
-					"**/{vs,sql}/code/**/{common,node}/**",
-					"*" // node modules
+					"@vscode/*", "*" // node modules
 				]
 			},
 			{
@@ -939,28 +938,28 @@
 				"target": "**/test/smoke/**",
 				"restrictions": [
 					"**/test/smoke/**",
-					"*" // node modules
+					"@vscode/*", "*" // node modules
 				]
 			},
 			{
 				"target": "**/test/automation/**",
 				"restrictions": [
 					"**/test/automation/**",
-					"*" // node modules
+					"@vscode/*", "*" // node modules
 				]
 			},
 			{
 				"target": "**/test/integration/**",
 				"restrictions": [
 					"**/test/integration/**",
-					"*" // node modules
+					"@vscode/*", "*" // node modules
 				]
 			},
 			{
 				"target": "**/test/monaco/**",
 				"restrictions": [
 					"**/test/monaco/**",
-					"*" // node modules
+					"@vscode/*", "*" // node modules
 				]
 			},
 			{
@@ -980,7 +979,7 @@
 				"target": "**/{node,electron-browser,electron-main}/**/*.test.ts",
 				"restrictions": [
 					"**/{vs,sql}/**",
-					"*", // node modules
+					"@vscode/*", "*", // node modules
 					"@angular/*" // {{SQL CARBON EDIT}}
 				]
 			},
@@ -988,14 +987,14 @@
 				"target": "**/{node,electron-browser,electron-main}/**/test/**",
 				"restrictions": [
 					"**/{vs,sql}/**",
-					"*" // node modules
+					"@vscode/*", "*" // node modules
 				]
 			},
 			{
 				"target": "**/test/{node,electron-browser,electron-main}/**",
 				"restrictions": [
 					"**/{vs,sql}/**",
-					"*" // node modules
+					"@vscode/*", "*" // node modules
 				]
 			},
 			{
@@ -1119,6 +1118,17 @@
 							"write"
 						]
 					}
+				]
+			}
+		},
+		{
+			"files": [
+				"src/{vs,sql}/server/*"
+			],
+			"rules": {
+				"header/header": [
+					// hygiene.js still checks that all files (even those in this directory) are MIT licensed.
+					"off"
 				]
 			}
 		}

@@ -38,6 +38,7 @@ const vscodeEntryPoints = _.flatten([
 	buildfile.base,
 	buildfile.workerExtensionHost,
 	buildfile.workerNotebook,
+	buildfile.workerLanguageDetection,
 	buildfile.workbenchDesktop,
 	buildfile.code
 ]);
@@ -287,9 +288,6 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 				'**/node-pty/lib/worker/conoutSocketWorker.js',
 				'**/node-pty/lib/shared/conout.js',
 				'**/*.wasm',
-				// For language detection
-				'**/model.json',
-				'**/group1-shard1of1.bin'
 			], 'node_modules.asar'));
 
 		let all = es.merge(

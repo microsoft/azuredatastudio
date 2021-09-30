@@ -33,6 +33,7 @@ if "%INTEGRATION_TEST_ELECTRON_PATH%"=="" (
 					:: compile-extension:css-language-features-server^
 					:: compile-extension:html-language-features-server^
 					:: compile-extension:json-language-features-server^
+					:: compile-extension:ipynb^
 					:: compile-extension-media
 
 	:: Configuration for more verbose output
@@ -88,7 +89,13 @@ mkdir %GITWORKSPACE%
 call "%INTEGRATION_TEST_ELECTRON_PATH%" %GITWORKSPACE% --extensionDevelopmentPath=%~dp0\..\extensions\git --extensionTestsPath=%~dp0\..\extensions\git\out\test --enable-proposed-api=vscode.git %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
 if %errorlevel% neq 0 exit /b %errorlevel%
 
-:: {{SQL CARBON EDIT}} Tests disabled
+:: {{SQL CARBON EDIT}} Disable VS Code tests for extensions we don't have
+:: set IPYNBWORKSPACE=%TEMPDIR%\ipynb-%RANDOM%
+:: mkdir %IPYNBWORKSPACE%
+:: call "%INTEGRATION_TEST_ELECTRON_PATH%" %IPYNBWORKSPACE% --extensionDevelopmentPath=%~dp0\..\extensions\ipynb --extensionTestsPath=%~dp0\..\extensions\ipynb\out\test %ALL_PLATFORMS_API_TESTS_EXTRA_ARGS%
+:: if %errorlevel% neq 0 exit /b %errorlevel%
+
+
 :: Tests standalone (CommonJS)
 :: call %~dp0\node-electron.bat %~dp0\..\extensions\css-language-features/server/test/index.js
 :: if %errorlevel% neq 0 exit /b %errorlevel%

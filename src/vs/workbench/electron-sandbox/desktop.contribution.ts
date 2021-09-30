@@ -245,7 +245,7 @@ import product from 'vs/platform/product/common/product'; // {{SQL CARBON EDIT}}
 		'properties': {
 			'telemetry.enableCrashReporter': {
 				'type': 'boolean',
-				'description': localize('telemetry.enableCrashReporting', "Enable crash reports to be sent to a Microsoft online service. \nThis option requires restart to take effect."),
+				'description': localize('telemetry.enableCrashReporting', "Enable crash reports to be collected. This helps us improve stability. \nThis option requires restart to take effect."),
 				'default': true,
 				'tags': ['usesOnlineServices', 'telemetry']
 			}

@@ -7,17 +7,14 @@ import { localize } from 'vs/nls';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { WelcomePageContribution, WelcomePageAction, WelcomeInputSerializer } from 'sql/workbench/contrib/welcome/page/browser/welcomePage'; // {{SQL CARBON EDIT}} use our welcome page
-import {
-	WelcomeInputSerializer as WelcomeInputSerializer2,
-	WelcomePageContribution as WelcomePageContribution2, WelcomePageAction as WelcomePageAction2
-} from 'vs/workbench/contrib/welcome/page/browser/welcomePage'; // {{SQL CARBON EDIT}} use our welcome page
 import { IWorkbenchActionRegistry, Extensions as ActionExtensions, CATEGORIES } from 'vs/workbench/common/actions'; // {{SQL CARBON EDIT}}
 import { SyncActionDescriptor } from 'vs/platform/actions/common/actions'; // {{SQL CARBON EDIT}}
+import { WelcomePageContribution as WelcomePageContributionVs } from 'vs/workbench/contrib/welcome/page/browser/welcomePage'; // {{SQL CARBON EDIT}} use our welcome page
 import { IConfigurationRegistry, Extensions as ConfigurationExtensions, ConfigurationScope } from 'vs/platform/configuration/common/configurationRegistry';
-import { IEditorFactoryRegistry, EditorExtensions } from 'vs/workbench/common/editor';
 import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration'; // {{SQL CARBON EDIT}} - use our welcome page
 import { workbenchConfigurationNodeBase } from 'vs/workbench/common/configuration';
+import { EditorExtensions, IEditorFactoryRegistry } from 'vs/workbench/common/editor';
 
 Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration)
 	.registerConfiguration({
@@ -60,12 +57,7 @@ class WelcomeContributions {
 
 		} else {
 			Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
-				.registerWorkbenchContribution(WelcomePageContribution2, LifecyclePhase.Restored);
-
-			Registry.as<IWorkbenchActionRegistry>(ActionExtensions.WorkbenchActions)
-				.registerWorkbenchAction(SyncActionDescriptor.create(WelcomePageAction2, WelcomePageAction2.ID, WelcomePageAction2.LABEL), 'Help: Welcome', CATEGORIES.Help.value);
-
-			Registry.as<IEditorFactoryRegistry>(EditorExtensions.EditorFactory).registerEditorSerializer(WelcomeInputSerializer2.ID, WelcomeInputSerializer2);
+				.registerWorkbenchContribution(WelcomePageContributionVs, LifecyclePhase.Restored);
 		}
 	}
 }
@@ -73,5 +65,3 @@ class WelcomeContributions {
 Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
 	.registerWorkbenchContribution(WelcomeContributions, LifecyclePhase.Starting);
 // {{SQL CARBON EDIT}} - end preview startup customization
-
-Registry.as<IEditorFactoryRegistry>(EditorExtensions.EditorFactory).registerEditorSerializer(WelcomeInputSerializer.ID, WelcomeInputSerializer);

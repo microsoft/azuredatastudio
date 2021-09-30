@@ -3,8 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ServiceCollection } from './serviceCollection';
 import * as descriptors from './descriptors';
+import { ServiceCollection } from './serviceCollection';
 
 // ------ internal util
 
