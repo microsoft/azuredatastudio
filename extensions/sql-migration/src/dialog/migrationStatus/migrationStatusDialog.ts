@@ -447,7 +447,7 @@ export class MigrationStatusDialog {
 		return this._getStatusControl(migrationStatus, warningCount, migration);
 	}
 
-	public openCalloutDialog(dialogHeading: string, dialogName?: string, calloutMessageText?: string, calloutMessageLink?: azdata.HyperlinkComponent): void {
+	public openCalloutDialog(dialogHeading: string, dialogName?: string, calloutMessageText?: string): void {
 		const dialog = azdata.window.createModelViewDialog(dialogHeading, dialogName, 288, 'callout', 'left', true, false,
 			{
 				xPos: 0,
@@ -471,9 +471,7 @@ export class MigrationStatusDialog {
 				}
 			}).component();
 			warningContentContainer.addItem(messageTextComponent);
-			if (calloutMessageLink) {
-				warningContentContainer.addItem(calloutMessageLink);
-			}
+
 			view.initializeModel(warningContentContainer);
 		});
 
@@ -531,19 +529,6 @@ export class MigrationStatusDialog {
 				migrationWarningCount
 			]);
 
-			const linkComponent = this._view.modelBuilder.hyperlink().withProps({
-				label: loc.LEARN_MORE,
-				url: '',
-				CSSStyles: {
-					'font-size': '13px',
-					'margin': '0px'
-				}
-			}).component();
-
-			this._disposables.push(linkComponent.onDidClick(
-				async (e) => await (new MigrationCutoverDialog(migration)).initialize())
-			);
-
 			migrationWarningCount.onDidClick(async () => {
 				const cutoverDialogModel = new MigrationCutoverDialogModel(migration!);
 				const errors = await cutoverDialogModel.fetchErrors();
@@ -553,8 +538,7 @@ export class MigrationStatusDialog {
 						? loc.WARNING
 						: loc.ERROR,
 					'input-table-row-dialog',
-					errors,
-					linkComponent
+					errors
 				);
 			});
 		}
