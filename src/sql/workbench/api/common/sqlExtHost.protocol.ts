@@ -18,9 +18,10 @@ import { ITreeComponentItem } from 'sql/workbench/common/views';
 import { ITaskHandlerDescription } from 'sql/workbench/services/tasks/common/tasks';
 import {
 	IItemConfig, IComponentShape, IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails,
-	IModelViewWizardDetails, IModelViewWizardPageDetails, INotebookManagerDetails, INotebookSessionDetails,
+	IModelViewWizardDetails, IModelViewWizardPageDetails, IExecuteManagerDetails, INotebookSessionDetails,
 	INotebookKernelDetails, INotebookFutureDetails, FutureMessageType, INotebookFutureDone, ISingleNotebookEditOperation,
-	NotebookChangeKind
+	NotebookChangeKind,
+	ISerializationManagerDetails
 } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IUndoStopOptions } from 'vs/workbench/api/common/extHost.protocol';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
@@ -863,7 +864,8 @@ export interface ExtHostNotebookShape {
 	 * Looks up a notebook manager for a given notebook URI
 	 * @returns handle of the manager to be used when sending
 	 */
-	$getNotebookManager(providerHandle: number, notebookUri: UriComponents): Thenable<INotebookManagerDetails>;
+	$getSerializationManagerDetails(providerHandle: number, notebookUri: UriComponents): Thenable<ISerializationManagerDetails>;
+	$getExecuteManagerDetails(providerHandle: number, notebookUri: UriComponents): Thenable<IExecuteManagerDetails>;
 	$handleNotebookClosed(notebookUri: UriComponents): void;
 
 	// Server Manager APIs
@@ -871,8 +873,8 @@ export interface ExtHostNotebookShape {
 	$doStopServer(managerHandle: number): Thenable<void>;
 
 	// Content Manager APIs
-	$getNotebookContents(managerHandle: number, notebookUri: UriComponents): Thenable<azdata.nb.INotebookContents>;
-	$save(managerHandle: number, notebookUri: UriComponents, notebook: azdata.nb.INotebookContents): Thenable<azdata.nb.INotebookContents>;
+	$deserializeNotebook(managerHandle: number, contents: string): Thenable<azdata.nb.INotebookContents>;
+	$serializeNotebook(managerHandle: number, notebook: azdata.nb.INotebookContents): Thenable<string>;
 
 	// Session Manager APIs
 	$refreshSpecs(managerHandle: number): Thenable<azdata.nb.IAllKernels>;
@@ -899,8 +901,10 @@ export interface ExtHostNotebookShape {
 }
 
 export interface MainThreadNotebookShape extends IDisposable {
-	$registerNotebookProvider(providerId: string, handle: number): void;
-	$unregisterNotebookProvider(handle: number): void;
+	$registerSerializationProvider(providerId: string, handle: number): void;
+	$registerExecuteProvider(providerId: string, handle: number): void;
+	$unregisterSerializationProvider(handle: number): void;
+	$unregisterExecuteProvider(handle: number): void;
 	$onFutureMessage(futureId: number, type: FutureMessageType, payload: azdata.nb.IMessage): void;
 	$onFutureDone(futureId: number, done: INotebookFutureDone): void;
 }

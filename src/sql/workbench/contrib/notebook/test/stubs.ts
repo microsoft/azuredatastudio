@@ -8,7 +8,7 @@ import * as vsEvent from 'vs/base/common/event';
 import { INotebookModel, ICellModel, IClientSession, NotebookContentChange, ISingleNotebookEditOperation, MoveDirection, ViewMode } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { INotebookFindModel } from 'sql/workbench/contrib/notebook/browser/models/notebookFindModel';
 import { NotebookChangeType, CellType } from 'sql/workbench/services/notebook/common/contracts';
-import { INotebookManager, INotebookService, INotebookEditor, ILanguageMagic, INotebookProvider, INavigationProvider, INotebookParams, INotebookSection, ICellEditorProvider, NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
+import { IExecuteManager, INotebookService, INotebookEditor, ILanguageMagic, IExecuteProvider, INavigationProvider, INotebookParams, INotebookSection, ICellEditorProvider, NotebookRange, ISerializationProvider, ISerializationManager } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import { IModelDecorationsChangeAccessor } from 'vs/editor/common/model';
 import { NotebookFindMatch } from 'sql/workbench/contrib/notebook/browser/find/notebookFindDecorations';
@@ -47,7 +47,10 @@ export class NotebookModelStub implements INotebookModel {
 	get sessionLoadFinished(): Promise<void> {
 		throw new Error('method not implemented.');
 	}
-	get notebookManagers(): INotebookManager[] {
+	get serializationManager(): ISerializationManager {
+		throw new Error('method not implemented.');
+	}
+	get executeManagers(): IExecuteManager[] {
 		throw new Error('method not implemented.');
 	}
 	get kernelChanged(): vsEvent.Event<nb.IKernelChangedArgs> {
@@ -197,9 +200,13 @@ export class NotebookFindModelStub implements INotebookFindModel {
 	}
 }
 
-export class NotebookManagerStub implements INotebookManager {
+export class SerializationManagerStub implements ISerializationManager {
 	providerId: string;
 	contentManager: nb.ContentManager;
+}
+
+export class ExecuteManagerStub implements IExecuteManager {
+	providerId: string;
 	sessionManager: nb.SessionManager;
 	serverManager: nb.ServerManager;
 }
@@ -245,10 +252,16 @@ export class NotebookServiceStub implements INotebookService {
 	setTrusted(notebookUri: URI, isTrusted: boolean): Promise<boolean> {
 		throw new Error('Method not implemented.');
 	}
-	registerProvider(providerId: string, provider: INotebookProvider): void {
+	registerSerializationProvider(providerId: string, provider: ISerializationProvider): void {
 		throw new Error('Method not implemented.');
 	}
-	unregisterProvider(providerId: string): void {
+	registerExecuteProvider(providerId: string, provider: IExecuteProvider): void {
+		throw new Error('Method not implemented.');
+	}
+	unregisterSerializationProvider(providerId: string): void {
+		throw new Error('Method not implemented.');
+	}
+	unregisterExecuteProvider(providerId: string): void {
 		throw new Error('Method not implemented.');
 	}
 	registerNavigationProvider(provider: INavigationProvider): void {
@@ -266,7 +279,10 @@ export class NotebookServiceStub implements INotebookService {
 	getStandardKernelsForProvider(provider: string): nb.IStandardKernel[] {
 		throw new Error('Method not implemented.');
 	}
-	getOrCreateNotebookManager(providerId: string, uri: URI): Thenable<INotebookManager> {
+	getOrCreateSerializationManager(providerId: string, uri: URI): Promise<ISerializationManager> {
+		throw new Error('Method not implemented.');
+	}
+	getOrCreateExecuteManager(providerId: string, uri: URI): Thenable<IExecuteManager> {
 		throw new Error('Method not implemented.');
 	}
 	addNotebookEditor(editor: INotebookEditor): void {

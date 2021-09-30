@@ -58,7 +58,7 @@ const configBase = {
 	}
 };
 
-export class JupyterSessionManager implements nb.SessionManager {
+export class JupyterSessionManager implements nb.SessionManager, vscode.Disposable {
 	private _ready: Deferred<void>;
 	private _isReady: boolean;
 	private _sessionManager: Session.IManager;

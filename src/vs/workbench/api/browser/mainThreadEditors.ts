@@ -28,6 +28,7 @@ import { revive } from 'vs/base/common/marshalling';
 import { ResourceNotebookCellEdit } from 'vs/workbench/contrib/bulkEdit/browser/bulkCellEdits';
 import { ExtensionIdentifier } from 'vs/platform/extensions/common/extensions';
 import { NotebookDto } from 'vs/workbench/api/browser/mainThreadNotebookDto';
+import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService'; // {{SQL CARBON EDIT}}
 
 export function reviveWorkspaceEditDto2(data: IWorkspaceEditDto | undefined): ResourceEdit[] {
 	if (!data?.edits) {
@@ -65,7 +66,8 @@ export class MainThreadTextEditors implements MainThreadTextEditorsShape {
 		@ICodeEditorService private readonly _codeEditorService: ICodeEditorService,
 		@IBulkEditService private readonly _bulkEditService: IBulkEditService,
 		@IEditorService private readonly _editorService: IEditorService,
-		@IEditorGroupsService private readonly _editorGroupService: IEditorGroupsService
+		@IEditorGroupsService private readonly _editorGroupService: IEditorGroupsService,
+		@INotebookService private readonly _notebookService: INotebookService // {{SQL CARBON EDIT}}
 	) {
 		this._instanceId = String(++MainThreadTextEditors.INSTANCE_COUNT);
 		this._proxy = extHostContext.getProxy(ExtHostContext.ExtHostEditors);
@@ -137,6 +139,8 @@ export class MainThreadTextEditors implements MainThreadTextEditorsShape {
 	async $tryShowTextDocument(resource: UriComponents, options: ITextDocumentShowOptions): Promise<string | undefined> {
 		const uri = URI.revive(resource);
 
+		let notebookFileTypes = this._notebookService.getSupportedFileExtensions().map(s => s.toLowerCase()); // {{SQL CARBON EDIT}}
+
 		const editorOptions: ITextEditorOptions = {
 			preserveFocus: options.preserveFocus,
 			pinned: options.pinned,
@@ -144,7 +148,7 @@ export class MainThreadTextEditors implements MainThreadTextEditorsShape {
 			// preserve pre 1.38 behaviour to not make group active when preserveFocus: true
 			// but make sure to restore the editor to fix https://github.com/microsoft/vscode/issues/79633
 			activation: options.preserveFocus ? EditorActivation.RESTORE : undefined,
-			override: uri?.fsPath?.toLowerCase().endsWith('ipynb') || uri?.fsPath?.toLowerCase().endsWith('sql') ? undefined : EditorResolution.DISABLED // {{SQL CARBON EDIT}}
+			override: notebookFileTypes?.some(ext => uri?.fsPath?.toLowerCase().endsWith(ext)) || uri?.fsPath?.toLowerCase().endsWith('sql') ? undefined : EditorResolution.DISABLED // {{SQL CARBON EDI cT}}
 		};
 
 		const input: IResourceEditorInput = {
