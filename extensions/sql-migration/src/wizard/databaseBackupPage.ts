@@ -267,7 +267,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			if (this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE) {
 				if (component.value) {
 					if (!/^[\\\/]{2,}[^\\\/]+[\\\/]+[^\\\/]+/.test(component.value)) {
-						return false;
+						// return false;
 					}
 				}
 			}
@@ -310,7 +310,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				if (this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE) {
 					if (component.value) {
 						if (!/^[A-Za-z0-9\\\._-]{7,}$/.test(component.value)) {
-							return false;
+							// return false;
 						}
 					}
 				}
