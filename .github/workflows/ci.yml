@@ -136,7 +136,8 @@ jobs:
 
       - name: Run Unit Tests (Electron)
         id: electron-unit-tests
-        run: DISPLAY=:10 ./scripts/test.sh --coverage --runGlob "**/sql/**/*.test.js" # {{SQL CARBON EDIT}} Run only our tests with coverage
+        #run: DISPLAY=:10 ./scripts/test.sh --coverage --runGlob "**/sql/**/*.test.js" # {{SQL CARBON EDIT}} Run only our tests with coverage
+        run: DISPLAY=:10 ./scripts/test.sh --coverage
 
       - name: Run Extension Unit Tests (Electron)
         id: electron-extension-unit-tests
