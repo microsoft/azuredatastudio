@@ -349,7 +349,7 @@ export function acquireWebNodePaths() {
 	for (const key of Object.keys(webPackages)) {
 		const packageJSON = path.join(root, 'node_modules', key, 'package.json');
 		const packageData = JSON.parse(fs.readFileSync(packageJSON, 'utf8'));
-		let entryPoint = packageData.browser ?? packageData.main;
+		let entryPoint = typeof packageData.browser === 'string' ? packageData.browser : packageData.main ?? packageData.main; // {{SQL CARBON EDIT}} Some packages (like Turndown) have objects in this field instead of the entry point, fall back to main in that case
 		// On rare cases a package doesn't have an entrypoint so we assume it has a dist folder with a min.js
 		if (!entryPoint) {
 			console.warn(`No entry point for ${key} assuming dist/${key}.min.js`);

@@ -2,6 +2,46 @@
 # yarn lockfile v1
 
 
+"@angular/animations@~4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@angular/animations/-/animations-4.1.3.tgz#6e89a1e0fbfd6d0e90be4f2ae190aac67f83a411"
+  integrity sha1-bomh4Pv9bQ6Qvk8q4ZCqxn+DpBE=
+
+"@angular/common@~4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@angular/common/-/common-4.1.3.tgz#e7c4791e32131cf74c239428c2a67daab2eef017"
+  integrity sha1-58R5HjITHPdMI5QowqZ9qrLu8Bc=
+
+"@angular/compiler@~4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@angular/compiler/-/compiler-4.1.3.tgz#d2dd30853b0cf4a54758b4a314632c231f9c94c3"
+  integrity sha1-0t0whTsM9KVHWLSjFGMsIx+clMM=
+
+"@angular/core@~4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@angular/core/-/core-4.1.3.tgz#285498eb86ab7d0b6f982f8f9f487ef610013b35"
+  integrity sha1-KFSY64arfQtvmC+Pn0h+9hABOzU=
+
+"@angular/forms@~4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@angular/forms/-/forms-4.1.3.tgz#380ab4c3af84c5d1d748c2a7d04151c7dc8e4982"
+  integrity sha1-OAq0w6+ExdHXSMKn0EFRx9yOSYI=
+
+"@angular/platform-browser-dynamic@~4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@angular/platform-browser-dynamic/-/platform-browser-dynamic-4.1.3.tgz#3c13fdcf591d487f6efdc1d46913f280c6d8c2ec"
+  integrity sha1-PBP9z1kdSH9u/cHUaRPygMbYwuw=
+
+"@angular/platform-browser@~4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@angular/platform-browser/-/platform-browser-4.1.3.tgz#4fa1db5119dd178b315ddae5b329bee1a932a5bd"
+  integrity sha1-T6HbURndF4sxXdrlsym+4akypb0=
+
+"@angular/router@~4.1.3":
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/@angular/router/-/router-4.1.3.tgz#ddafd46ae7ccc8b1f74904ffb45f394e44625216"
+  integrity sha1-3a/UaufMyLH3SQT/tF85TkRiUhY=
+
 "@microsoft/applicationinsights-analytics-js@2.6.4":
   version "2.6.4"
   resolved "https://registry.yarnpkg.com/@microsoft/applicationinsights-analytics-js/-/applicationinsights-analytics-js-2.6.4.tgz#22ad17276ed922f2f0e66b7efe304f31c50ede64"
@@ -438,6 +478,11 @@ vscode-textmate@5.4.0:
   version "5.4.0"
   resolved "https://registry.yarnpkg.com/vscode-textmate/-/vscode-textmate-5.4.0.tgz#4b25ffc1f14ac3a90faf9a388c67a01d24257cd7"
   integrity sha512-c0Q4zYZkcLizeYJ3hNyaVUM2AA8KDhNCA3JvXY8CeZSJuBdAy3bAvSbv46RClC4P3dSO9BdwhnKEx2zOo6vP/w==
+
+xtend@^4.0.0:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/xtend/-/xtend-4.0.2.tgz#bb72779f5fa465186b1f438f674fa347fdb5db54"
+  integrity sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==
 
 xterm-addon-search@0.9.0-beta.4:
   version "0.9.0-beta.4"

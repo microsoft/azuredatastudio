@@ -61,18 +61,19 @@ function darwinBundleDocumentType(extensions, icon, nameOrSuffix) {
  * darwinBundleDocumentTypes({ 'React source code': ['jsx', 'tsx'] }, 'react')
  * ```
  */
-function darwinBundleDocumentTypes(types, icon) {
-    return Object.keys(types).map((name) => {
-        const extensions = types[name];
-        return {
-            name: name,
-            role: 'Editor',
-            ostypes: ['TEXT', 'utxt', 'TUTX', '****'],
-            extensions: Array.isArray(extensions) ? extensions : [extensions],
-            iconFile: 'resources/darwin/' + icon + '.icns',
-        };
-    });
-}
+// {{SQL CARBON EDIT}} Remove unused
+// function darwinBundleDocumentTypes(types: { [name: string]: string | string[] }, icon: string): DarwinDocumentType[] {
+// 	return Object.keys(types).map((name: string): DarwinDocumentType => {
+// 		const extensions = types[name];
+// 		return {
+// 			name: name,
+// 			role: 'Editor',
+// 			ostypes: ['TEXT', 'utxt', 'TUTX', '****'],
+// 			extensions: Array.isArray(extensions) ? extensions : [extensions],
+// 			iconFile: 'resources/darwin/' + icon + '.icns',
+// 		} as DarwinDocumentType;
+// 	});
+// }
 exports.config = {
     version: util.getElectronVersion(),
     productAppName: product.nameLong,
