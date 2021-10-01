@@ -9,7 +9,7 @@ import { QuickInput } from '../quickinput';
 import { Editors } from '../editors';
 import { IElement } from '..';
 
-const winOrCtrl = process.platform === 'darwin' ? 'ctrl' : 'win';
+const winOrCtrl = process.platform === 'linux' ? 'ctrl' : process.platform === 'darwin' ? 'ctrl' : 'win';
 
 export class Notebook {
 
@@ -32,7 +32,8 @@ export class Notebook {
 	}
 
 	async newUntitledNotebook(): Promise<void> {
-		await this.code.dispatchKeybinding(winOrCtrl + '+alt+n');
+		const keyBinding = process.platform === 'linux' ? '+Alt+n' : '+alt+n';
+		await this.code.dispatchKeybinding(winOrCtrl + keyBinding);
 		await this.editors.waitForActiveTab(`Notebook-0`);
 		await this.code.waitForElement('.notebookEditor');
 	}
