@@ -218,5 +218,5 @@ export async function createandLoadNotebookModel(codeContent?: nb.INotebookConte
 		layoutChanged: undefined,
 		capabilitiesService: undefined
 	};
-	return new NotebookModel(defaultModelOptions, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+	return new NotebookModel(defaultModelOptions, undefined, undefined, undefined, undefined, undefined, undefined);
 }
