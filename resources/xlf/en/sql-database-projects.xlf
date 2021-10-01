@@ -16,6 +16,9 @@
     <trans-unit id="PublishHistory">
       <source xml:lang="en">Publish History</source>
     </trans-unit>
+    <trans-unit id="SettingAlreadyExists">
+      <source xml:lang="en">Local app setting '{0}' already exists. Overwrite?</source>
+    </trans-unit>
     <trans-unit id="Status">
       <source xml:lang="en">Status</source>
     </trans-unit>
@@ -111,6 +114,9 @@
     </trans-unit>
     <trans-unit id="createNew">
       <source xml:lang="en">Create New</source>
+    </trans-unit>
+    <trans-unit id="createNewLocalAppSetting">
+      <source xml:lang="en">Create new local app setting</source>
     </trans-unit>
     <trans-unit id="createProjectDialogOkButtonText">
       <source xml:lang="en">Create</source>
@@ -271,11 +277,17 @@
     <trans-unit id="enterConnStringTemplateDescription">
       <source xml:lang="en">Enter a template for SQL connection string</source>
     </trans-unit>
+    <trans-unit id="enterConnectionString">
+      <source xml:lang="en">Enter connection string</source>
+    </trans-unit>
     <trans-unit id="enterConnectionStringEnvName">
       <source xml:lang="en">Enter connection string environment variable name</source>
     </trans-unit>
     <trans-unit id="enterConnectionStringEnvNameDescription">
       <source xml:lang="en">Enter environment variable for SQL connection string</source>
+    </trans-unit>
+    <trans-unit id="enterConnectionStringSettingName">
+      <source xml:lang="en">Enter connection string setting name</source>
     </trans-unit>
     <trans-unit id="enterConnectionStringTemplate">
       <source xml:lang="en">Enter connection string template</source>
@@ -741,6 +753,9 @@
     </trans-unit>
     <trans-unit id="valueCannotBeEmpty">
       <source xml:lang="en">Value cannot be empty</source>
+    </trans-unit>
+    <trans-unit id="valueMustNotBeEmpty">
+      <source xml:lang="en">Value must not be empty</source>
     </trans-unit>
     <trans-unit id="viewFriendlyName">
       <source xml:lang="en">View</source>

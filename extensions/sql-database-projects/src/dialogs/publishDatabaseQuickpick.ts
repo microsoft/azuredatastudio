@@ -208,6 +208,12 @@ export async function getPublishDatabaseSettings(project: Project, promptForConn
 */
 export async function launchPublishDatabaseQuickpick(project: Project, projectController: ProjectsController): Promise<void> {
 	const publishTarget = await launchPublishTargetOption();
+
+	// Return when user hits escape
+	if (!publishTarget) {
+		return undefined;
+	}
+
 	if (publishTarget === constants.publishToDockerContainer) {
 		await projectController.publishToDockerContainer(project);
 	} else {
