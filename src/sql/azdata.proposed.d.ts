@@ -976,4 +976,12 @@ declare module 'azdata' {
 			expiresOn?: number
 		}
 	}
+
+	export interface ConnectionInfoSummary {
+		/**
+		 * Indicates whether the server version is supported. The default value is true. If the value is false, ADS will show a warning message.
+		 * Users can still connect to the servers with unsupported versions(e.g. SQL Server 2005) but some features might not work.
+		 */
+		isSupportedVersion?: boolean;
+	}
 }

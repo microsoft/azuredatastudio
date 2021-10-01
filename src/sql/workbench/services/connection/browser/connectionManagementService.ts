@@ -1045,6 +1045,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			if (this._connectionStatusManager.isDefaultTypeUri(info.ownerUri)) {
 				this._connectionGlobalStatus.setStatusToConnected(info.connectionSummary);
 			}
+			if (info.isSupportedVersion === false) {
+				this._notificationService.warn(nls.localize('connection.unsupportedServerVersionWarning', "The server version is no longer supported. You may still connect to it but some features in Azure Data Studio might not work as expected."));
+			}
 		} else {
 			connection.connectHandler(false, info.errorMessage, info.errorNumber, info.messages);
 			this._telemetryService.createErrorEvent(TelemetryKeys.TelemetryView.Shell, TelemetryKeys.TelemetryError.DatabaseConnectionError, info.errorNumber.toString())
