@@ -32,8 +32,10 @@ export class NotebookExtension<TNotebookMeta, TCellMeta> {
 	public setCellMetadata(cell: ICellModel, metadata: TCellMeta) {
 		const meta = {};
 		meta[this.extensionName] = metadata;
-		cell.metadata[this.extensionNamespace] = meta;
-		cell.metadata = deepClone(cell.metadata); // creating a new reference for change detection
-		cell.sendChangeToNotebook(NotebookChangeType.CellsModified);
+		const cellMetadata = deepClone(cell.metadata);
+		cellMetadata[this.extensionNamespace] = meta;
+		cell.metadata = cellMetadata;
+
+		//cell.sendChangeToNotebook(NotebookChangeType.CellsModified);
 	}
 }

@@ -138,7 +138,6 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public set metadata(data: any) {
 		this._metadata = data;
-		this.sendChangeToNotebook(NotebookChangeType.CellMetadataUpdated);
 	}
 
 	public get metadata(): any {
