@@ -545,7 +545,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this.insertCell(cell, index);
 	}
 
-	public splitCell(cellType: CellType, index?: number, notebookService?: INotebookService): ICellModel | undefined {
+	public splitCell(cellType: CellType, notebookService: INotebookService, index?: number): ICellModel | undefined {
 		if (this.inErrorState) {
 			return undefined;
 		}
@@ -563,41 +563,46 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				let range = model.getFullModelRange();
 				let selection = editorControl.getSelection();
 				let source = this.cells[index].source;
-				let newcell = null, tailcell = null, partial = null;
-				let newcellindex = index;
-				let tailcellindex = index;
+				let newCell = undefined, tailCell = undefined, partialSource = undefined;
+				let newCellIndex = index;
+				let tailCellIndex = index;
 
 				// Save UI state
 				let showMarkdown = this.cells[index].showMarkdown;
 				let showPreview = this.cells[index].showPreview;
 
 				//Get selection value from current cell
-				let newcellcontent = model.getValueInRange(selection);
+				let newCellContent = model.getValueInRange(selection);
 
 				//Get content after selection
-				let tailrange = range.setStartPosition(selection.endLineNumber, selection.endColumn);
-				let tailcellcontent = model.getValueInRange(tailrange);
+				let tailRange = range.setStartPosition(selection.endLineNumber, selection.endColumn);
+				let tailCellContent = model.getValueInRange(tailRange);
 
 				//Get content before selection
-				let headrange = range.setEndPosition(selection.startLineNumber, selection.startColumn);
-				let headcontent = model.getValueInRange(headrange);
+				let headRange = range.setEndPosition(selection.startLineNumber, selection.startColumn);
+				let headContent = model.getValueInRange(headRange);
+
+				// If the selection is equal to entire content then do nothing
+				if (headContent.length === 0 && tailCellContent.length === 0) {
+					return undefined;
+				}
 
 				//Set content before selection if the selection is not the same as original content
-				if (headcontent.length) {
+				if (headContent.length) {
 					let headsource = source.slice(range.startLineNumber - 1, selection.startLineNumber - 1);
 					if (selection.startColumn > 1) {
-						partial = source.slice(selection.startLineNumber - 1, selection.startLineNumber)[0].slice(0, selection.startColumn - 1);
-						headsource = headsource.concat(partial.toString());
+						partialSource = source.slice(selection.startLineNumber - 1, selection.startLineNumber)[0].slice(0, selection.startColumn - 1);
+						headsource = headsource.concat(partialSource.toString());
 					}
 					this.cells[index].source = headsource;
 				}
 
-				if (newcellcontent.length) {
-					newcell = this.createCell(cellType);
-					let newsource = source.slice(selection.startLineNumber - 1, selection.endLineNumber) as string[];
+				if (newCellContent.length) {
+					newCell = this.createCell(cellType);
+					let newSource = source.slice(selection.startLineNumber - 1, selection.endLineNumber) as string[];
 					if (selection.startColumn > 1) {
-						partial = source.slice(selection.startLineNumber - 1)[0].slice(selection.startColumn - 1);
-						newsource.splice(0, 1, partial);
+						partialSource = source.slice(selection.startLineNumber - 1)[0].slice(selection.startColumn - 1);
+						newSource.splice(0, 1, partialSource);
 					}
 					if (selection.endColumn !== source[selection.endLineNumber - 1].length) {
 						let splicestart = 0;
@@ -605,48 +610,48 @@ export class NotebookModel extends Disposable implements INotebookModel {
 							splicestart = selection.startColumn - 1;
 						}
 						let partial = source.slice(selection.endLineNumber - 1, selection.endLineNumber)[0].slice(splicestart, selection.endColumn - 1);
-						newsource.splice(newsource.length - 1, 1, partial);
+						newSource.splice(newSource.length - 1, 1, partial);
 					}
-					newcell.source = newsource;
-					newcellindex++;
-					this.insertCell(newcell, newcellindex);
+					newCell.source = newSource;
+					newCellIndex++;
+					this.insertCell(newCell, newCellIndex);
 				}
 
-				if (tailcellcontent.length) {
+				if (tailCellContent.length) {
 					//tail cell will be of original cell type.
-					tailcell = this.createCell(this._cells[index].cellType);
-					let tailsource = source.slice(tailrange.startLineNumber - 1) as string[];
+					tailCell = this.createCell(this._cells[index].cellType);
+					let tailSource = source.slice(tailRange.startLineNumber - 1) as string[];
 					if (selection.endColumn > 1) {
-						partial = source.slice(tailrange.startLineNumber - 1, tailrange.startLineNumber)[0].slice(tailrange.startColumn - 1);
-						tailsource.splice(0, 1, partial);
+						partialSource = source.slice(tailRange.startLineNumber - 1, tailRange.startLineNumber)[0].slice(tailRange.startColumn - 1);
+						tailSource.splice(0, 1, partialSource);
 					}
-					tailcell.source = tailsource;
-					tailcellindex = newcellindex + 1;
-					this.insertCell(tailcell, tailcellindex);
+					tailCell.source = tailSource;
+					tailCellIndex = newCellIndex + 1;
+					this.insertCell(tailCell, tailCellIndex);
 				}
 
 				//Delete the original cell if the selection begins at the start
-				if (!headcontent.length) {
+				if (!headContent.length) {
 					this.deleteCell(this.cells[index]);
 				}
-				let activecell = newcell ? newcell : tailcell;
-				let activecellindex = newcell ? newcellindex : tailcellindex;
+				let activeCell = newCell ? newCell : tailCell;
+				let activeCellIndex = newCell ? newCellIndex : tailCellIndex;
 
 				//make new cell Active
-				this.updateActiveCell(activecell);
+				this.updateActiveCell(activeCell);
 				this._contentChangedEmitter.fire({
 					changeType: NotebookChangeType.CellsModified,
-					cells: [activecell],
-					cellIndex: activecellindex
+					cells: [activeCell],
+					cellIndex: activeCellIndex
 				});
-				activecell.showMarkdown = showMarkdown;
-				activecell.showPreview = showPreview;
+				activeCell.showMarkdown = showMarkdown;
+				activeCell.showPreview = showPreview;
 
 				//return inserted cell
-				return activecell;
+				return activeCell;
 			}
 		}
-		return null;
+		return undefined;
 	}
 
 	public insertCell(cell: ICellModel, index?: number): ICellModel | undefined {
