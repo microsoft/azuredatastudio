@@ -891,6 +891,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.sql.virtual.machine">
       <source xml:lang="en">SQL Virtual Machine</source>
     </trans-unit>
+    <trans-unit id="sql.migration.start.migration.button">
+      <source xml:lang="en">Start migration</source>
+    </trans-unit>
     <trans-unit id="sql.migration.start.time">
       <source xml:lang="en">Start time</source>
     </trans-unit>

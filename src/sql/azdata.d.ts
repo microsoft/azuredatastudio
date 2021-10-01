@@ -4919,23 +4919,8 @@ declare module 'azdata' {
 			deleteCell(index: number): void;
 		}
 
-		/**
-		 * Register a notebook provider. The supported file types handled by this
-		 * provider are defined in the `package.json:
-		 * ```json
-		 * {
-		 *    "contributes": {
-		 *       "notebook.providers": [{
-		 *          "provider": "providername",
-		 *          "fileExtensions": ["FILEEXT"]
-		 *        }]
-		 *    }
-		 * }
-		 * ```
-		 * @param notebook provider
-		 * @returns disposable
-		 */
-		export function registerNotebookProvider(provider: NotebookProvider): vscode.Disposable;
+		export function registerSerializationProvider(provider: NotebookSerializationProvider): vscode.Disposable;
+		export function registerExecuteProvider(provider: NotebookExecuteProvider): vscode.Disposable;
 
 		export interface IStandardKernel {
 			readonly name: string;
@@ -4943,24 +4928,27 @@ declare module 'azdata' {
 			readonly connectionProviderIds: string[];
 		}
 
-		export interface NotebookProvider {
+		export interface NotebookSerializationProvider {
 			readonly providerId: string;
-			/**
-			 * @deprecated standardKernels will be removed in an upcoming release. Standard kernel contribution
-			 * should happen via JSON for extensions. Until this is removed, notebook providers can safely return an empty array.
-			 */
-			readonly standardKernels: IStandardKernel[];
-			getNotebookManager(notebookUri: vscode.Uri): Thenable<NotebookManager>;
+			getSerializationManager(notebookUri: vscode.Uri): Thenable<SerializationManager>;
+		}
+
+		export interface NotebookExecuteProvider {
+			readonly providerId: string;
+			getExecuteManager(notebookUri: vscode.Uri): Thenable<ExecuteManager>;
 			handleNotebookClosed(notebookUri: vscode.Uri): void;
 		}
 
-		export interface NotebookManager {
+		export interface SerializationManager {
 			/**
 			 * Manages reading and writing contents to/from files.
 			 * Files may be local or remote, with this manager giving them a chance to convert and migrate
 			 * from specific notebook file types to and from a standard type for this UI
 			 */
 			readonly contentManager: ContentManager;
+		}
+
+		export interface ExecuteManager {
 			/**
 			 * A SessionManager that handles starting, stopping and handling notifications around sessions.
 			 * Each notebook has 1 session associated with it, and the session is responsible
@@ -5009,7 +4997,7 @@ declare module 'azdata' {
 			/* Reads contents from a Uri representing a local or remote notebook and returns a
 			 * JSON object containing the cells and metadata about the notebook
 			 */
-			getNotebookContents(notebookUri: vscode.Uri): Thenable<INotebookContents>;
+			deserializeNotebook(contents: string): Thenable<INotebookContents>;
 
 			/**
 			 * Save a file.
@@ -5021,7 +5009,7 @@ declare module 'azdata' {
 			 * @returns A thenable which resolves with the file content model when the
 			 *   file is saved.
 			 */
-			save(notebookUri: vscode.Uri, notebook: INotebookContents): Thenable<INotebookContents>;
+			serializeNotebook(notebook: INotebookContents): Thenable<string>;
 		}
 
 		/**

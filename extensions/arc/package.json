@@ -983,8 +983,8 @@
                     "fields": [
                       {
                         "type": "options",
-                        "label": "%arc.sql.replicas.label%",
-                        "description": "%arc.sql.replicas.description%",
+                        "label": "%arc.sql.high.availability.label%",
+                        "description": "%arc.sql.high.availability.description%",
                         "required": true,
                         "variableName": "AZDATA_NB_VAR_SQL_REPLICAS",
                         "options": {

@@ -63,6 +63,9 @@
       <Item ItemId=";extensions/import/out/common/constants.flatFileImport.createDerivedColumn" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Create derived column]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Crear columna derivada]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -96,30 +99,45 @@
       <Item ItemId=";extensions/import/out/common/constants.flatFileImport.deriverColumnInstruction1" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select the columns of data on the left required to derive your new column]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Seleccione las columnas de datos de la izquierda necesarias para obtener su nueva columna]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/import/out/common/constants.flatFileImport.deriverColumnInstruction2" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select a row and specify an example transformation that you would like applied to the rest of the column]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Seleccione una fila y especifique una transformación de ejemplo que le gustaría aplicar al resto de la columna]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/import/out/common/constants.flatFileImport.deriverColumnInstruction3" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Click "Preview Transformation" to preview the transformation]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Haga clic en "Vista previa de la transformación" para obtener una vista previa de la transformación.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/import/out/common/constants.flatFileImport.deriverColumnInstruction4" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Refine your transformation until you have the desired column]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Perfeccione la transformación hasta que tenga la columna deseada]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/import/out/common/constants.flatFileImport.deriverColumnInstruction5" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specify the new derived column's name and click "Done"]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Especifique el nombre de la nueva columna derivada y haga clic en "Listo".]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -144,6 +162,9 @@
       <Item ItemId=";extensions/import/out/common/constants.flatFileImport.headerIntructionText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Welcome to the Derived Column Tool! To get started, please follow the steps below:]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Le damos la bienvenida a la herramienta Columna derivada. Para empezar, siga estos pasos:]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -240,6 +261,9 @@
       <Item ItemId=";extensions/import/out/common/constants.flatFileImport.previewTransformation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Preview Transformation]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Vista previa de transformación]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -300,6 +324,9 @@
       <Item ItemId=";extensions/import/out/common/constants.flatFileImport.selectColumn" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select column {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Seleccionar columna {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -333,12 +360,18 @@
       <Item ItemId=";extensions/import/out/common/constants.flatFileImport.specifyTransformation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specify Transformation]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Especificar transformación]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/import/out/common/constants.flatFileImport.specifyTransformationForRow" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specify transformation for row {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Especificar la transformación para fila {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

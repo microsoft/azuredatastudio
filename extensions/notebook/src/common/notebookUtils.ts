@@ -111,6 +111,10 @@ export class NotebookUtils {
 		}
 	}
 
+	public async toggleMarkdownStyle(style: string, showUI?: boolean, value?: string): Promise<void> {
+		return vscode.commands.executeCommand(style, showUI, value);
+	}
+
 	public async analyzeNotebook(oeContext?: azdata.ObjectExplorerContext): Promise<void> {
 		// Ensure we get a unique ID for the notebook. For now we're using a different prefix to the built-in untitled files
 		// to handle this. We should look into improving this in the future

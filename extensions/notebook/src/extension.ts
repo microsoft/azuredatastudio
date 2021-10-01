@@ -140,6 +140,18 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 		const urlToOpen: string = 'https://aka.ms/localized-BDC-book';
 		await vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(urlToOpen));
 	}));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.boldText', async () => {
+		await appContext.notebookUtils.toggleMarkdownStyle('bold');
+	}));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.italicizeText', async () => {
+		await appContext.notebookUtils.toggleMarkdownStyle('italic');
+	}));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.underlineText', async () => {
+		await appContext.notebookUtils.toggleMarkdownStyle('underline');
+	}));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.codeBlock', async () => {
+		await appContext.notebookUtils.toggleMarkdownStyle('formatBlock', false, 'pre');
+	}));
 
 	controller = new JupyterController(appContext);
 	let result = await controller.activate();
