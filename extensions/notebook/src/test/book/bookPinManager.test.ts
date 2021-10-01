@@ -8,11 +8,11 @@ import * as path from 'path';
 import * as TypeMoq from 'typemoq';
 import * as constants from '../../common/constants';
 import { IBookPinManager, BookPinManager } from '../../book/bookPinManager';
-import { BookTreeItem, BookTreeItemFormat, BookTreeItemType } from '../../book/bookTreeItem';
+import { BookTreeItem, BookTreeItemFormat } from '../../book/bookTreeItem';
 import * as vscode from 'vscode';
 import { BookModel } from '../../book/bookModel';
 import * as sinon from 'sinon';
-import { isBookItemPinned } from '../../common/utils';
+import { isBookItemPinned, BookTreeItemType } from '../../common/utils';
 
 describe('BookPinManagerTests', function () {
 

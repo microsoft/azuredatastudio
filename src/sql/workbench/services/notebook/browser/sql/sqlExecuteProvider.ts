@@ -6,21 +6,21 @@
 import { URI } from 'vs/base/common/uri';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { INotebookManager, INotebookProvider, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
-import { SqlNotebookManager } from 'sql/workbench/services/notebook/browser/sql/sqlNotebookManager';
+import { IExecuteManager, IExecuteProvider, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
+import { SqlExecuteManager } from 'sql/workbench/services/notebook/browser/sql/sqlExecuteManager';
 
-export class SqlNotebookProvider implements INotebookProvider {
-	private manager: SqlNotebookManager;
+export class SqlExecuteProvider implements IExecuteProvider {
+	private manager: SqlExecuteManager;
 
-	constructor(private _instantiationService: IInstantiationService) {
-		this.manager = new SqlNotebookManager(this._instantiationService);
+	constructor(instantiationService: IInstantiationService) {
+		this.manager = new SqlExecuteManager(instantiationService);
 	}
 
 	public get providerId(): string {
 		return SQL_NOTEBOOK_PROVIDER;
 	}
 
-	getNotebookManager(notebookUri: URI): Thenable<INotebookManager> {
+	getExecuteManager(notebookUri: URI): Thenable<IExecuteManager> {
 		return Promise.resolve(this.manager);
 	}
 

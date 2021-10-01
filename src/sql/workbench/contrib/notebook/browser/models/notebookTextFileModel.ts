@@ -200,8 +200,15 @@ export class NotebookTextFileModel {
 		return false;
 	}
 
-	public replaceEntireTextEditorModel(notebookModel: INotebookModel, type: NotebookChangeType, textEditorModel: ITextEditorModel) {
-		let content = JSON.stringify(notebookModel.toJSON(type), undefined, '    ');
+	public async replaceEntireTextEditorModel(notebookModel: INotebookModel, type: NotebookChangeType, textEditorModel: ITextEditorModel): Promise<void> {
+		let content: string;
+		let notebookContents = notebookModel.toJSON(type);
+		let serializer = notebookModel.serializationManager;
+		if (serializer) {
+			content = await serializer.contentManager.serializeNotebook(notebookContents);
+		} else {
+			content = JSON.stringify(notebookContents, undefined, '    ');
+		}
 		let model = textEditorModel.textEditorModel;
 		let endLine = model.getLineCount();
 		let endCol = model.getLineMaxColumn(endLine);

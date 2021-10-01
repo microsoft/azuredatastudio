@@ -70,17 +70,33 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	@HostListener('document:keydown', ['$event'])
 	onkeydown(e: KeyboardEvent) {
 		if (DOM.getActiveElement() === this.output?.nativeElement && this.isActive() && this.cellModel?.currentMode === CellEditModes.WYSIWYG) {
-			// select the active .
+			// Select all text
 			if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
 				preventDefaultAndExecCommand(e, 'selectAll');
+				// Redo text
 			} else if ((e.metaKey && e.shiftKey && e.key === 'z') || (e.ctrlKey && e.key === 'y') && !this.markdownMode) {
 				this.redoRichTextChange();
+				// Undo text
 			} else if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
 				this.undoRichTextChange();
+				// Outdent text
 			} else if (e.shiftKey && e.key === 'Tab') {
 				preventDefaultAndExecCommand(e, 'outdent');
+				// Indent text
 			} else if (e.key === 'Tab') {
 				preventDefaultAndExecCommand(e, 'indent');
+				// Bold text
+			} else if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+				preventDefaultAndExecCommand(e, 'bold');
+				// Italicize text
+			} else if ((e.ctrlKey || e.metaKey) && e.key === 'i') {
+				preventDefaultAndExecCommand(e, 'italic');
+				// Underline text
+			} else if ((e.ctrlKey || e.metaKey) && e.key === 'u') {
+				preventDefaultAndExecCommand(e, 'underline');
+				// Code Block
+			} else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'k') {
+				preventDefaultAndExecCommand(e, 'formatBlock', false, 'pre');
 			}
 		}
 	}
@@ -103,6 +119,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	public doubleClickEditEnabled: boolean;
 	private _highlightRange: NotebookRange;
 	private _isFindActive: boolean = false;
+	private _editorHeight: number;
+	private readonly _markdownMaxHeight = 4000;
 
 	private readonly _undoStack: RichTextEditStack;
 	private readonly _redoStack: RichTextEditStack;
@@ -176,6 +194,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	ngOnInit() {
+		this._editorHeight = document.querySelector('.editor-container').clientHeight;
 		this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
@@ -262,7 +281,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				let outputElement = <HTMLElement>this.output.nativeElement;
 				outputElement.innerHTML = this.markdownResult.element.innerHTML;
 				this.addUndoElement(outputElement.innerHTML);
-
+				if (this.markdownMode) {
+					this.setSplitViewHeight();
+				}
 				outputElement.style.lineHeight = this.markdownPreviewLineHeight.toString();
 				this.cellModel.renderedOutputTextContent = this.getRenderedTextOutput();
 				outputElement.focus();
@@ -270,6 +291,23 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 					this.addDecoration();
 				}
 			}
+		}
+	}
+
+	private setSplitViewHeight(): void {
+		// Set the same height for markdown editor and preview
+		this.setMarkdownEditorHeight(this._editorHeight);
+		let outputElement = <HTMLElement>this.output.nativeElement;
+		outputElement.style.maxHeight = this._editorHeight.toString() + 'px';
+		outputElement.style.overflowY = 'scroll';
+	}
+
+	private setMarkdownEditorHeight(height: number): void {
+		// Find cell editor provider via cell guid to set markdown editor max height
+		let cellEditorProvider = this.markdowncodeCell.find(c => c.cellGuid() === this.cellModel.cellGuid);
+		let markdownEditor = cellEditorProvider?.getEditor();
+		if (markdownEditor) {
+			markdownEditor.setMaximumHeight(height);
 		}
 	}
 
@@ -404,11 +442,18 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	private focusIfPreviewMode(): void {
-		if (this.previewMode && !this.markdownMode) {
-			let outputElement = this.output?.nativeElement as HTMLElement;
-			if (outputElement) {
-				outputElement.focus();
+		if (this.previewMode) {
+			if (!this.markdownMode) {
+				let outputElement = this.output?.nativeElement as HTMLElement;
+				if (outputElement) {
+					outputElement.style.maxHeight = 'unset';
+					outputElement.focus();
+				}
+			} else {
+				this.setSplitViewHeight();
 			}
+		} else {
+			this.setMarkdownEditorHeight(this._markdownMaxHeight);
 		}
 	}
 
@@ -554,10 +599,11 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	}
 }
 
-function preventDefaultAndExecCommand(e: KeyboardEvent, commandId: string) {
-	// use preventDefault() to avoid invoking the editor's select all
+function preventDefaultAndExecCommand(e: KeyboardEvent, commandId: string, showUI?: boolean, value?: string) {
+	// Use preventDefault() to avoid invoking the editor's select all and stopPropagation to prevent further propagation of the current event
+	e.stopPropagation();
 	e.preventDefault();
-	document.execCommand(commandId);
+	document.execCommand(commandId, showUI, value);
 }
 
 /**
