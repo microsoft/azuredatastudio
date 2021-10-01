@@ -298,6 +298,16 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		}
 	}
 
+	public addActiveClassFromModeChange() {
+		this.removeActiveClassFromModeActions();
+		const activeClass = ' active';
+		switch (this.cellModel.currentMode) {
+			case CellEditModes.MARKDOWN: this._toggleMarkdownViewAction.class += activeClass; break;
+			case CellEditModes.SPLIT: this._toggleSplitViewAction.class += activeClass; break;
+			case CellEditModes.WYSIWYG: this._toggleTextViewAction.class += activeClass; break;
+		}
+	}
+
 	/**
 	 * Instantiate modal for use as callout when inserting Link or Image into markdown.
 	 * @param calloutStyle Style of callout passed in to determine which callout is rendered.

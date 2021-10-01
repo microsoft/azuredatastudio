@@ -227,13 +227,9 @@ export class CellModel extends Disposable implements ICellModel {
 	public set isEditMode(isEditMode: boolean) {
 		this._isEditMode = isEditMode;
 		if (this._isEditMode) {
-			if (this.lastEditMode) {
-				this.showPreview = this.lastEditMode !== TextCellEditModes.Markdown;
-				this.showMarkdown = this.lastEditMode !== TextCellEditModes.RichText;
-			} else {
-				this.showPreview = this._defaultTextEditMode !== TextCellEditModes.Markdown;
-				this.showMarkdown = this._defaultTextEditMode !== TextCellEditModes.RichText;
-			}
+			const newEditMode = this.lastEditMode ?? this._defaultTextEditMode;
+			this.showPreview = newEditMode !== TextCellEditModes.Markdown;
+			this.showMarkdown = newEditMode !== TextCellEditModes.RichText;
 		}
 		this._onCellModeChanged.fire(this._isEditMode);
 		// Note: this does not require a notebook update as it does not change overall state

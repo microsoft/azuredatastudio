@@ -30,6 +30,7 @@ import { CodeComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/
 import { NotebookRange, ICellEditorProvider, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { HTMLMarkdownConverter } from 'sql/workbench/contrib/notebook/browser/htmlMarkdownConverter';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
+import { MarkdownToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
@@ -42,6 +43,7 @@ const findRangeSpecificClass = 'rangeSpecificHighlight';
 export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	@ViewChild('preview', { read: ElementRef }) private output: ElementRef;
 	@ViewChildren(CodeComponent) private markdowncodeCell: QueryList<CodeComponent>;
+	@ViewChildren(MarkdownToolbarComponent) private markdownToolbar: MarkdownToolbarComponent;
 
 	@Input() cellModel: ICellModel;
 
@@ -439,6 +441,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		} else {
 			this.setMarkdownEditorHeight(this._markdownMaxHeight);
 		}
+		this.markdownToolbar.addActiveClassFromModeChange();
 	}
 
 	protected isActive(): boolean {
