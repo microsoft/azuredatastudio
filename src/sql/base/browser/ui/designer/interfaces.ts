@@ -8,7 +8,7 @@ export interface DesignerComponentInput {
 	 * Gets the object type display name.
 	 */
 
-	readonly objectType: string;
+	readonly objectTypeDisplayName: string;
 	/**
 	 * Gets the designer view specification.
 	 */

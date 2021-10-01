@@ -1027,7 +1027,7 @@ export namespace GetSqlMigrationAssessmentItemsRequest {
 
 // ------------------------------- < Table Designer > ------------------------------------
 
-export interface ProcessTableDesignerEditRequestParams {
+export interface TableDesignerEditRequestParams {
 	tableInfo: azdata.designers.TableInfo,
 	edit: azdata.designers.DesignerEdit,
 	data: azdata.designers.DesignerData
@@ -1038,7 +1038,7 @@ export namespace GetTableDesignerInfoRequest {
 }
 
 export namespace ProcessTableDesignerEditRequest {
-	export const type = new RequestType<ProcessTableDesignerEditRequestParams, azdata.designers.DesignerEditResult, void, void>('tabledesigner/processedit');
+	export const type = new RequestType<TableDesignerEditRequestParams, azdata.designers.DesignerEditResult, void, void>('tabledesigner/processedit');
 }
 
 // ------------------------------- < Table Designer > ------------------------------------

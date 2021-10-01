@@ -18,13 +18,12 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 	}));
 
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.designTable', async (context: azdata.ObjectExplorerContext) => {
-		const nameParts = context.nodeInfo.label.split('.');
 		await azdata.designers.openTableDesigner(sqlProviderName, {
 			server: context.connectionProfile.serverName,
 			database: context.connectionProfile.databaseName,
 			isNewTable: false,
-			name: nameParts[1],
-			schema: nameParts[0]
+			name: context.nodeInfo.metadata.name,
+			schema: context.nodeInfo.metadata.schema
 		});
 	}));
 

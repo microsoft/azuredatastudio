@@ -18,7 +18,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		private _tableInfo: azdata.designers.TableInfo) {
 	}
 
-	get objectType(): string {
+	get objectTypeDisplayName(): string {
 		return localize('tableDesigner.tableObjectType', "Table");
 	}
 

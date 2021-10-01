@@ -1118,7 +1118,7 @@ export class TableDesignerFeature extends SqlOpsFeature<undefined> {
 			}
 		};
 		const processTableEdit = async (tableInfo: azdata.designers.TableInfo, data: azdata.designers.DesignerData, edit: azdata.designers.DesignerEdit): Promise<azdata.designers.DesignerEditResult> => {
-			let params: contracts.ProcessTableDesignerEditRequestParams = {
+			let params: contracts.TableDesignerEditRequestParams = {
 				tableInfo: tableInfo,
 				data: data,
 				edit: edit

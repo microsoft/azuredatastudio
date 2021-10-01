@@ -224,7 +224,7 @@ export class Designer extends Disposable implements IThemable {
 			this._componentMap.forEach(value => {
 				components.push(value.defintion);
 			});
-			type = this._input.objectType;
+			type = this._input.objectTypeDisplayName;
 			inputData = data;
 		} else {
 			context = currentContext;
