@@ -639,6 +639,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 				//make new cell Active
 				this.updateActiveCell(activeCell);
+				activeCell.isEditMode = true;
 				this._contentChangedEmitter.fire({
 					changeType: NotebookChangeType.CellsModified,
 					cells: [activeCell],
@@ -666,13 +667,12 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 		// Set newly created cell as active cell
 		this.updateActiveCell(cell);
-
+		cell.isEditMode = true;
 		this._contentChangedEmitter.fire({
 			changeType: NotebookChangeType.CellsModified,
 			cells: [cell],
 			cellIndex: index
 		});
-
 		return cell;
 	}
 
