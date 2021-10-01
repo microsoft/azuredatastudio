@@ -8,7 +8,7 @@ RUN apt-get update && apt-get upgrade -y
 
 RUN apt-get install -y libxkbfile-dev pkg-config libsecret-1-dev libxss1 dbus xvfb libgtk-3-0 \
 	libkrb5-dev git apt-transport-https ca-certificates curl gnupg-agent software-properties-common \
-	libnss3 libasound2 make gcc libx11-dev fakeroot rpm libgconf-2-4 libunwind8 g++ python3-dev python3-pip
+	libnss3 libasound2 make gcc libx11-dev fakeroot rpm libgconf-2-4 libunwind8 g++ python
 
 # Set the Chrome repo and install Chrome.
 RUN curl -sSL https://dl.google.com/linux/linux_signing_key.pub | apt-key add - \
