@@ -481,7 +481,7 @@
       <source xml:lang="en">Only .ipynb Notebooks are supported</source>
     </trans-unit>
 </body></file>
-  <file original="extensions/notebook/dist/jupyter/jupyterNotebookProvider" source-language="en" datatype="plaintext"><body>
+  <file original="extensions/notebook/dist/jupyter/jupyterExecuteProvider" source-language="en" datatype="plaintext"><body>
     <trans-unit id="errNotebookUriMissing">
       <source xml:lang="en">A notebook path is required</source>
     </trans-unit>
