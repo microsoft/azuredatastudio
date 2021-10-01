@@ -14,7 +14,7 @@ export abstract class Dialog {
 	}
 
 	protected async waitForDialogGone() {
-		await this.code.waitForElementGone(`div[aria-label="${this.title}"][class="modal fade flyout-dialog"]`);
+		await this.code.waitForElementGone(`div[aria-label="${this.title}"][class="modal fade flyout-dialog"]`, undefined, 3000);
 	}
 
 	protected async clickDialogButton(text: string) {
