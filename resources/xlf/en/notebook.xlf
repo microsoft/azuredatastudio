@@ -655,8 +655,17 @@
     <trans-unit id="notebook.command.addtext">
       <source xml:lang="en">Add Text Cell</source>
     </trans-unit>
+    <trans-unit id="notebook.command.boldText">
+      <source xml:lang="en">Bold Markdown Text</source>
+    </trans-unit>
     <trans-unit id="notebook.command.clearactivecellresult">
       <source xml:lang="en">Clear Cell Result</source>
+    </trans-unit>
+    <trans-unit id="notebook.command.codeBlock">
+      <source xml:lang="en">Add Code Block</source>
+    </trans-unit>
+    <trans-unit id="notebook.command.italicizeText">
+      <source xml:lang="en">Italicize Markdown Text</source>
     </trans-unit>
     <trans-unit id="notebook.command.new">
       <source xml:lang="en">New Notebook</source>
@@ -669,6 +678,9 @@
     </trans-unit>
     <trans-unit id="notebook.command.runallcells">
       <source xml:lang="en">Run Cells</source>
+    </trans-unit>
+    <trans-unit id="notebook.command.underlineText">
+      <source xml:lang="en">Underline Markdown Text</source>
     </trans-unit>
     <trans-unit id="notebook.configuration.title">
       <source xml:lang="en">Notebook configuration</source>
