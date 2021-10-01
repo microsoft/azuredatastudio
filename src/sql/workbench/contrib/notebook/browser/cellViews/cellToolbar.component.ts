@@ -100,15 +100,11 @@ export class CellToolbarComponent {
 		let taskbarContent: ITaskbarContent[] = [];
 		if (this.cellModel?.cellType === CellTypes.Markdown) {
 			taskbarContent.push(
-				{ action: splitCellButton },
 				{ action: this._editCellAction }
-			);
-		} else {
-			taskbarContent.push(
-				{ action: splitCellButton },
 			);
 		}
 		taskbarContent.push(
+			{ action: splitCellButton },
 			{ element: addCellDropdownContainer },
 			{ action: moveCellDownButton },
 			{ action: moveCellUpButton },
