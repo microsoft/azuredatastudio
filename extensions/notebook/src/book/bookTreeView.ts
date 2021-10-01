@@ -797,10 +797,11 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			try {
 				let toc = this.undoTocFiles.pop();
 				let files = this.undoMovedFiles.pop();
-				// restore toc files
-				for (const [key, value] of files.entries()) {
-					await fs.move(key, value);
+				// return files to previous file path
+				for (const [src, dest] of files.entries()) {
+					await fs.move(dest, src);
 				}
+				// restore toc files
 				for (const [key, value] of toc.entries()) {
 					const yamlFile = await yaml.safeLoad(value);
 					await fs.writeFile(key, yaml.safeDump(yamlFile, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
