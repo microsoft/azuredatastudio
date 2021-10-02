@@ -85,7 +85,7 @@ export class CellModel extends Disposable implements ICellModel {
 	private _outputCounter = 0; // When re-executing the same cell, ensure that we apply chart options in the same order
 	private _attachments: nb.ICellAttachments | undefined;
 	private _preventNextChartCache: boolean = false;
-	public lastEditMode: string;
+	public lastEditMode: string | undefined;
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
