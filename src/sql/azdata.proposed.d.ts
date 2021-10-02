@@ -979,9 +979,13 @@ declare module 'azdata' {
 
 	export interface ConnectionInfoSummary {
 		/**
-		 * Indicates whether the server version is supported. The default value is true. If the value is false, ADS will show a warning message.
-		 * Users can still connect to the servers with unsupported versions(e.g. SQL Server 2005) but some features might not work.
+		 * Indicates whether the server version is supported by ADS. The default value is true. If the value is false, ADS will show a warning message.
 		 */
 		isSupportedVersion?: boolean;
+
+		/**
+		 * The messages that will be appended to the Azure Data Studio's warning message about unsupported versions.
+		 */
+		unsupportedVersionMessage?: string;
 	}
 }
