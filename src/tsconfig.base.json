@@ -8,7 +8,9 @@
 		"noUnusedLocals": true,
 		"allowUnreachableCode": false,
 		"strict": true,
+		// Much of our code isn't strict-null compliant so disable these for now
 		"strictNullChecks": false,
+		// Disable since without strictNullChecks this has lots of errors in both vs and our code
 		"noImplicitAny": false,
 		"strictOptionalProperties": false,
 		"useUnknownInCatchVariables": false,
