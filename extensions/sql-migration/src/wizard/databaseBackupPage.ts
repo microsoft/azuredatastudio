@@ -446,12 +446,13 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			'font-size': '13px',
 			'font-weight': 'bold',
 			'text-align': 'left',
-			'border-bottom': '1px solid',
+			'box-shadow': 'inset 0px -1px 0px #F3F2F1',
+
 		};
 		const rowCssStyle: azdata.CssStyles = {
 			'border': 'none',
 			'font-size': '13px',
-			'border-bottom': '1px solid',
+			'box-shadow': 'inset 0px -1px 0px #F3F2F1',
 		};
 
 		const networkShareTableText = this._view.modelBuilder.text()
