@@ -10,7 +10,7 @@
 		"strict": true,
 		"strictNullChecks": false,
 		"noImplicitAny": false,
-		"strictOptionalProperties": false,
+		"exactOptionalPropertyTypes": false,
 		"useUnknownInCatchVariables": false,
 		"forceConsistentCasingInFileNames": true,
 		"baseUrl": ".",
