@@ -215,6 +215,10 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			if (!preview && window.getSelection() && window.getSelection().focusNode?.nodeName === '#text' && window.getSelection().getRangeAt(0)) {
 				let selection = window.getSelection().getRangeAt(0);
 
+				// window.getSelection gives the exact html elements and offsets of cursor location
+				// Since we only have the output element reference which is the parent of all html nodes
+				// we iterate through it's child nodes until we get the selection element and store them
+				// in the startElementNodes and endElementNodes and their offsets respectively.
 				let startElementNodes = [];
 				let startNode = selection.startContainer;
 				let endNode = selection.endContainer;
@@ -243,7 +247,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			if (!markdown) {
 				let editorControl = this.cellEditors.length > 0 ? this.cellEditors[0].getEditor().getControl() : undefined;
 				if (editorControl) {
-					let selection = editorControl.getSelections()[0];
+					let selection = editorControl.getSelection();
 
 					this.cellModel.markdownCursorPosition = selection.getPosition();
 				}
@@ -490,7 +494,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			} else {
 				this.setSplitViewHeight();
 			}
-			// Move cursor to the last known location
+			// Move cursor to the richTextCursorPosition
+			// We iterate through the output element childnodes to get to the element of cursor location
+			// If the elements exist, we set the selection, else the cursor defaults to beginning.
 			if (this.cellModel.richTextCursorPosition) {
 				let selection = window.getSelection();
 				let htmlNodes = this.cellModel.richTextCursorPosition.startElementNodes;

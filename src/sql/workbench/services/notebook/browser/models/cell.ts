@@ -86,8 +86,8 @@ export class CellModel extends Disposable implements ICellModel {
 	private _outputCounter = 0; // When re-executing the same cell, ensure that we apply chart options in the same order
 	private _attachments: nb.ICellAttachments | undefined;
 	private _preventNextChartCache: boolean = false;
-	private _richTextCursorPosition: ICaretPosition;
-	private _markdownCursorPosition: IPosition;
+	public richTextCursorPosition: ICaretPosition | undefined;
+	public markdownCursorPosition: IPosition | undefined;
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
@@ -146,22 +146,6 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public get metadata(): any {
 		return this._metadata;
-	}
-
-	public get markdownCursorPosition(): IPosition {
-		return this._markdownCursorPosition;
-	}
-
-	public set markdownCursorPosition(pos: IPosition) {
-		this._markdownCursorPosition = pos;
-	}
-
-	public get richTextCursorPosition(): ICaretPosition {
-		return this._richTextCursorPosition;
-	}
-
-	public set richTextCursorPosition(pos: ICaretPosition) {
-		this._richTextCursorPosition = pos;
 	}
 
 	public get attachments(): nb.ICellAttachments | undefined {
