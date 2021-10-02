@@ -221,6 +221,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 			}
 		}
 		this._notebookEditor = this._notebookService.findNotebookEditor(this.cellModel?.notebookModel?.notebookUri);
+		this.addActiveClassFromEditMode();
 	}
 
 	public async onInsertButtonClick(event: MouseEvent, type: MarkdownButtonType): Promise<void> {
@@ -298,7 +299,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		}
 	}
 
-	public addActiveClassFromModeChange() {
+	public addActiveClassFromEditMode() {
 		this.removeActiveClassFromModeActions();
 		const activeClass = ' active';
 		switch (this.cellModel.currentMode) {
