@@ -14,7 +14,7 @@ import { ControllerModel } from '../../../models/controllerModel';
 import { MiaaModel } from '../../../models/miaaModel';
 import { DashboardPage } from '../../components/dashboardPage';
 import { ResourceType } from 'arc';
-import { UserCancelledError } from '../../../common/api';
+
 
 export class MiaaDashboardOverviewPage extends DashboardPage {
 
@@ -212,7 +212,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 				this._connectToServerButton!.enabled = false;
 				this._databasesTableLoading!.loading = true;
 				try {
-					await this.callGetDatabases();
+					await this._miaaModel.callGetDatabases();
 				} catch {
 					this._connectToServerButton!.enabled = true;
 				}
@@ -320,19 +320,6 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 				{ component: this._openInAzurePortalButton }
 			]
 		).component();
-	}
-
-	private async callGetDatabases(): Promise<void> {
-		try {
-			await this._miaaModel.getDatabases();
-		} catch (error) {
-			if (error instanceof UserCancelledError) {
-				vscode.window.showWarningMessage(loc.miaaConnectionRequired);
-			} else {
-				vscode.window.showErrorMessage(loc.fetchDatabasesFailed(this._miaaModel.info.name, error));
-			}
-			throw error;
-		}
 	}
 
 	private handleRegistrationsUpdated(): void {

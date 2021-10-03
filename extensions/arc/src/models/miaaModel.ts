@@ -16,6 +16,7 @@ import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
 import { ControllerModel, Registration } from './controllerModel';
 import { ResourceModel } from './resourceModel';
 
+
 export type DatabaseModel = { name: string, status: string };
 
 export class MiaaModel extends ResourceModel {
@@ -111,6 +112,18 @@ export class MiaaModel extends ResourceModel {
 		}
 	}
 
+	public async callGetDatabases(): Promise<void> {
+		try {
+			await this.getDatabases();
+		} catch (error) {
+			if (error instanceof UserCancelledError) {
+				vscode.window.showWarningMessage(loc.miaaConnectionRequired);
+			} else {
+				vscode.window.showErrorMessage(loc.fetchDatabasesFailed(this.info.name, error));
+			}
+			throw error;
+		}
+	}
 	public async getDatabases(promptForConnection: boolean = true): Promise<void> {
 		if (!this._connectionProfile) {
 			await this.getConnectionProfile(promptForConnection);
