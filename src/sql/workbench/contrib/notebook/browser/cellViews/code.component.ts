@@ -282,6 +282,10 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			DOM.getContentHeight(this.codeElement.nativeElement)));
 		this._editor.setHeightToScrollHeight(false, this._cellModel.isCollapsed);
 		this.horizontalScrollbar();
+		// Move cursor to the last known location
+		if (this.cellModel.markdownCursorPosition) {
+			this._editor.getControl().setPosition(this.cellModel.markdownCursorPosition);
+		}
 	}
 
 	/**
@@ -393,10 +397,6 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		if (this.cellModel.id === this._activeCellId && this._editor.getContainer().offsetParent && ownerDocument && ownerDocument.hasFocus()) {
 			this._editor.focus();
 			this._editor.getContainer().scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-			// Move cursor to the last known location
-			if (this.cellModel.markdownCursorPosition) {
-				this._editor.getControl().setPosition(this.cellModel.markdownCursorPosition);
-			}
 		}
 	}
 

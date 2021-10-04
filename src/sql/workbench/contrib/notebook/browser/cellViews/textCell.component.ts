@@ -212,33 +212,34 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		}));
 		this._register(this.cellModel.onCellPreviewModeChanged(preview => {
 			// On preview mode change, get the cursor position (get the position only when the selection node is a text node)
-			if (!preview && window.getSelection() && window.getSelection().focusNode?.nodeName === '#text' && window.getSelection().getRangeAt(0)) {
+			if (window.getSelection() && window.getSelection().focusNode?.nodeName === '#text' && window.getSelection().getRangeAt(0)) {
 				let selection = window.getSelection().getRangeAt(0);
-
-				// window.getSelection gives the exact html elements and offsets of cursor location
-				// Since we only have the output element reference which is the parent of all html nodes
-				// we iterate through it's child nodes until we get the selection element and store them
-				// in the startElementNodes and endElementNodes and their offsets respectively.
-				let startElementNodes = [];
-				let startNode = selection.startContainer;
-				let endNode = selection.endContainer;
-				while (startNode !== this.output.nativeElement) {
-					startElementNodes.push(this.getNodeIndex(startNode));
-					startNode = startNode.parentNode;
+				if (selection.startOffset !== this.cellModel.richTextCursorPosition?.startOffset) {
+					// window.getSelection gives the exact html element and offsets of cursor location
+					// Since we only have the output element reference which is the parent of all html nodes
+					// we iterate through it's child nodes until we get the selection element and store the node indexes
+					// in the startElementNodes and endElementNodes and their offsets respectively.
+					let startElementNodes = [];
+					let startNode = selection.startContainer;
+					let endNode = selection.endContainer;
+					while (startNode !== this.output.nativeElement) {
+						startElementNodes.push(this.getNodeIndex(startNode));
+						startNode = startNode.parentNode;
+					}
+					let endElementNodes = [];
+					while (endNode !== this.output.nativeElement) {
+						endElementNodes.push(this.getNodeIndex(endNode));
+						endNode = endNode.parentNode;
+					}
+					// Create cursor position
+					let cursorPosition: ICaretPosition = {
+						startElementNodes: startElementNodes,
+						startOffset: selection.startOffset,
+						endElementNodes: endElementNodes,
+						endOffset: selection.endOffset
+					};
+					this.cellModel.richTextCursorPosition = cursorPosition;
 				}
-				let endElementNodes = [];
-				while (endNode !== this.output.nativeElement) {
-					endElementNodes.push(this.getNodeIndex(endNode));
-					endNode = endNode.parentNode;
-				}
-				// Create cursor position
-				let cursorPosition: ICaretPosition = {
-					startElementNodes: startElementNodes,
-					startOffset: selection.startOffset,
-					endElementNodes: endElementNodes,
-					endOffset: selection.endOffset
-				};
-				this.cellModel.richTextCursorPosition = cursorPosition;
 			}
 			this.previewMode = preview;
 			this.focusIfPreviewMode();
@@ -248,8 +249,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				let editorControl = this.cellEditors.length > 0 ? this.cellEditors[0].getEditor().getControl() : undefined;
 				if (editorControl) {
 					let selection = editorControl.getSelection();
-
-					this.cellModel.markdownCursorPosition = selection.getPosition();
+					this.cellModel.markdownCursorPosition = selection?.getPosition();
 				}
 			}
 			this.markdownMode = markdown;
@@ -497,7 +497,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			// Move cursor to the richTextCursorPosition
 			// We iterate through the output element childnodes to get to the element of cursor location
 			// If the elements exist, we set the selection, else the cursor defaults to beginning.
-			if (this.cellModel.richTextCursorPosition) {
+			if (!this.markdownMode && this.cellModel.richTextCursorPosition) {
 				let selection = window.getSelection();
 				let htmlNodes = this.cellModel.richTextCursorPosition.startElementNodes;
 				let depthToNode = htmlNodes.length;

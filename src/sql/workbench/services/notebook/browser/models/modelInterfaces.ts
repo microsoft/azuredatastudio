@@ -554,9 +554,9 @@ export interface ICellModel {
 }
 
 export interface ICaretPosition {
-	startElementNodes: any;
+	startElementNodes: number[];
 	startOffset: number;
-	endElementNodes: any;
+	endElementNodes: number[];
 	endOffset: number;
 }
 
