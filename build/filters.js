@@ -22,6 +22,10 @@ module.exports.all = [
 	'!out*/**',
 	'!test/**/out/**',
 	'!**/node_modules/**',
+
+	// {{SQL CARBON EDIT}}
+	'!build/actions/**/*.js',
+	'!build/**/*'
 ];
 
 module.exports.indentationFilter = [
@@ -91,6 +95,31 @@ module.exports.indentationFilter = [
 	'!extensions/markdown-language-features/notebook-out/*.js',
 	'!extensions/markdown-math/notebook-out/*.js',
 	'!extensions/simple-browser/media/*.js',
+
+	// {{SQL CARBON EDIT}} Except for our stuff
+	'!**/*.gif',
+	'!build/actions/**/*.js',
+	'!**/*.{xlf,lcl,docx,sql,vsix,bacpac,ipynb,jpg}',
+	'!extensions/mssql/sqltoolsservice/**',
+	'!extensions/import/flatfileimportservice/**',
+	'!extensions/admin-tool-ext-win/ssmsmin/**',
+	'!extensions/resource-deployment/notebooks/**',
+	'!extensions/mssql/notebooks/**',
+	'!extensions/azurehybridtoolkit/notebooks/**',
+	'!extensions/integration-tests/testData/**',
+	'!extensions/arc/src/controller/generated/**',
+	'!extensions/sql-database-projects/resources/templates/*.xml',
+	'!extensions/sql-database-projects/src/test/baselines/*.xml',
+	'!extensions/sql-database-projects/src/test/baselines/*.json',
+	'!extensions/sql-database-projects/src/test/baselines/*.sqlproj',
+	'!extensions/sql-database-projects/BuildDirectory/SystemDacpacs/**',
+	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts',
+	'!extensions/big-data-cluster/src/bigDataCluster/controller/clusterApiGenerated2.ts',
+	'!resources/linux/snap/electron-launch',
+	'!extensions/markdown-language-features/media/*.js',
+	'!extensions/simple-browser/media/*.js',
+	'!resources/xlf/LocProject.json',
+	'!build/**/*'
 ];
 
 module.exports.copyrightFilter = [
@@ -124,6 +153,47 @@ module.exports.copyrightFilter = [
 	'!extensions/html-language-features/server/src/modes/typescript/*',
 	'!extensions/*/server/bin/*',
 	'!src/vs/editor/test/node/classification/typescript-test.ts',
+
+	// {{SQL CARBON EDIT}} Except for stuff in our code that doesn't use our copyright
+	'!extensions/azurehybridtoolkit/notebooks/**',
+	'!extensions/azuremonitor/src/prompts/**',
+	'!extensions/import/flatfileimportservice/**',
+	'!extensions/kusto/src/prompts/**',
+	'!extensions/mssql/sqltoolsservice/**',
+	'!extensions/mssql/src/hdfs/webhdfs.ts',
+	'!extensions/mssql/src/prompts/**',
+	'!extensions/notebook/resources/jupyter_config/**',
+	'!extensions/notebook/src/intellisense/text.ts',
+	'!extensions/notebook/src/prompts/**',
+	'!extensions/query-history/images/**',
+	'!extensions/sql/build/update-grammar.js',
+	'!src/sql/workbench/contrib/notebook/browser/outputs/tableRenderers.ts',
+	'!src/sql/workbench/contrib/notebook/common/models/url.ts',
+	'!src/sql/workbench/services/notebook/browser/outputs/renderMimeInterfaces.ts',
+	'!src/sql/workbench/contrib/notebook/browser/models/outputProcessor.ts',
+	'!src/sql/workbench/services/notebook/browser/outputs/mimemodel.ts',
+	'!src/sql/workbench/contrib/notebook/browser/cellViews/media/*.css',
+	'!src/sql/base/browser/ui/table/plugins/rowSelectionModel.plugin.ts',
+	'!src/sql/base/browser/ui/table/plugins/rowDetailView.ts',
+	'!src/sql/base/browser/ui/table/plugins/headerFilter.plugin.ts',
+	'!src/sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin.ts',
+	'!src/sql/base/browser/ui/table/plugins/cellSelectionModel.plugin.ts',
+	'!src/sql/base/browser/ui/table/plugins/autoSizeColumns.plugin.ts',
+	'!src/sql/workbench/services/notebook/browser/outputs/sanitizer.ts',
+	'!src/sql/workbench/contrib/notebook/browser/outputs/renderers.ts',
+	'!src/sql/workbench/services/notebook/browser/outputs/tableRenderers.ts',
+	'!src/sql/workbench/services/notebook/browser/outputs/registry.ts',
+	'!src/sql/workbench/services/notebook/browser/outputs/factories.ts',
+	'!src/sql/workbench/services/notebook/common/nbformat.ts',
+	'!extensions/markdown-language-features/media/tomorrow.css',
+	'!src/sql/workbench/browser/modelComponents/media/highlight.css',
+	'!src/sql/workbench/contrib/notebook/electron-browser/cellViews/media/highlight.css',
+	'!src/sql/workbench/contrib/notebook/browser/turndownPluginGfm.ts',
+	'!**/*.gif',
+	'!**/*.xlf',
+	'!**/*.dacpac',
+	'!**/*.bacpac',
+	'!**/*.py'
 ];
 
 module.exports.jsHygieneFilter = [
@@ -138,6 +208,7 @@ module.exports.jsHygieneFilter = [
 	'!src/**/marked.js',
 	'!src/**/semver.js',
 	'!**/test/**',
+	'!build/**/*' // {{SQL CARBON EDIT}}
 ];
 
 module.exports.tsHygieneFilter = [
@@ -155,4 +226,11 @@ module.exports.tsHygieneFilter = [
 	'!extensions/vscode-api-tests/testWorkspace2/**',
 	'!extensions/**/*.test.ts',
 	'!extensions/html-language-features/server/lib/jquery.d.ts',
+
+	// {{SQL CARBON EDIT}}
+	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts',
+	'!extensions/big-data-cluster/src/bigDataCluster/controller/tokenApiGenerated.ts',
+	'!src/vs/workbench/services/themes/common/textMateScopeMatcher.ts', // skip this because we have no plans on touching this and its not ours
+	'!src/vs/workbench/contrib/extensions/browser/extensionRecommendationsService.ts', // skip this because known issue
+	'!build/**/*'
 ];

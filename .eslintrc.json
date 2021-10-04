@@ -1123,7 +1123,12 @@
 		},
 		{
 			"files": [
-				"src/{vs,sql}/server/*"
+				"src/{vs,sql}/server/*",
+
+				// {{SQL CARBON EDIT}} Ignore our own
+				"extensions/azuremonitor/src/prompts/**",
+				"src/sql/workbench/services/notebook/browser/outputs/renderers.ts",
+				"src/sql/workbench/services/notebook/browser/outputs/tableRenderers.ts"
 			],
 			"rules": {
 				"header/header": [
