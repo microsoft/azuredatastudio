@@ -98,7 +98,7 @@ class CopyResultAction extends Action {
 		label: string,
 		private copyHeader: boolean,
 		private dataService: DataService,
-		private configurationService: IConfigurationService
+		@IConfigurationService private configurationService: IConfigurationService
 	) {
 		super(id, label);
 	}
