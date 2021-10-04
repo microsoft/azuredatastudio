@@ -162,6 +162,8 @@ export class AzTool implements azExt.IAzApi {
 					memoryLimit?: string,
 					memoryRequest?: string,
 					noWait?: boolean,
+					recoveryPointObjective?: string,
+					retentionDays?: string
 				},
 				namespace: string,
 				additionalEnvVars?: azExt.AdditionalEnvVars
@@ -172,6 +174,8 @@ export class AzTool implements azExt.IAzApi {
 				if (args.memoryLimit) { argsArray.push('--memory-limit', args.memoryLimit); }
 				if (args.memoryRequest) { argsArray.push('--memory-request', args.memoryRequest); }
 				if (args.noWait) { argsArray.push('--no-wait'); }
+				if (args.recoveryPointObjective) { argsArray.push('--recovery-point-objective'); }
+				if (args.retentionDays) { argsArray.push('--retention-days'); }
 				return this.executeCommand<void>(argsArray, additionalEnvVars);
 			}
 		}
