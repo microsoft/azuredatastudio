@@ -42,6 +42,7 @@ import { IRange } from 'vs/editor/common/core/range';
 import { UntitledQueryEditorInput } from 'sql/base/query/browser/untitledQueryEditorInput';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IEditorOptions } from 'vs/platform/editor/common/editor';
+import { ITextResourceConfigurationService } from 'vs/editor/common/services/textResourceConfigurationService';
 
 const QUERY_EDITOR_VIEW_STATE_PREFERENCE_KEY = 'queryEditorViewState';
 
@@ -107,10 +108,11 @@ export class QueryEditor extends EditorPane {
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@IModeService private readonly modeService: IModeService,
+		@ITextResourceConfigurationService textResourceConfigurationService: ITextResourceConfigurationService
 	) {
 		super(QueryEditor.ID, telemetryService, themeService, storageService);
 
-		this.editorMemento = this.getEditorMemento<IQueryEditorViewState>(editorGroupService, QUERY_EDITOR_VIEW_STATE_PREFERENCE_KEY, 100);
+		this.editorMemento = this.getEditorMemento<IQueryEditorViewState>(editorGroupService, textResourceConfigurationService, QUERY_EDITOR_VIEW_STATE_PREFERENCE_KEY, 100);
 
 		this.queryEditorVisible = queryContext.QueryEditorVisibleContext.bindTo(contextKeyService);
 
@@ -119,14 +121,21 @@ export class QueryEditor extends EditorPane {
 	}
 
 	private onFilesChanged(e: FileChangesEvent): void {
-		const deleted = e.getDeleted();
-		if (deleted && deleted.length) {
-			this.clearTextEditorViewState(deleted.map(d => d.resource));
+		const deleted = e.rawDeleted;
+		if (!deleted) {
+			return;
+		}
+		const changes = [];
+		for (const [, change] of deleted) {
+			changes.push(change);
+		}
+		if (changes.length) {
+			this.clearTextEditorViewState(changes.map(d => d.resource));
 		}
 	}
 
-	protected override getEditorMemento<T>(editorGroupService: IEditorGroupsService, key: string, limit: number = 10): IEditorMemento<T> {
-		return new EditorMemento(this.getId(), key, Object.create(null), limit, editorGroupService); // do not persist in storage as results are never persisted
+	protected override getEditorMemento<T>(editorGroupService: IEditorGroupsService, configurationService: ITextResourceConfigurationService, key: string, limit: number = 10): IEditorMemento<T> {
+		return new EditorMemento(this.getId(), key, Object.create(null), limit, editorGroupService, configurationService); // do not persist in storage as results are never persisted
 	}
 
 	// PUBLIC METHODS ////////////////////////////////////////////////////////////
@@ -214,9 +223,9 @@ export class QueryEditor extends EditorPane {
 			this._changeConnectionAction.enabled = this.input.state.connected;
 			this.setTaskbarContent();
 			if (this.input.state.connected) {
-				this.listDatabasesActionItem.onConnected();
+				this.listDatabasesActionItem?.onConnected();
 			} else {
-				this.listDatabasesActionItem.onDisconnect();
+				this.listDatabasesActionItem?.onDisconnect();
 			}
 		}
 
@@ -251,17 +260,16 @@ export class QueryEditor extends EditorPane {
 	 */
 	private _getActionItemForAction(action: IAction): IActionViewItem {
 		if (action.id === actions.ListDatabasesAction.ID) {
-			return this.listDatabasesActionItem;
+			if (!this._listDatabasesActionItem) {
+				this._listDatabasesActionItem = this.instantiationService.createInstance(actions.ListDatabasesActionItem, this, action);
+				this._register(this._listDatabasesActionItem.attachStyler(this.themeService));
+			}
 		}
 
 		return null;
 	}
 
-	private get listDatabasesActionItem(): actions.ListDatabasesActionItem {
-		if (!this._listDatabasesActionItem) {
-			this._listDatabasesActionItem = this.instantiationService.createInstance(actions.ListDatabasesActionItem, this);
-			this._register(this._listDatabasesActionItem.attachStyler(this.themeService));
-		}
+	private get listDatabasesActionItem(): actions.ListDatabasesActionItem | undefined {
 		return this._listDatabasesActionItem;
 	}
 

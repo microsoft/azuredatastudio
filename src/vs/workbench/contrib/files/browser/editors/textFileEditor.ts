@@ -29,7 +29,7 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { createErrorWithActions } from 'vs/base/common/errors';
-import { EditorActivation, EditorOverride, ITextEditorOptions } from 'vs/platform/editor/common/editor';
+import { EditorActivation, ITextEditorOptions } from 'vs/platform/editor/common/editor';
 import { IUriIdentityService } from 'vs/workbench/services/uriIdentity/common/uriIdentity';
 import { IExplorerService } from 'vs/workbench/contrib/files/browser/files';
 import { MutableDisposable } from 'vs/base/common/lifecycle';
@@ -72,9 +72,11 @@ export class TextFileEditor extends BaseTextEditor {
 	}
 
 	private onDidFilesChange(e: FileChangesEvent): void {
-		const deleted = e.getDeleted();
-		if (deleted?.length) {
-			this.clearTextEditorViewState(deleted.map(({ resource }) => resource));
+		const deleted = e.rawDeleted;
+		if (deleted) {
+			for (const [resource] of deleted) {
+				this.clearTextEditorViewState(resource);
+			}
 		}
 	}
 
@@ -215,17 +217,19 @@ export class TextFileEditor extends BaseTextEditor {
 	}
 
 	private openAsBinary(input: FileEditorInput, options: ITextEditorOptions | undefined): void {
+
+		// Mark file input for forced binary opening
 		input.setForceOpenAsBinary();
 
-		this.editorService.openEditor(input, {
+		// Open in group
+		this.group?.openEditor(input, {
 			...options,
 			// Make sure to not steal away the currently active group
 			// because we are triggering another openEditor() call
 			// and do not control the initial intent that resulted
 			// in us now opening as binary.
-			activation: EditorActivation.PRESERVE,
-			override: EditorOverride.DISABLED
-		}, this.group);
+			activation: EditorActivation.PRESERVE
+		});
 	}
 
 	private async openAsFolder(input: FileEditorInput): Promise<void> {
@@ -278,7 +282,7 @@ export class TextFileEditor extends BaseTextEditor {
 		// If the user configured to not restore view state, we clear the view
 		// state unless the editor is still opened in the group.
 		if (!this.shouldRestoreTextEditorViewState(input) && (!this.group || !this.group.contains(input))) {
-			this.clearTextEditorViewState([input.resource], this.group);
+			this.clearTextEditorViewState(input.resource, this.group);
 		}
 
 		// Otherwise we save the view state to restore it later

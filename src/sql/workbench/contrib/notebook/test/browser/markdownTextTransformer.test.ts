@@ -87,7 +87,7 @@ suite('MarkdownTextTransformer', () => {
 		assert(!isUndefinedOrNull(widget), 'widget is undefined');
 
 		// Create new text model
-		textModel = new TextModel('', { isForSimpleWidget: true, defaultEOL: DefaultEndOfLine.LF, detectIndentation: true, indentSize: 0, insertSpaces: false, largeFileOptimizations: false, tabSize: 4, trimAutoWhitespace: false }, null, undefined, undoRedoService);
+		textModel = new TextModel('', { isForSimpleWidget: true, defaultEOL: DefaultEndOfLine.LF, detectIndentation: true, indentSize: 0, insertSpaces: false, largeFileOptimizations: false, tabSize: 4, trimAutoWhitespace: false, bracketPairColorizationOptions: { enabled: true } }, null, undefined, undoRedoService);
 
 		// Couple widget with newly created text model
 		widget.setModel(textModel);

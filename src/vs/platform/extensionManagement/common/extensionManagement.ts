@@ -3,17 +3,18 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { localize } from 'vs/nls';
-import { Event } from 'vs/base/common/event';
-import { IPager } from 'vs/base/common/paging';
-import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import { URI } from 'vs/base/common/uri';
 import { CancellationToken } from 'vs/base/common/cancellation';
-import { IExtensionManifest, IExtension, ExtensionType } from 'vs/platform/extensions/common/extensions';
+import { Event } from 'vs/base/common/event';
 import { FileAccess } from 'vs/base/common/network';
+import { IPager } from 'vs/base/common/paging';
+import { URI } from 'vs/base/common/uri';
+import { localize } from 'vs/nls';
+import { ExtensionType, IExtension, IExtensionManifest } from 'vs/platform/extensions/common/extensions';
+import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 
 export const EXTENSION_IDENTIFIER_PATTERN = '^([a-z0-9A-Z][a-z0-9-A-Z]*)\\.([a-z0-9A-Z][a-z0-9-A-Z]*)$';
 export const EXTENSION_IDENTIFIER_REGEX = new RegExp(EXTENSION_IDENTIFIER_PATTERN);
+export const WEB_EXTENSION_TAG = '__web_extension';
 
 export interface IGalleryExtensionProperties {
 	dependencies?: string[];
@@ -22,7 +23,6 @@ export interface IGalleryExtensionProperties {
 	// {{SQL CARBON EDIT}}
 	azDataEngine?: string;
 	localizedLanguages?: string[];
-	webExtension?: boolean;
 }
 
 export interface IGalleryExtensionAsset {
@@ -80,7 +80,6 @@ export interface IGalleryExtension {
 	name: string;
 	identifier: IGalleryExtensionIdentifier;
 	version: string;
-	date: string;
 	displayName: string;
 	publisherId: string;
 	publisher: string;
@@ -89,13 +88,15 @@ export interface IGalleryExtension {
 	installCount: number;
 	rating: number;
 	ratingCount: number;
-	assetUri: URI;
-	assetTypes: string[];
+	categories: readonly string[];
+	tags: readonly string[];
+	releaseDate: number;
+	lastUpdated: number;
 	assets: IGalleryExtensionAssets;
 	properties: IGalleryExtensionProperties;
 	telemetryData: any;
 	preview: boolean;
-	webResource?: URI;
+	webExtension: boolean;
 }
 
 export interface IGalleryMetadata {
@@ -144,6 +145,7 @@ export interface IQueryOptions {
 }
 
 export const enum StatisticType {
+	Install = 'install',
 	Uninstall = 'uninstall'
 }
 
@@ -183,17 +185,14 @@ export interface IExtensionGalleryService {
 
 export interface InstallExtensionEvent {
 	identifier: IExtensionIdentifier;
-	zipPath?: string;
-	gallery?: IGalleryExtension;
+	source: URI | IGalleryExtension;
 }
 
-export interface DidInstallExtensionEvent {
-	identifier: IExtensionIdentifier;
-	operation: InstallOperation;
-	zipPath?: string;
-	gallery?: IGalleryExtension;
-	local?: ILocalExtension;
-	error?: string;
+export interface InstallExtensionResult {
+	readonly identifier: IExtensionIdentifier;
+	readonly operation: InstallOperation;
+	readonly source?: URI | IGalleryExtension;
+	readonly local?: ILocalExtension;
 }
 
 export interface DidUninstallExtensionEvent {
@@ -208,6 +207,7 @@ export const INSTALL_ERROR_INCOMPATIBLE = 'incompatible';
 export class ExtensionManagementError extends Error {
 	constructor(message: string, readonly code: string) {
 		super(message);
+		this.name = code;
 	}
 }
 
@@ -215,12 +215,17 @@ export type InstallOptions = { isBuiltin?: boolean, isMachineScoped?: boolean, d
 export type InstallVSIXOptions = InstallOptions & { installOnlyNewlyAddedFromExtensionPack?: boolean };
 export type UninstallOptions = { donotIncludePack?: boolean, donotCheckDependents?: boolean };
 
+export interface IExtensionManagementParticipant {
+	postInstall(local: ILocalExtension, source: URI | IGalleryExtension, options: InstallOptions | InstallVSIXOptions, token: CancellationToken): Promise<void>;
+	postUninstall(local: ILocalExtension, options: UninstallOptions, token: CancellationToken): Promise<void>;
+}
+
 export const IExtensionManagementService = createDecorator<IExtensionManagementService>('extensionManagementService');
 export interface IExtensionManagementService {
 	readonly _serviceBrand: undefined;
 
 	onInstallExtension: Event<InstallExtensionEvent>;
-	onDidInstallExtension: Event<DidInstallExtensionEvent>;
+	onDidInstallExtensions: Event<readonly InstallExtensionResult[]>;
 	onUninstallExtension: Event<IExtensionIdentifier>;
 	onDidUninstallExtension: Event<DidUninstallExtensionEvent>;
 
@@ -237,6 +242,8 @@ export interface IExtensionManagementService {
 
 	updateMetadata(local: ILocalExtension, metadata: IGalleryMetadata): Promise<ILocalExtension>;
 	updateExtensionScope(local: ILocalExtension, isMachineScoped: boolean): Promise<ILocalExtension>;
+
+	registerParticipant(pariticipant: IExtensionManagementParticipant): void;
 }
 
 export const DISABLED_EXTENSIONS_STORAGE_PATH = 'extensionsIdentifiers/disabled';

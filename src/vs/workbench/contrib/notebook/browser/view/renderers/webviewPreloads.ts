@@ -43,10 +43,19 @@ export interface PreloadOptions {
 	dragAndDropEnabled: boolean;
 }
 
+interface PreloadContext {
+	readonly nonce: string;
+	readonly style: PreloadStyles;
+	readonly options: PreloadOptions;
+	readonly rendererData: readonly RendererMetadata[];
+	readonly isWorkspaceTrusted: boolean;
+}
+
 declare function __import(path: string): Promise<any>;
 
-async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, rendererData: readonly RendererMetadata[]) {
-	let currentOptions = options;
+async function webviewPreloads(ctx: PreloadContext) {
+	let currentOptions = ctx.options;
+	let isWorkspaceTrusted = ctx.isWorkspaceTrusted;
 
 	const acquireVsCodeApi = globalThis.acquireVsCodeApi;
 	const vscode = acquireVsCodeApi();
@@ -63,7 +72,30 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 					handleBlobUrlClick(node.href, node.download);
 				} else if (node.href.startsWith('data:')) {
 					handleDataUrl(node.href, node.download);
+				} else if (node.hash && node.getAttribute('href') === node.hash) {
+					// Scrolling to location within current doc
+					const targetId = node.hash.substr(1, node.hash.length - 1);
+
+					// Check outer document first
+					let scrollTarget: Element | null | undefined = event.view.document.getElementById(targetId);
+
+					if (!scrollTarget) {
+						// Fallback to checking preview shadow doms
+						for (const preview of event.view.document.querySelectorAll('.preview')) {
+							scrollTarget = preview.shadowRoot?.getElementById(targetId);
+							if (scrollTarget) {
+								break;
+							}
+						}
+					}
+
+					if (scrollTarget) {
+						const scrollTop = scrollTarget.getBoundingClientRect().top + event.view.scrollY;
+						postNotebookMessage<webviewMessages.IScrollToRevealMessage>('scroll-to-reveal', { scrollTop });
+						return;
+					}
 				}
+
 				event.preventDefault();
 				return;
 			}
@@ -133,6 +165,7 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 		getRenderer(id: string): Promise<any | undefined>;
 		postMessage?(message: unknown): void;
 		onDidReceiveMessage?: Event<unknown>;
+		readonly workspace: { readonly isTrusted: boolean };
 	}
 
 	interface ScriptModule {
@@ -158,52 +191,10 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 		};
 	};
 
-	const runRenderScript = async (url: string, rendererId: string): Promise<ScriptModule> => {
-		const text = await loadScriptSource(url);
-		// TODO: Support both the new module based renderers and the old style global renderers
-		const isModule = !text.includes('acquireNotebookRendererApi');
-		if (isModule) {
-			return __import(url);
-		} else {
-			return createBackCompatModule(rendererId, url, text);
-		}
-	};
-
-	const createBackCompatModule = (rendererId: string, scriptUrl: string, scriptText: string): ScriptModule => ({
-		activate: (): RendererApi => {
-			const onDidCreateOutput = createEmitter<IOutputItem>();
-			const onWillDestroyOutput = createEmitter<undefined | IDestroyCellInfo>();
-
-			const globals = {
-				scriptUrl,
-				acquireNotebookRendererApi: <T>(): GlobalNotebookRendererApi<T> => ({
-					onDidCreateOutput: onDidCreateOutput.event,
-					onWillDestroyOutput: onWillDestroyOutput.event,
-					setState: newState => vscode.setState({ ...vscode.getState(), [rendererId]: newState }),
-					getState: () => {
-						const state = vscode.getState();
-						return typeof state === 'object' && state ? state[rendererId] as T : undefined;
-					},
-				}),
-			};
-
-			invokeSourceWithGlobals(scriptText, globals);
-
-			return {
-				renderOutputItem(outputItem) {
-					onDidCreateOutput.fire({ ...outputItem, outputId: outputItem.id });
-				},
-				disposeOutputItem(id) {
-					onWillDestroyOutput.fire(id ? { outputId: id } : undefined);
-				}
-			};
-		}
-	});
-
 	const dimensionUpdater = new class {
 		private readonly pending = new Map<string, webviewMessages.DimensionUpdate>();
 
-		update(id: string, height: number, options: { init?: boolean; isOutput?: boolean }) {
+		updateHeight(id: string, height: number, options: { init?: boolean; isOutput?: boolean }) {
 			if (!this.pending.size) {
 				setTimeout(() => {
 					this.updateImmediately();
@@ -232,7 +223,7 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 
 		private readonly _observer: ResizeObserver;
 
-		private readonly _observedElements = new WeakMap<Element, { id: string, output: boolean }>();
+		private readonly _observedElements = new WeakMap<Element, { id: string, output: boolean, lastKnownHeight: number }>();
 
 		constructor() {
 			this._observer = new ResizeObserver(entries => {
@@ -248,19 +239,18 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 
 					if (entry.target.id === observedElementInfo.id && entry.contentRect) {
 						if (observedElementInfo.output) {
-							let height = 0;
 							if (entry.contentRect.height !== 0) {
-								entry.target.style.padding = `${style.outputNodePadding}px ${style.outputNodePadding}px ${style.outputNodePadding}px ${style.outputNodeLeftPadding}px`;
-								height = entry.contentRect.height + style.outputNodePadding * 2;
+								entry.target.style.padding = `${ctx.style.outputNodePadding}px 0 ${ctx.style.outputNodePadding}px 0`;
 							} else {
 								entry.target.style.padding = `0px`;
 							}
-							dimensionUpdater.update(observedElementInfo.id, height, {
-								isOutput: true
-							});
-						} else {
-							dimensionUpdater.update(observedElementInfo.id, entry.target.clientHeight, {
-								isOutput: false
+						}
+
+						const offsetHeight = entry.target.offsetHeight;
+						if (observedElementInfo.lastKnownHeight !== offsetHeight) {
+							observedElementInfo.lastKnownHeight = offsetHeight;
+							dimensionUpdater.updateHeight(observedElementInfo.id, offsetHeight, {
+								isOutput: observedElementInfo.output
 							});
 						}
 					}
@@ -273,7 +263,7 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 				return;
 			}
 
-			this._observedElements.set(container, { id, output });
+			this._observedElements.set(container, { id, output, lastKnownHeight: -1 });
 			this._observer.observe(container);
 		}
 	};
@@ -296,7 +286,7 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 		return false;
 	}
 
-	const handleWheel = (event: WheelEvent) => {
+	const handleWheel = (event: WheelEvent & { wheelDeltaX?: number, wheelDeltaY?: number, wheelDelta?: number }) => {
 		if (event.defaultPrevented || scrollWillGoToParent(event)) {
 			return;
 		}
@@ -306,7 +296,11 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 				deltaX: event.deltaX,
 				deltaY: event.deltaY,
 				deltaZ: event.deltaZ,
+				wheelDelta: event.wheelDelta,
+				wheelDeltaX: event.wheelDeltaX,
+				wheelDeltaY: event.wheelDeltaY,
 				detail: event.detail,
+				shiftKey: event.shiftKey,
 				type: event.type
 			}
 		});
@@ -320,12 +314,12 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 		}
 	}
 
-	function createFocusSink(cellId: string, outputId: string, focusNext?: boolean) {
+	function createFocusSink(cellId: string, focusNext?: boolean) {
 		const element = document.createElement('div');
 		element.tabIndex = 0;
 		element.addEventListener('focus', () => {
 			postNotebookMessage<webviewMessages.IBlurOutputMessage>('focus-editor', {
-				id: outputId,
+				cellId: cellId,
 				focusNext
 			});
 		});
@@ -357,7 +351,7 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 		return false;
 	}
 
-	class FocusTracker {
+	class OutputFocusTracker {
 		private _outputId: string;
 		private _hasFocus: boolean = false;
 		private _loosingFocus: boolean = false;
@@ -405,14 +399,14 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 		}
 	}
 
-	const focusTrackers = new Map<string, FocusTracker>();
+	const outputFocusTrackers = new Map<string, OutputFocusTracker>();
 
-	function addFocusTracker(element: HTMLElement, outputId: string): void {
-		if (focusTrackers.has(outputId)) {
-			focusTrackers.get(outputId)?.dispose();
+	function addOutputFocusTracker(element: HTMLElement, outputId: string): void {
+		if (outputFocusTrackers.has(outputId)) {
+			outputFocusTrackers.get(outputId)?.dispose();
 		}
 
-		focusTrackers.set(outputId, new FocusTracker(element, outputId));
+		outputFocusTrackers.set(outputId, new OutputFocusTracker(element, outputId));
 	}
 
 	function createEmitter<T>(listenerChange: (listeners: Set<Listener<T>>) => void = () => undefined): EmitterLike<T> {
@@ -461,37 +455,44 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 	interface IOutputItem {
 		readonly id: string;
 
-		/** @deprecated */
-		readonly outputId?: string;
-
-		/** @deprecated */
-		readonly element: HTMLElement;
-
 		readonly mime: string;
 		metadata: unknown;
-		metadata2: unknown;
 
 		text(): string;
 		json(): any;
 		data(): Uint8Array;
 		blob(): Blob;
-		/** @deprecated */
-		bytes(): Uint8Array;
 	}
 
-	interface IDestroyCellInfo {
-		outputId: string;
+	class OutputItem implements IOutputItem {
+		constructor(
+			public readonly id: string,
+			public readonly element: HTMLElement,
+			public readonly mime: string,
+			public readonly metadata: unknown,
+			public readonly valueBytes: Uint8Array
+		) { }
+
+		data() {
+			return this.valueBytes;
+		}
+
+		bytes() { return this.data(); }
+
+		text() {
+			return new TextDecoder().decode(this.valueBytes);
+		}
+
+		json() {
+			return JSON.parse(this.text());
+		}
+
+		blob() {
+			return new Blob([this.valueBytes], { type: this.mime });
+		}
 	}
 
 	const onDidReceiveKernelMessage = createEmitter<unknown>();
-
-	/** @deprecated */
-	interface GlobalNotebookRendererApi<T> {
-		setState: (newState: T) => void;
-		getState(): T | undefined;
-		readonly onWillDestroyOutput: Event<undefined | IDestroyCellInfo>;
-		readonly onDidCreateOutput: Event<IOutputItem>;
-	}
 
 	const kernelPreloadGlobals = {
 		acquireVsCodeApi,
@@ -511,44 +512,46 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 
 		switch (event.data.type) {
 			case 'initializeMarkup':
-				await notebookDocument.ensureMarkupCells(event.data.cells);
+				await Promise.all(event.data.cells.map(info => viewModel.ensureMarkupCell(info)));
 				dimensionUpdater.updateImmediately();
 				postNotebookMessage('initializedMarkup', {});
 				break;
 
 			case 'createMarkupCell':
-				notebookDocument.ensureMarkupCells([event.data.cell]);
+				viewModel.ensureMarkupCell(event.data.cell);
 				break;
 
 			case 'showMarkupCell':
-				notebookDocument.showMarkupCell(event.data.id, event.data.top, event.data.content);
+				viewModel.showMarkupCell(event.data.id, event.data.top, event.data.content);
 				break;
 
 			case 'hideMarkupCells':
 				for (const id of event.data.ids) {
-					notebookDocument.hideMarkupCell(id);
+					viewModel.hideMarkupCell(id);
 				}
 				break;
 
 			case 'unhideMarkupCells':
 				for (const id of event.data.ids) {
-					notebookDocument.unhideMarkupCell(id);
+					viewModel.unhideMarkupCell(id);
 				}
 				break;
 
 			case 'deleteMarkupCell':
 				for (const id of event.data.ids) {
-					notebookDocument.deleteMarkupCell(id);
+					viewModel.deleteMarkupCell(id);
 				}
 				break;
 
 			case 'updateSelectedMarkupCells':
-				notebookDocument.updateSelectedCells(event.data.selectedCellIds);
+				viewModel.updateSelectedCells(event.data.selectedCellIds);
 				break;
 
 			case 'html': {
 				const data = event.data;
-				outputs.enqueue(event.data.outputId, async (state) => {
+				const outputId = data.outputId;
+
+				outputRunner.enqueue(event.data.outputId, async (state) => {
 					const preloadsAndErrors = await Promise.all<unknown>([
 						data.rendererId ? renderers.load(data.rendererId) : undefined,
 						...data.requiredPreloads.map(p => kernelPreloads.waitFor(p.uri)),
@@ -558,48 +561,9 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 						return;
 					}
 
-					let cellOutputContainer = document.getElementById(data.cellId);
-					const outputId = data.outputId;
-					if (!cellOutputContainer) {
-						const container = document.getElementById('container')!;
+					const cellOutput = viewModel.ensureOutputCell(data.cellId, data.cellTop);
+					const outputNode = cellOutput.createOutputNode(outputId, data.outputOffset, data.left);
 
-						const upperWrapperElement = createFocusSink(data.cellId, outputId);
-						container.appendChild(upperWrapperElement);
-
-						const newElement = document.createElement('div');
-
-						newElement.id = data.cellId;
-						newElement.classList.add('cell_container');
-
-						container.appendChild(newElement);
-						cellOutputContainer = newElement;
-
-						const lowerWrapperElement = createFocusSink(data.cellId, outputId, true);
-						container.appendChild(lowerWrapperElement);
-					}
-
-					cellOutputContainer.style.position = 'absolute';
-					cellOutputContainer.style.top = data.cellTop + 'px';
-
-					const outputContainer = document.createElement('div');
-					outputContainer.classList.add('output_container');
-					outputContainer.style.position = 'absolute';
-					outputContainer.style.overflow = 'hidden';
-					outputContainer.style.maxHeight = '0px';
-					outputContainer.style.top = `${data.outputOffset}px`;
-
-					const outputNode = document.createElement('div');
-					outputNode.classList.add('output');
-					outputNode.style.position = 'absolute';
-					outputNode.style.top = `0px`;
-					outputNode.style.left = data.left + 'px';
-					// outputNode.style.width = 'calc(100% - ' + data.left + 'px)';
-					// outputNode.style.minHeight = '32px';
-					outputNode.style.padding = '0px';
-					outputNode.id = outputId;
-
-					addMouseoverListeners(outputNode, outputId);
-					addFocusTracker(outputNode, outputId);
 					const content = data.content;
 					if (content.type === RenderOutputType.Html) {
 						const trustedHtml = ttPolicy?.createHTML(content.htmlContent) ?? content.htmlContent;
@@ -611,59 +575,34 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 					} else {
 						const rendererApi = preloadsAndErrors[0] as RendererApi;
 						try {
-							rendererApi.renderOutputItem({
-								id: outputId,
-								element: outputNode,
-								mime: content.mimeType,
-								metadata: content.metadata,
-								metadata2: content.metadata2,
-								data() {
-									return content.valueBytes;
-								},
-								bytes() { return this.data(); },
-								text() {
-									return new TextDecoder().decode(content.valueBytes);
-								},
-								json() {
-									return JSON.parse(this.text());
-								},
-								blob() {
-									return new Blob([content.valueBytes], { type: content.mimeType });
-								}
-							}, outputNode);
+							rendererApi.renderOutputItem(new OutputItem(outputId, outputNode, content.mimeType, content.mimeType, content.valueBytes), outputNode);
 						} catch (e) {
 							showPreloadErrors(outputNode, e);
 						}
 					}
 
-					cellOutputContainer.appendChild(outputContainer);
-					outputContainer.appendChild(outputNode);
 					resizeObserver.observe(outputNode, outputId, true);
 
-					if (content.type === RenderOutputType.Html) {
-						domEval(outputNode);
-					}
-
-					const clientHeight = outputNode.clientHeight;
+					const offsetHeight = outputNode.offsetHeight;
 					const cps = document.defaultView!.getComputedStyle(outputNode);
-					if (clientHeight !== 0 && cps.padding === '0px') {
+					if (offsetHeight !== 0 && cps.padding === '0px') {
 						// we set padding to zero if the output height is zero (then we can have a zero-height output DOM node)
 						// thus we need to ensure the padding is accounted when updating the init height of the output
-						dimensionUpdater.update(outputId, clientHeight + style.outputNodePadding * 2, {
+						dimensionUpdater.updateHeight(outputId, offsetHeight + ctx.style.outputNodePadding * 2, {
 							isOutput: true,
 							init: true,
 						});
 
-						outputNode.style.padding = `${style.outputNodePadding}px ${style.outputNodePadding}px ${style.outputNodePadding}px ${style.outputNodeLeftPadding}px`;
+						outputNode.style.padding = `${ctx.style.outputNodePadding}px 0 ${ctx.style.outputNodePadding}px 0`;
 					} else {
-						dimensionUpdater.update(outputId, outputNode.clientHeight, {
+						dimensionUpdater.updateHeight(outputId, outputNode.offsetHeight, {
 							isOutput: true,
 							init: true,
 						});
 					}
 
 					// don't hide until after this step so that the height is right
-					cellOutputContainer.style.visibility = data.initiallyHidden ? 'hidden' : 'visible';
+					cellOutput.element.style.visibility = data.initiallyHidden ? 'hidden' : 'visible';
 				});
 				break;
 			}
@@ -672,84 +611,47 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 					// const date = new Date();
 					// console.log('----- will scroll ----  ', date.getMinutes() + ':' + date.getSeconds() + ':' + date.getMilliseconds());
 
-					for (const request of event.data.widgets) {
-						const widget = document.getElementById(request.outputId);
-						if (widget) {
-							widget.parentElement!.parentElement!.style.top = `${request.cellTop}px`;
-							widget.parentElement!.style.top = `${request.outputOffset}px`;
-							if (request.forceDisplay) {
-								widget.parentElement!.parentElement!.style.visibility = 'visible';
-							}
-						}
-					}
-
-					for (const cell of event.data.markdownPreviews) {
-						const container = document.getElementById(cell.id);
-						if (container) {
-							container.style.top = `${cell.top}px`;
-						}
-					}
-
+					viewModel.updateOutputsScroll(event.data.widgets);
+					viewModel.updateMarkupScrolls(event.data.markupCells);
 					break;
 				}
 			case 'clear':
 				renderers.clearAll();
+				viewModel.clearAll();
 				document.getElementById('container')!.innerText = '';
 
-				focusTrackers.forEach(ft => {
+				outputFocusTrackers.forEach(ft => {
 					ft.dispose();
 				});
-				focusTrackers.clear();
+				outputFocusTrackers.clear();
 				break;
+
 			case 'clearOutput': {
-				const output = document.getElementById(event.data.outputId);
-				const { rendererId, outputId } = event.data;
-
-				outputs.cancelOutput(outputId);
-				if (output && output.parentNode) {
-					if (rendererId) {
-						renderers.clearOutput(rendererId, outputId);
-					}
-					output.parentNode.removeChild(output);
-				}
-
+				const { cellId, rendererId, outputId } = event.data;
+				outputRunner.cancelOutput(outputId);
+				viewModel.clearOutput(cellId, outputId, rendererId);
 				break;
 			}
 			case 'hideOutput': {
-				const { outputId } = event.data;
-				outputs.enqueue(event.data.outputId, () => {
-					const container = document.getElementById(outputId)?.parentElement?.parentElement;
-					if (container) {
-						container.style.visibility = 'hidden';
-					}
+				const { cellId, outputId } = event.data;
+				outputRunner.enqueue(outputId, () => {
+					viewModel.hideOutput(cellId);
 				});
 				break;
 			}
 			case 'showOutput': {
-				const { outputId, cellTop: top } = event.data;
-				outputs.enqueue(event.data.outputId, () => {
-					const output = document.getElementById(outputId);
-					if (output) {
-						output.parentElement!.parentElement!.style.visibility = 'visible';
-						output.parentElement!.parentElement!.style.top = top + 'px';
-
-						dimensionUpdater.update(outputId, output.clientHeight, {
-							isOutput: true,
-						});
-					}
+				const { outputId, cellTop, cellId } = event.data;
+				outputRunner.enqueue(outputId, () => {
+					viewModel.showOutput(cellId, outputId, cellTop);
 				});
 				break;
 			}
-			case 'ack-dimension':
-				{
-					const { outputId, height } = event.data;
-					const output = document.getElementById(outputId);
-					if (output) {
-						output.parentElement!.style.maxHeight = `${height}px`;
-						output.parentElement!.style.height = `${height}px`;
-					}
-					break;
+			case 'ack-dimension': {
+				for (const { cellId, outputId, height } of event.data.updates) {
+					viewModel.updateOutputHeight(cellId, outputId, height);
 				}
+				break;
+			}
 			case 'preload':
 				const resources = event.data.resources;
 				for (const { uri, originalUri } of resources) {
@@ -792,13 +694,13 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 				break;
 			case 'notebookOptions':
 				currentOptions = event.data.options;
-
-				// Update markdown previews
-				for (const markdownContainer of document.querySelectorAll('.preview')) {
-					setMarkupContainerDraggable(markdownContainer, currentOptions.dragAndDropEnabled);
-				}
-
+				viewModel.toggleDragDropEnabled(currentOptions.dragAndDropEnabled);
 				break;
+			case 'updateWorkspaceTrust': {
+				isWorkspaceTrusted = event.data.isTrusted;
+				viewModel.rerenderMarkupCells();
+				break;
+			}
 		}
 	});
 
@@ -842,6 +744,9 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 				// TODO: This is async so that we can return a promise to the API in the future.
 				// Currently the API is always resolved before we call `createRendererContext`.
 				getRenderer: async (id: string) => renderers.getRenderer(id)?.api,
+				workspace: {
+					get isTrusted() { return isWorkspaceTrusted; }
+				}
 			};
 
 			if (messaging) {
@@ -854,9 +759,9 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 
 		/** Inner function cached in the _loadPromise(). */
 		private async _load(): Promise<RendererApi | undefined> {
-			const module = await runRenderScript(this.data.entrypoint, this.data.id);
+			const module = await __import(this.data.entrypoint);
 			if (!module) {
-				return undefined; // {{SQL CARBON EDIT}} Strict nulls
+				return undefined; // {{SQL CARBON EDIT}} strict-nulls
 			}
 
 			const api = await module.activate(this.createRendererContext());
@@ -864,7 +769,7 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 
 			// Squash any errors extends errors. They won't prevent the renderer
 			// itself from working, so just log them.
-			await Promise.all(rendererData
+			await Promise.all(ctx.rendererData
 				.filter(d => d.extends === this.data.id)
 				.map(d => this.loadExtension(d.id).catch(console.error)),
 			);
@@ -907,8 +812,9 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 		}
 	};
 
-	const outputs = new class {
-		private outputs = new Map<string, { cancelled: boolean; queue: Promise<unknown> }>();
+	const outputRunner = new class {
+		private readonly outputs = new Map<string, { cancelled: boolean; queue: Promise<unknown> }>();
+
 		/**
 		 * Pushes the action onto the list of actions for the given output ID,
 		 * ensuring that it's run in-order.
@@ -948,7 +854,7 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 		private readonly _renderers = new Map</* id */ string, Renderer>();
 
 		constructor() {
-			for (const renderer of rendererData) {
+			for (const renderer of ctx.rendererData) {
 				this._renderers.set(renderer.id, new Renderer(renderer, async (extensionId) => {
 					const ext = this._renderers.get(extensionId);
 					if (!ext) {
@@ -975,14 +881,14 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 
 
 		public clearAll() {
-			outputs.cancelAll();
+			outputRunner.cancelAll();
 			for (const renderer of this._renderers.values()) {
 				renderer.api?.disposeOutputItem?.();
 			}
 		}
 
 		public clearOutput(rendererId: string, outputId: string) {
-			outputs.cancelOutput(outputId);
+			outputRunner.cancelOutput(outputId);
 			this._renderers.get(rendererId)?.api?.disposeOutputItem?.(outputId);
 		}
 
@@ -991,7 +897,23 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 				.filter(renderer => renderer.data.mimeTypes.includes(info.mime) && !renderer.data.extends);
 
 			if (!renderers.length) {
-				throw new Error('Could not find renderer');
+				const errorContainer = document.createElement('div');
+
+				const error = document.createElement('div');
+				error.className = 'no-renderer-error';
+				const errorText = (document.documentElement.style.getPropertyValue('--notebook-cell-renderer-not-found-error') || '').replace('$0', info.mime);
+				error.innerText = errorText;
+
+				const cellText = document.createElement('div');
+				cellText.innerText = info.text();
+
+				errorContainer.appendChild(error);
+				errorContainer.appendChild(cellText);
+
+				element.innerText = '';
+				element.appendChild(errorContainer);
+
+				return;
 			}
 
 			await Promise.all(renderers.map(x => x.load()));
@@ -1003,40 +925,40 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 	let hasPostedRenderedMathTelemetry = false;
 	const unsupportedKatexTermsRegex = /(\\(?:abovewithdelims|array|Arrowvert|arrowvert|atopwithdelims|bbox|bracevert|buildrel|cancelto|cases|class|cssId|ddddot|dddot|DeclareMathOperator|definecolor|displaylines|enclose|eqalign|eqalignno|eqref|hfil|hfill|idotsint|iiiint|label|leftarrowtail|leftroot|leqalignno|lower|mathtip|matrix|mbox|mit|mmlToken|moveleft|moveright|mspace|newenvironment|Newextarrow|notag|oldstyle|overparen|overwithdelims|pmatrix|raise|ref|renewenvironment|require|root|Rule|scr|shoveleft|shoveright|sideset|skew|Space|strut|style|texttip|Tiny|toggle|underparen|unicode|uproot)\b)/gi;
 
-	const notebookDocument = new class {
+	const viewModel = new class ViewModel {
 
 		private readonly _markupCells = new Map<string, MarkupCell>();
+		private readonly _outputCells = new Map<string, OutputCell>();
 
-		private async createMarkupCell(init: webviewMessages.IMarkupCellInitialization, top: number): Promise<MarkupCell> {
+		private async createMarkupCell(init: webviewMessages.IMarkupCellInitialization, top: number, visible: boolean): Promise<MarkupCell> {
 			const existing = this._markupCells.get(init.cellId);
 			if (existing) {
 				console.error(`Trying to create markup that already exists: ${init.cellId}`);
 				return existing;
 			}
 
-			const markdownCell = new MarkupCell(init.cellId, init.mime, init.content, top);
-			this._markupCells.set(init.cellId, markdownCell);
+			const cell = new MarkupCell(init.cellId, init.mime, init.content, top);
+			cell.element.style.visibility = visible ? 'visible' : 'hidden';
+			this._markupCells.set(init.cellId, cell);
 
-			await markdownCell.ready;
-			return markdownCell;
+			await cell.ready;
+			return cell;
 		}
 
-		public async ensureMarkupCells(update: readonly webviewMessages.IMarkupCellInitialization[]): Promise<void> {
-			await Promise.all(update.map(async info => {
-				let cell = this._markupCells.get(info.cellId);
-				if (cell) {
-					await cell.updateContentAndRender(info.content);
-				} else {
-					cell = await this.createMarkupCell(info, info.offset);
-				}
+		public async ensureMarkupCell(info: webviewMessages.IMarkupCellInitialization): Promise<void> {
+			let cell = this._markupCells.get(info.cellId);
+			if (cell) {
 				cell.element.style.visibility = info.visible ? 'visible' : 'hidden';
-			}));
+				await cell.updateContentAndRender(info.content);
+			} else {
+				cell = await this.createMarkupCell(info, info.offset, info.visible);
+			}
 		}
 
 		public deleteMarkupCell(id: string) {
 			const cell = this.getExpectedMarkupCell(id);
 			if (cell) {
-				cell.element.remove();
+				cell.remove();
 				this._markupCells.delete(id);
 			}
 		}
@@ -1061,6 +983,12 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 			cell?.unhide();
 		}
 
+		public rerenderMarkupCells() {
+			for (const cell of this._markupCells.values()) {
+				cell.rerender();
+			}
+		}
+
 		private getExpectedMarkupCell(id: string): MarkupCell | undefined {
 			const cell = this._markupCells.get(id);
 			if (!cell) {
@@ -1076,13 +1004,73 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 				cell.setSelected(selectedCellSet.has(cell.id));
 			}
 		}
+
+		public toggleDragDropEnabled(dragAndDropEnabled: boolean) {
+			for (const cell of this._markupCells.values()) {
+				cell.toggleDragDropEnabled(dragAndDropEnabled);
+			}
+		}
+
+		public updateMarkupScrolls(markupCells: { id: string; top: number; }[]) {
+			for (const { id, top } of markupCells) {
+				const cell = this._markupCells.get(id);
+				if (cell) {
+					cell.element.style.top = `${top}px`;
+				}
+			}
+		}
+
+		public clearAll() {
+			this._markupCells.clear();
+			this._outputCells.clear();
+		}
+
+		public ensureOutputCell(cellId: string, cellTop: number): OutputCell {
+			let cell = this._outputCells.get(cellId);
+			if (!cell) {
+				cell = new OutputCell(cellId);
+				this._outputCells.set(cellId, cell);
+			}
+
+			cell.element.style.top = cellTop + 'px';
+			return cell;
+		}
+
+		public clearOutput(cellId: string, outputId: string, rendererId: string | undefined) {
+			const cell = this._outputCells.get(cellId);
+			cell?.clearOutput(outputId, rendererId);
+		}
+
+		public showOutput(cellId: string, outputId: string, top: number) {
+			const cell = this._outputCells.get(cellId);
+			cell?.show(outputId, top);
+		}
+
+		public hideOutput(cellId: string) {
+			const cell = this._outputCells.get(cellId);
+			cell?.hide();
+		}
+
+		public updateOutputHeight(cellId: string, outputId: string, height: number) {
+			const cell = this._outputCells.get(cellId);
+			cell?.updateOutputHeight(outputId, height);
+		}
+
+		public updateOutputsScroll(updates: webviewMessages.IContentWidgetTopRequest[]) {
+			for (const request of updates) {
+				const cell = this._outputCells.get(request.cellId);
+				cell?.updateScroll(request);
+			}
+		}
 	}();
 
 	class MarkupCell implements IOutputItem {
 
 		public readonly ready: Promise<void>;
 
-		/// Internal field that holds markdown text
+		public readonly element: HTMLElement;
+
+		/// Internal field that holds text content
 		private _content: string;
 
 		constructor(id: string, mime: string, content: string, top: number) {
@@ -1100,6 +1088,7 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 			this.element.classList.add('preview');
 			this.element.style.position = 'absolute';
 			this.element.style.top = top + 'px';
+			this.toggleDragDropEnabled(currentOptions.dragAndDropEnabled);
 			root.appendChild(this.element);
 
 			this.addEventListeners();
@@ -1112,13 +1101,8 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 
 		//#region IOutputItem
 		public readonly id: string;
-		public readonly mime;
-		public readonly element: HTMLElement;
-
-		// deprecated fields
+		public readonly mime: string;
 		public readonly metadata = undefined;
-		public readonly metadata2 = undefined;
-		public readonly outputId?: string | undefined;
 
 		text() { return this._content; }
 		json() { return undefined; }
@@ -1158,18 +1142,16 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 				postNotebookMessage<webviewMessages.IMouseLeaveMarkupCellMessage>('mouseLeaveMarkupCell', { cellId: this.id });
 			});
 
-			setMarkupContainerDraggable(this.element, currentOptions.dragAndDropEnabled);
-
 			this.element.addEventListener('dragstart', e => {
-				markdownPreviewDragManager.startDrag(e, this.id);
+				markupCellDragManager.startDrag(e, this.id);
 			});
 
 			this.element.addEventListener('drag', e => {
-				markdownPreviewDragManager.updateDrag(e, this.id);
+				markupCellDragManager.updateDrag(e, this.id);
 			});
 
 			this.element.addEventListener('dragend', e => {
-				markdownPreviewDragManager.endDrag(e, this.id);
+				markupCellDragManager.endDrag(e, this.id);
 			});
 		}
 
@@ -1178,22 +1160,49 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 
 			await renderers.render(this, this.element);
 
-			if (!hasPostedRenderedMathTelemetry) {
-				const hasRenderedMath = this.element.querySelector('.katex');
-				if (hasRenderedMath) {
-					hasPostedRenderedMathTelemetry = true;
-					postNotebookMessage<webviewMessages.ITelemetryFoundRenderedMarkdownMath>('telemetryFoundRenderedMarkdownMath', {});
+			if (this.mime === 'text/markdown') {
+				const root = this.element.shadowRoot;
+				if (root) {
+					if (!hasPostedRenderedMathTelemetry) {
+						const hasRenderedMath = root.querySelector('.katex');
+						if (hasRenderedMath) {
+							hasPostedRenderedMathTelemetry = true;
+							postNotebookMessage<webviewMessages.ITelemetryFoundRenderedMarkdownMath>('telemetryFoundRenderedMarkdownMath', {});
+						}
+					}
+
+					const innerText = root.querySelector<HTMLElement>('#preview')?.innerText;
+					const matches = innerText?.match(unsupportedKatexTermsRegex);
+					if (matches) {
+						postNotebookMessage<webviewMessages.ITelemetryFoundUnrenderedMarkdownMath>('telemetryFoundUnrenderedMarkdownMath', {
+							latexDirective: matches[0],
+						});
+					}
 				}
 			}
 
-			const matches = this.element.innerText.match(unsupportedKatexTermsRegex);
-			if (matches) {
-				postNotebookMessage<webviewMessages.ITelemetryFoundUnrenderedMarkdownMath>('telemetryFoundUnrenderedMarkdownMath', {
-					latexDirective: matches[0],
-				});
+			const root = (this.element.shadowRoot ?? this.element);
+			const html = [];
+			for (const child of root.children) {
+				switch (child.tagName) {
+					case 'LINK':
+					case 'SCRIPT':
+					case 'STYLE':
+						// not worth sending over since it will be stripped before rendering
+						break;
+
+					default:
+						html.push(child.outerHTML);
+						break;
+				}
 			}
 
-			dimensionUpdater.update(this.id, this.element.clientHeight, {
+			postNotebookMessage<webviewMessages.IRenderedMarkupMessage>('renderedMarkup', {
+				cellId: this.id,
+				html: html.join(''),
+			});
+
+			dimensionUpdater.updateHeight(this.id, this.element.offsetHeight, {
 				isOutput: false
 			});
 		}
@@ -1217,8 +1226,16 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 			this.updateMarkupDimensions();
 		}
 
+		public rerender() {
+			this.updateContentAndRender(this._content);
+		}
+
+		public remove() {
+			this.element.remove();
+		}
+
 		private async updateMarkupDimensions() {
-			dimensionUpdater.update(this.id, this.element.clientHeight, {
+			dimensionUpdater.updateHeight(this.id, this.element.offsetHeight, {
 				isOutput: false
 			});
 		}
@@ -1226,22 +1243,131 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 		public setSelected(selected: boolean) {
 			this.element.classList.toggle('selected', selected);
 		}
+
+		public toggleDragDropEnabled(enabled: boolean) {
+			if (enabled) {
+				this.element.classList.add('draggable');
+				this.element.setAttribute('draggable', 'true');
+			} else {
+				this.element.classList.remove('draggable');
+				this.element.removeAttribute('draggable');
+			}
+		}
+	}
+
+	class OutputCell {
+
+		public readonly element: HTMLElement;
+
+		public readonly outputElements = new Map</*outputId*/ string, HTMLElement>();
+
+		constructor(cellId: string) {
+			const container = document.getElementById('container')!;
+
+			const upperWrapperElement = createFocusSink(cellId);
+			container.appendChild(upperWrapperElement);
+
+			this.element = document.createElement('div');
+			this.element.style.position = 'absolute';
+
+			this.element.id = cellId;
+			this.element.classList.add('cell_container');
+
+			container.appendChild(this.element);
+			this.element = this.element;
+
+			const lowerWrapperElement = createFocusSink(cellId, true);
+			container.appendChild(lowerWrapperElement);
+		}
+
+		public createOutputNode(outputId: string, outputOffset: number, left: number): HTMLElement {
+			let outputContainer = this.outputElements.get(outputId);
+			if (!outputContainer) {
+				outputContainer = document.createElement('div');
+				outputContainer.classList.add('output_container');
+				outputContainer.style.position = 'absolute';
+				outputContainer.style.overflow = 'hidden';
+				this.element.appendChild(outputContainer);
+				this.outputElements.set(outputId, outputContainer);
+			}
+			outputContainer.innerText = '';
+			outputContainer.style.maxHeight = '0px';
+			outputContainer.style.top = `${outputOffset}px`;
+
+			const outputNode = document.createElement('div');
+			outputNode.id = outputId;
+			outputNode.classList.add('output');
+			outputNode.style.position = 'absolute';
+			outputNode.style.top = `0px`;
+			outputNode.style.left = left + 'px';
+			outputNode.style.padding = '0px';
+			outputContainer.appendChild(outputNode);
+
+			addMouseoverListeners(outputNode, outputId);
+			addOutputFocusTracker(outputNode, outputId);
+
+			return outputNode;
+		}
+
+		public clearOutput(outputId: string, rendererId: string | undefined) {
+			const outputContainer = this.outputElements.get(outputId);
+			if (!outputContainer) {
+				return;
+			}
+
+			if (rendererId) {
+				renderers.clearOutput(rendererId, outputId);
+			}
+			outputContainer.remove();
+			this.outputElements.delete(outputId);
+		}
+
+		public show(outputId: string, top: number) {
+			const outputContainer = this.outputElements.get(outputId);
+			if (!outputContainer) {
+				return;
+			}
+
+			this.element.style.visibility = 'visible';
+			this.element.style.top = `${top}px`;
+
+			dimensionUpdater.updateHeight(outputId, outputContainer.offsetHeight, {
+				isOutput: true,
+			});
+		}
+
+		public hide() {
+			this.element.style.visibility = 'hidden';
+		}
+
+		public updateOutputHeight(outputId: string, height: number) {
+			const outputContainer = this.outputElements.get(outputId);
+			if (!outputContainer) {
+				return;
+			}
+
+			outputContainer.style.maxHeight = `${height}px`;
+			outputContainer.style.height = `${height}px`;
+		}
+
+		public updateScroll(request: webviewMessages.IContentWidgetTopRequest) {
+			this.element.style.top = `${request.cellTop}px`;
+
+			const outputContainer = this.outputElements.get(request.outputId);
+			if (outputContainer) {
+				outputContainer.style.top = `${request.outputOffset}px`;
+			}
+
+			if (request.forceDisplay) {
+				this.element.style.visibility = 'visible';
+			}
+		}
 	}
 
 	vscode.postMessage({
 		__vscode_notebook_message: true,
 		type: 'initialized'
 	});
-
-	function setMarkupContainerDraggable(element: Element, isDraggable: boolean) {
-		if (isDraggable) {
-			element.classList.add('draggable');
-			element.setAttribute('draggable', 'true');
-		} else {
-			element.classList.remove('draggable');
-			element.removeAttribute('draggable');
-		}
-	}
 
 	function postNotebookMessage<T extends webviewMessages.FromWebviewMessage>(
 		type: T['type'],
@@ -1254,13 +1380,13 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 		});
 	}
 
-	const markdownPreviewDragManager = new class MarkdownPreviewDragManager {
+	const markupCellDragManager = new class MarkupCellDragManager {
 
 		private currentDrag: { cellId: string, clientY: number } | undefined;
 
 		constructor() {
 			document.addEventListener('dragover', e => {
-				// Allow dropping dragged markdown cells
+				// Allow dropping dragged markup cells
 				e.preventDefault();
 			});
 
@@ -1319,8 +1445,9 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 		updateDrag(e: DragEvent, cellId: string) {
 			if (cellId !== this.currentDrag?.cellId) {
 				this.currentDrag = undefined;
+			} else {
+				this.currentDrag = { cellId, clientY: e.clientY };
 			}
-			this.currentDrag = { cellId, clientY: e.clientY };
 		}
 
 		endDrag(e: DragEvent, cellId: string) {
@@ -1330,6 +1457,7 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 				cellId: cellId
 			});
 		}
+
 	}();
 }
 
@@ -1341,14 +1469,19 @@ export interface RendererMetadata {
 	readonly messaging: boolean;
 }
 
-export function preloadsScriptStr(styleValues: PreloadStyles, options: PreloadOptions, renderers: readonly RendererMetadata[]) {
-	// TS will try compiling `import()` in webviePreloads, so use an helper function instead
+export function preloadsScriptStr(styleValues: PreloadStyles, options: PreloadOptions, renderers: readonly RendererMetadata[], isWorkspaceTrusted: boolean, nonce: string) {
+	const ctx: PreloadContext = {
+		style: styleValues,
+		options,
+		rendererData: renderers,
+		isWorkspaceTrusted,
+		nonce,
+	};
+	// TS will try compiling `import()` in webviewPreloads, so use an helper function instead
 	// of using `import(...)` directly
 	return `
 		const __import = (x) => import(x);
 		(${webviewPreloads})(
-				JSON.parse(decodeURIComponent("${encodeURIComponent(JSON.stringify(styleValues))}")),
-				JSON.parse(decodeURIComponent("${encodeURIComponent(JSON.stringify(options))}")),
-				JSON.parse(decodeURIComponent("${encodeURIComponent(JSON.stringify(renderers))}"))
-			)\n//# sourceURL=notebookWebviewPreloads.js\n`;
+			JSON.parse(decodeURIComponent("${encodeURIComponent(JSON.stringify(ctx))}"))
+		)\n//# sourceURL=notebookWebviewPreloads.js\n`;
 }

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Emitter } from 'vs/base/common/event';
-import { IDisposable } from 'vs/base/common/lifecycle';
+import { Disposable } from 'vs/base/common/lifecycle';
 import { IConfigurationChangeEvent, IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { CellToolbarLocation, CellToolbarVisibility, CompactView, ConsolidatedOutputButton, ConsolidatedRunButton, DragAndDropEnabled, ExperimentalInsertToolbarAlignment, FocusIndicator, GlobalToolbar, InsertToolbarLocation, NotebookCellEditorOptionsCustomizations, NotebookCellInternalMetadata, ShowCellStatusBar, ShowCellStatusBarType, ShowFoldingControls } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 
@@ -77,6 +77,7 @@ interface NotebookOptionsChangeEvent {
 	dragAndDropEnabled?: boolean;
 	fontSize?: boolean;
 	editorOptionsCustomizations?: boolean;
+	cellBreakpointMargin?: boolean;
 }
 
 const defaultConfigConstants = {
@@ -91,21 +92,21 @@ const defaultConfigConstants = {
 
 const compactConfigConstants = {
 	codeCellLeftMargin: 8,
-	cellRunGutter: 32,
+	cellRunGutter: 36,
 	markdownCellTopMargin: 6,
 	markdownCellBottomMargin: 6,
 	markdownCellLeftMargin: 8,
-	markdownCellGutter: 32,
+	markdownCellGutter: 36,
 	focusIndicatorLeftMargin: 4
 };
 
-export class NotebookOptions {
+export class NotebookOptions extends Disposable {
 	private _layoutConfiguration: NotebookLayoutConfiguration;
-	protected readonly _onDidChangeOptions = new Emitter<NotebookOptionsChangeEvent>();
+	protected readonly _onDidChangeOptions = this._register(new Emitter<NotebookOptionsChangeEvent>());
 	readonly onDidChangeOptions = this._onDidChangeOptions.event;
-	private _disposables: IDisposable[];
 
 	constructor(private readonly configurationService: IConfigurationService) {
+		super();
 		const showCellStatusBar = this.configurationService.getValue<ShowCellStatusBarType>(ShowCellStatusBar);
 		const globalToolbar = this.configurationService.getValue<boolean | undefined>(GlobalToolbar) ?? true;
 		const consolidatedOutputButton = this.configurationService.getValue<boolean | undefined>(ConsolidatedOutputButton) ?? true;
@@ -122,14 +123,13 @@ export class NotebookOptions {
 		const fontSize = this.configurationService.getValue<number>('editor.fontSize');
 		const editorOptionsCustomizations = this.configurationService.getValue(NotebookCellEditorOptionsCustomizations);
 
-		this._disposables = [];
 		this._layoutConfiguration = {
 			...(compactView ? compactConfigConstants : defaultConfigConstants),
 			cellTopMargin: 6,
 			cellBottomMargin: 6,
 			cellRightMargin: 16,
 			cellStatusBarHeight: 22,
-			cellOutputPadding: 14,
+			cellOutputPadding: 12,
 			markdownPreviewPadding: 8,
 			// bottomToolbarHeight: bottomToolbarHeight,
 			// bottomToolbarGap: bottomToolbarGap,
@@ -137,7 +137,7 @@ export class NotebookOptions {
 			editorTopPadding: EDITOR_TOP_PADDING,
 			editorBottomPadding: 4,
 			editorBottomPaddingWithoutStatusBar: 12,
-			collapsedIndicatorHeight: 24,
+			collapsedIndicatorHeight: 28,
 			showCellStatusBar,
 			globalToolbar,
 			consolidatedOutputButton,
@@ -151,14 +151,14 @@ export class NotebookOptions {
 			insertToolbarAlignment,
 			showFoldingControls,
 			fontSize,
-			editorOptionsCustomizations
+			editorOptionsCustomizations,
 		};
 
-		this._disposables.push(this.configurationService.onDidChangeConfiguration(e => {
+		this._register(this.configurationService.onDidChangeConfiguration(e => {
 			this._updateConfiguration(e);
 		}));
 
-		this._disposables.push(EditorTopPaddingChangeEvent(() => {
+		this._register(EditorTopPaddingChangeEvent(() => {
 			const configuration = Object.assign({}, this._layoutConfiguration);
 			configuration.editorTopPadding = getEditorTopPadding();
 			this._layoutConfiguration = configuration;
@@ -342,17 +342,17 @@ export class NotebookOptions {
 		if (insertToolbarAlignment === 'left' || cellToolbar !== 'hidden') {
 			return {
 				bottomToolbarGap: 18,
-				bottomToolbarHeight: 22
+				bottomToolbarHeight: 18
 			};
 		}
 
 		if (insertToolbarPosition === 'betweenCells' || insertToolbarPosition === 'both') {
 			return compactView ? {
 				bottomToolbarGap: 12,
-				bottomToolbarHeight: 22
+				bottomToolbarHeight: 20
 			} : {
-				bottomToolbarGap: 18,
-				bottomToolbarHeight: 22
+				bottomToolbarGap: 20,
+				bottomToolbarHeight: 20
 			};
 		} else {
 			return {
@@ -481,8 +481,8 @@ export class NotebookOptions {
 		};
 	}
 
-	dispose() {
-		this._disposables.forEach(d => d.dispose());
-		this._disposables = [];
+	setCellBreakpointMarginActive(active: boolean) {
+		this._layoutConfiguration = { ...this._layoutConfiguration, ...{ cellBreakpointMarginActive: active } };
+		this._onDidChangeOptions.fire({ cellBreakpointMargin: true });
 	}
 }

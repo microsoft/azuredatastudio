@@ -12,21 +12,83 @@ import * as filter from 'gulp-filter';
 import * as _ from 'underscore';
 import * as util from './util';
 
+type DarwinDocumentSuffix = 'document' | 'script' | 'file' | 'source code';
+type DarwinDocumentType = {
+	name: string,
+	role: string,
+	ostypes: string[],
+	extensions: string[],
+	iconFile: string,
+};
+
+function isDocumentSuffix(str?: string): str is DarwinDocumentSuffix {
+	return str === 'document' || str === 'script' || str === 'file' || str === 'source code';
+}
+
 const root = path.dirname(path.dirname(__dirname));
 const product = JSON.parse(fs.readFileSync(path.join(root, 'product.json'), 'utf8'));
 const commit = util.getVersion(root);
 
 const darwinCreditsTemplate = product.darwinCredits && _.template(fs.readFileSync(path.join(root, product.darwinCredits), 'utf8'));
 
-function darwinBundleDocumentType(extensions: string[], icon: string) {
+/**
+ * Generate a `DarwinDocumentType` given a list of file extensions, an icon name, and an optional suffix or file type name.
+ * @param extensions A list of file extensions, such as `['bat', 'cmd']`
+ * @param icon A sentence-cased file type name that matches the lowercase name of a darwin icon resource.
+ * For example, `'HTML'` instead of `'html'`, or `'Java'` instead of `'java'`.
+ * This parameter is lowercased before it is used to reference an icon file.
+ * @param nameOrSuffix An optional suffix or a string to use as the file type. If a suffix is provided,
+ * it is used with the icon parameter to generate a file type string. If nothing is provided,
+ * `'document'` is used with the icon parameter to generate file type string.
+ *
+ * For example, if you call `darwinBundleDocumentType(..., 'HTML')`, the resulting file type is `"HTML document"`,
+ * and the `'html'` darwin icon is used.
+ *
+ * If you call `darwinBundleDocumentType(..., 'Javascript', 'file')`, the resulting file type is `"Javascript file"`.
+ * and the `'javascript'` darwin icon is used.
+ *
+ * If you call `darwinBundleDocumentType(..., 'bat', 'Windows command script')`, the file type is `"Windows command script"`,
+ * and the `'bat'` darwin icon is used.
+ */
+function darwinBundleDocumentType(extensions: string[], icon: string, nameOrSuffix?: string | DarwinDocumentSuffix): DarwinDocumentType {
+	// If given a suffix, generate a name from it. If not given anything, default to 'document'
+	if (isDocumentSuffix(nameOrSuffix) || !nameOrSuffix) {
+		nameOrSuffix = icon.charAt(0).toUpperCase() + icon.slice(1) + ' ' + (nameOrSuffix ?? 'document');
+	}
+
 	return {
-		name: product.nameLong + ' document',
+		name: nameOrSuffix,
 		role: 'Editor',
 		ostypes: ['TEXT', 'utxt', 'TUTX', '****'],
 		extensions: extensions,
-		iconFile: icon
+		iconFile: 'resources/darwin/' + icon + '.icns'
 	};
 }
+
+/**
+ * Generate several `DarwinDocumentType`s with unique names and a shared icon.
+ * @param types A map of file type names to their associated file extensions.
+ * @param icon A darwin icon resource to use. For example, `'HTML'` would refer to `resources/darwin/html.icns`
+ *
+ * Examples:
+ * ```
+ * darwinBundleDocumentTypes({ 'C header file': 'h', 'C source code': 'c' },'c')
+ * darwinBundleDocumentTypes({ 'React source code': ['jsx', 'tsx'] }, 'react')
+ * ```
+ */
+// {{SQL CARBON EDIT}} Remove unused
+// function darwinBundleDocumentTypes(types: { [name: string]: string | string[] }, icon: string): DarwinDocumentType[] {
+// 	return Object.keys(types).map((name: string): DarwinDocumentType => {
+// 		const extensions = types[name];
+// 		return {
+// 			name: name,
+// 			role: 'Editor',
+// 			ostypes: ['TEXT', 'utxt', 'TUTX', '****'],
+// 			extensions: Array.isArray(extensions) ? extensions : [extensions],
+// 			iconFile: 'resources/darwin/' + icon + '.icns',
+// 		} as DarwinDocumentType;
+// 	});
+// }
 
 export const config = {
 	version: util.getElectronVersion(),

@@ -17,7 +17,6 @@ import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 import { MenuId, IMenuService, MenuItemAction } from 'vs/platform/actions/common/actions';
 import { IAction, Action, SubmenuAction } from 'vs/base/common/actions';
 import { IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
-import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import * as DOM from 'vs/base/browser/dom';
 
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
@@ -101,7 +100,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		@Inject(IConnectionDialogService) private connectionDialogService: IConnectionDialogService,
 		@Inject(IContextKeyService) private contextKeyService: IContextKeyService,
 		@Inject(IMenuService) private menuService: IMenuService,
-		@Inject(IKeybindingService) private keybindingService: IKeybindingService,
 		@Inject(ICapabilitiesService) private capabilitiesService: ICapabilitiesService,
 		@Inject(ITextFileService) private textFileService: ITextFileService,
 		@Inject(ILogService) private readonly logService: ILogService,
@@ -576,7 +574,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				action.tooltip = action.label;
 				action.label = '';
 			}
-			return new MaskedLabeledMenuItemActionItem(action, this.keybindingService, this.notificationService);
+			return this.instantiationService.createInstance(MaskedLabeledMenuItemActionItem, action);
 		}
 		return undefined;
 	}

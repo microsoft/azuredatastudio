@@ -12,73 +12,73 @@ on:
 
 jobs:
   windows:
-      name: Windows
-      runs-on: windows-latest
-      timeout-minutes: 30
-      env:
-        CHILD_CONCURRENCY: "1"
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      steps:
-        - uses: actions/checkout@v2.2.0
+    name: Windows
+    runs-on: windows-latest
+    timeout-minutes: 30
+    env:
+      CHILD_CONCURRENCY: "1"
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v2
 
-        - uses: actions/setup-node@v2
-          with:
-            node-version: 12
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14
 
-        - uses: actions/setup-python@v2
-          with:
-            python-version: "2.x"
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "2.x"
 
-        # {{SQL CARBON EDIT}} Skip caching for now
-        # - name: Compute node modules cache key
-        #   id: nodeModulesCacheKey
-        #   run: echo "::set-output name=value::$(node build/azure-pipelines/common/computeNodeModulesCacheKey.js)"
-        # - name: Cache node_modules archive
-        #   id: cacheNodeModules
-        #   uses: actions/cache@v2
-        #   with:
-        #     path: ".build/node_modules_cache"
-        #     key: "${{ runner.os }}-cacheNodeModulesArchive-${{ steps.nodeModulesCacheKey.outputs.value }}"
-        # - name: Extract node_modules archive
-        #   if: ${{ steps.cacheNodeModules.outputs.cache-hit == 'true' }}
-        #   run: 7z.exe x .build/node_modules_cache/cache.7z -aos
-        # - name: Get yarn cache directory path
-        #   id: yarnCacheDirPath
-        #   if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
-        #   run: echo "::set-output name=dir::$(yarn cache dir)"
-        # - name: Cache yarn directory
-        #   if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
-        #   uses: actions/cache@v2
-        #   with:
-        #     path: ${{ steps.yarnCacheDirPath.outputs.dir }}
-        #     key: ${{ runner.os }}-yarnCacheDir-${{ steps.nodeModulesCacheKey.outputs.value }}
-        #     restore-keys: ${{ runner.os }}-yarnCacheDir-
+      # {{SQL CARBON EDIT}} Skip caching for now
+      # - name: Compute node modules cache key
+      #   id: nodeModulesCacheKey
+      #   run: echo "::set-output name=value::$(node build/azure-pipelines/common/computeNodeModulesCacheKey.js)"
+      # - name: Cache node_modules archive
+      #   id: cacheNodeModules
+      #   uses: actions/cache@v2
+      #   with:
+      #     path: ".build/node_modules_cache"
+      #     key: "${{ runner.os }}-cacheNodeModulesArchive-${{ steps.nodeModulesCacheKey.outputs.value }}"
+      # - name: Extract node_modules archive
+      #   if: ${{ steps.cacheNodeModules.outputs.cache-hit == 'true' }}
+      #   run: 7z.exe x .build/node_modules_cache/cache.7z -aos
+      # - name: Get yarn cache directory path
+      #   id: yarnCacheDirPath
+      #   if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
+      #   run: echo "::set-output name=dir::$(yarn cache dir)"
+      # - name: Cache yarn directory
+      #   if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
+      #   uses: actions/cache@v2
+      #   with:
+      #     path: ${{ steps.yarnCacheDirPath.outputs.dir }}
+      #     key: ${{ runner.os }}-yarnCacheDir-${{ steps.nodeModulesCacheKey.outputs.value }}
+      #     restore-keys: ${{ runner.os }}-yarnCacheDir-
 
-        - name: Execute yarn
-          # if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }} {{SQL CARBON EDIT}} Skipping caching for now
-          env:
-            PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
-            ELECTRON_SKIP_BINARY_DOWNLOAD: 1
-          run: yarn --frozen-lockfile --network-timeout 180000
-        # - name: Create node_modules archive {{SQL CARBON EDIT}} Skip caching for now
-        #   if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
-        #   run: |
-        #     mkdir -Force .build
-        #     node build/azure-pipelines/common/listNodeModules.js .build/node_modules_list.txt
-        #     mkdir -Force .build/node_modules_cache
-        #     7z.exe a .build/node_modules_cache/cache.7z -mx3 `@.build/node_modules_list.txt
+      - name: Execute yarn
+        # if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }} {{SQL CARBON EDIT}} Skipping caching for now
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
+          ELECTRON_SKIP_BINARY_DOWNLOAD: 1
+        run: yarn --frozen-lockfile --network-timeout 180000
+      # - name: Create node_modules archive {{SQL CARBON EDIT}} Skip caching for now
+      #   if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
+      #   run: |
+      #     mkdir -Force .build
+      #     node build/azure-pipelines/common/listNodeModules.js .build/node_modules_list.txt
+      #     mkdir -Force .build/node_modules_cache
+      #     7z.exe a .build/node_modules_cache/cache.7z -mx3 `@.build/node_modules_list.txt
 
-        - name: Compile and Download
-          run: yarn npm-run-all --max_old_space_size=4095 -lp compile "electron x64" # {{SQL CARBON EDIT}} Remove unused options playwright-install download-builtin-extensions
+      - name: Compile and Download
+        run: yarn npm-run-all --max_old_space_size=4095 -lp compile "electron x64" # {{SQL CARBON EDIT}} Remove unused options playwright-install download-builtin-extensions
 
-        - name: Run Unit Tests (Electron)
-          run: .\scripts\test.bat
+      - name: Run Unit Tests (Electron)
+        run: .\scripts\test.bat
 
-        # - name: Run Unit Tests (Browser) {{SQL CARBON EDIT}} disable for now
-        #   run: yarn test-browser --browser chromium
+      # - name: Run Unit Tests (Browser) {{SQL CARBON EDIT}} disable for now
+      #   run: yarn test-browser --browser chromium
 
-        # - name: Run Integration Tests (Electron) {{SQL CARBON EDIT}} disable for now
-        #   run: .\scripts\test-integration.bat
+      # - name: Run Integration Tests (Electron) {{SQL CARBON EDIT}} disable for now
+      #   run: .\scripts\test-integration.bat
 
   linux:
     name: Linux
@@ -101,7 +101,7 @@ jobs:
 
       - uses: actions/setup-node@v2
         with:
-          node-version: 12
+          node-version: 14
       # {{SQL CARBON EDIT}} Skip caching for now
       # - name: Compute node modules cache key
       #   id: nodeModulesCacheKey
@@ -111,8 +111,8 @@ jobs:
       #   uses: actions/cache@v2
       #   with:
       #     path: "**/node_modules"
-      #     key: ${{ runner.os }}-cacheNodeModules13-${{ steps.nodeModulesCacheKey.outputs.value }}
-      #     restore-keys: ${{ runner.os }}-cacheNodeModules13-
+      #     key: ${{ runner.os }}-cacheNodeModules14-${{ steps.nodeModulesCacheKey.outputs.value }}
+      #     restore-keys: ${{ runner.os }}-cacheNodeModules14-
       # - name: Get yarn cache directory path
       #   id: yarnCacheDirPath
       #   if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
@@ -170,7 +170,7 @@ jobs:
 
       - uses: actions/setup-node@v2
         with:
-          node-version: 12
+          node-version: 14
 
       # {{SQL CARBON EDIT}} Skip caching for now
       # - name: Compute node modules cache key
@@ -181,8 +181,8 @@ jobs:
       #   uses: actions/cache@v2
       #   with:
       #     path: "**/node_modules"
-      #     key: ${{ runner.os }}-cacheNodeModules13-${{ steps.nodeModulesCacheKey.outputs.value }}
-      #     restore-keys: ${{ runner.os }}-cacheNodeModules13-
+      #     key: ${{ runner.os }}-cacheNodeModules14-${{ steps.nodeModulesCacheKey.outputs.value }}
+      #     restore-keys: ${{ runner.os }}-cacheNodeModules14-
       # - name: Get yarn cache directory path
       #   id: yarnCacheDirPath
       #   if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
@@ -195,7 +195,7 @@ jobs:
       #     key: ${{ runner.os }}-yarnCacheDir-${{ steps.nodeModulesCacheKey.outputs.value }}
       #     restore-keys: ${{ runner.os }}-yarnCacheDir-
       - name: Execute yarn
-        if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
+        # if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }} {{SQL CARBON EDIT}} Skip caching for now
         env:
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
           ELECTRON_SKIP_BINARY_DOWNLOAD: 1
@@ -232,7 +232,7 @@ jobs:
 
       - uses: actions/setup-node@v2
         with:
-          node-version: 12
+          node-version: 14
 
       - name: Compute node modules cache key
         id: nodeModulesCacheKey
@@ -242,7 +242,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: "**/node_modules"
-          key: ${{ runner.os }}-cacheNodeModules13-${{ steps.nodeModulesCacheKey.outputs.value }}
+          key: ${{ runner.os }}-cacheNodeModules14-${{ steps.nodeModulesCacheKey.outputs.value }}
+          restore-keys: ${{ runner.os }}-cacheNodeModules14-
       - name: Get yarn cache directory path
         id: yarnCacheDirPath
         if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
@@ -280,6 +281,17 @@ jobs:
 
       - name: Compile /build/
         run: yarn --cwd build compile
+
+      - name: Run eslint
+        run: yarn eslint
+
+      # {{SQL CARBON EDIT}} Don't need this
+      # - name: Run Monaco Editor Checks
+      #   run: yarn monaco-compile-check
+
+      # {{SQL CARBON EDIT}} Don't need this
+      # - name: Run vscode-dts Compile Checks
+      #   run: yarn vscode-dts-compile-check
 
       - name: Run Trusted Types Checks
         run: yarn tsec-compile-check

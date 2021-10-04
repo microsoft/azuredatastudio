@@ -51,7 +51,6 @@ exports.dirs = [
 	'extensions/sql-assessment',
 	'extensions/sql-database-projects',
 	'extensions/sql-migration',
-	'extensions/testing-editor-contributions',
 	'extensions/vscode-test-resolver',
 	'extensions/xml-language-features',
 	// {{SQL CARBON EDIT}} - End

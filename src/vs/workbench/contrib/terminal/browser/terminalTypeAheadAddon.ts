@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { disposableTimeout } from 'vs/base/common/async';
-import { Color } from 'vs/base/common/color';
+import { Color, RGBA } from 'vs/base/common/color';
 import { debounce } from 'vs/base/common/decorators';
 import { Emitter } from 'vs/base/common/event';
 import { Disposable, toDisposable } from 'vs/base/common/lifecycle';
@@ -242,7 +242,7 @@ class StringReader {
 	 */
 	eatChar(char: string) {
 		if (this._input[this.index] !== char) {
-			return undefined; // {{SQL CARBON EDIT}} Strict nulls
+			return undefined; // {{SQL CARBON EDIT}} strict-nulls
 		}
 
 		this.index++;
@@ -254,7 +254,7 @@ class StringReader {
 	 */
 	eatStr(substr: string) {
 		if (this._input.slice(this.index, substr.length) !== substr) {
-			return undefined; // {{SQL CARBON EDIT}} Strict nulls
+			return undefined; // {{SQL CARBON EDIT}} strict-nulls
 		}
 
 		this.index += substr.length;
@@ -288,7 +288,7 @@ class StringReader {
 	eatRe(re: RegExp) {
 		const match = re.exec(this._input.slice(this.index));
 		if (!match) {
-			return undefined; // {{SQL CARBON EDIT}} Strict nulls
+			return undefined; // {{SQL CARBON EDIT}} strict-nulls
 		}
 
 		this.index += match[0].length;
@@ -1254,7 +1254,14 @@ class TypeAheadStyle implements IDisposable {
 			case 'inverted':
 				return { applyArgs: [7], undoArgs: [27] };
 			default:
-				const { r, g, b } = Color.fromHex(style).rgba;
+				let color: Color;
+				try {
+					color = Color.fromHex(style);
+				} catch {
+					color = new Color(new RGBA(255, 0, 0, 1));
+				}
+
+				const { r, g, b } = color.rgba;
 				return { applyArgs: [38, 2, r, g, b], undoArgs: [39] };
 		}
 	}

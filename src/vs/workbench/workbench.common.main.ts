@@ -97,6 +97,7 @@ import 'vs/workbench/services/authentication/browser/authenticationService';
 import 'vs/workbench/services/hover/browser/hoverService';
 import 'vs/workbench/services/experiment/common/experimentService';
 import 'vs/workbench/services/outline/browser/outlineService';
+import 'vs/workbench/services/languageDetection/browser/languageDetectionWorkerServiceImpl';
 
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { ExtensionGalleryService } from 'vs/platform/extensionManagement/common/extensionGalleryService';
@@ -256,7 +257,7 @@ registerSingleton(IDataGridProviderService, DataGridProviderService);
 //#region --- workbench contributions
 
 // Editor Override
-import 'vs/workbench/services/editor/browser/editorOverrideService';
+import 'vs/workbench/services/editor/browser/editorResolverService';
 
 // Telemetry
 import 'vs/workbench/contrib/telemetry/browser/telemetry.contribution';
@@ -271,6 +272,9 @@ import 'vs/workbench/contrib/performance/browser/performance.contribution';
 
 // Notebook
 import 'vs/workbench/contrib/notebook/browser/notebook.contribution';
+
+// Interactive
+import 'vs/workbench/contrib/interactive/browser/interactive.contribution';
 
 // Testing
 import 'vs/workbench/contrib/testing/browser/testing.contribution';
@@ -393,9 +397,14 @@ import 'vs/workbench/contrib/welcome/overlay/browser/welcomeOverlay';
 import 'vs/workbench/contrib/welcome/page/browser/welcomePage.contribution';
 import 'vs/workbench/contrib/welcome/gettingStarted/browser/gettingStarted.contribution';
 import 'vs/workbench/contrib/welcome/walkThrough/browser/walkThrough.contribution';
+import 'vs/workbench/contrib/welcome/common/viewsWelcome.contribution';
+import 'vs/workbench/contrib/welcome/common/newFile.contribution';
 
 // Call Hierarchy
 import 'vs/workbench/contrib/callHierarchy/browser/callHierarchy.contribution';
+
+// Type Hierarchy
+import 'vs/workbench/contrib/typeHierarchy/browser/typeHierarchy.contribution';
 
 // Outline
 import 'vs/workbench/contrib/codeEditor/browser/outline/documentSymbolsOutline';
@@ -413,9 +422,6 @@ import 'vs/workbench/contrib/userDataSync/browser/userDataSync.contribution';
 // Code Actions
 import 'vs/workbench/contrib/codeActions/common/codeActions.contribution';
 
-// Welcome
-import 'vs/workbench/contrib/welcome/common/viewsWelcome.contribution';
-
 // Timeline
 import 'vs/workbench/contrib/timeline/browser/timeline.contribution';
 
@@ -424,6 +430,9 @@ import 'vs/workbench/contrib/workspace/browser/workspace.contribution';
 
 // Workspaces
 import 'vs/workbench/contrib/workspaces/browser/workspaces.contribution';
+
+// List
+import 'vs/workbench/contrib/list/browser/list.contribution';
 
 //#endregion
 

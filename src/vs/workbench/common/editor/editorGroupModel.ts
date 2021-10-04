@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Event, Emitter } from 'vs/base/common/event';
-import { IEditorInputFactoryRegistry, IEditorIdentifier, IEditorCloseEvent, GroupIdentifier, IEditorInput, EditorsOrder, EditorExtensions } from 'vs/workbench/common/editor';
+import { IEditorFactoryRegistry, IEditorIdentifier, IEditorCloseEvent, GroupIdentifier, IEditorInput, EditorsOrder, EditorExtensions, IUntypedEditorInput } from 'vs/workbench/common/editor';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { SideBySideEditorInput } from 'vs/workbench/common/editor/sideBySideEditorInput';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -48,16 +48,17 @@ export interface ISerializedEditorInput {
 
 export interface ISerializedEditorGroupModel {
 	readonly id: number;
+	readonly locked?: boolean;
 	readonly editors: ISerializedEditorInput[];
 	readonly mru: number[];
 	readonly preview?: number;
 	sticky?: number;
 }
 
-export function isSerializedEditorGroupModel(obj?: unknown): obj is ISerializedEditorGroupModel {
-	const group = obj as ISerializedEditorGroupModel;
+export function isSerializedEditorGroupModel(group?: unknown): group is ISerializedEditorGroupModel {
+	const candidate = group as ISerializedEditorGroupModel | undefined;
 
-	return !!(obj && typeof obj === 'object' && Array.isArray(group.editors) && Array.isArray(group.mru));
+	return !!(candidate && typeof candidate === 'object' && Array.isArray(candidate.editors) && Array.isArray(candidate.mru));
 }
 
 export class EditorGroupModel extends Disposable {
@@ -65,6 +66,9 @@ export class EditorGroupModel extends Disposable {
 	private static IDS = 0;
 
 	//#region events
+
+	private readonly _onDidChangeLocked = this._register(new Emitter<void>());
+	readonly onDidChangeLocked = this._onDidChangeLocked.event;
 
 	private readonly _onDidActivateEditor = this._register(new Emitter<EditorInput>());
 	readonly onDidActivateEditor = this._onDidActivateEditor.event;
@@ -104,9 +108,11 @@ export class EditorGroupModel extends Disposable {
 	private editors: EditorInput[] = [];
 	private mru: EditorInput[] = [];
 
+	private locked = false;
+
 	private preview: EditorInput | null = null; // editor in preview state
 	private active: EditorInput | null = null;  // editor in active state
-	private sticky: number = -1; // index of first editor in sticky state
+	private sticky = -1; 						// index of first editor in sticky state
 
 	private editorOpenPositioning: ('left' | 'right' | 'first' | 'last') | undefined;
 	private focusRecentEditorAfterClose: boolean | undefined;
@@ -170,7 +176,7 @@ export class EditorGroupModel extends Disposable {
 		return this.active;
 	}
 
-	isActive(editor: EditorInput): boolean {
+	isActive(editor: EditorInput | IUntypedEditorInput): boolean {
 		return this.matches(this.active, editor);
 	}
 
@@ -704,7 +710,7 @@ export class EditorGroupModel extends Disposable {
 		return [this.editors[index], index];
 	}
 
-	contains(candidate: EditorInput, options?: { supportSideBySide?: boolean, strictEquals?: boolean }): boolean {
+	contains(candidate: EditorInput | IUntypedEditorInput, options?: { supportSideBySide?: boolean, strictEquals?: boolean }): boolean {
 		for (const editor of this.editors) {
 			if (this.matches(editor, candidate, options?.strictEquals)) {
 				return true;
@@ -720,7 +726,7 @@ export class EditorGroupModel extends Disposable {
 		return false;
 	}
 
-	private matches(editor: IEditorInput | null, candidate: IEditorInput | null, strictEquals?: boolean): boolean {
+	private matches(editor: IEditorInput | null, candidate: IEditorInput | IUntypedEditorInput | null, strictEquals?: boolean): boolean {
 		if (!editor || !candidate) {
 			return false;
 		}
@@ -730,6 +736,18 @@ export class EditorGroupModel extends Disposable {
 		}
 
 		return editor.matches(candidate);
+	}
+
+	get isLocked(): boolean {
+		return this.locked;
+	}
+
+	lock(locked: boolean): void {
+		if (this.isLocked !== locked) {
+			this.locked = locked;
+
+			this._onDidChangeLocked.fire();
+		}
 	}
 
 	clone(): EditorGroupModel {
@@ -751,7 +769,7 @@ export class EditorGroupModel extends Disposable {
 	}
 
 	serialize(): ISerializedEditorGroupModel {
-		const registry = Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories);
+		const registry = Registry.as<IEditorFactoryRegistry>(EditorExtensions.EditorFactory);
 
 		// Serialize all editor inputs so that we can store them.
 		// Editors that cannot be serialized need to be ignored
@@ -765,7 +783,7 @@ export class EditorGroupModel extends Disposable {
 			const editor = this.editors[i];
 			let canSerializeEditor = false;
 
-			const editorSerializer = registry.getEditorInputSerializer(editor);
+			const editorSerializer = registry.getEditorSerializer(editor);
 			if (editorSerializer) {
 				const value = editorSerializer.serialize(editor);
 
@@ -797,6 +815,7 @@ export class EditorGroupModel extends Disposable {
 
 		return {
 			id: this.id,
+			locked: this.locked ? true : undefined,
 			editors: serializedEditors,
 			mru: serializableMru,
 			preview: serializablePreviewIndex,
@@ -805,7 +824,7 @@ export class EditorGroupModel extends Disposable {
 	}
 
 	private deserialize(data: ISerializedEditorGroupModel): number {
-		const registry = Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories);
+		const registry = Registry.as<IEditorFactoryRegistry>(EditorExtensions.EditorFactory);
 
 		if (typeof data.id === 'number') {
 			this._id = data.id;
@@ -815,10 +834,14 @@ export class EditorGroupModel extends Disposable {
 			this._id = EditorGroupModel.IDS++; // backwards compatibility
 		}
 
+		if (data.locked) {
+			this.locked = true;
+		}
+
 		this.editors = coalesce(data.editors.map((e, index) => {
 			let editor: EditorInput | undefined = undefined;
 
-			const editorSerializer = registry.getEditorInputSerializer(e.id);
+			const editorSerializer = registry.getEditorSerializer(e.id);
 			if (editorSerializer) {
 				const deserializedEditor = editorSerializer.deserialize(this.instantiationService, e.value);
 				if (deserializedEditor instanceof EditorInput) {

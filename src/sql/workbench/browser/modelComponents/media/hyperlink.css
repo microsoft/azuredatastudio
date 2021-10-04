@@ -9,9 +9,3 @@ modelview-hyperlink .link-with-icon::after {
 	margin-left: 5px;
 	vertical-align: bottom;
 }
-
-modelview-hyperlink a:focus {
-	outline-width: 1px;
-	outline-style: solid;
-	outline-offset: 1px;
-}

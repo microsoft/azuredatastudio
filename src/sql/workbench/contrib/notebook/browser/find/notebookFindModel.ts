@@ -10,10 +10,9 @@ import { Event, Emitter } from 'vs/base/common/event';
 import * as types from 'vs/base/common/types';
 import { NotebookFindMatch, NotebookFindDecorations } from 'sql/workbench/contrib/notebook/browser/find/notebookFindDecorations';
 import * as model from 'vs/editor/common/model';
-import { ModelDecorationOptions, DidChangeDecorationsEmitter, createTextBuffer } from 'vs/editor/common/model/textModel';
+import { ModelDecorationOptions, DidChangeDecorationsEmitter, createTextBuffer, TextModel } from 'vs/editor/common/model/textModel';
 import { IModelDecorationsChangedEvent } from 'vs/editor/common/model/textModelEvents';
 import { IntervalNode } from 'vs/editor/common/model/intervalTree';
-import { EDITOR_MODEL_DEFAULTS } from 'vs/editor/common/config/editorOptions';
 import { Range, IRange } from 'vs/editor/common/core/range';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { singleLetterHash, isHighSurrogate } from 'vs/base/common/strings';
@@ -54,7 +53,7 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 	public findExpression: string;
 
 	//#region Decorations
-	private readonly _onDidChangeDecorations: DidChangeDecorationsEmitter = this._register(new DidChangeDecorationsEmitter());
+	private readonly _onDidChangeDecorations: DidChangeDecorationsEmitter = this._register(new DidChangeDecorationsEmitter(affectedInjectedTextLines => { } /* this.handleBeforeFireDecorationsChangedEvent(affectedInjectedTextLines) */)); // Do we need this event?
 	public readonly onDidChangeDecorations: Event<IModelDecorationsChangedEvent> = this._onDidChangeDecorations.event;
 	private _decorations: { [decorationId: string]: NotebookIntervalNode; };
 	//#endregion
@@ -71,7 +70,7 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 
 		this._decorations = Object.create(null);
 
-		const { textBuffer, } = createTextBuffer('', NotebookFindModel.DEFAULT_CREATION_OPTIONS.defaultEOL);
+		const { textBuffer, } = createTextBuffer('', TextModel.DEFAULT_CREATION_OPTIONS.defaultEOL);
 		this._buffer = textBuffer;
 		this._versionId = 1;
 		this.id = '$model' + MODEL_ID;
@@ -98,17 +97,6 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 		this._findDecorations.dispose();
 		this.clearFind();
 	}
-
-	public static DEFAULT_CREATION_OPTIONS: model.ITextModelCreationOptions = {
-		isForSimpleWidget: false,
-		tabSize: EDITOR_MODEL_DEFAULTS.tabSize,
-		indentSize: EDITOR_MODEL_DEFAULTS.indentSize,
-		insertSpaces: EDITOR_MODEL_DEFAULTS.insertSpaces,
-		detectIndentation: false,
-		defaultEOL: model.DefaultEndOfLine.LF,
-		trimAutoWhitespace: EDITOR_MODEL_DEFAULTS.trimAutoWhitespace,
-		largeFileOptimizations: EDITOR_MODEL_DEFAULTS.largeFileOptimizations,
-	};
 
 	public get onFindCountChange(): Event<number> { return this._onFindCountChange.event; }
 
@@ -288,7 +276,7 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 	 */
 	private _validateRangeRelaxedNoAllocations(range: IRange): NotebookRange {
 		if (range instanceof NotebookRange) {
-			const { textBuffer, } = createTextBuffer(range.cell.source instanceof Array ? range.cell.source.join('\n') : range.cell.source, NotebookFindModel.DEFAULT_CREATION_OPTIONS.defaultEOL);
+			const { textBuffer, } = createTextBuffer(range.cell.source instanceof Array ? range.cell.source.join('\n') : range.cell.source, TextModel.DEFAULT_CREATION_OPTIONS.defaultEOL);
 			this._buffer = textBuffer;
 		}
 

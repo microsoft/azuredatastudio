@@ -20,7 +20,7 @@ import * as TypeMoq from 'typemoq';
 import { errorHandler, onUnexpectedError } from 'vs/base/common/errors';
 import { Emitter, Event } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
-import { DidInstallExtensionEvent, DidUninstallExtensionEvent, IExtensionIdentifier, IExtensionManagementService, InstallExtensionEvent } from 'vs/platform/extensionManagement/common/extensionManagement';
+import { DidUninstallExtensionEvent, IExtensionIdentifier, IExtensionManagementService, InstallExtensionEvent } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { ExtensionIdentifier, IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
@@ -154,7 +154,6 @@ suite.skip('NotebookService:', function (): void {
 	let editorGroupsService: IEditorGroupsService;
 
 	let installExtensionEmitter: Emitter<InstallExtensionEvent>,
-		didInstallExtensionEmitter: Emitter<DidInstallExtensionEvent>,
 		uninstallExtensionEmitter: Emitter<IExtensionIdentifier>,
 		didUninstallExtensionEmitter: Emitter<DidUninstallExtensionEvent>;
 	let configurationService: IConfigurationService;
@@ -178,14 +177,12 @@ suite.skip('NotebookService:', function (): void {
 		instantiationService = new TestInstantiationService();
 
 		installExtensionEmitter = new Emitter<InstallExtensionEvent>();
-		didInstallExtensionEmitter = new Emitter<DidInstallExtensionEvent>();
 		uninstallExtensionEmitter = new Emitter<IExtensionIdentifier>();
 		didUninstallExtensionEmitter = new Emitter<DidUninstallExtensionEvent>();
 		configurationService = new TestConfigurationService();
 
 		instantiationService.stub(IExtensionManagementService, ExtensionManagementService);
 		instantiationService.stub(IExtensionManagementService, 'onInstallExtension', installExtensionEmitter.event);
-		instantiationService.stub(IExtensionManagementService, 'onDidInstallExtension', didInstallExtensionEmitter.event);
 		instantiationService.stub(IExtensionManagementService, 'onUninstallExtension', uninstallExtensionEmitter.event);
 		instantiationService.stub(IExtensionManagementService, 'onDidUninstallExtension', didUninstallExtensionEmitter.event);
 		extensionManagementService = instantiationService.get(IExtensionManagementService);

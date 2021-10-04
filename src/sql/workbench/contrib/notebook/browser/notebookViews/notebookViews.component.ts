@@ -14,7 +14,6 @@ import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootst
 import { Action } from 'vs/base/common/actions';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { MenuItemAction } from 'vs/platform/actions/common/actions';
-import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { onUnexpectedError } from 'vs/base/common/errors';
@@ -70,7 +69,6 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 		@Inject(IBootstrapParams) private _notebookParams: INotebookParams,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
-		@Inject(IKeybindingService) private _keybindingService: IKeybindingService,
 		@Inject(IContextMenuService) private _contextMenuService: IContextMenuService,
 		@Inject(INotificationService) private _notificationService: INotificationService,
 		@Inject(INotebookService) private _notebookService: INotebookService,
@@ -314,7 +312,7 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 				action.tooltip = action.label;
 				action.label = '';
 			}
-			return new LabeledMenuItemActionItem(action, this._keybindingService, this._notificationService, 'notebook-button fixed-width');
+			return this._instantiationService.createInstance(LabeledMenuItemActionItem, action, 'notebook-button fixed-width');
 		}
 		return undefined;
 	}

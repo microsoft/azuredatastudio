@@ -6,20 +6,14 @@
 import * as fs from 'fs';
 import * as cp from 'child_process';
 import * as path from 'path';
+import * as os from 'os';
 import * as minimist from 'minimist';
-import * as tmp from 'tmp';
 import * as rimraf from 'rimraf';
 import * as mkdirp from 'mkdirp';
 import { ncp } from 'ncp';
-import {
-	Application,
-	Quality,
-	ApplicationOptions,
-	MultiLogger,
-	Logger,
-	ConsoleLogger,
-	FileLogger,
-} from '../../automation';
+import * as vscodetest from 'vscode-test';
+import fetch from 'node-fetch';
+import { Quality, ApplicationOptions, MultiLogger, Logger, ConsoleLogger, FileLogger } from '../../automation';
 
 import { main as sqlMain, setup as sqlSetup } from './sql/main'; // {{SQL CARBON EDIT}}
 /*import { setup as setupDataMigrationTests } from './areas/workbench/data-migration.test';
@@ -35,9 +29,18 @@ import { setup as setupDataMultirootTests } from './areas/multiroot/multiroot.te
 import { setup as setupDataLocalizationTests } from './areas/workbench/localization.test';
 import { setup as setupLaunchTests } from './areas/workbench/launch.test';*/
 
-const tmpDir = tmp.dirSync({ prefix: 't' }) as { name: string; removeCallback: Function; };
-const testDataPath = tmpDir.name;
-process.once('exit', () => rimraf.sync(testDataPath));
+const testDataPath = path.join(os.tmpdir(), 'vscsmoke');
+if (fs.existsSync(testDataPath)) {
+	rimraf.sync(testDataPath);
+}
+fs.mkdirSync(testDataPath);
+process.once('exit', () => {
+	try {
+		rimraf.sync(testDataPath);
+	} catch {
+		// noop
+	}
+});
 
 const [, , ...args] = process.argv;
 const opts = minimist(args, {
@@ -49,12 +52,14 @@ const opts = minimist(args, {
 		'test-repo',
 		'screenshots',
 		'log',
-		'extensionsDir' // {{SQL CARBON EDIT}} Let callers control extensions dir for non-packaged extensions
+		'extensionsDir', // {{SQL CARBON EDIT}} Let callers control extensions dir for non-packaged extensions
+		'electronArgs'
 	],
 	boolean: [
 		'verbose',
 		'remote',
-		'web'
+		'web',
+		'headless'
 	],
 	default: {
 		verbose: false
@@ -77,7 +82,6 @@ if (screenshotsPath) {
 	mkdirp.sync(screenshotsPath);
 }
 
-// {{SQL CARBON EDIT}} Add logs to smoke tests
 const logPath = opts.log ? path.resolve(opts.log) : null;
 if (logPath) {
 	mkdirp.sync(path.dirname(logPath));
@@ -91,6 +95,12 @@ function fail(errorMessage): void {
 const repoPath = path.join(__dirname, '..', '..', '..');
 
 let quality: Quality;
+let version: string | undefined;
+
+function parseVersion(version: string): { major: number, minor: number, patch: number } {
+	const [, major, minor, patch] = /^(\d+)\.(\d+)\.(\d+)/.exec(version)!;
+	return { major: parseInt(major), minor: parseInt(minor), patch: parseInt(patch) };
+}
 
 //
 // #### Electron Smoke Tests ####
@@ -130,17 +140,21 @@ if (!opts.web) {
 		}
 	}
 
+	function getBuildVersion(root: string): string {
+		switch (process.platform) {
+			case 'darwin':
+				return require(path.join(root, 'Contents', 'Resources', 'app', 'package.json')).version;
+			default:
+				return require(path.join(root, 'resources', 'app', 'package.json')).version;
+		}
+	}
+
 	let testCodePath = opts.build;
-	let stableCodePath = opts['stable-build'];
 	let electronPath: string;
-	let stablePath: string | undefined = undefined;
 
 	if (testCodePath) {
 		electronPath = getBuildElectronPath(testCodePath);
-
-		if (stableCodePath) {
-			stablePath = getBuildElectronPath(stableCodePath);
-		}
+		version = getBuildVersion(testCodePath);
 	} else {
 		testCodePath = getDevElectronPath();
 		electronPath = testCodePath;
@@ -151,10 +165,6 @@ if (!opts.web) {
 
 	if (!fs.existsSync(electronPath || '')) {
 		fail(`Can't find VSCode at ${electronPath}.`);
-	}
-
-	if (typeof stablePath === 'string' && !fs.existsSync(stablePath)) {
-		fail(`Can't find Stable VSCode at ${stablePath}.`);
 	}
 
 	if (process.env.VSCODE_DEV === '1') {
@@ -221,16 +231,66 @@ async function setupRepository(): Promise<void> {
 			cp.spawnSync('git', ['clean', '-xdf'], { cwd: workspacePath });
 		}
 
-		// None of the test run the project
+		// None of the current smoke tests have a dependency on the packages.
+		// If new smoke tests are added that need the packages, uncomment this.
 		// console.log('*** Running yarn...');
 		// cp.execSync('yarn', { cwd: workspacePath, stdio: 'inherit' });
 	}
+}
+
+async function ensureStableCode(): Promise<void> {
+	if (opts.web || !opts['build']) {
+		return;
+	}
+
+	let stableCodePath = opts['stable-build'];
+	if (!stableCodePath) {
+		const { major, minor } = parseVersion(version!);
+		const majorMinorVersion = `${major}.${minor - 1}`;
+		const versionsReq = await fetch('https://update.code.visualstudio.com/api/releases/stable', { headers: { 'x-api-version': '2' } });
+
+		if (!versionsReq.ok) {
+			throw new Error('Could not fetch releases from update server');
+		}
+
+		const versions: { version: string }[] = await versionsReq.json();
+		const prefix = `${majorMinorVersion}.`;
+		const previousVersion = versions.find(v => v.version.startsWith(prefix));
+
+		if (!previousVersion) {
+			throw new Error(`Could not find suitable stable version ${majorMinorVersion}`);
+		}
+
+		console.log(`*** Found VS Code v${version}, downloading previous VS Code version ${previousVersion.version}...`);
+
+		const stableCodeExecutable = await vscodetest.download({
+			cachePath: path.join(os.tmpdir(), 'vscode-test'),
+			version: previousVersion.version
+		});
+
+		if (process.platform === 'darwin') {
+			// Visual Studio Code.app/Contents/MacOS/Electron
+			stableCodePath = path.dirname(path.dirname(path.dirname(stableCodeExecutable)));
+		} else {
+			// VSCode/Code.exe (Windows) | VSCode/code (Linux)
+			stableCodePath = path.dirname(stableCodeExecutable);
+		}
+	}
+
+	if (!fs.existsSync(stableCodePath)) {
+		throw new Error(`Can't find Stable VSCode at ${stableCodePath}.`);
+	}
+
+	console.log(`*** Using stable build ${stableCodePath} for migration tests`);
+
+	opts['stable-build'] = stableCodePath;
 }
 
 async function setup(): Promise<void> {
 	console.log('*** Test data:', testDataPath);
 	console.log('*** Preparing smoketest setup...');
 
+	await ensureStableCode();
 	await setupRepository();
 
 	console.log('*** Smoketest setup done!\n');
@@ -249,6 +309,7 @@ function createOptions(): ApplicationOptions {
 		loggers.push(new FileLogger(opts.log));
 		log = 'trace';
 	}
+
 	return {
 		quality,
 		codePath: opts.build,
@@ -262,7 +323,9 @@ function createOptions(): ApplicationOptions {
 		screenshotsPath,
 		remote: opts.remote,
 		web: opts.web,
-		browser: opts.browser
+		headless: opts.headless,
+		browser: opts.browser,
+		extraArgs: (opts.electronArgs || '').split(' ').map(a => a.trim()).filter(a => !!a)
 	};
 }
 
@@ -270,7 +333,7 @@ before(async function () {
 	this.timeout(2 * 60 * 1000); // allow two minutes for setup
 	await setup();
 	this.defaultOptions = createOptions();
-	await sqlSetup(this.defaultOptions); // {{SQL CARBON EDIT}}
+	await sqlSetup(this.defaultOptions);
 });
 
 after(async function () {
@@ -285,59 +348,38 @@ after(async function () {
 	await new Promise((c, e) => rimraf(testDataPath, { maxBusyTries: 10 }, err => err ? e(err) : c(undefined)));
 });
 
+sqlMain(opts.web);
+
+if (screenshotsPath) {
+	afterEach(async function () {
+		if (this.currentTest!.state !== 'failed') {
+			return;
+		}
+		const app = this.app as ApplicationOptions;
+		const name = this.currentTest!.fullTitle().replace(/[^a-z0-9\-]/ig, '_');
+
+		await app.captureScreenshot(name);
+	});
+}
+
+if (!opts.web && opts['build'] && !opts['remote']) {
+	describe(`Stable vs Insiders Smoke Tests: This test MUST run before releasing`, () => {
+		// setupDataMigrationTests(opts, testDataPath); {{SQL CARBON EDIT}} Remove unused tests
+	});
+}
+
 describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
-	if (screenshotsPath) {
-		afterEach(async function () {
-			if (this.currentTest!.state !== 'failed') {
-				return;
-			}
-			const app = this.app as Application;
-			const name = this.currentTest!.fullTitle().replace(/[^a-z0-9\-]/ig, '_');
-
-			await app.captureScreenshot(name);
-		});
-	}
-
-	if (opts.log) {
-		beforeEach(async function () {
-			const app = this.app as Application;
-			const title = this.currentTest!.fullTitle();
-
-			app.logger.log('*** Test start:', title);
-		});
-	}
-
-	// if (!opts.web && opts['stable-build']) {
-	// 	describe(`Stable vs Insiders Smoke Tests: This test MUST run before releasing by providing the --stable-build command line argument`, () => {
-	// 		setupDataMigrationTests(opts['stable-build'], testDataPath);
-	// 	});
-	// }
-
-	// {{SQL CARBON EDIT}} - Remove the nested test suite to make sure the suite setup is also applied to beforeEach and afterEach
-	// describe(`VSCode Smoke Tests (${opts.web ? 'Web' : 'Electron'})`, () => {
-
-	before(async function () {
-		const app = new Application(this.defaultOptions);
-		await app!.start(opts.web ? false : undefined);
-		this.app = app;
-	});
-
-	after(async function () {
-		await this.app.stop();
-	});
-
-	sqlMain(opts.web);
-
-	/* if (!opts.web) { setupDataLossTests(); }
-	if (!opts.web) { setupDataPreferencesTests(); }
-	setupDataSearchTests();
-	setupDataNotebookTests();
-	setupDataLanguagesTests();
-	setupDataEditorTests();
-	setupDataStatusbarTests(!!opts.web);
-	setupDataExtensionTests();
-	if (!opts.web) { setupDataMultirootTests(); }
-	if (!opts.web) { setupDataLocalizationTests(); }
-	if (!opts.web) { setupLaunchTests(); }*/
-	// });
+	/* {{SQL CARBON EDIT}} Disable unused tests
+	if (!opts.web) { setupDataLossTests(opts); }
+	if (!opts.web) { setupDataPreferencesTests(opts); }
+	setupDataSearchTests(opts);
+	setupDataNotebookTests(opts);
+	setupDataLanguagesTests(opts);
+	setupDataEditorTests(opts);
+	setupDataStatusbarTests(opts);
+	setupDataExtensionTests(opts);
+	if (!opts.web) { setupDataMultirootTests(opts); }
+	if (!opts.web) { setupDataLocalizationTests(opts); }
+	if (!opts.web) { setupLaunchTests(); }
+	*/
 });

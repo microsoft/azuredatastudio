@@ -20,8 +20,8 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IMenuService } from 'vs/platform/actions/common/actions';
-import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export class DatabaseDashboardPage extends DashboardPage implements OnInit {
 	protected propertiesWidget: WidgetConfig = {
@@ -51,10 +51,10 @@ export class DatabaseDashboardPage extends DashboardPage implements OnInit {
 		@Inject(ICommandService) commandService: ICommandService,
 		@Inject(IContextKeyService) contextKeyService: IContextKeyService,
 		@Inject(IMenuService) menuService: IMenuService,
-		@Inject(IKeybindingService) keybindingService: IKeybindingService,
-		@Inject(IWorkbenchThemeService) themeService: IWorkbenchThemeService
+		@Inject(IWorkbenchThemeService) themeService: IWorkbenchThemeService,
+		@Inject(IInstantiationService) instantiationService: IInstantiationService
 	) {
-		super(dashboardService, el, _cd, notificationService, angularEventingService, logService, commandService, contextKeyService, menuService, keybindingService, themeService);
+		super(dashboardService, el, _cd, notificationService, angularEventingService, logService, commandService, contextKeyService, menuService, themeService, instantiationService);
 		this._register(dashboardService.onUpdatePage(() => {
 			this.refresh(true);
 			this._cd.detectChanges();

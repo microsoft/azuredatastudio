@@ -8,149 +8,150 @@ The original copyright notices and the licenses under which Microsoft received
 such components are set forth below. Microsoft reserves all rights not
 expressly granted herein, whether by implication, estoppel or otherwise.
 
-    angular: https://github.com/angular/angular
-    angular2-grid: https://github.com/BTMorton/angular2-grid
-    angular2-slickgrid: https://github.com/Microsoft/angular2-slickgrid
-    applicationinsights: https://github.com/Microsoft/ApplicationInsights-node.js
-    axios: https://github.com/axios/axios
-    bootstrap: https://github.com/twbs/bootstrap
-    chart.js: https://github.com/Timer/chartjs
-    chokidar: https://github.com/paulmillr/chokidar
-    comment-json: https://github.com/kaelzhang/node-comment-json
-    core-js: https://github.com/zloirock/core-js
-    decompress: https://github.com/kevva/decompress
-    emmet: https://github.com/emmetio/emmet
-    error-ex: https://github.com/Qix-/node-error-ex
-    escape-string-regexp: https://github.com/sindresorhus/escape-string-regexp
-    fast-plist: https://github.com/Microsoft/node-fast-plist
-    figures: https://github.com/sindresorhus/figures
-    find-remove: https://www.npmjs.com/package/find-remove
-    fs-extra: https://github.com/jprichardson/node-fs-extra
-    gc-signals: https://github.com/Microsoft/node-gc-signals
-    getmac: https://github.com/bevry/getmac
-    graceful-fs: https://github.com/isaacs/node-graceful-fs
-    gridstack: https://github.com/gridstack/gridstack.js
-    html-query-plan: https://github.com/JustinPealing/html-query-plan
-    http-proxy-agent: https://github.com/TooTallNate/node-https-proxy-agent
-    https-proxy-agent: https://github.com/TooTallNate/node-https-proxy-agent
-    iconv-lite: https://github.com/ashtuchkin/iconv-lite
-    jquery: https://github.com/jquery/jquery
-    jquery-ui: https://github.com/jquery/jquery-ui
-    jquery.event.drag: https://github.com/devongovett/jquery.event.drag
-    jschardet: https://github.com/aadsm/jschardet
-    jupyter-powershell: https://github.com/vors/jupyter-powershell
-    JupyterLab: https://github.com/jupyterlab/jupyterlab
-    keytar: https://github.com/atom/node-keytar
-    make-error: https://github.com/JsCommunity/make-error
-    mark.js: https://github.com/julmot/mark.js
-    minimist: https://github.com/substack/minimist
-    moment: https://github.com/moment/moment
-    native-keymap: https://github.com/Microsoft/node-native-keymap
-    native-watchdog: https://github.com/Microsoft/node-native-watchdog
-    ng2-charts: https://github.com/valor-software/ng2-charts
-    node-fetch: https://github.com/bitinn/node-fetch
-    node-pty: https://github.com/Tyriar/node-pty
-    nsfw: https://github.com/Axosoft/nsfw
-    optimist: https://github.com/substack/node-optimist
-    primeng: https://github.com/primefaces/primeng
-    process-nextick-args: https://github.com/calvinmetcalf/process-nextick-args
-    pty.js: https://github.com/chjj/pty.js
-    pyzmq: https://github.com/zeromq/pyzmq
-    qs: https://github.com/ljharb/qs
-    reflect-metadata: https://github.com/rbuckton/reflect-metadata
-    request: https://github.com/request/request
-    rxjs: https://github.com/ReactiveX/RxJS
-    semver: https://github.com/npm/node-semver
-    slickgrid: https://github.com/6pac/SlickGrid
-    sqltoolsservice: https://github.com/Microsoft/sqltoolsservice
-    svg.js: https://github.com/svgdotjs/svg.js
-    systemjs: https://github.com/systemjs/systemjs
-    temp-write: https://github.com/sindresorhus/temp-write
-    turndown: https://github.com/domchristie/turndown
-    turndown-plugin-gfm: https://github.com/domchristie/turndown-plugin-gfm
-    underscore: https://github.com/jashkenas/underscore
-    v8-profiler: https://github.com/node-inspector/v8-profiler
-    vscode: https://github.com/microsoft/vscode
-    vscode-debugprotocol: https://github.com/Microsoft/vscode-debugadapter-node
-    vscode-languageclient: https://github.com/Microsoft/vscode-languageserver-node
-    vscode-nls: https://github.com/Microsoft/vscode-nls
-    vscode-ripgrep: https://github.com/roblourens/vscode-ripgrep
-    vscode-textmate: https://github.com/Microsoft/vscode-textmate
-    winreg: https://github.com/fresc81/node-winreg
-    xmldom: https://github.com/xmldom/xmldom
-    xml-formatter: https://github.com/chrisbottin/xml-formatter
-    xterm: https://github.com/sourcelair/xterm.js
-    yargs: https://github.com/yargs/yargs
-    yauzl: https://github.com/thejoshwolfe/yauzl
-    zone.js: https://www.npmjs.com/package/zone
+angular: https://github.com/angular/angular
+angular2-grid: https://github.com/BTMorton/angular2-grid
+angular2-slickgrid: https://github.com/Microsoft/angular2-slickgrid
+applicationinsights: https://github.com/Microsoft/ApplicationInsights-node.js
+axios: https://github.com/axios/axios
+bootstrap: https://github.com/twbs/bootstrap
+chart.js: https://github.com/Timer/chartjs
+chokidar: https://github.com/paulmillr/chokidar
+comment-json: https://github.com/kaelzhang/node-comment-json
+core-js: https://github.com/zloirock/core-js
+decompress: https://github.com/kevva/decompress
+emmet: https://github.com/emmetio/emmet
+error-ex: https://github.com/Qix-/node-error-ex
+escape-string-regexp: https://github.com/sindresorhus/escape-string-regexp
+fast-plist: https://github.com/Microsoft/node-fast-plist
+figures: https://github.com/sindresorhus/figures
+find-remove: https://www.npmjs.com/package/find-remove
+fs-extra: https://github.com/jprichardson/node-fs-extra
+gc-signals: https://github.com/Microsoft/node-gc-signals
+getmac: https://github.com/bevry/getmac
+graceful-fs: https://github.com/isaacs/node-graceful-fs
+gridstack: https://github.com/gridstack/gridstack.js
+html-query-plan: https://github.com/JustinPealing/html-query-plan
+http-proxy-agent: https://github.com/TooTallNate/node-https-proxy-agent
+https-proxy-agent: https://github.com/TooTallNate/node-https-proxy-agent
+iconv-lite: https://github.com/ashtuchkin/iconv-lite
+jquery: https://github.com/jquery/jquery
+jquery-ui: https://github.com/jquery/jquery-ui
+jquery.event.drag: https://github.com/devongovett/jquery.event.drag
+jschardet: https://github.com/aadsm/jschardet
+jupyter-powershell: https://github.com/vors/jupyter-powershell
+JupyterLab: https://github.com/jupyterlab/jupyterlab
+keytar: https://github.com/atom/node-keytar
+make-error: https://github.com/JsCommunity/make-error
+mark.js: https://github.com/julmot/mark.js
+minimist: https://github.com/substack/minimist
+moment: https://github.com/moment/moment
+native-keymap: https://github.com/Microsoft/node-native-keymap
+native-watchdog: https://github.com/Microsoft/node-native-watchdog
+ng2-charts: https://github.com/valor-software/ng2-charts
+node-fetch: https://github.com/bitinn/node-fetch
+node-pty: https://github.com/Tyriar/node-pty
+nsfw: https://github.com/Axosoft/nsfw
+optimist: https://github.com/substack/node-optimist
+primeng: https://github.com/primefaces/primeng
+process-nextick-args: https://github.com/calvinmetcalf/process-nextick-args
+pty.js: https://github.com/chjj/pty.js
+pyzmq: https://github.com/zeromq/pyzmq
+qs: https://github.com/ljharb/qs
+reflect-metadata: https://github.com/rbuckton/reflect-metadata
+request: https://github.com/request/request
+rxjs: https://github.com/ReactiveX/RxJS
+semver: https://github.com/npm/node-semver
+slickgrid: https://github.com/6pac/SlickGrid
+sqltoolsservice: https://github.com/Microsoft/sqltoolsservice
+svg.js: https://github.com/svgdotjs/svg.js
+systemjs: https://github.com/systemjs/systemjs
+temp-write: https://github.com/sindresorhus/temp-write
+turndown: https://github.com/domchristie/turndown
+turndown-plugin-gfm: https://github.com/domchristie/turndown-plugin-gfm
+underscore: https://github.com/jashkenas/underscore
+v8-profiler: https://github.com/node-inspector/v8-profiler
+vscode: https://github.com/microsoft/vscode
+vscode-debugprotocol: https://github.com/Microsoft/vscode-debugadapter-node
+vscode-languageclient: https://github.com/Microsoft/vscode-languageserver-node
+vscode-nls: https://github.com/Microsoft/vscode-nls
+vscode-ripgrep: https://github.com/roblourens/vscode-ripgrep
+vscode-textmate: https://github.com/Microsoft/vscode-textmate
+winreg: https://github.com/fresc81/node-winreg
+xmldom: https://github.com/xmldom/xmldom
+xml-formatter: https://github.com/chrisbottin/xml-formatter
+xterm: https://github.com/sourcelair/xterm.js
+yargs: https://github.com/yargs/yargs
+yauzl: https://github.com/thejoshwolfe/yauzl
+zone.js: https://www.npmjs.com/package/zone
 
-    Microsoft PROSE SDK: https://microsoft.github.io/prose
+Microsoft PROSE SDK: https://microsoft.github.io/prose
 
-    atom/language-clojure version 0.22.7 (https://github.com/atom/language-clojure)
-    atom/language-coffee-script version 0.49.3 (https://github.com/atom/language-coffee-script)
-    atom/language-css version 0.44.4 (https://github.com/atom/language-css)
-    atom/language-java version 0.32.1 (https://github.com/atom/language-java)
-    atom/language-sass version 0.62.1 (https://github.com/atom/language-sass)
-    atom/language-shellscript version 0.26.0 (https://github.com/atom/language-shellscript)
-    atom/language-xml version 0.35.2 (https://github.com/atom/language-xml)
-    better-go-syntax version 1.0.0 (https://github.com/jeff-hykin/better-go-syntax/ )
-    Colorsublime-Themes version 0.1.0 (https://github.com/Colorsublime/Colorsublime-Themes)
-    daaain/Handlebars version 1.8.0 (https://github.com/daaain/Handlebars)
-    dart-lang/dart-syntax-highlight (https://github.com/dart-lang/dart-syntax-highlight)
-    davidrios/pug-tmbundle (https://github.com/davidrios/pug-tmbundle)
-    definitelytyped (https://github.com/DefinitelyTyped/DefinitelyTyped)
-    demyte/language-cshtml version 0.3.0 (https://github.com/demyte/language-cshtml)
-    Document Object Model version 4.0.0 (https://www.w3.org/DOM/)
-    dotnet/csharp-tmLanguage version 0.1.0 (https://github.com/dotnet/csharp-tmLanguage)
-    expand-abbreviation version 0.5.8 (https://github.com/emmetio/expand-abbreviation)
-    fadeevab/make.tmbundle (https://github.com/fadeevab/make.tmbundle)
-    freebroccolo/atom-language-swift (https://github.com/freebroccolo/atom-language-swift)
-    HTML 5.1 W3C Working Draft version 08 October 2015 (http://www.w3.org/TR/2015/WD-html51-20151008/)
-    Ikuyadeu/vscode-R version 1.3.0 (https://github.com/Ikuyadeu/vscode-R)
-    insane version 2.6.2 (https://github.com/bevacqua/insane)
-    Ionic documentation version 1.2.4 (https://github.com/ionic-team/ionic-site)
-    ionide/ionide-fsgrammar (https://github.com/ionide/ionide-fsgrammar)
-    jeff-hykin/cpp-textmate-grammar version 1.12.11 (https://github.com/jeff-hykin/cpp-textmate-grammar)
-    jeff-hykin/cpp-textmate-grammar version 1.15.5 (https://github.com/jeff-hykin/cpp-textmate-grammar)
-    js-beautify version 1.6.8 (https://github.com/beautify-web/js-beautify)
-    JuliaEditorSupport/atom-language-julia version 0.21.0 (https://github.com/JuliaEditorSupport/atom-language-julia)
-    Jxck/assert version 1.0.0 (https://github.com/Jxck/assert)
-    language-docker (https://github.com/moby/moby)
-    language-less version 0.34.2 (https://github.com/atom/language-less)
-    language-php version 0.46.2 (https://github.com/atom/language-php)
-    MagicStack/MagicPython version 1.1.1 (https://github.com/MagicStack/MagicPython)
-    marked version 1.1.0 (https://github.com/markedjs/marked)
-    mdn-data version 1.1.12 (https://github.com/mdn/data)
-    microsoft/TypeScript-TmLanguage version 0.0.1 (https://github.com/microsoft/TypeScript-TmLanguage)
-    microsoft/vscode-JSON.tmLanguage (https://github.com/microsoft/vscode-JSON.tmLanguage)
-    microsoft/vscode-markdown-tm-grammar version 1.0.0 (https://github.com/microsoft/vscode-markdown-tm-grammar)
-    microsoft/vscode-mssql version 1.9.0 (https://github.com/microsoft/vscode-mssql)
-    mmims/language-batchfile version 0.7.6 (https://github.com/mmims/language-batchfile)
-    NVIDIA/cuda-cpp-grammar (https://github.com/NVIDIA/cuda-cpp-grammar)
-    PowerShell/EditorSyntax version 1.0.0 (https://github.com/PowerShell/EditorSyntax)
-    rust-syntax version 0.4.3 (https://github.com/dustypomerleau/rust-syntax)
-    seti-ui version 0.1.0 (https://github.com/jesseweed/seti-ui)
-    shaders-tmLanguage version 0.1.0 (https://github.com/tgjones/shaders-tmLanguage)
-    textmate/asp.vb.net.tmbundle (https://github.com/textmate/asp.vb.net.tmbundle)
-    textmate/c.tmbundle (https://github.com/textmate/c.tmbundle)
-    textmate/diff.tmbundle (https://github.com/textmate/diff.tmbundle)
-    textmate/git.tmbundle (https://github.com/textmate/git.tmbundle)
-    textmate/groovy.tmbundle (https://github.com/textmate/groovy.tmbundle)
-    textmate/html.tmbundle (https://github.com/textmate/html.tmbundle)
-    textmate/ini.tmbundle (https://github.com/textmate/ini.tmbundle)
-    textmate/javascript.tmbundle (https://github.com/textmate/javascript.tmbundle)
-    textmate/lua.tmbundle (https://github.com/textmate/lua.tmbundle)
-    textmate/markdown.tmbundle (https://github.com/textmate/markdown.tmbundle)
-    textmate/perl.tmbundle (https://github.com/textmate/perl.tmbundle)
-    textmate/ruby.tmbundle (https://github.com/textmate/ruby.tmbundle)
-    textmate/yaml.tmbundle (https://github.com/textmate/yaml.tmbundle)
-    TypeScript-TmLanguage version 0.1.8 (https://github.com/microsoft/TypeScript-TmLanguage)
-    TypeScript-TmLanguage version 1.0.0 (https://github.com/microsoft/TypeScript-TmLanguage)
-    Unicode version 12.0.0 (https://home.unicode.org/)
-    vscode-codicons version 0.0.14 (https://github.com/microsoft/vscode-codicons)
-    vscode-logfile-highlighter version 2.11.0 (https://github.com/emilast/vscode-logfile-highlighter)
-    vscode-swift version 0.0.1 (https://github.com/owensd/vscode-swift)
-    Web Background Synchronization (https://github.com/WICG/background-sync)
+1.	atom/language-clojure version 0.22.7 (https://github.com/atom/language-clojure)
+2.	atom/language-coffee-script version 0.49.3 (https://github.com/atom/language-coffee-script)
+3.	atom/language-css version 0.44.6 (https://github.com/atom/language-css)
+4.	atom/language-java version 0.32.1 (https://github.com/atom/language-java)
+5.	atom/language-sass version 0.62.1 (https://github.com/atom/language-sass)
+6.	atom/language-shellscript version 0.26.0 (https://github.com/atom/language-shellscript)
+7.	atom/language-xml version 0.35.2 (https://github.com/atom/language-xml)
+8.	better-go-syntax version 1.0.0 (https://github.com/jeff-hykin/better-go-syntax/ )
+9.	Colorsublime-Themes version 0.1.0 (https://github.com/Colorsublime/Colorsublime-Themes)
+10.	daaain/Handlebars version 1.8.0 (https://github.com/daaain/Handlebars)
+11.	dart-lang/dart-syntax-highlight (https://github.com/dart-lang/dart-syntax-highlight)
+12.	davidrios/pug-tmbundle (https://github.com/davidrios/pug-tmbundle)
+13.	definitelytyped (https://github.com/DefinitelyTyped/DefinitelyTyped)
+14.	demyte/language-cshtml version 0.3.0 (https://github.com/demyte/language-cshtml)
+15.	Document Object Model version 4.0.0 (https://www.w3.org/DOM/)
+16.	dotnet/csharp-tmLanguage version 0.1.0 (https://github.com/dotnet/csharp-tmLanguage)
+17.	expand-abbreviation version 0.5.8 (https://github.com/emmetio/expand-abbreviation)
+18.	fadeevab/make.tmbundle (https://github.com/fadeevab/make.tmbundle)
+19.	freebroccolo/atom-language-swift (https://github.com/freebroccolo/atom-language-swift)
+20.	HTML 5.1 W3C Working Draft version 08 October 2015 (http://www.w3.org/TR/2015/WD-html51-20151008/)
+21.	Ikuyadeu/vscode-R version 2.0.0 (https://github.com/Ikuyadeu/vscode-R)
+22.	insane version 2.6.2 (https://github.com/bevacqua/insane)
+23.	Ionic documentation version 1.2.4 (https://github.com/ionic-team/ionic-site)
+24.	ionide/ionide-fsgrammar (https://github.com/ionide/ionide-fsgrammar)
+25.	James-Yu/LaTeX-Workshop version 8.19.1 (https://github.com/James-Yu/LaTeX-Workshop)
+26.	jeff-hykin/cpp-textmate-grammar version 1.12.11 (https://github.com/jeff-hykin/cpp-textmate-grammar)
+27.	jeff-hykin/cpp-textmate-grammar version 1.15.5 (https://github.com/jeff-hykin/cpp-textmate-grammar)
+28.	js-beautify version 1.6.8 (https://github.com/beautify-web/js-beautify)
+29.	JuliaEditorSupport/atom-language-julia version 0.21.1 (https://github.com/JuliaEditorSupport/atom-language-julia)
+30.	Jxck/assert version 1.0.0 (https://github.com/Jxck/assert)
+31.	language-docker (https://github.com/moby/moby)
+32.	language-less version 0.34.2 (https://github.com/atom/language-less)
+33.	language-php version 0.46.2 (https://github.com/atom/language-php)
+34.	MagicStack/MagicPython version 1.1.1 (https://github.com/MagicStack/MagicPython)
+35.	marked version 1.1.0 (https://github.com/markedjs/marked)
+36.	mdn-data version 1.1.12 (https://github.com/mdn/data)
+37.	microsoft/TypeScript-TmLanguage version 0.0.1 (https://github.com/microsoft/TypeScript-TmLanguage)
+38.	microsoft/vscode-JSON.tmLanguage (https://github.com/microsoft/vscode-JSON.tmLanguage)
+39.	microsoft/vscode-markdown-tm-grammar version 1.0.0 (https://github.com/microsoft/vscode-markdown-tm-grammar)
+40.	microsoft/vscode-mssql version 1.9.0 (https://github.com/microsoft/vscode-mssql)
+41.	mmims/language-batchfile version 0.7.6 (https://github.com/mmims/language-batchfile)
+42.	NVIDIA/cuda-cpp-grammar (https://github.com/NVIDIA/cuda-cpp-grammar)
+43.	PowerShell/EditorSyntax version 1.0.0 (https://github.com/PowerShell/EditorSyntax)
+44.	rust-syntax version 0.5.0 (https://github.com/dustypomerleau/rust-syntax)
+45.	seti-ui version 0.1.0 (https://github.com/jesseweed/seti-ui)
+46.	shaders-tmLanguage version 0.1.0 (https://github.com/tgjones/shaders-tmLanguage)
+47.	textmate/asp.vb.net.tmbundle (https://github.com/textmate/asp.vb.net.tmbundle)
+48.	textmate/c.tmbundle (https://github.com/textmate/c.tmbundle)
+49.	textmate/diff.tmbundle (https://github.com/textmate/diff.tmbundle)
+50.	textmate/git.tmbundle (https://github.com/textmate/git.tmbundle)
+51.	textmate/groovy.tmbundle (https://github.com/textmate/groovy.tmbundle)
+52.	textmate/html.tmbundle (https://github.com/textmate/html.tmbundle)
+53.	textmate/ini.tmbundle (https://github.com/textmate/ini.tmbundle)
+54.	textmate/javascript.tmbundle (https://github.com/textmate/javascript.tmbundle)
+55.	textmate/lua.tmbundle (https://github.com/textmate/lua.tmbundle)
+56.	textmate/markdown.tmbundle (https://github.com/textmate/markdown.tmbundle)
+57.	textmate/perl.tmbundle (https://github.com/textmate/perl.tmbundle)
+58.	textmate/ruby.tmbundle (https://github.com/textmate/ruby.tmbundle)
+59.	textmate/yaml.tmbundle (https://github.com/textmate/yaml.tmbundle)
+60.	TypeScript-TmLanguage version 0.1.8 (https://github.com/microsoft/TypeScript-TmLanguage)
+61.	TypeScript-TmLanguage version 1.0.0 (https://github.com/microsoft/TypeScript-TmLanguage)
+62.	Unicode version 12.0.0 (https://home.unicode.org/)
+63.	vscode-codicons version 0.0.14 (https://github.com/microsoft/vscode-codicons)
+64.	vscode-logfile-highlighter version 2.11.0 (https://github.com/emilast/vscode-logfile-highlighter)
+65.	vscode-swift version 0.0.1 (https://github.com/owensd/vscode-swift)
+66.	Web Background Synchronization (https://github.com/WICG/background-sync)
 
 
 %% atom/language-clojure NOTICES AND INFORMATION BEGIN HERE
@@ -1465,7 +1466,7 @@ END OF make-error NOTICES AND INFORMATION
 =========================================
 The MIT License (MIT)
 
-Copyright (c) 2014–2019 Julian Kühnel
+Copyright (c) 2021 REditorSupport
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

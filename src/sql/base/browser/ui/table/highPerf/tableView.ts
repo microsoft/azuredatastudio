@@ -10,7 +10,6 @@ import { ScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElemen
 import { Event } from 'vs/base/common/event';
 import { ScrollEvent, ScrollbarVisibility, INewScrollDimensions } from 'vs/base/common/scrollable';
 import * as DOM from 'vs/base/browser/dom';
-import { domEvent } from 'vs/base/browser/event';
 import { CancelablePromise, createCancelablePromise } from 'vs/base/common/async';
 import { isWindows } from 'vs/base/common/platform';
 import * as browser from 'vs/base/browser/browser';
@@ -22,6 +21,7 @@ import { Sash, Orientation, ISashEvent as IBaseSashEvent } from 'vs/base/browser
 import { CellCache, ICell } from 'sql/base/browser/ui/table/highPerf/cellCache';
 import { ITableRenderer, ITableDataSource, ITableMouseEvent, IStaticTableRenderer, ITableColumn } from 'sql/base/browser/ui/table/highPerf/table';
 import { GridPosition } from 'sql/base/common/gridPosition';
+import { DomEmitter, DOMEventMap, EventHandler } from 'vs/base/browser/event';
 
 export interface IAriaSetProvider<T> {
 	getSetSize(element: T, index: number, listLength: number): number;
@@ -212,8 +212,9 @@ export class TableView<T> implements IDisposable {
 
 		// Prevent the monaco-scrollable-element from scrolling
 		// https://github.com/Microsoft/vscode/issues/44181
-		domEvent(this.scrollableElement.getDomNode(), 'scroll')
-			(e => (e.target as HTMLElement).scrollTop = 0, null, this.disposables);
+		const scrollEmitter = new DomEmitter(this.scrollableElement.getDomNode(), 'scroll');
+		this.disposables.push(scrollEmitter);
+		scrollEmitter.event(e => (e.target as HTMLElement).scrollTop = 0, null, this.disposables);
 
 		this.updateScrollWidth();
 		this.layout();
@@ -635,15 +636,37 @@ export class TableView<T> implements IDisposable {
 		delete this.visibleRows[index];
 	}
 
-	@memoize get onMouseClick(): Event<ITableMouseEvent<T>> { return Event.map(domEvent(this.domNode, 'click'), e => this.toMouseEvent(e)); }
-	@memoize get onMouseDblClick(): Event<ITableMouseEvent<T>> { return Event.map(domEvent(this.domNode, 'dblclick'), e => this.toMouseEvent(e)); }
-	@memoize get onMouseMiddleClick(): Event<ITableMouseEvent<T>> { return Event.filter(Event.map(domEvent(this.domNode, 'auxclick'), e => this.toMouseEvent(e as MouseEvent)), e => e.browserEvent.button === 1); }
-	@memoize get onMouseUp(): Event<ITableMouseEvent<T>> { return Event.map(domEvent(this.domNode, 'mouseup'), e => this.toMouseEvent(e)); }
-	@memoize get onMouseDown(): Event<ITableMouseEvent<T>> { return Event.map(domEvent(this.domNode, 'mousedown'), e => this.toMouseEvent(e)); }
-	@memoize get onMouseOver(): Event<ITableMouseEvent<T>> { return Event.map(domEvent(this.domNode, 'mouseover'), e => this.toMouseEvent(e)); }
-	@memoize get onMouseMove(): Event<ITableMouseEvent<T>> { return Event.map(domEvent(this.domNode, 'mousemove'), e => this.toMouseEvent(e)); }
-	@memoize get onMouseOut(): Event<ITableMouseEvent<T>> { return Event.map(domEvent(this.domNode, 'mouseout'), e => this.toMouseEvent(e)); }
-	@memoize get onContextMenu(): Event<ITableMouseEvent<T>> { return Event.map(domEvent(this.domNode, 'contextmenu'), e => this.toMouseEvent(e)); }
+	@memoize get onMouseClick(): Event<ITableMouseEvent<T>> { return Event.map(this.createAndRegisterDomEmitter(this.domNode, 'click').event, e => this.toMouseEvent(e)); }
+	@memoize get onMouseDblClick(): Event<ITableMouseEvent<T>> {
+		return Event.map(this.createAndRegisterDomEmitter(this.domNode, 'dblclick').event, e => this.toMouseEvent(e));
+	}
+	@memoize get onMouseMiddleClick(): Event<ITableMouseEvent<T>> {
+		return Event.filter(Event.map(this.createAndRegisterDomEmitter(this.domNode, 'auxclick').event, e => this.toMouseEvent(e as MouseEvent)), e => e.browserEvent.button === 1);
+	}
+	@memoize get onMouseUp(): Event<ITableMouseEvent<T>> {
+		return Event.map(this.createAndRegisterDomEmitter(this.domNode, 'mouseup').event, e => this.toMouseEvent(e));
+	}
+	@memoize get onMouseDown(): Event<ITableMouseEvent<T>> {
+		return Event.map(this.createAndRegisterDomEmitter(this.domNode, 'mousedown').event, e => this.toMouseEvent(e));
+	}
+	@memoize get onMouseOver(): Event<ITableMouseEvent<T>> {
+		return Event.map(this.createAndRegisterDomEmitter(this.domNode, 'mouseover').event, e => this.toMouseEvent(e));
+	}
+	@memoize get onMouseMove(): Event<ITableMouseEvent<T>> {
+		return Event.map(this.createAndRegisterDomEmitter(this.domNode, 'mousemove').event, e => this.toMouseEvent(e));
+	}
+	@memoize get onMouseOut(): Event<ITableMouseEvent<T>> {
+		return Event.map(this.createAndRegisterDomEmitter(this.domNode, 'mouseout').event, e => this.toMouseEvent(e));
+	}
+	@memoize get onContextMenu(): Event<ITableMouseEvent<T>> {
+		return Event.map(this.createAndRegisterDomEmitter(this.domNode, 'contextmenu').event, e => this.toMouseEvent(e));
+	}
+
+	private createAndRegisterDomEmitter<K extends keyof DOMEventMap>(eventHandler: EventHandler, type: K): DomEmitter<K> {
+		const emitter = new DomEmitter(eventHandler, type);
+		this.disposables.push(emitter);
+		return emitter;
+	}
 
 	public toMouseEvent(browserEvent: MouseEvent): ITableMouseEvent<T> {
 		const index = this.getItemIndexFromEventTarget(browserEvent.target || null);

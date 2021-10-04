@@ -3,16 +3,16 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { Registry } from 'vs/platform/registry/common/platform';
-import { EditorDescriptor, IEditorRegistry } from 'vs/workbench/browser/editor';
+import { EditorPaneDescriptor, IEditorPaneRegistry } from 'vs/workbench/browser/editor';
 
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { localize } from 'vs/nls';
-import { IEditorInputFactoryRegistry, ActiveEditorContext, IEditorInput, EditorExtensions } from 'vs/workbench/common/editor';
+import { IEditorFactoryRegistry, ActiveEditorContext, IEditorInput, EditorExtensions } from 'vs/workbench/common/editor';
 import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 import { UntitledNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/untitledNotebookInput';
 import { FileNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/fileNotebookInput';
-import { FileNoteBookEditorInputSerializer, NotebookEditorInputAssociation, UntitledNotebookEditorInputSerializer } from 'sql/workbench/contrib/notebook/browser/models/notebookInputFactory';
+import { FileNoteBookEditorSerializer, NotebookEditorLanguageAssociation, UntitledNotebookEditorSerializer } from 'sql/workbench/contrib/notebook/browser/models/notebookEditorFactory';
 import { IWorkbenchActionRegistry, Extensions as WorkbenchActionsExtensions } from 'vs/workbench/common/actions';
 import { SyncActionDescriptor, registerAction2, MenuRegistry, MenuId, Action2 } from 'vs/platform/actions/common/actions';
 
@@ -56,25 +56,27 @@ import { INotebookModel } from 'sql/workbench/services/notebook/browser/models/m
 import { IExecuteManager } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookExplorerViewletViewsContribution } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
-import { ContributedEditorPriority, IEditorOverrideService } from 'vs/workbench/services/editor/common/editorOverrideService';
+import { IEditorResolverService, RegisteredEditorPriority } from 'vs/workbench/services/editor/common/editorResolverService';
 import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/fileEditorInput';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
 import { useNewMarkdownRendererKey } from 'sql/workbench/contrib/notebook/common/notebookCommon';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { DiffNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/diffNotebookInput';
 import { JUPYTER_PROVIDER_ID } from 'sql/workbench/common/constants';
 
-Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories)
-	.registerEditorInputSerializer(FileNotebookInput.ID, FileNoteBookEditorInputSerializer);
+Registry.as<IEditorFactoryRegistry>(EditorExtensions.EditorFactory)
+	.registerEditorSerializer(FileNotebookInput.ID, FileNoteBookEditorSerializer);
 
-Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories)
-	.registerEditorInputSerializer(UntitledNotebookInput.ID, UntitledNotebookEditorInputSerializer);
+Registry.as<IEditorFactoryRegistry>(EditorExtensions.EditorFactory)
+	.registerEditorSerializer(UntitledNotebookInput.ID, UntitledNotebookEditorSerializer);
 
 Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations)
-	.registerLanguageAssociation(NotebookEditorInputAssociation.languages, NotebookEditorInputAssociation);
+	.registerLanguageAssociation(NotebookEditorLanguageAssociation.languages, NotebookEditorLanguageAssociation);
 
-Registry.as<IEditorRegistry>(EditorExtensions.Editors)
-	.registerEditor(EditorDescriptor.create(NotebookEditor, NotebookEditor.ID, NotebookEditor.LABEL), [new SyncDescriptor(UntitledNotebookInput), new SyncDescriptor(FileNotebookInput)]);
+Registry.as<IEditorPaneRegistry>(EditorExtensions.EditorPane)
+	.registerEditorPane(EditorPaneDescriptor.create(NotebookEditor, NotebookEditor.ID, NotebookEditor.LABEL), [new SyncDescriptor(UntitledNotebookInput), new SyncDescriptor(FileNotebookInput)]);
 
 Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
 	.registerWorkbenchContribution(NotebookThemingContribution, LifecyclePhase.Restored);
@@ -695,8 +697,10 @@ export class NotebookEditorOverrideContribution extends Disposable implements IW
 	constructor(
 		@ILogService private _logService: ILogService,
 		@IEditorService private _editorService: IEditorService,
-		@IEditorOverrideService private _editorOverrideService: IEditorOverrideService,
-		@IModeService private _modeService: IModeService
+		@IEditorResolverService private _editorResolverService: IEditorResolverService,
+		@IModeService private _modeService: IModeService,
+		@IConfigurationService private _configurationService: IConfigurationService,
+		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
 		super();
 		this.registerEditorOverrides();
@@ -710,7 +714,7 @@ export class NotebookEditorOverrideContribution extends Disposable implements IW
 	private registerEditorOverrides(): void {
 		this._registeredOverrides.clear();
 		// List of language IDs to associate the query editor for. These are case sensitive.
-		NotebookEditorInputAssociation.languages.map(lang => {
+		NotebookEditorLanguageAssociation.languages.map(lang => {
 			const langExtensions = this._modeService.getExtensions(lang);
 			if (langExtensions.length === 0) {
 				return;
@@ -718,27 +722,33 @@ export class NotebookEditorOverrideContribution extends Disposable implements IW
 			// Create the selector from the list of all the language extensions we want to associate with the
 			// notebook editor (filtering out any languages which didn't have any extensions registered yet)
 			const selector = `*{${langExtensions.join(',')}}`;
-			this._registeredOverrides.add(this._editorOverrideService.registerEditor(
+			this._registeredOverrides.add(this._editorResolverService.registerEditor(
 				selector,
 				{
 					id: NotebookEditor.ID,
 					label: NotebookEditor.LABEL,
-					describes: (currentEditor) => currentEditor instanceof FileNotebookInput,
-					priority: ContributedEditorPriority.builtin
+					priority: RegisteredEditorPriority.builtin
 				},
 				{},
-				(resource, options, group) => {
-					const fileInput = this._editorService.createEditorInput({
-						resource: resource
-					}) as FileEditorInput;
+				(editorInput, group) => {
+					const fileInput = this._editorService.createEditorInput(editorInput) as FileEditorInput;
 					// Try to convert the input, falling back to just a plain file input if we're unable to
 					const newInput = this.tryConvertInput(fileInput, lang) ?? fileInput;
-					return { editor: newInput, options: options, group: group };
+					return { editor: newInput, options: editorInput.options, group: group };
 				},
-				(diffEditorInput, options, group) => {
-					// Try to convert the input, falling back to the original input if we're unable to
-					const newInput = this.tryConvertInput(diffEditorInput, lang) ?? diffEditorInput;
-					return { editor: newInput, options: options, group: group };
+				undefined,
+				(diffEditorInput, group) => {
+					// todo@chgagnon, consolidate this logic and make sure it works as intended
+					let newInput: IEditorInput | undefined = undefined;
+					if (diffEditorInput instanceof DiffEditorInput) {
+						if (this._configurationService.getValue('notebook.showRenderedNotebookInDiffEditor') === true) {
+							newInput = this._instantiationService.createInstance(DiffNotebookInput, diffEditorInput.getName(), diffEditorInput);
+						}
+					}
+					if (!newInput) {
+						newInput = this._editorService.createEditorInput(diffEditorInput);
+					}
+					return { editor: newInput, options: diffEditorInput.options, group: group };
 				}
 			));
 		});
@@ -748,7 +758,7 @@ export class NotebookEditorOverrideContribution extends Disposable implements IW
 		const langAssociation = languageAssociationRegistry.getAssociationForLanguage(lang);
 		const notebookEditorInput = langAssociation?.syncConvertInput?.(input);
 		if (!notebookEditorInput) {
-			this._logService.warn('Unable to create input for overriding editor ', input instanceof DiffEditorInput ? `${input.primary.resource.toString()} <-> ${input.secondary.resource.toString()}` : input.resource.toString());
+			this._logService.warn('Unable to create input for resolving editor ', input instanceof DiffEditorInput ? `${input.primary.resource.toString()} <-> ${input.secondary.resource.toString()}` : input.resource.toString());
 			return undefined;
 		}
 		return notebookEditorInput;
