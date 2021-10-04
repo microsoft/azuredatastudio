@@ -9,6 +9,7 @@ import { DataService } from 'sql/workbench/services/query/common/dataService';
 import { localize } from 'vs/nls';
 import { IAction, Action } from 'vs/base/common/actions';
 import { SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export const GRID_SAVECSV_ID = 'grid.saveAsCsv';
 export const GRID_SAVEJSON_ID = 'grid.saveAsJson';
@@ -30,6 +31,7 @@ export class GridActionProvider {
 
 	constructor(
 		protected _dataService: DataService,
+		protected _configurationService: IConfigurationService,
 		protected _selectAllCallback: (index: number) => void
 	) {
 
@@ -45,8 +47,8 @@ export class GridActionProvider {
 		actions.push(new SaveResultAction(SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveFormat.EXCEL, this._dataService));
 		actions.push(new SaveResultAction(SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveFormat.XML, this._dataService));
 		actions.push(new SelectAllGridAction(SelectAllGridAction.ID, SelectAllGridAction.LABEL, this._selectAllCallback));
-		actions.push(new CopyResultAction(CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, false, this._dataService));
-		actions.push(new CopyResultAction(CopyResultAction.COPYWITHHEADERS_ID, CopyResultAction.COPYWITHHEADERS_LABEL, true, this._dataService));
+		actions.push(new CopyResultAction(CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, false, this._dataService, this._configurationService));
+		actions.push(new CopyResultAction(CopyResultAction.COPYWITHHEADERS_ID, CopyResultAction.COPYWITHHEADERS_LABEL, true, this._dataService, this._configurationService));
 
 		return actions;
 	}
@@ -95,13 +97,15 @@ class CopyResultAction extends Action {
 		id: string,
 		label: string,
 		private copyHeader: boolean,
-		private dataService: DataService
+		private dataService: DataService,
+		private configurationService: IConfigurationService
 	) {
 		super(id, label);
 	}
 
 	public override async run(gridInfo: IGridInfo): Promise<void> {
-		this.dataService.copyResults(gridInfo.selection, gridInfo.batchIndex, gridInfo.resultSetNumber, this.copyHeader);
+		const includeHeader = this.configurationService.getValue<boolean>('queryEditor.results.copyIncludeHeaders') || this.copyHeader;
+		this.dataService.copyResults(gridInfo.selection, gridInfo.batchIndex, gridInfo.resultSetNumber, includeHeader);
 	}
 }
 

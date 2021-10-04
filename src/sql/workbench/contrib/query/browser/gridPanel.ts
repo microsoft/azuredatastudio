@@ -358,8 +358,6 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 
 	public isOnlyTable: boolean = true;
 
-	private copyHeaders: boolean = false;
-
 	// this handles if the row count is small, like 4-5 rows
 	protected get maxSize(): number {
 		return ((this.resultSet.rowCount) * this.rowHeight) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT;
@@ -390,7 +388,6 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		super();
 
 		this.options = { ...defaultGridTableOptions, ...options };
-		this.copyHeaders = this.configurationService.getValue<boolean>('queryEditor.results.copyIncludeHeaders');
 		let config = this.configurationService.getValue<{ rowHeight: number }>('resultsGrid');
 		this.rowHeight = config && config.rowHeight ? config.rowHeight : ROW_HEIGHT;
 		this.state = state;
@@ -481,7 +478,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.rowNumberColumn = new RowNumberColumn({ numberOfRows: this.resultSet.rowCount });
 		let copyHandler = new CopyKeybind<T>();
 		copyHandler.onCopy(e => {
-			new CopyResultAction(CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, this.copyHeaders).run(this.generateContext());
+			new CopyResultAction(CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, this.configurationService, false).run(this.generateContext());
 		});
 		this.columns.unshift(this.rowNumberColumn.getColumnDefinition());
 		let tableOptions: Slick.GridOptions<T> = {
@@ -815,8 +812,8 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 					actions.push(new Separator());
 				}
 				actions.push(
-					new CopyResultAction(CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, this.copyHeaders),
-					new CopyResultAction(CopyResultAction.COPYWITHHEADERS_ID, CopyResultAction.COPYWITHHEADERS_LABEL, true)
+					new CopyResultAction(CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, this.configurationService, false),
+					new CopyResultAction(CopyResultAction.COPYWITHHEADERS_ID, CopyResultAction.COPYWITHHEADERS_LABEL, this.configurationService, true)
 				);
 
 				if (this.state.canBeMaximized) {

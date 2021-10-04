@@ -106,7 +106,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		this.nativeElement.className = 'editDataGridPanel';
 		this.nativeElement.classList.add('slickgridContainer');
 		this.dataService = dataService;
-		this.actionProvider = this.instantiationService.createInstance(EditDataGridActionProvider, this.dataService, this.onGridSelectAll(), this.onDeleteRow(), this.onRevertRow());
+		this.actionProvider = this.instantiationService.createInstance(EditDataGridActionProvider, this.dataService, this.configurationService, this.onGridSelectAll(), this.onDeleteRow(), this.onRevertRow());
 		onRestoreViewState(() => this.restoreViewState());
 		onSaveViewState(() => this.saveViewState());
 		this.onInit();
