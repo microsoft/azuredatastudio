@@ -915,7 +915,7 @@
             "pages": [
               {
                 "title": "%arc.sql.wizard.page1.title%",
-                "labelWidth": "175px",
+                "labelWidth": "190px",
                 "inputWidth": "280px",
                 "sections": [
                   {
