@@ -42,7 +42,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import * as interfaces from 'sql/platform/connection/common/interfaces';
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 import { Memento, MementoObject } from 'vs/workbench/common/memento';
-import { INotificationService } from 'vs/platform/notification/common/notification';
+import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { entries } from 'sql/base/common/collections';
 import { values } from 'vs/base/common/collections';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
@@ -72,6 +72,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	private _mementoObj: MementoObject;
 	private _connectionStore: ConnectionStore;
 	private _connectionStatusManager: ConnectionStatusManager;
+	private _connectionsGotUnsupportedVersionWarning: string[] = [];
 
 	private static readonly CONNECTION_MEMENTO = 'ConnectionManagement';
 	private static readonly _azureResources: AzureResource[] =
@@ -1044,6 +1045,23 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 			if (this._connectionStatusManager.isDefaultTypeUri(info.ownerUri)) {
 				this._connectionGlobalStatus.setStatusToConnected(info.connectionSummary);
+			}
+
+			const connectionUniqueId = connection.connectionProfile.getConnectionInfoId();
+			if (info.isSupportedVersion === false
+				&& this._connectionsGotUnsupportedVersionWarning.indexOf(connectionUniqueId) === -1
+				&& this._configurationService.getValue<boolean>('connection.showUnsupportedServerVersionWarning')) {
+				const warningMessage = nls.localize('connection.unsupportedServerVersionWarning', "The server version is not supported by Azure Data Studio, you may still connect to it but some features in Azure Data Studio might not work as expected.");
+				this._connectionsGotUnsupportedVersionWarning.push(connectionUniqueId);
+				this._notificationService.prompt(Severity.Warning,
+					`${warningMessage} ${info.unsupportedVersionMessage ?? ''}`, [
+					{
+						label: nls.localize('connection.neverShowUnsupportedVersionWarning', "Don't show again"),
+						run: () => {
+							this._configurationService.updateValue('connection.showUnsupportedServerVersionWarning', false).catch(e => errors.onUnexpectedError(e));
+						}
+					}
+				]);
 			}
 		} else {
 			connection.connectHandler(false, info.errorMessage, info.errorNumber, info.messages);

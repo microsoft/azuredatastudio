@@ -5,7 +5,7 @@
 	"dataFolderName": ".azuredatastudio",
 	"win32MutexName": "azuredatastudio",
 	"licenseName": "Microsoft EULA",
-	"licenseUrl": "https://github.com/Microsoft/azuredatastudio/blob/main/LICENSE.txt",
+	"licenseUrl": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/LICENSE.txt",
 	"win32DirName": "Azure Data Studio",
 	"win32NameVersion": "Azure Data Studio",
 	"win32RegValueName": "azuredatastudio",
