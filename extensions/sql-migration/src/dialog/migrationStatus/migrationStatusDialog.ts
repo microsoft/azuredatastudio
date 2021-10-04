@@ -464,7 +464,7 @@ export class MigrationStatusDialog {
 			}).component();
 			warningContentContainer.addItem(messageTextComponent);
 
-			view.initializeModel(warningContentContainer);
+			await view.initializeModel(warningContentContainer);
 		});
 
 		dialog.content = [tab];
