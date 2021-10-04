@@ -79,7 +79,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 	// 3. ask for object name for the binding
 	const objectName = await vscode.window.showInputBox({
 		prompt: selectedBinding.type === BindingType.input ? constants.sqlTableOrViewToQuery : constants.sqlTableToUpsert,
-		value: constants.placeHolderObject,
+		placeHolder: constants.placeHolderObject,
 		ignoreFocusOut: true
 	});
 
