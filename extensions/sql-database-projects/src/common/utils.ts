@@ -12,10 +12,11 @@ import * as glob from 'fast-glob';
 import * as dataworkspace from 'dataworkspace';
 import * as mssql from '../../../mssql';
 import * as vscodeMssql from 'vscode-mssql';
-import { promises as fs } from 'fs';
-import { Project } from '../models/project';
 import * as childProcess from 'child_process';
 import * as fse from 'fs-extra';
+import * as which from 'which';
+import { promises as fs } from 'fs';
+import { Project } from '../models/project';
 
 export interface ValidationResult {
 	errorMessage: string;
@@ -421,10 +422,16 @@ export async function createFolderIfNotExist(folderPath: string): Promise<void> 
 	}
 }
 
-export async function executeCommand(cmd: string, outputChannel: vscode.OutputChannel, timeout: number = 5 * 60 * 1000): Promise<string> {
+export async function executeCommand(cmd: string, outputChannel: vscode.OutputChannel, sensitiveData: string[] = [], timeout: number = 5 * 60 * 1000): Promise<string> {
 	return new Promise<string>((resolve, reject) => {
 		if (outputChannel) {
-			outputChannel.appendLine(`    > ${cmd}`);
+			let cmdOutputMessage = cmd;
+
+			sensitiveData.forEach(element => {
+				cmdOutputMessage = cmdOutputMessage.replace(element, '***');
+			});
+
+			outputChannel.appendLine(`    > ${cmdOutputMessage}`);
 		}
 		let child = childProcess.exec(cmd, {
 			timeout: timeout
@@ -490,6 +497,23 @@ export async function retry<T>(
 }
 
 /**
+ * Detects whether the specified command-line command is available on the current machine
+ */
+export async function detectCommandInstallation(command: string): Promise<boolean> {
+	try {
+		const found = await which(command);
+
+		if (found) {
+			return true;
+		}
+	} catch (err) {
+		console.log(getErrorMessage(err));
+	}
+
+	return false;
+}
+
+/**
  * Gets all the projects of the specified extension in the folder
  * @param folder
  * @param projectExtension project extension to filter on
@@ -516,4 +540,15 @@ export function validateSqlServerPortNumber(port: string | undefined): boolean {
 
 export function isEmptyString(password: string | undefined): boolean {
 	return password === undefined || password === '';
+}
+
+export function isValidSQLPassword(password: string, userName: string = 'sa'): boolean {
+	// Validate SQL Server password
+	const containsUserName = password && userName !== undefined && password.toUpperCase().includes(userName.toUpperCase());
+	// Instead of using one RegEx, I am separating it to make it more readable.
+	const hasUpperCase = /[A-Z]/.test(password) ? 1 : 0;
+	const hasLowerCase = /[a-z]/.test(password) ? 1 : 0;
+	const hasNumbers = /\d/.test(password) ? 1 : 0;
+	const hasNonAlphas = /\W/.test(password) ? 1 : 0;
+	return !containsUserName && password.length >= 8 && password.length <= 128 && (hasUpperCase + hasLowerCase + hasNumbers + hasNonAlphas >= 3);
 }

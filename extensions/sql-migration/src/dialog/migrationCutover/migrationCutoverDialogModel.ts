@@ -4,13 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { getMigrationStatus, DatabaseMigration, startMigrationCutover, stopMigration, getMigrationAsyncOperationDetails, AzureAsyncOperationResource, BackupFileInfo, getResourceGroupFromId } from '../../api/azure';
-import { MigrationContext } from '../../models/migrationLocalStorage';
+import { BackupFileInfoStatus, MigrationContext } from '../../models/migrationLocalStorage';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../../telemtery';
 import * as constants from '../../constants/strings';
 import { EOL } from 'os';
 import { getMigrationTargetType, getMigrationMode } from '../../constants/helper';
 
 export class MigrationCutoverDialogModel {
+	public CutoverError?: Error;
+	public CancelMigrationError?: Error;
 
 	public migrationStatus!: DatabaseMigration;
 	public migrationOpStatus!: AzureAsyncOperationResource;
@@ -48,6 +50,7 @@ export class MigrationCutoverDialogModel {
 
 	public async startCutover(): Promise<DatabaseMigration | undefined> {
 		try {
+			this.CutoverError = undefined;
 			if (this.migrationStatus) {
 				const cutover = await startMigrationCutover(
 					this._migration.azureAccount,
@@ -67,6 +70,7 @@ export class MigrationCutoverDialogModel {
 				return cutover;
 			}
 		} catch (error) {
+			this.CutoverError = error;
 			console.log(error);
 		}
 		return undefined!;
@@ -85,6 +89,7 @@ export class MigrationCutoverDialogModel {
 
 	public async cancelMigration(): Promise<void> {
 		try {
+			this.CancelMigrationError = undefined;
 			if (this.migrationStatus) {
 				const cutoverStartTime = new Date().toString();
 				await stopMigration(
@@ -105,6 +110,7 @@ export class MigrationCutoverDialogModel {
 				);
 			}
 		} catch (error) {
+			this.CancelMigrationError = error;
 			console.log(error);
 		}
 		return undefined!;
@@ -138,7 +144,7 @@ export class MigrationCutoverDialogModel {
 		const files: BackupFileInfo[] = [];
 		this.migrationStatus.properties.migrationStatusDetails?.activeBackupSets?.forEach(abs => {
 			abs.listOfBackupFiles.forEach(f => {
-				if (f.status !== 'Restored') {
+				if (f.status !== BackupFileInfoStatus.Restored) {
 					files.push(f);
 				}
 			});

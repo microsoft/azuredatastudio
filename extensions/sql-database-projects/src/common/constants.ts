@@ -13,6 +13,7 @@ const localize = nls.loadMessageBundle();
 export const dataSourcesFileName = 'datasources.json';
 export const sqlprojExtension = '.sqlproj';
 export const sqlFileExtension = '.sql';
+export const yamlFileExtension = '.yaml';
 export const schemaCompareExtensionId = 'microsoft.schema-compare';
 export const master = 'master';
 export const masterDacpac = 'master.dacpac';
@@ -130,18 +131,23 @@ export const nameMustNotBeEmpty = localize('nameMustNotBeEmpty', "Name must not 
 // Deploy
 export const selectPublishOption = localize('selectPublishOption', "Select where to publish the project to");
 export const publishToExistingServer = localize('publishToExistingServer', "Publish to existing server");
-export const publishToDockerContainer = localize('publishToDockerContainer', "Publish to docker container");
-export const enterPortNumber = localize('enterPortNumber', "Enter port number or press enter to use the default value");
+export const publishToDockerContainer = localize('publishToDockerContainer', "Publish to new server in a container");
+export const enterPortNumber = localize('enterPortNumber', "Enter SQL server port number or press enter to use the default value");
 export const enterConnectionStringEnvName = localize('enterConnectionStringEnvName', "Enter connection string environment variable name");
 export const enterConnectionStringTemplate = localize('enterConnectionStringTemplate', "Enter connection string template");
-export const enterPassword = localize('enterPassword', "Enter password");
-export const enterBaseImage = localize('enterBaseImage', "Enter the base SQL Server docker image or press enter to use the default value");
+export const enterPassword = localize('enterPassword', "Enter SQL Server admin password");
+export const confirmPassword = localize('confirmPassword', "Confirm SQL server admin password");
+export const selectBaseImage = localize('selectBaseImage', "Select the base SQL Server docker image");
+export const invalidSQLPasswordMessage = localize('invalidSQLPassword', "SQL Server password doesn't meet the password complexity requirement. For more information see https://docs.microsoft.com/sql/relational-databases/security/password-policy");
+export const passwordNotMatch = localize('passwordNotMatch', "SQL Server password doesn't match the confirmation password");
 export const portMustBeNumber = localize('portMustNotBeNumber', "Port must a be number");
 export const valueCannotBeEmpty = localize('valueCannotBeEmpty', "Value cannot be empty");
 export const dockerImageLabelPrefix = 'source=sqldbproject';
 export const dockerImageNamePrefix = 'sqldbproject';
 export const connectionNamePrefix = 'SQLDbProject';
-export const defaultDockerBaseImage = 'mcr.microsoft.com/mssql/server:2019-latest';
+export const sqlServerDockerRegistry = 'mcr.microsoft.com';
+export const sqlServerDockerRepository = 'mssql/server';
+export const azureSqlEdgeDockerRepository = 'azure-sql-edge';
 export const commandsFolderName = 'commands';
 export const mssqlFolderName = '.mssql';
 export const dockerFileName = 'Dockerfile';
@@ -158,12 +164,13 @@ export const deployProjectSucceed = localize('deployProjectSucceed', "Database p
 export const cleaningDockerImagesMessage = localize('cleaningDockerImagesMessage', "Cleaning existing deployments...");
 export const creatingDeploymentSettingsMessage = localize('creatingDeploymentSettingsMessage', "Creating deployment settings ...");
 export const runningDockerMessage = localize('runningDockerMessage', "Building and running the docker container ...");
+export function dockerNotRunningError(error: string) { return localize('dockerNotRunningError', "Failed to verify docker. Please make sure docker is installed and running. Error: '{0}'", error || ''); }
 export const dockerContainerNotRunningErrorMessage = localize('dockerContainerNotRunningErrorMessage', "Docker container is not running");
 export const dockerContainerFailedToRunErrorMessage = localize('dockerContainerFailedToRunErrorMessage', "Failed to run the docker container");
 export const connectingToSqlServerOnDockerMessage = localize('connectingToSqlServerOnDockerMessage', "Connecting to SQL Server on Docker");
 export const deployProjectFailedMessage = localize('deployProjectFailedMessage', "Failed to open a connection to the deployed database'");
 export function taskFailedError(taskName: string, err: string): string { return localize('taskFailedError.error', "Failed to complete task '{0}'. Error: {1}", taskName, err); }
-export function deployProjectFailed(errorMessage: string) { return localize('deployProjectFailed', "Failed to deploy project. Check output pane for more details. {0}", errorMessage); }
+export function publishToContainerFailed(errorMessage: string) { return localize('publishToContainerFailed', "Failed to publish to container. Check output pane for more details. {0}", errorMessage); }
 export function deployAppSettingUpdateFailed(appSetting: string) { return localize('deployAppSettingUpdateFailed', "Failed to update app setting '{0}'", appSetting); }
 export function deployAppSettingUpdating(appSetting: string) { return localize('deployAppSettingUpdating', "Updating app setting: '{0}'", appSetting); }
 export function connectionFailedError(error: string) { return localize('connectionFailedError', "Connection failed error: '{0}'", error); }
@@ -306,9 +313,11 @@ export const postDeployScriptFriendlyName = localize('postDeployScriptFriendlyNa
 export const NetCoreInstallationConfirmation: string = localize('sqlDatabaseProjects.NetCoreInstallationConfirmation', "The .NET Core SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK location in settings if already installed.");
 export function NetCoreSupportedVersionInstallationConfirmation(installedVersion: string) { return localize('sqlDatabaseProjects.NetCoreSupportedVersionInstallationConfirmation', "Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK supported version location in settings if already installed.", installedVersion); }
 export const UpdateNetCoreLocation: string = localize('sqlDatabaseProjects.UpdateNetCoreLocation', "Update Location");
-export const InstallNetCore: string = localize('sqlDatabaseProjects.InstallNetCore', "Install");
-export const DoNotAskAgain: string = localize('sqlDatabaseProjects.doNotAskAgain', "Don't Ask Again");
 export const projectsOutputChannel = localize('sqlDatabaseProjects.outputChannel', "Database Projects");
+
+// Prompt buttons
+export const Install: string = localize('sqlDatabaseProjects.Install', "Install");
+export const DoNotAskAgain: string = localize('sqlDatabaseProjects.doNotAskAgain', "Don't Ask Again");
 
 // SqlProj file XML names
 export const ItemGroup = 'ItemGroup';
@@ -408,6 +417,15 @@ export enum DatabaseProjectItemType {
 	dataSourceRoot = 'databaseProject.itemType.dataSourceRoot',
 }
 
+// AutoRest
+export const autorestPostDeploymentScriptName = 'PostDeploymentScript.sql';
+export const nodeButNotAutorestFound = localize('nodeButNotAutorestFound', "Autorest tool not found in system path, but found Node.js.  Running via npx.  Please execute 'npm install autorest -g' to install permanently.");
+export const nodeNotFound = localize('nodeNotFound', "Neither autorest nor Node.js (npx) found in system path.  Please install Node.js for autorest generation to work.");
+export const selectSpecFile = localize('selectSpecFile', "Select OpenAPI/Swagger spec file");
+export function generatingProjectFailed(errorMessage: string) { return localize('generatingProjectFailed', "Generating project via AutoRest failed: {0}", errorMessage); }
+export function multipleMostDeploymentScripts(count: number) { return localize('multipleMostDeploymentScripts', "Unexpected number of {0} files: {1}", autorestPostDeploymentScriptName, count); }
+export const specSelectionText = localize('specSelectionText', "OpenAPI/Swagger spec");
+
 // System dbs
 export const systemDbs = ['master', 'msdb', 'tempdb', 'model'];
 
@@ -461,5 +479,13 @@ export const connectionStringSettingPlaceholder = localize('connectionStringSett
 export const noAzureFunctionsInFile = localize('noAzureFunctionsInFile', "No Azure functions in the current active file");
 export const noAzureFunctionsProjectsInWorkspace = localize('noAzureFunctionsProjectsInWorkspace', "No Azure functions projects found in the workspace");
 export const addPackage = localize('addPackage', "Add Package");
+export const createNewLocalAppSetting = localize('createNewLocalAppSetting', 'Create new local app setting');
+export const createNewLocalAppSettingWithIcon = `$(add) ${createNewLocalAppSetting}`;
+export const valueMustNotBeEmpty = localize('valueMustNotBeEmpty', "Value must not be empty");
+export const enterConnectionStringSettingName = localize('enterConnectionStringSettingName', "Enter connection string setting name");
+export const enterConnectionString = localize('enterConnectionString', "Enter connection string");
+export const saveChangesInFile = localize('saveChangesInFile', "There are unsaved changes in the current file. Save now?");
+export const save = localize('save', "Save");
+export function settingAlreadyExists(settingName: string) { return localize('SettingAlreadyExists', 'Local app setting \'{0}\' already exists. Overwrite?', settingName); }
 export function failedToParse(errorMessage: string) { return localize('failedToParse', 'Failed to parse "{0}": {1}.', azureFunctionLocalSettingsFileName, errorMessage); }
 export function jsonParseError(error: string, line: number, column: number) { return localize('jsonParseError', '{0} near line "{1}", column "{2}"', error, line, column); }

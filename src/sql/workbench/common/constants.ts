@@ -34,6 +34,8 @@ export const UNTITLED_QUERY_EDITOR_TYPEID = 'workbench.editorinputs.untitledQuer
 export const FILE_QUERY_EDITOR_TYPEID = 'workbench.editorinputs.fileQueryInput';
 export const RESOURCE_VIEWER_TYPEID = 'workbench.editorinputs.resourceViewerInput';
 
+export const JUPYTER_PROVIDER_ID = 'jupyter';
+
 export const enum NotebookLanguage {
 	Notebook = 'Notebook',
 	Ipynb = 'ipynb'

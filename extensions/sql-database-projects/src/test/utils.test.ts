@@ -7,7 +7,7 @@ import * as should from 'should';
 import * as path from 'path';
 import * as os from 'os';
 import { createDummyFileStructure } from './testUtils';
-import { exists, trimUri, removeSqlCmdVariableFormatting, formatSqlCmdVariable, isValidSqlCmdVariableName, timeConversion, validateSqlServerPortNumber, isEmptyString } from '../common/utils';
+import { exists, trimUri, removeSqlCmdVariableFormatting, formatSqlCmdVariable, isValidSqlCmdVariableName, timeConversion, validateSqlServerPortNumber, isEmptyString, detectCommandInstallation, isValidSQLPassword } from '../common/utils';
 import { Uri } from 'vscode';
 
 describe('Tests to verify utils functions', function (): void {
@@ -104,6 +104,24 @@ describe('Tests to verify utils functions', function (): void {
 		should(isEmptyString('')).equals(true);
 		should(isEmptyString(undefined)).equals(true);
 		should(isEmptyString('65536')).equals(false);
+	});
+
+	it('Should correctly detect present commands', async () => {
+		should(await detectCommandInstallation('node')).equal(true, '"node" should have been detected.');
+		should(await detectCommandInstallation('bogusFakeCommand')).equal(false, '"bogusFakeCommand" should have been detected.');
+	});
+
+	it('Should validate SQL server password correctly', () => {
+		should(isValidSQLPassword('invalid')).equals(false, 'string with chars only is invalid password');
+		should(isValidSQLPassword('')).equals(false, 'empty string is invalid password');
+		should(isValidSQLPassword('65536')).equals(false, 'string with numbers only is invalid password');
+		should(isValidSQLPassword('dFGj')).equals(false, 'string with lowercase and uppercase char only is invalid password');
+		should(isValidSQLPassword('dj$')).equals(false, 'string with char and symbols only is invalid password');
+		should(isValidSQLPassword('dF65530')).equals(false, 'string with char and numbers only is invalid password');
+		should(isValidSQLPassword('dF6$30')).equals(false, 'dF6$30 is invalid password');
+		should(isValidSQLPassword('dF65$530')).equals(true, 'dF65$530 is valid password');
+		should(isValidSQLPassword('dFdf65$530')).equals(true, 'dF65$530 is valid password');
+		should(isValidSQLPassword('av1fgh533@')).equals(true, 'dF65$530 is valid password');
 	});
 });
 

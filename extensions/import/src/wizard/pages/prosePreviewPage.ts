@@ -2,17 +2,17 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
 import * as azdata from 'azdata';
 import { ImportPage } from '../api/importPage';
 import * as constants from '../../common/constants';
+import { DerivedColumnDialog } from '../../dialogs/derivedColumnDialog';
+import * as vscode from 'vscode';
 
 export class ProsePreviewPage extends ImportPage {
 
 	private _table: azdata.TableComponent;
 	private _loading: azdata.LoadingComponent;
 	private _form: azdata.FormContainer;
-	private _refresh: azdata.ButtonComponent;
 	private _resultTextComponent: azdata.TextComponent;
 	private _isSuccess: boolean;
 
@@ -40,14 +40,6 @@ export class ProsePreviewPage extends ImportPage {
 		this._form = form;
 	}
 
-	public get refresh(): azdata.ButtonComponent {
-		return this._refresh;
-	}
-
-	public set refresh(refresh: azdata.ButtonComponent) {
-		this._refresh = refresh;
-	}
-
 	public get resultTextComponent(): azdata.TextComponent {
 		return this._resultTextComponent;
 	}
@@ -70,14 +62,22 @@ export class ProsePreviewPage extends ImportPage {
 			columns: undefined,
 			forceFitColumns: azdata.ColumnSizingMode.DataFit
 		}).component();
-		this.refresh = this.view.modelBuilder.button().withProps({
-			label: constants.refreshText,
-			isFile: false,
-			secondary: true
-		}).component();
 
-		this.refresh.onDidClick(async () => {
-			await this.onPageEnter();
+		this.instance.createDerivedColumnButton.onClick(async (e) => {
+			const derivedColumnDialog = new DerivedColumnDialog(this.model, this.provider);
+			const response = await derivedColumnDialog.createDerivedColumn();
+			if (response) {
+				this.model.proseColumns.push({
+					columnName: response.derivedColumnName,
+					dataType: 'nvarchar(MAX)',
+					primaryKey: false,
+					nullable: true
+				});
+				response.derivedColumnDataPreview.forEach((v, i) => {
+					this.model.proseDataPreview[i].push(v);
+				});
+				this.populateTable(this.model.proseDataPreview, this.model.proseColumns.map(c => c.columnName));
+			}
 		});
 
 		this.loading = this.view.modelBuilder.loadingComponent().component();
@@ -94,9 +94,9 @@ export class ProsePreviewPage extends ImportPage {
 			},
 			{
 				component: this.table,
-				title: '',
-				actions: [this.refresh]
+				title: ''
 			}
+
 		]).component();
 
 		this.loading.component = this.form;
@@ -107,22 +107,30 @@ export class ProsePreviewPage extends ImportPage {
 	}
 
 	async onPageEnter(): Promise<boolean> {
-		this.loading.loading = true;
 		let proseResult: boolean;
 		let error: string;
-		try {
-			proseResult = await this.handleProse();
-		} catch (ex) {
-			error = ex.toString();
+		const enablePreviewFeatures = vscode.workspace.getConfiguration('workbench').get('enablePreviewFeatures');
+		if (this.model.newFileSelected) {
+			this.loading.loading = true;
+			try {
+				proseResult = await this.learnFile();
+			} catch (ex) {
+				error = ex.toString();
+				this.instance.wizard.message = {
+					level: azdata.window.MessageLevel.Error,
+					text: error
+				};
+			}
+			this.model.newFileSelected = false;
+			this.loading.loading = false;
 		}
-
-		this.loading.loading = false;
-		if (proseResult) {
+		if (!this.model.newFileSelected || proseResult) {
 			await this.populateTable(this.model.proseDataPreview, this.model.proseColumns.map(c => c.columnName));
 			this.isSuccess = true;
 			if (this.form) {
 				this.resultTextComponent.value = constants.successTitleText;
 			}
+			this.instance.createDerivedColumnButton.hidden = !enablePreviewFeatures;
 			return true;
 		} else {
 			await this.populateTable([], []);
@@ -135,7 +143,7 @@ export class ProsePreviewPage extends ImportPage {
 	}
 
 	override async onPageLeave(): Promise<boolean> {
-		await this.emptyTable();
+		this.instance.createDerivedColumnButton.hidden = true;
 		return true;
 	}
 
@@ -156,7 +164,7 @@ export class ProsePreviewPage extends ImportPage {
 		});
 	}
 
-	private async handleProse(): Promise<boolean> {
+	private async learnFile(): Promise<boolean> {
 		const response = await this.provider.sendPROSEDiscoveryRequest({
 			filePath: this.model.filePath,
 			tableName: this.model.table,
@@ -170,9 +178,16 @@ export class ProsePreviewPage extends ImportPage {
 		}
 
 		this.model.proseColumns = [];
+		this.model.originalProseColumns = [];
 		if (response.columnInfo) {
 			response.columnInfo.forEach((column) => {
 				this.model.proseColumns.push({
+					columnName: column.name,
+					dataType: column.sqlType,
+					primaryKey: false,
+					nullable: column.isNullable
+				});
+				this.model.originalProseColumns.push({
 					columnName: column.name,
 					dataType: column.sqlType,
 					primaryKey: false,
@@ -202,9 +217,5 @@ export class ProsePreviewPage extends ImportPage {
 			height: 400,
 			width: '700',
 		});
-	}
-
-	private async emptyTable() {
-		this.table.updateProperties([]);
 	}
 }

@@ -983,17 +983,30 @@
                     "fields": [
                       {
                         "type": "options",
-                        "label": "%arc.sql.replicas.label%",
-                        "description": "%arc.sql.replicas.description%",
+                        "label": "%arc.sql.high.availability.label%",
+                        "description": "%arc.sql.high.availability.description%",
                         "required": true,
                         "variableName": "AZDATA_NB_VAR_SQL_REPLICAS",
                         "options": {
                           "values": [
-                            "1",
-                            "3"
+                            "%arc.sql.two.replicas%",
+                            "%arc.sql.three.replicas%"
                           ],
-                          "defaultValue": "1",
+                          "defaultValue": "%arc.sql.two.replicas%",
                           "optionsType": "radio"
+                        },
+                        "dynamicOptions":
+                        {
+                          "target": "AZDATA_NB_VAR_SQL_SERVICE_TIER",
+                          "alternates": [
+                            {
+                              "selection": "%arc.sql.service.tier.general.purpose%",
+                              "alternateValues": [
+                                "%arc.sql.one.replica%"
+                              ],
+                              "defaultValue": "%arc.sql.one.replica%"
+                            }
+                          ]
                         }
                       },
                       {
@@ -1001,14 +1014,14 @@
                         "description": "%arc.sql.storage-class.data.description%",
                         "variableName": "AZDATA_NB_VAR_SQL_STORAGE_CLASS_DATA",
                         "type": "kube_storage_class",
-                        "required": true
+                        "required": false
                       },
                       {
                         "label": "%arc.storage-class.logs.label%",
                         "description": "%arc.sql.storage-class.logs.description%",
                         "variableName": "AZDATA_NB_VAR_SQL_STORAGE_CLASS_LOGS",
                         "type": "kube_storage_class",
-                        "required": true
+                        "required": false
                       },
                       {
                         "label": "%arc.cores-request.label%",
@@ -1069,6 +1082,29 @@
                             "description": "%memory.limit.greater.than.or.equal.to.requested.memory%"
                           }
                         ]
+                      },
+                      {
+                        "type": "options",
+                        "label": "%arc.sql.service.tier.label%",
+                        "description": "%arc.sql.service.tier.description%",
+                        "required": true,
+                        "variableName": "AZDATA_NB_VAR_SQL_SERVICE_TIER",
+                        "options": {
+                          "values": [
+                            "%arc.sql.service.tier.business.critical%",
+                            "%arc.sql.service.tier.general.purpose%"
+                          ],
+                          "defaultValue": "%arc.sql.service.tier.business.critical%",
+                          "optionsType": "radio"
+                        }
+                      },
+                      {
+                        "type": "checkbox",
+                        "label": "%arc.sql.dev.use.label%",
+                        "description": "%arc.sql.dev.use.description%",
+                        "defaultValue": "false",
+                        "variableName": "AZDATA_NB_VAR_SQL_DEV_USE",
+                        "required": true
                       }
                     ]
                   }

@@ -44,30 +44,7 @@ export async function getLocations(account: azdata.Account, subscription: Subscr
 		return sqlMigrationResourceLocations.includes(loc.displayName);
 	});
 
-	// Only including the regions that have migration service deployed for public preview.
-	const publicPreviewLocations = [
-		'eastus',
-		'canadaeast',
-		'canadacentral',
-		'centralus',
-		'westus2',
-		'westus',
-		'southcentralus',
-		'westeurope',
-		'uksouth',
-		'australiaeast',
-		'southeastasia',
-		'japaneast',
-		'centralindia',
-		'eastus2',
-		'eastus2euap',
-		'francecentral',
-		'southindia',
-		'australiasoutheast',
-		'northcentralus'
-	];
-
-	return filteredLocations.filter(v => publicPreviewLocations.includes(v.name));
+	return filteredLocations;
 }
 
 export type AzureProduct = azureResource.AzureGraphResource;
@@ -547,7 +524,7 @@ export interface TargetLocation {
 
 export interface BackupFileInfo {
 	fileName: string;
-	status: 'Arrived' | 'Uploading' | 'Uploaded' | 'Restoring' | 'Restored' | 'Cancelled' | 'Ignored';
+	status: 'Arrived' | 'Uploading' | 'Uploaded' | 'Restoring' | 'Restored' | 'Canceled' | 'Ignored';
 	totalSize: number;
 	dataRead: number;
 	dataWritten: number;

@@ -7,6 +7,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { IProjectType } from 'dataworkspace';
 import { promises as fs } from 'fs';
+import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
 
 export const testProjectType: IProjectType = {
 	id: 'tp1',
@@ -30,4 +31,8 @@ export async function createProjectFile(fileExt: string, contents?: string): Pro
 
 export function generateUniqueProjectFilePath(fileExt: string): string {
 	return path.join(os.tmpdir(), `TestProject_${new Date().getTime()}.${fileExt}`);
+}
+
+export function prettyPrintProviders(): string {
+	return `${ProjectProviderRegistry.providers.map(p => `[${p.supportedProjectTypes.map(t => t.id).join(', ')}]`).join('; ')}`;
 }

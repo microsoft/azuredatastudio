@@ -12,7 +12,7 @@ import * as vscode from 'vscode';
 import * as loc from '../common/localizedConstants';
 import { BookModel } from './bookModel';
 import { TocEntryPathHandler } from './tocEntryPathHandler';
-import { FileExtension } from '../common/utils';
+import { FileExtension, BookTreeItemType } from '../common/utils';
 
 export interface IBookTocManager {
 	updateBook(sources: BookTreeItem[], target: BookTreeItem, targetSection?: JupyterBookSection): Promise<void>;
@@ -20,6 +20,7 @@ export interface IBookTocManager {
 	createBook(bookContentPath: string, contentFolder: string): Promise<void>;
 	addNewTocEntry(pathDetails: TocEntryPathHandler, bookItem: BookTreeItem, isSection?: boolean): Promise<void>;
 	recovery(): Promise<void>;
+	enableDnd: boolean;
 }
 
 export interface quickPickResults {
@@ -41,6 +42,7 @@ export class BookTocManager implements IBookTocManager {
 	public tocFiles: Map<string, string> = new Map<string, string>();
 	private sourceBookContentPath: string;
 	private targetBookContentPath: string;
+	private _enableDnd: boolean = false;
 
 	constructor(private _sourceBook?: BookModel, private _targetBook?: BookModel) {
 		this._targetBook?.unwatchTOC();
@@ -279,14 +281,19 @@ export class BookTocManager implements IBookTocManager {
 		for (const elem of files) {
 			if (elem.file) {
 				let fileName = undefined;
+				// the toc does not provide the extension of the file, so we need to try for notebooks and markdown
 				try {
 					this.movedFiles.set(path.join(this.sourceBookContentPath, elem.file).concat('.ipynb'), path.join(this.targetBookContentPath, elem.file).concat('.ipynb'));
 					await fs.move(path.join(this.sourceBookContentPath, elem.file).concat('.ipynb'), path.join(this.targetBookContentPath, elem.file).concat('.ipynb'), { overwrite: false });
 				} catch (error) {
 					if (error.code === 'EEXIST') {
+						// if the file already exists in destination, then rename it before moving it.
 						fileName = await this.renameFile(path.join(this.sourceBookContentPath, elem.file).concat('.ipynb'), path.join(this.targetBookContentPath, elem.file).concat('.ipynb'));
+					} else if (error.code === 'ENOENT') {
+						// if it doesnt exist then remove it from movedFiles
+						this.movedFiles.delete(path.join(this.sourceBookContentPath, elem.file).concat('.ipynb'));
 					}
-					else if (error.code !== 'ENOENT') {
+					else {
 						throw (error);
 					}
 				}
@@ -295,9 +302,13 @@ export class BookTocManager implements IBookTocManager {
 					await fs.move(path.join(this.sourceBookContentPath, elem.file).concat('.md'), path.join(this.targetBookContentPath, elem.file).concat('.md'), { overwrite: false });
 				} catch (error) {
 					if (error.code === 'EEXIST') {
+						// if the file already exists in destination, then rename it before moving it.
 						fileName = await this.renameFile(path.join(this.sourceBookContentPath, elem.file).concat('.md'), path.join(this.targetBookContentPath, elem.file).concat('.md'));
+					} else if (error.code === 'ENOENT') {
+						// if it doesnt exist then remove it from movedFiles
+						this.movedFiles.delete(path.join(this.sourceBookContentPath, elem.file).concat('.md'));
 					}
-					else if (error.code !== 'ENOENT') {
+					else {
 						throw (error);
 					}
 				}
@@ -367,8 +378,8 @@ export class BookTocManager implements IBookTocManager {
 		let fileName = undefined;
 		try {
 			// no op if the notebook is already in the dest location
+			this.movedFiles.set(file.book.contentPath, path.join(rootPath, filePath.base));
 			if (file.book.contentPath !== path.join(rootPath, filePath.base)) {
-				this.movedFiles.set(file.book.contentPath, path.join(rootPath, filePath.base));
 				await fs.move(file.book.contentPath, path.join(rootPath, filePath.base), { overwrite: false });
 			}
 		} catch (error) {
@@ -403,9 +414,13 @@ export class BookTocManager implements IBookTocManager {
 	*/
 	public async updateBook(sources: BookTreeItem[], target: BookTreeItem, section?: JupyterBookSection): Promise<void> {
 		for (let element of sources) {
+			if (element.contextValue === BookTreeItemType.savedBook || this.isParent(element, target, section) || this.isDescendant(element, target)) {
+				// no op if the moving element is a book, the target dest is descendant of the moving element, the target dest is already the moving element parent
+				return;
+			}
 			try {
-				const targetSection = section ? section : (target.contextValue === 'section' ? { file: target.book.page.file, title: target.book.page.title } : undefined);
-				if (element.contextValue === 'section') {
+				const targetSection = section ? section : (target.contextValue === BookTreeItemType.section ? { file: target.book.page.file, title: target.book.page.title } : undefined);
+				if (element.contextValue === BookTreeItemType.section) {
 					// modify the sourceBook toc and remove the section
 					const findSection: JupyterBookSection = { file: element.book.page.file, title: element.book.page.title };
 					await this.moveSectionFiles(element, target);
@@ -418,7 +433,7 @@ export class BookTocManager implements IBookTocManager {
 					// the notebook is part of a book so we need to modify its toc as well
 					const findSection = { file: element.book.page.file, title: element.book.page.title };
 					await this.moveFile(element, target);
-					if (element.contextValue === 'savedBookNotebook' || element.contextValue === 'Markdown') {
+					if (element.contextValue === BookTreeItemType.savedBookNotebook || element.contextValue === BookTreeItemType.Markdown) {
 						// remove notebook entry from book toc
 						await this.updateTOC(element.book.version, element.tableOfContentsPath, findSection, undefined);
 					} else {
@@ -446,7 +461,7 @@ export class BookTocManager implements IBookTocManager {
 	public async addNewTocEntry(pathDetails: TocEntryPathHandler, bookItem: BookTreeItem, isSection?: boolean): Promise<void> {
 		let findSection: JupyterBookSection | undefined = undefined;
 		await fs.writeFile(pathDetails.filePath, '');
-		if (bookItem.contextValue === 'section') {
+		if (bookItem.contextValue === BookTreeItemType.section) {
 			findSection = { file: bookItem.book.page.file, title: bookItem.book.page.title };
 		}
 		let fileEntryInToc: JupyterBookSection = {
@@ -479,6 +494,37 @@ export class BookTocManager implements IBookTocManager {
 		const findSection = { file: element.book.page.file, title: element.book.page.title };
 		await this.updateTOC(element.book.version, element.tableOfContentsPath, findSection, undefined);
 		await this._sourceBook.reinitializeContents();
+	}
+
+	/**
+	 * Checks that the targetTreeItem is descendant of the tree item used by the onDrop method.
+	 * @param treeItem The moving element when using dnd.
+	 * @param targetTreeItem The target element where the moving element is dropped.
+	*/
+	isDescendant(treeItem: BookTreeItem, targetTreeItem: BookTreeItem): boolean {
+		return this._enableDnd && treeItem.rootContentPath === targetTreeItem.rootContentPath && targetTreeItem.book.hierarchyId?.includes(treeItem.book.hierarchyId);
+	}
+
+	/**
+	 * Checks that the book tree item is the parent of the passed element used by the onDrop and the moveTo method.
+	 * @param treeItem The child of the parent tree item.
+	 * @param parentTreeItem The parent of the passed element or the Saved Book tree item.
+	 * @param section (Optional) In case the parentTreeItem is the saved book, verify that the passed Jupyter Book Section is the parent of the treeItem.
+	*/
+	isParent(treeItem: BookTreeItem, parentTreeItem: BookTreeItem, section?: JupyterBookSection): boolean {
+		if (section) {
+			return section.file === treeItem.book.parent?.uri;
+		}
+
+		return treeItem.book.parent?.uri === parentTreeItem.uri &&
+			treeItem.book.parent?.rootContentPath === parentTreeItem.rootContentPath &&
+			treeItem.book.parent?.contextValue === parentTreeItem.contextValue &&
+			treeItem.book.parent?.sections.length === parentTreeItem.sections.length &&
+			treeItem.book.parent?.book.contentPath === parentTreeItem.book.contentPath;
+	}
+
+	public set enableDnd(useDnd: boolean) {
+		this._enableDnd = useDnd;
 	}
 
 	public get modifiedDir(): Set<string> {

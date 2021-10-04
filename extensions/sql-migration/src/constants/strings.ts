@@ -16,6 +16,11 @@ export function WIZARD_TITLE(instanceName: string): string {
 }
 // //#endregion
 
+// Resume Migration Dialog
+export const RESUME_TITLE = localize('sql.migration.resume.title', "Run migration workflow again");
+export const START_MIGRATION = localize('sql.migration.resume.start', "Start with migration assessment again (recommended)");
+export const CONTINUE_MIGRATION = localize('sql.migration.resume.contine', "Continue last migration attempt...");
+
 // Assessments Progress Page
 export const ASSESSMENT_BLOCKING_ISSUE_TITLE = localize('sql.migration.assessments.blocking.issue', 'This is a blocking issue that will prevent the database migration from succeeding.');
 export const ASSESSMENT_IN_PROGRESS = localize('sql.migration.assessment.in.progress', "Assessment in progress");
@@ -243,6 +248,7 @@ export const IMPACT = localize('sql.migration.impact', "Impact");
 export const ALL_FIELDS_REQUIRED = localize('sql.migration.all.fields.required', 'All fields are required.');
 
 //Summary Page
+export const START_MIGRATION_TEXT = localize('sql.migration.start.migration.button', "Start migration");
 export const SUMMARY_PAGE_TITLE = localize('sql.migration.summary.page.title', "Summary");
 export const SUMMARY_MI_TYPE = localize('sql.migration.summary.mi.type', "Azure SQL Managed Instance");
 export const SUMMARY_VM_TYPE = localize('sql.migration.summary.vm.type', "SQL Server on Azure Virtual Machine");
@@ -339,6 +345,7 @@ export const YES = localize('sql.migration.yes', "Yes");
 export const NO = localize('sql.migration.no', "No");
 export const EMPTY_TABLE_TEXT = localize('sql.migration.empty.table.text', "No backup files");
 export const EMPTY_TABLE_SUBTEXT = localize('sql.migration.empty.table.subtext', "If results were expected, verify the connection to the SQL Server instance.");
+export const MIGRATION_CUTOVER_ERROR = localize('sql.migration.cutover.error', 'An error occurred while initiating cutover.');
 
 //Migration confirm cutover dialog
 export const COMPLETING_CUTOVER_WARNING = localize('sql.migration.completing.cutover.warning', "Completing cutover without restoring all the backups may result in a data loss.");
@@ -456,6 +463,7 @@ export const SQL_MIGRATION_SERVICE_DETAILS_AUTH_KEYS_TITLE = localize('sql.migra
 export const SQL_MIGRATION_SERVICE_DETAILS_STATUS_UNAVAILABLE = localize('sql.migration.service.details.status.unavailable', "-- unavailable --");
 
 //Source Credentials page.
+export const SAVE_AND_CLOSE = localize('sql.migration.save.close', "Save and close");
 export const SOURCE_CONFIGURATION = localize('sql.migration.source.configuration', "Source configuration");
 export const SOURCE_CREDENTIALS = localize('sql.migration.source.credentials', "Source credentials");
 export const ENTER_YOUR_SQL_CREDS = localize('sql.migration.enter.your.sql.cred', "Enter the credentials for the source SQL Server instance. These credentials will be used while migrating databases to Azure SQL.");
@@ -508,3 +516,9 @@ export function WARNINGS_COUNT(totalCount: number): string {
 export const AUTHENTICATION_TYPE = localize('sql.migration.authentication.type', "Authentication type");
 
 export const REFRESH_BUTTON_LABEL = localize('sql.migration.status.refresh.label', 'Refresh');
+
+// Saved Assessment Dialog
+
+export const NEXT_LABEL = localize('sql.migration.saved.assessment.next', "Next");
+export const CANCEL_LABEL = localize('sql.migration.saved.assessment.cancel', "Cancel");
+export const SAVED_ASSESSMENT_RESULT = localize('sql.migration.saved.assessment.result', "Saved assessment result");

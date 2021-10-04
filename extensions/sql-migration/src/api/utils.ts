@@ -230,6 +230,14 @@ export function get12HourTime(date: Date | undefined): string {
 	return (date ? date : new Date()).toLocaleTimeString([], localeTimeStringOptions);
 }
 
+export function displayDialogErrorMessage(dialog: window.Dialog, text: string, error: Error): void {
+	dialog.message = {
+		level: window.MessageLevel.Error,
+		text: text,
+		description: error.message,
+	};
+}
+
 export function clearDialogMessage(dialog: window.Dialog): void {
 	dialog.message = {
 		text: ''

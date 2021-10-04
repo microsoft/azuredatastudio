@@ -11,25 +11,16 @@ import * as constants from '../constants/strings';
 import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 import { debounce } from '../api/utils';
 
-const headerLeft: azdata.CssStyles = {
+const styleLeft: azdata.CssStyles = {
 	'border': 'none',
 	'text-align': 'left',
 	'white-space': 'nowrap',
 	'text-overflow': 'ellipsis',
 	'overflow': 'hidden',
-	'border-bottom': '1px solid'
+	'box-shadow': '0px -1px 0px 0px rgba(243, 242, 241, 1) inset'
 };
 
-const headerRight: azdata.CssStyles = {
-	'border': 'none',
-	'text-align': 'right',
-	'white-space': 'nowrap',
-	'text-overflow': 'ellipsis',
-	'overflow': 'hidden',
-	'border-bottom': '1px solid'
-};
-
-const styleLeft: azdata.CssStyles = {
+const styleCheckBox: azdata.CssStyles = {
 	'border': 'none',
 	'text-align': 'left',
 	'white-space': 'nowrap',
@@ -43,6 +34,7 @@ const styleRight: azdata.CssStyles = {
 	'white-space': 'nowrap',
 	'text-overflow': 'ellipsis',
 	'overflow': 'hidden',
+	'box-shadow': '0px -1px 0px 0px rgba(243, 242, 241, 1) inset'
 };
 
 export class DatabaseSelectorPage extends MigrationWizardPage {
@@ -105,7 +97,6 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			|| assessedDatabases.length !== selectedDatabases.length
 			|| assessedDatabases.some(db => selectedDatabases.indexOf(db) < 0);
 
-		this.migrationStateModel._databaseAssessment = selectedDatabases;
 		this.wizard.message = {
 			text: '',
 			level: azdata.window.MessageLevel.Error
@@ -187,7 +178,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			this._databaseTableValues.push([
 				{
 					value: false,
-					style: styleLeft,
+					style: styleCheckBox,
 					enabled: selectable
 				},
 				{
@@ -251,7 +242,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 						width: 20,
 						isReadOnly: false,
 						showCheckAll: true,
-						headerCssStyles: headerLeft,
+						headerCssStyles: styleCheckBox
 					},
 					{
 						displayName: constants.DATABASE,
@@ -260,38 +251,44 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 						valueType: azdata.DeclarativeDataType.string,
 						width: '100%',
 						isReadOnly: true,
-						headerCssStyles: headerLeft
+						headerCssStyles: styleLeft
 					},
 					{
 						displayName: constants.STATUS,
 						valueType: azdata.DeclarativeDataType.string,
 						width: 100,
 						isReadOnly: true,
-						headerCssStyles: headerLeft
+						headerCssStyles: styleLeft
 					},
 					{
 						displayName: constants.SIZE,
 						valueType: azdata.DeclarativeDataType.string,
 						width: 125,
 						isReadOnly: true,
-						headerCssStyles: headerRight
+						headerCssStyles: styleRight
 					},
 					{
 						displayName: constants.LAST_BACKUP,
 						valueType: azdata.DeclarativeDataType.string,
 						width: 150,
 						isReadOnly: true,
-						headerCssStyles: headerLeft
+						headerCssStyles: styleLeft
 					}
 				]
 			}
 		).component();
 
-		await this._databaseSelectorTable.setDataValues(this._databaseTableValues);
-		this._disposables.push(this._databaseSelectorTable.onDataChanged(() => {
-			this._dbCount.updateProperties({
+		if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= 1) {
+			await this._databaseSelectorTable.setDataValues(this.migrationStateModel.savedInfo.selectedDatabases);
+		} else {
+			await this._databaseSelectorTable.setDataValues(this._databaseTableValues);
+		}
+		this._disposables.push(this._databaseSelectorTable.onDataChanged(async () => {
+			await this._dbCount.updateProperties({
 				'value': constants.DATABASES_SELECTED(this.selectedDbs().length, this._databaseTableValues.length)
 			});
+			this.migrationStateModel._databaseAssessment = this.selectedDbs();
+			this.migrationStateModel.databaseSelectorTableValues = <azdata.DeclarativeTableCellValue[][]>this._databaseSelectorTable.dataValues;
 		}));
 		const flex = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
