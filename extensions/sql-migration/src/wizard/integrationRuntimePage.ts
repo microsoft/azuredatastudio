@@ -199,6 +199,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		}).component();
 		this._resourceGroupDropdown = this._view.modelBuilder.dropDown().withProps({
 			ariaLabel: constants.RESOURCE_GROUP,
+			placeholder: constants.SELECT_RESOURCE_GROUP,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			editable: true,
 			required: true,
