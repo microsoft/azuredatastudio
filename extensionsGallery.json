@@ -4308,6 +4308,67 @@
 					],
 					"statistics": [],
 					"flags": "preview"
+				},
+				{
+					"extensionId": "85",
+					"extensionName": "net-6-runtime",
+					"displayName": ".NET 6 Runtime",
+					"shortDescription": "Provides .NET runtime binaries for use by other extensions",
+					"publisher": {
+						"displayName": "Microsoft",
+						"publisherId": "Microsoft",
+						"publisherName": "Microsoft"
+					},
+					"versions": [
+						{
+							"version": "0.1.0",
+							"lastUpdated": "10/1/2021",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://dsct.blob.core.windows.net/extensions/net-6-runtime/21271.1/net-6-runtime-0.1.0.vsix"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://dsct.blob.core.windows.net/extensions/net-6-runtime/21271.1/icon.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://dsct.blob.core.windows.net/extensions/net-6-runtime/21271.1/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
+									"source": "https://dsct.blob.core.windows.net/extensions/net-6-runtime/21271.1/CHANGELOG.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://dsct.blob.core.windows.net/extensions/net-6-runtime/21271.1/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://dsct.blob.core.windows.net/extensions/net-6-runtime/21271.1/LICENSE.rtf"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": ">=1.21.0"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/Microsoft"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "hidden"
 				}
 			],
 			"resultMetadata": [
@@ -4316,7 +4377,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 71
+							"count": 72
 						}
 					]
 				}
