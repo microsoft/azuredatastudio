@@ -643,8 +643,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 							} else {
 								this._angularEventing.sendAngularEvent(editor.uri, AngularEventType.NAV_DATABASE);
 							}
-							found = true;
 						}, errors.onUnexpectedError);
+					found = true;
 				}
 			}
 		});

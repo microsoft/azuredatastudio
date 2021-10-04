@@ -71,6 +71,9 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 					this.options.expiresOn = model.options.expiresOn;
 				}
 			}
+			if (model.connectToDatabase) {
+				this.connectToDatabase = true;
+			}
 		} else {
 			//Default for a new connection
 			this.savePassword = false;
@@ -157,6 +160,14 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 
 	public set azureResourceId(value: string | undefined) {
 		this.options['azureResourceId'] = value;
+	}
+
+	public get connectToDatabase() {
+		return this.options['connectToDatabase'];
+	}
+
+	public set connectToDatabase(value: boolean | undefined) {
+		this.options['connectToDatabase'] = value;
 	}
 
 	public get registeredServerDescription(): string {

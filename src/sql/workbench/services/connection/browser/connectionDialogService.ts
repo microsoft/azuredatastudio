@@ -196,6 +196,11 @@ export class ConnectionDialogService implements IConnectionDialogService {
 					profile.providerName = Constants.mssqlProviderName;
 				}
 
+				// Determine if database has been specified to connect to
+				if (profile.databaseName && !(profile.databaseName === `''`)) {
+					profile.connectToDatabase = true;
+				}
+
 				// Disable password prompt during reconnect if connected with an empty password
 				if (profile.password === '' && profile.savePassword === false) {
 					profile.savePassword = true;

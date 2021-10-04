@@ -135,8 +135,5 @@ export function findProfileInGroup(og: IConnectionProfile, groups: ConnectionPro
 }
 
 export function isMaster(profile: IConnectionProfile): boolean {
-	// TODO: the connection profile should have a property to indicate whether the connection is a server connection or database connection
-	// created issue to track the problem: https://github.com/Microsoft/azuredatastudio/issues/5193.
-	return (profile.providerName === mssqlProviderName && profile.databaseName?.toLowerCase() === 'master')
-		|| (profile.providerName.toLowerCase() === 'pgsql' && profile.databaseName?.toLowerCase() === 'postgres');
+	return (!profile.connectToDatabase);
 }
