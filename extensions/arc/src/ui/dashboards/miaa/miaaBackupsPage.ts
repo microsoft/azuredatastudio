@@ -3,19 +3,21 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-// import * as vscode from 'vscode';
+import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-// import * as azExt from 'az-ext';
+import * as azExt from 'az-ext';
 import * as loc from '../../../localizedConstants';
 import { IconPathHelper, cssStyles } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { MiaaModel } from '../../../models/miaaModel';
 import { ControllerModel } from '../../../models/controllerModel';
-import { getDatabaseStateDisplayText } from '../../../common/utils';
+import { ConfigureRPOSqlDialog } from '../../dialogs/configureRPOSqlDialog';
+//import { getDatabaseStateDisplayText } from '../../../common/utils';
 
 export class MiaaBackupsPage extends DashboardPage {
 	constructor(modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, private _controllerModel: ControllerModel, private _miaaModel: MiaaModel) {
 		super(modelView, dashboard);
+		this._azApi = vscode.extensions.getExtension(azExt.extension.name)?.exports;
 		//this._instanceProperties.miaaAdmin = this._miaaModel.username || this._instanceProperties.miaaAdmin;
 		this.disposables.push(
 			this._miaaModel.onDatabasesUpdated(() => this.eventuallyRunOnInitialized(() => this.handleDatabasesUpdated()))
@@ -23,11 +25,21 @@ export class MiaaBackupsPage extends DashboardPage {
 	}
 
 	private _databasesContainer!: azdata.DivContainer;
+	private _configureRetentionPolicyButton!: azdata.ButtonComponent;
 	private _connectToServerLoading!: azdata.LoadingComponent;
 	private _connectToServerButton!: azdata.ButtonComponent;
 	private _databasesTableLoading!: azdata.LoadingComponent;
 	private _databasesTable!: azdata.DeclarativeTableComponent;
 	private _databasesMessage!: azdata.TextComponent;
+	private readonly _azApi: azExt.IExtension;
+
+	private saveArgs: {
+		coresLimit?: string,
+		coresRequest?: string,
+		memoryLimit?: string,
+		memoryRequest?: string
+	} = {};
+
 	public get title(): string {
 		return loc.backup;
 	}
@@ -42,9 +54,9 @@ export class MiaaBackupsPage extends DashboardPage {
 	protected async refresh(): Promise<void> {
 		await Promise.all([this._controllerModel.refresh(false, this._controllerModel.info.namespace), this._miaaModel.refresh()]);
 	}
-	protected async configureRetentionPolicyButton(): Promise<void> {
-		await Promise.all([this._controllerModel.refresh(false, this._controllerModel.info.namespace), this._miaaModel.refresh()]);
-	}
+	// protected async configureRetentionPolicyButton(): Promise<void> {
+	// 	await Promise.all([this._controllerModel.refresh(false, this._controllerModel.info.namespace), this._miaaModel.refresh()]);
+	// }
 
 	public get container(): azdata.Component {
 		const root = this.modelView.modelBuilder.divContainer().component();
@@ -68,14 +80,14 @@ export class MiaaBackupsPage extends DashboardPage {
 			CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
-		const backupDatabaseInfoAndLinks = this.modelView.modelBuilder.flexContainer()
+		const backupDatabaseInfoAndLink = this.modelView.modelBuilder.flexContainer()
 		.withLayout({ flexWrap: 'wrap' })
 		.withItems([
 			backupInfoDescrition,
 			backupsDbsLearnMoreLink
 		], { CSSStyles: { 'margin-right': '5px' } }).component();
 
-		content.addItem(backupDatabaseInfoAndLinks, { CSSStyles: { 'min-height': '30px' } });
+		content.addItem(backupDatabaseInfoAndLink, { CSSStyles: { 'min-height': '30px' } });
 		content.addItem(this.modelView.modelBuilder.text().withProps({
 			value: loc.backup,
 			CSSStyles: { ...cssStyles.title }
@@ -109,15 +121,23 @@ export class MiaaBackupsPage extends DashboardPage {
 			width: '100%',
 			columns: [
 				{
-					displayName: loc.name,
+					displayName: loc.database,
 					valueType: azdata.DeclarativeDataType.string,
 					isReadOnly: true,
-					width: '80%',
+					width: '30%',
 					headerCssStyles: cssStyles.tableHeader,
 					rowCssStyles: cssStyles.tableRow
 				},
 				{
-					displayName: loc.status,
+					displayName: loc.pitrRestorePoint,
+					valueType: azdata.DeclarativeDataType.string,
+					isReadOnly: true,
+					width: '50%',
+					headerCssStyles: cssStyles.tableHeader,
+					rowCssStyles: cssStyles.tableRow
+				},
+				{
+					displayName: loc.restore,
 					valueType: azdata.DeclarativeDataType.string,
 					isReadOnly: true,
 					width: '20%',
@@ -170,41 +190,61 @@ export class MiaaBackupsPage extends DashboardPage {
 					refreshButton.enabled = true;
 				}
 			}));
-		const configureRetentionPolicyButton = this.modelView.modelBuilder.button().withProps({
+		const _configureRetentionPolicyButton = this.modelView.modelBuilder.button().withProps({
 				label: loc.configureRetentionPolicyButton,
 				enabled: true,
 				iconPath: IconPathHelper.edit,
-				CSSStyles: {
-				'height': '16px',
-				'width': '150px',
-				'left': '32px',
-				'top': '10px',
-				'border-radius': 'nullpx',
-				}
 			}).component();
 		this.disposables.push(
-			configureRetentionPolicyButton.onDidClick(async () => {
-				configureRetentionPolicyButton.enabled = false;
+			_configureRetentionPolicyButton.onDidClick(async () => {
+				const rpoSqlDialog = new ConfigureRPOSqlDialog(this._miaaModel);
+				rpoSqlDialog.showDialog(loc.configureRPO);
+
+				let rpArg = await rpoSqlDialog.waitForClose();
+				if (rpArg) {
 					try {
-						await this.configureRetentionPolicyButton();
+						this._configureRetentionPolicyButton.enabled = false;
+						//let extensionList = this.extensionNames.length ? this.extensionNames.join() + ',' + extArg : extArg;
+						await vscode.window.withProgress(
+							{
+								location: vscode.ProgressLocation.Notification,
+								title: loc.updatingInstance(this._miaaModel.info.name),
+								cancellable: false
+							},
+							async (_progress, _token): Promise<void> => {
+								await this._azApi.az.sql.miarc.edit(
+									this._miaaModel.info.name, this.saveArgs, this._miaaModel.controllerModel.info.namespace, this._miaaModel.controllerModel.azAdditionalEnvVars);
+
+								try {
+									await this._miaaModel.refresh();
+								} catch (error) {
+									vscode.window.showErrorMessage(loc.refreshFailed(error));
+								}
+							}
+						);
+
+						vscode.window.showInformationMessage(loc.extensionsAdded(rpArg));
+
+					} catch (error) {
+						vscode.window.showErrorMessage(loc.updateExtensionsFailed(error));
 					} finally {
-						configureRetentionPolicyButton.enabled = true;
+						this._configureRetentionPolicyButton.enabled = true;
 					}
+				}
 				}));
 
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems(
 				[
 					{ component: refreshButton, toolbarSeparatorAfter: true },
-					{ component: configureRetentionPolicyButton, toolbarSeparatorAfter: false },
+					{ component: _configureRetentionPolicyButton, toolbarSeparatorAfter: false },
 
 				]
 			).component();
-
 	}
 
 	private handleDatabasesUpdated(): void {
 		// If we were able to get the databases it means we have a good connection so update the username too
-		let databaseDisplayText = this._miaaModel.databases.map(d => [d.name, getDatabaseStateDisplayText(d.status)]);
+		let databaseDisplayText = this._miaaModel.databases.map(d => [d.name, d.lastBackup, ]);
 		let databasesTextValues = databaseDisplayText.map(d => {
 			return d.map((value): azdata.DeclarativeTableCellValue => {
 				return { value: value };

@@ -319,6 +319,8 @@ declare module 'az-ext' {
 						memoryLimit?: string,
 						memoryRequest?: string,
 						noWait?: boolean,
+						recoveryPointObjective?: string,
+						retentionDays?: string,
 					},
 					namespace?: string,
 					additionalEnvVars?: AdditionalEnvVars
