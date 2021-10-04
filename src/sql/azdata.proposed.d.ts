@@ -976,4 +976,16 @@ declare module 'azdata' {
 			expiresOn?: number
 		}
 	}
+
+	export interface ConnectionInfoSummary {
+		/**
+		 * Indicates whether the server version is supported by ADS. The default value is true. If the value is false, ADS will show a warning message.
+		 */
+		isSupportedVersion?: boolean;
+
+		/**
+		 * The messages that will be appended to the Azure Data Studio's warning message about unsupported versions.
+		 */
+		unsupportedVersionMessage?: string;
+	}
 }

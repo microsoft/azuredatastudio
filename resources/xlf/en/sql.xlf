@@ -1331,6 +1331,9 @@
     <trans-unit id="connection.parseClipboardForConnectionStringDescription">
       <source xml:lang="en">Attempt to parse the contents of the clipboard when the connection dialog is opened or a paste is performed.</source>
     </trans-unit>
+    <trans-unit id="connection.showUnsupportedServerVersionWarning">
+      <source xml:lang="en">Whether to show the warning message when user connects to a server version that is not supported by Azure Data Studio.</source>
+    </trans-unit>
     <trans-unit id="sql.defaultAuthenticationType.AzureMFA">
       <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
     </trans-unit>
@@ -4797,11 +4800,17 @@ Error: {1}</source>
     <trans-unit id="connection.invalidConnectionResult">
       <source xml:lang="en">Connection result is invalid</source>
     </trans-unit>
+    <trans-unit id="connection.neverShowUnsupportedVersionWarning">
+      <source xml:lang="en">Don't show again</source>
+    </trans-unit>
     <trans-unit id="connection.noAzureAccount">
       <source xml:lang="en">Failed to get Azure account token for connection</source>
     </trans-unit>
     <trans-unit id="connection.refreshAzureTokenFailure">
       <source xml:lang="en">Failed to refresh Azure account token for connection</source>
+    </trans-unit>
+    <trans-unit id="connection.unsupportedServerVersionWarning">
+      <source xml:lang="en">The server version is not supported by Azure Data Studio, you may still connect to it but some features in Azure Data Studio might not work as expected.</source>
     </trans-unit>
     <trans-unit id="connectionManagementService.noProviderForUri">
       <source xml:lang="en">Could not find provider for uri: {0}</source>
