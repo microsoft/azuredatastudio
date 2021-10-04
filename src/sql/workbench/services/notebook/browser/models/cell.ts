@@ -85,7 +85,7 @@ export class CellModel extends Disposable implements ICellModel {
 	private _outputCounter = 0; // When re-executing the same cell, ensure that we apply chart options in the same order
 	private _attachments: nb.ICellAttachments | undefined;
 	private _preventNextChartCache: boolean = false;
-	public lastEditMode: string | undefined;
+	private _lastEditMode: string | undefined;
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
@@ -227,7 +227,7 @@ export class CellModel extends Disposable implements ICellModel {
 	public set isEditMode(isEditMode: boolean) {
 		this._isEditMode = isEditMode;
 		if (this._isEditMode) {
-			const newEditMode = this.lastEditMode ?? this._defaultTextEditMode;
+			const newEditMode = this._lastEditMode ?? this._defaultTextEditMode;
 			this.showPreview = newEditMode !== TextCellEditModes.Markdown;
 			this.showMarkdown = newEditMode !== TextCellEditModes.RichText;
 		}
@@ -314,7 +314,7 @@ export class CellModel extends Disposable implements ICellModel {
 			this.sendChangeToNotebook(NotebookChangeType.CellSourceUpdated);
 			this.cellSourceChanged = true;
 			if (this.isEditMode) {
-				this.lastEditMode = this._showPreview && this._showMarkdown ? TextCellEditModes.SplitView : (this._showMarkdown ? TextCellEditModes.Markdown : TextCellEditModes.RichText);
+				this._lastEditMode = this._showPreview && this._showMarkdown ? TextCellEditModes.SplitView : (this._showMarkdown ? TextCellEditModes.Markdown : TextCellEditModes.RichText);
 			}
 		}
 		this._modelContentChangedEvent = undefined;
