@@ -370,7 +370,7 @@ export class TreeView extends Disposable implements ITreeView {
 			if (action instanceof MenuItemAction) {
 				return this.instantiationService.createInstance(MenuEntryActionViewItem, action, undefined);
 			} else if (action instanceof SubmenuItemAction) {
-				return this.instantiationService.createInstance(SubmenuEntryActionViewItem, action);
+				return this.instantiationService.createInstance(SubmenuEntryActionViewItem, action, undefined);
 			}
 
 			return undefined;
@@ -851,7 +851,7 @@ class TreeRenderer extends Disposable implements ITreeRenderer<ITreeItem, FuzzyS
 							targetElements: [this],
 							dispose: () => { }
 						};
-						hoverOptions = { text: tooltip, target };
+						hoverOptions = { content: tooltip, target };
 					}
 					if (mouseX !== undefined) {
 						(<IHoverTarget>hoverOptions.target).x = mouseX;

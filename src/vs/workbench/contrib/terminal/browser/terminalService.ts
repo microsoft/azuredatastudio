@@ -213,7 +213,7 @@ export class TerminalService implements ITerminalService {
 						forceReload: true,
 						override: TerminalEditor.ID
 					}
-				};
+				} as any; // {{SQL CARBON EDIT}} Cast to avoid compile error due to strictNullChecks being false
 			});
 
 		this._forwardInstanceHostEvents(this._terminalGroupService);
@@ -1122,7 +1122,7 @@ export class TerminalService implements ITerminalService {
 
 	async createTerminal(options?: ICreateTerminalOptions): Promise<ITerminalInstance> {
 		const config = options?.config || this._availableProfiles?.find(p => p.profileName === this._defaultProfileName);
-		const shellLaunchConfig = config && 'extensionIdentifier' in config ? {} : this._convertProfileToShellLaunchConfig(config || {});
+		const shellLaunchConfig = config && 'extensionIdentifier' in config ? {} : this._convertProfileToShellLaunchConfig((config as IShellLaunchConfig | ITerminalProfile) || {}); // {{SQL CARBON EDIT}} Cast to avoid compile error
 
 		// Get the contributed profile if it was provided
 		let contributedProfile = config && 'extensionIdentifier' in config ? config : undefined;
@@ -1213,7 +1213,7 @@ export class TerminalService implements ITerminalService {
 
 	private _resolveLocation(location?: ITerminalLocationOptions): TerminalLocation | undefined {
 		if (!location) {
-			return location;
+			return undefined; // {{SQL CARBON EDIT}} Return undefined directly to avoid compile error
 		} else if (typeof location === 'object') {
 			if ('parentTerminal' in location) {
 				return location.parentTerminal.target;

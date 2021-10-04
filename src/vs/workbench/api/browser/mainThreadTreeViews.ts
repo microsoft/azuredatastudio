@@ -242,11 +242,11 @@ export class TreeViewDataProvider implements ITreeViewDataProvider {
 		return this.itemsMap.size === 0;
 	}
 
-	public async postGetChildren(elements: ITreeItem[] | undefined): Promise<ITreeItem[] | undefined> { // {{SQL CARBON EDIT}} For use by Component Tree View
+	protected async postGetChildren(elements: ITreeItem[] | undefined): Promise<ITreeItem[] | undefined> { // {{SQL CARBON EDIT}} For use by Component Tree View
 		if (elements === undefined) {
 			return undefined;
 		}
-		const result: ITreeItem[] = []; // {{SQL CARBON EDIT}} Use generic type for component tree view
+		const result: ITreeItem[] = []; // {{SQL CARBON EDIT}} We don't always return ResolvableTreeItems
 		const hasResolve = await this.hasResolve;
 		if (elements) {
 			for (const element of elements) {

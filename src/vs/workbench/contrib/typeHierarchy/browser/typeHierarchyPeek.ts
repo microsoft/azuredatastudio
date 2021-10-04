@@ -363,7 +363,7 @@ export class TypeHierarchyTreePeekWidget extends peekView.PeekViewWidget {
 
 		await this._tree.setInput(model, viewState);
 
-		const root = <ITreeNode<typeHTree.Type>>this._tree.getNode(model).children[0];
+		const root = <ITreeNode<typeHTree.Type>>(this._tree.getNode(model).children[0] as any); // {{SQL CARBON EDIT}} Cast to avoid compiler warning from having strictNullChecks disabled
 		await this._tree.expand(root.element);
 
 		if (root.children.length === 0) {

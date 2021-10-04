@@ -109,7 +109,7 @@ export class FileDialogService extends AbstractFileDialogService implements IFil
 		try {
 			fileHandle = await window.showSaveFilePicker({ types: this.getFilePickerTypes(options.filters), ...{ suggestedName: basename(defaultUri) } });
 		} catch (error) {
-			return; // `showSaveFilePicker` will throw an error when the user cancels
+			return undefined; // `showSaveFilePicker` will throw an error when the user cancels {{SQL CARBON EDIT}} Avoid compiler warning from having strictNullChecks disabled
 		}
 
 		return this.fileSystemProvider.registerFileHandle(fileHandle);
@@ -144,7 +144,7 @@ export class FileDialogService extends AbstractFileDialogService implements IFil
 		try {
 			fileHandle = await window.showSaveFilePicker({ types: this.getFilePickerTypes(options.filters), ...options.defaultUri ? { suggestedName: basename(options.defaultUri) } : undefined });
 		} catch (error) {
-			return; // `showSaveFilePicker` will throw an error when the user cancels
+			return undefined; // `showSaveFilePicker` will throw an error when the user cancels  {{SQL CARBON EDIT}} Avoid compiler warning from having strictNullChecks disabled
 		}
 
 		return this.fileSystemProvider.registerFileHandle(fileHandle);

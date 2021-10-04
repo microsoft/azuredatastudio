@@ -124,7 +124,7 @@ export class TestDiskFileSystemProvider extends DiskFileSystemProvider {
 	}
 }
 
-suite.skip('Disk File Service', function () { // {{SQL CARBON EDIT}} Disable occasionally failing tests
+flakySuite('Disk File Service', function () {
 
 	const testSchema = 'test';
 
@@ -1146,7 +1146,7 @@ suite.skip('Disk File Service', function () { // {{SQL CARBON EDIT}} Disable occ
 		return testReadFile(URI.file(join(testDir, 'small.txt')));
 	});
 
-	test.skip('readFile - small file - buffered / readonly', () => { // {{SQL CARBON EDIT}} test is disabled due to failures
+	test('readFile - small file - buffered / readonly', () => {
 		setCapabilities(fileProvider, FileSystemProviderCapabilities.FileOpenReadWriteClose | FileSystemProviderCapabilities.Readonly);
 
 		return testReadFile(URI.file(join(testDir, 'small.txt')));
