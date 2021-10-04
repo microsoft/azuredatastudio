@@ -367,7 +367,7 @@ describe('BookTocManagerTests', function () {
 					],
 					'type': BookTreeItemType.savedNotebook
 				}
-			}
+			};
 		});
 
 		testRuns.forEach(function (run) {
@@ -555,7 +555,7 @@ describe('BookTocManagerTests', function () {
 					const section: JupyterBookSection = {
 						title: sectionA.title,
 						file: sectionA.uri
-					}
+					};
 					let isParent = bookTocManager.isParent(notebook1, sourceBook, section);
 					should(isParent).be.true('Section A is parent of notebook1');
 				});

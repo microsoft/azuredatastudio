@@ -220,7 +220,7 @@ describe('deploy service', function (): void {
 			appSettingType: AppSettingType.AzureFunction,
 			appSettingFile: filePath,
 			envVariableName: 'SQLConnectionString',
-		}
+		};
 		const deployService = new DeployService(testContext.outputChannel);
 		let connection = new azdata.connection.ConnectionProfile();
 		sandbox.stub(azdata.connection, 'getConnection').returns(Promise.resolve(connection));

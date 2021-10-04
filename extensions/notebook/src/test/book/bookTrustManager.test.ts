@@ -7,7 +7,7 @@ import * as should from 'should';
 import * as path from 'path';
 import * as TypeMoq from 'typemoq';
 import * as constants from '../../common/constants';
-import { BookTreeItemType } from '../../common/utils'
+import { BookTreeItemType } from '../../common/utils';
 import { IBookTrustManager, BookTrustManager } from '../../book/bookTrustManager';
 import { BookTreeItem, BookTreeItemFormat } from '../../book/bookTreeItem';
 import * as vscode from 'vscode';

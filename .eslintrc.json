@@ -1125,8 +1125,19 @@
 			"files": [
 				"src/{vs,sql}/server/*",
 
-				// {{SQL CARBON EDIT}} Ignore our own
+				// {{SQL CARBON EDIT}} Ignore our own that don't use our copyright
 				"extensions/azuremonitor/src/prompts/**",
+				"extensions/azuremonitor/src/typings/findRemove.d.ts",
+				"extensions/kusto/src/prompts/**",
+				"extensions/mssql/src/hdfs/webhdfs.ts",
+				"extensions/mssql/src/prompts/**",
+				"extensions/mssql/src/typings/bufferStreamReader.d.ts",
+				"extensions/mssql/src/typings/findRemove.d.ts",
+				"extensions/notebook/resources/jupyter_config/**",
+				"extensions/notebook/src/intellisense/text.ts",
+				"extensions/notebook/src/prompts/**",
+				"extensions/resource-deployment/src/typings/linuxReleaseInfo.d.ts",
+
 				"src/sql/workbench/services/notebook/browser/outputs/renderers.ts",
 				"src/sql/workbench/services/notebook/browser/outputs/tableRenderers.ts"
 			],
