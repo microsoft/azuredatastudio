@@ -3670,14 +3670,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.5.5",
-							"lastUpdated": "09/03/2021",
+							"version": "0.5.7",
+							"lastUpdated": "09/30/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/kusto/kusto-0.5.5.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/kusto/kusto-0.5.7.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -4215,14 +4215,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.1.6",
-							"lastUpdated": "09/03/2021",
+							"version": "0.1.8",
+							"lastUpdated": "09/30/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/azuremonitor/azuremonitor-0.1.6.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/azuremonitor/azuremonitor-0.1.8.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
