@@ -68,6 +68,7 @@ export class NotebookViewModel implements INotebookView {
 				width: DEFAULT_VIEW_CARD_WIDTH,
 				height: DEFAULT_VIEW_CARD_HEIGHT
 			});
+			this._notebookViews.setCellMetadata(cell, meta);
 		}
 	}
 
