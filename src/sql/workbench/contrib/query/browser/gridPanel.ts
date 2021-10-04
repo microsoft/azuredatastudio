@@ -390,7 +390,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		super();
 
 		this.options = { ...defaultGridTableOptions, ...options };
-		this.copyHeaders = this.configurationService.getValue<boolean>('queryEditor.results.saveAsCsv.includeHeaders');
+		this.copyHeaders = this.configurationService.getValue<boolean>('queryEditor.results.copyIncludeHeaders');
 		let config = this.configurationService.getValue<{ rowHeight: number }>('resultsGrid');
 		this.rowHeight = config && config.rowHeight ? config.rowHeight : ROW_HEIGHT;
 		this.state = state;
