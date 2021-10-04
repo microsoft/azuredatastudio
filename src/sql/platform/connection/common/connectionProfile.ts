@@ -82,7 +82,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 		this.options['databaseDisplayName'] = this.databaseName;
 	}
 
-	public static matchesProfile(a: interfaces.IConnectionProfile, b: interfaces.IConnectionProfile): boolean {
+	public static matchesProfile(a: interfaces.IConnectionProfile | undefined, b: interfaces.IConnectionProfile | undefined): boolean {
 		return a && b && a.getOptionsKey() === b.getOptionsKey();
 	}
 
