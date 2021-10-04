@@ -513,11 +513,13 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				}
 				// check to see if the nodes exist and set the cursor
 				if (startNodeElement && endNodeElement) {
-					selection.removeAllRanges();
 					let range = document.createRange();
-					range.setStart(startNodeElement, this.cellModel.richTextCursorPosition.startOffset);
-					range.setEnd(endNodeElement, this.cellModel.richTextCursorPosition.endOffset);
-					selection.addRange(range);
+					if (startNodeElement.length >= this.cellModel.richTextCursorPosition.startOffset && endNodeElement.length >= this.cellModel.richTextCursorPosition.endOffset) {
+						range.setStart(startNodeElement, this.cellModel.richTextCursorPosition.startOffset);
+						range.setEnd(endNodeElement, this.cellModel.richTextCursorPosition.endOffset);
+						selection.removeAllRanges();
+						selection.addRange(range);
+					}
 				}
 			}
 		} else {
