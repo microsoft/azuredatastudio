@@ -221,7 +221,7 @@
     "figures": "^2.0.0",
     "find-remove": "1.2.1",
     "@microsoft/ads-service-downloader": "0.2.3",
-    "vscode-extension-telemetry": "0.1.0",
+    "vscode-extension-telemetry": "0.4.2",
     "vscode-languageclient": "5.2.1",
     "vscode-nls": "^4.0.0"
   },
