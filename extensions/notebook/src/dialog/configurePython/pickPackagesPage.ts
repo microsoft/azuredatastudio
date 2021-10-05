@@ -160,7 +160,7 @@ export class PickPackagesPage extends BasePage {
 			} else {
 				this.instance.showErrorMessage(localize('msgUnsupportedKernel', "Could not retrieve packages for kernel {0}", kernelName));
 				this.requiredPackagesTable.data = [['-', '-', '-']];
-				this.model.packagesToInstall = undefined;
+				this.model.packagesToInstall = [];
 			}
 		} finally {
 			this.instance.wizard.doneButton.enabled = true;
