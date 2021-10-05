@@ -10,18 +10,144 @@ import { INotebookKernelDto2 } from 'vs/workbench/api/common/extHost.protocol';
 import { Emitter } from 'vs/base/common/event';
 import * as extHostTypeConverters from 'vs/workbench/api/common/extHostTypeConverters';
 
+class VSCodeSession implements azdata.nb.ISession {
+	constructor(options: azdata.nb.ISessionOptions) {
+
+	}
+
+	public get canChangeKernels(): boolean {
+		throw new Error('Method not implemented.');
+	}
+
+	public get id(): string {
+		throw new Error('Method not implemented.');
+	}
+
+	public get path(): string {
+		throw new Error('Method not implemented.');
+	}
+
+	public get name(): string {
+		throw new Error('Method not implemented.');
+	}
+
+	public get type(): string {
+		throw new Error('Method not implemented.');
+	}
+
+	public get status(): azdata.nb.KernelStatus {
+		throw new Error('Method not implemented.');
+	}
+
+	public get kernel(): azdata.nb.IKernel {
+		throw new Error('Method not implemented.');
+	}
+
+	public get defaultKernelLoaded(): boolean | undefined {
+		throw new Error('Method not implemented.');
+	}
+
+	public changeKernel(kernelInfo: azdata.nb.IKernelSpec): Thenable<azdata.nb.IKernel> {
+		throw new Error('Method not implemented.');
+	}
+
+	public configureKernel(kernelInfo: azdata.nb.IKernelSpec): Thenable<void> {
+		throw new Error('Method not implemented.');
+	}
+
+	public configureConnection(connection: azdata.IConnectionProfile): Thenable<void> {
+		throw new Error('Method not implemented.');
+	}
+}
+
+class VSCodeSessionManager implements azdata.nb.SessionManager {
+	private _sessions: azdata.nb.ISession[] = [];
+
+	constructor(private readonly _controller: vscode.NotebookController) {
+	}
+
+	public get isReady(): boolean {
+		return true;
+	}
+
+	public get ready(): Thenable<void> {
+		return Promise.resolve();
+	}
+
+	public get specs(): azdata.nb.IAllKernels {
+		let languages = this._controller.supportedLanguages?.length > 0 ? this._controller.supportedLanguages : [this._controller.label];
+		return {
+			defaultKernel: languages[0],
+			kernels: languages.map<azdata.nb.IKernelSpec>(language => {
+				return {
+					name: language
+				};
+			})
+		};
+	}
+
+	public startNew(options: azdata.nb.ISessionOptions): Thenable<azdata.nb.ISession> {
+		let session: azdata.nb.ISession = new VSCodeSession(options);
+		let index = this._sessions.findIndex(session => session.path === options.path);
+		if (index > -1) {
+			this._sessions.splice(index);
+		}
+		this._sessions.push(session);
+		return Promise.resolve(session);
+	}
+
+	public shutdown(id: string): Thenable<void> {
+		let index = this._sessions.findIndex(session => session.id === id);
+		if (index > -1) {
+			this._sessions.splice(index);
+		}
+		return Promise.resolve();
+	}
+
+	public shutdownAll(): Thenable<void> {
+		return Promise.all(this._sessions.map(session => {
+			return this.shutdown(session.id);
+		})).then();
+	}
+
+	public dispose(): void {
+		this._controller.dispose();
+	}
+}
+
+class VSCodeExecuteManager implements azdata.nb.ExecuteManager {
+	private readonly _sessionManager: azdata.nb.SessionManager;
+
+	constructor(private readonly _controller: vscode.NotebookController) {
+		this._sessionManager = new VSCodeSessionManager(this._controller);
+	}
+
+	public get sessionManager(): azdata.nb.SessionManager {
+		return this._sessionManager;
+	}
+
+	public get serverManager(): azdata.nb.ServerManager | undefined {
+		return undefined;
+	}
+}
+
 export class VSCodeExecuteProvider implements azdata.nb.NotebookExecuteProvider {
+	private readonly _executeManager: azdata.nb.ExecuteManager;
 
-	constructor(controller: vscode.NotebookController) {
-
+	constructor(private readonly _controller: vscode.NotebookController) {
+		this._executeManager = new VSCodeExecuteManager(this._controller);
 	}
 
-	providerId: string;
-	getExecuteManager(notebookUri: vscode.Uri): Thenable<azdata.nb.ExecuteManager> {
-		throw new Error('Method not implemented.');
+	public get providerId(): string {
+		return this._controller.id;
 	}
-	handleNotebookClosed(notebookUri: vscode.Uri): void {
-		throw new Error('Method not implemented.');
+
+	public getExecuteManager(notebookUri: vscode.Uri): Thenable<azdata.nb.ExecuteManager> {
+		return Promise.resolve(this._executeManager);
+	}
+
+	public handleNotebookClosed(notebookUri: vscode.Uri): void {
+		// No-op
 	}
 }
 
