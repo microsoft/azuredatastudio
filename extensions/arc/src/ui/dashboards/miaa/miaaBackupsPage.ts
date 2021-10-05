@@ -9,7 +9,7 @@ import * as azExt from 'az-ext';
 import * as loc from '../../../localizedConstants';
 import { IconPathHelper, cssStyles } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
-import { MiaaModel } from '../../../models/miaaModel';
+import { MiaaModel, RPModel } from '../../../models/miaaModel';
 import { ControllerModel } from '../../../models/controllerModel';
 import { ConfigureRPOSqlDialog } from '../../dialogs/configureRPOSqlDialog';
 
@@ -17,9 +17,6 @@ export class MiaaBackupsPage extends DashboardPage {
 	constructor(modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, private _controllerModel: ControllerModel, private _miaaModel: MiaaModel) {
 		super(modelView, dashboard);
 		this._azApi = vscode.extensions.getExtension(azExt.extension.name)?.exports;
-		//this._instanceProperties.miaaAdmin = this._miaaModel.username || this._instanceProperties.miaaAdmin;
-		this.saveArgs.recoveryPointObjective = this._miaaModel.rpSettings.rpo ? this.saveArgs.recoveryPointObjective : '';
-		this.saveArgs.retentionDays = this._miaaModel.rpSettings.rd ? this.saveArgs.retentionDays : '';
 		this.disposables.push(
 			this._miaaModel.onDatabasesUpdated(() => this.eventuallyRunOnInitialized(() => this.handleDatabasesUpdated())),
 			this._miaaModel.onConfigUpdated(() => this.eventuallyRunOnInitialized(() => this.handleDatabasesUpdated()))
@@ -35,10 +32,10 @@ export class MiaaBackupsPage extends DashboardPage {
 	private _databasesMessage!: azdata.TextComponent;
 	private readonly _azApi: azExt.IExtension;
 
-	private saveArgs: {
-		recoveryPointObjective?: string,
-		retentionDays?: string
-	} = {};
+	public saveArgs: RPModel = {
+		recoveryPointObjective: '',
+		retentionDays: ''
+	};
 
 	public get title(): string {
 		return loc.backup;
@@ -88,10 +85,6 @@ export class MiaaBackupsPage extends DashboardPage {
 			], { CSSStyles: { 'margin-right': '5px' } }).component();
 
 		content.addItem(backupDatabaseInfoAndLink, { CSSStyles: { 'min-height': '30px' } });
-		// content.addItem(this.modelView.modelBuilder.text().withProps({
-		// 	value: loc.backup,
-		// 	CSSStyles: { ...cssStyles.title }
-		// }).component());
 
 		// Create loaded components
 		const connectToServerText = this.modelView.modelBuilder.text().withProps({
@@ -153,9 +146,6 @@ export class MiaaBackupsPage extends DashboardPage {
 
 		this.handleDatabasesUpdated();
 		this._databasesTableLoading.component = this._databasesTable;
-
-		//const titleCSS = { ...cssStyles.title, 'margin-block-start': '2em', 'margin-block-end': '0' };
-		//root.addItem(this.modelView.modelBuilder.text().withProps({ value: loc.databases, CSSStyles: titleCSS }).component());
 		this.disposables.push(
 			this._connectToServerButton!.onDidClick(async () => {
 				this._connectToServerButton!.enabled = false;
@@ -197,15 +187,16 @@ export class MiaaBackupsPage extends DashboardPage {
 		this.disposables.push(
 			this._configureRetentionPolicyButton.onDidClick(async () => {
 				const rpoSqlDialog = new ConfigureRPOSqlDialog(this._miaaModel);
-
+				this.refreshRD();
+				this.refreshRPO();
 				rpoSqlDialog.showDialog(loc.configureRPO, this.saveArgs.recoveryPointObjective, this.saveArgs.retentionDays);
 
 				let rpArg = await rpoSqlDialog.waitForClose();
 				if (rpArg) {
 					try {
 						this._configureRetentionPolicyButton.enabled = false;
-						this.saveArgs.recoveryPointObjective = rpArg?.rpo;
-						this.saveArgs.retentionDays = rpArg?.rd;
+						this.saveArgs.recoveryPointObjective = rpArg.recoveryPointObjective;
+						this.saveArgs.retentionDays = rpArg.retentionDays;
 						//let extensionList = this.extensionNames.length ? this.extensionNames.join() + ',' + extArg : extArg;
 						await vscode.window.withProgress(
 							{
@@ -264,6 +255,26 @@ export class MiaaBackupsPage extends DashboardPage {
 				this._connectToServerLoading.loading = false;
 				this._connectToServerButton.enabled = true;
 			}
+		}
+	}
+	private refreshRPO(): void {
+		let current = this._miaaModel.config?.spec?.backup?.recoveryPointObjectiveInSeconds;
+
+		if (!current) {
+			this.saveArgs.recoveryPointObjective = '';
+		}
+		else {
+			this.saveArgs.recoveryPointObjective = current.toString();
+		}
+	}
+	private refreshRD(): void {
+		let current = this._miaaModel.config?.spec?.backup?.retentionPeriodInDays;
+
+		if (!current) {
+			this.saveArgs.retentionDays = '';
+		}
+		else {
+			this.saveArgs.retentionDays = current.toString();
 		}
 	}
 }

@@ -17,6 +17,11 @@ export class ConfigureRPOSqlDialog extends InitializingComponent {
 
 	protected _completionPromise = new Deferred<RPModel | undefined>();
 
+	public saveArgs: RPModel = {
+		recoveryPointObjective: '',
+		retentionDays: ''
+	};
+
 	constructor(protected _model: MiaaModel) {
 		super();
 	}
@@ -102,9 +107,9 @@ export class ConfigureRPOSqlDialog extends InitializingComponent {
 			return false;
 		}
 		else {
-			this._model.rpSettings.rpo = this.rpoInputBox.value;
-			this._model.rpSettings.rd = this.retentionDaysInputBox.value;
-			this._completionPromise.resolve(this._model.rpSettings);
+			this.saveArgs.recoveryPointObjective = this.rpoInputBox.value;
+			this.saveArgs.retentionDays = this.retentionDaysInputBox.value;
+			this._completionPromise.resolve(this.saveArgs);
 		}
 		return true;
 	}

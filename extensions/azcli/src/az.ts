@@ -174,8 +174,8 @@ export class AzTool implements azExt.IAzApi {
 				if (args.memoryLimit) { argsArray.push('--memory-limit', args.memoryLimit); }
 				if (args.memoryRequest) { argsArray.push('--memory-request', args.memoryRequest); }
 				if (args.noWait) { argsArray.push('--no-wait'); }
-				if (args.recoveryPointObjective) { argsArray.push('--recovery-point-objective'); }
-				if (args.retentionDays) { argsArray.push('--retention-days'); }
+				if (args.recoveryPointObjective) { argsArray.push('--recovery-point-objective', args.recoveryPointObjective); }
+				if (args.retentionDays) { argsArray.push('--retention-days', args.retentionDays); }
 				return this.executeCommand<void>(argsArray, additionalEnvVars);
 			}
 		}

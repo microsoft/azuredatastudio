@@ -16,27 +16,27 @@ import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
 import { ControllerModel, Registration } from './controllerModel';
 import { ResourceModel } from './resourceModel';
 
-
 export type DatabaseModel = { name: string, status: string, lastBackup: Date };
-export type RPModel = { rpo: string, rd: string};
-//export type DatabaseModelBackup = { name: string, status: string, lastBackup: Date };
+export type RPModel = { recoveryPointObjective: string, retentionDays: string };
 
 export class MiaaModel extends ResourceModel {
 
 	private _config: azExt.SqlMiShowResult | undefined;
 	private _databases: DatabaseModel[] = [];
-	private _rpSettings: RPModel = {
-		rpo: '5',
-		rd: '0'};
+
 	private readonly _onConfigUpdated = new vscode.EventEmitter<azExt.SqlMiShowResult | undefined>();
 	private readonly _onDatabasesUpdated = new vscode.EventEmitter<DatabaseModel[]>();
-	//private readonly _onRPUpdated = new vscode.EventEmitter<RPModel>();
+
 	private readonly _azApi: azExt.IExtension;
 	public onConfigUpdated = this._onConfigUpdated.event;
 	public onDatabasesUpdated = this._onDatabasesUpdated.event;
-	//public onRPUpdated = this._onRPUpdated.event;
+
 	public configLastUpdated: Date | undefined;
 	public databasesLastUpdated: Date | undefined;
+	public rpSettings: RPModel = {
+		recoveryPointObjective: '',
+		retentionDays: ''
+	};
 
 	private _refreshPromise: Deferred<void> | undefined = undefined;
 
@@ -71,9 +71,6 @@ export class MiaaModel extends ResourceModel {
 		return this._databases;
 	}
 
-	public get rpSettings(): RPModel {
-		return this._rpSettings;
-	}
 
 	/** Refreshes the model */
 	public async refresh(): Promise<void> {
@@ -86,7 +83,9 @@ export class MiaaModel extends ResourceModel {
 			try {
 				const result = await this._azApi.az.sql.miarc.show(this.info.name, this.controllerModel.info.namespace, this.controllerModel.azAdditionalEnvVars);
 				this._config = result.stdout;
+
 				this.configLastUpdated = new Date();
+				this.updateRPSettings();
 				this._onConfigUpdated.fire(this._config);
 			} catch (err) {
 				// If an error occurs show a message so the user knows something failed but still
@@ -200,5 +199,17 @@ export class MiaaModel extends ResourceModel {
 		this.info.connectionId = connectionProfile.id;
 		this._miaaInfo.userName = connectionProfile.userName;
 		await this._treeDataProvider.saveControllers();
+	}
+
+	public async updateRPSettings() {
+		let rpo = this._config?.spec?.backup?.recoveryPointObjectiveInSeconds?.toString();
+		let rd = this._config?.spec?.backup?.retentionPeriodInDays?.toString();
+		if (rpo !== undefined) {
+			this.rpSettings.recoveryPointObjective = rpo;
+		}
+		if (rd !== undefined) {
+			this.rpSettings.retentionDays = rd;
+		}
+
 	}
 }
