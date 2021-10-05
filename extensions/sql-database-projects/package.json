@@ -171,7 +171,8 @@
       },
       {
         "command": "sqlDatabaseProjects.addSqlBinding",
-        "title": "%sqlDatabaseProjects.addSqlBinding%"
+        "title": "%sqlDatabaseProjects.addSqlBinding%",
+        "category": "MS SQL"
       }
     ],
     "menus": {
