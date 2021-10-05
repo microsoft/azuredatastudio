@@ -214,6 +214,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			// On preview mode change, get the cursor position (get the position only when the selection node is a text node)
 			if (window.getSelection() && window.getSelection().focusNode?.nodeName === '#text' && window.getSelection().getRangeAt(0)) {
 				let selection = window.getSelection().getRangeAt(0);
+				// Check to see if the last cursor position is still the same and skip
 				if (selection.startOffset !== this.cellModel.richTextCursorPosition?.startOffset) {
 					// window.getSelection gives the exact html element and offsets of cursor location
 					// Since we only have the output element reference which is the parent of all html nodes
@@ -274,7 +275,11 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	getNodeIndex(n) {
-		let i = 0; while (n = n.previousSibling) { i++; }
+		let i = 0;
+		// walk up the node to the top and get it's index
+		while (n = n.previousSibling) {
+			i++;
+		}
 		return i;
 	}
 
@@ -513,8 +518,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				}
 				// check to see if the nodes exist and set the cursor
 				if (startNodeElement && endNodeElement) {
-					let range = document.createRange();
+					// check the offset is still valid (element's text updates can make it invalid)
 					if (startNodeElement.length >= this.cellModel.richTextCursorPosition.startOffset && endNodeElement.length >= this.cellModel.richTextCursorPosition.endOffset) {
+						let range = document.createRange();
 						range.setStart(startNodeElement, this.cellModel.richTextCursorPosition.startOffset);
 						range.setEnd(endNodeElement, this.cellModel.richTextCursorPosition.endOffset);
 						selection.removeAllRanges();
