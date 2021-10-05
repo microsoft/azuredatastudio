@@ -67,7 +67,7 @@ export class PackageHelper {
 			} else {
 				void vscode.window.showInformationMessage(constants.addPackageReferenceMessage, constants.moreInformation).then((result) => {
 					if (result === constants.moreInformation) {
-						void vscode.env.openExternal(vscode.Uri.parse('https://github.com/Azure/azure-functions-sql-extension/blob/main/README.md'));
+						void vscode.env.openExternal(vscode.Uri.parse(constants.sqlBindingsHelpLink));
 					}
 				});
 			}

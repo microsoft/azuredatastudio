@@ -466,6 +466,7 @@ export function getTargetPlatformFromVersion(version: string): string {
 export const hostFileName = 'host.json';
 export const sqlExtensionPackageName = 'Microsoft.Azure.WebJobs.Extensions.Sql';
 export const placeHolderObject = '[dbo].[table1]';
+export const sqlBindingsHelpLink = 'https://github.com/Azure/azure-functions-sql-extension/blob/main/README.md';
 
 export const input = localize('input', "Input");
 export const output = localize('output', "Output");
