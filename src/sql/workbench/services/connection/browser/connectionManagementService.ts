@@ -638,7 +638,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					editor.connectionProfile.databaseName = profile.databaseName;
 					this._editorService.openEditor(editor)
 						.then(() => {
-							if (!profile.databaseName || Utils.isMaster(profile)) {
+							if (!profile.databaseName || Utils.isServerConnection(profile)) {
 								this._angularEventing.sendAngularEvent(editor.uri, AngularEventType.NAV_SERVER);
 							} else {
 								this._angularEventing.sendAngularEvent(editor.uri, AngularEventType.NAV_DATABASE);

@@ -6,7 +6,6 @@
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 // CONSTANTS //////////////////////////////////////////////////////////////////////////////////////
 const msInH = 3.6e6;
@@ -134,6 +133,6 @@ export function findProfileInGroup(og: IConnectionProfile, groups: ConnectionPro
 	return undefined;
 }
 
-export function isMaster(profile: IConnectionProfile): boolean {
+export function isServerConnection(profile: IConnectionProfile): boolean {
 	return (!profile.connectToDatabase);
 }
