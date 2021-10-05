@@ -525,12 +525,12 @@ Includes non-masked style declarations. */
 }
 
 .codicon:not(.masked-icon).icon-split-cell {
-	background-image: url("i_split_cell.svg");
+	background-image: url("split_cell.svg");
 }
 
 .codicon.masked-icon.icon-split-cell:before {
-	-webkit-mask-image: url("i_split_cell.svg");
-	mask-image: url("i_split_cell.svg");
+	-webkit-mask-image: url("split_cell.svg");
+	mask-image: url("split_cell.svg");
 }
 
 /* Masked element inside pseudo element */
