@@ -39,8 +39,6 @@
     "download-builtin-extensions": "node build/lib/builtInExtensions.js",
     "download-builtin-extensions-cg": "node build/lib/builtInExtensionsCG.js",
     "monaco-compile-check": "tsc -p src/tsconfig.monaco.json --noEmit",
-    "strict-vscode": "node --max_old_space_size=4095 node_modules/typescript/bin/tsc -p src/tsconfig.vscode.json",
-    "strict-vscode-watch": "node --max_old_space_size=4095 node_modules/typescript/bin/tsc -p src/tsconfig.vscode.json --watch",
     "strict-initialization-watch": "tsc --watch -p src/tsconfig.json --noEmit --strictPropertyInitialization",
     "tsec-compile-check": "node node_modules/tsec/bin/tsec -p src/tsconfig.tsec.json",
     "vscode-dts-compile-check": "node node_modules/tsec/bin/tsec -p src/tsconfig.vscode-dts.json && node node_modules/tsec/bin/tsec -p src/tsconfig.vscode-proposed-dts.json",

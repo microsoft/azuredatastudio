@@ -82,7 +82,6 @@ steps:
     yarn sqllint
     yarn extensions-lint
     yarn gulp hygiene
-    yarn strict-vscode
     yarn valid-layers-check
   displayName: Run hygiene, eslint
   condition: and(succeeded(), eq(variables['VSCODE_STEP_ON_IT'], 'false'))

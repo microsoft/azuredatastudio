@@ -49,10 +49,6 @@ steps:
       yarn gulp hygiene
     displayName: Run Hygiene Checks
 
-  - script: | # {{SQL CARBON EDIT}} add strict null check
-      yarn strict-vscode
-    displayName: Run Strict Null Check
-
   # - script: | {{SQL CARBON EDIT}} remove monaco editor checks
   #     yarn monaco-compile-check
   #   displayName: Run Monaco Editor Checks

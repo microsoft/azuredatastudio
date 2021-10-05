@@ -273,9 +273,6 @@ jobs:
       - name: Run Valid Layers Checks
         run: yarn valid-layers-check
 
-      - name: Run Strict Compile Options # {{SQL CARBON EDIT}} add step
-        run: yarn strict-vscode
-
       # - name: Run Monaco Editor Checks {{SQL CARBON EDIT}} Remove Monaco checks
       #   run: yarn monaco-compile-check
 
