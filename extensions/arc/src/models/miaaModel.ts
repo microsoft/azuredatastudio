@@ -25,7 +25,9 @@ export class MiaaModel extends ResourceModel {
 
 	private _config: azExt.SqlMiShowResult | undefined;
 	private _databases: DatabaseModel[] = [];
-	private _rpSettings: RPModel = {rpo: '', rd: ''};
+	private _rpSettings: RPModel = {
+		rpo: '5',
+		rd: '0'};
 	private readonly _onConfigUpdated = new vscode.EventEmitter<azExt.SqlMiShowResult | undefined>();
 	private readonly _onDatabasesUpdated = new vscode.EventEmitter<DatabaseModel[]>();
 	//private readonly _onRPUpdated = new vscode.EventEmitter<RPModel>();

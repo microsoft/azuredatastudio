@@ -22,7 +22,7 @@ export class ConfigureRPOSqlDialog extends InitializingComponent {
 		super();
 	}
 
-	public showDialog(dialogTitle: string): azdata.window.Dialog {
+	public showDialog(dialogTitle: string, rpo: string| undefined, rd: string| undefined): azdata.window.Dialog {
 		const dialog = azdata.window.createModelViewDialog(dialogTitle);
 		dialog.cancelButton.onClick(() => this.handleCancel());
 		dialog.registerContent(async view => {
@@ -30,11 +30,12 @@ export class ConfigureRPOSqlDialog extends InitializingComponent {
 			this.rpoInputBox = this.modelBuilder.inputBox()
 				.withProps({
 					readOnly: false,
-					min: 5,
-					max: 10,
+					min: 300,
+					max: 600,
 					inputType: 'number',
 					ariaLabel: loc.rpo,
-					value: this._model.rpSettings.rpo.toString()? this._model.config?.spec?.backup?.recoveryPointObjectiveInSeconds?.toString() : undefined
+					//value: this._model.rpSettings?.rpo?.toString()? this._model.config?.spec?.backup?.recoveryPointObjectiveInSeconds?.toString() : undefined
+					value: rpo
 				}).component();
 			// this.retentionDaysSlider = this.modelBuilder.slider()
 			// 	.withProps({
@@ -52,7 +53,8 @@ export class ConfigureRPOSqlDialog extends InitializingComponent {
 					max: 35,
 					inputType: 'number',
 					ariaLabel: loc.rd,
-					value: this._model.rpSettings.rd.toString()?this._model.config?.spec?.backup?.retentionPeriodInDays?.toString(): undefined
+					//value: this._model.rpSettings?.rd?.toString()?this._model.config?.spec?.backup?.retentionPeriodInDays?.toString(): undefined
+					value: rd
 				}).component();
 
 			const info = this.modelBuilder.text().withProps({
@@ -67,6 +69,10 @@ export class ConfigureRPOSqlDialog extends InitializingComponent {
 
 			const infoAndLink = this.modelBuilder.flexContainer().withLayout({ flexWrap: 'wrap' }).component();
 			infoAndLink.addItem(info, { CSSStyles: { 'margin-right': '5px' } });
+			infoAndLink.addItem(this.modelBuilder.text().withProps({
+				value: loc.pitr,
+				CSSStyles: { ...cssStyles.title }
+			}).component());
 			infoAndLink.addItem(link);
 
 			let formModel = this.modelBuilder.formContainer()
@@ -78,7 +84,7 @@ export class ConfigureRPOSqlDialog extends InitializingComponent {
 						{
 							component: this.rpoInputBox,
 							title: loc.rpo,
-							required: true
+							required: false
 						},
 						// {
 						// 	component: this.retentionDaysSlider,
@@ -88,7 +94,7 @@ export class ConfigureRPOSqlDialog extends InitializingComponent {
 						{
 							component: this.retentionDaysInputBox,
 							title: loc.rd,
-							required: true
+							required: false
 						}
 					],
 					title: ''

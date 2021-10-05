@@ -59,6 +59,7 @@ export const type = localize('arc.type', "Type");
 export const status = localize('arc.status', "Status");
 export const database = localize('arc.database', "Database");
 export const pitrRestorePoint = localize('arc.pitrRestorePoint', "Earliest PITR restore point");
+export const pitr = localize('arc.pitr', "Point-in-time restore (PITR)");
 export const restore = localize('arc.restore', "Restore");
 export const miaaAdmin = localize('arc.miaaAdmin', "Managed instance admin");
 export const extensionName = localize('arc.extensionName', "Extension name");

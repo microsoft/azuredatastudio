@@ -19,8 +19,8 @@ export class MiaaBackupsPage extends DashboardPage {
 		super(modelView, dashboard);
 		this._azApi = vscode.extensions.getExtension(azExt.extension.name)?.exports;
 		//this._instanceProperties.miaaAdmin = this._miaaModel.username || this._instanceProperties.miaaAdmin;
-		this.saveArgs.recoveryPointObjective = this._miaaModel.rpSettings.rpo || this.saveArgs.recoveryPointObjective;
-		this.saveArgs.retentionDays = this._miaaModel.rpSettings.rd || this.saveArgs.retentionDays;
+		this.saveArgs.recoveryPointObjective = this._miaaModel.rpSettings.rpo ? this.saveArgs.recoveryPointObjective: '';
+		this.saveArgs.retentionDays = this._miaaModel.rpSettings.rd ? this.saveArgs.retentionDays: '';
 		this.disposables.push(
 			this._miaaModel.onDatabasesUpdated(() => this.eventuallyRunOnInitialized(() => this.handleDatabasesUpdated())),
 			this._miaaModel.onConfigUpdated(() => this.eventuallyRunOnInitialized(() => this.handleDatabasesUpdated()))
@@ -60,7 +60,10 @@ export class MiaaBackupsPage extends DashboardPage {
 	// }
 
 	public get container(): azdata.Component {
-		const root = this.modelView.modelBuilder.divContainer().component();
+		const root = this.modelView.modelBuilder.flexContainer()
+			.withLayout({ flexFlow: 'column' })
+			.withProps({ CSSStyles: { 'margin': '18px' } })
+			.component();
 		const content = this.modelView.modelBuilder.divContainer().component();
 		this._databasesContainer = this.modelView.modelBuilder.divContainer().component();
 		root.addItem(content, { CSSStyles: { 'margin': '20px' } });
@@ -89,11 +92,10 @@ export class MiaaBackupsPage extends DashboardPage {
 		], { CSSStyles: { 'margin-right': '5px' } }).component();
 
 		content.addItem(backupDatabaseInfoAndLink, { CSSStyles: { 'min-height': '30px' } });
-		content.addItem(this.modelView.modelBuilder.text().withProps({
-			value: loc.backup,
-			CSSStyles: { ...cssStyles.title }
-		}).component());
-
+		// content.addItem(this.modelView.modelBuilder.text().withProps({
+		// 	value: loc.backup,
+		// 	CSSStyles: { ...cssStyles.title }
+		// }).component());
 
 		// Create loaded components
 		const connectToServerText = this.modelView.modelBuilder.text().withProps({
@@ -156,8 +158,8 @@ export class MiaaBackupsPage extends DashboardPage {
 		this.handleDatabasesUpdated();
 		this._databasesTableLoading.component = this._databasesTable;
 
-		const titleCSS = { ...cssStyles.title, 'margin-block-start': '2em', 'margin-block-end': '0' };
-		root.addItem(this.modelView.modelBuilder.text().withProps({ value: loc.databases, CSSStyles: titleCSS }).component());
+		//const titleCSS = { ...cssStyles.title, 'margin-block-start': '2em', 'margin-block-end': '0' };
+		//root.addItem(this.modelView.modelBuilder.text().withProps({ value: loc.databases, CSSStyles: titleCSS }).component());
 		this.disposables.push(
 			this._connectToServerButton!.onDidClick(async () => {
 				this._connectToServerButton!.enabled = false;
@@ -199,7 +201,8 @@ export class MiaaBackupsPage extends DashboardPage {
 		this.disposables.push(
 			this._configureRetentionPolicyButton.onDidClick(async () => {
 				const rpoSqlDialog = new ConfigureRPOSqlDialog(this._miaaModel);
-				rpoSqlDialog.showDialog(loc.configureRPO);
+
+				rpoSqlDialog.showDialog(loc.configureRPO, this.saveArgs.recoveryPointObjective, this.saveArgs.retentionDays );
 
 				let rpArg = await rpoSqlDialog.waitForClose();
 				if (rpArg) {
