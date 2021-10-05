@@ -4,15 +4,16 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Emitter } from 'vs/base/common/event';
-import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
-import { ExtHostNotebookKernelsShape, IMainContext, INotebookKernelDto2, MainContext, MainThreadNotebookDocumentsShape, MainThreadNotebookKernelsShape } from 'vs/workbench/api/common/extHost.protocol';
+import { Disposable } from 'vs/base/common/lifecycle'; // {{SQL CARBON EDIT}} Removed DisposableStore
+import { ExtHostNotebookKernelsShape, IMainContext, MainThreadNotebookDocumentsShape } from 'vs/workbench/api/common/extHost.protocol'; // {{SQL CARBON EDIT}} Removed INotebookKernelDto2, MainContext, MainThreadNotebookKernelsShape
 import * as vscode from 'vscode';
+import * as azdata from 'azdata';
 import { ExtHostNotebookController } from 'vs/workbench/api/common/extHostNotebook';
 import { ExtensionIdentifier, IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { URI, UriComponents } from 'vs/base/common/uri';
 import * as extHostTypeConverters from 'vs/workbench/api/common/extHostTypeConverters';
 import { IExtHostInitDataService } from 'vs/workbench/api/common/extHostInitDataService';
-import { asWebviewUri } from 'vs/workbench/api/common/shared/webview';
+// import { asWebviewUri } from 'vs/workbench/api/common/shared/webview'; {{SQL CARBON EDIT}}
 import { ResourceMap } from 'vs/base/common/map';
 import { timeout } from 'vs/base/common/async';
 import { ExtHostCell, ExtHostNotebookDocument } from 'vs/workbench/api/common/extHostNotebookDocument';
@@ -21,7 +22,8 @@ import { CancellationTokenSource } from 'vs/base/common/cancellation';
 import { asArray } from 'vs/base/common/arrays';
 import { ILogService } from 'vs/platform/log/common/log';
 import { NotebookCellOutput } from 'vs/workbench/api/common/extHostTypes';
-import { checkProposedApiEnabled } from 'vs/workbench/services/extensions/common/extensions';
+import { ADSNotebookController, VSCodeExecuteProvider } from 'vs/workbench/api/common/adsNotebookController';
+// import { checkProposedApiEnabled } from 'vs/workbench/services/extensions/common/extensions'; {{SQL CARBON EDIT}}
 
 interface IKernelData {
 	extensionId: ExtensionIdentifier,
@@ -33,181 +35,26 @@ interface IKernelData {
 
 export class ExtHostNotebookKernels implements ExtHostNotebookKernelsShape {
 
-	private readonly _proxy: MainThreadNotebookKernelsShape;
+	// private readonly _proxy: MainThreadNotebookKernelsShape; {{SQL CARBON EDIT}}
 	private readonly _activeExecutions = new ResourceMap<NotebookCellExecutionTask>();
 
 	private readonly _kernelData = new Map<number, IKernelData>();
-	private _handlePool: number = 0;
+	// private _handlePool: number = 0; {{SQL CARBON EDIT}}
 
 	constructor(
-		private readonly _mainContext: IMainContext,
-		private readonly _initData: IExtHostInitDataService,
+		_mainContext: IMainContext, // {{SQL CARBON EDIT}}
+		_initData: IExtHostInitDataService, // {{SQL CARBON EDIT}}
 		private readonly _extHostNotebook: ExtHostNotebookController,
 		@ILogService private readonly _logService: ILogService,
 	) {
-		this._proxy = _mainContext.getProxy(MainContext.MainThreadNotebookKernels);
+		// this._proxy = _mainContext.getProxy(MainContext.MainThreadNotebookKernels); {{SQL CARBON EDIT}}
 	}
 
+	// {{SQL CARBON EDIT}}
 	createNotebookController(extension: IExtensionDescription, id: string, viewType: string, label: string, handler?: (cells: vscode.NotebookCell[], notebook: vscode.NotebookDocument, controller: vscode.NotebookController) => void | Thenable<void>, preloads?: vscode.NotebookRendererScript[]): vscode.NotebookController {
-
-		for (let data of this._kernelData.values()) {
-			if (data.controller.id === id && ExtensionIdentifier.equals(extension.identifier, data.extensionId)) {
-				throw new Error(`notebook controller with id '${id}' ALREADY exist`);
-			}
-		}
-
-
-		const handle = this._handlePool++;
-		const that = this;
-
-		this._logService.trace(`NotebookController[${handle}], CREATED by ${extension.identifier.value}, ${id}`);
-
-		const _defaultExecutHandler = () => console.warn(`NO execute handler from notebook controller '${data.id}' of extension: '${extension.identifier}'`);
-
-		let isDisposed = false;
-		const commandDisposables = new DisposableStore();
-
-		const onDidChangeSelection = new Emitter<{ selected: boolean, notebook: vscode.NotebookDocument; }>();
-		const onDidReceiveMessage = new Emitter<{ editor: vscode.NotebookEditor, message: any; }>();
-
-		const data: INotebookKernelDto2 = {
-			id: `${extension.identifier.value}/${id}`,
-			notebookType: viewType,
-			extensionId: extension.identifier,
-			extensionLocation: extension.extensionLocation,
-			label: label || extension.identifier.value,
-			preloads: preloads ? preloads.map(extHostTypeConverters.NotebookRendererScript.from) : []
-		};
-
-		//
-		let _executeHandler = handler ?? _defaultExecutHandler;
-		let _interruptHandler: ((this: vscode.NotebookController, notebook: vscode.NotebookDocument) => void | Thenable<void>) | undefined;
-
-		this._proxy.$addKernel(handle, data).catch(err => {
-			// this can happen when a kernel with that ID is already registered
-			console.log(err);
-			isDisposed = true;
-		});
-
-		// update: all setters write directly into the dto object
-		// and trigger an update. the actual update will only happen
-		// once per event loop execution
-		let tokenPool = 0;
-		const _update = () => {
-			if (isDisposed) {
-				return;
-			}
-			const myToken = ++tokenPool;
-			Promise.resolve().then(() => {
-				if (myToken === tokenPool) {
-					this._proxy.$updateKernel(handle, data);
-				}
-			});
-		};
-
-		// notebook documents that are associated to this controller
-		const associatedNotebooks = new ResourceMap<boolean>();
-
-		const controller: vscode.NotebookController = {
-			get id() { return id; },
-			get notebookType() { return data.notebookType; },
-			onDidChangeSelectedNotebooks: onDidChangeSelection.event,
-			get label() {
-				return data.label;
-			},
-			set label(value) {
-				data.label = value ?? extension.displayName ?? extension.name;
-				_update();
-			},
-			get detail() {
-				return data.detail ?? '';
-			},
-			set detail(value) {
-				data.detail = value;
-				_update();
-			},
-			get description() {
-				return data.description ?? '';
-			},
-			set description(value) {
-				data.description = value;
-				_update();
-			},
-			get supportedLanguages() {
-				return data.supportedLanguages;
-			},
-			set supportedLanguages(value) {
-				data.supportedLanguages = value;
-				_update();
-			},
-			get supportsExecutionOrder() {
-				return data.supportsExecutionOrder ?? false;
-			},
-			set supportsExecutionOrder(value) {
-				data.supportsExecutionOrder = value;
-				_update();
-			},
-			get rendererScripts() {
-				return data.preloads ? data.preloads.map(extHostTypeConverters.NotebookRendererScript.to) : [];
-			},
-			get executeHandler() {
-				return _executeHandler;
-			},
-			set executeHandler(value) {
-				_executeHandler = value ?? _defaultExecutHandler;
-			},
-			get interruptHandler() {
-				return _interruptHandler;
-			},
-			set interruptHandler(value) {
-				_interruptHandler = value;
-				data.supportsInterrupt = Boolean(value);
-				_update();
-			},
-			createNotebookCellExecution(cell) {
-				if (isDisposed) {
-					throw new Error('notebook controller is DISPOSED');
-				}
-				if (!associatedNotebooks.has(cell.notebook.uri)) {
-					that._logService.trace(`NotebookController[${handle}] NOT associated to notebook, associated to THESE notebooks:`, Array.from(associatedNotebooks.keys()).map(u => u.toString()));
-					throw new Error(`notebook controller is NOT associated to notebook: ${cell.notebook.uri.toString()}`);
-				}
-				return that._createNotebookCellExecution(cell);
-			},
-			dispose: () => {
-				if (!isDisposed) {
-					this._logService.trace(`NotebookController[${handle}], DISPOSED`);
-					isDisposed = true;
-					this._kernelData.delete(handle);
-					commandDisposables.dispose();
-					onDidChangeSelection.dispose();
-					onDidReceiveMessage.dispose();
-					this._proxy.$removeKernel(handle);
-				}
-			},
-			// --- priority
-			updateNotebookAffinity(notebook, priority) {
-				that._proxy.$updateNotebookPriority(handle, notebook.uri, priority);
-			},
-			// --- ipc
-			onDidReceiveMessage: onDidReceiveMessage.event,
-			postMessage(message, editor) {
-				checkProposedApiEnabled(extension);
-				return that._proxy.$postMessage(handle, editor && that._extHostNotebook.getIdByEditor(editor), message);
-			},
-			asWebviewUri(uri: URI) {
-				checkProposedApiEnabled(extension);
-				return asWebviewUri(uri, that._initData.remote);
-			},
-		};
-
-		this._kernelData.set(handle, {
-			extensionId: extension.identifier,
-			controller,
-			onDidReceiveMessage,
-			onDidChangeSelection,
-			associatedNotebooks
-		});
+		let controller = new ADSNotebookController(extension, id, viewType, label, handler, preloads);
+		let executeProvider = new VSCodeExecuteProvider(controller);
+		azdata.nb.registerExecuteProvider(executeProvider);
 		return controller;
 	}
 
@@ -287,32 +134,6 @@ export class ExtHostNotebookKernels implements ExtHostNotebookKernelsShape {
 
 		const editor = this._extHostNotebook.getEditorById(editorId);
 		obj.onDidReceiveMessage.fire(Object.freeze({ editor: editor.apiEditor, message }));
-	}
-
-	// ---
-
-	_createNotebookCellExecution(cell: vscode.NotebookCell): vscode.NotebookCellExecution {
-		if (cell.index < 0) {
-			throw new Error('CANNOT execute cell that has been REMOVED from notebook');
-		}
-		const notebook = this._extHostNotebook.getNotebookDocument(cell.notebook.uri);
-		const cellObj = notebook.getCellFromApiCell(cell);
-		if (!cellObj) {
-			throw new Error('invalid cell');
-		}
-		if (this._activeExecutions.has(cellObj.uri)) {
-			throw new Error(`duplicate execution for ${cellObj.uri}`);
-		}
-		const execution = new NotebookCellExecutionTask(cellObj.notebook, cellObj, this._mainContext.getProxy(MainContext.MainThreadNotebookDocuments));
-		this._activeExecutions.set(cellObj.uri, execution);
-		const listener = execution.onDidChangeState(() => {
-			if (execution.state === NotebookCellExecutionTaskState.Resolved) {
-				execution.dispose();
-				listener.dispose();
-				this._activeExecutions.delete(cellObj.uri);
-			}
-		});
-		return execution.asApiObject();
 	}
 }
 
