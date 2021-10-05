@@ -23,14 +23,11 @@ export class MiaaModel extends ResourceModel {
 
 	private _config: azExt.SqlMiShowResult | undefined;
 	private _databases: DatabaseModel[] = [];
-
 	private readonly _onConfigUpdated = new vscode.EventEmitter<azExt.SqlMiShowResult | undefined>();
 	private readonly _onDatabasesUpdated = new vscode.EventEmitter<DatabaseModel[]>();
-
 	private readonly _azApi: azExt.IExtension;
 	public onConfigUpdated = this._onConfigUpdated.event;
 	public onDatabasesUpdated = this._onDatabasesUpdated.event;
-
 	public configLastUpdated: Date | undefined;
 	public databasesLastUpdated: Date | undefined;
 	public rpSettings: RPModel = {
@@ -71,7 +68,6 @@ export class MiaaModel extends ResourceModel {
 		return this._databases;
 	}
 
-
 	/** Refreshes the model */
 	public async refresh(): Promise<void> {
 		// Only allow one refresh to be happening at a time
@@ -83,7 +79,6 @@ export class MiaaModel extends ResourceModel {
 			try {
 				const result = await this._azApi.az.sql.miarc.show(this.info.name, this.controllerModel.info.namespace, this.controllerModel.azAdditionalEnvVars);
 				this._config = result.stdout;
-
 				this.configLastUpdated = new Date();
 				this.updateRPSettings();
 				this._onConfigUpdated.fire(this._config);
