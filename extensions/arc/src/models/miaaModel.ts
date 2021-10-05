@@ -17,18 +17,22 @@ import { ControllerModel, Registration } from './controllerModel';
 import { ResourceModel } from './resourceModel';
 
 
-export type DatabaseModel = { name: string, status: string };
+export type DatabaseModel = { name: string, status: string, lastBackup: Date };
+export type RPModel = { rpo: string, rd: string};
+//export type DatabaseModelBackup = { name: string, status: string, lastBackup: Date };
 
 export class MiaaModel extends ResourceModel {
 
 	private _config: azExt.SqlMiShowResult | undefined;
 	private _databases: DatabaseModel[] = [];
-
+	private _rpSettings: RPModel = {rpo: '', rd: ''};
 	private readonly _onConfigUpdated = new vscode.EventEmitter<azExt.SqlMiShowResult | undefined>();
 	private readonly _onDatabasesUpdated = new vscode.EventEmitter<DatabaseModel[]>();
+	//private readonly _onRPUpdated = new vscode.EventEmitter<RPModel>();
 	private readonly _azApi: azExt.IExtension;
 	public onConfigUpdated = this._onConfigUpdated.event;
 	public onDatabasesUpdated = this._onDatabasesUpdated.event;
+	//public onRPUpdated = this._onRPUpdated.event;
 	public configLastUpdated: Date | undefined;
 	public databasesLastUpdated: Date | undefined;
 
@@ -63,6 +67,10 @@ export class MiaaModel extends ResourceModel {
 
 	public get databases(): DatabaseModel[] {
 		return this._databases;
+	}
+
+	public get rpSettings(): RPModel {
+		return this._rpSettings;
 	}
 
 	/** Refreshes the model */
@@ -145,9 +153,9 @@ export class MiaaModel extends ResourceModel {
 			throw new Error('Could not fetch databases');
 		}
 		if (databases.length > 0 && typeof (databases[0]) === 'object') {
-			this._databases = (<azdata.DatabaseInfo[]>databases).map(db => { return { name: db.options['name'], status: db.options['state'] }; });
+			this._databases = (<azdata.DatabaseInfo[]>databases).map(db => { return { name: db.options['name'], status: db.options['state'], lastBackup: db.options['lastBackup'] }; });
 		} else {
-			this._databases = (<string[]>databases).map(db => { return { name: db, status: '-' }; });
+			this._databases = (<string[]>databases).map(db => { return { name: db, status: '-', lastBackup: new Date() }; });
 		}
 		this.databasesLastUpdated = new Date();
 		this._onDatabasesUpdated.fire(this._databases);

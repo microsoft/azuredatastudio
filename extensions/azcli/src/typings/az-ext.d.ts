@@ -141,6 +141,10 @@ declare module 'az-ext' {
 			uid: string // "cea737aa-3f82-4f6a-9bed-2b51c2c33dff"
 		},
 		spec: {
+			backup?: {
+				recoveryPointObjectiveInSeconds?: number,
+				retentionPeriodInDays: number,
+			}
 			scheduling?: {
 				default?: {
 					resources?: {

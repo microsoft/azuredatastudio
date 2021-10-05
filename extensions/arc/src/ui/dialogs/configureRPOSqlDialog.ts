@@ -8,15 +8,15 @@ import { Deferred } from '../../common/promise';
 import * as loc from '../../localizedConstants';
 import { cssStyles } from '../../constants';
 import { InitializingComponent } from '../components/initializingComponent';
-import { MiaaModel } from '../../models/miaaModel';
+import { MiaaModel, RPModel } from '../../models/miaaModel';
 
 export class ConfigureRPOSqlDialog extends InitializingComponent {
 	protected modelBuilder!: azdata.ModelBuilder;
-
 	protected rpoInputBox!: azdata.InputBoxComponent;
-	protected retentionDaysSlider!: azdata.SliderComponent;
+	//protected retentionDaysSlider!: azdata.SliderComponent;
+	protected retentionDaysInputBox!: azdata.InputBoxComponent;
 
-	protected _completionPromise = new Deferred<string | undefined>();
+	protected _completionPromise = new Deferred<RPModel | undefined>();
 
 	constructor(protected _model: MiaaModel) {
 		super();
@@ -33,15 +33,26 @@ export class ConfigureRPOSqlDialog extends InitializingComponent {
 					min: 5,
 					max: 10,
 					inputType: 'number',
-					ariaLabel: loc.rpo
+					ariaLabel: loc.rpo,
+					value: this._model.rpSettings.rpo.toString()? this._model.config?.spec?.backup?.recoveryPointObjectiveInSeconds?.toString() : undefined
 				}).component();
-			this.retentionDaysSlider = this.modelBuilder.slider()
+			// this.retentionDaysSlider = this.modelBuilder.slider()
+			// 	.withProps({
+			// 		min: 1,
+			// 		max: 35,
+			// 		value: 0,
+			// 		step: 1,
+			// 		showTicks: false,
+			// 		ariaLabel: loc.rd
+			// 	}).component();
+			this.retentionDaysInputBox = this.modelBuilder.inputBox()
 				.withProps({
+					readOnly: false,
 					min: 1,
 					max: 35,
-					step: 1,
-					showTicks: true,
-					ariaLabel: loc.rd
+					inputType: 'number',
+					ariaLabel: loc.rd,
+					value: this._model.rpSettings.rd.toString()?this._model.config?.spec?.backup?.retentionPeriodInDays?.toString(): undefined
 				}).component();
 
 			const info = this.modelBuilder.text().withProps({
@@ -69,8 +80,13 @@ export class ConfigureRPOSqlDialog extends InitializingComponent {
 							title: loc.rpo,
 							required: true
 						},
+						// {
+						// 	component: this.retentionDaysSlider,
+						// 	title: loc.rd,
+						// 	required: true
+						// },
 						{
-							component: this.retentionDaysSlider,
+							component: this.retentionDaysInputBox,
 							title: loc.rd,
 							required: true
 						}
@@ -79,7 +95,8 @@ export class ConfigureRPOSqlDialog extends InitializingComponent {
 				}]).withLayout({ width: '100%' }).component();
 			await view.initializeModel(formModel);
 			this.rpoInputBox.focus();
-			this.retentionDaysSlider.focus();
+			// this.retentionDaysSlider.focus();
+			this.retentionDaysInputBox.focus();
 			this.initialized = true;
 		});
 
@@ -91,8 +108,15 @@ export class ConfigureRPOSqlDialog extends InitializingComponent {
 	}
 
 	public async validate(): Promise<boolean> {
-		this._completionPromise.resolve(this.rpoInputBox.value?.toString());
-		this._completionPromise.resolve(this.retentionDaysSlider.value?.toString());
+		if (!this.rpoInputBox.value || !this.retentionDaysInputBox.value) {
+			return false;
+		}
+		else
+		{
+			this._model.rpSettings.rpo = this.rpoInputBox.value;
+			this._model.rpSettings.rd = this.rpoInputBox.value;
+			this._completionPromise.resolve(this._model.rpSettings);
+		}
 		return true;
 	}
 
@@ -100,7 +124,7 @@ export class ConfigureRPOSqlDialog extends InitializingComponent {
 		this._completionPromise.resolve(undefined);
 	}
 
-	public waitForClose(): Promise<string | undefined> {
+	public waitForClose(): Promise<RPModel | undefined> {
 		return this._completionPromise.promise;
 	}
 }

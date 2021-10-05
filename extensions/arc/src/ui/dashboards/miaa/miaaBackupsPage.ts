@@ -19,8 +19,11 @@ export class MiaaBackupsPage extends DashboardPage {
 		super(modelView, dashboard);
 		this._azApi = vscode.extensions.getExtension(azExt.extension.name)?.exports;
 		//this._instanceProperties.miaaAdmin = this._miaaModel.username || this._instanceProperties.miaaAdmin;
+		this.saveArgs.recoveryPointObjective = this._miaaModel.rpSettings.rpo || this.saveArgs.recoveryPointObjective;
+		this.saveArgs.retentionDays = this._miaaModel.rpSettings.rd || this.saveArgs.retentionDays;
 		this.disposables.push(
-			this._miaaModel.onDatabasesUpdated(() => this.eventuallyRunOnInitialized(() => this.handleDatabasesUpdated()))
+			this._miaaModel.onDatabasesUpdated(() => this.eventuallyRunOnInitialized(() => this.handleDatabasesUpdated())),
+			this._miaaModel.onConfigUpdated(() => this.eventuallyRunOnInitialized(() => this.handleDatabasesUpdated()))
 		);
 	}
 
@@ -34,10 +37,8 @@ export class MiaaBackupsPage extends DashboardPage {
 	private readonly _azApi: azExt.IExtension;
 
 	private saveArgs: {
-		coresLimit?: string,
-		coresRequest?: string,
-		memoryLimit?: string,
-		memoryRequest?: string
+		recoveryPointObjective?: string,
+		retentionDays?: string
 	} = {};
 
 	public get title(): string {
@@ -190,13 +191,13 @@ export class MiaaBackupsPage extends DashboardPage {
 					refreshButton.enabled = true;
 				}
 			}));
-		const _configureRetentionPolicyButton = this.modelView.modelBuilder.button().withProps({
+		this._configureRetentionPolicyButton = this.modelView.modelBuilder.button().withProps({
 				label: loc.configureRetentionPolicyButton,
 				enabled: true,
 				iconPath: IconPathHelper.edit,
 			}).component();
 		this.disposables.push(
-			_configureRetentionPolicyButton.onDidClick(async () => {
+			this._configureRetentionPolicyButton.onDidClick(async () => {
 				const rpoSqlDialog = new ConfigureRPOSqlDialog(this._miaaModel);
 				rpoSqlDialog.showDialog(loc.configureRPO);
 
@@ -204,6 +205,8 @@ export class MiaaBackupsPage extends DashboardPage {
 				if (rpArg) {
 					try {
 						this._configureRetentionPolicyButton.enabled = false;
+						this.saveArgs.recoveryPointObjective = rpArg?.rpo;
+						this.saveArgs.retentionDays = rpArg?.rd;
 						//let extensionList = this.extensionNames.length ? this.extensionNames.join() + ',' + extArg : extArg;
 						await vscode.window.withProgress(
 							{
@@ -223,7 +226,8 @@ export class MiaaBackupsPage extends DashboardPage {
 							}
 						);
 
-						vscode.window.showInformationMessage(loc.extensionsAdded(rpArg));
+						//vscode.window.showInformationMessage(loc.extensionsAdded(rpArg));
+						//vscode.window.showInformationMessage(loc.extensionsAdded(dialog.registerContent.arguments));
 
 					} catch (error) {
 						vscode.window.showErrorMessage(loc.updateExtensionsFailed(error));
@@ -236,7 +240,7 @@ export class MiaaBackupsPage extends DashboardPage {
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems(
 				[
 					{ component: refreshButton, toolbarSeparatorAfter: true },
-					{ component: _configureRetentionPolicyButton, toolbarSeparatorAfter: false },
+					{ component: this._configureRetentionPolicyButton, toolbarSeparatorAfter: false },
 
 				]
 			).component();
