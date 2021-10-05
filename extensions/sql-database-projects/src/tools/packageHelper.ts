@@ -65,11 +65,11 @@ export class PackageHelper {
 			if (project) {
 				await this.addPackage(project, packageName, packageVersion);
 			} else {
-				const result = await vscode.window.showInformationMessage(constants.addPackageReferenceMessage, constants.moreInformation);
-
-				if (result === constants.moreInformation) {
-					void vscode.env.openExternal(vscode.Uri.parse('https://github.com/Azure/azure-functions-sql-extension/blob/main/README.md'));
-				}
+				void vscode.window.showInformationMessage(constants.addPackageReferenceMessage, constants.moreInformation).then((result) => {
+					if (result === constants.moreInformation) {
+						void vscode.env.openExternal(vscode.Uri.parse('https://github.com/Azure/azure-functions-sql-extension/blob/main/README.md'));
+					}
+				});
 			}
 		} catch (e) {
 			void vscode.window.showErrorMessage(e.message);
