@@ -199,6 +199,8 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				// Determine if database has been specified to connect to
 				if (profile.databaseName && !(profile.databaseName === `''`)) {
 					profile.connectToDatabase = true;
+				} else {
+					profile.connectToDatabase = false;
 				}
 
 				// Disable password prompt during reconnect if connected with an empty password
