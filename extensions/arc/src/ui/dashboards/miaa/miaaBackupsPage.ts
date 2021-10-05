@@ -12,15 +12,14 @@ import { DashboardPage } from '../../components/dashboardPage';
 import { MiaaModel } from '../../../models/miaaModel';
 import { ControllerModel } from '../../../models/controllerModel';
 import { ConfigureRPOSqlDialog } from '../../dialogs/configureRPOSqlDialog';
-//import { getDatabaseStateDisplayText } from '../../../common/utils';
 
 export class MiaaBackupsPage extends DashboardPage {
 	constructor(modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, private _controllerModel: ControllerModel, private _miaaModel: MiaaModel) {
 		super(modelView, dashboard);
 		this._azApi = vscode.extensions.getExtension(azExt.extension.name)?.exports;
 		//this._instanceProperties.miaaAdmin = this._miaaModel.username || this._instanceProperties.miaaAdmin;
-		this.saveArgs.recoveryPointObjective = this._miaaModel.rpSettings.rpo ? this.saveArgs.recoveryPointObjective: '';
-		this.saveArgs.retentionDays = this._miaaModel.rpSettings.rd ? this.saveArgs.retentionDays: '';
+		this.saveArgs.recoveryPointObjective = this._miaaModel.rpSettings.rpo ? this.saveArgs.recoveryPointObjective : '';
+		this.saveArgs.retentionDays = this._miaaModel.rpSettings.rd ? this.saveArgs.retentionDays : '';
 		this.disposables.push(
 			this._miaaModel.onDatabasesUpdated(() => this.eventuallyRunOnInitialized(() => this.handleDatabasesUpdated())),
 			this._miaaModel.onConfigUpdated(() => this.eventuallyRunOnInitialized(() => this.handleDatabasesUpdated()))
@@ -55,9 +54,6 @@ export class MiaaBackupsPage extends DashboardPage {
 	protected async refresh(): Promise<void> {
 		await Promise.all([this._controllerModel.refresh(false, this._controllerModel.info.namespace), this._miaaModel.refresh()]);
 	}
-	// protected async configureRetentionPolicyButton(): Promise<void> {
-	// 	await Promise.all([this._controllerModel.refresh(false, this._controllerModel.info.namespace), this._miaaModel.refresh()]);
-	// }
 
 	public get container(): azdata.Component {
 		const root = this.modelView.modelBuilder.flexContainer()
@@ -73,10 +69,10 @@ export class MiaaBackupsPage extends DashboardPage {
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' }
 		}).component();
 		const backupInfoDescrition = this.modelView.modelBuilder.flexContainer()
-		.withLayout({ flexWrap: 'wrap' })
-		.withItems([
-			infoBackupDatabases
-		], { CSSStyles: { 'margin-right': '5px' } }).component();
+			.withLayout({ flexWrap: 'wrap' })
+			.withItems([
+				infoBackupDatabases
+			], { CSSStyles: { 'margin-right': '5px' } }).component();
 
 		const backupsDbsLearnMoreLink = this.modelView.modelBuilder.hyperlink().withProps({
 			label: loc.learnMore,
@@ -85,11 +81,11 @@ export class MiaaBackupsPage extends DashboardPage {
 		}).component();
 
 		const backupDatabaseInfoAndLink = this.modelView.modelBuilder.flexContainer()
-		.withLayout({ flexWrap: 'wrap' })
-		.withItems([
-			backupInfoDescrition,
-			backupsDbsLearnMoreLink
-		], { CSSStyles: { 'margin-right': '5px' } }).component();
+			.withLayout({ flexWrap: 'wrap' })
+			.withItems([
+				backupInfoDescrition,
+				backupsDbsLearnMoreLink
+			], { CSSStyles: { 'margin-right': '5px' } }).component();
 
 		content.addItem(backupDatabaseInfoAndLink, { CSSStyles: { 'min-height': '30px' } });
 		// content.addItem(this.modelView.modelBuilder.text().withProps({
@@ -194,15 +190,15 @@ export class MiaaBackupsPage extends DashboardPage {
 				}
 			}));
 		this._configureRetentionPolicyButton = this.modelView.modelBuilder.button().withProps({
-				label: loc.configureRetentionPolicyButton,
-				enabled: true,
-				iconPath: IconPathHelper.edit,
-			}).component();
+			label: loc.configureRetentionPolicyButton,
+			enabled: true,
+			iconPath: IconPathHelper.edit,
+		}).component();
 		this.disposables.push(
 			this._configureRetentionPolicyButton.onDidClick(async () => {
 				const rpoSqlDialog = new ConfigureRPOSqlDialog(this._miaaModel);
 
-				rpoSqlDialog.showDialog(loc.configureRPO, this.saveArgs.recoveryPointObjective, this.saveArgs.retentionDays );
+				rpoSqlDialog.showDialog(loc.configureRPO, this.saveArgs.recoveryPointObjective, this.saveArgs.retentionDays);
 
 				let rpArg = await rpoSqlDialog.waitForClose();
 				if (rpArg) {
@@ -229,29 +225,26 @@ export class MiaaBackupsPage extends DashboardPage {
 							}
 						);
 
-						//vscode.window.showInformationMessage(loc.extensionsAdded(rpArg));
-						//vscode.window.showInformationMessage(loc.extensionsAdded(dialog.registerContent.arguments));
-
 					} catch (error) {
 						vscode.window.showErrorMessage(loc.updateExtensionsFailed(error));
 					} finally {
 						this._configureRetentionPolicyButton.enabled = true;
 					}
 				}
-				}));
+			}));
 
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems(
-				[
-					{ component: refreshButton, toolbarSeparatorAfter: true },
-					{ component: this._configureRetentionPolicyButton, toolbarSeparatorAfter: false },
+			[
+				{ component: refreshButton, toolbarSeparatorAfter: true },
+				{ component: this._configureRetentionPolicyButton, toolbarSeparatorAfter: false },
 
-				]
-			).component();
+			]
+		).component();
 	}
 
 	private handleDatabasesUpdated(): void {
 		// If we were able to get the databases it means we have a good connection so update the username too
-		let databaseDisplayText = this._miaaModel.databases.map(d => [d.name, d.lastBackup, ]);
+		let databaseDisplayText = this._miaaModel.databases.map(d => [d.name, d.lastBackup,]);
 		let databasesTextValues = databaseDisplayText.map(d => {
 			return d.map((value): azdata.DeclarativeTableCellValue => {
 				return { value: value };

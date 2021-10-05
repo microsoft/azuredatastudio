@@ -13,7 +13,6 @@ import { MiaaModel, RPModel } from '../../models/miaaModel';
 export class ConfigureRPOSqlDialog extends InitializingComponent {
 	protected modelBuilder!: azdata.ModelBuilder;
 	protected rpoInputBox!: azdata.InputBoxComponent;
-	//protected retentionDaysSlider!: azdata.SliderComponent;
 	protected retentionDaysInputBox!: azdata.InputBoxComponent;
 
 	protected _completionPromise = new Deferred<RPModel | undefined>();
@@ -22,9 +21,11 @@ export class ConfigureRPOSqlDialog extends InitializingComponent {
 		super();
 	}
 
-	public showDialog(dialogTitle: string, rpo: string| undefined, rd: string| undefined): azdata.window.Dialog {
+	public showDialog(dialogTitle: string, rpo: string | undefined, rd: string | undefined): azdata.window.Dialog {
 		const dialog = azdata.window.createModelViewDialog(dialogTitle);
 		dialog.cancelButton.onClick(() => this.handleCancel());
+		rpo = (rpo === undefined ? this._model.config?.spec?.backup?.recoveryPointObjectiveInSeconds?.toString() : rpo);
+		rd = (rd === undefined ? this._model.config?.spec?.backup?.retentionPeriodInDays?.toString() : rd);
 		dialog.registerContent(async view => {
 			this.modelBuilder = view.modelBuilder;
 			this.rpoInputBox = this.modelBuilder.inputBox()
@@ -34,18 +35,8 @@ export class ConfigureRPOSqlDialog extends InitializingComponent {
 					max: 600,
 					inputType: 'number',
 					ariaLabel: loc.rpo,
-					//value: this._model.rpSettings?.rpo?.toString()? this._model.config?.spec?.backup?.recoveryPointObjectiveInSeconds?.toString() : undefined
 					value: rpo
 				}).component();
-			// this.retentionDaysSlider = this.modelBuilder.slider()
-			// 	.withProps({
-			// 		min: 1,
-			// 		max: 35,
-			// 		value: 0,
-			// 		step: 1,
-			// 		showTicks: false,
-			// 		ariaLabel: loc.rd
-			// 	}).component();
 			this.retentionDaysInputBox = this.modelBuilder.inputBox()
 				.withProps({
 					readOnly: false,
@@ -53,7 +44,6 @@ export class ConfigureRPOSqlDialog extends InitializingComponent {
 					max: 35,
 					inputType: 'number',
 					ariaLabel: loc.rd,
-					//value: this._model.rpSettings?.rd?.toString()?this._model.config?.spec?.backup?.retentionPeriodInDays?.toString(): undefined
 					value: rd
 				}).component();
 
@@ -68,11 +58,11 @@ export class ConfigureRPOSqlDialog extends InitializingComponent {
 			}).component();
 
 			const infoAndLink = this.modelBuilder.flexContainer().withLayout({ flexWrap: 'wrap' }).component();
-			infoAndLink.addItem(info, { CSSStyles: { 'margin-right': '5px' } });
 			infoAndLink.addItem(this.modelBuilder.text().withProps({
 				value: loc.pitr,
 				CSSStyles: { ...cssStyles.title }
 			}).component());
+			infoAndLink.addItem(info, { CSSStyles: { 'margin-right': '5px' } });
 			infoAndLink.addItem(link);
 
 			let formModel = this.modelBuilder.formContainer()
@@ -86,11 +76,6 @@ export class ConfigureRPOSqlDialog extends InitializingComponent {
 							title: loc.rpo,
 							required: false
 						},
-						// {
-						// 	component: this.retentionDaysSlider,
-						// 	title: loc.rd,
-						// 	required: true
-						// },
 						{
 							component: this.retentionDaysInputBox,
 							title: loc.rd,
@@ -101,7 +86,6 @@ export class ConfigureRPOSqlDialog extends InitializingComponent {
 				}]).withLayout({ width: '100%' }).component();
 			await view.initializeModel(formModel);
 			this.rpoInputBox.focus();
-			// this.retentionDaysSlider.focus();
 			this.retentionDaysInputBox.focus();
 			this.initialized = true;
 		});
@@ -117,10 +101,9 @@ export class ConfigureRPOSqlDialog extends InitializingComponent {
 		if (!this.rpoInputBox.value || !this.retentionDaysInputBox.value) {
 			return false;
 		}
-		else
-		{
+		else {
 			this._model.rpSettings.rpo = this.rpoInputBox.value;
-			this._model.rpSettings.rd = this.rpoInputBox.value;
+			this._model.rpSettings.rd = this.retentionDaysInputBox.value;
 			this._completionPromise.resolve(this._model.rpSettings);
 		}
 		return true;
