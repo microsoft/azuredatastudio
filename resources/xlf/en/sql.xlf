@@ -3808,6 +3808,9 @@ Error: {1}</source>
     <trans-unit id="messagesTabTitle">
       <source xml:lang="en">Messages</source>
     </trans-unit>
+    <trans-unit id="queryResults.queryEditorCrashError">
+      <source xml:lang="en">The query editor ran into an issue and has stopped working. Please save and reopen it.</source>
+    </trans-unit>
     <trans-unit id="resultsTabTitle">
       <source xml:lang="en">Results</source>
     </trans-unit>
