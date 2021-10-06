@@ -297,11 +297,6 @@ declare module 'azdata' {
 		azureAccount?: string;
 		azureResourceId?: string;
 		azurePortalEndpoint?: string;
-
-		/**
-		 * Gets a boolean value of if the user specified a database to connect to
-		 */
-		connectToDatabase?: boolean;
 	}
 
 	/*
