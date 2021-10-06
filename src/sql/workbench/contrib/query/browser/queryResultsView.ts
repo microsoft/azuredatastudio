@@ -319,7 +319,7 @@ export class QueryResultsView extends Disposable {
 
 			if (info?.queryRunner?.isDisposed) {
 				this.logService.error(`The query runner for '${input.uri}' has been disposed.`);
-				this.notificationService.error(nls.localize('queryResults.queryEditorCrashError', "We ran into an error and the current query document has stopped working. Please save the document and reopen it."));
+				this.notificationService.error(nls.localize('queryResults.queryEditorCrashError', "The query editor ran into an issue and has stopped working. Please save and reopen it."));
 				return;
 			}
 
