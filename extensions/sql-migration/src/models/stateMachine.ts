@@ -121,6 +121,7 @@ export interface SavedInfo {
 	targetServerInstance: azureResource.AzureSqlManagedInstance | SqlVMServer | null;
 	migrationMode: MigrationMode | null;
 	databaseAssessment: string[] | null;
+	networkContainerType: NetworkContainerType | null;
 }
 
 
@@ -1024,7 +1025,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			resourceGroup: null,
 			targetServerInstance: null,
 			migrationMode: null,
-			databaseAssessment: null
+			databaseAssessment: null,
+			networkContainerType: null
 		};
 		switch (currentPage) {
 			case Page.Summary:
@@ -1032,10 +1034,27 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			case Page.IntegrationRuntime:
 
 			case Page.DatabaseBackup:
+				saveInfo.networkContainerType = this._databaseBackup.networkContainerType;
+			// networkShare: NetworkShare;
+			// subscription: azureResource.AzureResourceSubscription;
+			// blobs: Blob[];
+
+			// backups on network share / Azure Storage Blob Container radio card selection
+			// Network share:
+			// username, password
+			// network share location where backups are stored textbox
+			// windows user account with read access to the network share location
+			// password
+
+			// Azure Storage Blob Container:
+
+
+
 
 			case Page.MigrationMode:
 				saveInfo.migrationMode = this._databaseBackup.migrationMode;
 			case Page.SKURecommendation:
+				// need to add card selection to save
 				saveInfo.migrationTargetType = this._targetType;
 				saveInfo.databaseAssessment = this._databaseAssessment;
 				saveInfo.serverAssessment = this._assessmentResults;

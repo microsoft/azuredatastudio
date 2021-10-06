@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import { EOL } from 'os';
 import { getStorageAccountAccessKeys } from '../api/azure';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { Blob, MigrationMode, MigrationSourceAuthenticationType, MigrationStateModel, MigrationTargetType, NetworkContainerType, StateChangeEvent } from '../models/stateMachine';
+import { Blob, MigrationMode, MigrationSourceAuthenticationType, MigrationStateModel, MigrationTargetType, NetworkContainerType, Page, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
@@ -744,13 +744,33 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				column.width = isOfflineMigration ? WIZARD_TABLE_COLUMN_WIDTH_SMALL : WIZARD_TABLE_COLUMN_WIDTH;
 			});
 
-			this._networkShareButton.checked = false;
-			this._networkTableContainer.display = 'none';
-			await this._networkShareContainer.updateCssStyles({ 'display': 'none' });
+			if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.MigrationMode) {
+				if (this.migrationStateModel.savedInfo.networkContainerType === NetworkContainerType.NETWORK_SHARE) {
+					this._networkShareButton.checked = true;
+				} else {
+					this._networkShareButton.checked = false;
+					this._networkTableContainer.display = 'none';
+					await this._networkShareContainer.updateCssStyles({ 'display': 'none' });
+				}
+			} else {
+				this._networkShareButton.checked = false;
+				this._networkTableContainer.display = 'none';
+				await this._networkShareContainer.updateCssStyles({ 'display': 'none' });
+			}
 
-			this._blobContainerButton.checked = false;
-			this._blobTableContainer.display = 'none';
-			await this._blobContainer.updateCssStyles({ 'display': 'none' });
+			if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.MigrationMode) {
+				if (this.migrationStateModel.savedInfo.networkContainerType === NetworkContainerType.BLOB_CONTAINER) {
+					this._blobContainerButton.checked = true;
+				} else {
+					this._blobContainerButton.checked = false;
+					this._blobTableContainer.display = 'none';
+					await this._blobContainer.updateCssStyles({ 'display': 'none' });
+				}
+			} else {
+				this._blobContainerButton.checked = false;
+				this._blobTableContainer.display = 'none';
+				await this._blobContainer.updateCssStyles({ 'display': 'none' });
+			}
 
 			await this._targetDatabaseContainer.updateCssStyles({ 'display': 'none' });
 			await this._networkShareStorageAccountDetails.updateCssStyles({ 'display': 'none' });

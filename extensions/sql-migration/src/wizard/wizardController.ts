@@ -5,7 +5,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
-import { MigrationStateModel } from '../models/stateMachine';
+import { MigrationStateModel, Page } from '../models/stateMachine';
 import * as loc from '../constants/strings';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { SKURecommendationPage } from './skuRecommendationPage';
@@ -64,7 +64,11 @@ export class WizardController {
 		wizardSetupPromises.push(...pages.map(p => p.registerWizardContent()));
 		wizardSetupPromises.push(this._wizardObject.open());
 		if (this._model.resumeAssessment) {
+			if (this._model.savedInfo.closedPage >= Page.MigrationMode) {
+				this._model.refreshDatabaseBackupPage = true;
+			}
 			wizardSetupPromises.push(this._wizardObject.setCurrentPage(this._model.savedInfo.closedPage));
+			//TODO: switch statement here initializing important values?
 		}
 
 		this._model.extensionContext.subscriptions.push(this._wizardObject.onPageChanged(async (pageChangeInfo: azdata.window.WizardPageChangeInfo) => {

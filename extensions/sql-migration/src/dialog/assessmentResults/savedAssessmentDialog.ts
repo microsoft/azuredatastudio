@@ -69,7 +69,6 @@ export class SavedAssessmentDialog {
 		if (this.stateModel.resumeAssessment) {
 			const wizardController = new WizardController(this.context, this.stateModel);
 			await wizardController.openWizard(this.stateModel.sourceConnectionId);
-			console.log(this.stateModel.savedInfo.selectedDatabases);
 		} else {
 			// normal flow
 			const wizardController = new WizardController(this.context, this.stateModel);
