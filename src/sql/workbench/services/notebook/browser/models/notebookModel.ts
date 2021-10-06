@@ -598,7 +598,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				}
 
 				if (newCellContent.length) {
-					newCell = this.createCell(cellType);
 					let newSource = source.slice(selection.startLineNumber - 1, selection.endLineNumber) as string[];
 					if (selection.startColumn > 1) {
 						partialSource = source.slice(selection.startLineNumber - 1)[0].slice(selection.startColumn - 1);
@@ -612,9 +611,16 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						let partial = source.slice(selection.endLineNumber - 1, selection.endLineNumber)[0].slice(splicestart, selection.endColumn - 1);
 						newSource.splice(newSource.length - 1, 1, partial);
 					}
-					newCell.source = newSource;
-					newCellIndex++;
-					this.insertCell(newCell, newCellIndex);
+					//If the selection is from the start.
+					if (headContent.length) {
+						newCell = this.createCell(cellType);
+						newCell.source = newSource;
+						newCellIndex++;
+						this.insertCell(newCell, newCellIndex);
+					}
+					else {
+						this.cells[index].source = newSource;
+					}
 				}
 
 				if (tailCellContent.length) {
@@ -630,12 +636,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					this.insertCell(tailCell, tailCellIndex);
 				}
 
-				//Delete the original cell if the selection begins at the start
-				if (!headContent.length) {
-					this.deleteCell(this.cells[index]);
-				}
-				let activeCell = newCell ? newCell : tailCell;
-				let activeCellIndex = newCell ? newCellIndex : tailCellIndex;
+				let activeCell = newCell ? newCell : (headContent.length ? tailCell : this.cells[index]);
+				let activeCellIndex = newCell ? newCellIndex : (headContent.length ? tailCellIndex : index);
 
 				//make new cell Active
 				this.updateActiveCell(activeCell);
