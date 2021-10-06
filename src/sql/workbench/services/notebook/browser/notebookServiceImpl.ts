@@ -625,8 +625,8 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	private waitOnSerializationProviderAvailability(providerDescriptor: SerializationProviderDescriptor, timeout?: number): Promise<ISerializationProvider | undefined> {
-		// Wait up to 20 seconds for the provider to be registered
-		timeout = timeout ?? 20000;
+		// Wait up to 30 seconds for the provider to be registered
+		timeout = timeout ?? 30000;
 		let promises: Promise<ISerializationProvider>[] = [
 			providerDescriptor.instanceReady,
 			new Promise<ISerializationProvider>((resolve, reject) => setTimeout(() => {
@@ -639,8 +639,8 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	private waitOnExecuteProviderAvailability(providerDescriptor: ExecuteProviderDescriptor, timeout?: number): Promise<IExecuteProvider | undefined> {
-		// Wait up to 20 seconds for the provider to be registered
-		timeout = timeout ?? 20000;
+		// Wait up to 30 seconds for the provider to be registered
+		timeout = timeout ?? 30000;
 		let promises: Promise<IExecuteProvider>[] = [
 			providerDescriptor.instanceReady,
 			new Promise<IExecuteProvider>((resolve, reject) => setTimeout(() => resolve(undefined), timeout))
