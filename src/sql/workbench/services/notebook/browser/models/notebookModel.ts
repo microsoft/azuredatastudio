@@ -611,14 +611,14 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						let partial = source.slice(selection.endLineNumber - 1, selection.endLineNumber)[0].slice(splicestart, selection.endColumn - 1);
 						newSource.splice(newSource.length - 1, 1, partial);
 					}
-					//If the selection is from the start.
+					//If the selection is not from the start of the cell, create a new cell.
 					if (headContent.length) {
 						newCell = this.createCell(cellType);
 						newCell.source = newSource;
 						newCellIndex++;
 						this.insertCell(newCell, newCellIndex);
 					}
-					else {
+					else { //update the existing cell
 						this.cells[index].source = newSource;
 					}
 				}
