@@ -50,7 +50,7 @@ import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editor
 import { IEditorInput, IEditorPane } from 'vs/workbench/common/editor';
 import { isINotebookInput } from 'sql/workbench/services/notebook/browser/interface';
 import { INotebookShowOptions } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { JUPYTER_PROVIDER_ID, NotebookLanguage } from 'sql/workbench/common/constants';
+import { NotebookLanguage } from 'sql/workbench/common/constants';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { SqlSerializationProvider } from 'sql/workbench/services/notebook/browser/sql/sqlSerializationProvider';
 
@@ -307,17 +307,23 @@ export class NotebookService extends Disposable implements INotebookService {
 	private handleNewProviderDescriptions(p: { id: string; registration: ProviderDescriptionRegistration }) {
 		let registration = p.registration;
 		if (registration.fileExtensions) {
-			// Skip adding a Serialization descriptor for Jupyter, since we use the default notebook Serialization provider for jupyter
-			if (!this._serializationProviders.has(p.id) && p.id !== JUPYTER_PROVIDER_ID) {
-				this._serializationProviders.set(p.id, new SerializationProviderDescriptor(p.id));
+			let extensions = registration.fileExtensions;
+			if (!this._serializationProviders.has(p.id)) {
+				// Only add a new provider descriptor if the provider
+				// supports file extensions beyond the default ipynb
+				let isNewFileType = (fileExt: string) => fileExt?.length > 0 && fileExt.toUpperCase() !== DEFAULT_NOTEBOOK_FILETYPE;
+				let addNewProvider = Array.isArray(extensions) ? extensions.some(ext => isNewFileType(ext)) : isNewFileType(extensions);
+				if (addNewProvider) {
+					this._serializationProviders.set(p.id, new SerializationProviderDescriptor(p.id));
+				}
 			}
-			if (Array.isArray(registration.fileExtensions)) {
-				for (let fileType of registration.fileExtensions) {
+			if (Array.isArray(extensions)) {
+				for (let fileType of extensions) {
 					this.addFileProvider(fileType, registration);
 				}
 			}
 			else {
-				this.addFileProvider(registration.fileExtensions, registration);
+				this.addFileProvider(extensions, registration);
 			}
 		}
 		if (registration.standardKernels) {
@@ -629,11 +635,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		timeout = timeout ?? 30000;
 		let promises: Promise<ISerializationProvider>[] = [
 			providerDescriptor.instanceReady,
-			new Promise<ISerializationProvider>((resolve, reject) => setTimeout(() => {
-				// Serialization providers don't always get registered, so remove this provider descriptor to prevent future waits
-				this._serializationProviders.delete(providerDescriptor.providerId);
-				return resolve(undefined);
-			}, timeout))
+			new Promise<ISerializationProvider>((resolve, reject) => setTimeout(() => resolve(undefined), timeout))
 		];
 		return Promise.race(promises);
 	}
