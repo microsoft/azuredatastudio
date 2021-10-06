@@ -62,6 +62,9 @@
         <Item ItemId=";(...) ng" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Whether to show the warning message when user connects to a server version that is not supported by Azure Data Studio.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Si se muestra o no el mensaje de advertencia cuando el usuario se conecta a una versión del servidor que no es compatible con Azure Data Studio.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1058,6 +1061,9 @@
         <Item ItemId=";(...) ing" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[The server version is not supported by Azure Data Studio, you may still connect to it but some features in Azure Data Studio might not work as expected.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[La versión del servidor no es compatible con Azure Data Studio, es posible que aún pueda conectarse a ella, pero puede que algunas características de Azure Data Studio no funcionen de la forma esperada.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>

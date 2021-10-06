@@ -466,6 +466,7 @@ export function getTargetPlatformFromVersion(version: string): string {
 export const hostFileName = 'host.json';
 export const sqlExtensionPackageName = 'Microsoft.Azure.WebJobs.Extensions.Sql';
 export const placeHolderObject = '[dbo].[table1]';
+export const sqlBindingsHelpLink = 'https://github.com/Azure/azure-functions-sql-extension/blob/main/README.md';
 
 export const input = localize('input', "Input");
 export const output = localize('output', "Output");
@@ -489,3 +490,5 @@ export const save = localize('save', "Save");
 export function settingAlreadyExists(settingName: string) { return localize('SettingAlreadyExists', 'Local app setting \'{0}\' already exists. Overwrite?', settingName); }
 export function failedToParse(errorMessage: string) { return localize('failedToParse', 'Failed to parse "{0}": {1}.', azureFunctionLocalSettingsFileName, errorMessage); }
 export function jsonParseError(error: string, line: number, column: number) { return localize('jsonParseError', '{0} near line "{1}", column "{2}"', error, line, column); }
+export const moreInformation = localize('moreInformation', "More Information");
+export const addPackageReferenceMessage = localize('addPackageReferenceMessage', 'To use SQL bindings, ensure your Azure Functions project has a reference to {0}', sqlExtensionPackageName);
