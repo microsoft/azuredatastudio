@@ -15,7 +15,7 @@ import { DiskFileSystemProvider, IWatcherOptions } from 'vs/platform/files/node/
 import { VSBuffer } from 'vs/base/common/buffer';
 import { posix, delimiter } from 'vs/base/common/path';
 import { IServerEnvironmentService } from 'vs/server/serverEnvironmentService';
-import { ReadableStreamEventPayload } from 'vs/base/common/stream';
+import { listenStream, ReadableStreamEventPayload } from 'vs/base/common/stream';
 import { CancellationTokenSource } from 'vs/base/common/cancellation';
 
 class SessionFileWatcher extends Disposable {
@@ -55,8 +55,8 @@ class SessionFileWatcher extends Disposable {
 			const segments = fileWatcherPolling.split(delimiter);
 			const pollingInterval = Number(segments[0]);
 			if (pollingInterval > 0) {
-				//const usePolling: boolean = segments.length > 1 ? segments.slice(1) : true;
-				return { usePolling: true, pollingInterval };
+				const usePolling = segments.length > 1 ? segments.slice(1) : true;
+				return { usePolling, pollingInterval };
 			}
 		}
 
@@ -165,14 +165,16 @@ export class RemoteAgentFileSystemChannel extends Disposable implements IServerC
 		});
 
 		const fileStream = this.fsProvider.readFileStream(resource, opts, cancellableSource.token);
-		fileStream.on('data', chunk => emitter.fire(VSBuffer.wrap(chunk)));
-		fileStream.on('error', error => emitter.fire(error));
-		fileStream.on('end', () => {
-			emitter.fire('end');
+		listenStream(fileStream, {
+			onData: chunk => emitter.fire(VSBuffer.wrap(chunk)),
+			onError: error => emitter.fire(error),
+			onEnd: () => {
+				emitter.fire('end');
 
-			// Cleanup
-			emitter.dispose();
-			cancellableSource.dispose();
+				// Cleanup
+				emitter.dispose();
+				cancellableSource.dispose();
+			}
 		});
 
 		return emitter.event;

@@ -210,7 +210,7 @@ export class WebClientServer {
 			'default-src \'self\';',
 			'img-src \'self\' https: data: blob:;',
 			'media-src \'none\';',
-			`script-src 'self' 'unsafe-eval' https://az416426.vo.msecnd.net ${this._getScriptCspHashes(data).join(' ')} 'sha256-O98pkmgtvUCQGVoddaGy891K52PVRnySDRxRszVLPNQ=' http://${remoteAuthority};`, // the sha is the same as in src/vs/workbench/services/extensions/worker/httpWebWorkerExtensionHostIframe.html
+			`script-src 'self' 'unsafe-eval' https://az416426.vo.msecnd.net ${this._getScriptCspHashes(data).join(' ')} 'sha256-cb2sg39EJV8ABaSNFfWu/ou8o1xVXYK7jp90oZ9vpcg=' http://${remoteAuthority};`, // the sha is the same as in src/vs/workbench/services/extensions/worker/httpWebWorkerExtensionHostIframe.html
 			'child-src \'self\';',
 			'frame-src \'self\' https://*.vscode-webview-test.com https://vscodeweb.azureedge.net data:;',
 			'worker-src \'self\' data:;',

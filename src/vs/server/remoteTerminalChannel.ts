@@ -101,6 +101,7 @@ export class RemoteTerminalChannel extends Disposable implements IServerChannel<
 				return this._createProcess(uriTransformer, <ICreateTerminalProcessArguments>args);
 			}
 			case '$attachToProcess': return this._ptyService.attachToProcess.apply(this._ptyService, args);
+			case '$detachFromProcess': return this._ptyService.detachFromProcess.apply(this._ptyService, args);
 
 			case '$listProcesses': return this._ptyService.listProcesses.apply(this._ptyService, args);
 			case '$orphanQuestionReply': return this._ptyService.orphanQuestionReply.apply(this._ptyService, args);
@@ -126,6 +127,9 @@ export class RemoteTerminalChannel extends Disposable implements IServerChannel<
 			case '$reduceConnectionGraceTime': return this._reduceConnectionGraceTime();
 			case '$updateIcon': return this._ptyService.updateIcon.apply(this._ptyService, args);
 			case '$updateTitle': return this._ptyService.updateTitle.apply(this._ptyService, args);
+
+			case '$requestDetachInstance': return this._ptyService.requestDetachInstance(args[0], args[1]);
+			case '$acceptDetachedInstance': return this._ptyService.acceptDetachInstanceReply(args[0], args[1]);
 		}
 
 		throw new Error(`IPC Command ${command} not found`);
@@ -147,7 +151,9 @@ export class RemoteTerminalChannel extends Disposable implements IServerChannel<
 			case '$onProcessOverrideDimensionsEvent': return this._ptyService.onProcessOverrideDimensions;
 			case '$onProcessResolvedShellLaunchConfigEvent': return this._ptyService.onProcessResolvedShellLaunchConfig;
 			case '$onProcessOrphanQuestion': return this._ptyService.onProcessOrphanQuestion;
+			case '$onProcessDidChangeHasChildProcesses': return this._ptyService.onProcessDidChangeHasChildProcesses;
 			case '$onExecuteCommand': return this.onExecuteCommand;
+			case '$onDidRequestDetach': return this._ptyService.onDidRequestDetach || Event.None;
 			default:
 				break;
 		}
@@ -172,12 +178,12 @@ export class RemoteTerminalChannel extends Disposable implements IServerChannel<
 
 		let baseEnv: platform.IProcessEnvironment;
 		if (args.shellLaunchConfig.useShellEnvironment) {
-			this._logService.info('*');
+			this._logService.trace('*');
 			baseEnv = await buildUserEnvironment(args.resolverEnv, platform.language, false, this._environmentService, this._logService);
 		} else {
 			baseEnv = this._getEnvironment();
 		}
-		this._logService.info('baseEnv', baseEnv);
+		this._logService.trace('baseEnv', baseEnv);
 
 		const reviveWorkspaceFolder = (workspaceData: IWorkspaceFolderData): IWorkspaceFolder => {
 			return {
@@ -232,7 +238,7 @@ export class RemoteTerminalChannel extends Disposable implements IServerChannel<
 		};
 		const cliServer = new CLIServerBase(commandsExecuter, this._logService, ipcHandlePath);
 
-		const id = await this._ptyService.createProcess(shellLaunchConfig, initialCwd, args.cols, args.rows, env, baseEnv, false, args.shouldPersistTerminal, args.workspaceId, args.workspaceName);
+		const id = await this._ptyService.createProcess(shellLaunchConfig, initialCwd, args.cols, args.rows, args.unicodeVersion, env, baseEnv, false, args.shouldPersistTerminal, args.workspaceId, args.workspaceName);
 		this._ptyService.onProcessExit(e => e.id === id && cliServer.dispose());
 
 		return {
@@ -295,8 +301,8 @@ export class RemoteTerminalChannel extends Disposable implements IServerChannel<
 		return this._ptyService.getDefaultSystemShell(osOverride);
 	}
 
-	private async _getProfiles(profiles: unknown, defaultProfile: unknown, includeDetectedProfiles?: boolean): Promise<ITerminalProfile[]> {
-		return this._ptyService.getProfiles?.(profiles, defaultProfile, includeDetectedProfiles) || [];
+	private async _getProfiles(workspaceId: string, profiles: unknown, defaultProfile: unknown, includeDetectedProfiles?: boolean): Promise<ITerminalProfile[]> {
+		return this._ptyService.getProfiles?.(workspaceId, profiles, defaultProfile, includeDetectedProfiles) || [];
 	}
 
 	private _getEnvironment(): platform.IProcessEnvironment {

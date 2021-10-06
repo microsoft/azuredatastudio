@@ -246,18 +246,18 @@ export function main(desc: ProductDescription, args: string[]): void {
 			return;
 		}
 
-		// if (parsedArgs['install-extension'] !== undefined || parsedArgs['uninstall-extension'] !== undefined || parsedArgs['list-extensions']) {
-		// 	sendToPipe({
-		// 		type: 'extensionManagement',
-		// 		list: parsedArgs['list-extensions'] ? { showVersions: parsedArgs['show-versions'], category: parsedArgs['category'] } : undefined,
-		// 		install: asExtensionIdOrVSIX(parsedArgs['install-extension']),
-		// 		uninstall: asExtensionIdOrVSIX(parsedArgs['uninstall-extension']),
-		// 		force: parsedArgs['force']
-		// 	}).then((res: string) => {
-		// 		console.log(res);
-		// 	});
-		// 	return;
-		// }
+		if (parsedArgs['install-extension'] !== undefined || parsedArgs['uninstall-extension'] !== undefined || parsedArgs['list-extensions']) {
+			sendToPipe({
+				type: 'extensionManagement',
+				list: parsedArgs['list-extensions'] ? { showVersions: parsedArgs['show-versions'], category: parsedArgs['category'] } : undefined,
+				install: asExtensionIdOrVSIX(parsedArgs['install-extension']),
+				uninstall: asExtensionIdOrVSIX(parsedArgs['uninstall-extension']),
+				force: parsedArgs['force']
+			}).then((res: string) => {
+				console.log(res);
+			});
+			return;
+		}
 
 		if (!fileURIs.length && !folderURIs.length) {
 			console.log('At least one file or folder must be provided.');
@@ -351,9 +351,9 @@ function sendToPipe(args: PipeCommand): Promise<any> {
 	});
 }
 
-// function asExtensionIdOrVSIX(inputs: string[] | undefined) {
-// 	return inputs?.map(input => /\.vsix$/i.test(input) ? pathToURI(input).href : input);
-// }
+function asExtensionIdOrVSIX(inputs: string[] | undefined) {
+	return inputs?.map(input => /\.vsix$/i.test(input) ? pathToURI(input).href : input);
+}
 
 function fatal(err: any): void {
 	console.error('Unable to connect to VS Code server.');
