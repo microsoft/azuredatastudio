@@ -273,6 +273,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}
 			return true;
 		}).component();
+		if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.MigrationMode) {
+			this._networkSharePath.value = this.migrationStateModel.savedInfo.networkShare?.networkShareLocation;
+		}
 		this._disposables.push(this._networkSharePath.onTextChanged(async (value) => {
 			await this.validateFields();
 			this.migrationStateModel._databaseBackup.networkShare.networkShareLocation = value;
@@ -316,6 +319,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				}
 				return true;
 			}).component();
+		if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.DatabaseBackup) {
+			this._windowsUserAccountText.value = this.migrationStateModel.savedInfo.networkShare?.windowsUser;
+		}
 		this._disposables.push(this._windowsUserAccountText.onTextChanged((value) => {
 			this.migrationStateModel._databaseBackup.networkShare.windowsUser = value;
 		}));
@@ -747,6 +753,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.MigrationMode) {
 				if (this.migrationStateModel.savedInfo.networkContainerType === NetworkContainerType.NETWORK_SHARE) {
 					this._networkShareButton.checked = true;
+
+					//TODO: populate other info here
 				} else {
 					this._networkShareButton.checked = false;
 					this._networkTableContainer.display = 'none';
@@ -761,6 +769,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.MigrationMode) {
 				if (this.migrationStateModel.savedInfo.networkContainerType === NetworkContainerType.BLOB_CONTAINER) {
 					this._blobContainerButton.checked = true;
+					//TODO: populate other info here
 				} else {
 					this._blobContainerButton.checked = false;
 					this._blobTableContainer.display = 'none';

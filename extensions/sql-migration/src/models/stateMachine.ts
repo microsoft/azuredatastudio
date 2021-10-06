@@ -115,6 +115,7 @@ export interface SavedInfo {
 	selectedDatabases: azdata.DeclarativeTableCellValue[][];
 	migrationTargetType: MigrationTargetType | null;
 	migrationDatabases: azdata.DeclarativeTableCellValue[][];
+	databaseList: string[];
 	subscription: azureResource.AzureResourceSubscription | null;
 	location: azureResource.AzureLocation | null;
 	resourceGroup: azureResource.AzureResourceResourceGroup | null;
@@ -122,6 +123,7 @@ export interface SavedInfo {
 	migrationMode: MigrationMode | null;
 	databaseAssessment: string[] | null;
 	networkContainerType: NetworkContainerType | null;
+	networkShare: NetworkShare | null;
 }
 
 
@@ -1020,13 +1022,15 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			selectedDatabases: [],
 			migrationTargetType: null,
 			migrationDatabases: [],
+			databaseList: [],
 			subscription: null,
 			location: null,
 			resourceGroup: null,
 			targetServerInstance: null,
 			migrationMode: null,
 			databaseAssessment: null,
-			networkContainerType: null
+			networkContainerType: null,
+			networkShare: null
 		};
 		switch (currentPage) {
 			case Page.Summary:
@@ -1035,6 +1039,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 			case Page.DatabaseBackup:
 				saveInfo.networkContainerType = this._databaseBackup.networkContainerType;
+				saveInfo.networkShare = this._databaseBackup.networkShare;
 			// networkShare: NetworkShare;
 			// subscription: azureResource.AzureResourceSubscription;
 			// blobs: Blob[];
@@ -1059,6 +1064,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				saveInfo.databaseAssessment = this._databaseAssessment;
 				saveInfo.serverAssessment = this._assessmentResults;
 				saveInfo.migrationDatabases = this._databaseSelection;
+				saveInfo.databaseList = this._migrationDbs;
 				saveInfo.subscription = this._targetSubscription;
 				saveInfo.location = this._location;
 				saveInfo.resourceGroup = this._resourceGroup;
