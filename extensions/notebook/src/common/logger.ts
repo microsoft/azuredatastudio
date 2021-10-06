@@ -6,7 +6,7 @@
 import * as vscode from 'vscode';
 
 class LoggerImpl {
-	private _output: vscode.OutputChannel;
+	private _output: vscode.OutputChannel | undefined;
 
 	constructor() {
 	}
@@ -16,11 +16,11 @@ class LoggerImpl {
 	}
 
 	log(msg: string): void {
-		this._output.appendLine(`[${new Date().toISOString()}] ${msg}`);
+		this._output?.appendLine(`[${new Date().toISOString()}] ${msg}`);
 	}
 
 	show(): void {
-		this._output.show(true);
+		this._output?.show(true);
 	}
 }
 
