@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IRevertOptions, GroupIdentifier, IEditorInput, EditorInputCapabilities } from 'vs/workbench/common/editor';
+import { IRevertOptions, GroupIdentifier, IEditorInput, EditorInputCapabilities, IUntypedEditorInput } from 'vs/workbench/common/editor';
 import { Emitter, Event } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import * as resources from 'vs/base/common/resources';
@@ -508,7 +508,7 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 		return this._model.updateModel();
 	}
 
-	public override matches(otherInput: any): boolean {
+	public override matches(otherInput: IEditorInput | IUntypedEditorInput): boolean {
 		if (otherInput instanceof NotebookInput) {
 			return this.textInput.matches(otherInput.textInput);
 		} else {
