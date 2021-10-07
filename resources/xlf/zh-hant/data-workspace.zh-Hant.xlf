@@ -147,8 +147,8 @@
         <target state="translated">遠端 Git 存放庫</target>
       </trans-unit>
       <trans-unit id="dataworkspace.restartConfirmation">
-        <source xml:lang="en">Azure Data Studio needs to be restarted for the project to be created and added to the workspace, do this now?</source>
-        <target state="translated">必須將 Azure Data Studio 重新開機，才能建立專案並將其新增至工作區，立即執行此動作嗎?</target>
+        <source xml:lang="en">Azure Data Studio needs to be restarted for the project to be added to the workspace. Restart now?</source>
+        <target state="translated">需要重新啟動 Azure Data Studio，專案才能新增到工作區。立即重新啟動?</target>
       </trans-unit>
       <trans-unit id="dataworkspace.select">
         <source xml:lang="en">Select</source>
@@ -255,6 +255,10 @@ To learn more about projects [read our docs](https://aka.ms/azuredatastudio-proj
       <trans-unit id="projects.defaultProjectSaveLocation">
         <source xml:lang="en">Full path to folder where new projects are saved by default.</source>
         <target state="translated">預設儲存新專案之資料夾的完整路徑。</target>
+      </trans-unit>
+      <trans-unit id="projects.excludedProjectsDescription">
+        <source xml:lang="en">List of projects in the workspace to exclude from the projects viewlet</source>
+        <target state="translated">工作區中要從專案 Viewlet 排除的專案清單</target>
       </trans-unit>
       <trans-unit id="projects.showNotAddedProjectsInWorkspacePrompt">
         <source xml:lang="en">Always show information message when the current workspace folders contain projects that have not been added to the workspace's projects.</source>

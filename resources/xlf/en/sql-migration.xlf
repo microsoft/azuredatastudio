@@ -345,6 +345,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.enter.your.sql.cred">
       <source xml:lang="en">Enter the credentials for the source SQL Server instance. These credentials will be used while migrating databases to Azure SQL.</source>
     </trans-unit>
+    <trans-unit id="sql.migration.error">
+      <source xml:lang="en">Error</source>
+    </trans-unit>
     <trans-unit id="sql.migration.failed">
       <source xml:lang="en">Migrations failed</source>
     </trans-unit>
@@ -1022,6 +1025,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.view.select.button.label">
       <source xml:lang="en">View/Select</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.warning">
+      <source xml:lang="en">Warning</source>
     </trans-unit>
     <trans-unit id="sql.migration.warnings">
       <source xml:lang="en">Warnings</source>

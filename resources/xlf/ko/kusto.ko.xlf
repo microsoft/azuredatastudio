@@ -180,7 +180,7 @@
       </trans-unit>
       <trans-unit id="kusto.connectionOptions.authType.description">
         <source xml:lang="en">Specifies the method of authenticating with Kusto Server</source>
-        <target state="translated">Kusto Server를 사용하여 인증하는 방법을 지정합니다.</target>
+        <target state="translated">Kusto 서버를 사용하여 인증하는 방법을 지정합니다.</target>
       </trans-unit>
       <trans-unit id="kusto.connectionOptions.authType.displayName">
         <source xml:lang="en">Authentication type</source>
