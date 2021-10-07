@@ -840,7 +840,7 @@ export class ProjectsController {
 		}
 
 		const filters: { [name: string]: string[] } = {};
-		filters[constants.specSelectionText] = ['yaml'];
+		filters[constants.specSelectionText] = ['yaml', 'yml', 'json'];
 
 		let uris = await vscode.window.showOpenDialog({
 			canSelectFiles: true,
