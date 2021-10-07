@@ -56,7 +56,7 @@ declare module 'vscode-mssql' {
          * @param connectionInfo The connection info
          * @returns The URI associated with this connection
          */
-        connect(connectionInfo: IConnectionInfo, saveConnection?: boolean): Promise<string>;
+        connect(connectionInfo: IConnectionInfo): Promise<string>;
 
         /**
          * Lists the databases for a given connection. Must be given an already-opened connection to succeed.

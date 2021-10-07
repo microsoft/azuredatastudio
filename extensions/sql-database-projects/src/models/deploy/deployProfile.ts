@@ -27,6 +27,5 @@ export interface ILocalDbSetting {
 	password: string,
 	dbName: string,
 	dockerBaseImage: string,
-	connectionRetryTimeout?: number,
-	profileName?: string
+	connectionRetryTimeout?: number
 }
