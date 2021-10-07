@@ -345,7 +345,7 @@ export class UntitledTextEditorModel extends BaseTextEditorModel implements IUnt
 				this.setDirty(false);
 			}
 
-			// Untitled associated to file path are dirty right away
+			// Untitled associated to file path are dirty right away as well as untitled with content
 			else {
 				this.setDirty(this.hasAssociatedFilePath || !!hasBackup || !!this.initialValue);
 			}
