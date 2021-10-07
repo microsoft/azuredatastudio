@@ -282,7 +282,7 @@ describe('deploy service', function (): void {
 		});
 
 
-		const reallyLongName = new Array(128 + 1).join( 'a' ).replace(/[^a-zA-Z0-9_,\-]/g, '');
+		const reallyLongName = new Array(128 + 1).join('a').replace(/[^a-zA-Z0-9_,\-]/g, '');
 		const imageProjectName = reallyLongName.substring(0, 128 - (constants.dockerImageNamePrefix.length + tag.length + 2));
 		should(deployService.getDockerImageInfo(reallyLongName, baseImage, id)).deepEqual({
 			label: `${constants.dockerImageLabelPrefix}-${imageProjectName}`,
