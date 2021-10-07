@@ -57,7 +57,7 @@ describe('Autorest tests', function (): void {
 		should(constructedCommand === expectedOutput || constructedCommand === `npx ${expectedOutput}`).equal(true, `Constructed autorest command not formatting as expected:\nActual: ${constructedCommand}\nExpected: [npx ]${expectedOutput}`);
 	});
 
-	it.only('Should prompt user for action when autorest not found', async function (): Promise<void> {
+	it('Should prompt user for action when autorest not found', async function (): Promise<void> {
 		const promptStub = sinon.stub(window, 'showInformationMessage').returns(<any>Promise.resolve());
 		const detectStub = sinon.stub(utils, 'detectCommandInstallation');
 		detectStub.withArgs('autorest').returns(Promise.resolve(false));
