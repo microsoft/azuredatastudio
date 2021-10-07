@@ -840,7 +840,7 @@ export class ProjectsController {
 		}
 
 		const filters: { [name: string]: string[] } = {};
-		filters[constants.specSelectionText] = constants.openApiSpecExtensions;
+		filters[constants.specSelectionText] = constants.openApiSpecFileExtensions;
 
 		let uris = await vscode.window.showOpenDialog({
 			canSelectFiles: true,
