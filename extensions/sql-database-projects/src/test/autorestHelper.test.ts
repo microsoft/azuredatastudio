@@ -11,6 +11,7 @@ import * as path from 'path';
 import { TestContext, createContext } from './testContext';
 import { AutorestHelper } from '../tools/autorestHelper';
 import { promises as fs } from 'fs';
+import { window } from 'vscode';
 
 let testContext: TestContext;
 
@@ -54,5 +55,17 @@ describe('Autorest tests', function (): void {
 
 		// depending on whether the machine running the test has autorest installed or just node, the expected output may differ by just the prefix, hence matching against two options
 		should(constructedCommand === expectedOutput || constructedCommand === `npx ${expectedOutput}`).equal(true, `Constructed autorest command not formatting as expected:\nActual: ${constructedCommand}\nExpected: [npx ]${expectedOutput}`);
+	});
+
+	it.only('Should prompt user for action when autorest not found', async function (): Promise<void> {
+		const promptStub = sinon.stub(window, 'showInformationMessage').returns(<any>Promise.resolve());
+		const detectStub = sinon.stub(utils, 'detectCommandInstallation');
+		detectStub.withArgs('autorest').returns(Promise.resolve(false));
+		detectStub.withArgs('npx').returns(Promise.resolve(true));
+
+		const autorestHelper = new AutorestHelper(testContext.outputChannel);
+		await autorestHelper.detectInstallation();
+
+		should(promptStub.calledOnce).be.true('User should have been prompted for how to run autorest because it wasn\'t found.');
 	});
 });
