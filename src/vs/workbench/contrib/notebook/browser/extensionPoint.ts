@@ -7,6 +7,8 @@ import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import * as nls from 'vs/nls';
 import { ExtensionsRegistry } from 'vs/workbench/services/extensions/common/extensionsRegistry';
 import { NotebookEditorPriority, NotebookRendererEntrypoint, RendererMessagingSpec } from 'vs/workbench/contrib/notebook/common/notebookCommon';
+import { Registry } from 'vs/platform/registry/common/platform'; // {{SQL CARBON EDIT}}
+import { INotebookProviderRegistry, NotebookProviderRegistryId, ProviderDescriptionRegistration } from 'sql/workbench/services/notebook/common/notebookRegistry'; // {{SQL CARBON EDIT}}
 
 namespace NotebookEditorContribution {
 	export const type = 'type';
@@ -184,6 +186,23 @@ export const notebooksExtensionPoint = ExtensionsRegistry.registerExtensionPoint
 		extensionPoint: 'notebooks',
 		jsonSchema: notebookProviderContribution
 	});
+
+// {{SQL CARBON EDIT}}
+// Convert VSCode notebook registrations into ADS equivalents
+const adsNotebookRegistry = Registry.as<INotebookProviderRegistry>(NotebookProviderRegistryId);
+
+notebooksExtensionPoint.setHandler(extensions => {
+	for (let extension of extensions) {
+		for (const notebookContribution of extension.value) {
+			let adsProvider: ProviderDescriptionRegistration = {
+				provider: notebookContribution.type,
+				fileExtensions: notebookContribution.selector?.map(s => s.filenamePattern) ?? [],
+				standardKernels: [] // TODO: Find a way to add in kernel info
+			};
+			adsNotebookRegistry.registerProviderDescription(adsProvider);
+		}
+	}
+});
 
 export const notebookRendererExtensionPoint = ExtensionsRegistry.registerExtensionPoint<INotebookRendererContribution[]>(
 	{
