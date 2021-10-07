@@ -18,6 +18,7 @@ export class FileNotebookInput extends NotebookInput {
 		title: string,
 		resource: URI,
 		textInput: FileEditorInput,
+		private _showActions: boolean,
 		@ITextModelService textModelService: ITextModelService,
 		@IInstantiationService instantiationService: IInstantiationService,
 		@INotebookService notebookService: INotebookService,
@@ -48,5 +49,9 @@ export class FileNotebookInput extends NotebookInput {
 
 	public getEncoding(): string | undefined {
 		return this.textInput.getEncoding();
+	}
+
+	public showActions(): boolean {
+		return this._showActions;
 	}
 }
