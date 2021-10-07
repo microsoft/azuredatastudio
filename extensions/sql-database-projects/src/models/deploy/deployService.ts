@@ -133,6 +133,15 @@ export class DeployService {
 			const dockerFilePath = path.join(mssqlFolderPath, constants.dockerFileName);
 			const startFilePath = path.join(commandsFolderPath, constants.startCommandName);
 
+			// Clean up existing docker image
+			const containerIds = await this.getCurrentDockerContainer(imageInfo.label);
+			if (containerIds.length > 0) {
+				const result = await vscode.window.showWarningMessage(constants.containerAlreadyExistForProject, constants.yesString, constants.noString);
+				if (result === constants.yesString) {
+					this.logToOutput(constants.cleaningDockerImagesMessage);
+					await this.cleanDockerObjects(containerIds, ['docker stop', 'docker rm']);
+				}
+			}
 
 			this.logToOutput(constants.creatingDeploymentSettingsMessage);
 			// Create commands
@@ -380,17 +389,22 @@ RUN ["/bin/bash", "/opt/commands/start.sh"]
 		await fse.writeFile(filePath, content);
 	}
 
-	public async cleanDockerObjects(commandToGetObjects: string, commandsToClean: string[]): Promise<void> {
-		const currentIds = await utils.executeCommand(commandToGetObjects, this._outputChannel);
-		if (currentIds) {
-			const ids = currentIds.split(/\r?\n/);
-			for (let index = 0; index < ids.length; index++) {
-				const id = ids[index];
-				if (id) {
-					for (let commandId = 0; commandId < commandsToClean.length; commandId++) {
-						const command = commandsToClean[commandId];
-						await utils.executeCommand(`${command} ${id}`, this._outputChannel);
-					}
+	private async getCurrentIds(commandToRun: string): Promise<string[]> {
+		const currentIds = await utils.executeCommand(commandToRun, this._outputChannel);
+		return currentIds ? currentIds.split(/\r?\n/) : [];
+	}
+
+	public async getCurrentDockerContainer(imageLabel: string): Promise<string[]> {
+		return await this.getCurrentIds(`docker ps -q -a --filter label=${imageLabel}`);
+	}
+
+	public async cleanDockerObjects(ids: string[], commandsToClean: string[]): Promise<void> {
+		for (let index = 0; index < ids.length; index++) {
+			const id = ids[index];
+			if (id) {
+				for (let commandId = 0; commandId < commandsToClean.length; commandId++) {
+					const command = commandsToClean[commandId];
+					await utils.executeCommand(`${command} ${id}`, this._outputChannel);
 				}
 			}
 		}
