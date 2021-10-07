@@ -9933,15 +9933,18 @@
 			"treeView.notRegistered": "未注册 ID 为 \"{0}\" 的树状视图。"
 		},
 		"sql/workbench/api/common/extHostNotebook": {
-			"errNoManager": "未找到管理器",
-			"errNoProvider": "未找到笔记本提供程序",
+			"errNoExecuteManager": "找不到执行管理器",
+			"errNoExecuteProvider": "找不到笔记本执行提供程序",
+			"errNoSerializationManager": "找不到序列化管理器",
+			"errNoSerializationProvider": "找不到笔记本序列化提供程序",
+			"executeProviderRequired": "必须向此方法传递具有有效 providerId 的 NotebookExecuteProvider",
 			"noContentManager": "笔记本 {0} 的笔记本管理器没有内容管理器。无法对其执行操作",
 			"noServerManager": "笔记本 {0} 的笔记本管理器没有服务器管理器。无法对其执行操作",
 			"noSessionManager": "笔记本 {0} 的笔记本管理器没有会话管理器。无法对其执行操作",
-			"providerRequired": "必须向此方法传递具有有效 providerId 的 NotebookProvider"
+			"serializationProviderRequired": "必须向此方法传递具有有效 providerId 的 NotebookSerializationProvider"
 		},
 		"sql/workbench/api/common/extHostNotebookDocumentsAndEditors": {
-			"providerRequired": "必须向此方法传递具有有效 providerId 的 NotebookProvider"
+			"navigationProviderRequired": "必须向此方法传递具有有效 providerId 的 NavigationProvider"
 		},
 		"sql/workbench/browser/actions": {
 			"clearSavedAccounts": "清除所有保存的帐户",
@@ -9985,6 +9988,7 @@
 			"optionsDialog.ok": "确定"
 		},
 		"sql/workbench/browser/modal/optionsDialogHelper": {
+			"optionsDialog.defaultGroupName": "常规",
 			"optionsDialog.invalidInput": "输入无效。预期值为数值。",
 			"optionsDialog.missingRequireField": "是必需的。"
 		},
@@ -9997,6 +10001,7 @@
 			"declarativeTable.showActions": "显示操作"
 		},
 		"sql/workbench/browser/modelComponents/dropdown.component": {
+			"defaultDropdownErrorMessage": "请填写此字段。",
 			"loadingCompletedMessage": "加载已完成",
 			"loadingMessage": "正在加载"
 		},
@@ -10250,6 +10255,12 @@
 		},
 		"sql/workbench/contrib/connection/browser/connection.contribution": {
 			"connection.parseClipboardForConnectionStringDescription": "在打开连接对话框或执行粘贴时尝试分析剪贴板的内容。",
+			"connection.showUnsupportedServerVersionWarning": "当用户连接到 Azure Data Studio 不支持的服务器版本时是否显示警告消息。",
+			"sql.defaultAuthenticationType.AzureMFA": "Azure Active Directory - 支持 MFA 的通用目录",
+			"sql.defaultAuthenticationType.AzureMFAAndUser": "Azure Active Directory - 密码",
+			"sql.defaultAuthenticationType.Integrated": "Windows 身份验证",
+			"sql.defaultAuthenticationType.SqlLogin": "SQL 登录",
+			"sql.defaultAuthenticationTypeDescription": "连接到 Azure 资源时要使用的默认身份验证类型。 ",
 			"sql.defaultEngineDescription": "要使用的默认 SQL 引擎。这将驱动 .sql 文件中的默认语言提供程序，以及创建新连接时使用的默认语言提供程序。",
 			"sql.maxRecentConnectionsDescription": "连接列表中保存的最近使用的连接数量上限"
 		},
@@ -11214,6 +11225,7 @@
 		},
 		"sql/workbench/contrib/query/browser/queryResultsView": {
 			"messagesTabTitle": "消息",
+			"queryResults.queryEditorCrashError": "The query editor ran into an issue and has stopped working. Please save and reopen it.",
 			"resultsTabTitle": "结果"
 		},
 		"sql/workbench/contrib/query/browser/statusBarItems": {
@@ -11605,7 +11617,12 @@
 		},
 		"sql/workbench/services/connection/browser/connectionManagementService": {
 			"cancelConnectionConfirmation": "确定要取消此连接吗?",
+			"connection.invalidConnectionResult": "连接结果无效",
+			"connection.neverShowUnsupportedVersionWarning": "不再显示",
 			"connection.noAzureAccount": "未能获取 Azure 帐户令牌用于连接",
+			"connection.refreshAzureTokenFailure": "未能刷新用于连接的 Azure 帐户令牌",
+			"connection.unsupportedServerVersionWarning": "Azure Data Studio 不支持此服务器版本，你仍然可以连接到它，但 Azure Data Studio 中的某些功能可能无法按预期工作。",
+			"connectionManagementService.noProviderForUri": "找不到此 URI 的提供程序: {0}",
 			"connectionNotAcceptedError": "连接未被接受",
 			"connectionService.no": "否",
 			"connectionService.yes": "是"
@@ -11792,7 +11809,7 @@
 			"carbon.extension.contributes.notebook.provider": "笔记本提供程序的标识符。",
 			"carbon.extension.contributes.notebook.standardKernels": "此笔记本提供程序应标配哪些内核",
 			"vscode.extension.contributes.notebook.languagemagics": "提供笔记本语言。",
-			"vscode.extension.contributes.notebook.providers": "提供笔记本提供程序。"
+			"vscode.extension.contributes.notebook.providersDescriptions": "提供笔记本提供程序说明。"
 		},
 		"sql/workbench/services/objectExplorer/browser/asyncServerTreeRenderer": {
 			"loading": "正在加载..."
@@ -11856,6 +11873,8 @@
 		"sql/workbench/services/query/common/queryModelService": {
 			"commitEditFailed": "提交行失败:",
 			"msgCancelQueryFailed": "取消查询失败: {0}",
+			"queryModelService.noQueryFoundForUri": "找不到 {0} 的查询",
+			"queryModelService.uriAlreadyHasQuery": "{0} 已具有现有查询",
 			"runQueryBatchStartLine": "第 {0} 行",
 			"runQueryBatchStartMessage": "开始执行查询的位置:",
 			"runQueryStringBatchStartMessage": "已开始执行查询 \"{0}\"",
@@ -11954,6 +11973,14 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "入门(&&S)",
 			"showReleaseNotes": "显示入门指南"
+		},
+		"sql/platform/connection/common/connectionStatusManager": {
+			"connectionStatusManager.noConnectionForUri": "找不到与此 URI 的连接: {0}",
+			"connectionStatusManager.uriAlreadyInConnectionsList": "已存在与此 URI 的连接: {0}"
+		},
+		"sql/workbench/services/query/common/queryManagement": {
+			"queryManagement.noQueryRunnerForUri": "找不到此 URI 的查询运行程序: {0}",
+			"queryManagement.uriAlreadyHasQueryRunner": "URI: {0} 意外地已具有查询运行程序。"
 		}
 	}
 }
