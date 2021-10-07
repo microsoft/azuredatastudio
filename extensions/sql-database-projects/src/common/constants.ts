@@ -421,6 +421,10 @@ export enum DatabaseProjectItemType {
 export const autorestPostDeploymentScriptName = 'PostDeploymentScript.sql';
 export const nodeButNotAutorestFound = localize('nodeButNotAutorestFound', "Autorest tool not found in system path, but found Node.js.  Running via npx.  Please execute 'npm install autorest -g' to install permanently.");
 export const nodeNotFound = localize('nodeNotFound', "Neither autorest nor Node.js (npx) found in system path.  Please install Node.js for autorest generation to work.");
+export const nodeButNotAutrestFoundPrompt = localize('nodeButNotAutrestFoundPrompt', "Autorest is not installed, but can still be run via Node's 'npx' command. What would you like to do?");
+export const installGlobally = localize('installGlobally', "Install globally");
+export const runViaNpx = localize('runViaNpx', "Run via npx");
+
 export const selectSpecFile = localize('selectSpecFile', "Select OpenAPI/Swagger spec file");
 export function generatingProjectFailed(errorMessage: string) { return localize('generatingProjectFailed', "Generating project via AutoRest failed: {0}", errorMessage); }
 export function multipleMostDeploymentScripts(count: number) { return localize('multipleMostDeploymentScripts', "Unexpected number of {0} files: {1}", autorestPostDeploymentScriptName, count); }
