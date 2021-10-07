@@ -13,8 +13,10 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as childProcess from 'child_process';
 import { AppSettingType, IDeployProfile } from '../../models/deploy/deployProfile';
-let fse = require('fs-extra');
-let path = require('path');
+import * as UUID from 'vscode-languageclient/lib/utils/uuid';
+import * as fse from 'fs-extra';
+import * as path from 'path';
+import * as constants from '../../common/constants';
 
 export interface TestContext {
 	outputChannel: vscode.OutputChannel;
@@ -88,7 +90,7 @@ describe('deploy service', function (): void {
 
 	});
 
-	it('Should deploy fails if docker is not running', async function (): Promise<void> {
+	it('Should fail the deploy if docker is not running', async function (): Promise<void> {
 		const testContext = createContext();
 		const deployProfile: IDeployProfile = {
 			localDbSetting: {
@@ -168,10 +170,12 @@ describe('deploy service', function (): void {
 			}
 		};
 
-		const appInteg = {appSettingType: AppSettingType.AzureFunction,
+		const appInteg = {
+			appSettingType: AppSettingType.AzureFunction,
 			appSettingFile: filePath,
 			deploySettings: undefined,
-			envVariableName: 'SQLConnectionString'};
+			envVariableName: 'SQLConnectionString'
+		};
 
 		const deployService = new DeployService(testContext.outputChannel);
 		sandbox.stub(childProcess, 'exec').yields(undefined, 'id');
@@ -243,5 +247,47 @@ describe('deploy service', function (): void {
 		await deployService.cleanDockerObjects(`docker ps -q -a --filter label=test`, ['docker stop', 'docker rm']);
 		should(process.calledThrice);
 	});
-});
 
+	it('Should create docker image info correctly', () => {
+		const testContext = createContext();
+		const deployService = new DeployService(testContext.outputChannel);
+		const id = UUID.generateUuid().toLocaleLowerCase();
+		const baseImage = 'baseImage:latest';
+		const tag = baseImage.replace(':', '-').replace(constants.sqlServerDockerRegistry, '').replace(/[^a-zA-Z0-9_,\-]/g, '').toLocaleLowerCase();
+
+		should(deployService.getDockerImageInfo('project-name123_test', baseImage, id)).deepEqual({
+			label: `${constants.dockerImageLabelPrefix}-project-name123_test`,
+			containerName: `${constants.dockerImageNamePrefix}-project-name123_test-${id}`,
+			tag: `${constants.dockerImageNamePrefix}-project-name123_test-${tag}`
+		});
+		should(deployService.getDockerImageInfo('project-name1', baseImage, id)).deepEqual({
+			label: `${constants.dockerImageLabelPrefix}-project-name1`,
+			containerName: `${constants.dockerImageNamePrefix}-project-name1-${id}`,
+			tag: `${constants.dockerImageNamePrefix}-project-name1-${tag}`
+		});
+		should(deployService.getDockerImageInfo('project-name2$#', baseImage, id)).deepEqual({
+			label: `${constants.dockerImageLabelPrefix}-project-name2`,
+			containerName: `${constants.dockerImageNamePrefix}-project-name2-${id}`,
+			tag: `${constants.dockerImageNamePrefix}-project-name2-${tag}`
+		});
+		should(deployService.getDockerImageInfo('project - name3', baseImage, id)).deepEqual({
+			label: `${constants.dockerImageLabelPrefix}-project-name3`,
+			containerName: `${constants.dockerImageNamePrefix}-project-name3-${id}`,
+			tag: `${constants.dockerImageNamePrefix}-project-name3-${tag}`
+		});
+		should(deployService.getDockerImageInfo('project_name4', baseImage, id)).deepEqual({
+			label: `${constants.dockerImageLabelPrefix}-project_name4`,
+			containerName: `${constants.dockerImageNamePrefix}-project_name4-${id}`,
+			tag: `${constants.dockerImageNamePrefix}-project_name4-${tag}`
+		});
+
+
+		const reallyLongName = new Array(128 + 1).join( 'a' ).replace(/[^a-zA-Z0-9_,\-]/g, '');
+		const imageProjectName = reallyLongName.substring(0, 128 - (constants.dockerImageNamePrefix.length + tag.length + 2));
+		should(deployService.getDockerImageInfo(reallyLongName, baseImage, id)).deepEqual({
+			label: `${constants.dockerImageLabelPrefix}-${imageProjectName}`,
+			containerName: `${constants.dockerImageNamePrefix}-${imageProjectName}-${id}`,
+			tag: `${constants.dockerImageNamePrefix}-${imageProjectName}-${tag}`
+		});
+	});
+});
