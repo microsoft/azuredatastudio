@@ -71,7 +71,7 @@ export class AutorestHelper extends ShellExecutionHelper {
 	public async generateAutorestFiles(specPath: string, outputFolder: string): Promise<string | undefined> {
 		const commandExecutable = await this.detectInstallation();
 
-		if (commandExecutable === undefined) {
+		if (!commandExecutable) {
 			// unable to find autorest or npx
 
 			if (vscode.workspace.getConfiguration(DBProjectConfigurationKey)[nodejsDoNotAskAgainKey] !== true) {
