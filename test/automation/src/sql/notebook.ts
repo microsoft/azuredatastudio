@@ -9,7 +9,7 @@ import { QuickInput } from '../quickinput';
 import { Editors } from '../editors';
 import { IElement } from '..';
 
-const winOrCtrl = (process.platform === 'linux' || process.platform === 'darwin') ? 'ctrl' : 'win';
+const winOrCtrl = process.platform === 'win32' ? 'win' : 'ctrl';
 
 export class Notebook {
 
