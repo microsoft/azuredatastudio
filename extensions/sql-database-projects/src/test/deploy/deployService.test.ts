@@ -234,7 +234,6 @@ describe('deploy service', function (): void {
 		await deployService.updateAppSettings(appInteg, deployProfile);
 		let newContent = JSON.parse(fse.readFileSync(filePath, 'utf8'));
 		should(newContent).deepEqual(expected);
-
 	});
 
 	it('Should clean a list of docker images successfully', async function (): Promise<void> {
