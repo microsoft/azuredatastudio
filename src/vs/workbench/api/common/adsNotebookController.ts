@@ -15,7 +15,7 @@ import { INotebookProviderRegistry, NotebookProviderRegistryId } from 'sql/workb
 const notebookRegistry = Registry.as<INotebookProviderRegistry>(NotebookProviderRegistryId);
 
 class VSCodeSession implements azdata.nb.ISession {
-	constructor(options: azdata.nb.ISessionOptions) {
+	constructor(_controller: vscode.NotebookController, _options: azdata.nb.ISessionOptions) {
 
 	}
 
@@ -91,7 +91,7 @@ class VSCodeSessionManager implements azdata.nb.SessionManager {
 	}
 
 	public startNew(options: azdata.nb.ISessionOptions): Thenable<azdata.nb.ISession> {
-		let session: azdata.nb.ISession = new VSCodeSession(options);
+		let session: azdata.nb.ISession = new VSCodeSession(this._controller, options);
 		let index = this._sessions.findIndex(session => session.path === options.path);
 		if (index > -1) {
 			this._sessions.splice(index);
