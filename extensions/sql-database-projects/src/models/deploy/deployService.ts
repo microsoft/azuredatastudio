@@ -26,7 +26,7 @@ export class DeployService {
 	}
 
 	private DefaultSqlRetryTimeoutInSec: number = 10;
-	private DefaultSqlNumberOfRetries: number = 10;
+	private DefaultSqlNumberOfRetries: number = 3;
 
 	private createConnectionStringTemplate(runtime: string | undefined): string {
 		switch (runtime?.toLocaleLowerCase()) {
@@ -137,6 +137,13 @@ export class DeployService {
 			const dockerFilePath = path.join(mssqlFolderPath, constants.dockerFileName);
 			const startFilePath = path.join(commandsFolderPath, constants.startCommandName);
 
+
+			// If profile name is not set use the docker name to have a unique name
+			if (!profile.localDbSetting.profileName) {
+				profile.localDbSetting.profileName = imageSpec.containerName;
+			}
+
+			this.logToOutput(constants.cleaningDockerImagesMessage);
 			// Clean up existing docker image
 			const containerIds = await this.getCurrentDockerContainer(imageSpec.label);
 			if (containerIds.length > 0) {
@@ -218,7 +225,7 @@ export class DeployService {
 	}
 
 	// Connects to a database
-	private async connectToDatabase(profile: ILocalDbSetting, savePassword: boolean, database: string): Promise<ConnectionResult | string | undefined> {
+	private async connectToDatabase(profile: ILocalDbSetting, saveConnectionAndPassword: boolean, database: string): Promise<ConnectionResult | string | undefined> {
 		const getAzdataApi = await utils.getAzdataApi();
 		const vscodeMssqlApi = getAzdataApi ? undefined : await utils.getVscodeMssqlApi();
 		if (getAzdataApi) {
@@ -226,12 +233,12 @@ export class DeployService {
 				password: profile.password,
 				serverName: `${profile.serverName},${profile.port}`,
 				database: database,
-				savePassword: savePassword,
+				savePassword: saveConnectionAndPassword,
 				userName: profile.userName,
 				providerName: 'MSSQL',
 				saveProfile: false,
 				id: '',
-				connectionName: `${constants.connectionNamePrefix} ${database}`,
+				connectionName: `${profile.profileName}`,
 				options: [],
 				authenticationType: 'SqlLogin'
 			};
@@ -242,7 +249,7 @@ export class DeployService {
 				server: `${profile.serverName}`,
 				port: profile.port,
 				database: database,
-				savePassword: savePassword,
+				savePassword: saveConnectionAndPassword,
 				user: profile.userName,
 				authenticationType: 'SqlLogin',
 				encrypt: false,
@@ -269,9 +276,10 @@ export class DeployService {
 				replication: undefined,
 				trustServerCertificate: undefined,
 				typeSystemVersion: undefined,
-				workstationId: undefined
+				workstationId: undefined,
+				profileName: profile.profileName
 			};
-			let connectionUrl = await vscodeMssqlApi.connect(connectionProfile);
+			let connectionUrl = await vscodeMssqlApi.connect(connectionProfile, saveConnectionAndPassword);
 			return connectionUrl;
 		} else {
 			return undefined;
@@ -304,12 +312,12 @@ export class DeployService {
 		return connectionResult ? connectionResult.connectionId : <string>connection;
 	}
 
-	public async getConnection(profile: ILocalDbSetting, savePassword: boolean, database: string): Promise<string | undefined> {
+	public async getConnection(profile: ILocalDbSetting, saveConnectionAndPassword: boolean, database: string): Promise<string | undefined> {
 		const getAzdataApi = await utils.getAzdataApi();
 		let connection = await utils.retry(
 			constants.connectingToSqlServerOnDockerMessage,
 			async () => {
-				return await this.connectToDatabase(profile, savePassword, database);
+				return await this.connectToDatabase(profile, saveConnectionAndPassword, database);
 			},
 			this.validateConnection,
 			this.formatConnectionResult,
