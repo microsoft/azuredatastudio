@@ -99,14 +99,18 @@ export class DeployService {
 		}
 	}
 
-	public getDockerImageInfo(projectName: string, baseImage: string, imageUniqueId?: string): DockerImageSpec {
+	public getDockerImageSpec(projectName: string, baseImage: string, imageUniqueId?: string): DockerImageSpec {
 
 		imageUniqueId = imageUniqueId ?? UUID.generateUuid();
 		// Remove unsupported characters
 		//
-		let imageProjectName = projectName.replace(/[^a-zA-Z0-9_,\-]/g, '');
+
+		// docker image name and tag can only include letters, digits, underscore, period and dash
+		const regexForDockerImageName = /[^a-zA-Z0-9_,\-]/g;
+
+		let imageProjectName = projectName.replace(regexForDockerImageName, '');
 		const tagMaxLength = 128;
-		let tag = baseImage.replace(':', '-').replace(constants.sqlServerDockerRegistry, '').replace(/[^a-zA-Z0-9_,\-]/g, '');
+		const tag = baseImage.replace(':', '-').replace(constants.sqlServerDockerRegistry, '').replace(regexForDockerImageName, '');
 
 		// cut the name if it's too long
 		//
@@ -125,7 +129,7 @@ export class DeployService {
 
 			await this.verifyDocker();
 
-			const imageInfo = this.getDockerImageInfo(project.projectFileName, profile.localDbSetting.dockerBaseImage);
+			const imageSpec = this.getDockerImageSpec(project.projectFileName, profile.localDbSetting.dockerBaseImage);
 
 			const root = project.projectFolderPath;
 			const mssqlFolderPath = path.join(root, constants.mssqlFolderName);
@@ -134,7 +138,7 @@ export class DeployService {
 			const startFilePath = path.join(commandsFolderPath, constants.startCommandName);
 
 			// Clean up existing docker image
-			const containerIds = await this.getCurrentDockerContainer(imageInfo.label);
+			const containerIds = await this.getCurrentDockerContainer(imageSpec.label);
 			if (containerIds.length > 0) {
 				const result = await vscode.window.showWarningMessage(constants.containerAlreadyExistForProject, constants.yesString, constants.noString);
 				if (result === constants.yesString) {
@@ -147,19 +151,19 @@ export class DeployService {
 			// Create commands
 			//
 
-			await this.createCommands(mssqlFolderPath, commandsFolderPath, dockerFilePath, startFilePath, imageInfo.label, profile.localDbSetting.dockerBaseImage);
+			await this.createCommands(mssqlFolderPath, commandsFolderPath, dockerFilePath, startFilePath, imageSpec.label, profile.localDbSetting.dockerBaseImage);
 
 			this.logToOutput(constants.runningDockerMessage);
 			// Building the image and running the docker
 			//
-			const createdDockerId: string | undefined = await this.buildAndRunDockerContainer(dockerFilePath, imageInfo, root, profile.localDbSetting);
+			const createdDockerId: string | undefined = await this.buildAndRunDockerContainer(dockerFilePath, imageSpec, root, profile.localDbSetting);
 			this.logToOutput(`Docker container created. Id: ${createdDockerId}`);
 
 
 			// Waiting a bit to make sure docker container doesn't crash
 			//
 			const runningDockerId = await utils.retry('Validating the docker container', async () => {
-				return await utils.executeCommand(`docker ps -q -a --filter label=${imageInfo.label} -q`, this._outputChannel);
+				return await utils.executeCommand(`docker ps -q -a --filter label=${imageSpec.label} -q`, this._outputChannel);
 			}, (dockerId) => {
 				return Promise.resolve({ validated: dockerId !== undefined, errorMessage: constants.dockerContainerNotRunningErrorMessage });
 			}, (dockerId) => {
