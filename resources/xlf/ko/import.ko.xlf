@@ -18,6 +18,14 @@
         <source xml:lang="en">Column Name</source>
         <target state="translated">열 이름</target>
       </trans-unit>
+      <trans-unit id="flatFileImport.columnTableTitle">
+        <source xml:lang="en">Column</source>
+        <target state="translated">열</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.createDerivedColumn">
+        <source xml:lang="en">Create derived column</source>
+        <target state="translated">파생 열 만들기</target>
+      </trans-unit>
       <trans-unit id="flatFileImport.dataType">
         <source xml:lang="en">Data Type</source>
         <target state="translated">데이터 형식</target>
@@ -30,6 +38,26 @@
         <source xml:lang="en">Database name</source>
         <target state="translated">데이터베이스 이름</target>
       </trans-unit>
+      <trans-unit id="flatFileImport.deriverColumnInstruction1">
+        <source xml:lang="en">Select the columns of data on the left required to derive your new column</source>
+        <target state="translated">새 열을 파생시키는 데 필요한 왼쪽의 데이터 열을 선택하세요.</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.deriverColumnInstruction2">
+        <source xml:lang="en">Select a row and specify an example transformation that you would like applied to the rest of the column</source>
+        <target state="translated">행을 선택하고 나머지 열에 적용할 예제 변환을 지정합니다.</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.deriverColumnInstruction3">
+        <source xml:lang="en">Click "Preview Transformation" to preview the transformation</source>
+        <target state="translated">변환을 미리 보려면 "변환 미리 보기"를 클릭하세요.</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.deriverColumnInstruction4">
+        <source xml:lang="en">Refine your transformation until you have the desired column</source>
+        <target state="translated">원하는 열이 생길 때까지 변환을 수정하세요.</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.deriverColumnInstruction5">
+        <source xml:lang="en">Specify the new derived column's name and click "Done"</source>
+        <target state="translated">새 파생 열의 이름을 지정하고 "완료"를 클릭합니다.</target>
+      </trans-unit>
       <trans-unit id="flatFileImport.fileImport">
         <source xml:lang="en">File to be imported</source>
         <target state="translated">가져올 파일</target>
@@ -37,6 +65,10 @@
       <trans-unit id="flatFileImport.fileTextboxTitle">
         <source xml:lang="en">Location of the file to be imported</source>
         <target state="translated">가져올 파일의 위치</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.headerIntructionText">
+        <source xml:lang="en">Welcome to the Derived Column Tool! To get started, please follow the steps below:</source>
+        <target state="translated">파생 열 도구에 오신 것을 환영합니다! 시작하려면 다음 단계를 따르세요.</target>
       </trans-unit>
       <trans-unit id="flatFileImport.importData">
         <source xml:lang="en">Import Data</source>
@@ -78,6 +110,10 @@
         <source xml:lang="en">Summary</source>
         <target state="translated">요약</target>
       </trans-unit>
+      <trans-unit id="flatFileImport.previewTransformation">
+        <source xml:lang="en">Preview Transformation</source>
+        <target state="translated">변환 미리 보기</target>
+      </trans-unit>
       <trans-unit id="flatFileImport.primaryKey">
         <source xml:lang="en">Primary Key</source>
         <target state="translated">기본 키</target>
@@ -98,6 +134,14 @@
         <source xml:lang="en">Table schema</source>
         <target state="translated">테이블 스키마</target>
       </trans-unit>
+      <trans-unit id="flatFileImport.selectAllColumns">
+        <source xml:lang="en">Select all columns</source>
+        <target state="translated">모든 열 선택</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.selectColumn">
+        <source xml:lang="en">Select column {0}</source>
+        <target state="translated">열 {0} 선택</target>
+      </trans-unit>
       <trans-unit id="flatFileImport.serverDropdownTitle">
         <source xml:lang="en">Server the database is in</source>
         <target state="translated">데이터베이스가 있는 서버</target>
@@ -105,6 +149,18 @@
       <trans-unit id="flatFileImport.serverName">
         <source xml:lang="en">Server name</source>
         <target state="translated">서버 이름</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.specifyDerivedColNameTitle">
+        <source xml:lang="en">Column Name</source>
+        <target state="translated">열 이름</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.specifyTransformation">
+        <source xml:lang="en">Specify Transformation</source>
+        <target state="translated">변환 지정</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.specifyTransformationForRow">
+        <source xml:lang="en">Specify transformation for row {0}</source>
+        <target state="translated">행 {0}에 대한 변환 지정</target>
       </trans-unit>
       <trans-unit id="flatFileImport.success.norows">
         <source xml:lang="en">✔ You have successfully inserted the data into a table.</source>

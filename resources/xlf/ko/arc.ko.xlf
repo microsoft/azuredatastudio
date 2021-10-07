@@ -1565,6 +1565,22 @@
         <source xml:lang="en">The request for cores of the managed instance as an integer.</source>
         <target state="translated">정수로 관리되는 인스턴스의 코어에 대한 요청입니다.</target>
       </trans-unit>
+      <trans-unit id="arc.sql.dev.use.description">
+        <source xml:lang="en">Check the box to indicate this instance will be used for development or testing purposes only. This instance will not be billed.</source>
+        <target state="translated">이 인스턴스가 개발 또는 테스트 목적으로만 사용됨을 나타내려면 확인란을 선택합니다. 이 인스턴스는 청구되지 않습니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.dev.use.label">
+        <source xml:lang="en">For development use only</source>
+        <target state="translated">개발용으로만 사용</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.high.availability.description">
+        <source xml:lang="en">Enable additional replicas for high availabilty. The compute and storage configuration selected below will be applied to all replicas.</source>
+        <target state="translated">고가용성을 위해 추가적인 복제본을 사용 설정합니다. 아래에서 선택한 컴퓨팅 및 스토리지 구성이 모든 복제본에 적용됩니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.high.availability.label">
+        <source xml:lang="en">High Availability</source>
+        <target state="translated">고가용성</target>
+      </trans-unit>
       <trans-unit id="arc.sql.instance.name">
         <source xml:lang="en">Instance name</source>
         <target state="translated">인스턴스 이름</target>
@@ -1589,29 +1605,89 @@
         <source xml:lang="en">The request for the capacity of the managed instance as an integer amount of memory in GBs.</source>
         <target state="translated">관리되는 인스턴스의 용량에 대한 요청(GB의 정수 메모리 양)입니다.</target>
       </trans-unit>
-      <trans-unit id="arc.sql.replicas.description">
-        <source xml:lang="en">The number of SQL Managed Instance replicas that will be deployed in your Kubernetes cluster for high availability purposes</source>
-        <target state="translated">고가용성을 위해 Kubernetes 클러스터에 배포될 SQL Managed Instance의 복제본 수</target>
+      <trans-unit id="arc.sql.one.replica">
+        <source xml:lang="en">1 replica</source>
+        <target state="translated">복제본 1개</target>
       </trans-unit>
-      <trans-unit id="arc.sql.replicas.label">
-        <source xml:lang="en">Replicas</source>
-        <target state="translated">복제본</target>
+      <trans-unit id="arc.sql.service.tier.business.critical">
+        <source xml:lang="en">[PREVIEW] Business Critical (Unlimited vCores and RAM, advanced high availability)</source>
+        <target state="translated">[미리 보기] 비즈니스 크리티컬(무제한 vCore 및 RAM, 고급 고가용성)</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.service.tier.description">
+        <source xml:lang="en">Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical. {0}</source>
+        <target state="translated">범용 및 중요 비즈니스용을 포함하여 SQL Managed Instance - Azure Arc에 사용할 수 있는 최신 vCore 서비스 계층에서 선택합니다. {0}</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.service.tier.general.purpose">
+        <source xml:lang="en">General Purpose (Up to 24 vCores and 128 Gi of RAM, standard high availability)</source>
+        <target state="translated">범용(최대 24개의 vCore 및 128Gi의 RAM, 표준 고가용성)</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.service.tier.label">
+        <source xml:lang="en">Service Tier</source>
+        <target state="translated">서비스 계층</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.storage-class.backups.description">
+        <source xml:lang="en">The storage class to be used for backup persistent volumes. If no value is specified, the default storage class will be used.</source>
+        <target state="translated">백업 영구 볼륨에 사용할 저장소 클래스입니다. 값을 지정하지 않으면 기본 저장소 클래스가 사용됩니다.</target>
       </trans-unit>
       <trans-unit id="arc.sql.storage-class.data.description">
-        <source xml:lang="en">The storage class to be used for data (.mdf)</source>
-        <target state="translated">데이터에 사용할 스토리지 클래스(.mdf)</target>
+        <source xml:lang="en">The storage class to be used for data (.mdf). If no value is specified, the default storage class will be used.</source>
+        <target state="translated">데이터(.mdf)에 사용할 스토리지 클래스입니다. 값을 지정하지 않으면 기본 스토리지 클래스가 사용됩니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.storage-class.datalogs.description">
+        <source xml:lang="en">The storage class to be used for database logs (.ldf). If no value is specified, the default storage class will be used.</source>
+        <target state="translated">데이터베이스 로그(.ldf)에 사용할 저장소 클래스입니다. 값을 지정하지 않으면 기본 저장소 클래스가 사용됩니다.</target>
       </trans-unit>
       <trans-unit id="arc.sql.storage-class.dc.description">
         <source xml:lang="en">The storage class to be used for all data and logs persistent volumes for all data controller pods that require them.</source>
         <target state="translated">모든 데이터에 사용할 스토리지 클래스이며 필요한 모든 데이터 컨트롤러 Pod의 영구 볼륨을 기록합니다.</target>
       </trans-unit>
       <trans-unit id="arc.sql.storage-class.logs.description">
-        <source xml:lang="en">The storage class to be used for logs (/var/log)</source>
-        <target state="translated">로그에 사용할 스토리지 클래스(/var/log)</target>
+        <source xml:lang="en">The storage class to be used for logs (/var/log). If no value is specified, the default storage class will be used.</source>
+        <target state="translated">로그에 사용할 스토리지 클래스(/var/log). 값을 지정하지 않으면 기본 스토리지 클래스가 사용됩니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.three.replicas">
+        <source xml:lang="en">3 replicas</source>
+        <target state="translated">복제본 3개</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.two.replicas">
+        <source xml:lang="en">2 replicas</source>
+        <target state="translated">복제본 2개</target>
       </trans-unit>
       <trans-unit id="arc.sql.username">
         <source xml:lang="en">Username</source>
         <target state="translated">사용자 이름</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.volume.size.backups.description">
+        <source xml:lang="en">The size of the storage volume to be used for backups in gibibytes.</source>
+        <target state="translated">백업에 사용할 저장소 볼륨의 크기(기비바이트)입니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.volume.size.backups.label">
+        <source xml:lang="en">Volume Size in Gi (Backups)</source>
+        <target state="translated">Gi 단위의 볼류 크기(백업)</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.volume.size.data.description">
+        <source xml:lang="en">The size of the storage volume to be used for data in gibibytes.</source>
+        <target state="translated">데이터에 사용할 저장소 볼륨의 크기(기비바이트)입니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.volume.size.data.label">
+        <source xml:lang="en">Volume Size in Gi (Data)</source>
+        <target state="translated">Gi 단위의 볼류 크기(데이터)</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.volume.size.datalogs.description">
+        <source xml:lang="en">The size of the storage volume to be used for database logs in gibibytes.</source>
+        <target state="translated">데이터베이스 로그에 사용할 저장소 볼륨의 크기(기비바이트)입니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.volume.size.datalogs.label">
+        <source xml:lang="en">Volume Size in Gi (Database logs)</source>
+        <target state="translated">볼륨 크기(Gi)(데이터베이스 로그)</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.volume.size.logs.description">
+        <source xml:lang="en">The size of the storage volume to be used for logs in gibibytes.</source>
+        <target state="translated">로그에 사용할 저장소 볼륨의 크기(기비바이트)입니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.volume.size.logs.label">
+        <source xml:lang="en">Volume Size in Gi (Logs)</source>
+        <target state="translated">Gi 단위의 볼류 크기(로그)</target>
       </trans-unit>
       <trans-unit id="arc.sql.wizard.page1.title">
         <source xml:lang="en">Provide Azure SQL managed instance parameters</source>
@@ -1628,6 +1704,10 @@
       <trans-unit id="arc.storage-class.data.label">
         <source xml:lang="en">Storage Class (Data)</source>
         <target state="translated">스토리지 클래스(데이터)</target>
+      </trans-unit>
+      <trans-unit id="arc.storage-class.datalogs.label">
+        <source xml:lang="en">Storage Class (Database logs)</source>
+        <target state="translated">저장소 클래스(데이터베이스 로그)</target>
       </trans-unit>
       <trans-unit id="arc.storage-class.dc.label">
         <source xml:lang="en">Storage Class</source>
