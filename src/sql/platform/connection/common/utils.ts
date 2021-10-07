@@ -134,5 +134,8 @@ export function findProfileInGroup(og: IConnectionProfile, groups: ConnectionPro
 }
 
 export function isServerConnection(profile: IConnectionProfile): boolean {
-	return (!profile.connectToDatabase);
+	if (!profile.options.originalDatabase || profile.options.originalDatabase === '') {
+		return true;
+	}
+	return false;
 }

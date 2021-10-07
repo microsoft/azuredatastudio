@@ -196,6 +196,8 @@ export class ConnectionDialogService implements IConnectionDialogService {
 					profile.providerName = Constants.mssqlProviderName;
 				}
 
+				profile.options.originalDatabase = profile.databaseName;
+
 				// Disable password prompt during reconnect if connected with an empty password
 				if (profile.password === '' && profile.savePassword === false) {
 					profile.savePassword = true;
