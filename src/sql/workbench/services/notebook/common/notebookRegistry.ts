@@ -168,7 +168,7 @@ class NotebookProviderRegistry implements INotebookProviderRegistry {
 	updateProviderDescriptionLanguages(providerId: string, languages: string[]): void {
 		let registration = this._providerDescriptionRegistration.get(providerId);
 		if (!registration) {
-			throw new Error('Specific provider does not exist.');
+			throw new Error(localize('providerNotInRegistryError', "The specified provider '{0}' is not present in the notebook registry.", providerId));
 		}
 		let kernels = languages.map<azdata.nb.IStandardKernel>(language => {
 			return {
