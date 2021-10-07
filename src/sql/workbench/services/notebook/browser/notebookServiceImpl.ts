@@ -311,19 +311,14 @@ export class NotebookService extends Disposable implements INotebookService {
 			if (!this._serializationProviders.has(p.id)) {
 				// Only add a new provider descriptor if the provider
 				// supports file extensions beyond the default ipynb
-				let isNewFileType = (fileExt: string) => fileExt?.length > 0 && fileExt.toUpperCase() !== DEFAULT_NOTEBOOK_FILETYPE;
-				let addNewProvider = Array.isArray(extensions) ? extensions.some(ext => isNewFileType(ext)) : isNewFileType(extensions);
+				let addNewProvider = extensions.some(ext => ext?.length > 0 && ext.toUpperCase() !== DEFAULT_NOTEBOOK_FILETYPE);
 				if (addNewProvider) {
 					this._serializationProviders.set(p.id, new SerializationProviderDescriptor(p.id));
 				}
 			}
-			if (Array.isArray(extensions)) {
-				for (let fileType of extensions) {
-					this.addFileProvider(fileType, registration);
-				}
-			}
-			else {
-				this.addFileProvider(extensions, registration);
+
+			for (let fileType of extensions) {
+				this.addFileProvider(fileType, registration);
 			}
 		}
 		if (registration.standardKernels) {
@@ -402,13 +397,10 @@ export class NotebookService extends Disposable implements INotebookService {
 		if (!standardKernels) {
 			standardKernels = [];
 		}
-		if (Array.isArray(provider.standardKernels)) {
-			provider.standardKernels.forEach(kernel => {
-				standardKernels.push(kernel);
-			});
-		} else {
-			standardKernels.push(provider.standardKernels);
-		}
+		provider.standardKernels.forEach(kernel => {
+			standardKernels.push(kernel);
+		});
+
 		// Filter out unusable kernels when running on a SAW
 		if (this.productService.quality === 'saw') {
 			standardKernels = standardKernels.filter(kernel => !kernel.blockedOnSAW);
@@ -700,8 +692,8 @@ export class NotebookService extends Disposable implements INotebookService {
 
 		notebookRegistry.registerProviderDescription({
 			provider: serializationProvider.providerId,
-			fileExtensions: DEFAULT_NOTEBOOK_FILETYPE,
-			standardKernels: { name: notebookConstants.SQL, displayName: notebookConstants.SQL, connectionProviderIds: [notebookConstants.SQL_CONNECTION_PROVIDER] }
+			fileExtensions: [DEFAULT_NOTEBOOK_FILETYPE],
+			standardKernels: [{ name: notebookConstants.SQL, displayName: notebookConstants.SQL, connectionProviderIds: [notebookConstants.SQL_CONNECTION_PROVIDER] }]
 		});
 	}
 

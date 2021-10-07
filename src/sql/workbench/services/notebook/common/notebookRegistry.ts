@@ -19,8 +19,8 @@ export const Extensions = {
 
 export interface ProviderDescriptionRegistration {
 	provider: string;
-	fileExtensions: string | string[];
-	standardKernels: azdata.nb.IStandardKernel | azdata.nb.IStandardKernel[];
+	fileExtensions: string[];
+	standardKernels: azdata.nb.IStandardKernel[];
 }
 
 let providerDescriptionType: IJSONSchema = {
@@ -153,6 +153,7 @@ export interface INotebookProviderRegistry {
 
 	readonly onNewDescriptionRegistration: Event<{ id: string, registration: ProviderDescriptionRegistration }>;
 
+	updateProviderDescriptionLanguages(providerId: string, languages: string[]): void;
 	registerProviderDescription(provider: ProviderDescriptionRegistration): void;
 	registerNotebookLanguageMagic(magic: NotebookLanguageMagicRegistration): void;
 }
@@ -163,6 +164,22 @@ class NotebookProviderRegistry implements INotebookProviderRegistry {
 
 	private _onNewDescriptionRegistration = new Emitter<{ id: string, registration: ProviderDescriptionRegistration }>();
 	public readonly onNewDescriptionRegistration: Event<{ id: string, registration: ProviderDescriptionRegistration }> = this._onNewDescriptionRegistration.event;
+
+	updateProviderDescriptionLanguages(providerId: string, languages: string[]): void {
+		let registration = this._providerDescriptionRegistration.get(providerId);
+		if (!registration) {
+			throw new Error('Specific provider does not exist.');
+		}
+		let kernels = languages.map<azdata.nb.IStandardKernel>(language => {
+			return {
+				name: language,
+				displayName: language,
+				connectionProviderIds: []
+			};
+		});
+		registration.standardKernels = kernels;
+		this._providerDescriptionRegistration.set(providerId, registration);
+	}
 
 	registerProviderDescription(registration: ProviderDescriptionRegistration): void {
 		this._providerDescriptionRegistration.set(registration.provider, registration);

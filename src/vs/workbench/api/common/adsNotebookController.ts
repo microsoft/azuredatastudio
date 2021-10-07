@@ -9,6 +9,10 @@ import { IExtensionDescription } from 'vs/platform/extensions/common/extensions'
 import { INotebookKernelDto2 } from 'vs/workbench/api/common/extHost.protocol';
 import { Emitter } from 'vs/base/common/event';
 import * as extHostTypeConverters from 'vs/workbench/api/common/extHostTypeConverters';
+import { Registry } from 'vs/platform/registry/common/platform';
+import { INotebookProviderRegistry, NotebookProviderRegistryId } from 'sql/workbench/services/notebook/common/notebookRegistry';
+
+const notebookRegistry = Registry.as<INotebookProviderRegistry>(NotebookProviderRegistryId);
 
 class VSCodeSession implements azdata.nb.ISession {
 	constructor(options: azdata.nb.ISessionOptions) {
@@ -218,6 +222,7 @@ export class ADSNotebookController implements vscode.NotebookController {
 
 	public set supportedLanguages(value) {
 		this._kernelData.supportedLanguages = value;
+		notebookRegistry.updateProviderDescriptionLanguages(this._id, value);
 	}
 
 	public get supportsExecutionOrder() {
