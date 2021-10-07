@@ -74,6 +74,7 @@
 			"newBook": "新しい Jupyter ブック (プレビュー)",
 			"newMarkdown": "新しいマークダウン (プレビュー)",
 			"newNotebook": "新しいノートブック (プレビュー)",
+			"newSection": "新しいセクション (プレビュー)",
 			"noBDCConnectionError": "Spark カーネルは、SQL Server ビッグ データ クラスターのマスター インスタンスへの接続を必要とします。",
 			"noBooksSelected": "ビューレットに現在選択されている Jupyter ブックがありません。",
 			"onGitHub": "GitHub",
@@ -110,7 +111,7 @@
 		},
 		"dist/dialog/configurePython/configurePathPage": {
 			"configurePython.browseButtonText": "参照",
-			"configurePython.descriptionWithKernel": "{0} カーネルには、Python ランタイムを構成し、依存関係をインストールする必要があります。",
+			"configurePython.descriptionWithKernel": "The '{0}' kernel requires a Python runtime to be configured and dependencies to be installed.",
 			"configurePython.descriptionWithoutKernel": "Notebook カーネルには、Python ランタイムが構成され、依存関係がインストールされている必要があります。",
 			"configurePython.existingInstall": "既存の Python インストールを使用する",
 			"configurePython.installationType": "インストールの種類",
@@ -139,7 +140,7 @@
 			"configurePython.pkgNameColumn": "名前",
 			"configurePython.requiredDependencies": "必要なカーネルの依存関係のインストール",
 			"configurePython.requiredVersionColumn": "必要なバージョン",
-			"msgUnsupportedKernel": "カーネル {0} のパッケージを取得できませんでした"
+			"msgNoRequirementsForKernel": "No packages are required by default for the kernel '{0}'"
 		},
 		"dist/dialog/managePackages/addNewPackageTab": {
 			"managePackages.addNewTabTitle": "新規追加",
@@ -183,7 +184,7 @@
 			"notebookFileType": "ノートブック",
 			"unsupportedFileType": ".ipynb ノートブックのみがサポートされています"
 		},
-		"dist/jupyter/jupyterNotebookProvider": {
+		"dist/jupyter/jupyterExecuteProvider": {
 			"errNotebookUriMissing": "ノートブック パスが必須です"
 		},
 		"dist/jupyter/jupyterServerInstallation": {
@@ -251,11 +252,15 @@
 			"notebook.command.addcell": "セルの追加",
 			"notebook.command.addcode": "コード セルの追加",
 			"notebook.command.addtext": "テキスト セルの追加",
+			"notebook.command.boldText": "Markdown テキストを太字にする",
 			"notebook.command.clearactivecellresult": "セル結果をクリアする",
+			"notebook.command.codeBlock": "コード ブロックを追加する",
+			"notebook.command.italicizeText": "Markdown テキストを斜体にする",
 			"notebook.command.new": "新しいノートブック",
 			"notebook.command.open": "ノートブックを開く",
 			"notebook.command.runactivecell": "セルの実行",
 			"notebook.command.runallcells": "セルの実行",
+			"notebook.command.underlineText": "Markdown テキストに下線を付ける",
 			"notebook.configuration.title": "Notebook 構成",
 			"notebook.dontPromptPythonUpdate.description": "Python の更新を確認するメッセージを表示しません。",
 			"notebook.jupyterServerShutdownTimeout.description": "すべてのノートブックが閉じられた後、サーバーをシャットダウンするまでの待機時間 (分)。(シャットダウンしない場合は ”0” を入力してください)",
@@ -274,6 +279,7 @@
 			"title.SavedBooks": "ノートブック",
 			"title.addMarkdown": "マークダウン ファイルの追加",
 			"title.addNotebook": "ノートブックの追加",
+			"title.addSection": "セクションの追加",
 			"title.analyzeJupyterNotebook": "ノートブックで分析",
 			"title.closeJupyterBook": "Jupyter ブックを閉じる",
 			"title.closeNotebook": "ノートブックを閉じる",

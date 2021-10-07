@@ -22,6 +22,10 @@
         <source xml:lang="en">Publish History</source>
         <target state="translated">公開履歴</target>
       </trans-unit>
+      <trans-unit id="SettingAlreadyExists">
+        <source xml:lang="en">Local app setting '{0}' already exists. Overwrite?</source>
+        <target state="translated">ローカル アプリケーション設定 '{0}' は既に存在します。上書きしますか?</target>
+      </trans-unit>
       <trans-unit id="Status">
         <source xml:lang="en">Status</source>
         <target state="translated">状態</target>
@@ -61,6 +65,10 @@
       <trans-unit id="addPackage">
         <source xml:lang="en">Add Package</source>
         <target state="translated">パッケージの追加</target>
+      </trans-unit>
+      <trans-unit id="addPackageReferenceMessage">
+        <source xml:lang="en">To use SQL bindings, ensure your Azure Functions project has a reference to {0}</source>
+        <target state="new">To use SQL bindings, ensure your Azure Functions project has a reference to {0}</target>
       </trans-unit>
       <trans-unit id="appSettingPrompt">
         <source xml:lang="en">Would you like to update Azure Function local.settings.json with the new connection string?</source>
@@ -122,6 +130,10 @@
         <source xml:lang="en">Cleaning existing deployments...</source>
         <target state="translated">既存の展開をクリーンにしています...</target>
       </trans-unit>
+      <trans-unit id="confirmPassword">
+        <source xml:lang="en">Confirm SQL server admin password</source>
+        <target state="translated">SQL サーバー管理者パスワードを確認する</target>
+      </trans-unit>
       <trans-unit id="connectingToSqlServerOnDockerMessage">
         <source xml:lang="en">Connecting to SQL Server on Docker</source>
         <target state="translated">Docker の SQL Server に接続しています</target>
@@ -145,6 +157,10 @@
       <trans-unit id="createNew">
         <source xml:lang="en">Create New</source>
         <target state="translated">新規作成</target>
+      </trans-unit>
+      <trans-unit id="createNewLocalAppSetting">
+        <source xml:lang="en">Create new local app setting</source>
+        <target state="translated">新しいローカル アプリ設定を作成する</target>
       </trans-unit>
       <trans-unit id="createProjectDialogOkButtonText">
         <source xml:lang="en">Create</source>
@@ -290,10 +306,6 @@
         <source xml:lang="en">Deploying SQL Db Project Locally</source>
         <target state="translated">SQL Db プロジェクトをローカルに展開しています</target>
       </trans-unit>
-      <trans-unit id="deployProjectFailed">
-        <source xml:lang="en">Failed to deploy project. Check output pane for more details. {0}</source>
-        <target state="translated">プロジェクトを展開できませんでした。詳細については、出力ウィンドウを確認してください。{0}</target>
-      </trans-unit>
       <trans-unit id="deployProjectFailedMessage">
         <source xml:lang="en">Failed to open a connection to the deployed database'</source>
         <target state="translated">展開したデータベースへの接続を開けませんでした'</target>
@@ -305,14 +317,6 @@
       <trans-unit id="deployScriptExists">
         <source xml:lang="en">A {0} script already exists. The new script will not be included in build.</source>
         <target state="translated">{0} スクリプトが既に存在します。新しいスクリプトはビルドに含まれません。</target>
-      </trans-unit>
-      <trans-unit id="deployToDockerContainer">
-        <source xml:lang="en">Deploy to docker container</source>
-        <target state="translated">Docker コンテナーへの展開</target>
-      </trans-unit>
-      <trans-unit id="deployToExistingServer">
-        <source xml:lang="en">Deploy to existing server</source>
-        <target state="translated">既存のサーバーへの展開</target>
       </trans-unit>
       <trans-unit id="differentDbDifferentServer">
         <source xml:lang="en">Different database, different server</source>
@@ -337,6 +341,10 @@
       <trans-unit id="dockerLogMessage">
         <source xml:lang="en">Docker logs: '{0}'</source>
         <target state="translated">Docker ログ: '{0}'</target>
+      </trans-unit>
+      <trans-unit id="dockerNotRunningError">
+        <source xml:lang="en">Failed to verify docker. Please make sure docker is installed and running. Error: '{0}'</source>
+        <target state="translated">Docker を確認できませんでした。Docker がインストールされ、実行されていることを確認してください。エラー: '{0}'</target>
       </trans-unit>
       <trans-unit id="done">
         <source xml:lang="en">Done</source>
@@ -366,6 +374,10 @@
         <source xml:lang="en">Enter a template for SQL connection string</source>
         <target state="translated">SQL 接続文字列のテンプレートを入力してください</target>
       </trans-unit>
+      <trans-unit id="enterConnectionString">
+        <source xml:lang="en">Enter connection string</source>
+        <target state="translated">接続文字列を入力してください</target>
+      </trans-unit>
       <trans-unit id="enterConnectionStringEnvName">
         <source xml:lang="en">Enter connection string environment variable name</source>
         <target state="translated">接続文字列の環境変数名を入力してください</target>
@@ -373,6 +385,10 @@
       <trans-unit id="enterConnectionStringEnvNameDescription">
         <source xml:lang="en">Enter environment variable for SQL connection string</source>
         <target state="translated">SQL 接続文字列の環境変数を入力してください</target>
+      </trans-unit>
+      <trans-unit id="enterConnectionStringSettingName">
+        <source xml:lang="en">Enter connection string setting name</source>
+        <target state="translated">接続文字列の設定名を入力してください</target>
       </trans-unit>
       <trans-unit id="enterConnectionStringTemplate">
         <source xml:lang="en">Enter connection string template</source>
@@ -387,12 +403,12 @@
         <target state="translated">変数 '{0}' の新しい値を入力してください</target>
       </trans-unit>
       <trans-unit id="enterPassword">
-        <source xml:lang="en">Enter password or press enter to use the generated password</source>
-        <target state="translated">パスワードを入力するか、Enter キーを押して、生成されたパスワードを使用します</target>
+        <source xml:lang="en">Enter SQL Server admin password</source>
+        <target state="translated">SQL サーバー管理者パスワードを入力する</target>
       </trans-unit>
       <trans-unit id="enterPortNumber">
-        <source xml:lang="en">Enter port number or press enter to use the default value</source>
-        <target state="translated">ポート番号を入力するか、Enter キーを押して既定値を使用します</target>
+        <source xml:lang="en">Enter SQL server port number or press enter to use the default value</source>
+        <target state="translated">SQL server ポート番号を入力するか、Enter キーを押して既定値を使用します</target>
       </trans-unit>
       <trans-unit id="enterSystemDbName">
         <source xml:lang="en">Enter a database name for this system database</source>
@@ -425,6 +441,10 @@
       <trans-unit id="extractTargetRequired">
         <source xml:lang="en">Target information for extract is required to create database project.</source>
         <target state="translated">データベース プロジェクトを作成するには、抽出対象の情報が必要です。</target>
+      </trans-unit>
+      <trans-unit id="failedToParse">
+        <source xml:lang="en">Failed to parse "{0}": {1}.</source>
+        <target state="translated">"{0}" を解析できませんでした: {1}。</target>
       </trans-unit>
       <trans-unit id="file">
         <source xml:lang="en">File</source>
@@ -474,6 +494,10 @@
         <source xml:lang="en">Generate Script</source>
         <target state="translated">スクリプトの生成</target>
       </trans-unit>
+      <trans-unit id="generatingProjectFailed">
+        <source xml:lang="en">Generating project via AutoRest failed: {0}</source>
+        <target state="translated">AutoRest を介したプロジェクトの生成に失敗しました: {0}</target>
+      </trans-unit>
       <trans-unit id="hr">
         <source xml:lang="en">hr</source>
         <target state="translated">時間</target>
@@ -506,6 +530,10 @@
         <source xml:lang="en">Invalid value specified for the property '{0}' in .sqlproj file</source>
         <target state="translated">.sqlproj ファイルのプロパティ '{0}' に無効な値が指定されました: '{0}'</target>
       </trans-unit>
+      <trans-unit id="invalidSQLPassword">
+        <source xml:lang="en">SQL Server password doesn't meet the password complexity requirement. For more information see https://docs.microsoft.com/sql/relational-databases/security/password-policy</source>
+        <target state="translated">SQL Server パスワードがパスワードの複雑さの要件を満たしていません。詳細については、https://docs.microsoft.com/sql/relational-databases/security/password-policy をご覧ください</target>
+      </trans-unit>
       <trans-unit id="invalidSqlConnectionString">
         <source xml:lang="en">Invalid SQL connection string</source>
         <target state="translated">無効な SQL 接続文字列です</target>
@@ -513,6 +541,10 @@
       <trans-unit id="invalidTargetPlatform">
         <source xml:lang="en">Invalid target platform: {0}. Supported target platforms: {1}</source>
         <target state="translated">ターゲット プラットフォームが無効です: {0}。サポートされているターゲット プラットフォーム: {1}</target>
+      </trans-unit>
+      <trans-unit id="jsonParseError">
+        <source xml:lang="en">{0} near line "{1}", column "{2}"</source>
+        <target state="translated">行 "{1}"、列 "{2}" 付近の {0}</target>
       </trans-unit>
       <trans-unit id="loadProfilePlaceholderText">
         <source xml:lang="en">Load profile...</source>
@@ -530,9 +562,17 @@
         <source xml:lang="en">Missing 'version' entry in {0}</source>
         <target state="translated">{0} に 'version' エントリがありません。</target>
       </trans-unit>
+      <trans-unit id="moreInformation">
+        <source xml:lang="en">More Information</source>
+        <target state="new">More Information</target>
+      </trans-unit>
       <trans-unit id="msec">
         <source xml:lang="en">msec</source>
         <target state="translated">ミリ秒</target>
+      </trans-unit>
+      <trans-unit id="multipleMostDeploymentScripts">
+        <source xml:lang="en">Unexpected number of {0} files: {1}</source>
+        <target state="translated">{0} ファイルの数が予期していたものではありませんでした: {1}</target>
       </trans-unit>
       <trans-unit id="multipleSqlProjFilesSelected">
         <source xml:lang="en">Multiple .sqlproj files selected; please select only one.</source>
@@ -582,6 +622,14 @@
         <source xml:lang="en">No (default)</source>
         <target state="translated">いいえ (既定値)</target>
       </trans-unit>
+      <trans-unit id="nodeButNotAutorestFound">
+        <source xml:lang="en">Autorest tool not found in system path, but found Node.js.  Running via npx.  Please execute 'npm install autorest -g' to install permanently.</source>
+        <target state="translated">AutoRest ツールはシステム パスで見つかりませんでしたが、Node.js が見つかりました。NPX を介して実行しています。完全にインストールするには、'npm install autorest -g' を実行してください。</target>
+      </trans-unit>
+      <trans-unit id="nodeNotFound">
+        <source xml:lang="en">Neither autorest nor Node.js (npx) found in system path.  Please install Node.js for autorest generation to work.</source>
+        <target state="translated">システム パスで AutoRest と Node.js (npx) のいずれも見つかりませんでした。AutoRest の生成を機能させるには、Node.js をインストールしてください。</target>
+      </trans-unit>
       <trans-unit id="notValidVariableName">
         <source xml:lang="en">The variable name '{0}' is not valid.</source>
         <target state="translated">変数名 '{0}' は無効です。</target>
@@ -605,6 +653,10 @@
       <trans-unit id="parentTreeItemUnknown">
         <source xml:lang="en">Cannot access parent of provided tree item</source>
         <target state="translated">指定されたツリー項目の親にアクセスできません</target>
+      </trans-unit>
+      <trans-unit id="passwordNotMatch">
+        <source xml:lang="en">SQL Server password doesn't match the confirmation password</source>
+        <target state="translated">SQL Server パスワードが確認パスワードと一致しません</target>
       </trans-unit>
       <trans-unit id="portMustNotBeNumber">
         <source xml:lang="en">Port must a be number</source>
@@ -674,6 +726,18 @@
         <source xml:lang="en">Publish Settings File</source>
         <target state="translated">公開の設定ファイル</target>
       </trans-unit>
+      <trans-unit id="publishToContainerFailed">
+        <source xml:lang="en">Failed to publish to container. Check output pane for more details. {0}</source>
+        <target state="translated">コンテナーに公開できませんでした。詳細については、出力ウィンドウを確認してください。{0}</target>
+      </trans-unit>
+      <trans-unit id="publishToDockerContainer">
+        <source xml:lang="en">Publish to new server in a container</source>
+        <target state="translated">コンテナー内の新しいサーバーに公開する</target>
+      </trans-unit>
+      <trans-unit id="publishToExistingServer">
+        <source xml:lang="en">Publish to existing server</source>
+        <target state="translated">既存サーバーへに公開</target>
+      </trans-unit>
       <trans-unit id="referenceRadioButtonsGroupTitle">
         <source xml:lang="en">Type</source>
         <target state="translated">種類</target>
@@ -722,6 +786,14 @@
         <source xml:lang="en">Same database</source>
         <target state="translated">同じデータベース</target>
       </trans-unit>
+      <trans-unit id="save">
+        <source xml:lang="en">Save</source>
+        <target state="translated">保存</target>
+      </trans-unit>
+      <trans-unit id="saveChangesInFile">
+        <source xml:lang="en">There are unsaved changes in the current file. Save now?</source>
+        <target state="translated">現在のファイルに保存されていない変更があります。今すぐ保存しますか?</target>
+      </trans-unit>
       <trans-unit id="schema">
         <source xml:lang="en">Schema</source>
         <target state="translated">スキーマ</target>
@@ -750,6 +822,10 @@
         <source xml:lang="en">Select an Azure function in the current file to add SQL binding to</source>
         <target state="translated">SQL バインドを追加する Azure 関数を現在のファイル内から選択します</target>
       </trans-unit>
+      <trans-unit id="selectBaseImage">
+        <source xml:lang="en">Select the base SQL Server docker image</source>
+        <target state="translated">基本の SQL Server Docker イメージを選択する</target>
+      </trans-unit>
       <trans-unit id="selectBindingType">
         <source xml:lang="en">Select type of binding</source>
         <target state="translated">バインドするタイプを選択します</target>
@@ -766,10 +842,6 @@
         <source xml:lang="en">Select database</source>
         <target state="translated">データベースを選択してください</target>
       </trans-unit>
-      <trans-unit id="selectDeployOption">
-        <source xml:lang="en">Select where to deploy the project to</source>
-        <target state="translated">プロジェクトの展開先を選択します</target>
-      </trans-unit>
       <trans-unit id="selectFolderStructure">
         <source xml:lang="en">Select folder structure</source>
         <target state="translated">フォルダー構造の選択</target>
@@ -785,6 +857,18 @@
       <trans-unit id="selectProjectLocation">
         <source xml:lang="en">Select project location</source>
         <target state="translated">プロジェクトの場所を選択</target>
+      </trans-unit>
+      <trans-unit id="selectPublishOption">
+        <source xml:lang="en">Select where to publish the project to</source>
+        <target state="translated">プロジェクトの公開先を選択します</target>
+      </trans-unit>
+      <trans-unit id="selectSetting">
+        <source xml:lang="en">Select SQL connection string setting from local.settings.json</source>
+        <target state="translated">local.settings.json から SQL 接続文字列設定を選択します</target>
+      </trans-unit>
+      <trans-unit id="selectSpecFile">
+        <source xml:lang="en">Select OpenAPI/Swagger spec file</source>
+        <target state="translated">OpenAPI または Swagger 仕様ファイルを選択してください</target>
       </trans-unit>
       <trans-unit id="selectString">
         <source xml:lang="en">Select</source>
@@ -810,6 +894,10 @@
         <source xml:lang="en">Source database</source>
         <target state="translated">ソース データベース</target>
       </trans-unit>
+      <trans-unit id="specSelectionText">
+        <source xml:lang="en">OpenAPI/Swagger spec</source>
+        <target state="translated">OpenAPI または Swagger 仕様</target>
+      </trans-unit>
       <trans-unit id="sqlCmdTableLabel">
         <source xml:lang="en">SQLCMD Variables</source>
         <target state="translated">SQLCMD 変数</target>
@@ -826,7 +914,7 @@
         <source xml:lang="en">SQL connection string</source>
         <target state="translated">SQL 接続文字列</target>
       </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.InstallNetCore">
+      <trans-unit id="sqlDatabaseProjects.Install">
         <source xml:lang="en">Install</source>
         <target state="translated">インストール</target>
       </trans-unit>
@@ -850,9 +938,9 @@
         <source xml:lang="en">Database Projects</source>
         <target state="translated">データベース プロジェクト</target>
       </trans-unit>
-      <trans-unit id="sqlObjectToQuery">
-        <source xml:lang="en">SQL object to query</source>
-        <target state="translated">クエリ対象の SQL オブジェクト</target>
+      <trans-unit id="sqlTableOrViewToQuery">
+        <source xml:lang="en">SQL table or view to query</source>
+        <target state="translated">クエリを実行する SQL テーブルまたはビュー</target>
       </trans-unit>
       <trans-unit id="sqlTableToUpsert">
         <source xml:lang="en">SQL table to upsert into</source>
@@ -934,6 +1022,10 @@
         <source xml:lang="en">Value cannot be empty</source>
         <target state="translated">値を空にすることはできません</target>
       </trans-unit>
+      <trans-unit id="valueMustNotBeEmpty">
+        <source xml:lang="en">Value must not be empty</source>
+        <target state="translated">この値を空にすることはできません</target>
+      </trans-unit>
       <trans-unit id="viewFriendlyName">
         <source xml:lang="en">View</source>
         <target state="translated">表示</target>
@@ -950,6 +1042,10 @@
         <source xml:lang="en">	&gt;&gt;&gt; {0}   … errored out: {1}</source>
         <target state="translated">	&gt;&gt;&gt; {0}   ...エラーが発生しました: {1}</target>
       </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/sql-database-projects/dist/tools/shellExecutionHelper" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
       <trans-unit id="sqlDatabaseProjects.RunCommand.stderr">
         <source xml:lang="en">    stderr: </source>
         <target state="translated">    stderr: </target>
@@ -982,6 +1078,10 @@
         <source xml:lang="en">Add SQL Binding</source>
         <target state="translated">SQL バインドの追加</target>
       </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.autorestSqlVersion">
+        <source xml:lang="en">Which version of Autorest.Sql to use from NPM.  Latest will be used if not set.</source>
+        <target state="translated">NPM から使用する Autorest.Sql のバージョン。設定されていない場合は、最新版が使用されます。</target>
+      </trans-unit>
       <trans-unit id="sqlDatabaseProjects.build">
         <source xml:lang="en">Build</source>
         <target state="translated">ビルド</target>
@@ -1002,10 +1102,6 @@
         <source xml:lang="en">Delete</source>
         <target state="translated">削除</target>
       </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.deployLocal">
-        <source xml:lang="en">Deploy</source>
-        <target state="translated">展開</target>
-      </trans-unit>
       <trans-unit id="sqlDatabaseProjects.description">
         <source xml:lang="en">Design and publish SQL database schemas</source>
         <target state="translated">SQL データベース スキーマをデザインして発行する</target>
@@ -1021,6 +1117,10 @@
       <trans-unit id="sqlDatabaseProjects.exclude">
         <source xml:lang="en">Exclude from project</source>
         <target state="translated">プロジェクトから除外する</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.generateProjectFromOpenApiSpec">
+        <source xml:lang="en">Generate SQL Project from OpenAPI/Swagger spec</source>
+        <target state="translated">OpenAPI または Swagger 仕様から SQL プロジェクトを生成する</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.netCoreDoNotAsk">
         <source xml:lang="en">Whether to prompt the user to install .NET Core when not detected.</source>
@@ -1069,6 +1169,10 @@
       <trans-unit id="sqlDatabaseProjects.newView">
         <source xml:lang="en">Add View</source>
         <target state="translated">ビューの追加</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.nodejsDoNotAsk">
+        <source xml:lang="en">Whether to prompt the user to install Node.js when not detected.</source>
+        <target state="translated">検出されなかった場合に、ユーザーに Node.js のインストールを求めるかどうか。</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.open">
         <source xml:lang="en">Open Database Project</source>

@@ -45,7 +45,7 @@
 			"dataworkspace.projectParentDirectoryNotExistError": "L’emplacement de projet sélectionné « {0} » n’existe pas ou n’est pas un répertoire.",
 			"dataworkspace.projectsFailedToLoad": "Échec du chargement de certains projets. Pour afficher plus de détails, [ouvrez la console du développeur](command:workbench.action.toggleDevTools)",
 			"dataworkspace.remoteGitRepo": "Référentiel Git distant",
-			"dataworkspace.restartConfirmation": "Azure Data Studio doit être redémarré pour que le projet soit créé et ajouté à l’espace de travail, faites-le maintenant ?",
+			"dataworkspace.restartConfirmation": "Azure Data Studio doit être redémarré pour que le projet soit ajouté à l'espace de travail. Redémarrer maintenant?",
 			"dataworkspace.select": "Sélectionner",
 			"dataworkspace.selectProjectLocation": "Sélectionner l’emplacement du projet",
 			"dataworkspace.selectProjectType": "Sélectionner le type de projet",
@@ -70,6 +70,7 @@
 			"projects-view-no-project-content": "Aucun projet n’est ouvert dans l’espace de travail actuel.\r\n[Créer](command:projects.new)\r\n[Ouvrir un existant](command:projects.openExisting)\r\nPour en savoir plus sur les projets [lire nos documents](https://aka.ms/azuredatastudio-projects).\r\n",
 			"projects-view-no-workspace-content": "Créez ou ouvrez existant pour commencer.\r\n[Créer](command:projects.new)\r\n[Ouvrir un existant](command:projects.openExisting)\r\nPour en savoir plus sur les projets [lire nos documents](https://aka.ms/azuredatastudio-projects).",
 			"projects.defaultProjectSaveLocation": "Chemin d’accès complet au dossier dans lequel les nouveaux projets sont enregistrés par défaut.",
+			"projects.excludedProjectsDescription": "Liste des projets dans l’espace de travail à exclure des projets Viewlet",
 			"projects.showNotAddedProjectsInWorkspacePrompt": "Toujours afficher un message d'information lorsque les dossiers de l'espace de travail actuel contiennent des projets qui n'ont pas été ajoutés aux projets de l'espace de travail.",
 			"refresh-workspace-command": "Actualiser",
 			"remove-project-command": "Supprimer le projet"

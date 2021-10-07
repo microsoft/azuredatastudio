@@ -74,6 +74,7 @@
 			"newBook": "新 Jupyter 书籍(预览)",
 			"newMarkdown": "新建 Markdown (预览)",
 			"newNotebook": "新笔记本(预览)",
+			"newSection": "新节(预览)",
 			"noBDCConnectionError": "Spark 内核需要连接到 SQL Server 大数据群集主实例。",
 			"noBooksSelected": "当前，Viewlet 中未选中任何 Jupyter Book。",
 			"onGitHub": "GitHub",
@@ -110,7 +111,7 @@
 		},
 		"dist/dialog/configurePython/configurePathPage": {
 			"configurePython.browseButtonText": "浏览",
-			"configurePython.descriptionWithKernel": "{0} 内核要求配置 Python 运行时并安装依赖项。",
+			"configurePython.descriptionWithKernel": "The '{0}' kernel requires a Python runtime to be configured and dependencies to be installed.",
 			"configurePython.descriptionWithoutKernel": "笔记本内核要求配置 Python 运行时并安装依赖项。",
 			"configurePython.existingInstall": "使用现有 Python 安装",
 			"configurePython.installationType": "安装类型",
@@ -139,7 +140,7 @@
 			"configurePython.pkgNameColumn": "名称",
 			"configurePython.requiredDependencies": "安装所需的内核依赖项",
 			"configurePython.requiredVersionColumn": "所需版本",
-			"msgUnsupportedKernel": "无法检索内核 {0} 的包"
+			"msgNoRequirementsForKernel": "No packages are required by default for the kernel '{0}'"
 		},
 		"dist/dialog/managePackages/addNewPackageTab": {
 			"managePackages.addNewTabTitle": "新增",
@@ -183,7 +184,7 @@
 			"notebookFileType": "笔记本",
 			"unsupportedFileType": "仅支持 .ipynb 笔记本"
 		},
-		"dist/jupyter/jupyterNotebookProvider": {
+		"dist/jupyter/jupyterExecuteProvider": {
 			"errNotebookUriMissing": "需要笔记本路径"
 		},
 		"dist/jupyter/jupyterServerInstallation": {
@@ -251,11 +252,15 @@
 			"notebook.command.addcell": "添加单元格",
 			"notebook.command.addcode": "添加代码单元格",
 			"notebook.command.addtext": "添加文本单元格",
+			"notebook.command.boldText": "加粗 Markdown 文本",
 			"notebook.command.clearactivecellresult": "清除单元格结果",
+			"notebook.command.codeBlock": "添加代码块",
+			"notebook.command.italicizeText": "倾斜 Markdown 文本",
 			"notebook.command.new": "新建笔记本",
 			"notebook.command.open": "打开笔记本",
 			"notebook.command.runactivecell": "运行单元格",
 			"notebook.command.runallcells": "运行单元格",
+			"notebook.command.underlineText": "下划线 Markdown 文本",
 			"notebook.configuration.title": "笔记本配置",
 			"notebook.dontPromptPythonUpdate.description": "不显示更新 Python 的提示。",
 			"notebook.jupyterServerShutdownTimeout.description": "在关闭所有笔记本后关闭服务器之前等待的时间 (以分钟为单位)。(输入 0 则不关闭)",
@@ -274,6 +279,7 @@
 			"title.SavedBooks": "笔记本",
 			"title.addMarkdown": "添加 Markdown 文件",
 			"title.addNotebook": "添加笔记本",
+			"title.addSection": "添加节",
 			"title.analyzeJupyterNotebook": "在笔记本中分析",
 			"title.closeJupyterBook": "关闭 Jupyter Book",
 			"title.closeNotebook": "关闭笔记本",

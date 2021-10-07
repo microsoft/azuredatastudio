@@ -74,6 +74,7 @@
 			"newBook": "새 Jupyter Book(미리 보기)",
 			"newMarkdown": "새 Markdown(미리 보기)",
 			"newNotebook": "새 Notebook(미리 보기)",
+			"newSection": "새 섹션(미리 보기)",
 			"noBDCConnectionError": "Spark 커널을 SQL Server 빅 데이터 클러스터 마스터 인스턴스에 연결해야 합니다.",
 			"noBooksSelected": "뷰렛에 현재 선택된 Jupyter Book이 없습니다.",
 			"onGitHub": "GitHub",
@@ -110,7 +111,7 @@
 		},
 		"dist/dialog/configurePython/configurePathPage": {
 			"configurePython.browseButtonText": "찾아보기",
-			"configurePython.descriptionWithKernel": "{0} 커널을 사용하려면 Python 런타임을 구성하고 종속성을 설치해야 합니다.",
+			"configurePython.descriptionWithKernel": "The '{0}' kernel requires a Python runtime to be configured and dependencies to be installed.",
 			"configurePython.descriptionWithoutKernel": "Notebook 커널에서는 Python 런타임을 구성하고 종속성을 설치해야 합니다.",
 			"configurePython.existingInstall": "기존 Python 설치 사용",
 			"configurePython.installationType": "설치 유형",
@@ -139,7 +140,7 @@
 			"configurePython.pkgNameColumn": "이름",
 			"configurePython.requiredDependencies": "필요한 커널 종속성 설치",
 			"configurePython.requiredVersionColumn": "필요한 버전",
-			"msgUnsupportedKernel": "{0} 커널의 패키지를 검색할 수 없음"
+			"msgNoRequirementsForKernel": "No packages are required by default for the kernel '{0}'"
 		},
 		"dist/dialog/managePackages/addNewPackageTab": {
 			"managePackages.addNewTabTitle": "새로 추가",
@@ -183,7 +184,7 @@
 			"notebookFileType": "Notebook",
 			"unsupportedFileType": ".ipynb Notebook만 지원됩니다."
 		},
-		"dist/jupyter/jupyterNotebookProvider": {
+		"dist/jupyter/jupyterExecuteProvider": {
 			"errNotebookUriMissing": "Notebook 경로는 필수입니다."
 		},
 		"dist/jupyter/jupyterServerInstallation": {
@@ -251,11 +252,15 @@
 			"notebook.command.addcell": "셀 추가",
 			"notebook.command.addcode": "코드 셀 추가",
 			"notebook.command.addtext": "텍스트 셀 추가",
+			"notebook.command.boldText": "굵은 마크다운 텍스트",
 			"notebook.command.clearactivecellresult": "셀 결과 지우기",
+			"notebook.command.codeBlock": "코드 블록 추가",
+			"notebook.command.italicizeText": "Markdown 텍스트 기울임꼴",
 			"notebook.command.new": "새 Notebook",
 			"notebook.command.open": "Notebook 열기",
 			"notebook.command.runactivecell": "셀 실행",
 			"notebook.command.runallcells": "셀 실행",
+			"notebook.command.underlineText": "Markdown 텍스트에 밑줄 긋기",
 			"notebook.configuration.title": "Notebook 구성",
 			"notebook.dontPromptPythonUpdate.description": "Python을 업데이트하라는 메시지가 표시되지 않습니다.",
 			"notebook.jupyterServerShutdownTimeout.description": "모든 전자 필기장이 닫힌 후 서버를 종료하기 전에 대기해야 할 시간(분)입니다(종료하지 않으려면 0을 입력하세요).",
@@ -274,6 +279,7 @@
 			"title.SavedBooks": "Notebook",
 			"title.addMarkdown": "Markdown 파일 추가",
 			"title.addNotebook": "Notebook 추가",
+			"title.addSection": "섹션 추가",
 			"title.analyzeJupyterNotebook": "Notebook에서 분석",
 			"title.closeJupyterBook": "Jupyter Book 닫기",
 			"title.closeNotebook": "Notebook 닫기",
