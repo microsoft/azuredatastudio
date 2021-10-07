@@ -371,7 +371,7 @@ export class DeployService {
 		//
 		await this.createFile(startFilePath, 'echo starting the container!');
 		if (os.platform() !== 'win32') {
-			await utils.executeCommand(`chmod +x ${startFilePath}`, this._outputChannel);
+			await utils.executeCommand(`chmod +x '${startFilePath}'`, this._outputChannel);
 		}
 
 		// Create the Dockerfile
