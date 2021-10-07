@@ -905,10 +905,6 @@ declare module 'azdata' {
 		action: ActionOnCellCheckboxCheck;
 	}
 
-	export interface CheckboxColumn extends TableColumn {
-		action: ActionOnCellCheckboxCheck;
-	}
-
 	export interface ResultSetSummary {
 		/**
 		 * The visualization options for the result set.
