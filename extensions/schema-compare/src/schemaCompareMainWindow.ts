@@ -341,19 +341,19 @@ export class SchemaCompareMainWindow {
 			width: '98%'
 		});
 
-		this.splitView.addItem(this.differencesTable);
-		this.splitView.addItem(this.diffEditor);
-		this.splitView.setLayout({
-			orientation: 'vertical',
-			splitViewHeight: 800
-		});
-
 		this.flexModel.removeItem(this.loader);
 		this.flexModel.removeItem(this.waitText);
 		this.resetButtons(ResetButtonState.afterCompareComplete);
 
 		if (this.comparisonResult.differences.length > 0) {
 			this.flexModel.addItem(this.splitView);
+
+			this.splitView.addItem(this.differencesTable);
+			this.splitView.addItem(this.diffEditor);
+			this.splitView.setLayout({
+				orientation: 'vertical',
+				splitViewHeight: 800
+			});
 
 			// create a map of the differences to row numbers
 			for (let i = 0; i < data.length; ++i) {
