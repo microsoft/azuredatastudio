@@ -149,7 +149,8 @@ export class NotebookMarkdownRenderer {
 					.replace(/>/g, '&gt;')
 					.replace(/"/g, '&quot;')
 					.replace(/'/g, '&#39;');
-				return `<a href=${href} data-href="${href}" title="${title || href}" is-absolute=${hrefAbsolute}>${text}</a>`;
+				let isMarkdown = markdown.value ? true : false;
+				return `<a href=${href} data-href="${href}" title="${title || href}" is-markdown=${isMarkdown} is-absolute=${hrefAbsolute}>${text}</a>`;
 			}
 		};
 		renderer.paragraph = (text): string => {
@@ -181,6 +182,7 @@ export class NotebookMarkdownRenderer {
 				return `<div class="code" data-code="${id}">${escape(code)}</div>`;
 			};
 		}
+
 
 		if (useNewRenderer) {
 			const markedOptions: vsMarked.MarkedOptions = {
