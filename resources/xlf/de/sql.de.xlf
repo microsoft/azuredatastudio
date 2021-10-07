@@ -373,6 +373,18 @@
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/platform/connection/common/connectionStatusManager" source-language="en" datatype="plaintext" target-language="de">
+    <body>
+      <trans-unit id="connectionStatusManager.noConnectionForUri">
+        <source xml:lang="en">Could not find connection with uri: {0}</source>
+        <target state="translated">Die Verbindung mit URI konnte nicht gefunden werden: {0}</target>
+      </trans-unit>
+      <trans-unit id="connectionStatusManager.uriAlreadyInConnectionsList">
+        <source xml:lang="en">There is already a connection with uri: {0}</source>
+        <target state="translated">Es besteht bereits eine Verbindung mit URI: {0}</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/platform/dashboard/browser/insightRegistry" source-language="en" datatype="plaintext" target-language="de">
     <body>
       <trans-unit id="schema.dashboardWidgets.InsightsRegistry">
@@ -739,13 +751,25 @@
   </file>
   <file original="src/sql/workbench/api/common/extHostNotebook" source-language="en" datatype="plaintext" target-language="de">
     <body>
-      <trans-unit id="errNoManager">
-        <source xml:lang="en">No Manager found</source>
-        <target state="translated">Kein Manager gefunden.</target>
+      <trans-unit id="errNoExecuteManager">
+        <source xml:lang="en">No execute manager found</source>
+        <target state="translated">Kein Ausführungsmanager gefunden</target>
       </trans-unit>
-      <trans-unit id="errNoProvider">
-        <source xml:lang="en">no notebook provider found</source>
-        <target state="translated">Kein Notebook-Anbieter gefunden.</target>
+      <trans-unit id="errNoExecuteProvider">
+        <source xml:lang="en">No notebook execute provider found</source>
+        <target state="translated">Kein Notebookausführungsanbieter gefunden</target>
+      </trans-unit>
+      <trans-unit id="errNoSerializationManager">
+        <source xml:lang="en">No serialization manager found</source>
+        <target state="translated">Kein Serialisierungsmanager gefunden</target>
+      </trans-unit>
+      <trans-unit id="errNoSerializationProvider">
+        <source xml:lang="en">No notebook serialization provider found</source>
+        <target state="translated">Es wurde kein Anbieter für die Notebook-Serialisierung gefunden</target>
+      </trans-unit>
+      <trans-unit id="executeProviderRequired">
+        <source xml:lang="en">A NotebookExecuteProvider with valid providerId must be passed to this method</source>
+        <target state="translated">Ein NotebookExecuteProvider mit gültiger Provider-ID muss an diese Methode übergeben werden</target>
       </trans-unit>
       <trans-unit id="noContentManager">
         <source xml:lang="en">Notebook Manager for notebook {0} does not have a content manager. Cannot perform operations on it</source>
@@ -759,17 +783,17 @@
         <source xml:lang="en">Notebook Manager for notebook {0} does not have a session manager. Cannot perform operations on it</source>
         <target state="translated">Der Notebook-Manager für das Notebook "{0}" umfasst keinen Sitzungs-Manager. Es können keine Aktionen ausgeführt werden.</target>
       </trans-unit>
-      <trans-unit id="providerRequired">
-        <source xml:lang="en">A NotebookProvider with valid providerId must be passed to this method</source>
-        <target state="translated">An diese Klasse muss ein NotebookProvider mit gültiger providerId übergeben werden.</target>
+      <trans-unit id="serializationProviderRequired">
+        <source xml:lang="en">A NotebookSerializationProvider with valid providerId must be passed to this method</source>
+        <target state="translated">Ein NotebookSerializationProvider mit gültiger Provider-ID muss an diese Methode übergeben werden</target>
       </trans-unit>
     </body>
   </file>
   <file original="src/sql/workbench/api/common/extHostNotebookDocumentsAndEditors" source-language="en" datatype="plaintext" target-language="de">
     <body>
-      <trans-unit id="providerRequired">
-        <source xml:lang="en">A NotebookProvider with valid providerId must be passed to this method</source>
-        <target state="translated">An diese Klasse muss ein NotebookProvider mit gültiger providerId übergeben werden.</target>
+      <trans-unit id="navigationProviderRequired">
+        <source xml:lang="en">A NavigationProvider with valid providerId must be passed to this method</source>
+        <target state="translated">Ein NavigationProvider mit gültiger Provider-ID muss an diese Methode übergeben werden</target>
       </trans-unit>
     </body>
   </file>
@@ -911,6 +935,10 @@
   </file>
   <file original="src/sql/workbench/browser/modal/optionsDialogHelper" source-language="en" datatype="plaintext" target-language="de">
     <body>
+      <trans-unit id="optionsDialog.defaultGroupName">
+        <source xml:lang="en">General</source>
+        <target state="translated">Allgemein</target>
+      </trans-unit>
       <trans-unit id="optionsDialog.invalidInput">
         <source xml:lang="en">Invalid input.  Numeric value expected.</source>
         <target state="translated">Ungültige Eingabe. Es wird ein numerischer Wert erwartet.</target>
@@ -947,6 +975,10 @@
   </file>
   <file original="src/sql/workbench/browser/modelComponents/dropdown.component" source-language="en" datatype="plaintext" target-language="de">
     <body>
+      <trans-unit id="defaultDropdownErrorMessage">
+        <source xml:lang="en">Please fill out this field.</source>
+        <target state="translated">Füllen Sie dieses Feld aus.</target>
+      </trans-unit>
       <trans-unit id="loadingCompletedMessage">
         <source xml:lang="en">Loading completed</source>
         <target state="translated">Ladevorgang abgeschlossen</target>
@@ -1834,6 +1866,30 @@
       <trans-unit id="connection.parseClipboardForConnectionStringDescription">
         <source xml:lang="en">Attempt to parse the contents of the clipboard when the connection dialog is opened or a paste is performed.</source>
         <target state="translated">Hiermit wird versucht, die Inhalte der Zwischenablage zu analysieren, wenn das Verbindungsdialogfeld geöffnet ist oder ein Element eingefügt wird.</target>
+      </trans-unit>
+      <trans-unit id="connection.showUnsupportedServerVersionWarning">
+        <source xml:lang="en">Whether to show the warning message when user connects to a server version that is not supported by Azure Data Studio.</source>
+        <target state="translated">Gibt an, ob die Warnmeldung angezeigt werden soll, wenn ein Benutzer eine Verbindung mit einer Serverversion herstellt, die von Azure Data Studio nicht unterstützt wird.</target>
+      </trans-unit>
+      <trans-unit id="sql.defaultAuthenticationType.AzureMFA">
+        <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
+        <target state="translated">Azure Active Directory: universell mit MFA-Unterstützung</target>
+      </trans-unit>
+      <trans-unit id="sql.defaultAuthenticationType.AzureMFAAndUser">
+        <source xml:lang="en">Azure Active Directory - Password</source>
+        <target state="translated">Azure Active Directory: Kennwort</target>
+      </trans-unit>
+      <trans-unit id="sql.defaultAuthenticationType.Integrated">
+        <source xml:lang="en">Windows Authentication</source>
+        <target state="translated">Windows-Authentifizierung</target>
+      </trans-unit>
+      <trans-unit id="sql.defaultAuthenticationType.SqlLogin">
+        <source xml:lang="en">Sql Login</source>
+        <target state="translated">SQL-Anmeldung</target>
+      </trans-unit>
+      <trans-unit id="sql.defaultAuthenticationTypeDescription">
+        <source xml:lang="en">Default authentication type to use when connecting to Azure resources. </source>
+        <target state="translated">Standardauthentifizierungstyp, der beim Herstellen einer Verbindung mit Azure-Ressourcen verwendet werden soll.</target>
       </trans-unit>
       <trans-unit id="sql.defaultEngineDescription">
         <source xml:lang="en">Default SQL Engine to use. This drives default language provider in .sql files and the default to use when creating a new connection.</source>
@@ -5265,6 +5321,10 @@ Fehler: {1}</target>
         <source xml:lang="en">Messages</source>
         <target state="translated">Meldungen</target>
       </trans-unit>
+      <trans-unit id="queryResults.queryEditorCrashError">
+        <source xml:lang="en">The query editor ran into an issue and has stopped working. Please save and reopen it.</source>
+        <target state="new">The query editor ran into an issue and has stopped working. Please save and reopen it.</target>
+      </trans-unit>
       <trans-unit id="resultsTabTitle">
         <source xml:lang="en">Results</source>
         <target state="translated">Ergebnisse</target>
@@ -6645,9 +6705,29 @@ Fehler: {1}</target>
         <source xml:lang="en">Are you sure you want to cancel this connection?</source>
         <target state="translated">Möchten Sie diese Verbindung abbrechen?</target>
       </trans-unit>
+      <trans-unit id="connection.invalidConnectionResult">
+        <source xml:lang="en">Connection result is invalid</source>
+        <target state="translated">Das Verbindungsergebnis ist ungültig.</target>
+      </trans-unit>
+      <trans-unit id="connection.neverShowUnsupportedVersionWarning">
+        <source xml:lang="en">Don't show again</source>
+        <target state="translated">Nicht mehr anzeigen</target>
+      </trans-unit>
       <trans-unit id="connection.noAzureAccount">
         <source xml:lang="en">Failed to get Azure account token for connection</source>
         <target state="translated">Fehler beim Abrufen des Azure-Kontotokens für die Verbindung.</target>
+      </trans-unit>
+      <trans-unit id="connection.refreshAzureTokenFailure">
+        <source xml:lang="en">Failed to refresh Azure account token for connection</source>
+        <target state="translated">Fehler beim Aktualisieren des Azure-Kontotokens für die Verbindung.</target>
+      </trans-unit>
+      <trans-unit id="connection.unsupportedServerVersionWarning">
+        <source xml:lang="en">The server version is not supported by Azure Data Studio, you may still connect to it but some features in Azure Data Studio might not work as expected.</source>
+        <target state="translated">Die Serverversion wird von Azure Data Studio nicht unterstützt. Sie können dennoch eine Verbindung damit herstellen, aber einige Features in Azure Data Studio funktionieren möglicherweise nicht wie erwartet.</target>
+      </trans-unit>
+      <trans-unit id="connectionManagementService.noProviderForUri">
+        <source xml:lang="en">Could not find provider for uri: {0}</source>
+        <target state="translated">Der Anbieter für URI konnte nicht gefunden werden: {0}</target>
       </trans-unit>
       <trans-unit id="connectionNotAcceptedError">
         <source xml:lang="en">Connection Not Accepted</source>
@@ -7274,9 +7354,9 @@ Fehler: {1}</target>
         <source xml:lang="en">Contributes notebook language.</source>
         <target state="translated">Stellt die Notebook-Sprache zur Verfügung.</target>
       </trans-unit>
-      <trans-unit id="vscode.extension.contributes.notebook.providers">
-        <source xml:lang="en">Contributes notebook providers.</source>
-        <target state="translated">Stellt Notebook-Anbieter zur Verfügung.</target>
+      <trans-unit id="vscode.extension.contributes.notebook.providersDescriptions">
+        <source xml:lang="en">Contributes notebook provider descriptions.</source>
+        <target state="translated">Steuert Beschreibungen des Notebookanbieters bei.</target>
       </trans-unit>
     </body>
   </file>
@@ -7484,6 +7564,18 @@ Fehler: {1}</target>
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/services/query/common/queryManagement" source-language="en" datatype="plaintext" target-language="de">
+    <body>
+      <trans-unit id="queryManagement.noQueryRunnerForUri">
+        <source xml:lang="en">Could not find Query Runner for uri: {0}</source>
+        <target state="translated">Die Abfragenausführung für URI konnte nicht gefunden werden: {0}</target>
+      </trans-unit>
+      <trans-unit id="queryManagement.uriAlreadyHasQueryRunner">
+        <source xml:lang="en">Uri: {0} unexpectedly already has a query runner.</source>
+        <target state="translated">URI: {0} verfügt unerwarteterweise bereits über eine Abfragenausführung.</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/services/query/common/queryModelService" source-language="en" datatype="plaintext" target-language="de">
     <body>
       <trans-unit id="commitEditFailed">
@@ -7493,6 +7585,14 @@ Fehler: {1}</target>
       <trans-unit id="msgCancelQueryFailed">
         <source xml:lang="en">Canceling the query failed: {0}</source>
         <target state="translated">Fehler beim Abbrechen der Abfrage: {0}</target>
+      </trans-unit>
+      <trans-unit id="queryModelService.noQueryFoundForUri">
+        <source xml:lang="en">No Query found for {0}</source>
+        <target state="translated">Für {0} wurde keine Abfrage gefunden.</target>
+      </trans-unit>
+      <trans-unit id="queryModelService.uriAlreadyHasQuery">
+        <source xml:lang="en">{0} already has an existing query</source>
+        <target state="translated">{0} verfügt bereits über eine vorhandene Abfrage.</target>
       </trans-unit>
       <trans-unit id="runQueryBatchStartLine">
         <source xml:lang="en">Line {0}</source>
