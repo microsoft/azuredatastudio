@@ -234,9 +234,7 @@ export class UntitledTextEditorModel extends BaseTextEditorModel implements IUnt
 
 	//#region Dirty
 
-	// {{SQL CARBON EDIT}}
-	// Don't mark untitled editors with content as dirty (#5863)
-	private dirty = this.hasAssociatedFilePath;
+	private dirty = this.hasAssociatedFilePath || !!this.initialValue;
 
 	isDirty(): boolean {
 		return this.dirty;
@@ -290,6 +288,8 @@ export class UntitledTextEditorModel extends BaseTextEditorModel implements IUnt
 
 
 	//#region Resolve
+	// {{SQL CARBON EDIT}}
+	private initialRawJsonEditorContent: string | undefined = undefined;
 
 	override async resolve(): Promise<void> {
 
@@ -339,9 +339,17 @@ export class UntitledTextEditorModel extends BaseTextEditorModel implements IUnt
 				this.updateNameFromFirstLine(textEditorModel);
 			}
 
-			// {{SQL CARBON EDIT}}
-			// Untitled associated to file path are dirty right away (#5863)
-			this.setDirty(this.hasAssociatedFilePath || !!hasBackup);
+			// {{SQL CARBON EDIT}} - START
+			// Don't flag untitled JSON files with content as dirty (#5863)
+			if (this.initialValue && textEditorModel.getModeId().toLowerCase() === 'json') {
+				this.setDirty(false);
+			}
+
+			// Untitled associated to file path are dirty right away
+			else {
+				this.setDirty(this.hasAssociatedFilePath || !!hasBackup || !!this.initialValue);
+			}
+			// {{SQL CARBON EDIT}} - END
 
 			// If we have initial contents, make sure to emit this
 			// as the appropiate events to the outside.
@@ -353,14 +361,27 @@ export class UntitledTextEditorModel extends BaseTextEditorModel implements IUnt
 
 	private onModelContentChanged(textEditorModel: ITextModel, e: IModelContentChangedEvent): void {
 
-		// {{SQL CARBON EDIT}}
-		// Needed to determine if untitled editors with content have changed. (#5863)
-		let textEditorContent = textEditorModel.getValue().replace(/(\r\n|\n|\r)/gm, '').replace(/ /g, '');
+		// {{SQL CARBON EDIT}} - START
+		/**
+		 * Invoking "getValue" on the textEditorModel is necessary because it permits us to see escaped characters.
+		 * This simplifies how we detect formatting changes with whitespace to mark the file as dirty.
+		 *
+		 * The "initialValue" property doesn't contain escaped characters or spaces when an untitled file is preloaded with
+		 * JSON content.
+		 */
+		if (textEditorModel.getModeId().toLowerCase() === 'json' && this.initialRawJsonEditorContent === undefined) {
+			let rawJsonEditorContent = textEditorModel.getValue();
+
+			if (this.initialValue && rawJsonEditorContent) {
+				this.initialRawJsonEditorContent = rawJsonEditorContent;
+			}
+		}
+		// {{SQL CARBON EDIT}} - END
 
 		// mark the untitled text editor as non-dirty once its content becomes empty and we do
 		// not have an associated path set. we never want dirty indicator in that case.
 		if (!this.hasAssociatedFilePath && textEditorModel.getLineCount() === 1 && textEditorModel.getLineContent(1) === ''
-			|| textEditorContent === this.initialValue) { // {{SQL CARBON EDIT}} Prevents untitled editors with content from being marked as dirty (#5863)
+			|| this.initialRawJsonEditorContent === textEditorModel.getValue()) { // {{SQL CARBON EDIT}} Prevents untitled editors with content from being marked as dirty (#5863)
 			this.setDirty(false);
 		}
 
