@@ -73,11 +73,11 @@ export class ProjectsController {
 
 	projFileWatchers = new Map<string, vscode.FileSystemWatcher>();
 
-	constructor(outputChannel: vscode.OutputChannel) {
-		this.netCoreTool = new NetCoreTool(outputChannel);
+	constructor(private _outputChannel: vscode.OutputChannel) {
+		this.netCoreTool = new NetCoreTool(this._outputChannel);
 		this.buildHelper = new BuildHelper();
-		this.deployService = new DeployService(outputChannel);
-		this.autorestHelper = new AutorestHelper(outputChannel);
+		this.deployService = new DeployService(this._outputChannel);
+		this.autorestHelper = new AutorestHelper(this._outputChannel);
 	}
 
 	public getDashboardPublishData(projectFile: string): (string | dataworkspace.IconCellValue)[][] {
@@ -270,6 +270,7 @@ export class ProjectsController {
 			if (deployProfile && deployProfile.deploySettings) {
 				let connectionUri: string | undefined;
 				if (deployProfile.localDbSetting) {
+					void utils.showInfoMessageWithOutputChannel(constants.publishingProjectMessage, this._outputChannel);
 					connectionUri = await this.deployService.deploy(deployProfile, project);
 					if (connectionUri) {
 						deployProfile.deploySettings.connectionUri = connectionUri;
@@ -281,16 +282,16 @@ export class ProjectsController {
 						if (deployProfile.localDbSetting) {
 							await this.deployService.getConnection(deployProfile.localDbSetting, true, deployProfile.localDbSetting.dbName);
 						}
-						void vscode.window.showInformationMessage(constants.deployProjectSucceed);
+						void vscode.window.showInformationMessage(constants.publishProjectSucceed);
 					} else {
-						void vscode.window.showErrorMessage(constants.publishToContainerFailed(publishResult?.errorMessage || ''));
+						void utils.showErrorMessageWithOutputChannel(constants.publishToContainerFailed, publishResult?.errorMessage || '', this._outputChannel);
 					}
 				} else {
-					void vscode.window.showErrorMessage(constants.publishToContainerFailed(constants.deployProjectFailedMessage));
+					void utils.showErrorMessageWithOutputChannel(constants.publishToContainerFailed, constants.deployProjectFailedMessage, this._outputChannel);
 				}
 			}
 		} catch (error) {
-			void vscode.window.showErrorMessage(constants.publishToContainerFailed(utils.getErrorMessage(error)));
+			void utils.showErrorMessageWithOutputChannel(constants.publishToContainerFailed, error, this._outputChannel);
 		}
 		return;
 	}

@@ -15,6 +15,7 @@ import * as childProcess from 'child_process';
 import { AppSettingType, IDeployProfile } from '../../models/deploy/deployProfile';
 let fse = require('fs-extra');
 let path = require('path');
+import * as constants from '../../common/constants';
 
 export interface TestContext {
 	outputChannel: vscode.OutputChannel;
@@ -81,6 +82,7 @@ describe('deploy service', function (): void {
 		const deployService = new DeployService(testContext.outputChannel);
 		sandbox.stub(azdata.connection, 'connect').returns(Promise.resolve(mockConnectionResult));
 		sandbox.stub(azdata.connection, 'getUriForConnection').returns(Promise.resolve('connection'));
+		sandbox.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve(constants.yesString));
 		sandbox.stub(azdata.tasks, 'startBackgroundOperation').callThrough();
 		sandbox.stub(childProcess, 'exec').yields(undefined, 'id');
 		let connection = await deployService.deploy(deployProfile, project1);
@@ -168,10 +170,12 @@ describe('deploy service', function (): void {
 			}
 		};
 
-		const appInteg = {appSettingType: AppSettingType.AzureFunction,
+		const appInteg = {
+			appSettingType: AppSettingType.AzureFunction,
 			appSettingFile: filePath,
 			deploySettings: undefined,
-			envVariableName: 'SQLConnectionString'};
+			envVariableName: 'SQLConnectionString'
+		};
 
 		const deployService = new DeployService(testContext.outputChannel);
 		sandbox.stub(childProcess, 'exec').yields(undefined, 'id');
@@ -220,7 +224,7 @@ describe('deploy service', function (): void {
 			appSettingType: AppSettingType.AzureFunction,
 			appSettingFile: filePath,
 			envVariableName: 'SQLConnectionString',
-		}
+		};
 		const deployService = new DeployService(testContext.outputChannel);
 		let connection = new azdata.connection.ConnectionProfile();
 		sandbox.stub(azdata.connection, 'getConnection').returns(Promise.resolve(connection));
@@ -229,7 +233,6 @@ describe('deploy service', function (): void {
 		await deployService.updateAppSettings(appInteg, deployProfile);
 		let newContent = JSON.parse(fse.readFileSync(filePath, 'utf8'));
 		should(newContent).deepEqual(expected);
-
 	});
 
 	it('Should clean a list of docker images successfully', async function (): Promise<void> {
@@ -241,8 +244,8 @@ describe('deploy service', function (): void {
 		id2
 		id3`);
 
-		await deployService.cleanDockerObjects(`docker ps -q -a --filter label=test`, ['docker stop', 'docker rm']);
+		const ids = await deployService.getCurrentDockerContainer('label');
+		await deployService.cleanDockerObjects(ids, ['docker stop', 'docker rm']);
 		should(process.calledThrice);
 	});
 });
-
