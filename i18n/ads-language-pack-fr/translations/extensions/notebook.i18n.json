@@ -74,6 +74,7 @@
 			"newBook": "Nouveau livre de jupyter (Preview)",
 			"newMarkdown": "Nouvel Aperçu Markdown (Aperçu)",
 			"newNotebook": "Nouveau bloc-notes (Aperçu)",
+			"newSection": "Nouvelle section (Aperçu)",
 			"noBDCConnectionError": "Les noyaux Spark nécessitent une connexion a une instance maître de cluster Big Data SQL Server.",
 			"noBooksSelected": "Aucun Jupyter Book n'est actuellement sélectionné dans la viewlet.",
 			"onGitHub": "GitHub",
@@ -110,7 +111,7 @@
 		},
 		"dist/dialog/configurePython/configurePathPage": {
 			"configurePython.browseButtonText": "Parcourir",
-			"configurePython.descriptionWithKernel": "Le noyau {0} nécessite la configuration d'un runtime Python et l'installation de dépendances.",
+			"configurePython.descriptionWithKernel": "The '{0}' kernel requires a Python runtime to be configured and dependencies to be installed.",
 			"configurePython.descriptionWithoutKernel": "Les noyaux de notebook nécessitent la configuration d'un runtime Python et l'installation de dépendances.",
 			"configurePython.existingInstall": "Utiliser l'installation existante de Python",
 			"configurePython.installationType": "Type d'installation",
@@ -139,7 +140,7 @@
 			"configurePython.pkgNameColumn": "Nom",
 			"configurePython.requiredDependencies": "Installer les dépendances de noyau nécessaires",
 			"configurePython.requiredVersionColumn": "Version obligatoire",
-			"msgUnsupportedKernel": "Impossible de récupérer les packages du noyau {0}"
+			"msgNoRequirementsForKernel": "No packages are required by default for the kernel '{0}'"
 		},
 		"dist/dialog/managePackages/addNewPackageTab": {
 			"managePackages.addNewTabTitle": "Ajouter un nouveau",
@@ -183,7 +184,7 @@
 			"notebookFileType": "Notebooks",
 			"unsupportedFileType": "Seuls les notebooks .ipynb sont pris en charge"
 		},
-		"dist/jupyter/jupyterNotebookProvider": {
+		"dist/jupyter/jupyterExecuteProvider": {
 			"errNotebookUriMissing": "Le chemin du notebook est obligatoire"
 		},
 		"dist/jupyter/jupyterServerInstallation": {
@@ -251,11 +252,15 @@
 			"notebook.command.addcell": "Ajouter une cellule",
 			"notebook.command.addcode": "Ajouter une cellule de code",
 			"notebook.command.addtext": "Ajouter une cellule de texte",
+			"notebook.command.boldText": "Mettre en gras le texte Markdown",
 			"notebook.command.clearactivecellresult": "Effacer le résultat de la cellule",
+			"notebook.command.codeBlock": "Ajouter un bloc de code",
+			"notebook.command.italicizeText": "Mettre en italique le texte de la démarque",
 			"notebook.command.new": "Nouveau notebook",
 			"notebook.command.open": "Ouvrir le notebook",
 			"notebook.command.runactivecell": "Exécuter la cellule",
 			"notebook.command.runallcells": "Exécuter les cellules",
+			"notebook.command.underlineText": "Texte de démarque",
 			"notebook.configuration.title": "Configuration de notebook",
 			"notebook.dontPromptPythonUpdate.description": "Ne pas afficher d’invite pour mettre à jour Python.",
 			"notebook.jupyterServerShutdownTimeout.description": "Durée d’attente (en minutes) avant l’arrêt d’un serveur une fois tous les blocs-notes fermés. (Entrez 0 pour ne pas arrêter)",
@@ -274,6 +279,7 @@
 			"title.SavedBooks": "Notebooks",
 			"title.addMarkdown": "Ajouter un fichier de marques",
 			"title.addNotebook": "Ajouter un bloc-notes",
+			"title.addSection": "Ajouter une section",
 			"title.analyzeJupyterNotebook": "Analyser dans le notebook",
 			"title.closeJupyterBook": "Fermer Jupyter Book",
 			"title.closeNotebook": "Fermeture du bloc-notes",

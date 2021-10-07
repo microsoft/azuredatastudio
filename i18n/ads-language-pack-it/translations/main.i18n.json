@@ -9933,15 +9933,18 @@
 			"treeView.notRegistered": "Non è stata registrata alcuna visualizzazione struttura ad albero con ID '{0}'."
 		},
 		"sql/workbench/api/common/extHostNotebook": {
-			"errNoManager": "Non è stato trovato alcun gestore",
-			"errNoProvider": "non è stato trovato alcun provider di notebook",
+			"errNoExecuteManager": "Non è stato trovato alcun gestore di esecuzione",
+			"errNoExecuteProvider": "Non è stato trovato alcun provider di esecuzione di notebook",
+			"errNoSerializationManager": "Non è stato trovato alcun gestore di serializzazione",
+			"errNoSerializationProvider": "Non è stato trovato alcun provider di serializzazione notebook",
+			"executeProviderRequired": "È necessario passare a questo metodo un elemento NotebookExecuteProvider con providerId valido",
 			"noContentManager": "Il gestore del notebook {0} non include un gestore di contenuti. Non è possibile eseguirvi operazioni",
 			"noServerManager": "Il gestore del notebook {0} non include un gestore di server. Non è possibile eseguirvi operazioni",
 			"noSessionManager": "Il gestore del notebook {0} non include un gestore di sessioni. Non è possibile eseguirvi operazioni",
-			"providerRequired": "È necessario passare a questo metodo un elemento NotebookProvider con providerId valido"
+			"serializationProviderRequired": "È necessario passare a questo metodo un elemento NotebookSerializationProvider con providerId valido"
 		},
 		"sql/workbench/api/common/extHostNotebookDocumentsAndEditors": {
-			"providerRequired": "È necessario passare a questo metodo un elemento NotebookProvider con providerId valido"
+			"navigationProviderRequired": "È necessario passare a questo metodo un elemento NavigationProvider con providerId valido"
 		},
 		"sql/workbench/browser/actions": {
 			"clearSavedAccounts": "Cancella tutti gli account salvati",
@@ -9985,6 +9988,7 @@
 			"optionsDialog.ok": "OK"
 		},
 		"sql/workbench/browser/modal/optionsDialogHelper": {
+			"optionsDialog.defaultGroupName": "Generale",
 			"optionsDialog.invalidInput": "Input non valido. È previsto un valore numerico.",
 			"optionsDialog.missingRequireField": " è obbligatorio."
 		},
@@ -9997,6 +10001,7 @@
 			"declarativeTable.showActions": "Mostra azioni"
 		},
 		"sql/workbench/browser/modelComponents/dropdown.component": {
+			"defaultDropdownErrorMessage": "Compilare questo campo.",
 			"loadingCompletedMessage": "Caricamento completato",
 			"loadingMessage": "Caricamento"
 		},
@@ -10250,6 +10255,12 @@
 		},
 		"sql/workbench/contrib/connection/browser/connection.contribution": {
 			"connection.parseClipboardForConnectionStringDescription": "Prova ad analizzare il contenuto degli appunti quando si apre la finestra di dialogo di connessione o si esegue un'operazione Incolla.",
+			"connection.showUnsupportedServerVersionWarning": "Indica se visualizzare un messaggio di avviso quando l'utente si connette a una versione del server non supportata da Azure Data Studio.",
+			"sql.defaultAuthenticationType.AzureMFA": "Azure Active Directory - Universale con supporto MFA",
+			"sql.defaultAuthenticationType.AzureMFAAndUser": "Azure Active Directory - Password",
+			"sql.defaultAuthenticationType.Integrated": "Autenticazione di Windows",
+			"sql.defaultAuthenticationType.SqlLogin": "Accesso SQL",
+			"sql.defaultAuthenticationTypeDescription": "Tipo di autenticazione predefinito da utilizzare per la connessione alle risorse di Azure. ",
 			"sql.defaultEngineDescription": "Motore SQL predefinito da usare. Stabilisce il provider del linguaggio predefinito nei file con estensione sql e il valore predefinito da usare quando si crea una nuova connessione.",
 			"sql.maxRecentConnectionsDescription": "Numero massimo di connessioni usate di recente da archiviare nell'elenco delle connessioni."
 		},
@@ -11214,6 +11225,7 @@
 		},
 		"sql/workbench/contrib/query/browser/queryResultsView": {
 			"messagesTabTitle": "Messaggi",
+			"queryResults.queryEditorCrashError": "The query editor ran into an issue and has stopped working. Please save and reopen it.",
 			"resultsTabTitle": "Risultati"
 		},
 		"sql/workbench/contrib/query/browser/statusBarItems": {
@@ -11605,7 +11617,12 @@
 		},
 		"sql/workbench/services/connection/browser/connectionManagementService": {
 			"cancelConnectionConfirmation": "Annullare questa connessione?",
+			"connection.invalidConnectionResult": "Risultato connessione non valido",
+			"connection.neverShowUnsupportedVersionWarning": "Non visualizzare più",
 			"connection.noAzureAccount": "Non è stato possibile recuperare il token dell'account di Azure per la connessione",
+			"connection.refreshAzureTokenFailure": "Non è stato possibile aggiornare il token dell'account di Azure per la connessione",
+			"connection.unsupportedServerVersionWarning": "La versione del server non è supportata da Azure Data Studio, è possibile comunque connettersi ad esso, ma alcune funzionalità di Azure Data Studio potrebbero non funzionare come previsto.",
+			"connectionManagementService.noProviderForUri": "Non è stato possibile trovare il provider per l'URI: {0}",
 			"connectionNotAcceptedError": "Connessione non accettata",
 			"connectionService.no": "No",
 			"connectionService.yes": "Sì"
@@ -11792,7 +11809,7 @@
 			"carbon.extension.contributes.notebook.provider": "Identificatore del provider di notebook.",
 			"carbon.extension.contributes.notebook.standardKernels": "Indica i kernel che devono essere standard con questo provider di notebook",
 			"vscode.extension.contributes.notebook.languagemagics": "Aggiunge come contributo la lingua del notebook.",
-			"vscode.extension.contributes.notebook.providers": "Aggiunge come contributo i provider di notebook."
+			"vscode.extension.contributes.notebook.providersDescriptions": "Aggiunge come contributo le descrizioni del provider di notebook."
 		},
 		"sql/workbench/services/objectExplorer/browser/asyncServerTreeRenderer": {
 			"loading": "Caricamento..."
@@ -11856,6 +11873,8 @@
 		"sql/workbench/services/query/common/queryModelService": {
 			"commitEditFailed": "Commit della riga non riuscito: ",
 			"msgCancelQueryFailed": "Annullamento della query non riuscito: {0}",
+			"queryModelService.noQueryFoundForUri": "Non sono state trovate query per {0}",
+			"queryModelService.uriAlreadyHasQuery": "{0} esiste già una query esistente",
 			"runQueryBatchStartLine": "Riga {0}",
 			"runQueryBatchStartMessage": "Esecuzione della query iniziata a ",
 			"runQueryStringBatchStartMessage": "Esecuzione della query \"{0}\" avviata",
@@ -11954,6 +11973,14 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "&&Introduzione",
 			"showReleaseNotes": "Mostra introduzione"
+		},
+		"sql/platform/connection/common/connectionStatusManager": {
+			"connectionStatusManager.noConnectionForUri": "Non è stato possibile trovare la connessione per l'URI:{0}",
+			"connectionStatusManager.uriAlreadyInConnectionsList": "Esiste già una connessione con URI: {0}"
+		},
+		"sql/workbench/services/query/common/queryManagement": {
+			"queryManagement.noQueryRunnerForUri": "Non è stato possibile trovare il Runner di query per l'URI: {0}",
+			"queryManagement.uriAlreadyHasQueryRunner": "URI: {0} imprevisto ha già un Runner di query."
 		}
 	}
 }
