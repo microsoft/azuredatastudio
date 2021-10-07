@@ -59,7 +59,7 @@ export class ConfigureRPOSqlDialog extends InitializingComponent {
 
 			const link = this.modelBuilder.hyperlink().withProps({
 				label: loc.learnMore,
-				url: '',
+				url: 'https://docs.microsoft.com/en-us/azure/azure-arc/data/point-in-time-restore',
 			}).component();
 
 			const infoAndLink = this.modelBuilder.flexContainer().withLayout({ flexWrap: 'wrap' }).component();

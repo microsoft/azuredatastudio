@@ -46,7 +46,7 @@ export class MiaaBackupsPage extends DashboardPage {
 	}
 
 	public get icon(): { dark: string, light: string } {
-		return IconPathHelper.properties;
+		return IconPathHelper.pitr;
 	}
 	protected async refresh(): Promise<void> {
 		await Promise.all([this._controllerModel.refresh(false, this._controllerModel.info.namespace), this._miaaModel.refresh()]);
@@ -73,7 +73,7 @@ export class MiaaBackupsPage extends DashboardPage {
 
 		const backupsDbsLearnMoreLink = this.modelView.modelBuilder.hyperlink().withProps({
 			label: loc.learnMore,
-			url: '',
+			url: 'https://docs.microsoft.com/en-us/azure/azure-arc/data/point-in-time-restore',
 			CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
@@ -105,7 +105,6 @@ export class MiaaBackupsPage extends DashboardPage {
 
 		this._connectToServerLoading = this.modelView.modelBuilder.loadingComponent().withItem(connectToServerContainer).component();
 
-		// this._connectToServerLoading = this.modelView.modelBuilder.loadingComponent().withItem(connectToServerContainer).component();
 		this._databasesContainer.addItem(this._connectToServerLoading, { CSSStyles: { 'margin-top': '20px' } });
 
 		this._databasesTableLoading = this.modelView.modelBuilder.loadingComponent().component();
@@ -130,11 +129,11 @@ export class MiaaBackupsPage extends DashboardPage {
 				},
 				{
 					displayName: loc.restore,
-					valueType: azdata.DeclarativeDataType.string,
+					valueType: azdata.DeclarativeDataType.component,
 					isReadOnly: true,
 					width: '20%',
 					headerCssStyles: cssStyles.tableHeader,
-					rowCssStyles: cssStyles.tableRow
+					rowCssStyles: cssStyles.tableRow,
 				}
 			],
 			dataValues: []
@@ -235,19 +234,24 @@ export class MiaaBackupsPage extends DashboardPage {
 
 	private handleDatabasesUpdated(): void {
 		// If we were able to get the databases it means we have a good connection so update the username too
-		let databaseDisplayText = this._miaaModel.databases.map(d => [d.name, d.lastBackup,]);
-		let databasesTextValues = databaseDisplayText.map(d => {
+		let databaseDisplay = this._miaaModel.databases.map(d => [
+			d.name,
+			d.lastBackup,
+			this.getRestoreButton(d.lastBackup)]);
+		let databasesValues = databaseDisplay.map(d => {
 			return d.map((value): azdata.DeclarativeTableCellValue => {
 				return { value: value };
 			});
 		});
-		this._databasesTable.setDataValues(databasesTextValues);
+		this._databasesTable.setDataValues(databasesValues);
+
 		this._databasesTableLoading.loading = false;
 
 		if (this._miaaModel.databasesLastUpdated) {
 			// We successfully connected so now can remove the button and replace it with the actual databases table
 			this._databasesContainer.removeItem(this._connectToServerLoading);
 			this._databasesContainer.addItem(this._databasesTableLoading, { CSSStyles: { 'margin-bottom': '20px' } });
+
 		} else {
 			// If we don't have an endpoint then there's no point in showing the connect button - but the logic
 			// to display text informing the user of this is already handled by the handleMiaaConfigUpdated
@@ -276,5 +280,21 @@ export class MiaaBackupsPage extends DashboardPage {
 		else {
 			this.saveArgs.retentionDays = current.toString();
 		}
+	}
+	private getRestoreButton(pitrDate: Date): azdata.ButtonComponent | string {
+		let date = new Date(0);
+		if ((pitrDate === date) || !pitrDate) {
+			return '';
+		}
+		let restoreButton!: azdata.ButtonComponent;
+		restoreButton = this.modelView.modelBuilder.button().withProps({
+			enabled: true,
+			iconPath: IconPathHelper.openInTab,
+		}).component();
+		this.disposables.push(
+			restoreButton.onDidClick(async () => {
+				azdata.window.createModelViewDialog(loc.restore);
+			}));
+		return restoreButton;
 	}
 }

@@ -414,7 +414,7 @@ declare module 'azdata' {
 		/**
 		 * The cell value
 		 */
-		value: string | number | boolean | Component | DeclarativeTableMenuCellValue | Date;
+		value: string | number | boolean | Component | DeclarativeTableMenuCellValue | Date | ButtonComponent;
 		/**
 		 * The aria-label of the cell
 		 */
@@ -899,6 +899,10 @@ declare module 'azdata' {
 	}
 
 	export interface HyperlinkColumn extends IconColumnOptions, TableColumn {
+	}
+
+	export interface CheckboxColumn extends TableColumn {
+		action: ActionOnCellCheckboxCheck;
 	}
 
 	export interface CheckboxColumn extends TableColumn {
