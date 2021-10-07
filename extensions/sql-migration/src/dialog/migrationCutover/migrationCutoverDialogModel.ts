@@ -7,6 +7,7 @@ import { getMigrationStatus, DatabaseMigration, startMigrationCutover, stopMigra
 import { BackupFileInfoStatus, MigrationContext } from '../../models/migrationLocalStorage';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../../telemtery';
 import * as constants from '../../constants/strings';
+import { EOL } from 'os';
 import { getMigrationTargetType, getMigrationMode } from '../../constants/helper';
 
 export class MigrationCutoverDialogModel {
@@ -73,6 +74,17 @@ export class MigrationCutoverDialogModel {
 			console.log(error);
 		}
 		return undefined!;
+	}
+
+	public async fetchErrors(): Promise<string> {
+		const errors = [];
+		await this.fetchStatus();
+		errors.push(this.migrationOpStatus.error?.message);
+		errors.push(this._migration.asyncOperationResult?.error?.message);
+		errors.push(this.migrationStatus.properties.migrationFailureError?.message);
+		return errors
+			.filter((e, i, arr) => e !== undefined && i === arr.indexOf(e))
+			.join(EOL);
 	}
 
 	public async cancelMigration(): Promise<void> {

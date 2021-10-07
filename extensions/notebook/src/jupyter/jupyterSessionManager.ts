@@ -21,6 +21,7 @@ import { SQL_PROVIDER, CONTROLLER_ENDPOINT, KNOX_ENDPOINT_GATEWAY, KNOX_ENDPOINT
 import CodeAdapter from '../prompts/adapter';
 import { IQuestion, QuestionTypes } from '../prompts/question';
 import { ExtensionContextHelper } from '../common/extensionContextHelper';
+import Logger from '../common/logger';
 
 const configBase = {
 	'kernel_python_credentials': {
@@ -280,6 +281,7 @@ export class JupyterSession implements nb.ISession {
 
 	public async configureConnection(connectionProfile: IConnectionProfile): Promise<void> {
 		if (connectionProfile && connectionProfile.providerName && utils.isSparkKernel(this.sessionImpl.kernel.name)) {
+			Logger.log(`Configuring Spark connection`);
 			// %_do_not_call_change_endpoint is a SparkMagic command that lets users change endpoint options,
 			// such as user/profile/host name/auth type
 
@@ -295,6 +297,7 @@ export class JupyterSession implements nb.ISession {
 				const endpoints = utils.getClusterEndpoints(serverInfo);
 				const controllerEndpoint = endpoints.find(ep => ep.name.toLowerCase() === CONTROLLER_ENDPOINT);
 
+				Logger.log(`Found controller endpoint ${controllerEndpoint.endpoint}`);
 				// root is the default username for pre-CU5 instances, so while we prefer to use the connection username
 				// as a default now we'll still fall back to root if it's empty for some reason. (but the calls below should
 				// get the actual correct value regardless)
@@ -324,6 +327,7 @@ export class JupyterSession implements nb.ISession {
 
 				let gatewayEndpoint: bdc.IEndpointModel = endpoints?.find(ep => ep.name.toLowerCase() === KNOX_ENDPOINT_GATEWAY);
 				if (!gatewayEndpoint) {
+					Logger.log(`Querying controller for knox gateway endpoint`);
 					// User doesn't have permission to see the gateway endpoint from the DMV so we need to query the controller instead
 					const allEndpoints = (await clusterController.getEndPoints()).endPoints;
 					gatewayEndpoint = allEndpoints?.find(ep => ep.name.toLowerCase() === KNOX_ENDPOINT_GATEWAY);
@@ -331,7 +335,9 @@ export class JupyterSession implements nb.ISession {
 						throw new Error(localize('notebook.couldNotFindKnoxGateway', "Could not find Knox gateway endpoint"));
 					}
 				}
+				Logger.log(`Got Knox gateway ${gatewayEndpoint.endpoint}`);
 				let gatewayHostAndPort = utils.getHostAndPortFromEndpoint(gatewayEndpoint.endpoint);
+				Logger.log(`Parsed knox host and port ${JSON.stringify(gatewayHostAndPort)}`);
 				connectionProfile.options[KNOX_ENDPOINT_SERVER] = gatewayHostAndPort.host;
 				connectionProfile.options[KNOX_ENDPOINT_PORT] = gatewayHostAndPort.port;
 			}
@@ -343,11 +349,16 @@ export class JupyterSession implements nb.ISession {
 
 			let server = vscode.Uri.parse(utils.getLivyUrl(connectionProfile.options[KNOX_ENDPOINT_SERVER], connectionProfile.options[KNOX_ENDPOINT_PORT])).toString();
 			let doNotCallChangeEndpointParams: string;
+			let doNotCallChangeEndpointLogMessage: string;
 			if (utils.isIntegratedAuth(connectionProfile)) {
 				doNotCallChangeEndpointParams = `%_do_not_call_change_endpoint --server=${server} --auth=Kerberos`;
+				doNotCallChangeEndpointLogMessage = doNotCallChangeEndpointParams;
 			} else {
-				doNotCallChangeEndpointParams = `%_do_not_call_change_endpoint --username=${knoxUsername} --password=${knoxPassword} --server=${server} --auth=Basic_Access`;
+				doNotCallChangeEndpointParams = `%_do_not_call_change_endpoint --username=${knoxUsername} --server=${server} --auth=Basic_Access`;
+				doNotCallChangeEndpointLogMessage = doNotCallChangeEndpointParams + ` --password=${'*'.repeat(knoxPassword.length)}`;
+				doNotCallChangeEndpointParams += ` --password=${knoxPassword}`;
 			}
+			Logger.log(`Change endpoint command '${doNotCallChangeEndpointLogMessage}'`);
 			let future = this.sessionImpl.kernel.requestExecute({
 				code: doNotCallChangeEndpointParams
 			}, true);
@@ -393,6 +404,7 @@ export class JupyterSession implements nb.ISession {
 }
 
 async function getClusterController(controllerEndpoint: string, authType: bdc.AuthType, username?: string, password?: string): Promise<bdc.IClusterController | undefined> {
+	Logger.log(`Getting cluster controller ${controllerEndpoint}. Auth=${authType} Username=${username} password=${'*'.repeat(password?.length ?? 0)}`);
 	const bdcApi = <bdc.IExtension>await vscode.extensions.getExtension(bdc.constants.extensionName).activate();
 	const controller = bdcApi.getClusterController(
 		controllerEndpoint,
@@ -400,6 +412,7 @@ async function getClusterController(controllerEndpoint: string, authType: bdc.Au
 		username,
 		password);
 	try {
+		Logger.log(`Fetching endpoints for ${controllerEndpoint} to test connection...`);
 		// We just want to test the connection - so using getEndpoints since that is available to all users (not just admin)
 		await controller.getEndPoints();
 		return controller;

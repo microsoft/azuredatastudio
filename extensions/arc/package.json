@@ -915,7 +915,7 @@
             "pages": [
               {
                 "title": "%arc.sql.wizard.page1.title%",
-                "labelWidth": "175px",
+                "labelWidth": "190px",
                 "inputWidth": "280px",
                 "sections": [
                   {
@@ -1017,11 +1017,61 @@
                         "required": false
                       },
                       {
+                        "label": "%arc.sql.volume.size.data.label%",
+                        "description": "%arc.sql.volume.size.data.description%",
+                        "variableName": "AZDATA_NB_VAR_SQL_VOLUME_SIZE_DATA",
+                        "type": "number",
+                        "defaultValue": "5",
+                        "min": 1,
+                        "required": true
+                      },
+                      {
+                        "label": "%arc.storage-class.datalogs.label%",
+                        "description": "%arc.sql.storage-class.datalogs.description%",
+                        "variableName": "AZDATA_NB_VAR_SQL_STORAGE_CLASS_DATALOGS",
+                        "type": "kube_storage_class",
+                        "required": false
+                      },
+                      {
+                        "label": "%arc.sql.volume.size.datalogs.label%",
+                        "description": "%arc.sql.volume.size.datalogs.description%",
+                        "variableName": "AZDATA_NB_VAR_SQL_VOLUME_SIZE_DATALOGS",
+                        "type": "number",
+                        "defaultValue": "5",
+                        "min": 1,
+                        "required": true
+                      },
+                      {
                         "label": "%arc.storage-class.logs.label%",
                         "description": "%arc.sql.storage-class.logs.description%",
                         "variableName": "AZDATA_NB_VAR_SQL_STORAGE_CLASS_LOGS",
                         "type": "kube_storage_class",
                         "required": false
+                      },
+                      {
+                        "label": "%arc.sql.volume.size.logs.label%",
+                        "description": "%arc.sql.volume.size.logs.description%",
+                        "variableName": "AZDATA_NB_VAR_SQL_VOLUME_SIZE_LOGS",
+                        "type": "number",
+                        "defaultValue": "5",
+                        "min": 1,
+                        "required": true
+                      },
+                      {
+                        "label": "%arc.storage-class.backups.label%",
+                        "description": "%arc.sql.storage-class.backups.description%",
+                        "variableName": "AZDATA_NB_VAR_SQL_STORAGE_CLASS_BACKUPS",
+                        "type": "kube_storage_class",
+                        "required": false
+                      },
+                      {
+                        "label": "%arc.sql.volume.size.backups.label%",
+                        "description": "%arc.sql.volume.size.backups.description%",
+                        "variableName": "AZDATA_NB_VAR_SQL_VOLUME_SIZE_BACKUPS",
+                        "type": "number",
+                        "defaultValue": "5",
+                        "min": 1,
+                        "required": true
                       },
                       {
                         "label": "%arc.cores-request.label%",

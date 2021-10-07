@@ -50,7 +50,7 @@ import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editor
 import { IEditorInput, IEditorPane } from 'vs/workbench/common/editor';
 import { isINotebookInput } from 'sql/workbench/services/notebook/browser/interface';
 import { INotebookShowOptions } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { JUPYTER_PROVIDER_ID, NotebookLanguage } from 'sql/workbench/common/constants';
+import { NotebookLanguage } from 'sql/workbench/common/constants';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { SqlSerializationProvider } from 'sql/workbench/services/notebook/browser/sql/sqlSerializationProvider';
 
@@ -305,25 +305,31 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	private handleNewProviderDescriptions(p: { id: string; registration: ProviderDescriptionRegistration }) {
-		// Skip adding a Serialization descriptor for Jupyter, since we use the default notebook Serialization provider for jupyter
-		if (!this._serializationProviders.has(p.id) && p.id !== JUPYTER_PROVIDER_ID) {
-			this._serializationProviders.set(p.id, new SerializationProviderDescriptor(p.id));
-		}
-		if (!this._executeProviders.has(p.id)) {
-			this._executeProviders.set(p.id, new ExecuteProviderDescriptor(p.id));
-		}
 		let registration = p.registration;
 		if (registration.fileExtensions) {
-			if (Array.isArray(registration.fileExtensions)) {
-				for (let fileType of registration.fileExtensions) {
+			let extensions = registration.fileExtensions;
+			if (!this._serializationProviders.has(p.id)) {
+				// Only add a new provider descriptor if the provider
+				// supports file extensions beyond the default ipynb
+				let isNewFileType = (fileExt: string) => fileExt?.length > 0 && fileExt.toUpperCase() !== DEFAULT_NOTEBOOK_FILETYPE;
+				let addNewProvider = Array.isArray(extensions) ? extensions.some(ext => isNewFileType(ext)) : isNewFileType(extensions);
+				if (addNewProvider) {
+					this._serializationProviders.set(p.id, new SerializationProviderDescriptor(p.id));
+				}
+			}
+			if (Array.isArray(extensions)) {
+				for (let fileType of extensions) {
 					this.addFileProvider(fileType, registration);
 				}
 			}
 			else {
-				this.addFileProvider(registration.fileExtensions, registration);
+				this.addFileProvider(extensions, registration);
 			}
 		}
 		if (registration.standardKernels) {
+			if (!this._executeProviders.has(p.id)) {
+				this._executeProviders.set(p.id, new ExecuteProviderDescriptor(p.id));
+			}
 			this.addStandardKernels(registration);
 		}
 	}
@@ -625,27 +631,21 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	private waitOnSerializationProviderAvailability(providerDescriptor: SerializationProviderDescriptor, timeout?: number): Promise<ISerializationProvider | undefined> {
-		// Wait up to 10 seconds for the provider to be registered
-		timeout = timeout ?? 10000;
+		// Wait up to 30 seconds for the provider to be registered
+		timeout = timeout ?? 30000;
 		let promises: Promise<ISerializationProvider>[] = [
 			providerDescriptor.instanceReady,
-			new Promise<ISerializationProvider>((resolve, reject) => setTimeout(() => {
-				this._serializationProviders.delete(providerDescriptor.providerId);
-				return resolve(undefined);
-			}, timeout))
+			new Promise<ISerializationProvider>((resolve, reject) => setTimeout(() => resolve(undefined), timeout))
 		];
 		return Promise.race(promises);
 	}
 
 	private waitOnExecuteProviderAvailability(providerDescriptor: ExecuteProviderDescriptor, timeout?: number): Promise<IExecuteProvider | undefined> {
-		// Wait up to 10 seconds for the provider to be registered
-		timeout = timeout ?? 10000;
+		// Wait up to 30 seconds for the provider to be registered
+		timeout = timeout ?? 30000;
 		let promises: Promise<IExecuteProvider>[] = [
 			providerDescriptor.instanceReady,
-			new Promise<IExecuteProvider>((resolve, reject) => setTimeout(() => {
-				this._executeProviders.delete(providerDescriptor.providerId);
-				return resolve(undefined);
-			}, timeout))
+			new Promise<IExecuteProvider>((resolve, reject) => setTimeout(() => resolve(undefined), timeout))
 		];
 		return Promise.race(promises);
 	}

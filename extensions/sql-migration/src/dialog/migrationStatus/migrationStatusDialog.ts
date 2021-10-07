@@ -436,12 +436,45 @@ export class MigrationStatusDialog {
 			warningCount++;
 		}
 
-		return this._getStatusControl(migrationStatus, warningCount);
+		return this._getStatusControl(migrationStatus, warningCount, migration);
 	}
 
-	private _getStatusControl(status: string, count: number): azdata.FlexContainer {
+	public openCalloutDialog(dialogHeading: string, dialogName?: string, calloutMessageText?: string): void {
+		const dialog = azdata.window.createModelViewDialog(dialogHeading, dialogName, 288, 'callout', 'left', true, false,
+			{
+				xPos: 0,
+				yPos: 0,
+				width: 20,
+				height: 20
+			});
+		const tab: azdata.window.DialogTab = azdata.window.createTab('');
+		tab.registerContent(async view => {
+			const warningContentContainer = view.modelBuilder.divContainer().component();
+			const messageTextComponent = view.modelBuilder.text().withProps({
+				value: calloutMessageText,
+				CSSStyles: {
+					'font-size': '12px',
+					'line-height': '16px',
+					'margin': '0 0 12px 0',
+					'display': '-webkit-box',
+					'-webkit-box-orient': 'vertical',
+					'-webkit-line-clamp': '5',
+					'overflow': 'hidden'
+				}
+			}).component();
+			warningContentContainer.addItem(messageTextComponent);
+
+			await view.initializeModel(warningContentContainer);
+		});
+
+		dialog.content = [tab];
+
+		azdata.window.openDialog(dialog);
+	}
+
+	private _getStatusControl(status: string, count: number, migration: MigrationContext): azdata.DivContainer {
 		const control = this._view.modelBuilder
-			.flexContainer()
+			.divContainer()
 			.withItems([
 				// migration status icon
 				this._view.modelBuilder.image()
@@ -465,23 +498,42 @@ export class MigrationStatusDialog {
 			.component();
 
 		if (count > 0) {
-			control.addItems([
-				// migration warning / error image
-				this._view.modelBuilder.image().withProps({
+			const migrationWarningImage = this._view.modelBuilder.image()
+				.withProps({
 					iconPath: this._statusInfoMap(status),
 					iconHeight: statusImageSize,
 					iconWidth: statusImageSize,
 					height: statusImageSize,
 					width: statusImageSize,
 					CSSStyles: imageCellStyles
-				}).component(),
-				// migration warning / error counts
-				this._view.modelBuilder.text().withProps({
-					value: loc.STATUS_WARNING_COUNT(status, count),
+				}).component();
+
+			const migrationWarningCount = this._view.modelBuilder.hyperlink()
+				.withProps({
+					label: loc.STATUS_WARNING_COUNT(status, count) ?? '',
+					ariaLabel: loc.ERROR,
+					url: '',
 					height: statusImageSize,
 					CSSStyles: statusCellStyles,
-				}).component()
+				}).component();
+
+			control.addItems([
+				migrationWarningImage,
+				migrationWarningCount
 			]);
+
+			this._disposables.push(migrationWarningCount.onDidClick(async () => {
+				const cutoverDialogModel = new MigrationCutoverDialogModel(migration!);
+				const errors = await cutoverDialogModel.fetchErrors();
+				this.openCalloutDialog(
+					status === MigrationStatus.InProgress
+						|| status === MigrationStatus.Completing
+						? loc.WARNING
+						: loc.ERROR,
+					'input-table-row-dialog',
+					errors
+				);
+			}));
 		}
 
 		return control;

@@ -336,10 +336,13 @@
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.restartConfirmation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Data Studio needs to be restarted for the project to be created and added to the workspace, do this now?]]></Val>
+          <Val><![CDATA[Azure Data Studio needs to be restarted for the project to be added to the workspace. Restart now?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[프로젝트를 만들고 작업 영역에 추가하려면 Azure Data Studio를 다시 시작해야 합니다. 지금 다시 시작할까요?]]></Val>
+            <Val><![CDATA[프로젝트를 작업 영역에 추가하려면 Azure Data Studio를 다시 시작해야 합니다. 지금 다시 시작하시겠습니까?]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure Data Studio needs to be restarted for the project to be created and added to the workspace, do this now?]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -537,6 +540,15 @@
           <Val><![CDATA[Full path to folder where new projects are saved by default.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[새 프로젝트가 기본적으로 저장되는 폴더의 전체 경로입니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/data-workspace/package.projects.excludedProjectsDescription" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[List of projects in the workspace to exclude from the projects viewlet]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[프로젝트 뷰렛에서 제외할 작업 영역의 프로젝트 목록]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
