@@ -182,5 +182,5 @@
 	"arc.agreement.sql.help.text": "Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}",
 	"arc.agreement.sql.help.text.learn.more": "Learn more",
 	"arc.agreement.sql.help.text.learn.more.ariaLabel": "Learn more about Azure Arc enabled Managed Instance",
-	"arc.sql.pitr.retentiion.description":"Configure retention for point-in-time backups. {0}"
+	"arc.sql.pitr.retention.description":"Configure retention for point-in-time backups. {0}"
 }

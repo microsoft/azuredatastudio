@@ -1163,14 +1163,14 @@
                     "fields": [
                       {
                         "type": "readonly_text",
-                        "label": "%arc.sql.pitr.retentiion.description%",
+                        "label": "%arc.sql.pitr.retention.description%",
                         "labelWidth": "600px",
                         "enabled": true,
                         "fieldHeight": "10px",
                         "links": [
                           {
                             "text": "%arc.agreement.sql.help.text.learn.more%",
-                            "url": "https://docs.microsoft.com/en-us/azure/azure-arc/data/point-in-time-restore"
+                            "url": "https://docs.microsoft.com/azure/azure-arc/data/point-in-time-restore"
                           }
                         ]
                       },
