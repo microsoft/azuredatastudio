@@ -472,6 +472,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		if (!tokenFillSuccess) {
 			throw new Error(nls.localize('connection.noAzureAccount', "Failed to get Azure account token for connection"));
 		}
+		if (options.saveTheConnection) {
+			connection.options.originalDatabase = connection.databaseName;
+		}
 		return this.createNewConnection(uri, connection).then(async connectionResult => {
 			if (connectionResult && connectionResult.connected) {
 				// The connected succeeded so add it to our active connections now, optionally adding it to the MRU based on
