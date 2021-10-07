@@ -65,7 +65,7 @@ export class MiaaBackupsPage extends DashboardPage {
 			value: loc.miaaBackupsDatabasesDescription,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' }
 		}).component();
-		const backupInfoDescrition = this.modelView.modelBuilder.flexContainer()
+		const backupInfoDescription = this.modelView.modelBuilder.flexContainer()
 			.withLayout({ flexWrap: 'wrap' })
 			.withItems([
 				infoBackupDatabases
@@ -73,14 +73,14 @@ export class MiaaBackupsPage extends DashboardPage {
 
 		const backupsDbsLearnMoreLink = this.modelView.modelBuilder.hyperlink().withProps({
 			label: loc.learnMore,
-			url: 'https://docs.microsoft.com/en-us/azure/azure-arc/data/point-in-time-restore',
+			url: 'https://docs.microsoft.com/azure/azure-arc/data/point-in-time-restore',
 			CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
 		const backupDatabaseInfoAndLink = this.modelView.modelBuilder.flexContainer()
 			.withLayout({ flexWrap: 'wrap' })
 			.withItems([
-				backupInfoDescrition,
+				backupInfoDescription,
 				backupsDbsLearnMoreLink
 			], { CSSStyles: { 'margin-right': '5px' } }).component();
 
@@ -98,7 +98,6 @@ export class MiaaBackupsPage extends DashboardPage {
 		}).component();
 
 		const connectToServerContainer = this.modelView.modelBuilder.divContainer().component();
-
 
 		connectToServerContainer.addItem(connectToServerText, { CSSStyles: { 'text-align': 'center', 'margin-top': '20px' } });
 		connectToServerContainer.addItem(this._connectToServerButton);
@@ -196,7 +195,6 @@ export class MiaaBackupsPage extends DashboardPage {
 						this._configureRetentionPolicyButton.enabled = false;
 						this.saveArgs.recoveryPointObjective = rpArg.recoveryPointObjective;
 						this.saveArgs.retentionDays = rpArg.retentionDays;
-						//let extensionList = this.extensionNames.length ? this.extensionNames.join() + ',' + extArg : extArg;
 						await vscode.window.withProgress(
 							{
 								location: vscode.ProgressLocation.Notification,

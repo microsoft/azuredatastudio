@@ -15,7 +15,6 @@ import { MiaaModel } from '../../../models/miaaModel';
 import { DashboardPage } from '../../components/dashboardPage';
 import { ResourceType } from 'arc';
 
-
 export class MiaaDashboardOverviewPage extends DashboardPage {
 
 	private _propertiesLoading!: azdata.LoadingComponent;
