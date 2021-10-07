@@ -281,19 +281,18 @@ export class MiaaBackupsPage extends DashboardPage {
 			this.saveArgs.retentionDays = current.toString();
 		}
 	}
-	private getRestoreButton(pitrDate: Date): azdata.ButtonComponent | string {
-		let date = new Date(0);
-		if ((pitrDate === date) || !pitrDate) {
+	private getRestoreButton(pitrDate: string): azdata.ButtonComponent | string {
+		if ((pitrDate === '') || !pitrDate) {
 			return '';
 		}
 		let restoreButton!: azdata.ButtonComponent;
 		restoreButton = this.modelView.modelBuilder.button().withProps({
-			enabled: true,
+			enabled: false,
 			iconPath: IconPathHelper.openInTab,
 		}).component();
 		this.disposables.push(
 			restoreButton.onDidClick(async () => {
-				azdata.window.createModelViewDialog(loc.restore);
+				//add pitr restore dialog page
 			}));
 		return restoreButton;
 	}

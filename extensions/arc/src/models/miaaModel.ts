@@ -16,7 +16,7 @@ import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
 import { ControllerModel, Registration } from './controllerModel';
 import { ResourceModel } from './resourceModel';
 
-export type DatabaseModel = { name: string, status: string, lastBackup: Date };
+export type DatabaseModel = { name: string, status: string, lastBackup: string };
 export type RPModel = { recoveryPointObjective: string, retentionDays: string };
 
 export class MiaaModel extends ResourceModel {
@@ -151,7 +151,7 @@ export class MiaaModel extends ResourceModel {
 		if (databases.length > 0 && typeof (databases[0]) === 'object') {
 			this._databases = (<azdata.DatabaseInfo[]>databases).map(db => { return { name: db.options['name'], status: db.options['state'], lastBackup: db.options['lastBackup'] }; });
 		} else {
-			this._databases = (<string[]>databases).map(db => { return { name: db, status: '-', lastBackup: new Date(0) }; });
+			this._databases = (<string[]>databases).map(db => { return { name: db, status: '-', lastBackup: '' }; });
 		}
 		this.databasesLastUpdated = new Date();
 		this._onDatabasesUpdated.fire(this._databases);
