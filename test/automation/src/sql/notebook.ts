@@ -32,8 +32,7 @@ export class Notebook {
 	}
 
 	async newUntitledNotebook(): Promise<void> {
-		const keyBinding = process.platform === 'linux' ? '+Alt+n' : '+alt+n';
-		await this.code.dispatchKeybinding(winOrCtrl + keyBinding);
+		await this.code.dispatchKeybinding(winOrCtrl + '+Alt+n');
 		await this.editors.waitForActiveTab(`Notebook-0`);
 		await this.code.waitForElement('.notebookEditor');
 	}
