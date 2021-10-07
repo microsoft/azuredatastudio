@@ -26,7 +26,7 @@ export class DeployService {
 	}
 
 	private DefaultSqlRetryTimeoutInSec: number = 10;
-	private DefaultSqlNumberOfRetries: number = 5;
+	private DefaultSqlNumberOfRetries: number = 3;
 
 	private createConnectionStringTemplate(runtime: string | undefined): string {
 		switch (runtime?.toLocaleLowerCase()) {
@@ -225,7 +225,7 @@ export class DeployService {
 	}
 
 	// Connects to a database
-	private async connectToDatabase(profile: ILocalDbSetting, saveConnection: boolean, database: string): Promise<ConnectionResult | string | undefined> {
+	private async connectToDatabase(profile: ILocalDbSetting, saveConnectionAndPassword: boolean, database: string): Promise<ConnectionResult | string | undefined> {
 		const getAzdataApi = await utils.getAzdataApi();
 		const vscodeMssqlApi = getAzdataApi ? undefined : await utils.getVscodeMssqlApi();
 		if (getAzdataApi) {
@@ -233,7 +233,7 @@ export class DeployService {
 				password: profile.password,
 				serverName: `${profile.serverName},${profile.port}`,
 				database: database,
-				savePassword: saveConnection,
+				savePassword: saveConnectionAndPassword,
 				userName: profile.userName,
 				providerName: 'MSSQL',
 				saveProfile: false,
@@ -249,7 +249,7 @@ export class DeployService {
 				server: `${profile.serverName}`,
 				port: profile.port,
 				database: database,
-				savePassword: saveConnection,
+				savePassword: saveConnectionAndPassword,
 				user: profile.userName,
 				authenticationType: 'SqlLogin',
 				encrypt: false,
@@ -279,7 +279,7 @@ export class DeployService {
 				workstationId: undefined,
 				profileName: profile.profileName
 			};
-			let connectionUrl = await vscodeMssqlApi.connect(connectionProfile, saveConnection);
+			let connectionUrl = await vscodeMssqlApi.connect(connectionProfile, saveConnectionAndPassword);
 			return connectionUrl;
 		} else {
 			return undefined;
@@ -312,12 +312,12 @@ export class DeployService {
 		return connectionResult ? connectionResult.connectionId : <string>connection;
 	}
 
-	public async getConnection(profile: ILocalDbSetting, saveConnection: boolean, database: string): Promise<string | undefined> {
+	public async getConnection(profile: ILocalDbSetting, saveConnectionAndPassword: boolean, database: string): Promise<string | undefined> {
 		const getAzdataApi = await utils.getAzdataApi();
 		let connection = await utils.retry(
 			constants.connectingToSqlServerOnDockerMessage,
 			async () => {
-				return await this.connectToDatabase(profile, saveConnection, database);
+				return await this.connectToDatabase(profile, saveConnectionAndPassword, database);
 			},
 			this.validateConnection,
 			this.formatConnectionResult,

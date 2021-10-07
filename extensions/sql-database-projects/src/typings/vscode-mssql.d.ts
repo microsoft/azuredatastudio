@@ -54,7 +54,7 @@ declare module 'vscode-mssql' {
          * Attempts to create a new connection for the given connection info. An error is thrown and displayed
          * to the user if an error occurs while connecting.
          * @param connectionInfo The connection info
-		 * @param saveConnection Save the connection profile if sets to true
+         * @param saveConnection Save the connection profile if sets to true
          * @returns The URI associated with this connection
          */
         connect(connectionInfo: IConnectionInfo, saveConnection?: boolean): Promise<string>;
