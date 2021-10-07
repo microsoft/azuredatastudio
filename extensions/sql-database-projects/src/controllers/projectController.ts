@@ -840,7 +840,7 @@ export class ProjectsController {
 		}
 
 		const filters: { [name: string]: string[] } = {};
-		filters[constants.specSelectionText] = ['yaml', 'yml', 'json'];
+		filters[constants.specSelectionText] = constants.openApiSpecExtensions;
 
 		let uris = await vscode.window.showOpenDialog({
 			canSelectFiles: true,
@@ -891,7 +891,8 @@ export class ProjectsController {
 			}
 
 			outputFolder = folders[0].fsPath;
-			projectName = path.basename(specPath, constants.yamlFileExtension);
+
+			projectName = path.basename(specPath, path.extname(specPath));
 			newProjectFolder = path.join(outputFolder, projectName);
 
 			if (await utils.exists(newProjectFolder)) {
