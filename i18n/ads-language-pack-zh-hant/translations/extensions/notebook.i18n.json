@@ -74,6 +74,7 @@
 			"newBook": "新 Jupyter Book (預覽)",
 			"newMarkdown": "新增 Markdown (預覽)",
 			"newNotebook": "新筆記本 (預覽)",
+			"newSection": "新增區段 (預覽)",
 			"noBDCConnectionError": "Spark 核心需要對 SQL Server 巨量資料叢集主要執行個體的連線。",
 			"noBooksSelected": "目前未在 Viewlet 中選取任何 Jupyter 書籍。",
 			"onGitHub": "GitHub",
@@ -110,7 +111,7 @@
 		},
 		"dist/dialog/configurePython/configurePathPage": {
 			"configurePython.browseButtonText": "瀏覽",
-			"configurePython.descriptionWithKernel": "{0} 核心需要設定 Python 執行階段並安裝相依性。",
+			"configurePython.descriptionWithKernel": "The '{0}' kernel requires a Python runtime to be configured and dependencies to be installed.",
 			"configurePython.descriptionWithoutKernel": "Notebook 核心需要設定 Python 執行階段並安裝相依性。",
 			"configurePython.existingInstall": "使用現有的 Python 安裝",
 			"configurePython.installationType": "安裝類型",
@@ -139,7 +140,7 @@
 			"configurePython.pkgNameColumn": "名稱",
 			"configurePython.requiredDependencies": "安裝必要的核心相依性",
 			"configurePython.requiredVersionColumn": "所需版本",
-			"msgUnsupportedKernel": "無法擷取核心 {0} 的套件"
+			"msgNoRequirementsForKernel": "No packages are required by default for the kernel '{0}'"
 		},
 		"dist/dialog/managePackages/addNewPackageTab": {
 			"managePackages.addNewTabTitle": "新增",
@@ -183,7 +184,7 @@
 			"notebookFileType": "Notebooks",
 			"unsupportedFileType": "僅支援 .ipynb Notebooks"
 		},
-		"dist/jupyter/jupyterNotebookProvider": {
+		"dist/jupyter/jupyterExecuteProvider": {
 			"errNotebookUriMissing": "筆記本路徑為必要項"
 		},
 		"dist/jupyter/jupyterServerInstallation": {
@@ -251,11 +252,15 @@
 			"notebook.command.addcell": "新增資料格",
 			"notebook.command.addcode": "新增程式碼資料格",
 			"notebook.command.addtext": "新增文字資料格",
+			"notebook.command.boldText": "將 Markdown 文字變為粗體",
 			"notebook.command.clearactivecellresult": "清除資料格結果",
+			"notebook.command.codeBlock": "新增程式碼區塊",
+			"notebook.command.italicizeText": "將 Markdown 文字變為斜體",
 			"notebook.command.new": "新增 Notebook",
 			"notebook.command.open": "開啟 Notebook",
 			"notebook.command.runactivecell": "執行資料格",
 			"notebook.command.runallcells": "執行資料格",
+			"notebook.command.underlineText": "為 Markdown 文字加上底線",
 			"notebook.configuration.title": "Notebook 組態",
 			"notebook.dontPromptPythonUpdate.description": "不要顯示更新 Python 的提示。",
 			"notebook.jupyterServerShutdownTimeout.description": "在所有筆記本關閉後關閉伺服器前須等候的時間 (分鐘)。(若不要關閉，請輸入 0) ",
@@ -274,6 +279,7 @@
 			"title.SavedBooks": "Notebooks",
 			"title.addMarkdown": "新增 Markdown 檔案",
 			"title.addNotebook": "新增筆記本",
+			"title.addSection": "新增區段",
 			"title.analyzeJupyterNotebook": "在 Notebook 中分析",
 			"title.closeJupyterBook": "關閉 Jupyter 書籍",
 			"title.closeNotebook": "關閉筆記本",

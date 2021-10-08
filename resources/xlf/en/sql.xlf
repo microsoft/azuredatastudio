@@ -2666,6 +2666,9 @@ Error: {1}</source>
     <trans-unit id="optionTextCell">
       <source xml:lang="en">Text cell</source>
     </trans-unit>
+    <trans-unit id="splitCell">
+      <source xml:lang="en">Split cell</source>
+    </trans-unit>
     <trans-unit id="textPreview">
       <source xml:lang="en">Text cell</source>
     </trans-unit>
@@ -3807,6 +3810,9 @@ Error: {1}</source>
   <file original="src/sql/workbench/contrib/query/browser/queryResultsView" source-language="en" datatype="plaintext"><body>
     <trans-unit id="messagesTabTitle">
       <source xml:lang="en">Messages</source>
+    </trans-unit>
+    <trans-unit id="queryResults.queryEditorCrashError">
+      <source xml:lang="en">The query editor ran into an issue and has stopped working. Please save and reopen it.</source>
     </trans-unit>
     <trans-unit id="resultsTabTitle">
       <source xml:lang="en">Results</source>

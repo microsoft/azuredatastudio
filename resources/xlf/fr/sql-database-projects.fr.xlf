@@ -22,6 +22,10 @@
         <source xml:lang="en">Publish History</source>
         <target state="translated">Publier l’historique</target>
       </trans-unit>
+      <trans-unit id="SettingAlreadyExists">
+        <source xml:lang="en">Local app setting '{0}' already exists. Overwrite?</source>
+        <target state="translated">Le paramètre d’application local « {0} » existe déjà. Voulez-vous le remplacer?</target>
+      </trans-unit>
       <trans-unit id="Status">
         <source xml:lang="en">Status</source>
         <target state="translated">État</target>
@@ -61,6 +65,10 @@
       <trans-unit id="addPackage">
         <source xml:lang="en">Add Package</source>
         <target state="translated">Ajouter un package</target>
+      </trans-unit>
+      <trans-unit id="addPackageReferenceMessage">
+        <source xml:lang="en">To use SQL bindings, ensure your Azure Functions project has a reference to {0}</source>
+        <target state="new">To use SQL bindings, ensure your Azure Functions project has a reference to {0}</target>
       </trans-unit>
       <trans-unit id="appSettingPrompt">
         <source xml:lang="en">Would you like to update Azure Function local.settings.json with the new connection string?</source>
@@ -122,6 +130,10 @@
         <source xml:lang="en">Cleaning existing deployments...</source>
         <target state="translated">Nettoyage des déploiements existants...</target>
       </trans-unit>
+      <trans-unit id="confirmPassword">
+        <source xml:lang="en">Confirm SQL server admin password</source>
+        <target state="translated">Confirmer le mot de passe administrateur du serveur SQL</target>
+      </trans-unit>
       <trans-unit id="connectingToSqlServerOnDockerMessage">
         <source xml:lang="en">Connecting to SQL Server on Docker</source>
         <target state="translated">Connexion à SQL Server sur Docker</target>
@@ -145,6 +157,10 @@
       <trans-unit id="createNew">
         <source xml:lang="en">Create New</source>
         <target state="translated">Créer un nouveau</target>
+      </trans-unit>
+      <trans-unit id="createNewLocalAppSetting">
+        <source xml:lang="en">Create new local app setting</source>
+        <target state="translated">Créer un paramètre d’application locale</target>
       </trans-unit>
       <trans-unit id="createProjectDialogOkButtonText">
         <source xml:lang="en">Create</source>
@@ -290,10 +306,6 @@
         <source xml:lang="en">Deploying SQL Db Project Locally</source>
         <target state="translated">Déploiement d’un projet de base de données SQL localement</target>
       </trans-unit>
-      <trans-unit id="deployProjectFailed">
-        <source xml:lang="en">Failed to deploy project. Check output pane for more details. {0}</source>
-        <target state="translated">Échec du déploiement du projet. Pour plus d’informations, consultez le volet de sortie. {0}</target>
-      </trans-unit>
       <trans-unit id="deployProjectFailedMessage">
         <source xml:lang="en">Failed to open a connection to the deployed database'</source>
         <target state="translated">Échec de l’ouverture d’une connexion à la base de données déployée »</target>
@@ -305,14 +317,6 @@
       <trans-unit id="deployScriptExists">
         <source xml:lang="en">A {0} script already exists. The new script will not be included in build.</source>
         <target state="translated">Un script {0} existe déjà. Le nouveau script ne sera pas inclus dans la build.</target>
-      </trans-unit>
-      <trans-unit id="deployToDockerContainer">
-        <source xml:lang="en">Deploy to docker container</source>
-        <target state="translated">Déployer sur un conteneur Docker</target>
-      </trans-unit>
-      <trans-unit id="deployToExistingServer">
-        <source xml:lang="en">Deploy to existing server</source>
-        <target state="translated">Déployer sur un serveur existant</target>
       </trans-unit>
       <trans-unit id="differentDbDifferentServer">
         <source xml:lang="en">Different database, different server</source>
@@ -337,6 +341,10 @@
       <trans-unit id="dockerLogMessage">
         <source xml:lang="en">Docker logs: '{0}'</source>
         <target state="translated">Journaux Docker : «{0}»</target>
+      </trans-unit>
+      <trans-unit id="dockerNotRunningError">
+        <source xml:lang="en">Failed to verify docker. Please make sure docker is installed and running. Error: '{0}'</source>
+        <target state="translated">Échec de la vérification de l’ancreur. Assurez-vous que l’amarrage est installé et en cours d’exécution. Erreur : « {0} »</target>
       </trans-unit>
       <trans-unit id="done">
         <source xml:lang="en">Done</source>
@@ -366,6 +374,10 @@
         <source xml:lang="en">Enter a template for SQL connection string</source>
         <target state="translated">Entrer un modèle pour la chaîne de connexion SQL</target>
       </trans-unit>
+      <trans-unit id="enterConnectionString">
+        <source xml:lang="en">Enter connection string</source>
+        <target state="translated">Entrer une chaîne de connexion</target>
+      </trans-unit>
       <trans-unit id="enterConnectionStringEnvName">
         <source xml:lang="en">Enter connection string environment variable name</source>
         <target state="translated">Entrer le nom de la variable d’environnement de chaîne de connexion</target>
@@ -373,6 +385,10 @@
       <trans-unit id="enterConnectionStringEnvNameDescription">
         <source xml:lang="en">Enter environment variable for SQL connection string</source>
         <target state="translated">Entrer la variable d’environnement pour la chaîne de connexion SQL</target>
+      </trans-unit>
+      <trans-unit id="enterConnectionStringSettingName">
+        <source xml:lang="en">Enter connection string setting name</source>
+        <target state="translated">Entrer le nom du paramètre de la chaîne de connexion</target>
       </trans-unit>
       <trans-unit id="enterConnectionStringTemplate">
         <source xml:lang="en">Enter connection string template</source>
@@ -387,12 +403,12 @@
         <target state="translated">Entrer une nouvelle valeur pour la variable « {0} »</target>
       </trans-unit>
       <trans-unit id="enterPassword">
-        <source xml:lang="en">Enter password or press enter to use the generated password</source>
-        <target state="translated">Entrez le mot de passe ou appuyez sur Entrée pour utiliser le mot de passe généré</target>
+        <source xml:lang="en">Enter SQL Server admin password</source>
+        <target state="translated">Entrez le mot de passe de l'administrateur de SQL Server</target>
       </trans-unit>
       <trans-unit id="enterPortNumber">
-        <source xml:lang="en">Enter port number or press enter to use the default value</source>
-        <target state="translated">Entrez le numéro de port ou appuyez sur Entrée pour utiliser la valeur par défaut</target>
+        <source xml:lang="en">Enter SQL server port number or press enter to use the default value</source>
+        <target state="translated">Entrez le serveur SQL numéro de port ou appuyez sur Entrée pour utiliser la valeur par défaut</target>
       </trans-unit>
       <trans-unit id="enterSystemDbName">
         <source xml:lang="en">Enter a database name for this system database</source>
@@ -425,6 +441,10 @@
       <trans-unit id="extractTargetRequired">
         <source xml:lang="en">Target information for extract is required to create database project.</source>
         <target state="translated">Les informations cibles pour l’extraction sont nécessaires pour créer un projet de base de données.</target>
+      </trans-unit>
+      <trans-unit id="failedToParse">
+        <source xml:lang="en">Failed to parse "{0}": {1}.</source>
+        <target state="translated">Échec de l'analyse de "{0}" : {1}.</target>
       </trans-unit>
       <trans-unit id="file">
         <source xml:lang="en">File</source>
@@ -474,6 +494,10 @@
         <source xml:lang="en">Generate Script</source>
         <target state="translated">Générer le script</target>
       </trans-unit>
+      <trans-unit id="generatingProjectFailed">
+        <source xml:lang="en">Generating project via AutoRest failed: {0}</source>
+        <target state="translated">Échec de la génération du projet via le repos autorest : {0}</target>
+      </trans-unit>
       <trans-unit id="hr">
         <source xml:lang="en">hr</source>
         <target state="translated">h</target>
@@ -506,6 +530,10 @@
         <source xml:lang="en">Invalid value specified for the property '{0}' in .sqlproj file</source>
         <target state="translated">Valeur non valide spécifiée pour la propriété : « {0} » dans le fichier .sqlproj.</target>
       </trans-unit>
+      <trans-unit id="invalidSQLPassword">
+        <source xml:lang="en">SQL Server password doesn't meet the password complexity requirement. For more information see https://docs.microsoft.com/sql/relational-databases/security/password-policy</source>
+        <target state="translated">SQL Server  n'est pas conforme aux exigences de complexité de mot de passe. Pour plus d'informations : https://docs.microsoft.com/sql/relational-databases/security/password-policy</target>
+      </trans-unit>
       <trans-unit id="invalidSqlConnectionString">
         <source xml:lang="en">Invalid SQL connection string</source>
         <target state="translated">Chaîne de connexion SQL non valide</target>
@@ -513,6 +541,10 @@
       <trans-unit id="invalidTargetPlatform">
         <source xml:lang="en">Invalid target platform: {0}. Supported target platforms: {1}</source>
         <target state="translated">Plateforme cible non valide : {0}. Plateformes cibles prises en charge : {1}</target>
+      </trans-unit>
+      <trans-unit id="jsonParseError">
+        <source xml:lang="en">{0} near line "{1}", column "{2}"</source>
+        <target state="translated">{0} près de la ligne "{1}", colonne "{2}"</target>
       </trans-unit>
       <trans-unit id="loadProfilePlaceholderText">
         <source xml:lang="en">Load profile...</source>
@@ -530,9 +562,17 @@
         <source xml:lang="en">Missing 'version' entry in {0}</source>
         <target state="translated">Entrée 'version' manquante dans {0}.</target>
       </trans-unit>
+      <trans-unit id="moreInformation">
+        <source xml:lang="en">More Information</source>
+        <target state="new">More Information</target>
+      </trans-unit>
       <trans-unit id="msec">
         <source xml:lang="en">msec</source>
         <target state="translated">msec</target>
+      </trans-unit>
+      <trans-unit id="multipleMostDeploymentScripts">
+        <source xml:lang="en">Unexpected number of {0} files: {1}</source>
+        <target state="translated">Nombre de cellules inattendu {0} fichiers: {1}</target>
       </trans-unit>
       <trans-unit id="multipleSqlProjFilesSelected">
         <source xml:lang="en">Multiple .sqlproj files selected; please select only one.</source>
@@ -582,6 +622,14 @@
         <source xml:lang="en">No (default)</source>
         <target state="translated">Non (pas de valeur par défaut)</target>
       </trans-unit>
+      <trans-unit id="nodeButNotAutorestFound">
+        <source xml:lang="en">Autorest tool not found in system path, but found Node.js.  Running via npx.  Please execute 'npm install autorest -g' to install permanently.</source>
+        <target state="translated">L’outil autorest est introuvable dans le chemin d’accès système, mais il a été trouvé Node.js.  Exécution via npx.  Exécutez « NPM install autorest-g » pour installer définitivement.</target>
+      </trans-unit>
+      <trans-unit id="nodeNotFound">
+        <source xml:lang="en">Neither autorest nor Node.js (npx) found in system path.  Please install Node.js for autorest generation to work.</source>
+        <target state="translated">Autorest ou Node.js (npx) introuvable dans le chemin d’accès système.  Installez Node.js pour que la génération autorest fonctionne.</target>
+      </trans-unit>
       <trans-unit id="notValidVariableName">
         <source xml:lang="en">The variable name '{0}' is not valid.</source>
         <target state="translated">Le nom de variable '{0}' n'est pas valide.</target>
@@ -605,6 +653,10 @@
       <trans-unit id="parentTreeItemUnknown">
         <source xml:lang="en">Cannot access parent of provided tree item</source>
         <target state="translated">Impossible d’accéder au parent de l’élément d’arborescence fourni</target>
+      </trans-unit>
+      <trans-unit id="passwordNotMatch">
+        <source xml:lang="en">SQL Server password doesn't match the confirmation password</source>
+        <target state="translated">SQL Server mot de passe ne correspond pas au mot de passe de confirmation</target>
       </trans-unit>
       <trans-unit id="portMustNotBeNumber">
         <source xml:lang="en">Port must a be number</source>
@@ -674,6 +726,18 @@
         <source xml:lang="en">Publish Settings File</source>
         <target state="translated">Fichier de paramètres de publication</target>
       </trans-unit>
+      <trans-unit id="publishToContainerFailed">
+        <source xml:lang="en">Failed to publish to container. Check output pane for more details. {0}</source>
+        <target state="translated">Échec de la publication dans le conteneur. Vérifiez le panneau de sortie pour plus de détails. {0}</target>
+      </trans-unit>
+      <trans-unit id="publishToDockerContainer">
+        <source xml:lang="en">Publish to new server in a container</source>
+        <target state="translated">Publier sur un nouveau serveur dans un conteneur</target>
+      </trans-unit>
+      <trans-unit id="publishToExistingServer">
+        <source xml:lang="en">Publish to existing server</source>
+        <target state="translated">Publier sur un serveur existant</target>
+      </trans-unit>
       <trans-unit id="referenceRadioButtonsGroupTitle">
         <source xml:lang="en">Type</source>
         <target state="translated">Type</target>
@@ -722,6 +786,14 @@
         <source xml:lang="en">Same database</source>
         <target state="translated">Même base de données</target>
       </trans-unit>
+      <trans-unit id="save">
+        <source xml:lang="en">Save</source>
+        <target state="translated">Enregistrer</target>
+      </trans-unit>
+      <trans-unit id="saveChangesInFile">
+        <source xml:lang="en">There are unsaved changes in the current file. Save now?</source>
+        <target state="translated">Il y a des modifications non enregistrées dans le fichier actif. Voulez-vous enregistrer maintenant?</target>
+      </trans-unit>
       <trans-unit id="schema">
         <source xml:lang="en">Schema</source>
         <target state="translated">Schéma</target>
@@ -750,6 +822,10 @@
         <source xml:lang="en">Select an Azure function in the current file to add SQL binding to</source>
         <target state="translated">Sélectionnez une fonction Azure dans le fichier actif auquel ajouter une liaison SQL</target>
       </trans-unit>
+      <trans-unit id="selectBaseImage">
+        <source xml:lang="en">Select the base SQL Server docker image</source>
+        <target state="translated">Sélectionner l’image de l’ancrer SQL Server de base</target>
+      </trans-unit>
       <trans-unit id="selectBindingType">
         <source xml:lang="en">Select type of binding</source>
         <target state="translated">Sélectionner le type de liaison</target>
@@ -766,10 +842,6 @@
         <source xml:lang="en">Select database</source>
         <target state="translated">Sélectionner une base de données</target>
       </trans-unit>
-      <trans-unit id="selectDeployOption">
-        <source xml:lang="en">Select where to deploy the project to</source>
-        <target state="translated">Sélectionnez l’emplacement de déploiement du projet sur</target>
-      </trans-unit>
       <trans-unit id="selectFolderStructure">
         <source xml:lang="en">Select folder structure</source>
         <target state="translated">Sélectionner une structure de dossiers</target>
@@ -785,6 +857,18 @@
       <trans-unit id="selectProjectLocation">
         <source xml:lang="en">Select project location</source>
         <target state="translated">Sélectionner l’emplacement du projet</target>
+      </trans-unit>
+      <trans-unit id="selectPublishOption">
+        <source xml:lang="en">Select where to publish the project to</source>
+        <target state="translated">Sélectionnez l’emplacement de déploiement du projet sur</target>
+      </trans-unit>
+      <trans-unit id="selectSetting">
+        <source xml:lang="en">Select SQL connection string setting from local.settings.json</source>
+        <target state="translated">Sélectionnez le paramètre de chaîne de connexion SQL dans local.settings.json</target>
+      </trans-unit>
+      <trans-unit id="selectSpecFile">
+        <source xml:lang="en">Select OpenAPI/Swagger spec file</source>
+        <target state="translated">Sélectionner un fichier de spécification OpenAPI/Swagger</target>
       </trans-unit>
       <trans-unit id="selectString">
         <source xml:lang="en">Select</source>
@@ -810,6 +894,10 @@
         <source xml:lang="en">Source database</source>
         <target state="translated">Base de données source</target>
       </trans-unit>
+      <trans-unit id="specSelectionText">
+        <source xml:lang="en">OpenAPI/Swagger spec</source>
+        <target state="translated">Spécification OpenAPI/Swagger</target>
+      </trans-unit>
       <trans-unit id="sqlCmdTableLabel">
         <source xml:lang="en">SQLCMD Variables</source>
         <target state="translated">Variables SQLCMD</target>
@@ -826,7 +914,7 @@
         <source xml:lang="en">SQL connection string</source>
         <target state="translated">Chaîne de connexion SQL</target>
       </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.InstallNetCore">
+      <trans-unit id="sqlDatabaseProjects.Install">
         <source xml:lang="en">Install</source>
         <target state="translated">Installer</target>
       </trans-unit>
@@ -850,9 +938,9 @@
         <source xml:lang="en">Database Projects</source>
         <target state="translated">Projets de base de données</target>
       </trans-unit>
-      <trans-unit id="sqlObjectToQuery">
-        <source xml:lang="en">SQL object to query</source>
-        <target state="translated">Objet SQL à interroger</target>
+      <trans-unit id="sqlTableOrViewToQuery">
+        <source xml:lang="en">SQL table or view to query</source>
+        <target state="translated">Table ou vue SQL à interroger</target>
       </trans-unit>
       <trans-unit id="sqlTableToUpsert">
         <source xml:lang="en">SQL table to upsert into</source>
@@ -934,6 +1022,10 @@
         <source xml:lang="en">Value cannot be empty</source>
         <target state="translated">La valeur ne peut pas être vide</target>
       </trans-unit>
+      <trans-unit id="valueMustNotBeEmpty">
+        <source xml:lang="en">Value must not be empty</source>
+        <target state="translated">La valeur ne doit pas être vide</target>
+      </trans-unit>
       <trans-unit id="viewFriendlyName">
         <source xml:lang="en">View</source>
         <target state="translated">Voir</target>
@@ -950,13 +1042,17 @@
         <source xml:lang="en">	&gt;&gt;&gt; {0}   … errored out: {1}</source>
         <target state="translated">	&gt;&gt;&gt; {0}   … a donné une erreur : {1}</target>
       </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/sql-database-projects/dist/tools/shellExecutionHelper" source-language="en" datatype="plaintext" target-language="fr">
+    <body>
       <trans-unit id="sqlDatabaseProjects.RunCommand.stderr">
         <source xml:lang="en">    stderr: </source>
-        <target state="translated">    stderr : </target>
+        <target state="translated">    stderr : </target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.RunCommand.stdout">
         <source xml:lang="en">    stdout: </source>
-        <target state="translated">    stdout : </target>
+        <target state="translated">    stdout : </target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.RunStreamedCommand.ExitedWithCode">
         <source xml:lang="en">    &gt;&gt;&gt; {0}    … exited with code: {1}</source>
@@ -982,6 +1078,10 @@
         <source xml:lang="en">Add SQL Binding</source>
         <target state="translated">Ajouter une liaison SQL</target>
       </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.autorestSqlVersion">
+        <source xml:lang="en">Which version of Autorest.Sql to use from NPM.  Latest will be used if not set.</source>
+        <target state="translated">Version d’autorest. SQL à utiliser à partir de NPM.  La dernière version sera utilisée si elle n’est pas définie.</target>
+      </trans-unit>
       <trans-unit id="sqlDatabaseProjects.build">
         <source xml:lang="en">Build</source>
         <target state="translated">Build</target>
@@ -1002,10 +1102,6 @@
         <source xml:lang="en">Delete</source>
         <target state="translated">Supprimer</target>
       </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.deployLocal">
-        <source xml:lang="en">Deploy</source>
-        <target state="translated">Déployer</target>
-      </trans-unit>
       <trans-unit id="sqlDatabaseProjects.description">
         <source xml:lang="en">Design and publish SQL database schemas</source>
         <target state="translated">Concevoir et publier des schémas de base de données SQL</target>
@@ -1021,6 +1117,10 @@
       <trans-unit id="sqlDatabaseProjects.exclude">
         <source xml:lang="en">Exclude from project</source>
         <target state="translated">Exclure du projet</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.generateProjectFromOpenApiSpec">
+        <source xml:lang="en">Generate SQL Project from OpenAPI/Swagger spec</source>
+        <target state="translated">Générer un projet SQL à partir de OpenAPI/Swagger spec</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.netCoreDoNotAsk">
         <source xml:lang="en">Whether to prompt the user to install .NET Core when not detected.</source>
@@ -1069,6 +1169,10 @@
       <trans-unit id="sqlDatabaseProjects.newView">
         <source xml:lang="en">Add View</source>
         <target state="translated">Ajouter une vue</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.nodejsDoNotAsk">
+        <source xml:lang="en">Whether to prompt the user to install Node.js when not detected.</source>
+        <target state="translated">Indique si l’utilisateur doit être invité à installer Node.js quand il n’est pas détecté.</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.open">
         <source xml:lang="en">Open Database Project</source>

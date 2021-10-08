@@ -9,10 +9,10 @@
 	"version": "1.0.0",
 	"contents": {
 		"dist/constants": {
-			"XEventsFailed": "XEvents operation failed.",
-			"XEventsNotSupported": "XEvents sessions not supported.",
-			"XEventsStarted": "XEvents sessions started for PageContention and ObjectContention.",
-			"XEventsStopped": "XEvents sessions PageContention and ObjectContention removed."
+			"XEventsFailed": "XEvents 작업에 실패했습니다.",
+			"XEventsNotSupported": "XEvents 세션은 지원되지 않습니다.",
+			"XEventsStarted": "PageContention 및 ObjectContention에 대한 XEvents 세션이 시작되었습니다.",
+			"XEventsStopped": "PageContention 및 ObjectContention에 대한 XEvents 세션이 제거되었습니다."
 		}
 	}
 }
