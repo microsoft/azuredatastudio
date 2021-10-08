@@ -634,7 +634,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	private focusDashboard(profile: interfaces.IConnectionProfile): boolean {
 		let found: boolean = false;
 
-		this._editorService.editors.map(editor => {
+		this._editorService.editors.find(editor => {
 			if (editor instanceof DashboardInput) {
 				if (DashboardInput.profileMatches(profile, editor.connectionProfile)) {
 					editor.connectionProfile.connectionName = profile.connectionName;
