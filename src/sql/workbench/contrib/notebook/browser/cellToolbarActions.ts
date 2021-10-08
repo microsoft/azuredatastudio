@@ -30,7 +30,7 @@ export class EditCellAction extends ToggleableAction {
 	private static readonly maskedIconClass = 'masked-icon';
 
 	constructor(
-		id: string, toggleTooltip: boolean, isEditMode: boolean
+		id: string, toggleTooltip: boolean, isEditMode: boolean, private splitCellAction: SplitCellAction
 	) {
 		super(id, {
 			baseClass: EditCellAction.baseClass,
@@ -54,6 +54,13 @@ export class EditCellAction extends ToggleableAction {
 	public override async run(context: CellContext): Promise<void> {
 		this.editMode = !this.editMode;
 		context.cell.isEditMode = this.editMode;
+		this._register(context.cell.onCellMarkdownModeChanged(markdown => {
+			if (this.editMode && markdown) {
+				this.splitCellAction.enabled = true;
+			} else {
+				this.splitCellAction.enabled = false;
+			}
+		}));
 	}
 }
 
