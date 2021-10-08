@@ -87,7 +87,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	public doubleClickEditEnabled: boolean;
 	private _onScroll = new Emitter<void>();
 	// Don't show the right hand toolbar actions if the notebook is created in a diff editor.
-	private _showToolbarActions: boolean = this._notebookParams.input.showActions();
+	private _showToolbarActions: boolean = this._notebookParams.input.showActions;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,

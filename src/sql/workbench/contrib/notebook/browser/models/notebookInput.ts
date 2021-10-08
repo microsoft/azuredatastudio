@@ -517,7 +517,7 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 		}
 	}
 
-	public showActions(): boolean {
+	public get showActions(): boolean {
 		return this._showActions;
 	}
 }
