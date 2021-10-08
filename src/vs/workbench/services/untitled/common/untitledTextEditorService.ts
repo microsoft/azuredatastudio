@@ -13,7 +13,6 @@ import { ResourceMap } from 'vs/base/common/map';
 import { Schemas } from 'vs/base/common/network';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
-import { NonDirtyUntitledTextEditorModel } from 'vs/workbench/services/untitled/common/nonDirty/nonDirtyUntitledTextEditorModel'; // {{SQL CARBON EDIT}}
 
 export const IUntitledTextEditorService = createDecorator<IUntitledTextEditorService>('untitledTextEditorService');
 
@@ -64,9 +63,6 @@ export interface INewUntitledTextEditorWithAssociatedResourceOptions extends INe
 export interface INonDirtyUntitledTextEditorOptions extends INewUntitledTextEditorOptions {
 	/**
 	 * Identifies if the new editor should never be marked as dirty.
-	 *
-	 * Note: This flag is only used when the untitled file is generated through
-	 * the grid panel.
 	 */
 	nonDirty?: boolean;
 }
@@ -104,7 +100,7 @@ export interface IUntitledTextEditorModelManager {
 	create(options?: INewUntitledTextEditorOptions): IUntitledTextEditorModel;
 	create(options?: INewUntitledTextEditorWithAssociatedResourceOptions): IUntitledTextEditorModel;
 	create(options?: IExistingUntitledTextEditorOptions): IUntitledTextEditorModel;
-	create(options?: INonDirtyUntitledTextEditorOptions): IUntitledTextEditorModel; // {{SQL CARBON EDIT}} Need this for untitled editors generated via the gridPanel.
+	create(options?: INonDirtyUntitledTextEditorOptions): IUntitledTextEditorModel; // {{SQL CARBON EDIT}} Need this for untitled editors that should not be considered dirty.
 
 	/**
 	 * Returns an existing untitled editor model if already created before.
@@ -238,16 +234,8 @@ export class UntitledTextEditorService extends Disposable implements IUntitledTe
 			} while (this.mapResourceToModel.has(untitledResource));
 		}
 
-		// {{SQL CARBON EDIT}} - START
 		// Create new model with provided options
-		let model: UntitledTextEditorModel;
-		if (!!options.nonDirty) {
-			model = this._register(this.instantiationService.createInstance(NonDirtyUntitledTextEditorModel, untitledResource, !!options.associatedResource, options.initialValue, options.mode, options.encoding));
-		}
-		else {
-			model = this._register(this.instantiationService.createInstance(UntitledTextEditorModel, untitledResource, !!options.associatedResource, options.initialValue, options.mode, options.encoding));
-		}
-		// {{SQL CARBON EDIT}} - END
+		const model = this._register(this.instantiationService.createInstance(UntitledTextEditorModel, untitledResource, !!options.associatedResource, options.initialValue, options.mode, options.encoding, !!options.nonDirty)); // {{SQL CARBON EDIT}}
 		this.registerModel(model);
 
 		return model;

@@ -68,11 +68,11 @@ export interface IUntitledTextEditorModel extends ITextEditorModel, IModeSupport
 export class UntitledTextEditorModel extends BaseTextEditorModel implements IUntitledTextEditorModel {
 
 	private static readonly FIRST_LINE_NAME_MAX_LENGTH = 40;
-	protected static readonly FIRST_LINE_NAME_CANDIDATE_MAX_LENGTH = UntitledTextEditorModel.FIRST_LINE_NAME_MAX_LENGTH * 10; // {{SQL CARBON EDIT}} make property protected
+	private static readonly FIRST_LINE_NAME_CANDIDATE_MAX_LENGTH = UntitledTextEditorModel.FIRST_LINE_NAME_MAX_LENGTH * 10;
 
 	//#region Events
 
-	protected readonly _onDidChangeContent = this._register(new Emitter<void>()); // {{SQL CARBON EDIT}} make property protected
+	private readonly _onDidChangeContent = this._register(new Emitter<void>());
 	readonly onDidChangeContent = this._onDidChangeContent.event;
 
 	private readonly _onDidChangeName = this._register(new Emitter<void>());
@@ -116,15 +116,16 @@ export class UntitledTextEditorModel extends BaseTextEditorModel implements IUnt
 	constructor(
 		readonly resource: URI,
 		readonly hasAssociatedFilePath: boolean,
-		protected readonly initialValue: string | undefined, // {{SQL CARBON EDIT}} make property protected
-		protected preferredMode: string | undefined, // {{SQL CARBON EDIT}} make property protected
+		private readonly initialValue: string | undefined,
+		private preferredMode: string | undefined,
 		private preferredEncoding: string | undefined,
+		private nonDirty: boolean | undefined, // {{SQL CARBON EDIT}} allows us to begin with clean state
 		@IModeService modeService: IModeService,
 		@IModelService modelService: IModelService,
-		@IWorkingCopyBackupService protected readonly workingCopyBackupService: IWorkingCopyBackupService, // {{SQL CARBON EDIT}} make protected
+		@IWorkingCopyBackupService private readonly workingCopyBackupService: IWorkingCopyBackupService,
 		@ITextResourceConfigurationService private readonly textResourceConfigurationService: ITextResourceConfigurationService,
 		@IWorkingCopyService private readonly workingCopyService: IWorkingCopyService,
-		@ITextFileService protected readonly textFileService: ITextFileService, // {{SQL CARBON EDIT}} make protected
+		@ITextFileService private readonly textFileService: ITextFileService,
 		@ILabelService private readonly labelService: ILabelService,
 		@IEditorService private readonly editorService: IEditorService
 	) {
@@ -149,8 +150,7 @@ export class UntitledTextEditorModel extends BaseTextEditorModel implements IUnt
 		this._register(this.textResourceConfigurationService.onDidChangeConfiguration(() => this.onConfigurationChange(true)));
 	}
 
-	// {{SQL CARBON EDIT}} make method protected
-	protected onConfigurationChange(fromEvent: boolean): void {
+	private onConfigurationChange(fromEvent: boolean): void {
 
 		// Encoding
 		const configuredEncoding = this.textResourceConfigurationService.getValue<string>(this.resource, 'files.encoding');
@@ -338,8 +338,14 @@ export class UntitledTextEditorModel extends BaseTextEditorModel implements IUnt
 				this.updateNameFromFirstLine(textEditorModel);
 			}
 
-			// Untitled associated to file path are dirty right away as well as untitled with content
-			this.setDirty(this.hasAssociatedFilePath || !!hasBackup || !!this.initialValue);
+			// {{SQL CARBON EDIT}} - START
+			if (!!this.nonDirty && !!this.initialValue) {
+				this.setDirty(false);
+			}
+			else {
+				// Untitled associated to file path are dirty right away as well as untitled with content
+				this.setDirty(this.hasAssociatedFilePath || !!hasBackup || !!this.initialValue);
+			}
 
 			// If we have initial contents, make sure to emit this
 			// as the appropiate events to the outside.
@@ -349,13 +355,13 @@ export class UntitledTextEditorModel extends BaseTextEditorModel implements IUnt
 		}
 	}
 
-	// {{SQL CARBON EDIT}} make method protected
-	protected onModelContentChanged(textEditorModel: ITextModel, e: IModelContentChangedEvent): void {
+	private onModelContentChanged(textEditorModel: ITextModel, e: IModelContentChangedEvent): void {
 
 		// mark the untitled text editor as non-dirty once its content becomes empty and we do
 		// not have an associated path set. we never want dirty indicator in that case.
-		if (!this.hasAssociatedFilePath && textEditorModel.getLineCount() === 1 && textEditorModel.getLineContent(1) === '') {
+		if (!this.hasAssociatedFilePath && textEditorModel.getLineCount() === 1 && textEditorModel.getLineContent(1) === '' && !!this.nonDirty) { // {{SQL CARBON EDIT}}
 			this.setDirty(false);
+			//this.nonDirty = false; // {{SQL CARBON EDIT}}
 		}
 
 		// turn dirty otherwise
@@ -372,8 +378,7 @@ export class UntitledTextEditorModel extends BaseTextEditorModel implements IUnt
 		this._onDidChangeContent.fire();
 	}
 
-	// {{SQL CARBON EDIT}} make method protected
-	protected updateNameFromFirstLine(textEditorModel: ITextModel): void {
+	private updateNameFromFirstLine(textEditorModel: ITextModel): void {
 		if (this.hasAssociatedFilePath) {
 			return; // not in case of an associated file path
 		}
