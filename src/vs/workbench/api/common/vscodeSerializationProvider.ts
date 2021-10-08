@@ -5,16 +5,49 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
+import { VSBuffer } from 'vs/base/common/buffer';
 
 class VSCodeContentManager implements azdata.nb.ContentManager {
-	constructor(serializer: vscode.NotebookSerializer) {
+	constructor(private readonly _serializer: vscode.NotebookSerializer) {
+	}
 
+	public async deserializeNotebook(contents: string): Promise<azdata.nb.INotebookContents> {
+		let buffer = VSBuffer.fromString(contents);
+		let notebookData = await this._serializer.deserializeNotebook(buffer.buffer, (new vscode.CancellationTokenSource()).token);
+		return {
+			cells: notebookData.cells.map<azdata.nb.ICellContents>(cell => {
+				return {
+					cell_type: cell.kind === vscode.NotebookCellKind.Code ? 'code' : 'markdown',
+					source: cell.value,
+					metadata: {
+						language: cell.languageId
+					},
+					execution_count: cell.executionSummary?.executionOrder,
+					outputs: cell.outputs?.map(output => {
+						return undefined; // TODO: implement output conversion
+					})
+				};
+			}),
+			metadata: {},
+			nbformat: notebookData.metadata ? notebookData.metadata['nbformat'] : undefined,
+			nbformat_minor: notebookData.metadata ? notebookData.metadata['nbformat_minor'] : undefined
+		};
 	}
-	public deserializeNotebook(contents: string): Thenable<azdata.nb.INotebookContents> {
-		throw new Error('Method not implemented.');
-	}
-	public serializeNotebook(notebook: azdata.nb.INotebookContents): Thenable<string> {
-		throw new Error('Method not implemented.');
+
+	public async serializeNotebook(notebook: azdata.nb.INotebookContents): Promise<string> {
+		let notebookData: vscode.NotebookData = {
+			cells: notebook.cells.map<vscode.NotebookCellData>(cell => {
+				return {
+					kind: cell.cell_type === 'code' ? vscode.NotebookCellKind.Code : vscode.NotebookCellKind.Markup,
+					value: Array.isArray(cell.source) ? cell.source.join('\n') : cell.source,
+					languageId: cell.metadata?.language,
+					outputs: undefined // TODO: implement output conversions
+				};
+			})
+		};
+		let bytes = await this._serializer.serializeNotebook(notebookData, (new vscode.CancellationTokenSource()).token);
+		let buffer = VSBuffer.wrap(bytes);
+		return buffer.toString();
 	}
 }
 
