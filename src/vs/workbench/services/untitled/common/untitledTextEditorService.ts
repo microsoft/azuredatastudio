@@ -13,6 +13,7 @@ import { ResourceMap } from 'vs/base/common/map';
 import { Schemas } from 'vs/base/common/network';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
+import { NonDirtyUntitledTextEditorModel } from 'vs/workbench/services/untitled/common/nonDirty/nonDirtyUntitledTextEditorModel'; // {{SQL CARBON EDIT}}
 
 export const IUntitledTextEditorService = createDecorator<IUntitledTextEditorService>('untitledTextEditorService');
 
@@ -59,7 +60,19 @@ export interface INewUntitledTextEditorWithAssociatedResourceOptions extends INe
 	associatedResource?: { authority: string; path: string; query: string; fragment: string; }
 }
 
-type IInternalUntitledTextEditorOptions = IExistingUntitledTextEditorOptions & INewUntitledTextEditorWithAssociatedResourceOptions;
+// {{SQL CARBON EDIT}} - START
+export interface INonDirtyUntitledTextEditorOptions extends INewUntitledTextEditorOptions {
+	/**
+	 * Identifies if the new editor should never be marked as dirty.
+	 *
+	 * Note: This flag is only used when the untitled file is generated through
+	 * the grid panel.
+	 */
+	nonDirty?: boolean;
+}
+// {{SQL CARBON EDIT}} - END
+
+type IInternalUntitledTextEditorOptions = IExistingUntitledTextEditorOptions & INewUntitledTextEditorWithAssociatedResourceOptions & INonDirtyUntitledTextEditorOptions; // {{SQL CARBON EDIT}} adds non-dirty flag to IInternalUntitledTextEditorOptions
 
 export interface IUntitledTextEditorModelManager {
 
@@ -91,6 +104,7 @@ export interface IUntitledTextEditorModelManager {
 	create(options?: INewUntitledTextEditorOptions): IUntitledTextEditorModel;
 	create(options?: INewUntitledTextEditorWithAssociatedResourceOptions): IUntitledTextEditorModel;
 	create(options?: IExistingUntitledTextEditorOptions): IUntitledTextEditorModel;
+	create(options?: INonDirtyUntitledTextEditorOptions): IUntitledTextEditorModel; // {{SQL CARBON EDIT}} Need this for untitled editors generated via the gridPanel.
 
 	/**
 	 * Returns an existing untitled editor model if already created before.
@@ -207,6 +221,7 @@ export class UntitledTextEditorService extends Disposable implements IUntitledTe
 		// Take over encoding and initial value
 		massagedOptions.encoding = options.encoding;
 		massagedOptions.initialValue = options.initialValue;
+		massagedOptions.nonDirty = options.nonDirty; // {{SQL CARBON EDIT}} take over nonDirty value
 
 		return massagedOptions;
 	}
@@ -223,9 +238,16 @@ export class UntitledTextEditorService extends Disposable implements IUntitledTe
 			} while (this.mapResourceToModel.has(untitledResource));
 		}
 
+		// {{SQL CARBON EDIT}} - START
 		// Create new model with provided options
-		const model = this._register(this.instantiationService.createInstance(UntitledTextEditorModel, untitledResource, !!options.associatedResource, options.initialValue, options.mode, options.encoding));
-
+		let model: UntitledTextEditorModel;
+		if (!!options.nonDirty) {
+			model = this._register(this.instantiationService.createInstance(NonDirtyUntitledTextEditorModel, untitledResource, !!options.associatedResource, options.initialValue, options.mode, options.encoding));
+		}
+		else {
+			model = this._register(this.instantiationService.createInstance(UntitledTextEditorModel, untitledResource, !!options.associatedResource, options.initialValue, options.mode, options.encoding));
+		}
+		// {{SQL CARBON EDIT}} - END
 		this.registerModel(model);
 
 		return model;
