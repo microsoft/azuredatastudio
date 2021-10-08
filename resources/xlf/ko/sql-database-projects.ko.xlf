@@ -22,6 +22,10 @@
         <source xml:lang="en">Publish History</source>
         <target state="translated">게시 기록</target>
       </trans-unit>
+      <trans-unit id="SettingAlreadyExists">
+        <source xml:lang="en">Local app setting '{0}' already exists. Overwrite?</source>
+        <target state="translated">로컬 앱 설정 '{0}'이(가) 이미 존재합니다. 덮어쓰시겠습니까?</target>
+      </trans-unit>
       <trans-unit id="Status">
         <source xml:lang="en">Status</source>
         <target state="translated">상태</target>
@@ -61,6 +65,10 @@
       <trans-unit id="addPackage">
         <source xml:lang="en">Add Package</source>
         <target state="translated">패키지 추가</target>
+      </trans-unit>
+      <trans-unit id="addPackageReferenceMessage">
+        <source xml:lang="en">To use SQL bindings, ensure your Azure Functions project has a reference to {0}</source>
+        <target state="new">To use SQL bindings, ensure your Azure Functions project has a reference to {0}</target>
       </trans-unit>
       <trans-unit id="appSettingPrompt">
         <source xml:lang="en">Would you like to update Azure Function local.settings.json with the new connection string?</source>
@@ -122,6 +130,10 @@
         <source xml:lang="en">Cleaning existing deployments...</source>
         <target state="translated">기존 배포를 정리하는 중...</target>
       </trans-unit>
+      <trans-unit id="confirmPassword">
+        <source xml:lang="en">Confirm SQL server admin password</source>
+        <target state="translated">SQL 서버 관리자 암호 확인</target>
+      </trans-unit>
       <trans-unit id="connectingToSqlServerOnDockerMessage">
         <source xml:lang="en">Connecting to SQL Server on Docker</source>
         <target state="translated">Docker에서 SQL Server에 연결하는 중</target>
@@ -145,6 +157,10 @@
       <trans-unit id="createNew">
         <source xml:lang="en">Create New</source>
         <target state="translated">새로 만들기</target>
+      </trans-unit>
+      <trans-unit id="createNewLocalAppSetting">
+        <source xml:lang="en">Create new local app setting</source>
+        <target state="translated">새 로컬 앱 설정 만들기</target>
       </trans-unit>
       <trans-unit id="createProjectDialogOkButtonText">
         <source xml:lang="en">Create</source>
@@ -290,10 +306,6 @@
         <source xml:lang="en">Deploying SQL Db Project Locally</source>
         <target state="translated">로컬로 SQL DB 프로젝트 배포 중</target>
       </trans-unit>
-      <trans-unit id="deployProjectFailed">
-        <source xml:lang="en">Failed to deploy project. Check output pane for more details. {0}</source>
-        <target state="translated">프로젝트를 배포하지 못했습니다. 자세한 내용은 출력 창을 확인하세요. {0}</target>
-      </trans-unit>
       <trans-unit id="deployProjectFailedMessage">
         <source xml:lang="en">Failed to open a connection to the deployed database'</source>
         <target state="translated">배포된 데이터베이스’에 대한 연결을 열지 못함</target>
@@ -305,14 +317,6 @@
       <trans-unit id="deployScriptExists">
         <source xml:lang="en">A {0} script already exists. The new script will not be included in build.</source>
         <target state="translated">{0} 스크립트가 이미 있습니다. 새 스크립트는 빌드에 포함되지 않습니다.</target>
-      </trans-unit>
-      <trans-unit id="deployToDockerContainer">
-        <source xml:lang="en">Deploy to docker container</source>
-        <target state="translated">Docker 컨테이너에 배포</target>
-      </trans-unit>
-      <trans-unit id="deployToExistingServer">
-        <source xml:lang="en">Deploy to existing server</source>
-        <target state="translated">기존 서버에 배포</target>
       </trans-unit>
       <trans-unit id="differentDbDifferentServer">
         <source xml:lang="en">Different database, different server</source>
@@ -337,6 +341,10 @@
       <trans-unit id="dockerLogMessage">
         <source xml:lang="en">Docker logs: '{0}'</source>
         <target state="translated">Docker 로그: '{0}'</target>
+      </trans-unit>
+      <trans-unit id="dockerNotRunningError">
+        <source xml:lang="en">Failed to verify docker. Please make sure docker is installed and running. Error: '{0}'</source>
+        <target state="translated">도커를 확인하지 못했습니다. 도커가 설치되어 실행 중인지 확인하세요. 오류: '{0}'</target>
       </trans-unit>
       <trans-unit id="done">
         <source xml:lang="en">Done</source>
@@ -366,6 +374,10 @@
         <source xml:lang="en">Enter a template for SQL connection string</source>
         <target state="translated">SQL 연결 문자열에 대한 템플릿 입력</target>
       </trans-unit>
+      <trans-unit id="enterConnectionString">
+        <source xml:lang="en">Enter connection string</source>
+        <target state="translated">연결 문자열 입력</target>
+      </trans-unit>
       <trans-unit id="enterConnectionStringEnvName">
         <source xml:lang="en">Enter connection string environment variable name</source>
         <target state="translated">연결 문자열 환경 변수 이름 입력</target>
@@ -373,6 +385,10 @@
       <trans-unit id="enterConnectionStringEnvNameDescription">
         <source xml:lang="en">Enter environment variable for SQL connection string</source>
         <target state="translated">SQL 연결 문자열에 대한 환경 변수 입력</target>
+      </trans-unit>
+      <trans-unit id="enterConnectionStringSettingName">
+        <source xml:lang="en">Enter connection string setting name</source>
+        <target state="translated">연결 문자열 설정 이름 입력</target>
       </trans-unit>
       <trans-unit id="enterConnectionStringTemplate">
         <source xml:lang="en">Enter connection string template</source>
@@ -387,12 +403,12 @@
         <target state="translated">'{0}' 변수의 새 값을 입력합니다.</target>
       </trans-unit>
       <trans-unit id="enterPassword">
-        <source xml:lang="en">Enter password or press enter to use the generated password</source>
-        <target state="translated">암호를 입력하거나 Enter 키를 눌러 생성된 암호를 사용함</target>
+        <source xml:lang="en">Enter SQL Server admin password</source>
+        <target state="translated">SQL Server 관리자 암호 입력</target>
       </trans-unit>
       <trans-unit id="enterPortNumber">
-        <source xml:lang="en">Enter port number or press enter to use the default value</source>
-        <target state="translated">포트 번호를 입력하거나 Enter 키를 눌러 기본값을 사용함</target>
+        <source xml:lang="en">Enter SQL server port number or press enter to use the default value</source>
+        <target state="translated">SQL 서버 포트 번호를 입력하거나 Enter 키를 눌러 기본값을 사용함</target>
       </trans-unit>
       <trans-unit id="enterSystemDbName">
         <source xml:lang="en">Enter a database name for this system database</source>
@@ -425,6 +441,10 @@
       <trans-unit id="extractTargetRequired">
         <source xml:lang="en">Target information for extract is required to create database project.</source>
         <target state="translated">데이터베이스 프로젝트를 만들려면 추출에 대한 대상 정보가 필요합니다.</target>
+      </trans-unit>
+      <trans-unit id="failedToParse">
+        <source xml:lang="en">Failed to parse "{0}": {1}.</source>
+        <target state="translated">{0}을(를) 구문 분석하지 못했습니다. {1}.</target>
       </trans-unit>
       <trans-unit id="file">
         <source xml:lang="en">File</source>
@@ -474,6 +494,10 @@
         <source xml:lang="en">Generate Script</source>
         <target state="translated">스크립트 생성</target>
       </trans-unit>
+      <trans-unit id="generatingProjectFailed">
+        <source xml:lang="en">Generating project via AutoRest failed: {0}</source>
+        <target state="translated">AutoRest를 통한 프로젝트 생성 실패: {0}</target>
+      </trans-unit>
       <trans-unit id="hr">
         <source xml:lang="en">hr</source>
         <target state="translated">시간</target>
@@ -506,6 +530,10 @@
         <source xml:lang="en">Invalid value specified for the property '{0}' in .sqlproj file</source>
         <target state="translated">.sqlproj 파일의 '{0}' 속성에 잘못된 값이 지정되었습니다.</target>
       </trans-unit>
+      <trans-unit id="invalidSQLPassword">
+        <source xml:lang="en">SQL Server password doesn't meet the password complexity requirement. For more information see https://docs.microsoft.com/sql/relational-databases/security/password-policy</source>
+        <target state="translated">SQL Server 암호가 암호 복잡성 요구 사항을 충족하지 않습니다. 자세한 내용은 https://docs.microsoft.com/sql/relational-databases/security/password-policy를 참조하세요.</target>
+      </trans-unit>
       <trans-unit id="invalidSqlConnectionString">
         <source xml:lang="en">Invalid SQL connection string</source>
         <target state="translated">잘못된 SQL 연결 문자열</target>
@@ -513,6 +541,10 @@
       <trans-unit id="invalidTargetPlatform">
         <source xml:lang="en">Invalid target platform: {0}. Supported target platforms: {1}</source>
         <target state="translated">잘못된 대상 플랫폼: {0}. 지원되는 대상 플랫폼: {1}</target>
+      </trans-unit>
+      <trans-unit id="jsonParseError">
+        <source xml:lang="en">{0} near line "{1}", column "{2}"</source>
+        <target state="translated">{0}("{1}" 줄, "{2}" 열 근처)</target>
       </trans-unit>
       <trans-unit id="loadProfilePlaceholderText">
         <source xml:lang="en">Load profile...</source>
@@ -530,9 +562,17 @@
         <source xml:lang="en">Missing 'version' entry in {0}</source>
         <target state="translated">{0}에 '버전' 항목이 없습니다.</target>
       </trans-unit>
+      <trans-unit id="moreInformation">
+        <source xml:lang="en">More Information</source>
+        <target state="new">More Information</target>
+      </trans-unit>
       <trans-unit id="msec">
         <source xml:lang="en">msec</source>
         <target state="translated">밀리초</target>
+      </trans-unit>
+      <trans-unit id="multipleMostDeploymentScripts">
+        <source xml:lang="en">Unexpected number of {0} files: {1}</source>
+        <target state="translated">예기치 않은 {0} 파일 수: {1}</target>
       </trans-unit>
       <trans-unit id="multipleSqlProjFilesSelected">
         <source xml:lang="en">Multiple .sqlproj files selected; please select only one.</source>
@@ -582,6 +622,14 @@
         <source xml:lang="en">No (default)</source>
         <target state="translated">(기본값) 없음</target>
       </trans-unit>
+      <trans-unit id="nodeButNotAutorestFound">
+        <source xml:lang="en">Autorest tool not found in system path, but found Node.js.  Running via npx.  Please execute 'npm install autorest -g' to install permanently.</source>
+        <target state="translated">Autorest 도구는 시스템 경로에 없지만 Node.js는 찾았습니다.  npx를 통해 실행. 영구적으로 설치하려면 'npm install autorest -g'를 실행하세요.</target>
+      </trans-unit>
+      <trans-unit id="nodeNotFound">
+        <source xml:lang="en">Neither autorest nor Node.js (npx) found in system path.  Please install Node.js for autorest generation to work.</source>
+        <target state="translated">시스템 경로에 autorest나 Node.js(npx)가 없습니다. autorest 생성이 작동하려면 Node.js를 설치하세요.</target>
+      </trans-unit>
       <trans-unit id="notValidVariableName">
         <source xml:lang="en">The variable name '{0}' is not valid.</source>
         <target state="translated">'{0}'은(는) 잘못된 변수 이름입니다.</target>
@@ -605,6 +653,10 @@
       <trans-unit id="parentTreeItemUnknown">
         <source xml:lang="en">Cannot access parent of provided tree item</source>
         <target state="translated">제공된 트리 항목의 부모에 액세스할 수 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="passwordNotMatch">
+        <source xml:lang="en">SQL Server password doesn't match the confirmation password</source>
+        <target state="translated">SQL Server 암호가 확인 암호와 일치하지 않습니다.</target>
       </trans-unit>
       <trans-unit id="portMustNotBeNumber">
         <source xml:lang="en">Port must a be number</source>
@@ -674,6 +726,18 @@
         <source xml:lang="en">Publish Settings File</source>
         <target state="translated">설정 파일 게시</target>
       </trans-unit>
+      <trans-unit id="publishToContainerFailed">
+        <source xml:lang="en">Failed to publish to container. Check output pane for more details. {0}</source>
+        <target state="translated">컨테이너에 게시하지 못했습니다. 자세한 내용은 출력 창을 확인하세요. {0}</target>
+      </trans-unit>
+      <trans-unit id="publishToDockerContainer">
+        <source xml:lang="en">Publish to new server in a container</source>
+        <target state="translated">컨테이너의 새 서버에 게시</target>
+      </trans-unit>
+      <trans-unit id="publishToExistingServer">
+        <source xml:lang="en">Publish to existing server</source>
+        <target state="translated">기존 서버에 게시</target>
+      </trans-unit>
       <trans-unit id="referenceRadioButtonsGroupTitle">
         <source xml:lang="en">Type</source>
         <target state="translated">형식</target>
@@ -722,6 +786,14 @@
         <source xml:lang="en">Same database</source>
         <target state="translated">동일한 데이터베이스</target>
       </trans-unit>
+      <trans-unit id="save">
+        <source xml:lang="en">Save</source>
+        <target state="translated">저장</target>
+      </trans-unit>
+      <trans-unit id="saveChangesInFile">
+        <source xml:lang="en">There are unsaved changes in the current file. Save now?</source>
+        <target state="translated">현재 파일에 저장되지 않은 변경 사항이 있습니다. 지금 저장하시겠습니까?</target>
+      </trans-unit>
       <trans-unit id="schema">
         <source xml:lang="en">Schema</source>
         <target state="translated">스키마</target>
@@ -750,6 +822,10 @@
         <source xml:lang="en">Select an Azure function in the current file to add SQL binding to</source>
         <target state="translated">현재 파일에서 SQL 바인딩을 추가할 Azure 함수 선택</target>
       </trans-unit>
+      <trans-unit id="selectBaseImage">
+        <source xml:lang="en">Select the base SQL Server docker image</source>
+        <target state="translated">기본 SQL Server 도커 이미지 선택</target>
+      </trans-unit>
       <trans-unit id="selectBindingType">
         <source xml:lang="en">Select type of binding</source>
         <target state="translated">바인딩 유형 선택</target>
@@ -766,10 +842,6 @@
         <source xml:lang="en">Select database</source>
         <target state="translated">데이터베이스 선택</target>
       </trans-unit>
-      <trans-unit id="selectDeployOption">
-        <source xml:lang="en">Select where to deploy the project to</source>
-        <target state="translated">프로젝트를 배포할 위치 선택</target>
-      </trans-unit>
       <trans-unit id="selectFolderStructure">
         <source xml:lang="en">Select folder structure</source>
         <target state="translated">폴더 구조 선택</target>
@@ -785,6 +857,18 @@
       <trans-unit id="selectProjectLocation">
         <source xml:lang="en">Select project location</source>
         <target state="translated">프로젝트 위치 선택</target>
+      </trans-unit>
+      <trans-unit id="selectPublishOption">
+        <source xml:lang="en">Select where to publish the project to</source>
+        <target state="translated">프로젝트를 게시할 위치 선택</target>
+      </trans-unit>
+      <trans-unit id="selectSetting">
+        <source xml:lang="en">Select SQL connection string setting from local.settings.json</source>
+        <target state="translated">local.settings.js에서 SQL 연결 문자열 설정 선택</target>
+      </trans-unit>
+      <trans-unit id="selectSpecFile">
+        <source xml:lang="en">Select OpenAPI/Swagger spec file</source>
+        <target state="translated">OpenAPI/Swagger 사양 파일 선택</target>
       </trans-unit>
       <trans-unit id="selectString">
         <source xml:lang="en">Select</source>
@@ -810,6 +894,10 @@
         <source xml:lang="en">Source database</source>
         <target state="translated">원본 데이터베이스</target>
       </trans-unit>
+      <trans-unit id="specSelectionText">
+        <source xml:lang="en">OpenAPI/Swagger spec</source>
+        <target state="translated">OpenAPI/Swagger 사양</target>
+      </trans-unit>
       <trans-unit id="sqlCmdTableLabel">
         <source xml:lang="en">SQLCMD Variables</source>
         <target state="translated">SQLCMD 변수</target>
@@ -826,7 +914,7 @@
         <source xml:lang="en">SQL connection string</source>
         <target state="translated">SQL 연결 문자열</target>
       </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.InstallNetCore">
+      <trans-unit id="sqlDatabaseProjects.Install">
         <source xml:lang="en">Install</source>
         <target state="translated">설치</target>
       </trans-unit>
@@ -850,9 +938,9 @@
         <source xml:lang="en">Database Projects</source>
         <target state="translated">데이터베이스 프로젝트</target>
       </trans-unit>
-      <trans-unit id="sqlObjectToQuery">
-        <source xml:lang="en">SQL object to query</source>
-        <target state="translated">쿼리할 SQL 개체</target>
+      <trans-unit id="sqlTableOrViewToQuery">
+        <source xml:lang="en">SQL table or view to query</source>
+        <target state="translated">쿼리할 SQL 테이블 또는 뷰</target>
       </trans-unit>
       <trans-unit id="sqlTableToUpsert">
         <source xml:lang="en">SQL table to upsert into</source>
@@ -934,6 +1022,10 @@
         <source xml:lang="en">Value cannot be empty</source>
         <target state="translated">값을 비워 둘 수 없음</target>
       </trans-unit>
+      <trans-unit id="valueMustNotBeEmpty">
+        <source xml:lang="en">Value must not be empty</source>
+        <target state="translated">값은 비워 둘 수 없습니다.</target>
+      </trans-unit>
       <trans-unit id="viewFriendlyName">
         <source xml:lang="en">View</source>
         <target state="translated">보기</target>
@@ -950,6 +1042,10 @@
         <source xml:lang="en">	&gt;&gt;&gt; {0}   … errored out: {1}</source>
         <target state="translated">	&gt;&gt;&gt; {0}    ... 오류가 발생했습니다. {1}</target>
       </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/sql-database-projects/dist/tools/shellExecutionHelper" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
       <trans-unit id="sqlDatabaseProjects.RunCommand.stderr">
         <source xml:lang="en">    stderr: </source>
         <target state="translated">    stderr: </target>
@@ -982,6 +1078,10 @@
         <source xml:lang="en">Add SQL Binding</source>
         <target state="translated">SQL 바인딩 추가</target>
       </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.autorestSqlVersion">
+        <source xml:lang="en">Which version of Autorest.Sql to use from NPM.  Latest will be used if not set.</source>
+        <target state="translated">NPM에서 사용할 Autorest.Sql 버전입니다. 설정하지 않으면 최신이 사용됩니다.</target>
+      </trans-unit>
       <trans-unit id="sqlDatabaseProjects.build">
         <source xml:lang="en">Build</source>
         <target state="translated">빌드</target>
@@ -1002,10 +1102,6 @@
         <source xml:lang="en">Delete</source>
         <target state="translated">삭제</target>
       </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.deployLocal">
-        <source xml:lang="en">Deploy</source>
-        <target state="translated">배포</target>
-      </trans-unit>
       <trans-unit id="sqlDatabaseProjects.description">
         <source xml:lang="en">Design and publish SQL database schemas</source>
         <target state="translated">SQL 데이터베이스 스키마 디자인 및 게시</target>
@@ -1021,6 +1117,10 @@
       <trans-unit id="sqlDatabaseProjects.exclude">
         <source xml:lang="en">Exclude from project</source>
         <target state="translated">프로젝트에서 제외</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.generateProjectFromOpenApiSpec">
+        <source xml:lang="en">Generate SQL Project from OpenAPI/Swagger spec</source>
+        <target state="translated">OpenAPI/Swagger 사양에서 SQL 프로젝트 생성</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.netCoreDoNotAsk">
         <source xml:lang="en">Whether to prompt the user to install .NET Core when not detected.</source>
@@ -1069,6 +1169,10 @@
       <trans-unit id="sqlDatabaseProjects.newView">
         <source xml:lang="en">Add View</source>
         <target state="translated">보기 추가</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.nodejsDoNotAsk">
+        <source xml:lang="en">Whether to prompt the user to install Node.js when not detected.</source>
+        <target state="translated">검색되지 않는 경우 사용자에게 Node.js를 설치할지 사용자에게 묻는 메시지를 표시할지 여부입니다.</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.open">
         <source xml:lang="en">Open Database Project</source>
