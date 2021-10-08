@@ -105,6 +105,8 @@ suite('Link Callout Dialog', function (): void {
 		assert.strictEqual(escapeUrl('Test()URL'), 'Test%28%29URL', 'URL test square brackets failed');
 		assert.strictEqual(escapeUrl('<>&()'), '&lt;&gt;&amp;%28%29', 'URL test known escaped characters failed');
 		assert.strictEqual(escapeUrl('<>&()[]'), '&lt;&gt;&amp;%28%29[]', 'URL test all escaped characters failed');
+		assert.strictEqual(escapeUrl('TEST URL'), 'TEST%20URL', 'URL with spaces failed');
+		assert.strictEqual(escapeUrl('TEST%20URL'), 'TEST%2520URL', 'URL with %20 failed');
 	});
 
 	test('Unquote text', function (): void {
