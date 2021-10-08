@@ -55,7 +55,6 @@ import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/
 import { MaskedLabeledMenuItemActionItem } from 'sql/platform/actions/browser/menuEntryActionViewItem';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Emitter } from 'vs/base/common/event';
-import { FileNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/fileNotebookInput';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -88,7 +87,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	public doubleClickEditEnabled: boolean;
 	private _onScroll = new Emitter<void>();
 	// Don't show the right hand toolbar actions if the notebook is created in a diff editor.
-	private _showToolbarActions: boolean = (<FileNotebookInput>this._notebookParams.input).showActions();
+	private _showToolbarActions: boolean = this._notebookParams.input.showActions();
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
