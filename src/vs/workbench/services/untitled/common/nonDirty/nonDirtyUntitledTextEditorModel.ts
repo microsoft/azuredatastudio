@@ -1,3 +1,4 @@
+// {{SQL CARBON EDIT}} This entire file is needed to address #5863
 import { bufferToStream, VSBuffer, VSBufferReadableStream } from 'vs/base/common/buffer';
 import { assertIsDefined } from 'vs/base/common/types';
 import { URI } from 'vs/base/common/uri';
