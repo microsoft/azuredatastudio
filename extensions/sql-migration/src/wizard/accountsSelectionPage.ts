@@ -29,7 +29,8 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 			component: view.modelBuilder.text().withProps({
 				value: constants.ACCOUNTS_SELECTION_PAGE_DESCRIPTION,
 				CSSStyles: {
-					...styles.BODY_CSS
+					...styles.BODY_CSS,
+					'margin': '0',
 				}
 			}).component()
 		};

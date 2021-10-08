@@ -412,7 +412,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				enabled: false,
 				CSSStyles: {
 					...styles.BODY_CSS,
-					'margin': '0px'
+					'margin': '0 0 12px 0'
 				}
 			}).component();
 
@@ -603,7 +603,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				value: constants.DATABASE_BACKUP_NETWORK_SHARE_AZURE_ACCOUNT_HELP,
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
 				CSSStyles: {
-					...styles.BODY_CSS
+					...styles.BODY_CSS,
+					'margin-bottom': '12px'
 				}
 			}).component();
 
@@ -611,9 +612,10 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			.withProps({
 				value: constants.SUBSCRIPTION,
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
-				requiredIndicator: true,
+				// requiredIndicator: true,
 				CSSStyles: {
-					...styles.LABEL_CSS
+					...styles.LABEL_CSS,
+					'margin': '0'
 				}
 			}).component();
 		this._networkShareContainerSubscription = this._view.modelBuilder.text()
@@ -621,8 +623,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				enabled: false,
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
 				CSSStyles: {
-					...styles.BODY_CSS,
-					'margin-top': '-1em'
+					// ...styles.BODY_CSS,
+					// 'margin-top': '-1em'
 				}
 			}).component();
 
@@ -630,9 +632,10 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			.withProps({
 				value: constants.LOCATION,
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
-				requiredIndicator: true,
+				// requiredIndicator: true,
 				CSSStyles: {
-					...styles.LABEL_CSS
+					...styles.LABEL_CSS,
+					'margin': '12px 0 0'
 				}
 			}).component();
 		this._networkShareContainerLocation = this._view.modelBuilder.text()
@@ -640,7 +643,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				enabled: false,
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
 				CSSStyles: {
-					'margin-top': '-1em'
+					'margin': '0'
 				}
 			}).component();
 

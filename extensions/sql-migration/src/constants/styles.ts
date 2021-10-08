@@ -3,9 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-export const SECONDARY_TEXT_LIGHT = '#605E5C';
-export const SECONDARY_TEXT_DARK = '#EDEBE9';
-
 export const DASHBOARD_TITLE_CSS = {
 	'font-size': '36px',
 	'line-height': '48px',
@@ -46,15 +43,14 @@ export const LABEL_CSS = {
 
 export const LIGHT_LABEL_CSS = {
 	...BODY_CSS,
-	'font-weight': '600',
-	// 'color': secondaryTextLight
+	'font-weight': '350',
 };
 
 export const NOTE_CSS = {
 	'font-size': '12px',
 	'line-height': '16px',
 	'margin': '0',
-	// 'color': secondaryTextLight,
+	'font-weight': '350',
 };
 
 export const BOLD_NOTE_CSS = {

@@ -158,8 +158,7 @@ export class DashboardWidget {
 			value: loc.PRE_REQ_TITLE,
 			CSSStyles: {
 				...styles.BODY_CSS,
-				'padding-left': '16px',
-				'margin-bottom': '4px',
+				'margin': '0px',
 			}
 		}).component();
 
@@ -172,10 +171,9 @@ export class DashboardWidget {
 				loc.PRE_REQ_3
 			],
 			CSSStyles: {
-				'padding-left': '16px',
-				'margin-bottom': '4px',
-				'margin-top': '8px',
-				...styles.SMALL_NOTE_CSS
+				...styles.SMALL_NOTE_CSS,
+				'padding-left': '12px',
+				'margin': '-0.5em 0px',
 			}
 		}).component();
 
@@ -183,31 +181,22 @@ export class DashboardWidget {
 			label: loc.LEARN_MORE,
 			ariaLabel: loc.LEARN_MORE_ABOUT_PRE_REQS,
 			url: 'https://aka.ms/azuresqlmigrationextension',
-			CSSStyles: {
-				'padding-left': '8px'
-			}
 		}).component();
 
 		const preReqContainer = view.modelBuilder.flexContainer().withItems([
 			preRequisiteListTitle,
-			preRequisiteListElement
+			preRequisiteListElement,
+			preRequisiteLearnMoreLink
 		]).withLayout({
 			flexFlow: 'column'
 		}).component();
 
-		preReqContainer.addItem(preRequisiteLearnMoreLink, {
-			CSSStyles: {
-				'padding-left': '8px'
-			}
-		});
-
 		tasksContainer.addItem(migrateButton, {});
 		tasksContainer.addItems([preReqContainer], {
 			CSSStyles: {
-				'margin-left': '8px'
+				'margin-left': '20px'
 			}
 		});
-
 		return tasksContainer;
 	}
 
@@ -414,14 +403,9 @@ export class DashboardWidget {
 				ariaLabel: loc.SHOW_STATUS,
 				clickable: true,
 				CSSStyles: {
-					// 'width': buttonWidth,
-					// 'height': buttonHeight,
-					// 'margin-bottom': '16px',
-					// 'border': '1px solid',
-					'width': '400px',
+					'height': buttonHeight,
+					'margin-bottom': '16px',
 					'border': '1px solid',
-					'margin-top': '10px',
-					'height': '50px',
 					'display': 'flex',
 					'flex-direction': 'column',
 					'justify-content': 'flex-start',
@@ -585,7 +569,8 @@ export class DashboardWidget {
 				buttonContainer
 			]
 		).withLayout({
-			flexFlow: 'row'
+			flexFlow: 'row',
+			alignItems: 'center'
 		}).component();
 
 		this._migrationStatusCardsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();

@@ -225,7 +225,7 @@ export class CreateSqlMigrationServiceDialog {
 		this.migrationServiceSubscription = this._view.modelBuilder.text().withProps({
 			enabled: false,
 			CSSStyles: {
-				'margin-top': '-1em'
+				'margin': '-1em 0 0'
 			}
 		}).component();
 
@@ -301,7 +301,7 @@ export class CreateSqlMigrationServiceDialog {
 			enabled: false,
 			value: await this._model.getLocationDisplayName(this._model._targetServerInstance.location),
 			CSSStyles: {
-				'margin-top': '-1em'
+				'margin': '-1em 0 0'
 			}
 		}).component();
 

@@ -160,6 +160,7 @@ export class MigrationCutoverDialog {
 					width: '1100px',
 					height: '300px',
 					CSSStyles: {
+						...styles.BODY_CSS,
 						'display': 'none',
 						'padding-left': '0px'
 					}
@@ -668,6 +669,7 @@ export class MigrationCutoverDialog {
 
 			if (this._shouldDisplayBackupFileTable()) {
 				await this._fileCount.updateCssStyles({
+					...styles.SECTION_HEADER_CSS,
 					display: 'inline'
 				});
 				await this._fileTable.updateCssStyles({

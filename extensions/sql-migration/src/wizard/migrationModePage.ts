@@ -78,7 +78,6 @@ export class MigrationModePage extends MigrationWizardPage {
 			name: buttonGroup,
 			CSSStyles: {
 				...styles.LABEL_CSS,
-				'margin-top': '8px'
 			},
 			checked: true
 		}).component();
@@ -102,7 +101,7 @@ export class MigrationModePage extends MigrationWizardPage {
 			name: buttonGroup,
 			CSSStyles: {
 				...styles.LABEL_CSS,
-				'margin-top': '8px'
+				'margin-top': '12px'
 			},
 		}).component();
 

@@ -85,7 +85,7 @@ export class SummaryPage extends MigrationWizardPage {
 
 		this._flexContainer.addItems(
 			[
-				await createHeadingTextComponent(this._view, constants.ACCOUNTS_SELECTION_PAGE_TITLE),
+				await createHeadingTextComponent(this._view, constants.ACCOUNTS_SELECTION_PAGE_TITLE, true),
 				createInformationRow(this._view, constants.ACCOUNTS_SELECTION_PAGE_TITLE, this.migrationStateModel._azureAccount.displayInfo.displayName),
 
 				await createHeadingTextComponent(this._view, constants.SOURCE_DATABASES),

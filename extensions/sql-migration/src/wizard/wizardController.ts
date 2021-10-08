@@ -156,7 +156,7 @@ export function createInformationRow(view: azdata.ModelView, label: string, valu
 			[
 				createLabelTextComponent(view, label,
 					{
-						...styles.LIGHT_LABEL_CSS,
+						...styles.BODY_CSS,
 						'margin': '4px 0px',
 						'width': '300px',
 					}
@@ -175,7 +175,7 @@ export async function createHeadingTextComponent(view: azdata.ModelView, value: 
 	const component = createTextComponent(view, value);
 	await component.updateCssStyles({
 		...styles.LABEL_CSS,
-		'margin-top': firstElement ? '0' : '20px'
+		'margin-top': firstElement ? '0' : '24px'
 	});
 	return component;
 }

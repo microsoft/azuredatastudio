@@ -134,13 +134,13 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			value: constants.IR_PAGE_DESCRIPTION,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			CSSStyles: {
-				...styles.BODY_CSS
+				...styles.BODY_CSS,
+				'margin-bottom': '16px'
 			}
 		}).component();
 
 		const subscriptionLabel = this._view.modelBuilder.text().withProps({
 			value: constants.SUBSCRIPTION,
-			requiredIndicator: true,
 			CSSStyles: {
 				...styles.LABEL_CSS
 			}
@@ -149,22 +149,22 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			enabled: false,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			CSSStyles: {
-				'margin-top': '-1em'
+				'margin': '0'
 			}
 		}).component();
 
 		const locationLabel = this._view.modelBuilder.text().withProps({
 			value: constants.LOCATION,
-			requiredIndicator: true,
 			CSSStyles: {
-				...styles.LABEL_CSS
+				...styles.LABEL_CSS,
+				'margin-top': '1em'
 			}
 		}).component();
 		this._location = this._view.modelBuilder.text().withProps({
 			enabled: false,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			CSSStyles: {
-				'margin-top': '-1em'
+				'margin': '0'
 			}
 		}).component();
 

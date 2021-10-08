@@ -764,7 +764,8 @@ errorId: ${e.errorId}
 
 		this._progressContainer = this._view.modelBuilder.flexContainer().withLayout({
 			height: '100%',
-			flexFlow: 'row'
+			flexFlow: 'row',
+			alignItems: 'center'
 		}).component();
 
 		this._progressContainer.addItem(this._assessmentProgress, { flex: '0 0 auto' });
