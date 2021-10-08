@@ -45,7 +45,7 @@
 			"dataworkspace.projectParentDirectoryNotExistError": "La ubicación del proyecto seleccionado, \"{0}\", no existe o no es un directorio.",
 			"dataworkspace.projectsFailedToLoad": "No se pudieron cargar algunos proyectos. Para ver más detalles, [abra la consola de desarrollo](command:workbench.action.toggleDevTools).",
 			"dataworkspace.remoteGitRepo": "Repositorio GIT remoto",
-			"dataworkspace.restartConfirmation": "Azure Data Studio debe reiniciarse para que el proyecto se cree y agregue al área de trabajo, ¿quiere hacerlo ahora?",
+			"dataworkspace.restartConfirmation": "Azure Data Studio debe reiniciarse para que el proyecto se agregue al área de trabajo. ¿Reiniciar ahora?",
 			"dataworkspace.select": "Seleccionar",
 			"dataworkspace.selectProjectLocation": "Seleccionar ubicación del proyecto",
 			"dataworkspace.selectProjectType": "Seleccionar tipo de proyecto",
@@ -70,6 +70,7 @@
 			"projects-view-no-project-content": "No hay ningún proyecto abierto en el área de trabajo actual.\r\n[Crear una nueva](command:projects.new)\r\n[Abrir existente](command:projects.openExisting)\r\nPara obtener más información sobre los proyectos, [le la documentación](https://aka.ms/azuredatastudio-projects).\r\n",
 			"projects-view-no-workspace-content": "Para empezar, cree un elemento o abra uno existente.\r\n[Crear](command:projects.new)\r\n[Abrir existente](command:projects.openExisting)\r\nPara obtener más información sobre los proyectos, [lea la documentación](https://aka.ms/azuredatastudio-projects).",
 			"projects.defaultProjectSaveLocation": "Ruta completa a la carpeta donde se guardan los nuevos proyectos de forma predeterminada.",
+			"projects.excludedProjectsDescription": "Lista de proyectos del área de trabajo que se excluirán del viewlet de proyectos",
 			"projects.showNotAddedProjectsInWorkspacePrompt": "Mostrar siempre el mensaje de información cuando las carpetas del área de trabajo actual contengan proyectos que no se hayan agregado a los proyectos del área de trabajo.",
 			"refresh-workspace-command": "Actualizar",
 			"remove-project-command": "Quitar proyecto"

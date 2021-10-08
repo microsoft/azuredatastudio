@@ -199,6 +199,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		}).component();
 		this._resourceGroupDropdown = this._view.modelBuilder.dropDown().withProps({
 			ariaLabel: constants.RESOURCE_GROUP,
+			placeholder: constants.SELECT_RESOURCE_GROUP,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			editable: true,
 			required: true,
@@ -222,6 +223,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		}).component();
 		this._dmsDropdown = this._view.modelBuilder.dropDown().withProps({
 			ariaLabel: constants.IR_PAGE_TITLE,
+			placeholder: constants.SELECT_RESOURCE_GROUP_PROMPT,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			editable: true,
 			required: true,
@@ -436,8 +438,6 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		this._resourceGroupDropdown.loading = true;
 		try {
 			this._resourceGroupDropdown.values = await this.migrationStateModel.getAzureResourceGroupDropdownValues(this.migrationStateModel._targetSubscription);
-			const resourceGroupDropdownValue = this._resourceGroupDropdown.values.find(v => v.displayName === this.migrationStateModel._sqlMigrationServiceResourceGroup);
-			this._resourceGroupDropdown.value = (resourceGroupDropdownValue) ? resourceGroupDropdownValue : this._resourceGroupDropdown.values[0];
 		} finally {
 			this._resourceGroupDropdown.loading = false;
 		}

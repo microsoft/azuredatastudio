@@ -2666,6 +2666,9 @@ Error: {1}</source>
     <trans-unit id="optionTextCell">
       <source xml:lang="en">Text cell</source>
     </trans-unit>
+    <trans-unit id="splitCell">
+      <source xml:lang="en">Split cell</source>
+    </trans-unit>
     <trans-unit id="textPreview">
       <source xml:lang="en">Text cell</source>
     </trans-unit>

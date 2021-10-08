@@ -85,6 +85,9 @@
     <trans-unit id="changeTargetPlatformAction">
       <source xml:lang="en">Change Target Platform</source>
     </trans-unit>
+    <trans-unit id="checkoutOutputMessage">
+      <source xml:lang="en">Check output pane for more details.</source>
+    </trans-unit>
     <trans-unit id="chooseAction">
       <source xml:lang="en">Choose action</source>
     </trans-unit>
@@ -114,6 +117,9 @@
     </trans-unit>
     <trans-unit id="connectionStringSettingPlaceholder">
       <source xml:lang="en">Connection string setting specified in "local.settings.json"</source>
+    </trans-unit>
+    <trans-unit id="containerAlreadyExistForProject">
+      <source xml:lang="en">Other servers on container already exist for the project. Do you want to delete them?'</source>
     </trans-unit>
     <trans-unit id="createNew">
       <source xml:lang="en">Create New</source>
@@ -231,9 +237,6 @@
     </trans-unit>
     <trans-unit id="deployProjectFailedMessage">
       <source xml:lang="en">Failed to open a connection to the deployed database'</source>
-    </trans-unit>
-    <trans-unit id="deployProjectSucceed">
-      <source xml:lang="en">Database project deployed successfully</source>
     </trans-unit>
     <trans-unit id="deployScriptExists">
       <source xml:lang="en">A {0} script already exists. The new script will not be included in build.</source>
@@ -541,17 +544,23 @@
     <trans-unit id="publishDialogName">
       <source xml:lang="en">Publish project</source>
     </trans-unit>
+    <trans-unit id="publishProjectSucceed">
+      <source xml:lang="en">Database project published successfully</source>
+    </trans-unit>
     <trans-unit id="publishSettingsFiles">
       <source xml:lang="en">Publish Settings File</source>
     </trans-unit>
     <trans-unit id="publishToContainerFailed">
-      <source xml:lang="en">Failed to publish to container. Check output pane for more details. {0}</source>
+      <source xml:lang="en">Failed to publish to container. {0}</source>
     </trans-unit>
     <trans-unit id="publishToDockerContainer">
       <source xml:lang="en">Publish to new server in a container</source>
     </trans-unit>
     <trans-unit id="publishToExistingServer">
       <source xml:lang="en">Publish to existing server</source>
+    </trans-unit>
+    <trans-unit id="publishingProjectMessage">
+      <source xml:lang="en">Publishing project in a container...</source>
     </trans-unit>
     <trans-unit id="referenceRadioButtonsGroupTitle">
       <source xml:lang="en">Type</source>
