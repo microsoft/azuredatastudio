@@ -145,6 +145,9 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 		this.options['azureResourceId'] = value;
 	}
 
+	/**
+	 * Database of server specified before connection
+	 */
 	public get originalDatabase() {
 		return this.options['originalDatabase'];
 	}
