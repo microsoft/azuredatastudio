@@ -19,7 +19,7 @@ const WIZARD_TABLE_COLUMN_WIDTH = '200px';
 const WIZARD_TABLE_COLUMN_WIDTH_SMALL = '170px';
 
 const blobResourceGroupErrorStrings = [constants.RESOURCE_GROUP_NOT_FOUND];
-const blobStorageAccountErrorStrings = [constants.NO_STORAGE_ACCOUNT_FOUND, constants.SELECT_RESOURCE_GROUP];
+const blobStorageAccountErrorStrings = [constants.NO_STORAGE_ACCOUNT_FOUND, constants.SELECT_RESOURCE_GROUP_PROMPT];
 const blobContainerErrorStrings = [constants.NO_BLOBCONTAINERS_FOUND, constants.SELECT_STORAGE_ACCOUNT];
 const blobFileErrorStrings = [constants.NO_BLOBFILES_FOUND, constants.SELECT_BLOB_CONTAINER];
 
@@ -457,12 +457,14 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			...styles.LABEL_CSS,
 			'border': 'none',
 			'text-align': 'left',
-			'border-bottom': '1px solid',
+			'box-shadow': 'inset 0px -1px 0px #F3F2F1',
+
 		};
 		const rowCssStyle: azdata.CssStyles = {
 			...styles.BODY_CSS,
 			'border': 'none',
-			'border-bottom': '1px solid',
+			'font-size': '13px',
+			'box-shadow': 'inset 0px -1px 0px #F3F2F1',
 		};
 
 		const networkShareTableText = this._view.modelBuilder.text()
@@ -990,7 +992,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						}
 					});
 					this._blobContainerStorageAccountDropdowns.forEach((v, index) => {
-						if (this.shouldDisplayBlobDropdownError(v, [constants.NO_STORAGE_ACCOUNT_FOUND, constants.SELECT_RESOURCE_GROUP])) {
+						if (this.shouldDisplayBlobDropdownError(v, [constants.NO_STORAGE_ACCOUNT_FOUND, constants.SELECT_RESOURCE_GROUP_PROMPT])) {
 							errors.push(constants.INVALID_BLOB_STORAGE_ACCOUNT_ERROR(this.migrationStateModel._migrationDbs[index]));
 						}
 					});
@@ -1250,7 +1252,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		await this._blobContainerDropdowns[rowIndex].updateProperties(dropdownProps);
 		if (columnName === constants.STORAGE_ACCOUNT) { return; }
 
-		this._blobContainerStorageAccountDropdowns[rowIndex].values = createDropdownValuesWithPrereq(constants.SELECT_RESOURCE_GROUP);
+		this._blobContainerStorageAccountDropdowns[rowIndex].values = createDropdownValuesWithPrereq(constants.SELECT_RESOURCE_GROUP_PROMPT);
 		selectDropDownIndex(this._blobContainerStorageAccountDropdowns[rowIndex], 0);
 		await this._blobContainerStorageAccountDropdowns[rowIndex].updateProperties(dropdownProps);
 	}

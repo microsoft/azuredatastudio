@@ -242,6 +242,8 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 
 			this.onContentChanged.emit();
 			this.checkForLanguageMagics();
+			// When content is updated we have to also update the horizontal scrollbar
+			this.horizontalScrollbar();
 		}));
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration('editor.wordWrap') || e.affectsConfiguration('editor.fontSize')) {
@@ -249,6 +251,9 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			}
 		}));
 		this._register(this.model.layoutChanged(() => this._layoutEmitter.fire(), this));
+		// Handles mouse wheel and scrollbar events
+		this._register(Event.debounce(this.model.onScroll.event, (l, e) => e, 250, /*leading=*/false)
+			(() => this.horizontalScrollbar()));
 		this._register(this.cellModel.onExecutionStateChange(event => {
 			if (event === CellExecutionState.Running && !this.cellModel.stdInVisible) {
 				this.setFocusAndScroll();
@@ -264,7 +269,6 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			}
 			this._layoutEmitter.fire();
 		}));
-
 		this.layout();
 
 		if (this._cellModel.isCollapsed) {
@@ -277,6 +281,55 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			DOM.getContentWidth(this.codeElement.nativeElement),
 			DOM.getContentHeight(this.codeElement.nativeElement)));
 		this._editor.setHeightToScrollHeight(false, this._cellModel.isCollapsed);
+		this.horizontalScrollbar();
+		// Move cursor to the last known location
+		if (this.cellModel.markdownCursorPosition) {
+			this._editor.getControl().setPosition(this.cellModel.markdownCursorPosition);
+		}
+	}
+
+	/**
+	 * Horizontal Scrollbar function will ensure we only calculate and trigger this if word wrap is off and it is a markdown cell
+	 * This will adjust the horizontal scrollbar to either a fixed position at the bottom of the viewport (visible area)
+	 * or it will set it to the bottom of the markdown editor if it is in the viewport (visible area)
+	 */
+	public horizontalScrollbar(): void {
+		let showScrollbar: boolean = this._editor.shouldAddHorizontalScrollbar;
+		let horizontalScrollbar: HTMLElement = this.codeElement.nativeElement.querySelector('div.scrollbar.horizontal');
+		if (this._configurationService.getValue('editor.wordWrap') === 'off' && this.cellModel.cellType !== CellTypes.Code && this.cellModel.source.length > 0 && showScrollbar) {
+			// Get markdown split view horizontal scrollbar
+			let viewport: HTMLElement = document.querySelector('.scrollable');
+			let markdownEditor: HTMLElement = this.codeElement.nativeElement.closest('.show-markdown .editor');
+
+			//Get values based on current context of the editor and ADS window
+			let markdownEditorBottom = Math.floor(markdownEditor.getBoundingClientRect().bottom);
+			let viewportBottom = Math.floor(viewport.getBoundingClientRect().bottom);
+			let viewportHeight = DOM.getTotalHeight(viewport);
+			let viewportTop = Math.floor(document.querySelector('.scrollable').getBoundingClientRect().top);
+
+			// Have to offset the height based on the contents viewport and the additional scrollbars that are present in markdown editor and notebook
+			let horizontalTop = Math.floor(Math.abs(viewportTop + viewportHeight) - Math.abs(2 * horizontalScrollbar.scrollHeight));
+
+			// Set opacity for both fixed and absolute
+			horizontalScrollbar.style.opacity = '1';
+
+			// If the bottom of the editor is in the viewport, then set the horizontal scrollbar to the bottom of the editor space
+			if (markdownEditorBottom < viewportBottom) {
+				horizontalScrollbar.style.position = 'absolute';
+				horizontalScrollbar.style.left = '0px';
+				horizontalScrollbar.style.top = '';
+				horizontalScrollbar.style.bottom = '0px';
+				// If the bottom of the editor is not in the viewport, then set the horizontal scrollbar to the bottom of the viewport
+			} else {
+				horizontalScrollbar.style.position = 'fixed';
+				horizontalScrollbar.style.left = '';
+				horizontalScrollbar.style.top = horizontalTop + 'px';
+				horizontalScrollbar.style.bottom = '';
+			}
+		} else {
+			// If horizontal scrollbar is not needed then set do not show it
+			horizontalScrollbar.style.opacity = '0';
+		}
 	}
 
 	protected initActionBar() {

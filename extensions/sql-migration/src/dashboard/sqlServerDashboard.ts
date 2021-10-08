@@ -448,7 +448,7 @@ export class DashboardWidget {
 			justifyContent: 'flex-start',
 		}).withProps({
 			CSSStyles: {
-				'border': '1px solid',
+				'border': '1px solid rgba(0, 0, 0, 0.1)',
 				'padding': '16px'
 			}
 		}).component();
@@ -688,7 +688,7 @@ export class DashboardWidget {
 			justifyContent: 'flex-start',
 		}).withProps({
 			CSSStyles: {
-				'border': '1px solid',
+				'border': '1px solid rgba(0, 0, 0, 0.1)',
 				'padding': '16px'
 			}
 		}).component();

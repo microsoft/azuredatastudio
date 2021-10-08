@@ -110,6 +110,8 @@ export class WizardController {
 				}, {});
 		});
 
+		this._wizardObject.doneButton.label = loc.START_MIGRATION_TEXT;
+
 		this._wizardObject.doneButton.onClick(e => {
 			sendSqlMigrationActionEvent(
 				TelemetryViews.SqlMigrationWizard,

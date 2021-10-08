@@ -262,6 +262,10 @@ This may take some time.</source>
         <source xml:lang="en">Completing cutover</source>
         <target state="translated">컷오버를 완료하는 중</target>
       </trans-unit>
+      <trans-unit id="sql.migration.cutover.error">
+        <source xml:lang="en">An error occurred while initiating cutover.</source>
+        <target state="translated">컷오버를 시작하는 동안 오류가 발생했습니다.</target>
+      </trans-unit>
       <trans-unit id="sql.migration.cutover.help.main">
         <source xml:lang="en">Perform the following steps before you complete cutover.</source>
         <target state="translated">중단을 완료하기 전에 다음 단계를 수행합니다.</target>
@@ -926,9 +930,37 @@ This may take some time.</source>
         <source xml:lang="en">Resource group</source>
         <target state="translated">리소스 그룹</target>
       </trans-unit>
+      <trans-unit id="sql.migration.resume.contine">
+        <source xml:lang="en">Continue last migration attempt...</source>
+        <target state="translated">마지막 마이그레이션 시도 계속...</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.resume.start">
+        <source xml:lang="en">Start with migration assessment again (recommended)</source>
+        <target state="translated">마이그레이션 평가 다시 시작(권장)</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.resume.title">
+        <source xml:lang="en">Run migration workflow again</source>
+        <target state="translated">마이그레이션 워크플로 다시 실행</target>
+      </trans-unit>
       <trans-unit id="sql.migration.rg.created">
         <source xml:lang="en">Resource group created</source>
         <target state="translated">리소스 그룹을 만들었습니다.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.save.close">
+        <source xml:lang="en">Save and close</source>
+        <target state="translated">저장하고 닫기</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.saved.assessment.cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">취소</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.saved.assessment.next">
+        <source xml:lang="en">Next</source>
+        <target state="translated">다음</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.saved.assessment.result">
+        <source xml:lang="en">Saved assessment result</source>
+        <target state="translated">저장된 평가 결과</target>
       </trans-unit>
       <trans-unit id="sql.migration.search">
         <source xml:lang="en">Search</source>
@@ -1158,6 +1190,10 @@ This may take some time.</source>
         <source xml:lang="en">SQL Virtual Machine</source>
         <target state="translated">SQL 가상 머신</target>
       </trans-unit>
+      <trans-unit id="sql.migration.start.migration.button">
+        <source xml:lang="en">Start migration</source>
+        <target state="translated">마이그레이션 시작</target>
+      </trans-unit>
       <trans-unit id="sql.migration.start.time">
         <source xml:lang="en">Start time</source>
         <target state="translated">시작 시간</target>
@@ -1165,6 +1201,14 @@ This may take some time.</source>
       <trans-unit id="sql.migration.status">
         <source xml:lang="en">Status</source>
         <target state="translated">상태</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.add.account">
+        <source xml:lang="en">Add account</source>
+        <target state="translated">계정 추가</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.add.account.MESSAGE">
+        <source xml:lang="en">Add your Azure account to view existing migrations and their status.</source>
+        <target state="translated">Azure 계정을 추가하여 기존 마이그레이션 및 해당 상태를 확인합니다.</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.canceling">
         <source xml:lang="en">Canceling</source>

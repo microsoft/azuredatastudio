@@ -45,7 +45,7 @@
 			"dataworkspace.projectParentDirectoryNotExistError": "所选项目位置“{0}”不存在或不是目录。",
 			"dataworkspace.projectsFailedToLoad": "未能加载某些项目。要查看更多详细信息，请 [打开开发人员控制台](command:workbench.action.toggleDevTools)",
 			"dataworkspace.remoteGitRepo": "远程 Git 存储库",
-			"dataworkspace.restartConfirmation": "要创建并将项目添加到工作区，需要重启 Azure Data Studio，是否立即执行此操作?",
+			"dataworkspace.restartConfirmation": "需要重启 Azure Data Studio 才能将项目添加到工作区。立即重启?",
 			"dataworkspace.select": "选择",
 			"dataworkspace.selectProjectLocation": "选择项目位置",
 			"dataworkspace.selectProjectType": "选择项目类型",
@@ -70,6 +70,7 @@
 			"projects-view-no-project-content": "当前工作区中未打开任何项目。\r\n[新建](command:projects.new)\r\n[打开现有](command:projects.openExisting)\r\n要了解项目的详细信息，请 [阅读文档](https://aka.ms/azuredatastudio-projects)。\r\n",
 			"projects-view-no-workspace-content": "创建新的或打开现有的以开始使用。\r\n[新建](command:projects.new)\r\n[打开现有](command:projects.openExisting)\r\n要了解项目的详细信息，请 [阅读文档](https://aka.ms/azuredatastudio-projects)。",
 			"projects.defaultProjectSaveLocation": "文件夹的完整路径，其中已默认保存新项目。",
+			"projects.excludedProjectsDescription": "要从项目 Viewlet 中排除的工作区中的项目列表",
 			"projects.showNotAddedProjectsInWorkspacePrompt": "在当前工作区文件夹包含尚未添加到工作区项目的项目时，始终显示信息消息。",
 			"refresh-workspace-command": "刷新",
 			"remove-project-command": "删除项目"

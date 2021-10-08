@@ -316,15 +316,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/arc/dist/localizedConstants.arc.controllerEndpoint" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Controller endpoint]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Controllerendpunkt]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.controllerKubeConfig" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Kube Config File Path]]></Val>
@@ -3514,6 +3505,42 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.dev.use.description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Check the box to indicate this instance will be used for development or testing purposes only. This instance will not be billed.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Aktivieren Sie das Kontrollkästchen, um anzugeben, dass diese Instanz nur zu Entwicklungs- oder Testzwecken verwendet wird. Diese Instanz wird nicht in Rechnung gestellt.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.dev.use.label" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[For development use only]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Nur für die Entwicklung]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.high.availability.description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Enable additional replicas for high availabilty. The compute and storage configuration selected below will be applied to all replicas.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Aktivieren Sie zusätzliche Replikate, um Hochverfügbarkeit zu erzielen. Die nachstehend ausgewählte Konfiguration für Compute- und Speicherressourcen wird auf alle Replikate angewendet.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.high.availability.label" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[High Availability]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Hochverfügbarkeit]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/arc/package.arc.sql.instance.name" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Instance name]]></Val>
@@ -3568,29 +3595,77 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/arc/package.arc.sql.replicas.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/arc/package.arc.sql.one.replica" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[The number of SQL Managed Instance replicas that will be deployed in your Kubernetes cluster for high availability purposes]]></Val>
+          <Val><![CDATA[1 replica]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Die Anzahl der SQL Managed Instance-Replikate, die in Ihrem Kubernetes-Cluster für Hochverfügbarkeit bereitgestellt werden.]]></Val>
+            <Val><![CDATA[1 Replikat]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/arc/package.arc.sql.replicas.label" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/arc/package.arc.sql.service.tier.business.critical" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Replicas]]></Val>
+          <Val><![CDATA[[PREVIEW]5D; Business Critical (Unlimited vCores and RAM, advanced high availability)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Replikate]]></Val>
+            <Val><![CDATA[[VORSCHAU]5D; Unternehmenskritisch (Unbegrenzte virtuelle Kerne und RAM, erweiterte Hochverfügbarkeit)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.service.tier.description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical. {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Wählen Sie aus den neuesten virtuellen Kern-Dienstebenen aus, die für SQL Managed Instance verfügbar sind – Azure Arc einschließlich Universell und Unternehmenskritisch. {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.service.tier.general.purpose" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[General Purpose (Up to 24 vCores and 128 Gi of RAM, standard high availability)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Universell (bis zu 24 virtuelle Kerne und 128 Gi RAM, Standard-Hochverfügbarkeit)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.service.tier.label" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Service Tier]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Dienstebene]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.storage-class.backups.description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The storage class to be used for backup persistent volumes. If no value is specified, the default storage class will be used.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Die Speicherklasse, die für persistente Sicherungsvolumes verwendet werden soll. Wenn kein Wert angegeben wird, wird die Standardspeicherklasse verwendet.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/package.arc.sql.storage-class.data.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[The storage class to be used for data (.mdf)]]></Val>
+          <Val><![CDATA[The storage class to be used for data (.mdf). If no value is specified, the default storage class will be used.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Die Speicherklasse, die für Daten (.mdf) verwendet werden soll]]></Val>
+            <Val><![CDATA[Die für Daten (.mdf) zu verwendende Speicherklasse. Wenn kein Wert angegeben wird, wird die Standardspeicherklasse verwendet.]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[The storage class to be used for data (.mdf)]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.storage-class.datalogs.description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The storage class to be used for database logs (.ldf). If no value is specified, the default storage class will be used.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Die Speicherklasse, die für Datenbankprotokolle (LDF) verwendet werden soll. Wenn kein Wert angegeben wird, wird die Standardspeicherklasse verwendet.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3606,9 +3681,30 @@
       </Item>
       <Item ItemId=";extensions/arc/package.arc.sql.storage-class.logs.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[The storage class to be used for logs (/var/log)]]></Val>
+          <Val><![CDATA[The storage class to be used for logs (/var/log). If no value is specified, the default storage class will be used.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Die Speicherklasse, die für Protokolle (/var/log) verwendet werden soll]]></Val>
+            <Val><![CDATA[Die für Protokolle (/var/log) zu verwendende Speicherklasse. Wenn kein Wert angegeben wird, wird die Standardspeicherklasse verwendet.]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[The storage class to be used for logs (/var/log)]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.three.replicas" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[3 replicas]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[3 Replikate]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.two.replicas" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[2 replicas]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[2 Replikate]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3618,6 +3714,78 @@
           <Val><![CDATA[Username]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Benutzername]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.volume.size.backups.description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The size of the storage volume to be used for backups in gibibytes.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Die Größe des Speichervolumes, das für Sicherungen in GiB verwendet werden soll.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.volume.size.backups.label" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Volume Size in Gi (Backups)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Volumegröße in Gi (Sicherungen)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.volume.size.data.description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The size of the storage volume to be used for data in gibibytes.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Die Größe des Speichervolumes, das für Daten in Gibibytes verwendet werden soll.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.volume.size.data.label" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Volume Size in Gi (Data)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Volumegröße in Gi (Daten)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.volume.size.datalogs.description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The size of the storage volume to be used for database logs in gibibytes.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Die Größe des Speichervolumes, das für Datenbankprotokolle in GiB verwendet werden soll.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.volume.size.datalogs.label" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Volume Size in Gi (Database logs)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Volumegröße in Gi (Datenbankprotokolle)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.volume.size.logs.description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The size of the storage volume to be used for logs in gibibytes.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Die Größe des Speichervolumes, das für Protokolle in GiB verwendet werden soll.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.volume.size.logs.label" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Volume Size in Gi (Logs)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Volumegröße in Gi (Protokolle)]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3654,6 +3822,15 @@
           <Val><![CDATA[Storage Class (Data)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Speicherklasse (Daten)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.storage-class.datalogs.label" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Storage Class (Database logs)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Storage-Klasse (Datenbankprotokolle)]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

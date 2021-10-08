@@ -54,6 +54,7 @@ import { CellToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cel
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 import { MaskedLabeledMenuItemActionItem } from 'sql/platform/actions/browser/menuEntryActionViewItem';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
+import { Emitter } from 'vs/base/common/event';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -84,6 +85,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private navigationResult: nb.NavigationResult;
 	public previewFeaturesEnabled: boolean = false;
 	public doubleClickEditEnabled: boolean;
+	private _onScroll = new Emitter<void>();
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -223,6 +225,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	//Saves scrollTop value on scroll change
 	public scrollHandler(event: Event) {
 		this._scrollTop = (<HTMLElement>event.srcElement).scrollTop;
+		this.model.onScroll.fire();
 	}
 
 	public unselectActiveCell() {
@@ -339,6 +342,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._register(this._model.kernelChanged((kernelArgs) => this.handleKernelChanged(kernelArgs)));
 		this._register(this._model.onCellTypeChanged(() => this.detectChanges()));
 		this._register(this._model.layoutChanged(() => this.detectChanges()));
+		this._register(this.model.onScroll.event(() => this._onScroll.fire()));
 
 		this.setLoading(false);
 		// Check if URI fragment is present; if it is, navigate to section by default

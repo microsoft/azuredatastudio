@@ -171,7 +171,8 @@
       },
       {
         "command": "sqlDatabaseProjects.addSqlBinding",
-        "title": "%sqlDatabaseProjects.addSqlBinding%"
+        "title": "%sqlDatabaseProjects.addSqlBinding%",
+        "category": "MS SQL"
       }
     ],
     "menus": {
@@ -402,7 +403,7 @@
   },
   "dependencies": {
     "@microsoft/ads-extension-telemetry": "^1.1.5",
-    "fast-glob": "^3.1.0",
+    "fast-glob": "^3.2.7",
     "fs-extra": "^5.0.0",
     "jsonc-parser": "^2.3.1",
     "promisify-child-process": "^3.1.1",
@@ -427,7 +428,6 @@
     "sinon": "^9.0.2",
     "tslint": "^5.8.0",
     "typemoq": "^2.1.0",
-    "typescript": "^2.6.1",
     "vscodetestcover": "^1.1.0"
   },
   "__metadata": {

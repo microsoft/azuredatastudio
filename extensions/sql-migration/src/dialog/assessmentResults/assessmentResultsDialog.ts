@@ -18,7 +18,7 @@ export type Issues = {
 };
 export class AssessmentResultsDialog {
 
-	private static readonly OkButtonText: string = 'OK';
+	private static readonly SelectButtonText: string = 'Select';
 	private static readonly CancelButtonText: string = 'Cancel';
 
 	private _isOpen: boolean = false;
@@ -68,7 +68,7 @@ export class AssessmentResultsDialog {
 			this._isOpen = true;
 			this.dialog = azdata.window.createModelViewDialog(this.title, this.title, 'wide');
 
-			this.dialog.okButton.label = AssessmentResultsDialog.OkButtonText;
+			this.dialog.okButton.label = AssessmentResultsDialog.SelectButtonText;
 			this._disposables.push(this.dialog.okButton.onClick(async () => await this.execute()));
 
 			this.dialog.cancelButton.label = AssessmentResultsDialog.CancelButtonText;

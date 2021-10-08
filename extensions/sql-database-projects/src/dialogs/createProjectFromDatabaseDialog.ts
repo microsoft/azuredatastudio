@@ -372,9 +372,6 @@ export class CreateProjectFromDatabaseDialog {
 
 	async validate(): Promise<boolean> {
 		try {
-			if (await getDataWorkspaceExtensionApi().validateWorkspace() === false) {
-				return false;
-			}
 			// the selected location should be an existing directory
 			const parentDirectoryExists = await exists(this.projectLocationTextBox!.value!);
 			if (!parentDirectoryExists) {
@@ -388,6 +385,11 @@ export class CreateProjectFromDatabaseDialog {
 				this.showErrorMessage(constants.ProjectDirectoryAlreadyExistError(this.projectNameTextBox!.value!, this.projectLocationTextBox!.value!));
 				return false;
 			}
+
+			if (await getDataWorkspaceExtensionApi().validateWorkspace() === false) {
+				return false;
+			}
+
 			return true;
 		} catch (err) {
 			this.showErrorMessage(err?.message ? err.message : err);

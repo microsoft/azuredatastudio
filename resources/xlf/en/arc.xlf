@@ -1187,6 +1187,9 @@
     <trans-unit id="arc.sql.instance.name">
       <source xml:lang="en">Instance name</source>
     </trans-unit>
+    <trans-unit id="arc.sql.instance.retention.policy.title">
+      <source xml:lang="en">SQL Instance Backup Retention Policy</source>
+    </trans-unit>
     <trans-unit id="arc.sql.instance.settings.section.title">
       <source xml:lang="en">SQL Instance settings</source>
     </trans-unit>
@@ -1205,6 +1208,18 @@
     <trans-unit id="arc.sql.one.replica">
       <source xml:lang="en">1 replica</source>
     </trans-unit>
+    <trans-unit id="arc.sql.pitr.description">
+      <source xml:lang="en">Point in time restore</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.pitr.retention.description">
+      <source xml:lang="en">Configure retention for point-in-time backups. {0}</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.retention.days.description">
+      <source xml:lang="en">Specify how long you want to keep your point-in-time backups.</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.retention.days.label">
+      <source xml:lang="en">PITR retention (days)</source>
+    </trans-unit>
     <trans-unit id="arc.sql.service.tier.business.critical">
       <source xml:lang="en">[PREVIEW] Business Critical (Unlimited vCores and RAM, advanced high availability)</source>
     </trans-unit>
@@ -1217,8 +1232,14 @@
     <trans-unit id="arc.sql.service.tier.label">
       <source xml:lang="en">Service Tier</source>
     </trans-unit>
+    <trans-unit id="arc.sql.storage-class.backups.description">
+      <source xml:lang="en">The storage class to be used for backup persistent volumes. If no value is specified, the default storage class will be used.</source>
+    </trans-unit>
     <trans-unit id="arc.sql.storage-class.data.description">
       <source xml:lang="en">The storage class to be used for data (.mdf). If no value is specified, the default storage class will be used.</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.storage-class.datalogs.description">
+      <source xml:lang="en">The storage class to be used for database logs (.ldf). If no value is specified, the default storage class will be used.</source>
     </trans-unit>
     <trans-unit id="arc.sql.storage-class.dc.description">
       <source xml:lang="en">The storage class to be used for all data and logs persistent volumes for all data controller pods that require them.</source>
@@ -1235,6 +1256,30 @@
     <trans-unit id="arc.sql.username">
       <source xml:lang="en">Username</source>
     </trans-unit>
+    <trans-unit id="arc.sql.volume.size.backups.description">
+      <source xml:lang="en">The size of the storage volume to be used for backups in gibibytes.</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.volume.size.backups.label">
+      <source xml:lang="en">Volume Size in Gi (Backups)</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.volume.size.data.description">
+      <source xml:lang="en">The size of the storage volume to be used for data in gibibytes.</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.volume.size.data.label">
+      <source xml:lang="en">Volume Size in Gi (Data)</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.volume.size.datalogs.description">
+      <source xml:lang="en">The size of the storage volume to be used for database logs in gibibytes.</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.volume.size.datalogs.label">
+      <source xml:lang="en">Volume Size in Gi (Database logs)</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.volume.size.logs.description">
+      <source xml:lang="en">The size of the storage volume to be used for logs in gibibytes.</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.volume.size.logs.label">
+      <source xml:lang="en">Volume Size in Gi (Logs)</source>
+    </trans-unit>
     <trans-unit id="arc.sql.wizard.page1.title">
       <source xml:lang="en">Provide Azure SQL managed instance parameters</source>
     </trans-unit>
@@ -1246,6 +1291,9 @@
     </trans-unit>
     <trans-unit id="arc.storage-class.data.label">
       <source xml:lang="en">Storage Class (Data)</source>
+    </trans-unit>
+    <trans-unit id="arc.storage-class.datalogs.label">
+      <source xml:lang="en">Storage Class (Database logs)</source>
     </trans-unit>
     <trans-unit id="arc.storage-class.dc.label">
       <source xml:lang="en">Storage Class</source>

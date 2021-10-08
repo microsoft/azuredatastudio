@@ -22,6 +22,27 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
+      <Item ItemId=";@extensions/sql-database-projects/dist/tools/shellExecutionHelper.sqlDatabaseProjects.RunStreamedCommand.ExitedWit" ItemType="0" PsrId="308" Leaf="false">
+        <Disp Icon="Dir" LocTbl="false" />
+        <Item ItemId=";(...) hCode" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[    >>> {0}    … exited with code: {1}]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[    >>> {0}    … завершил работу с кодом: {1}]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+        <Item ItemId=";(...) hSignal" ItemType="0" PsrId="308" Leaf="true">
+          <Str Cat="Text">
+            <Val><![CDATA[    >>> {0}   … exited with signal: {1}]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[    >>> {0}   … завершил работу с сигналом: {1}]]></Val>
+            </Tgt>
+          </Str>
+          <Disp Icon="Str" />
+        </Item>
+      </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.BuildHistory" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Build History]]></Val>
@@ -63,6 +84,15 @@
           <Val><![CDATA[Publish History]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Журнал публикации]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.SettingAlreadyExists" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Local app setting '{0}' already exists. Overwrite?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Параметр локального приложения "{0}" уже существует. Перезаписать его?]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -153,6 +183,15 @@
           <Val><![CDATA[Add Package]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Добавить пакет]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.addPackageReferenceMessage" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[To use SQL bindings, ensure your Azure Functions project has a reference to {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Чтобы использовать привязки SQL, убедитесь, что проект Функций Azure содержит ссылку на {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -292,6 +331,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.confirmPassword" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Confirm SQL server admin password]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Подтвердите пароль администратора SQL Server]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.connectingToSqlServerOnDockerMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Connecting to SQL Server on Docker]]></Val>
@@ -346,6 +394,15 @@
           <Prev Cat="Text">
             <Val><![CDATA[<Create New>]]></Val>
           </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.createNewLocalAppSetting" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Create new local app setting]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Создать новый параметр локального приложения]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -673,15 +730,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.deployProjectFailed" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Failed to deploy project. Check output pane for more details. {0}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Не удалось развернуть проект. Дополнительные сведения см. в области вывода. {0}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.deployProjectFailedMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to open a connection to the deployed database']]></Val>
@@ -763,6 +811,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.dockerNotRunningError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Failed to verify docker. Please make sure docker is installed and running. Error: '{0}']]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Не удалось проверить Docker. Убедитесь, что инструмент Docker установлен и работает. Ошибка: "{0}"]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.done" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Done]]></Val>
@@ -817,20 +874,20 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.enterBaseImage" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Enter the base SQL Server docker image or press enter to use the default value]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Введите базовый образ Docker SQL Server или нажмите клавишу ВВОД, чтобы использовать значение по умолчанию.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.enterConnStringTemplateDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enter a template for SQL connection string]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Введите шаблон для строки подключения SQL]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.enterConnectionString" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Enter connection string]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Введите строку подключения]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -849,6 +906,15 @@
           <Val><![CDATA[Enter environment variable for SQL connection string]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Укажите переменную среды для строки подключения SQL]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.enterConnectionStringSettingName" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Enter connection string setting name]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Введите имя параметра строки подключения]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -882,22 +948,25 @@
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.enterPassword" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Enter password]]></Val>
+          <Val><![CDATA[Enter SQL Server admin password]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Введите пароль.]]></Val>
+            <Val><![CDATA[Введите пароль администратора SQL Server]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Enter password or press enter to use the generated password]]></Val>
+            <Val><![CDATA[Enter password]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.enterPortNumber" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Enter port number or press enter to use the default value]]></Val>
+          <Val><![CDATA[Enter SQL server port number or press enter to use the default value]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Введите номер порта или нажмите клавишу ВВОД, чтобы использовать значение по умолчанию]]></Val>
+            <Val><![CDATA[Введите номер порта SQL Server или нажмите клавишу ВВОД, чтобы использовать значение по умолчанию]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Enter port number or press enter to use the default value]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1090,6 +1159,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.generatingProjectFailed" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Generating project via AutoRest failed: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ошибка формирования проекта через AutoRest: {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.hr" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[hr]]></Val>
@@ -1162,6 +1240,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.invalidSQLPassword" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[SQL Server password doesn't meet the password complexity requirement. For more information see https://docs.microsoft.com/sql/relational-databases/security/password-policy]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Пароль SQL Server не соответствует требованиям к сложности пароля. Дополнительные сведения см. по адресу https://docs.microsoft.com/sql/relational-databases/security/password-policy]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.invalidSqlConnectionString" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Invalid SQL connection string]]></Val>
@@ -1225,11 +1312,29 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.moreInformation" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[More Information]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Дополнительные сведения]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.msec" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[msec]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[мс]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.multipleMostDeploymentScripts" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Unexpected number of {0} files: {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Непредвиденное количество файлов {0}: {1}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1342,6 +1447,24 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.nodeButNotAutorestFound" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Autorest tool not found in system path, but found Node.js.  Running via npx.  Please execute 'npm install autorest -g' to install permanently.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Инструмент Autorest не найден в системном пути, но найдена платформа Node.js. Запуск через npx. Выполните команду "npm install autorest -g" для постоянной установки.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.nodeNotFound" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Neither autorest nor Node.js (npx) found in system path.  Please install Node.js for autorest generation to work.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[В системном пути не найдены autorest и Node.js (npx). Установите Node.js, чтобы можно было использовать формирование autorest.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.notValidVariableName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The variable name '{0}' is not valid.]]></Val>
@@ -1392,6 +1515,15 @@
           <Val><![CDATA[Cannot access parent of provided tree item]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Не удается получить доступ к предоставленному родительскому элементу дерева]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.passwordNotMatch" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[SQL Server password doesn't match the confirmation password]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Пароль SQL Server не совпадает с подтверждением]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1552,12 +1684,24 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.publishToContainerFailed" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Failed to publish to container. Check output pane for more details. {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Не удалось опубликовать контейнер. Дополнительные сведения см. в области вывода. {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.publishToDockerContainer" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Publish to docker container]]></Val>
+          <Val><![CDATA[Publish to new server in a container]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Опубликовать в контейнер Docker]]></Val>
+            <Val><![CDATA[Опубликовать на новом сервере в контейнере]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Publish to docker container]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1678,6 +1822,24 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.save" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Save]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Сохранить]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.saveChangesInFile" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[There are unsaved changes in the current file. Save now?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[В текущем файле есть несохраненные изменения. Сохранить сейчас?]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.schema" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Schema]]></Val>
@@ -1737,6 +1899,15 @@
           <Val><![CDATA[Select an Azure function in the current file to add SQL binding to]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Выберите функцию Azure в текущем файле, чтобы добавить привязку SQL]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.selectBaseImage" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Select the base SQL Server docker image]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Выберите базовый образ Docker SQL Server]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1834,6 +2005,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.selectSpecFile" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Select OpenAPI/Swagger spec file]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Выберите файл спецификации OpenAPI/Swagger]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.selectString" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select]]></Val>
@@ -1888,6 +2068,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.specSelectionText" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[OpenAPI/Swagger spec]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Спецификация OpenAPI/Swagger]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.sqlCmdTableLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SQLCMD Variables]]></Val>
@@ -1924,7 +2113,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.sqlDatabaseProjects.InstallNetCore" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.sqlDatabaseProjects.Install" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Install]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2164,6 +2353,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.valueMustNotBeEmpty" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Value must not be empty]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Значение не должно быть пустым]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.viewFriendlyName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[View]]></Val>
@@ -2191,7 +2389,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-database-projects/dist/tools/netcoreTool.sqlDatabaseProjects.RunCommand.stderr" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/sql-database-projects/dist/tools/shellExecutionHelper.sqlDatabaseProjects.RunCommand.stderr" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[    stderr: ]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2200,29 +2398,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-database-projects/dist/tools/netcoreTool.sqlDatabaseProjects.RunCommand.stdout" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/sql-database-projects/dist/tools/shellExecutionHelper.sqlDatabaseProjects.RunCommand.stdout" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[    stdout: ]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[    stdout: ]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-database-projects/dist/tools/netcoreTool.sqlDatabaseProjects.RunStreamedCommand.ExitedWithCode" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[    >>> {0}    … exited with code: {1}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[    >>> {0}    … завершил работу с кодом: {1}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/sql-database-projects/dist/tools/netcoreTool.sqlDatabaseProjects.RunStreamedCommand.ExitedWithSignal" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[    >>> {0}   … exited with signal: {1}]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[    >>> {0}   … завершил работу с сигналом: {1}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2250,6 +2430,15 @@
           <Val><![CDATA[Add SQL Binding]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Добавить привязку SQL]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-database-projects/package.sqlDatabaseProjects.autorestSqlVersion" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Which version of Autorest.Sql to use from NPM.  Latest will be used if not set.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Какую версию Autorest.Sql использовать из NPM. Если значение не задано, будет использоваться последняя версия.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2331,6 +2520,15 @@
           <Val><![CDATA[Exclude from project]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Исключить из проекта]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-database-projects/package.sqlDatabaseProjects.generateProjectFromOpenApiSpec" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Generate SQL Project from OpenAPI/Swagger spec]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Сформировать проект SQL из спецификации OpenAPI/Swagger]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2439,6 +2637,15 @@
           <Val><![CDATA[Add View]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Добавить представление]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-database-projects/package.sqlDatabaseProjects.nodejsDoNotAsk" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Whether to prompt the user to install Node.js when not detected.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Предлагать ли пользователю установить платформу Node.js, если она не обнаружена.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

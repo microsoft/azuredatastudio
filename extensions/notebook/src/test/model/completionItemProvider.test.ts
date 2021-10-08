@@ -9,19 +9,19 @@ import * as vscode from 'vscode';
 import * as TypeMoq from 'typemoq';
 
 import { NotebookCompletionItemProvider } from '../../intellisense/completionItemProvider';
-import { JupyterNotebookProvider } from '../../jupyter/jupyterNotebookProvider';
 import { NotebookUtils } from '../../common/notebookUtils';
-import { JupyterNotebookManager } from '../../jupyter/jupyterNotebookManager';
+import { JupyterExecuteManager } from '../../jupyter/jupyterExecuteManager';
 import { JupyterSessionManager, JupyterSession } from '../../jupyter/jupyterSessionManager';
 import { LocalJupyterServerManager } from '../../jupyter/jupyterServerManager';
 import { TestKernel } from '../common';
 import { sleep } from '../common/testUtils';
+import { JupyterExecuteProvider } from '../../jupyter/jupyterExecuteProvider';
 
 describe('Completion Item Provider', function () {
 	let completionItemProvider: NotebookCompletionItemProvider;
-	let notebookProviderMock: TypeMoq.IMock<JupyterNotebookProvider>;
+	let executeProviderMock: TypeMoq.IMock<JupyterExecuteProvider>;
 	let notebookUtils: NotebookUtils;
-	let notebookManager: JupyterNotebookManager;
+	let notebookManager: JupyterExecuteManager;
 	let mockSessionManager: TypeMoq.IMock<JupyterSessionManager>;
 	let mockServerManager: TypeMoq.IMock<LocalJupyterServerManager>;
 	let mockJupyterSession: TypeMoq.IMock<JupyterSession>;
@@ -45,10 +45,10 @@ describe('Completion Item Provider', function () {
 		mockSessionManager = TypeMoq.Mock.ofType<JupyterSessionManager>();
 		mockJupyterSession = TypeMoq.Mock.ofType<JupyterSession>();
 		kernel = new TestKernel(true, true);
-		notebookManager = new JupyterNotebookManager(mockServerManager.object, mockSessionManager.object);
-		notebookProviderMock = TypeMoq.Mock.ofType<JupyterNotebookProvider>();
-		notebookProviderMock.setup(n => n.getNotebookManager(TypeMoq.It.isAny())).returns(() => Promise.resolve(notebookManager));
-		completionItemProvider = new NotebookCompletionItemProvider(notebookProviderMock.object);
+		notebookManager = new JupyterExecuteManager(mockServerManager.object, mockSessionManager.object);
+		executeProviderMock = TypeMoq.Mock.ofType<JupyterExecuteProvider>();
+		executeProviderMock.setup(n => n.getExecuteManager(TypeMoq.It.isAny())).returns(() => Promise.resolve(notebookManager));
+		completionItemProvider = new NotebookCompletionItemProvider(executeProviderMock.object);
 	});
 
 	it('should not return items when undefined passed in for every parameter', async () => {

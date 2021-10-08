@@ -10,13 +10,13 @@ import * as fs from 'fs-extra';
 import * as constants from '../common/constants';
 import { IPrompter } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
-import { BookTreeItem, BookTreeItemType } from './bookTreeItem';
+import { BookTreeItem } from './bookTreeItem';
 import { BookModel } from './bookModel';
 import { Deferred } from '../common/promise';
 import { IBookTrustManager, BookTrustManager } from './bookTrustManager';
 import * as loc from '../common/localizedConstants';
 import * as glob from 'fast-glob';
-import { getPinnedNotebooks, confirmMessageDialog, getNotebookType, FileExtension, IPinnedNotebook } from '../common/utils';
+import { getPinnedNotebooks, confirmMessageDialog, getNotebookType, FileExtension, IPinnedNotebook, BookTreeItemType } from '../common/utils';
 import { IBookPinManager, BookPinManager } from './bookPinManager';
 import { BookTocManager, IBookTocManager, quickPickResults } from './bookTocManager';
 import { CreateBookDialog } from '../dialog/createBookDialog';
@@ -755,6 +755,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				const targetBook = this.books.find(book => book.bookPath === target.book.root);
 				for (let [book, items] of sourcesByBook) {
 					this.bookTocManager = new BookTocManager(book, targetBook);
+					this.bookTocManager.enableDnd = true;
 					await this.bookTocManager.updateBook(items, target);
 				}
 			}

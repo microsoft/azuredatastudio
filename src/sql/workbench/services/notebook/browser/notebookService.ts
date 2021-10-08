@@ -57,15 +57,14 @@ export interface INotebookService {
 	readonly isRegistrationComplete: boolean;
 	readonly registrationComplete: Promise<void>;
 	readonly languageMagics: ILanguageMagic[];
-	/**
-	 * Register a metadata provider
-	 */
-	registerProvider(providerId: string, provider: INotebookProvider): void;
 
-	/**
-	 * Register a metadata provider
-	 */
-	unregisterProvider(providerId: string): void;
+	registerSerializationProvider(providerId: string, provider: ISerializationProvider): void;
+
+	registerExecuteProvider(providerId: string, provider: IExecuteProvider): void;
+
+	unregisterSerializationProvider(providerId: string): void;
+
+	unregisterExecuteProvider(providerId: string): void;
 
 	registerNavigationProvider(provider: INavigationProvider): void;
 
@@ -77,14 +76,9 @@ export interface INotebookService {
 
 	getStandardKernelsForProvider(provider: string): azdata.nb.IStandardKernel[];
 
-	/**
-	 * Initializes and returns a Notebook manager that can handle all important calls to open, display, and
-	 * run cells in a notebook.
-	 * @param providerId ID for the provider to be used to instantiate a backend notebook service
-	 * @param uri URI for a notebook that is to be opened. Based on this an existing manager may be used, or
-	 * a new one may need to be created
-	 */
-	getOrCreateNotebookManager(providerId: string, uri: URI): Thenable<INotebookManager>;
+	getOrCreateSerializationManager(providerId: string, uri: URI): Promise<ISerializationManager>;
+
+	getOrCreateExecuteManager(providerId: string, uri: URI): Thenable<IExecuteManager>;
 
 	addNotebookEditor(editor: INotebookEditor): void;
 
@@ -148,15 +142,24 @@ export interface INotebookService {
 	getUntitledUriPath(originalTitle: string): string;
 }
 
-export interface INotebookProvider {
+export interface IExecuteProvider {
 	readonly providerId: string;
-	getNotebookManager(notebookUri: URI): Thenable<INotebookManager>;
+	getExecuteManager(notebookUri: URI): Thenable<IExecuteManager>;
 	handleNotebookClosed(notebookUri: URI): void;
 }
 
-export interface INotebookManager {
+export interface ISerializationProvider {
+	readonly providerId: string;
+	getSerializationManager(notebookUri: URI): Thenable<ISerializationManager>;
+}
+
+export interface ISerializationManager {
 	providerId: string;
 	readonly contentManager: azdata.nb.ContentManager;
+}
+
+export interface IExecuteManager {
+	providerId: string;
 	readonly sessionManager: azdata.nb.SessionManager;
 	readonly serverManager: azdata.nb.ServerManager;
 }

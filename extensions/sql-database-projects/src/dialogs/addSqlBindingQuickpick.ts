@@ -14,6 +14,16 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 		// this command only shows in the command palette when the active editor is a .cs file, so we can safely assume that's the scenario
 		// when this is called without a uri
 		uri = vscode.window.activeTextEditor!.document.uri;
+
+		if (vscode.window.activeTextEditor!.document.isDirty) {
+			const result = await vscode.window.showWarningMessage(constants.saveChangesInFile, { modal: true }, constants.save);
+
+			if (result !== constants.save) {
+				return;
+			}
+
+			await vscode.window.activeTextEditor!.document.save();
+		}
 	}
 
 	// get all the Azure functions in the file
@@ -22,7 +32,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 	try {
 		getAzureFunctionsResult = await azureFunctionsService.getAzureFunctions(uri.fsPath);
 	} catch (e) {
-		void vscode.window.showErrorMessage(e);
+		void vscode.window.showErrorMessage(utils.getErrorMessage(e));
 		return;
 	}
 
@@ -69,7 +79,8 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 	// 3. ask for object name for the binding
 	const objectName = await vscode.window.showInputBox({
 		prompt: selectedBinding.type === BindingType.input ? constants.sqlTableOrViewToQuery : constants.sqlTableToUpsert,
-		value: constants.placeHolderObject,
+		placeHolder: constants.placeHolderObject,
+		validateInput: input => input ? undefined : constants.nameMustNotBeEmpty,
 		ignoreFocusOut: true
 	});
 
@@ -93,7 +104,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 		try {
 			settings = await azureFunctionsUtils.getLocalSettingsJson(path.join(path.dirname(projectUri.fsPath!), constants.azureFunctionLocalSettingsFileName));
 		} catch (e) {
-			void vscode.window.showErrorMessage(e);
+			void vscode.window.showErrorMessage(utils.getErrorMessage(e));
 			return;
 		}
 
@@ -153,7 +164,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 					}
 				} catch (e) {
 					// display error message and show select setting quickpick again
-					void vscode.window.showErrorMessage(e);
+					void vscode.window.showErrorMessage(utils.getErrorMessage(e));
 				}
 				// If user cancels out of this or doesn't want to overwrite an existing setting
 				// just return them to the select setting quickpick in case they changed their mind
@@ -190,7 +201,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 			.withAdditionalProperties({ bindingType: selectedBinding.label })
 			.send();
 	} catch (e) {
-		void vscode.window.showErrorMessage(e);
+		void vscode.window.showErrorMessage(utils.getErrorMessage(e));
 		TelemetryReporter.sendErrorEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.finishAddSqlBinding);
 		return;
 	}

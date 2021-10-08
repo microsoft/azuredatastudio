@@ -1565,6 +1565,22 @@
         <source xml:lang="en">The request for cores of the managed instance as an integer.</source>
         <target state="translated">Запрос ядер управляемого экземпляра в виде целого числа.</target>
       </trans-unit>
+      <trans-unit id="arc.sql.dev.use.description">
+        <source xml:lang="en">Check the box to indicate this instance will be used for development or testing purposes only. This instance will not be billed.</source>
+        <target state="translated">Установите этот флажок, чтобы указать, что этот экземпляр будет использоваться только для разработки и тестирования. За этот экземпляр не будет взиматься оплата.</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.dev.use.label">
+        <source xml:lang="en">For development use only</source>
+        <target state="translated">Только для разработки</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.high.availability.description">
+        <source xml:lang="en">Enable additional replicas for high availabilty. The compute and storage configuration selected below will be applied to all replicas.</source>
+        <target state="translated">Включите дополнительные реплики для высокого уровня доступности. Выбранная ниже конфигурация вычислений и хранилища будет применена ко всем репликам.</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.high.availability.label">
+        <source xml:lang="en">High Availability</source>
+        <target state="translated">Высокая доступность</target>
+      </trans-unit>
       <trans-unit id="arc.sql.instance.name">
         <source xml:lang="en">Instance name</source>
         <target state="translated">Имя экземпляра</target>
@@ -1589,29 +1605,89 @@
         <source xml:lang="en">The request for the capacity of the managed instance as an integer amount of memory in GBs.</source>
         <target state="translated">Запрос емкости управляемого экземпляра в виде целочисленного объема памяти в ГБ.</target>
       </trans-unit>
-      <trans-unit id="arc.sql.replicas.description">
-        <source xml:lang="en">The number of SQL Managed Instance replicas that will be deployed in your Kubernetes cluster for high availability purposes</source>
-        <target state="translated">Число реплик Управляемого экземпляра SQL, которые будут развернуты в кластере Kubernetes для обеспечения высокого уровня доступности</target>
+      <trans-unit id="arc.sql.one.replica">
+        <source xml:lang="en">1 replica</source>
+        <target state="translated">1 реплика</target>
       </trans-unit>
-      <trans-unit id="arc.sql.replicas.label">
-        <source xml:lang="en">Replicas</source>
-        <target state="translated">Реплики</target>
+      <trans-unit id="arc.sql.service.tier.business.critical">
+        <source xml:lang="en">[PREVIEW] Business Critical (Unlimited vCores and RAM, advanced high availability)</source>
+        <target state="translated">[ПРЕДВАРИТЕЛЬНАЯ ВЕРСИЯ] Критически важный для бизнеса (неограниченное количество виртуальных ядер и объем ОЗУ, расширенные функции высокого уровня доступности)</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.service.tier.description">
+        <source xml:lang="en">Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical. {0}</source>
+        <target state="translated">Выберите один из последних уровней служб vCore, доступных для Управляемого экземпляра SQL Managed Instance — Azure Arc, включая уровни "Общего назначения" и "Критически важный для бизнеса". {0}</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.service.tier.general.purpose">
+        <source xml:lang="en">General Purpose (Up to 24 vCores and 128 Gi of RAM, standard high availability)</source>
+        <target state="translated">Общего назначения (до 24 виртуальных ядер и 128 ГБ ОЗУ, стандартные функции высокого уровня доступности)</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.service.tier.label">
+        <source xml:lang="en">Service Tier</source>
+        <target state="translated">Уровень служб</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.storage-class.backups.description">
+        <source xml:lang="en">The storage class to be used for backup persistent volumes. If no value is specified, the default storage class will be used.</source>
+        <target state="translated">Класс хранения для постоянных томов резервного копирования. Если значение не указано, будет использоваться класс по умолчанию.</target>
       </trans-unit>
       <trans-unit id="arc.sql.storage-class.data.description">
-        <source xml:lang="en">The storage class to be used for data (.mdf)</source>
-        <target state="translated">Класс хранения, используемый для данных (.mdf)</target>
+        <source xml:lang="en">The storage class to be used for data (.mdf). If no value is specified, the default storage class will be used.</source>
+        <target state="translated">Класс хранения, используемый для данных (.mdf). Если значение не указано, будет использован класс хранения по умолчанию.</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.storage-class.datalogs.description">
+        <source xml:lang="en">The storage class to be used for database logs (.ldf). If no value is specified, the default storage class will be used.</source>
+        <target state="translated">Класс хранения для журналов базы данных (.ldf). Если значение не указано, будет использоваться класс по умолчанию.</target>
       </trans-unit>
       <trans-unit id="arc.sql.storage-class.dc.description">
         <source xml:lang="en">The storage class to be used for all data and logs persistent volumes for all data controller pods that require them.</source>
         <target state="translated">Класс хранения, используемый для всех данных и постоянных томов журналов во всех объектах pod контроллеров данных, которым они требуются.</target>
       </trans-unit>
       <trans-unit id="arc.sql.storage-class.logs.description">
-        <source xml:lang="en">The storage class to be used for logs (/var/log)</source>
-        <target state="translated">Класс хранения, используемый для журналов (var/log)</target>
+        <source xml:lang="en">The storage class to be used for logs (/var/log). If no value is specified, the default storage class will be used.</source>
+        <target state="translated">Класс хранения, используемый для журналов (/var/log). Если значение не указано, будет использован класс хранения по умолчанию.</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.three.replicas">
+        <source xml:lang="en">3 replicas</source>
+        <target state="translated">3 реплики</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.two.replicas">
+        <source xml:lang="en">2 replicas</source>
+        <target state="translated">2 реплики</target>
       </trans-unit>
       <trans-unit id="arc.sql.username">
         <source xml:lang="en">Username</source>
         <target state="translated">Имя пользователя</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.volume.size.backups.description">
+        <source xml:lang="en">The size of the storage volume to be used for backups in gibibytes.</source>
+        <target state="translated">Размер тома хранилища для резервных копий (гибибайт).</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.volume.size.backups.label">
+        <source xml:lang="en">Volume Size in Gi (Backups)</source>
+        <target state="translated">Размер тома в ГиБ (резервные копии)</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.volume.size.data.description">
+        <source xml:lang="en">The size of the storage volume to be used for data in gibibytes.</source>
+        <target state="translated">Размер тома хранилища для данных (гибибайт).</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.volume.size.data.label">
+        <source xml:lang="en">Volume Size in Gi (Data)</source>
+        <target state="translated">Размер тома в ГиБ (данные)</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.volume.size.datalogs.description">
+        <source xml:lang="en">The size of the storage volume to be used for database logs in gibibytes.</source>
+        <target state="translated">Размер тома хранилища для журналов базы данных (гибибайт).</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.volume.size.datalogs.label">
+        <source xml:lang="en">Volume Size in Gi (Database logs)</source>
+        <target state="translated">Размер тома в ГиБ (журналы базы данных)</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.volume.size.logs.description">
+        <source xml:lang="en">The size of the storage volume to be used for logs in gibibytes.</source>
+        <target state="translated">Размер тома хранилища для журналов (гибибайт).</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.volume.size.logs.label">
+        <source xml:lang="en">Volume Size in Gi (Logs)</source>
+        <target state="translated">Размер тома в ГиБ (журналы)</target>
       </trans-unit>
       <trans-unit id="arc.sql.wizard.page1.title">
         <source xml:lang="en">Provide Azure SQL managed instance parameters</source>
@@ -1628,6 +1704,10 @@
       <trans-unit id="arc.storage-class.data.label">
         <source xml:lang="en">Storage Class (Data)</source>
         <target state="translated">Класс хранения (данные)</target>
+      </trans-unit>
+      <trans-unit id="arc.storage-class.datalogs.label">
+        <source xml:lang="en">Storage Class (Database logs)</source>
+        <target state="translated">Класс хранения (журналы базы данных)</target>
       </trans-unit>
       <trans-unit id="arc.storage-class.dc.label">
         <source xml:lang="en">Storage Class</source>

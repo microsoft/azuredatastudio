@@ -23,7 +23,7 @@ import { IMarkdownRenderResult } from 'vs/editor/browser/core/markdownRenderer';
 
 import { NotebookMarkdownRenderer } from 'sql/workbench/contrib/notebook/browser/outputs/notebookMarkdown';
 import { CellView } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
-import { CellEditModes, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { ICaretPosition, CellEditModes, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { ISanitizer, defaultSanitizer } from 'sql/workbench/services/notebook/browser/outputs/sanitizer';
 import { CodeComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/code.component';
@@ -70,17 +70,33 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	@HostListener('document:keydown', ['$event'])
 	onkeydown(e: KeyboardEvent) {
 		if (DOM.getActiveElement() === this.output?.nativeElement && this.isActive() && this.cellModel?.currentMode === CellEditModes.WYSIWYG) {
-			// select the active .
+			// Select all text
 			if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
 				preventDefaultAndExecCommand(e, 'selectAll');
+				// Redo text
 			} else if ((e.metaKey && e.shiftKey && e.key === 'z') || (e.ctrlKey && e.key === 'y') && !this.markdownMode) {
 				this.redoRichTextChange();
+				// Undo text
 			} else if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
 				this.undoRichTextChange();
+				// Outdent text
 			} else if (e.shiftKey && e.key === 'Tab') {
 				preventDefaultAndExecCommand(e, 'outdent');
+				// Indent text
 			} else if (e.key === 'Tab') {
 				preventDefaultAndExecCommand(e, 'indent');
+				// Bold text
+			} else if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+				preventDefaultAndExecCommand(e, 'bold');
+				// Italicize text
+			} else if ((e.ctrlKey || e.metaKey) && e.key === 'i') {
+				preventDefaultAndExecCommand(e, 'italic');
+				// Underline text
+			} else if ((e.ctrlKey || e.metaKey) && e.key === 'u') {
+				preventDefaultAndExecCommand(e, 'underline');
+				// Code Block
+			} else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'k') {
+				preventDefaultAndExecCommand(e, 'formatBlock', false, 'pre');
 			}
 		}
 	}
@@ -103,6 +119,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	public doubleClickEditEnabled: boolean;
 	private _highlightRange: NotebookRange;
 	private _isFindActive: boolean = false;
+	private _editorHeight: number;
+	private readonly _markdownMaxHeight = 4000;
 
 	private readonly _undoStack: RichTextEditStack;
 	private readonly _redoStack: RichTextEditStack;
@@ -176,6 +194,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	ngOnInit() {
+		this._editorHeight = document.querySelector('.editor-container').clientHeight;
 		this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
@@ -192,10 +211,48 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			this._changeRef.detectChanges();
 		}));
 		this._register(this.cellModel.onCellPreviewModeChanged(preview => {
+			// On preview mode change, get the cursor position (get the position only when the selection node is a text node)
+			if (window.getSelection() && window.getSelection().focusNode?.nodeName === '#text' && window.getSelection().getRangeAt(0)) {
+				let selection = window.getSelection().getRangeAt(0);
+				// Check to see if the last cursor position is still the same and skip
+				if (selection.startOffset !== this.cellModel.richTextCursorPosition?.startOffset) {
+					// window.getSelection gives the exact html element and offsets of cursor location
+					// Since we only have the output element reference which is the parent of all html nodes
+					// we iterate through it's child nodes until we get the selection element and store the node indexes
+					// in the startElementNodes and endElementNodes and their offsets respectively.
+					let startElementNodes = [];
+					let startNode = selection.startContainer;
+					let endNode = selection.endContainer;
+					while (startNode !== this.output.nativeElement) {
+						startElementNodes.push(this.getNodeIndex(startNode));
+						startNode = startNode.parentNode;
+					}
+					let endElementNodes = [];
+					while (endNode !== this.output.nativeElement) {
+						endElementNodes.push(this.getNodeIndex(endNode));
+						endNode = endNode.parentNode;
+					}
+					// Create cursor position
+					let cursorPosition: ICaretPosition = {
+						startElementNodes: startElementNodes,
+						startOffset: selection.startOffset,
+						endElementNodes: endElementNodes,
+						endOffset: selection.endOffset
+					};
+					this.cellModel.richTextCursorPosition = cursorPosition;
+				}
+			}
 			this.previewMode = preview;
 			this.focusIfPreviewMode();
 		}));
 		this._register(this.cellModel.onCellMarkdownModeChanged(markdown => {
+			if (!markdown) {
+				let editorControl = this.cellEditors.length > 0 ? this.cellEditors[0].getEditor().getControl() : undefined;
+				if (editorControl) {
+					let selection = editorControl.getSelection();
+					this.cellModel.markdownCursorPosition = selection?.getPosition();
+				}
+			}
 			this.markdownMode = markdown;
 			this.focusIfPreviewMode();
 		}));
@@ -215,6 +272,17 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				break;
 			}
 		}
+	}
+
+	getNodeIndex(n) {
+		let i = 0;
+		// walk up the node to the top and get it's index
+		n = n.previousSibling;
+		while (n) {
+			i++;
+			n = n.previousSibling;
+		}
+		return i;
 	}
 
 	public cellGuid(): string {
@@ -262,7 +330,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				let outputElement = <HTMLElement>this.output.nativeElement;
 				outputElement.innerHTML = this.markdownResult.element.innerHTML;
 				this.addUndoElement(outputElement.innerHTML);
-
+				if (this.markdownMode) {
+					this.setSplitViewHeight();
+				}
 				outputElement.style.lineHeight = this.markdownPreviewLineHeight.toString();
 				this.cellModel.renderedOutputTextContent = this.getRenderedTextOutput();
 				outputElement.focus();
@@ -270,6 +340,23 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 					this.addDecoration();
 				}
 			}
+		}
+	}
+
+	private setSplitViewHeight(): void {
+		// Set the same height for markdown editor and preview
+		this.setMarkdownEditorHeight(this._editorHeight);
+		let outputElement = <HTMLElement>this.output.nativeElement;
+		outputElement.style.maxHeight = this._editorHeight.toString() + 'px';
+		outputElement.style.overflowY = 'scroll';
+	}
+
+	private setMarkdownEditorHeight(height: number): void {
+		// Find cell editor provider via cell guid to set markdown editor max height
+		let cellEditorProvider = this.markdowncodeCell.find(c => c.cellGuid() === this.cellModel.cellGuid);
+		let markdownEditor = cellEditorProvider?.getEditor();
+		if (markdownEditor) {
+			markdownEditor.setMaximumHeight(height);
 		}
 	}
 
@@ -404,11 +491,47 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	private focusIfPreviewMode(): void {
-		if (this.previewMode && !this.markdownMode) {
-			let outputElement = this.output?.nativeElement as HTMLElement;
-			if (outputElement) {
-				outputElement.focus();
+		if (this.previewMode) {
+			if (!this.markdownMode) {
+				let outputElement = this.output?.nativeElement as HTMLElement;
+				if (outputElement) {
+					outputElement.style.maxHeight = 'unset';
+					outputElement.focus();
+				}
+			} else {
+				this.setSplitViewHeight();
 			}
+			// Move cursor to the richTextCursorPosition
+			// We iterate through the output element childnodes to get to the element of cursor location
+			// If the elements exist, we set the selection, else the cursor defaults to beginning.
+			if (!this.markdownMode && this.cellModel.richTextCursorPosition) {
+				let selection = window.getSelection();
+				let htmlNodes = this.cellModel.richTextCursorPosition.startElementNodes;
+				let depthToNode = htmlNodes.length;
+				let startNodeElement: any = this.output.nativeElement;
+				while (depthToNode-- && startNodeElement) {
+					startNodeElement = startNodeElement.childNodes[htmlNodes[depthToNode]];
+				}
+				htmlNodes = this.cellModel.richTextCursorPosition.endElementNodes;
+				depthToNode = htmlNodes.length;
+				let endNodeElement: any = this.output.nativeElement;
+				while (depthToNode-- && endNodeElement) {
+					endNodeElement = endNodeElement?.childNodes[htmlNodes[depthToNode]];
+				}
+				// check to see if the nodes exist and set the cursor
+				if (startNodeElement && endNodeElement) {
+					// check the offset is still valid (element's text updates can make it invalid)
+					if (startNodeElement.length >= this.cellModel.richTextCursorPosition.startOffset && endNodeElement.length >= this.cellModel.richTextCursorPosition.endOffset) {
+						let range = document.createRange();
+						range.setStart(startNodeElement, this.cellModel.richTextCursorPosition.startOffset);
+						range.setEnd(endNodeElement, this.cellModel.richTextCursorPosition.endOffset);
+						selection.removeAllRanges();
+						selection.addRange(range);
+					}
+				}
+			}
+		} else {
+			this.setMarkdownEditorHeight(this._markdownMaxHeight);
 		}
 	}
 
@@ -554,10 +677,11 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	}
 }
 
-function preventDefaultAndExecCommand(e: KeyboardEvent, commandId: string) {
-	// use preventDefault() to avoid invoking the editor's select all
+function preventDefaultAndExecCommand(e: KeyboardEvent, commandId: string, showUI?: boolean, value?: string) {
+	// Use preventDefault() to avoid invoking the editor's select all and stopPropagation to prevent further propagation of the current event
+	e.stopPropagation();
 	e.preventDefault();
-	document.execCommand(commandId);
+	document.execCommand(commandId, showUI, value);
 }
 
 /**

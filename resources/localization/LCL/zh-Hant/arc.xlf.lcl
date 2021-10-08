@@ -316,15 +316,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/arc/dist/localizedConstants.arc.controllerEndpoint" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Controller endpoint]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[控制器端點]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.controllerKubeConfig" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Kube Config File Path]]></Val>
@@ -3514,6 +3505,42 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.dev.use.description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Check the box to indicate this instance will be used for development or testing purposes only. This instance will not be billed.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[勾選此方塊以表示此執行個體將僅用於開發或測試用途。此執行個體將不會計費。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.dev.use.label" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[For development use only]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[僅供開發使用]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.high.availability.description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Enable additional replicas for high availabilty. The compute and storage configuration selected below will be applied to all replicas.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[為求高可用性啟用其他複本。下方選取的計算與儲存體組態將會套用至所有複本。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.high.availability.label" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[High Availability]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[高可用性]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/arc/package.arc.sql.instance.name" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Instance name]]></Val>
@@ -3568,29 +3595,77 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/arc/package.arc.sql.replicas.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/arc/package.arc.sql.one.replica" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[The number of SQL Managed Instance replicas that will be deployed in your Kubernetes cluster for high availability purposes]]></Val>
+          <Val><![CDATA[1 replica]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[出於高可用性目的，將部署在 Kubernetes 叢集中的 SQL 受控執行個體複本數目]]></Val>
+            <Val><![CDATA[1 個複本]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/arc/package.arc.sql.replicas.label" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/arc/package.arc.sql.service.tier.business.critical" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Replicas]]></Val>
+          <Val><![CDATA[[PREVIEW]5D; Business Critical (Unlimited vCores and RAM, advanced high availability)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[複本]]></Val>
+            <Val><![CDATA[[預覽]5D; 商務關鍵性 (無限虛擬核心及 RAM，進階高可用性)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.service.tier.description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical. {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[從 Azure SQL 受控執行個體 - Azure Arc (包括一般用途和商務關鍵性) 可用的最新虛擬核心服務層級中選取。 {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.service.tier.general.purpose" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[General Purpose (Up to 24 vCores and 128 Gi of RAM, standard high availability)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[一般用途 (最高 24 個虛擬核心及 128 Gi RAM，標準高可用性)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.service.tier.label" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Service Tier]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[服務層級]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.storage-class.backups.description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The storage class to be used for backup persistent volumes. If no value is specified, the default storage class will be used.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[用用於備份永久性磁碟區的儲存類別。如果未指定任何值，則會使用預設儲存類別。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/package.arc.sql.storage-class.data.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[The storage class to be used for data (.mdf)]]></Val>
+          <Val><![CDATA[The storage class to be used for data (.mdf). If no value is specified, the default storage class will be used.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[用於資料 (.mdf) 的儲存類別]]></Val>
+            <Val><![CDATA[用於資料 (.mdf) 的儲存類別。如果未指定任何值，則會使用預設儲存類別。]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[The storage class to be used for data (.mdf)]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.storage-class.datalogs.description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The storage class to be used for database logs (.ldf). If no value is specified, the default storage class will be used.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[用於資料庫記錄 (.ldf) 的儲存類別。如果未指定任何值，則會使用預設儲存類別。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3606,9 +3681,30 @@
       </Item>
       <Item ItemId=";extensions/arc/package.arc.sql.storage-class.logs.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[The storage class to be used for logs (/var/log)]]></Val>
+          <Val><![CDATA[The storage class to be used for logs (/var/log). If no value is specified, the default storage class will be used.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[用於記錄 (/var/log) 的儲存類別]]></Val>
+            <Val><![CDATA[用於記錄 (/var/log) 的儲存類別。如果未指定任何值，則會使用預設儲存類別。]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[The storage class to be used for logs (/var/log)]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.three.replicas" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[3 replicas]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[3 個複本]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.two.replicas" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[2 replicas]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[2 個複本]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3618,6 +3714,78 @@
           <Val><![CDATA[Username]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[使用者名稱]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.volume.size.backups.description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The size of the storage volume to be used for backups in gibibytes.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[要用於備份之儲存磁碟區的大小 (GB)。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.volume.size.backups.label" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Volume Size in Gi (Backups)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[以 Gi 表示的磁碟區大小 (備份)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.volume.size.data.description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The size of the storage volume to be used for data in gibibytes.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[要用於資料之儲存磁碟區的大小 (GB)。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.volume.size.data.label" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Volume Size in Gi (Data)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[以 Gi 表示的磁碟區大小 (資料)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.volume.size.datalogs.description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The size of the storage volume to be used for database logs in gibibytes.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[要用於資料庫記錄之儲存區的大小 (以 GI 為單位)。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.volume.size.datalogs.label" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Volume Size in Gi (Database logs)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[以 Gi 表示的磁碟區大小 (資料庫記錄)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.volume.size.logs.description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The size of the storage volume to be used for logs in gibibytes.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[要用於記錄之儲存磁碟區的大小 (GB)。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.volume.size.logs.label" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Volume Size in Gi (Logs)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[以 Gi 表示的磁碟區大小 (記錄)]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3654,6 +3822,15 @@
           <Val><![CDATA[Storage Class (Data)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[儲存類別 (資料)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.storage-class.datalogs.label" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Storage Class (Database logs)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[儲存類別 (資料庫記錄)]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

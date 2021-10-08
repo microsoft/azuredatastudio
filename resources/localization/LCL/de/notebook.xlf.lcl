@@ -950,10 +950,13 @@
       </Item>
       <Item ItemId=";extensions/notebook/dist/dialog/configurePython/configurePathPage.configurePython.descriptionWithKernel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[The {0} kernel requires a Python runtime to be configured and dependencies to be installed.]]></Val>
+          <Val><![CDATA[The '{0}' kernel requires a Python runtime to be configured and dependencies to be installed.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Für den {0}-Kernel ist die Konfiguration einer Python-Runtime und die Installation von Abhängigkeiten erforderlich.]]></Val>
+            <Val><![CDATA[Für den "{0}"-Kernel ist die Konfiguration einer Python-Runtime und die Installation von Abhängigkeiten erforderlich.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[The {0} kernel requires a Python runtime to be configured and dependencies to be installed.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1173,11 +1176,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/configurePython/pickPackagesPage.msgUnsupportedKernel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/notebook/dist/dialog/configurePython/pickPackagesPage.msgNoRequirementsForKernel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Could not retrieve packages for kernel {0}]]></Val>
+          <Val><![CDATA[No packages are required by default for the kernel '{0}']]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Für Kernel "{0}" konnten keine Pakete abgerufen werden.]]></Val>
+            <Val><![CDATA[Für den Kernel "{0}" sind standardmäßig keine Pakete erforderlich]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1470,7 +1473,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/jupyter/jupyterNotebookProvider.errNotebookUriMissing" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/notebook/dist/jupyter/jupyterExecuteProvider.errNotebookUriMissing" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[A notebook path is required]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -1953,11 +1956,38 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/notebook/package.notebook.command.boldText" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Bold Markdown Text]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Fettschreiben des Markdowntextes]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/notebook/package.notebook.command.clearactivecellresult" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Clear Cell Result]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Zellergebnis löschen]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/notebook/package.notebook.command.codeBlock" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Add Code Block]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Codeblock hinzufügen]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/notebook/package.notebook.command.italicizeText" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Italicize Markdown Text]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Kursivisieren des Markdowntextes]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1994,6 +2024,15 @@
           <Val><![CDATA[Run Cells]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Zellen ausführen]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/notebook/package.notebook.command.underlineText" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Underline Markdown Text]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Markdowntext unterstreichen]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

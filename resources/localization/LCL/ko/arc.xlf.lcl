@@ -316,15 +316,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/arc/dist/localizedConstants.arc.controllerEndpoint" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Controller endpoint]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[컨트롤러 엔드포인트]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.controllerKubeConfig" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Kube Config File Path]]></Val>
@@ -3514,6 +3505,42 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.dev.use.description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Check the box to indicate this instance will be used for development or testing purposes only. This instance will not be billed.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[이 인스턴스가 개발 또는 테스트 목적으로만 사용됨을 나타내려면 확인란을 선택합니다. 이 인스턴스는 청구되지 않습니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.dev.use.label" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[For development use only]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[개발용으로만 사용]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.high.availability.description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Enable additional replicas for high availabilty. The compute and storage configuration selected below will be applied to all replicas.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[고가용성을 위해 추가적인 복제본을 사용 설정합니다. 아래에서 선택한 컴퓨팅 및 스토리지 구성이 모든 복제본에 적용됩니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.high.availability.label" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[High Availability]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[고가용성]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/arc/package.arc.sql.instance.name" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Instance name]]></Val>
@@ -3568,29 +3595,77 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/arc/package.arc.sql.replicas.description" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/arc/package.arc.sql.one.replica" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[The number of SQL Managed Instance replicas that will be deployed in your Kubernetes cluster for high availability purposes]]></Val>
+          <Val><![CDATA[1 replica]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[고가용성을 위해 Kubernetes 클러스터에 배포될 SQL Managed Instance의 복제본 수]]></Val>
+            <Val><![CDATA[복제본 1개]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/arc/package.arc.sql.replicas.label" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/arc/package.arc.sql.service.tier.business.critical" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Replicas]]></Val>
+          <Val><![CDATA[[PREVIEW]5D; Business Critical (Unlimited vCores and RAM, advanced high availability)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[복제본]]></Val>
+            <Val><![CDATA[[미리 보기]5D; 비즈니스 크리티컬(무제한 vCore 및 RAM, 고급 고가용성)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.service.tier.description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical. {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[범용 및 중요 비즈니스용을 포함하여 SQL Managed Instance - Azure Arc에 사용할 수 있는 최신 vCore 서비스 계층에서 선택합니다. {0}]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.service.tier.general.purpose" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[General Purpose (Up to 24 vCores and 128 Gi of RAM, standard high availability)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[범용(최대 24개의 vCore 및 128Gi의 RAM, 표준 고가용성)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.service.tier.label" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Service Tier]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[서비스 계층]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.storage-class.backups.description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The storage class to be used for backup persistent volumes. If no value is specified, the default storage class will be used.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[백업 영구 볼륨에 사용할 저장소 클래스입니다. 값을 지정하지 않으면 기본 저장소 클래스가 사용됩니다.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/package.arc.sql.storage-class.data.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[The storage class to be used for data (.mdf)]]></Val>
+          <Val><![CDATA[The storage class to be used for data (.mdf). If no value is specified, the default storage class will be used.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[데이터에 사용할 스토리지 클래스(.mdf)]]></Val>
+            <Val><![CDATA[데이터(.mdf)에 사용할 스토리지 클래스입니다. 값을 지정하지 않으면 기본 스토리지 클래스가 사용됩니다.]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[The storage class to be used for data (.mdf)]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.storage-class.datalogs.description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The storage class to be used for database logs (.ldf). If no value is specified, the default storage class will be used.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[데이터베이스 로그(.ldf)에 사용할 저장소 클래스입니다. 값을 지정하지 않으면 기본 저장소 클래스가 사용됩니다.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3606,9 +3681,30 @@
       </Item>
       <Item ItemId=";extensions/arc/package.arc.sql.storage-class.logs.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[The storage class to be used for logs (/var/log)]]></Val>
+          <Val><![CDATA[The storage class to be used for logs (/var/log). If no value is specified, the default storage class will be used.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[로그에 사용할 스토리지 클래스(/var/log)]]></Val>
+            <Val><![CDATA[로그에 사용할 스토리지 클래스(/var/log). 값을 지정하지 않으면 기본 스토리지 클래스가 사용됩니다.]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[The storage class to be used for logs (/var/log)]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.three.replicas" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[3 replicas]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[복제본 3개]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.two.replicas" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[2 replicas]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[복제본 2개]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3618,6 +3714,78 @@
           <Val><![CDATA[Username]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[사용자 이름]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.volume.size.backups.description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The size of the storage volume to be used for backups in gibibytes.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[백업에 사용할 저장소 볼륨의 크기(기비바이트)입니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.volume.size.backups.label" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Volume Size in Gi (Backups)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Gi 단위의 볼류 크기(백업)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.volume.size.data.description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The size of the storage volume to be used for data in gibibytes.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[데이터에 사용할 저장소 볼륨의 크기(기비바이트)입니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.volume.size.data.label" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Volume Size in Gi (Data)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Gi 단위의 볼류 크기(데이터)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.volume.size.datalogs.description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The size of the storage volume to be used for database logs in gibibytes.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[데이터베이스 로그에 사용할 저장소 볼륨의 크기(기비바이트)입니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.volume.size.datalogs.label" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Volume Size in Gi (Database logs)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[볼륨 크기(Gi)(데이터베이스 로그)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.volume.size.logs.description" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The size of the storage volume to be used for logs in gibibytes.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[로그에 사용할 저장소 볼륨의 크기(기비바이트)입니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.sql.volume.size.logs.label" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Volume Size in Gi (Logs)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Gi 단위의 볼류 크기(로그)]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3654,6 +3822,15 @@
           <Val><![CDATA[Storage Class (Data)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[스토리지 클래스(데이터)]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/package.arc.storage-class.datalogs.label" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Storage Class (Database logs)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[저장소 클래스(데이터베이스 로그)]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
