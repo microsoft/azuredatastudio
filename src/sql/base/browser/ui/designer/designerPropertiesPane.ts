@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { CreateComponentFunc, DesignerUIComponent, SetComponentValueFunc } from 'sql/base/browser/ui/designer/designer';
-import { DesignerData, DesignerEditIdentifier, DesignerItemComponentInfo, InputBoxProperties, NameProperty } from 'sql/base/browser/ui/designer/interfaces';
+import { DesignerData, DesignerEditIdentifier, DesignerDataPropertyInfo, InputBoxProperties, NameProperty } from 'sql/base/browser/ui/designer/interfaces';
 import * as DOM from 'vs/base/browser/dom';
 import { equals } from 'vs/base/common/objects';
 import { localize } from 'vs/nls';
@@ -17,7 +17,7 @@ export type PropertiesPaneObjectContext = 'root' | {
 export interface ObjectInfo {
 	context: PropertiesPaneObjectContext;
 	type: string;
-	components: DesignerItemComponentInfo[];
+	components: DesignerDataPropertyInfo[];
 	data: DesignerData;
 }
 
@@ -25,7 +25,7 @@ export class DesignerPropertiesPane {
 	private _titleElement: HTMLElement;
 	private _contentElement: HTMLElement;
 	private _currentContext?: PropertiesPaneObjectContext;
-	private _componentMap = new Map<string, { defintion: DesignerItemComponentInfo, component: DesignerUIComponent }>();
+	private _componentMap = new Map<string, { defintion: DesignerDataPropertyInfo, component: DesignerUIComponent }>();
 
 	constructor(container: HTMLElement, private _createComponent: CreateComponentFunc, private _setComponentValue: SetComponentValueFunc, private _styleComponent: (component: DesignerUIComponent) => void) {
 		const titleContainer = container.appendChild(DOM.$('.title-container'));
@@ -59,7 +59,7 @@ export class DesignerPropertiesPane {
 			this._currentContext = item.context;
 			item.components.forEach((value) => {
 				// todo: handle table type in properties pane
-				if (value.type !== 'table') {
+				if (value.componentType !== 'table') {
 					const editIdentifier: DesignerEditIdentifier = this._currentContext === 'root' ? value.propertyName : {
 						parentProperty: this._currentContext.parentProperty,
 						index: this._currentContext.index,

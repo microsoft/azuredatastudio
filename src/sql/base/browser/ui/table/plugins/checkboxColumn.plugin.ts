@@ -12,7 +12,7 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 
 export interface CheckBoxCellValue {
 	enabled?: boolean;
-	value: boolean;
+	checked: boolean;
 }
 
 export interface CheckBoxChangedEventArgs<T extends Slick.SlickData> {
@@ -23,7 +23,6 @@ export interface CheckBoxChangedEventArgs<T extends Slick.SlickData> {
 }
 
 export interface CheckBoxColumnOptions extends BaseTableColumnOptions {
-	cellValueExtractor: (value: any) => boolean;
 }
 
 export class CheckBoxColumn<T extends Slick.SlickData> implements Slick.Plugin<T>, TableColumn<T> {
@@ -54,7 +53,7 @@ export class CheckBoxColumn<T extends Slick.SlickData> implements Slick.Plugin<T
 				const cellValue = dataContext[columnDef.field] as CheckBoxCellValue;
 				const escapedTitle = escape(columnDef.name ?? '');
 				const disabledAttribute = cellValue.enabled === false ? 'disabled' : '';
-				const checkedAttribute = cellValue.value ? 'checked' : '';
+				const checkedAttribute = cellValue.checked ? 'checked' : '';
 				return `<input type="checkbox" tabindex=-1 title="${escapedTitle}" aria-label="${escapedTitle}" ${checkedAttribute} ${disabledAttribute}/>`;
 			},
 			field: this.options.field,
@@ -94,8 +93,8 @@ export class CheckBoxColumn<T extends Slick.SlickData> implements Slick.Plugin<T
 		const cell = this._grid.getActiveCell();
 		const checked = this.getCheckbox().checked;
 		const item = this._grid.getDataItem(cell.row);
-		const originalValue = this.options.cellValueExtractor(item[this.definition.field]);
-		if (checked !== originalValue) {
+		const cellValue = item[this.options.field] as CheckBoxCellValue;
+		if (checked !== cellValue.checked) {
 			this._onChange.fire({
 				row: cell.row,
 				column: cell.cell,

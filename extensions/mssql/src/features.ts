@@ -1117,11 +1117,11 @@ export class TableDesignerFeature extends SqlOpsFeature<undefined> {
 				return Promise.reject(e);
 			}
 		};
-		const processTableEdit = async (tableInfo: azdata.designers.TableInfo, data: azdata.designers.DesignerData, edit: azdata.designers.DesignerEdit): Promise<azdata.designers.DesignerEditResult> => {
+		const processTableEdit = async (tableInfo: azdata.designers.TableInfo, data: azdata.designers.DesignerData, tableChangeInfo: azdata.designers.DesignerEdit): Promise<azdata.designers.DesignerEditResult> => {
 			let params: contracts.TableDesignerEditRequestParams = {
 				tableInfo: tableInfo,
 				data: data,
-				edit: edit
+				tableChangeInfo: tableChangeInfo
 			};
 			try {
 				return client.sendRequest(contracts.ProcessTableDesignerEditRequest.type, params);

@@ -30,23 +30,23 @@ export const NameProperty = 'name';
 export const ScriptProperty = 'script';
 
 export interface DesignerView {
-	components?: DesignerItemComponentInfo[]
+	components?: DesignerDataPropertyInfo[]
 	tabs: DesignerTab[];
 }
 
 
 export interface DesignerTab {
 	title: string;
-	components: DesignerItemComponentInfo[];
+	components: DesignerDataPropertyInfo[];
 }
 
 export interface DesignerData {
 	[key: string]: InputBoxProperties | CheckBoxProperties | DropDownProperties | DesignerTableProperties;
 }
 
-export interface DesignerItemComponentInfo {
+export interface DesignerDataPropertyInfo {
 	propertyName: string;
-	type: DesignerComponentTypeName;
+	componentType: DesignerComponentTypeName;
 	group?: string;
 	componentProperties?: InputBoxProperties | CheckBoxProperties | DropDownProperties | DesignerTableProperties;
 }
@@ -96,7 +96,7 @@ export interface DesignerTableProperties extends ComponentProperties {
 	/**
 	 * the properties of the table data item
 	 */
-	itemProperties?: DesignerItemComponentInfo[];
+	itemProperties?: DesignerDataPropertyInfo[];
 
 	data?: DesignerTableComponentRowData[];
 }

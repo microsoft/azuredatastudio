@@ -1029,7 +1029,7 @@ export namespace GetSqlMigrationAssessmentItemsRequest {
 
 export interface TableDesignerEditRequestParams {
 	tableInfo: azdata.designers.TableInfo,
-	edit: azdata.designers.DesignerEdit,
+	tableChangeInfo: azdata.designers.DesignerEdit,
 	data: azdata.designers.DesignerData
 }
 
