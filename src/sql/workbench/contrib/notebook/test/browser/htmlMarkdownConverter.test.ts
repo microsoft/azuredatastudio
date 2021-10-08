@@ -129,12 +129,12 @@ suite('HTML Markdown Converter', function (): void {
 	});
 
 	test('Should transform <a> tag', () => {
-		configurationService.updateValue('notebook.keepAbsolutePath', false, ConfigurationTarget.USER);
+		configurationService.updateValue('notebook.useAbsoluteFilePaths', false, ConfigurationTarget.USER);
 		htmlString = '<a href="/tmp/stuff.png">stuff</a>';
 		assert.strictEqual(htmlMarkdownConverter.convert(htmlString), `[stuff](.${path.sep}stuff.png)`, 'Basic link test failed');
 		htmlString = '<a href="/tmp/stuff.png"</a>';
 		assert.strictEqual(htmlMarkdownConverter.convert(htmlString), `[](.${path.sep}stuff.png)`, 'Basic link test no label failed');
-		htmlString = '<a href="/tmp/my stuff.png"</a>';
+		htmlString = '<a href="/tmp/my stuff.png"></a>';
 		assert.strictEqual(htmlMarkdownConverter.convert(htmlString), `[](.${path.sep}my%20stuff.png)`, 'Basic link test no label space filename failed');
 		htmlString = '<a href="/stuff.png">stuff</a>';
 		assert.strictEqual(htmlMarkdownConverter.convert(htmlString), `[stuff](..${path.sep}stuff.png)`, 'Basic link test above folder failed');
