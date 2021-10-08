@@ -70,6 +70,9 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 					this.options.expiresOn = model.options.expiresOn;
 				}
 			}
+			if (model.options?.originalDatabase) {
+				this.originalDatabase = model.options.originalDatabase;
+			}
 		} else {
 			//Default for a new connection
 			this.savePassword = false;
@@ -140,6 +143,19 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 
 	public set azureResourceId(value: string | undefined) {
 		this.options['azureResourceId'] = value;
+	}
+
+	/**
+	 * Database of server specified before connection.
+	 * Some providers will modify the database field of the connection once a connection is made
+	 * so that it reflects the actual database that was connected to.
+	 */
+	public get originalDatabase() {
+		return this.options['originalDatabase'];
+	}
+
+	public set originalDatabase(value: string | undefined) {
+		this.options['originalDatabase'] = value;
 	}
 
 	public get registeredServerDescription(): string {

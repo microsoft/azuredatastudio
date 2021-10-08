@@ -45,7 +45,7 @@
 			"dataworkspace.projectParentDirectoryNotExistError": "選取的專案位置 '{0}' 不存在或不是目錄。",
 			"dataworkspace.projectsFailedToLoad": "無法載入部分專案。若要檢視更多詳細資料，請[開啟開發人員主控台](command:workbench.action.toggleDevTools)",
 			"dataworkspace.remoteGitRepo": "遠端 Git 存放庫",
-			"dataworkspace.restartConfirmation": "必須將 Azure Data Studio 重新開機，才能建立專案並將其新增至工作區，立即執行此動作嗎?",
+			"dataworkspace.restartConfirmation": "需要重新啟動 Azure Data Studio，專案才能新增到工作區。立即重新啟動?",
 			"dataworkspace.select": "選取",
 			"dataworkspace.selectProjectLocation": "選取專案位置",
 			"dataworkspace.selectProjectType": "選取專案類型",
@@ -70,6 +70,7 @@
 			"projects-view-no-project-content": "目前工作區未開啟任何專案。\r\n[建立新的] (command:projects.new)\r\n[開啟現有的](command:projects.openExisting)\r\n若要深入了解專案，請[閱讀我們的文件](https://aka.ms/azuredatastudio-projects)。\r\n",
 			"projects-view-no-workspace-content": "建立新的或開啟現有的以開始使用。\r\n[建立新的] (command:projects.new)\r\n[開啟現有的](command:projects.openExisting)\r\n若要深入了解專案，請[閱讀我們的文件](https://aka.ms/azuredatastudio-projects)。",
 			"projects.defaultProjectSaveLocation": "預設儲存新專案之資料夾的完整路徑。",
+			"projects.excludedProjectsDescription": "工作區中要從專案 Viewlet 排除的專案清單",
 			"projects.showNotAddedProjectsInWorkspacePrompt": "當目前的工作區資料夾包含尚未新增到工作區專案的專案時，永遠顯示資訊訊息。",
 			"refresh-workspace-command": "重新整理",
 			"remove-project-command": "移除專案"

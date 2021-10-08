@@ -1187,6 +1187,9 @@
     <trans-unit id="arc.sql.instance.name">
       <source xml:lang="en">Instance name</source>
     </trans-unit>
+    <trans-unit id="arc.sql.instance.retention.policy.title">
+      <source xml:lang="en">SQL Instance Backup Retention Policy</source>
+    </trans-unit>
     <trans-unit id="arc.sql.instance.settings.section.title">
       <source xml:lang="en">SQL Instance settings</source>
     </trans-unit>
@@ -1204,6 +1207,18 @@
     </trans-unit>
     <trans-unit id="arc.sql.one.replica">
       <source xml:lang="en">1 replica</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.pitr.description">
+      <source xml:lang="en">Point in time restore</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.pitr.retention.description">
+      <source xml:lang="en">Configure retention for point-in-time backups. {0}</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.retention.days.description">
+      <source xml:lang="en">Specify how long you want to keep your point-in-time backups.</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.retention.days.label">
+      <source xml:lang="en">PITR retention (days)</source>
     </trans-unit>
     <trans-unit id="arc.sql.service.tier.business.critical">
       <source xml:lang="en">[PREVIEW] Business Critical (Unlimited vCores and RAM, advanced high availability)</source>
