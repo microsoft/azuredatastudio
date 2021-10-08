@@ -60,7 +60,7 @@ export class CellToolbarComponent {
 		this._actionBar.context = context;
 
 		let splitCellButton = this.instantiationService.createInstance(SplitCellAction, 'notebook.SplitCellAtCursor', this.buttonSplitCell, 'masked-icon icon-split-cell');
-		splitCellButton.enabled = false;
+		splitCellButton.enabled = this.cellModel.cellType !== 'markdown';
 
 		let addCellsButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddCodeCell', localize('codeCellsPreview', "Add cell"), 'masked-pseudo code');
 
