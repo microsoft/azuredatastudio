@@ -632,6 +632,9 @@ errorId: ${e.errorId}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
+			if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.SKURecommendation) {
+				this.migrationStateModel._migrationDbs = this.migrationStateModel.savedInfo.databaseList;
+			}
 			const errors: string[] = [];
 			this.wizard.message = {
 				text: '',

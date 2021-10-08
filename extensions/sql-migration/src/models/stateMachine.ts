@@ -124,6 +124,9 @@ export interface SavedInfo {
 	databaseAssessment: string[] | null;
 	networkContainerType: NetworkContainerType | null;
 	networkShare: NetworkShare | null;
+	targetSubscription: azureResource.AzureResourceSubscription | null;
+	blobs: Blob[];
+	targetDatabaseNames: string[];
 }
 
 
@@ -1030,7 +1033,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			migrationMode: null,
 			databaseAssessment: null,
 			networkContainerType: null,
-			networkShare: null
+			networkShare: null,
+			targetSubscription: null,
+			blobs: [],
+			targetDatabaseNames: []
 		};
 		switch (currentPage) {
 			case Page.Summary:
@@ -1040,6 +1046,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			case Page.DatabaseBackup:
 				saveInfo.networkContainerType = this._databaseBackup.networkContainerType;
 				saveInfo.networkShare = this._databaseBackup.networkShare;
+				saveInfo.targetSubscription = this._databaseBackup.subscription;
+				saveInfo.blobs = this._databaseBackup.blobs;
+				saveInfo.targetDatabaseNames = this._targetDatabaseNames;
+
 			// networkShare: NetworkShare;
 			// subscription: azureResource.AzureResourceSubscription;
 			// blobs: Blob[];
