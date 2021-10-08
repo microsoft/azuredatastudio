@@ -1049,23 +1049,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				saveInfo.targetSubscription = this._databaseBackup.subscription;
 				saveInfo.blobs = this._databaseBackup.blobs;
 				saveInfo.targetDatabaseNames = this._targetDatabaseNames;
-
-			// networkShare: NetworkShare;
-			// subscription: azureResource.AzureResourceSubscription;
-			// blobs: Blob[];
-
-			// backups on network share / Azure Storage Blob Container radio card selection
-			// Network share:
-			// username, password
-			// network share location where backups are stored textbox
-			// windows user account with read access to the network share location
-			// password
-
-			// Azure Storage Blob Container:
-
-
-
-
 			case Page.MigrationMode:
 				saveInfo.migrationMode = this._databaseBackup.migrationMode;
 			case Page.SKURecommendation:
