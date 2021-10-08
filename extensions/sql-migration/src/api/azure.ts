@@ -241,7 +241,7 @@ export async function getStorageAccountAccessKeys(account: azdata.Account, subsc
 
 export async function getSqlMigrationServiceMonitoringData(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, sqlMigrationService: string, sessionId: string): Promise<IntegrationRuntimeMonitoringData> {
 	const api = await getAzureCoreAPI();
-	const path = encodeURI(`/subscriptions/${subscription.id}/resourceGroups/${resourceGroupName}/providers/Microsoft.DataMigration/sqlMigrationServices/${sqlMigrationService}/monitoringData?api-version=2020-09-01-preview`);
+	const path = encodeURI(`/subscriptions/${subscription.id}/resourceGroups/${resourceGroupName}/providers/Microsoft.DataMigration/sqlMigrationServices/${sqlMigrationService}/getMonitoringData?api-version=2020-09-01-preview`);
 	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, undefined, getSessionIdHeader(sessionId));
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
