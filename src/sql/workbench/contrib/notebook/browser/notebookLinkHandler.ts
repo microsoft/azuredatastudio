@@ -47,17 +47,18 @@ export class NotebookLinkHandler {
 			// HTMLAnchorElement
 			// windows files need to use the link.href instead as it contains the file:// prefix
 			// which enables us to get the proper relative path
+			this.isAbsolutePath = this._link.attributes['is-absolute']?.nodeValue === 'true' ? true : false;
+			this.isMarkdown = this._link.attributes['is-markdown']?.nodeValue === 'true' ? true : false;
+			this.isEncoded = this._link.attributes['is-encoded']?.nodeValue === 'true' ? true : false;
+			this._isFile = this._link.protocol === 'file:';
+			// Given an anchor element for windows href link will need to use nodeValue instead as that does not encode the url
 			if (isWindows) {
-				this._href = this._link.href;
+				this._href = this.isMarkdown || this.isEncoded ? this._link.href?.replace(/%5C/g, '\\') : this._link.attributes['href']?.nodeValue;
 			} else {
 				this._href = this._link.attributes['href']?.nodeValue;
 			}
 			this._notebookUriLink = this._href ? URI.parse(encodeURI(this._href)) : undefined;
-			this._isFile = this._link.protocol === 'file:';
 			this._isAnchorLink = this._notebookUriLink?.fragment ? true : false;
-			this.isAbsolutePath = this._link.attributes['is-absolute']?.nodeValue === 'true' ? true : false;
-			this.isMarkdown = this._link.attributes['is-markdown']?.nodeValue === 'true' ? true : false;
-			this.isEncoded = this._link.attributes['is-encoded']?.nodeValue === 'true' ? true : false;
 		}
 		this._notebookDirectory = this._notebookURI ? path.dirname(this._notebookURI.fsPath) : '';
 	}
