@@ -1052,7 +1052,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			case Page.MigrationMode:
 				saveInfo.migrationMode = this._databaseBackup.migrationMode;
 			case Page.SKURecommendation:
-				// need to add card selection to save
 				saveInfo.migrationTargetType = this._targetType;
 				saveInfo.databaseAssessment = this._databaseAssessment;
 				saveInfo.serverAssessment = this._assessmentResults;
