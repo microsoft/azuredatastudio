@@ -8,7 +8,7 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 import { Emitter, Event } from 'vs/base/common/event';
 import { IRelativePattern } from 'vs/base/common/glob';
 import { hash } from 'vs/base/common/hash';
-import { DisposableStore, IDisposable, toDisposable } from 'vs/base/common/lifecycle';
+import { DisposableStore, IDisposable } from 'vs/base/common/lifecycle'; // {{SQL CARBON EDIT}} Removed toDisposable
 import { ResourceMap } from 'vs/base/common/map';
 import { isFalsyOrWhitespace } from 'vs/base/common/strings';
 import { assertIsDefined } from 'vs/base/common/types';
@@ -24,8 +24,10 @@ import * as typeConverters from 'vs/workbench/api/common/extHostTypeConverters';
 import * as extHostTypes from 'vs/workbench/api/common/extHostTypes';
 import { INotebookExclusiveDocumentFilter, INotebookContributionData, NotebookCellsChangeType, NotebookDataDto } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 import type * as vscode from 'vscode';
+import * as azdata from 'azdata';
 import { ExtHostCell, ExtHostNotebookDocument } from './extHostNotebookDocument';
 import { ExtHostNotebookEditor } from './extHostNotebookEditor';
+import { VSCodeSerializationProvider } from 'vs/workbench/api/common/vscodeSerializationProvider';
 
 
 type NotebookContentProviderData = {
@@ -312,25 +314,13 @@ export class ExtHostNotebookController implements ExtHostNotebookShape {
 
 	// --- serialize/deserialize
 
-	private _handlePool = 0;
+	// private _handlePool = 0; {{SQL CARBON EDIT}}
 	private readonly _notebookSerializer = new Map<number, vscode.NotebookSerializer>();
 
+	// {{SQL CARBON EDIT}}
 	registerNotebookSerializer(extension: IExtensionDescription, viewType: string, serializer: vscode.NotebookSerializer, options?: vscode.NotebookDocumentContentOptions, registration?: vscode.NotebookRegistrationData): vscode.Disposable {
-		if (isFalsyOrWhitespace(viewType)) {
-			throw new Error(`viewType cannot be empty or just whitespace`);
-		}
-		const handle = this._handlePool++;
-		this._notebookSerializer.set(handle, serializer);
-		this._notebookProxy.$registerNotebookSerializer(
-			handle,
-			{ id: extension.identifier, location: extension.extensionLocation },
-			viewType,
-			typeConverters.NotebookDocumentContentOptions.from(options),
-			ExtHostNotebookController._convertNotebookRegistrationData(extension, registration)
-		);
-		return toDisposable(() => {
-			this._notebookProxy.$unregisterNotebookSerializer(handle);
-		});
+		let serializationProvider = new VSCodeSerializationProvider(viewType, serializer);
+		return azdata.nb.registerSerializationProvider(serializationProvider);
 	}
 
 	async $dataToNotebook(handle: number, bytes: VSBuffer, token: CancellationToken): Promise<NotebookDataDto> {
