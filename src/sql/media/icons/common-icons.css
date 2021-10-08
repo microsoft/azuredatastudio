@@ -222,12 +222,6 @@
 	background: url("edit.svg") center center no-repeat;
 }
 
-.vs .codicon.icon-split-cell,
-.hc-black .codicon.icon-split-cell,
-.vs-dark .codicon.icon-split-cell {
-	background: url("split_cell.svg")
-}
-
 .hc-black .codicon.pin,
 .vs-dark .codicon.pin {
 	background: url("pin_inverse.svg") center center no-repeat;
@@ -530,6 +524,16 @@ Includes non-masked style declarations. */
 	background-image: url('start-outline.svg');
 }
 
+.codicon:not(.masked-icon).icon-split-cell {
+	background-image: url("split_cell.svg");
+}
+
+.codicon.masked-icon.icon-split-cell:before {
+	background-image: none;
+	-webkit-mask-image: url("split_cell.svg");
+	mask-image: url("split_cell.svg");
+}
+
 /* Masked element inside pseudo element */
 .masked-pseudo {
 	background-image: none !important;
@@ -606,13 +610,6 @@ Includes non-masked style declarations. */
 	-webkit-mask-image: url('edit.svg');
 	mask-image: url('edit.svg');
 }
-
-.codicon.masked-icon.icon-split-cell:before {
-	background-image: none;
-	-webkit-mask-image: url('split_cell.svg');
-	mask-image: url('split_cell.svg');
-}
-
 .codicon.masked-icon.move-up:before {
 	transform: scale(-1);
 	background-image: none;
