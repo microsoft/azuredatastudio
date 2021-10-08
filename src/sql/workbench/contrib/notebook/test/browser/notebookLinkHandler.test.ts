@@ -75,7 +75,7 @@ suite('Noteboook Link Handler', function (): void {
 	});
 
 	test('Should return absolute links with keep absolute path setting', () => {
-		configurationService.updateValue('notebook.keepAbsolutePath', true, ConfigurationTarget.USER);
+		configurationService.updateValue('notebook.useAbsoluteFilePaths', true, ConfigurationTarget.USER);
 		let result = new NotebookLinkHandler(notebookUri, 'https://www.microsoft.com/images/msft.png', configurationService);
 		assert.strictEqual(result.getLinkUrl(), `https://www.microsoft.com/images/msft.png`, 'HTTPS link failed to resolve');
 

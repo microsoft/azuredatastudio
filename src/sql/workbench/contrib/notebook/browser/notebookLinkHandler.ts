@@ -9,7 +9,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { replaceInvalidLinkPath } from 'sql/workbench/contrib/notebook/common/utils';
 import { isWindows } from 'vs/base/common/platform';
 
-const keepAbsolutePathConfigName = 'notebook.keepAbsolutePath';
+const useAbsolutePathConfigName = 'notebook.useAbsoluteFilePaths';
 
 export class NotebookLinkHandler {
 	private _notebookUriLink: URI;
@@ -75,7 +75,7 @@ export class NotebookLinkHandler {
 		// cases where we only have the href link
 		if (typeof this._link === 'string') {
 			// Does not convert absolute path to relative path
-			if (this._isFile && this.isAbsolutePath && this._configurationService.getValue(keepAbsolutePathConfigName) === true) {
+			if (this._isFile && this.isAbsolutePath && this._configurationService.getValue(useAbsolutePathConfigName) === true) {
 				return this._link;
 			}
 			// sets the string to absolute path to be used to resolve
@@ -94,8 +94,8 @@ export class NotebookLinkHandler {
 			if (this._notebookUriLink && this._isFile) {
 				let targetUri: URI;
 				// Does not convert absolute path to relative path if keep Absolute Path setting is enabled
-				if (this.isAbsolutePath && this._configurationService.getValue(keepAbsolutePathConfigName) === true) {
-					return escape(this._href);
+				if (this.isAbsolutePath && this._configurationService.getValue(useAbsolutePathConfigName) === true) {
+					return this._href;
 				} else {
 					if (this._isAnchorLink) {
 						targetUri = this.getUriAnchorLink(this._link, this._notebookURI);

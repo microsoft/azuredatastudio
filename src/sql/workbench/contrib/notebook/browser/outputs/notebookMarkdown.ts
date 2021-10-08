@@ -183,7 +183,6 @@ export class NotebookMarkdownRenderer {
 			};
 		}
 
-
 		if (useNewRenderer) {
 			const markedOptions: vsMarked.MarkedOptions = {
 				sanitize: !markdown.isTrusted,

@@ -129,7 +129,7 @@ suite('HTML Markdown Converter', function (): void {
 	});
 
 	test('Should transform <a> tag', () => {
-		configurationService.updateValue('notebook.keepAbsolutePath', false, ConfigurationTarget.USER);
+		configurationService.updateValue('notebook.useAbsoluteFilePaths', false, ConfigurationTarget.USER);
 		htmlString = '<a href="/tmp/stuff.png">stuff</a>';
 		assert.strictEqual(htmlMarkdownConverter.convert(htmlString), `[stuff](.${path.sep}stuff.png)`, 'Basic link test failed');
 		htmlString = '<a href="/tmp/stuff.png"</a>';
