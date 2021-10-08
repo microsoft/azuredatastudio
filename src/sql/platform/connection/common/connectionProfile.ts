@@ -146,7 +146,9 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 	}
 
 	/**
-	 * Database of server specified before connection
+	 * Database of server specified before connection.
+	 * Some providers will modify the database field of the connection once a connection is made
+	 * so that it reflects the actual database that was connected to.
 	 */
 	public get originalDatabase() {
 		return this.options['originalDatabase'];

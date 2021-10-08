@@ -134,5 +134,6 @@ export function findProfileInGroup(og: IConnectionProfile, groups: ConnectionPro
 }
 
 export function isServerConnection(profile: IConnectionProfile): boolean {
+	// If the user did not specify a database in the original connection, then this is considered a server-level connection
 	return !profile.options.originalDatabase;
 }
