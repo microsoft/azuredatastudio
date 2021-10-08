@@ -70,7 +70,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 					this.options.expiresOn = model.options.expiresOn;
 				}
 			}
-			if (model.options.originalDatabase) {
+			if (model.options?.originalDatabase) {
 				this.originalDatabase = model.options.originalDatabase;
 			}
 		} else {
