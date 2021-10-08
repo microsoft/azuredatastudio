@@ -119,7 +119,7 @@ export class UntitledTextEditorModel extends BaseTextEditorModel implements IUnt
 		private readonly initialValue: string | undefined,
 		private preferredMode: string | undefined,
 		private preferredEncoding: string | undefined,
-		private nonDirty: boolean | undefined, // {{SQL CARBON EDIT}} allows us to begin with clean state
+		private nonDirty: boolean | undefined, // {{SQL CARBON EDIT}} allows editor to start in clean state
 		@IModeService modeService: IModeService,
 		@IModelService modelService: IModelService,
 		@IWorkingCopyBackupService private readonly workingCopyBackupService: IWorkingCopyBackupService,
@@ -339,13 +339,14 @@ export class UntitledTextEditorModel extends BaseTextEditorModel implements IUnt
 			}
 
 			// {{SQL CARBON EDIT}} - START
-			if (!!this.nonDirty && !!this.initialValue) {
+			if (!!this.nonDirty) {
 				this.setDirty(false);
 			}
 			else {
 				// Untitled associated to file path are dirty right away as well as untitled with content
 				this.setDirty(this.hasAssociatedFilePath || !!hasBackup || !!this.initialValue);
 			}
+			// {{SQL CARBON EDIT}} - END
 
 			// If we have initial contents, make sure to emit this
 			// as the appropiate events to the outside.
@@ -359,9 +360,8 @@ export class UntitledTextEditorModel extends BaseTextEditorModel implements IUnt
 
 		// mark the untitled text editor as non-dirty once its content becomes empty and we do
 		// not have an associated path set. we never want dirty indicator in that case.
-		if (!this.hasAssociatedFilePath && textEditorModel.getLineCount() === 1 && textEditorModel.getLineContent(1) === '' && !!this.nonDirty) { // {{SQL CARBON EDIT}}
+		if (!this.hasAssociatedFilePath && textEditorModel.getLineCount() === 1 && textEditorModel.getLineContent(1) === '' || !!this.nonDirty) { // {{SQL CARBON EDIT}}
 			this.setDirty(false);
-			//this.nonDirty = false; // {{SQL CARBON EDIT}}
 		}
 
 		// turn dirty otherwise
