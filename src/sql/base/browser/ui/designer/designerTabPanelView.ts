@@ -17,7 +17,7 @@ export class DesignerTabPanelView extends Disposable implements IPanelView {
 		super();
 		this._componentsContainer = DOM.$('.components-grid');
 		this._tab.components.forEach(componentDefition => {
-			const component = this._createComponent(this._componentsContainer, componentDefition, componentDefition.property, this._tab.labelOnTop);
+			const component = this._createComponent(this._componentsContainer, componentDefition, componentDefition.propertyName);
 			if (componentDefition.type === 'table') {
 				this._tables.push(component as Table<Slick.SlickData>);
 			}

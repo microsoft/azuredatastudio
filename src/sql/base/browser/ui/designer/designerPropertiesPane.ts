@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { CreateComponentFunc, DesignerUIComponent, SetComponentValueFunc } from 'sql/base/browser/ui/designer/designer';
-import { DesignerComponentType, DesignerData, DesignerEditIdentifier, InputComponentData, NameProperty } from 'sql/base/browser/ui/designer/interfaces';
+import { DesignerData, DesignerEditIdentifier, DesignerItemComponentInfo, InputBoxProperties, NameProperty } from 'sql/base/browser/ui/designer/interfaces';
 import * as DOM from 'vs/base/browser/dom';
 import { equals } from 'vs/base/common/objects';
 import { localize } from 'vs/nls';
@@ -17,7 +17,7 @@ export type PropertiesPaneObjectContext = 'root' | {
 export interface ObjectInfo {
 	context: PropertiesPaneObjectContext;
 	type: string;
-	components: DesignerComponentType[];
+	components: DesignerItemComponentInfo[];
 	data: DesignerData;
 }
 
@@ -25,7 +25,7 @@ export class DesignerPropertiesPane {
 	private _titleElement: HTMLElement;
 	private _contentElement: HTMLElement;
 	private _currentContext?: PropertiesPaneObjectContext;
-	private _componentMap = new Map<string, { defintion: DesignerComponentType, component: DesignerUIComponent }>();
+	private _componentMap = new Map<string, { defintion: DesignerItemComponentInfo, component: DesignerUIComponent }>();
 
 	constructor(container: HTMLElement, private _createComponent: CreateComponentFunc, private _setComponentValue: SetComponentValueFunc, private _styleComponent: (component: DesignerUIComponent) => void) {
 		const titleContainer = container.appendChild(DOM.$('.title-container'));
@@ -58,22 +58,22 @@ export class DesignerPropertiesPane {
 			this.clear();
 			this._currentContext = item.context;
 			item.components.forEach((value) => {
-				// Table component is not supported in the properties pane.
+				// todo: handle table type in properties pane
 				if (value.type !== 'table') {
-					const editIdentifier: DesignerEditIdentifier = this._currentContext === 'root' ? value.property : {
+					const editIdentifier: DesignerEditIdentifier = this._currentContext === 'root' ? value.propertyName : {
 						parentProperty: this._currentContext.parentProperty,
 						index: this._currentContext.index,
-						property: value.property
+						property: value.propertyName
 					};
-					const component = this._createComponent(this._contentElement, value, editIdentifier, false);
-					this._componentMap.set(value.property, {
+					const component = this._createComponent(this._contentElement, value, editIdentifier);
+					this._componentMap.set(value.propertyName, {
 						component: component,
 						defintion: value
 					});
 				}
 			});
 		}
-		const name = (<InputComponentData>item.data[NameProperty])?.value ?? '';
+		const name = (<InputBoxProperties>item.data[NameProperty])?.value ?? '';
 		this._titleElement.innerText = localize({
 			key: 'tableDesigner.propertiesPaneTitleWithContext',
 			comment: ['{0} is the place holder for object type', '{1} is the place holder for object name']

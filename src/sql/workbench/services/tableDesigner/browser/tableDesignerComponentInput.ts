@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { DesignerData, DesignerEdit, DesignerEditResult, DesignerComponentInput, DesignerView, DesignerTab, ComponentDefinition, TableComponentDefinition, InputComponentDefinition, DropdownComponentDefinition, InputComponentData } from 'sql/base/browser/ui/designer/interfaces';
+import { DesignerData, DesignerEdit, DesignerEditResult, DesignerComponentInput, DesignerView, DesignerTab, DesignerItemComponentInfo, DropDownProperties, DesignerTableProperties } from 'sql/base/browser/ui/designer/interfaces';
 import { TableDesignerProvider } from 'sql/workbench/services/tableDesigner/common/interface';
 import { localize } from 'vs/nls';
 import { designers } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -43,7 +43,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		}
 		return {
 			isValid: result.isValid,
-			errorMessages: result.errorMessages
+			errors: result.errors
 		};
 	}
 
@@ -53,20 +53,22 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		this._data = designerInfo.data;
 		this.setDefaultData();
 
-		const advancedTabComponents: ComponentDefinition[] = [];
-
-		advancedTabComponents.push(<azdata.designers.DropdownComponentDefinition>{
-			type: 'dropdown',
-			title: localize('tableDesigner.schemaTitle', "Schema"),
-			property: designers.TableProperty.Schema,
-			options: designerInfo.schemas
-		});
-
-		advancedTabComponents.push({
-			type: 'input',
-			title: localize('tableDesigner.descriptionTitle', "Description"),
-			property: designers.TableProperty.Description
-		});
+		const advancedTabComponents: DesignerItemComponentInfo[] = [
+			{
+				type: 'dropdown',
+				propertyName: designers.TableProperty.Schema,
+				componentProperties: <DropDownProperties>{
+					title: localize('tableDesigner.schemaTitle', "Schema"),
+					values: designerInfo.schemas
+				}
+			}, {
+				type: 'input',
+				propertyName: designers.TableProperty.Description,
+				componentProperties: {
+					title: localize('tableDesigner.descriptionTitle', "Description")
+				}
+			}
+		];
 
 		if (designerInfo.view.additionalTableProperties) {
 			advancedTabComponents.push(...designerInfo.view.additionalTableProperties);
@@ -77,52 +79,44 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			components: advancedTabComponents
 		};
 
-		const columnProperties: ComponentDefinition[] = [];
-
-		columnProperties.push(
+		const columnProperties: DesignerItemComponentInfo[] = [
 			{
 				type: 'input',
-				title: localize('tableDesigner.columnNameTitle', "Name"),
-				property: designers.TableColumnProperty.Name,
-				width: 150
-			}
-		);
-
-		columnProperties.push(
-			<DropdownComponentDefinition>{
+				propertyName: designers.TableColumnProperty.Name,
+				componentProperties: {
+					title: localize('tableDesigner.columnNameTitle', "Name"),
+					width: 150
+				}
+			}, {
 				type: 'dropdown',
-				title: localize('tableDesigner.columnTypeTitle', "Type"),
-				property: designers.TableColumnProperty.Type,
-				width: 75,
-				options: designerInfo.columnTypes
-			}
-		);
-
-		columnProperties.push(
-			<InputComponentDefinition>{
+				propertyName: designers.TableColumnProperty.Type,
+				componentProperties: {
+					title: localize('tableDesigner.columnTypeTitle', "Type"),
+					width: 75,
+					values: designerInfo.columnTypes
+				}
+			}, {
 				type: 'input',
-				title: localize('tableDesigner.columnLengthTitle', "Length"),
-				property: designers.TableColumnProperty.Length,
-				width: 75
-			}
-		);
-
-		columnProperties.push(
-			{
+				propertyName: designers.TableColumnProperty.Length,
+				componentProperties: {
+					title: localize('tableDesigner.columnLengthTitle', "Length"),
+					width: 75
+				}
+			}, {
 				type: 'input',
-				title: localize('tableDesigner.columnDefaultValueTitle', "Default Value"),
-				property: designers.TableColumnProperty.DefaultValue,
-				width: 150
-			}
-		);
-
-		columnProperties.push(
-			{
+				propertyName: designers.TableColumnProperty.DefaultValue,
+				componentProperties: {
+					title: localize('tableDesigner.columnDefaultValueTitle', "Default Value"),
+					width: 150
+				}
+			}, {
 				type: 'checkbox',
-				title: localize('tableDesigner.columnAllowNullTitle', "Allow Nulls"),
-				property: designers.TableColumnProperty.AllowNulls
+				propertyName: designers.TableColumnProperty.AllowNulls,
+				componentProperties: {
+					title: localize('tableDesigner.columnAllowNullTitle', "Allow Nulls"),
+				}
 			}
-		);
+		];
 
 		if (designerInfo.view.addtionalTableColumnProperties) {
 			columnProperties.push(...designerInfo.view.addtionalTableColumnProperties);
@@ -131,18 +125,21 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		const columnsTab = <DesignerTab>{
 			title: localize('tableDesigner.columnsTabTitle', "Columns"),
 			components: [
-				<TableComponentDefinition>{
+				{
 					type: 'table',
-					property: designers.TableProperty.Columns,
-					columns: [
-						designers.TableColumnProperty.Name,
-						designers.TableColumnProperty.Type,
-						designers.TableColumnProperty.Length,
-						designers.TableColumnProperty.DefaultValue,
-						designers.TableColumnProperty.AllowNulls
-					],
-					itemProperties: columnProperties,
-					objectType: localize('tableDesigner.columnTypeName', "Column")
+					propertyName: designers.TableProperty.Columns,
+					componentProperties: <DesignerTableProperties>{
+						ariaLabel: localize('tableDesigner.columnsTabTitle', "Columns"),
+						columns: [
+							designers.TableColumnProperty.Name,
+							designers.TableColumnProperty.Type,
+							designers.TableColumnProperty.Length,
+							designers.TableColumnProperty.DefaultValue,
+							designers.TableColumnProperty.AllowNulls
+						],
+						itemProperties: columnProperties,
+						objectTypeDisplayName: localize('tableDesigner.columnTypeName', "Column")
+					}
 				}
 			]
 		};
@@ -155,9 +152,11 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		this._view = {
 			components: [{
 				type: 'input',
-				property: designers.TableColumnProperty.Name,
-				title: localize('tableDesigner.nameTitle', "Table name"),
-				width: 200
+				propertyName: designers.TableColumnProperty.Name,
+				componentProperties: {
+					title: localize('tableDesigner.nameTitle', "Table name"),
+					width: 200
+				}
 			}],
 			tabs: tabs
 		};
@@ -172,7 +171,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 
 	private setDefaultInputData(allProperties: string[], property: string): void {
 		if (allProperties.indexOf(property) === -1) {
-			this._data[property] = <InputComponentData>{};
+			this._data[property] = {};
 		}
 	}
 }

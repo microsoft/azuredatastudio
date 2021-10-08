@@ -1030,38 +1030,50 @@ declare module 'azdata' {
 		}
 
 		export interface TableDesignerView {
-			additionalTableProperties?: DesignerComponentType[];
-			addtionalTableColumnProperties?: DesignerComponentType[];
+			additionalTableProperties?: DesignerItemComponentInfo[];
+			addtionalTableColumnProperties?: DesignerItemComponentInfo[];
 			addtionalTabs?: DesignerTab[];
 		}
 
 		export interface DesignerData {
-			[key: string]: InputComponentData | CheckboxComponentData | DropdownComponentData | TableComponentData;
+			[key: string]: InputBoxProperties | CheckBoxProperties | DropDownProperties | DesignerTableProperties;
 		}
 
-		export interface ComponentData {
-			enabled?: boolean;
+		export interface DesignerTab {
+			title: string;
+			components: DesignerItemComponentInfo[];
 		}
 
-		export interface InputComponentData extends ComponentData {
-			value: string | number;
+		export interface DesignerItemComponentInfo {
+			propertyName: string;
+			type: DesignerComponentTypeName;
+			group?: string;
+			componentProperties: InputBoxProperties | CheckBoxProperties | DropDownProperties | DesignerTableProperties;
 		}
 
-		export interface CheckboxComponentData extends ComponentData {
-			value: boolean;
+		export type DesignerComponentTypeName = 'input' | 'checkbox' | 'dropdown' | 'table';
+
+		export interface DesignerTableProperties extends ComponentProperties {
+			/**
+			 * the name of the properties to be displayed, properties not in this list will be accessible in details view.
+			 */
+			columns?: string[];
+
+			/**
+			 * The display name of the object type
+			 */
+			objectTypeDisplayName: string;
+
+			/**
+			 * the properties of the table data item
+			 */
+			itemProperties?: DesignerItemComponentInfo[];
+
+			data?: DesignerTableComponentRowData[];
 		}
 
-		export interface DropdownComponentData extends ComponentData {
-			value: string;
-			options: string[];
-		}
-
-		export interface TableComponentData extends ComponentData {
-			rows: TableComponentRowData[];
-		}
-
-		export interface TableComponentRowData {
-			[key: string]: InputComponentData | CheckboxComponentData | DropdownComponentData | TableComponentData;
+		export interface DesignerTableComponentRowData {
+			[key: string]: InputBoxProperties | CheckBoxProperties | DropDownProperties | DesignerTableProperties;
 		}
 
 		export enum DesignerEditType {
@@ -1081,63 +1093,7 @@ declare module 'azdata' {
 		export interface DesignerEditResult {
 			data: DesignerData;
 			isValid: boolean;
-			errorMessages?: string[];
-		}
-
-		export interface DesignerTab {
-			title: string;
-			/**
-			 * Whether the label should be place on top of the component or on the left side of component. Default value is false.
-			 */
-			labelOnTop?: boolean;
-			components: DesignerComponentType[];
-		}
-
-		export type DesignerComponentType = InputComponentDefinition | CheckboxComponentDefinition | DropdownComponentDefinition | TableComponentDefinition;
-
-		export type DesignerComponentTypeName = 'input' | 'checkbox' | 'dropdown' | 'table';
-
-		export interface ComponentDefinition {
-			/**
-			 * The name of the property that the component is bound to.
-			 */
-			property: string;
-
-			type: DesignerComponentTypeName;
-
-			title?: string;
-
-			ariaLabel?: string;
-
-			width?: number;
-
-			description?: string;
-
-			group?: string;
-		}
-
-		export interface InputComponentDefinition extends ComponentDefinition {
-			placeholder?: string;
-			inputType?: 'text' | 'number';
-		}
-
-		export interface DropdownComponentDefinition extends ComponentDefinition {
-			options: string[]
-		}
-
-		export interface CheckboxComponentDefinition extends ComponentDefinition {
-		}
-
-		export interface TableComponentDefinition extends ComponentDefinition {
-			/**
-			 * the name of the properties to be displayed, properties not in this list will be accessible in details view.
-			 */
-			columns: string[];
-
-			/**
-			 * the properties of the table data item
-			 */
-			itemProperties: DesignerComponentType[];
+			errors?: { message: string, property?: DesignerEditIdentifier }[];
 		}
 	}
 }

@@ -29,40 +29,82 @@ export interface DesignerComponentInput {
 export const NameProperty = 'name';
 export const ScriptProperty = 'script';
 
-export interface DesignerData {
-	[key: string]: InputComponentData | CheckboxComponentData | DropdownComponentData | TableComponentData;
+export interface DesignerView {
+	components?: DesignerItemComponentInfo[]
+	tabs: DesignerTab[];
 }
 
-export interface ComponentData {
+
+export interface DesignerTab {
+	title: string;
+	components: DesignerItemComponentInfo[];
+}
+
+export interface DesignerData {
+	[key: string]: InputBoxProperties | CheckBoxProperties | DropDownProperties | DesignerTableProperties;
+}
+
+export interface DesignerItemComponentInfo {
+	propertyName: string;
+	type: DesignerComponentTypeName;
+	group?: string;
+	componentProperties?: InputBoxProperties | CheckBoxProperties | DropDownProperties | DesignerTableProperties;
+}
+
+export type DesignerComponentTypeName = 'input' | 'checkbox' | 'dropdown' | 'table';
+
+export interface ComponentProperties {
+	title?: string;
+
+	ariaLabel?: string;
+
+	width?: number | string;
+
 	enabled?: boolean;
 }
 
-export interface InputComponentData extends ComponentData {
-	value: string | number;
+export interface CategoryValue {
+	displayName: string;
+	name: string;
 }
 
-export interface CheckboxComponentData extends ComponentData {
-	value: boolean;
+export interface DropDownProperties extends ComponentProperties {
+	value?: string | CategoryValue;
+	values?: string[] | CategoryValue[];
 }
 
-export interface DropdownComponentData extends ComponentData {
-	value: string;
-	options: string[];
+export interface CheckBoxProperties extends ComponentProperties {
+	checked?: boolean;
 }
 
-export interface TableComponentData extends ComponentData {
-	rows: TableComponentRowData[];
+export interface InputBoxProperties extends ComponentProperties {
+	value?: string;
+	inputType?: 'text' | 'number';
 }
 
-export interface TableComponentRowData {
-	[key: string]: InputComponentData | CheckboxComponentData | DropdownComponentData | TableComponentData;
+export interface DesignerTableProperties extends ComponentProperties {
+	/**
+	 * the name of the properties to be displayed, properties not in this list will be accessible in details view.
+	 */
+	columns?: string[];
+
+	/**
+	 * The display name of the object type
+	 */
+	objectTypeDisplayName: string;
+
+	/**
+	 * the properties of the table data item
+	 */
+	itemProperties?: DesignerItemComponentInfo[];
+
+	data?: DesignerTableComponentRowData[];
 }
 
-
-export interface DesignerView {
-	components?: DesignerComponentType[]
-	tabs: DesignerTab[];
+export interface DesignerTableComponentRowData {
+	[key: string]: InputBoxProperties | CheckBoxProperties | DropDownProperties | DesignerTableProperties;
 }
+
 
 export enum DesignerEditType {
 	Add = 0,
@@ -80,62 +122,5 @@ export type DesignerEditIdentifier = string | { parentProperty: string, index: n
 
 export interface DesignerEditResult {
 	isValid: boolean;
-	errorMessages?: string[];
-}
-
-export interface DesignerTab {
-	title: string;
-	labelOnTop?: boolean;
-	components: DesignerComponentType[];
-}
-
-export type DesignerComponentType = InputComponentDefinition | CheckboxComponentDefinition | DropdownComponentDefinition | TableComponentDefinition;
-
-export type DesignerComponentTypeName = 'input' | 'checkbox' | 'dropdown' | 'table';
-
-export interface ComponentDefinition {
-	/**
-	 * The name of the property that the component is bound to.
-	 */
-	property: string;
-
-	type: DesignerComponentTypeName;
-
-	title?: string;
-
-	ariaLabel?: string;
-
-	width?: number;
-
-	description?: string;
-
-	group?: string;
-}
-
-export interface InputComponentDefinition extends ComponentDefinition {
-	placeholder?: string;
-	inputType?: 'text' | 'number';
-}
-
-export interface DropdownComponentDefinition extends ComponentDefinition {
-	options: string[]
-}
-export interface CheckboxComponentDefinition extends ComponentDefinition {
-}
-
-export interface TableComponentDefinition extends ComponentDefinition {
-	/**
-	 * the name of the properties to be displayed, properties not in this list will be accessible in details view.
-	 */
-	columns: string[];
-
-	/**
-	 * the properties of the table data item
-	 */
-	itemProperties: DesignerComponentType[];
-
-	/**
-	 * The display name of the object type
-	 */
-	objectType: string;
+	errors?: { message: string, property?: DesignerEditIdentifier }[];
 }

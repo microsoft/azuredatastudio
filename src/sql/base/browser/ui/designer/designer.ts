@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { DesignerComponentInput, DesignerComponentType, DesignerEditType, DesignerTab, InputComponentDefinition, InputComponentData, TableComponentDefinition, TableComponentData, DesignerEdit, TableComponentRowData, CheckboxComponentData, DropdownComponentDefinition, DesignerEditIdentifier, DesignerData, CheckboxComponentDefinition, DropdownComponentData } from 'sql/base/browser/ui/designer/interfaces';
+import { DesignerComponentInput, DesignerEditType, DesignerTab, DesignerEdit, DesignerEditIdentifier, DesignerData, DesignerItemComponentInfo, DesignerTableComponentRowData, DesignerTableProperties, InputBoxProperties, DropDownProperties, CheckBoxProperties, DesignerComponentTypeName } from 'sql/base/browser/ui/designer/interfaces';
 import { IPanelTab, ITabbedPanelStyles, TabbedPanel } from 'sql/base/browser/ui/panel/panel';
 import * as DOM from 'vs/base/browser/dom';
 import { Event } from 'vs/base/common/event';
@@ -34,8 +34,8 @@ export interface IDesignerStyle {
 
 export type DesignerUIComponent = InputBox | Checkbox | Table<Slick.SlickData> | SelectBox;
 
-export type CreateComponentFunc = (container: HTMLElement, component: DesignerComponentType, editIdentifier: DesignerEditIdentifier, labelOnTop: boolean) => DesignerUIComponent;
-export type SetComponentValueFunc = (definition: DesignerComponentType, component: DesignerUIComponent, data: DesignerData) => void;
+export type CreateComponentFunc = (container: HTMLElement, component: DesignerItemComponentInfo, editIdentifier: DesignerEditIdentifier) => DesignerUIComponent;
+export type SetComponentValueFunc = (definition: DesignerItemComponentInfo, component: DesignerUIComponent, data: DesignerData) => void;
 
 export class Designer extends Disposable implements IThemable {
 
@@ -51,7 +51,7 @@ export class Designer extends Disposable implements IThemable {
 	private _propertiesPaneContainer: HTMLElement;
 	private _styles: IDesignerStyle = {};
 	private _supressEditProcessing: boolean = false;
-	private _componentMap = new Map<string, { defintion: DesignerComponentType, component: DesignerUIComponent }>();
+	private _componentMap = new Map<string, { defintion: DesignerItemComponentInfo, component: DesignerUIComponent }>();
 	private _input: DesignerComponentInput;
 	private _tableCellEditorFactory: TableCellEditorFactory;
 	private _propertiesPane: DesignerPropertiesPane;
@@ -64,7 +64,7 @@ export class Designer extends Disposable implements IThemable {
 				valueGetter: (item, column): string => {
 					return item[column.field].value;
 				},
-				valueSetter: async (context: string, row: number, item: TableComponentRowData, column: Slick.Column<Slick.SlickData>, value: string): Promise<void> => {
+				valueSetter: async (context: string, row: number, item: DesignerTableComponentRowData, column: Slick.Column<Slick.SlickData>, value: string): Promise<void> => {
 					await this.handleEdit({
 						type: DesignerEditType.Update,
 						property: {
@@ -132,8 +132,8 @@ export class Designer extends Disposable implements IThemable {
 			onDidChange: Event.None
 		}, Sizing.Distribute);
 
-		this._propertiesPane = new DesignerPropertiesPane(this._propertiesPaneContainer, (container, component, identifier, labelOnTop) => {
-			return this.createComponent(container, component, identifier, labelOnTop, false, false);
+		this._propertiesPane = new DesignerPropertiesPane(this._propertiesPaneContainer, (container, component, identifier) => {
+			return this.createComponent(container, component, identifier, false, false);
 		}, (definition, component, data) => {
 			this.setComponentValue(definition, component, data);
 		}, (component) => {
@@ -191,7 +191,7 @@ export class Designer extends Disposable implements IThemable {
 		const view = await this._input.getView();
 		if (view.components) {
 			view.components.forEach(component => {
-				this.createComponent(this._topContentContainer, component, component.property, false, true, true);
+				this.createComponent(this._topContentContainer, component, component.propertyName, true, true);
 			});
 		}
 		this._tabbedPanel.clearTabs();
@@ -214,7 +214,7 @@ export class Designer extends Disposable implements IThemable {
 		});
 
 		let type: string;
-		let components: DesignerComponentType[];
+		let components: DesignerItemComponentInfo[];
 		let inputData: DesignerData;
 		let context: PropertiesPaneObjectContext;
 		const currentContext = this._propertiesPane.context;
@@ -228,11 +228,11 @@ export class Designer extends Disposable implements IThemable {
 			inputData = data;
 		} else {
 			context = currentContext;
-			const tableData = data[currentContext.parentProperty] as TableComponentData;
-			const tableDefinition = this._componentMap.get(currentContext.parentProperty).defintion as TableComponentDefinition;
-			inputData = tableData.rows[currentContext.index] as DesignerData;
-			components = tableDefinition.itemProperties;
-			type = tableDefinition.objectType;
+			const tableData = data[currentContext.parentProperty] as DesignerTableProperties;
+			const tableProperties = this._componentMap.get(currentContext.parentProperty).defintion.componentProperties as DesignerTableProperties;
+			inputData = tableData.data[currentContext.index] as DesignerData;
+			components = tableProperties.itemProperties;
+			type = tableProperties.objectTypeDisplayName;
 		}
 		this._propertiesPane.show({
 			context: context,
@@ -262,12 +262,19 @@ export class Designer extends Disposable implements IThemable {
 		switch (edit.type) {
 			case DesignerEditType.Update:
 				if (typeof edit.property === 'string') {
-					const propertyValue = data[edit.property] as InputComponentData | DropdownComponentData | CheckboxComponentData;
-					propertyValue.value = edit.value;
+					// if the type of the property is string then the property is a top level property
+					const componentData = data[edit.property];
+					const componentType = this._componentMap.get(edit.property).defintion.type;
+					this.setComponentData(componentType, componentData, edit.value);
 				} else {
-					const parentPropertyValue = data[edit.property.parentProperty] as TableComponentData;
-					const propertyValue = parentPropertyValue.rows[edit.property.index][edit.property.property] as InputComponentData | DropdownComponentData | CheckboxComponentData;
-					propertyValue.value = edit.value;
+					const columnPropertyName = edit.property.property;
+					const tableInfo = this._componentMap.get(edit.property.parentProperty).defintion.componentProperties as DesignerTableProperties;
+					const tableProperties = data[edit.property.parentProperty] as DesignerTableProperties;
+					const componentData = tableProperties.data[edit.property.index][columnPropertyName];
+					const itemProperty = tableInfo.itemProperties.find(property => property.propertyName === columnPropertyName);
+					if (itemProperty) {
+						this.setComponentData(itemProperty.type, componentData, edit.value);
+					}
 				}
 				break;
 			default:
@@ -275,9 +282,23 @@ export class Designer extends Disposable implements IThemable {
 		}
 	}
 
+	private setComponentData(componentType: DesignerComponentTypeName, componentData: any, value: any): void {
+		switch (componentType) {
+			case 'checkbox':
+				(<CheckBoxProperties>componentData).checked = value;
+				break;
+			case 'dropdown':
+				(<DropDownProperties>componentData).value = value;
+				break;
+			case 'input':
+				(<InputBoxProperties>componentData).value = value;
+				break;
+		}
+	}
+
 	private createTabView(tab: DesignerTab): IPanelTab {
-		const view = new DesignerTabPanelView(tab, (container, component, identifier, labelOnTop) => {
-			return this.createComponent(container, component, identifier, labelOnTop, true, false);
+		const view = new DesignerTabPanelView(tab, (container, component, identifier) => {
+			return this.createComponent(container, component, identifier, true, false);
 		});
 		return {
 			identifier: tab.title,
@@ -286,12 +307,12 @@ export class Designer extends Disposable implements IThemable {
 		};
 	}
 
-	private setComponentValue(definition: DesignerComponentType, component: DesignerUIComponent, data: DesignerData): void {
+	private setComponentValue(definition: DesignerItemComponentInfo, component: DesignerUIComponent, data: DesignerData): void {
 		this._supressEditProcessing = true;
 		switch (definition.type) {
 			case 'input':
 				const input = component as InputBox;
-				const inputData = data[definition.property] as InputComponentData;
+				const inputData = data[definition.propertyName] as InputBoxProperties;
 				input.setEnabled(inputData.enabled ?? true);
 				input.value = inputData.value?.toString() ?? '';
 				break;
@@ -299,31 +320,31 @@ export class Designer extends Disposable implements IThemable {
 				const table = component as Table<Slick.SlickData>;
 				const tableDataView = table.getData() as TableDataView<Slick.SlickData>;
 				tableDataView.clear();
-				tableDataView.push((data[definition.property] as TableComponentData).rows);
+				tableDataView.push((data[definition.propertyName] as DesignerTableProperties).data);
 				table.rerenderGrid();
 				break;
 			case 'checkbox':
 				const checkbox = component as Checkbox;
-				const checkboxData = data[definition.property] as CheckboxComponentData;
+				const checkboxData = data[definition.propertyName] as CheckBoxProperties;
 				if (checkboxData.enabled === false) {
 					checkbox.disable();
 				} else {
 					checkbox.enable();
 				}
-				checkbox.checked = checkboxData.value;
+				checkbox.checked = checkboxData.checked;
 				break;
 			case 'dropdown':
 				const dropdown = component as SelectBox;
-				const dropdownDefinition = definition as DropdownComponentDefinition;
-				const dropdownData = data[definition.property] as DropdownComponentData;
+				const defaultDropdownData = definition.componentProperties as DropDownProperties;
+				const dropdownData = data[definition.propertyName] as DropDownProperties;
 				if (dropdownData.enabled === false) {
 					dropdown.disable();
 				} else {
 					dropdown.enable();
 				}
-				const options = dropdownData.options || dropdownDefinition.options || [];
+				const options = (dropdownData.values || defaultDropdownData.values || []) as string[];
 				dropdown.setOptions(options);
-				const idx = options?.indexOf(dropdownData.value);
+				const idx = options?.indexOf(dropdownData.value as string);
 				if (idx > -1) {
 					dropdown.select(idx);
 				}
@@ -334,30 +355,30 @@ export class Designer extends Disposable implements IThemable {
 		this._supressEditProcessing = false;
 	}
 
-	private createComponent(container: HTMLElement, componentDefinition: DesignerComponentType, editIdentifier: DesignerEditIdentifier, labelOnTop: boolean, addToComponentMap: boolean, setWidth: boolean): DesignerUIComponent {
-		const componentContainerClass = labelOnTop || componentDefinition.type === 'table' ? '.full-row' : '';
+	private createComponent(container: HTMLElement, componentDefinition: DesignerItemComponentInfo, editIdentifier: DesignerEditIdentifier, addToComponentMap: boolean, setWidth: boolean): DesignerUIComponent {
+		const componentContainerClass = componentDefinition.type === 'table' ? '.full-row' : '';
 		const labelContainer = container.appendChild(DOM.$(componentContainerClass));
-		labelContainer.appendChild(DOM.$('span.component-label')).innerText = componentDefinition.type === 'checkbox' || componentDefinition.title === undefined ? '' : componentDefinition.title;
+		labelContainer.appendChild(DOM.$('span.component-label')).innerText = (componentDefinition.type === 'checkbox' || componentDefinition.componentProperties?.title === undefined) ? '' : componentDefinition.componentProperties.title;
 		const componentDiv = container.appendChild(DOM.$(componentContainerClass));
 		let component: DesignerUIComponent;
 		switch (componentDefinition.type) {
 			case 'input':
-				const inputDefinition = componentDefinition as InputComponentDefinition;
+				const inputProperties = componentDefinition.componentProperties as InputBoxProperties;
 				const input = new InputBox(componentDiv, this._contextViewProvider, {
-					ariaLabel: componentDefinition.ariaLabel ?? componentDefinition.title,
-					type: inputDefinition.inputType,
+					ariaLabel: inputProperties.title,
+					type: inputProperties.inputType,
 				});
 				input.onDidChange(async (newValue) => {
 					await this.handleEdit({ type: DesignerEditType.Update, property: editIdentifier, value: newValue });
 				});
-				if (setWidth && componentDefinition.width !== undefined) {
-					input.width = componentDefinition.width;
+				if (setWidth && inputProperties.width !== undefined) {
+					input.width = inputProperties.width as number;
 				}
 				component = input;
 				break;
 			case 'dropdown':
-				const dropdownDefinition = componentDefinition as DropdownComponentDefinition;
-				const dropdown = new SelectBox(dropdownDefinition.options, undefined, this._contextViewProvider, undefined);
+				const dropdownProperties = componentDefinition.componentProperties as DropDownProperties;
+				const dropdown = new SelectBox(dropdownProperties.values as string[], undefined, this._contextViewProvider, undefined);
 				dropdown.render(componentDiv);
 				dropdown.selectElem.style.height = '25px';
 				dropdown.onDidSelect(async (e) => {
@@ -366,9 +387,9 @@ export class Designer extends Disposable implements IThemable {
 				component = dropdown;
 				break;
 			case 'checkbox':
-				const checkboxDefinition = componentDefinition as CheckboxComponentDefinition;
+				const checkboxProperties = componentDefinition.componentProperties as CheckBoxProperties;
 				const checkbox = new Checkbox(componentDiv, {
-					label: checkboxDefinition.title
+					label: checkboxProperties.title
 				});
 				checkbox.onChange(async (newValue) => {
 					await this.handleEdit({ type: DesignerEditType.Update, property: editIdentifier, value: newValue });
@@ -376,7 +397,7 @@ export class Designer extends Disposable implements IThemable {
 				component = checkbox;
 				break;
 			case 'table':
-				const tableDefinition = componentDefinition as TableComponentDefinition;
+				const tableProperties = componentDefinition.componentProperties as DesignerTableProperties;
 				const table = new Table(componentDiv, {
 					dataProvider: new TableDataView()
 				}, {
@@ -387,44 +408,44 @@ export class Designer extends Disposable implements IThemable {
 					}
 				}
 				);
-				table.columns = tableDefinition.columns.map(propName => {
-					const propertyDefinition = tableDefinition.itemProperties.find(item => item.property === propName);
+				table.columns = tableProperties.columns.map(propName => {
+					const propertyDefinition = tableProperties.itemProperties.find(item => item.propertyName === propName);
 					switch (propertyDefinition.type) {
 						case 'checkbox':
 							const checkboxColumn = new CheckBoxColumn({
-								field: propertyDefinition.property,
-								name: propertyDefinition.title,
-								cellValueExtractor: (value: CheckboxComponentData) => { return value.value; },
-								width: propertyDefinition.width
+								field: propertyDefinition.propertyName,
+								name: propertyDefinition.componentProperties.title,
+								cellValueExtractor: (value: CheckBoxProperties) => { return value.checked; },
+								width: propertyDefinition.componentProperties.width as number
 							});
 							table.registerPlugin(checkboxColumn);
 							checkboxColumn.onChange(async (e) => {
 								await this.handleEdit({
 									type: DesignerEditType.Update,
 									property: {
-										parentProperty: tableDefinition.property,
+										parentProperty: componentDefinition.propertyName,
 										index: e.row,
-										property: propertyDefinition.property
+										property: propertyDefinition.propertyName
 									},
 									value: e.value
 								});
 							});
 							return checkboxColumn.definition;
 						case 'dropdown':
-							const dropdownDefinition = propertyDefinition as DropdownComponentDefinition;
+							const dropdownProperties = propertyDefinition.componentProperties as DropDownProperties;
 							return {
-								name: propertyDefinition.title,
-								field: propertyDefinition.property,
-								editor: this._tableCellEditorFactory.getSelectBoxEditorClass(componentDefinition.property, dropdownDefinition.options),
-								width: propertyDefinition.width
+								name: dropdownProperties.title,
+								field: propertyDefinition.propertyName,
+								editor: this._tableCellEditorFactory.getSelectBoxEditorClass(componentDefinition.propertyName, dropdownProperties.values as string[]),
+								width: dropdownProperties.width as number
 							};
 						default:
-							const inputDefinition = propertyDefinition as InputComponentDefinition;
+							const inputProperties = propertyDefinition.componentProperties as InputBoxProperties;
 							return {
-								name: propertyDefinition.title,
-								field: propertyDefinition.property,
-								editor: this._tableCellEditorFactory.getTextEditorClass(componentDefinition.property, inputDefinition.inputType),
-								width: propertyDefinition.width
+								name: inputProperties.title,
+								field: propertyDefinition.propertyName,
+								editor: this._tableCellEditorFactory.getTextEditorClass(componentDefinition.propertyName, inputProperties.inputType),
+								width: inputProperties.width as number
 							};
 					}
 				});
@@ -435,11 +456,11 @@ export class Designer extends Disposable implements IThemable {
 				table.grid.onActiveCellChanged.subscribe((e, data) => {
 					this._propertiesPane.show({
 						context: {
-							parentProperty: tableDefinition.property,
+							parentProperty: componentDefinition.propertyName,
 							index: data.row
 						},
-						type: tableDefinition.objectType,
-						components: tableDefinition.itemProperties,
+						type: tableProperties.objectTypeDisplayName,
+						components: tableProperties.itemProperties,
 						data: table.getData().getItem(data.row)
 					});
 				});
@@ -449,7 +470,7 @@ export class Designer extends Disposable implements IThemable {
 				throw new Error(localize('tableDesigner.unknownComponentType', "The component type: {0} is not supported", componentDefinition.type));
 		}
 		if (addToComponentMap) {
-			this._componentMap.set(componentDefinition.property, {
+			this._componentMap.set(componentDefinition.propertyName, {
 				defintion: componentDefinition,
 				component: component
 			});
