@@ -422,13 +422,11 @@ export class CellModel extends Disposable implements ICellModel {
 		this._showPreview = val;
 		this._onCellPreviewChanged.fire(this._showPreview);
 		let cellMode = CellEditModes.NONE;
-		if (val) {
+		if (this._showPreview) {
 			cellMode = this._showMarkdown ? CellEditModes.SPLIT : CellEditModes.WYSIWYG;
 		}
 		else {
-			if (this._showMarkdown) {
-				cellMode = CellEditModes.MARKDOWN;
-			}
+			cellMode = this._showMarkdown ? CellEditModes.MARKDOWN : CellEditModes.NONE;
 		}
 		this._onCurrentModeChanged.fire(cellMode);
 	}
@@ -441,13 +439,11 @@ export class CellModel extends Disposable implements ICellModel {
 		this._showMarkdown = val;
 		this._onCellMarkdownChanged.fire(this._showMarkdown);
 		let cellMode = CellEditModes.NONE;
-		if (val) {
+		if (this._showMarkdown) {
 			cellMode = this._showPreview ? CellEditModes.SPLIT : CellEditModes.MARKDOWN;
 		}
 		else {
-			if (this._showPreview) {
-				cellMode = CellEditModes.WYSIWYG;
-			}
+			cellMode = this._showPreview ? CellEditModes.WYSIWYG : CellEditModes.NONE;
 		}
 		this._onCurrentModeChanged.fire(cellMode);
 	}
