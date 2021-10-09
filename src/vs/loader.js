@@ -794,6 +794,7 @@ var AMDLoader;
 					script = new that._vm.Script(scriptSource, options);
 				} catch (err) {
 					console.warn('ERROR IN VM SCRIPT ', scriptSource);
+					console.warn(err);
 					throw err;
 				}
 
@@ -864,6 +865,7 @@ var AMDLoader;
 				script = new this._vm.Script(contents, options);
 			} catch (err) {
 				console.warn('ERROR IN VM SCRIPT ', contents);
+				console.warn(err);
 				throw err;
 			}
 
