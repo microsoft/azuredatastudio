@@ -620,6 +620,5 @@ export enum CellEditModes {
 	'CODE',
 	'MARKDOWN',
 	'SPLIT',
-	'WYSIWYG',
-	'NONE'
+	'WYSIWYG'
 }
