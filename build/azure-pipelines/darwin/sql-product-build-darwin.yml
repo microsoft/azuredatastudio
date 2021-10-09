@@ -105,7 +105,7 @@ steps:
 
   - script: |
       set -e
-      ./scripts/test.sh --build --tfs "Unit Tests"
+      ./scripts/test.sh --build --tfs "Unit Tests" # Disable code coverage since it's currently broken --coverage
     displayName: Run unit tests
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
