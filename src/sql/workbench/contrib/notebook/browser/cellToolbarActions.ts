@@ -42,7 +42,6 @@ export class EditCellAction extends ToggleableAction {
 			shouldToggleTooltip: toggleTooltip,
 			isOn: isEditMode
 		});
-
 	}
 
 	public get editMode(): boolean {
@@ -56,8 +55,6 @@ export class EditCellAction extends ToggleableAction {
 		this.editMode = !this.editMode;
 		context.cell.isEditMode = this.editMode;
 	}
-
-
 }
 
 export class SplitCellAction extends CellActionBase {
