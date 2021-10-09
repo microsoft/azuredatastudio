@@ -60,6 +60,7 @@ export class CellToolbarComponent {
 		this._actionBar.context = context;
 
 		let splitCellButton = this.instantiationService.createInstance(SplitCellAction, 'notebook.SplitCellAtCursor', this.buttonSplitCell, 'masked-icon icon-split-cell');
+		splitCellButton.setListener(context);
 		splitCellButton.enabled = this.cellModel.cellType !== 'markdown';
 
 		let addCellsButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddCodeCell', localize('codeCellsPreview', "Add cell"), 'masked-pseudo code');
@@ -79,8 +80,7 @@ export class CellToolbarComponent {
 		this._cellToggleMoreActions = this.instantiationService.createInstance(CellToggleMoreActions);
 		this._cellToggleMoreActions.onInit(moreActionsContainer, context);
 
-		this._editCellAction = this.instantiationService.createInstance(EditCellAction, 'notebook.EditCell', true, this.cellModel.isEditMode, splitCellButton);
-		this._editCellAction.setListener(context);
+		this._editCellAction = this.instantiationService.createInstance(EditCellAction, 'notebook.EditCell', true, this.cellModel.isEditMode);
 		this._editCellAction.enabled = true;
 
 		let addCellDropdownContainer = DOM.$('li.action-item');

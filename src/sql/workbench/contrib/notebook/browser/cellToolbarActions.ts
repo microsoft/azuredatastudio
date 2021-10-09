@@ -30,7 +30,7 @@ export class EditCellAction extends ToggleableAction {
 	private static readonly maskedIconClass = 'masked-icon';
 
 	constructor(
-		id: string, toggleTooltip: boolean, isEditMode: boolean, private splitCellAction: SplitCellAction
+		id: string, toggleTooltip: boolean, isEditMode: boolean
 	) {
 		super(id, {
 			baseClass: EditCellAction.baseClass,
@@ -57,15 +57,7 @@ export class EditCellAction extends ToggleableAction {
 		context.cell.isEditMode = this.editMode;
 	}
 
-	public setListener(context: CellContext) {
-		this._register(context.cell.onCurrentModeChanged(currentMode => {
-			if (currentMode === CellEditModes.WYSIWYG) {
-				this.splitCellAction.enabled = false;
-			} else {
-				this.splitCellAction.enabled = true;
-			}
-		}));
-	}
+
 }
 
 export class SplitCellAction extends CellActionBase {
@@ -88,6 +80,15 @@ export class SplitCellAction extends CellActionBase {
 		let index = model.cells.findIndex((cell) => cell.id === context.cell.id);
 		context.model?.splitCell(context.cell.cellType, this.notebookService, index);
 		return Promise.resolve();
+	}
+	public setListener(context: CellContext) {
+		this._register(context.cell.onCurrentModeChanged(currentMode => {
+			if (currentMode === CellEditModes.WYSIWYG) {
+				this.enabled = false;
+			} else {
+				this.enabled = true;
+			}
+		}));
 	}
 }
 
