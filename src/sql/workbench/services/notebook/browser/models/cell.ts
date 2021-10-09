@@ -58,6 +58,7 @@ export class CellModel extends Disposable implements ICellModel {
 	private _onTableUpdated = new Emitter<ITableUpdatedEvent>();
 	private _onCellModeChanged = new Emitter<boolean>();
 	private _onExecutionStateChanged = new Emitter<CellExecutionState>();
+	private _onCurrentModeChanged = new Emitter<CellEditModes>();
 	private _isTrusted: boolean;
 	private _active: boolean;
 	private _hover: boolean;
@@ -382,6 +383,10 @@ export class CellModel extends Disposable implements ICellModel {
 		return this._onExecutionStateChanged.event;
 	}
 
+	public get onCurrentModeChanged(): Event<CellEditModes> {
+		return this._onCurrentModeChanged.event;
+	}
+
 	private fireExecutionStateChanged(): void {
 		this._onExecutionStateChanged.fire(this.executionState);
 	}
@@ -416,6 +421,20 @@ export class CellModel extends Disposable implements ICellModel {
 	public set showPreview(val: boolean) {
 		this._showPreview = val;
 		this._onCellPreviewChanged.fire(this._showPreview);
+		if (val) {
+			if (this._showMarkdown) {
+				this._onCurrentModeChanged.fire(CellEditModes.SPLIT);
+			} else {
+				this._onCurrentModeChanged.fire(CellEditModes.WYSIWYG);
+			}
+		}
+		else {
+			if (this._showMarkdown) {
+				this._onCurrentModeChanged.fire(CellEditModes.MARKDOWN);
+			} else {
+				this._onCurrentModeChanged.fire(CellEditModes.NONE);
+			}
+		}
 	}
 
 	public get showMarkdown(): boolean {
@@ -425,6 +444,20 @@ export class CellModel extends Disposable implements ICellModel {
 	public set showMarkdown(val: boolean) {
 		this._showMarkdown = val;
 		this._onCellMarkdownChanged.fire(this._showMarkdown);
+		if (val) {
+			if (this._showPreview) {
+				this._onCurrentModeChanged.fire(CellEditModes.SPLIT);
+			} else {
+				this._onCurrentModeChanged.fire(CellEditModes.MARKDOWN);
+			}
+		}
+		else {
+			if (this._showPreview) {
+				this._onCurrentModeChanged.fire(CellEditModes.WYSIWYG);
+			} else {
+				this._onCurrentModeChanged.fire(CellEditModes.NONE);
+			}
+		}
 	}
 
 	public get defaultTextEditMode(): string {

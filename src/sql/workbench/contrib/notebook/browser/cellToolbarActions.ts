@@ -17,7 +17,7 @@ import Severity from 'vs/base/common/severity';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { MoveDirection } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { CellEditModes, MoveDirection } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 const moreActionsLabel = localize('moreActionsLabel', "More");
 
 export class EditCellAction extends ToggleableAction {
@@ -30,7 +30,7 @@ export class EditCellAction extends ToggleableAction {
 	private static readonly maskedIconClass = 'masked-icon';
 
 	constructor(
-		id: string, toggleTooltip: boolean, isEditMode: boolean
+		id: string, toggleTooltip: boolean, isEditMode: boolean, private splitCellAction: SplitCellAction
 	) {
 		super(id, {
 			baseClass: EditCellAction.baseClass,
@@ -42,6 +42,7 @@ export class EditCellAction extends ToggleableAction {
 			shouldToggleTooltip: toggleTooltip,
 			isOn: isEditMode
 		});
+
 	}
 
 	public get editMode(): boolean {
@@ -51,9 +52,14 @@ export class EditCellAction extends ToggleableAction {
 		this.toggle(value);
 	}
 
-	public override async run(context: CellContext): Promise<void> {
-		this.editMode = !this.editMode;
-		context.cell.isEditMode = this.editMode;
+	public setListener(context: CellContext) {
+		this._register(context.cell.onCurrentModeChanged(currentMode => {
+			if (currentMode === CellEditModes.WYSIWYG) {
+				this.splitCellAction.enabled = false;
+			} else {
+				this.splitCellAction.enabled = true;
+			}
+		}));
 	}
 }
 
