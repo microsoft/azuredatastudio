@@ -1127,6 +1127,9 @@
     <trans-unit id="title.configurePython">
       <source xml:lang="en">Configure Python for Notebooks</source>
     </trans-unit>
+    <trans-unit id="title.designTable">
+      <source xml:lang="en">Design</source>
+    </trans-unit>
     <trans-unit id="title.endpoints">
       <source xml:lang="en">Service Endpoints</source>
     </trans-unit>
@@ -1135,6 +1138,9 @@
     </trans-unit>
     <trans-unit id="title.newSparkJob">
       <source xml:lang="en">New Spark Job</source>
+    </trans-unit>
+    <trans-unit id="title.newTable">
+      <source xml:lang="en">New Table</source>
     </trans-unit>
     <trans-unit id="title.openClusterDashboard">
       <source xml:lang="en">Cluster
