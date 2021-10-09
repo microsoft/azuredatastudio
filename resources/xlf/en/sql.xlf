@@ -1,5 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="src/sql/base/browser/ui/designer/designer" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="tableDesigner.unknownComponentType">
+      <source xml:lang="en">The component type: {0} is not supported</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/base/browser/ui/designer/designerPropertiesPane" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="tableDesigner.propertiesPaneTitle">
+      <source xml:lang="en">Properties</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.propertiesPaneTitleWithContext">
+      <source xml:lang="en">Properties - {0} {1}</source>
+      <note>{0} is the place holder for object type
+{1} is the place holder for object name</note>
+    </trans-unit>
+</body></file>
   <file original="src/sql/base/browser/ui/loadingSpinner/loadingSpinner.component" source-language="en" datatype="plaintext"><body>
     <trans-unit id="loadingCompletedMessage">
       <source xml:lang="en">Loading completed</source>
@@ -629,6 +644,11 @@
     </trans-unit>
     <trans-unit id="resourceViewerInput.resourceViewer">
       <source xml:lang="en">Resource Viewer</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/browser/editor/tableDesigner/tableDesignerInput" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="tableDesigner.newTable">
+      <source xml:lang="en">New Table</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/browser/modal/modal" source-language="en" datatype="plaintext"><body>
@@ -5662,6 +5682,44 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="serverGroup.editServerGroup">
       <source xml:lang="en">Edit server group</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="tableDesigner.advancedTab">
+      <source xml:lang="en">Advanced</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.columnAllowNullTitle">
+      <source xml:lang="en">Allow Nulls</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.columnDefaultValueTitle">
+      <source xml:lang="en">Default Value</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.columnLengthTitle">
+      <source xml:lang="en">Length</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.columnNameTitle">
+      <source xml:lang="en">Name</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.columnTypeName">
+      <source xml:lang="en">Column</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.columnTypeTitle">
+      <source xml:lang="en">Type</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.columnsTabTitle">
+      <source xml:lang="en">Columns</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.descriptionTitle">
+      <source xml:lang="en">Description</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.nameTitle">
+      <source xml:lang="en">Table name</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.schemaTitle">
+      <source xml:lang="en">Schema</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.tableObjectType">
+      <source xml:lang="en">Table</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/tasks/common/tasksService" source-language="en" datatype="plaintext"><body>
