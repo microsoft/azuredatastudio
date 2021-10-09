@@ -1082,3 +1082,61 @@ export class ProfilerFeature extends SqlOpsFeature<undefined> {
 	}
 }
 
+
+/**
+ * Table Designer Feature
+ * TODO: Move this feature to data protocol client repo once stablized
+ */
+export class TableDesignerFeature extends SqlOpsFeature<undefined> {
+	private static readonly messagesTypes: RPCMessageType[] = [
+		contracts.ProcessTableDesignerEditRequest.type,
+	];
+	constructor(client: SqlOpsDataClient) {
+		super(client, TableDesignerFeature.messagesTypes);
+	}
+
+	public fillClientCapabilities(capabilities: ClientCapabilities): void {
+	}
+
+	public initialize(capabilities: ServerCapabilities): void {
+		this.register(this.messages, {
+			id: UUID.generateUuid(),
+			registerOptions: undefined
+		});
+	}
+
+	protected registerProvider(options: undefined): Disposable {
+		const client = this._client;
+
+		const getTableDesignerInfo = async (tableInfo: azdata.designers.TableInfo): Promise<azdata.designers.TableDesignerInfo> => {
+			try {
+				return client.sendRequest(contracts.GetTableDesignerInfoRequest.type, tableInfo);
+			}
+			catch (e) {
+				client.logFailedRequest(contracts.GetTableDesignerInfoRequest.type, e);
+				return Promise.reject(e);
+			}
+		};
+		const processTableEdit = async (tableInfo: azdata.designers.TableInfo, data: azdata.designers.DesignerData, tableChangeInfo: azdata.designers.DesignerEdit): Promise<azdata.designers.DesignerEditResult> => {
+			let params: contracts.TableDesignerEditRequestParams = {
+				tableInfo: tableInfo,
+				data: data,
+				tableChangeInfo: tableChangeInfo
+			};
+			try {
+				return client.sendRequest(contracts.ProcessTableDesignerEditRequest.type, params);
+			}
+			catch (e) {
+				client.logFailedRequest(contracts.ProcessTableDesignerEditRequest.type, e);
+				return Promise.reject(e);
+			}
+		};
+
+		return azdata.dataprotocol.registerTableDesignerProvider({
+			providerId: client.providerId,
+			getTableDesignerInfo,
+			processTableEdit
+		});
+	}
+}
+
