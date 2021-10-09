@@ -530,12 +530,12 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Gets the table designer info for the specified table
 	 */
-	$getTableDesignerInfo(handle, table: azdata.designers.TableInfo): Promise<azdata.designers.TableDesignerInfo> { throw ni(); }
+	$getTableDesignerInfo(handle, table: azdata.designers.TableInfo): Thenable<azdata.designers.TableDesignerInfo> { throw ni(); }
 
 	/**
 	 * Process the table edit.
 	 */
-	$processTableDesignerEdit(handle, table: azdata.designers.TableInfo, data: azdata.designers.DesignerData, edit: azdata.designers.DesignerEdit): Promise<azdata.designers.DesignerEditResult> { throw ni(); }
+	$processTableDesignerEdit(handle, table: azdata.designers.TableInfo, data: azdata.designers.DesignerData, edit: azdata.designers.DesignerEdit): Thenable<azdata.designers.DesignerEditResult> { throw ni(); }
 
 	/**
 	 * Open a new instance of table designer.
