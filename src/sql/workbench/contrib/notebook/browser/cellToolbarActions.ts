@@ -79,7 +79,7 @@ export class SplitCellAction extends CellActionBase {
 		return Promise.resolve();
 	}
 	public setListener(context: CellContext) {
-		this._register(context.cell.onCurrentModeChanged(currentMode => {
+		this._register(context.cell.onCurrentEditModeChanged(currentMode => {
 			this.enabled = currentMode === CellEditModes.WYSIWYG ? false : true;
 		}));
 	}
