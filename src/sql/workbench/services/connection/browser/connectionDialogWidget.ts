@@ -42,6 +42,7 @@ import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { AsyncServerTree } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ConnectionBrowseTab } from 'sql/workbench/services/connection/browser/connectionBrowseTab';
+import { ElementSizeObserver } from 'vs/editor/browser/config/elementSizeObserver';
 
 export interface OnShowUIResponse {
 	selectedProviderDisplayName: string;
@@ -96,6 +97,15 @@ export class ConnectionDialogWidget extends Modal {
 	private _connecting = false;
 
 	private _connectionSource: ConnectionSource = 'manual';
+
+	/**
+	 * The available size of the panel could change when:
+	 * 1. a connection node is selected from recent/browse tab
+	 * 2. the connection type is changed
+	 * 3. the auth type is changed
+	 * We need to react to the size change and properly layout the panel content.
+	 */
+	private _panelSizeObserver: ElementSizeObserver;
 
 	constructor(
 		private providerDisplayNameOptions: string[],
@@ -218,6 +228,11 @@ export class ConnectionDialogWidget extends Modal {
 
 		this._register(this._themeService.onDidColorThemeChange(e => this.updateTheme(e)));
 		this.updateTheme(this._themeService.getColorTheme());
+		this._panelSizeObserver = new ElementSizeObserver(this._panel.element, undefined, () => {
+			this._panel.layout(new DOM.Dimension(this._panel.element.clientWidth, this._panel.element.clientHeight));
+		});
+		this._register(this._panelSizeObserver);
+		this._panelSizeObserver.startObserving();
 	}
 
 	/**

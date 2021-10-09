@@ -260,6 +260,10 @@
         <source xml:lang="en">New Notebook (Preview)</source>
         <target state="translated">新しいノートブック (プレビュー)</target>
       </trans-unit>
+      <trans-unit id="newSection">
+        <source xml:lang="en">New Section (Preview)</source>
+        <target state="translated">新しいセクション (プレビュー)</target>
+      </trans-unit>
       <trans-unit id="noBDCConnectionError">
         <source xml:lang="en">Spark kernels require a connection to a SQL Server Big Data Cluster master instance.</source>
         <target state="translated">Spark カーネルは、SQL Server ビッグ データ クラスターのマスター インスタンスへの接続を必要とします。</target>
@@ -393,8 +397,8 @@
         <target state="translated">参照</target>
       </trans-unit>
       <trans-unit id="configurePython.descriptionWithKernel">
-        <source xml:lang="en">The {0} kernel requires a Python runtime to be configured and dependencies to be installed.</source>
-        <target state="translated">{0} カーネルには、Python ランタイムを構成し、依存関係をインストールする必要があります。</target>
+        <source xml:lang="en">The '{0}' kernel requires a Python runtime to be configured and dependencies to be installed.</source>
+        <target state="new">The '{0}' kernel requires a Python runtime to be configured and dependencies to be installed.</target>
       </trans-unit>
       <trans-unit id="configurePython.descriptionWithoutKernel">
         <source xml:lang="en">Notebook kernels require a Python runtime to be configured and dependencies to be installed.</source>
@@ -500,9 +504,9 @@
         <source xml:lang="en">Required Version</source>
         <target state="translated">必要なバージョン</target>
       </trans-unit>
-      <trans-unit id="msgUnsupportedKernel">
-        <source xml:lang="en">Could not retrieve packages for kernel {0}</source>
-        <target state="translated">カーネル {0} のパッケージを取得できませんでした</target>
+      <trans-unit id="msgNoRequirementsForKernel">
+        <source xml:lang="en">No packages are required by default for the kernel '{0}'</source>
+        <target state="new">No packages are required by default for the kernel '{0}'</target>
       </trans-unit>
     </body>
   </file>
@@ -654,7 +658,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/jupyter/jupyterNotebookProvider" source-language="en" datatype="plaintext" target-language="ja">
+  <file original="extensions/notebook/dist/jupyter/jupyterExecuteProvider" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="errNotebookUriMissing">
         <source xml:lang="en">A notebook path is required</source>
@@ -896,9 +900,21 @@
         <source xml:lang="en">Add Text Cell</source>
         <target state="translated">テキスト セルの追加</target>
       </trans-unit>
+      <trans-unit id="notebook.command.boldText">
+        <source xml:lang="en">Bold Markdown Text</source>
+        <target state="translated">Markdown テキストを太字にする</target>
+      </trans-unit>
       <trans-unit id="notebook.command.clearactivecellresult">
         <source xml:lang="en">Clear Cell Result</source>
         <target state="translated">セル結果をクリアする</target>
+      </trans-unit>
+      <trans-unit id="notebook.command.codeBlock">
+        <source xml:lang="en">Add Code Block</source>
+        <target state="translated">コード ブロックを追加する</target>
+      </trans-unit>
+      <trans-unit id="notebook.command.italicizeText">
+        <source xml:lang="en">Italicize Markdown Text</source>
+        <target state="translated">Markdown テキストを斜体にする</target>
       </trans-unit>
       <trans-unit id="notebook.command.new">
         <source xml:lang="en">New Notebook</source>
@@ -915,6 +931,10 @@
       <trans-unit id="notebook.command.runallcells">
         <source xml:lang="en">Run Cells</source>
         <target state="translated">セルの実行</target>
+      </trans-unit>
+      <trans-unit id="notebook.command.underlineText">
+        <source xml:lang="en">Underline Markdown Text</source>
+        <target state="translated">Markdown テキストに下線を付ける</target>
       </trans-unit>
       <trans-unit id="notebook.configuration.title">
         <source xml:lang="en">Notebook configuration</source>
@@ -987,6 +1007,10 @@
       <trans-unit id="title.addNotebook">
         <source xml:lang="en">Add Notebook</source>
         <target state="translated">ノートブックの追加</target>
+      </trans-unit>
+      <trans-unit id="title.addSection">
+        <source xml:lang="en">Add Section</source>
+        <target state="translated">セクションの追加</target>
       </trans-unit>
       <trans-unit id="title.analyzeJupyterNotebook">
         <source xml:lang="en">Analyze in Notebook</source>

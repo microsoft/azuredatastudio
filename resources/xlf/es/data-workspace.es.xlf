@@ -147,8 +147,8 @@
         <target state="translated">Repositorio GIT remoto</target>
       </trans-unit>
       <trans-unit id="dataworkspace.restartConfirmation">
-        <source xml:lang="en">Azure Data Studio needs to be restarted for the project to be created and added to the workspace, do this now?</source>
-        <target state="translated">Azure Data Studio debe reiniciarse para que el proyecto se cree y agregue al área de trabajo, ¿quiere hacerlo ahora?</target>
+        <source xml:lang="en">Azure Data Studio needs to be restarted for the project to be added to the workspace. Restart now?</source>
+        <target state="translated">Azure Data Studio debe reiniciarse para que el proyecto se agregue al área de trabajo. ¿Reiniciar ahora?</target>
       </trans-unit>
       <trans-unit id="dataworkspace.select">
         <source xml:lang="en">Select</source>
@@ -255,6 +255,10 @@ Para obtener más información sobre los proyectos, [lea la documentación](http
       <trans-unit id="projects.defaultProjectSaveLocation">
         <source xml:lang="en">Full path to folder where new projects are saved by default.</source>
         <target state="translated">Ruta completa a la carpeta donde se guardan los nuevos proyectos de forma predeterminada.</target>
+      </trans-unit>
+      <trans-unit id="projects.excludedProjectsDescription">
+        <source xml:lang="en">List of projects in the workspace to exclude from the projects viewlet</source>
+        <target state="translated">Lista de proyectos del área de trabajo que se excluirán del viewlet de proyectos</target>
       </trans-unit>
       <trans-unit id="projects.showNotAddedProjectsInWorkspacePrompt">
         <source xml:lang="en">Always show information message when the current workspace folders contain projects that have not been added to the workspace's projects.</source>

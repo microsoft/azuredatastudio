@@ -197,6 +197,11 @@ configurationRegistry.registerConfiguration({
 			'type': 'boolean',
 			'default': true,
 			'description': localize('connection.parseClipboardForConnectionStringDescription', "Attempt to parse the contents of the clipboard when the connection dialog is opened or a paste is performed.")
+		},
+		'connection.showUnsupportedServerVersionWarning': {
+			'type': 'boolean',
+			'default': true,
+			'description': localize('connection.showUnsupportedServerVersionWarning', "Whether to show the warning message when user connects to a server version that is not supported by Azure Data Studio.")
 		}
 	}
 });

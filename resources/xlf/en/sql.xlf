@@ -537,11 +537,20 @@
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/api/common/extHostNotebook" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="errNoManager">
-      <source xml:lang="en">No Manager found</source>
+    <trans-unit id="errNoExecuteManager">
+      <source xml:lang="en">No execute manager found</source>
     </trans-unit>
-    <trans-unit id="errNoProvider">
-      <source xml:lang="en">no notebook provider found</source>
+    <trans-unit id="errNoExecuteProvider">
+      <source xml:lang="en">No notebook execute provider found</source>
+    </trans-unit>
+    <trans-unit id="errNoSerializationManager">
+      <source xml:lang="en">No serialization manager found</source>
+    </trans-unit>
+    <trans-unit id="errNoSerializationProvider">
+      <source xml:lang="en">No notebook serialization provider found</source>
+    </trans-unit>
+    <trans-unit id="executeProviderRequired">
+      <source xml:lang="en">A NotebookExecuteProvider with valid providerId must be passed to this method</source>
     </trans-unit>
     <trans-unit id="noContentManager">
       <source xml:lang="en">Notebook Manager for notebook {0} does not have a content manager. Cannot perform operations on it</source>
@@ -552,13 +561,13 @@
     <trans-unit id="noSessionManager">
       <source xml:lang="en">Notebook Manager for notebook {0} does not have a session manager. Cannot perform operations on it</source>
     </trans-unit>
-    <trans-unit id="providerRequired">
-      <source xml:lang="en">A NotebookProvider with valid providerId must be passed to this method</source>
+    <trans-unit id="serializationProviderRequired">
+      <source xml:lang="en">A NotebookSerializationProvider with valid providerId must be passed to this method</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/api/common/extHostNotebookDocumentsAndEditors" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="providerRequired">
-      <source xml:lang="en">A NotebookProvider with valid providerId must be passed to this method</source>
+    <trans-unit id="navigationProviderRequired">
+      <source xml:lang="en">A NavigationProvider with valid providerId must be passed to this method</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/browser/actions" source-language="en" datatype="plaintext"><body>
@@ -1321,6 +1330,9 @@
   <file original="src/sql/workbench/contrib/connection/browser/connection.contribution" source-language="en" datatype="plaintext"><body>
     <trans-unit id="connection.parseClipboardForConnectionStringDescription">
       <source xml:lang="en">Attempt to parse the contents of the clipboard when the connection dialog is opened or a paste is performed.</source>
+    </trans-unit>
+    <trans-unit id="connection.showUnsupportedServerVersionWarning">
+      <source xml:lang="en">Whether to show the warning message when user connects to a server version that is not supported by Azure Data Studio.</source>
     </trans-unit>
     <trans-unit id="sql.defaultAuthenticationType.AzureMFA">
       <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
@@ -2654,6 +2666,9 @@ Error: {1}</source>
     <trans-unit id="optionTextCell">
       <source xml:lang="en">Text cell</source>
     </trans-unit>
+    <trans-unit id="splitCell">
+      <source xml:lang="en">Split cell</source>
+    </trans-unit>
     <trans-unit id="textPreview">
       <source xml:lang="en">Text cell</source>
     </trans-unit>
@@ -3796,6 +3811,9 @@ Error: {1}</source>
     <trans-unit id="messagesTabTitle">
       <source xml:lang="en">Messages</source>
     </trans-unit>
+    <trans-unit id="queryResults.queryEditorCrashError">
+      <source xml:lang="en">The query editor ran into an issue and has stopped working. Please save and reopen it.</source>
+    </trans-unit>
     <trans-unit id="resultsTabTitle">
       <source xml:lang="en">Results</source>
     </trans-unit>
@@ -4788,11 +4806,17 @@ Error: {1}</source>
     <trans-unit id="connection.invalidConnectionResult">
       <source xml:lang="en">Connection result is invalid</source>
     </trans-unit>
+    <trans-unit id="connection.neverShowUnsupportedVersionWarning">
+      <source xml:lang="en">Don't show again</source>
+    </trans-unit>
     <trans-unit id="connection.noAzureAccount">
       <source xml:lang="en">Failed to get Azure account token for connection</source>
     </trans-unit>
     <trans-unit id="connection.refreshAzureTokenFailure">
       <source xml:lang="en">Failed to refresh Azure account token for connection</source>
+    </trans-unit>
+    <trans-unit id="connection.unsupportedServerVersionWarning">
+      <source xml:lang="en">The server version is not supported by Azure Data Studio, you may still connect to it but some features in Azure Data Studio might not work as expected.</source>
     </trans-unit>
     <trans-unit id="connectionManagementService.noProviderForUri">
       <source xml:lang="en">Could not find provider for uri: {0}</source>
@@ -5234,8 +5258,8 @@ Error: {1}</source>
     <trans-unit id="vscode.extension.contributes.notebook.languagemagics">
       <source xml:lang="en">Contributes notebook language.</source>
     </trans-unit>
-    <trans-unit id="vscode.extension.contributes.notebook.providers">
-      <source xml:lang="en">Contributes notebook providers.</source>
+    <trans-unit id="vscode.extension.contributes.notebook.providersDescriptions">
+      <source xml:lang="en">Contributes notebook provider descriptions.</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/objectExplorer/browser/asyncServerTreeRenderer" source-language="en" datatype="plaintext"><body>

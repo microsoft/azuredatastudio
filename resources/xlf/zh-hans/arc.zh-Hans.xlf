@@ -1565,6 +1565,22 @@
         <source xml:lang="en">The request for cores of the managed instance as an integer.</source>
         <target state="translated">将托管实例的核心作为整数的请求。</target>
       </trans-unit>
+      <trans-unit id="arc.sql.dev.use.description">
+        <source xml:lang="en">Check the box to indicate this instance will be used for development or testing purposes only. This instance will not be billed.</source>
+        <target state="translated">选中此框以指示此实例将仅用于开发或测试目的。将不会对此实例计费。</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.dev.use.label">
+        <source xml:lang="en">For development use only</source>
+        <target state="translated">仅供开发使用</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.high.availability.description">
+        <source xml:lang="en">Enable additional replicas for high availabilty. The compute and storage configuration selected below will be applied to all replicas.</source>
+        <target state="translated">启用其他副本以实现高可用性。所选的计算和存储配置将应用于所有副本。</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.high.availability.label">
+        <source xml:lang="en">High Availability</source>
+        <target state="translated">高可用性</target>
+      </trans-unit>
       <trans-unit id="arc.sql.instance.name">
         <source xml:lang="en">Instance name</source>
         <target state="translated">实例名称</target>
@@ -1589,29 +1605,89 @@
         <source xml:lang="en">The request for the capacity of the managed instance as an integer amount of memory in GBs.</source>
         <target state="translated">对托管实例容量的请求(整数内存量，以 GB 为单位)。</target>
       </trans-unit>
-      <trans-unit id="arc.sql.replicas.description">
-        <source xml:lang="en">The number of SQL Managed Instance replicas that will be deployed in your Kubernetes cluster for high availability purposes</source>
-        <target state="translated">出于高可用性目的将部署在 Kubernetes 群集中的 SQL 托管实例副本数</target>
+      <trans-unit id="arc.sql.one.replica">
+        <source xml:lang="en">1 replica</source>
+        <target state="translated">1 个副本</target>
       </trans-unit>
-      <trans-unit id="arc.sql.replicas.label">
-        <source xml:lang="en">Replicas</source>
-        <target state="translated">副本</target>
+      <trans-unit id="arc.sql.service.tier.business.critical">
+        <source xml:lang="en">[PREVIEW] Business Critical (Unlimited vCores and RAM, advanced high availability)</source>
+        <target state="translated">[预览] 业务关键(无限制的 vCore 和 RAM，高级高可用性)</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.service.tier.description">
+        <source xml:lang="en">Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical. {0}</source>
+        <target state="translated">从可用于 SQL 托管实例 - Azure Arc 的最新 vCore 服务层(包括常规用途和业务关键型)中进行选择。{0}</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.service.tier.general.purpose">
+        <source xml:lang="en">General Purpose (Up to 24 vCores and 128 Gi of RAM, standard high availability)</source>
+        <target state="translated">常规用途(最多 24 个 Vcore 和 128 Gi RAM，标准高可用性)</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.service.tier.label">
+        <source xml:lang="en">Service Tier</source>
+        <target state="translated">服务层</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.storage-class.backups.description">
+        <source xml:lang="en">The storage class to be used for backup persistent volumes. If no value is specified, the default storage class will be used.</source>
+        <target state="translated">用于备份永久性卷的存储类。如果未指定任何值，则将使用默认存储类。</target>
       </trans-unit>
       <trans-unit id="arc.sql.storage-class.data.description">
-        <source xml:lang="en">The storage class to be used for data (.mdf)</source>
-        <target state="translated">要用于数据的存储类(.mdf)</target>
+        <source xml:lang="en">The storage class to be used for data (.mdf). If no value is specified, the default storage class will be used.</source>
+        <target state="translated">用于数据的存储类(.mdf)。如果未指定任何值，则将使用默认存储类。</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.storage-class.datalogs.description">
+        <source xml:lang="en">The storage class to be used for database logs (.ldf). If no value is specified, the default storage class will be used.</source>
+        <target state="translated">用于数据的数据库日志(.ldf)。如果未指定任何值，则将使用默认存储类。</target>
       </trans-unit>
       <trans-unit id="arc.sql.storage-class.dc.description">
         <source xml:lang="en">The storage class to be used for all data and logs persistent volumes for all data controller pods that require them.</source>
         <target state="translated">要用于所有数据的存储类，以及所有需要它们的数据控制器 Pod 的 日志永久卷。</target>
       </trans-unit>
       <trans-unit id="arc.sql.storage-class.logs.description">
-        <source xml:lang="en">The storage class to be used for logs (/var/log)</source>
-        <target state="translated">要用于日志的存储类(/var/log)</target>
+        <source xml:lang="en">The storage class to be used for logs (/var/log). If no value is specified, the default storage class will be used.</source>
+        <target state="translated">用于日志的存储类(/var/log)。如果未指定任何值，则将使用默认存储类。</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.three.replicas">
+        <source xml:lang="en">3 replicas</source>
+        <target state="translated">3 个副本</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.two.replicas">
+        <source xml:lang="en">2 replicas</source>
+        <target state="translated">2 个副本</target>
       </trans-unit>
       <trans-unit id="arc.sql.username">
         <source xml:lang="en">Username</source>
         <target state="translated">用户名</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.volume.size.backups.description">
+        <source xml:lang="en">The size of the storage volume to be used for backups in gibibytes.</source>
+        <target state="translated">用于备份的存储卷大小(GB)。</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.volume.size.backups.label">
+        <source xml:lang="en">Volume Size in Gi (Backups)</source>
+        <target state="translated">以 Gi 为单位的卷大小(备份)。</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.volume.size.data.description">
+        <source xml:lang="en">The size of the storage volume to be used for data in gibibytes.</source>
+        <target state="translated">用于数据的存储卷大小(GB)。</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.volume.size.data.label">
+        <source xml:lang="en">Volume Size in Gi (Data)</source>
+        <target state="translated">以 Gi 为单位的卷大小(数据)</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.volume.size.datalogs.description">
+        <source xml:lang="en">The size of the storage volume to be used for database logs in gibibytes.</source>
+        <target state="translated">用于数据库日志的存储卷大小(GB)。</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.volume.size.datalogs.label">
+        <source xml:lang="en">Volume Size in Gi (Database logs)</source>
+        <target state="translated">以 Gi 为单位的卷(数据库日志)</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.volume.size.logs.description">
+        <source xml:lang="en">The size of the storage volume to be used for logs in gibibytes.</source>
+        <target state="translated">用于日志的存储卷大小(GB)。</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.volume.size.logs.label">
+        <source xml:lang="en">Volume Size in Gi (Logs)</source>
+        <target state="translated">以 Gi 为单位的卷大小(日志)</target>
       </trans-unit>
       <trans-unit id="arc.sql.wizard.page1.title">
         <source xml:lang="en">Provide Azure SQL managed instance parameters</source>
@@ -1628,6 +1704,10 @@
       <trans-unit id="arc.storage-class.data.label">
         <source xml:lang="en">Storage Class (Data)</source>
         <target state="translated">存储类(数据)</target>
+      </trans-unit>
+      <trans-unit id="arc.storage-class.datalogs.label">
+        <source xml:lang="en">Storage Class (Database logs)</source>
+        <target state="translated">存储类(数据库日志)</target>
       </trans-unit>
       <trans-unit id="arc.storage-class.dc.label">
         <source xml:lang="en">Storage Class</source>

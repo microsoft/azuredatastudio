@@ -73,11 +73,11 @@ export class ProjectsController {
 
 	projFileWatchers = new Map<string, vscode.FileSystemWatcher>();
 
-	constructor(outputChannel: vscode.OutputChannel) {
-		this.netCoreTool = new NetCoreTool(outputChannel);
+	constructor(private _outputChannel: vscode.OutputChannel) {
+		this.netCoreTool = new NetCoreTool(this._outputChannel);
 		this.buildHelper = new BuildHelper();
-		this.deployService = new DeployService(outputChannel);
-		this.autorestHelper = new AutorestHelper(outputChannel);
+		this.deployService = new DeployService(this._outputChannel);
+		this.autorestHelper = new AutorestHelper(this._outputChannel);
 	}
 
 	public getDashboardPublishData(projectFile: string): (string | dataworkspace.IconCellValue)[][] {
@@ -270,6 +270,7 @@ export class ProjectsController {
 			if (deployProfile && deployProfile.deploySettings) {
 				let connectionUri: string | undefined;
 				if (deployProfile.localDbSetting) {
+					void utils.showInfoMessageWithOutputChannel(constants.publishingProjectMessage, this._outputChannel);
 					connectionUri = await this.deployService.deploy(deployProfile, project);
 					if (connectionUri) {
 						deployProfile.deploySettings.connectionUri = connectionUri;
@@ -281,16 +282,16 @@ export class ProjectsController {
 						if (deployProfile.localDbSetting) {
 							await this.deployService.getConnection(deployProfile.localDbSetting, true, deployProfile.localDbSetting.dbName);
 						}
-						void vscode.window.showInformationMessage(constants.deployProjectSucceed);
+						void vscode.window.showInformationMessage(constants.publishProjectSucceed);
 					} else {
-						void vscode.window.showErrorMessage(constants.publishToContainerFailed(publishResult?.errorMessage || ''));
+						void utils.showErrorMessageWithOutputChannel(constants.publishToContainerFailed, publishResult?.errorMessage || '', this._outputChannel);
 					}
 				} else {
-					void vscode.window.showErrorMessage(constants.publishToContainerFailed(constants.deployProjectFailedMessage));
+					void utils.showErrorMessageWithOutputChannel(constants.publishToContainerFailed, constants.deployProjectFailedMessage, this._outputChannel);
 				}
 			}
 		} catch (error) {
-			void vscode.window.showErrorMessage(constants.publishToContainerFailed(utils.getErrorMessage(error)));
+			void utils.showErrorMessageWithOutputChannel(constants.publishToContainerFailed, error, this._outputChannel);
 		}
 		return;
 	}
@@ -840,7 +841,7 @@ export class ProjectsController {
 		}
 
 		const filters: { [name: string]: string[] } = {};
-		filters[constants.specSelectionText] = ['yaml'];
+		filters[constants.specSelectionText] = constants.openApiSpecFileExtensions;
 
 		let uris = await vscode.window.showOpenDialog({
 			canSelectFiles: true,
@@ -891,7 +892,8 @@ export class ProjectsController {
 			}
 
 			outputFolder = folders[0].fsPath;
-			projectName = path.basename(specPath, constants.yamlFileExtension);
+
+			projectName = path.basename(specPath, path.extname(specPath));
 			newProjectFolder = path.join(outputFolder, projectName);
 
 			if (await utils.exists(newProjectFolder)) {
@@ -1128,31 +1130,27 @@ export class ProjectsController {
 
 	public async createProjectFromDatabaseCallback(model: ImportDataModel) {
 		try {
+			const newProjFolderUri = model.filePath;
+
+			const newProjFilePath = await this.createNewProject({
+				newProjName: model.projName,
+				folderUri: vscode.Uri.file(newProjFolderUri),
+				projectTypeId: constants.emptySqlDatabaseProjectTypeId
+			});
+
+			model.filePath = path.dirname(newProjFilePath);
+			this.setFilePath(model);
+
+			const project = await Project.openProject(newProjFilePath);
+			await this.createProjectFromDatabaseApiCall(model); // Call ExtractAPI in DacFx Service
+			let fileFolderList: vscode.Uri[] = model.extractTarget === mssql.ExtractTarget.file ? [vscode.Uri.file(model.filePath)] : await this.generateList(model.filePath); // Create a list of all the files and directories to be added to project
+
+			await project.addToProject(fileFolderList); // Add generated file structure to the project
+
+			// add project to workspace
 			const workspaceApi = utils.getDataWorkspaceExtensionApi();
-
-			const validateWorkspace = await workspaceApi.validateWorkspace();
-			if (validateWorkspace) {
-				const newProjFolderUri = model.filePath;
-
-				const newProjFilePath = await this.createNewProject({
-					newProjName: model.projName,
-					folderUri: vscode.Uri.file(newProjFolderUri),
-					projectTypeId: constants.emptySqlDatabaseProjectTypeId
-				});
-
-				model.filePath = path.dirname(newProjFilePath);
-				this.setFilePath(model);
-
-				const project = await Project.openProject(newProjFilePath);
-				await this.createProjectFromDatabaseApiCall(model); // Call ExtractAPI in DacFx Service
-				let fileFolderList: vscode.Uri[] = model.extractTarget === mssql.ExtractTarget.file ? [vscode.Uri.file(model.filePath)] : await this.generateList(model.filePath); // Create a list of all the files and directories to be added to project
-
-				await project.addToProject(fileFolderList); // Add generated file structure to the project
-
-				// add project to workspace
-				workspaceApi.showProjectsView();
-				await workspaceApi.addProjectsToWorkspace([vscode.Uri.file(newProjFilePath)]);
-			}
+			workspaceApi.showProjectsView();
+			await workspaceApi.addProjectsToWorkspace([vscode.Uri.file(newProjFilePath)]);
 		} catch (err) {
 			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
 		}
