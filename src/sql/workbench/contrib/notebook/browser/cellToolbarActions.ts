@@ -52,6 +52,11 @@ export class EditCellAction extends ToggleableAction {
 		this.toggle(value);
 	}
 
+	public override async run(context: CellContext): Promise<void> {
+		this.editMode = !this.editMode;
+		context.cell.isEditMode = this.editMode;
+	}
+
 	public setListener(context: CellContext) {
 		this._register(context.cell.onCurrentModeChanged(currentMode => {
 			if (currentMode === CellEditModes.WYSIWYG) {
