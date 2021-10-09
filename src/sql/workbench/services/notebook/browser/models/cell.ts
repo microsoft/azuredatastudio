@@ -421,20 +421,16 @@ export class CellModel extends Disposable implements ICellModel {
 	public set showPreview(val: boolean) {
 		this._showPreview = val;
 		this._onCellPreviewChanged.fire(this._showPreview);
+		let cellMode = CellEditModes.NONE;
 		if (val) {
-			if (this._showMarkdown) {
-				this._onCurrentModeChanged.fire(CellEditModes.SPLIT);
-			} else {
-				this._onCurrentModeChanged.fire(CellEditModes.WYSIWYG);
-			}
+			cellMode = this._showMarkdown ? CellEditModes.SPLIT : CellEditModes.WYSIWYG;
 		}
 		else {
 			if (this._showMarkdown) {
-				this._onCurrentModeChanged.fire(CellEditModes.MARKDOWN);
-			} else {
-				this._onCurrentModeChanged.fire(CellEditModes.NONE);
+				cellMode = CellEditModes.MARKDOWN;
 			}
 		}
+		this._onCurrentModeChanged.fire(cellMode);
 	}
 
 	public get showMarkdown(): boolean {
@@ -444,20 +440,16 @@ export class CellModel extends Disposable implements ICellModel {
 	public set showMarkdown(val: boolean) {
 		this._showMarkdown = val;
 		this._onCellMarkdownChanged.fire(this._showMarkdown);
+		let cellMode = CellEditModes.NONE;
 		if (val) {
-			if (this._showPreview) {
-				this._onCurrentModeChanged.fire(CellEditModes.SPLIT);
-			} else {
-				this._onCurrentModeChanged.fire(CellEditModes.MARKDOWN);
-			}
+			cellMode = this._showPreview ? CellEditModes.SPLIT : CellEditModes.MARKDOWN;
 		}
 		else {
 			if (this._showPreview) {
-				this._onCurrentModeChanged.fire(CellEditModes.WYSIWYG);
-			} else {
-				this._onCurrentModeChanged.fire(CellEditModes.NONE);
+				cellMode = CellEditModes.WYSIWYG;
 			}
 		}
+		this._onCurrentModeChanged.fire(cellMode);
 	}
 
 	public get defaultTextEditMode(): string {
