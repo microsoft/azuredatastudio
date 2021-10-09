@@ -80,11 +80,7 @@ export class SplitCellAction extends CellActionBase {
 	}
 	public setListener(context: CellContext) {
 		this._register(context.cell.onCurrentModeChanged(currentMode => {
-			if (currentMode === CellEditModes.WYSIWYG) {
-				this.enabled = false;
-			} else {
-				this.enabled = true;
-			}
+			this.enabled = currentMode === CellEditModes.WYSIWYG ? false : true;
 		}));
 	}
 }
