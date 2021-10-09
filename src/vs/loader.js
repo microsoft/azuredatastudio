@@ -789,14 +789,7 @@ var AMDLoader;
                 catch (_e) {
                     recorder.record(61 /* CachedDataMissed */, cachedDataPath);
                 }
-				var script;
-				try {
-					script = new that._vm.Script(scriptSource, options);
-				} catch (err) {
-					console.warn('ERROR IN VM SCRIPT ', scriptSource);
-					throw err;
-				}
-
+                var script = new that._vm.Script(scriptSource, options);
                 var compileWrapper = script.runInThisContext(options);
                 // run script
                 var dirname = that._path.dirname(filename);
@@ -859,14 +852,7 @@ var AMDLoader;
         NodeScriptLoader.prototype._createAndEvalScript = function (moduleManager, contents, options, callback, errorback) {
             var recorder = moduleManager.getRecorder();
             recorder.record(31 /* NodeBeginEvaluatingScript */, options.filename);
-			var script;
-			try {
-				script = new this._vm.Script(contents, options);
-			} catch (err) {
-				console.warn('ERROR IN VM SCRIPT ', contents);
-				throw err;
-			}
-
+            var script = new this._vm.Script(contents, options);
             var ret = script.runInThisContext(options);
             var globalDefineFunc = moduleManager.getGlobalAMDDefineFunc();
             var receivedDefineCall = false;
