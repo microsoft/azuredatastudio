@@ -118,7 +118,7 @@ steps:
 
   - script: |
       set -e
-      DISPLAY=:10 ./scripts/test.sh --build --coverage --reporter mocha-junit-reporter --tfs "Unit Tests"
+      DISPLAY=:10 ./scripts/test.sh --build --tfs "Unit Tests"
     displayName: Run unit tests (Electron)
     condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
