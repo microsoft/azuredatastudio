@@ -1095,7 +1095,8 @@ declare module 'azdata' {
 			DefaultValue = 'defaultValue',
 			Length = 'length',
 			Name = 'name',
-			Type = 'type'
+			Type = 'type',
+			IsPrimaryKey = 'isPrimaryKey'
 		}
 
 		/**
@@ -1229,7 +1230,7 @@ declare module 'azdata' {
 			/**
 			 * the new value
 			 */
-			value: any;
+			value?: any;
 		}
 
 		/**

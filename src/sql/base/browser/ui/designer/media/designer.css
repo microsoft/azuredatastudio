@@ -59,7 +59,8 @@
 
 .designer-component .components-grid {
 	display: grid;
-	grid-template-columns: max-content auto; /* label, component*/
+	grid-template-columns: max-content auto;
+	/* label, component*/
 	grid-template-rows: max-content;
 	grid-gap: 5px;
 	padding: 5px;
@@ -68,10 +69,24 @@
 }
 
 .designer-component .components-grid .full-row {
-	grid-area: span 1 / span 2; /* spans 1 row and 2 columns*/
+	grid-area: span 1 / span 2;
+	/* spans 1 row and 2 columns*/
 }
 
 .designer-component .monaco-table .slick-cell.editable {
 	padding: 0px;
 	border-width: 0px;
+}
+
+.designer-component .add-row-button-container {
+	display: flex;
+	flex-flow: row-reverse;
+}
+
+.designer-component .add-row-button-container .codicon.add-row-button {
+	width: fit-content;
+	background-repeat: no-repeat;
+	background-size: 13px;
+	padding-left: 17px;
+	background-position: 2px center;
 }

@@ -115,6 +115,12 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				componentProperties: {
 					title: localize('tableDesigner.columnAllowNullTitle', "Allow Nulls"),
 				}
+			}, {
+				componentType: 'checkbox',
+				propertyName: designers.TableColumnProperty.IsPrimaryKey,
+				componentProperties: {
+					title: localize('tableDesigner.columnIsPrimaryKeyTitle', "Primary Key"),
+				}
 			}
 		];
 
@@ -135,7 +141,8 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 							designers.TableColumnProperty.Type,
 							designers.TableColumnProperty.Length,
 							designers.TableColumnProperty.DefaultValue,
-							designers.TableColumnProperty.AllowNulls
+							designers.TableColumnProperty.AllowNulls,
+							designers.TableColumnProperty.IsPrimaryKey
 						],
 						itemProperties: columnProperties,
 						objectTypeDisplayName: localize('tableDesigner.columnTypeName', "Column")

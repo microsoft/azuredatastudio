@@ -115,7 +115,7 @@ export enum DesignerEditType {
 export interface DesignerEdit {
 	type: DesignerEditType;
 	property: DesignerEditIdentifier;
-	value: any;
+	value?: any;
 }
 
 export type DesignerEditIdentifier = string | { parentProperty: string, index: number, property: string };
