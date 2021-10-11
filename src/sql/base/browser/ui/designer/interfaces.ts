@@ -3,7 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { Event } from 'vs/base/common/event';
+
 export interface DesignerComponentInput {
+	/**
+	 * The event that is triggerd when the designer state changes.
+	 */
+	readonly onStateChange: Event<DesignerState>;
+
 	/**
 	 * Gets the object type display name.
 	 */
@@ -24,6 +31,27 @@ export interface DesignerComponentInput {
 	 * @param edit the information about the edit.
 	 */
 	processEdit(edit: DesignerEdit): Promise<DesignerEditResult>;
+
+	/**
+	 * A boolean value indicating whether the current state is valid.
+	 */
+	readonly valid: boolean;
+
+	/**
+	 * A boolean value indicating whether the current state is dirty.
+	 */
+	readonly dirty: boolean;
+
+	/**
+	 * A boolean value indicating whether the changes are being saved.
+	 */
+	readonly saving: boolean;
+}
+
+export interface DesignerState {
+	valid: boolean;
+	dirty: boolean;
+	saving: boolean;
 }
 
 export const NameProperty = 'name';
@@ -115,7 +143,7 @@ export enum DesignerEditType {
 export interface DesignerEdit {
 	type: DesignerEditType;
 	property: DesignerEditIdentifier;
-	value: any;
+	value?: any;
 }
 
 export type DesignerEditIdentifier = string | { parentProperty: string, index: number, property: string };

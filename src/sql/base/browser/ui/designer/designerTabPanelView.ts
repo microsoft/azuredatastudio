@@ -10,6 +10,10 @@ import { Disposable } from 'vs/base/common/lifecycle';
 import * as DOM from 'vs/base/browser/dom';
 import { CreateComponentFunc } from 'sql/base/browser/ui/designer/designer';
 
+const ButtonHeight = 30;
+const HorizontalPadding = 10;
+const VerticalPadding = 20;
+
 export class DesignerTabPanelView extends Disposable implements IPanelView {
 	private _componentsContainer: HTMLElement;
 	private _tables: Table<Slick.SlickData>[] = [];
@@ -30,7 +34,7 @@ export class DesignerTabPanelView extends Disposable implements IPanelView {
 
 	layout(dimension: DOM.Dimension): void {
 		this._tables.forEach(table => {
-			table.layout(new DOM.Dimension(dimension.width - 10, dimension.height - 20));
+			table.layout(new DOM.Dimension(dimension.width - HorizontalPadding, dimension.height - VerticalPadding - ButtonHeight));
 		});
 	}
 }

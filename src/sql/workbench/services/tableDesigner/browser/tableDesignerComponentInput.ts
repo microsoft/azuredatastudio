@@ -4,18 +4,39 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { DesignerData, DesignerEdit, DesignerEditResult, DesignerComponentInput, DesignerView, DesignerTab, DesignerDataPropertyInfo, DropDownProperties, DesignerTableProperties } from 'sql/base/browser/ui/designer/interfaces';
+import { DesignerData, DesignerEdit, DesignerEditResult, DesignerComponentInput, DesignerView, DesignerTab, DesignerDataPropertyInfo, DropDownProperties, DesignerTableProperties, DesignerState } from 'sql/base/browser/ui/designer/interfaces';
 import { TableDesignerProvider } from 'sql/workbench/services/tableDesigner/common/interface';
 import { localize } from 'vs/nls';
 import { designers } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { Emitter, Event } from 'vs/base/common/event';
+import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 
 export class TableDesignerComponentInput implements DesignerComponentInput {
 
 	private _data: DesignerData;
 	private _view: DesignerView;
+	private _valid: boolean = true;
+	private _dirty: boolean = false;
+	private _saving: boolean = false;
+	private _onStateChange = new Emitter<DesignerState>();
+
+	public readonly onStateChange: Event<DesignerState> = this._onStateChange.event;
 
 	constructor(private readonly _provider: TableDesignerProvider,
-		private _tableInfo: azdata.designers.TableInfo) {
+		private _tableInfo: azdata.designers.TableInfo,
+		@INotificationService private readonly _notificationService: INotificationService) {
+	}
+
+	get valid(): boolean {
+		return this._valid;
+	}
+
+	get dirty(): boolean {
+		return this._dirty;
+	}
+
+	get saving(): boolean {
+		return this._saving;
 	}
 
 	get objectTypeDisplayName(): string {
@@ -41,10 +62,45 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		if (result.isValid) {
 			this._data = result.data;
 		}
+		this.updateState(result.isValid, true, this.saving);
 		return {
 			isValid: result.isValid,
 			errors: result.errors
 		};
+	}
+
+	async save(): Promise<void> {
+		const notificationHandle = this._notificationService.notify({
+			severity: Severity.Info,
+			message: localize('tableDesigner.savingChanges', "Saving table designer changes...")
+		});
+		try {
+			this.updateState(this.valid, this.dirty, true);
+			await this._provider.saveTable(this._tableInfo, this._data);
+			this.updateState(true, false, false);
+			notificationHandle.updateMessage(localize('tableDesigner.savedChangeSuccess', "The changes have been successfully saved."));
+		} catch (error) {
+			notificationHandle.updateSeverity(Severity.Error);
+			notificationHandle.updateMessage(localize('tableDesigner.saveChangeError', "An error occured while saving changes: {0}", error?.message ?? error));
+			this.updateState(this.valid, this.dirty, false);
+		}
+	}
+
+	async revert(): Promise<void> {
+		this.updateState(true, false, false);
+	}
+
+	private updateState(valid: boolean, dirty: boolean, saving: boolean): void {
+		if (this._dirty !== dirty || this._valid !== valid || this._saving !== saving) {
+			this._dirty = dirty;
+			this._valid = valid;
+			this._saving = saving;
+			this._onStateChange.fire({
+				valid: this._valid,
+				dirty: this._dirty,
+				saving: this._saving
+			});
+		}
 	}
 
 	private async initialize(): Promise<void> {
@@ -115,6 +171,12 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				componentProperties: {
 					title: localize('tableDesigner.columnAllowNullTitle', "Allow Nulls"),
 				}
+			}, {
+				componentType: 'checkbox',
+				propertyName: designers.TableColumnProperty.IsPrimaryKey,
+				componentProperties: {
+					title: localize('tableDesigner.columnIsPrimaryKeyTitle', "Primary Key"),
+				}
 			}
 		];
 
@@ -135,7 +197,8 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 							designers.TableColumnProperty.Type,
 							designers.TableColumnProperty.Length,
 							designers.TableColumnProperty.DefaultValue,
-							designers.TableColumnProperty.AllowNulls
+							designers.TableColumnProperty.AllowNulls,
+							designers.TableColumnProperty.IsPrimaryKey
 						],
 						itemProperties: columnProperties,
 						objectTypeDisplayName: localize('tableDesigner.columnTypeName', "Column")

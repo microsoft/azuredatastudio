@@ -1,0 +1,23 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.table-designer-main-container {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	height: 100%;
+}
+
+.table-designer-main-container .actionbar-container {
+	flex: 0 0 auto;
+	padding: 5px;
+	border-width: 0 0 1px 0;
+	border-style: solid;
+	border-bottom-color: rgba(128, 128, 128, 0.35);
+}
+
+.table-designer-main-container .designer-container {
+	flex: 1 1 auto;
+}
