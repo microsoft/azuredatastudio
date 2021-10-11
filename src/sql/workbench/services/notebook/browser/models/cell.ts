@@ -58,6 +58,7 @@ export class CellModel extends Disposable implements ICellModel {
 	private _onTableUpdated = new Emitter<ITableUpdatedEvent>();
 	private _onCellModeChanged = new Emitter<boolean>();
 	private _onExecutionStateChanged = new Emitter<CellExecutionState>();
+	private _onCurrentEditModeChanged = new Emitter<CellEditModes>();
 	private _isTrusted: boolean;
 	private _active: boolean;
 	private _hover: boolean;
@@ -382,6 +383,10 @@ export class CellModel extends Disposable implements ICellModel {
 		return this._onExecutionStateChanged.event;
 	}
 
+	public get onCurrentEditModeChanged(): Event<CellEditModes> {
+		return this._onCurrentEditModeChanged.event;
+	}
+
 	private fireExecutionStateChanged(): void {
 		this._onExecutionStateChanged.fire(this.executionState);
 	}
@@ -416,6 +421,7 @@ export class CellModel extends Disposable implements ICellModel {
 	public set showPreview(val: boolean) {
 		this._showPreview = val;
 		this._onCellPreviewChanged.fire(this._showPreview);
+		this._onCurrentEditModeChanged.fire(this.currentMode);
 	}
 
 	public get showMarkdown(): boolean {
@@ -425,6 +431,7 @@ export class CellModel extends Disposable implements ICellModel {
 	public set showMarkdown(val: boolean) {
 		this._showMarkdown = val;
 		this._onCellMarkdownChanged.fire(this._showMarkdown);
+		this._onCurrentEditModeChanged.fire(this.currentMode);
 	}
 
 	public get defaultTextEditMode(): string {

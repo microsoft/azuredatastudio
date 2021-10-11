@@ -540,6 +540,7 @@ export interface ICellModel {
 	cellSourceChanged: boolean;
 	readonly savedConnectionName: string | undefined;
 	attachments: nb.ICellAttachments | undefined;
+	readonly onCurrentEditModeChanged: Event<CellEditModes>;
 	readonly currentMode: CellEditModes;
 	/**
 	 * Adds image as an attachment to cell metadata
