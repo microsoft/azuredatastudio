@@ -251,6 +251,7 @@ suite('SQL ConnectionStatusManager tests', () => {
 		newConnection.options['databaseDisplayName'] = newConnection.databaseName;
 		connections.addConnection(newConnection, 'test_uri_1');
 		connections.addConnection(newConnection, 'test_uri_2');
+		newConnection = new ConnectionProfile(capabilitiesService, newConnection);
 
 		// Get the connections and verify that the duplicate is only returned once
 		let activeConnections = connections.getActiveConnectionProfiles();

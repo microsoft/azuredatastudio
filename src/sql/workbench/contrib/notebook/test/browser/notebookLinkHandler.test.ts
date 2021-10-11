@@ -75,8 +75,7 @@ suite('Noteboook Link Handler', function (): void {
 	});
 
 	test('Should return absolute links with keep absolute path setting', () => {
-		// let basePath = process.cwd();
-		configurationService.updateValue('notebook.keepAbsolutePath', true, ConfigurationTarget.USER);
+		configurationService.updateValue('notebook.useAbsoluteFilePaths', true, ConfigurationTarget.USER);
 		let result = new NotebookLinkHandler(notebookUri, 'https://www.microsoft.com/images/msft.png', configurationService);
 		assert.strictEqual(result.getLinkUrl(), `https://www.microsoft.com/images/msft.png`, 'HTTPS link failed to resolve');
 
@@ -123,6 +122,6 @@ suite('Noteboook Link Handler', function (): void {
 		assert.strictEqual(result.getLinkUrl(), `.${path.sep}my%20stuff.png`, 'Basic link test with space filename failed');
 
 		result = new NotebookLinkHandler(notebookUri, Object.assign(document.createElement('a'), { href: '/tmp/my%20stuff.png' }), configurationService);
-		assert.strictEqual(result.getLinkUrl(), `.${path.sep}my%20stuff.png`, 'Basic link test with space filename failed');
+		assert.strictEqual(result.getLinkUrl(), `.${path.sep}my%2520stuff.png`, 'Basic link test with %20 filename failed');
 	});
 });

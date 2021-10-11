@@ -74,6 +74,7 @@
 			"newBook": "Nuevo libro de Jupyter (versión preliminar)",
 			"newMarkdown": "Nuevo Markdown (versión preliminar)",
 			"newNotebook": "Nuevo bloc de notas (versión preliminar)",
+			"newSection": "Nueva sección (versión preliminar)",
 			"noBDCConnectionError": "Los kernels de Spark requieren una conexión a una instancia maestra del clúster de macrodatos de SQL Server.",
 			"noBooksSelected": "Actualmente no hay ningún libro de Jupyter seleccionado en viewlet.",
 			"onGitHub": "GitHub",
@@ -110,7 +111,7 @@
 		},
 		"dist/dialog/configurePython/configurePathPage": {
 			"configurePython.browseButtonText": "Examinar",
-			"configurePython.descriptionWithKernel": "El kernel de {0} requiere que se configure un entorno de ejecución de Python y que se instalen dependencias.",
+			"configurePython.descriptionWithKernel": "The '{0}' kernel requires a Python runtime to be configured and dependencies to be installed.",
 			"configurePython.descriptionWithoutKernel": "Los kernel del cuaderno requieren que se configure un entorno de ejecución de Python y que se instalen dependencias.",
 			"configurePython.existingInstall": "Usar la instalación de Python existente",
 			"configurePython.installationType": "Tipo de instalación",
@@ -139,7 +140,7 @@
 			"configurePython.pkgNameColumn": "Nombre",
 			"configurePython.requiredDependencies": "Instalar dependencias de kernel necesarias",
 			"configurePython.requiredVersionColumn": "Versión necesaria",
-			"msgUnsupportedKernel": "No se pueden recuperar los paquetes para el kernel {0}."
+			"msgNoRequirementsForKernel": "No packages are required by default for the kernel '{0}'"
 		},
 		"dist/dialog/managePackages/addNewPackageTab": {
 			"managePackages.addNewTabTitle": "Añadir nuevos",
@@ -183,7 +184,7 @@
 			"notebookFileType": "Notebooks",
 			"unsupportedFileType": "Solo se admiten los Notebooks de tipo .ipynb"
 		},
-		"dist/jupyter/jupyterNotebookProvider": {
+		"dist/jupyter/jupyterExecuteProvider": {
 			"errNotebookUriMissing": "Se requiere una ruta de acceso del cuaderno"
 		},
 		"dist/jupyter/jupyterServerInstallation": {
@@ -251,11 +252,15 @@
 			"notebook.command.addcell": "Agregar celda",
 			"notebook.command.addcode": "Agregar celda de código",
 			"notebook.command.addtext": "Agregar celda de texto",
+			"notebook.command.boldText": "Texto de Markdown en negrita",
 			"notebook.command.clearactivecellresult": "Borrar resultado de la celda",
+			"notebook.command.codeBlock": "Agregar bloque de código",
+			"notebook.command.italicizeText": "Poner en cursiva el texto de Markdown",
 			"notebook.command.new": "Nuevo Notebook",
 			"notebook.command.open": "Abrir Notebook",
 			"notebook.command.runactivecell": "Ejecutar celda",
 			"notebook.command.runallcells": "Ejecutar celdas",
+			"notebook.command.underlineText": "Subrayado del texto de Markdown",
 			"notebook.configuration.title": "Configuración de Notebook",
 			"notebook.dontPromptPythonUpdate.description": "No mostrar el mensaje para actualizar Python.",
 			"notebook.jupyterServerShutdownTimeout.description": "La cantidad de tiempo (en minutos) que se debe esperar antes de apagar un servidor después de cerrar todos los cuadernos. (Escriba 0 para no apagar)",
@@ -274,6 +279,7 @@
 			"title.SavedBooks": "Cuadernos",
 			"title.addMarkdown": "Agregar un archivo de Markdown",
 			"title.addNotebook": "Agregar el Bloc de notas",
+			"title.addSection": "Agregar sección",
 			"title.analyzeJupyterNotebook": "Analizar en Notebook",
 			"title.closeJupyterBook": "Cierre del libro de Jupyter",
 			"title.closeNotebook": "Cerrar bloc de notas",

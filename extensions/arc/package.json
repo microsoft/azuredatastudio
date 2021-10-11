@@ -915,7 +915,7 @@
             "pages": [
               {
                 "title": "%arc.sql.wizard.page1.title%",
-                "labelWidth": "175px",
+                "labelWidth": "190px",
                 "inputWidth": "280px",
                 "sections": [
                   {
@@ -983,8 +983,8 @@
                     "fields": [
                       {
                         "type": "options",
-                        "label": "%arc.sql.replicas.label%",
-                        "description": "%arc.sql.replicas.description%",
+                        "label": "%arc.sql.high.availability.label%",
+                        "description": "%arc.sql.high.availability.description%",
                         "required": true,
                         "variableName": "AZDATA_NB_VAR_SQL_REPLICAS",
                         "options": {
@@ -1017,11 +1017,61 @@
                         "required": false
                       },
                       {
+                        "label": "%arc.sql.volume.size.data.label%",
+                        "description": "%arc.sql.volume.size.data.description%",
+                        "variableName": "AZDATA_NB_VAR_SQL_VOLUME_SIZE_DATA",
+                        "type": "number",
+                        "defaultValue": "5",
+                        "min": 1,
+                        "required": true
+                      },
+                      {
+                        "label": "%arc.storage-class.datalogs.label%",
+                        "description": "%arc.sql.storage-class.datalogs.description%",
+                        "variableName": "AZDATA_NB_VAR_SQL_STORAGE_CLASS_DATALOGS",
+                        "type": "kube_storage_class",
+                        "required": false
+                      },
+                      {
+                        "label": "%arc.sql.volume.size.datalogs.label%",
+                        "description": "%arc.sql.volume.size.datalogs.description%",
+                        "variableName": "AZDATA_NB_VAR_SQL_VOLUME_SIZE_DATALOGS",
+                        "type": "number",
+                        "defaultValue": "5",
+                        "min": 1,
+                        "required": true
+                      },
+                      {
                         "label": "%arc.storage-class.logs.label%",
                         "description": "%arc.sql.storage-class.logs.description%",
                         "variableName": "AZDATA_NB_VAR_SQL_STORAGE_CLASS_LOGS",
                         "type": "kube_storage_class",
                         "required": false
+                      },
+                      {
+                        "label": "%arc.sql.volume.size.logs.label%",
+                        "description": "%arc.sql.volume.size.logs.description%",
+                        "variableName": "AZDATA_NB_VAR_SQL_VOLUME_SIZE_LOGS",
+                        "type": "number",
+                        "defaultValue": "5",
+                        "min": 1,
+                        "required": true
+                      },
+                      {
+                        "label": "%arc.storage-class.backups.label%",
+                        "description": "%arc.sql.storage-class.backups.description%",
+                        "variableName": "AZDATA_NB_VAR_SQL_STORAGE_CLASS_BACKUPS",
+                        "type": "kube_storage_class",
+                        "required": false
+                      },
+                      {
+                        "label": "%arc.sql.volume.size.backups.label%",
+                        "description": "%arc.sql.volume.size.backups.description%",
+                        "variableName": "AZDATA_NB_VAR_SQL_VOLUME_SIZE_BACKUPS",
+                        "type": "number",
+                        "defaultValue": "5",
+                        "min": 1,
+                        "required": true
                       },
                       {
                         "label": "%arc.cores-request.label%",
@@ -1105,6 +1155,33 @@
                         "defaultValue": "false",
                         "variableName": "AZDATA_NB_VAR_SQL_DEV_USE",
                         "required": true
+                      }
+                    ]
+                  },
+                  {
+                    "title": "%arc.sql.instance.retention.policy.title%",
+                    "fields": [
+                      {
+                        "type": "readonly_text",
+                        "label": "%arc.sql.pitr.retention.description%",
+                        "labelWidth": "600px",
+                        "enabled": true,
+                        "fieldHeight": "10px",
+                        "links": [
+                          {
+                            "text": "%arc.agreement.sql.help.text.learn.more%",
+                            "url": "https://docs.microsoft.com/azure/azure-arc/data/point-in-time-restore"
+                          }
+                        ]
+                      },
+                      {
+                        "label": "%arc.sql.retention.days.label%",
+                        "description": "%arc.sql.retention.days.description%",
+                        "variableName": "AZDATA_NB_VAR_SQL_RETENTION_DAYS",
+                        "type": "number",
+                        "min": 1,
+                        "max": 35,
+                        "required": false
                       }
                     ]
                   }

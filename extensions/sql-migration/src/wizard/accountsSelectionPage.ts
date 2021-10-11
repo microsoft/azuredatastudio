@@ -11,6 +11,7 @@ import * as constants from '../constants/strings';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import { deepClone, findDropDownItemIndex, selectDropDownIndex } from '../api/utils';
 import { getSubscriptions } from '../api/azure';
+import * as styles from '../constants/styles';
 
 export class AccountsSelectionPage extends MigrationWizardPage {
 	private _azureAccountsDropdown!: azdata.DropDownComponent;
@@ -20,19 +21,34 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.ACCOUNTS_SELECTION_PAGE_TITLE), migrationStateModel);
-		this.wizardPage.description = constants.ACCOUNTS_SELECTION_PAGE_DESCRIPTION;
 	}
 
 	protected async registerContent(view: azdata.ModelView): Promise<void> {
+		const pageDescription = {
+			title: '',
+			component: view.modelBuilder.text().withProps({
+				value: constants.ACCOUNTS_SELECTION_PAGE_DESCRIPTION,
+				CSSStyles: {
+					...styles.BODY_CSS,
+					'margin': '0',
+				}
+			}).component()
+		};
+
 		this.wizard.customButtons[0].enabled = true;
 		const form = view.modelBuilder.formContainer()
 			.withFormItems(
 				[
+					pageDescription,
 					await this.createAzureAccountsDropdown(view),
 					await this.createAzureTenantContainer(view),
 				]
-			);
-		await view.initializeModel(form.component());
+			).withProps({
+				CSSStyles: {
+					'padding-top': '0'
+				}
+			}).component();
+		await view.initializeModel(form);
 		await this.populateAzureAccountsDropdown();
 		this._disposables.push(view.onClosed(e =>
 			this._disposables.forEach(
@@ -44,8 +60,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 		const azureAccountLabel = view.modelBuilder.text().withProps({
 			value: constants.ACCOUNTS_SELECTION_PAGE_TITLE,
 			CSSStyles: {
-				'font-size': '13px',
-				'font-weight': 'bold',
+				...styles.LABEL_CSS
 			}
 		}).component();
 
@@ -117,7 +132,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 				label: constants.ACCOUNT_LINK_BUTTON_LABEL,
 				url: '',
 				CSSStyles: {
-					'font-size': '13px',
+					...styles.BODY_CSS
 				}
 			})
 			.component();
@@ -153,8 +168,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 		const azureTenantDropdownLabel = view.modelBuilder.text().withProps({
 			value: constants.AZURE_TENANT,
 			CSSStyles: {
-				'font-size': '13px',
-				'font-weight': 'bold'
+				...styles.LABEL_CSS
 			}
 		}).component();
 

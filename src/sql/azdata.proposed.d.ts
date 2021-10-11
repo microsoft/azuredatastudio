@@ -976,4 +976,295 @@ declare module 'azdata' {
 			expiresOn?: number
 		}
 	}
+
+	export interface ConnectionInfoSummary {
+		/**
+		 * Indicates whether the server version is supported by ADS. The default value is true. If the value is false, ADS will show a warning message.
+		 */
+		isSupportedVersion?: boolean;
+
+		/**
+		 * The messages that will be appended to the Azure Data Studio's warning message about unsupported versions.
+		 */
+		unsupportedVersionMessage?: string;
+	}
+
+	export enum DataProviderType {
+		TableDesignerProvider = 'TableDesignerProvider'
+	}
+
+	export namespace dataprotocol {
+		export function registerTableDesignerProvider(provider: designers.TableDesignerProvider): vscode.Disposable;
+	}
+
+	export namespace designers {
+		/**
+		 * Open a table designer window.
+		 * @param providerId The table designer provider Id.
+		 * @param tableInfo The table information. The object will be passed back to the table designer provider as the unique identifier for the table.
+		 */
+		export function openTableDesigner(providerId: string, tableInfo: TableInfo): Thenable<void>;
+
+		/**
+		 * Definition for the table designer provider.
+		 */
+		export interface TableDesignerProvider extends DataProvider {
+			/**
+			 * Gets the table designer information for the specified table.
+			 * @param table the table information.
+			 */
+			getTableDesignerInfo(table: TableInfo): Thenable<TableDesignerInfo>;
+			/**
+			 * Process the table change.
+			 * @param table the table information
+			 * @param data the object contains the state of the table designer
+			 * @param tableChangeInfo the information about the change user made through the UI.
+			 */
+			processTableEdit(table: TableInfo, data: DesignerData, tableChangeInfo: DesignerEdit): Thenable<DesignerEditResult>;
+
+			/**
+			 * Save the table
+			 * @param table the table information
+			 * @param data the object contains the state of the table designer
+			 */
+			saveTable(table: TableInfo, data: DesignerData): Thenable<void>;
+		}
+
+		/**
+		 * The information of the table.
+		 */
+		export interface TableInfo {
+			/**
+			 * The server name.
+			 */
+			server: string;
+			/**
+			 * The database name
+			 */
+			database: string;
+			/**
+			 * The schema name, only required for existing table.
+			 */
+			schema?: string;
+			/**
+			 * The table name, only required for existing table.
+			 */
+			name?: string;
+			/**
+			 * A boolean value indicates whether a new table is being designed.
+			 */
+			isNewTable: boolean;
+			/**
+			 * If this is not a new table, the id will be set to uniquely identify a table.
+			 */
+			id?: string;
+			/**
+			 * Extension can store additional information that the provider needs to uniquely identify a table.
+			 */
+			[key: string]: any;
+		}
+
+		/**
+		 * The information to populate the table designer UI.
+		 */
+		export interface TableDesignerInfo {
+			/**
+			 * The view definition.
+			 */
+			view: TableDesignerView;
+			/**
+			 * The data model.
+			 */
+			data: DesignerData;
+			/**
+			 * The supported column types
+			 */
+			columnTypes: string[];
+			/**
+			 * The list of schemas in the database.
+			 */
+			schemas: string[];
+		}
+
+		/**
+		 * Name of the common table properties.
+		 * Extensions can use the names to access the designer data.
+		 */
+		export enum TableProperty {
+			Columns = 'columns',
+			Description = 'description',
+			Name = 'name',
+			Schema = 'schema',
+			Script = 'script'
+		}
+		/**
+		 * Name of the common table column properties.
+		 * Extensions can use the names to access the designer data.
+		 */
+		export enum TableColumnProperty {
+			AllowNulls = 'allowNulls',
+			DefaultValue = 'defaultValue',
+			Length = 'length',
+			Name = 'name',
+			Type = 'type',
+			IsPrimaryKey = 'isPrimaryKey'
+		}
+
+		/**
+		 * The table designer view definition
+		 */
+		export interface TableDesignerView {
+			/**
+			 * Additional table properties. Common table properties are handled by Azure Data Studio. see {@link TableProperty}
+			 */
+			additionalTableProperties?: DesignerDataPropertyInfo[];
+			/**
+			 * Additional table column properties.Common table properties are handled by Azure Data Studio. see {@link TableColumnProperty}
+			 */
+			addtionalTableColumnProperties?: DesignerDataPropertyInfo[];
+			/**
+			 * Additional tabs.
+			 */
+			addtionalTabs?: DesignerTab[];
+		}
+
+		/**
+		 * The data model object of the designer.
+		 */
+		export interface DesignerData {
+			[key: string]: InputBoxProperties | CheckBoxProperties | DropDownProperties | DesignerTableProperties;
+		}
+
+		/**
+		 * The definition of a designer tab
+		 */
+		export interface DesignerTab {
+			/**
+			 * The title of the tab
+			 */
+			title: string;
+			/**
+			 * the components to be displayed in this tab.
+			 */
+			components: DesignerDataPropertyInfo[];
+		}
+
+		/**
+		 * The definition of the property in the designer.
+		 */
+		export interface DesignerDataPropertyInfo {
+			/**
+			 * The property name
+			 */
+			propertyName: string;
+			/**
+			 * The component type
+			 */
+			componentType: DesignerComponentTypeName;
+			/**
+			 * The group name, properties with the same group name will be displayed under the same group on the UI.
+			 */
+			group?: string;
+			/**
+			 * The properties of the component.
+			 */
+			componentProperties: InputBoxProperties | CheckBoxProperties | DropDownProperties | DesignerTableProperties;
+		}
+
+		/**
+		 * The child component types supported by designer.
+		 */
+		export type DesignerComponentTypeName = 'input' | 'checkbox' | 'dropdown' | 'table';
+
+		/**
+		 * The properties for the table component in the designer.
+		 */
+		export interface DesignerTableProperties extends ComponentProperties {
+			/**
+			 * the name of the properties to be displayed, properties not in this list will be accessible in properties pane.
+			 */
+			columns?: string[];
+
+			/**
+			 * The display name of the object type
+			 */
+			objectTypeDisplayName: string;
+
+			/**
+			 * the properties of the table data item
+			 */
+			itemProperties?: DesignerDataPropertyInfo[];
+
+			/**
+			 * The data to be displayed.
+			 */
+			data?: DesignerTableComponentDataItem[];
+		}
+
+		/**
+		 * The data item of the designer's table component.
+		 */
+		export interface DesignerTableComponentDataItem {
+			[key: string]: InputBoxProperties | CheckBoxProperties | DropDownProperties | DesignerTableProperties;
+		}
+
+		/**
+		 * Type of the edit originated from the designer UI.
+		 */
+		export enum DesignerEditType {
+			/**
+			 * Add a row to a table
+			 */
+			Add = 0,
+			/**
+			 * Remove a row from a table
+			 */
+			Remove = 1,
+			/**
+			 * Update a property
+			 */
+			Update = 2
+		}
+
+		/**
+		 * Information of the edit originated from the designer UI.
+		 */
+		export interface DesignerEdit {
+			/**
+			 * The edit type
+			 */
+			type: DesignerEditType;
+			/**
+			 * the property that was edited
+			 */
+			property: DesignerEditIdentifier;
+			/**
+			 * the new value
+			 */
+			value?: any;
+		}
+
+		/**
+		 * The identifier of a property. The value is string typed if the property belongs to the root object, otherwise the type of the value is an object.
+		 */
+		export type DesignerEditIdentifier = string | { parentProperty: string, index: number, property: string };
+
+		/**
+		 * The result returned by the table designer provider after handling an edit request.
+		 */
+		export interface DesignerEditResult {
+			/**
+			 * The data model object.
+			 */
+			data: DesignerData;
+			/**
+			 * Whether the current state is valid.
+			 */
+			isValid: boolean;
+			/**
+			 * Error messages of current state, and the property the caused the error.
+			 */
+			errors?: { message: string, property?: DesignerEditIdentifier }[];
+		}
+	}
 }

@@ -293,7 +293,7 @@
       <source xml:lang="en">Browse</source>
     </trans-unit>
     <trans-unit id="configurePython.descriptionWithKernel">
-      <source xml:lang="en">The {0} kernel requires a Python runtime to be configured and dependencies to be installed.</source>
+      <source xml:lang="en">The '{0}' kernel requires a Python runtime to be configured and dependencies to be installed.</source>
     </trans-unit>
     <trans-unit id="configurePython.descriptionWithoutKernel">
       <source xml:lang="en">Notebook kernels require a Python runtime to be configured and dependencies to be installed.</source>
@@ -371,8 +371,8 @@
     <trans-unit id="configurePython.requiredVersionColumn">
       <source xml:lang="en">Required Version</source>
     </trans-unit>
-    <trans-unit id="msgUnsupportedKernel">
-      <source xml:lang="en">Could not retrieve packages for kernel {0}</source>
+    <trans-unit id="msgNoRequirementsForKernel">
+      <source xml:lang="en">No packages are required by default for the kernel '{0}'</source>
     </trans-unit>
 </body></file>
   <file original="extensions/notebook/dist/dialog/managePackages/addNewPackageTab" source-language="en" datatype="plaintext"><body>
@@ -481,7 +481,7 @@
       <source xml:lang="en">Only .ipynb Notebooks are supported</source>
     </trans-unit>
 </body></file>
-  <file original="extensions/notebook/dist/jupyter/jupyterNotebookProvider" source-language="en" datatype="plaintext"><body>
+  <file original="extensions/notebook/dist/jupyter/jupyterExecuteProvider" source-language="en" datatype="plaintext"><body>
     <trans-unit id="errNotebookUriMissing">
       <source xml:lang="en">A notebook path is required</source>
     </trans-unit>
@@ -655,8 +655,17 @@
     <trans-unit id="notebook.command.addtext">
       <source xml:lang="en">Add Text Cell</source>
     </trans-unit>
+    <trans-unit id="notebook.command.boldText">
+      <source xml:lang="en">Bold Markdown Text</source>
+    </trans-unit>
     <trans-unit id="notebook.command.clearactivecellresult">
       <source xml:lang="en">Clear Cell Result</source>
+    </trans-unit>
+    <trans-unit id="notebook.command.codeBlock">
+      <source xml:lang="en">Add Code Block</source>
+    </trans-unit>
+    <trans-unit id="notebook.command.italicizeText">
+      <source xml:lang="en">Italicize Markdown Text</source>
     </trans-unit>
     <trans-unit id="notebook.command.new">
       <source xml:lang="en">New Notebook</source>
@@ -669,6 +678,9 @@
     </trans-unit>
     <trans-unit id="notebook.command.runallcells">
       <source xml:lang="en">Run Cells</source>
+    </trans-unit>
+    <trans-unit id="notebook.command.underlineText">
+      <source xml:lang="en">Underline Markdown Text</source>
     </trans-unit>
     <trans-unit id="notebook.configuration.title">
       <source xml:lang="en">Notebook configuration</source>

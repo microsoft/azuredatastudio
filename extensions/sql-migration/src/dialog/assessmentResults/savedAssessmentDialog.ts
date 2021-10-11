@@ -8,6 +8,7 @@ import * as vscode from 'vscode';
 import * as constants from '../../constants/strings';
 import { MigrationStateModel } from '../../models/stateMachine';
 import { WizardController } from '../../wizard/wizardController';
+import * as styles from '../../constants/styles';
 
 export class SavedAssessmentDialog {
 
@@ -88,11 +89,10 @@ export class SavedAssessmentDialog {
 	public initializePageContent(view: azdata.ModelView): azdata.FlexContainer {
 		const buttonGroup = 'resumeMigration';
 
-		const text = view.modelBuilder.text().withProps({
+		const pageTitle = view.modelBuilder.text().withProps({
 			CSSStyles: {
-				'font-size': '18px',
-				'font-weight': 'bold',
-				'margin': '100px 8px 0px 36px'
+				...styles.PAGE_TITLE_CSS,
+				'margin-bottom': '12px'
 			},
 			value: constants.RESUME_TITLE
 		}).component();
@@ -101,8 +101,8 @@ export class SavedAssessmentDialog {
 			label: constants.START_MIGRATION,
 			name: buttonGroup,
 			CSSStyles: {
-				'font-size': '14px',
-				'margin': '40px 8px 0px 36px'
+				...styles.BODY_CSS,
+				'margin-bottom': '8px'
 			},
 			checked: true
 		}).component();
@@ -116,8 +116,7 @@ export class SavedAssessmentDialog {
 			label: constants.CONTINUE_MIGRATION,
 			name: buttonGroup,
 			CSSStyles: {
-				'font-size': '14px',
-				'margin': '10px 8px 0px 36px'
+				...styles.BODY_CSS,
 			},
 			checked: false
 		}).component();
@@ -128,12 +127,17 @@ export class SavedAssessmentDialog {
 			}
 		});
 
-		const flex = view.modelBuilder.flexContainer().withLayout({
-			flexFlow: 'column',
-			height: '100%',
-			width: '100%'
-		}).component();
-		flex.addItem(text, { flex: '0 0 auto' });
+		const flex = view.modelBuilder.flexContainer()
+			.withLayout({
+				flexFlow: 'column',
+				height: '100%',
+				width: '100%',
+			}).withProps({
+				CSSStyles: {
+					'margin': '20px 15px',
+				}
+			}).component();
+		flex.addItem(pageTitle, { flex: '0 0 auto' });
 		flex.addItem(radioStart, { flex: '0 0 auto' });
 		flex.addItem(radioContinue, { flex: '0 0 auto' });
 
