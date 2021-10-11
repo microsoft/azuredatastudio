@@ -236,7 +236,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 	//#endregion
 
 	//#region APIs called by extensions
-	registerExecuteProvider(provider: azdata.nb.NotebookExecuteProvider): vscode.Disposable {
+	$registerExecuteProvider(provider: azdata.nb.NotebookExecuteProvider): vscode.Disposable {
 		if (!provider || !provider.providerId) {
 			throw new Error(localize('executeProviderRequired', "A NotebookExecuteProvider with valid providerId must be passed to this method"));
 		}
@@ -245,7 +245,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		return this._createDisposable(handle);
 	}
 
-	registerSerializationProvider(provider: azdata.nb.NotebookSerializationProvider): vscode.Disposable {
+	$registerSerializationProvider(provider: azdata.nb.NotebookSerializationProvider): vscode.Disposable {
 		if (!provider || !provider.providerId) {
 			throw new Error(localize('serializationProviderRequired', "A NotebookSerializationProvider with valid providerId must be passed to this method"));
 		}

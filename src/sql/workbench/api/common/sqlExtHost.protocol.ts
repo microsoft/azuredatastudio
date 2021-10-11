@@ -915,6 +915,10 @@ export interface ExtHostNotebookShape {
 	// Future APIs
 	$sendInputReply(futureId: number, content: azdata.nb.IInputReply): void;
 	$disposeFuture(futureId: number): void;
+
+	// Provider registration
+	$registerExecuteProvider(provider: azdata.nb.NotebookExecuteProvider): vscode.Disposable;
+	$registerSerializationProvider(provider: azdata.nb.NotebookSerializationProvider): vscode.Disposable;
 }
 
 export interface MainThreadNotebookShape extends IDisposable {

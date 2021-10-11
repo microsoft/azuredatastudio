@@ -64,7 +64,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { IURITransformerService } from 'vs/workbench/api/common/extHostUriTransformerService';
 import { IExtHostRpcService } from 'vs/workbench/api/common/extHostRpcService';
 import { IExtHostInitDataService } from 'vs/workbench/api/common/extHostInitDataService';
-import { ExtHostNotebookController } from 'vs/workbench/api/common/extHostNotebook';
+// import { ExtHostNotebookController } from 'vs/workbench/api/common/extHostNotebook'; {{SQL CARBON EDIT}}
 import { ExtHostTheming } from 'vs/workbench/api/common/extHostTheming';
 import { IExtHostTunnelService } from 'vs/workbench/api/common/extHostTunnelService';
 import { IExtHostApiDeprecationService } from 'vs/workbench/api/common/extHostApiDeprecationService';
@@ -83,7 +83,7 @@ import { ExtHostUriOpeners } from 'vs/workbench/api/common/extHostUriOpener';
 import { IExtHostSecretState } from 'vs/workbench/api/common/exHostSecretState';
 import { IExtHostEditorTabs } from 'vs/workbench/api/common/extHostEditorTabs';
 import { IExtHostTelemetry } from 'vs/workbench/api/common/extHostTelemetry';
-import { ExtHostNotebookKernels } from 'vs/workbench/api/common/extHostNotebookKernels';
+// import { ExtHostNotebookKernels } from 'vs/workbench/api/common/extHostNotebookKernels'; {{SQL CARBON EDIT}}
 import { TextSearchCompleteMessageType } from 'vs/workbench/services/search/common/searchExtTypes';
 // import { ExtHostNotebookRenderers } from 'vs/workbench/api/common/extHostNotebookRenderers'; {{SQL CARBON EDIT}}
 import { Schemas } from 'vs/base/common/network';
@@ -91,6 +91,9 @@ import { matchesScheme } from 'vs/platform/opener/common/opener';
 // import { ExtHostNotebookEditors } from 'vs/workbench/api/common/extHostNotebookEditors'; {{SQL CARBON EDIT}}
 // import { ExtHostNotebookDocuments } from 'vs/workbench/api/common/extHostNotebookDocuments'; {{SQL CARBON EDIT}}
 import * as nls from 'vs/nls';
+import { SqlExtHostContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
+import { VSCodeSerializationProvider } from 'vs/workbench/api/common/vscodeSerializationProvider';
+import { ADSNotebookController, VSCodeExecuteProvider } from 'vs/workbench/api/common/adsNotebookController';
 
 // {{SQL CARBON EDIT}}
 const functionalityNotSupportedError = nls.localize('vscodeFunctionalityNotSupportedError', "This VSCode functionality is not supported in Azure Data Studio.");
@@ -151,10 +154,10 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 	const extHostDocuments = rpcProtocol.set(ExtHostContext.ExtHostDocuments, new ExtHostDocuments(rpcProtocol, extHostDocumentsAndEditors));
 	const extHostDocumentContentProviders = rpcProtocol.set(ExtHostContext.ExtHostDocumentContentProviders, new ExtHostDocumentContentProvider(rpcProtocol, extHostDocumentsAndEditors, extHostLogService));
 	const extHostDocumentSaveParticipant = rpcProtocol.set(ExtHostContext.ExtHostDocumentSaveParticipant, new ExtHostDocumentSaveParticipant(extHostLogService, extHostDocuments, rpcProtocol.getProxy(MainContext.MainThreadBulkEdits)));
-	const extHostNotebook = rpcProtocol.set(ExtHostContext.ExtHostNotebook, new ExtHostNotebookController(rpcProtocol, extHostCommands, extHostDocumentsAndEditors, extHostDocuments, extensionStoragePaths));
+	// const extHostNotebook = rpcProtocol.set(ExtHostContext.ExtHostNotebook, new ExtHostNotebookController(rpcProtocol, extHostCommands, extHostDocumentsAndEditors, extHostDocuments, extensionStoragePaths)); {{SQL CARBON EDIT}}
 	// const extHostNotebookDocuments = rpcProtocol.set(ExtHostContext.ExtHostNotebookDocuments, new ExtHostNotebookDocuments(extHostLogService, extHostNotebook)); {{SQL CARBON EDIT}}
 	// const extHostNotebookEditors = rpcProtocol.set(ExtHostContext.ExtHostNotebookEditors, new ExtHostNotebookEditors(extHostLogService, rpcProtocol, extHostNotebook)); {{SQL CARBON EDIT}}
-	const extHostNotebookKernels = rpcProtocol.set(ExtHostContext.ExtHostNotebookKernels, new ExtHostNotebookKernels(rpcProtocol, initData, extHostNotebook, extHostLogService));
+	// const extHostNotebookKernels = rpcProtocol.set(ExtHostContext.ExtHostNotebookKernels, new ExtHostNotebookKernels(rpcProtocol, initData, extHostNotebook, extHostLogService)); {{SQL CARBON EDIT}}
 	// const extHostNotebookRenderers = rpcProtocol.set(ExtHostContext.ExtHostNotebookRenderers, new ExtHostNotebookRenderers(rpcProtocol, extHostNotebook)); {{SQL CARBON EDIT}}
 	const extHostEditors = rpcProtocol.set(ExtHostContext.ExtHostEditors, new ExtHostEditors(rpcProtocol, extHostDocumentsAndEditors));
 	const extHostTreeViews = rpcProtocol.set(ExtHostContext.ExtHostTreeViews, new ExtHostTreeViews(rpcProtocol.getProxy(MainContext.MainThreadTreeViews), extHostCommands, extHostLogService));
@@ -178,12 +181,17 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 	const extHostTesting = rpcProtocol.set(ExtHostContext.ExtHostTesting, new ExtHostTesting(rpcProtocol, extHostDocumentsAndEditors, extHostWorkspace));
 	const extHostUriOpeners = rpcProtocol.set(ExtHostContext.ExtHostUriOpeners, new ExtHostUriOpeners(rpcProtocol));
 
+	// {{SQL CARBON EDIT}}
+	const sqlExtHostNotebook = rpcProtocol.getProxy(SqlExtHostContext.ExtHostNotebook);
+
 	// Check that no named customers are missing
 	// {{SQL CARBON EDIT}} filter out the services we don't expose
 	const filtered: ProxyIdentifier<any>[] = [
 		ExtHostContext.ExtHostDebugService,
+		ExtHostContext.ExtHostNotebook,
 		ExtHostContext.ExtHostNotebookDocuments,
 		ExtHostContext.ExtHostNotebookEditors,
+		ExtHostContext.ExtHostNotebookKernels,
 		ExtHostContext.ExtHostNotebookRenderers
 	];
 	const expected: ProxyIdentifier<any>[] = values(ExtHostContext).filter(v => !filtered.find(x => x === v));
@@ -924,7 +932,8 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 				// return extHostNotebook.onDidCloseNotebookDocument;
 			},
 			registerNotebookSerializer(viewType: string, serializer: vscode.NotebookSerializer, options?: vscode.NotebookDocumentContentOptions, registration?: vscode.NotebookRegistrationData) {
-				return extHostNotebook.registerNotebookSerializer(extension, viewType, serializer, options, extension.enableProposedApi ? registration : undefined);
+				let serializationProvider = new VSCodeSerializationProvider(viewType, serializer);
+				return sqlExtHostNotebook.$registerSerializationProvider(serializationProvider);
 			},
 			registerNotebookContentProvider: (viewType: string, provider: vscode.NotebookContentProvider, options?: vscode.NotebookDocumentContentOptions, registration?: vscode.NotebookRegistrationData) => {
 				// {{SQL CARBON EDIT}}
@@ -1143,7 +1152,10 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 		// namespace: notebook
 		const notebooks: typeof vscode.notebooks = {
 			createNotebookController(id: string, notebookType: string, label: string, handler?, rendererScripts?: vscode.NotebookRendererScript[]) {
-				return extHostNotebookKernels.createNotebookController(extension, id, notebookType, label, handler, extension.enableProposedApi ? rendererScripts : undefined);
+				let controller = new ADSNotebookController(extension, id, notebookType, label, handler, extension.enableProposedApi ? rendererScripts : undefined);
+				let executeProvider = new VSCodeExecuteProvider(controller);
+				sqlExtHostNotebook.$registerExecuteProvider(executeProvider);
+				return controller;
 			},
 			registerNotebookCellStatusBarItemProvider: (notebookType: string, provider: vscode.NotebookCellStatusBarItemProvider) => {
 				// {{SQL CARBON EDIT}}

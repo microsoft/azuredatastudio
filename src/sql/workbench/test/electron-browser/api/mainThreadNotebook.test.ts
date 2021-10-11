@@ -20,6 +20,7 @@ import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKe
 import { ExtHostNotebookShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { IProductService } from 'vs/platform/product/common/productService';
+import { Disposable } from 'vscode';
 
 suite('MainThreadNotebook Tests', () => {
 
@@ -181,6 +182,12 @@ suite('MainThreadNotebook Tests', () => {
 });
 
 class ExtHostNotebookStub implements ExtHostNotebookShape {
+	$registerExecuteProvider(provider: azdata.nb.NotebookExecuteProvider): Disposable {
+		throw new Error('Method not implemented.');
+	}
+	$registerSerializationProvider(provider: azdata.nb.NotebookSerializationProvider): Disposable {
+		throw new Error('Method not implemented.');
+	}
 	$getSerializationManagerDetails(providerHandle: number, notebookUri: UriComponents): Thenable<ISerializationManagerDetails> {
 		throw new Error('Method not implemented.');
 	}
