@@ -23,11 +23,10 @@ export class ConfigureRPOSqlDialog extends InitializingComponent {
 		super();
 	}
 
-	public showDialog(dialogTitle: string, rpo: string | undefined, rd: string | undefined): azdata.window.Dialog {
+	public showDialog(dialogTitle: string, retentionDays: string | undefined): azdata.window.Dialog {
 		const dialog = azdata.window.createModelViewDialog(dialogTitle);
 		dialog.cancelButton.onClick(() => this.handleCancel());
-		rpo = (rpo === undefined ? this._model.config?.spec?.backup?.recoveryPointObjectiveInSeconds?.toString() : rpo);
-		rd = (rd === undefined ? this._model.config?.spec?.backup?.retentionPeriodInDays?.toString() : rd);
+		retentionDays = (retentionDays === undefined ? this._model.config?.spec?.backup?.retentionPeriodInDays?.toString() : retentionDays);
 		dialog.registerContent(async view => {
 			this.modelBuilder = view.modelBuilder;
 			this.retentionDaysInputBox = this.modelBuilder.inputBox()
@@ -36,8 +35,8 @@ export class ConfigureRPOSqlDialog extends InitializingComponent {
 					min: 1,
 					max: 35,
 					inputType: 'number',
-					ariaLabel: loc.rd,
-					value: rd
+					ariaLabel: loc.retentionDays,
+					value: retentionDays
 				}).component();
 
 			const info = this.modelBuilder.text().withProps({
@@ -66,7 +65,7 @@ export class ConfigureRPOSqlDialog extends InitializingComponent {
 						},
 						{
 							component: this.retentionDaysInputBox,
-							title: loc.rd,
+							title: loc.retentionDays,
 							required: false
 						}
 					],
@@ -94,6 +93,7 @@ export class ConfigureRPOSqlDialog extends InitializingComponent {
 		}
 		return true;
 	}
+
 
 	private handleCancel(): void {
 		this._completionPromise.resolve(undefined);

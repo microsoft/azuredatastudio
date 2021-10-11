@@ -414,7 +414,7 @@ declare module 'azdata' {
 		/**
 		 * The cell value
 		 */
-		value: string | number | boolean | Component | DeclarativeTableMenuCellValue | ButtonComponent;
+		value: string | number | boolean | Component | DeclarativeTableMenuCellValue;
 		/**
 		 * The aria-label of the cell
 		 */

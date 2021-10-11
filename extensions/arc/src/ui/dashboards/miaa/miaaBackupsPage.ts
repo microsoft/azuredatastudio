@@ -44,7 +44,7 @@ export class MiaaBackupsPage extends DashboardPage {
 	};
 
 	public get title(): string {
-		return loc.backup;
+		return loc.backups;
 	}
 
 	public get id(): string {
@@ -195,12 +195,11 @@ export class MiaaBackupsPage extends DashboardPage {
 		}).component();
 		this.disposables.push(
 			this._configureRetentionPolicyButton.onDidClick(async () => {
-				const rpoSqlDialog = new ConfigureRPOSqlDialog(this._miaaModel);
+				const retentionPolicySqlDialog = new ConfigureRPOSqlDialog(this._miaaModel);
 				this.refreshRD();
-				this.refreshRPO();
-				rpoSqlDialog.showDialog(loc.configureRPO, this.saveArgs.recoveryPointObjective, this.saveArgs.retentionDays);
+				retentionPolicySqlDialog.showDialog(loc.configureRP, this.saveArgs.retentionDays);
 
-				let rpArg = await rpoSqlDialog.waitForClose();
+				let rpArg = await retentionPolicySqlDialog.waitForClose();
 				if (rpArg) {
 					try {
 						this._configureRetentionPolicyButton.enabled = false;
@@ -269,25 +268,8 @@ export class MiaaBackupsPage extends DashboardPage {
 			}
 		}
 	}
-	private refreshRPO(): void {
-		let current = this._miaaModel.config?.spec?.backup?.recoveryPointObjectiveInSeconds;
-
-		if (!current) {
-			this.saveArgs.recoveryPointObjective = '';
-		}
-		else {
-			this.saveArgs.recoveryPointObjective = current.toString();
-		}
-	}
 	private refreshRD(): void {
-		let current = this._miaaModel.config?.spec?.backup?.retentionPeriodInDays;
-
-		if (!current) {
-			this.saveArgs.retentionDays = '';
-		}
-		else {
-			this.saveArgs.retentionDays = current.toString();
-		}
+		this.saveArgs.retentionDays = this._miaaModel.config?.spec?.backup?.retentionPeriodInDays.toString() ?? '';
 	}
 	private getRestoreButton(db: DatabaseModel): azdata.ButtonComponent | string {
 		let pitrDate = db.lastBackup;
@@ -301,7 +283,6 @@ export class MiaaBackupsPage extends DashboardPage {
 		}).component();
 		this.disposables.push(
 			restoreButton.onDidClick(async () => {
-				//this.refreshPitrSettings();
 				const restoreDialog = new RestoreSqlDialog(this._miaaModel, this._controllerModel, db);
 				restoreDialog.showDialog(loc.restoreDatabase);
 				let args = await restoreDialog.waitForClose();
@@ -337,5 +318,4 @@ export class MiaaBackupsPage extends DashboardPage {
 			}));
 		return restoreButton;
 	}
-
 }

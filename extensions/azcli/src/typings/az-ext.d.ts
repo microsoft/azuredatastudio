@@ -142,8 +142,7 @@ declare module 'az-ext' {
 		},
 		spec: {
 			backup?: {
-				recoveryPointObjectiveInSeconds?: number,
-				retentionPeriodInDays: number,
+				retentionPeriodInDays: number, // 1
 			}
 			scheduling?: {
 				default?: {

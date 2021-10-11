@@ -90,7 +90,7 @@ export class MiaaModel extends ResourceModel {
 				const result = await this._azApi.az.sql.miarc.show(this.info.name, this.controllerModel.info.namespace, this.controllerModel.azAdditionalEnvVars);
 				this._config = result.stdout;
 				this.configLastUpdated = new Date();
-				this.updateRPSettings();
+				this.rpSettings.retentionDays = this._config?.spec?.backup?.retentionPeriodInDays?.toString() ?? '';
 				this._onConfigUpdated.fire(this._config);
 			} catch (err) {
 				// If an error occurs show a message so the user knows something failed but still
@@ -206,15 +206,4 @@ export class MiaaModel extends ResourceModel {
 		await this._treeDataProvider.saveControllers();
 	}
 
-	public async updateRPSettings() {
-		let rpo = this._config?.spec?.backup?.recoveryPointObjectiveInSeconds?.toString();
-		let rd = this._config?.spec?.backup?.retentionPeriodInDays?.toString();
-		if (rpo !== undefined) {
-			this.rpSettings.recoveryPointObjective = rpo;
-		}
-		if (rd !== undefined) {
-			this.rpSettings.retentionDays = rd;
-		}
-
-	}
 }
