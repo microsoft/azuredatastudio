@@ -521,7 +521,7 @@ export class Designer extends Disposable implements IThemable {
 				deleteRowColumn.onClick(async (e) => {
 					const data = await this._input.getData();
 					(data[componentDefinition.propertyName] as DesignerTableProperties).data.splice(e.row, 1);
-					this.handleEdit({
+					await this.handleEdit({
 						type: DesignerEditType.Remove,
 						property: componentDefinition.propertyName,
 						value: e.item
@@ -533,9 +533,9 @@ export class Designer extends Disposable implements IThemable {
 				table.grid.onBeforeEditCell.subscribe((e, data): boolean => {
 					return data.item[data.column.field].enabled !== false;
 				});
-				table.grid.onActiveCellChanged.subscribe((e, data) => {
+				table.grid.onActiveCellChanged.subscribe(async (e, data) => {
 					if (data.row !== undefined) {
-						this.updatePropertiesPane({
+						await this.updatePropertiesPane({
 							parentProperty: componentDefinition.propertyName,
 							index: data.row
 						});
