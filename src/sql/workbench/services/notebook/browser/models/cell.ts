@@ -317,9 +317,6 @@ export class CellModel extends Disposable implements ICellModel {
 			this._source = newSource;
 			this.sendChangeToNotebook(NotebookChangeType.CellSourceUpdated);
 			this.cellSourceChanged = true;
-			if (this.isEditMode) {
-				this._lastEditMode = this._showPreview && this._showMarkdown ? TextCellEditModes.SplitView : (this._showMarkdown ? TextCellEditModes.Markdown : TextCellEditModes.RichText);
-			}
 		}
 		this._modelContentChangedEvent = undefined;
 		this._preventNextChartCache = true;
@@ -425,6 +422,9 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public set showPreview(val: boolean) {
 		this._showPreview = val;
+		if (this._isEditMode) {
+			this._lastEditMode = this._showPreview && this._showMarkdown ? TextCellEditModes.SplitView : (this._showMarkdown ? TextCellEditModes.Markdown : TextCellEditModes.RichText);
+		}
 		this._onCellPreviewChanged.fire(this._showPreview);
 		this._onCurrentEditModeChanged.fire(this.currentMode);
 	}
@@ -435,6 +435,9 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public set showMarkdown(val: boolean) {
 		this._showMarkdown = val;
+		if (this._isEditMode) {
+			this._lastEditMode = this._showPreview && this._showMarkdown ? TextCellEditModes.SplitView : (this._showMarkdown ? TextCellEditModes.Markdown : TextCellEditModes.RichText);
+		}
 		this._onCellMarkdownChanged.fire(this._showMarkdown);
 		this._onCurrentEditModeChanged.fire(this.currentMode);
 	}
