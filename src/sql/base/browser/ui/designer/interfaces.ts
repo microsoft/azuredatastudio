@@ -41,11 +41,17 @@ export interface DesignerComponentInput {
 	 * A boolean value indicating whether the current state is dirty.
 	 */
 	readonly dirty: boolean;
+
+	/**
+	 * A boolean value indicating whether the changes are being saved.
+	 */
+	readonly saving: boolean;
 }
 
 export interface DesignerState {
 	valid: boolean;
 	dirty: boolean;
+	saving: boolean;
 }
 
 export const NameProperty = 'name';

@@ -511,7 +511,7 @@ export class Designer extends Disposable implements IThemable {
 					}
 				});
 				const deleteRowColumn = new ButtonColumn({
-					id: 'actions',
+					id: 'deleteRow',
 					iconCssClass: Codicon.trash.classNames,
 					title: localize('designer.removeRowText', "Remove"),
 					width: 20,

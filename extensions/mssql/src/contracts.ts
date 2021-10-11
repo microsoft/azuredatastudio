@@ -1033,12 +1033,21 @@ export interface TableDesignerEditRequestParams {
 	data: azdata.designers.DesignerData
 }
 
+export interface SaveTableDesignerChangesRequestParams {
+	tableInfo: azdata.designers.TableInfo,
+	data: azdata.designers.DesignerData
+}
+
 export namespace GetTableDesignerInfoRequest {
 	export const type = new RequestType<azdata.designers.TableInfo, azdata.designers.TableDesignerInfo, void, void>('tabledesigner/gettabledesignerinfo');
 }
 
 export namespace ProcessTableDesignerEditRequest {
 	export const type = new RequestType<TableDesignerEditRequestParams, azdata.designers.DesignerEditResult, void, void>('tabledesigner/processedit');
+}
+
+export namespace SaveTableDesignerChangesRequest {
+	export const type = new RequestType<SaveTableDesignerChangesRequestParams, void, void, void>('tabledesigner/saveChanges');
 }
 
 // ------------------------------- < Table Designer > ------------------------------------

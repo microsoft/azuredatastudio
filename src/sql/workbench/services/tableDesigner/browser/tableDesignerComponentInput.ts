@@ -9,7 +9,7 @@ import { TableDesignerProvider } from 'sql/workbench/services/tableDesigner/comm
 import { localize } from 'vs/nls';
 import { designers } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { Emitter, Event } from 'vs/base/common/event';
-import { INotificationService } from 'vs/platform/notification/common/notification';
+import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 
 export class TableDesignerComponentInput implements DesignerComponentInput {
 
@@ -17,6 +17,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 	private _view: DesignerView;
 	private _valid: boolean = true;
 	private _dirty: boolean = false;
+	private _saving: boolean = false;
 	private _onStateChange = new Emitter<DesignerState>();
 
 	public readonly onStateChange: Event<DesignerState> = this._onStateChange.event;
@@ -32,6 +33,10 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 
 	get dirty(): boolean {
 		return this._dirty;
+	}
+
+	get saving(): boolean {
+		return this._saving;
 	}
 
 	get objectTypeDisplayName(): string {
@@ -57,7 +62,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		if (result.isValid) {
 			this._data = result.data;
 		}
-		this.updateState(result.isValid, true);
+		this.updateState(result.isValid, true, this.saving);
 		return {
 			isValid: result.isValid,
 			errors: result.errors
@@ -65,22 +70,35 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 	}
 
 	async save(): Promise<void> {
+		const notificationHandle = this._notificationService.notify({
+			severity: Severity.Info,
+			message: localize('tableDesigner.savingChanges', "Saving table designer changes...")
+		});
 		try {
+			this.updateState(this.valid, this.dirty, true);
 			await this._provider.saveTable(this._tableInfo, this._data);
-			this.updateState(true, false);
-			this._notificationService.info(localize('tableDesigner.savedChangeSuccess', "The changes have been successfully saved."));
+			this.updateState(true, false, false);
+			notificationHandle.updateMessage(localize('tableDesigner.savedChangeSuccess', "The changes have been successfully saved."));
 		} catch (error) {
-			this._notificationService.error(localize('tableDesigner.saveChangeError', "An error occured while saving changes: {0}", error?.message ?? error));
+			notificationHandle.updateSeverity(Severity.Error);
+			notificationHandle.updateMessage(localize('tableDesigner.saveChangeError', "An error occured while saving changes: {0}", error?.message ?? error));
+			this.updateState(this.valid, this.dirty, false);
 		}
 	}
 
-	public updateState(valid: boolean, dirty: boolean): void {
-		if (this._dirty !== dirty || this._valid !== valid) {
+	async revert(): Promise<void> {
+		this.updateState(true, false, false);
+	}
+
+	private updateState(valid: boolean, dirty: boolean, saving: boolean): void {
+		if (this._dirty !== dirty || this._valid !== valid || this._saving !== saving) {
 			this._dirty = dirty;
 			this._valid = valid;
+			this._saving = saving;
 			this._onStateChange.fire({
 				valid: this._valid,
-				dirty: this._dirty
+				dirty: this._dirty,
+				saving: this._saving
 			});
 		}
 	}

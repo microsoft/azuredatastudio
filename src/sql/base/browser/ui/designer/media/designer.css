@@ -59,8 +59,8 @@
 
 .designer-component .components-grid {
 	display: grid;
+	/* grid-template-columns: column 1 is for label, column 2 is for component.*/
 	grid-template-columns: max-content auto;
-	/* label, component*/
 	grid-template-rows: max-content;
 	grid-gap: 5px;
 	padding: 5px;
@@ -70,7 +70,6 @@
 
 .designer-component .components-grid .full-row {
 	grid-area: span 1 / span 2;
-	/* spans 1 row and 2 columns*/
 }
 
 .designer-component .monaco-table .slick-cell.editable {
