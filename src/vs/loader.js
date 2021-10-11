@@ -1337,7 +1337,7 @@ var AMDLoader;
                 throw new Error('Can only have one anonymous define call per script file');
             }
             var stack = null;
-            if (this._config.isBuild()) {
+            if (true) {
                 stack = new Error('StackLocation').stack || null;
             }
             this._currentAnonymousDefineCall = {
