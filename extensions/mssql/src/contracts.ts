@@ -1047,7 +1047,7 @@ export namespace ProcessTableDesignerEditRequest {
 }
 
 export namespace SaveTableDesignerChangesRequest {
-	export const type = new RequestType<SaveTableDesignerChangesRequestParams, void, void, void>('tabledesigner/saveChanges');
+	export const type = new RequestType<SaveTableDesignerChangesRequestParams, void, void, void>('tabledesigner/savechanges');
 }
 
 // ------------------------------- < Table Designer > ------------------------------------
