@@ -561,14 +561,14 @@ export function isValidSQLPassword(password: string, userName: string = 'sa'): b
 
 export async function showErrorMessageWithOutputChannel(errorMessageFunc: (error: string) => string, error: any, outputChannel: vscode.OutputChannel): Promise<void> {
 	const result = await vscode.window.showErrorMessage(errorMessageFunc(getErrorMessage(error)), constants.checkoutOutputMessage);
-	if (result !== undefined) {
+	if (result === constants.checkoutOutputMessage) {
 		outputChannel.show();
 	}
 }
 
 export async function showInfoMessageWithOutputChannel(message: string, outputChannel: vscode.OutputChannel): Promise<void> {
 	const result = await vscode.window.showInformationMessage(message, constants.checkoutOutputMessage);
-	if (result !== undefined) {
+	if (result === constants.checkoutOutputMessage) {
 		outputChannel.show();
 	}
 }

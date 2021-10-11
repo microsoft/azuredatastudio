@@ -238,7 +238,7 @@ export class DeployService {
 				providerName: 'MSSQL',
 				saveProfile: false,
 				id: '',
-				connectionName: `${profile.profileName}`,
+				connectionName: profile.profileName,
 				options: [],
 				authenticationType: 'SqlLogin'
 			};
@@ -401,13 +401,9 @@ RUN ["/bin/bash", "/opt/commands/start.sh"]
 		await fse.writeFile(filePath, content);
 	}
 
-	private async getCurrentIds(commandToRun: string): Promise<string[]> {
-		const currentIds = await utils.executeCommand(commandToRun, this._outputChannel);
-		return currentIds ? currentIds.split(/\r?\n/) : [];
-	}
-
 	public async getCurrentDockerContainer(imageLabel: string): Promise<string[]> {
-		return await this.getCurrentIds(`docker ps -q -a --filter label=${imageLabel}`);
+		const currentIds = await utils.executeCommand(`docker ps -q -a --filter label=${imageLabel}`, this._outputChannel);
+		return currentIds ? currentIds.split(/\r?\n/) : [];
 	}
 
 	public async cleanDockerObjects(ids: string[], commandsToClean: string[]): Promise<void> {
