@@ -18,7 +18,17 @@ import { ResourceModel } from './resourceModel';
 
 export type DatabaseModel = { name: string, status: string, lastBackup: string };
 export type RPModel = { recoveryPointObjective: string, retentionDays: string };
-
+export type PITRModel = {
+	instanceName: string,
+	resourceGroupName: string,
+	location: string,
+	subscriptionId: string,
+	dbName: string,
+	restorePoint: string,
+	earliestPitr: string,
+	latestPitr: string,
+};
+export const systemDbs = ['master', 'msdb', 'tempdb', 'model'];
 export class MiaaModel extends ResourceModel {
 
 	private _config: azExt.SqlMiShowResult | undefined;

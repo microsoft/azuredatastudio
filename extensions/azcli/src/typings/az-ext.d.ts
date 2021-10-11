@@ -329,6 +329,19 @@ declare module 'az-ext' {
 					namespace?: string,
 					additionalEnvVars?: AdditionalEnvVars
 				): Promise<AzOutput<void>>
+			},
+			midbarc: {
+				restore(
+					name: string,
+					args: {
+						destName?: string,
+						managedInstance?: string,
+						time?: string,
+						noWait?: boolean,
+					},
+					namespace?: string,
+					additionalEnvVars?: AdditionalEnvVars
+				): Promise<AzOutput<void>>
 			}
 		},
 		getPath(): Promise<string>,
