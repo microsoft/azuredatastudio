@@ -12,7 +12,7 @@
 		"strictNullChecks": false,
 		// Disable since without strictNullChecks this has lots of errors in both vs and our code
 		"noImplicitAny": false,
-		"strictOptionalProperties": false,
+		"exactOptionalPropertyTypes": false,
 		"useUnknownInCatchVariables": false,
 		"forceConsistentCasingInFileNames": true,
 		"baseUrl": ".",
