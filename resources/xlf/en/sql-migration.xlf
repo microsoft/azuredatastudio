@@ -106,6 +106,9 @@ This may take some time.</source>
       <source xml:lang="en">Blob container</source>
     </trans-unit>
     <trans-unit id="sql.migration.blob.resourceGroup.select">
+      <source xml:lang="en">Select a resource group.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.blob.resourceGroup.select.prompt">
       <source xml:lang="en">Select a resource group value first.</source>
     </trans-unit>
     <trans-unit id="sql.migration.blob.storage.header.text">

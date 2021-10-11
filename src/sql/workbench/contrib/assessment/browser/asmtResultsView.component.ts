@@ -150,7 +150,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 		let self = this;
 		const profile = this._commonService.connectionManagementService.connectionInfo.connectionProfile;
 
-		this.isServerMode = !profile.databaseName || Utils.isMaster(profile);
+		this.isServerMode = !profile.databaseName || Utils.isServerConnection(profile);
 
 		if (this.isServerMode) {
 			this.placeholderNoResultsLabel = nls.localize('asmt.TargetInstanceComplient', "Instance {0} is totally compliant with the best practices. Good job!", profile.serverName);

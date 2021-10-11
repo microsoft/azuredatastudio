@@ -403,7 +403,7 @@
   },
   "dependencies": {
     "@microsoft/ads-extension-telemetry": "^1.1.5",
-    "fast-glob": "^3.1.0",
+    "fast-glob": "^3.2.7",
     "fs-extra": "^5.0.0",
     "jsonc-parser": "^2.3.1",
     "promisify-child-process": "^3.1.1",
