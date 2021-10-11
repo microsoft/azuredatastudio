@@ -9,10 +9,10 @@
 	"version": "1.0.0",
 	"contents": {
 		"dist/constants": {
-			"XEventsFailed": "XEvents operation failed.",
-			"XEventsNotSupported": "XEvents sessions not supported.",
-			"XEventsStarted": "XEvents sessions started for PageContention and ObjectContention.",
-			"XEventsStopped": "XEvents sessions PageContention and ObjectContention removed."
+			"XEventsFailed": "Fehler beim XEvents-Vorgang.",
+			"XEventsNotSupported": "XEvents-Sitzungen werden nicht unterstützt.",
+			"XEventsStarted": "XEvents-Sitzungen wurden für PageContention und ObjectContention gestartet.",
+			"XEventsStopped": "Die XEvents-Sitzungen PageContention und ObjectContention wurden entfernt."
 		}
 	}
 }

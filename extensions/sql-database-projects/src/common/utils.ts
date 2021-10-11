@@ -437,6 +437,12 @@ export async function executeCommand(cmd: string, outputChannel: vscode.OutputCh
 			timeout: timeout
 		}, (err, stdout) => {
 			if (err) {
+
+				// removing sensitive data from the exception
+				sensitiveData.forEach(element => {
+					err.cmd = err.cmd?.replace(element, '***');
+					err.message = err.message?.replace(element, '***');
+				});
 				reject(err);
 			} else {
 				resolve(stdout);
@@ -552,3 +558,18 @@ export function isValidSQLPassword(password: string, userName: string = 'sa'): b
 	const hasNonAlphas = /\W/.test(password) ? 1 : 0;
 	return !containsUserName && password.length >= 8 && password.length <= 128 && (hasUpperCase + hasLowerCase + hasNumbers + hasNonAlphas >= 3);
 }
+
+export async function showErrorMessageWithOutputChannel(errorMessageFunc: (error: string) => string, error: any, outputChannel: vscode.OutputChannel): Promise<void> {
+	const result = await vscode.window.showErrorMessage(errorMessageFunc(getErrorMessage(error)), constants.checkoutOutputMessage);
+	if (result === constants.checkoutOutputMessage) {
+		outputChannel.show();
+	}
+}
+
+export async function showInfoMessageWithOutputChannel(message: string, outputChannel: vscode.OutputChannel): Promise<void> {
+	const result = await vscode.window.showInformationMessage(message, constants.checkoutOutputMessage);
+	if (result === constants.checkoutOutputMessage) {
+		outputChannel.show();
+	}
+}
+

@@ -45,7 +45,7 @@
 			"dataworkspace.projectParentDirectoryNotExistError": "Il percorso del progetto selezionato '{0}' non esiste o non è una directory.",
 			"dataworkspace.projectsFailedToLoad": "Non è stato possibile caricare alcuni progetti. Per visualizzare altri dettagli, [aprire la console per sviluppatori] (comando: workbench.action.toggleDevTools)",
 			"dataworkspace.remoteGitRepo": "Repository GIT remoto",
-			"dataworkspace.restartConfirmation": "È necessario riavviare Azure Data Studio affinché il progetto venga creato e aggiunto all'area di lavoro. Procedere ora?",
+			"dataworkspace.restartConfirmation": "È necessario riavviare Azure Data Studio per aggiungere il progetto all'area di lavoro. Riavvia ora?",
 			"dataworkspace.select": "Seleziona",
 			"dataworkspace.selectProjectLocation": "Seleziona percorso del progetto",
 			"dataworkspace.selectProjectType": "Seleziona tipo di progetto",
@@ -70,6 +70,7 @@
 			"projects-view-no-project-content": "Nessun progetto aperto nell'area di lavoro corrente.\r\n[Crea nuovo] (comando: projects.new)\r\n[Apri esistente] (comando: projects.openExisting)\r\nPer altre informazioni sui progetti [vedere la documentazione] (https://aka.ms/azuredatastudio-projects).\r\n",
 			"projects-view-no-workspace-content": "Per iniziare, creare un nuovo progetto o aprirne uno esistente.\r\n[Crea nuovo] (comando: projects.new)\r\n[Apri esistente] (comando: projects.openExisting)\r\nPer altre informazioni sui progetti [vedere la documentazione] (https://aka.ms/azuredatastudio-projects).",
 			"projects.defaultProjectSaveLocation": "Percorso completo della cartella in cui vengono salvati i nuovi progetti per impostazione predefinita.",
+			"projects.excludedProjectsDescription": "Elenco dei progetti nell'area di lavoro da escludere dal viewlet dei progetti",
 			"projects.showNotAddedProjectsInWorkspacePrompt": "Mostra sempre un messaggio informativo quando le cartelle dell'area di lavoro correnti contengono progetti che non sono stati aggiunti ai progetti dell'area di lavoro.",
 			"refresh-workspace-command": "Aggiorna",
 			"remove-project-command": "Rimuovi progetto"

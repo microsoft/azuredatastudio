@@ -211,6 +211,8 @@ import { IAssessmentService } from 'sql/workbench/services/assessment/common/int
 import { AssessmentService } from 'sql/workbench/services/assessment/common/assessmentService';
 import { DataGridProviderService } from 'sql/workbench/services/dataGridProvider/browser/dataGridProviderService';
 import { IDataGridProviderService } from 'sql/workbench/services/dataGridProvider/common/dataGridProviderService';
+import { ITableDesignerService } from 'sql/workbench/services/tableDesigner/common/interface';
+import { TableDesignerService } from 'sql/workbench/services/tableDesigner/browser/tableDesignerService';
 
 registerSingleton(IDashboardService, DashboardService);
 registerSingleton(IDashboardViewService, DashboardViewService);
@@ -250,6 +252,7 @@ registerSingleton(IObjectExplorerService, ObjectExplorerService);
 registerSingleton(IOEShimService, OEShimService);
 registerSingleton(IAssessmentService, AssessmentService);
 registerSingleton(IDataGridProviderService, DataGridProviderService);
+registerSingleton(ITableDesignerService, TableDesignerService);
 
 //#endregion
 
@@ -529,5 +532,8 @@ import 'sql/workbench/contrib/azure/browser/azure.contribution';
 
 // Charts
 import 'sql/workbench/contrib/charts/browser/charts.contribution';
+
+// table designer
+import 'sql/workbench/contrib/tableDesigner/browser/tableDesigner.contribution';
 
 //#endregion
