@@ -163,6 +163,7 @@ export class Designer extends Disposable implements IThemable {
 			component.style(this._styles.selectBoxStyles);
 		}
 	}
+
 	public style(styles: IDesignerStyle): void {
 		this._styles = styles;
 		this._componentMap.forEach((value, key, map) => {

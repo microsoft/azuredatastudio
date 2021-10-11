@@ -4,18 +4,34 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { DesignerData, DesignerEdit, DesignerEditResult, DesignerComponentInput, DesignerView, DesignerTab, DesignerDataPropertyInfo, DropDownProperties, DesignerTableProperties } from 'sql/base/browser/ui/designer/interfaces';
+import { DesignerData, DesignerEdit, DesignerEditResult, DesignerComponentInput, DesignerView, DesignerTab, DesignerDataPropertyInfo, DropDownProperties, DesignerTableProperties, DesignerState } from 'sql/base/browser/ui/designer/interfaces';
 import { TableDesignerProvider } from 'sql/workbench/services/tableDesigner/common/interface';
 import { localize } from 'vs/nls';
 import { designers } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { Emitter, Event } from 'vs/base/common/event';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 
 export class TableDesignerComponentInput implements DesignerComponentInput {
 
 	private _data: DesignerData;
 	private _view: DesignerView;
+	private _valid: boolean = true;
+	private _dirty: boolean = false;
+	private _onStateChange = new Emitter<DesignerState>();
+
+	public readonly onStateChange: Event<DesignerState> = this._onStateChange.event;
 
 	constructor(private readonly _provider: TableDesignerProvider,
-		private _tableInfo: azdata.designers.TableInfo) {
+		private _tableInfo: azdata.designers.TableInfo,
+		@INotificationService private readonly _notificationService: INotificationService) {
+	}
+
+	get valid(): boolean {
+		return this._valid;
+	}
+
+	get dirty(): boolean {
+		return this._dirty;
 	}
 
 	get objectTypeDisplayName(): string {
@@ -41,10 +57,32 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		if (result.isValid) {
 			this._data = result.data;
 		}
+		this.updateState(result.isValid, true);
 		return {
 			isValid: result.isValid,
 			errors: result.errors
 		};
+	}
+
+	async save(): Promise<void> {
+		try {
+			await this._provider.saveTable(this._tableInfo, this._data);
+			this.updateState(true, false);
+			this._notificationService.info(localize('tableDesigner.savedChangeSuccess', "The changes have been successfully saved."));
+		} catch (error) {
+			this._notificationService.error(localize('tableDesigner.saveChangeError', "An error occured while saving changes: {0}", error?.message ?? error));
+		}
+	}
+
+	public updateState(valid: boolean, dirty: boolean): void {
+		if (this._dirty !== dirty || this._valid !== valid) {
+			this._dirty = dirty;
+			this._valid = valid;
+			this._onStateChange.fire({
+				valid: this._valid,
+				dirty: this._dirty
+			});
+		}
 	}
 
 	private async initialize(): Promise<void> {
