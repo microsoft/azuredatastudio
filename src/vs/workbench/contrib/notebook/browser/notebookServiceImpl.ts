@@ -80,7 +80,7 @@ export class NotebookProviderInfoStore extends Disposable {
 			}
 		}));
 
-		// notebooksExtensionPoint.setHandler(extensions => this._setupHandler(extensions)); {{SQL CARBON EDIT}}
+		// notebooksExtensionPoint.setHandler(extensions => this._setupHandler(extensions)); {{SQL CARBON EDIT}} Registration handled elsewhere
 	}
 
 	override dispose(): void {
