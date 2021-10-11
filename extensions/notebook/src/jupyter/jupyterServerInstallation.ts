@@ -154,6 +154,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		this._kernelSetupCache = new Map<string, boolean>();
 		this._requiredKernelPackages = new Map<string, PythonPkgDetails[]>();
 
+		this._requiredKernelPackages.set(constants.ipykernelDisplayName, [requiredJupyterPkg]);
 		this._requiredKernelPackages.set(constants.python3DisplayName, [requiredJupyterPkg]);
 		this._requiredKernelPackages.set(constants.powershellDisplayName, [requiredJupyterPkg, requiredPowershellPkg]);
 		this._requiredKernelPackages.set(constants.pysparkDisplayName, requiredSparkPackages);

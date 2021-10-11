@@ -45,7 +45,7 @@
 			"dataworkspace.projectParentDirectoryNotExistError": "Der ausgewählte Projektspeicherort \"{0}\" ist nicht vorhanden oder kein Verzeichnis.",
 			"dataworkspace.projectsFailedToLoad": "Einige Projekte konnten nicht geladen werden. Um weitere Details anzuzeigen, [Entwicklerkonsole öffnen](command:workbench.action.toggleDevTools)",
 			"dataworkspace.remoteGitRepo": "Git-Remoterepository",
-			"dataworkspace.restartConfirmation": "Azure Data Studio muss neu gestartet werden, damit das Projekt erstellt und dem Arbeitsbereich hinzugefügt wird, jetzt ausführen?",
+			"dataworkspace.restartConfirmation": "Azure Data Studio muss neu gestartet werden, damit das Projekt in den Arbeitsbereich hinzugefügt wird. Jetzt neu starten?",
 			"dataworkspace.select": "Auswählen",
 			"dataworkspace.selectProjectLocation": "Projektspeicherort auswählen",
 			"dataworkspace.selectProjectType": "Projekttyp auswählen",
@@ -70,6 +70,7 @@
 			"projects-view-no-project-content": "Im aktuellen Arbeitsbereich sind keine Projekte geöffnet.\r\n[Neues erstellen](command:projects.new)\r\n[Bestehendes öffnen](command:projects.openExisting)\r\nWeitere Informationen zu Projekten [unsere Dokumentation lesen](https://aka.ms/azuredatastudio-projects).\r\n",
 			"projects-view-no-workspace-content": "Erstellen Sie ein neues oder öffnen Sie ein bestehendes, um loszulegen.\r\n[Neues erstellen](command:projects.new)\r\n[Bestehendes öffnen](command:projects.openExisting)\r\nWeitere Informationen zu Projekten [unsere Dokumentation lesen](https://aka.ms/azuredatastudio-projects).",
 			"projects.defaultProjectSaveLocation": "Vollständiger Pfad zu dem Ordner, in dem neue Projekte standardmäßig gespeichert werden.",
+			"projects.excludedProjectsDescription": "Liste der Projekte im Arbeitsbereich, die aus dem Projekte-Viewlet ausgeschlossen werden sollen",
 			"projects.showNotAddedProjectsInWorkspacePrompt": "Informationsmeldung immer anzeigen, wenn die aktuellen Arbeitsbereichsordner Projekte enthalten, die nicht zu den Projekten des Arbeitsbereichs hinzugefügt wurden.",
 			"refresh-workspace-command": "Aktualisieren",
 			"remove-project-command": "Projekt entfernen"

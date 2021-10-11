@@ -260,6 +260,10 @@
         <source xml:lang="en">New Notebook (Preview)</source>
         <target state="translated">새 Notebook(미리 보기)</target>
       </trans-unit>
+      <trans-unit id="newSection">
+        <source xml:lang="en">New Section (Preview)</source>
+        <target state="translated">새 섹션(미리 보기)</target>
+      </trans-unit>
       <trans-unit id="noBDCConnectionError">
         <source xml:lang="en">Spark kernels require a connection to a SQL Server Big Data Cluster master instance.</source>
         <target state="translated">Spark 커널을 SQL Server 빅 데이터 클러스터 마스터 인스턴스에 연결해야 합니다.</target>
@@ -393,8 +397,8 @@
         <target state="translated">찾아보기</target>
       </trans-unit>
       <trans-unit id="configurePython.descriptionWithKernel">
-        <source xml:lang="en">The {0} kernel requires a Python runtime to be configured and dependencies to be installed.</source>
-        <target state="translated">{0} 커널을 사용하려면 Python 런타임을 구성하고 종속성을 설치해야 합니다.</target>
+        <source xml:lang="en">The '{0}' kernel requires a Python runtime to be configured and dependencies to be installed.</source>
+        <target state="new">The '{0}' kernel requires a Python runtime to be configured and dependencies to be installed.</target>
       </trans-unit>
       <trans-unit id="configurePython.descriptionWithoutKernel">
         <source xml:lang="en">Notebook kernels require a Python runtime to be configured and dependencies to be installed.</source>
@@ -500,9 +504,9 @@
         <source xml:lang="en">Required Version</source>
         <target state="translated">필요한 버전</target>
       </trans-unit>
-      <trans-unit id="msgUnsupportedKernel">
-        <source xml:lang="en">Could not retrieve packages for kernel {0}</source>
-        <target state="translated">{0} 커널의 패키지를 검색할 수 없음</target>
+      <trans-unit id="msgNoRequirementsForKernel">
+        <source xml:lang="en">No packages are required by default for the kernel '{0}'</source>
+        <target state="new">No packages are required by default for the kernel '{0}'</target>
       </trans-unit>
     </body>
   </file>
@@ -654,7 +658,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/jupyter/jupyterNotebookProvider" source-language="en" datatype="plaintext" target-language="ko">
+  <file original="extensions/notebook/dist/jupyter/jupyterExecuteProvider" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="errNotebookUriMissing">
         <source xml:lang="en">A notebook path is required</source>
@@ -896,9 +900,21 @@
         <source xml:lang="en">Add Text Cell</source>
         <target state="translated">텍스트 셀 추가</target>
       </trans-unit>
+      <trans-unit id="notebook.command.boldText">
+        <source xml:lang="en">Bold Markdown Text</source>
+        <target state="translated">굵은 마크다운 텍스트</target>
+      </trans-unit>
       <trans-unit id="notebook.command.clearactivecellresult">
         <source xml:lang="en">Clear Cell Result</source>
         <target state="translated">셀 결과 지우기</target>
+      </trans-unit>
+      <trans-unit id="notebook.command.codeBlock">
+        <source xml:lang="en">Add Code Block</source>
+        <target state="translated">코드 블록 추가</target>
+      </trans-unit>
+      <trans-unit id="notebook.command.italicizeText">
+        <source xml:lang="en">Italicize Markdown Text</source>
+        <target state="translated">Markdown 텍스트 기울임꼴</target>
       </trans-unit>
       <trans-unit id="notebook.command.new">
         <source xml:lang="en">New Notebook</source>
@@ -915,6 +931,10 @@
       <trans-unit id="notebook.command.runallcells">
         <source xml:lang="en">Run Cells</source>
         <target state="translated">셀 실행</target>
+      </trans-unit>
+      <trans-unit id="notebook.command.underlineText">
+        <source xml:lang="en">Underline Markdown Text</source>
+        <target state="translated">Markdown 텍스트에 밑줄 긋기</target>
       </trans-unit>
       <trans-unit id="notebook.configuration.title">
         <source xml:lang="en">Notebook configuration</source>
@@ -987,6 +1007,10 @@
       <trans-unit id="title.addNotebook">
         <source xml:lang="en">Add Notebook</source>
         <target state="translated">Notebook 추가</target>
+      </trans-unit>
+      <trans-unit id="title.addSection">
+        <source xml:lang="en">Add Section</source>
+        <target state="translated">섹션 추가</target>
       </trans-unit>
       <trans-unit id="title.analyzeJupyterNotebook">
         <source xml:lang="en">Analyze in Notebook</source>
