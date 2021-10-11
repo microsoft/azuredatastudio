@@ -17,7 +17,7 @@ import Severity from 'vs/base/common/severity';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { MoveDirection } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { CellEditModes, MoveDirection } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 const moreActionsLabel = localize('moreActionsLabel', "More");
 
 export class EditCellAction extends ToggleableAction {
@@ -77,6 +77,11 @@ export class SplitCellAction extends CellActionBase {
 		let index = model.cells.findIndex((cell) => cell.id === context.cell.id);
 		context.model?.splitCell(context.cell.cellType, this.notebookService, index);
 		return Promise.resolve();
+	}
+	public setListener(context: CellContext) {
+		this._register(context.cell.onCurrentEditModeChanged(currentMode => {
+			this.enabled = currentMode === CellEditModes.WYSIWYG ? false : true;
+		}));
 	}
 }
 
