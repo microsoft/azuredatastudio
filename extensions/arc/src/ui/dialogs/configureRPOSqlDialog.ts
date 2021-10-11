@@ -12,7 +12,6 @@ import { MiaaModel, RPModel } from '../../models/miaaModel';
 
 export class ConfigureRPOSqlDialog extends InitializingComponent {
 	protected modelBuilder!: azdata.ModelBuilder;
-	protected rpoInputBox!: azdata.InputBoxComponent;
 	protected retentionDaysInputBox!: azdata.InputBoxComponent;
 	protected _completionPromise = new Deferred<RPModel | undefined>();
 	public saveArgs: RPModel = {
@@ -31,15 +30,6 @@ export class ConfigureRPOSqlDialog extends InitializingComponent {
 		rd = (rd === undefined ? this._model.config?.spec?.backup?.retentionPeriodInDays?.toString() : rd);
 		dialog.registerContent(async view => {
 			this.modelBuilder = view.modelBuilder;
-			this.rpoInputBox = this.modelBuilder.inputBox()
-				.withProps({
-					readOnly: false,
-					min: 300,
-					max: 600,
-					inputType: 'number',
-					ariaLabel: loc.rpo,
-					value: rpo
-				}).component();
 			this.retentionDaysInputBox = this.modelBuilder.inputBox()
 				.withProps({
 					readOnly: false,
@@ -75,11 +65,6 @@ export class ConfigureRPOSqlDialog extends InitializingComponent {
 							component: infoAndLink
 						},
 						{
-							component: this.rpoInputBox,
-							title: loc.rpo,
-							required: false
-						},
-						{
 							component: this.retentionDaysInputBox,
 							title: loc.rd,
 							required: false
@@ -88,7 +73,6 @@ export class ConfigureRPOSqlDialog extends InitializingComponent {
 					title: ''
 				}]).withLayout({ width: '100%' }).component();
 			await view.initializeModel(formModel);
-			this.rpoInputBox.focus();
 			this.retentionDaysInputBox.focus();
 			this.initialized = true;
 		});
@@ -101,11 +85,10 @@ export class ConfigureRPOSqlDialog extends InitializingComponent {
 	}
 
 	public async validate(): Promise<boolean> {
-		if (!this.rpoInputBox.value || !this.retentionDaysInputBox.value) {
+		if (!this.retentionDaysInputBox.value) {
 			return false;
 		}
 		else {
-			this.saveArgs.recoveryPointObjective = this.rpoInputBox.value;
 			this.saveArgs.retentionDays = this.retentionDaysInputBox.value;
 			this._completionPromise.resolve(this.saveArgs);
 		}
