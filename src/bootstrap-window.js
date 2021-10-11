@@ -143,9 +143,19 @@
 				'xterm-addon-webgl': `../node_modules/xterm-addon-webgl/lib/xterm-addon-webgl.js`,
 				'iconv-lite-umd': `../node_modules/iconv-lite-umd/lib/iconv-lite-umd.js`,
 				'jschardet': `../node_modules/jschardet/dist/jschardet.min.js`,
+				'ansi_up': `../node_modules/ansi_up/ansi_up.js`
 			};
 		} else {
-			loaderConfig.amdModulesPattern = /^(vs|sql)\//; // {{SQL CARBON EDIT}} include sql in regex
+			// VS Code uses an AMD loader for its own files (and ours) but Node.JS normally uses commonjs. For modules that
+			// support UMD this may cause some issues since it will appear to them that AMD exists and so depending on the order
+			// they check support for the two types they may end up using either commonjs or AMD. If commonjs is first this is
+			// the expected method and so nothing needs to be done - but if it's AMD then the VS Code loader will throw an error
+			// (Can only have one anonymous define call per script file). In order to make packages that do this load correctly
+			// we need to add them to the list below to tell the loader that these should be loaded using AMD as well
+			loaderConfig.amdModulesPattern = /^(vs|sql)\/|(^ansi_up$)/; // {{SQL CARBON EDIT}} include sql and ansi_up in regex
+			loaderConfig.paths = {
+				'ansi_up': '../node_modules/ansi_up/ansi_up.js'
+			};
 		}
 
 		// Signal before require.config()
