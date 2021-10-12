@@ -25,8 +25,18 @@ class VSCodeContentManager implements azdata.nb.ContentManager {
 						language: cell.languageId
 					},
 					execution_count: cell.executionSummary?.executionOrder,
-					outputs: cell.outputs?.map(output => {
-						return undefined; // TODO: implement output conversion
+					outputs: cell.outputs?.map<azdata.nb.IExecuteResult>(output => {
+						let outputData = {};
+						for (let item of output.items) {
+							outputData[item.mime] = item.data;
+						}
+						return {
+							output_type: 'execute_result',
+							data: outputData,
+							execution_count: cell.executionSummary?.executionOrder,
+							metadata: output.metadata,
+							id: output.id
+						};
 					})
 				};
 			}),
@@ -43,7 +53,13 @@ class VSCodeContentManager implements azdata.nb.ContentManager {
 					kind: cell.cell_type === 'code' ? NotebookCellKind.Code : NotebookCellKind.Markup,
 					value: Array.isArray(cell.source) ? cell.source.join('\n') : cell.source,
 					languageId: cell.metadata?.language,
-					outputs: undefined // TODO: implement output conversions
+					outputs: cell.outputs.map<vscode.NotebookCellOutput>(output => {
+						return {
+							items: [],
+							metadata: output.metadata,
+							id: output.id
+						};
+					})
 				};
 			})
 		};

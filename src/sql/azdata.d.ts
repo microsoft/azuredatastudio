@@ -5077,6 +5077,7 @@ declare module 'azdata' {
 		export interface ICellOutput {
 			output_type: OutputTypeName;
 			metadata?: ICellOutputMetadata | undefined;
+			id?: string; // Used for VSCode cell conversions
 		}
 
 		export interface ICellOutputMetadata {
