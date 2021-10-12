@@ -8,6 +8,7 @@ import type * as azdata from 'azdata';
 import { VSBuffer } from 'vs/base/common/buffer';
 import { NotebookCellKind } from 'vs/workbench/api/common/extHostTypes';
 import { CancellationTokenSource } from 'vs/base/common/cancellation';
+import { OutputTypes } from 'sql/workbench/services/notebook/common/contracts';
 
 class VSCodeContentManager implements azdata.nb.ContentManager {
 	constructor(private readonly _serializer: vscode.NotebookSerializer) {
@@ -46,6 +47,34 @@ class VSCodeContentManager implements azdata.nb.ContentManager {
 		};
 	}
 
+	private convertToVscodeCellOutput(output: azdata.nb.ICellOutput): vscode.NotebookCellOutputItem[] {
+		switch (output.output_type) {
+			case OutputTypes.ExecuteResult:
+			case OutputTypes.DisplayData:
+			case OutputTypes.UpdateDisplayData:
+				let displayOutput = output as azdata.nb.IDisplayResult;
+				return Object.keys(displayOutput.data).map<vscode.NotebookCellOutputItem>(key => {
+					return {
+						mime: key,
+						data: VSBuffer.fromString(displayOutput.data[key]).buffer
+					};
+				});
+			case OutputTypes.Stream:
+				let streamOutput = output as azdata.nb.IStreamResult;
+				return [{
+					mime: 'text/html',
+					data: VSBuffer.fromString(Array.isArray(streamOutput.text) ? streamOutput.text.join('') : streamOutput.text).buffer
+				}];
+			case OutputTypes.Error:
+				let errorOutput = output as azdata.nb.IErrorResult;
+				let errorString = errorOutput.ename + ': ' + errorOutput.evalue + '\n' + errorOutput.traceback?.join('\n');
+				return [{
+					mime: 'text/html',
+					data: VSBuffer.fromString(errorString).buffer
+				}];
+		}
+	}
+
 	public async serializeNotebook(notebook: azdata.nb.INotebookContents): Promise<string> {
 		let notebookData: vscode.NotebookData = {
 			cells: notebook.cells.map<vscode.NotebookCellData>(cell => {
@@ -55,7 +84,7 @@ class VSCodeContentManager implements azdata.nb.ContentManager {
 					languageId: cell.metadata?.language,
 					outputs: cell.outputs.map<vscode.NotebookCellOutput>(output => {
 						return {
-							items: [],
+							items: this.convertToVscodeCellOutput(output),
 							metadata: output.metadata,
 							id: output.id
 						};
