@@ -79,21 +79,17 @@ export class ConfigureRPOSqlDialog extends InitializingComponent {
 		dialog.okButton.label = loc.apply;
 		dialog.cancelButton.label = loc.cancel;
 		dialog.registerCloseValidator(async () => await this.validate());
-		dialog.okButton.onClick(() => { this._completionPromise.resolve(this.saveArgs); });
+		dialog.okButton.onClick(() => {
+			this.saveArgs.retentionDays = this.retentionDaysInputBox.value ?? '';
+			this._completionPromise.resolve(this.saveArgs);
+		});
 		azdata.window.openDialog(dialog);
 		return dialog;
 	}
 
 	public async validate(): Promise<boolean> {
-		if (!this.retentionDaysInputBox.value) {
-			return false;
-		}
-		else {
-			this.saveArgs.retentionDays = this.retentionDaysInputBox.value;
-			return true;
-		}
+		return !this.retentionDaysInputBox.value ? false : true;
 	}
-
 
 	private handleCancel(): void {
 		this._completionPromise.resolve(undefined);

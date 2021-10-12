@@ -245,7 +245,7 @@ export class MiaaBackupsPage extends DashboardPage {
 		let databaseDisplay = this._miaaModel.databases.map(d => [
 			d.name,
 			d.lastBackup,
-			this.getRestoreButton(d)]);
+			this.createRestoreButton(d)]);
 		let databasesValues = databaseDisplay.map(d => {
 			return d.map((value): azdata.DeclarativeTableCellValue => {
 				return { value: value };
@@ -269,16 +269,18 @@ export class MiaaBackupsPage extends DashboardPage {
 			}
 		}
 	}
+
 	private refreshRD(): void {
 		this.saveArgs.retentionDays = this._miaaModel.config?.spec?.backup?.retentionPeriodInDays.toString() ?? '';
 	}
-	private getRestoreButton(db: DatabaseModel): azdata.ButtonComponent | string {
+
+	// Create restore button for every database entry in the database table
+	private createRestoreButton(db: DatabaseModel): azdata.ButtonComponent | string {
 		let pitrDate = db.lastBackup;
-		if ((pitrDate === '') || !pitrDate) {
+		if (!pitrDate) {
 			return '';
 		}
-		let restoreButton!: azdata.ButtonComponent;
-		restoreButton = this.modelView.modelBuilder.button().withProps({
+		const restoreButton = this.modelView.modelBuilder.button().withProps({
 			enabled: systemDbs.indexOf(db.name) > -1 ? false : true,
 			iconPath: IconPathHelper.openInTab,
 		}).component();
@@ -292,8 +294,7 @@ export class MiaaBackupsPage extends DashboardPage {
 						restoreButton.enabled = false;
 						this.pitrArgs.destName = args.dbName;
 						this.pitrArgs.managedInstance = args.instanceName;
-						// eslint-disable-next-line code-no-unexternalized-strings
-						this.pitrArgs.time = '"' + args.restorePoint + '"';
+						this.pitrArgs.time = `"${args.restorePoint}"`;
 						await vscode.window.withProgress(
 							{
 								location: vscode.ProgressLocation.Notification,

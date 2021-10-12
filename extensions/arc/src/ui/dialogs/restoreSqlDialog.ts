@@ -226,26 +226,28 @@ export class RestoreSqlDialog extends InitializingComponent {
 		dialog.okButton.label = loc.restore;
 		dialog.cancelButton.label = loc.cancel;
 		dialog.registerCloseValidator(async () => await this.validate());
-		dialog.okButton.onClick(() => { this._completionPromise.resolve(this.pitrSettings); });
+		dialog.okButton.onClick(() => {
+			this.pitrSettings.subscriptionId = this.subscriptionInputBox.value ?? '';
+			this.pitrSettings.instanceName = this.instanceInputBox.value ?? '';
+			this.pitrSettings.resourceGroupName = this.resourceGroupInputBox.value ?? '';
+			this.pitrSettings.dbName = this.databaseNameInputBox.value ?? '';
+			this.pitrSettings.earliestPitr = this.earliestRestorePointInputBox.value ?? '';
+			this.pitrSettings.latestPitr = this.latestRestorePointInputBox.value ?? '';
+			this.pitrSettings.restorePoint = this.restorePointInputBox.value ?? '';
+			this._completionPromise.resolve(this.pitrSettings);
+		});
 		azdata.window.openDialog(dialog);
 		return dialog;
 	}
 
 	public async validate(): Promise<boolean> {
 		if (!this.subscriptionInputBox.value || !this.resourceGroupInputBox.value
-			|| !this.sourceDbInputBox.value
+			|| !this.sourceDbInputBox.value || !this.latestRestorePointInputBox.value
 			|| !this.restorePointInputBox.value || !this.databaseNameInputBox.value
-			|| !this.instanceInputBox.value || !this.latestRestorePointInputBox.value) {
+			|| !this.instanceInputBox.value) {
 			return false;
 		}
 		else {
-			this.pitrSettings.subscriptionId = this.subscriptionInputBox.value;
-			this.pitrSettings.instanceName = this.instanceInputBox.value;
-			this.pitrSettings.resourceGroupName = this.resourceGroupInputBox.value;
-			this.pitrSettings.dbName = this.databaseNameInputBox.value;
-			this.pitrSettings.earliestPitr = this.earliestRestorePointInputBox.value ? this.earliestRestorePointInputBox.value : '';
-			this.pitrSettings.latestPitr = this.latestRestorePointInputBox.value;
-			this.pitrSettings.restorePoint = this.restorePointInputBox.value;
 			return true;
 		}
 	}

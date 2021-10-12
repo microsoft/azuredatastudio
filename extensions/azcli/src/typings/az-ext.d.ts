@@ -317,13 +317,12 @@ declare module 'az-ext' {
 				edit(
 					name: string,
 					args: {
-						coresLimit?: string,
-						coresRequest?: string,
-						memoryLimit?: string,
-						memoryRequest?: string,
-						noWait?: boolean,
-						recoveryPointObjective?: string,
-						retentionDays?: string,
+						coresLimit?: string, //2
+						coresRequest?: string, //1
+						memoryLimit?: string, // 2Gi
+						memoryRequest?: string, //1Gi
+						noWait?: boolean, //true
+						retentionDays?: string, //5
 					},
 					namespace?: string,
 					additionalEnvVars?: AdditionalEnvVars
@@ -333,10 +332,10 @@ declare module 'az-ext' {
 				restore(
 					name: string,
 					args: {
-						destName?: string,
-						managedInstance?: string,
-						time?: string,
-						noWait?: boolean,
+						destName?: string, //testDb
+						managedInstance?: string, //sqlmi1
+						time?: string, //2021-10-12T11:16:30.000Z
+						noWait?: boolean, //true
 					},
 					namespace?: string,
 					additionalEnvVars?: AdditionalEnvVars
