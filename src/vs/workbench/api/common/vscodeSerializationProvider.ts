@@ -7,6 +7,7 @@ import type * as vscode from 'vscode';
 import type * as azdata from 'azdata';
 import { VSBuffer } from 'vs/base/common/buffer';
 import { NotebookCellKind } from 'vs/workbench/api/common/extHostTypes';
+import { CancellationTokenSource } from 'vs/base/common/cancellation';
 
 class VSCodeContentManager implements azdata.nb.ContentManager {
 	constructor(private readonly _serializer: vscode.NotebookSerializer) {
@@ -14,7 +15,7 @@ class VSCodeContentManager implements azdata.nb.ContentManager {
 
 	public async deserializeNotebook(contents: string): Promise<azdata.nb.INotebookContents> {
 		let buffer = VSBuffer.fromString(contents);
-		let notebookData = await this._serializer.deserializeNotebook(buffer.buffer, undefined);
+		let notebookData = await this._serializer.deserializeNotebook(buffer.buffer, new CancellationTokenSource().token);
 		return {
 			cells: notebookData.cells.map<azdata.nb.ICellContents>(cell => {
 				return {
@@ -46,7 +47,7 @@ class VSCodeContentManager implements azdata.nb.ContentManager {
 				};
 			})
 		};
-		let bytes = await this._serializer.serializeNotebook(notebookData, undefined);
+		let bytes = await this._serializer.serializeNotebook(notebookData, new CancellationTokenSource().token);
 		let buffer = VSBuffer.wrap(bytes);
 		return buffer.toString();
 	}
