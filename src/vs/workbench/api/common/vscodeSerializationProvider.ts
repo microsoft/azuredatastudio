@@ -28,7 +28,7 @@ class VSCodeContentManager implements azdata.nb.ContentManager {
 					outputs: cell.outputs?.map<azdata.nb.IExecuteResult>(output => {
 						let outputData = {};
 						for (let item of output.items) {
-							outputData[item.mime] = item.data;
+							outputData[item.mime] = VSBuffer.wrap(item.data).toString();
 						}
 						return {
 							output_type: 'execute_result',
