@@ -223,9 +223,10 @@ export class RestoreSqlDialog extends InitializingComponent {
 			this.initialized = true;
 		});
 
-		dialog.registerCloseValidator(async () => await this.validate());
 		dialog.okButton.label = loc.restore;
 		dialog.cancelButton.label = loc.cancel;
+		dialog.registerCloseValidator(async () => await this.validate());
+		dialog.okButton.onClick(() => { this._completionPromise.resolve(this.pitrSettings); });
 		azdata.window.openDialog(dialog);
 		return dialog;
 	}
@@ -245,9 +246,8 @@ export class RestoreSqlDialog extends InitializingComponent {
 			this.pitrSettings.earliestPitr = this.earliestRestorePointInputBox.value ? this.earliestRestorePointInputBox.value : '';
 			this.pitrSettings.latestPitr = this.latestRestorePointInputBox.value;
 			this.pitrSettings.restorePoint = this.restorePointInputBox.value;
-			this._completionPromise.resolve(this.pitrSettings);
+			return true;
 		}
-		return true;
 	}
 
 	private handleCancel(): void {

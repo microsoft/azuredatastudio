@@ -41,6 +41,7 @@ export class MiaaBackupsPage extends DashboardPage {
 		destName: '',
 		managedInstance: '',
 		time: '',
+		noWait: true
 	};
 
 	public get title(): string {

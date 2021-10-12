@@ -76,9 +76,10 @@ export class ConfigureRPOSqlDialog extends InitializingComponent {
 			this.initialized = true;
 		});
 
-		dialog.registerCloseValidator(async () => await this.validate());
 		dialog.okButton.label = loc.apply;
 		dialog.cancelButton.label = loc.cancel;
+		dialog.registerCloseValidator(async () => await this.validate());
+		dialog.okButton.onClick(() => { this._completionPromise.resolve(this.saveArgs); });
 		azdata.window.openDialog(dialog);
 		return dialog;
 	}
@@ -89,9 +90,8 @@ export class ConfigureRPOSqlDialog extends InitializingComponent {
 		}
 		else {
 			this.saveArgs.retentionDays = this.retentionDaysInputBox.value;
-			this._completionPromise.resolve(this.saveArgs);
+			return true;
 		}
-		return true;
 	}
 
 
