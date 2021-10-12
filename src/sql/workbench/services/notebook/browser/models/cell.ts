@@ -422,11 +422,8 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public set showPreview(val: boolean) {
 		this._showPreview = val;
-		if (this._isEditMode) {
-			this._lastEditMode = this._showPreview && this._showMarkdown ? TextCellEditModes.SplitView : (this._showMarkdown ? TextCellEditModes.Markdown : TextCellEditModes.RichText);
-		}
 		this._onCellPreviewChanged.fire(this._showPreview);
-		this._onCurrentEditModeChanged.fire(this.currentMode);
+		this.doModeUpdates();
 	}
 
 	public get showMarkdown(): boolean {
@@ -435,10 +432,14 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public set showMarkdown(val: boolean) {
 		this._showMarkdown = val;
+		this._onCellMarkdownChanged.fire(this._showMarkdown);
+		this.doModeUpdates();
+	}
+
+	private doModeUpdates() {
 		if (this._isEditMode) {
 			this._lastEditMode = this._showPreview && this._showMarkdown ? TextCellEditModes.SplitView : (this._showMarkdown ? TextCellEditModes.Markdown : TextCellEditModes.RichText);
 		}
-		this._onCellMarkdownChanged.fire(this._showMarkdown);
 		this._onCurrentEditModeChanged.fire(this.currentMode);
 	}
 

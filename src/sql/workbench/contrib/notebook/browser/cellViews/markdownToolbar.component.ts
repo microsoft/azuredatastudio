@@ -301,7 +301,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		}
 	}
 
-	public addActiveClassFromEditMode() {
+	private addActiveClassFromEditMode() {
 		this.removeActiveClassFromModeActions();
 		const activeClass = ' active';
 		switch (this.cellModel.currentMode) {
