@@ -44,8 +44,10 @@
 	 */
 	async function load(modulePaths, resultCallback, options) {
 
+		const isDev = !!safeProcess.env['VSCODE_DEV'];
+
 		// Error handler (TODO@sandbox non-sandboxed only)
-		let showDevtoolsOnError = !!safeProcess.env['VSCODE_DEV'];
+		let showDevtoolsOnError = isDev;
 		safeProcess.on('uncaughtException', function (/** @type {string | Error} */ error) {
 			onUnexpectedError(error, showDevtoolsOnError);
 		});
@@ -57,11 +59,6 @@
 		const configuration = await preloadGlobals.context.resolveConfiguration();
 		performance.mark('code/didWaitForWindowConfig');
 		clearTimeout(timeout);
-
-		// Signal DOM modifications are now OK
-		if (typeof options?.canModifyDOM === 'function') {
-			options.canModifyDOM(configuration);
-		}
 
 		// Signal DOM modifications are now OK
 		if (typeof options?.canModifyDOM === 'function') {
@@ -80,8 +77,8 @@
 			disallowReloadKeybinding: false,
 			removeDeveloperKeybindingsAfterLoad: false
 		};
-		showDevtoolsOnError = safeProcess.env['VSCODE_DEV'] && !forceDisableShowDevtoolsOnError;
-		const enableDeveloperKeybindings = safeProcess.env['VSCODE_DEV'] || forceEnableDeveloperKeybindings;
+		showDevtoolsOnError = isDev && !forceDisableShowDevtoolsOnError;
+		const enableDeveloperKeybindings = isDev || forceEnableDeveloperKeybindings;
 		let developerDeveloperKeybindingsDisposable;
 		if (enableDeveloperKeybindings) {
 			developerDeveloperKeybindingsDisposable = registerDeveloperKeybindings(disallowReloadKeybinding);
@@ -129,33 +126,34 @@
 			});
 		}
 
-		// Enable loading of node modules:
-		// - sandbox: we list paths of webpacked modules to help the loader
-		// - non-sandbox: we signal that any module that does not begin with
-		//                `vs/` should be loaded using node.js require()
-		if (safeProcess.sandboxed) {
-			loaderConfig.paths = {
-				'vscode-textmate': `../node_modules/vscode-textmate/release/main`,
-				'vscode-oniguruma': `../node_modules/vscode-oniguruma/release/main`,
-				'xterm': `../node_modules/xterm/lib/xterm.js`,
-				'xterm-addon-search': `../node_modules/xterm-addon-search/lib/xterm-addon-search.js`,
-				'xterm-addon-unicode11': `../node_modules/xterm-addon-unicode11/lib/xterm-addon-unicode11.js`,
-				'xterm-addon-webgl': `../node_modules/xterm-addon-webgl/lib/xterm-addon-webgl.js`,
-				'iconv-lite-umd': `../node_modules/iconv-lite-umd/lib/iconv-lite-umd.js`,
-				'jschardet': `../node_modules/jschardet/dist/jschardet.min.js`,
-				'ansi_up': `../node_modules/ansi_up/ansi_up.js`
-			};
-		} else {
+		// Teach the loader the location of the node modules we use in renderers
+		// This will enable to load these modules via <script> tags instead of
+		// using a fallback such as node.js require which does not exist in sandbox
+		const baseNodeModulesPath = isDev ? '../node_modules' : '../node_modules.asar';
+		loaderConfig.paths = {
+			'vscode-textmate': `${baseNodeModulesPath}/vscode-textmate/release/main.js`,
+			'vscode-oniguruma': `${baseNodeModulesPath}/vscode-oniguruma/release/main.js`,
+			'xterm': `${baseNodeModulesPath}/xterm/lib/xterm.js`,
+			'xterm-addon-search': `${baseNodeModulesPath}/xterm-addon-search/lib/xterm-addon-search.js`,
+			'xterm-addon-unicode11': `${baseNodeModulesPath}/xterm-addon-unicode11/lib/xterm-addon-unicode11.js`,
+			'xterm-addon-webgl': `${baseNodeModulesPath}/xterm-addon-webgl/lib/xterm-addon-webgl.js`,
+			'iconv-lite-umd': `${baseNodeModulesPath}/iconv-lite-umd/lib/iconv-lite-umd.js`,
+			'jschardet': `${baseNodeModulesPath}/jschardet/dist/jschardet.min.js`,
+			'@vscode/vscode-languagedetection': `${baseNodeModulesPath}/@vscode/vscode-languagedetection/dist/lib/index.js`,
+			'tas-client-umd': `${baseNodeModulesPath}/tas-client-umd/lib/tas-client-umd.js`,
+			'ansi_up': `${baseNodeModulesPath}/ansi_up/ansi_up.js`
+		};
+
+		// For priviledged renderers, allow to load built-in and other node.js
+		// modules via AMD which has a fallback to using node.js `require`
+		if (!safeProcess.sandboxed) {
 			// VS Code uses an AMD loader for its own files (and ours) but Node.JS normally uses commonjs. For modules that
 			// support UMD this may cause some issues since it will appear to them that AMD exists and so depending on the order
 			// they check support for the two types they may end up using either commonjs or AMD. If commonjs is first this is
 			// the expected method and so nothing needs to be done - but if it's AMD then the VS Code loader will throw an error
 			// (Can only have one anonymous define call per script file). In order to make packages that do this load correctly
 			// we need to add them to the list below to tell the loader that these should be loaded using AMD as well
-			loaderConfig.amdModulesPattern = /^(vs|sql)\/|(^ansi_up$)/; // {{SQL CARBON EDIT}} include sql and ansi_up in regex
-			loaderConfig.paths = {
-				'ansi_up': '../node_modules/ansi_up/ansi_up.js'
-			};
+			loaderConfig.amdModulesPattern = /(vs|sql)\/|(^vscode-textmate$)|(^vscode-oniguruma$)|(^xterm$)|(^xterm-addon-search$)|(^xterm-addon-unicode11$)|(^xterm-addon-webgl$)|(^iconv-lite-umd$)|(^jschardet$)|(^@vscode\/vscode-languagedetection$)|(^tas-client-umd$)|(^ansi_up$)/;  // {{SQL CARBON EDIT}} include sql and ansi_up in regex
 		}
 
 		// Signal before require.config()
