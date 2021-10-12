@@ -190,7 +190,6 @@ export const notebooksExtensionPoint = ExtensionsRegistry.registerExtensionPoint
 // {{SQL CARBON EDIT}}
 // Convert VSCode notebook registrations into ADS equivalents
 const adsNotebookRegistry = Registry.as<INotebookProviderRegistry>(NotebookProviderRegistryId);
-
 notebooksExtensionPoint.setHandler(extensions => {
 	for (let extension of extensions) {
 		for (const notebookContribution of extension.value) {
