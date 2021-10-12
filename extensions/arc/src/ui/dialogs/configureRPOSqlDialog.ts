@@ -88,7 +88,7 @@ export class ConfigureRPOSqlDialog extends InitializingComponent {
 	}
 
 	public async validate(): Promise<boolean> {
-		return !this.retentionDaysInputBox.value ? false : true;
+		return !!this.retentionDaysInputBox.value;
 	}
 
 	private handleCancel(): void {
