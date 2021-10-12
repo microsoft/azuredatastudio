@@ -41,7 +41,7 @@ import { ICommandService } from 'vs/platform/commands/common/commands';
 
 export type IOpenRecentAction = IAction & { uri: URI, remoteAuthority?: string };
 
-MenuRegistry.appendMenuItem(MenuId.MenubarMainMenu, {
+/*MenuRegistry.appendMenuItem(MenuId.MenubarMainMenu, {
 	submenu: MenuId.MenubarFileMenu,
 	title: {
 		value: 'File',
@@ -59,7 +59,7 @@ MenuRegistry.appendMenuItem(MenuId.MenubarMainMenu, {
 		mnemonicTitle: localize({ key: 'mEdit', comment: ['&& denotes a mnemonic'] }, "&&Edit")
 	},
 	order: 2
-});
+});*/
 
 /* {{SQL CARBON EDIT}} - Disable unused menus
 MenuRegistry.appendMenuItem(MenuId.MenubarMainMenu, {
@@ -73,7 +73,7 @@ MenuRegistry.appendMenuItem(MenuId.MenubarMainMenu, {
 });
 */
 
-MenuRegistry.appendMenuItem(MenuId.MenubarMainMenu, {
+/*MenuRegistry.appendMenuItem(MenuId.MenubarMainMenu, {
 	submenu: MenuId.MenubarViewMenu,
 	title: {
 		value: 'View',
@@ -81,7 +81,7 @@ MenuRegistry.appendMenuItem(MenuId.MenubarMainMenu, {
 		mnemonicTitle: localize({ key: 'mView', comment: ['&& denotes a mnemonic'] }, "&&View")
 	},
 	order: 4
-});
+});*/
 
 /* {{SQL CARBON EDIT}} - Disable unused menus
 MenuRegistry.appendMenuItem(MenuId.MenubarMainMenu, {

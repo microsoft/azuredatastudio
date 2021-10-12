@@ -273,7 +273,7 @@ const externalExtensions = [
  * Extensions that are built into ADS but should be packaged externally as well for VS Code.
  */
 export const vscodeExternalExtensions = [
-	'data-workspace'
+	//'data-workspace'
 ];
 
 // extensions that require a rebuild since they have native parts

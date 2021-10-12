@@ -19,7 +19,7 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { IContextKeyService, IContextKey, ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { IViewsRegistry, IViewDescriptor, Extensions, ViewContainer, IViewContainersRegistry, ViewContainerLocation, IViewDescriptorService, ViewContentGroups } from 'vs/workbench/common/views';
+import { IViewsRegistry, IViewDescriptor, Extensions, IViewDescriptorService, ViewContentGroups } from 'vs/workbench/common/views';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
@@ -30,19 +30,19 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { IEditorPane } from 'vs/workbench/common/editor';
 import { ViewPaneContainer } from 'vs/workbench/browser/parts/views/viewPaneContainer';
 import { ViewPane } from 'vs/workbench/browser/parts/views/viewPane';
-import { KeyChord, KeyMod, KeyCode } from 'vs/base/common/keyCodes';
+//import { KeyChord, KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IProgressService, ProgressLocation } from 'vs/platform/progress/common/progress';
-import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
+//import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { WorkbenchStateContext, RemoteNameContext } from 'vs/workbench/browser/contextkeys';
 import { IsWebContext } from 'vs/platform/contextkey/common/contextkeys';
 import { AddRootFolderAction, OpenFolderAction, OpenFileFolderAction } from 'vs/workbench/browser/actions/workspaceActions';
 import { isMacintosh, isWeb } from 'vs/base/common/platform';
-import { Codicon } from 'vs/base/common/codicons';
-import { registerIcon } from 'vs/platform/theme/common/iconRegistry';
+//import { Codicon } from 'vs/base/common/codicons';
+//import { registerIcon } from 'vs/platform/theme/common/iconRegistry';
 
-const explorerViewIcon = registerIcon('explorer-view-icon', Codicon.files, localize('explorerViewIcon', 'View icon of the explorer view.'));
-const openEditorsViewIcon = registerIcon('open-editors-view-icon', Codicon.book, localize('openEditorsIcon', 'View icon of the open editors view.'));
+//const explorerViewIcon = registerIcon('explorer-view-icon', Codicon.files, localize('explorerViewIcon', 'View icon of the explorer view.'));
+//const openEditorsViewIcon = registerIcon('open-editors-view-icon', Codicon.book, localize('openEditorsIcon', 'View icon of the open editors view.'));
 
 export class ExplorerViewletViewsContribution extends Disposable implements IWorkbenchContribution {
 
@@ -69,7 +69,7 @@ export class ExplorerViewletViewsContribution extends Disposable implements IWor
 	}
 
 	private registerViews(): void {
-		const viewDescriptors = viewsRegistry.getViews(VIEW_CONTAINER);
+		/*const viewDescriptors = viewsRegistry.getViews(VIEW_CONTAINER);
 
 		let viewDescriptorsToRegister: IViewDescriptor[] = [];
 		let viewDescriptorsToDeregister: IViewDescriptor[] = [];
@@ -105,10 +105,10 @@ export class ExplorerViewletViewsContribution extends Disposable implements IWor
 		}
 		if (viewDescriptorsToDeregister.length) {
 			viewsRegistry.deregisterViews(viewDescriptorsToDeregister, VIEW_CONTAINER);
-		}
+		}*/
 	}
 
-	private createOpenEditorsViewDescriptor(): IViewDescriptor {
+	/*private createOpenEditorsViewDescriptor(): IViewDescriptor {
 		return {
 			id: OpenEditorsView.ID,
 			name: OpenEditorsView.NAME,
@@ -153,7 +153,7 @@ export class ExplorerViewletViewsContribution extends Disposable implements IWor
 				id: 'workbench.explorer.fileView.focus'
 			}
 		};
-	}
+	}*/
 
 	private onConfigurationUpdated(e: IConfigurationChangeEvent): void {
 		if (e.affectsConfiguration('explorer.openEditors.visible')) {
@@ -263,12 +263,12 @@ export class ExplorerViewPaneContainer extends ViewPaneContainer {
 	}
 }
 
-const viewContainerRegistry = Registry.as<IViewContainersRegistry>(Extensions.ViewContainersRegistry);
+//const viewContainerRegistry = Registry.as<IViewContainersRegistry>(Extensions.ViewContainersRegistry);
 
 /**
  * Explorer viewlet container.
  */
-export const VIEW_CONTAINER: ViewContainer = viewContainerRegistry.registerViewContainer({
+/*export const VIEW_CONTAINER: ViewContainer = viewContainerRegistry.registerViewContainer({
 	id: VIEWLET_ID,
 	title: localize('explore', "Explorer"),
 	ctorDescriptor: new SyncDescriptor(ExplorerViewPaneContainer),
@@ -283,7 +283,7 @@ export const VIEW_CONTAINER: ViewContainer = viewContainerRegistry.registerViewC
 		keybindings: { primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_E },
 		order: 0
 	},
-}, ViewContainerLocation.Sidebar); // {{SQL CARBON EDIT}} not default
+}, ViewContainerLocation.Sidebar);*/ // {{SQL CARBON EDIT}} not default
 
 const viewsRegistry = Registry.as<IViewsRegistry>(Extensions.ViewsRegistry);
 viewsRegistry.registerViewWelcomeContent(EmptyView.ID, {

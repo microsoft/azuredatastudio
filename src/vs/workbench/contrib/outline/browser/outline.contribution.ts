@@ -4,18 +4,18 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
-import { IViewsRegistry, IViewDescriptor, Extensions as ViewExtensions } from 'vs/workbench/common/views';
-import { OutlinePane } from './outlinePane';
+//import { IViewDescriptor } from 'vs/workbench/common/views';
+//import { OutlinePane } from './outlinePane';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IConfigurationRegistry, Extensions as ConfigurationExtensions, ConfigurationScope } from 'vs/platform/configuration/common/configurationRegistry';
-import { VIEW_CONTAINER } from 'vs/workbench/contrib/files/browser/explorerViewlet';
-import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
-import { Codicon } from 'vs/base/common/codicons';
-import { registerIcon } from 'vs/platform/theme/common/iconRegistry';
+//import { VIEW_CONTAINER } from 'vs/workbench/contrib/files/browser/explorerViewlet';
+//import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
+//import { Codicon } from 'vs/base/common/codicons';
+//import { registerIcon } from 'vs/platform/theme/common/iconRegistry';
 import { OutlineConfigKeys } from 'vs/workbench/services/outline/browser/outline';
 
 
-const outlineViewIcon = registerIcon('outline-view-icon', Codicon.symbolClass, localize('outlineViewIcon', 'View icon of the outline view.'));
+/*const outlineViewIcon = registerIcon('outline-view-icon', Codicon.symbolClass, localize('outlineViewIcon', 'View icon of the outline view.'));
 
 const _outlineDesc = <IViewDescriptor>{
 	id: OutlinePane.Id,
@@ -29,9 +29,9 @@ const _outlineDesc = <IViewDescriptor>{
 	order: 2,
 	weight: 30,
 	focusCommand: { id: 'outline.focus' }
-};
+};*/
 
-Registry.as<IViewsRegistry>(ViewExtensions.ViewsRegistry).registerViews([_outlineDesc], VIEW_CONTAINER);
+//Registry.as<IViewsRegistry>(ViewExtensions.ViewsRegistry).registerViews([_outlineDesc], VIEW_CONTAINER);
 
 Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration).registerConfiguration({
 	'id': 'outline',

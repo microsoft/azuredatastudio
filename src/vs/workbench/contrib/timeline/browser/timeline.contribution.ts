@@ -7,8 +7,8 @@ import { localize } from 'vs/nls';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { IViewsRegistry, IViewDescriptor, Extensions as ViewExtensions } from 'vs/workbench/common/views';
-import { VIEW_CONTAINER } from 'vs/workbench/contrib/files/browser/explorerViewlet';
+import { IViewDescriptor } from 'vs/workbench/common/views';
+//import { VIEW_CONTAINER } from 'vs/workbench/contrib/files/browser/explorerViewlet';
 import { ITimelineService, TimelinePaneId } from 'vs/workbench/contrib/timeline/common/timeline';
 import { TimelineHasProviderContext, TimelineService } from 'vs/workbench/contrib/timeline/common/timelineService';
 import { TimelinePane } from './timelinePane';
@@ -70,7 +70,7 @@ configurationRegistry.registerConfiguration({
 	}
 });
 
-Registry.as<IViewsRegistry>(ViewExtensions.ViewsRegistry).registerViews([new TimelinePaneDescriptor()], VIEW_CONTAINER);
+//Registry.as<IViewsRegistry>(ViewExtensions.ViewsRegistry).registerViews([new TimelinePaneDescriptor()], VIEW_CONTAINER);
 
 namespace OpenTimelineAction {
 

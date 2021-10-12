@@ -24,7 +24,7 @@ import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { ModesRegistry } from 'vs/editor/common/modes/modesRegistry';
 import { Codicon } from 'vs/base/common/codicons';
 import { registerIcon } from 'vs/platform/theme/common/iconRegistry';
-import { SCMViewPane } from 'vs/workbench/contrib/scm/browser/scmViewPane';
+//import { SCMViewPane } from 'vs/workbench/contrib/scm/browser/scmViewPane';
 import { SCMViewService } from 'vs/workbench/contrib/scm/browser/scmViewService';
 import { SCMRepositoriesViewPane } from 'vs/workbench/contrib/scm/browser/scmRepositoriesViewPane';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
@@ -58,7 +58,7 @@ viewsRegistry.registerViewWelcomeContent(VIEW_PANE_ID, {
 	content: localize('no open repo', "No source control providers registered."),
 	when: 'default'
 });
-
+/*
 viewsRegistry.registerViews([{
 	id: VIEW_PANE_ID,
 	name: localize('source control', "Source Control"),
@@ -80,7 +80,7 @@ viewsRegistry.registerViews([{
 		},
 		order: 2,
 	}
-}], viewContainer);
+}], viewContainer);*/
 
 viewsRegistry.registerViews([{
 	id: REPOSITORIES_VIEW_PANE_ID,

@@ -17,9 +17,9 @@ import { Action2, ICommandAction, MenuId, MenuRegistry, registerAction2, SyncAct
 import { CommandsRegistry, ICommandHandler, ICommandService } from 'vs/platform/commands/common/commands';
 import { ConfigurationTarget, IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ConfigurationScope, Extensions as ConfigurationExtensions, IConfigurationRegistry } from 'vs/platform/configuration/common/configurationRegistry';
-import { ContextKeyEqualsExpr, ContextKeyExpr, ContextKeyRegexExpr, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { ContextKeyEqualsExpr, ContextKeyExpr, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IFileService } from 'vs/platform/files/common/files';
-import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
+//import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
@@ -28,11 +28,11 @@ import { Extensions as QuickAccessExtensions, IQuickAccessRegistry } from 'vs/pl
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
-import { ViewPaneContainer } from 'vs/workbench/browser/parts/views/viewPaneContainer';
+//import { ViewPaneContainer } from 'vs/workbench/browser/parts/views/viewPaneContainer';
 import { defaultQuickAccessContextKeyValue } from 'vs/workbench/browser/quickaccess';
 import { Extensions as ActionExtensions, IWorkbenchActionRegistry } from 'vs/workbench/common/actions';
 import { Extensions as WorkbenchExtensions, IWorkbenchContribution, IWorkbenchContributionsRegistry } from 'vs/workbench/common/contributions';
-import { Extensions as ViewExtensions, IViewContainersRegistry, IViewDescriptor, IViewDescriptorService, IViewsRegistry, IViewsService, ViewContainerLocation } from 'vs/workbench/common/views';
+import { IViewsService } from 'vs/workbench/common/views';
 import { GotoSymbolQuickAccessProvider } from 'vs/workbench/contrib/codeEditor/browser/quickaccess/gotoSymbolQuickAccess';
 import { ExplorerViewPaneContainer } from 'vs/workbench/contrib/files/browser/explorerViewlet';
 import { getMultiSelectedResources, IExplorerService } from 'vs/workbench/contrib/files/browser/files';
@@ -40,8 +40,8 @@ import { ExplorerFolderContext, ExplorerRootContext, FilesExplorerFocusCondition
 import { AnythingQuickAccessProvider } from 'vs/workbench/contrib/search/browser/anythingQuickAccess';
 import { registerContributions as replaceContributions } from 'vs/workbench/contrib/search/browser/replaceContributions';
 import { cancelSearch, clearHistoryCommand, clearSearchResults, CloseReplaceAction, collapseDeepestExpandedLevel, copyAllCommand, copyMatchCommand, copyPathCommand, expandAll, FindInFilesCommand, FocusNextInputAction, FocusNextSearchResultAction, FocusPreviousInputAction, FocusPreviousSearchResultAction, focusSearchListCommand, getSearchView, openSearchView, refreshSearch, RemoveAction, ReplaceAction, ReplaceAllAction, ReplaceAllInFolderAction, ReplaceInFilesAction, toggleCaseSensitiveCommand, togglePreserveCaseCommand, toggleRegexCommand, ToggleSearchOnTypeAction, toggleWholeWordCommand } from 'vs/workbench/contrib/search/browser/searchActions';
-import { searchClearIcon, searchCollapseAllIcon, searchExpandAllIcon, searchRefreshIcon, searchStopIcon, searchViewIcon } from 'vs/workbench/contrib/search/browser/searchIcons';
-import { SearchView } from 'vs/workbench/contrib/search/browser/searchView';
+import { searchClearIcon, searchCollapseAllIcon, searchExpandAllIcon, searchRefreshIcon, searchStopIcon } from 'vs/workbench/contrib/search/browser/searchIcons';
+//import { SearchView } from 'vs/workbench/contrib/search/browser/searchView';
 import { registerContributions as searchWidgetContributions } from 'vs/workbench/contrib/search/browser/searchWidget';
 import { SymbolsQuickAccessProvider } from 'vs/workbench/contrib/search/browser/symbolsQuickAccess';
 import * as Constants from 'vs/workbench/contrib/search/common/constants';
@@ -53,7 +53,7 @@ import * as SearchEditorConstants from 'vs/workbench/contrib/searchEditor/browse
 import { SearchEditor } from 'vs/workbench/contrib/searchEditor/browser/searchEditor';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
-import { ISearchConfiguration, SearchSortOrder, SEARCH_EXCLUDE_CONFIG, VIEWLET_ID, VIEW_ID } from 'vs/workbench/services/search/common/search';
+import { ISearchConfiguration, SearchSortOrder, SEARCH_EXCLUDE_CONFIG, VIEW_ID } from 'vs/workbench/services/search/common/search';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 
 registerSingleton(ISearchWorkbenchService, SearchWorkbenchService, true);
@@ -615,7 +615,7 @@ class ShowAllSymbolsAction extends Action {
 
 const SEARCH_MODE_CONFIG = 'search.mode';
 
-const viewContainer = Registry.as<IViewContainersRegistry>(ViewExtensions.ViewContainersRegistry).registerViewContainer({
+/*const viewContainer = Registry.as<IViewContainersRegistry>(ViewExtensions.ViewContainersRegistry).registerViewContainer({
 	id: VIEWLET_ID,
 	title: nls.localize('name', "Search"),
 	ctorDescriptor: new SyncDescriptor(ViewPaneContainer, [VIEWLET_ID, { mergeViewWithContainerWhenSingleView: true, donotShowContainerTitleWhenMergedWithContainer: true }]),
@@ -644,20 +644,18 @@ const viewDescriptor: IViewDescriptor = {
 };
 
 // Register search default location to sidebar
-Registry.as<IViewsRegistry>(ViewExtensions.ViewsRegistry).registerViews([viewDescriptor], viewContainer);
+Registry.as<IViewsRegistry>(ViewExtensions.ViewsRegistry).registerViews([viewDescriptor], viewContainer);*/
 
 
 // Migrate search location setting to new model
 class RegisterSearchViewContribution implements IWorkbenchContribution {
 	constructor(
-		@IConfigurationService configurationService: IConfigurationService,
-		@IViewDescriptorService viewDescriptorService: IViewDescriptorService
-	) {
+		@IConfigurationService configurationService: IConfigurationService) {
 		const data = configurationService.inspect('search.location');
 
-		if (data.value === 'panel') {
+		/*if (data.value === 'panel') {
 			viewDescriptorService.moveViewToLocation(viewDescriptor, ViewContainerLocation.Panel);
-		}
+		}*/
 
 		if (data.userValue) {
 			configurationService.updateValue('search.location', undefined, ConfigurationTarget.USER);
