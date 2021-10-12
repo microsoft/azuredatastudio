@@ -25,7 +25,7 @@ import { Command } from 'vs/editor/common/modes';
 import { TreeDataTransferConverter, TreeDataTransferDTO } from 'vs/workbench/api/common/shared/treeDataTransfer';
 
 // {{SQL CARBON EDIT}}
-import * as azdata from 'azdata';
+import type * as azdata from 'azdata';
 export type TreeItemHandle = string;
 
 function toTreeItemLabel(label: any, extension: IExtensionDescription): ITreeItemLabel | undefined {

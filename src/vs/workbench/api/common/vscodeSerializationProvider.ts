@@ -3,9 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
-import * as azdata from 'azdata';
+import type * as vscode from 'vscode';
+import type * as azdata from 'azdata';
 import { VSBuffer } from 'vs/base/common/buffer';
+import { NotebookCellKind } from 'vs/workbench/api/common/extHostTypes';
 
 class VSCodeContentManager implements azdata.nb.ContentManager {
 	constructor(private readonly _serializer: vscode.NotebookSerializer) {
@@ -13,11 +14,11 @@ class VSCodeContentManager implements azdata.nb.ContentManager {
 
 	public async deserializeNotebook(contents: string): Promise<azdata.nb.INotebookContents> {
 		let buffer = VSBuffer.fromString(contents);
-		let notebookData = await this._serializer.deserializeNotebook(buffer.buffer, (new vscode.CancellationTokenSource()).token);
+		let notebookData = await this._serializer.deserializeNotebook(buffer.buffer, undefined);
 		return {
 			cells: notebookData.cells.map<azdata.nb.ICellContents>(cell => {
 				return {
-					cell_type: cell.kind === vscode.NotebookCellKind.Code ? 'code' : 'markdown',
+					cell_type: cell.kind === NotebookCellKind.Code ? 'code' : 'markdown',
 					source: cell.value,
 					metadata: {
 						language: cell.languageId
@@ -38,14 +39,14 @@ class VSCodeContentManager implements azdata.nb.ContentManager {
 		let notebookData: vscode.NotebookData = {
 			cells: notebook.cells.map<vscode.NotebookCellData>(cell => {
 				return {
-					kind: cell.cell_type === 'code' ? vscode.NotebookCellKind.Code : vscode.NotebookCellKind.Markup,
+					kind: cell.cell_type === 'code' ? NotebookCellKind.Code : NotebookCellKind.Markup,
 					value: Array.isArray(cell.source) ? cell.source.join('\n') : cell.source,
 					languageId: cell.metadata?.language,
 					outputs: undefined // TODO: implement output conversions
 				};
 			})
 		};
-		let bytes = await this._serializer.serializeNotebook(notebookData, (new vscode.CancellationTokenSource()).token);
+		let bytes = await this._serializer.serializeNotebook(notebookData, undefined);
 		let buffer = VSBuffer.wrap(bytes);
 		return buffer.toString();
 	}

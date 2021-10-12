@@ -3,8 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
-import * as azdata from 'azdata';
+import type * as vscode from 'vscode';
+import type * as azdata from 'azdata';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { INotebookKernelDto2 } from 'vs/workbench/api/common/extHost.protocol';
 import { Emitter } from 'vs/base/common/event';
