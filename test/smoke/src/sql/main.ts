@@ -22,9 +22,15 @@ export function main(isWeb: boolean = false): void {
 	} else {
 		setupQueryEditorTests();
 	}
-	setupNotebookTests();
+
+	if (!isWeb) {
+		setupNotebookTests();
+	}
+
 	setupNotebookViewTests();
+
 	setupCreateBookDialogTests();
+
 	setupAddRemoteBookDialogTests();
 	setupImportTests();
 }
