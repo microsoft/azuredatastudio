@@ -10,7 +10,7 @@ import { NotebookCellKind } from 'vs/workbench/api/common/extHostTypes';
 import { CancellationTokenSource } from 'vs/base/common/cancellation';
 import { OutputTypes } from 'sql/workbench/services/notebook/common/contracts';
 
-class VSCodeContentManager implements azdata.nb.ContentManager {
+export class VSCodeContentManager implements azdata.nb.ContentManager {
 	constructor(private readonly _serializer: vscode.NotebookSerializer) {
 	}
 
@@ -42,12 +42,12 @@ class VSCodeContentManager implements azdata.nb.ContentManager {
 				};
 			}),
 			metadata: {},
-			nbformat: notebookData.metadata ? notebookData.metadata['nbformat'] : undefined,
-			nbformat_minor: notebookData.metadata ? notebookData.metadata['nbformat_minor'] : undefined
+			nbformat: 4,
+			nbformat_minor: 2
 		};
 	}
 
-	private convertToVscodeCellOutput(output: azdata.nb.ICellOutput): vscode.NotebookCellOutputItem[] {
+	public static convertToVscodeCellOutput(output: azdata.nb.ICellOutput): vscode.NotebookCellOutputItem[] {
 		switch (output.output_type) {
 			case OutputTypes.ExecuteResult:
 			case OutputTypes.DisplayData:
@@ -84,7 +84,7 @@ class VSCodeContentManager implements azdata.nb.ContentManager {
 					languageId: cell.metadata?.language,
 					outputs: cell.outputs.map<vscode.NotebookCellOutput>(output => {
 						return {
-							items: this.convertToVscodeCellOutput(output),
+							items: VSCodeContentManager.convertToVscodeCellOutput(output),
 							metadata: output.metadata,
 							id: output.id
 						};
