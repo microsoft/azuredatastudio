@@ -49,7 +49,7 @@ export class TreeNodeContextKey implements IContextKey<TreeNode> {
 		this._nodePathKey.set(value && value.nodePath);
 		const connectionProfile = value.getConnectionProfile();
 		const capabilities = connectionProfile ? this._capabilitiesService.getCapabilities(connectionProfile.providerName) : undefined;
-		this._queryEnabled.set(capabilities && capabilities.connection.isQueryProvider);
+		this._queryEnabled.set(capabilities?.connection.isQueryProvider);
 	}
 
 	reset(): void {

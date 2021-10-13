@@ -215,6 +215,6 @@ export class MssqlNodeContext extends Disposable {
 	private setQueryEnabledKey(): void {
 		const provider = this.nodeContextValue?.node?.payload?.providerName || this.nodeContextValue.node.childProvider;
 		const capabilities = provider ? this.capabilitiesService.getCapabilities(provider) : undefined;
-		this.queryEnabledKey.set(provider && capabilities && capabilities.connection.isQueryProvider);
+		this.queryEnabledKey.set(capabilities?.connection.isQueryProvider);
 	}
 }
