@@ -288,6 +288,25 @@ export class CancelQueryAction extends QueryTaskbarAction {
 }
 
 /**
+ * Action class that renders query results as text
+ */
+export class ResultsToTextAction extends QueryTaskbarAction {
+	public static ID = 'resultsToTextAction';
+	public static enabledClass = ''; // TODO lewissanchez: What CSS class is needed, if any?
+
+	constructor(
+		editor: QueryEditor,
+		@IConnectionManagementService connectionManagementService: IConnectionManagementService
+	) {
+		super(connectionManagementService, editor, ResultsToTextAction.ID, ResultsToTextAction.enabledClass);
+
+		this.label = nls.localize('queryEditor.resultsToText', "Results to Text"); // TODO lewissanchez - Add localized string
+	}
+
+	// Run should specify how to print results.
+}
+
+/**
  * Action class that runs a query in the active SQL text document.
  */
 export class EstimatedQueryPlanAction extends QueryTaskbarAction {
