@@ -48,7 +48,7 @@ suite('Notebook Serializer', () => {
 				id: '2',
 				items: [{
 					mime: 'text/plain',
-					data: VSBuffer.fromString('2').buffer
+					data: VSBuffer.fromString('1').buffer
 				}],
 				metadata: {}
 			}],
@@ -96,43 +96,41 @@ suite('Notebook Serializer', () => {
 		cells: [
 			{
 				cell_type: 'code',
-				source: [
-					'1+1'
-				],
+				source: '1+1',
 				outputs: [
 					{
 						id: '1',
 						output_type: 'execute_result',
 						data: {
-							'text/plain': [
-								'2'
-							]
+							'text/plain': '2'
 						},
 						metadata: {},
 						execution_count: 1
 					} as azdata.nb.IExecuteResult
 				],
-				execution_count: 2
+				execution_count: 1,
+				metadata: {
+					language: 'python'
+				}
 			},
 			{
 				cell_type: 'code',
-				source: [
-					'print(1)'
-				],
+				source: 'print(1)',
 				outputs: [
 					{
 						id: '2',
 						output_type: 'execute_result',
 						data: {
-							'text/plain': [
-								'1'
-							]
+							'text/plain': '1'
 						},
 						metadata: {},
 						execution_count: 2
 					} as azdata.nb.IExecuteResult
 				],
-				execution_count: 2
+				execution_count: 2,
+				metadata: {
+					language: 'python'
+				}
 			}
 		]
 	};

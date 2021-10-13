@@ -41,7 +41,7 @@ export class VSCodeContentManager implements azdata.nb.ContentManager {
 					})
 				};
 			}),
-			metadata: {},
+			metadata: notebookData.metadata ?? {},
 			nbformat: 4,
 			nbformat_minor: 2
 		};
@@ -90,7 +90,8 @@ export class VSCodeContentManager implements azdata.nb.ContentManager {
 						};
 					})
 				};
-			})
+			}),
+			metadata: notebook.metadata
 		};
 		let bytes = await this._serializer.serializeNotebook(notebookData, new CancellationTokenSource().token);
 		let buffer = VSBuffer.wrap(bytes);
