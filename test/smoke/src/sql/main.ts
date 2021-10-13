@@ -19,23 +19,14 @@ import * as mkdirp from 'mkdirp';
 export function main(isWeb: boolean = false): void {
 	if (isWeb) {
 		setupQueryEditorWebTests();
+		setupNotebookViewTests();
+		setupAddRemoteBookDialogTests();
 	} else {
 		setupQueryEditorTests();
-	}
-
-	if (!isWeb) {
 		setupNotebookTests();
-	}
-
-	setupNotebookViewTests();
-
-	if (!isWeb) {
+		setupNotebookViewTests();
 		setupCreateBookDialogTests();
-	}
-
-	setupAddRemoteBookDialogTests();
-
-	if (!isWeb) {
+		setupAddRemoteBookDialogTests();
 		setupImportTests();
 	}
 }
