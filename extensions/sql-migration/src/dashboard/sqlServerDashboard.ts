@@ -11,6 +11,7 @@ import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 import { MigrationStatusDialog } from '../dialog/migrationStatus/migrationStatusDialog';
 import { AdsMigrationStatus } from '../dialog/migrationStatus/migrationStatusDialogModel';
 import { filterMigrations, SupportedAutoRefreshIntervals } from '../api/utils';
+import * as styles from '../constants/styles';
 
 interface IActionMetadata {
 	title?: string,
@@ -82,7 +83,8 @@ export class DashboardWidget {
 						linear-gradient(0deg, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0) 100%)
 					`,
 					'background-repeat': 'no-repeat',
-					'background-position': '91.06% 100%'
+					'background-position': '91.06% 100%',
+					'margin-bottom': '20px'
 				}
 			});
 
@@ -90,12 +92,12 @@ export class DashboardWidget {
 			header.addItem(tasksContainer, {
 				CSSStyles: {
 					'width': `${maxWidth}px`,
-					'height': '150px',
+					'margin': '24px'
 				}
 			});
 			container.addItem(await this.createFooter(view), {
 				CSSStyles: {
-					'margin-top': '20px'
+					'margin': '0 24px'
 				}
 			});
 			this._disposables.push(this._view.onClosed(e => {
@@ -110,6 +112,8 @@ export class DashboardWidget {
 	}
 
 	private createHeader(view: azdata.ModelView): azdata.FlexContainer {
+		this.setAutoRefresh(refreshFrequency);
+
 		const header = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 			width: maxWidth,
@@ -118,28 +122,20 @@ export class DashboardWidget {
 			value: loc.DASHBOARD_TITLE,
 			width: '750px',
 			CSSStyles: {
-				'font-size': '36px',
-				'margin-bottom': '5px',
+				...styles.DASHBOARD_TITLE_CSS
 			}
 		}).component();
 
-		this.setAutoRefresh(refreshFrequency);
-
-		const container = view.modelBuilder.flexContainer().withItems([
-			titleComponent,
-		]).component();
-
-		const descComponent = view.modelBuilder.text().withProps({
+		const descriptionComponent = view.modelBuilder.text().withProps({
 			value: loc.DASHBOARD_DESCRIPTION,
 			CSSStyles: {
-				'font-size': '12px',
-				'margin-top': '10px',
+				...styles.NOTE_CSS
 			}
 		}).component();
-		header.addItems([container, descComponent], {
+		header.addItems([titleComponent, descriptionComponent], {
 			CSSStyles: {
 				'width': `${maxWidth}px`,
-				'padding-left': '20px'
+				'padding-left': '24px'
 			}
 		});
 		return header;
@@ -149,7 +145,6 @@ export class DashboardWidget {
 		const tasksContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'row',
 			width: '100%',
-			height: '50px',
 		}).component();
 
 		const migrateButtonMetadata: IActionMetadata = {
@@ -162,9 +157,8 @@ export class DashboardWidget {
 		const preRequisiteListTitle = view.modelBuilder.text().withProps({
 			value: loc.PRE_REQ_TITLE,
 			CSSStyles: {
-				'font-size': '14px',
-				'padding-left': '15px',
-				'margin-bottom': '-5px'
+				...styles.BODY_CSS,
+				'margin': '0px',
 			}
 		}).component();
 
@@ -177,9 +171,9 @@ export class DashboardWidget {
 				loc.PRE_REQ_3
 			],
 			CSSStyles: {
-				'padding-left': '30px',
-				'margin-bottom': '5px',
-				'margin-top': '10px'
+				...styles.SMALL_NOTE_CSS,
+				'padding-left': '12px',
+				'margin': '-0.5em 0px',
 			}
 		}).component();
 
@@ -187,36 +181,22 @@ export class DashboardWidget {
 			label: loc.LEARN_MORE,
 			ariaLabel: loc.LEARN_MORE_ABOUT_PRE_REQS,
 			url: 'https://aka.ms/azuresqlmigrationextension',
-			CSSStyles: {
-				'padding-left': '10px'
-			}
 		}).component();
 
 		const preReqContainer = view.modelBuilder.flexContainer().withItems([
 			preRequisiteListTitle,
-			preRequisiteListElement
+			preRequisiteListElement,
+			preRequisiteLearnMoreLink
 		]).withLayout({
 			flexFlow: 'column'
 		}).component();
 
-		preReqContainer.addItem(preRequisiteLearnMoreLink, {
-			CSSStyles: {
-				'padding-left': '10px'
-			}
-		});
-
-		tasksContainer.addItem(migrateButton, {
-			CSSStyles: {
-				'margin-top': '20px',
-				'padding': '10px'
-			}
-		});
+		tasksContainer.addItem(migrateButton, {});
 		tasksContainer.addItems([preReqContainer], {
 			CSSStyles: {
-				'padding': '10px'
+				'margin-left': '20px'
 			}
 		});
-
 		return tasksContainer;
 	}
 
@@ -333,198 +313,112 @@ export class DashboardWidget {
 	private createStatusCard(
 		cardIconPath: IconPath,
 		cardTitle: string,
+		hasSubtext: boolean = false
 	): StatusCard {
+		const buttonWidth = '400px';
+		const buttonHeight = hasSubtext ? '70px' : '50px';
+		const statusCard = this._view.modelBuilder.flexContainer()
+			.withProps({
+				CSSStyles: {
+					'width': buttonWidth,
+					'height': buttonHeight,
+					'align-items': 'center',
+				}
+			}).component();
 
-		const cardTitleText = this._view.modelBuilder.text().withProps({ value: cardTitle }).withProps({
-			CSSStyles: {
-				'height': '23px',
-				'margin-top': '15px',
-				'margin-bottom': '0px',
-				'width': '300px',
-				'font-size': '14px',
-				'font-weight': 'bold'
-			}
-		}).component();
-
-		const cardCount = this._view.modelBuilder.text().withProps({
-			value: '0',
-			CSSStyles: {
-				'font-size': '28px',
-				'line-height': '36px',
-				'margin-top': '4px'
-			}
-		}).component();
-
-		const flex = this._view.modelBuilder.flexContainer().withProps({
-			CSSStyles: {
-				'width': '400px',
-				'height': '50px'
-			}
-		}).component();
-
-		const img = this._view.modelBuilder.image().withProps({
+		const statusIcon = this._view.modelBuilder.image().withProps({
 			iconPath: cardIconPath!.light,
 			iconHeight: 24,
 			iconWidth: 24,
-			width: 64,
-			height: 30,
+			height: 32,
 			CSSStyles: {
-				'margin-top': '10px'
+				'margin': '0 8px'
 			}
 		}).component();
 
-		flex.addItem(img, {
-			flex: '0'
-		});
-		flex.addItem(cardTitleText, {
-			flex: '0',
-			CSSStyles: {
-				'width': '300px'
-			}
-		});
-		flex.addItem(cardCount, {
-			flex: '0'
-		});
-
-		const compositeButton = this._view.modelBuilder.divContainer().withItems([flex]).withProps({
-			ariaRole: 'button',
-			ariaLabel: loc.SHOW_STATUS,
-			clickable: true,
-			CSSStyles: {
-				'width': '400px',
-				'border': '1px solid',
-				'margin-top': '10px',
-				'height': '50px',
-				'display': 'flex',
-				'flex-direction': 'column',
-				'justify-content': 'flex-start',
-				'border-radius': '4px',
-				'transition': 'all .5s ease',
-			}
-		}).component();
-		return {
-			container: compositeButton,
-			count: cardCount
-		};
-	}
-
-	private createStatusWithSubtextCard(
-		cardIconPath: IconPath,
-		cardTitle: string,
-		cardDescription: string
-	): StatusCard {
-
-		const cardTitleText = this._view.modelBuilder.text().withProps({ value: cardTitle }).withProps({
-			CSSStyles: {
-				'height': '23px',
-				'margin-top': '15px',
-				'margin-bottom': '0px',
-				'width': '300px',
-				'font-size': '14px',
-			}
-		}).component();
-
-		const cardDescriptionWarning = this._view.modelBuilder.image().withProps({
-			iconPath: IconPathHelper.warning,
-			iconWidth: 12,
-			iconHeight: 12,
-			width: 12,
-			height: 17
-		}).component();
-
-		const cardDescriptionText = this._view.modelBuilder.text().withProps({ value: cardDescription }).withProps({
-			CSSStyles: {
-				'height': '13px',
-				'margin-top': '0px',
-				'margin-bottom': '0px',
-				'width': '250px',
-				'font-height': '13px',
-				'margin': '0 0 0 4px'
-			}
-		}).component();
-
-		const subTextContainer = this._view.modelBuilder.flexContainer().withProps({
-			CSSStyles: {
-				'justify-content': 'left',
-			}
-		}).component();
-
-		subTextContainer.addItem(cardDescriptionWarning, {
-			flex: '0 0 auto'
-		});
-
-		subTextContainer.addItem(cardDescriptionText, {
-			flex: '0 0 auto'
-		});
-
-		const cardCount = this._view.modelBuilder.text().withProps({
-			value: '0',
-			CSSStyles: {
-				'font-size': '28px',
-				'line-height': '28px',
-				'margin-top': '15px'
-			}
-		}).component();
-
-		const flexContainer = this._view.modelBuilder.flexContainer().withItems([
-			cardTitleText,
-			subTextContainer
-		]).withLayout({
+		const textContainer = this._view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column'
-		}).withProps({
+		}).component();
+
+		const cardTitleText = this._view.modelBuilder.text().withProps({ value: cardTitle }).withProps({
 			CSSStyles: {
-				'width': '300px',
+				...styles.SECTION_HEADER_CSS,
+				'width': '240px'
+			}
+		}).component();
+		textContainer.addItem(cardTitleText);
+
+		const cardCount = this._view.modelBuilder.text().withProps({
+			value: '0',
+			CSSStyles: {
+				...styles.BIG_NUMBER_CSS,
+				'margin': '0 0 0 8px',
+				'text-align': 'center',
 			}
 		}).component();
 
-		const flex = this._view.modelBuilder.flexContainer().withProps({
-			CSSStyles: {
-				'width': '400px',
-				'height': '70px',
-			}
-		}).component();
+		let warningContainer;
+		let warningText;
+		if (hasSubtext) {
+			const warningIcon = this._view.modelBuilder.image().withProps({
+				iconPath: IconPathHelper.warning,
+				iconWidth: 12,
+				iconHeight: 12,
+				width: 12,
+				height: 18
+			}).component();
 
-		const img = this._view.modelBuilder.image().withProps({
-			iconPath: cardIconPath!.light,
-			iconHeight: 24,
-			iconWidth: 24,
-			width: 64,
-			height: 30,
-			CSSStyles: {
-				'margin-top': '20px'
-			}
-		}).component();
+			const warningDescription = '';
+			warningText = this._view.modelBuilder.text().withProps({ value: warningDescription }).withProps({
+				CSSStyles: {
+					...styles.BODY_CSS,
+					'padding-left': '8px',
+				}
+			}).component();
 
-		flex.addItem(img, {
-			flex: '0'
-		});
-		flex.addItem(flexContainer, {
-			flex: '0',
-			CSSStyles: {
-				'width': '300px'
-			}
-		});
-		flex.addItem(cardCount, {
-			flex: '0'
-		});
+			warningContainer = this._view.modelBuilder.flexContainer().withItems([
+				warningIcon,
+				warningText
+			], {
+				flex: '0 0 auto'
+			}).withProps({
+				CSSStyles: {
+					'align-items': 'center'
+				}
+			}).component();
 
-		const compositeButton = this._view.modelBuilder.divContainer().withItems([flex]).withProps({
-			ariaRole: 'button',
-			ariaLabel: 'show status',
-			clickable: true,
-			CSSStyles: {
-				'width': '400px',
-				'height': '70px',
-				'margin-top': '10px',
-				'border': '1px solid'
-			}
-		}).component();
+			textContainer.addItem(warningContainer);
+		}
+
+		statusCard.addItems([
+			statusIcon,
+			textContainer,
+			cardCount,
+		]);
+
+		const compositeButton = this._view.modelBuilder.divContainer()
+			.withItems([statusCard])
+			.withProps({
+				ariaRole: 'button',
+				ariaLabel: loc.SHOW_STATUS,
+				clickable: true,
+				CSSStyles: {
+					'height': buttonHeight,
+					'margin-bottom': '16px',
+					'border': '1px solid',
+					'display': 'flex',
+					'flex-direction': 'column',
+					'justify-content': 'flex-start',
+					'border-radius': '4px',
+					'transition': 'all .5s ease',
+				}
+			}).component();
 		return {
 			container: compositeButton,
 			count: cardCount,
-			textContainer: flexContainer,
-			warningContainer: subTextContainer,
-			warningText: cardDescriptionText
+			textContainer: textContainer,
+			warningContainer: warningContainer,
+			warningText: warningText
 		};
 	}
 
@@ -532,7 +426,6 @@ export class DashboardWidget {
 		const footerContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'row',
 			width: maxWidth,
-			height: '500px',
 			justifyContent: 'flex-start'
 		}).component();
 		const statusContainer = await this.createMigrationStatusContainer(view);
@@ -540,7 +433,7 @@ export class DashboardWidget {
 		footerContainer.addItem(statusContainer);
 		footerContainer.addItem(videoLinksContainer, {
 			CSSStyles: {
-				'padding-left': '10px',
+				'padding-left': '8px',
 			}
 		});
 
@@ -556,17 +449,14 @@ export class DashboardWidget {
 		}).withProps({
 			CSSStyles: {
 				'border': '1px solid rgba(0, 0, 0, 0.1)',
-				'padding': '15px'
+				'padding': '16px'
 			}
 		}).component();
 
 		const statusContainerTitle = view.modelBuilder.text().withProps({
 			value: loc.DATABASE_MIGRATION_STATUS,
 			CSSStyles: {
-				'font-size': '18px',
-				'font-weight': 'bold',
-				'margin': '0px',
-				'width': '290px'
+				...styles.SECTION_HEADER_CSS
 			}
 		}).component();
 
@@ -574,7 +464,7 @@ export class DashboardWidget {
 			label: loc.VIEW_ALL,
 			url: '',
 			CSSStyles: {
-				'font-size': '13px'
+				...styles.BODY_CSS
 			}
 		}).component();
 
@@ -588,8 +478,8 @@ export class DashboardWidget {
 			url: '',
 			ariaRole: 'button',
 			CSSStyles: {
+				...styles.BODY_CSS,
 				'text-align': 'right',
-				'font-size': '13px'
 			}
 		}).component();
 
@@ -604,18 +494,15 @@ export class DashboardWidget {
 		}).component();
 
 		buttonContainer.addItem(this._viewAllMigrationsButton, {
-			flex: 'auto',
 			CSSStyles: {
-				'border-right': '1px solid ',
-				'width': '40px',
+				'padding-right': '8px',
+				'border-right': '1px solid',
 			}
 		});
 
 		buttonContainer.addItem(refreshButton, {
-			flex: 'auto',
 			CSSStyles: {
-				'margin-left': '5px',
-				'width': '25px'
+				'padding-left': '8px',
 			}
 		});
 
@@ -638,11 +525,9 @@ export class DashboardWidget {
 			width: 198,
 			height: 34,
 			CSSStyles: {
-				'font-family': 'Segoe UI',
-				'font-size': '12px',
+				...styles.NOTE_CSS,
 				'margin': 'auto',
 				'text-align': 'center',
-				'line-height': '16px',
 				'display': 'none'
 			}
 		}).component();
@@ -684,7 +569,8 @@ export class DashboardWidget {
 				buttonContainer
 			]
 		).withLayout({
-			flexFlow: 'row'
+			flexFlow: 'row',
+			alignItems: 'center'
 		}).component();
 
 		this._migrationStatusCardsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
@@ -718,10 +604,10 @@ export class DashboardWidget {
 			this._inProgressMigrationButton.container
 		);
 
-		this._inProgressWarningMigrationButton = this.createStatusWithSubtextCard(
+		this._inProgressWarningMigrationButton = this.createStatusCard(
 			IconPathHelper.inProgressMigration,
 			loc.MIGRATION_IN_PROGRESS,
-			''
+			true
 		);
 		this._disposables.push(this._inProgressWarningMigrationButton.container.onDidClick(async (e) => {
 			const dialog = new MigrationStatusDialog(await this.getCurrentMigrations(), AdsMigrationStatus.ONGOING);
@@ -782,11 +668,7 @@ export class DashboardWidget {
 		statusContainer.addItem(
 			header, {
 			CSSStyles: {
-				'padding': '0px',
-				'padding-right': '5px',
-				'padding-top': '10px',
-				'height': '10px',
-				'margin': '0px'
+				'margin-bottom': '16px'
 			}
 		}
 		);
@@ -794,13 +676,7 @@ export class DashboardWidget {
 		statusContainer.addItem(addAccountImage, {});
 		statusContainer.addItem(addAccountText, {});
 		statusContainer.addItem(addAccountButton, {});
-
-		statusContainer.addItem(this._migrationStatusCardLoadingContainer, {
-			CSSStyles: {
-				'margin-top': '30px'
-			}
-		});
-
+		statusContainer.addItem(this._migrationStatusCardLoadingContainer, {});
 		return statusContainer;
 	}
 
@@ -813,25 +689,19 @@ export class DashboardWidget {
 		}).withProps({
 			CSSStyles: {
 				'border': '1px solid rgba(0, 0, 0, 0.1)',
-				'padding': '15px'
+				'padding': '16px'
 			}
 		}).component();
 		const titleComponent = view.modelBuilder.text().withProps({
 			value: loc.HELP_TITLE,
 			CSSStyles: {
-				'font-size': '18px',
-				'font-weight': 'bold',
-				'margin': '0px'
+				...styles.SECTION_HEADER_CSS
 			}
 		}).component();
 
 		linksContainer.addItems([titleComponent], {
 			CSSStyles: {
-				'padding': '0px',
-				'padding-right': '5px',
-				'padding-top': '10px',
-				'height': '10px',
-				'margin': '0px'
+				'margin-bottom': '16px'
 			}
 		});
 
@@ -841,22 +711,17 @@ export class DashboardWidget {
 			link: 'https://docs.microsoft.com/azure/azure-sql/migration-guides/managed-instance/sql-server-to-sql-managed-instance-assessment-rules'
 		}];
 
-		const styles = {
-			'margin-top': '10px',
-			'padding': '10px 10px 10px 0'
-		};
 		linksContainer.addItems(links.map(l => this.createLink(view, l)), {
-			CSSStyles: styles
+			CSSStyles: {
+				'margin-bottom': '8px'
+			}
 		});
 
-		const videosContainer = this.createVideoLinkContainers(view, [
-		]);
-		const viewPanelStyle = {
-			'padding': '10px 5px 10px 10px',
-			'margin-top': '-15px'
-		};
+		const videosContainer = this.createVideoLinkContainers(view, []);
 		linksContainer.addItem(videosContainer, {
-			CSSStyles: viewPanelStyle
+			CSSStyles: {
+				'margin-bottom': '8px'
+			}
 		});
 
 		return linksContainer;
@@ -864,47 +729,39 @@ export class DashboardWidget {
 
 	private createLink(view: azdata.ModelView, linkMetaData: IActionMetadata): azdata.Component {
 		const maxWidth = 400;
-		const labelsContainer = view.modelBuilder.flexContainer().withLayout({
-			flexFlow: 'column',
-			width: maxWidth,
-			justifyContent: 'flex-start'
+		const labelsContainer = view.modelBuilder.flexContainer().withProps({
+			CSSStyles: {
+				'flex-direction': 'column',
+				'width': `${maxWidth}px`,
+				'justify-content': 'flex-start'
+			}
+		}).component();
+		const linkContainer = view.modelBuilder.flexContainer().withProps({
+			CSSStyles: {
+				'flex-direction': 'row',
+				'width': `${maxWidth + 10}px`,
+				'justify-content': 'flex-start',
+				'margin-bottom': '4px'
+			}
+
 		}).component();
 		const descriptionComponent = view.modelBuilder.text().withProps({
 			value: linkMetaData.description,
 			width: maxWidth,
 			CSSStyles: {
-				'font-size': '12px',
-				'line-height': '16px',
-				'margin': '0px'
+				...styles.NOTE_CSS
 			}
-		}).component();
-		const linkContainer = view.modelBuilder.flexContainer().withLayout({
-			flexFlow: 'row',
-			width: maxWidth + 10,
-			justifyContent: 'flex-start'
 		}).component();
 		const linkComponent = view.modelBuilder.hyperlink().withProps({
 			label: linkMetaData.title!,
 			url: linkMetaData.link!,
 			showLinkIcon: true,
 			CSSStyles: {
-				'font-size': '14px',
-				'margin': '0px'
+				...styles.BODY_CSS
 			}
 		}).component();
-		linkContainer.addItem(linkComponent, {
-			CSSStyles: {
-				'font-size': '14px',
-				'line-height': '18px',
-				'padding': '0 5px 0 0',
-			}
-		});
-		labelsContainer.addItems([linkContainer, descriptionComponent], {
-			CSSStyles: {
-				'padding': '5px 0 0 0',
-			}
-		});
-
+		linkContainer.addItem(linkComponent);
+		labelsContainer.addItems([linkContainer, descriptionComponent]);
 		return labelsContainer;
 	}
 
@@ -938,8 +795,7 @@ export class DashboardWidget {
 			width: maxWidth,
 			height: '50px',
 			CSSStyles: {
-				'font-size': '13px',
-				'margin': '0px'
+				...styles.BODY_CSS
 			}
 		}).component();
 		this._disposables.push(video1Container.onDidClick(async () => {

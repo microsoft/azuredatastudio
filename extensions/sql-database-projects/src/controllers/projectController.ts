@@ -871,7 +871,7 @@ export class ProjectsController {
 		let projectName: string = '';
 
 		let quickpickSelection = await vscode.window.showQuickPick(
-			[constants.browseEllipsis],
+			[constants.browseEllipsisWithIcon],
 			{ title: constants.selectProjectLocation, ignoreFocusOut: true });
 		if (!quickpickSelection) {
 			return;
@@ -899,7 +899,7 @@ export class ProjectsController {
 			if (await utils.exists(newProjectFolder)) {
 
 				quickpickSelection = await vscode.window.showQuickPick(
-					[constants.browseEllipsis],
+					[constants.browseEllipsisWithIcon],
 					{ title: constants.folderAlreadyExistsChooseNewLocation(newProjectFolder), ignoreFocusOut: true });
 				if (!quickpickSelection) {
 					return;

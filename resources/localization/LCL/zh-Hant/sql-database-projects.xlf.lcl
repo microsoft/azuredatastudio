@@ -297,10 +297,13 @@
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.checkoutOutputMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Check output pane for more details.]]></Val>
+          <Val><![CDATA[Check output pane for more details]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[如需詳細資料，請查看輸出窗格。]]></Val>
+            <Val><![CDATA[如需詳細資料，請查看輸出窗格]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Check output pane for more details.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -396,10 +399,13 @@
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.containerAlreadyExistForProject" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Other servers on container already exist for the project. Do you want to delete them?']]></Val>
+          <Val><![CDATA[Other servers on container already exist for the project. Do you want to delete them?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[容器上的其他伺服器已存在於專案中。您要刪除它們嗎?']]></Val>
+            <Val><![CDATA[容器上的其他伺服器已存在於專案中。要刪除它們嗎?]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Other servers on container already exist for the project. Do you want to delete them?']]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
