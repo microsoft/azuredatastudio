@@ -48,7 +48,7 @@ export class MssqlNodeContext extends Disposable {
 	static CanScriptAsCreateOrDelete = new RawContextKey<boolean>('canScriptAsCreateOeDelete', false);
 	static CanScriptAsExecute = new RawContextKey<boolean>('canScriptAsExecute', false);
 	static CanScriptAsAlter = new RawContextKey<boolean>('canScriptAsAlter', false);
-	static QueryEnabled = new RawContextKey<boolean>('QueryEnabled', false);
+	static IsQueryProvider = new RawContextKey<boolean>('isQueryProvider', false);
 
 	private nodeProviderKey!: IContextKey<string>;
 	private isCloudKey!: IContextKey<boolean>;
@@ -63,7 +63,7 @@ export class MssqlNodeContext extends Disposable {
 	private canScriptAsCreateOrDeleteKey!: IContextKey<boolean>;
 	private canScriptAsExecuteKey!: IContextKey<boolean>;
 	private canScriptAsAlterKey!: IContextKey<boolean>;
-	private queryEnabledKey!: IContextKey<boolean>;
+	private isQueryProviderKey!: IContextKey<boolean>;
 
 
 	constructor(
@@ -112,7 +112,7 @@ export class MssqlNodeContext extends Disposable {
 		this.canScriptAsAlterKey = MssqlNodeContext.CanScriptAsAlter.bindTo(this.contextKeyService);
 		this.nodeProviderKey = MssqlNodeContext.NodeProvider.bindTo(this.contextKeyService);
 		this.canOpenInAzurePortal = MssqlNodeContext.CanOpenInAzurePortal.bindTo(this.contextKeyService);
-		this.queryEnabledKey = MssqlNodeContext.QueryEnabled.bindTo(this.contextKeyService);
+		this.isQueryProviderKey = MssqlNodeContext.IsQueryProvider.bindTo(this.contextKeyService);
 	}
 
 	/**
@@ -215,6 +215,6 @@ export class MssqlNodeContext extends Disposable {
 	private setQueryEnabledKey(): void {
 		const provider = this.nodeContextValue?.node?.payload?.providerName || this.nodeContextValue.node.childProvider;
 		const capabilities = provider ? this.capabilitiesService.getCapabilities(provider) : undefined;
-		this.queryEnabledKey.set(capabilities?.connection.isQueryProvider);
+		this.isQueryProviderKey.set(capabilities?.connection.isQueryProvider);
 	}
 }

@@ -15,7 +15,7 @@ export class TreeNodeContextKey implements IContextKey<TreeNode> {
 	static TreeNode = new RawContextKey<TreeNode>('treeNode', undefined);
 	static NodeLabel = new RawContextKey<string>('nodeLabel', undefined);
 	static NodePath = new RawContextKey<string>('nodePath', undefined);
-	static QueryEnabled = new RawContextKey<boolean>('QueryEnabled', false);
+	static IsQueryProvider = new RawContextKey<boolean>('isQueryProvider', false);
 
 	private _nodeTypeKey: IContextKey<string>;
 	private _subTypeKey: IContextKey<string>;
@@ -23,7 +23,7 @@ export class TreeNodeContextKey implements IContextKey<TreeNode> {
 	private _treeNodeKey: IContextKey<TreeNode>;
 	private _nodeLabelKey: IContextKey<string>;
 	private _nodePathKey: IContextKey<string>;
-	private _queryEnabled: IContextKey<boolean>;
+	private _isQueryProvider: IContextKey<boolean>;
 
 	constructor(
 		@IContextKeyService contextKeyService: IContextKeyService,
@@ -35,7 +35,7 @@ export class TreeNodeContextKey implements IContextKey<TreeNode> {
 		this._treeNodeKey = TreeNodeContextKey.TreeNode.bindTo(contextKeyService);
 		this._nodeLabelKey = TreeNodeContextKey.NodeLabel.bindTo(contextKeyService);
 		this._nodePathKey = TreeNodeContextKey.NodePath.bindTo(contextKeyService);
-		this._queryEnabled = TreeNodeContextKey.QueryEnabled.bindTo(contextKeyService);
+		this._isQueryProvider = TreeNodeContextKey.IsQueryProvider.bindTo(contextKeyService);
 	}
 
 	set(value: TreeNode) {
@@ -49,7 +49,7 @@ export class TreeNodeContextKey implements IContextKey<TreeNode> {
 		this._nodePathKey.set(value && value.nodePath);
 		const connectionProfile = value.getConnectionProfile();
 		const capabilities = connectionProfile ? this._capabilitiesService.getCapabilities(connectionProfile.providerName) : undefined;
-		this._queryEnabled.set(capabilities?.connection.isQueryProvider);
+		this._isQueryProvider.set(capabilities?.connection.isQueryProvider);
 	}
 
 	reset(): void {
@@ -59,7 +59,7 @@ export class TreeNodeContextKey implements IContextKey<TreeNode> {
 		this._treeNodeKey.reset();
 		this._nodeLabelKey.reset();
 		this._nodePathKey.reset();
-		this._queryEnabled.reset();
+		this._isQueryProvider.reset();
 	}
 
 	public get(): TreeNode | undefined {
