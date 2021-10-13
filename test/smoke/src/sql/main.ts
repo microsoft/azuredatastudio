@@ -29,7 +29,9 @@ export function main(isWeb: boolean = false): void {
 
 	setupNotebookViewTests();
 
-	setupCreateBookDialogTests();
+	if (!isWeb) {
+		setupCreateBookDialogTests();
+	}
 
 	setupAddRemoteBookDialogTests();
 	setupImportTests();
