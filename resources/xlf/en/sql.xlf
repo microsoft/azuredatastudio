@@ -1397,6 +1397,9 @@
     <trans-unit id="schema.iconPath">
       <source xml:lang="en">Icon path for the server type</source>
     </trans-unit>
+    <trans-unit id="schema.isQueryProvider">
+      <source xml:lang="en">Whether the provider is also a query provider. The default value is true.</source>
+    </trans-unit>
     <trans-unit id="schema.notebookKernelAlias">
       <source xml:lang="en">Notebook Kernel Alias for the provider</source>
     </trans-unit>
