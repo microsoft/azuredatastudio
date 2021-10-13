@@ -101,7 +101,7 @@
     "connectionProvider": {
       "providerId": "TESTPROVIDER",
       "languageMode": "sql",
-      "notebookKernelAlias": "Test Provider",
+      "isQueryProvider": false,
       "displayName": "Test Provider",
       "iconPath": [
         {

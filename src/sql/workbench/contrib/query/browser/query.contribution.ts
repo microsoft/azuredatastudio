@@ -78,7 +78,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 		id: OE_NEW_QUERY_ACTION_ID,
 		title: localize('newQuery', "New Query")
 	},
-	when: ContextKeyExpr.or(ContextKeyExpr.and(TreeNodeContextKey.Status.notEqualsTo('Unavailable'), TreeNodeContextKey.NodeType.isEqualTo('Server')), ContextKeyExpr.and(TreeNodeContextKey.Status.notEqualsTo('Unavailable'), TreeNodeContextKey.NodeType.isEqualTo('Database')))
+	when: ContextKeyExpr.and(TreeNodeContextKey.Status.notEqualsTo('Unavailable'), TreeNodeContextKey.QueryEnabled.isEqualTo(true), ContextKeyExpr.or(TreeNodeContextKey.NodeType.isEqualTo('Server'), TreeNodeContextKey.NodeType.isEqualTo('Database')))
 });
 
 // New Query
@@ -89,7 +89,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: DE_NEW_QUERY_COMMAND_ID,
 		title: localize('newQuery', "New Query")
 	},
-	when: MssqlNodeContext.IsDatabaseOrServer
+	when: ContextKeyExpr.and(MssqlNodeContext.IsDatabaseOrServer, MssqlNodeContext.QueryEnabled)
 });
 
 const ExplorerNewQueryActionID = 'explorer.query';
