@@ -34,7 +34,10 @@ export function main(isWeb: boolean = false): void {
 	}
 
 	setupAddRemoteBookDialogTests();
-	setupImportTests();
+
+	if (!isWeb) {
+		setupImportTests();
+	}
 }
 
 /* eslint-disable no-sync */
