@@ -465,10 +465,6 @@
         {
           "command": "notebook.command.highlightText",
           "when": "activeEditor == workbench.editor.notebookEditor && editorLangId == markdown"
-        },
-        {
-          "command": "notebook.command.addLink",
-          "when": "activeEditor == workbench.editor.notebookEditor && editorLangId == markdown"
         }
       ],
       "touchBar": [
@@ -655,11 +651,6 @@
       {
         "command": "notebook.command.highlightText",
         "key": "Ctrl+Shift+H",
-        "when": "activeEditor == workbench.editor.notebookEditor && editorLangId == markdown"
-      },
-      {
-        "command": "notebook.command.addLink",
-        "key": "Ctrl+L",
         "when": "activeEditor == workbench.editor.notebookEditor && editorLangId == markdown"
       }
     ],

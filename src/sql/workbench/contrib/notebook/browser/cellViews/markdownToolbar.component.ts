@@ -252,7 +252,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		this._notebookEditor = this._notebookService.findNotebookEditor(this.cellModel?.notebookModel?.notebookUri);
 	}
 
-	public async onInsertButtonClick(event: Event, type: MarkdownButtonType): Promise<void> {
+	public async onInsertButtonClick(event: MouseEvent, type: MarkdownButtonType): Promise<void> {
 		DOM.EventHelper.stop(event, true);
 		let triggerElement = event.target as HTMLElement;
 		let needsTransform = true;
