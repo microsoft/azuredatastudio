@@ -425,7 +425,7 @@ export const autorestPostDeploymentScriptName = 'PostDeploymentScript.sql';
 export const nodeButNotAutorestFound = localize('nodeButNotAutorestFound', "Autorest tool not found in system path, but found Node.js.  Running via npx.  Please execute 'npm install autorest -g' to install permanently.");
 export const nodeNotFound = localize('nodeNotFound', "Neither autorest nor Node.js (npx) found in system path.  Please install Node.js for autorest generation to work.");
 export const selectSpecFile = localize('selectSpecFile', "Select OpenAPI/Swagger spec file");
-export function generatingProjectFailed(errorMessage: string) { return localize('generatingProjectFailed', "Generating project via AutoRest failed: {0}", errorMessage); }
+export function generatingProjectFailed(errorMessage: string) { return localize('generatingProjectFailed', "Generating project via AutoRest failed.  Check output pane for more details. Error: {0}", errorMessage); }
 export function multipleMostDeploymentScripts(count: number) { return localize('multipleMostDeploymentScripts', "Unexpected number of {0} files: {1}", autorestPostDeploymentScriptName, count); }
 export const specSelectionText = localize('specSelectionText', "OpenAPI/Swagger spec");
 
