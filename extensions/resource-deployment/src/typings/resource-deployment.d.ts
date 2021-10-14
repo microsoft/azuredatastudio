@@ -1,3 +1,5 @@
+import { InputValueType } from '../ui/modelViewUtils';
+
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
@@ -5,6 +7,7 @@
 declare module 'resource-deployment' {
 	import * as azdata from 'azdata';
 	import * as vscode from 'vscode';
+	import * as arc from 'arc';
 
 	export const enum ErrorType {
 		userCancelled,
@@ -26,7 +29,7 @@ declare module 'resource-deployment' {
 
 	export interface IValueProvider {
 		readonly id: string,
-		getValue(triggerValue: string): Promise<string>;
+		getValue(triggerValue: string | {[key: string]: InputValueType}): Promise<string>;
 	}
 
 	/**

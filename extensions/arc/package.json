@@ -1153,12 +1153,173 @@
                         "label": "%arc.sql.dev.use.label%",
                         "description": "%arc.sql.dev.use.description%",
                         "defaultValue": "false",
-                        "variableName": "AZDATA_NB_VAR_SQL_DEV_USE",
-                        "required": true
+                        "variableName": "AZDATA_NB_VAR_SQL_DEV_USE"
                       }
                     ]
                   }
                 ]
+              },
+              {
+                "title": "%arc.sql.cost.summary.sql.miaa.cost.summary%",
+                "isSummaryPage": true,
+                  "fieldHeight": "16px",
+                  "sections": [
+                    {
+                      "title": "",
+                      "collapsible": false,
+                      "fieldWidth": "200px",
+                      "fieldHeight": "14px",
+                      "spaceBetweenFields": 0,
+                      "rows": [
+                        {
+                          "items": [
+                            {
+                              "items": [
+                                {
+                                  "label": "%arc.sql.cost.summary.sql.miaa%",
+                                  "type": "readonly_text",
+                                  "enabled": true,
+                                  "labelWidth": "185px"
+                                }
+                              ]
+                            },
+                            {
+                              "items": [
+                                {
+                                  "label": "%arc.sql.cost.summary.estimated.cost.per.month%",
+                                  "type": "readonly_text",
+                                  "enabled": true,
+                                  "labelWidth": "190px",
+                                  "labelCSSStyles": {
+                                    "fontWeight": "Bold"
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "items": [
+                            {
+                              "items": [
+                                {
+                                  "label": "%arc.sql.summary.arc.by.microsoft%",
+                                  "type": "readonly_text",
+                                  "labelWidth": "185px"
+                                }
+                              ]
+                            },
+                            {
+                              "items": [
+                                {
+                                  "label": "%arc.data.controller.summary.free%",
+                                  "type": "readonly_text",
+                                  "enabled": true,
+                                  "defaultValue": "",
+                                  "labelWidth": "100px"
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "items": [
+                            {
+                              "items": [
+                                {
+                                  "label": "{0}",
+                                  "type": "readonly_text",
+                                  "enabled": true,
+                                  "labelWidth": "69px",
+                                  "links": [
+                                    {
+                                      "text": "%arc.data.controller.summary.arc.terms.of.use%",
+                                      "url": "https://go.microsoft.com/fwlink/?linkid=2045708"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "label": "|",
+                                  "type": "readonly_text",
+                                  "enabled": true,
+                                  "defaultValue": "",
+                                  "labelWidth": "4px",
+                                  "fieldWidth": "6px"
+                                },
+                                {
+                                  "label": "{0}",
+                                  "type": "readonly_text",
+                                  "enabled": true,
+                                  "labelWidth": "100px",
+                                  "links": [
+                                    {
+                                      "text": "%arc.data.controller.summary.arc.terms.privacy.policy%",
+                                      "url": "https://go.microsoft.com/fwlink/?linkid=512132"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "title": "%arc.sql.cost.summary%",
+                      "fields": [
+                        {
+                          "label": "%arc.sql.cost.summary.service.tier%",
+                          "type": "readonly_text",
+                          "isEvaluated": true,
+                          "defaultValue": "General Purpose"
+                        },
+                        {
+                          "label": "%arc.sql.cost.summary.cost.vcore%",
+                          "type": "readonly_text",
+                          "isEvaluated": true,
+                          "defaultValue": "0.00"
+                        },
+                        {
+                          "label": "%arc.sql.cost.summary.vcore.limit%",
+                          "type": "readonly_text",
+                          "isEvaluated": true,
+                          "defaultValue": "x4"
+                        },
+                        {
+                          "label": "%arc.sql.cost.summary.azure.hybrid.benefit.discount%",
+                          "type": "readonly_text",
+                          "isEvaluated": true,
+                          "defaultValue": "--"
+                        },
+                        {
+                          "label": "%arc.sql.cost.summary.estimated.cost.per.month%",
+                          "type": "readonly_text",
+                          "isEvaluated": true,
+                          "defaultValue": "0.00 USD",
+                          "valueProvider": {
+                            "providerId": "params-to-estimated-cost",
+                            "triggerFields": [
+                              "AZDATA_NB_VAR_SQL_REPLICAS",
+                              "AZDATA_NB_VAR_SQL_SERVICE_TIER",
+                              "AZDATA_NB_VAR_SQL_DEV_USE"
+                            ]
+                          }
+                        },
+                        {
+                          "label": "%arc.sql.cost.summary.additional.charge%",
+                          "type": "readonly_text",
+                          "enabled": true,
+                          "labelWidth": "750px",
+                          "links": [
+                            {
+                              "text": "%arc.sql.cost.summary.pricing.details%",
+                              "url": "https://aka.ms/ArcSQLBilling"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
               }
             ]
           },

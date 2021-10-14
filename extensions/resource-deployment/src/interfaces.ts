@@ -307,7 +307,7 @@ export interface DynamicOptionsAlternates {
 
 export interface ValueProviderInfo {
 	providerId: string,
-	triggerField: string
+	triggerFields: string | string[]
 }
 
 export interface FieldInfoBase {
