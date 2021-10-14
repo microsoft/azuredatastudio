@@ -142,8 +142,8 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.assessment.in.progress.content" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[We are assessing the databases in your SQL Server instance {0} to identify the right Azure SQL target.]D;]A;]D;]A;This may take some time.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Wir bewerten die Datenbanken in Ihrer SQL Server-Instanz "{0}", um das richtige Azure SQL-Ziel zu identifizieren.]D;]A;]D;]A;Dies kann einige Zeit dauern.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Wir bewerten die Datenbanken in Ihrer SQL Server-Instanz {0}, um das richtige Azure SQL-Ziel zu identifizieren.]D;]A;]D;]A;Dies kann einige Zeit dauern.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[We are assessing the databases in your SQL server instance {0} to identify the right Azure SQL target.]D;]A;]D;]A;This may take some time.]]></Val>
@@ -2518,8 +2518,8 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.select.azure.mi" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select your target Azure subscription and your target Azure SQL Managed Instance.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Wählen Sie Ihr Azure-Zielabonnement und Ihre Ziel-Azure SQL Managed Instance]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Wählen Sie Ihr Azure-Zielabonnement und Ihre Ziel-Azure SQL Managed Instance.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Select your target Azure subscription and your target Azure SQL Managed Instance]]></Val>
