@@ -13,16 +13,17 @@ import * as assert from 'assert';
 
 class MockNotebookSerializer implements vscode.NotebookSerializer {
 	deserializeNotebook(content: Uint8Array, token: vscode.CancellationToken): vscode.NotebookData | Thenable<vscode.NotebookData> {
-		throw new Error('Method not implemented.');
+		return undefined;
 	}
 	serializeNotebook(data: vscode.NotebookData, token: vscode.CancellationToken): Uint8Array | Thenable<Uint8Array> {
-		throw new Error('Method not implemented.');
+		return new Uint8Array([]);
 	}
 }
 
 suite('Notebook Serializer', () => {
 	let contentManager: VSCodeContentManager;
 	let sandbox: sinon.SinonSandbox;
+	let serializeSpy: sinon.SinonSpy;
 
 	const deserializeResult: vscode.NotebookData = {
 		cells: [{
@@ -135,11 +136,61 @@ suite('Notebook Serializer', () => {
 		]
 	};
 
+	const expectedSerializeArg: vscode.NotebookData = {
+		cells: [{
+			kind: NotebookCellKind.Code,
+			value: '1+1',
+			languageId: 'python',
+			outputs: [{
+				items: [{
+					mime: 'text/plain',
+					data: VSBuffer.fromString('2').buffer
+				}],
+				metadata: {},
+				id: '1'
+			}],
+			executionSummary: {
+				executionOrder: 1
+			}
+		}, {
+			kind: NotebookCellKind.Code,
+			value: 'print(1)',
+			languageId: 'python',
+			outputs: [{
+				items: [{
+					mime: 'text/plain',
+					data: VSBuffer.fromString('1').buffer
+				}],
+				metadata: {},
+				id: '2'
+			}],
+			executionSummary: {
+				executionOrder: 2
+			}
+		}],
+		metadata: {
+			kernelspec: {
+				name: 'python3',
+				display_name: 'Python 3',
+				language: 'python'
+			},
+			language_info: {
+				name: 'python',
+				version: '3.8.10',
+				mimetype: 'text/x-python',
+				codemirror_mode: {
+					name: 'ipython',
+					version: '3'
+				}
+			}
+		}
+	};
+
 	setup(() => {
 		sandbox = sinon.createSandbox();
 		let serializer = new MockNotebookSerializer();
 		sandbox.stub(serializer, 'deserializeNotebook').returns(deserializeResult);
-		sandbox.stub(serializer, 'serializeNotebook').returns(undefined);
+		serializeSpy = sandbox.spy(serializer, 'serializeNotebook');
 
 		contentManager = new VSCodeContentManager(serializer);
 	});
@@ -157,6 +208,9 @@ suite('Notebook Serializer', () => {
 	});
 
 	test('Serialize ADS notebook data into VSCode notebook strings', async () => {
+		await contentManager.serializeNotebook(expectedDeserializedNotebook); // Argument is ignored since we're returning a mocked result
+		assert(serializeSpy.calledOnce);
+		assert.deepStrictEqual(serializeSpy.firstCall.args[0], expectedSerializeArg);
 	});
 });
 

@@ -88,7 +88,10 @@ export class VSCodeContentManager implements azdata.nb.ContentManager {
 							metadata: output.metadata,
 							id: output.id
 						};
-					})
+					}),
+					executionSummary: {
+						executionOrder: cell.execution_count
+					}
 				};
 			}),
 			metadata: notebook.metadata
