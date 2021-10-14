@@ -48,6 +48,7 @@ export class MssqlNodeContext extends Disposable {
 	static CanScriptAsCreateOrDelete = new RawContextKey<boolean>('canScriptAsCreateOeDelete', false);
 	static CanScriptAsExecute = new RawContextKey<boolean>('canScriptAsExecute', false);
 	static CanScriptAsAlter = new RawContextKey<boolean>('canScriptAsAlter', false);
+	static IsQueryProvider = new RawContextKey<boolean>('isQueryProvider', false);
 
 	private nodeProviderKey!: IContextKey<string>;
 	private isCloudKey!: IContextKey<boolean>;
@@ -62,6 +63,8 @@ export class MssqlNodeContext extends Disposable {
 	private canScriptAsCreateOrDeleteKey!: IContextKey<boolean>;
 	private canScriptAsExecuteKey!: IContextKey<boolean>;
 	private canScriptAsAlterKey!: IContextKey<boolean>;
+	private isQueryProviderKey!: IContextKey<boolean>;
+
 
 	constructor(
 		private nodeContextValue: INodeContextValue,
@@ -88,6 +91,7 @@ export class MssqlNodeContext extends Disposable {
 					this.setScriptingContextKeys();
 					this.nodeTypeKey.set(node.contextValue);
 				}
+				this.setQueryEnabledKey();
 			}
 			if (node.label) {
 				this.nodeLabelKey.set(node.label.label);
@@ -108,6 +112,7 @@ export class MssqlNodeContext extends Disposable {
 		this.canScriptAsAlterKey = MssqlNodeContext.CanScriptAsAlter.bindTo(this.contextKeyService);
 		this.nodeProviderKey = MssqlNodeContext.NodeProvider.bindTo(this.contextKeyService);
 		this.canOpenInAzurePortal = MssqlNodeContext.CanOpenInAzurePortal.bindTo(this.contextKeyService);
+		this.isQueryProviderKey = MssqlNodeContext.IsQueryProvider.bindTo(this.contextKeyService);
 	}
 
 	/**
@@ -202,5 +207,14 @@ export class MssqlNodeContext extends Disposable {
 		if (MssqlNodeContext.canSelect.has(nodeType)) {
 			this.canScriptAsSelectKey.set(true);
 		}
+	}
+
+	/**
+	 * Set whether the current node's provider is also a query provider.
+	 */
+	private setQueryEnabledKey(): void {
+		const provider = this.nodeContextValue?.node?.payload?.providerName || this.nodeContextValue.node.childProvider;
+		const capabilities = provider ? this.capabilitiesService.getCapabilities(provider) : undefined;
+		this.isQueryProviderKey.set(capabilities?.connection.isQueryProvider);
 	}
 }

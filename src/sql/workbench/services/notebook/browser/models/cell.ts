@@ -87,6 +87,7 @@ export class CellModel extends Disposable implements ICellModel {
 	private _outputCounter = 0; // When re-executing the same cell, ensure that we apply chart options in the same order
 	private _attachments: nb.ICellAttachments | undefined;
 	private _preventNextChartCache: boolean = false;
+	private _lastEditMode: string | undefined;
 	public richTextCursorPosition: ICaretPosition | undefined;
 	public markdownCursorPosition: IPosition | undefined;
 
@@ -230,8 +231,9 @@ export class CellModel extends Disposable implements ICellModel {
 	public set isEditMode(isEditMode: boolean) {
 		this._isEditMode = isEditMode;
 		if (this._isEditMode) {
-			this.showPreview = this._defaultTextEditMode !== TextCellEditModes.Markdown;
-			this.showMarkdown = this._defaultTextEditMode !== TextCellEditModes.RichText;
+			const newEditMode = this._lastEditMode ?? this._defaultTextEditMode;
+			this.showPreview = newEditMode !== TextCellEditModes.Markdown;
+			this.showMarkdown = newEditMode !== TextCellEditModes.RichText;
 		}
 		this._onCellModeChanged.fire(this._isEditMode);
 		// Note: this does not require a notebook update as it does not change overall state
@@ -421,7 +423,7 @@ export class CellModel extends Disposable implements ICellModel {
 	public set showPreview(val: boolean) {
 		this._showPreview = val;
 		this._onCellPreviewChanged.fire(this._showPreview);
-		this._onCurrentEditModeChanged.fire(this.currentMode);
+		this.doModeUpdates();
 	}
 
 	public get showMarkdown(): boolean {
@@ -431,6 +433,13 @@ export class CellModel extends Disposable implements ICellModel {
 	public set showMarkdown(val: boolean) {
 		this._showMarkdown = val;
 		this._onCellMarkdownChanged.fire(this._showMarkdown);
+		this.doModeUpdates();
+	}
+
+	private doModeUpdates() {
+		if (this._isEditMode) {
+			this._lastEditMode = this._showPreview && this._showMarkdown ? TextCellEditModes.SplitView : (this._showMarkdown ? TextCellEditModes.Markdown : TextCellEditModes.RichText);
+		}
 		this._onCurrentEditModeChanged.fire(this.currentMode);
 	}
 
