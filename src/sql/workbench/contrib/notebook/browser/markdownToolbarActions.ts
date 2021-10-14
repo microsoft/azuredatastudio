@@ -607,8 +607,6 @@ export class ToggleViewAction extends Action {
 	}
 
 	public override async run(context: MarkdownToolbarComponent): Promise<void> {
-		context.removeActiveClassFromModeActions();
-		this.class += ' active';
 		context.cellModel.showPreview = this.showPreview;
 		context.cellModel.showMarkdown = this.showMarkdown;
 		// Hide image button in WYSIWYG mode
@@ -617,5 +615,6 @@ export class ToggleViewAction extends Action {
 		} else {
 			context.showLinkAndImageButtons();
 		}
+		context.updateActiveViewAction();
 	}
 }

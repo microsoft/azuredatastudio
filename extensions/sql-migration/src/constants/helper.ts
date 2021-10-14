@@ -24,7 +24,7 @@ export function getMigrationTargetType(migration: MigrationContext): string {
 }
 
 export function getMigrationMode(migration: MigrationContext): string {
-	return migration.migrationContext.properties.autoCutoverConfiguration?.autoCutover?.valueOf() ? loc.OFFLINE : loc.OFFLINE;
+	return migration.migrationContext.properties.offlineConfiguration?.offline?.valueOf() ? loc.OFFLINE : loc.OFFLINE;
 }
 
 export function getMigrationModeEnum(migration: MigrationContext): MigrationMode {

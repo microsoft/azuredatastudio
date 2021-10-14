@@ -911,8 +911,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					password: this._sqlServerPassword
 				},
 				scope: this._targetServerInstance.id,
-				autoCutoverConfiguration: {
-					autoCutover: isOfflineMigration
+				offlineConfiguration: {
+					offline: isOfflineMigration
 				}
 			}
 		};
@@ -933,8 +933,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						};
 
 						if (isOfflineMigration) {
-							requestBody.properties.autoCutoverConfiguration = {
-								autoCutover: isOfflineMigration,
+							requestBody.properties.offlineConfiguration = {
+								offline: isOfflineMigration,
 								lastBackupName: this._databaseBackup.blobs[i]?.lastBackupFile
 							};
 						}
@@ -967,7 +967,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				);
 				response.databaseMigration.properties.sourceDatabaseName = this._migrationDbs[i];
 				response.databaseMigration.properties.backupConfiguration = requestBody.properties.backupConfiguration!;
-				response.databaseMigration.properties.autoCutoverConfiguration = requestBody.properties.autoCutoverConfiguration!;
+				response.databaseMigration.properties.offlineConfiguration = requestBody.properties.offlineConfiguration!;
 
 				if (response.status === 201 || response.status === 200) {
 					sendSqlMigrationActionEvent(

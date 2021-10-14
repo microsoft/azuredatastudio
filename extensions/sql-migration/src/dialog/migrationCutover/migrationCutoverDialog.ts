@@ -831,7 +831,7 @@ export class MigrationCutoverDialog {
 	}
 
 	private _isOnlineMigration(): boolean {
-		return this._model._migration.migrationContext.properties.autoCutoverConfiguration?.autoCutover?.valueOf() ? false : true;
+		return this._model._migration.migrationContext.properties.offlineConfiguration?.offline?.valueOf() ? false : true;
 	}
 
 	private _shouldDisplayBackupFileTable(): boolean {
