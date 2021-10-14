@@ -19,6 +19,7 @@ import { IEditorOpenContext } from 'vs/workbench/common/editor';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { SaveTableChangesAction } from 'sql/workbench/contrib/tableDesigner/browser/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IModelService } from 'vs/editor/common/services/modelService';
 
 export class TableDesignerEditor extends EditorPane {
 	public static readonly ID: string = 'workbench.editor.tableDesigner';
@@ -31,7 +32,8 @@ export class TableDesignerEditor extends EditorPane {
 		@IWorkbenchThemeService themeService: IWorkbenchThemeService,
 		@IStorageService storageService: IStorageService,
 		@IContextViewService private _contextViewService: IContextViewService,
-		@IInstantiationService private _instantiationService: IInstantiationService
+		@IInstantiationService private _instantiationService: IInstantiationService,
+		@IModelService private _modelService: IModelService
 	) {
 		super(TableDesignerEditor.ID, telemetryService, themeService, storageService);
 	}
@@ -57,7 +59,7 @@ export class TableDesignerEditor extends EditorPane {
 		this._saveChangesAction = this._instantiationService.createInstance(SaveTableChangesAction);
 		this._saveChangesAction.enabled = false;
 		actionbar.push(this._saveChangesAction, { icon: true, label: false });
-		this._designer = new Designer(designerContainer, this._contextViewService);
+		this._designer = new Designer(this._instantiationService, this.themeService, this._modelService, designerContainer, this._contextViewService);
 		this._register(attachDesignerStyler(this._designer, this.themeService));
 	}
 

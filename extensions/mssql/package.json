@@ -449,6 +449,16 @@
       ],
       "objectExplorer/item/context": [
         {
+          "command": "mssql.newTable",
+          "when": "connectionProvider == MSSQL && nodeType == Folder && nodePath =~/\/Tables$/",
+          "group": "0_query"
+        },
+        {
+          "command": "mssql.designTable",
+          "when": "connectionProvider == MSSQL && nodeType == Table",
+          "group": "0_query@3"
+        },
+        {
           "command": "mssqlCluster.uploadFiles",
           "when": "nodeType=~/^mssqlCluster/ && nodeType != mssqlCluster:message && nodeType != mssqlCluster:file && nodeSubType=~/^(?!:mount).*$/",
           "group": "1mssqlCluster@1"

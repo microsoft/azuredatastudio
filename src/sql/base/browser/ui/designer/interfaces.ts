@@ -152,3 +152,12 @@ export interface DesignerEditResult {
 	isValid: boolean;
 	errors?: { message: string, property?: DesignerEditIdentifier }[];
 }
+
+export interface DesignerEditorProvider {
+
+	init(container: HTMLElement): Promise<void>;
+
+	setValue(text: string, enabled: boolean): Promise<void>;
+
+	onTextChanged: Event<string>;
+}

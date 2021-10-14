@@ -26,6 +26,15 @@ import { DesignerPropertiesPane, PropertiesPaneObjectContext } from 'sql/base/br
 import { Button, IButtonStyles } from 'sql/base/browser/ui/button/button';
 import { ButtonColumn } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
 import { Codicon } from 'vs/base/common/codicons';
+import { BasicView, DesignerEditor } from 'sql/base/browser/ui/designer/designerEditor';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { UntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
+import { URI } from 'vs/base/common/uri';import { Schemas } from 'vs/base/common/network';
+import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
+import { ITextModel } from 'vs/editor/common/model';
+import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { IModelService } from 'vs/editor/common/services/modelService';
 
 export interface IDesignerStyle {
 	tabbedPanelStyles?: ITabbedPanelStyles;
@@ -45,7 +54,6 @@ export class Designer extends Disposable implements IThemable {
 	private _horizontalSplitViewContainer: HTMLElement;
 	private _verticalSplitViewContainer: HTMLElement;
 	private _tabbedPanelContainer: HTMLElement;
-	private _editorContainer: HTMLElement;
 	private _horizontalSplitView: SplitView;
 	private _verticalSplitView: SplitView;
 	private _tabbedPanel: TabbedPanel;
@@ -59,9 +67,20 @@ export class Designer extends Disposable implements IThemable {
 	private _tableCellEditorFactory: TableCellEditorFactory;
 	private _propertiesPane: DesignerPropertiesPane;
 	private _buttons: Button[] = [];
+	private _editor: DesignerEditor;
+	private _untitledTextEditorModel: UntitledTextEditorModel;
+	private _editorModel: ITextModel;
+	private _editorTabbedPanel: TabbedPanel;
+	private _editorInput: UntitledTextEditorInput;
+	private _panelView: BasicView;
 
-	constructor(private readonly _container: HTMLElement,
-		private readonly _contextViewProvider: IContextViewProvider) {
+	constructor(
+		@IInstantiationService private _instantiationService: IInstantiationService,
+		@IThemeService private _themeService: IThemeService,
+		@IModelService private _modelService: IModelService,
+		private readonly _container: HTMLElement,
+		private readonly _contextViewProvider: IContextViewProvider
+	) {
 		super();
 		this._tableCellEditorFactory = new TableCellEditorFactory(
 			{
@@ -92,7 +111,6 @@ export class Designer extends Disposable implements IThemable {
 		this._contentContainer = DOM.$('.content-container');
 		this._topContentContainer = DOM.$('.top-content-container.components-grid');
 		this._tabbedPanelContainer = DOM.$('.tabbed-panel-container');
-		this._editorContainer = DOM.$('.editor-container');
 		this._propertiesPaneContainer = DOM.$('.properties-container');
 		this._verticalSplitView = new SplitView(this._verticalSplitViewContainer, { orientation: Orientation.VERTICAL });
 		this._horizontalSplitView = new SplitView(this._horizontalSplitViewContainer, { orientation: Orientation.HORIZONTAL });
@@ -106,14 +124,6 @@ export class Designer extends Disposable implements IThemable {
 				this.layoutTabbedPanel();
 			},
 			minimumSize: 200,
-			maximumSize: Number.POSITIVE_INFINITY,
-			onDidChange: Event.None
-		}, Sizing.Distribute);
-
-		this._verticalSplitView.addView({
-			element: this._editorContainer,
-			layout: size => { },
-			minimumSize: 100,
 			maximumSize: Number.POSITIVE_INFINITY,
 			onDidChange: Event.None
 		}, Sizing.Distribute);
@@ -143,9 +153,45 @@ export class Designer extends Disposable implements IThemable {
 		}, (component) => {
 			this.styleComponent(component);
 		});
-		const editor = DOM.$('div');
-		editor.innerText = 'script pane placeholder';
-		this._editorContainer.appendChild(editor);
+
+		let paneContainer = this._createDesignerEditorPane();
+		this._panelView = new BasicView(
+			300,
+			Number.POSITIVE_INFINITY,
+			size => this._editorTabbedPanel.layout(new DOM.Dimension(DOM.getTotalWidth(this._verticalSplitViewContainer), size)),
+			paneContainer,
+			{ headersize: 35 }
+		);
+		this._verticalSplitView.addView(this._panelView, Sizing.Distribute);
+	}
+
+	private _createDesignerEditor(): HTMLElement {
+		this._editor = this._instantiationService.createInstance(DesignerEditor);
+		let editorContainer = document.createElement('div');
+		editorContainer.className = 'designer-editor';
+		this._editor.create(editorContainer);
+		this._editor.setVisible(true);
+		this._untitledTextEditorModel = this._instantiationService.createInstance(UntitledTextEditorModel, URI.from({ scheme: Schemas.untitled }), false, undefined, 'sql', undefined);
+		this._editorInput = this._instantiationService.createInstance(UntitledTextEditorInput, this._untitledTextEditorModel);
+		this._editor.setInput(this._editorInput, undefined, undefined);
+		this._editorInput.resolve().then(model => this._editorModel = model.textEditorModel);
+		return editorContainer;
+	}
+
+	private _createDesignerEditorPane(): HTMLElement {
+		let editorContainer = this._createDesignerEditor();
+		let tabbedPanelContainer = document.createElement('div');
+		this._editorTabbedPanel = new TabbedPanel(tabbedPanelContainer);
+
+		this._editorTabbedPanel.pushTab({
+			identifier: 'editor',
+			title: localize('tableDesigner.scriptTitle', "Script"),
+			view: {
+				layout: dim => this._editor.layout(dim),
+				render: parent => parent.appendChild(editorContainer)
+			}
+		});
+		return tabbedPanelContainer;
 	}
 
 	private styleComponent(component: TabbedPanel | InputBox | Checkbox | Table<Slick.SlickData> | SelectBox | Button): void {
