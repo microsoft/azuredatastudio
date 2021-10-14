@@ -615,6 +615,6 @@ export class ToggleViewAction extends Action {
 		} else {
 			context.showLinkAndImageButtons();
 		}
-		context.setActiveClass();
+		context.updateActiveViewAction();
 	}
 }
