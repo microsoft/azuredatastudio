@@ -195,7 +195,7 @@ notebooksExtensionPoint.setHandler(extensions => {
 		for (const notebookContribution of extension.value) {
 			let adsProvider: ProviderDescriptionRegistration = {
 				provider: notebookContribution.type,
-				fileExtensions: notebookContribution.selector?.map(s => s.filenamePattern) ?? [],
+				fileExtensions: notebookContribution.selector?.map(s => s.filenamePattern.slice(2)) ?? [], // Use slice to remove leading wildcard. VSCode passes something like *.ipynb, while ADS expects just ipynb
 				standardKernels: [] // Kernels get added later when a NotebookController is created for this provider
 			};
 			adsNotebookRegistry.registerProviderDescription(adsProvider);
