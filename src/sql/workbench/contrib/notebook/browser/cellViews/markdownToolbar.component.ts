@@ -221,7 +221,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 			}
 		}
 		this._notebookEditor = this._notebookService.findNotebookEditor(this.cellModel?.notebookModel?.notebookUri);
-		this.addActiveClassFromEditMode();
+		this.setActiveClass();
 	}
 
 	public async onInsertButtonClick(event: MouseEvent, type: MarkdownButtonType): Promise<void> {
@@ -292,7 +292,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		}
 	}
 
-	public removeActiveClassFromModeActions() {
+	private removeActiveClassFromModeActions() {
 		const activeClass = ' active';
 		for (let action of [this._toggleTextViewAction, this._toggleSplitViewAction, this._toggleMarkdownViewAction]) {
 			if (action.class.includes(activeClass)) {
@@ -301,7 +301,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		}
 	}
 
-	private addActiveClassFromEditMode() {
+	public setActiveClass() {
 		this.removeActiveClassFromModeActions();
 		const activeClass = ' active';
 		switch (this.cellModel.currentMode) {
