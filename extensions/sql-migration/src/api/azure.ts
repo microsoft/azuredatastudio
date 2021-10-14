@@ -289,7 +289,7 @@ export async function getMigrationStatus(account: azdata.Account, subscription: 
 	if (migration.properties) {
 		migrationUpdate.properties.sourceDatabaseName = migration.properties.sourceDatabaseName;
 		migrationUpdate.properties.backupConfiguration = migration.properties.backupConfiguration;
-		migrationUpdate.properties.autoCutoverConfiguration = migration.properties.autoCutoverConfiguration;
+		migrationUpdate.properties.offlineConfiguration = migration.properties.offlineConfiguration;
 	}
 
 	return migrationUpdate;
@@ -423,7 +423,7 @@ export interface StartDatabaseMigrationRequest {
 			password: string
 		},
 		scope: string,
-		autoCutoverConfiguration: AutoCutoverConfiguration,
+		offlineConfiguration: OfflineConfiguration,
 	}
 }
 
@@ -453,7 +453,7 @@ export interface DatabaseMigrationProperties {
 	migrationService: string;
 	migrationOperationId: string;
 	backupConfiguration: BackupConfiguration;
-	autoCutoverConfiguration: AutoCutoverConfiguration;
+	offlineConfiguration: OfflineConfiguration;
 	migrationFailureError: ErrorInfo;
 }
 export interface MigrationStatusDetails {
@@ -487,8 +487,8 @@ export interface BackupConfiguration {
 	targetLocation?: TargetLocation;
 }
 
-export interface AutoCutoverConfiguration {
-	autoCutover: boolean;
+export interface OfflineConfiguration {
+	offline: boolean;
 	lastBackupName?: string;
 }
 
