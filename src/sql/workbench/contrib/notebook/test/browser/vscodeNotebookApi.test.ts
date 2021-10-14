@@ -10,6 +10,7 @@ import * as sinon from 'sinon';
 import { NotebookCellKind } from 'vs/workbench/api/common/extHostTypes';
 import { VSBuffer } from 'vs/base/common/buffer';
 import * as assert from 'assert';
+import { OutputTypes } from 'sql/workbench/services/notebook/common/contracts';
 
 class MockNotebookSerializer implements vscode.NotebookSerializer {
 	deserializeNotebook(content: Uint8Array, token: vscode.CancellationToken): vscode.NotebookData | Thenable<vscode.NotebookData> {
@@ -199,7 +200,69 @@ suite('Notebook Serializer', () => {
 		sandbox.restore();
 	});
 
-	test('Convert ADS notebook output to VSCode notebook output', async () => {
+	test('Convert ADS notebook execute result to VSCode notebook output', async () => {
+		let cellOutput: azdata.nb.IExecuteResult = {
+			output_type: OutputTypes.ExecuteResult,
+			data: {
+				'text/plain': 'abc',
+				'text/html': '<i>abc</i>'
+			},
+			execution_count: 1
+		};
+		let expectedVSCodeOutput: vscode.NotebookCellOutputItem[] = [{
+			mime: 'text/plain',
+			data: VSBuffer.fromString('abc').buffer
+		}, {
+			mime: 'text/html',
+			data: VSBuffer.fromString('<i>abc</i>').buffer
+		}];
+		let actualOutput = VSCodeContentManager.convertToVscodeCellOutput(cellOutput);
+		assert.deepStrictEqual(actualOutput, expectedVSCodeOutput);
+	});
+
+	test('Convert ADS notebook stream result to VSCode notebook output', async () => {
+		let cellOutput: azdata.nb.IStreamResult = {
+			output_type: 'stream',
+			name: 'stdout',
+			text: [
+				'abc'
+			]
+		};
+		let expectedVSCodeOutput: vscode.NotebookCellOutputItem[] = [{
+			mime: 'text/html',
+			data: VSBuffer.fromString('abc').buffer
+		}];
+		let actualOutput = VSCodeContentManager.convertToVscodeCellOutput(cellOutput);
+		assert.deepStrictEqual(actualOutput, expectedVSCodeOutput);
+	});
+
+	test('Convert ADS notebook error with trace to VSCode notebook output', async () => {
+		let cellOutput: azdata.nb.IErrorResult = {
+			output_type: 'error',
+			ename: 'TestException',
+			evalue: 'Expected test error',
+			traceback: ['Trace line 1', 'Trace line 2']
+		};
+		let expectedVSCodeOutput: vscode.NotebookCellOutputItem[] = [{
+			mime: 'text/html',
+			data: VSBuffer.fromString('TestException: Expected test error\nTrace line 1\nTrace line 2').buffer
+		}];
+		let actualOutput = VSCodeContentManager.convertToVscodeCellOutput(cellOutput);
+		assert.deepStrictEqual(actualOutput, expectedVSCodeOutput);
+	});
+
+	test('Convert ADS notebook error without trace to VSCode notebook output', async () => {
+		let cellOutput: azdata.nb.IErrorResult = {
+			output_type: 'error',
+			ename: 'TestException',
+			evalue: 'Expected test error'
+		};
+		let expectedVSCodeOutput: vscode.NotebookCellOutputItem[] = [{
+			mime: 'text/html',
+			data: VSBuffer.fromString('TestException: Expected test error').buffer
+		}];
+		let actualOutput = VSCodeContentManager.convertToVscodeCellOutput(cellOutput);
+		assert.deepStrictEqual(actualOutput, expectedVSCodeOutput);
 	});
 
 	test('Deserialize VSCode notebook into ADS notebook data', async () => {

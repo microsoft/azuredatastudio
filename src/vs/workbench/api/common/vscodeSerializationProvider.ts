@@ -67,7 +67,7 @@ export class VSCodeContentManager implements azdata.nb.ContentManager {
 				}];
 			case OutputTypes.Error:
 				let errorOutput = output as azdata.nb.IErrorResult;
-				let errorString = errorOutput.ename + ': ' + errorOutput.evalue + '\n' + errorOutput.traceback?.join('\n');
+				let errorString = errorOutput.ename + ': ' + errorOutput.evalue + (errorOutput.traceback ? '\n' + errorOutput.traceback?.join('\n') : '');
 				return [{
 					mime: 'text/html',
 					data: VSBuffer.fromString(errorString).buffer
