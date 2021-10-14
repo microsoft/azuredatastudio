@@ -29,6 +29,7 @@ const MenuCommands = {
 	ViewService: 'sqlmigration.view.service',
 	CopyMigration: 'sqlmigration.copy.migration',
 	CancelMigration: 'sqlmigration.cancel.migration',
+	RetryMigration: 'sqlmigration.retry.migration',
 };
 
 export class MigrationStatusDialog {
@@ -95,6 +96,14 @@ export class MigrationStatusDialog {
 		);
 
 	private canCutoverMigration = (status: string | undefined) => status === MigrationStatus.InProgress;
+
+	private canRetryMigration = (status: string | undefined) => true;
+	// status &&
+	// (
+	// 	// === ProvisioningState.Failed
+	// 	status === MigrationStatus.Failed
+	// 	// canceled
+	// );
 
 	private createSearchAndRefreshContainer(): azdata.FlexContainer {
 		this._searchBox = this._view.modelBuilder.inputBox().withProps({
@@ -302,6 +311,30 @@ export class MigrationStatusDialog {
 					console.log(e);
 				}
 			}));
+
+		this._disposables.push(vscode.commands.registerCommand(
+			MenuCommands.RetryMigration,
+			async (migrationId: string) => {
+				console.log("1--RETRY",)
+				try {
+					clearDialogMessage(this._dialogObject);
+					const migration = this._model._migrations.find(migration => migration.migrationContext.id === migrationId);
+					console.log("2--RETRY", migration)
+					if (this.canRetryMigration(migration?.migrationContext.properties.migrationStatus)) {
+						void vscode.window.showInformationMessage(loc.RETRY_MIGRATION, loc.YES, loc.NO).then(async (v) => {
+							if (v === loc.YES) {
+
+							}
+						});
+					}
+					else {
+						await vscode.window.showInformationMessage(loc.MIGRATION_CANNOT_RETRY);
+					}
+				} catch (e) {
+					displayDialogErrorMessage(this._dialogObject, loc.MIGRATION_RETRY_ERROR, e);
+					console.log(e);
+				}
+			}));
 	}
 
 	private async populateMigrationTable(): Promise<void> {
@@ -414,6 +447,10 @@ export class MigrationStatusDialog {
 
 		if (this.canCancelMigration(migrationStatus)) {
 			menuCommands.push(MenuCommands.CancelMigration);
+		}
+
+		if (this.canRetryMigration(migrationStatus)) {
+			menuCommands.push(MenuCommands.RetryMigration);
 		}
 
 		return menuCommands;

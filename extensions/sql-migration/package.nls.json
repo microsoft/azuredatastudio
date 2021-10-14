@@ -14,5 +14,6 @@
 	"view-target-menu": "Azure SQL Target details",
 	"view-service-menu": "Database Migration Service details",
 	"copy-migration-menu": "Copy migration details",
-	"cancel-migration-menu": "Cancel migration"
+	"cancel-migration-menu": "Cancel migration",
+	"retry-migration-menu": "Retry migration"
 }
