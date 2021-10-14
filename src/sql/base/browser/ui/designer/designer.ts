@@ -290,6 +290,9 @@ export class Designer extends Disposable implements IThemable {
 			case DesignerEditType.Update:
 				if (typeof edit.property === 'string') {
 					// if the type of the property is string then the property is a top level property
+					if (!data[edit.property]) {
+						data[edit.property] = {};
+					}
 					const componentData = data[edit.property];
 					const componentType = this._componentMap.get(edit.property).defintion.componentType;
 					this.setComponentData(componentType, componentData, edit.value);
@@ -297,6 +300,9 @@ export class Designer extends Disposable implements IThemable {
 					const columnPropertyName = edit.property.property;
 					const tableInfo = this._componentMap.get(edit.property.parentProperty).defintion.componentProperties as DesignerTableProperties;
 					const tableProperties = data[edit.property.parentProperty] as DesignerTableProperties;
+					if (!tableProperties.data[edit.property.index][columnPropertyName]) {
+						tableProperties.data[edit.property.index][columnPropertyName] = {};
+					}
 					const componentData = tableProperties.data[edit.property.index][columnPropertyName];
 					const itemProperty = tableInfo.itemProperties.find(property => property.propertyName === columnPropertyName);
 					if (itemProperty) {
@@ -335,6 +341,10 @@ export class Designer extends Disposable implements IThemable {
 	}
 
 	private setComponentValue(definition: DesignerDataPropertyInfo, component: DesignerUIComponent, data: DesignerData): void {
+		// Skip the property if it is not in the data model
+		if (!data[definition.propertyName]) {
+			return;
+		}
 		this._supressEditProcessing = true;
 		switch (definition.componentType) {
 			case 'input':
