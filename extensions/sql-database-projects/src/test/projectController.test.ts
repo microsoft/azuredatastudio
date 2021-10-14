@@ -706,6 +706,7 @@ describe('ProjectsController', function (): void {
 				await testUtils.createTestFile('SELECT \'This is a post-deployment script\'', constants.autorestPostDeploymentScriptName, newProjFolder);
 			});
 
+			projController.setup(x => x.promptForAutorestProjectName(TypeMoq.It.isAny())).returns(async () => path.basename(specName, '.yaml'));
 			projController.setup(x => x.openProjectInWorkspace(TypeMoq.It.isAny())).returns(async () => { });
 
 			const project = (await projController.object.generateProjectFromOpenApiSpec())!;
