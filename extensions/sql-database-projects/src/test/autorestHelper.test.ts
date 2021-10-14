@@ -12,6 +12,7 @@ import { TestContext, createContext } from './testContext';
 import { AutorestHelper } from '../tools/autorestHelper';
 import { promises as fs } from 'fs';
 import { window } from 'vscode';
+import { runViaNpx } from '../common/constants';
 
 let testContext: TestContext;
 
@@ -25,12 +26,16 @@ describe('Autorest tests', function (): void {
 	});
 
 	it('Should detect autorest', async function (): Promise<void> {
+		sinon.stub(window, 'showInformationMessage').returns(<any>Promise.resolve(runViaNpx)); // stub a selection in case test runner doesn't have autorest installed
+
 		const autorestHelper = new AutorestHelper(testContext.outputChannel);
 		const executable = await autorestHelper.detectInstallation();
 		should(executable === 'autorest' || executable === 'npx autorest').equal(true, 'autorest command should be found in default path during unit tests');
 	});
 
 	it('Should run an autorest command successfully', async function (): Promise<void> {
+		sinon.stub(window, 'showInformationMessage').returns(<any>Promise.resolve(runViaNpx)); // stub a selection in case test runner doesn't have autorest installed
+
 		const autorestHelper = new AutorestHelper(testContext.outputChannel);
 		const dummyFile = path.join(await testUtils.generateTestFolderPath(), 'testoutput.log');
 		sinon.stub(autorestHelper, 'constructAutorestCommand').returns(`${await autorestHelper.detectInstallation()} --version > ${dummyFile}`);
@@ -48,13 +53,15 @@ describe('Autorest tests', function (): void {
 	});
 
 	it('Should construct a correct autorest command for project generation', async function (): Promise<void> {
+		sinon.stub(window, 'showInformationMessage').returns(<any>Promise.resolve(runViaNpx)); // stub a selection in case test runner doesn't have autorest installed
+
 		const expectedOutput = 'autorest --use:autorest-sql-testing@latest --input-file="/some/path/test.yaml" --output-folder="/some/output/path" --clear-output-folder --verbose';
 
 		const autorestHelper = new AutorestHelper(testContext.outputChannel);
 		const constructedCommand = autorestHelper.constructAutorestCommand((await autorestHelper.detectInstallation())!, '/some/path/test.yaml', '/some/output/path');
 
 		// depending on whether the machine running the test has autorest installed or just node, the expected output may differ by just the prefix, hence matching against two options
-		should(constructedCommand === expectedOutput || constructedCommand === `npx ${expectedOutput}`).equal(true, `Constructed autorest command not formatting as expected:\nActual: ${constructedCommand}\nExpected: [npx ]${expectedOutput}`);
+		should(constructedCommand === expectedOutput || constructedCommand === `npx ${expectedOutput}`).equal(true, `Constructed autorest command not formatting as expected:\nActual:\n\t${constructedCommand}\nExpected:\n\t[npx ]${expectedOutput}`);
 	});
 
 	it('Should prompt user for action when autorest not found', async function (): Promise<void> {
