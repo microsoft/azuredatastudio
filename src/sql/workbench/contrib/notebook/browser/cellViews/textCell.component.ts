@@ -30,7 +30,7 @@ import { CodeComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/
 import { NotebookRange, ICellEditorProvider, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { HTMLMarkdownConverter } from 'sql/workbench/contrib/notebook/browser/htmlMarkdownConverter';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
-import { highlightText, preventDefaultAndPropagation } from 'sql/workbench/contrib/notebook/browser/utils';
+import { highlightSelectedText } from 'sql/workbench/contrib/notebook/browser/utils';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
@@ -99,8 +99,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			} else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'k') {
 				preventDefaultAndExecCommand(e, 'formatBlock', false, 'pre');
 			} else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'h') {
-				preventDefaultAndPropagation(e);
-				highlightText();
+				DOM.EventHelper.stop(e, true);
+				highlightSelectedText();
 			}
 		}
 	}

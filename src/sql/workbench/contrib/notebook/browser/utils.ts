@@ -1,14 +1,12 @@
-
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-
 /**
  * Highlights markdown text
  */
-export function highlightText(): void {
+export function highlightSelectedText(): void {
 	let selectionFocusNode = document.getSelection()?.focusNode;
 	// Find if element is wrapped in <mark></mark>
 	while (selectionFocusNode?.parentNode?.nodeName?.toLowerCase() && selectionFocusNode?.parentNode?.nodeName?.toLowerCase() !== 'mark') {
@@ -49,11 +47,3 @@ export function highlightText(): void {
 	}
 }
 
-/**
- * This function ensures that only the keybinding that the user did within does not trigger multiple events
- * @param e Event from keybinding
- */
-export function preventDefaultAndPropagation(e: KeyboardEvent): void {
-	e.stopPropagation();
-	e.preventDefault();
-}

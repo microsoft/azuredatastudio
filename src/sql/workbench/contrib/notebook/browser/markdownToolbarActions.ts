@@ -16,7 +16,7 @@ import { EditOperation } from 'vs/editor/common/core/editOperation';
 import { Position } from 'vs/editor/common/core/position';
 import { MarkdownToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component';
 import { IEditor } from 'vs/editor/common/editorCommon';
-import { highlightText } from 'sql/workbench/contrib/notebook/browser/utils';
+import { highlightSelectedText } from 'sql/workbench/contrib/notebook/browser/utils';
 
 export class TransformMarkdownAction extends Action {
 
@@ -59,7 +59,7 @@ export class TransformMarkdownAction extends Action {
 				document.execCommand('formatBlock', false, 'H3');
 				break;
 			case MarkdownButtonType.HIGHLIGHT:
-				highlightText();
+				highlightSelectedText();
 				break;
 			case MarkdownButtonType.IMAGE:
 			case MarkdownButtonType.IMAGE_PREVIEW:
