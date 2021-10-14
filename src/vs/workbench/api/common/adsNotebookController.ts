@@ -14,53 +14,84 @@ import { INotebookProviderRegistry, NotebookProviderRegistryId } from 'sql/workb
 
 const notebookRegistry = Registry.as<INotebookProviderRegistry>(NotebookProviderRegistryId);
 
-class VSCodeSession implements azdata.nb.ISession {
-	constructor(_controller: vscode.NotebookController, _options: azdata.nb.ISessionOptions) {
+class VSCodeKernel implements azdata.nb.IKernel {
+	constructor(_controller: vscode.NotebookController) {
 
+	}
+	id: string;
+	name: string;
+	supportsIntellisense: boolean;
+	requiresConnection?: boolean;
+	isReady: boolean;
+	ready: Thenable<void>;
+	info: azdata.nb.IInfoReply;
+	getSpec(): Thenable<azdata.nb.IKernelSpec> {
+		throw new Error('Method not implemented.');
+	}
+	requestExecute(content: azdata.nb.IExecuteRequest, disposeOnDone?: boolean): azdata.nb.IFuture {
+		throw new Error('Method not implemented.');
+	}
+	requestComplete(content: azdata.nb.ICompleteRequest): Thenable<azdata.nb.ICompleteReplyMsg> {
+		throw new Error('Method not implemented.');
+	}
+	interrupt(): Thenable<void> {
+		throw new Error('Method not implemented.');
+	}
+}
+
+class VSCodeSession implements azdata.nb.ISession {
+	private _kernel: VSCodeKernel;
+	private _defaultKernelLoaded = false;
+	constructor(controller: vscode.NotebookController, private readonly _options: azdata.nb.ISessionOptions) {
+		this._kernel = new VSCodeKernel(controller);
+	}
+
+	public set defaultKernelLoaded(value) {
+		this._defaultKernelLoaded = value;
+	}
+
+	public get defaultKernelLoaded(): boolean {
+		return this._defaultKernelLoaded;
 	}
 
 	public get canChangeKernels(): boolean {
-		throw new Error('Method not implemented.');
+		return true;
 	}
 
 	public get id(): string {
-		throw new Error('Method not implemented.');
+		return this._options.kernelId || this._kernel ? this._kernel.id : '';
 	}
 
 	public get path(): string {
-		throw new Error('Method not implemented.');
+		return this._options.path;
 	}
 
 	public get name(): string {
-		throw new Error('Method not implemented.');
+		return this._options.name || '';
 	}
 
 	public get type(): string {
-		throw new Error('Method not implemented.');
+		return this._options.type || '';
 	}
 
 	public get status(): azdata.nb.KernelStatus {
-		throw new Error('Method not implemented.');
+		return 'connected';
 	}
 
 	public get kernel(): azdata.nb.IKernel {
-		throw new Error('Method not implemented.');
+		return this._kernel;
 	}
 
-	public get defaultKernelLoaded(): boolean | undefined {
-		throw new Error('Method not implemented.');
+	changeKernel(kernelInfo: azdata.nb.IKernelSpec): Thenable<azdata.nb.IKernel> {
+		return Promise.resolve(this._kernel);
 	}
 
-	public changeKernel(kernelInfo: azdata.nb.IKernelSpec): Thenable<azdata.nb.IKernel> {
-		throw new Error('Method not implemented.');
+	configureKernel(kernelInfo: azdata.nb.IKernelSpec): Thenable<void> {
+		return Promise.resolve();
 	}
 
-	public configureKernel(kernelInfo: azdata.nb.IKernelSpec): Thenable<void> {
-		throw new Error('Method not implemented.');
-	}
-
-	public configureConnection(connection: azdata.IConnectionProfile): Thenable<void> {
-		throw new Error('Method not implemented.');
+	configureConnection(connection: azdata.IConnectionProfile): Thenable<void> {
+		return Promise.resolve();
 	}
 }
 
@@ -122,8 +153,8 @@ class VSCodeSessionManager implements azdata.nb.SessionManager {
 class VSCodeExecuteManager implements azdata.nb.ExecuteManager {
 	private readonly _sessionManager: azdata.nb.SessionManager;
 
-	constructor(private readonly _controller: vscode.NotebookController) {
-		this._sessionManager = new VSCodeSessionManager(this._controller);
+	constructor(controller: vscode.NotebookController) {
+		this._sessionManager = new VSCodeSessionManager(controller);
 	}
 
 	public get sessionManager(): azdata.nb.SessionManager {
