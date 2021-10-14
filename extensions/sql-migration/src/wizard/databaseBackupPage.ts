@@ -632,8 +632,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				enabled: false,
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
 				CSSStyles: {
-					// ...styles.BODY_CSS,
-					// 'margin-top': '-1em'
+					'margin': '0'
 				}
 			}).component();
 

@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { MigrationContext } from '../models/migrationLocalStorage';
+import { MigrationMode } from '../models/stateMachine';
 import * as loc from './strings';
 
 export enum SQLTargetAssetType {
@@ -24,4 +25,8 @@ export function getMigrationTargetType(migration: MigrationContext): string {
 
 export function getMigrationMode(migration: MigrationContext): string {
 	return migration.migrationContext.properties.autoCutoverConfiguration?.autoCutover?.valueOf() ? loc.OFFLINE : loc.OFFLINE;
+}
+
+export function getMigrationModeEnum(migration: MigrationContext): MigrationMode {
+	return migration.migrationContext.properties.autoCutoverConfiguration?.autoCutover?.valueOf() ? MigrationMode.OFFLINE : MigrationMode.OFFLINE;
 }
