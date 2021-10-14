@@ -159,7 +159,7 @@ export class MiaaModel extends ResourceModel {
 			throw new Error('Could not fetch databases');
 		}
 		if (databases.length > 0 && typeof (databases[0]) === 'object') {
-			this._databases = (<azdata.DatabaseInfo[]>databases).map(db => { return { name: db.options['name'], status: db.options['state'], lastBackup: this.getDateISOString(db.options['lastBackup']) }; });
+			this._databases = (<azdata.DatabaseInfo[]>databases).map(db => { return { name: db.options['name'], status: db.options['state'], lastBackup: db.options['lastBackup'] }; });
 		} else {
 			this._databases = (<string[]>databases).map(db => { return { name: db, status: '-', lastBackup: '' }; });
 		}
@@ -206,7 +206,4 @@ export class MiaaModel extends ResourceModel {
 		await this._treeDataProvider.saveControllers();
 	}
 
-	protected getDateISOString(dateTime: string): string {
-		return dateTime === '' ? '' : (new Date(dateTime)).toISOString();
-	}
 }
