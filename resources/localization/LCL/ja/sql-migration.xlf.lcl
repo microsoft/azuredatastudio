@@ -141,10 +141,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.assessment.in.progress.content" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[We are assessing the databases in your SQL server instance {0} to identify the right Azure SQL target.]D;]A;]D;]A;This may take some time.]]></Val>
+          <Val><![CDATA[We are assessing the databases in your SQL Server instance {0} to identify the right Azure SQL target.]D;]A;]D;]A;This may take some time.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[適切な Azure SQL ターゲットを特定するために、SQL サーバー インスタンス {0} でデータベースを評価しています。]D;]A;]D;]A;これには時間がかかることがあります。]]></Val>
+            <Val><![CDATA[適切な Azure SQL ターゲットを特定するために、SQL Server インスタンス {0} でデータベースを評価しています。]D;]A;]D;]A;これには時間がかかることがあります。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[We are assessing the databases in your SQL server instance {0} to identify the right Azure SQL target.]D;]A;]D;]A;This may take some time.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -372,6 +375,18 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.blob.resourceGroup.select" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
+          <Val><![CDATA[Select a resource group.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[リソース グループを選択します。]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Select a resource group value first.]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.blob.resourceGroup.select.prompt" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
           <Val><![CDATA[Select a resource group value first.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[最初にリソース グループの値を選択します。]]></Val>
@@ -399,10 +414,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.blob.storage.subscription.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Select the subscription that contains the storage account.]]></Val>
+          <Val><![CDATA[Subscription]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[ストレージ アカウントを含むサブスクリプションを選択します。]]></Val>
+            <Val><![CDATA[サブスクリプション]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Select the subscription that contains the storage account.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1183,6 +1201,15 @@
           <Prev Cat="Text">
             <Val><![CDATA[Enter the credentials for the source SQL Server instance. These credentials will be used while migrating database(s) to Azure SQL.]]></Val>
           </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.error" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Error]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[エラー]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2490,10 +2517,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.select.azure.mi" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Select your target Azure subscription and your target Azure SQL Managed Instance]]></Val>
+          <Val><![CDATA[Select your target Azure subscription and your target Azure SQL Managed Instance.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[対象の Azure サブスクリプションと対象の Azure SQL Managed Instance を選択します]]></Val>
+            <Val><![CDATA[対象の Azure サブスクリプションと対象の Azure SQL Managed Instance を選択します。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Select your target Azure subscription and your target Azure SQL Managed Instance]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3459,6 +3489,15 @@
           <Val><![CDATA[View/Select]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[表示/選択]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.warning" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Warning]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[警告]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

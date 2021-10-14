@@ -115,12 +115,18 @@ export interface SavedInfo {
 	selectedDatabases: azdata.DeclarativeTableCellValue[][];
 	migrationTargetType: MigrationTargetType | null;
 	migrationDatabases: azdata.DeclarativeTableCellValue[][];
+	databaseList: string[];
 	subscription: azureResource.AzureResourceSubscription | null;
 	location: azureResource.AzureLocation | null;
 	resourceGroup: azureResource.AzureResourceResourceGroup | null;
 	targetServerInstance: azureResource.AzureSqlManagedInstance | SqlVMServer | null;
 	migrationMode: MigrationMode | null;
 	databaseAssessment: string[] | null;
+	networkContainerType: NetworkContainerType | null;
+	networkShare: NetworkShare | null;
+	targetSubscription: azureResource.AzureResourceSubscription | null;
+	blobs: Blob[];
+	targetDatabaseNames: string[];
 }
 
 
@@ -905,8 +911,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					password: this._sqlServerPassword
 				},
 				scope: this._targetServerInstance.id,
-				autoCutoverConfiguration: {
-					autoCutover: isOfflineMigration
+				offlineConfiguration: {
+					offline: isOfflineMigration
 				}
 			}
 		};
@@ -927,8 +933,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						};
 
 						if (isOfflineMigration) {
-							requestBody.properties.autoCutoverConfiguration = {
-								autoCutover: isOfflineMigration,
+							requestBody.properties.offlineConfiguration = {
+								offline: isOfflineMigration,
 								lastBackupName: this._databaseBackup.blobs[i]?.lastBackupFile
 							};
 						}
@@ -961,7 +967,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				);
 				response.databaseMigration.properties.sourceDatabaseName = this._migrationDbs[i];
 				response.databaseMigration.properties.backupConfiguration = requestBody.properties.backupConfiguration!;
-				response.databaseMigration.properties.autoCutoverConfiguration = requestBody.properties.autoCutoverConfiguration!;
+				response.databaseMigration.properties.offlineConfiguration = requestBody.properties.offlineConfiguration!;
 
 				if (response.status === 201 || response.status === 200) {
 					sendSqlMigrationActionEvent(
@@ -1019,12 +1025,18 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			selectedDatabases: [],
 			migrationTargetType: null,
 			migrationDatabases: [],
+			databaseList: [],
 			subscription: null,
 			location: null,
 			resourceGroup: null,
 			targetServerInstance: null,
 			migrationMode: null,
-			databaseAssessment: null
+			databaseAssessment: null,
+			networkContainerType: null,
+			networkShare: null,
+			targetSubscription: null,
+			blobs: [],
+			targetDatabaseNames: []
 		};
 		switch (currentPage) {
 			case Page.Summary:
@@ -1032,7 +1044,11 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			case Page.IntegrationRuntime:
 
 			case Page.DatabaseBackup:
-
+				saveInfo.networkContainerType = this._databaseBackup.networkContainerType;
+				saveInfo.networkShare = this._databaseBackup.networkShare;
+				saveInfo.targetSubscription = this._databaseBackup.subscription;
+				saveInfo.blobs = this._databaseBackup.blobs;
+				saveInfo.targetDatabaseNames = this._targetDatabaseNames;
 			case Page.MigrationMode:
 				saveInfo.migrationMode = this._databaseBackup.migrationMode;
 			case Page.SKURecommendation:
@@ -1040,6 +1056,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				saveInfo.databaseAssessment = this._databaseAssessment;
 				saveInfo.serverAssessment = this._assessmentResults;
 				saveInfo.migrationDatabases = this._databaseSelection;
+				saveInfo.databaseList = this._migrationDbs;
 				saveInfo.subscription = this._targetSubscription;
 				saveInfo.location = this._location;
 				saveInfo.resourceGroup = this._resourceGroup;

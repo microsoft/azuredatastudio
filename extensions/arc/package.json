@@ -1157,6 +1157,33 @@
                         "required": true
                       }
                     ]
+                  },
+                  {
+                    "title": "%arc.sql.instance.retention.policy.title%",
+                    "fields": [
+                      {
+                        "type": "readonly_text",
+                        "label": "%arc.sql.pitr.retention.description%",
+                        "labelWidth": "600px",
+                        "enabled": true,
+                        "fieldHeight": "10px",
+                        "links": [
+                          {
+                            "text": "%arc.agreement.sql.help.text.learn.more%",
+                            "url": "https://docs.microsoft.com/azure/azure-arc/data/point-in-time-restore"
+                          }
+                        ]
+                      },
+                      {
+                        "label": "%arc.sql.retention.days.label%",
+                        "description": "%arc.sql.retention.days.description%",
+                        "variableName": "AZDATA_NB_VAR_SQL_RETENTION_DAYS",
+                        "type": "number",
+                        "min": 1,
+                        "max": 35,
+                        "required": false
+                      }
+                    ]
                   }
                 ]
               }

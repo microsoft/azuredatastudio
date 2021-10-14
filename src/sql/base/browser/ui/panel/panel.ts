@@ -248,6 +248,12 @@ export class TabbedPanel extends Disposable {
 		}
 	}
 
+	public clearTabs(): void {
+		this._tabMap.forEach((value, key, map) => {
+			this.removeTab(key);
+		});
+	}
+
 	public removeTab(tab: PanelTabIdentifier) {
 		const actualTab = this._tabMap.get(tab);
 		if (!actualTab) {

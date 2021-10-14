@@ -17,7 +17,6 @@
     "onCommand:sqlDatabaseProjects.open",
     "onCommand:sqlDatabaseProjects.createProjectFromDatabase",
     "onCommand:sqlDatabaseProjects.generateProjectFromOpenApiSpec",
-    "onCommand:sqlDatabaseProjects.addSqlBinding",
     "workspaceContains:**/*.sqlproj",
     "onView:dataworkspace.views.main"
   ],
@@ -168,11 +167,6 @@
         "command": "sqlDatabaseProjects.generateProjectFromOpenApiSpec",
         "title": "%sqlDatabaseProjects.generateProjectFromOpenApiSpec%",
         "category": "%sqlDatabaseProjects.displayName%"
-      },
-      {
-        "command": "sqlDatabaseProjects.addSqlBinding",
-        "title": "%sqlDatabaseProjects.addSqlBinding%",
-        "category": "MS SQL"
       }
     ],
     "menus": {
@@ -271,10 +265,6 @@
         {
           "command": "sqlDatabaseProjects.changeTargetPlatform",
           "when": "false"
-        },
-        {
-          "command": "sqlDatabaseProjects.addSqlBinding",
-          "when": "editorLangId == csharp && !azdataAvailable"
         }
       ],
       "view/item/context": [
@@ -403,7 +393,7 @@
   },
   "dependencies": {
     "@microsoft/ads-extension-telemetry": "^1.1.5",
-    "fast-glob": "^3.1.0",
+    "fast-glob": "^3.2.7",
     "fs-extra": "^5.0.0",
     "jsonc-parser": "^2.3.1",
     "promisify-child-process": "^3.1.1",

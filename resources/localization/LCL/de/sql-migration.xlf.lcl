@@ -141,10 +141,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.assessment.in.progress.content" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[We are assessing the databases in your SQL server instance {0} to identify the right Azure SQL target.]D;]A;]D;]A;This may take some time.]]></Val>
+          <Val><![CDATA[We are assessing the databases in your SQL Server instance {0} to identify the right Azure SQL target.]D;]A;]D;]A;This may take some time.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Wir bewerten die Datenbanken in Ihrer SQL Server-Instanz "{0}", um das richtige Azure SQL-Ziel zu identifizieren.]D;]A;]D;]A;Dies kann einige Zeit dauern.]]></Val>
+            <Val><![CDATA[Wir bewerten die Datenbanken in Ihrer SQL Server-Instanz {0}, um das richtige Azure SQL-Ziel zu identifizieren.]D;]A;]D;]A;Dies kann einige Zeit dauern.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[We are assessing the databases in your SQL server instance {0} to identify the right Azure SQL target.]D;]A;]D;]A;This may take some time.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -372,6 +375,18 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.blob.resourceGroup.select" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
+          <Val><![CDATA[Select a resource group.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Wählen Sie eine Ressourcengruppe aus.]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Select a resource group value first.]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.blob.resourceGroup.select.prompt" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
           <Val><![CDATA[Select a resource group value first.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Wählen Sie zuerst einen Ressourcengruppenwert aus.]]></Val>
@@ -399,10 +414,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.blob.storage.subscription.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Select the subscription that contains the storage account.]]></Val>
+          <Val><![CDATA[Subscription]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Wählen Sie das Abonnement aus, das das Speicherkonto enthält.]]></Val>
+            <Val><![CDATA[Abonnement]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Select the subscription that contains the storage account.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1183,6 +1201,15 @@
           <Prev Cat="Text">
             <Val><![CDATA[Enter the credentials for the source SQL Server instance. These credentials will be used while migrating database(s) to Azure SQL.]]></Val>
           </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.error" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Error]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Fehler]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2490,10 +2517,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.select.azure.mi" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Select your target Azure subscription and your target Azure SQL Managed Instance]]></Val>
+          <Val><![CDATA[Select your target Azure subscription and your target Azure SQL Managed Instance.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Wählen Sie Ihr Azure-Zielabonnement und Ihre Ziel-Azure SQL Managed Instance]]></Val>
+            <Val><![CDATA[Wählen Sie Ihr Azure-Zielabonnement und Ihre Ziel-Azure SQL Managed Instance.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Select your target Azure subscription and your target Azure SQL Managed Instance]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3459,6 +3489,15 @@
           <Val><![CDATA[View/Select]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Anzeigen/auswählen]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.warning" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Warning]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Warnung]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

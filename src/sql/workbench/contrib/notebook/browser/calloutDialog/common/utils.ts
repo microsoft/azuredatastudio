@@ -26,13 +26,15 @@ export function escapeLabel(unescapedLabel: string): string {
  */
 export function escapeUrl(unescapedUrl: string): string {
 	let firstEscape = strings.escape(unescapedUrl);
-	return firstEscape.replace(/[()]/g, function (match) {
-		switch (match) {
-			case '(': return '%28';
-			case ')': return '%29';
-			default: return match;
-		}
-	});
+	return firstEscape.replace(/%20/g, '%2520')
+		.replace(/\s/g, '%20')
+		.replace(/[()]/g, function (match) {
+			switch (match) {
+				case '(': return '%28';
+				case ')': return '%29';
+				default: return match;
+			}
+		});
 }
 
 /**

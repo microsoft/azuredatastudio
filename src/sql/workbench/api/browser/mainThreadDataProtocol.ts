@@ -30,6 +30,7 @@ import { IAssessmentService } from 'sql/workbench/services/assessment/common/int
 import { IDataGridProviderService } from 'sql/workbench/services/dataGridProvider/common/dataGridProviderService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { ITableDesignerService } from 'sql/workbench/services/tableDesigner/common/interface';
 
 /**
  * Main thread class for handling data protocol management registration.
@@ -59,7 +60,8 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 		@IFileBrowserService private _fileBrowserService: IFileBrowserService,
 		@IAssessmentService private _assessmentService: IAssessmentService,
 		@IDataGridProviderService private _dataGridProviderService: IDataGridProviderService,
-		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService
+		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
+		@ITableDesignerService private _tableDesignerService: ITableDesignerService
 	) {
 		super();
 		if (extHostContext) {
@@ -507,6 +509,24 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 		return undefined;
 	}
 
+	$registerTableDesignerProvider(providerId: string, handle: number): Promise<any> {
+		const self = this;
+		this._tableDesignerService.registerProvider(providerId, <azdata.designers.TableDesignerProvider>{
+			providerId: providerId,
+			getTableDesignerInfo(tableInfo: azdata.designers.TableInfo): Thenable<azdata.designers.TableDesignerInfo> {
+				return self._proxy.$getTableDesignerInfo(handle, tableInfo);
+			},
+			processTableEdit(table, data, edit): Thenable<azdata.designers.DesignerEditResult> {
+				return self._proxy.$processTableDesignerEdit(handle, table, data, edit);
+			},
+			saveTable(tableInfo: azdata.designers.TableInfo, data: azdata.designers.DesignerData): Thenable<void> {
+				return self._proxy.$saveTable(handle, tableInfo, data);
+			}
+		});
+
+		return undefined;
+	}
+
 	public $registerSerializationProvider(providerId: string, handle: number): Promise<any> {
 		const self = this;
 		this._serializationService.registerProvider(providerId, <azdata.SerializationProvider>{
@@ -614,6 +634,11 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 	// SQL Server Agent handlers
 	public $onJobDataUpdated(handle: Number): void {
 		this._jobManagementService.fireOnDidChange();
+	}
+
+	// Table Designer
+	public $openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo): void {
+		this._tableDesignerService.openTableDesigner(providerId, tableInfo);
 	}
 
 	public $unregisterProvider(handle: number): Promise<any> {

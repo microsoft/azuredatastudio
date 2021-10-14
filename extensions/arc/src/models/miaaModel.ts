@@ -16,13 +16,23 @@ import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
 import { ControllerModel, Registration } from './controllerModel';
 import { ResourceModel } from './resourceModel';
 
-export type DatabaseModel = { name: string, status: string };
-
+export type DatabaseModel = { name: string, status: string, lastBackup: string };
+export type RPModel = { recoveryPointObjective: string, retentionDays: string };
+export type PITRModel = {
+	instanceName: string,
+	resourceGroupName: string,
+	location: string,
+	subscriptionId: string,
+	dbName: string,
+	restorePoint: string,
+	earliestPitr: string,
+	latestPitr: string,
+};
+export const systemDbs = ['master', 'msdb', 'tempdb', 'model'];
 export class MiaaModel extends ResourceModel {
 
 	private _config: azExt.SqlMiShowResult | undefined;
 	private _databases: DatabaseModel[] = [];
-
 	private readonly _onConfigUpdated = new vscode.EventEmitter<azExt.SqlMiShowResult | undefined>();
 	private readonly _onDatabasesUpdated = new vscode.EventEmitter<DatabaseModel[]>();
 	private readonly _azApi: azExt.IExtension;
@@ -30,6 +40,10 @@ export class MiaaModel extends ResourceModel {
 	public onDatabasesUpdated = this._onDatabasesUpdated.event;
 	public configLastUpdated: Date | undefined;
 	public databasesLastUpdated: Date | undefined;
+	public rpSettings: RPModel = {
+		recoveryPointObjective: '',
+		retentionDays: ''
+	};
 
 	private _refreshPromise: Deferred<void> | undefined = undefined;
 
@@ -76,6 +90,7 @@ export class MiaaModel extends ResourceModel {
 				const result = await this._azApi.az.sql.miarc.show(this.info.name, this.controllerModel.info.namespace, this.controllerModel.azAdditionalEnvVars);
 				this._config = result.stdout;
 				this.configLastUpdated = new Date();
+				this.rpSettings.retentionDays = this._config?.spec?.backup?.retentionPeriodInDays?.toString() ?? '';
 				this._onConfigUpdated.fire(this._config);
 			} catch (err) {
 				// If an error occurs show a message so the user knows something failed but still
@@ -111,6 +126,18 @@ export class MiaaModel extends ResourceModel {
 		}
 	}
 
+	public async callGetDatabases(): Promise<void> {
+		try {
+			await this.getDatabases();
+		} catch (error) {
+			if (error instanceof UserCancelledError) {
+				vscode.window.showWarningMessage(loc.miaaConnectionRequired);
+			} else {
+				vscode.window.showErrorMessage(loc.fetchDatabasesFailed(this.info.name, error));
+			}
+			throw error;
+		}
+	}
 	public async getDatabases(promptForConnection: boolean = true): Promise<void> {
 		if (!this._connectionProfile) {
 			await this.getConnectionProfile(promptForConnection);
@@ -132,9 +159,9 @@ export class MiaaModel extends ResourceModel {
 			throw new Error('Could not fetch databases');
 		}
 		if (databases.length > 0 && typeof (databases[0]) === 'object') {
-			this._databases = (<azdata.DatabaseInfo[]>databases).map(db => { return { name: db.options['name'], status: db.options['state'] }; });
+			this._databases = (<azdata.DatabaseInfo[]>databases).map(db => { return { name: db.options['name'], status: db.options['state'], lastBackup: db.options['lastBackup'] }; });
 		} else {
-			this._databases = (<string[]>databases).map(db => { return { name: db, status: '-' }; });
+			this._databases = (<string[]>databases).map(db => { return { name: db, status: '-', lastBackup: '' }; });
 		}
 		this.databasesLastUpdated = new Date();
 		this._onDatabasesUpdated.fire(this._databases);
@@ -178,4 +205,5 @@ export class MiaaModel extends ResourceModel {
 		this._miaaInfo.userName = connectionProfile.userName;
 		await this._treeDataProvider.saveControllers();
 	}
+
 }

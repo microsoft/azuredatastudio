@@ -526,6 +526,26 @@ export abstract class ExtHostDataProtocolShape {
 	 * Gets the list of columns for a data grid
 	 */
 	$getDataGridColumns(handle: number): Thenable<azdata.DataGridColumn[]> { throw ni(); }
+
+	/**
+	 * Gets the table designer info for the specified table
+	 */
+	$getTableDesignerInfo(handle, table: azdata.designers.TableInfo): Thenable<azdata.designers.TableDesignerInfo> { throw ni(); }
+
+	/**
+	 * Process the table edit.
+	 */
+	$processTableDesignerEdit(handle, table: azdata.designers.TableInfo, data: azdata.designers.DesignerData, edit: azdata.designers.DesignerEdit): Thenable<azdata.designers.DesignerEditResult> { throw ni(); }
+
+	/**
+	 * Process the table edit.
+	 */
+	$saveTable(handle, table: azdata.designers.TableInfo, data: azdata.designers.DesignerData): Thenable<void> { throw ni(); }
+
+	/**
+	 * Open a new instance of table designer.
+	 */
+	$openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, designerInfo: azdata.designers.TableDesignerInfo): void { throw ni(); }
 }
 
 /**
@@ -591,6 +611,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$registerSerializationProvider(providerId: string, handle: number): Promise<any>;
 	$registerSqlAssessmentServicesProvider(providerId: string, handle: number): Promise<any>;
 	$registerDataGridProvider(providerId: string, title: string, handle: number): void;
+	$registerTableDesignerProvider(providerId: string, handle: number): Promise<any>;
 	$unregisterProvider(handle: number): Promise<any>;
 	$onConnectionComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void;
 	$onIntelliSenseCacheComplete(handle: number, connectionUri: string): void;
@@ -614,6 +635,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$onSessionStopped(handle: number, response: azdata.ProfilerSessionStoppedParams): void;
 	$onProfilerSessionCreated(handle: number, response: azdata.ProfilerSessionCreatedParams): void;
 	$onJobDataUpdated(handle: Number): void;
+	$openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo): void;
 
 	/**
 	 * Callback when a session has completed initialization

@@ -841,7 +841,7 @@ export class ProjectsController {
 		}
 
 		const filters: { [name: string]: string[] } = {};
-		filters[constants.specSelectionText] = ['yaml'];
+		filters[constants.specSelectionText] = constants.openApiSpecFileExtensions;
 
 		let uris = await vscode.window.showOpenDialog({
 			canSelectFiles: true,
@@ -871,7 +871,7 @@ export class ProjectsController {
 		let projectName: string = '';
 
 		let quickpickSelection = await vscode.window.showQuickPick(
-			[constants.browseEllipsis],
+			[constants.browseEllipsisWithIcon],
 			{ title: constants.selectProjectLocation, ignoreFocusOut: true });
 		if (!quickpickSelection) {
 			return;
@@ -892,13 +892,14 @@ export class ProjectsController {
 			}
 
 			outputFolder = folders[0].fsPath;
-			projectName = path.basename(specPath, constants.yamlFileExtension);
+
+			projectName = path.basename(specPath, path.extname(specPath));
 			newProjectFolder = path.join(outputFolder, projectName);
 
 			if (await utils.exists(newProjectFolder)) {
 
 				quickpickSelection = await vscode.window.showQuickPick(
-					[constants.browseEllipsis],
+					[constants.browseEllipsisWithIcon],
 					{ title: constants.folderAlreadyExistsChooseNewLocation(newProjectFolder), ignoreFocusOut: true });
 				if (!quickpickSelection) {
 					return;
@@ -976,6 +977,7 @@ export class ProjectsController {
 			return project;
 		} catch (err) {
 			void vscode.window.showErrorMessage(constants.generatingProjectFailed(utils.getErrorMessage(err)));
+			this._outputChannel.show();
 			return;
 		}
 	}
