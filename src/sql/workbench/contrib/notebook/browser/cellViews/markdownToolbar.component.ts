@@ -5,7 +5,7 @@
 import 'vs/css!./markdownToolbar';
 import * as DOM from 'vs/base/browser/dom';
 import { Button, IButtonStyles } from 'sql/base/browser/ui/button/button';
-import { Component, Input, Inject, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, Inject, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { localize } from 'vs/nls';
 import { CellEditModes, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { ITaskbarContent, Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
@@ -25,6 +25,7 @@ import { escape } from 'vs/base/common/strings';
 import { IImageCalloutDialogOptions, ImageCalloutDialog } from 'sql/workbench/contrib/notebook/browser/calloutDialog/imageCalloutDialog';
 import { TextCellEditModes } from 'sql/workbench/services/notebook/common/contracts';
 import { NotebookLinkHandler } from 'sql/workbench/contrib/notebook/browser/notebookLinkHandler';
+import { preventDefaultAndPropagation } from 'sql/workbench/contrib/notebook/common/notebookCommon';
 
 export const MARKDOWN_TOOLBAR_SELECTOR: string = 'markdown-toolbar-component';
 const linksRegex = /\[(?<text>.+)\]\((?<url>[^ ]+)(?: "(?<title>.+)")?\)/;
@@ -35,6 +36,34 @@ const linksRegex = /\[(?<text>.+)\]\((?<url>[^ ]+)(?: "(?<title>.+)")?\)/;
 })
 export class MarkdownToolbarComponent extends AngularDisposable {
 	@ViewChild('mdtoolbar', { read: ElementRef }) private mdtoolbar: ElementRef;
+
+	@HostListener('document:keydown', ['$event'])
+	async onkeydown(e: KeyboardEvent) {
+		if (this.cellModel?.currentMode === CellEditModes.SPLIT || this.cellModel?.currentMode === CellEditModes.MARKDOWN) {
+			let markdownTextTransformer = new MarkdownTextTransformer(this._notebookService, this.cellModel);
+			// 	// Bold Text
+			if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+				preventDefaultAndPropagation(e);
+				await markdownTextTransformer.transformText(MarkdownButtonType.BOLD);
+				// Italicize text
+			} else if ((e.ctrlKey || e.metaKey) && e.key === 'i') {
+				preventDefaultAndPropagation(e);
+				await markdownTextTransformer.transformText(MarkdownButtonType.ITALIC);
+				// Underline text
+			} else if ((e.ctrlKey || e.metaKey) && e.key === 'u') {
+				preventDefaultAndPropagation(e);
+				await markdownTextTransformer.transformText(MarkdownButtonType.UNDERLINE);
+				// Code Block
+			} else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'k') {
+				preventDefaultAndPropagation(e);
+				await markdownTextTransformer.transformText(MarkdownButtonType.CODE);
+				// Highlight Text
+			} else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'h') {
+				preventDefaultAndPropagation(e);
+				await markdownTextTransformer.transformText(MarkdownButtonType.HIGHLIGHT);
+			}
+		}
+	}
 
 	public previewFeaturesEnabled: boolean = false;
 
@@ -223,7 +252,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		this._notebookEditor = this._notebookService.findNotebookEditor(this.cellModel?.notebookModel?.notebookUri);
 	}
 
-	public async onInsertButtonClick(event: MouseEvent, type: MarkdownButtonType): Promise<void> {
+	public async onInsertButtonClick(event: Event, type: MarkdownButtonType): Promise<void> {
 		DOM.EventHelper.stop(event, true);
 		let triggerElement = event.target as HTMLElement;
 		let needsTransform = true;
