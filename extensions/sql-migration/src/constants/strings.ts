@@ -19,7 +19,7 @@ export function WIZARD_TITLE(instanceName: string): string {
 // Resume Migration Dialog
 export const RESUME_TITLE = localize('sql.migration.resume.title', "Run migration workflow again");
 export const START_MIGRATION = localize('sql.migration.resume.start', "Start with migration assessment again (recommended)");
-export const CONTINUE_MIGRATION = localize('sql.migration.resume.contine', "Continue last migration attempt...");
+export const CONTINUE_MIGRATION = localize('sql.migration.resume.continue', "Continue last migration attempt...");
 
 // Assessments Progress Page
 export const ASSESSMENT_BLOCKING_ISSUE_TITLE = localize('sql.migration.assessments.blocking.issue', 'This is a blocking issue that will prevent the database migration from succeeding.');
@@ -170,13 +170,13 @@ export const DATABASE_MIGRATION_SERVICE_AUTHENTICATION_KEYS = localize('sql.migr
 export const CREATE_MIGRATION_SERVICE_TITLE = localize('sql.migration.services.dialog.title', "Create Azure Database Migration Service");
 export const MIGRATION_SERVICE_SUBSCRIPTION_INFO = localize('sql.migration.services.subscription', "Subscription name for your Azure Database Migration Service.");
 export const MIGRATION_SERVICE_LOCATION_INFO = localize('sql.migration.services.location', "Azure region for your Azure Database Migration Service. This should be the same region as your target Azure SQL.");
-export const MIGRATION_SERVICE_RESOURCE_GROUP_INFO = localize('sql.migration.services.resourcegroup', "Resource group for your Azure Database Migration Service.");
+export const MIGRATION_SERVICE_RESOURCE_GROUP_INFO = localize('sql.migration.services.resource.group', "Resource group for your Azure Database Migration Service.");
 export const MIGRATION_SERVICE_NAME_INFO = localize('sql.migration.services.name', "Azure Database Migration Service name.");
 export const MIGRATION_SERVICE_TARGET_INFO = localize('sql.migration.services.target', "Azure SQL target selected as default.");
 export const MIGRATION_SERVICE_DIALOG_DESCRIPTION = localize('sql.migration.services.container.description', "Enter the information below to add a new Azure Database Migration Service.");
 export const LOADING_MIGRATION_SERVICES = localize('sql.migration.service.container.loading.help', "Loading Migration Services");
 export const SERVICE_CONTAINER_HEADING = localize('sql.migration.service.container.heading', "Setup integration runtime");
-export const SERVICE_CONTAINER_DESCRIPTION1 = localize('sql.migration.service.container.container.description1', "Azure Database Migration Service leverages Azure Data Factory's self-hosted integration runtime to upload backups from on-premises network fie share to Azure.");
+export const SERVICE_CONTAINER_DESCRIPTION1 = localize('sql.migration.service.container.container.description1', "Azure Database Migration Service leverages Azure Data Factory's self-hosted integration runtime to upload backups from on-premises network file share to Azure.");
 export const SERVICE_CONTAINER_DESCRIPTION2 = localize('sql.migration.service.container.container.description2', "Follow the instructions below to setup self-hosted integration runtime.");
 export const SERVICE_STEP1 = localize('sql.migration.ir.setup.step1', "Step 1: {0}");
 export const SERVICE_STEP1_LINK = localize('sql.migration.option', "Download and install integration runtime");
@@ -227,7 +227,7 @@ export const COPY_THROUGHPUT_INFO = localize('sql.migration.copy.throughput.info
 export const WARNING = localize('sql.migration.warning', "Warning");
 export const ERROR = localize('sql.migration.error', "Error");
 export const LEARN_MORE = localize('sql.migration.learn.more', "Learn more");
-export const LEARN_MORE_ABOUT_PRE_REQS = localize('sql.migration.learn.more.pre.reqs', "Learn more about things you need before starting a migration.");
+export const LEARN_MORE_ABOUT_PRE_REQS = localize('sql.migration.learn.more.prerequisites', "Learn more about things you need before starting a migration.");
 export const SUBSCRIPTION = localize('sql.migration.subscription', "Subscription");
 export const STORAGE_ACCOUNT = localize('sql.migration.storage.account', "Storage account");
 export const RESOURCE_GROUP = localize('sql.migration.resourceGroups', "Resource group");
