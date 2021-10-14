@@ -428,6 +428,7 @@ export const selectSpecFile = localize('selectSpecFile', "Select OpenAPI/Swagger
 export function generatingProjectFailed(errorMessage: string) { return localize('generatingProjectFailed', "Generating project via AutoRest failed.  Check output pane for more details. Error: {0}", errorMessage); }
 export function multipleMostDeploymentScripts(count: number) { return localize('multipleMostDeploymentScripts', "Unexpected number of {0} files: {1}", autorestPostDeploymentScriptName, count); }
 export const specSelectionText = localize('specSelectionText', "OpenAPI/Swagger spec");
+export const autorestProjectName = localize('autorestProjectName', "New SQL Project name");
 
 // System dbs
 export const systemDbs = ['master', 'msdb', 'tempdb', 'model'];

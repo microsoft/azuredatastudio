@@ -544,8 +544,8 @@ export function validateSqlServerPortNumber(port: string | undefined): boolean {
 	return !isNaN(valueAsNum) && valueAsNum > 0 && valueAsNum < 65535;
 }
 
-export function isEmptyString(password: string | undefined): boolean {
-	return password === undefined || password === '';
+export function isEmptyString(input: string | undefined): boolean {
+	return input === undefined || input === '';
 }
 
 export function isValidSQLPassword(password: string, userName: string = 'sa'): boolean {

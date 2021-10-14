@@ -925,6 +925,31 @@ export class ProjectsController {
 		workspaceApi.showProjectsView();
 	}
 
+	public async promptForAutorestProjectName(defaultName?: string): Promise<string | undefined> {
+		let valid: boolean = false;
+		let name: string | undefined = '';
+
+		while (!valid) {
+			name = await vscode.window.showInputBox({
+				ignoreFocusOut: true,
+				prompt: constants.autorestProjectName,
+				value: defaultName
+			});
+
+			if (name === undefined) {
+				return; // cancelled by user
+			}
+
+			name = name.trim();
+
+			if (!utils.isEmptyString(name)) {
+				break;
+			}
+		}
+
+		return name;
+	}
+
 	public async generateProjectFromOpenApiSpec(): Promise<Project | undefined> {
 		try {
 			// 1. select spec file
@@ -936,6 +961,11 @@ export class ProjectsController {
 			// 2. select location, make new folder
 			const projectInfo = await this.selectAutorestProjectLocation(specPath!);
 			if (!projectInfo) {
+				return;
+			}
+
+			const projectName = await this.promptForAutorestProjectName(projectInfo.projectName);
+			if (!projectName) {
 				return;
 			}
 
