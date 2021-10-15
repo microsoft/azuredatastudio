@@ -17,10 +17,13 @@ const notebookRegistry = Registry.as<INotebookProviderRegistry>(NotebookProvider
 class VSCodeKernel implements azdata.nb.IKernel {
 	protected static kernelId = 0;
 	private readonly _id: string;
+	private readonly _name: string;
 	private readonly _info: azdata.nb.IInfoReply;
+	private readonly _kernelSpec: azdata.nb.IKernelSpec;
 
 	constructor(private readonly _controller: vscode.NotebookController, private readonly _options: azdata.nb.ISessionOptions, language: string) {
 		this._id = this._options.kernelId ?? (VSCodeKernel.kernelId++).toString();
+		this._name = this._options.kernelName ?? this._controller.id;
 		this._info = {
 			protocol_version: '',
 			implementation: '',
@@ -35,6 +38,11 @@ class VSCodeKernel implements azdata.nb.IKernel {
 				url: ''
 			}]
 		};
+		this._kernelSpec = {
+			name: this._name,
+			language: language,
+			display_name: this._name
+		};
 	}
 
 	public get id(): string {
@@ -42,7 +50,7 @@ class VSCodeKernel implements azdata.nb.IKernel {
 	}
 
 	public get name(): string {
-		return this._options.kernelName ?? this._controller.id;
+		return this._name;
 	}
 
 	public get supportsIntellisense(): boolean {
@@ -66,7 +74,7 @@ class VSCodeKernel implements azdata.nb.IKernel {
 	}
 
 	getSpec(): Thenable<azdata.nb.IKernelSpec> {
-		throw new Error('Method not implemented.');
+		return Promise.resolve(this._kernelSpec);
 	}
 
 	requestExecute(content: azdata.nb.IExecuteRequest, disposeOnDone?: boolean): azdata.nb.IFuture {
