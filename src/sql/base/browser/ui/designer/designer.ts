@@ -26,6 +26,7 @@ import { DesignerPropertiesPane, PropertiesPaneObjectContext } from 'sql/base/br
 import { Button, IButtonStyles } from 'sql/base/browser/ui/button/button';
 import { ButtonColumn } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
 import { Codicon } from 'vs/base/common/codicons';
+import { Color } from 'vs/base/common/color';
 
 export interface IDesignerStyle {
 	tabbedPanelStyles?: ITabbedPanelStyles;
@@ -34,6 +35,7 @@ export interface IDesignerStyle {
 	selectBoxStyles?: ISelectBoxStyles;
 	checkboxStyles?: ICheckboxStyles;
 	buttonStyles?: IButtonStyles;
+	paneSeparator?: Color;
 }
 
 export type DesignerUIComponent = InputBox | Checkbox | Table<Slick.SlickData> | SelectBox;
@@ -173,11 +175,11 @@ export class Designer extends Disposable implements IThemable {
 		});
 		this._propertiesPane.style();
 		this._verticalSplitView.style({
-			separatorBorder: styles.selectBoxStyles.selectBorder
+			separatorBorder: styles.paneSeparator
 		});
 
 		this._horizontalSplitView.style({
-			separatorBorder: styles.selectBoxStyles.selectBorder
+			separatorBorder: styles.paneSeparator
 		});
 
 		this._buttons.forEach((button) => {
@@ -290,6 +292,9 @@ export class Designer extends Disposable implements IThemable {
 			case DesignerEditType.Update:
 				if (typeof edit.property === 'string') {
 					// if the type of the property is string then the property is a top level property
+					if (!data[edit.property]) {
+						data[edit.property] = {};
+					}
 					const componentData = data[edit.property];
 					const componentType = this._componentMap.get(edit.property).defintion.componentType;
 					this.setComponentData(componentType, componentData, edit.value);
@@ -297,6 +302,9 @@ export class Designer extends Disposable implements IThemable {
 					const columnPropertyName = edit.property.property;
 					const tableInfo = this._componentMap.get(edit.property.parentProperty).defintion.componentProperties as DesignerTableProperties;
 					const tableProperties = data[edit.property.parentProperty] as DesignerTableProperties;
+					if (!tableProperties.data[edit.property.index][columnPropertyName]) {
+						tableProperties.data[edit.property.index][columnPropertyName] = {};
+					}
 					const componentData = tableProperties.data[edit.property.index][columnPropertyName];
 					const itemProperty = tableInfo.itemProperties.find(property => property.propertyName === columnPropertyName);
 					if (itemProperty) {
@@ -335,6 +343,10 @@ export class Designer extends Disposable implements IThemable {
 	}
 
 	private setComponentValue(definition: DesignerDataPropertyInfo, component: DesignerUIComponent, data: DesignerData): void {
+		// Skip the property if it is not in the data model
+		if (!data[definition.propertyName]) {
+			return;
+		}
 		this._supressEditProcessing = true;
 		switch (definition.componentType) {
 			case 'input':

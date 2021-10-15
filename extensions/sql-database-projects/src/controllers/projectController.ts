@@ -967,6 +967,7 @@ export class ProjectsController {
 			return project;
 		} catch (err) {
 			void vscode.window.showErrorMessage(constants.generatingProjectFailed(utils.getErrorMessage(err)));
+			this._outputChannel.show();
 			return;
 		}
 	}

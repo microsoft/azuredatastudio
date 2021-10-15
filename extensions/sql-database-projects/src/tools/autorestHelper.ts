@@ -101,6 +101,6 @@ export class AutorestHelper extends ShellExecutionHelper {
 	 */
 	public constructAutorestCommand(executable: string, specPath: string, outputFolder: string): string {
 		// TODO: should --clear-output-folder be included? We should always be writing to a folder created just for this, but potentially risky
-		return `${executable} --use:${autorestPackageName}@${this.autorestSqlPackageVersion} --input-file="${specPath}" --output-folder="${outputFolder}" --clear-output-folder`;
+		return `${executable} --use:${autorestPackageName}@${this.autorestSqlPackageVersion} --input-file="${specPath}" --output-folder="${outputFolder}" --clear-output-folder --verbose`;
 	}
 }
