@@ -27,6 +27,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private _assessmentStatusIcon!: azdata.ImageComponent;
 	private _detailsComponent!: azdata.TextComponent;
 	private _skipAssessmentCheckbox!: azdata.CheckBoxComponent;
+	private _skipAssessmentSubText!: azdata.TextComponent;
 	private _chooseTargetComponent!: azdata.DivContainer;
 	private _azureSubscriptionText!: azdata.TextComponent;
 	private _managedInstanceSubscriptionDropdown!: azdata.DropDownComponent;
@@ -94,7 +95,21 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this._skipAssessmentCheckbox = view.modelBuilder.checkBox().withProps({
 			label: constants.SKU_RECOMMENDATION_ASSESSMENT_ERROR_BYPASS,
 			checked: false,
-			CSSStyles: { 'margin-top': '10px', 'display': 'none' },
+			CSSStyles: {
+				...styles.SECTION_HEADER_CSS,
+				'margin': '10px 0 0 0',
+				'display': 'none'
+			},
+		}).component();
+		this._skipAssessmentSubText = view.modelBuilder.text().withProps({
+			value: constants.SKU_RECOMMENDATION_ASSESSMENT_ERROR_DETAIL,
+			CSSStyles: {
+				'margin': '0 0 0 15px',
+				'font-size': '13px',
+				'color': 'red',
+				'width': '590px',
+				'display': 'none'
+			},
 		}).component();
 
 		this._disposables.push(this._skipAssessmentCheckbox.onChanged(async (value) => {
@@ -124,6 +139,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				this._detailsComponent,
 				refreshAssessmentButton,
 				this._skipAssessmentCheckbox,
+				this._skipAssessmentSubText,
 			]
 		).withProps({
 			CSSStyles: {
@@ -566,19 +582,25 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	}
 
 	private async _setAssessmentState(assessing: boolean, failedAssessment: boolean): Promise<void> {
-		await this._assessmentComponent.updateCssStyles({ 'display': assessing ? 'block' : 'none' });
+		let display: azdata.DisplayType = assessing ? 'block' : 'none';
+		await this._assessmentComponent.updateCssStyles({ 'display': display });
+		this._assessmentComponent.display = display;
 
-		let display: azdata.DisplayType = !assessing && failedAssessment ? 'block' : 'none';
+		display = !assessing && failedAssessment ? 'block' : 'none';
 		await this._skipAssessmentCheckbox.updateCssStyles({ 'display': display });
 		this._skipAssessmentCheckbox.display = display;
+		await this._skipAssessmentSubText.updateCssStyles({ 'display': display });
+		this._skipAssessmentSubText.display = display;
 
 		await this._formContainer.component().updateCssStyles({ 'display': !assessing ? 'block' : 'none' });
 
 		display = failedAssessment && !this._skipAssessmentCheckbox.checked ? 'none' : 'block';
 		await this._chooseTargetComponent.updateCssStyles({ 'display': display });
+		this._chooseTargetComponent.display = display;
 
 		display = !this._rbg.selectedCardId || failedAssessment && !this._skipAssessmentCheckbox.checked ? 'none' : 'inline';
 		await this.assessmentGroupContainer.updateCssStyles({ 'display': display });
+		this.assessmentGroupContainer.display = display;
 
 		display = this._rbg.selectedCardId
 			&& (!failedAssessment || this._skipAssessmentCheckbox.checked)
@@ -586,6 +608,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			? 'inline'
 			: 'none';
 		await this._targetContainer.updateCssStyles({ 'display': display });
+		this._targetContainer.display = display;
 
 		this._assessmentLoader.loading = assessing;
 	}
