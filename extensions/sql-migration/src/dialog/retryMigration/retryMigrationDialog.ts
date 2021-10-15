@@ -7,25 +7,15 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as mssql from '../../../../mssql';
 import { azureResource } from 'azureResource';
-import { getLocations } from '../../api/azure';
+import { getLocations, getResourceGroupFromId } from '../../api/azure';
 import { MigrationMode, MigrationStateModel, NetworkContainerType, SavedInfo, Page } from '../../models/stateMachine';
 import { MigrationContext } from '../../models/migrationLocalStorage';
 import { WizardController } from '../../wizard/wizardController';
-import { getBlobContainerId, getMigrationModeEnum, getMigrationTargetTypeEnum, getResourceGroupId, getResourceGroupName, getStorageAccountName } from '../../constants/helper';
-import * as loc from '../../constants/strings';
-import * as styles from '../../constants/styles';
+import { getBlobContainerId, getMigrationModeEnum, getMigrationTargetTypeEnum, getResourceGroupId, getResourceName } from '../../constants/helper';
 
 export class RetryMigrationDialog {
 	private _context: vscode.ExtensionContext;
 	private _migration: MigrationContext;
-
-	private static readonly OkButtonText: string = loc.NEXT_LABEL;
-	private static readonly CancelButtonText: string = loc.CANCEL_LABEL;
-
-	private _isOpen: boolean = false;
-	private dialog: azdata.window.Dialog | undefined;
-	private _rootContainer!: azdata.FlexContainer;
-	private _disposables: vscode.Disposable[] = [];
 
 	constructor(context: vscode.ExtensionContext, migration: MigrationContext) {
 		this._context = context;
@@ -36,7 +26,6 @@ export class RetryMigrationDialog {
 		let stateModel = new MigrationStateModel(this._context, connectionId, api.sqlMigration);
 
 		const sourceDatabaseName = migration.migrationContext.properties.sourceDatabaseName;
-
 		let savedInfo: SavedInfo;
 		savedInfo = {
 			closedPage: Page.AzureAccount,
@@ -59,7 +48,7 @@ export class RetryMigrationDialog {
 			location: location,
 			resourceGroup: {
 				id: getResourceGroupId(migration.targetManagedInstance.id),
-				name: getResourceGroupName(migration.targetManagedInstance.id),
+				name: getResourceGroupFromId(migration.targetManagedInstance.id),
 				subscription: migration.subscription
 			},
 			targetServerInstance: migration.targetManagedInstance,
@@ -75,17 +64,18 @@ export class RetryMigrationDialog {
 			blobs: [],
 
 			// Integration Runtime
+			migrationServiceId: migration.migrationContext.properties.migrationService,
 		};
 
 		const getStorageAccountResourceGroup = (storageAccountResourceId: string) => {
 			return {
 				id: getResourceGroupId(storageAccountResourceId!),
-				name: getResourceGroupName(storageAccountResourceId!),
+				name: getResourceGroupFromId(storageAccountResourceId!),
 				subscription: migration.subscription
 			};
 		};
 		const getStorageAccount = (storageAccountResourceId: string) => {
-			const storageAccountName = getStorageAccountName(storageAccountResourceId);
+			const storageAccountName = getResourceName(storageAccountResourceId);
 			return {
 				type: 'microsoft.storage/storageaccounts',
 				id: storageAccountResourceId!,
@@ -114,7 +104,7 @@ export class RetryMigrationDialog {
 			savedInfo.blobs = [
 				{
 					blobContainer: {
-						id: getBlobContainerId(getResourceGroupId(storageAccountResourceId!), getStorageAccountName(storageAccountResourceId!), sourceLocation?.azureBlob.blobContainerName),
+						id: getBlobContainerId(getResourceGroupId(storageAccountResourceId!), getResourceName(storageAccountResourceId!), sourceLocation?.azureBlob.blobContainerName),
 						name: sourceLocation?.azureBlob.blobContainerName,
 						subscription: migration.subscription
 					},
@@ -132,46 +122,7 @@ export class RetryMigrationDialog {
 		return stateModel;
 	}
 
-	private async initializeDialog(dialog: azdata.window.Dialog): Promise<void> {
-		return new Promise<void>((resolve, reject) => {
-			dialog.registerContent(async (view) => {
-				try {
-					this._rootContainer = this.initializePageContent(view);
-					await view.initializeModel(this._rootContainer);
-					this._disposables.push(dialog.okButton.onClick(async e => {
-						await this.execute();
-					}));
-					this._disposables.push(dialog.cancelButton.onClick(e => {
-						this.cancel();
-					}));
-
-					this._disposables.push(view.onClosed(e => {
-						this._disposables.forEach(
-							d => { try { d.dispose(); } catch { } }
-						);
-					}));
-					resolve();
-				} catch (ex) {
-					reject(ex);
-				}
-			});
-		});
-	}
-
 	public async openDialog(dialogName?: string) {
-		if (!this._isOpen) {
-			this._isOpen = true;
-			this.dialog = azdata.window.createModelViewDialog(loc.RETRY_MIGRATION, loc.RETRY_MIGRATION, '60%');
-			this.dialog.okButton.label = RetryMigrationDialog.OkButtonText;
-			this.dialog.cancelButton.label = RetryMigrationDialog.CancelButtonText;
-			const dialogSetupPromises: Thenable<void>[] = [];
-			dialogSetupPromises.push(this.initializeDialog(this.dialog));
-			azdata.window.openDialog(this.dialog);
-			await Promise.all(dialogSetupPromises);
-		}
-	}
-
-	protected async execute() {
 		const locations = await getLocations(this._migration.azureAccount, this._migration.subscription);
 		let location: azureResource.AzureLocation;
 		locations.forEach(azureLocation => {
@@ -199,37 +150,5 @@ export class RetryMigrationDialog {
 
 		const wizardController = new WizardController(this._context, stateModel);
 		await wizardController.openWizard(stateModel.sourceConnectionId);
-		this._isOpen = false;
-	}
-
-	protected cancel() {
-		this._isOpen = false;
-	}
-
-	public get isOpen(): boolean {
-		return this._isOpen;
-	}
-
-	public initializePageContent(view: azdata.ModelView): azdata.FlexContainer {
-		const pageTitle = view.modelBuilder.text().withProps({
-			CSSStyles: {
-				...styles.PAGE_TITLE_CSS,
-				'margin-bottom': '12px'
-			},
-			value: loc.RETRY_MIGRATION
-		}).component();
-
-		const flex = view.modelBuilder.flexContainer()
-			.withLayout({
-				flexFlow: 'column',
-				height: '100%',
-				width: '100%',
-			}).withProps({
-				CSSStyles: {
-					'margin': '20px 15px',
-				}
-			}).component();
-		flex.addItem(pageTitle, { flex: '0 0 auto' });
-		return flex;
 	}
 }

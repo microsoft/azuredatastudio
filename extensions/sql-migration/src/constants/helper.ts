@@ -46,11 +46,7 @@ export function getResourceGroupId(resourceId: string): string {
 	return resourceId.split('/providers')[0];
 }
 
-export function getResourceGroupName(resourceId: string): string {
-	return getResourceGroupId(resourceId).split('/')[-1];
-}
-
-export function getStorageAccountName(resourceId: string): string {
+export function getResourceName(resourceId: string): string {
 	const splitResourceId = resourceId.split('/');
 	return splitResourceId[splitResourceId.length - 1];
 }

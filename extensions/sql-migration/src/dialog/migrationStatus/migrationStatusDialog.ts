@@ -100,7 +100,10 @@ export class MigrationStatusDialog {
 
 	private canCutoverMigration = (status: string | undefined) => status === MigrationStatus.InProgress;
 
-	private canRetryMigration = (status: string | undefined) => status === MigrationStatus.Failed;
+	private canRetryMigration = (status: string | undefined) => (
+		status === undefined ||
+		status === MigrationStatus.Failed
+	);
 
 	private createSearchAndRefreshContainer(): azdata.FlexContainer {
 		this._searchBox = this._view.modelBuilder.inputBox().withProps({

@@ -572,7 +572,7 @@ errorId: ${e.errorId}
 				this._managedInstanceSubscriptionDropdown.loading = false;
 				this._resourceDropdown.loading = false;
 			}
-			if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= 2 && this._managedInstanceSubscriptionDropdown.values)) {
+			if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.SKURecommendation && this._managedInstanceSubscriptionDropdown.values)) {
 				this._managedInstanceSubscriptionDropdown.values!.forEach((subscription, index) => {
 					if ((<azdata.CategoryValue>subscription).name === this.migrationStateModel.savedInfo?.subscription?.id) {
 						selectDropDownIndex(this._managedInstanceSubscriptionDropdown, index);
@@ -589,7 +589,7 @@ errorId: ${e.errorId}
 		this._azureLocationDropdown.loading = true;
 		try {
 			this._azureResourceGroupDropdown.values = await this.migrationStateModel.getAzureResourceGroupDropdownValues(this.migrationStateModel._targetSubscription);
-			if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= 2 && this._azureResourceGroupDropdown.values)) {
+			if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.SKURecommendation && this._azureResourceGroupDropdown.values)) {
 				this._azureResourceGroupDropdown.values.forEach((resourceGroup, index) => {
 					if (resourceGroup.name === this.migrationStateModel.savedInfo?.resourceGroup?.id) {
 						selectDropDownIndex(this._azureResourceGroupDropdown, index);
@@ -599,7 +599,7 @@ errorId: ${e.errorId}
 				selectDropDownIndex(this._azureResourceGroupDropdown, 0);
 			}
 			this._azureLocationDropdown.values = await this.migrationStateModel.getAzureLocationDropdownValues(this.migrationStateModel._targetSubscription);
-			if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= 2 && this._azureLocationDropdown.values)) {
+			if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.SKURecommendation && this._azureLocationDropdown.values)) {
 				this._azureLocationDropdown.values.forEach((location, index) => {
 					if (location.displayName === this.migrationStateModel.savedInfo?.location?.displayName) {
 						selectDropDownIndex(this._azureLocationDropdown, index);
@@ -634,7 +634,7 @@ errorId: ${e.errorId}
 					this.migrationStateModel._location,
 					this.migrationStateModel._resourceGroup);
 			}
-			if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= 2 && this._resourceDropdown.values)) {
+			if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.SKURecommendation && this._resourceDropdown.values)) {
 				this._resourceDropdown.values.forEach((resource, index) => {
 					if (resource.displayName === this.migrationStateModel.savedInfo?.targetServerInstance?.name) {
 						selectDropDownIndex(this._resourceDropdown, index);
