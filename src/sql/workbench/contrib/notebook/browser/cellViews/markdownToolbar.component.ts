@@ -40,24 +40,24 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 	async onkeydown(e: KeyboardEvent) {
 		if (this.cellModel?.currentMode === CellEditModes.SPLIT || this.cellModel?.currentMode === CellEditModes.MARKDOWN) {
 			let markdownTextTransformer = new MarkdownTextTransformer(this._notebookService, this.cellModel);
-			// Bold Text
 			if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+				// Bold Text
 				DOM.EventHelper.stop(e, true);
 				await markdownTextTransformer.transformText(MarkdownButtonType.BOLD);
-				// Italicize text
 			} else if ((e.ctrlKey || e.metaKey) && e.key === 'i') {
+				// Italicize text
 				DOM.EventHelper.stop(e, true);
 				await markdownTextTransformer.transformText(MarkdownButtonType.ITALIC);
-				// Underline text
 			} else if ((e.ctrlKey || e.metaKey) && e.key === 'u') {
+				// Underline text
 				DOM.EventHelper.stop(e, true);
 				await markdownTextTransformer.transformText(MarkdownButtonType.UNDERLINE);
-				// Code Block
 			} else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'k') {
+				// Code Block
 				DOM.EventHelper.stop(e, true);
 				await markdownTextTransformer.transformText(MarkdownButtonType.CODE);
-				// Highlight Text
 			} else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'h') {
+				// Highlight Text
 				DOM.EventHelper.stop(e, true);
 				await markdownTextTransformer.transformText(MarkdownButtonType.HIGHLIGHT);
 			}
