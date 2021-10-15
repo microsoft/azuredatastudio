@@ -87,4 +87,4 @@ export const calloutDialogBodyBackground = registerColor('calloutDialog.bodyBack
 export const calloutDialogShadowColor = registerColor('calloutDialog.shadow', { light: '#000000', dark: '#FFFFFF', hc: '#000000' }, nls.localize('calloutDialogShadowColor', 'Callout dialog box shadow color.'));
 
 // Designer
-export const DesignerPaneSeparator = registerColor('designer.paneSeparator', { light: '#DDDDDD', dark: '#8A8886', hc: contrastBorder }, nls.localize('calloutDialogShadowColor', 'Callout dialog box shadow color.'));
+export const DesignerPaneSeparator = registerColor('designer.paneSeparator', { light: '#DDDDDD', dark: '#8A8886', hc: contrastBorder }, nls.localize('designer.paneSeparator', 'The pane separator color.'));
