@@ -127,6 +127,7 @@ export interface SavedInfo {
 	targetSubscription: azureResource.AzureResourceSubscription | null;
 	blobs: Blob[];
 	targetDatabaseNames: string[];
+	migrationServiceId: string | null;
 }
 
 
@@ -1036,12 +1037,14 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			networkShare: null,
 			targetSubscription: null,
 			blobs: [],
-			targetDatabaseNames: []
+			targetDatabaseNames: [],
+			migrationServiceId: null,
 		};
 		switch (currentPage) {
 			case Page.Summary:
 
 			case Page.IntegrationRuntime:
+				saveInfo.migrationServiceId = this._sqlMigrationService?.id!;
 
 			case Page.DatabaseBackup:
 				saveInfo.networkContainerType = this._databaseBackup.networkContainerType;
