@@ -914,7 +914,14 @@ export class ProjectsController {
 	}
 
 	public async generateAutorestFiles(specPath: string, newProjectFolder: string): Promise<void> {
-		await this.autorestHelper.generateAutorestFiles(specPath, newProjectFolder);
+		await vscode.window.withProgress(
+			{
+				location: vscode.ProgressLocation.Notification,
+				title: constants.generatingProjectFromAutorest(path.basename(specPath)),
+				cancellable: false
+			}, async (_progress, _token) => {
+				await this.autorestHelper.generateAutorestFiles(specPath, newProjectFolder);
+			});
 	}
 
 	public async openProjectInWorkspace(projectFilePath: string): Promise<void> {
