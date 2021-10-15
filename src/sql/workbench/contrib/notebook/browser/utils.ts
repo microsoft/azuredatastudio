@@ -3,9 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-/**
- * Highlights markdown text
- */
 export function highlightSelectedText(): void {
 	let selectionFocusNode = document.getSelection()?.focusNode;
 	// Find if element is wrapped in <mark></mark>
