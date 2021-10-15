@@ -358,6 +358,10 @@ export function getResourceGroupFromId(id: string): string {
 	return id.replace(RegExp('^(.*?)/resourceGroups/'), '').replace(RegExp('/providers/.*'), '').toLowerCase();
 }
 
+export function getBlobContainerId(resourceGroupId: string, storageAccountName: string, blobContainerName: string): string {
+	return `${resourceGroupId}/providers/Microsoft.Storage/storageAccounts/${storageAccountName}/blobServices/default/containers/${blobContainerName}`;
+}
+
 export interface SqlMigrationServiceProperties {
 	name: string;
 	subscriptionId: string;

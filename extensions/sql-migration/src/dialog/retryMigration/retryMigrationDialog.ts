@@ -7,11 +7,11 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as mssql from '../../../../mssql';
 import { azureResource } from 'azureResource';
-import { getLocations, getResourceGroupFromId } from '../../api/azure';
+import { getLocations, getResourceGroupFromId, getBlobContainerId } from '../../api/azure';
 import { MigrationMode, MigrationStateModel, NetworkContainerType, SavedInfo, Page } from '../../models/stateMachine';
 import { MigrationContext } from '../../models/migrationLocalStorage';
 import { WizardController } from '../../wizard/wizardController';
-import { getBlobContainerId, getMigrationModeEnum, getMigrationTargetTypeEnum, getResourceGroupId, getResourceName } from '../../constants/helper';
+import { getMigrationModeEnum, getMigrationTargetTypeEnum, getResourceGroupId, getResourceName } from '../../constants/helper';
 
 export class RetryMigrationDialog {
 	private _context: vscode.ExtensionContext;

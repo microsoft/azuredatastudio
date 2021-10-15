@@ -50,7 +50,3 @@ export function getResourceName(resourceId: string): string {
 	const splitResourceId = resourceId.split('/');
 	return splitResourceId[splitResourceId.length - 1];
 }
-
-export function getBlobContainerId(resourceGroupId: string, storageAccountName: string, blobContainerName: string): string {
-	return `${resourceGroupId}/providers/Microsoft.Storage/storageAccounts/${storageAccountName}/blobServices/default/containers/${blobContainerName}`;
-}

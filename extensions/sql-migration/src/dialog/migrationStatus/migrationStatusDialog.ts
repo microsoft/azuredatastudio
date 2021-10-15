@@ -101,8 +101,10 @@ export class MigrationStatusDialog {
 	private canCutoverMigration = (status: string | undefined) => status === MigrationStatus.InProgress;
 
 	private canRetryMigration = (status: string | undefined) => (
-		status === undefined ||
-		status === MigrationStatus.Failed
+		status !== MigrationStatus.InProgress &&
+		status !== MigrationStatus.Creating &&
+		status !== MigrationStatus.Completing &&
+		status !== MigrationStatus.Canceling
 	);
 
 	private createSearchAndRefreshContainer(): azdata.FlexContainer {

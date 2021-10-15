@@ -359,6 +359,29 @@ export class MigrationCutoverDialog {
 			flex: '0'
 		});
 
+		this._retryButton = this._view.modelBuilder.button().withProps({
+			label: loc.RETRY_MIGRATION,
+			iconPath: IconPathHelper.retry,
+			enabled: false,
+			iconHeight: '16px',
+			iconWidth: '16px',
+			height: '20px',
+			width: '120px',
+			CSSStyles: {
+				...styles.BODY_CSS,
+			}
+		}).component();
+		this._disposables.push(this._retryButton.onDidClick(
+			async (e) => {
+				await this.refreshStatus();
+				let retryMigrationDialog = new RetryMigrationDialog(this._context, this._migration);
+				await retryMigrationDialog.openDialog();
+			}
+		));
+		headerActions.addItem(this._retryButton, {
+			flex: '0',
+		});
+
 		this._refreshButton = this._view.modelBuilder.button().withProps({
 			iconPath: IconPathHelper.refresh,
 			iconHeight: '16px',
@@ -442,31 +465,6 @@ export class MigrationCutoverDialog {
 			flex: '0',
 			CSSStyles: {
 				'margin-left': '16px'
-			}
-		});
-
-		this._retryButton = this._view.modelBuilder.button().withProps({
-			enabled: false,
-			iconHeight: '16px',
-			iconWidth: '16px',
-			label: loc.RETRY_MIGRATION,
-			height: '20px',
-			width: '120px',
-			CSSStyles: {
-				...styles.BODY_CSS,
-			}
-		}).component();
-		this._disposables.push(this._retryButton.onDidClick(
-			async (e) => {
-				await this.refreshStatus();
-				let retryMigrationDialog = new RetryMigrationDialog(this._context, this._migration);
-				await retryMigrationDialog.openDialog();
-			}
-		));
-		headerActions.addItem(this._retryButton, {
-			flex: '0',
-			CSSStyles: {
-				'margin-left': 'auto',
 			}
 		});
 
