@@ -53,15 +53,16 @@ describe('Autorest tests', function (): void {
 	});
 
 	it('Should construct a correct autorest command for project generation', async function (): Promise<void> {
+		const autorestHelper = new AutorestHelper(testContext.outputChannel);
 		sinon.stub(window, 'showInformationMessage').returns(<any>Promise.resolve(runViaNpx)); // stub a selection in case test runner doesn't have autorest installed
+		sinon.stub(autorestHelper, 'detectInstallation').returns(Promise.resolve('autorest'));
 
 		const expectedOutput = 'autorest --use:autorest-sql-testing@latest --input-file="/some/path/test.yaml" --output-folder="/some/output/path" --clear-output-folder --verbose';
 
-		const autorestHelper = new AutorestHelper(testContext.outputChannel);
 		const constructedCommand = autorestHelper.constructAutorestCommand((await autorestHelper.detectInstallation())!, '/some/path/test.yaml', '/some/output/path');
 
 		// depending on whether the machine running the test has autorest installed or just node, the expected output may differ by just the prefix, hence matching against two options
-		should(constructedCommand === expectedOutput || constructedCommand === `npx ${expectedOutput}`).equal(true, `Constructed autorest command not formatting as expected:\nActual:\n\t${constructedCommand}\nExpected:\n\t[npx ]${expectedOutput}`);
+		should(constructedCommand === expectedOutput).equal(true, `Constructed autorest command not formatting as expected:\nActual:\n\t${constructedCommand}\nExpected:\n\t${expectedOutput}`);
 	});
 
 	it('Should prompt user for action when autorest not found', async function (): Promise<void> {

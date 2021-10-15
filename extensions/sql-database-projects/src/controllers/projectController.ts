@@ -914,7 +914,7 @@ export class ProjectsController {
 	}
 
 	public async generateAutorestFiles(specPath: string, newProjectFolder: string): Promise<string | undefined> {
-		return await this.autorestHelper.generateAutorestFiles(specPath, newProjectFolder);
+		return this.autorestHelper.generateAutorestFiles(specPath, newProjectFolder);
 	}
 
 	public async openProjectInWorkspace(projectFilePath: string): Promise<void> {
