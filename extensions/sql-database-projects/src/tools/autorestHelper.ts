@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import { DoNotAskAgain, Install, nodeButNotAutorestFound, nodeNotFound, nodeButNotAutrestFoundPrompt, runViaNpx, installGlobally } from '../common/constants';
+import { DoNotAskAgain, Install, nodeButNotAutorestFound, nodeNotFound, nodeButNotAutorestFoundPrompt, runViaNpx, installGlobally } from '../common/constants';
 import * as utils from '../common/utils';
 import * as semver from 'semver';
 import { DBProjectConfigurationKey } from './netcoreTool';
@@ -49,7 +49,7 @@ export class AutorestHelper extends ShellExecutionHelper {
 		if (await utils.detectCommandInstallation(npxCommand)) {
 			this._outputChannel.appendLine(nodeButNotAutorestFound);
 
-			const response = await vscode.window.showInformationMessage(nodeButNotAutrestFoundPrompt, installGlobally, runViaNpx);
+			const response = await vscode.window.showInformationMessage(nodeButNotAutorestFoundPrompt, installGlobally, runViaNpx);
 
 			if (response === installGlobally) {
 				await this.runStreamedCommand('npm install autorest -g', this._outputChannel);
