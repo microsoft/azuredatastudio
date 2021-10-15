@@ -913,8 +913,8 @@ export class ProjectsController {
 		return { newProjectFolder, outputFolder, projectName };
 	}
 
-	public async generateAutorestFiles(specPath: string, newProjectFolder: string): Promise<void> {
-		await this.autorestHelper.generateAutorestFiles(specPath, newProjectFolder);
+	public async generateAutorestFiles(specPath: string, newProjectFolder: string): Promise<string | undefined> {
+		return this.autorestHelper.generateAutorestFiles(specPath, newProjectFolder);
 	}
 
 	public async openProjectInWorkspace(projectFilePath: string): Promise<void> {
@@ -940,7 +940,18 @@ export class ProjectsController {
 			}
 
 			// 3. run AutoRest to generate .sql files
-			await this.generateAutorestFiles(specPath, projectInfo.newProjectFolder);
+			const result = await this.generateAutorestFiles(specPath, projectInfo.newProjectFolder);
+			if (!result) { // user canceled operation when choosing how to run autorest
+				return;
+			}
+
+			const fileFolderList: vscode.Uri[] | undefined = await this.getSqlFileList(projectInfo.newProjectFolder);
+
+			if (!fileFolderList || fileFolderList.length === 0) {
+				void vscode.window.showInformationMessage(constants.noSqlFilesGenerated);
+				this._outputChannel.show();
+				return;
+			}
 
 			// 4. create new SQL project
 			const newProjFilePath = await this.createNewProject({
@@ -952,7 +963,6 @@ export class ProjectsController {
 			const project = await Project.openProject(newProjFilePath);
 
 			// 5. add generated files to SQL project
-			let fileFolderList: vscode.Uri[] = await this.getSqlFileList(project.projectFolderPath);
 			await project.addToProject(fileFolderList.filter(f => !f.fsPath.endsWith(constants.autorestPostDeploymentScriptName))); // Add generated file structure to the project
 
 			const postDeploymentScript: vscode.Uri | undefined = this.findPostDeploymentScript(fileFolderList);
@@ -967,6 +977,7 @@ export class ProjectsController {
 			return project;
 		} catch (err) {
 			void vscode.window.showErrorMessage(constants.generatingProjectFailed(utils.getErrorMessage(err)));
+			this._outputChannel.show();
 			return;
 		}
 	}
@@ -986,17 +997,20 @@ export class ProjectsController {
 			default:
 				throw new Error(constants.multipleMostDeploymentScripts(results.length));
 		}
-
 	}
 
-	private async getSqlFileList(folder: string): Promise<vscode.Uri[]> {
+	private async getSqlFileList(folder: string): Promise<vscode.Uri[] | undefined> {
+		if (!(await utils.exists(folder))) {
+			return undefined;
+		}
+
 		const entries = await fs.readdir(folder, { withFileTypes: true });
 
 		const folders = entries.filter(dir => dir.isDirectory()).map(dir => path.join(folder, dir.name));
-		const files = entries.filter(file => !file.isDirectory() && path.extname(file.name) === '.sql').map(file => vscode.Uri.file(path.join(folder, file.name)));
+		const files = entries.filter(file => !file.isDirectory() && path.extname(file.name) === constants.sqlFileExtension).map(file => vscode.Uri.file(path.join(folder, file.name)));
 
 		for (const folder of folders) {
-			files.push(...await this.getSqlFileList(folder));
+			files.push(...(await this.getSqlFileList(folder) ?? []));
 		}
 
 		return files;

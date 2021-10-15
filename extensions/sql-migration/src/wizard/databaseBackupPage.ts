@@ -1134,10 +1134,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.DatabaseBackup)) {
 			this.migrationStateModel._targetDatabaseNames = this.migrationStateModel.savedInfo.targetDatabaseNames;
 		}
-		// this.migrationStateModel._targetDatabaseNames?.forEach((v, index) => {
-		// 	this._networkShareTargetDatabaseNames[index].value = v;
-		// 	this._blobContainerTargetDatabaseNames[index].value = v;
-		// });
 
 		await this._windowsUserAccountText.updateProperties({
 			required: containerType === NetworkContainerType.NETWORK_SHARE
@@ -1202,7 +1198,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			this._networkShareStorageAccountResourceGroupDropdown.values = await this.migrationStateModel.getAzureResourceGroupDropdownValues(this.migrationStateModel._databaseBackup.subscription);
 			if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.DatabaseBackup && this._networkShareStorageAccountResourceGroupDropdown.values)) {
 				this._networkShareStorageAccountResourceGroupDropdown.values.forEach((resource, index) => {
-					if ((<azdata.CategoryValue>resource).name.toLowerCase() === this.migrationStateModel.savedInfo?.networkShare?.resourceGroup.id.toLowerCase()) {
+					if ((<azdata.CategoryValue>resource).name.toLowerCase() === this.migrationStateModel.savedInfo?.networkShare?.resourceGroup?.id?.toLowerCase()) {
 						selectDropDownIndex(this._networkShareStorageAccountResourceGroupDropdown, index);
 					}
 				});
@@ -1237,7 +1233,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				dropDown.values = resourceGroupValues;
 				if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.DatabaseBackup && dropDown.values)) {
 					dropDown.values.forEach((resource, resourceIndex) => {
-						if ((<azdata.CategoryValue>resource).name.toLowerCase() === this.migrationStateModel.savedInfo?.blobs[index]?.resourceGroup.id.toLowerCase()) {
+						if ((<azdata.CategoryValue>resource).name.toLowerCase() === this.migrationStateModel.savedInfo?.blobs[index]?.resourceGroup?.id?.toLowerCase()) {
 							selectDropDownIndex(dropDown, resourceIndex);
 						}
 					});
@@ -1258,7 +1254,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			this._blobContainerStorageAccountDropdowns[index].values = await this.migrationStateModel.getStorageAccountValues(this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.blobs[index].resourceGroup);
 			if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.DatabaseBackup && this._blobContainerStorageAccountDropdowns[index].values && this.migrationStateModel.savedInfo.blobs[index].storageAccount)) {
 				this._blobContainerStorageAccountDropdowns[index].values!.forEach((resource, resourceIndex) => {
-					if ((<azdata.CategoryValue>resource).name.toLowerCase() === this.migrationStateModel.savedInfo?.blobs[index]?.storageAccount.id.toLowerCase()) {
+					if ((<azdata.CategoryValue>resource).name.toLowerCase() === this.migrationStateModel.savedInfo?.blobs[index]?.storageAccount?.id?.toLowerCase()) {
 						selectDropDownIndex(this._blobContainerStorageAccountDropdowns[index], resourceIndex);
 					}
 				});
@@ -1279,7 +1275,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			this._blobContainerDropdowns[index].values = blobContainerValues;
 			if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.DatabaseBackup && this._blobContainerDropdowns[index].values && this.migrationStateModel.savedInfo.blobs[index].blobContainer)) {
 				this._blobContainerDropdowns[index].values!.forEach((resource, resourceIndex) => {
-					if ((<azdata.CategoryValue>resource).name.toLowerCase() === this.migrationStateModel.savedInfo?.blobs[index]?.blobContainer.id.toLowerCase()) {
+					if ((<azdata.CategoryValue>resource).name.toLowerCase() === this.migrationStateModel.savedInfo?.blobs[index]?.blobContainer?.id?.toLowerCase()) {
 						selectDropDownIndex(this._blobContainerDropdowns[index], resourceIndex);
 					}
 				});

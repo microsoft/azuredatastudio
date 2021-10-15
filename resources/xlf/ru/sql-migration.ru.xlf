@@ -51,7 +51,7 @@
         <target state="translated">Оценка выполняется</target>
       </trans-unit>
       <trans-unit id="sql.migration.assessment.in.progress.content">
-        <source xml:lang="en">We are assessing the databases in your SQL server instance {0} to identify the right Azure SQL target.
+        <source xml:lang="en">We are assessing the databases in your SQL Server instance {0} to identify the right Azure SQL target.
 
 This may take some time.</source>
         <target state="translated">Идет оценка баз данных в экземпляре SQL Server {0} для идентификации правильного целевого объекта Azure SQL.
@@ -143,6 +143,10 @@ This may take some time.</source>
         <target state="translated">Контейнер BLOB-объектов</target>
       </trans-unit>
       <trans-unit id="sql.migration.blob.resourceGroup.select">
+        <source xml:lang="en">Select a resource group.</source>
+        <target state="translated">Выберите группу ресурсов.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.blob.resourceGroup.select.prompt">
         <source xml:lang="en">Select a resource group value first.</source>
         <target state="translated">Сначала выберите значение группы ресурсов.</target>
       </trans-unit>
@@ -155,8 +159,8 @@ This may take some time.</source>
         <target state="translated">Укажите контейнер Azure Storage Blob, содержащий резервные копии.</target>
       </trans-unit>
       <trans-unit id="sql.migration.blob.storage.subscription.label">
-        <source xml:lang="en">Select the subscription that contains the storage account.</source>
-        <target state="translated">Выберите подписку, содержащую учетную запись хранения.</target>
+        <source xml:lang="en">Subscription</source>
+        <target state="translated">Подписка</target>
       </trans-unit>
       <trans-unit id="sql.migration.blob.storage.table.help">
         <source xml:lang="en">Enter target database name and select resource group, storage account and container for the selected source databases.</source>
@@ -461,6 +465,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.enter.your.sql.cred">
         <source xml:lang="en">Enter the credentials for the source SQL Server instance. These credentials will be used while migrating databases to Azure SQL.</source>
         <target state="translated">Введите учетные данные для источника экземпляра SQL Server. Эти учетные данные будут использоваться при миграции баз данных в Azure SQL.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.error">
+        <source xml:lang="en">Error</source>
+        <target state="translated">Ошибка</target>
       </trans-unit>
       <trans-unit id="sql.migration.failed">
         <source xml:lang="en">Migrations failed</source>
@@ -975,7 +983,7 @@ This may take some time.</source>
         <target state="translated">{0} сек</target>
       </trans-unit>
       <trans-unit id="sql.migration.select.azure.mi">
-        <source xml:lang="en">Select your target Azure subscription and your target Azure SQL Managed Instance</source>
+        <source xml:lang="en">Select your target Azure subscription and your target Azure SQL Managed Instance.</source>
         <target state="translated">Выберите целевую подписку Azure и целевой управляемый экземпляр SQL Azure.</target>
       </trans-unit>
       <trans-unit id="sql.migration.select.azure.vm">
@@ -1365,6 +1373,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.view.select.button.label">
         <source xml:lang="en">View/Select</source>
         <target state="translated">Просмотреть или выбрать</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.warning">
+        <source xml:lang="en">Warning</source>
+        <target state="translated">Предупреждение</target>
       </trans-unit>
       <trans-unit id="sql.migration.warnings">
         <source xml:lang="en">Warnings</source>
