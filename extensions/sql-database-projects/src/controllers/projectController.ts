@@ -909,11 +909,11 @@ export class ProjectsController {
 			}
 		}
 
-		await fs.mkdir(newProjectFolder);
 		return { newProjectFolder, outputFolder, projectName };
 	}
 
 	public async generateAutorestFiles(specPath: string, newProjectFolder: string): Promise<void> {
+		await fs.mkdir(newProjectFolder, { recursive: true });
 		await this.autorestHelper.generateAutorestFiles(specPath, newProjectFolder);
 	}
 
@@ -933,7 +933,10 @@ export class ProjectsController {
 			name = await vscode.window.showInputBox({
 				ignoreFocusOut: true,
 				prompt: constants.autorestProjectName,
-				value: defaultName
+				value: defaultName,
+				validateInput: (value) => {
+					return value.trim() ? undefined : constants.nameMustNotBeEmpty;
+				}
 			});
 
 			if (name === undefined) {
@@ -941,10 +944,7 @@ export class ProjectsController {
 			}
 
 			name = name.trim();
-
-			if (!utils.isEmptyString(name)) {
-				break;
-			}
+			valid = true;
 		}
 
 		return name;
@@ -964,15 +964,16 @@ export class ProjectsController {
 				return;
 			}
 
+			// 3. prompt for project name
 			const projectName = await this.promptForAutorestProjectName(projectInfo.projectName);
 			if (!projectName) {
 				return;
 			}
 
-			// 3. run AutoRest to generate .sql files
+			// 4. run AutoRest to generate .sql files
 			await this.generateAutorestFiles(specPath, projectInfo.newProjectFolder);
 
-			// 4. create new SQL project
+			// 5. create new SQL project
 			const newProjFilePath = await this.createNewProject({
 				newProjName: projectInfo.projectName,
 				folderUri: vscode.Uri.file(projectInfo.outputFolder),
@@ -981,7 +982,7 @@ export class ProjectsController {
 
 			const project = await Project.openProject(newProjFilePath);
 
-			// 5. add generated files to SQL project
+			// 6. add generated files to SQL project
 			let fileFolderList: vscode.Uri[] = await this.getSqlFileList(project.projectFolderPath);
 			await project.addToProject(fileFolderList.filter(f => !f.fsPath.endsWith(constants.autorestPostDeploymentScriptName))); // Add generated file structure to the project
 
@@ -991,7 +992,7 @@ export class ProjectsController {
 				await project.addScriptItem(path.relative(project.projectFolderPath, postDeploymentScript.fsPath), undefined, templates.postDeployScript);
 			}
 
-			// 6. add project to workspace and open
+			// 7. add project to workspace and open
 			await this.openProjectInWorkspace(newProjFilePath);
 
 			return project;
