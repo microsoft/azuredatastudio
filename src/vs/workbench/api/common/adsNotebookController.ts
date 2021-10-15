@@ -14,6 +14,61 @@ import { INotebookProviderRegistry, NotebookProviderRegistryId } from 'sql/workb
 
 const notebookRegistry = Registry.as<INotebookProviderRegistry>(NotebookProviderRegistryId);
 
+class VSCodeFuture implements azdata.nb.IFuture {
+	private _inProgress = true;
+
+	constructor(private readonly _executeCompletion: Promise<void>) {
+	}
+
+	dispose() {
+		// No-op
+	}
+
+	public get inProgress(): boolean {
+		return this._inProgress;
+	}
+
+	public set inProgress(value: boolean) {
+		this._inProgress = value;
+	}
+
+	public get msg(): azdata.nb.IMessage | undefined {
+		return undefined;
+	}
+
+	public get done(): Thenable<azdata.nb.IShellMessage | undefined> {
+		return this._executeCompletion.then(() => {
+			return undefined;
+		}).finally(() => {
+			this._inProgress = false;
+		});
+	}
+
+	setReplyHandler(handler: azdata.nb.MessageHandler<azdata.nb.IShellMessage>): void {
+		// No-op
+	}
+
+	setStdInHandler(handler: azdata.nb.MessageHandler<azdata.nb.IStdinMessage>): void {
+		// No-op
+	}
+
+	setIOPubHandler(handler: azdata.nb.MessageHandler<azdata.nb.IIOPubMessage>): void {
+		// No-op
+	}
+
+	registerMessageHook(hook: (msg: azdata.nb.IIOPubMessage) => boolean | Thenable<boolean>): void {
+		// No-op
+	}
+
+	removeMessageHook(hook: (msg: azdata.nb.IIOPubMessage) => boolean | Thenable<boolean>): void {
+		// No-op
+	}
+
+	sendInputReply(content: azdata.nb.IInputReply): void {
+		// No-op
+	}
+}
+
 class VSCodeKernel implements azdata.nb.IKernel {
 	protected static kernelId = 0;
 	private readonly _id: string;
@@ -57,7 +112,7 @@ class VSCodeKernel implements azdata.nb.IKernel {
 		return true;
 	}
 
-	public get requiresConnection(): boolean {
+	public get requiresConnection(): boolean | undefined {
 		return false;
 	}
 
@@ -69,7 +124,7 @@ class VSCodeKernel implements azdata.nb.IKernel {
 		return Promise.resolve();
 	}
 
-	public get info(): azdata.nb.IInfoReply {
+	public get info(): azdata.nb.IInfoReply | null {
 		return this._info;
 	}
 
@@ -78,15 +133,26 @@ class VSCodeKernel implements azdata.nb.IKernel {
 	}
 
 	requestExecute(content: azdata.nb.IExecuteRequest, disposeOnDone?: boolean): azdata.nb.IFuture {
-		throw new Error('Method not implemented.');
+		let executePromise: Promise<void>;
+		if (this._controller.executeHandler) {
+			executePromise = Promise.resolve(this._controller.executeHandler(undefined, undefined, this._controller));
+		}
+		else {
+			executePromise = Promise.resolve();
+		}
+
+		return new VSCodeFuture(executePromise);
 	}
 
 	requestComplete(content: azdata.nb.ICompleteRequest): Thenable<azdata.nb.ICompleteReplyMsg> {
-		throw new Error('Method not implemented.');
+		let response: Partial<azdata.nb.ICompleteReplyMsg> = {};
+		return Promise.resolve(response as azdata.nb.ICompleteReplyMsg);
 	}
 
-	interrupt(): Thenable<void> {
-		throw new Error('Method not implemented.');
+	public async interrupt(): Promise<void> {
+		if (this._controller.interruptHandler) {
+			await this._controller.interruptHandler(undefined); // TODO: implement
+		}
 	}
 }
 
