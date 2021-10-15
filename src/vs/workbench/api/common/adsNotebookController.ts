@@ -15,25 +15,68 @@ import { INotebookProviderRegistry, NotebookProviderRegistryId } from 'sql/workb
 const notebookRegistry = Registry.as<INotebookProviderRegistry>(NotebookProviderRegistryId);
 
 class VSCodeKernel implements azdata.nb.IKernel {
-	constructor(_controller: vscode.NotebookController) {
+	protected static kernelId = 0;
+	private readonly _id: string;
+	private readonly _info: azdata.nb.IInfoReply;
 
+	constructor(private readonly _controller: vscode.NotebookController, private readonly _options: azdata.nb.ISessionOptions, language: string) {
+		this._id = this._options.kernelId ?? (VSCodeKernel.kernelId++).toString();
+		this._info = {
+			protocol_version: '',
+			implementation: '',
+			implementation_version: '',
+			language_info: {
+				name: language,
+				version: '',
+			},
+			banner: '',
+			help_links: [{
+				text: '',
+				url: ''
+			}]
+		};
 	}
-	id: string;
-	name: string;
-	supportsIntellisense: boolean;
-	requiresConnection?: boolean;
-	isReady: boolean;
-	ready: Thenable<void>;
-	info: azdata.nb.IInfoReply;
+
+	public get id(): string {
+		return this._id;
+	}
+
+	public get name(): string {
+		return this._options.kernelName ?? this._controller.id;
+	}
+
+	public get supportsIntellisense(): boolean {
+		return true;
+	}
+
+	public get requiresConnection(): boolean {
+		return false;
+	}
+
+	public get isReady(): boolean {
+		return true;
+	}
+
+	public get ready(): Thenable<void> {
+		return Promise.resolve();
+	}
+
+	public get info(): azdata.nb.IInfoReply {
+		return this._info;
+	}
+
 	getSpec(): Thenable<azdata.nb.IKernelSpec> {
 		throw new Error('Method not implemented.');
 	}
+
 	requestExecute(content: azdata.nb.IExecuteRequest, disposeOnDone?: boolean): azdata.nb.IFuture {
 		throw new Error('Method not implemented.');
 	}
+
 	requestComplete(content: azdata.nb.ICompleteRequest): Thenable<azdata.nb.ICompleteReplyMsg> {
 		throw new Error('Method not implemented.');
 	}
+
 	interrupt(): Thenable<void> {
 		throw new Error('Method not implemented.');
 	}
@@ -42,8 +85,8 @@ class VSCodeKernel implements azdata.nb.IKernel {
 class VSCodeSession implements azdata.nb.ISession {
 	private _kernel: VSCodeKernel;
 	private _defaultKernelLoaded = false;
-	constructor(controller: vscode.NotebookController, private readonly _options: azdata.nb.ISessionOptions) {
-		this._kernel = new VSCodeKernel(controller);
+	constructor(controller: vscode.NotebookController, private readonly _options: azdata.nb.ISessionOptions, language: string) {
+		this._kernel = new VSCodeKernel(controller, this._options, language);
 	}
 
 	public set defaultKernelLoaded(value) {
@@ -122,7 +165,7 @@ class VSCodeSessionManager implements azdata.nb.SessionManager {
 	}
 
 	public startNew(options: azdata.nb.ISessionOptions): Thenable<azdata.nb.ISession> {
-		let session: azdata.nb.ISession = new VSCodeSession(this._controller, options);
+		let session: azdata.nb.ISession = new VSCodeSession(this._controller, options, this.specs.defaultKernel);
 		let index = this._sessions.findIndex(session => session.path === options.path);
 		if (index > -1) {
 			this._sessions.splice(index);
