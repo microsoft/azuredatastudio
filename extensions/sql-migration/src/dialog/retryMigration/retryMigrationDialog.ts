@@ -6,15 +6,14 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as mssql from '../../../../mssql';
-import * as loc from '../../constants/strings';
-import { MigrationMode, MigrationStateModel, NetworkContainerType } from '../../models/stateMachine';
+import { azureResource } from 'azureResource';
+import { getLocations } from '../../api/azure';
+import { MigrationMode, MigrationStateModel, NetworkContainerType, SavedInfo, Page } from '../../models/stateMachine';
 import { MigrationContext } from '../../models/migrationLocalStorage';
 import { WizardController } from '../../wizard/wizardController';
-import { MigrationCutoverDialogModel } from '../migrationCutover/migrationCutoverDialogModel';
+import { getBlobContainerId, getMigrationModeEnum, getMigrationTargetTypeEnum, getResourceGroupId, getResourceGroupName, getStorageAccountName } from '../../constants/helper';
+import * as loc from '../../constants/strings';
 import * as styles from '../../constants/styles';
-import { SavedInfo, Page } from '../../models/stateMachine';
-import { getMigrationModeEnum } from '../../constants/helper';
-
 
 export class RetryMigrationDialog {
 	private _context: vscode.ExtensionContext;
@@ -23,66 +22,113 @@ export class RetryMigrationDialog {
 	private static readonly OkButtonText: string = loc.NEXT_LABEL;
 	private static readonly CancelButtonText: string = loc.CANCEL_LABEL;
 
-	private _dialogObject!: azdata.window.Dialog;
-	private _view!: azdata.ModelView;
-	private _model: MigrationCutoverDialogModel;
-
 	private _isOpen: boolean = false;
 	private dialog: azdata.window.Dialog | undefined;
 	private _rootContainer!: azdata.FlexContainer;
 	private _disposables: vscode.Disposable[] = [];
 
-
 	constructor(context: vscode.ExtensionContext, migration: MigrationContext) {
 		this._context = context;
 		this._migration = migration;
-		this._model = new MigrationCutoverDialogModel(migration);
-		this._dialogObject = azdata.window.createModelViewDialog('', 'RetryMigrationDialog', 'wide');
 	}
 
-
-	private createMigrationStateModel(migration: MigrationContext, connectionId: string, serverName: string, api: mssql.IExtension): MigrationStateModel {
+	private createMigrationStateModel(migration: MigrationContext, connectionId: string, serverName: string, api: mssql.IExtension, location: azureResource.AzureLocation): MigrationStateModel {
 		let stateModel = new MigrationStateModel(this._context, connectionId, api.sqlMigration);
+
+		const sourceDatabaseName = migration.migrationContext.properties.sourceDatabaseName;
 
 		let savedInfo: SavedInfo;
 		savedInfo = {
-			closedPage: Page.Summary,
+			closedPage: Page.AzureAccount,
 
 			// AzureAccount
 			azureAccount: migration.azureAccount,
-			azureTenant: null,
+			azureTenant: migration.azureAccount.properties.tenants[0],
 
 			// DatabaseSelector
 			selectedDatabases: [],
 
 			// SKURecommendation
-			migrationTargetType: null,
-			databaseAssessment: null,
-			serverAssessment: null,
+			databaseAssessment: [sourceDatabaseName],
+			databaseList: [sourceDatabaseName],
 			migrationDatabases: [],
-			databaseList: [],
-			subscription: null,
-			location: null,
-			resourceGroup: null,
+			serverAssessment: null,
+
+			migrationTargetType: getMigrationTargetTypeEnum(migration)!,
+			subscription: migration.subscription,
+			location: location,
+			resourceGroup: {
+				id: getResourceGroupId(migration.targetManagedInstance.id),
+				name: getResourceGroupName(migration.targetManagedInstance.id),
+				subscription: migration.subscription
+			},
 			targetServerInstance: migration.targetManagedInstance,
 
 			// MigrationMode
 			migrationMode: getMigrationModeEnum(migration),
 
 			// DatabaseBackup
+			targetSubscription: migration.subscription,
+			targetDatabaseNames: [migration.migrationContext.name],
 			networkContainerType: null,
 			networkShare: null,
-			targetSubscription: null,
 			blobs: [],
-			targetDatabaseNames: []
 
 			// Integration Runtime
 		};
 
-		stateModel.savedInfo = savedInfo;
-		stateModel.resumeAssessment = true;
-		stateModel.serverName = serverName;
+		const getStorageAccountResourceGroup = (storageAccountResourceId: string) => {
+			return {
+				id: getResourceGroupId(storageAccountResourceId!),
+				name: getResourceGroupName(storageAccountResourceId!),
+				subscription: migration.subscription
+			};
+		};
+		const getStorageAccount = (storageAccountResourceId: string) => {
+			const storageAccountName = getStorageAccountName(storageAccountResourceId);
+			return {
+				type: 'microsoft.storage/storageaccounts',
+				id: storageAccountResourceId!,
+				tenantId: savedInfo.azureTenant?.id!,
+				subscriptionId: migration.subscription.id,
+				name: storageAccountName,
+				location: savedInfo.location!.name,
+			};
+		};
 
+		const sourceLocation = migration.migrationContext.properties.backupConfiguration.sourceLocation;
+		if (sourceLocation?.fileShare) {
+			savedInfo.networkContainerType = NetworkContainerType.NETWORK_SHARE;
+			const storageAccountResourceId = migration.migrationContext.properties.backupConfiguration.targetLocation?.storageAccountResourceId!;
+			savedInfo.networkShare = {
+				password: '',
+				networkShareLocation: sourceLocation?.fileShare?.path!,
+				windowsUser: sourceLocation?.fileShare?.username!,
+				storageAccount: getStorageAccount(storageAccountResourceId!),
+				resourceGroup: getStorageAccountResourceGroup(storageAccountResourceId!),
+				storageKey: ''
+			};
+		} else if (sourceLocation?.azureBlob) {
+			savedInfo.networkContainerType = NetworkContainerType.BLOB_CONTAINER;
+			const storageAccountResourceId = sourceLocation?.azureBlob?.storageAccountResourceId!;
+			savedInfo.blobs = [
+				{
+					blobContainer: {
+						id: getBlobContainerId(getResourceGroupId(storageAccountResourceId!), getStorageAccountName(storageAccountResourceId!), sourceLocation?.azureBlob.blobContainerName),
+						name: sourceLocation?.azureBlob.blobContainerName,
+						subscription: migration.subscription
+					},
+					lastBackupFile: getMigrationModeEnum(migration) === MigrationMode.OFFLINE ? migration.migrationContext.properties.offlineConfiguration.lastBackupName! : undefined,
+					storageAccount: getStorageAccount(storageAccountResourceId!),
+					resourceGroup: getStorageAccountResourceGroup(storageAccountResourceId!),
+					storageKey: ''
+				}
+			];
+		}
+
+		stateModel.retryMigration = true;
+		stateModel.savedInfo = savedInfo;
+		stateModel.serverName = serverName;
 		return stateModel;
 	}
 
@@ -126,6 +172,14 @@ export class RetryMigrationDialog {
 	}
 
 	protected async execute() {
+		const locations = await getLocations(this._migration.azureAccount, this._migration.subscription);
+		let location: azureResource.AzureLocation;
+		locations.forEach(azureLocation => {
+			if (azureLocation.name === this._migration.targetManagedInstance.location) {
+				location = azureLocation;
+			}
+		});
+
 		let activeConnection = await azdata.connection.getCurrentConnection();
 		let connectionId: string = '';
 		let serverName: string = '';
@@ -141,7 +195,7 @@ export class RetryMigrationDialog {
 		}
 
 		const api = (await vscode.extensions.getExtension(mssql.extension.name)?.activate()) as mssql.IExtension;
-		const stateModel = this.createMigrationStateModel(this._migration, connectionId, serverName, api);
+		const stateModel = this.createMigrationStateModel(this._migration, connectionId, serverName, api, location!);
 
 		const wizardController = new WizardController(this._context, stateModel);
 		await wizardController.openWizard(stateModel.sourceConnectionId);
@@ -157,24 +211,12 @@ export class RetryMigrationDialog {
 	}
 
 	public initializePageContent(view: azdata.ModelView): azdata.FlexContainer {
-		const buttonGroup = 'resumeMigration';
-
 		const pageTitle = view.modelBuilder.text().withProps({
 			CSSStyles: {
 				...styles.PAGE_TITLE_CSS,
 				'margin-bottom': '12px'
 			},
-			value: "loc.RESUME_TITLE"
-		}).component();
-
-		const radioStart = view.modelBuilder.radioButton().withProps({
-			label: loc.START_MIGRATION,
-			name: buttonGroup,
-			CSSStyles: {
-				...styles.BODY_CSS,
-				'margin-bottom': '8px'
-			},
-			checked: true
+			value: loc.RETRY_MIGRATION
 		}).component();
 
 		const flex = view.modelBuilder.flexContainer()
@@ -188,7 +230,6 @@ export class RetryMigrationDialog {
 				}
 			}).component();
 		flex.addItem(pageTitle, { flex: '0 0 auto' });
-		flex.addItem(radioStart, { flex: '0 0 auto' });
 		return flex;
 	}
 }

@@ -113,7 +113,7 @@ export class MigrationModePage extends MigrationWizardPage {
 			}
 		}).component();
 
-		if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= 3) {
+		if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= 3)) {
 			if (this.migrationStateModel.savedInfo.migrationMode === MigrationMode.ONLINE) {
 				onlineButton.checked = true;
 				offlineButton.checked = false;

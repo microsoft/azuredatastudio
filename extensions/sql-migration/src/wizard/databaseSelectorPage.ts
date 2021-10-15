@@ -278,14 +278,17 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= 1) {
 			await this._databaseSelectorTable.setDataValues(this.migrationStateModel.savedInfo.selectedDatabases);
 		} else {
+			if (this.migrationStateModel.retryMigration) {
+				const sourceDatabaseName = this.migrationStateModel.savedInfo.databaseList[0];
+				const sourceDatabaseIndex = this._dbNames.indexOf(sourceDatabaseName);
+				this._databaseTableValues[sourceDatabaseIndex][0].value = true;
+			}
 			await this._databaseSelectorTable.setDataValues(this._databaseTableValues);
+			await this.updateValuesOnSelection();
 		}
+
 		this._disposables.push(this._databaseSelectorTable.onDataChanged(async () => {
-			await this._dbCount.updateProperties({
-				'value': constants.DATABASES_SELECTED(this.selectedDbs().length, this._databaseTableValues.length)
-			});
-			this.migrationStateModel._databaseAssessment = this.selectedDbs();
-			this.migrationStateModel.databaseSelectorTableValues = <azdata.DeclarativeTableCellValue[][]>this._databaseSelectorTable.dataValues;
+			await this.updateValuesOnSelection();
 		}));
 		const flex = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
@@ -312,6 +315,14 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			}
 		});
 		return result;
+	}
+
+	private async updateValuesOnSelection() {
+		await this._dbCount.updateProperties({
+			'value': constants.DATABASES_SELECTED(this.selectedDbs().length, this._databaseTableValues.length)
+		});
+		this.migrationStateModel._databaseAssessment = this.selectedDbs();
+		this.migrationStateModel.databaseSelectorTableValues = <azdata.DeclarativeTableCellValue[][]>this._databaseSelectorTable.dataValues;
 	}
 
 	// undo when bug #16445 is fixed

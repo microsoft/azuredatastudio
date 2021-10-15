@@ -100,13 +100,7 @@ export class MigrationStatusDialog {
 
 	private canCutoverMigration = (status: string | undefined) => status === MigrationStatus.InProgress;
 
-	private canRetryMigration = (status: string | undefined) => true;
-	// status &&
-	// (
-	// 	// === ProvisioningState.Failed
-	// 	status === MigrationStatus.Failed
-	// 	// canceled
-	// );
+	private canRetryMigration = (status: string | undefined) => status === MigrationStatus.Failed;
 
 	private createSearchAndRefreshContainer(): azdata.FlexContainer {
 		this._searchBox = this._view.modelBuilder.inputBox().withProps({
@@ -318,11 +312,9 @@ export class MigrationStatusDialog {
 		this._disposables.push(vscode.commands.registerCommand(
 			MenuCommands.RetryMigration,
 			async (migrationId: string) => {
-				console.log("1--RETRY",)
 				try {
 					clearDialogMessage(this._dialogObject);
 					const migration = this._model._migrations.find(migration => migration.migrationContext.id === migrationId);
-					console.log("2--RETRY", migration)
 					if (this.canRetryMigration(migration?.migrationContext.properties.migrationStatus)) {
 						void vscode.window.showInformationMessage(loc.RETRY_MIGRATION, loc.YES, loc.NO).then(async (v) => {
 							if (v === loc.YES) {

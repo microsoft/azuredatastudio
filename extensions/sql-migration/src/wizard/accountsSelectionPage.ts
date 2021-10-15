@@ -111,7 +111,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 					await this._accountTenantFlexContainer.updateCssStyles({
 						'display': 'none'
 					});
-					if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= 0) {
+					if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= 0)) {
 						(<azdata.CategoryValue[]>this._azureAccountsDropdown.values)?.forEach((account, index) => {
 							if (account.name === this.migrationStateModel.savedInfo.azureAccount?.displayInfo.userId) {
 								selectDropDownIndex(this._azureAccountsDropdown, index);

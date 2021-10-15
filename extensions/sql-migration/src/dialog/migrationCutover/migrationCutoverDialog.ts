@@ -405,12 +405,13 @@ export class MigrationCutoverDialog {
 		});
 
 		this._retryButton = this._view.modelBuilder.button().withProps({
-			// iconPath: IconPathHelper.retry,
+			iconPath: IconPathHelper.discard,
+			enabled: false,
 			iconHeight: '16px',
 			iconWidth: '16px',
 			label: loc.RETRY_MIGRATION,
 			height: '20px',
-			width: '100px',
+			width: '120px',
 			CSSStyles: {
 				...styles.BODY_CSS,
 			}
@@ -749,6 +750,8 @@ export class MigrationCutoverDialog {
 			this._cancelButton.enabled =
 				migrationStatusTextValue === MigrationStatus.Creating ||
 				migrationStatusTextValue === MigrationStatus.InProgress;
+
+			this._retryButton.enabled = migrationStatusTextValue === MigrationStatus.Failed;
 		} catch (e) {
 			displayDialogErrorMessage(this._dialogObject, loc.MIGRATION_STATUS_REFRESH_ERROR, e);
 			console.log(e);

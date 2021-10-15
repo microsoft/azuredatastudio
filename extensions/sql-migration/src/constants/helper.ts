@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { MigrationContext } from '../models/migrationLocalStorage';
-import { MigrationMode } from '../models/stateMachine';
+import { MigrationMode, MigrationTargetType } from '../models/stateMachine';
 import * as loc from './strings';
 
 export enum SQLTargetAssetType {
@@ -23,10 +23,38 @@ export function getMigrationTargetType(migration: MigrationContext): string {
 	}
 }
 
+export function getMigrationTargetTypeEnum(migration: MigrationContext): MigrationTargetType | undefined {
+	switch (migration.targetManagedInstance.type) {
+		case SQLTargetAssetType.SQLMI:
+			return MigrationTargetType.SQLMI;
+		case SQLTargetAssetType.SQLVM:
+			return MigrationTargetType.SQLVM;
+		default:
+			return undefined;
+	}
+}
+
 export function getMigrationMode(migration: MigrationContext): string {
-	return migration.migrationContext.properties.offlineConfiguration?.offline?.valueOf() ? loc.OFFLINE : loc.OFFLINE;
+	return migration.migrationContext.properties.offlineConfiguration?.offline?.valueOf() ? loc.OFFLINE : loc.ONLINE;
 }
 
 export function getMigrationModeEnum(migration: MigrationContext): MigrationMode {
-	return migration.migrationContext.properties.autoCutoverConfiguration?.autoCutover?.valueOf() ? MigrationMode.OFFLINE : MigrationMode.OFFLINE;
+	return migration.migrationContext.properties.offlineConfiguration?.offline?.valueOf() ? MigrationMode.OFFLINE : MigrationMode.ONLINE;
+}
+
+export function getResourceGroupId(resourceId: string): string {
+	return resourceId.split('/providers')[0];
+}
+
+export function getResourceGroupName(resourceId: string): string {
+	return getResourceGroupId(resourceId).split('/')[-1];
+}
+
+export function getStorageAccountName(resourceId: string): string {
+	const splitResourceId = resourceId.split('/');
+	return splitResourceId[splitResourceId.length - 1];
+}
+
+export function getBlobContainerId(resourceGroupId: string, storageAccountName: string, blobContainerName: string): string {
+	return `${resourceGroupId}/providers/Microsoft.Storage/storageAccounts/${storageAccountName}/blobServices/default/containers/${blobContainerName}`;
 }

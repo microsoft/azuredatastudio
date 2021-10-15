@@ -182,6 +182,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public refreshDatabaseBackupPage!: boolean;
 
 	public _databaseSelection!: azdata.DeclarativeTableCellValue[][];
+	public retryMigration!: boolean;
 	public resumeAssessment!: boolean;
 	public savedInfo!: SavedInfo;
 	public closedPage!: number;
