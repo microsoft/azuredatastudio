@@ -970,6 +970,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				response.databaseMigration.properties.backupConfiguration = requestBody.properties.backupConfiguration!;
 				response.databaseMigration.properties.offlineConfiguration = requestBody.properties.offlineConfiguration!;
 
+				let wizardEntryPoint = 'default';
+				if (this.resumeAssessment) {
+					wizardEntryPoint = 'saveAndClose';
+				}
 				if (response.status === 201 || response.status === 200) {
 					sendSqlMigrationActionEvent(
 						TelemetryViews.MigrationWizardSummaryPage,
@@ -988,7 +992,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 							'targetDatabaseName': this._targetDatabaseNames[i],
 							'serverName': this._targetServerInstance.name,
 							'sqlMigrationServiceId': Buffer.from(this._sqlMigrationService?.id!).toString('base64'),
-							'irRegistered': (this._nodeNames.length > 0).toString()
+							'irRegistered': (this._nodeNames.length > 0).toString(),
+							'wizardEntryPoint': wizardEntryPoint,
 						},
 						{
 						}
