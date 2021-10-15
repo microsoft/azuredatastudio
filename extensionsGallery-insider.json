@@ -4446,7 +4446,7 @@
 				{
 					"extensionId": "87",
 					"extensionName": "dsct-oracle-to-ms-sql",
-					"displayName": "Database Schema Conversion Toolkit (Oracle to MS SQL)",
+					"displayName": "Database Schema Conversion Toolkit (Oracle to Microsoft SQL)",
 					"shortDescription": "Azure Data Studio extension to convert Oracle Database objects to Microsoft SQL Server or Azure SQL database objects",
 					"publisher": {
 						"displayName": "Microsoft",
@@ -4455,34 +4455,34 @@
 					},
 					"versions": [
 						{
-							"version": "0.1.0",
-							"lastUpdated": "10/6/2021",
+							"version": "0.1.1",
+							"lastUpdated": "10/15/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/21279.1/dsct-oracle-to-ms-sql-0.1.0.vsix"
+									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/21288.1/dsct-oracle-to-ms-sql-0.1.1.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/21279.1/icon.png"
+									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/21288.1/icon.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/21279.1/README.md"
+									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/21288.1/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Changelog",
-									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/21279.1/CHANGELOG.md"
+									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/21288.1/CHANGELOG.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/21279.1/package.json"
+									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/21288.1/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/21279.1/LICENSE.rtf"
+									"source": "https://dsct.blob.core.windows.net/extensions/dsct-oracle-to-ms-sql/21288.1/LICENSE.rtf"
 								}
 							],
 							"properties": [
