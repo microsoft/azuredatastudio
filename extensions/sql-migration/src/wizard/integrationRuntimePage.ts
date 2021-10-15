@@ -408,7 +408,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		this._dmsDropdown.loading = true;
 		try {
 			this._dmsDropdown.values = await this.migrationStateModel.getSqlMigrationServiceValues(this.migrationStateModel._targetSubscription, <SqlManagedInstance>this.migrationStateModel._targetServerInstance, resourceGroupName);
-			const selectedSqlMigrationService = this._dmsDropdown.values.find(v => v.displayName.toLowerCase() === this.migrationStateModel._sqlMigrationService?.name.toLowerCase());
+			const selectedSqlMigrationService = this._dmsDropdown.values.find(v => v.displayName.toLowerCase() === this.migrationStateModel._sqlMigrationService?.name?.toLowerCase());
 
 			if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.IntegrationRuntime && this._dmsDropdown.values) {
 				this._dmsDropdown.values.forEach((resource, resourceIndex) => {

@@ -68,6 +68,11 @@ export enum Page {
 	Summary
 }
 
+export enum WizardEntryPoint {
+	Default = 'Default',
+	SaveAndClose = 'SaveAndClose',
+}
+
 export interface DatabaseBackupModel {
 	migrationMode: MigrationMode;
 	networkContainerType: NetworkContainerType;
@@ -970,9 +975,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				response.databaseMigration.properties.backupConfiguration = requestBody.properties.backupConfiguration!;
 				response.databaseMigration.properties.offlineConfiguration = requestBody.properties.offlineConfiguration!;
 
-				let wizardEntryPoint = 'default';
+				let wizardEntryPoint = WizardEntryPoint.Default;
 				if (this.resumeAssessment) {
-					wizardEntryPoint = 'saveAndClose';
+					wizardEntryPoint = WizardEntryPoint.SaveAndClose;
 				}
 				if (response.status === 201 || response.status === 200) {
 					sendSqlMigrationActionEvent(
