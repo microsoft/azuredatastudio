@@ -68,6 +68,11 @@ export enum Page {
 	Summary
 }
 
+export enum WizardEntryPoint {
+	Default = 'Default',
+	SaveAndClose = 'SaveAndClose',
+}
+
 export interface DatabaseBackupModel {
 	migrationMode: MigrationMode;
 	networkContainerType: NetworkContainerType;
@@ -127,6 +132,7 @@ export interface SavedInfo {
 	targetSubscription: azureResource.AzureResourceSubscription | null;
 	blobs: Blob[];
 	targetDatabaseNames: string[];
+	migrationServiceId: string | null;
 }
 
 
@@ -987,6 +993,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				response.databaseMigration.properties.backupConfiguration = requestBody.properties.backupConfiguration!;
 				response.databaseMigration.properties.offlineConfiguration = requestBody.properties.offlineConfiguration!;
 
+				let wizardEntryPoint = WizardEntryPoint.Default;
+				if (this.resumeAssessment) {
+					wizardEntryPoint = WizardEntryPoint.SaveAndClose;
+				}
 				if (response.status === 201 || response.status === 200) {
 					sendSqlMigrationActionEvent(
 						TelemetryViews.MigrationWizardSummaryPage,
@@ -1005,7 +1015,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 							'targetDatabaseName': this._targetDatabaseNames[i],
 							'serverName': this._targetServerInstance.name,
 							'sqlMigrationServiceId': Buffer.from(this._sqlMigrationService?.id!).toString('base64'),
-							'irRegistered': (this._nodeNames.length > 0).toString()
+							'irRegistered': (this._nodeNames.length > 0).toString(),
+							'wizardEntryPoint': wizardEntryPoint,
 						},
 						{
 						}
@@ -1054,12 +1065,14 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			networkShare: null,
 			targetSubscription: null,
 			blobs: [],
-			targetDatabaseNames: []
+			targetDatabaseNames: [],
+			migrationServiceId: null,
 		};
 		switch (currentPage) {
 			case Page.Summary:
 
 			case Page.IntegrationRuntime:
+				saveInfo.migrationServiceId = this._sqlMigrationService?.id!;
 
 			case Page.DatabaseBackup:
 				saveInfo.networkContainerType = this._databaseBackup.networkContainerType;
