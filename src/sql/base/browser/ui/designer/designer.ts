@@ -26,6 +26,7 @@ import { DesignerPropertiesPane, PropertiesPaneObjectContext } from 'sql/base/br
 import { Button, IButtonStyles } from 'sql/base/browser/ui/button/button';
 import { ButtonColumn } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
 import { Codicon } from 'vs/base/common/codicons';
+import { Color } from 'vs/base/common/color';
 
 export interface IDesignerStyle {
 	tabbedPanelStyles?: ITabbedPanelStyles;
@@ -34,6 +35,7 @@ export interface IDesignerStyle {
 	selectBoxStyles?: ISelectBoxStyles;
 	checkboxStyles?: ICheckboxStyles;
 	buttonStyles?: IButtonStyles;
+	paneSeparator?: Color;
 }
 
 export type DesignerUIComponent = InputBox | Checkbox | Table<Slick.SlickData> | SelectBox;
@@ -173,11 +175,11 @@ export class Designer extends Disposable implements IThemable {
 		});
 		this._propertiesPane.style();
 		this._verticalSplitView.style({
-			separatorBorder: styles.selectBoxStyles.selectBorder
+			separatorBorder: styles.paneSeparator
 		});
 
 		this._horizontalSplitView.style({
-			separatorBorder: styles.selectBoxStyles.selectBorder
+			separatorBorder: styles.paneSeparator
 		});
 
 		this._buttons.forEach((button) => {
