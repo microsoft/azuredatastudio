@@ -5,7 +5,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { SqlMigrationAssessmentResultItem, SqlMigrationImpactedObjectInfo } from '../../../../mssql/src/mssql';
-import { MigrationStateModel, MigrationTargetType } from '../../models/stateMachine';
+import { MigrationStateModel, MigrationTargetType, Page } from '../../models/stateMachine';
 import * as constants from '../../constants/strings';
 import { debounce } from '../../api/utils';
 import { IconPath, IconPathHelper } from '../../constants/iconPathHelper';
@@ -962,7 +962,7 @@ export class SqlDatabaseTree {
 			});
 		}
 		await this._instanceTable.setDataValues(instanceTableValues);
-		if ((this._model.resumeAssessment && this._model.savedInfo.closedPage >= 2)) {
+		if ((this._model.resumeAssessment && this._model.savedInfo.closedPage >= Page.SKURecommendation)) {
 			await this._databaseTable.setDataValues(this._model.savedInfo.migrationDatabases);
 		} else {
 			await this._databaseTable.setDataValues(this._databaseTableValues);
