@@ -41,12 +41,3 @@ export function getMigrationMode(migration: MigrationContext): string {
 export function getMigrationModeEnum(migration: MigrationContext): MigrationMode {
 	return migration.migrationContext.properties.offlineConfiguration?.offline?.valueOf() ? MigrationMode.OFFLINE : MigrationMode.ONLINE;
 }
-
-export function getResourceGroupId(resourceId: string): string {
-	return resourceId.split('/providers')[0];
-}
-
-export function getResourceName(resourceId: string): string {
-	const splitResourceId = resourceId.split('/');
-	return splitResourceId[splitResourceId.length - 1];
-}

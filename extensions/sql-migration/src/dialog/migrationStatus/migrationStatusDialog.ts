@@ -321,12 +321,8 @@ export class MigrationStatusDialog {
 					clearDialogMessage(this._dialogObject);
 					const migration = this._model._migrations.find(migration => migration.migrationContext.id === migrationId);
 					if (this.canRetryMigration(migration?.migrationContext.properties.migrationStatus)) {
-						void vscode.window.showInformationMessage(loc.RETRY_MIGRATION, loc.YES, loc.NO).then(async (v) => {
-							if (v === loc.YES) {
-								let retryMigrationDialog = new RetryMigrationDialog(this._context, migration!);
-								await retryMigrationDialog.openDialog();
-							}
-						});
+						let retryMigrationDialog = new RetryMigrationDialog(this._context, migration!);
+						await retryMigrationDialog.openDialog();
 					}
 					else {
 						await vscode.window.showInformationMessage(loc.MIGRATION_CANNOT_RETRY);

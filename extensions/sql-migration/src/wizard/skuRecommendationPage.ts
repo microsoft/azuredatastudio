@@ -94,7 +94,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this._detailsComponent = this.createDetailsComponent(view); // The details of what can be moved
 		this._skipAssessmentCheckbox = view.modelBuilder.checkBox().withProps({
 			label: constants.SKU_RECOMMENDATION_ASSESSMENT_ERROR_BYPASS,
-			checked: false,
+			checked: this.migrationStateModel.retryMigration,
 			CSSStyles: {
 				...styles.SECTION_HEADER_CSS,
 				'margin': '10px 0 0 0',
@@ -540,7 +540,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				await this.migrationStateModel.getDatabaseAssessments(MigrationTargetType.SQLMI);
 			}
 
-			const assessmentError = this.migrationStateModel._assessmentResults.assessmentError;
+			const assessmentError = this.migrationStateModel._assessmentResults?.assessmentError;
 			if (assessmentError) {
 				errors.push(`message: ${assessmentError.message}${EOL}stack: ${assessmentError.stack}`);
 			}
@@ -566,7 +566,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			} else {
 				this._assessmentStatusIcon.iconPath = IconPathHelper.completedMigration;
 				this._igComponent.value = constants.ASSESSMENT_COMPLETED(serverName);
-				this._detailsComponent.value = constants.SKU_RECOMMENDATION_ALL_SUCCESSFUL(this.migrationStateModel._assessmentResults.databaseAssessments.length);
+				this._detailsComponent.value = constants.SKU_RECOMMENDATION_ALL_SUCCESSFUL(this.migrationStateModel._assessmentResults?.databaseAssessments?.length);
 			}
 		}
 
@@ -602,9 +602,10 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		await this.assessmentGroupContainer.updateCssStyles({ 'display': display });
 		this.assessmentGroupContainer.display = display;
 
-		display = this._rbg.selectedCardId
+		display = (this._rbg.selectedCardId
 			&& (!failedAssessment || this._skipAssessmentCheckbox.checked)
 			&& this.migrationStateModel._migrationDbs.length > 0
+			|| this.migrationStateModel.retryMigration)
 			? 'inline'
 			: 'none';
 		await this._targetContainer.updateCssStyles({ 'display': display });

@@ -1113,6 +1113,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	}
 
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
+		if (this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.BLOB_CONTAINER) {
+			this.wizard.nextButton.enabled = true;
+		}
 	}
 
 	private async switchNetworkContainerFields(containerType: NetworkContainerType): Promise<void> {

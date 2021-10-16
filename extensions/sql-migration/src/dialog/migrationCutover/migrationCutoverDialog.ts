@@ -749,7 +749,12 @@ export class MigrationCutoverDialog {
 				migrationStatusTextValue === MigrationStatus.Creating ||
 				migrationStatusTextValue === MigrationStatus.InProgress;
 
-			this._retryButton.enabled = migrationStatusTextValue === MigrationStatus.Failed;
+			this._retryButton.enabled =
+				migrationStatusTextValue !== MigrationStatus.InProgress &&
+				migrationStatusTextValue !== MigrationStatus.Creating &&
+				migrationStatusTextValue !== MigrationStatus.Completing &&
+				migrationStatusTextValue !== MigrationStatus.Canceling;
+
 		} catch (e) {
 			displayDialogErrorMessage(this._dialogObject, loc.MIGRATION_STATUS_REFRESH_ERROR, e);
 			console.log(e);

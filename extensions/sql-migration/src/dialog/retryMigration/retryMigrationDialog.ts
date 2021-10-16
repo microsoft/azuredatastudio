@@ -7,11 +7,11 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as mssql from '../../../../mssql';
 import { azureResource } from 'azureResource';
-import { getLocations, getResourceGroupFromId, getBlobContainerId } from '../../api/azure';
+import { getLocations, getResourceGroupFromId, getBlobContainerId, getFullResourceGroupFromId, getResourceName } from '../../api/azure';
 import { MigrationMode, MigrationStateModel, NetworkContainerType, SavedInfo, Page } from '../../models/stateMachine';
 import { MigrationContext } from '../../models/migrationLocalStorage';
 import { WizardController } from '../../wizard/wizardController';
-import { getMigrationModeEnum, getMigrationTargetTypeEnum, getResourceGroupId, getResourceName } from '../../constants/helper';
+import { getMigrationModeEnum, getMigrationTargetTypeEnum } from '../../constants/helper';
 
 export class RetryMigrationDialog {
 	private _context: vscode.ExtensionContext;
@@ -47,7 +47,7 @@ export class RetryMigrationDialog {
 			subscription: migration.subscription,
 			location: location,
 			resourceGroup: {
-				id: getResourceGroupId(migration.targetManagedInstance.id),
+				id: getFullResourceGroupFromId(migration.targetManagedInstance.id),
 				name: getResourceGroupFromId(migration.targetManagedInstance.id),
 				subscription: migration.subscription
 			},
@@ -69,7 +69,7 @@ export class RetryMigrationDialog {
 
 		const getStorageAccountResourceGroup = (storageAccountResourceId: string) => {
 			return {
-				id: getResourceGroupId(storageAccountResourceId!),
+				id: getFullResourceGroupFromId(storageAccountResourceId!),
 				name: getResourceGroupFromId(storageAccountResourceId!),
 				subscription: migration.subscription
 			};
@@ -104,7 +104,7 @@ export class RetryMigrationDialog {
 			savedInfo.blobs = [
 				{
 					blobContainer: {
-						id: getBlobContainerId(getResourceGroupId(storageAccountResourceId!), getResourceName(storageAccountResourceId!), sourceLocation?.azureBlob.blobContainerName),
+						id: getBlobContainerId(getFullResourceGroupFromId(storageAccountResourceId!), getResourceName(storageAccountResourceId!), sourceLocation?.azureBlob.blobContainerName),
 						name: sourceLocation?.azureBlob.blobContainerName,
 						subscription: migration.subscription
 					},
