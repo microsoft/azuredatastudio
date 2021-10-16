@@ -864,11 +864,10 @@ export class ProjectsController {
 	 * 			outputFolder: 'C:\Source',
 	 * 			projectName: 'MyProject'}
 	 */
-	public async selectAutorestProjectLocation(specPath: string): Promise<{ newProjectFolder: string, outputFolder: string, projectName: string } | undefined> {
+	public async selectAutorestProjectLocation(projectName: string): Promise<{ newProjectFolder: string, outputFolder: string, projectName: string } | undefined> {
 		let valid = false;
 		let newProjectFolder: string = '';
 		let outputFolder: string = '';
-		let projectName: string = '';
 
 		let quickpickSelection = await vscode.window.showQuickPick(
 			[constants.browseEllipsisWithIcon],
@@ -893,7 +892,6 @@ export class ProjectsController {
 
 			outputFolder = folders[0].fsPath;
 
-			projectName = path.basename(specPath, path.extname(specPath));
 			newProjectFolder = path.join(outputFolder, projectName);
 
 			if (await utils.exists(newProjectFolder)) {
@@ -926,26 +924,20 @@ export class ProjectsController {
 	}
 
 	public async promptForAutorestProjectName(defaultName?: string): Promise<string | undefined> {
-		let valid: boolean = false;
-		let name: string | undefined = '';
-
-		while (!valid) {
-			name = await vscode.window.showInputBox({
-				ignoreFocusOut: true,
-				prompt: constants.autorestProjectName,
-				value: defaultName,
-				validateInput: (value) => {
-					return value.trim() ? undefined : constants.nameMustNotBeEmpty;
-				}
-			});
-
-			if (name === undefined) {
-				return; // cancelled by user
+		let name: string | undefined = await vscode.window.showInputBox({
+			ignoreFocusOut: true,
+			prompt: constants.autorestProjectName,
+			value: defaultName,
+			validateInput: (value) => {
+				return value.trim() ? undefined : constants.nameMustNotBeEmpty;
 			}
+		});
 
-			name = name.trim();
-			valid = true;
+		if (name === undefined) {
+			return; // cancelled by user
 		}
+
+		name = name.trim();
 
 		return name;
 	}
@@ -958,15 +950,15 @@ export class ProjectsController {
 				return;
 			}
 
-			// 2. select location, make new folder
-			const projectInfo = await this.selectAutorestProjectLocation(specPath!);
-			if (!projectInfo) {
+			// 2. prompt for project name
+			const projectName = await this.promptForAutorestProjectName(path.basename(specPath, path.extname(specPath)));
+			if (!projectName) {
 				return;
 			}
 
-			// 3. prompt for project name
-			const projectName = await this.promptForAutorestProjectName(projectInfo.projectName);
-			if (!projectName) {
+			// 3. select location, make new folder
+			const projectInfo = await this.selectAutorestProjectLocation(projectName!);
+			if (!projectInfo) {
 				return;
 			}
 
