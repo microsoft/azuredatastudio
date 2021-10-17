@@ -358,6 +358,10 @@ export function getResourceGroupFromId(id: string): string {
 	return id.replace(RegExp('^(.*?)/resourceGroups/'), '').replace(RegExp('/providers/.*'), '').toLowerCase();
 }
 
+export function getFullResourceGroupFromId(id: string): string {
+	return id.replace(RegExp('/providers/.*'), '').toLowerCase();
+}
+
 export interface SqlMigrationServiceProperties {
 	name: string;
 	subscriptionId: string;

@@ -111,7 +111,7 @@
 		},
 		"dist/dialog/configurePython/configurePathPage": {
 			"configurePython.browseButtonText": "参照",
-			"configurePython.descriptionWithKernel": "The '{0}' kernel requires a Python runtime to be configured and dependencies to be installed.",
+			"configurePython.descriptionWithKernel": "'{0}' カーネルにって、Python ランタイムを構成し、依存関係をインストールする必要があります。",
 			"configurePython.descriptionWithoutKernel": "Notebook カーネルには、Python ランタイムが構成され、依存関係がインストールされている必要があります。",
 			"configurePython.existingInstall": "既存の Python インストールを使用する",
 			"configurePython.installationType": "インストールの種類",
@@ -140,7 +140,7 @@
 			"configurePython.pkgNameColumn": "名前",
 			"configurePython.requiredDependencies": "必要なカーネルの依存関係のインストール",
 			"configurePython.requiredVersionColumn": "必要なバージョン",
-			"msgNoRequirementsForKernel": "No packages are required by default for the kernel '{0}'"
+			"msgNoRequirementsForKernel": "既定では、カーネル '{0}' にはパッケージは必要ありません"
 		},
 		"dist/dialog/managePackages/addNewPackageTab": {
 			"managePackages.addNewTabTitle": "新規追加",

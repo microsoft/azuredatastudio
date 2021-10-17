@@ -705,6 +705,7 @@ describe('ProjectsController', function (): void {
 			projController.setup(x => x.generateAutorestFiles(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(async () => {
 				await testUtils.createDummyFileStructure(true, fileList, newProjFolder);
 				await testUtils.createTestFile('SELECT \'This is a post-deployment script\'', constants.autorestPostDeploymentScriptName, newProjFolder);
+				return 'some dummy console output';
 			});
 
 			projController.setup(x => x.promptForAutorestProjectName(TypeMoq.It.isAny())).returns(async () => renamedProjectName);
