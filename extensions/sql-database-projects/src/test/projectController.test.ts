@@ -684,7 +684,8 @@ describe('ProjectsController', function (): void {
 			const parentFolder = await testUtils.generateTestFolderPath();
 			await testUtils.createDummyFileStructure();
 			const specName = 'DummySpec.yaml';
-			const newProjFolder = path.join(parentFolder, path.basename(specName, '.yaml'));
+			const renamedProjectName = 'RenamedProject';
+			const newProjFolder = path.join(parentFolder, renamedProjectName);
 			let fileList: vscode.Uri[] = [];
 
 			const projController = TypeMoq.Mock.ofType(ProjectsController);
@@ -697,7 +698,7 @@ describe('ProjectsController', function (): void {
 				return {
 					newProjectFolder: newProjFolder,
 					outputFolder: parentFolder,
-					projectName: path.basename(specName, '.yaml')
+					projectName: renamedProjectName
 				};
 			});
 
@@ -706,10 +707,13 @@ describe('ProjectsController', function (): void {
 				await testUtils.createTestFile('SELECT \'This is a post-deployment script\'', constants.autorestPostDeploymentScriptName, newProjFolder);
 			});
 
-			projController.setup(x => x.promptForAutorestProjectName(TypeMoq.It.isAny())).returns(async () => path.basename(specName, '.yaml'));
+			projController.setup(x => x.promptForAutorestProjectName(TypeMoq.It.isAny())).returns(async () => renamedProjectName);
 			projController.setup(x => x.openProjectInWorkspace(TypeMoq.It.isAny())).returns(async () => { });
 
 			const project = (await projController.object.generateProjectFromOpenApiSpec())!;
+
+			should(project.projectFileName).equal(renamedProjectName);
+			should(project.projectFolderPath.endsWith(renamedProjectName)).is.true(`Expected: '${project.projectFolderPath}' to include '${renamedProjectName}'`);
 
 			should(project.postDeployScripts.length).equal(1, `Expected 1 post-deployment script, got ${project?.postDeployScripts.length}`);
 			const actual = path.basename(project.postDeployScripts[0].fsUri.fsPath);
