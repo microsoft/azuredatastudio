@@ -111,7 +111,7 @@
 		},
 		"dist/dialog/configurePython/configurePathPage": {
 			"configurePython.browseButtonText": "Parcourir",
-			"configurePython.descriptionWithKernel": "The '{0}' kernel requires a Python runtime to be configured and dependencies to be installed.",
+			"configurePython.descriptionWithKernel": "Le noyau ’{0}’ nécessite la configuration d'un runtime Python et l'installation de dépendances.",
 			"configurePython.descriptionWithoutKernel": "Les noyaux de notebook nécessitent la configuration d'un runtime Python et l'installation de dépendances.",
 			"configurePython.existingInstall": "Utiliser l'installation existante de Python",
 			"configurePython.installationType": "Type d'installation",
@@ -140,7 +140,7 @@
 			"configurePython.pkgNameColumn": "Nom",
 			"configurePython.requiredDependencies": "Installer les dépendances de noyau nécessaires",
 			"configurePython.requiredVersionColumn": "Version obligatoire",
-			"msgNoRequirementsForKernel": "No packages are required by default for the kernel '{0}'"
+			"msgNoRequirementsForKernel": "Aucun package n’est requis par défaut pour le noyau « {0} »."
 		},
 		"dist/dialog/managePackages/addNewPackageTab": {
 			"managePackages.addNewTabTitle": "Ajouter un nouveau",

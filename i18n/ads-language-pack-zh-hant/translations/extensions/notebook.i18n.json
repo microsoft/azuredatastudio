@@ -111,7 +111,7 @@
 		},
 		"dist/dialog/configurePython/configurePathPage": {
 			"configurePython.browseButtonText": "瀏覽",
-			"configurePython.descriptionWithKernel": "The '{0}' kernel requires a Python runtime to be configured and dependencies to be installed.",
+			"configurePython.descriptionWithKernel": "'{0}' 核心需要設定 Python 執行階段並安裝相依性。",
 			"configurePython.descriptionWithoutKernel": "Notebook 核心需要設定 Python 執行階段並安裝相依性。",
 			"configurePython.existingInstall": "使用現有的 Python 安裝",
 			"configurePython.installationType": "安裝類型",
@@ -140,7 +140,7 @@
 			"configurePython.pkgNameColumn": "名稱",
 			"configurePython.requiredDependencies": "安裝必要的核心相依性",
 			"configurePython.requiredVersionColumn": "所需版本",
-			"msgNoRequirementsForKernel": "No packages are required by default for the kernel '{0}'"
+			"msgNoRequirementsForKernel": "核心 '{0}' 預設不需要任何封裝"
 		},
 		"dist/dialog/managePackages/addNewPackageTab": {
 			"managePackages.addNewTabTitle": "新增",
