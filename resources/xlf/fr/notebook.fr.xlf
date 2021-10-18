@@ -260,6 +260,10 @@
         <source xml:lang="en">New Notebook (Preview)</source>
         <target state="translated">Nouveau bloc-notes (Aperçu)</target>
       </trans-unit>
+      <trans-unit id="newSection">
+        <source xml:lang="en">New Section (Preview)</source>
+        <target state="translated">Nouvelle section (Aperçu)</target>
+      </trans-unit>
       <trans-unit id="noBDCConnectionError">
         <source xml:lang="en">Spark kernels require a connection to a SQL Server Big Data Cluster master instance.</source>
         <target state="translated">Les noyaux Spark nécessitent une connexion a une instance maître de cluster Big Data SQL Server.</target>
@@ -393,8 +397,8 @@
         <target state="translated">Parcourir</target>
       </trans-unit>
       <trans-unit id="configurePython.descriptionWithKernel">
-        <source xml:lang="en">The {0} kernel requires a Python runtime to be configured and dependencies to be installed.</source>
-        <target state="translated">Le noyau {0} nécessite la configuration d'un runtime Python et l'installation de dépendances.</target>
+        <source xml:lang="en">The '{0}' kernel requires a Python runtime to be configured and dependencies to be installed.</source>
+        <target state="translated">Le noyau ’{0}’ nécessite la configuration d'un runtime Python et l'installation de dépendances.</target>
       </trans-unit>
       <trans-unit id="configurePython.descriptionWithoutKernel">
         <source xml:lang="en">Notebook kernels require a Python runtime to be configured and dependencies to be installed.</source>
@@ -500,9 +504,9 @@
         <source xml:lang="en">Required Version</source>
         <target state="translated">Version obligatoire</target>
       </trans-unit>
-      <trans-unit id="msgUnsupportedKernel">
-        <source xml:lang="en">Could not retrieve packages for kernel {0}</source>
-        <target state="translated">Impossible de récupérer les packages du noyau {0}</target>
+      <trans-unit id="msgNoRequirementsForKernel">
+        <source xml:lang="en">No packages are required by default for the kernel '{0}'</source>
+        <target state="translated">Aucun package n’est requis par défaut pour le noyau « {0} ».</target>
       </trans-unit>
     </body>
   </file>
@@ -654,7 +658,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/jupyter/jupyterNotebookProvider" source-language="en" datatype="plaintext" target-language="fr">
+  <file original="extensions/notebook/dist/jupyter/jupyterExecuteProvider" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="errNotebookUriMissing">
         <source xml:lang="en">A notebook path is required</source>
@@ -896,9 +900,21 @@
         <source xml:lang="en">Add Text Cell</source>
         <target state="translated">Ajouter une cellule de texte</target>
       </trans-unit>
+      <trans-unit id="notebook.command.boldText">
+        <source xml:lang="en">Bold Markdown Text</source>
+        <target state="translated">Mettre en gras le texte Markdown</target>
+      </trans-unit>
       <trans-unit id="notebook.command.clearactivecellresult">
         <source xml:lang="en">Clear Cell Result</source>
         <target state="translated">Effacer le résultat de la cellule</target>
+      </trans-unit>
+      <trans-unit id="notebook.command.codeBlock">
+        <source xml:lang="en">Add Code Block</source>
+        <target state="translated">Ajouter un bloc de code</target>
+      </trans-unit>
+      <trans-unit id="notebook.command.italicizeText">
+        <source xml:lang="en">Italicize Markdown Text</source>
+        <target state="translated">Mettre en italique le texte de la démarque</target>
       </trans-unit>
       <trans-unit id="notebook.command.new">
         <source xml:lang="en">New Notebook</source>
@@ -915,6 +931,10 @@
       <trans-unit id="notebook.command.runallcells">
         <source xml:lang="en">Run Cells</source>
         <target state="translated">Exécuter les cellules</target>
+      </trans-unit>
+      <trans-unit id="notebook.command.underlineText">
+        <source xml:lang="en">Underline Markdown Text</source>
+        <target state="translated">Texte de démarque</target>
       </trans-unit>
       <trans-unit id="notebook.configuration.title">
         <source xml:lang="en">Notebook configuration</source>
@@ -987,6 +1007,10 @@
       <trans-unit id="title.addNotebook">
         <source xml:lang="en">Add Notebook</source>
         <target state="translated">Ajouter un bloc-notes</target>
+      </trans-unit>
+      <trans-unit id="title.addSection">
+        <source xml:lang="en">Add Section</source>
+        <target state="translated">Ajouter une section</target>
       </trans-unit>
       <trans-unit id="title.analyzeJupyterNotebook">
         <source xml:lang="en">Analyze in Notebook</source>

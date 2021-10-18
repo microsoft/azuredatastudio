@@ -13,7 +13,7 @@ const localize = nls.loadMessageBundle();
 export const dataSourcesFileName = 'datasources.json';
 export const sqlprojExtension = '.sqlproj';
 export const sqlFileExtension = '.sql';
-export const yamlFileExtension = '.yaml';
+export const openApiSpecFileExtensions = ['yaml', 'yml', 'json'];
 export const schemaCompareExtensionId = 'microsoft.schema-compare';
 export const master = 'master';
 export const masterDacpac = 'master.dacpac';
@@ -160,7 +160,8 @@ export const enterConnStringTemplateDescription = localize('enterConnStringTempl
 export const appSettingPrompt = localize('appSettingPrompt', "Would you like to update Azure Function local.settings.json with the new connection string?");
 export const enterConnectionStringEnvNameDescription = localize('enterConnectionStringEnvNameDescription', "Enter environment variable for SQL connection string");
 export const deployDbTaskName = localize('deployDbTaskName', "Deploying SQL Db Project Locally");
-export const deployProjectSucceed = localize('deployProjectSucceed', "Database project deployed successfully");
+export const publishProjectSucceed = localize('publishProjectSucceed', "Database project published successfully");
+export const publishingProjectMessage = localize('publishingProjectMessage', "Publishing project in a container...");
 export const cleaningDockerImagesMessage = localize('cleaningDockerImagesMessage', "Cleaning existing deployments...");
 export const creatingDeploymentSettingsMessage = localize('creatingDeploymentSettingsMessage', "Creating deployment settings ...");
 export const runningDockerMessage = localize('runningDockerMessage', "Building and running the docker container ...");
@@ -169,8 +170,10 @@ export const dockerContainerNotRunningErrorMessage = localize('dockerContainerNo
 export const dockerContainerFailedToRunErrorMessage = localize('dockerContainerFailedToRunErrorMessage', "Failed to run the docker container");
 export const connectingToSqlServerOnDockerMessage = localize('connectingToSqlServerOnDockerMessage', "Connecting to SQL Server on Docker");
 export const deployProjectFailedMessage = localize('deployProjectFailedMessage', "Failed to open a connection to the deployed database'");
+export const containerAlreadyExistForProject = localize('containerAlreadyExistForProject', "Other servers on container already exist for the project. Do you want to delete them?");
+export const checkoutOutputMessage = localize('checkoutOutputMessage', "Check output pane for more details");
 export function taskFailedError(taskName: string, err: string): string { return localize('taskFailedError.error', "Failed to complete task '{0}'. Error: {1}", taskName, err); }
-export function publishToContainerFailed(errorMessage: string) { return localize('publishToContainerFailed', "Failed to publish to container. Check output pane for more details. {0}", errorMessage); }
+export function publishToContainerFailed(errorMessage: string) { return localize('publishToContainerFailed', "Failed to publish to container. {0}", errorMessage); }
 export function deployAppSettingUpdateFailed(appSetting: string) { return localize('deployAppSettingUpdateFailed', "Failed to update app setting '{0}'", appSetting); }
 export function deployAppSettingUpdating(appSetting: string) { return localize('deployAppSettingUpdating', "Updating app setting: '{0}'", appSetting); }
 export function connectionFailedError(error: string) { return localize('connectionFailedError', "Connection failed error: '{0}'", error); }
@@ -420,11 +423,18 @@ export enum DatabaseProjectItemType {
 // AutoRest
 export const autorestPostDeploymentScriptName = 'PostDeploymentScript.sql';
 export const nodeButNotAutorestFound = localize('nodeButNotAutorestFound', "Autorest tool not found in system path, but found Node.js.  Running via npx.  Please execute 'npm install autorest -g' to install permanently.");
-export const nodeNotFound = localize('nodeNotFound', "Neither autorest nor Node.js (npx) found in system path.  Please install Node.js for autorest generation to work.");
+export const nodeNotFound = localize('nodeNotFound', "Neither Autorest nor Node.js (npx) found in system path.  Please install Node.js for Autorest generation to work.");
+export const nodeButNotAutorestFoundPrompt = localize('nodeButNotAutorestFoundPrompt', "Autorest is not installed. To proceed, choose whether to run Autorest from a temporary location via 'npx' or install Autorest globally then run.");
+export const installGlobally = localize('installGlobally', "Install globally");
+export const runViaNpx = localize('runViaNpx', "Run via npx");
+
 export const selectSpecFile = localize('selectSpecFile', "Select OpenAPI/Swagger spec file");
-export function generatingProjectFailed(errorMessage: string) { return localize('generatingProjectFailed', "Generating project via AutoRest failed: {0}", errorMessage); }
+export function generatingProjectFailed(errorMessage: string) { return localize('generatingProjectFailed', "Generating project via AutoRest failed.  Check output pane for more details. Error: {0}", errorMessage); }
+export const noSqlFilesGenerated = localize('noSqlFilesGenerated', "No .sql files were generated by Autorest. Please confirm that your spec contains model definitions, or check the output log for details.");
 export function multipleMostDeploymentScripts(count: number) { return localize('multipleMostDeploymentScripts', "Unexpected number of {0} files: {1}", autorestPostDeploymentScriptName, count); }
 export const specSelectionText = localize('specSelectionText', "OpenAPI/Swagger spec");
+export const autorestProjectName = localize('autorestProjectName', "New SQL project name");
+export function generatingProjectFromAutorest(specName: string) { return localize('generatingProjectFromAutorest', "Generating new SQL project from {0}...  Check output window for details.", specName); }
 
 // System dbs
 export const systemDbs = ['master', 'msdb', 'tempdb', 'model'];
@@ -466,6 +476,7 @@ export function getTargetPlatformFromVersion(version: string): string {
 export const hostFileName = 'host.json';
 export const sqlExtensionPackageName = 'Microsoft.Azure.WebJobs.Extensions.Sql';
 export const placeHolderObject = '[dbo].[table1]';
+export const sqlBindingsHelpLink = 'https://github.com/Azure/azure-functions-sql-extension/blob/main/README.md';
 
 export const input = localize('input', "Input");
 export const output = localize('output', "Output");
@@ -489,3 +500,5 @@ export const save = localize('save', "Save");
 export function settingAlreadyExists(settingName: string) { return localize('SettingAlreadyExists', 'Local app setting \'{0}\' already exists. Overwrite?', settingName); }
 export function failedToParse(errorMessage: string) { return localize('failedToParse', 'Failed to parse "{0}": {1}.', azureFunctionLocalSettingsFileName, errorMessage); }
 export function jsonParseError(error: string, line: number, column: number) { return localize('jsonParseError', '{0} near line "{1}", column "{2}"', error, line, column); }
+export const moreInformation = localize('moreInformation', "More Information");
+export const addPackageReferenceMessage = localize('addPackageReferenceMessage', 'To use SQL bindings, ensure your Azure Functions project has a reference to {0}', sqlExtensionPackageName);

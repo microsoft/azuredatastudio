@@ -24,8 +24,8 @@ export class DiffNotebookInput extends SideBySideEditorInput {
 		@INotebookService notebookService: INotebookService,
 		@ILogService logService: ILogService
 	) {
-		let originalInput = instantiationService.createInstance(FileNotebookInput, diffInput.primary.getName(), diffInput.primary.resource, diffInput.originalInput as FileEditorInput);
-		let modifiedInput = instantiationService.createInstance(FileNotebookInput, diffInput.secondary.getName(), diffInput.secondary.resource, diffInput.modifiedInput as FileEditorInput);
+		let originalInput = instantiationService.createInstance(FileNotebookInput, diffInput.primary.getName(), diffInput.primary.resource, diffInput.originalInput as FileEditorInput, false);
+		let modifiedInput = instantiationService.createInstance(FileNotebookInput, diffInput.secondary.getName(), diffInput.secondary.resource, diffInput.modifiedInput as FileEditorInput, false);
 		super(title, diffInput.getTitle(), modifiedInput, originalInput);
 		this._notebookService = notebookService;
 		this._logService = logService;

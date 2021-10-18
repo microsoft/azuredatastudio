@@ -8,103 +8,113 @@ import * as colors from './colors';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import * as cr from 'vs/platform/theme/common/colorRegistry';
 import * as sqlcr from 'sql/platform/theme/common/colorRegistry';
-import { attachStyler, defaultListStyles, IColorMapping, IStyleOverrides } from 'vs/platform/theme/common/styler';
+import { attachStyler, computeStyles, defaultButtonStyles, defaultListStyles, IColorMapping, IStyleOverrides } from 'vs/platform/theme/common/styler';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IThemable } from 'vs/base/common/styler';
 
-export function attachDropdownStyler(widget: IThemable, themeService: IThemeService, style?:
-	{
-		backgroundColor?: cr.ColorIdentifier,
-		foregroundColor?: cr.ColorIdentifier,
-		borderColor?: cr.ColorIdentifier,
-		buttonForeground?: cr.ColorIdentifier,
-		buttonBackground?: cr.ColorIdentifier,
-		buttonHoverBackground?: cr.ColorIdentifier,
-		buttonFocusOutline?: cr.ColorIdentifier
-	}): IDisposable {
-	return attachStyler(themeService, {
-		foregroundColor: (style && style.foregroundColor) || cr.inputForeground,
-		borderColor: (style && style.borderColor) || cr.inputBorder,
-		backgroundColor: (style && style.backgroundColor) || cr.editorBackground,
-		buttonForeground: (style && style.buttonForeground) || cr.buttonForeground,
-		buttonBackground: (style && style.buttonBackground) || cr.buttonBackground,
-		buttonHoverBackground: (style && style.buttonHoverBackground) || cr.buttonHoverBackground,
-		buttonBorder: cr.contrastBorder,
-		buttonFocusOutline: (style && style.buttonFocusOutline) || colors.buttonFocusOutline
-	}, widget);
+export interface IDropdownStyleOverrides extends IStyleOverrides {
+	foregroundColor?: cr.ColorIdentifier;
+	borderColor?: cr.ColorIdentifier;
+	backgroundColor?: cr.ColorIdentifier;
+	buttonForeground?: cr.ColorIdentifier;
+	buttonBackground?: cr.ColorIdentifier;
+	buttonHoverBackground?: cr.ColorIdentifier;
+	buttonBorder?: cr.ColorIdentifier;
+	buttonFocusOutline?: cr.ColorIdentifier;
 }
 
-export function attachInputBoxStyler(widget: IThemable, themeService: IThemeService, style?:
-	{
-		inputBackground?: cr.ColorIdentifier,
-		inputForeground?: cr.ColorIdentifier,
-		disabledInputBackground?: cr.ColorIdentifier,
-		disabledInputForeground?: cr.ColorIdentifier,
-		inputBorder?: cr.ColorIdentifier,
-		inputValidationInfoBorder?: cr.ColorIdentifier,
-		inputValidationInfoBackground?: cr.ColorIdentifier,
-		inputValidationWarningBorder?: cr.ColorIdentifier,
-		inputValidationWarningBackground?: cr.ColorIdentifier,
-		inputValidationErrorBorder?: cr.ColorIdentifier,
-		inputValidationErrorBackground?: cr.ColorIdentifier
-	}): IDisposable {
-	return attachStyler(themeService, {
-		inputBackground: (style && style.inputBackground) || cr.inputBackground,
-		inputForeground: (style && style.inputForeground) || cr.inputForeground,
-		disabledInputBackground: (style && style.disabledInputBackground) || colors.disabledInputBackground,
-		disabledInputForeground: (style && style.disabledInputForeground) || colors.disabledInputForeground,
-		inputBorder: (style && style.inputBorder) || cr.inputBorder,
-		inputValidationInfoBorder: (style && style.inputValidationInfoBorder) || cr.inputValidationInfoBorder,
-		inputValidationInfoBackground: (style && style.inputValidationInfoBackground) || cr.inputValidationInfoBackground,
-		inputValidationWarningBorder: (style && style.inputValidationWarningBorder) || cr.inputValidationWarningBorder,
-		inputValidationWarningBackground: (style && style.inputValidationWarningBackground) || cr.inputValidationWarningBackground,
-		inputValidationErrorBorder: (style && style.inputValidationErrorBorder) || cr.inputValidationErrorBorder,
-		inputValidationErrorBackground: (style && style.inputValidationErrorBackground) || cr.inputValidationErrorBackground
-	}, widget);
+export const defaultDropdownStyle: IDropdownStyleOverrides = {
+	foregroundColor: cr.inputForeground,
+	borderColor: cr.inputBorder,
+	backgroundColor: cr.editorBackground,
+	buttonForeground: cr.buttonForeground,
+	buttonBackground: cr.buttonBackground,
+	buttonHoverBackground: cr.buttonHoverBackground,
+	buttonBorder: cr.contrastBorder,
+	buttonFocusOutline: colors.buttonFocusOutline
+};
+
+export function attachDropdownStyler(widget: IThemable, themeService: IThemeService, style?: IDropdownStyleOverrides): IDisposable {
+	return attachStyler(themeService, { ...defaultDropdownStyle, ...(style || {}) }, widget);
 }
 
-export function attachSelectBoxStyler(widget: IThemable, themeService: IThemeService, style?:
-	{
-		selectBackground?: cr.ColorIdentifier,
-		selectListBackground?: cr.ColorIdentifier,
-		selectForeground?: cr.ColorIdentifier,
-		selectBorder?: cr.ColorIdentifier,
-		disabledSelectBackground?: cr.ColorIdentifier,
-		disabledSelectForeground?: cr.ColorIdentifier,
-		inputValidationInfoBorder?: cr.ColorIdentifier,
-		inputValidationInfoBackground?: cr.ColorIdentifier,
-		inputValidationWarningBorder?: cr.ColorIdentifier,
-		inputValidationWarningBackground?: cr.ColorIdentifier,
-		inputValidationErrorBorder?: cr.ColorIdentifier,
-		inputValidationErrorBackground?: cr.ColorIdentifier,
-		focusBorder?: cr.ColorIdentifier,
-		listFocusBackground?: cr.ColorIdentifier,
-		listFocusForeground?: cr.ColorIdentifier,
-		listFocusOutline?: cr.ColorIdentifier,
-		listHoverBackground?: cr.ColorIdentifier,
-		listHoverForeground?: cr.ColorIdentifier
-	}): IDisposable {
-	return attachStyler(themeService, {
-		selectBackground: (style && style.selectBackground) || cr.selectBackground,
-		selectListBackground: (style && style.selectListBackground) || cr.selectListBackground,
-		selectForeground: (style && style.selectForeground) || cr.selectForeground,
-		selectBorder: (style && style.selectBorder) || cr.selectBorder,
-		disabledSelectBackground: (style && style.disabledSelectBackground) || colors.disabledInputBackground,
-		disabledSelectForeground: (style && style.disabledSelectForeground) || colors.disabledInputForeground,
-		inputValidationInfoBorder: (style && style.inputValidationInfoBorder) || cr.inputValidationInfoBorder,
-		inputValidationInfoBackground: (style && style.inputValidationInfoBackground) || cr.inputValidationInfoBackground,
-		inputValidationWarningBorder: (style && style.inputValidationWarningBorder) || cr.inputValidationWarningBorder,
-		inputValidationWarningBackground: (style && style.inputValidationWarningBackground) || cr.inputValidationWarningBackground,
-		inputValidationErrorBorder: (style && style.inputValidationErrorBorder) || cr.inputValidationErrorBorder,
-		inputValidationErrorBackground: (style && style.inputValidationErrorBackground) || cr.inputValidationErrorBackground,
-		focusBorder: (style && style.focusBorder) || cr.focusBorder,
-		listFocusBackground: (style && style.listFocusBackground) || cr.listFocusBackground,
-		listFocusForeground: (style && style.listFocusForeground) || cr.listFocusForeground,
-		listFocusOutline: (style && style.listFocusOutline) || cr.activeContrastBorder,
-		listHoverBackground: (style && style.listHoverBackground) || cr.listHoverBackground,
-		listHoverForeground: (style && style.listHoverForeground) || cr.listHoverForeground,
-		listHoverOutline: (style && style.listFocusOutline) || cr.activeContrastBorder
-	}, widget);
+export interface IInputBoxStyleOverrides extends IStyleOverrides {
+	inputBackground?: cr.ColorIdentifier,
+	inputForeground?: cr.ColorIdentifier,
+	disabledInputBackground?: cr.ColorIdentifier,
+	disabledInputForeground?: cr.ColorIdentifier,
+	inputBorder?: cr.ColorIdentifier,
+	inputValidationInfoBorder?: cr.ColorIdentifier,
+	inputValidationInfoBackground?: cr.ColorIdentifier,
+	inputValidationWarningBorder?: cr.ColorIdentifier,
+	inputValidationWarningBackground?: cr.ColorIdentifier,
+	inputValidationErrorBorder?: cr.ColorIdentifier,
+	inputValidationErrorBackground?: cr.ColorIdentifier
+}
+
+export const defaultInputBoxStyles: IInputBoxStyleOverrides = {
+	inputBackground: cr.inputBackground,
+	inputForeground: cr.inputForeground,
+	disabledInputBackground: colors.disabledInputBackground,
+	disabledInputForeground: colors.disabledInputForeground,
+	inputBorder: cr.inputBorder,
+	inputValidationInfoBorder: cr.inputValidationInfoBorder,
+	inputValidationInfoBackground: cr.inputValidationInfoBackground,
+	inputValidationWarningBorder: cr.inputValidationWarningBorder,
+	inputValidationWarningBackground: cr.inputValidationWarningBackground,
+	inputValidationErrorBorder: cr.inputValidationErrorBorder,
+	inputValidationErrorBackground: cr.inputValidationErrorBackground
+};
+
+export function attachInputBoxStyler(widget: IThemable, themeService: IThemeService, style?: IInputBoxStyleOverrides): IDisposable {
+	return attachStyler(themeService, { ...defaultInputBoxStyles, ...(style || {}) }, widget);
+}
+
+export interface ISelectBoxStyleOverrides extends IStyleOverrides {
+	selectBackground?: cr.ColorIdentifier,
+	selectListBackground?: cr.ColorIdentifier,
+	selectForeground?: cr.ColorIdentifier,
+	selectBorder?: cr.ColorIdentifier,
+	disabledSelectBackground?: cr.ColorIdentifier,
+	disabledSelectForeground?: cr.ColorIdentifier,
+	inputValidationInfoBorder?: cr.ColorIdentifier,
+	inputValidationInfoBackground?: cr.ColorIdentifier,
+	inputValidationWarningBorder?: cr.ColorIdentifier,
+	inputValidationWarningBackground?: cr.ColorIdentifier,
+	inputValidationErrorBorder?: cr.ColorIdentifier,
+	inputValidationErrorBackground?: cr.ColorIdentifier,
+	focusBorder?: cr.ColorIdentifier,
+	listFocusBackground?: cr.ColorIdentifier,
+	listFocusForeground?: cr.ColorIdentifier,
+	listFocusOutline?: cr.ColorIdentifier,
+	listHoverBackground?: cr.ColorIdentifier,
+	listHoverForeground?: cr.ColorIdentifier
+}
+
+export const defaultSelectBoxStyles: ISelectBoxStyleOverrides = {
+	selectBackground: cr.selectBackground,
+	selectListBackground: cr.selectListBackground,
+	selectForeground: cr.selectForeground,
+	selectBorder: cr.selectBorder,
+	disabledSelectBackground: colors.disabledInputBackground,
+	disabledSelectForeground: colors.disabledInputForeground,
+	inputValidationInfoBorder: cr.inputValidationInfoBorder,
+	inputValidationInfoBackground: cr.inputValidationInfoBackground,
+	inputValidationWarningBorder: cr.inputValidationWarningBorder,
+	inputValidationWarningBackground: cr.inputValidationWarningBackground,
+	inputValidationErrorBorder: cr.inputValidationErrorBorder,
+	inputValidationErrorBackground: cr.inputValidationErrorBackground,
+	focusBorder: cr.focusBorder,
+	listFocusBackground: cr.listFocusBackground,
+	listFocusForeground: cr.listFocusForeground,
+	listFocusOutline: cr.activeContrastBorder,
+	listHoverBackground: cr.listHoverBackground,
+	listHoverForeground: cr.listHoverForeground,
+	listHoverOutline: cr.activeContrastBorder
+};
+
+export function attachSelectBoxStyler(widget: IThemable, themeService: IThemeService, style?: ISelectBoxStyleOverrides): IDisposable {
+	return attachStyler(themeService, { ...defaultSelectBoxStyles, ...(style || {}) }, widget);
 }
 
 export function attachListBoxStyler(widget: IThemable, themeService: IThemeService, style?:
@@ -132,7 +142,7 @@ export function attachListBoxStyler(widget: IThemable, themeService: IThemeServi
 	}, widget);
 }
 
-export function attachTableStyler(widget: IThemable, themeService: IThemeService, style?: {
+export interface ITableStyleOverrides extends IStyleOverrides {
 	listFocusBackground?: cr.ColorIdentifier,
 	listFocusForeground?: cr.ColorIdentifier,
 	listActiveSelectionBackground?: cr.ColorIdentifier,
@@ -150,31 +160,35 @@ export function attachTableStyler(widget: IThemable, themeService: IThemeService
 	listSelectionOutline?: cr.ColorIdentifier,
 	listHoverOutline?: cr.ColorIdentifier,
 	tableHeaderBackground?: cr.ColorIdentifier,
-	tableHeaderForeground?: cr.ColorIdentifier
-}): IDisposable {
-	return attachStyler(themeService, {
-		listFocusBackground: (style && style.listFocusBackground) || cr.listFocusBackground,
-		listFocusForeground: (style && style.listFocusForeground) || cr.listFocusForeground,
-		listActiveSelectionBackground: (style && style.listActiveSelectionBackground) || cr.listActiveSelectionBackground,
-		listActiveSelectionForeground: (style && style.listActiveSelectionForeground) || cr.listActiveSelectionForeground,
-		listFocusAndSelectionBackground: style && style.listFocusAndSelectionBackground || colors.listFocusAndSelectionBackground,
-		listFocusAndSelectionForeground: (style && style.listFocusAndSelectionForeground) || cr.listActiveSelectionForeground,
-		listInactiveFocusBackground: (style && style.listInactiveFocusBackground),
-		listInactiveSelectionBackground: (style && style.listInactiveSelectionBackground) || cr.listInactiveSelectionBackground,
-		listInactiveSelectionForeground: (style && style.listInactiveSelectionForeground) || cr.listInactiveSelectionForeground,
-		listHoverBackground: (style && style.listHoverBackground) || cr.listHoverBackground,
-		listHoverForeground: (style && style.listHoverForeground) || cr.listHoverForeground,
-		listDropBackground: (style && style.listDropBackground) || cr.listDropBackground,
-		listFocusOutline: (style && style.listFocusOutline) || cr.activeContrastBorder,
-		listSelectionOutline: (style && style.listSelectionOutline) || cr.activeContrastBorder,
-		listHoverOutline: (style && style.listHoverOutline) || cr.activeContrastBorder,
-		listInactiveFocusOutline: style && style.listInactiveFocusOutline,
-		tableHeaderBackground: (style && style.tableHeaderBackground) || colors.tableHeaderBackground,
-		tableHeaderForeground: (style && style.tableHeaderForeground) || colors.tableHeaderForeground
-	}, widget);
+	tableHeaderForeground?: cr.ColorIdentifier,
 }
 
-export interface ITableStyleOverrides extends IStyleOverrides {
+export const defaultTableStyles: ITableStyleOverrides = {
+	listFocusBackground: cr.listFocusBackground,
+	listFocusForeground: cr.listFocusForeground,
+	listActiveSelectionBackground: cr.listActiveSelectionBackground,
+	listActiveSelectionForeground: cr.listActiveSelectionForeground,
+	listFocusAndSelectionBackground: colors.listFocusAndSelectionBackground,
+	listFocusAndSelectionForeground: cr.listActiveSelectionForeground,
+	listInactiveFocusBackground: cr.listInactiveFocusBackground,
+	listInactiveSelectionBackground: cr.listInactiveSelectionBackground,
+	listInactiveSelectionForeground: cr.listInactiveSelectionForeground,
+	listHoverBackground: cr.listHoverBackground,
+	listHoverForeground: cr.listHoverForeground,
+	listDropBackground: cr.listDropBackground,
+	listFocusOutline: cr.activeContrastBorder,
+	listSelectionOutline: cr.activeContrastBorder,
+	listHoverOutline: cr.activeContrastBorder,
+	listInactiveFocusOutline: cr.listInactiveFocusOutline,
+	tableHeaderBackground: colors.tableHeaderBackground,
+	tableHeaderForeground: colors.tableHeaderForeground
+};
+
+export function attachTableStyler(widget: IThemable, themeService: IThemeService, style?: ITableStyleOverrides): IDisposable {
+	return attachStyler(themeService, { ...defaultTableStyles, ...(style || {}) }, widget);
+}
+
+export interface IHighPerfTableStyleOverrides extends IStyleOverrides {
 	listFocusBackground?: cr.ColorIdentifier,
 	listFocusForeground?: cr.ColorIdentifier,
 	listActiveSelectionBackground?: cr.ColorIdentifier,
@@ -195,10 +209,6 @@ export interface ITableStyleOverrides extends IStyleOverrides {
 	tableHeaderForeground?: cr.ColorIdentifier,
 	cellOutlineColor?: cr.ColorIdentifier,
 	tableHeaderAndRowCountColor?: cr.ColorIdentifier
-}
-
-export function attachHighPerfTableStyler(widget: IThemable, themeService: IThemeService, overrides?: IColorMapping): IDisposable {
-	return attachStyler(themeService, { ...defaultHighPerfTableStyles, ...(overrides || {}) }, widget);
 }
 
 export const defaultHighPerfTableStyles: IColorMapping = {
@@ -223,7 +233,11 @@ export const defaultHighPerfTableStyles: IColorMapping = {
 	tableHeaderAndRowCountColor: colors.tableCellOutline
 };
 
-export function attachEditableDropdownStyler(widget: IThemable, themeService: IThemeService, style?: {
+export function attachHighPerfTableStyler(widget: IThemable, themeService: IThemeService, overrides?: IHighPerfTableStyleOverrides): IDisposable {
+	return attachStyler(themeService, { ...defaultHighPerfTableStyles, ...(overrides || {}) }, widget);
+}
+
+export interface IEditableDropdownStyleOverrides extends IStyleOverrides {
 	listFocusBackground?: cr.ColorIdentifier,
 	listFocusForeground?: cr.ColorIdentifier,
 	listActiveSelectionBackground?: cr.ColorIdentifier,
@@ -240,7 +254,6 @@ export function attachEditableDropdownStyler(widget: IThemable, themeService: IT
 	listInactiveFocusOutline?: cr.ColorIdentifier,
 	listSelectionOutline?: cr.ColorIdentifier,
 	listHoverOutline?: cr.ColorIdentifier,
-
 	inputBackground?: cr.ColorIdentifier,
 	inputForeground?: cr.ColorIdentifier,
 	inputBorder?: cr.ColorIdentifier,
@@ -252,43 +265,53 @@ export function attachEditableDropdownStyler(widget: IThemable, themeService: IT
 	inputValidationErrorBackground?: cr.ColorIdentifier,
 	contextBackground?: cr.ColorIdentifier,
 	contextBorder?: cr.ColorIdentifier
-}): IDisposable {
-	return attachStyler(themeService, {
-		listFocusBackground: (style && style.listFocusBackground) || cr.listFocusBackground,
-		listFocusForeground: (style && style.listFocusForeground) || cr.listFocusForeground,
-		listActiveSelectionBackground: (style && style.listActiveSelectionBackground) || cr.lighten(cr.listActiveSelectionBackground, 0.1),
-		listActiveSelectionForeground: (style && style.listActiveSelectionForeground) || cr.listActiveSelectionForeground,
-		listFocusAndSelectionBackground: style && style.listFocusAndSelectionBackground || cr.listActiveSelectionBackground,
-		listFocusAndSelectionForeground: (style && style.listFocusAndSelectionForeground) || cr.listActiveSelectionForeground,
-		listInactiveFocusBackground: (style && style.listInactiveFocusBackground),
-		listInactiveSelectionBackground: (style && style.listInactiveSelectionBackground) || cr.listInactiveSelectionBackground,
-		listInactiveSelectionForeground: (style && style.listInactiveSelectionForeground) || cr.listInactiveSelectionForeground,
-		listHoverBackground: (style && style.listHoverBackground) || cr.listHoverBackground,
-		listHoverForeground: (style && style.listHoverForeground) || cr.listHoverForeground,
-		listDropBackground: (style && style.listDropBackground) || cr.listDropBackground,
-		listFocusOutline: (style && style.listFocusOutline) || cr.activeContrastBorder,
-		listSelectionOutline: (style && style.listSelectionOutline) || cr.activeContrastBorder,
-		listHoverOutline: (style && style.listHoverOutline) || cr.activeContrastBorder,
-		listInactiveFocusOutline: style && style.listInactiveFocusOutline,
-		inputBackground: (style && style.inputBackground) || cr.inputBackground,
-		inputForeground: (style && style.inputForeground) || cr.inputForeground,
-		inputBorder: (style && style.inputBorder) || cr.inputBorder,
-		inputValidationInfoBorder: (style && style.inputValidationInfoBorder) || cr.inputValidationInfoBorder,
-		inputValidationInfoBackground: (style && style.inputValidationInfoBackground) || cr.inputValidationInfoBackground,
-		inputValidationWarningBorder: (style && style.inputValidationWarningBorder) || cr.inputValidationWarningBorder,
-		inputValidationWarningBackground: (style && style.inputValidationWarningBackground) || cr.inputValidationWarningBackground,
-		inputValidationErrorBorder: (style && style.inputValidationErrorBorder) || cr.inputValidationErrorBorder,
-		inputValidationErrorBackground: (style && style.inputValidationErrorBackground) || cr.inputValidationErrorBackground,
-		contextBackground: (style && style.contextBackground) || cr.editorBackground,
-		contextBorder: (style && style.contextBorder) || cr.inputBorder
-	}, widget);
 }
 
-export function attachCheckboxStyler(widget: IThemable, themeService: IThemeService, style?: { disabledCheckboxForeground?: cr.ColorIdentifier })
-	: IDisposable {
-	return attachStyler(themeService, {
-		disabledCheckboxForeground: (style && style.disabledCheckboxForeground) || colors.disabledCheckboxForeground
-	}, widget);
+export const defaultEditableDropdownStyle: IEditableDropdownStyleOverrides = {
+	listFocusBackground: cr.listFocusBackground,
+	listFocusForeground: cr.listFocusForeground,
+	listActiveSelectionBackground: cr.listActiveSelectionBackground,
+	listActiveSelectionForeground: cr.listActiveSelectionForeground,
+	listFocusAndSelectionBackground: cr.listActiveSelectionBackground,
+	listFocusAndSelectionForeground: cr.listActiveSelectionForeground,
+	listInactiveFocusBackground: cr.listInactiveFocusBackground,
+	listInactiveSelectionBackground: cr.listInactiveSelectionBackground,
+	listInactiveSelectionForeground: cr.listInactiveSelectionForeground,
+	listHoverBackground: cr.listHoverBackground,
+	listHoverForeground: cr.listHoverForeground,
+	listDropBackground: cr.listDropBackground,
+	listFocusOutline: cr.activeContrastBorder,
+	listSelectionOutline: cr.activeContrastBorder,
+	listHoverOutline: cr.activeContrastBorder,
+	listInactiveFocusOutline: cr.listInactiveFocusOutline,
+	inputBackground: cr.inputBackground,
+	inputForeground: cr.inputForeground,
+	inputBorder: cr.inputBorder,
+	inputValidationInfoBorder: cr.inputValidationInfoBorder,
+	inputValidationInfoBackground: cr.inputValidationInfoBackground,
+	inputValidationWarningBorder: cr.inputValidationWarningBorder,
+	inputValidationWarningBackground: cr.inputValidationWarningBackground,
+	inputValidationErrorBorder: cr.inputValidationErrorBorder,
+	inputValidationErrorBackground: cr.inputValidationErrorBackground,
+	contextBackground: cr.editorBackground,
+	contextBorder: cr.inputBorder
+};
+
+
+export function attachEditableDropdownStyler(widget: IThemable, themeService: IThemeService, style?: IEditableDropdownStyleOverrides): IDisposable {
+	return attachStyler(themeService, { ...defaultEditableDropdownStyle, ...(style || {}) }, widget);
+}
+
+export interface ICheckboxStyleOverrides extends IStyleOverrides {
+	disabledCheckboxForeground?: cr.ColorIdentifier
+}
+
+export const defaultCheckboxStyles: ICheckboxStyleOverrides = {
+	disabledCheckboxForeground: colors.disabledCheckboxForeground
+};
+
+export function attachCheckboxStyler(widget: IThemable, themeService: IThemeService, style?: ICheckboxStyleOverrides): IDisposable {
+	return attachStyler(themeService, {}, widget);
 }
 
 export interface IInfoBoxStyleOverrides {
@@ -329,9 +352,7 @@ export function attachInfoButtonStyler(widget: IThemable, themeService: IThemeSe
 
 export function attachTableFilterStyler(widget: IThemable, themeService: IThemeService): IDisposable {
 	return attachStyler(themeService, {
-		inputBackground: cr.inputBackground,
-		inputForeground: cr.inputForeground,
-		inputBorder: cr.inputBorder,
+		...defaultInputBoxStyles,
 		buttonForeground: cr.buttonForeground,
 		buttonBackground: cr.buttonBackground,
 		buttonHoverBackground: cr.buttonHoverBackground,
@@ -348,4 +369,27 @@ export function attachTableFilterStyler(widget: IThemable, themeService: IThemeS
 		badgeBorder: cr.contrastBorder,
 		...defaultListStyles,
 	}, widget);
+}
+
+export function attachDesignerStyler(widget: any, themeService: IThemeService): IDisposable {
+	function applyStyles(): void {
+		const colorTheme = themeService.getColorTheme();
+		const inputStyles = computeStyles(colorTheme, defaultInputBoxStyles);
+		const selectBoxStyles = computeStyles(colorTheme, defaultSelectBoxStyles);
+		const tableStyles = computeStyles(colorTheme, defaultTableStyles);
+		const checkboxStyles = computeStyles(colorTheme, defaultCheckboxStyles);
+		const buttonStyles = computeStyles(colorTheme, defaultButtonStyles);
+		widget.style({
+			inputBoxStyles: inputStyles,
+			selectBoxStyles: selectBoxStyles,
+			tableStyles: tableStyles,
+			checkboxStyles: checkboxStyles,
+			buttonStyles: buttonStyles,
+			paneSeparator: cr.resolveColorValue(sqlcr.DesignerPaneSeparator, colorTheme)
+		});
+	}
+
+	applyStyles();
+
+	return themeService.onDidColorThemeChange(applyStyles);
 }

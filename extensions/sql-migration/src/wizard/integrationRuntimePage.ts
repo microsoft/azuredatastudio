@@ -5,19 +5,20 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import { azureResource } from 'azureResource';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { MigrationStateModel, NetworkContainerType, StateChangeEvent } from '../models/stateMachine';
+import { MigrationStateModel, NetworkContainerType, Page, StateChangeEvent } from '../models/stateMachine';
 import { CreateSqlMigrationServiceDialog } from '../dialog/createSqlMigrationService/createSqlMigrationServiceDialog';
 import * as constants from '../constants/strings';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
-import { getLocationDisplayName, getSqlMigrationService, getSqlMigrationServiceAuthKeys, getSqlMigrationServiceMonitoringData, SqlManagedInstance } from '../api/azure';
+import { getFullResourceGroupFromId, getLocationDisplayName, getSqlMigrationService, getSqlMigrationServiceAuthKeys, getSqlMigrationServiceMonitoringData, SqlManagedInstance, SqlVMServer } from '../api/azure';
 import { IconPathHelper } from '../constants/iconPathHelper';
-import { findDropDownItemIndex } from '../api/utils';
+import { findDropDownItemIndex, selectDropDownIndex } from '../api/utils';
+import * as styles from '../constants/styles';
 
 export class IntergrationRuntimePage extends MigrationWizardPage {
 
 	private _view!: azdata.ModelView;
-	private _form!: azdata.FormBuilder;
 	private _statusLoadingComponent!: azdata.LoadingComponent;
 	private _subscription!: azdata.TextComponent;
 	private _location!: azdata.TextComponent;
@@ -43,23 +44,6 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 	protected async registerContent(view: azdata.ModelView): Promise<void> {
 		this._view = view;
 
-		const createNewMigrationService = view.modelBuilder.hyperlink().withProps({
-			label: constants.CREATE_NEW,
-			url: '',
-			CSSStyles: {
-				'font-size': '13px'
-			}
-		}).component();
-
-		this._disposables.push(createNewMigrationService.onDidClick(async (e) => {
-			const dialog = new CreateSqlMigrationServiceDialog();
-			const createdDmsResult = await dialog.createNewDms(this.migrationStateModel, (<azdata.CategoryValue>this._resourceGroupDropdown.value).displayName);
-			this.migrationStateModel._sqlMigrationServiceResourceGroup = createdDmsResult.resourceGroup;
-			this.migrationStateModel._sqlMigrationService = createdDmsResult.service;
-			await this.loadResourceGroupDropdown();
-			await this.populateDms(createdDmsResult.resourceGroup);
-		}));
-
 		this._statusLoadingComponent = view.modelBuilder.loadingComponent().withItem(this.createDMSDetailsContainer()).component();
 
 		this._dmsInfoContainer = this._view.modelBuilder.flexContainer().withItems([
@@ -69,19 +53,16 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			text: constants.DMS_PORTAL_INFO,
 			style: 'information',
 			CSSStyles: {
-				'font-size': '13px'
+				...styles.BODY_CSS
 			},
 			width: WIZARD_INPUT_COMPONENT_WIDTH
 		}).component();
 
-		this._form = view.modelBuilder.formContainer()
+		const form = view.modelBuilder.formContainer()
 			.withFormItems(
 				[
 					{
 						component: this.migrationServiceDropdownContainer()
-					},
-					{
-						component: createNewMigrationService
 					},
 					{
 						component: dmsPortalInfo
@@ -89,19 +70,26 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 					{
 						component: this._dmsInfoContainer
 					}
-
 				]
-			);
+			).withProps({
+				CSSStyles: {
+					'padding-top': '0'
+				}
+			}).component();
 
 		this._disposables.push(this._view.onClosed(e => {
 			this._disposables.forEach(
 				d => { try { d.dispose(); } catch { } });
 		}));
 
-		await view.initializeModel(this._form.component());
+		await view.initializeModel(form);
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
+		if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.IntegrationRuntime) {
+			this.migrationStateModel._targetSubscription = <azureResource.AzureResourceSubscription>this.migrationStateModel.savedInfo.targetSubscription;
+			this.migrationStateModel._targetServerInstance = <SqlManagedInstance | SqlVMServer>this.migrationStateModel.savedInfo.targetServerInstance;
+		}
 
 		this._subscription.value = this.migrationStateModel._targetSubscription.name;
 		this._location.value = await getLocationDisplayName(this.migrationStateModel._targetServerInstance.location);
@@ -151,41 +139,37 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			value: constants.IR_PAGE_DESCRIPTION,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			CSSStyles: {
-				'font-size': '13px',
+				...styles.BODY_CSS,
+				'margin-bottom': '16px'
 			}
 		}).component();
 
 		const subscriptionLabel = this._view.modelBuilder.text().withProps({
 			value: constants.SUBSCRIPTION,
-			requiredIndicator: true,
 			CSSStyles: {
-				'font-size': '13px',
-				'font-weight': 'bold',
+				...styles.LABEL_CSS
 			}
 		}).component();
 		this._subscription = this._view.modelBuilder.text().withProps({
 			enabled: false,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			CSSStyles: {
-				'font-size': '13px',
-				'margin': '0px 0px'
+				'margin': '0'
 			}
 		}).component();
 
 		const locationLabel = this._view.modelBuilder.text().withProps({
 			value: constants.LOCATION,
-			requiredIndicator: true,
 			CSSStyles: {
-				'font-size': '13px',
-				'font-weight': 'bold',
+				...styles.LABEL_CSS,
+				'margin-top': '1em'
 			}
 		}).component();
 		this._location = this._view.modelBuilder.text().withProps({
 			enabled: false,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			CSSStyles: {
-				'font-size': '13px',
-				'margin': '0px 0px'
+				'margin': '0'
 			}
 		}).component();
 
@@ -193,16 +177,19 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			value: constants.RESOURCE_GROUP,
 			requiredIndicator: true,
 			CSSStyles: {
-				'font-size': '13px',
-				'font-weight': 'bold',
+				...styles.LABEL_CSS
 			}
 		}).component();
 		this._resourceGroupDropdown = this._view.modelBuilder.dropDown().withProps({
 			ariaLabel: constants.RESOURCE_GROUP,
+			placeholder: constants.SELECT_RESOURCE_GROUP,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			editable: true,
 			required: true,
 			fireOnTextChange: true,
+			CSSStyles: {
+				'margin-top': '-1em'
+			}
 		}).component();
 		this._disposables.push(this._resourceGroupDropdown.onValueChanged(async (value) => {
 			const selectedIndex = findDropDownItemIndex(this._resourceGroupDropdown, value);
@@ -212,20 +199,23 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			}
 		}));
 
-		const migrationServcieDropdownLabel = this._view.modelBuilder.text().withProps({
+		const migrationServiceDropdownLabel = this._view.modelBuilder.text().withProps({
 			value: constants.IR_PAGE_TITLE,
 			requiredIndicator: true,
 			CSSStyles: {
-				'font-size': '13px',
-				'font-weight': 'bold',
+				...styles.LABEL_CSS
 			}
 		}).component();
 		this._dmsDropdown = this._view.modelBuilder.dropDown().withProps({
 			ariaLabel: constants.IR_PAGE_TITLE,
+			placeholder: constants.SELECT_RESOURCE_GROUP_PROMPT,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			editable: true,
 			required: true,
 			fireOnTextChange: true,
+			CSSStyles: {
+				'margin-top': '-1em'
+			}
 		}).component();
 		this._disposables.push(this._dmsDropdown.onValueChanged(async (value) => {
 			if (value && value !== constants.SQL_MIGRATION_SERVICE_NOT_FOUND_ERROR) {
@@ -244,6 +234,23 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			}
 		}));
 
+		const createNewMigrationService = this._view.modelBuilder.hyperlink().withProps({
+			label: constants.CREATE_NEW,
+			url: '',
+			CSSStyles: {
+				...styles.BODY_CSS
+			}
+		}).component();
+
+		this._disposables.push(createNewMigrationService.onDidClick(async (e) => {
+			const dialog = new CreateSqlMigrationServiceDialog();
+			const createdDmsResult = await dialog.createNewDms(this.migrationStateModel, (<azdata.CategoryValue>this._resourceGroupDropdown.value).displayName);
+			this.migrationStateModel._sqlMigrationServiceResourceGroup = createdDmsResult.resourceGroup;
+			this.migrationStateModel._sqlMigrationService = createdDmsResult.service;
+			await this.loadResourceGroupDropdown();
+			await this.populateDms(createdDmsResult.resourceGroup);
+		}));
+
 		const flexContainer = this._view.modelBuilder.flexContainer().withItems([
 			descriptionText,
 			subscriptionLabel,
@@ -252,8 +259,9 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			this._location,
 			resourceGroupLabel,
 			this._resourceGroupDropdown,
-			migrationServcieDropdownLabel,
-			this._dmsDropdown
+			migrationServiceDropdownLabel,
+			this._dmsDropdown,
+			createNewMigrationService
 		]).withLayout({
 			flexFlow: 'column'
 		}).component();
@@ -268,10 +276,8 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		const connectionStatusLabel = this._view.modelBuilder.text().withProps({
 			value: constants.SERVICE_CONNECTION_STATUS,
 			CSSStyles: {
-				'font-weight': 'bold',
-				'font-size': '13px',
-				'width': '130px',
-				'margin': '0'
+				...styles.LABEL_CSS,
+				'width': '130px'
 			}
 		}).component();
 
@@ -293,16 +299,10 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			}
 		}));
 
-		const connectionLabelContainer = this._view.modelBuilder.flexContainer().withProps({
-			CSSStyles: {
-				'margin-bottom': '13px'
-			}
-		}).component();
-
+		const connectionLabelContainer = this._view.modelBuilder.flexContainer().component();
 		connectionLabelContainer.addItem(connectionStatusLabel, {
 			flex: '0'
 		});
-
 		connectionLabelContainer.addItem(this._refreshButton, {
 			flex: '0',
 			CSSStyles: { 'margin-right': '10px' }
@@ -317,15 +317,14 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			style: 'error',
 			text: '',
 			CSSStyles: {
-				'font-size': '13px'
+				...styles.BODY_CSS
 			}
 		}).component();
 
 		const authenticationKeysLabel = this._view.modelBuilder.text().withProps({
 			value: constants.AUTHENTICATION_KEYS,
 			CSSStyles: {
-				'font-weight': 'bold',
-				'font-size': '13px'
+				...styles.LABEL_CSS
 			}
 		}).component();
 
@@ -362,52 +361,8 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			iconPath: IconPathHelper.refresh,
 			ariaLabel: constants.REFRESH_KEY2,
 		}).component();
-		this._authKeyTable = this._view.modelBuilder.declarativeTable().withProps({
-			ariaLabel: constants.DATABASE_MIGRATION_SERVICE_AUTHENTICATION_KEYS,
-			columns: [
-				{
-					displayName: constants.NAME,
-					valueType: azdata.DeclarativeDataType.string,
-					width: '50px',
-					isReadOnly: true,
-					rowCssStyles: {
-						'font-size': '13px'
-					},
-					headerCssStyles: {
-						'font-size': '13px'
-					}
-				},
-				{
-					displayName: constants.AUTH_KEY_COLUMN_HEADER,
-					valueType: azdata.DeclarativeDataType.string,
-					width: '500px',
-					isReadOnly: true,
-					rowCssStyles: {
-						'font-size': '13px',
 
-					},
-					headerCssStyles: {
-						'font-size': '13px'
-					}
-				},
-				{
-					displayName: '',
-					valueType: azdata.DeclarativeDataType.component,
-					width: '30px',
-					isReadOnly: true,
-					rowCssStyles: {
-						'font-size': '13px'
-					},
-					headerCssStyles: {
-						'font-size': '13px'
-					}
-				}
-			],
-			CSSStyles: {
-				'margin-top': '5px',
-				'width': WIZARD_INPUT_COMPONENT_WIDTH
-			}
-		}).component();
+		this._authKeyTable = createAuthenticationKeyTable(this._view);
 
 		statusContainer.addItems([
 			this._dmsStatusInfoBox,
@@ -436,8 +391,14 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		this._resourceGroupDropdown.loading = true;
 		try {
 			this._resourceGroupDropdown.values = await this.migrationStateModel.getAzureResourceGroupDropdownValues(this.migrationStateModel._targetSubscription);
-			const resourceGroupDropdownValue = this._resourceGroupDropdown.values.find(v => v.displayName === this.migrationStateModel._sqlMigrationServiceResourceGroup);
-			this._resourceGroupDropdown.value = (resourceGroupDropdownValue) ? resourceGroupDropdownValue : this._resourceGroupDropdown.values[0];
+			if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.IntegrationRuntime && this._resourceGroupDropdown.values) {
+				this._resourceGroupDropdown.values.forEach((resource, resourceIndex) => {
+					const resourceId = this.migrationStateModel.savedInfo?.migrationServiceId?.toLowerCase();
+					if (resourceId && (<azdata.CategoryValue>resource).name.toLowerCase() === getFullResourceGroupFromId(resourceId)) {
+						selectDropDownIndex(this._resourceGroupDropdown, resourceIndex);
+					}
+				});
+			}
 		} finally {
 			this._resourceGroupDropdown.loading = false;
 		}
@@ -447,12 +408,20 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		this._dmsDropdown.loading = true;
 		try {
 			this._dmsDropdown.values = await this.migrationStateModel.getSqlMigrationServiceValues(this.migrationStateModel._targetSubscription, <SqlManagedInstance>this.migrationStateModel._targetServerInstance, resourceGroupName);
-			const selectedSqlMigrationService = this._dmsDropdown.values.find(v => v.displayName.toLowerCase() === this.migrationStateModel._sqlMigrationService?.name.toLowerCase());
-			this._dmsDropdown.value = (selectedSqlMigrationService) ? selectedSqlMigrationService : this._dmsDropdown.values[0];
+			const selectedSqlMigrationService = this._dmsDropdown.values.find(v => v.displayName.toLowerCase() === this.migrationStateModel._sqlMigrationService?.name?.toLowerCase());
+
+			if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.IntegrationRuntime && this._dmsDropdown.values) {
+				this._dmsDropdown.values.forEach((resource, resourceIndex) => {
+					if ((<azdata.CategoryValue>resource).name.toLowerCase() === this.migrationStateModel.savedInfo?.migrationServiceId?.toLowerCase()) {
+						selectDropDownIndex(this._dmsDropdown, resourceIndex);
+					}
+				});
+			} else {
+				this._dmsDropdown.value = (selectedSqlMigrationService) ? selectedSqlMigrationService : this._dmsDropdown.values[0];
+			}
 		} finally {
 			this._dmsDropdown.loading = false;
 		}
-
 	}
 
 	private async loadMigrationServiceStatus(): Promise<void> {
@@ -542,4 +511,56 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			console.log(e);
 		}
 	}
+}
+
+export function createAuthenticationKeyTable(view: azdata.ModelView,): azdata.DeclarativeTableComponent {
+	const authKeyTable = view.modelBuilder.declarativeTable().withProps({
+		ariaLabel: constants.DATABASE_MIGRATION_SERVICE_AUTHENTICATION_KEYS,
+		columns: [
+			{
+				displayName: constants.NAME,
+				valueType: azdata.DeclarativeDataType.string,
+				width: '50px',
+				isReadOnly: true,
+				rowCssStyles: {
+					...styles.BODY_CSS
+				},
+				headerCssStyles: {
+					...styles.BODY_CSS,
+					'font-weight': '600'
+				}
+			},
+			{
+				displayName: constants.AUTH_KEY_COLUMN_HEADER,
+				valueType: azdata.DeclarativeDataType.string,
+				width: '500px',
+				isReadOnly: true,
+				rowCssStyles: {
+					...styles.BODY_CSS,
+
+				},
+				headerCssStyles: {
+					...styles.BODY_CSS,
+					'font-weight': '600'
+				}
+			},
+			{
+				displayName: '',
+				valueType: azdata.DeclarativeDataType.component,
+				width: '30px',
+				isReadOnly: true,
+				rowCssStyles: {
+					...styles.BODY_CSS
+				},
+				headerCssStyles: {
+					...styles.BODY_CSS
+				}
+			}
+		],
+		CSSStyles: {
+			'margin-top': '5px',
+			'width': WIZARD_INPUT_COMPONENT_WIDTH
+		}
+	}).component();
+	return authKeyTable;
 }

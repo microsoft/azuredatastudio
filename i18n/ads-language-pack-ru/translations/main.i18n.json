@@ -9933,15 +9933,18 @@
 			"treeView.notRegistered": "Отсутствует зарегистрированное представление в виде дерева с идентификатором \"{0}\"."
 		},
 		"sql/workbench/api/common/extHostNotebook": {
-			"errNoManager": "Диспетчер не найден",
-			"errNoProvider": "поставщики записных книжек не найдены",
+			"errNoExecuteManager": "Диспетчер выполнения не найден",
+			"errNoExecuteProvider": "Поставщик выполнения записной книжки не найден",
+			"errNoSerializationManager": "Диспетчер сериализации не найден",
+			"errNoSerializationProvider": "Поставщик сериализации записной книжки не найден",
+			"executeProviderRequired": "В качестве параметра этого метода необходимо указать NotebookExecuteProvider с действительным providerId",
 			"noContentManager": "Notebook Manager для записной книжки {0} не включает диспетчер содержимого. Невозможно выполнить операции над ним",
 			"noServerManager": "Notebook Manager для записной книжки {0} не содержит диспетчера серверов. Невозможно выполнить операции над ним",
 			"noSessionManager": "Notebook Manager для записной книжки {0} не содержит диспетчер сеанса. Невозможно выполнить действия над ним",
-			"providerRequired": "В качестве параметра этого метода необходимо указать NotebookProvider с действительным providerId"
+			"serializationProviderRequired": "В качестве параметра этого метода необходимо указать NotebookSerializationProvider с действительным providerId"
 		},
 		"sql/workbench/api/common/extHostNotebookDocumentsAndEditors": {
-			"providerRequired": "В качестве параметра этого метода необходимо указать NotebookProvider с действительным providerId"
+			"navigationProviderRequired": "В качестве параметра этого метода необходимо указать NavigationProvider с действительным providerId"
 		},
 		"sql/workbench/browser/actions": {
 			"clearSavedAccounts": "Очистить все сохраненные учетные записи",
@@ -9985,6 +9988,7 @@
 			"optionsDialog.ok": "ОК"
 		},
 		"sql/workbench/browser/modal/optionsDialogHelper": {
+			"optionsDialog.defaultGroupName": "Общие",
 			"optionsDialog.invalidInput": "Введены недопустимые данные. Ожидается числовое значение.",
 			"optionsDialog.missingRequireField": " требуется."
 		},
@@ -9997,6 +10001,7 @@
 			"declarativeTable.showActions": "Показать действия"
 		},
 		"sql/workbench/browser/modelComponents/dropdown.component": {
+			"defaultDropdownErrorMessage": "Заполните это поле.",
 			"loadingCompletedMessage": "Загрузка завершена",
 			"loadingMessage": "Загрузка"
 		},
@@ -10250,6 +10255,12 @@
 		},
 		"sql/workbench/contrib/connection/browser/connection.contribution": {
 			"connection.parseClipboardForConnectionStringDescription": "Попытка проанализировать содержимое буфера обмена, когда открыто диалоговое окно подключения или выполняется вставка.",
+			"connection.showUnsupportedServerVersionWarning": "Надо ли показывать предупреждающее сообщение при подключении пользователя к версии сервера, которую не поддерживает Azure Data Studio.",
+			"sql.defaultAuthenticationType.AzureMFA": "Azure Active Directory — универсальный с поддержкой MFA",
+			"sql.defaultAuthenticationType.AzureMFAAndUser": "Azure Active Directory — пароль",
+			"sql.defaultAuthenticationType.Integrated": "Проверка подлинности Windows",
+			"sql.defaultAuthenticationType.SqlLogin": "Вход SQL",
+			"sql.defaultAuthenticationTypeDescription": "Тип проверки подлинности по умолчанию, используемый при подключении к ресурсам Azure. ",
 			"sql.defaultEngineDescription": "Ядро СУБД, используемое по умолчанию. Оно определяет поставщика языка по умолчанию в файлах .sql и используется по умолчанию при создании новых подключений.",
 			"sql.maxRecentConnectionsDescription": "Максимальное количество недавно использованных подключений для хранения в списке подключений."
 		},
@@ -10260,6 +10271,7 @@
 			"schema.connectionOptions": "Параметры подключения",
 			"schema.displayName": "Отображаемое имя поставщика",
 			"schema.iconPath": "Путь к значку для типа сервера",
+			"schema.isQueryProvider": "Whether the provider is also a query provider. The default value is true.",
 			"schema.notebookKernelAlias": "Псевдоним ядра записной книжки для поставщика",
 			"schema.providerId": "Общий идентификатор поставщика"
 		},
@@ -10776,6 +10788,7 @@
 			"codePreview": "Ячейка кода",
 			"optionCodeCell": "Ячейка кода",
 			"optionTextCell": "Текстовая ячейка",
+			"splitCell": "Разбить ячейку",
 			"textPreview": "Текстовая ячейка"
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/code.component": {
@@ -11214,6 +11227,7 @@
 		},
 		"sql/workbench/contrib/query/browser/queryResultsView": {
 			"messagesTabTitle": "Сообщения",
+			"queryResults.queryEditorCrashError": "В редакторе запросов возникла проблема, он перестал работать. Сохраните данные и снова откройте редактор запросов.",
 			"resultsTabTitle": "Результаты"
 		},
 		"sql/workbench/contrib/query/browser/statusBarItems": {
@@ -11605,7 +11619,12 @@
 		},
 		"sql/workbench/services/connection/browser/connectionManagementService": {
 			"cancelConnectionConfirmation": "Вы действительно хотите отменить это подключение?",
+			"connection.invalidConnectionResult": "Недопустимый результат подключения",
+			"connection.neverShowUnsupportedVersionWarning": "Больше не показывать",
 			"connection.noAzureAccount": "Не удалось получить маркер учетной записи Azure для подключения",
+			"connection.refreshAzureTokenFailure": "Не удалось обновить маркер учетной записи Azure для подключения",
+			"connection.unsupportedServerVersionWarning": "Azure Data Studio не поддерживает эту версию сервера; возможно, вы можете подключиться к ней, но некоторые функции Azure Data Studio могут работать не так, как ожидалось.",
+			"connectionManagementService.noProviderForUri": "Не найден поставщик для URI: {0}",
 			"connectionNotAcceptedError": "Подключение не принято",
 			"connectionService.no": "Нет",
 			"connectionService.yes": "Да"
@@ -11792,7 +11811,7 @@
 			"carbon.extension.contributes.notebook.provider": "Идентификатор поставщика записных книжек.",
 			"carbon.extension.contributes.notebook.standardKernels": "Какие ядра следует использовать в качестве стандартных для этого поставщика записных книжек",
 			"vscode.extension.contributes.notebook.languagemagics": "Определяет язык записной книжки.",
-			"vscode.extension.contributes.notebook.providers": "Добавляет поставщиков записных книжек."
+			"vscode.extension.contributes.notebook.providersDescriptions": "Добавляет описания поставщиков записных книжек."
 		},
 		"sql/workbench/services/objectExplorer/browser/asyncServerTreeRenderer": {
 			"loading": "Загрузка…"
@@ -11856,6 +11875,8 @@
 		"sql/workbench/services/query/common/queryModelService": {
 			"commitEditFailed": "Не удалось зафиксировать строку: ",
 			"msgCancelQueryFailed": "Ошибка при сбое запроса: {0}",
+			"queryModelService.noQueryFoundForUri": "Не найдены запросы для {0}",
+			"queryModelService.uriAlreadyHasQuery": "У {0} уже есть существующий запрос",
 			"runQueryBatchStartLine": "Строка {0}",
 			"runQueryBatchStartMessage": "Начало выполнения запроса ",
 			"runQueryStringBatchStartMessage": "Начато выполнение запроса \"{0}\"",
@@ -11954,6 +11975,47 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "Начало р&&аботы",
 			"showReleaseNotes": "Показать раздел \"Начало работы\""
+		},
+		"sql/platform/connection/common/connectionStatusManager": {
+			"connectionStatusManager.noConnectionForUri": "Не найдено подключение с URI: {0}",
+			"connectionStatusManager.uriAlreadyInConnectionsList": "Уже существует подключение с URI: {0}"
+		},
+		"sql/workbench/services/query/common/queryManagement": {
+			"queryManagement.noQueryRunnerForUri": "Не найдено средство выполнения запросов для URI: {0}",
+			"queryManagement.uriAlreadyHasQueryRunner": "URI: у {0} неожиданно оказалось выполнения запросов."
+		},
+		"sql/base/browser/ui/designer/designer": {
+			"designer.newRowText": "Добавить новый",
+			"designer.removeRowText": "Удалить",
+			"tableDesigner.unknownComponentType": "Тип компонента {0} не поддерживается"
+		},
+		"sql/base/browser/ui/designer/designerPropertiesPane": {
+			"tableDesigner.propertiesPaneTitle": "Свойства",
+			"tableDesigner.propertiesPaneTitleWithContext": "Свойства — {0} {1}"
+		},
+		"sql/workbench/browser/editor/tableDesigner/tableDesignerInput": {
+			"tableDesigner.newTable": "Создать таблицу"
+		},
+		"sql/workbench/contrib/tableDesigner/browser/actions": {
+			"tableDesigner.saveTableChanges": "Сохранить изменения"
+		},
+		"sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput": {
+			"tableDesigner.advancedTab": "Дополнительно",
+			"tableDesigner.columnAllowNullTitle": "Разрешить значения NULL",
+			"tableDesigner.columnDefaultValueTitle": "Значение по умолчанию",
+			"tableDesigner.columnIsPrimaryKeyTitle": "Первичный ключ",
+			"tableDesigner.columnLengthTitle": "Длина",
+			"tableDesigner.columnNameTitle": "Имя",
+			"tableDesigner.columnTypeName": "Столбец",
+			"tableDesigner.columnTypeTitle": "Тип",
+			"tableDesigner.columnsTabTitle": "Столбцы",
+			"tableDesigner.descriptionTitle": "Описание",
+			"tableDesigner.nameTitle": "Имя таблицы",
+			"tableDesigner.saveChangeError": "Произошла ошибка при сохранении изменений: {0}",
+			"tableDesigner.savedChangeSuccess": "Изменения успешно сохранены.",
+			"tableDesigner.savingChanges": "Сохранение изменений конструктора таблиц...",
+			"tableDesigner.schemaTitle": "Схема",
+			"tableDesigner.tableObjectType": "Таблицы"
 		}
 	}
 }

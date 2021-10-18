@@ -6,6 +6,10 @@
         <source xml:lang="en">adding worker nodes</source>
         <target state="translated">ワーカー ノードを追加しています</target>
       </trans-unit>
+      <trans-unit id="arc.apply">
+        <source xml:lang="en">Apply</source>
+        <target state="new">Apply</target>
+      </trans-unit>
       <trans-unit id="arc.arcDeploymentDeprecation">
         <source xml:lang="en">The Arc Deployment extension has been replaced by the Arc extension and has been uninstalled.</source>
         <target state="translated">Arc 展開拡張機能が Arc 拡張機能に置き換えられ、アンインストールされました。</target>
@@ -21,6 +25,10 @@
       <trans-unit id="arc.backup">
         <source xml:lang="en">Backup</source>
         <target state="translated">バックアップ</target>
+      </trans-unit>
+      <trans-unit id="arc.backups">
+        <source xml:lang="en">Backups</source>
+        <target state="new">Backups</target>
       </trans-unit>
       <trans-unit id="arc.backupsStorage">
         <source xml:lang="en">{0} backups</source>
@@ -73,6 +81,14 @@
       <trans-unit id="arc.configurationPerNode">
         <source xml:lang="en">Configuration (per node)</source>
         <target state="translated">構成 (ノードあたり)</target>
+      </trans-unit>
+      <trans-unit id="arc.configureRP">
+        <source xml:lang="en">Configure retention policy</source>
+        <target state="new">Configure retention policy</target>
+      </trans-unit>
+      <trans-unit id="arc.configureRetentionPolicyButton">
+        <source xml:lang="en">Configure Retention Policy</source>
+        <target state="new">Configure Retention Policy</target>
       </trans-unit>
       <trans-unit id="arc.confirmNewPassword">
         <source xml:lang="en">Confirm the new password</source>
@@ -257,6 +273,10 @@
         <source xml:lang="en">{0} data</source>
         <target state="translated">{0} データ</target>
       </trans-unit>
+      <trans-unit id="arc.database">
+        <source xml:lang="en">Database</source>
+        <target state="new">Database</target>
+      </trans-unit>
       <trans-unit id="arc.databaseCreated">
         <source xml:lang="en">Database {0} created</source>
         <target state="translated">{0} データベースが作成されました</target>
@@ -264,6 +284,14 @@
       <trans-unit id="arc.databaseCreationFailed">
         <source xml:lang="en">Failed to create database {0}. {1}</source>
         <target state="translated">データベース {0} を作成できませんでした。{1}</target>
+      </trans-unit>
+      <trans-unit id="arc.databaseDetails">
+        <source xml:lang="en">Database Details</source>
+        <target state="new">Database Details</target>
+      </trans-unit>
+      <trans-unit id="arc.databaseDetailsText">
+        <source xml:lang="en">Enter the required settings for this database, including a name and a target managed instance. By default, the source instance is selected.</source>
+        <target state="new">Enter the required settings for this database, including a name and a target managed instance. By default, the source instance is selected.</target>
       </trans-unit>
       <trans-unit id="arc.databaseName">
         <source xml:lang="en">Database name</source>
@@ -312,6 +340,10 @@
       <trans-unit id="arc.dropMultipleExtensions">
         <source xml:lang="en">Currently dropping another extension, try again once that is completed.</source>
         <target state="translated">現在、別の拡張機能を切断しています。完了してからもう一度お試しください。</target>
+      </trans-unit>
+      <trans-unit id="arc.earliestPitrRestorePoint">
+        <source xml:lang="en">Earliest PITR restore point</source>
+        <target state="new">Earliest PITR restore point</target>
       </trans-unit>
       <trans-unit id="arc.emergency">
         <source xml:lang="en">Emergency</source>
@@ -449,6 +481,10 @@
         <source xml:lang="en">Installing extension '{0}'...</source>
         <target state="translated">拡張機能 '{0}' をインストールしています...</target>
       </trans-unit>
+      <trans-unit id="arc.instance">
+        <source xml:lang="en">Instance</source>
+        <target state="new">Instance</target>
+      </trans-unit>
       <trans-unit id="arc.instanceDeleted">
         <source xml:lang="en">Instance '{0}' deleted</source>
         <target state="translated">インスタンス '{0}' が削除されました</target>
@@ -492,6 +528,10 @@
       <trans-unit id="arc.lastTransition">
         <source xml:lang="en">Last transition</source>
         <target state="translated">最終移行</target>
+      </trans-unit>
+      <trans-unit id="arc.latestpitrRestorePoint">
+        <source xml:lang="en">Latest PITR restore point</source>
+        <target state="new">Latest PITR restore point</target>
       </trans-unit>
       <trans-unit id="arc.learnAboutNodeParameters">
         <source xml:lang="en">Learn more about database engine settings for Azure Arc-enabled PostgreSQL Hyperscale</source>
@@ -540,6 +580,10 @@
       <trans-unit id="arc.miaaAdmin">
         <source xml:lang="en">Managed instance admin</source>
         <target state="translated">マネージド インスタンスの管理者</target>
+      </trans-unit>
+      <trans-unit id="arc.miaaBackupsDatabasesDescription">
+        <source xml:lang="en">Databases with available backups are displayed below. Restore databases to this instance or any other instance within the same custom location.</source>
+        <target state="new">Databases with available backups are displayed below. Restore databases to this instance or any other instance within the same custom location.</target>
       </trans-unit>
       <trans-unit id="arc.miaaComputeAndStorageDescriptionPartOne">
         <source xml:lang="en">You can scale your Azure SQL managed instance - Azure Arc by</source>
@@ -721,6 +765,14 @@
         <source xml:lang="en">PostgreSQL Hyperscale - Azure Arc</source>
         <target state="translated">PostgreSQL Hyperscale – Azure Arc</target>
       </trans-unit>
+      <trans-unit id="arc.pitr">
+        <source xml:lang="en">Point-in-time restore (PITR)</source>
+        <target state="new">Point-in-time restore (PITR)</target>
+      </trans-unit>
+      <trans-unit id="arc.pitrInfo">
+        <source xml:lang="en">Specify how long you want to keep your point-in-time backups. Customize this for backup availability.</source>
+        <target state="new">Specify how long you want to keep your point-in-time backups. Customize this for backup availability.</target>
+      </trans-unit>
       <trans-unit id="arc.podConditionsTable">
         <source xml:lang="en">Pod conditions table</source>
         <target state="translated">ポッド条件テーブル</target>
@@ -792,6 +844,14 @@
       <trans-unit id="arc.preloaded Extensions">
         <source xml:lang="en">Preloaded Extensions</source>
         <target state="translated">事前読み込みの拡張機能</target>
+      </trans-unit>
+      <trans-unit id="arc.projectDetails">
+        <source xml:lang="en">Project Details</source>
+        <target state="new">Project Details</target>
+      </trans-unit>
+      <trans-unit id="arc.projectDetailsText">
+        <source xml:lang="en">Select the subscription to manage deployed resources. Use resource groups like folders to organize and manage all your resources.</source>
+        <target state="new">Select the subscription to manage deployed resources. Use resource groups like folders to organize and manage all your resources.</target>
       </trans-unit>
       <trans-unit id="arc.properties">
         <source xml:lang="en">Properties</source>
@@ -865,9 +925,29 @@
         <source xml:lang="en">Resource health can tell you if your resource is running as expected.</source>
         <target state="translated">リソース正常性では、リソースが予期したとおりに実行されているかどうか知ることができます。</target>
       </trans-unit>
+      <trans-unit id="arc.restore">
+        <source xml:lang="en">Restore</source>
+        <target state="new">Restore</target>
+      </trans-unit>
+      <trans-unit id="arc.restoreDatabase">
+        <source xml:lang="en">Restore Database</source>
+        <target state="new">Restore Database</target>
+      </trans-unit>
+      <trans-unit id="arc.restoreInfo">
+        <source xml:lang="en">Restore a database to an Azure Arc enabled SQL Managed Instance of your choice.</source>
+        <target state="new">Restore a database to an Azure Arc enabled SQL Managed Instance of your choice.</target>
+      </trans-unit>
+      <trans-unit id="arc.restorePoint">
+        <source xml:lang="en">Restore point (UTC)</source>
+        <target state="new">Restore point (UTC)</target>
+      </trans-unit>
       <trans-unit id="arc.restoring">
         <source xml:lang="en">Restoring</source>
         <target state="translated">復元しています</target>
+      </trans-unit>
+      <trans-unit id="arc.retentionDays">
+        <source xml:lang="en">Point-In-Time Recovery retention (days)</source>
+        <target state="new">Point-In-Time Recovery retention (days)</target>
       </trans-unit>
       <trans-unit id="arc.running">
         <source xml:lang="en">Running</source>
@@ -917,6 +997,18 @@
         <source xml:lang="en">Settings</source>
         <target state="translated">設定</target>
       </trans-unit>
+      <trans-unit id="arc.sourceDatabase">
+        <source xml:lang="en">Source database</source>
+        <target state="new">Source database</target>
+      </trans-unit>
+      <trans-unit id="arc.sourceDetails">
+        <source xml:lang="en">Source Details</source>
+        <target state="new">Source Details</target>
+      </trans-unit>
+      <trans-unit id="arc.sourceDetailsText">
+        <source xml:lang="en">Select a backup source and provide details. Additional settings will be defaulted where possible based on the selected backup.</source>
+        <target state="new">Select a backup source and provide details. Additional settings will be defaulted where possible based on the selected backup.</target>
+      </trans-unit>
       <trans-unit id="arc.state">
         <source xml:lang="en">State</source>
         <target state="translated">状態</target>
@@ -928,6 +1020,10 @@
       <trans-unit id="arc.storagePerNode">
         <source xml:lang="en">storage per node</source>
         <target state="translated">ストレージ (ノードあたり)</target>
+      </trans-unit>
+      <trans-unit id="arc.subscription">
+        <source xml:lang="en">Subscription</source>
+        <target state="new">Subscription</target>
       </trans-unit>
       <trans-unit id="arc.subscriptionId">
         <source xml:lang="en">Subscription ID</source>
@@ -1565,9 +1661,29 @@
         <source xml:lang="en">The request for cores of the managed instance as an integer.</source>
         <target state="translated">整数として表したマネージド インスタンスのコアの要求。</target>
       </trans-unit>
+      <trans-unit id="arc.sql.dev.use.description">
+        <source xml:lang="en">Check the box to indicate this instance will be used for development or testing purposes only. This instance will not be billed.</source>
+        <target state="translated">このインスタンスが開発またはテスト目的でのみ使用されることを示すチェックボックスをオンにします。このインスタンスには請求されません。</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.dev.use.label">
+        <source xml:lang="en">For development use only</source>
+        <target state="translated">開発用途のみ</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.high.availability.description">
+        <source xml:lang="en">Enable additional replicas for high availabilty. The compute and storage configuration selected below will be applied to all replicas.</source>
+        <target state="translated">高可用性のために追加のレプリカを有効にします。以下で選択したコンピューティングとストレージの構成は、すべてのレプリカに適用されます。</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.high.availability.label">
+        <source xml:lang="en">High Availability</source>
+        <target state="translated">高可用性</target>
+      </trans-unit>
       <trans-unit id="arc.sql.instance.name">
         <source xml:lang="en">Instance name</source>
         <target state="translated">インスタンス名</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.instance.retention.policy.title">
+        <source xml:lang="en">SQL Instance Backup Retention Policy</source>
+        <target state="translated">SQL インスタンス バックアップ保持ポリシー</target>
       </trans-unit>
       <trans-unit id="arc.sql.instance.settings.section.title">
         <source xml:lang="en">SQL Instance settings</source>
@@ -1589,29 +1705,105 @@
         <source xml:lang="en">The request for the capacity of the managed instance as an integer amount of memory in GBs.</source>
         <target state="translated">マネージド インスタンスの容量を要求して、整数のメモリ量 (GB) で指定します。</target>
       </trans-unit>
-      <trans-unit id="arc.sql.replicas.description">
-        <source xml:lang="en">The number of SQL Managed Instance replicas that will be deployed in your Kubernetes cluster for high availability purposes</source>
-        <target state="translated">高可用性の目的で Kubernetes クラスターに展開される SQL Managed Instance のレプリカの数</target>
+      <trans-unit id="arc.sql.one.replica">
+        <source xml:lang="en">1 replica</source>
+        <target state="translated">1 個のレプリカ</target>
       </trans-unit>
-      <trans-unit id="arc.sql.replicas.label">
-        <source xml:lang="en">Replicas</source>
-        <target state="translated">レプリカ</target>
+      <trans-unit id="arc.sql.pitr.description">
+        <source xml:lang="en">Point in time restore</source>
+        <target state="translated">特定の時点に復元</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.pitr.retention.description">
+        <source xml:lang="en">Configure retention for point-in-time backups. {0}</source>
+        <target state="translated">ポイントインタイム バックアップのための保有期間を構成します。{0}</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.retention.days.description">
+        <source xml:lang="en">Specify how long you want to keep your point-in-time backups.</source>
+        <target state="translated">ポイントインタイム バックアップを保管する期間を指定します。</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.retention.days.label">
+        <source xml:lang="en">PITR retention (days)</source>
+        <target state="translated">PITR 保持期間 (日数)</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.service.tier.business.critical">
+        <source xml:lang="en">[PREVIEW] Business Critical (Unlimited vCores and RAM, advanced high availability)</source>
+        <target state="translated">[PREVIEW] Business Critical (無制限の仮想コアと RAM、詳細な高可用性)</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.service.tier.description">
+        <source xml:lang="en">Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical. {0}</source>
+        <target state="translated">SQL Managed Instance に使用可能な最新の仮想コア サービス レベルから General Purpose と Business Critical を含む Azure Arc を選択します。{0}</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.service.tier.general.purpose">
+        <source xml:lang="en">General Purpose (Up to 24 vCores and 128 Gi of RAM, standard high availability)</source>
+        <target state="translated">General Purpose (最大 24 個の仮想コアと 128Gi の RAM、標準的な高可用性)</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.service.tier.label">
+        <source xml:lang="en">Service Tier</source>
+        <target state="translated">サービス層</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.storage-class.backups.description">
+        <source xml:lang="en">The storage class to be used for backup persistent volumes. If no value is specified, the default storage class will be used.</source>
+        <target state="translated">バックアップ永続ボリュームに使用されるストレージ クラス。値が指定されない場合は、既定のストレージ クラスが使用されます。</target>
       </trans-unit>
       <trans-unit id="arc.sql.storage-class.data.description">
-        <source xml:lang="en">The storage class to be used for data (.mdf)</source>
-        <target state="translated">データ (.mdf) に使用されるストレージ クラス</target>
+        <source xml:lang="en">The storage class to be used for data (.mdf). If no value is specified, the default storage class will be used.</source>
+        <target state="translated">データ (.mdf) に使用されるストレージ クラス。値が指定されない場合は、既定のストレージ クラスが使用されます。</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.storage-class.datalogs.description">
+        <source xml:lang="en">The storage class to be used for database logs (.ldf). If no value is specified, the default storage class will be used.</source>
+        <target state="translated">データベース ログ (.ldf) に使用されるストレージ クラス。値が指定されない場合は、既定のストレージ クラスが使用されます。</target>
       </trans-unit>
       <trans-unit id="arc.sql.storage-class.dc.description">
         <source xml:lang="en">The storage class to be used for all data and logs persistent volumes for all data controller pods that require them.</source>
         <target state="translated">すべてのデータとログの永続ボリュームを必要とするすべてのデータ コントローラー ポッドに使用されるストレージ クラス。</target>
       </trans-unit>
       <trans-unit id="arc.sql.storage-class.logs.description">
-        <source xml:lang="en">The storage class to be used for logs (/var/log)</source>
-        <target state="translated">ログ (/var/log) に使用されるストレージ クラス</target>
+        <source xml:lang="en">The storage class to be used for logs (/var/log). If no value is specified, the default storage class will be used.</source>
+        <target state="translated">ログ (/var/log) に使用されるストレージ クラス。値が指定されない場合は、既定のストレージ クラスが使用されます。</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.three.replicas">
+        <source xml:lang="en">3 replicas</source>
+        <target state="translated">3 個のレプリカ</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.two.replicas">
+        <source xml:lang="en">2 replicas</source>
+        <target state="translated">2 個のレプリカ</target>
       </trans-unit>
       <trans-unit id="arc.sql.username">
         <source xml:lang="en">Username</source>
         <target state="translated">ユーザー名</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.volume.size.backups.description">
+        <source xml:lang="en">The size of the storage volume to be used for backups in gibibytes.</source>
+        <target state="translated">バックアップに使用するストレージ ボリュームのサイズ (GB)。</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.volume.size.backups.label">
+        <source xml:lang="en">Volume Size in Gi (Backups)</source>
+        <target state="translated">ボリュームのサイズ (Gi) (バックアップ)</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.volume.size.data.description">
+        <source xml:lang="en">The size of the storage volume to be used for data in gibibytes.</source>
+        <target state="translated">データに使用するストレージ ボリュームのサイズ (GB)。</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.volume.size.data.label">
+        <source xml:lang="en">Volume Size in Gi (Data)</source>
+        <target state="translated">ボリュームのサイズ (Gi) (データ)。</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.volume.size.datalogs.description">
+        <source xml:lang="en">The size of the storage volume to be used for database logs in gibibytes.</source>
+        <target state="translated">データベース ログに使用するストレージ ボリュームのサイズ (GB)。</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.volume.size.datalogs.label">
+        <source xml:lang="en">Volume Size in Gi (Database logs)</source>
+        <target state="translated">ボリュームのサイズ (Gi) (データベース ログ)</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.volume.size.logs.description">
+        <source xml:lang="en">The size of the storage volume to be used for logs in gibibytes.</source>
+        <target state="translated">ログに使用するストレージ ボリュームのサイズ (GB)。</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.volume.size.logs.label">
+        <source xml:lang="en">Volume Size in Gi (Logs)</source>
+        <target state="translated">ボリュームのサイズ (Gi) (ログ)。</target>
       </trans-unit>
       <trans-unit id="arc.sql.wizard.page1.title">
         <source xml:lang="en">Provide Azure SQL managed instance parameters</source>
@@ -1628,6 +1820,10 @@
       <trans-unit id="arc.storage-class.data.label">
         <source xml:lang="en">Storage Class (Data)</source>
         <target state="translated">ストレージ クラス (データ)</target>
+      </trans-unit>
+      <trans-unit id="arc.storage-class.datalogs.label">
+        <source xml:lang="en">Storage Class (Database logs)</source>
+        <target state="translated">ストレージ クラス (データベース ログ)</target>
       </trans-unit>
       <trans-unit id="arc.storage-class.dc.label">
         <source xml:lang="en">Storage Class</source>

@@ -51,12 +51,12 @@
         <target state="translated">Valutazione in corso</target>
       </trans-unit>
       <trans-unit id="sql.migration.assessment.in.progress.content">
-        <source xml:lang="en">We are assessing the databases in your SQL server instance {0} to identify the right Azure SQL target.
+        <source xml:lang="en">We are assessing the databases in your SQL Server instance {0} to identify the right Azure SQL target.
 
 This may take some time.</source>
         <target state="translated">I database nell'istanza di SQL Server vengono valutati {0} per identificare la destinazione Azure SQL corretta.
 
-L'operazione potrebbe richiedere del tempo.</target>
+L'operazione potrebbe richiedere qualche minuto.</target>
       </trans-unit>
       <trans-unit id="sql.migration.assessment.migration.warning">
         <source xml:lang="en">Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines.</source>
@@ -143,6 +143,10 @@ L'operazione potrebbe richiedere del tempo.</target>
         <target state="translated">Contenitore BLOB</target>
       </trans-unit>
       <trans-unit id="sql.migration.blob.resourceGroup.select">
+        <source xml:lang="en">Select a resource group.</source>
+        <target state="translated">Selezionare un gruppo di risorse.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.blob.resourceGroup.select.prompt">
         <source xml:lang="en">Select a resource group value first.</source>
         <target state="translated">Selezionare prima un valore del gruppo di risorse.</target>
       </trans-unit>
@@ -155,8 +159,8 @@ L'operazione potrebbe richiedere del tempo.</target>
         <target state="translated">Specificare il contenitore BLOB del servizio di archiviazione di Azure che contiene i backup.</target>
       </trans-unit>
       <trans-unit id="sql.migration.blob.storage.subscription.label">
-        <source xml:lang="en">Select the subscription that contains the storage account.</source>
-        <target state="translated">Selezionare la sottoscrizione che contiene l'account di archiviazione.</target>
+        <source xml:lang="en">Subscription</source>
+        <target state="translated">Sottoscrizione</target>
       </trans-unit>
       <trans-unit id="sql.migration.blob.storage.table.help">
         <source xml:lang="en">Enter target database name and select resource group, storage account and container for the selected source databases.</source>
@@ -261,6 +265,10 @@ L'operazione potrebbe richiedere del tempo.</target>
       <trans-unit id="sql.migration.cutover.card">
         <source xml:lang="en">Completing cutover</source>
         <target state="translated">Completamento cutover</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.cutover.error">
+        <source xml:lang="en">An error occurred while initiating cutover.</source>
+        <target state="translated">Si è verificato un errore durante l'avvio del cutover.</target>
       </trans-unit>
       <trans-unit id="sql.migration.cutover.help.main">
         <source xml:lang="en">Perform the following steps before you complete cutover.</source>
@@ -457,6 +465,10 @@ L'operazione potrebbe richiedere del tempo.</target>
       <trans-unit id="sql.migration.enter.your.sql.cred">
         <source xml:lang="en">Enter the credentials for the source SQL Server instance. These credentials will be used while migrating databases to Azure SQL.</source>
         <target state="translated">Immettere le credenziali per l'istanza di SQL Server di origine. Queste credenziali verranno usate durante la migrazione dei database ad Azure SQL.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.error">
+        <source xml:lang="en">Error</source>
+        <target state="translated">Errore</target>
       </trans-unit>
       <trans-unit id="sql.migration.failed">
         <source xml:lang="en">Migrations failed</source>
@@ -926,9 +938,37 @@ L'operazione potrebbe richiedere del tempo.</target>
         <source xml:lang="en">Resource group</source>
         <target state="translated">Gruppo di risorse</target>
       </trans-unit>
+      <trans-unit id="sql.migration.resume.contine">
+        <source xml:lang="en">Continue last migration attempt...</source>
+        <target state="translated">Continua ultimo tentativo di migrazione...</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.resume.start">
+        <source xml:lang="en">Start with migration assessment again (recommended)</source>
+        <target state="translated">Eseguire di nuovo la valutazione della migrazione (scelta consigliata)</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.resume.title">
+        <source xml:lang="en">Run migration workflow again</source>
+        <target state="translated">Eseguire di nuovo il flusso di lavoro di migrazione</target>
+      </trans-unit>
       <trans-unit id="sql.migration.rg.created">
         <source xml:lang="en">Resource group created</source>
         <target state="translated">Il gruppo di risorse è stato creato</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.save.close">
+        <source xml:lang="en">Save and close</source>
+        <target state="translated">Salva e chiudi</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.saved.assessment.cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">Annulla</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.saved.assessment.next">
+        <source xml:lang="en">Next</source>
+        <target state="translated">Avanti</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.saved.assessment.result">
+        <source xml:lang="en">Saved assessment result</source>
+        <target state="translated">Risultato della valutazione sAlvato</target>
       </trans-unit>
       <trans-unit id="sql.migration.search">
         <source xml:lang="en">Search</source>
@@ -943,8 +983,8 @@ L'operazione potrebbe richiedere del tempo.</target>
         <target state="translated">{0} sec</target>
       </trans-unit>
       <trans-unit id="sql.migration.select.azure.mi">
-        <source xml:lang="en">Select your target Azure subscription and your target Azure SQL Managed Instance</source>
-        <target state="translated">Selezionare la sottoscrizione di Azure di destinazione e l'istanza gestita di SQL di Azure di destinazione</target>
+        <source xml:lang="en">Select your target Azure subscription and your target Azure SQL Managed Instance.</source>
+        <target state="translated">Selezionare la sottoscrizione di Azure di destinazione e l'Istanza gestita di SQL di Azure di destinazione.</target>
       </trans-unit>
       <trans-unit id="sql.migration.select.azure.vm">
         <source xml:lang="en">Select your target Azure Subscription and your target SQL Server on Azure Virtual Machine for your target.</source>
@@ -1158,6 +1198,10 @@ L'operazione potrebbe richiedere del tempo.</target>
         <source xml:lang="en">SQL Virtual Machine</source>
         <target state="translated">Macchina virtuale SQL</target>
       </trans-unit>
+      <trans-unit id="sql.migration.start.migration.button">
+        <source xml:lang="en">Start migration</source>
+        <target state="translated">Avvia migrazione</target>
+      </trans-unit>
       <trans-unit id="sql.migration.start.time">
         <source xml:lang="en">Start time</source>
         <target state="translated">Ora di inizio</target>
@@ -1165,6 +1209,14 @@ L'operazione potrebbe richiedere del tempo.</target>
       <trans-unit id="sql.migration.status">
         <source xml:lang="en">Status</source>
         <target state="translated">Stato</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.add.account">
+        <source xml:lang="en">Add account</source>
+        <target state="translated">Aggiungi account</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.add.account.MESSAGE">
+        <source xml:lang="en">Add your Azure account to view existing migrations and their status.</source>
+        <target state="translated">Aggiungere l'account Azure per visualizzare le migrazioni esistenti e il relativo stato.</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.canceling">
         <source xml:lang="en">Canceling</source>
@@ -1321,6 +1373,10 @@ L'operazione potrebbe richiedere del tempo.</target>
       <trans-unit id="sql.migration.view.select.button.label">
         <source xml:lang="en">View/Select</source>
         <target state="translated">Visualizza/Seleziona</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.warning">
+        <source xml:lang="en">Warning</source>
+        <target state="translated">Avviso</target>
       </trans-unit>
       <trans-unit id="sql.migration.warnings">
         <source xml:lang="en">Warnings</source>

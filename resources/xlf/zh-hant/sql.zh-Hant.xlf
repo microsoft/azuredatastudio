@@ -1,5 +1,35 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="src/sql/base/browser/ui/designer/designer" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="designer.newRowText">
+        <source xml:lang="en">Add New</source>
+        <target state="translated">新增</target>
+      </trans-unit>
+      <trans-unit id="designer.removeRowText">
+        <source xml:lang="en">Remove</source>
+        <target state="translated">移除</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.unknownComponentType">
+        <source xml:lang="en">The component type: {0} is not supported</source>
+        <target state="translated">不支援元件類型 {0}</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/base/browser/ui/designer/designerPropertiesPane" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="tableDesigner.propertiesPaneTitle">
+        <source xml:lang="en">Properties</source>
+        <target state="translated">屬性</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.propertiesPaneTitleWithContext">
+        <source xml:lang="en">Properties - {0} {1}</source>
+        <note>{0} is the place holder for object type
+{1} is the place holder for object name</note>
+        <target state="translated">屬性 - {0} {1}</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/base/browser/ui/loadingSpinner/loadingSpinner.component" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
       <trans-unit id="loadingCompletedMessage">
@@ -373,6 +403,18 @@
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/platform/connection/common/connectionStatusManager" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="connectionStatusManager.noConnectionForUri">
+        <source xml:lang="en">Could not find connection with uri: {0}</source>
+        <target state="translated">找不到 URI: {0} 的連線</target>
+      </trans-unit>
+      <trans-unit id="connectionStatusManager.uriAlreadyInConnectionsList">
+        <source xml:lang="en">There is already a connection with uri: {0}</source>
+        <target state="translated">已有 URI: {0} 的連結</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/platform/dashboard/browser/insightRegistry" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
       <trans-unit id="schema.dashboardWidgets.InsightsRegistry">
@@ -739,13 +781,25 @@
   </file>
   <file original="src/sql/workbench/api/common/extHostNotebook" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
-      <trans-unit id="errNoManager">
-        <source xml:lang="en">No Manager found</source>
-        <target state="translated">找不到管理員</target>
+      <trans-unit id="errNoExecuteManager">
+        <source xml:lang="en">No execute manager found</source>
+        <target state="translated">找不到任何執行管理員</target>
       </trans-unit>
-      <trans-unit id="errNoProvider">
-        <source xml:lang="en">no notebook provider found</source>
-        <target state="translated">找不到任何筆記本提供者</target>
+      <trans-unit id="errNoExecuteProvider">
+        <source xml:lang="en">No notebook execute provider found</source>
+        <target state="translated">找不到任何筆記本執行提供者</target>
+      </trans-unit>
+      <trans-unit id="errNoSerializationManager">
+        <source xml:lang="en">No serialization manager found</source>
+        <target state="translated">找不到序列化管理員</target>
+      </trans-unit>
+      <trans-unit id="errNoSerializationProvider">
+        <source xml:lang="en">No notebook serialization provider found</source>
+        <target state="translated">找不到筆記本序列化提供者</target>
+      </trans-unit>
+      <trans-unit id="executeProviderRequired">
+        <source xml:lang="en">A NotebookExecuteProvider with valid providerId must be passed to this method</source>
+        <target state="translated">必須將具有有效 providerId 的 NotebookExecuteProvider 傳遞給此方法</target>
       </trans-unit>
       <trans-unit id="noContentManager">
         <source xml:lang="en">Notebook Manager for notebook {0} does not have a content manager. Cannot perform operations on it</source>
@@ -759,17 +813,17 @@
         <source xml:lang="en">Notebook Manager for notebook {0} does not have a session manager. Cannot perform operations on it</source>
         <target state="translated">筆記本 {0} 的 Notebook 管理員沒有工作階段管理員。無法對其執行作業</target>
       </trans-unit>
-      <trans-unit id="providerRequired">
-        <source xml:lang="en">A NotebookProvider with valid providerId must be passed to this method</source>
-        <target state="translated">必須將具有有效 providerId 的 NotebookProvider 傳遞給此方法</target>
+      <trans-unit id="serializationProviderRequired">
+        <source xml:lang="en">A NotebookSerializationProvider with valid providerId must be passed to this method</source>
+        <target state="translated">必須將具有有效 providerId 的 NotebookSerializationProvider 傳遞給此方法</target>
       </trans-unit>
     </body>
   </file>
   <file original="src/sql/workbench/api/common/extHostNotebookDocumentsAndEditors" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
-      <trans-unit id="providerRequired">
-        <source xml:lang="en">A NotebookProvider with valid providerId must be passed to this method</source>
-        <target state="translated">必須將具有有效 providerId 的 NotebookProvider 傳遞給此方法</target>
+      <trans-unit id="navigationProviderRequired">
+        <source xml:lang="en">A NavigationProvider with valid providerId must be passed to this method</source>
+        <target state="translated">必須將具有有效 providerId 的 NavigationProvider 傳遞給此方法</target>
       </trans-unit>
     </body>
   </file>
@@ -861,6 +915,14 @@
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/browser/editor/tableDesigner/tableDesignerInput" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="tableDesigner.newTable">
+        <source xml:lang="en">New Table</source>
+        <target state="translated">新增資料表</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/browser/modal/modal" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
       <trans-unit id="closeMessage">
@@ -911,6 +973,10 @@
   </file>
   <file original="src/sql/workbench/browser/modal/optionsDialogHelper" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
+      <trans-unit id="optionsDialog.defaultGroupName">
+        <source xml:lang="en">General</source>
+        <target state="translated">一般</target>
+      </trans-unit>
       <trans-unit id="optionsDialog.invalidInput">
         <source xml:lang="en">Invalid input.  Numeric value expected.</source>
         <target state="translated">輸入無效。預期為數字。</target>
@@ -947,6 +1013,10 @@
   </file>
   <file original="src/sql/workbench/browser/modelComponents/dropdown.component" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
+      <trans-unit id="defaultDropdownErrorMessage">
+        <source xml:lang="en">Please fill out this field.</source>
+        <target state="translated">請填寫此欄位。</target>
+      </trans-unit>
       <trans-unit id="loadingCompletedMessage">
         <source xml:lang="en">Loading completed</source>
         <target state="translated">已完成載入</target>
@@ -1835,6 +1905,30 @@
         <source xml:lang="en">Attempt to parse the contents of the clipboard when the connection dialog is opened or a paste is performed.</source>
         <target state="translated">嘗試在連線對話方塊開啟或已執行貼上時剖析剪貼簿的內容。</target>
       </trans-unit>
+      <trans-unit id="connection.showUnsupportedServerVersionWarning">
+        <source xml:lang="en">Whether to show the warning message when user connects to a server version that is not supported by Azure Data Studio.</source>
+        <target state="translated">當使用者連接到 Azure Data Studio 不支援的伺服器版本時，是否要顯示警告訊息。</target>
+      </trans-unit>
+      <trans-unit id="sql.defaultAuthenticationType.AzureMFA">
+        <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
+        <target state="translated">Azure Active Directory - MFA 通用支援</target>
+      </trans-unit>
+      <trans-unit id="sql.defaultAuthenticationType.AzureMFAAndUser">
+        <source xml:lang="en">Azure Active Directory - Password</source>
+        <target state="translated">Azure Active Directory - 密碼</target>
+      </trans-unit>
+      <trans-unit id="sql.defaultAuthenticationType.Integrated">
+        <source xml:lang="en">Windows Authentication</source>
+        <target state="translated">Windows 驗證</target>
+      </trans-unit>
+      <trans-unit id="sql.defaultAuthenticationType.SqlLogin">
+        <source xml:lang="en">Sql Login</source>
+        <target state="translated">SQL 登入</target>
+      </trans-unit>
+      <trans-unit id="sql.defaultAuthenticationTypeDescription">
+        <source xml:lang="en">Default authentication type to use when connecting to Azure resources. </source>
+        <target state="translated">連接至 Azure 資源時要使用的預設驗證類型。</target>
+      </trans-unit>
       <trans-unit id="sql.defaultEngineDescription">
         <source xml:lang="en">Default SQL Engine to use. This drives default language provider in .sql files and the default to use when creating a new connection.</source>
         <target state="translated">要使用的預設 SQL 引擎。這會驅動 .sql 檔案中的預設語言提供者，以及建立新連線時要使用的預設。</target>
@@ -1866,6 +1960,10 @@
       <trans-unit id="schema.iconPath">
         <source xml:lang="en">Icon path for the server type</source>
         <target state="translated">伺服器類型的圖示路徑</target>
+      </trans-unit>
+      <trans-unit id="schema.isQueryProvider">
+        <source xml:lang="en">Whether the provider is also a query provider. The default value is true.</source>
+        <target state="translated">提供者是否也是查詢提供者。預設值為 true。</target>
       </trans-unit>
       <trans-unit id="schema.notebookKernelAlias">
         <source xml:lang="en">Notebook Kernel Alias for the provider</source>
@@ -3685,6 +3783,10 @@ Error: {1}</source>
         <source xml:lang="en">Text cell</source>
         <target state="translated">文字資料格</target>
       </trans-unit>
+      <trans-unit id="splitCell">
+        <source xml:lang="en">Split cell</source>
+        <target state="translated">分割儲存格</target>
+      </trans-unit>
       <trans-unit id="textPreview">
         <source xml:lang="en">Text cell</source>
         <target state="translated">文字資料格</target>
@@ -5265,6 +5367,10 @@ Error: {1}</source>
         <source xml:lang="en">Messages</source>
         <target state="translated">訊息</target>
       </trans-unit>
+      <trans-unit id="queryResults.queryEditorCrashError">
+        <source xml:lang="en">The query editor ran into an issue and has stopped working. Please save and reopen it.</source>
+        <target state="translated">查詢編輯器發生問題，因此已停止運作。請儲存並重新開啟。</target>
+      </trans-unit>
       <trans-unit id="resultsTabTitle">
         <source xml:lang="en">Results</source>
         <target state="translated">結果</target>
@@ -5690,6 +5796,14 @@ Error: {1}</source>
       <trans-unit id="refreshError">
         <source xml:lang="en">An error occurred refreshing node '{0}': {1}</source>
         <target state="translated">重新整理節點 '{0}' 時發生錯誤: {1}</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/tableDesigner/browser/actions" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="tableDesigner.saveTableChanges">
+        <source xml:lang="en">Save Changes</source>
+        <target state="translated">儲存變更</target>
       </trans-unit>
     </body>
   </file>
@@ -6645,9 +6759,29 @@ Error: {1}</source>
         <source xml:lang="en">Are you sure you want to cancel this connection?</source>
         <target state="translated">您確定要取消此連線嗎?</target>
       </trans-unit>
+      <trans-unit id="connection.invalidConnectionResult">
+        <source xml:lang="en">Connection result is invalid</source>
+        <target state="translated">連線結果無效。</target>
+      </trans-unit>
+      <trans-unit id="connection.neverShowUnsupportedVersionWarning">
+        <source xml:lang="en">Don't show again</source>
+        <target state="translated">不要再顯示</target>
+      </trans-unit>
       <trans-unit id="connection.noAzureAccount">
         <source xml:lang="en">Failed to get Azure account token for connection</source>
         <target state="translated">無法取得連線的 Azure 帳戶權杖</target>
+      </trans-unit>
+      <trans-unit id="connection.refreshAzureTokenFailure">
+        <source xml:lang="en">Failed to refresh Azure account token for connection</source>
+        <target state="translated">無法重新整理 Azure 帳戶權杖以建立連線</target>
+      </trans-unit>
+      <trans-unit id="connection.unsupportedServerVersionWarning">
+        <source xml:lang="en">The server version is not supported by Azure Data Studio, you may still connect to it but some features in Azure Data Studio might not work as expected.</source>
+        <target state="translated">Azure Data Studio 不支援伺服器版本，您仍然可以連接到伺服器版本，但 Azure Data Studio 中的某些功能可能無法如預期方式執行。</target>
+      </trans-unit>
+      <trans-unit id="connectionManagementService.noProviderForUri">
+        <source xml:lang="en">Could not find provider for uri: {0}</source>
+        <target state="translated">找不到 URI: {0} 的提供者</target>
       </trans-unit>
       <trans-unit id="connectionNotAcceptedError">
         <source xml:lang="en">Connection Not Accepted</source>
@@ -7274,9 +7408,9 @@ Error: {1}</source>
         <source xml:lang="en">Contributes notebook language.</source>
         <target state="translated">提供筆記本語言。</target>
       </trans-unit>
-      <trans-unit id="vscode.extension.contributes.notebook.providers">
-        <source xml:lang="en">Contributes notebook providers.</source>
-        <target state="translated">提供筆記本提供者。</target>
+      <trans-unit id="vscode.extension.contributes.notebook.providersDescriptions">
+        <source xml:lang="en">Contributes notebook provider descriptions.</source>
+        <target state="translated">提供筆記本提供者描述。</target>
       </trans-unit>
     </body>
   </file>
@@ -7484,6 +7618,18 @@ Error: {1}</source>
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/services/query/common/queryManagement" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="queryManagement.noQueryRunnerForUri">
+        <source xml:lang="en">Could not find Query Runner for uri: {0}</source>
+        <target state="translated">找不到 URI: {0} 的查詢執行器</target>
+      </trans-unit>
+      <trans-unit id="queryManagement.uriAlreadyHasQueryRunner">
+        <source xml:lang="en">Uri: {0} unexpectedly already has a query runner.</source>
+        <target state="translated">URI: {0} 意外地已有查詢執行器。</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/services/query/common/queryModelService" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
       <trans-unit id="commitEditFailed">
@@ -7493,6 +7639,14 @@ Error: {1}</source>
       <trans-unit id="msgCancelQueryFailed">
         <source xml:lang="en">Canceling the query failed: {0}</source>
         <target state="translated">取消查詢失敗: {0}</target>
+      </trans-unit>
+      <trans-unit id="queryModelService.noQueryFoundForUri">
+        <source xml:lang="en">No Query found for {0}</source>
+        <target state="translated">找不到 {0} 的查詢</target>
+      </trans-unit>
+      <trans-unit id="queryModelService.uriAlreadyHasQuery">
+        <source xml:lang="en">{0} already has an existing query</source>
+        <target state="translated">{0} 已經有一個查詢</target>
       </trans-unit>
       <trans-unit id="runQueryBatchStartLine">
         <source xml:lang="en">Line {0}</source>
@@ -7817,6 +7971,74 @@ Error: {1}</source>
       <trans-unit id="serverGroup.editServerGroup">
         <source xml:lang="en">Edit server group</source>
         <target state="translated">編輯伺服器群組</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="tableDesigner.advancedTab">
+        <source xml:lang="en">Advanced</source>
+        <target state="translated">進階</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.columnAllowNullTitle">
+        <source xml:lang="en">Allow Nulls</source>
+        <target state="translated">允許 Null 值</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.columnDefaultValueTitle">
+        <source xml:lang="en">Default Value</source>
+        <target state="translated">預設值</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.columnIsPrimaryKeyTitle">
+        <source xml:lang="en">Primary Key</source>
+        <target state="translated">主索引鍵</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.columnLengthTitle">
+        <source xml:lang="en">Length</source>
+        <target state="translated">長度</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.columnNameTitle">
+        <source xml:lang="en">Name</source>
+        <target state="translated">名稱</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.columnTypeName">
+        <source xml:lang="en">Column</source>
+        <target state="translated">資料行</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.columnTypeTitle">
+        <source xml:lang="en">Type</source>
+        <target state="translated">類型</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.columnsTabTitle">
+        <source xml:lang="en">Columns</source>
+        <target state="translated">資料行</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.descriptionTitle">
+        <source xml:lang="en">Description</source>
+        <target state="translated">描述</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.nameTitle">
+        <source xml:lang="en">Table name</source>
+        <target state="translated">資料表名稱</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.saveChangeError">
+        <source xml:lang="en">An error occured while saving changes: {0}</source>
+        <target state="translated">儲存變更時發生錯誤: {0}</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.savedChangeSuccess">
+        <source xml:lang="en">The changes have been successfully saved.</source>
+        <target state="translated">已成功儲存變更。</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.savingChanges">
+        <source xml:lang="en">Saving table designer changes...</source>
+        <target state="translated">正在儲存資料表設計工具變更...</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.schemaTitle">
+        <source xml:lang="en">Schema</source>
+        <target state="translated">結構描述</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.tableObjectType">
+        <source xml:lang="en">Table</source>
+        <target state="translated">資料表</target>
       </trans-unit>
     </body>
   </file>

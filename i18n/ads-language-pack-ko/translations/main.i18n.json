@@ -9933,15 +9933,18 @@
 			"treeView.notRegistered": "ID가 '{0}'인 등록된 트리 뷰가 없습니다."
 		},
 		"sql/workbench/api/common/extHostNotebook": {
-			"errNoManager": "관리자를 찾을 수 없음",
-			"errNoProvider": "Notebook 공급자가 없음",
+			"errNoExecuteManager": "실행 관리자를 찾을 수 없음",
+			"errNoExecuteProvider": "전자 필기장 실행 공급자를 찾을 수 없음",
+			"errNoSerializationManager": "serialization 관리자를 찾을 수 없음",
+			"errNoSerializationProvider": "전자 필기장 serialization 공급자를 찾을 수 없습니다.",
+			"executeProviderRequired": "유효한 providerId가 있는 NotebookExecuteProvider를 이 메서드에 전달해야 합니다.",
 			"noContentManager": "{0} Notebook의 Notebook 관리자에 콘텐츠 관리자가 없습니다. 작업을 수행할 수 없습니다.",
 			"noServerManager": "{0} Notebook의 Notebook 관리자에 서버 관리자가 없습니다. 작업을 수행할 수 없습니다.",
 			"noSessionManager": "{0} Notebook의 Notebook 관리자에 세션 관리자가 없습니다. 작업을 수행할 수 없습니다.",
-			"providerRequired": "유효한 providerId가 있는 NotebookProvider를 이 메서드에 전달해야 합니다."
+			"serializationProviderRequired": "유효한 providerId가 있는 NotebookSerializationProvider를 이 메서드에 전달해야 합니다."
 		},
 		"sql/workbench/api/common/extHostNotebookDocumentsAndEditors": {
-			"providerRequired": "유효한 providerId가 있는 NotebookProvider를 이 메서드에 전달해야 합니다."
+			"navigationProviderRequired": "유효한 providerId가 있는 NavigationProvider가 이 메서드에 전달되어야 합니다."
 		},
 		"sql/workbench/browser/actions": {
 			"clearSavedAccounts": "저장된 모든 계정 지우기",
@@ -9985,6 +9988,7 @@
 			"optionsDialog.ok": "확인"
 		},
 		"sql/workbench/browser/modal/optionsDialogHelper": {
+			"optionsDialog.defaultGroupName": "일반",
 			"optionsDialog.invalidInput": "잘못된 입력입니다. 숫자 값이 필요합니다.",
 			"optionsDialog.missingRequireField": "이(가) 필요합니다."
 		},
@@ -9997,6 +10001,7 @@
 			"declarativeTable.showActions": "작업 표시"
 		},
 		"sql/workbench/browser/modelComponents/dropdown.component": {
+			"defaultDropdownErrorMessage": "이 필드를 입력하세요.",
 			"loadingCompletedMessage": "로드 완료",
 			"loadingMessage": "로드"
 		},
@@ -10250,6 +10255,12 @@
 		},
 		"sql/workbench/contrib/connection/browser/connection.contribution": {
 			"connection.parseClipboardForConnectionStringDescription": "연결 대화 상자가 열리거나 붙여넣기가 수행되면 클립보드의 내용을 구문 분석하려고 합니다.",
+			"connection.showUnsupportedServerVersionWarning": "사용자가 Azure Data Studio에서 지원하지 않는 서버 버전에 연결할 때 경고 메시지를 표시할지 여부입니다.",
+			"sql.defaultAuthenticationType.AzureMFA": "Azure Active Directory - MFA가 지원되는 유니버설",
+			"sql.defaultAuthenticationType.AzureMFAAndUser": "Azure Active Directory - 암호",
+			"sql.defaultAuthenticationType.Integrated": "Windows 인증",
+			"sql.defaultAuthenticationType.SqlLogin": "SQL 로그인",
+			"sql.defaultAuthenticationTypeDescription": "Azure 리소스에 연결할 때 사용할 기본 인증 유형입니다.",
 			"sql.defaultEngineDescription": "사용할 기본 SQL 엔진입니다. 해당 엔진은 .sql 파일의 기본 언어 공급자와 새 연결을 만들 때 사용할 기본 공급자를 구동합니다.",
 			"sql.maxRecentConnectionsDescription": "연결 목록에 저장할 최근에 사용한 최대 연결 수입니다."
 		},
@@ -10260,6 +10271,7 @@
 			"schema.connectionOptions": "연결 옵션",
 			"schema.displayName": "공급자의 표시 이름",
 			"schema.iconPath": "서버 유형의 아이콘 경로",
+			"schema.isQueryProvider": "Whether the provider is also a query provider. The default value is true.",
 			"schema.notebookKernelAlias": "공급자의 Notebook 커널 별칭",
 			"schema.providerId": "공급자의 일반 ID"
 		},
@@ -10776,6 +10788,7 @@
 			"codePreview": "코드 셀",
 			"optionCodeCell": "코드 셀",
 			"optionTextCell": "텍스트 셀",
+			"splitCell": "셀 분할",
 			"textPreview": "텍스트 셀"
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/code.component": {
@@ -11214,6 +11227,7 @@
 		},
 		"sql/workbench/contrib/query/browser/queryResultsView": {
 			"messagesTabTitle": "메시지",
+			"queryResults.queryEditorCrashError": "쿼리 편집기에 문제가 발생하여 작동이 중지되었습니다. 저장하고 다시 여세요.",
 			"resultsTabTitle": "결과"
 		},
 		"sql/workbench/contrib/query/browser/statusBarItems": {
@@ -11605,7 +11619,12 @@
 		},
 		"sql/workbench/services/connection/browser/connectionManagementService": {
 			"cancelConnectionConfirmation": "이 연결을 취소하시겠습니까?",
+			"connection.invalidConnectionResult": "연결 결과가 잘못되었습니다.",
+			"connection.neverShowUnsupportedVersionWarning": "다시 표시 안 함",
 			"connection.noAzureAccount": "연결을 위한 Azure 계정 토큰을 가져오지 못함",
+			"connection.refreshAzureTokenFailure": "연결을 위한 Azure 계정 토큰을 새로 고침하지 못함",
+			"connection.unsupportedServerVersionWarning": "서버 버전은 Azure Data Studio에서 지원되지 않으므로 계속 연결할 수 있지만 Azure Data Studio의 일부 기능이 예상대로 작동하지 않을 수 있습니다.",
+			"connectionManagementService.noProviderForUri": "{0} URI에 대한 공급자를 찾을 수 없습니다.",
 			"connectionNotAcceptedError": "연결이 허용되지 않음",
 			"connectionService.no": "아니요",
 			"connectionService.yes": "예"
@@ -11792,7 +11811,7 @@
 			"carbon.extension.contributes.notebook.provider": "Notebook 공급자의 식별자입니다.",
 			"carbon.extension.contributes.notebook.standardKernels": "이 Notebook 공급자에서 표준이어야 하는 커널",
 			"vscode.extension.contributes.notebook.languagemagics": "Notebook 언어를 적용합니다.",
-			"vscode.extension.contributes.notebook.providers": "Notebook 공급자를 적용합니다."
+			"vscode.extension.contributes.notebook.providersDescriptions": "전자 필기장 공급자 설명을 제공합니다."
 		},
 		"sql/workbench/services/objectExplorer/browser/asyncServerTreeRenderer": {
 			"loading": "로드 중..."
@@ -11856,6 +11875,8 @@
 		"sql/workbench/services/query/common/queryModelService": {
 			"commitEditFailed": "행 커밋 실패: ",
 			"msgCancelQueryFailed": "쿼리 취소 실패: {0}",
+			"queryModelService.noQueryFoundForUri": "{0}에 대한 쿼리를 찾을 수 없습니다.",
+			"queryModelService.uriAlreadyHasQuery": "{0}에 기존 쿼리가 이미 있습니다.",
 			"runQueryBatchStartLine": "줄 {0}",
 			"runQueryBatchStartMessage": "다음에서 쿼리 실행 시작: ",
 			"runQueryStringBatchStartMessage": "쿼리 \"{0}\" 실행을 시작함",
@@ -11954,6 +11975,47 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "시작(&S)",
 			"showReleaseNotes": "시작 표시"
+		},
+		"sql/platform/connection/common/connectionStatusManager": {
+			"connectionStatusManager.noConnectionForUri": "{0} URI를 사용하여 연결을 찾을 수 없습니다.",
+			"connectionStatusManager.uriAlreadyInConnectionsList": "{0} URI가 있는 연결이 이미 있습니다."
+		},
+		"sql/workbench/services/query/common/queryManagement": {
+			"queryManagement.noQueryRunnerForUri": "{0} URI에 대한 쿼리 실행기를 찾을 수 없습니다.",
+			"queryManagement.uriAlreadyHasQueryRunner": "URI: {0} 예외에는 쿼리 실행기를 이미 가지고 있습니다."
+		},
+		"sql/base/browser/ui/designer/designer": {
+			"designer.newRowText": "새로 추가",
+			"designer.removeRowText": "제거",
+			"tableDesigner.unknownComponentType": "구성 요소 형식: {0}이(가) 지원되지 않음"
+		},
+		"sql/base/browser/ui/designer/designerPropertiesPane": {
+			"tableDesigner.propertiesPaneTitle": "속성",
+			"tableDesigner.propertiesPaneTitleWithContext": "속성 - {0} {1}"
+		},
+		"sql/workbench/browser/editor/tableDesigner/tableDesignerInput": {
+			"tableDesigner.newTable": "새 테이블"
+		},
+		"sql/workbench/contrib/tableDesigner/browser/actions": {
+			"tableDesigner.saveTableChanges": "변경 내용 저장"
+		},
+		"sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput": {
+			"tableDesigner.advancedTab": "고급",
+			"tableDesigner.columnAllowNullTitle": "Null 허용",
+			"tableDesigner.columnDefaultValueTitle": "기본값",
+			"tableDesigner.columnIsPrimaryKeyTitle": "기본 키",
+			"tableDesigner.columnLengthTitle": "길이",
+			"tableDesigner.columnNameTitle": "이름",
+			"tableDesigner.columnTypeName": "열",
+			"tableDesigner.columnTypeTitle": "형식",
+			"tableDesigner.columnsTabTitle": "열",
+			"tableDesigner.descriptionTitle": "설명",
+			"tableDesigner.nameTitle": "테이블 이름",
+			"tableDesigner.saveChangeError": "변경 내용을 저장하는 동안 오류가 발생했습니다. {0}",
+			"tableDesigner.savedChangeSuccess": "변경 내용이 저장되었습니다.",
+			"tableDesigner.savingChanges": "테이블 디자이너 변경 내용을 저장하는 중...",
+			"tableDesigner.schemaTitle": "스키마",
+			"tableDesigner.tableObjectType": "테이블"
 		}
 	}
 }

@@ -63,6 +63,13 @@ export interface IUntitledTextEditorModel extends ITextEditorModel, IModeSupport
 	 * Resolves the untitled model.
 	 */
 	resolve(): Promise<void>;
+
+	// {{SQL CARBON EDIT}} - START
+	/**
+	 * Sets the dirty state for this untitled model
+	 */
+	setDirty(dirty: boolean): void
+	// {{SQL CARBON EDIT}} - END
 }
 
 export class UntitledTextEditorModel extends BaseTextEditorModel implements IUntitledTextEditorModel {

@@ -74,6 +74,7 @@
 			"newBook": "Новая книга Jupyter (предварительный просмотр)",
 			"newMarkdown": "Новый файл Markdown (предварительный просмотр)",
 			"newNotebook": "Новая записная книжка (предварительный просмотр)",
+			"newSection": "Новый раздел (предварительная версия)",
 			"noBDCConnectionError": "Ядрам Spark требуется подключение к главному экземпляру кластера больших данных SQL Server.",
 			"noBooksSelected": "В данный момент во viewlet не выбраны книги Jupyter.",
 			"onGitHub": "GitHub",
@@ -110,7 +111,7 @@
 		},
 		"dist/dialog/configurePython/configurePathPage": {
 			"configurePython.browseButtonText": "Обзор",
-			"configurePython.descriptionWithKernel": "Для ядра {0} требуется настроить среду выполнения Python и установить зависимости.",
+			"configurePython.descriptionWithKernel": "Для ядра \"{0}\" требуется настроить среду выполнения Python и установить зависимости.",
 			"configurePython.descriptionWithoutKernel": "Для ядер записных книжек требуется настроить среду выполнения Python и установить зависимости.",
 			"configurePython.existingInstall": "Использовать существующую установку Python",
 			"configurePython.installationType": "Тип установки",
@@ -139,7 +140,7 @@
 			"configurePython.pkgNameColumn": "Имя",
 			"configurePython.requiredDependencies": "Установка необходимых зависимостей ядра",
 			"configurePython.requiredVersionColumn": "Требуемая версия",
-			"msgUnsupportedKernel": "Не удалось получить пакеты для ядра {0}"
+			"msgNoRequirementsForKernel": "По умолчанию пакеты не требуются для ядра \"{0}\"."
 		},
 		"dist/dialog/managePackages/addNewPackageTab": {
 			"managePackages.addNewTabTitle": "Добавить новый",
@@ -183,7 +184,7 @@
 			"notebookFileType": "Записные книжки",
 			"unsupportedFileType": "Поддерживаются только записные книжки IPYNB"
 		},
-		"dist/jupyter/jupyterNotebookProvider": {
+		"dist/jupyter/jupyterExecuteProvider": {
 			"errNotebookUriMissing": "Требуется путь к записной книжке"
 		},
 		"dist/jupyter/jupyterServerInstallation": {
@@ -251,11 +252,15 @@
 			"notebook.command.addcell": "Добавить ячейку",
 			"notebook.command.addcode": "Добавить ячейку кода",
 			"notebook.command.addtext": "Добавить текстовую ячейку",
+			"notebook.command.boldText": "Полужирный текст Markdown",
 			"notebook.command.clearactivecellresult": "Очистить результат ячейки",
+			"notebook.command.codeBlock": "Добавить блок кода",
+			"notebook.command.italicizeText": "Курсивный текст Markdown",
 			"notebook.command.new": "Создать записную книжку",
 			"notebook.command.open": "Открыть записную книжку",
 			"notebook.command.runactivecell": "Выполнить ячейку",
 			"notebook.command.runallcells": "Выполнить ячейки",
+			"notebook.command.underlineText": "Подчеркнутый текст Markdown",
 			"notebook.configuration.title": "Конфигурация Notebook",
 			"notebook.dontPromptPythonUpdate.description": "Не показывать предложение обновить Python.",
 			"notebook.jupyterServerShutdownTimeout.description": "Интервал времени (в минутах), по истечении которого производится завершение работы сервера после закрытия всех записных книжек. (Введите 0, чтобы не завершать работу)",
@@ -274,6 +279,7 @@
 			"title.SavedBooks": "Записные книжки",
 			"title.addMarkdown": "Добавить файл Markdown",
 			"title.addNotebook": "Добавить записную книжку",
+			"title.addSection": "Добавить раздел",
 			"title.analyzeJupyterNotebook": "Анализировать в Notebook",
 			"title.closeJupyterBook": "Закрыть книгу Jupyter",
 			"title.closeNotebook": "Закрыть записную книжку",

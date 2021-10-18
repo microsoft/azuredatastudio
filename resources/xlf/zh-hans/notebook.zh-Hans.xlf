@@ -260,6 +260,10 @@
         <source xml:lang="en">New Notebook (Preview)</source>
         <target state="translated">新笔记本(预览)</target>
       </trans-unit>
+      <trans-unit id="newSection">
+        <source xml:lang="en">New Section (Preview)</source>
+        <target state="translated">新节(预览)</target>
+      </trans-unit>
       <trans-unit id="noBDCConnectionError">
         <source xml:lang="en">Spark kernels require a connection to a SQL Server Big Data Cluster master instance.</source>
         <target state="translated">Spark 内核需要连接到 SQL Server 大数据群集主实例。</target>
@@ -393,8 +397,8 @@
         <target state="translated">浏览</target>
       </trans-unit>
       <trans-unit id="configurePython.descriptionWithKernel">
-        <source xml:lang="en">The {0} kernel requires a Python runtime to be configured and dependencies to be installed.</source>
-        <target state="translated">{0} 内核要求配置 Python 运行时并安装依赖项。</target>
+        <source xml:lang="en">The '{0}' kernel requires a Python runtime to be configured and dependencies to be installed.</source>
+        <target state="translated">"{0}" 内核要求配置 Python 运行时并安装依赖项。</target>
       </trans-unit>
       <trans-unit id="configurePython.descriptionWithoutKernel">
         <source xml:lang="en">Notebook kernels require a Python runtime to be configured and dependencies to be installed.</source>
@@ -500,9 +504,9 @@
         <source xml:lang="en">Required Version</source>
         <target state="translated">所需版本</target>
       </trans-unit>
-      <trans-unit id="msgUnsupportedKernel">
-        <source xml:lang="en">Could not retrieve packages for kernel {0}</source>
-        <target state="translated">无法检索内核 {0} 的包</target>
+      <trans-unit id="msgNoRequirementsForKernel">
+        <source xml:lang="en">No packages are required by default for the kernel '{0}'</source>
+        <target state="translated">默认情况下，内核 "{0}" 不需要包</target>
       </trans-unit>
     </body>
   </file>
@@ -654,7 +658,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/notebook/dist/jupyter/jupyterNotebookProvider" source-language="en" datatype="plaintext" target-language="zh-Hans">
+  <file original="extensions/notebook/dist/jupyter/jupyterExecuteProvider" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
       <trans-unit id="errNotebookUriMissing">
         <source xml:lang="en">A notebook path is required</source>
@@ -896,9 +900,21 @@
         <source xml:lang="en">Add Text Cell</source>
         <target state="translated">添加文本单元格</target>
       </trans-unit>
+      <trans-unit id="notebook.command.boldText">
+        <source xml:lang="en">Bold Markdown Text</source>
+        <target state="translated">加粗 Markdown 文本</target>
+      </trans-unit>
       <trans-unit id="notebook.command.clearactivecellresult">
         <source xml:lang="en">Clear Cell Result</source>
         <target state="translated">清除单元格结果</target>
+      </trans-unit>
+      <trans-unit id="notebook.command.codeBlock">
+        <source xml:lang="en">Add Code Block</source>
+        <target state="translated">添加代码块</target>
+      </trans-unit>
+      <trans-unit id="notebook.command.italicizeText">
+        <source xml:lang="en">Italicize Markdown Text</source>
+        <target state="translated">倾斜 Markdown 文本</target>
       </trans-unit>
       <trans-unit id="notebook.command.new">
         <source xml:lang="en">New Notebook</source>
@@ -915,6 +931,10 @@
       <trans-unit id="notebook.command.runallcells">
         <source xml:lang="en">Run Cells</source>
         <target state="translated">运行单元格</target>
+      </trans-unit>
+      <trans-unit id="notebook.command.underlineText">
+        <source xml:lang="en">Underline Markdown Text</source>
+        <target state="translated">下划线 Markdown 文本</target>
       </trans-unit>
       <trans-unit id="notebook.configuration.title">
         <source xml:lang="en">Notebook configuration</source>
@@ -987,6 +1007,10 @@
       <trans-unit id="title.addNotebook">
         <source xml:lang="en">Add Notebook</source>
         <target state="translated">添加笔记本</target>
+      </trans-unit>
+      <trans-unit id="title.addSection">
+        <source xml:lang="en">Add Section</source>
+        <target state="translated">添加节</target>
       </trans-unit>
       <trans-unit id="title.analyzeJupyterNotebook">
         <source xml:lang="en">Analyze in Notebook</source>

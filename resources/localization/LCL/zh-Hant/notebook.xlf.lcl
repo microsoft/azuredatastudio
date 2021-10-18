@@ -950,10 +950,13 @@
       </Item>
       <Item ItemId=";extensions/notebook/dist/dialog/configurePython/configurePathPage.configurePython.descriptionWithKernel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[The {0} kernel requires a Python runtime to be configured and dependencies to be installed.]]></Val>
+          <Val><![CDATA[The '{0}' kernel requires a Python runtime to be configured and dependencies to be installed.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} 核心需要設定 Python 執行階段並安裝相依性。]]></Val>
+            <Val><![CDATA['{0}' 核心需要設定 Python 執行階段並安裝相依性。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[The {0} kernel requires a Python runtime to be configured and dependencies to be installed.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1173,11 +1176,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/configurePython/pickPackagesPage.msgUnsupportedKernel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/notebook/dist/dialog/configurePython/pickPackagesPage.msgNoRequirementsForKernel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Could not retrieve packages for kernel {0}]]></Val>
+          <Val><![CDATA[No packages are required by default for the kernel '{0}']]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[無法擷取核心 {0} 的套件]]></Val>
+            <Val><![CDATA[核心 '{0}' 預設不需要任何封裝]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1976,6 +1979,15 @@
           <Val><![CDATA[Add Code Block]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[新增程式碼區塊]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/notebook/package.notebook.command.highlightText" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Highlight Markdown Text]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[將 Markdown 文字強調顯示]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

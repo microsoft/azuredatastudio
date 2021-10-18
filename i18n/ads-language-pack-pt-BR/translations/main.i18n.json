@@ -9933,15 +9933,18 @@
 			"treeView.notRegistered": "Não há exibição de árvore com a id '{0}' registrada."
 		},
 		"sql/workbench/api/common/extHostNotebook": {
-			"errNoManager": "Nenhum Gerenciador encontrado",
-			"errNoProvider": "nenhum provedor de notebook encontrado",
+			"errNoExecuteManager": "Não foi encontrado nenhum gerente de execução",
+			"errNoExecuteProvider": "Nenhum provedor de execução de bloco de anotações encontrado",
+			"errNoSerializationManager": "Não foi encontrado nenhum gerente de serialização",
+			"errNoSerializationProvider": "Nenhum provedor de serialização do bloco de anotações encontrado",
+			"executeProviderRequired": "Um NotebookExecuteProvider com fornecedor válidoDeve ser passado para este método",
 			"noContentManager": "O Notebook Manager do notebook {0} não tem um gerenciador de conteúdo. Não é possível executar operações nele",
 			"noServerManager": "O Notebook Manager para o notebook {0} não tem um gerenciador de servidores. Não é possível executar operações nele",
 			"noSessionManager": "O Notebook Manager do notebook {0} não tem um gerenciador de sessão. Não é possível executar operações nele",
-			"providerRequired": "Um NotebookProvider com providerId válido precisa ser passado para este método"
+			"serializationProviderRequired": "Um provedor de serialização de blocos de anotações com um provedor válidoDeve ser passado para este método"
 		},
 		"sql/workbench/api/common/extHostNotebookDocumentsAndEditors": {
-			"providerRequired": "Um NotebookProvider com providerId válido precisa ser passado para este método"
+			"navigationProviderRequired": "Um provedor de navegação com provedor válidoDeve ser passado para este método"
 		},
 		"sql/workbench/browser/actions": {
 			"clearSavedAccounts": "Limpar todas as contas salvas",
@@ -9985,6 +9988,7 @@
 			"optionsDialog.ok": "OK"
 		},
 		"sql/workbench/browser/modal/optionsDialogHelper": {
+			"optionsDialog.defaultGroupName": "Geral",
 			"optionsDialog.invalidInput": "Entrada inválida. Valor numérico esperado.",
 			"optionsDialog.missingRequireField": " é necessário."
 		},
@@ -9997,6 +10001,7 @@
 			"declarativeTable.showActions": "Mostrar ações"
 		},
 		"sql/workbench/browser/modelComponents/dropdown.component": {
+			"defaultDropdownErrorMessage": "Preencha este campo.",
 			"loadingCompletedMessage": "Carregamento concluído",
 			"loadingMessage": "Carregando"
 		},
@@ -10250,6 +10255,12 @@
 		},
 		"sql/workbench/contrib/connection/browser/connection.contribution": {
 			"connection.parseClipboardForConnectionStringDescription": "Tentativa de analisar o conteúdo da área de transferência quando a caixa de diálogo conexão é aberta ou a cópia é executada.",
+			"connection.showUnsupportedServerVersionWarning": "Se a mensagem de aviso deve ser exibida quando o usuário se conecta a uma versão do servidor que não tem suporte do Azure Data Studio.",
+			"sql.defaultAuthenticationType.AzureMFA": "Azure Active Directory – Universal com suporte para MFA",
+			"sql.defaultAuthenticationType.AzureMFAAndUser": "Azure Active Directory – senha",
+			"sql.defaultAuthenticationType.Integrated": "Autenticação do Windows",
+			"sql.defaultAuthenticationType.SqlLogin": "Login Sql",
+			"sql.defaultAuthenticationTypeDescription": "Tipo de autenticação padrão a ser usado ao se conectar aos recursos do Azure.",
 			"sql.defaultEngineDescription": "Mecanismo SQL padrão a ser usado. Isso direciona o provedor de idioma padrão em arquivos .sql e o padrão a ser usado ao criar uma conexão.",
 			"sql.maxRecentConnectionsDescription": "O número máximo de conexões usadas recentemente para armazenar na lista de conexão."
 		},
@@ -10260,6 +10271,7 @@
 			"schema.connectionOptions": "Opções de conexão",
 			"schema.displayName": "Nome de Exibição do provedor",
 			"schema.iconPath": "Caminho do ícone do tipo de servidor",
+			"schema.isQueryProvider": "Whether the provider is also a query provider. The default value is true.",
 			"schema.notebookKernelAlias": "Alias do Kernel do Notebook para o provedor",
 			"schema.providerId": "ID comum do provedor"
 		},
@@ -10776,6 +10788,7 @@
 			"codePreview": "Célula de código",
 			"optionCodeCell": "Célula de código",
 			"optionTextCell": "Célula de texto",
+			"splitCell": "Dividir célula",
 			"textPreview": "Célula de texto"
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/code.component": {
@@ -11214,6 +11227,7 @@
 		},
 		"sql/workbench/contrib/query/browser/queryResultsView": {
 			"messagesTabTitle": "Mensagens",
+			"queryResults.queryEditorCrashError": "O editor de consultas teve um problema e parou de funcionar. Salve ele e abra novamente.",
 			"resultsTabTitle": "Resultados"
 		},
 		"sql/workbench/contrib/query/browser/statusBarItems": {
@@ -11605,7 +11619,12 @@
 		},
 		"sql/workbench/services/connection/browser/connectionManagementService": {
 			"cancelConnectionConfirmation": "Tem certeza de que deseja cancelar esta conexão?",
+			"connection.invalidConnectionResult": "O resultado da conexão é inválido",
+			"connection.neverShowUnsupportedVersionWarning": "Não mostrar novamente",
 			"connection.noAzureAccount": "Falha ao obter o token de conta do Azure para a conexão",
+			"connection.refreshAzureTokenFailure": "Falha ao obter o token de conta do Azure para a conexão",
+			"connection.unsupportedServerVersionWarning": "A versão do servidor não é compatível com Azure Data Studio, você ainda pode se conectar a ela, mas alguns recursos no Azure Data Studio podem não funcionar conforme o esperado.",
+			"connectionManagementService.noProviderForUri": "Não foi possível encontrar o provedor para o uri: {0}",
 			"connectionNotAcceptedError": "Conexão não aceita",
 			"connectionService.no": "Não",
 			"connectionService.yes": "Sim"
@@ -11792,7 +11811,7 @@
 			"carbon.extension.contributes.notebook.provider": "Identificador do provedor de notebook.",
 			"carbon.extension.contributes.notebook.standardKernels": "Quais kernels devem ser padrão com este provedor de notebook?",
 			"vscode.extension.contributes.notebook.languagemagics": "Contribui com a linguagem do notebook.",
-			"vscode.extension.contributes.notebook.providers": "Contribui com provedores de notebooks."
+			"vscode.extension.contributes.notebook.providersDescriptions": "Contribui com as descrições dos fornecedores de bloco de anotações."
 		},
 		"sql/workbench/services/objectExplorer/browser/asyncServerTreeRenderer": {
 			"loading": "Carregando..."
@@ -11856,6 +11875,8 @@
 		"sql/workbench/services/query/common/queryModelService": {
 			"commitEditFailed": "A linha de commit falhou: ",
 			"msgCancelQueryFailed": "O cancelamento da consulta falhou: {0}",
+			"queryModelService.noQueryFoundForUri": "Nenhuma Consulta encontrada para {0}",
+			"queryModelService.uriAlreadyHasQuery": "{0} já tem uma consulta existente",
 			"runQueryBatchStartLine": "Linha {0}",
 			"runQueryBatchStartMessage": "Iniciada a execução de consulta em ",
 			"runQueryStringBatchStartMessage": "Começou a executar consulta \"{0}\"",
@@ -11954,6 +11975,47 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "I&&ntrodução",
 			"showReleaseNotes": "Mostrar Introdução"
+		},
+		"sql/platform/connection/common/connectionStatusManager": {
+			"connectionStatusManager.noConnectionForUri": "Não foi possível localizar a conexão com o uri: {0}",
+			"connectionStatusManager.uriAlreadyInConnectionsList": "Já existe uma conexão com o uri: {0}"
+		},
+		"sql/workbench/services/query/common/queryManagement": {
+			"queryManagement.noQueryRunnerForUri": "Não foi possível localizar o Executor de Consulta para o uri: {0}",
+			"queryManagement.uriAlreadyHasQueryRunner": "Uri: {0} inesperadamente já tem um executor de consulta."
+		},
+		"sql/base/browser/ui/designer/designer": {
+			"designer.newRowText": "Adicionar Novo",
+			"designer.removeRowText": "Remover",
+			"tableDesigner.unknownComponentType": "O tipo de componente: {0} não tem suporte"
+		},
+		"sql/base/browser/ui/designer/designerPropertiesPane": {
+			"tableDesigner.propertiesPaneTitle": "Propriedades",
+			"tableDesigner.propertiesPaneTitleWithContext": "Propriedades - {0} {1}"
+		},
+		"sql/workbench/browser/editor/tableDesigner/tableDesignerInput": {
+			"tableDesigner.newTable": "Nova Tabela"
+		},
+		"sql/workbench/contrib/tableDesigner/browser/actions": {
+			"tableDesigner.saveTableChanges": "Salvar Alterações"
+		},
+		"sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput": {
+			"tableDesigner.advancedTab": "Avançado",
+			"tableDesigner.columnAllowNullTitle": "Permitir Valores Nulos",
+			"tableDesigner.columnDefaultValueTitle": "Valor Padrão",
+			"tableDesigner.columnIsPrimaryKeyTitle": "Chave Primária",
+			"tableDesigner.columnLengthTitle": "Comprimento",
+			"tableDesigner.columnNameTitle": "Nome",
+			"tableDesigner.columnTypeName": "Coluna",
+			"tableDesigner.columnTypeTitle": "Tipo",
+			"tableDesigner.columnsTabTitle": "Colunas",
+			"tableDesigner.descriptionTitle": "Descrição",
+			"tableDesigner.nameTitle": "Nome da tabela",
+			"tableDesigner.saveChangeError": "Ocorreu um erro ao salvar as alterações: {0}",
+			"tableDesigner.savedChangeSuccess": "As alterações foram salvas com sucesso.",
+			"tableDesigner.savingChanges": "Alterações no designer da mesa de salvamento...",
+			"tableDesigner.schemaTitle": "Esquema",
+			"tableDesigner.tableObjectType": "Tabela"
 		}
 	}
 }

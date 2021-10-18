@@ -22,6 +22,10 @@
         <source xml:lang="en">Publish History</source>
         <target state="translated">發佈歷程記錄</target>
       </trans-unit>
+      <trans-unit id="SettingAlreadyExists">
+        <source xml:lang="en">Local app setting '{0}' already exists. Overwrite?</source>
+        <target state="translated">本機應用程式設定 '{0}' 已經存在。要覆寫嗎?</target>
+      </trans-unit>
       <trans-unit id="Status">
         <source xml:lang="en">Status</source>
         <target state="translated">狀態</target>
@@ -61,6 +65,10 @@
       <trans-unit id="addPackage">
         <source xml:lang="en">Add Package</source>
         <target state="translated">新增套件</target>
+      </trans-unit>
+      <trans-unit id="addPackageReferenceMessage">
+        <source xml:lang="en">To use SQL bindings, ensure your Azure Functions project has a reference to {0}</source>
+        <target state="translated">若要使用 SQL 繫結，請確定您的 Azure Functions 專案具有 {0} 參考</target>
       </trans-unit>
       <trans-unit id="appSettingPrompt">
         <source xml:lang="en">Would you like to update Azure Function local.settings.json with the new connection string?</source>
@@ -106,6 +114,10 @@
         <source xml:lang="en">Change Target Platform</source>
         <target state="translated">變更目標平台</target>
       </trans-unit>
+      <trans-unit id="checkoutOutputMessage">
+        <source xml:lang="en">Check output pane for more details</source>
+        <target state="translated">如需詳細資料，請查看輸出窗格</target>
+      </trans-unit>
       <trans-unit id="chooseAction">
         <source xml:lang="en">Choose action</source>
         <target state="translated">選擇動作</target>
@@ -121,6 +133,10 @@
       <trans-unit id="cleaningDockerImagesMessage">
         <source xml:lang="en">Cleaning existing deployments...</source>
         <target state="translated">正在清除現有的部署...</target>
+      </trans-unit>
+      <trans-unit id="confirmPassword">
+        <source xml:lang="en">Confirm SQL server admin password</source>
+        <target state="translated">確認 SQL Server 管理員密碼</target>
       </trans-unit>
       <trans-unit id="connectingToSqlServerOnDockerMessage">
         <source xml:lang="en">Connecting to SQL Server on Docker</source>
@@ -142,9 +158,17 @@
         <source xml:lang="en">Connection string setting specified in "local.settings.json"</source>
         <target state="translated">在 "local.settings.json" 中指定的連接字串設定</target>
       </trans-unit>
+      <trans-unit id="containerAlreadyExistForProject">
+        <source xml:lang="en">Other servers on container already exist for the project. Do you want to delete them?</source>
+        <target state="translated">容器上的其他伺服器已存在於專案中。要刪除它們嗎?</target>
+      </trans-unit>
       <trans-unit id="createNew">
         <source xml:lang="en">Create New</source>
         <target state="translated">新建立</target>
+      </trans-unit>
+      <trans-unit id="createNewLocalAppSetting">
+        <source xml:lang="en">Create new local app setting</source>
+        <target state="translated">建立新的本機應用程式設定</target>
       </trans-unit>
       <trans-unit id="createProjectDialogOkButtonText">
         <source xml:lang="en">Create</source>
@@ -290,29 +314,13 @@
         <source xml:lang="en">Deploying SQL Db Project Locally</source>
         <target state="translated">在本機部署 SQL 資料庫專案</target>
       </trans-unit>
-      <trans-unit id="deployProjectFailed">
-        <source xml:lang="en">Failed to deploy project. Check output pane for more details. {0}</source>
-        <target state="translated">無法部署專案。如需詳細資料，請查看輸出窗格。{0}</target>
-      </trans-unit>
       <trans-unit id="deployProjectFailedMessage">
         <source xml:lang="en">Failed to open a connection to the deployed database'</source>
         <target state="translated">無法開啟與已部署資料庫的連線</target>
       </trans-unit>
-      <trans-unit id="deployProjectSucceed">
-        <source xml:lang="en">Database project deployed successfully</source>
-        <target state="translated">已成功部署資料庫專案</target>
-      </trans-unit>
       <trans-unit id="deployScriptExists">
         <source xml:lang="en">A {0} script already exists. The new script will not be included in build.</source>
         <target state="translated">{0} 指令碼已存在。新指令碼不會包含在組建中。</target>
-      </trans-unit>
-      <trans-unit id="deployToDockerContainer">
-        <source xml:lang="en">Deploy to docker container</source>
-        <target state="translated">部署至 Docker 容器</target>
-      </trans-unit>
-      <trans-unit id="deployToExistingServer">
-        <source xml:lang="en">Deploy to existing server</source>
-        <target state="translated">部署到現有的伺服器</target>
       </trans-unit>
       <trans-unit id="differentDbDifferentServer">
         <source xml:lang="en">Different database, different server</source>
@@ -337,6 +345,10 @@
       <trans-unit id="dockerLogMessage">
         <source xml:lang="en">Docker logs: '{0}'</source>
         <target state="translated">Docker 記錄檔: '{0}'</target>
+      </trans-unit>
+      <trans-unit id="dockerNotRunningError">
+        <source xml:lang="en">Failed to verify docker. Please make sure docker is installed and running. Error: '{0}'</source>
+        <target state="translated">無法驗證 docker。請確定 docker 已安裝且正在執行。錯誤: '{0}'</target>
       </trans-unit>
       <trans-unit id="done">
         <source xml:lang="en">Done</source>
@@ -366,6 +378,10 @@
         <source xml:lang="en">Enter a template for SQL connection string</source>
         <target state="translated">輸入 SQL 連接字串的範本</target>
       </trans-unit>
+      <trans-unit id="enterConnectionString">
+        <source xml:lang="en">Enter connection string</source>
+        <target state="translated">輸入連接字串</target>
+      </trans-unit>
       <trans-unit id="enterConnectionStringEnvName">
         <source xml:lang="en">Enter connection string environment variable name</source>
         <target state="translated">輸入連接字串環境變數名稱</target>
@@ -373,6 +389,10 @@
       <trans-unit id="enterConnectionStringEnvNameDescription">
         <source xml:lang="en">Enter environment variable for SQL connection string</source>
         <target state="translated">輸入 SQL 連接字串的環境變數</target>
+      </trans-unit>
+      <trans-unit id="enterConnectionStringSettingName">
+        <source xml:lang="en">Enter connection string setting name</source>
+        <target state="translated">輸入連接字串設定名稱</target>
       </trans-unit>
       <trans-unit id="enterConnectionStringTemplate">
         <source xml:lang="en">Enter connection string template</source>
@@ -387,12 +407,12 @@
         <target state="translated">輸入變數 '{0}' 的新值</target>
       </trans-unit>
       <trans-unit id="enterPassword">
-        <source xml:lang="en">Enter password or press enter to use the generated password</source>
-        <target state="translated">輸入密碼或按下 Enter 以使用產生的密碼</target>
+        <source xml:lang="en">Enter SQL Server admin password</source>
+        <target state="translated">輸入 SQL Server 管理員密碼</target>
       </trans-unit>
       <trans-unit id="enterPortNumber">
-        <source xml:lang="en">Enter port number or press enter to use the default value</source>
-        <target state="translated">輸入連接埠號碼或按 Enter 以使用預設值</target>
+        <source xml:lang="en">Enter SQL server port number or press enter to use the default value</source>
+        <target state="translated">輸入 SQL Server 連接埠號碼或按 Enter 以使用預設值</target>
       </trans-unit>
       <trans-unit id="enterSystemDbName">
         <source xml:lang="en">Enter a database name for this system database</source>
@@ -425,6 +445,10 @@
       <trans-unit id="extractTargetRequired">
         <source xml:lang="en">Target information for extract is required to create database project.</source>
         <target state="translated">需要供解壓縮的目標資訊才能建立資料庫專案。</target>
+      </trans-unit>
+      <trans-unit id="failedToParse">
+        <source xml:lang="en">Failed to parse "{0}": {1}.</source>
+        <target state="translated">無法剖析 "{0}": {1}。</target>
       </trans-unit>
       <trans-unit id="file">
         <source xml:lang="en">File</source>
@@ -474,6 +498,10 @@
         <source xml:lang="en">Generate Script</source>
         <target state="translated">產生指令碼</target>
       </trans-unit>
+      <trans-unit id="generatingProjectFailed">
+        <source xml:lang="en">Generating project via AutoRest failed: {0}</source>
+        <target state="translated">無法透過 AutoRest 產生專案: {0}</target>
+      </trans-unit>
       <trans-unit id="hr">
         <source xml:lang="en">hr</source>
         <target state="translated">小時</target>
@@ -506,6 +534,10 @@
         <source xml:lang="en">Invalid value specified for the property '{0}' in .sqlproj file</source>
         <target state="translated">在 .sqlproj 中為屬性 '{0}' 指定的值無效</target>
       </trans-unit>
+      <trans-unit id="invalidSQLPassword">
+        <source xml:lang="en">SQL Server password doesn't meet the password complexity requirement. For more information see https://docs.microsoft.com/sql/relational-databases/security/password-policy</source>
+        <target state="translated">SQL Server 密碼不符合密碼複雜度要求。如需詳細資訊，請參閱 https://docs.microsoft.com/sql/relational-databases/security/password-policy</target>
+      </trans-unit>
       <trans-unit id="invalidSqlConnectionString">
         <source xml:lang="en">Invalid SQL connection string</source>
         <target state="translated">不正確的 SQL 連接字串</target>
@@ -513,6 +545,10 @@
       <trans-unit id="invalidTargetPlatform">
         <source xml:lang="en">Invalid target platform: {0}. Supported target platforms: {1}</source>
         <target state="translated">目標平台無效: {0}。支援的目標平台: {1}</target>
+      </trans-unit>
+      <trans-unit id="jsonParseError">
+        <source xml:lang="en">{0} near line "{1}", column "{2}"</source>
+        <target state="translated">{0} 接近行 "{1}"，資料行 "{2}"</target>
       </trans-unit>
       <trans-unit id="loadProfilePlaceholderText">
         <source xml:lang="en">Load profile...</source>
@@ -530,9 +566,17 @@
         <source xml:lang="en">Missing 'version' entry in {0}</source>
         <target state="translated">遺漏了 {0} 的 'version' 項目</target>
       </trans-unit>
+      <trans-unit id="moreInformation">
+        <source xml:lang="en">More Information</source>
+        <target state="translated">詳細資訊</target>
+      </trans-unit>
       <trans-unit id="msec">
         <source xml:lang="en">msec</source>
         <target state="translated">毫秒</target>
+      </trans-unit>
+      <trans-unit id="multipleMostDeploymentScripts">
+        <source xml:lang="en">Unexpected number of {0} files: {1}</source>
+        <target state="translated">非預期的 {0} 檔案數: {1}</target>
       </trans-unit>
       <trans-unit id="multipleSqlProjFilesSelected">
         <source xml:lang="en">Multiple .sqlproj files selected; please select only one.</source>
@@ -582,6 +626,14 @@
         <source xml:lang="en">No (default)</source>
         <target state="translated">無 (預設值)</target>
       </trans-unit>
+      <trans-unit id="nodeButNotAutorestFound">
+        <source xml:lang="en">Autorest tool not found in system path, but found Node.js.  Running via npx.  Please execute 'npm install autorest -g' to install permanently.</source>
+        <target state="translated">系統路徑中找不到 Autorest 工具，但找到透過 npx 執行的 Node.js。請執行 'npm install autorest -g' 以永久安裝。</target>
+      </trans-unit>
+      <trans-unit id="nodeNotFound">
+        <source xml:lang="en">Neither autorest nor Node.js (npx) found in system path.  Please install Node.js for autorest generation to work.</source>
+        <target state="translated">在系統路徑中找不到 Autorest 和 Node.js (npx)。請安裝 Node.js 以產生 Autorest。</target>
+      </trans-unit>
       <trans-unit id="notValidVariableName">
         <source xml:lang="en">The variable name '{0}' is not valid.</source>
         <target state="translated">變數名稱 '{0}' 無效。</target>
@@ -605,6 +657,10 @@
       <trans-unit id="parentTreeItemUnknown">
         <source xml:lang="en">Cannot access parent of provided tree item</source>
         <target state="translated">無法存取提供之樹狀項目的父代</target>
+      </trans-unit>
+      <trans-unit id="passwordNotMatch">
+        <source xml:lang="en">SQL Server password doesn't match the confirmation password</source>
+        <target state="translated">SQL Server 密碼與確認密碼不相符</target>
       </trans-unit>
       <trans-unit id="portMustNotBeNumber">
         <source xml:lang="en">Port must a be number</source>
@@ -670,9 +726,29 @@
         <source xml:lang="en">Publish project</source>
         <target state="translated">發佈專案</target>
       </trans-unit>
+      <trans-unit id="publishProjectSucceed">
+        <source xml:lang="en">Database project published successfully</source>
+        <target state="translated">已成功發佈資料庫專案</target>
+      </trans-unit>
       <trans-unit id="publishSettingsFiles">
         <source xml:lang="en">Publish Settings File</source>
         <target state="translated">發佈設定檔案</target>
+      </trans-unit>
+      <trans-unit id="publishToContainerFailed">
+        <source xml:lang="en">Failed to publish to container. {0}</source>
+        <target state="translated">無法發佈至容器。{0}</target>
+      </trans-unit>
+      <trans-unit id="publishToDockerContainer">
+        <source xml:lang="en">Publish to new server in a container</source>
+        <target state="translated">發行至容器中的新伺服器</target>
+      </trans-unit>
+      <trans-unit id="publishToExistingServer">
+        <source xml:lang="en">Publish to existing server</source>
+        <target state="translated">發佈到現有的伺服器</target>
+      </trans-unit>
+      <trans-unit id="publishingProjectMessage">
+        <source xml:lang="en">Publishing project in a container...</source>
+        <target state="translated">正在發佈容器中的專案...</target>
       </trans-unit>
       <trans-unit id="referenceRadioButtonsGroupTitle">
         <source xml:lang="en">Type</source>
@@ -722,6 +798,14 @@
         <source xml:lang="en">Same database</source>
         <target state="translated">相同資料庫</target>
       </trans-unit>
+      <trans-unit id="save">
+        <source xml:lang="en">Save</source>
+        <target state="translated">儲存</target>
+      </trans-unit>
+      <trans-unit id="saveChangesInFile">
+        <source xml:lang="en">There are unsaved changes in the current file. Save now?</source>
+        <target state="translated">目前的檔案中有未儲存的變更。要立即儲存嗎?</target>
+      </trans-unit>
       <trans-unit id="schema">
         <source xml:lang="en">Schema</source>
         <target state="translated">結構描述</target>
@@ -750,6 +834,10 @@
         <source xml:lang="en">Select an Azure function in the current file to add SQL binding to</source>
         <target state="translated">在目前檔案中選取要新增 SQL 繫結的 Azure 函式</target>
       </trans-unit>
+      <trans-unit id="selectBaseImage">
+        <source xml:lang="en">Select the base SQL Server docker image</source>
+        <target state="translated">選取基底 SQL Server docker 映像</target>
+      </trans-unit>
       <trans-unit id="selectBindingType">
         <source xml:lang="en">Select type of binding</source>
         <target state="translated">選取繫結類型</target>
@@ -766,10 +854,6 @@
         <source xml:lang="en">Select database</source>
         <target state="translated">選取資料庫</target>
       </trans-unit>
-      <trans-unit id="selectDeployOption">
-        <source xml:lang="en">Select where to deploy the project to</source>
-        <target state="translated">選取專案部署位置</target>
-      </trans-unit>
       <trans-unit id="selectFolderStructure">
         <source xml:lang="en">Select folder structure</source>
         <target state="translated">選取資料夾結構</target>
@@ -785,6 +869,18 @@
       <trans-unit id="selectProjectLocation">
         <source xml:lang="en">Select project location</source>
         <target state="translated">選取專案位置</target>
+      </trans-unit>
+      <trans-unit id="selectPublishOption">
+        <source xml:lang="en">Select where to publish the project to</source>
+        <target state="translated">選取要將專案發佈的位置</target>
+      </trans-unit>
+      <trans-unit id="selectSetting">
+        <source xml:lang="en">Select SQL connection string setting from local.settings.json</source>
+        <target state="translated">從 local.settings.json 選取 SQL 連接字串設定</target>
+      </trans-unit>
+      <trans-unit id="selectSpecFile">
+        <source xml:lang="en">Select OpenAPI/Swagger spec file</source>
+        <target state="translated">選取 OpenAPI/Swagger 規格檔案</target>
       </trans-unit>
       <trans-unit id="selectString">
         <source xml:lang="en">Select</source>
@@ -810,6 +906,10 @@
         <source xml:lang="en">Source database</source>
         <target state="translated">來源資料庫</target>
       </trans-unit>
+      <trans-unit id="specSelectionText">
+        <source xml:lang="en">OpenAPI/Swagger spec</source>
+        <target state="translated">OpenAPI/Swagger 規格</target>
+      </trans-unit>
       <trans-unit id="sqlCmdTableLabel">
         <source xml:lang="en">SQLCMD Variables</source>
         <target state="translated">SQLCMD 變數</target>
@@ -826,7 +926,7 @@
         <source xml:lang="en">SQL connection string</source>
         <target state="translated">SQL 連接字串</target>
       </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.InstallNetCore">
+      <trans-unit id="sqlDatabaseProjects.Install">
         <source xml:lang="en">Install</source>
         <target state="translated">安裝</target>
       </trans-unit>
@@ -850,9 +950,9 @@
         <source xml:lang="en">Database Projects</source>
         <target state="translated">資料庫專案</target>
       </trans-unit>
-      <trans-unit id="sqlObjectToQuery">
-        <source xml:lang="en">SQL object to query</source>
-        <target state="translated">要查詢的 SQL 物件</target>
+      <trans-unit id="sqlTableOrViewToQuery">
+        <source xml:lang="en">SQL table or view to query</source>
+        <target state="translated">要查詢的 SQL 資料表或檢視</target>
       </trans-unit>
       <trans-unit id="sqlTableToUpsert">
         <source xml:lang="en">SQL table to upsert into</source>
@@ -934,6 +1034,10 @@
         <source xml:lang="en">Value cannot be empty</source>
         <target state="translated">值不得空白</target>
       </trans-unit>
+      <trans-unit id="valueMustNotBeEmpty">
+        <source xml:lang="en">Value must not be empty</source>
+        <target state="translated">值不得為空白</target>
+      </trans-unit>
       <trans-unit id="viewFriendlyName">
         <source xml:lang="en">View</source>
         <target state="translated">檢視</target>
@@ -950,6 +1054,10 @@
         <source xml:lang="en">	&gt;&gt;&gt; {0}   … errored out: {1}</source>
         <target state="translated">	&gt;&gt;&gt; {0}   … 發生錯誤: {1}</target>
       </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/sql-database-projects/dist/tools/shellExecutionHelper" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
       <trans-unit id="sqlDatabaseProjects.RunCommand.stderr">
         <source xml:lang="en">    stderr: </source>
         <target state="translated">    stderr: </target>
@@ -982,6 +1090,10 @@
         <source xml:lang="en">Add SQL Binding</source>
         <target state="translated">新增 SQL 繫結</target>
       </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.autorestSqlVersion">
+        <source xml:lang="en">Which version of Autorest.Sql to use from NPM.  Latest will be used if not set.</source>
+        <target state="translated">要從 NPM 使用的 Autorest.Sql 版本。如果未設定，則會使用最新的版本。</target>
+      </trans-unit>
       <trans-unit id="sqlDatabaseProjects.build">
         <source xml:lang="en">Build</source>
         <target state="translated">組建</target>
@@ -1002,10 +1114,6 @@
         <source xml:lang="en">Delete</source>
         <target state="translated">刪除</target>
       </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.deployLocal">
-        <source xml:lang="en">Deploy</source>
-        <target state="translated">部署</target>
-      </trans-unit>
       <trans-unit id="sqlDatabaseProjects.description">
         <source xml:lang="en">Design and publish SQL database schemas</source>
         <target state="translated">設計及發佈 SQL 資料庫結構描述</target>
@@ -1021,6 +1129,10 @@
       <trans-unit id="sqlDatabaseProjects.exclude">
         <source xml:lang="en">Exclude from project</source>
         <target state="translated">從專案中排除</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.generateProjectFromOpenApiSpec">
+        <source xml:lang="en">Generate SQL Project from OpenAPI/Swagger spec</source>
+        <target state="translated">透過 OpenAPI/Swagger 規格產生 SQL 專案</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.netCoreDoNotAsk">
         <source xml:lang="en">Whether to prompt the user to install .NET Core when not detected.</source>
@@ -1069,6 +1181,10 @@
       <trans-unit id="sqlDatabaseProjects.newView">
         <source xml:lang="en">Add View</source>
         <target state="translated">新增檢視</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.nodejsDoNotAsk">
+        <source xml:lang="en">Whether to prompt the user to install Node.js when not detected.</source>
+        <target state="translated">是否在未偵測到 Node.js 時提示使用者加以安裝。</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.open">
         <source xml:lang="en">Open Database Project</source>

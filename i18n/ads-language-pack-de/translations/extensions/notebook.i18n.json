@@ -74,6 +74,7 @@
 			"newBook": "Neue Jupyter Book-Instanz (Vorschau)",
 			"newMarkdown": "Neuer Markdown (Vorschau)",
 			"newNotebook": "Neues Notebook (Vorschau)",
+			"newSection": "Neuer Abschnitt (Vorschau)",
 			"noBDCConnectionError": "Für Spark-Kernel ist eine Verbindung mit einer Masterinstanz eines SQL Server-Big Data-Clusters erforderlich.",
 			"noBooksSelected": "Im Viewlet sind zurzeit keine Jupyter Books ausgewählt.",
 			"onGitHub": "GitHub",
@@ -110,7 +111,7 @@
 		},
 		"dist/dialog/configurePython/configurePathPage": {
 			"configurePython.browseButtonText": "Durchsuchen",
-			"configurePython.descriptionWithKernel": "Für den {0}-Kernel ist die Konfiguration einer Python-Runtime und die Installation von Abhängigkeiten erforderlich.",
+			"configurePython.descriptionWithKernel": "Für den \"{0}\"-Kernel ist die Konfiguration einer Python-Runtime und die Installation von Abhängigkeiten erforderlich.",
 			"configurePython.descriptionWithoutKernel": "Für Notebook-Kernel ist die Konfiguration einer Python-Runtime und die Installation von Abhängigkeiten erforderlich.",
 			"configurePython.existingInstall": "Vorhandene Python-Installation verwenden",
 			"configurePython.installationType": "Installationstyp",
@@ -139,7 +140,7 @@
 			"configurePython.pkgNameColumn": "Name",
 			"configurePython.requiredDependencies": "Erforderliche Kernelabhängigkeiten installieren",
 			"configurePython.requiredVersionColumn": "Erforderliche Version",
-			"msgUnsupportedKernel": "Für Kernel \"{0}\" konnten keine Pakete abgerufen werden."
+			"msgNoRequirementsForKernel": "Für den Kernel \"{0}\" sind standardmäßig keine Pakete erforderlich"
 		},
 		"dist/dialog/managePackages/addNewPackageTab": {
 			"managePackages.addNewTabTitle": "Neu hinzufügen",
@@ -183,7 +184,7 @@
 			"notebookFileType": "Notebooks",
 			"unsupportedFileType": "Es werden nur IPYNB-Notebooks unterstützt."
 		},
-		"dist/jupyter/jupyterNotebookProvider": {
+		"dist/jupyter/jupyterExecuteProvider": {
 			"errNotebookUriMissing": "Ein Notebook-Pfad ist erforderlich."
 		},
 		"dist/jupyter/jupyterServerInstallation": {
@@ -251,11 +252,15 @@
 			"notebook.command.addcell": "Zelle hinzufügen",
 			"notebook.command.addcode": "Codezelle hinzufügen",
 			"notebook.command.addtext": "Textzelle hinzufügen",
+			"notebook.command.boldText": "Fettschreiben des Markdowntextes",
 			"notebook.command.clearactivecellresult": "Zellergebnis löschen",
+			"notebook.command.codeBlock": "Codeblock hinzufügen",
+			"notebook.command.italicizeText": "Kursivisieren des Markdowntextes",
 			"notebook.command.new": "Neues Notebook",
 			"notebook.command.open": "Notebook öffnen",
 			"notebook.command.runactivecell": "Zelle ausführen",
 			"notebook.command.runallcells": "Zellen ausführen",
+			"notebook.command.underlineText": "Markdowntext unterstreichen",
 			"notebook.configuration.title": "Notebook-Konfiguration",
 			"notebook.dontPromptPythonUpdate.description": "Zeigen Sie keine Aufforderungen zum Aktualisieren von Python an.",
 			"notebook.jupyterServerShutdownTimeout.description": "Die Zeit ( in Minuten), die abgewartet werden soll, bevor ein Server heruntergefahren wird, nachdem alle Notizbücher geschlossen wurden. (Geben Sie 0 ein, um nicht herunterzufahren)",
@@ -274,6 +279,7 @@
 			"title.SavedBooks": "Notebooks",
 			"title.addMarkdown": "Markdowndatei hinzufügen",
 			"title.addNotebook": "Notebook hinzufügen",
+			"title.addSection": "Abschnitt hinzufügen",
 			"title.analyzeJupyterNotebook": "In Notebook analysieren",
 			"title.closeJupyterBook": "Jupyter-Buch schließen",
 			"title.closeNotebook": "Notebook schließen",
