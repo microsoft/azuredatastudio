@@ -9,6 +9,8 @@ import { MigrationStateModel, MigrationTargetType } from '../../models/stateMach
 import * as constants from '../../constants/strings';
 import { debounce } from '../../api/utils';
 import { IconPath, IconPathHelper } from '../../constants/iconPathHelper';
+import * as styles from '../../constants/styles';
+import { EOL } from 'os';
 
 const styleLeft: azdata.CssStyles = {
 	'border': 'none',
@@ -44,6 +46,7 @@ const headerRight: azdata.CssStyles = {
 
 export class SqlDatabaseTree {
 	private _view!: azdata.ModelView;
+	private _dialog!: azdata.window.Dialog;
 	private _instanceTable!: azdata.DeclarativeTableComponent;
 	private _databaseTable!: azdata.DeclarativeTableComponent;
 	private _assessmentResultsTable!: azdata.DeclarativeTableComponent;
@@ -83,6 +86,7 @@ export class SqlDatabaseTree {
 
 	async createRootContainer(dialog: azdata.window.Dialog, view: azdata.ModelView): Promise<azdata.Component> {
 		this._view = view;
+		this._dialog = dialog;
 
 		const selectDbMessage = this.createSelectDbMessage();
 		this._resultComponent = await this.createComponentResult(view);
@@ -135,8 +139,7 @@ export class SqlDatabaseTree {
 	private createDatabaseCount(): azdata.TextComponent {
 		this._databaseCount = this._view.modelBuilder.text().withProps({
 			CSSStyles: {
-				'font-size': '11px',
-				'font-weight': 'bold',
+				...styles.BOLD_NOTE_CSS,
 				'margin': '0px 15px 0px 15px'
 			},
 			value: constants.DATABASES(0, this._model._databaseAssessment.length)
@@ -388,24 +391,23 @@ export class SqlDatabaseTree {
 
 	private createNoIssuesText(): azdata.FlexContainer {
 		let message: azdata.TextComponent;
+		const failedAssessment = this.handleFailedAssessment();
 		if (this._targetType === MigrationTargetType.SQLVM) {
 			message = this._view.modelBuilder.text().withProps({
-				value: constants.NO_ISSUES_FOUND_VM,
+				value: failedAssessment
+					? constants.NO_RESULTS_AVAILABLE
+					: constants.NO_ISSUES_FOUND_VM,
 				CSSStyles: {
-					'font-size': '14px',
-					'width': '100%',
-					'margin': '0',
-					'text-align': 'left'
+					...styles.BODY_CSS
 				}
 			}).component();
 		} else {
 			message = this._view.modelBuilder.text().withProps({
-				value: constants.NO_ISSUES_FOUND_MI,
+				value: failedAssessment
+					? constants.NO_RESULTS_AVAILABLE
+					: constants.NO_ISSUES_FOUND_MI,
 				CSSStyles: {
-					'font-size': '14px',
-					'width': '100%',
-					'margin': '0',
-					'text-align': 'left'
+					...styles.BODY_CSS
 				}
 			}).component();
 		}
@@ -413,8 +415,7 @@ export class SqlDatabaseTree {
 
 		this._noIssuesContainer = this._view.modelBuilder.flexContainer().withItems([message]).withProps({
 			CSSStyles: {
-				'margin-left': '24px',
-				'margin-top': '20px',
+				'margin-top': '8px',
 				'display': 'none'
 			}
 		}).component();
@@ -422,11 +423,39 @@ export class SqlDatabaseTree {
 		return this._noIssuesContainer;
 	}
 
+	private handleFailedAssessment(): boolean {
+		const failedAssessment: boolean = this._model._assessmentResults.assessmentError !== undefined
+			|| (this._model._assessmentResults?.errors?.length || 0) > 0;
+		if (failedAssessment) {
+			this._dialog.message = {
+				level: azdata.window.MessageLevel.Warning,
+				text: constants.ASSESSMENT_MIGRATION_WARNING,
+				description: this.getAssessmentError(),
+			};
+		}
+
+		return failedAssessment;
+	}
+
+	private getAssessmentError(): string {
+		const errors: string[] = [];
+		const assessmentError = this._model._assessmentResults.assessmentError;
+		if (assessmentError) {
+			errors.push(`message: ${assessmentError.message}${EOL}stack: ${assessmentError.stack}`);
+		}
+		if (this._model?._assessmentResults?.errors?.length! > 0) {
+			errors.push(...this._model._assessmentResults.errors?.map(
+				e => `message: ${e.message}${EOL}errorSummary: ${e.errorSummary}${EOL}possibleCauses: ${e.possibleCauses}${EOL}guidance: ${e.guidance}${EOL}errorId: ${e.errorId}`)!);
+		}
+
+		return errors.join(EOL);
+	}
+
 	private createSelectDbMessage(): azdata.FlexContainer {
 		const message = this._view.modelBuilder.text().withProps({
 			value: constants.SELECT_DB_PROMPT,
 			CSSStyles: {
-				'font-size': '14px',
+				...styles.BODY_CSS,
 				'width': '400px',
 				'margin': '10px 0px 0px 0px',
 				'text-align': 'left'
@@ -479,10 +508,9 @@ export class SqlDatabaseTree {
 		const impactedObjectsTitle = this._view.modelBuilder.text().withProps({
 			value: constants.IMPACTED_OBJECTS,
 			CSSStyles: {
-				'font-size': '13px',
+				...styles.LIGHT_LABEL_CSS,
 				'width': '280px',
 				'margin': '10px 0px 0px 0px',
-				'font-weight': 'bold'
 			}
 		}).component();
 
@@ -539,17 +567,13 @@ export class SqlDatabaseTree {
 		const objectDetailsTitle = this._view.modelBuilder.text().withProps({
 			value: constants.OBJECT_DETAILS,
 			CSSStyles: {
-				'font-size': '13px',
-				'line-size': '18px',
+				...styles.LIGHT_LABEL_CSS,
 				'margin': '12px 0px 0px 0px',
-				'font-weight': 'bold'
 			}
 		}).component();
 		const objectDescriptionStyle = {
-			'font-size': '12px',
-			'line-size': '18px',
+			...styles.BODY_CSS,
 			'margin': '5px 0px 0px 0px',
-			'text-align': 'justify',
 			'word-wrap': 'break-word'
 		};
 		this._objectDetailsType = this._view.modelBuilder.text().withProps({
@@ -575,22 +599,19 @@ export class SqlDatabaseTree {
 	}
 
 	private createDescription(): azdata.FlexContainer {
-		const labelStyle = {
-			'font-size': '13px',
+		const LABEL_CSS = {
+			...styles.LIGHT_LABEL_CSS,
 			'width': '200px',
-			'font-weight': 'bold',
-			'margin': '10px 35px 0px 0px'
+			'margin': '12px 0 0'
 		};
 		const textStyle = {
-			'font-size': '12px',
+			...styles.BODY_CSS,
 			'width': '200px',
-			'margin': '3px 35px 0px 0px',
-			'text-align': 'justify',
 			'word-wrap': 'break-word'
 		};
 		const descriptionTitle = this._view.modelBuilder.text().withProps({
 			value: constants.DESCRIPTION,
-			CSSStyles: labelStyle
+			CSSStyles: LABEL_CSS
 		}).component();
 		this._descriptionText = this._view.modelBuilder.text().withProps({
 			CSSStyles: textStyle
@@ -598,14 +619,14 @@ export class SqlDatabaseTree {
 
 		const recommendationTitle = this._view.modelBuilder.text().withProps({
 			value: constants.RECOMMENDATION,
-			CSSStyles: labelStyle
+			CSSStyles: LABEL_CSS
 		}).component();
 		this._recommendationText = this._view.modelBuilder.text().withProps({
 			CSSStyles: textStyle
 		}).component();
 		const moreInfo = this._view.modelBuilder.text().withProps({
 			value: constants.MORE_INFO,
-			CSSStyles: labelStyle
+			CSSStyles: LABEL_CSS
 		}).component();
 		this._moreInfo = this._view.modelBuilder.hyperlink().withProps({
 			label: '',
@@ -626,11 +647,10 @@ export class SqlDatabaseTree {
 		this._assessmentTitle = this._view.modelBuilder.text().withProps({
 			value: '',
 			CSSStyles: {
-				'font-size': '13px',
-				'line-size': '18px',
+				...styles.LABEL_CSS,
+				'margin-top': '12px',
 				'height': '48px',
 				'width': '540px',
-				'font-weight': '600',
 				'border-bottom': 'solid 1px'
 			}
 		}).component();
@@ -642,9 +662,8 @@ export class SqlDatabaseTree {
 		const title = this._view.modelBuilder.text().withProps({
 			value: constants.TARGET_PLATFORM,
 			CSSStyles: {
-				'font-size': '13px',
-				'line-size': '19px',
-				'margin': '0px 0px 0px 0px'
+				...styles.BODY_CSS,
+				'margin': '0 0 4px 0'
 			}
 		});
 
@@ -655,8 +674,7 @@ export class SqlDatabaseTree {
 		const impact = this._view.modelBuilder.text().withProps({
 			value: (this._targetType === MigrationTargetType.SQLVM) ? constants.SUMMARY_VM_TYPE : constants.SUMMARY_MI_TYPE,
 			CSSStyles: {
-				'font-size': '18px',
-				'margin': '0px 0px 0px 0px'
+				...styles.PAGE_SUBTITLE_CSS
 			}
 		});
 
@@ -666,9 +684,9 @@ export class SqlDatabaseTree {
 	private createRecommendationComponent(): azdata.TextComponent {
 		this._dbName = this._view.modelBuilder.text().withProps({
 			CSSStyles: {
-				'font-size': '13px',
-				'font-weight': 'bold',
-				'margin': '10px 0px 0px 0px'
+				...styles.LABEL_CSS,
+				'margin-bottom': '8px',
+				'font-weight': '700'
 			}
 		}).component();
 
@@ -679,11 +697,9 @@ export class SqlDatabaseTree {
 		this._recommendationTitle = this._view.modelBuilder.text().withProps({
 			value: constants.WARNINGS,
 			CSSStyles: {
-				'font-size': '13px',
-				'line-height': '18px',
-				'width': '200px',
-				'font-weight': '600',
-				'margin': '8px 35px 5px 0px'
+				...styles.LABEL_CSS,
+				'margin': '0 8px 4px 0',
+				'width': '220px',
 			}
 		}).component();
 
@@ -694,11 +710,9 @@ export class SqlDatabaseTree {
 		this._recommendation = this._view.modelBuilder.text().withProps({
 			value: constants.WARNINGS_DETAILS,
 			CSSStyles: {
-				'font-size': '13px',
-				'line-height': '18px',
+				...styles.LABEL_CSS,
+				'margin': '0 0 4px 24px',
 				'width': '200px',
-				'font-weight': '600',
-				'margin': '8px 0px 5px 0px'
 			}
 		}).component();
 

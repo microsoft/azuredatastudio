@@ -163,7 +163,11 @@ export function findDropDownItemIndex(dropDown: DropDownComponent, value: string
 }
 
 export function hashString(value: string): string {
-	return crypto.createHash('sha512').update(value).digest('hex');
+	if (value?.length > 0) {
+		return crypto.createHash('sha512').update(value).digest('hex');
+	}
+
+	return '';
 }
 
 export function debounce(delay: number): Function {

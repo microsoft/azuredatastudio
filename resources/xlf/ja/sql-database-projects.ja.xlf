@@ -68,7 +68,7 @@
       </trans-unit>
       <trans-unit id="addPackageReferenceMessage">
         <source xml:lang="en">To use SQL bindings, ensure your Azure Functions project has a reference to {0}</source>
-        <target state="new">To use SQL bindings, ensure your Azure Functions project has a reference to {0}</target>
+        <target state="translated">SQL バインドを使用するには、Azure Functions プロジェクトに {0} への参照があることを確認します</target>
       </trans-unit>
       <trans-unit id="appSettingPrompt">
         <source xml:lang="en">Would you like to update Azure Function local.settings.json with the new connection string?</source>
@@ -114,6 +114,10 @@
         <source xml:lang="en">Change Target Platform</source>
         <target state="translated">ターゲット プラットフォームの変更</target>
       </trans-unit>
+      <trans-unit id="checkoutOutputMessage">
+        <source xml:lang="en">Check output pane for more details</source>
+        <target state="translated">詳細については、出力ペインを確認してください。</target>
+      </trans-unit>
       <trans-unit id="chooseAction">
         <source xml:lang="en">Choose action</source>
         <target state="translated">アクションの選択</target>
@@ -153,6 +157,10 @@
       <trans-unit id="connectionStringSettingPlaceholder">
         <source xml:lang="en">Connection string setting specified in "local.settings.json"</source>
         <target state="translated">"local.settings.json" で指定された接続文字列の設定</target>
+      </trans-unit>
+      <trans-unit id="containerAlreadyExistForProject">
+        <source xml:lang="en">Other servers on container already exist for the project. Do you want to delete them?</source>
+        <target state="translated">コンテナー上にはプロジェクトのためのサーバーが既に存在しています。それらを削除しますか?'</target>
       </trans-unit>
       <trans-unit id="createNew">
         <source xml:lang="en">Create New</source>
@@ -309,10 +317,6 @@
       <trans-unit id="deployProjectFailedMessage">
         <source xml:lang="en">Failed to open a connection to the deployed database'</source>
         <target state="translated">展開したデータベースへの接続を開けませんでした'</target>
-      </trans-unit>
-      <trans-unit id="deployProjectSucceed">
-        <source xml:lang="en">Database project deployed successfully</source>
-        <target state="translated">データベース プロジェクトが正常に展開されました</target>
       </trans-unit>
       <trans-unit id="deployScriptExists">
         <source xml:lang="en">A {0} script already exists. The new script will not be included in build.</source>
@@ -564,7 +568,7 @@
       </trans-unit>
       <trans-unit id="moreInformation">
         <source xml:lang="en">More Information</source>
-        <target state="new">More Information</target>
+        <target state="translated">詳細情報</target>
       </trans-unit>
       <trans-unit id="msec">
         <source xml:lang="en">msec</source>
@@ -722,13 +726,17 @@
         <source xml:lang="en">Publish project</source>
         <target state="translated">プロジェクトの発行</target>
       </trans-unit>
+      <trans-unit id="publishProjectSucceed">
+        <source xml:lang="en">Database project published successfully</source>
+        <target state="translated">データベース プロジェクトが正常に公開されました</target>
+      </trans-unit>
       <trans-unit id="publishSettingsFiles">
         <source xml:lang="en">Publish Settings File</source>
         <target state="translated">公開の設定ファイル</target>
       </trans-unit>
       <trans-unit id="publishToContainerFailed">
-        <source xml:lang="en">Failed to publish to container. Check output pane for more details. {0}</source>
-        <target state="translated">コンテナーに公開できませんでした。詳細については、出力ウィンドウを確認してください。{0}</target>
+        <source xml:lang="en">Failed to publish to container. {0}</source>
+        <target state="translated">コンテナーを公開できませんでした。{0}</target>
       </trans-unit>
       <trans-unit id="publishToDockerContainer">
         <source xml:lang="en">Publish to new server in a container</source>
@@ -737,6 +745,10 @@
       <trans-unit id="publishToExistingServer">
         <source xml:lang="en">Publish to existing server</source>
         <target state="translated">既存サーバーへに公開</target>
+      </trans-unit>
+      <trans-unit id="publishingProjectMessage">
+        <source xml:lang="en">Publishing project in a container...</source>
+        <target state="translated">コンテナーでプロジェクトを公開しています...</target>
       </trans-unit>
       <trans-unit id="referenceRadioButtonsGroupTitle">
         <source xml:lang="en">Type</source>
