@@ -1355,8 +1355,15 @@
                         {
                           "label": "%arc.sql.cost.summary.estimated.cost.per.month%",
                           "type": "readonly_text",
-                          "isEvaluated": true,
-                          "defaultValue": "0.00 USD"
+                          "defaultValue": "0.00 USD",
+                          "valueProvider": {
+                            "providerId": "params-to-estimated-cost",
+                            "triggerFields": [
+                              "AZDATA_NB_VAR_SQL_REPLICAS",
+                              "AZDATA_NB_VAR_SQL_SERVICE_TIER",
+                              "AZDATA_NB_VAR_SQL_DEV_USE"
+                            ]
+                          }
                         },
                         {
                           "label": "%arc.sql.cost.summary.additional.charge%",

@@ -916,6 +916,18 @@ function processReadonlyTextField(context: FieldContext, allowEvaluation: boolea
 	const text = context.fieldInfo.defaultValue !== undefined
 		? createLabel(context.view, { text: context.fieldInfo.defaultValue, description: '', required: false, width: context.fieldInfo.inputWidth })
 		: undefined;
+	if (text) {
+		// If we created the text component then add it to our list of inputs so other fields can utilize it
+		const onChangedEmitter = new vscode.EventEmitter<void>(); // Stub event since we don't currently support updating this when the dependent fields change
+		context.onNewDisposableCreated(onChangedEmitter);
+		context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, {
+			component: text,
+			getValue: async (): Promise<InputValueType> => typeof text.value === 'string' ? text.value : text.value?.join(EOL),
+			setValue: (value: InputValueType) => text.value = value?.toString(),
+			onValueChanged: onChangedEmitter.event,
+		});
+	}
+
 	addLabelInputPairToContainer(context.view, context.components, label, text, context.fieldInfo);
 	return { label: label, text: text };
 }
