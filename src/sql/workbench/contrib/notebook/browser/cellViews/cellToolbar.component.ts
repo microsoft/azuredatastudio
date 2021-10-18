@@ -59,10 +59,6 @@ export class CellToolbarComponent {
 		this._actionBar = new Taskbar(taskbar);
 		this._actionBar.context = context;
 
-		let splitCellButton = this.instantiationService.createInstance(SplitCellAction, 'notebook.SplitCellAtCursor', this.buttonSplitCell, 'masked-icon icon-split-cell');
-		splitCellButton.setListener(context);
-		splitCellButton.enabled = this.cellModel.cellType !== 'markdown';
-
 		let addCellsButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddCodeCell', localize('codeCellsPreview', "Add cell"), 'masked-pseudo code');
 
 		let addCodeCellButton = this.instantiationService.createInstance(AddCellAction, 'notebook.AddCodeCell', localize('codePreview', "Code cell"), 'masked-pseudo code');
@@ -75,6 +71,10 @@ export class CellToolbarComponent {
 		let moveCellUpButton = this.instantiationService.createInstance(MoveCellAction, 'notebook.MoveCellUp', 'masked-icon move-up', this.buttonMoveUp);
 
 		let deleteButton = this.instantiationService.createInstance(DeleteCellAction, 'notebook.DeleteCell', 'masked-icon delete', this.buttonDelete);
+
+		let splitCellButton = this.instantiationService.createInstance(SplitCellAction, 'notebook.SplitCellAtCursor', this.buttonSplitCell, 'masked-icon icon-split-cell');
+		splitCellButton.setListener(context);
+		splitCellButton.enabled = this.cellModel.cellType !== 'markdown';
 
 		let moreActionsContainer = DOM.$('li.action-item');
 		this._cellToggleMoreActions = this.instantiationService.createInstance(CellToggleMoreActions);
@@ -106,11 +106,11 @@ export class CellToolbarComponent {
 			);
 		}
 		taskbarContent.push(
-			{ action: splitCellButton },
 			{ element: addCellDropdownContainer },
 			{ action: moveCellDownButton },
 			{ action: moveCellUpButton },
 			{ action: deleteButton },
+			{ action: splitCellButton },
 			{ element: moreActionsContainer });
 
 		this._actionBar.setContent(taskbarContent);
