@@ -1,4 +1,4 @@
-import { InputValueType } from '../../../resource-deployment/src/ui/modelViewUtils';
+import { InputValueType } from 'resource-deployment';
 import * as loc from '../localizedConstants';
 
 export class SqlManagedInstanceGeneralPurpose {

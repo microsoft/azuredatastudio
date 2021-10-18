@@ -7,7 +7,7 @@ import { azureResource } from 'azureResource';
 import * as fs from 'fs';
 import { EOL } from 'os';
 import * as path from 'path';
-import { IOptionsSourceProvider } from 'resource-deployment';
+import { InputValueType, IOptionsSourceProvider } from 'resource-deployment';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { getDateTimeString, getErrorMessage, isUserCancelledError, throwUnless } from '../common/utils';
@@ -33,7 +33,6 @@ const localize = nls.loadMessageBundle();
 */
 
 export type Validator = () => { valid: boolean, message: string };
-export type InputValueType = string | number | undefined;
 export type InputComponent = azdata.TextComponent | azdata.InputBoxComponent | azdata.DropDownComponent | azdata.CheckBoxComponent | RadioGroupLoadingComponentBuilder;
 export type InputComponentInfo<T extends InputComponent> = {
 	component: T;
@@ -470,6 +469,9 @@ async function hookUpValueProviders(context: WizardPageContext): Promise<void> {
 		await Promise.all(section.fields.map(async field => {
 			if (field.valueProvider) {
 				const fieldKey = field.variableName || field.label;
+				console.error(`All inputcomponents: ${context.inputComponents}`);
+				console.error(`fieldKey: ${fieldKey}`);
+
 				const fieldComponent = context.inputComponents[fieldKey];
 				// eslint-disable-next-line code-no-unexternalized-strings
 				if (typeof (field.valueProvider.triggerFields) === "string") {
@@ -497,25 +499,36 @@ async function hookUpValueProviders(context: WizardPageContext): Promise<void> {
 					// Make sure each field component exists and add it to the targetComponents list
 					let targetComponents: InputComponentInfo<InputComponent>[] = [];
 					let targetComponentLabelToValue: { [label: string]: InputValueType; } = {};
+
 					field.valueProvider.triggerFields.forEach(async (triggerField) => {
 						const targetComponent = context.inputComponents[triggerField];
 						if (!targetComponent) {
+							console.error(`triggerField: ${triggerField}.`);
+							console.error(`targetComponent: ${targetComponent}.`);
 							console.error(`Could not find target component ${triggerField} when hooking up value providers for ${field.label}`);
 							return;
 						}
 						targetComponents.push(targetComponent);
-						targetComponentLabelToValue[triggerField] = await targetComponent.getValue(); // maybe don't need?
+						console.error(`Successfully hooked up triggerField: ${triggerField}.`);
+						console.error(`Successfully hooked up targetComponent: ${targetComponent.labelComponent?.value?.toString()}.`);
+						// targetComponentLabelToValue[triggerField] = await targetComponent.getValue(); // maybe don't need?
 					});
 
 					// If one triggerfield changes value, update the new field value
 					const updateFields = async () => {
 						targetComponents.forEach(async (targetComponent) => {
 							const labelKey = <string>targetComponent.labelComponent?.value?.toString();
+							console.error(`Labelkey: ${labelKey}.`);
 							targetComponentLabelToValue[labelKey] = await targetComponent.getValue();
+							console.error(`Value: ${targetComponentLabelToValue[labelKey]}.`);
 						});
 						// valueprovider gets the single value  dictionary [servicetier, devuseonly]
 						newFieldValue = await provider.getValue(targetComponentLabelToValue ?? {});
-						fieldComponent.setValue(newFieldValue);
+						// eslint-disable-next-line code-no-unexternalized-strings
+						fieldComponent.setValue("$10.00");
+						console.error(`Field comp: ${fieldComponent.labelComponent?.value}.`);
+						console.error(`Gotten value: ${newFieldValue}.`);
+						console.error(`New set value: ${await fieldComponent.getValue()}.`);
 					};
 
 					// Set the onValueChanged behavior for each component
@@ -929,7 +942,9 @@ function processEvaluatedTextField(context: FieldContext): ReadOnlyFieldInputs {
 			readOnlyField.text!.value = await substituteVariableValues(context.inputComponents, context.fieldInfo.defaultValue);
 			return readOnlyField.text!.value;
 		},
-		setValue: (value: InputValueType) => readOnlyField.text!.value = value?.toString(),
+		setValue: (value: InputValueType) => {
+			readOnlyField.text!.value = value?.toString();
+		},
 		onValueChanged: onChangedEmitter.event,
 	});
 	return readOnlyField;
@@ -1338,7 +1353,7 @@ function createAzureSubscriptionComponent(
 			width: context.fieldInfo.inputWidth,
 			enabled: false
 		});
-		setValueFunc = (value) => { };
+		setValueFunc = () => { };
 	} else {
 		subscriptionInputInfo = createDropdownInputInfo(context.view, {
 			defaultValue: defaultValue,
@@ -1361,7 +1376,7 @@ function createAzureSubscriptionComponent(
 			const inputValue = (await subscriptionInputInfo.getValue())?.toString() || '';
 			return subscriptionValueToSubscriptionMap.get(inputValue)?.id || inputValue;
 		},
-		setValue: (value: InputValueType) => setValueFunc,
+		setValue: () => setValueFunc,
 		getDisplayValue: subscriptionInputInfo.getDisplayValue,
 		onValueChanged: subscriptionInputInfo.onValueChanged
 	});
