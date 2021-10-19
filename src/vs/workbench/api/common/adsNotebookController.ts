@@ -135,7 +135,19 @@ class VSCodeKernel implements azdata.nb.IKernel {
 	requestExecute(content: azdata.nb.IExecuteRequest, disposeOnDone?: boolean): azdata.nb.IFuture {
 		let executePromise: Promise<void>;
 		if (this._controller.executeHandler) {
-			executePromise = Promise.resolve(this._controller.executeHandler(undefined, undefined, this._controller));
+			let notebookUri = undefined;
+			let cell = <vscode.NotebookCell>{
+				document: <vscode.TextDocument>{
+					uri: notebookUri,
+					languageId: this._kernelSpec.language,
+					getText: () => Array.isArray(content.code) ? content.code.join('') : content.code,
+				},
+				notebook: <vscode.NotebookDocument>{
+					uri: notebookUri
+				}
+			};
+
+			executePromise = Promise.resolve(this._controller.executeHandler([cell], cell.notebook, this._controller));
 		}
 		else {
 			executePromise = Promise.resolve();
@@ -150,9 +162,10 @@ class VSCodeKernel implements azdata.nb.IKernel {
 	}
 
 	public async interrupt(): Promise<void> {
-		if (this._controller.interruptHandler) {
-			await this._controller.interruptHandler(undefined); // TODO: implement
-		}
+		// TODO: implement
+		// if (this._controller.interruptHandler) {
+		// 	await this._controller.interruptHandler(undefined);
+		// }
 	}
 }
 
