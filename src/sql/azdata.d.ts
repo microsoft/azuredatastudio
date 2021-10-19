@@ -5351,6 +5351,7 @@ declare module 'azdata' {
 		 */
 		export interface IExecuteRequest extends IExecuteOptions {
 			code: string | string[];
+			notebookUri?: vscode.Uri; // Used for VSCode notebook cell execution
 		}
 
 		/**

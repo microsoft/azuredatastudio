@@ -135,15 +135,14 @@ class VSCodeKernel implements azdata.nb.IKernel {
 	requestExecute(content: azdata.nb.IExecuteRequest, disposeOnDone?: boolean): azdata.nb.IFuture {
 		let executePromise: Promise<void>;
 		if (this._controller.executeHandler) {
-			let notebookUri = undefined;
 			let cell = <vscode.NotebookCell>{
 				document: <vscode.TextDocument>{
-					uri: notebookUri,
+					uri: content.notebookUri,
 					languageId: this._kernelSpec.language,
 					getText: () => Array.isArray(content.code) ? content.code.join('') : content.code,
 				},
 				notebook: <vscode.NotebookDocument>{
-					uri: notebookUri
+					uri: content.notebookUri
 				}
 			};
 
