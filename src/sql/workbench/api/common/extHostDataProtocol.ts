@@ -896,11 +896,11 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).getTableDesignerInfo(table);
 	}
 
-	public override $processTableDesignerEdit(handle, table: azdata.designers.TableInfo, data: azdata.designers.DesignerData, edit: azdata.designers.DesignerEdit): Thenable<azdata.designers.DesignerEditResult> {
+	public override $processTableDesignerEdit(handle, table: azdata.designers.TableInfo, data: azdata.designers.DesignerViewModel, edit: azdata.designers.DesignerEdit): Thenable<azdata.designers.DesignerEditResult> {
 		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).processTableEdit(table, data, edit);
 	}
 
-	public override $saveTable(handle, table: azdata.designers.TableInfo, data: azdata.designers.DesignerData): Thenable<void> {
+	public override $saveTable(handle, table: azdata.designers.TableInfo, data: azdata.designers.DesignerViewModel): Thenable<void> {
 		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).saveTable(table, data);
 	}
 
