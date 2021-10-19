@@ -11,6 +11,8 @@ import { Emitter } from 'vs/base/common/event';
 import * as extHostTypeConverters from 'vs/workbench/api/common/extHostTypeConverters';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { INotebookProviderRegistry, NotebookProviderRegistryId } from 'sql/workbench/services/notebook/common/notebookRegistry';
+// import { INotebookEditor, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
+// import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 
 const notebookRegistry = Registry.as<INotebookProviderRegistry>(NotebookProviderRegistryId);
 
@@ -436,32 +438,59 @@ export class ADSNotebookController implements vscode.NotebookController {
 }
 
 class ADSNotebookCellExecution implements vscode.NotebookCellExecution {
-	constructor(cell: vscode.NotebookCell) {
+	private _executionOrder: number;
+	// private _editor: INotebookEditor;
 
+	constructor(private readonly _cell: vscode.NotebookCell) { //, @INotebookService private _notebookService: INotebookService) {
+		// this._editor = this._notebookService.findNotebookEditor(this._cell.notebook.uri);
 	}
 
-	cell: vscode.NotebookCell;
-	token: vscode.CancellationToken;
-	executionOrder: number;
-	start(startTime?: number): void {
+	public get cell(): vscode.NotebookCell {
+		return this._cell;
+	}
+
+	public get token(): vscode.CancellationToken {
+		return undefined;
+	}
+
+	public get executionOrder(): number {
+		return this._executionOrder;
+	}
+
+	public set executionOrder(order: number) {
+		this._executionOrder = order;
+	}
+
+	public start(startTime?: number): void {
 		throw new Error('Method not implemented.');
 	}
-	end(success: boolean, endTime?: number): void {
+
+	public end(success: boolean, endTime?: number): void {
 		throw new Error('Method not implemented.');
 	}
-	clearOutput(cell?: vscode.NotebookCell): Thenable<void> {
+
+	public async clearOutput(cell?: vscode.NotebookCell): Promise<void> {
+		// if (cell) {
+		// 	let innerCell = this._editor.cells ? this._editor.cells[cell.index] : undefined;
+		// 	if (innerCell) {
+		// 		return this._editor.clearOutput(innerCell).then();
+		// 	}
+		// }
+	}
+
+	public replaceOutput(out: vscode.NotebookCellOutput | vscode.NotebookCellOutput[], cell?: vscode.NotebookCell): Thenable<void> {
 		throw new Error('Method not implemented.');
 	}
-	replaceOutput(out: vscode.NotebookCellOutput | vscode.NotebookCellOutput[], cell?: vscode.NotebookCell): Thenable<void> {
+
+	public appendOutput(out: vscode.NotebookCellOutput | vscode.NotebookCellOutput[], cell?: vscode.NotebookCell): Thenable<void> {
 		throw new Error('Method not implemented.');
 	}
-	appendOutput(out: vscode.NotebookCellOutput | vscode.NotebookCellOutput[], cell?: vscode.NotebookCell): Thenable<void> {
+
+	public replaceOutputItems(items: vscode.NotebookCellOutputItem | vscode.NotebookCellOutputItem[], output: vscode.NotebookCellOutput): Thenable<void> {
 		throw new Error('Method not implemented.');
 	}
-	replaceOutputItems(items: vscode.NotebookCellOutputItem | vscode.NotebookCellOutputItem[], output: vscode.NotebookCellOutput): Thenable<void> {
-		throw new Error('Method not implemented.');
-	}
-	appendOutputItems(items: vscode.NotebookCellOutputItem | vscode.NotebookCellOutputItem[], output: vscode.NotebookCellOutput): Thenable<void> {
+
+	public appendOutputItems(items: vscode.NotebookCellOutputItem | vscode.NotebookCellOutputItem[], output: vscode.NotebookCellOutput): Thenable<void> {
 		throw new Error('Method not implemented.');
 	}
 }
