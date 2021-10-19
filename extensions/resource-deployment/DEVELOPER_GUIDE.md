@@ -59,9 +59,9 @@ There are a number of properties on each `ResourceType`.
 
 `description` - The description of the type displayed to the user
 
-`platforms` - The OS platforms that the type supports running on, use `*` for all.
+`platforms` - The OS platforms that the type supports running on, options are `linux` (Linux distros), `darwin` (MacOS), `win32` (Windows) or`*` for all.
 
-`icon` - The icon to display for the type - supports either single icon or separate ones for light and dark mode.
+`icon` - The icon to display for the type - supports either single icon or separate ones for light and dark mode. The icon should be in `svg` format.
 
 `options` - An array of [ResourceTypeOption](#resourcetypeoption) objects, allowing users to provide different sub-options for a given resource type. (e.g. the specific version of SQL Server to deploy)
 
