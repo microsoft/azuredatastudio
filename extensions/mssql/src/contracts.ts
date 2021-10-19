@@ -1030,12 +1030,12 @@ export namespace GetSqlMigrationAssessmentItemsRequest {
 export interface TableDesignerEditRequestParams {
 	tableInfo: azdata.designers.TableInfo,
 	tableChangeInfo: azdata.designers.DesignerEdit,
-	data: azdata.designers.DesignerData
+	viewModel: azdata.designers.DesignerViewModel
 }
 
 export interface SaveTableDesignerChangesRequestParams {
 	tableInfo: azdata.designers.TableInfo,
-	data: azdata.designers.DesignerData
+	viewModel: azdata.designers.DesignerViewModel
 }
 
 export namespace GetTableDesignerInfoRequest {
