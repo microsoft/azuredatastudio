@@ -52,6 +52,7 @@ export interface DesignerState {
 	valid: boolean;
 	dirty: boolean;
 	saving: boolean;
+	processing: boolean;
 }
 
 export const NameProperty = 'name';
