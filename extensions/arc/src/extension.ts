@@ -61,23 +61,52 @@ export async function activate(context: vscode.ExtensionContext): Promise<arc.IE
 	// register option sources
 	const rdApi = <rd.IExtension>vscode.extensions.getExtension(rd.extension.name)?.exports;
 	context.subscriptions.push(rdApi.registerOptionsSourceProvider(new ArcControllersOptionsSourceProvider(treeDataProvider)));
+
+	// Register valueprovider for getting the calculated cost per VCore.
+	context.subscriptions.push(rdApi.registerValueProvider({
+		id: 'params-to-cost-per-vcore',
+		getValue: async (mapping: { [key: string]: rd.InputValueType }) => {
+			try {
+				return pricing.fullPriceForOneVCore(mapping);
+			} catch (e) {
+				throw e;
+			}
+		}
+	}));
+
+	// Register valueprovider for getting the number of CPU VCores Limit input by the user.
+	context.subscriptions.push(rdApi.registerValueProvider({
+		id: 'params-to-vcore-limit',
+		getValue: async (mapping: { [key: string]: rd.InputValueType }) => {
+			try {
+				return loc.multiply + pricing.numCores(mapping).toString();
+			} catch (e) {
+				throw e;
+			}
+		}
+	}));
+
+	// Register valueprovider for getting the amount of hybrid benefit discount to be applied.
+	context.subscriptions.push(rdApi.registerValueProvider({
+		id: 'params-to-hybrid-benefit-discount',
+		getValue: async (mapping: { [key: string]: rd.InputValueType }) => {
+			try {
+				return loc.negative + pricing.azureHybridBenefitDiscount(mapping).toString();
+			} catch (e) {
+				throw e;
+			}
+		}
+	}));
+
+	// Register valueprovider for getting the total estimated cost.
 	context.subscriptions.push(rdApi.registerValueProvider({
 		id: 'params-to-estimated-cost',
-		getValue: async (mapping: string | { [key: string]: rd.InputValueType }) => {
-			// cast it to an object right away (may need to do same for the string one)
-
-			// Mapping looks like:
-			// { "AZDATA_NB_VAR_SERVICE_TIER": "General Purpose",
-			//   "AZDATA_NB_VAR_DEV_USE_ONLY": true
-			// }
-
-			// eslint-disable-next-line code-no-unexternalized-strings
-			if (!(typeof (mapping) === "string")) {
-				pricing.total(mapping);
+		getValue: async (mapping: { [key: string]: rd.InputValueType }) => {
+			try {
+				return pricing.total(mapping).toString() + loc.USD;
+			} catch (e) {
+				throw e;
 			}
-
-			// use try catch, if wrong return error
-			return '999.00 USD'; // try this for now
 		}
 	}));
 

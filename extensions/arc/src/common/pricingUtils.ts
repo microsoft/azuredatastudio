@@ -2,7 +2,7 @@ import { InputValueType } from 'resource-deployment';
 import * as loc from '../localizedConstants';
 
 export class SqlManagedInstanceGeneralPurpose {
-	public static tierName: string = loc.generalPurpose;
+	public static tierName: string = loc.generalPurposeLabel;
 	public static basePricePerCore: number = 80;
 	public static licenseIncludedPricePerCore: number = 153;
 	public static maxMemorySize: number = 128;
@@ -19,7 +19,7 @@ export class SqlManagedInstanceGeneralPurpose {
 }
 
 export class SqlManagedInstanceBusinessCritical {
-	public static tierName: string = loc.businessCritical;
+	public static tierName: string = loc.businessCriticalLabel;
 
 	// Set to real values when BC is ready
 	public static basePricePerCore: number = 0;
@@ -47,12 +47,11 @@ export class AzureHybridLicenseTypes {
 export const SqlManagedInstancePricingLink: string = loc.sqlManagedInstancePricingLink;
 
 // Estimated base price for one vCore.
-// if is Dev use, price = 0
-// else if service tier is General Purpose, price = 80
-// 		if service tier is Business Critical, price = 0
 export function estimatedBasePriceForOneVCore(mapping: { [key: string]: InputValueType }): number {
 	let price = 0;
-	if (!mapping[loc.devUseFieldLabel]) {
+	if (mapping[loc.devUseFieldLabel] === 'true') {
+		price = 0;
+	} else if (mapping[loc.devUseFieldLabel] === 'false') {
 		if (mapping[loc.serviceTierFieldLabel] === SqlManagedInstanceGeneralPurpose.tierName) {
 			price = SqlManagedInstanceGeneralPurpose.basePricePerCore;
 		} else if (mapping[loc.serviceTierFieldLabel] === SqlManagedInstanceBusinessCritical.tierName) {
@@ -63,12 +62,11 @@ export function estimatedBasePriceForOneVCore(mapping: { [key: string]: InputVal
 }
 
 // Estimated SQL server license price for one vCore.
-// if is Dev use, price = 0
-// else if service tier is General Purpose, price = 153 - 80
-// 		if service tier is Business Critical, price = 0 - 0
 export function estimatedSqlServerLicensePriceForOneVCore(mapping: { [key: string]: InputValueType }): number {
 	let price = 0;
-	if (!mapping[loc.devUseFieldLabel]) {
+	if (mapping[loc.devUseFieldLabel] === 'true') {
+		price = 0;
+	} else if (mapping[loc.devUseFieldLabel] === 'false') {
 		if (mapping[loc.serviceTierFieldLabel] === SqlManagedInstanceGeneralPurpose.tierName) {
 			price = SqlManagedInstanceGeneralPurpose.licenseIncludedPricePerCore - SqlManagedInstanceGeneralPurpose.basePricePerCore;
 		} else if (mapping[loc.serviceTierFieldLabel] === SqlManagedInstanceBusinessCritical.tierName) {
@@ -80,13 +78,12 @@ export function estimatedSqlServerLicensePriceForOneVCore(mapping: { [key: strin
 
 // Full price for one vCore. This is shown on the cost summary card.
 export function fullPriceForOneVCore(mapping: { [key: string]: InputValueType }): number {
-	return estimatedBasePriceForOneVCore(mapping) - estimatedSqlServerLicensePriceForOneVCore(mapping);
+	return estimatedBasePriceForOneVCore(mapping) + estimatedSqlServerLicensePriceForOneVCore(mapping);
 }
 
 // Gets number of vCores limit specified
 export function numCores(mapping: { [key: string]: InputValueType }): number {
-	// if a vCores limit is specified, return that limit. Else return 0. I think default is 4
-	return estimatedBasePriceForOneVCore(mapping) - estimatedSqlServerLicensePriceForOneVCore(mapping);
+	return mapping[loc.vcoresLimitFieldLabel] ? <number>mapping[loc.vcoresLimitFieldLabel] : 0;
 }
 
 // Full price for all selected vCores.
@@ -99,11 +96,14 @@ export function vCoreSqlServerLicensePriceForAllCores(mapping: { [key: string]: 
 	return estimatedSqlServerLicensePriceForOneVCore(mapping) * numCores(mapping);
 }
 
-// If customer doesn't have SQL server license AHB discount is set to zero. This is shown on the cost summary card.
+// If the customer doesn't already have SQL Server License, AHB discount is set to zero because the price will be included
+// in the total cost. If they already have it (they checked the box), then a discount will be applied.
 export function azureHybridBenefitDiscount(mapping: { [key: string]: InputValueType }): number {
-	// If licensetype is LicenseIncluded, then the price is 0.
-	// Else (if type is BasePrice) it costs:
-	return vCoreSqlServerLicensePriceForAllCores(mapping);
+	if (mapping[loc.licenseTypeFieldLabel] === 'true') {
+		return vCoreSqlServerLicensePriceForAllCores(mapping);
+	} else {
+		return 0;
+	}
 }
 
 // Total price that will be charged to a customer. Is shown on the cost summary card.

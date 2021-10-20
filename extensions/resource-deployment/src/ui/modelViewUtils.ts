@@ -101,6 +101,7 @@ export interface FilePickerInputs {
 }
 interface ReadOnlyFieldInputs {
 	label: azdata.TextComponent;
+	variableName?: azdata.TextComponent;
 	text?: azdata.TextComponent;
 }
 
@@ -342,7 +343,7 @@ export function initializeWizardPage(context: WizardPageContext): void {
 		}));
 		await hookUpDynamicEnablement(context);
 		await hookUpDynamicOptions(context);
-		await hookUpValueProviders(context);
+		await hookUpValueProviders(context); // all of the content for all pages is registered
 		const formBuilder = view.modelBuilder.formContainer().withFormItems(
 			sections.map(section => { return { title: '', component: section }; }),
 			{
@@ -469,76 +470,37 @@ async function hookUpValueProviders(context: WizardPageContext): Promise<void> {
 		await Promise.all(section.fields.map(async field => {
 			if (field.valueProvider) {
 				const fieldKey = field.variableName || field.label;
-				console.error(`All inputcomponents: ${context.inputComponents}`);
-				console.error(`fieldKey: ${fieldKey}`);
-
 				const fieldComponent = context.inputComponents[fieldKey];
-				// eslint-disable-next-line code-no-unexternalized-strings
-				if (typeof (field.valueProvider.triggerFields) === "string") {
-					const targetComponent = context.inputComponents[field.valueProvider.triggerFields];
+				const provider = await valueProviderService.getValueProvider(field.valueProvider.providerId);
+
+				let targetComponentLabelToComponent: { [label: string]: InputComponentInfo<InputComponent>; } = {};
+				let targetComponentLabelToValue: { [label: string]: InputValueType; } = {};
+
+				field.valueProvider.triggerFields.forEach(async (triggerField) => {
+					const targetComponent = context.inputComponents[triggerField];
 					if (!targetComponent) {
-						console.error(`Could not find target component ${field.valueProvider.triggerFields} when hooking up value providers for ${field.label}`);
+						console.error(`Could not find target component ${triggerField} when hooking up value providers for ${field.label}`);
 						return;
 					}
-					const provider = await valueProviderService.getValueProvider(field.valueProvider.providerId);
-					const updateFields = async () => {
-						const targetComponentValue = await targetComponent.getValue();
-						const newFieldValue = await provider.getValue(targetComponentValue?.toString() ?? '');
-						fieldComponent.setValue(newFieldValue);
-					};
-					targetComponent.onValueChanged(() => {
+					targetComponentLabelToComponent[triggerField] = targetComponent;
+				});
+
+				// If one triggerfield changes value, update the new field value.
+				const updateFields = async () => {
+					for (let label in targetComponentLabelToComponent) {
+						targetComponentLabelToValue[label] = await targetComponentLabelToComponent[label].getValue();
+					}
+					let newFieldValue = await provider.getValue(targetComponentLabelToValue ?? {});
+					fieldComponent.setValue(newFieldValue);
+				};
+
+				// Set the onValueChanged behavior for each component
+				for (let label in targetComponentLabelToComponent) {
+					targetComponentLabelToComponent[label].onValueChanged(() => {
 						updateFields();
 					});
-					await updateFields();
-					// Make it string[] by default later
-				} else {
-					// If triggerfields is a string[]
-					const provider = await valueProviderService.getValueProvider(field.valueProvider.providerId);
-					let newFieldValue = ''; // make generic, output value not string
-
-					// Make sure each field component exists and add it to the targetComponents list
-					let targetComponents: InputComponentInfo<InputComponent>[] = [];
-					let targetComponentLabelToValue: { [label: string]: InputValueType; } = {};
-
-					field.valueProvider.triggerFields.forEach(async (triggerField) => {
-						const targetComponent = context.inputComponents[triggerField];
-						if (!targetComponent) {
-							console.error(`triggerField: ${triggerField}.`);
-							console.error(`targetComponent: ${targetComponent}.`);
-							console.error(`Could not find target component ${triggerField} when hooking up value providers for ${field.label}`);
-							return;
-						}
-						targetComponents.push(targetComponent);
-						console.error(`Successfully hooked up triggerField: ${triggerField}.`);
-						console.error(`Successfully hooked up targetComponent: ${targetComponent.labelComponent?.value?.toString()}.`);
-						// targetComponentLabelToValue[triggerField] = await targetComponent.getValue(); // maybe don't need?
-					});
-
-					// If one triggerfield changes value, update the new field value
-					const updateFields = async () => {
-						targetComponents.forEach(async (targetComponent) => {
-							const labelKey = <string>targetComponent.labelComponent?.value?.toString();
-							console.error(`Labelkey: ${labelKey}.`);
-							targetComponentLabelToValue[labelKey] = await targetComponent.getValue();
-							console.error(`Value: ${targetComponentLabelToValue[labelKey]}.`);
-						});
-						// valueprovider gets the single value  dictionary [servicetier, devuseonly]
-						newFieldValue = await provider.getValue(targetComponentLabelToValue ?? {});
-						// eslint-disable-next-line code-no-unexternalized-strings
-						fieldComponent.setValue("$10.00");
-						console.error(`Field comp: ${fieldComponent.labelComponent?.value}.`);
-						console.error(`Gotten value: ${newFieldValue}.`);
-						console.error(`New set value: ${await fieldComponent.getValue()}.`);
-					};
-
-					// Set the onValueChanged behavior for each component
-					targetComponents.forEach((targetComponent) => {
-						targetComponent.onValueChanged(() => {
-							updateFields();
-						});
-					});
-					await updateFields(); // takes all the current values (default) calling it right away
 				}
+				await updateFields();
 			}
 		}));
 	}));

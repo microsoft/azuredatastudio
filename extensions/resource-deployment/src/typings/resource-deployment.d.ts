@@ -29,7 +29,7 @@ declare module 'resource-deployment' {
 
 	export interface IValueProvider {
 		readonly id: string,
-		getValue(triggerValue: string | {[key: string]: InputValueType}): Promise<string>;
+		getValue(triggerValues: string | {[key: string]: InputValueType}): Promise<InputValueType>;
 	}
 
 	/**

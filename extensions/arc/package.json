@@ -1079,6 +1079,7 @@
                         "variableName": "AZDATA_NB_VAR_SQL_CORES_REQUEST",
                         "type": "number",
                         "min": 1,
+                        "defaultValue": 2,
                         "required": false,
                         "validations": [
                           {
@@ -1095,6 +1096,7 @@
                         "type": "number",
                         "min": 1,
                         "required": false,
+                        "defaultValue": 4,
                         "validations": [
                           {
                             "type": ">=",
@@ -1109,6 +1111,7 @@
                         "variableName": "AZDATA_NB_VAR_SQL_MEMORY_REQUEST",
                         "type": "number",
                         "min": 2,
+                        "defaultValue": 4,
                         "required": false,
                         "validations": [
                           {
@@ -1124,6 +1127,7 @@
                         "variableName": "AZDATA_NB_VAR_SQL_MEMORY_LIMIT",
                         "type": "number",
                         "min": 2,
+                        "defaultValue": 8,
                         "required": false,
                         "validations": [
                           {
@@ -1153,13 +1157,14 @@
                         "label": "%arc.sql.dev.use.label%",
                         "variableName": "AZDATA_NB_VAR_SQL_DEV_USE",
                         "description": "%arc.sql.dev.use.description%",
-                        "defaultValue": "false"
+                        "defaultValue": false
                       },
                       {
-                        "label": "%arc.sql.cost.summary.service.tier%",
-                        "type": "readonly_text",
-                        "isEvaluated": true,
-                        "defaultValue": "$(AZDATA_NB_VAR_ARC_SERVICE_TIER)"
+                        "type": "checkbox",
+                        "label": "%arc.sql.license.type.label%",
+                        "variableName": "AZDATA_NB_VAR_SQL_LICENSE_TYPE",
+                        "description": "%arc.sql.license.type.description%",
+                        "defaultValue": false
                       }
                     ]
                   },
@@ -1194,44 +1199,6 @@
                     "title": "%arc.sql.cost.summary%",
                     "fields": [
                       {
-                        "label": "%arc.sql.cost.summary.service.tier%",
-                        "type": "readonly_text",
-                        "isEvaluated": true,
-                        "defaultValue": "$(AZDATA_NB_VAR_ARC_SERVICE_TIER)"
-                      },
-                      {
-                        "label": "%arc.sql.cost.summary.cost.vcore%",
-                        "type": "readonly_text",
-                        "isEvaluated": true,
-                        "defaultValue": "0.00"
-                      },
-                      {
-                        "label": "%arc.sql.cost.summary.vcore.limit%",
-                        "type": "readonly_text",
-                        "isEvaluated": true,
-                        "defaultValue": "x4"
-                      },
-                      {
-                        "label": "%arc.sql.cost.summary.azure.hybrid.benefit.discount%",
-                        "type": "readonly_text",
-                        "isEvaluated": true,
-                        "defaultValue": "--"
-                      },
-                      {
-                        "label": "%arc.sql.cost.summary.estimated.cost.per.month%",
-                        "type": "readonly_text",
-                        "isEvaluated": true,
-                        "defaultValue": "0.00 USD",
-                        "valueProvider": {
-                          "providerId": "params-to-estimated-cost",
-                          "triggerFields": [
-                            "AZDATA_NB_VAR_SQL_REPLICAS",
-                            "AZDATA_NB_VAR_SQL_SERVICE_TIER",
-                            "AZDATA_NB_VAR_SQL_DEV_USE"
-                          ]
-                        }
-                       },
-                       {
                         "label": "%arc.sql.cost.summary.additional.charge%",
                         "type": "readonly_text",
                         "enabled": true,
@@ -1241,172 +1208,67 @@
                             "text": "%arc.sql.cost.summary.pricing.details%",
                             "url": "https://aka.ms/ArcSQLBilling"
                           }
-                         ]
-                       }
-                     ]
-                   }
+                        ]
+                      },
+                      {
+                        "label": "%arc.sql.cost.summary.cost.vcore%",
+                        "type": "readonly_text",
+                        "isEvaluated": true,
+                        "defaultValue": "0.00 USD",
+                        "valueProvider": {
+                          "providerId": "params-to-cost-per-vcore",
+                          "triggerFields": [
+                            "AZDATA_NB_VAR_SQL_DEV_USE",
+                            "AZDATA_NB_VAR_SQL_SERVICE_TIER"
+                          ]
+                        }
+                      },
+                      {
+                        "label": "%arc.sql.cost.summary.vcore.limit%",
+                        "type": "readonly_text",
+                        "isEvaluated": true,
+                        "defaultValue": "x 4",
+                        "valueProvider": {
+                          "providerId": "params-to-vcore-limit",
+                          "triggerFields": [
+                            "AZDATA_NB_VAR_SQL_CORES_LIMIT"
+                          ]
+                        }
+                      },
+                      {
+                        "label": "%arc.sql.cost.summary.azure.hybrid.benefit.discount%",
+                        "type": "readonly_text",
+                        "isEvaluated": true,
+                        "defaultValue": "- 0",
+                        "valueProvider": {
+                          "providerId": "params-to-hybrid-benefit-discount",
+                          "triggerFields": [
+                            "AZDATA_NB_VAR_SQL_CORES_LIMIT",
+                            "AZDATA_NB_VAR_SQL_DEV_USE",
+                            "AZDATA_NB_VAR_SQL_SERVICE_TIER",
+                            "AZDATA_NB_VAR_SQL_LICENSE_TYPE"
+                          ]
+                        }
+                      },
+                      {
+                        "label": "%arc.sql.cost.summary.estimated.cost.per.month%",
+                        "type": "readonly_text",
+                        "variableName": "AZDATA_NB_VAR_SQL_ESTIMATED_COST",
+                        "defaultValue": "0.00 USD",
+                        "valueProvider": {
+                          "providerId": "params-to-estimated-cost",
+                          "triggerFields": [
+                            "AZDATA_NB_VAR_SQL_REPLICAS",
+                            "AZDATA_NB_VAR_SQL_CORES_LIMIT",
+                            "AZDATA_NB_VAR_SQL_DEV_USE",
+                            "AZDATA_NB_VAR_SQL_SERVICE_TIER",
+                            "AZDATA_NB_VAR_SQL_LICENSE_TYPE"
+                          ]
+                        }
+                      }
+                    ]
+                  }
                  ]
-               },
-               {
-                  "title": "%arc.sql.cost.summary.sql.miaa.cost.summary%",
-                  "isSummaryPage": true,
-                  "fieldHeight": "16px",
-                  "sections": [
-                    {
-                      "title": "",
-                      "collapsible": false,
-                      "fieldWidth": "200px",
-                      "fieldHeight": "14px",
-                      "spaceBetweenFields": 0,
-                      "rows": [
-                        {
-                          "items": [
-                            {
-                              "items": [
-                                {
-                                  "label": "%arc.sql.cost.summary.sql.miaa%",
-                                  "type": "readonly_text",
-                                  "enabled": true,
-                                  "labelWidth": "185px"
-                                }
-                              ]
-                            },
-                            {
-                              "items": [
-                                {
-                                  "label": "%arc.sql.cost.summary.estimated.cost.per.month%",
-                                  "type": "readonly_text",
-                                  "enabled": true,
-                                  "labelWidth": "190px",
-                                  "labelCSSStyles": {
-                                    "fontWeight": "Bold"
-                                  }
-                                }
-                              ]
-                            }
-                          ]
-                        },
-                        {
-                          "items": [
-                            {
-                              "items": [
-                                {
-                                  "label": "%arc.sql.summary.arc.by.microsoft%",
-                                  "type": "readonly_text",
-                                  "labelWidth": "185px"
-                                }
-                              ]
-                            },
-                            {
-                              "items": [
-                                {
-                                  "label": "%arc.data.controller.summary.free%",
-                                  "type": "readonly_text",
-                                  "enabled": true,
-                                  "defaultValue": "",
-                                  "labelWidth": "100px"
-                                }
-                              ]
-                            }
-                          ]
-                        },
-                        {
-                          "items": [
-                            {
-                              "items": [
-                                {
-                                  "label": "{0}",
-                                  "type": "readonly_text",
-                                  "enabled": true,
-                                  "labelWidth": "69px",
-                                  "links": [
-                                    {
-                                      "text": "%arc.data.controller.summary.arc.terms.of.use%",
-                                      "url": "https://go.microsoft.com/fwlink/?linkid=2045708"
-                                    }
-                                  ]
-                                },
-                                {
-                                  "label": "|",
-                                  "type": "readonly_text",
-                                  "enabled": true,
-                                  "defaultValue": "",
-                                  "labelWidth": "4px",
-                                  "fieldWidth": "6px"
-                                },
-                                {
-                                  "label": "{0}",
-                                  "type": "readonly_text",
-                                  "enabled": true,
-                                  "labelWidth": "100px",
-                                  "links": [
-                                    {
-                                      "text": "%arc.data.controller.summary.arc.terms.privacy.policy%",
-                                      "url": "https://go.microsoft.com/fwlink/?linkid=512132"
-                                    }
-                                  ]
-                                }
-                              ]
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "title": "%arc.sql.cost.summary%",
-                      "fields": [
-                        {
-                          "label": "%arc.sql.cost.summary.service.tier%",
-                          "type": "readonly_text",
-                          "isEvaluated": true,
-                          "defaultValue": "$(AZDATA_NB_VAR_ARC_SERVICE_TIER)"
-                        },
-                        {
-                          "label": "%arc.sql.cost.summary.cost.vcore%",
-                          "type": "readonly_text",
-                          "isEvaluated": true,
-                          "defaultValue": "0.00"
-                        },
-                        {
-                          "label": "%arc.sql.cost.summary.vcore.limit%",
-                          "type": "readonly_text",
-                          "isEvaluated": true,
-                          "defaultValue": "x4"
-                        },
-                        {
-                          "label": "%arc.sql.cost.summary.azure.hybrid.benefit.discount%",
-                          "type": "readonly_text",
-                          "isEvaluated": true,
-                          "defaultValue": "--"
-                        },
-                        {
-                          "label": "%arc.sql.cost.summary.estimated.cost.per.month%",
-                          "type": "readonly_text",
-                          "defaultValue": "0.00 USD",
-                          "valueProvider": {
-                            "providerId": "params-to-estimated-cost",
-                            "triggerFields": [
-                              "AZDATA_NB_VAR_SQL_REPLICAS",
-                              "AZDATA_NB_VAR_SQL_SERVICE_TIER",
-                              "AZDATA_NB_VAR_SQL_DEV_USE"
-                            ]
-                          }
-                        },
-                        {
-                          "label": "%arc.sql.cost.summary.additional.charge%",
-                          "type": "readonly_text",
-                          "enabled": true,
-                          "labelWidth": "750px",
-                          "links": [
-                            {
-                              "text": "%arc.sql.cost.summary.pricing.details%",
-                              "url": "https://aka.ms/ArcSQLBilling"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                ]
               }
             ]
           },

@@ -148,6 +148,8 @@
 	"arc.sql.service.tier.label": "Service Tier",
 	"arc.sql.service.tier.description": "Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical. {0}",
 	"arc.sql.dev.use.label": "For development use only",
+	"arc.sql.license.type.label": "I already have a SQL Server License",
+	"arc.sql.license.type.description": "Apply the Azure Hybrid Benefit if you already own a SQL Server License",
 	"arc.sql.pitr.description": "Point in time restore",
 	"arc.sql.retention.days.label": "PITR retention (days)",
 	"arc.sql.retention.days.description": "Specify how long you want to keep your point-in-time backups.",
