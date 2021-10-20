@@ -71,7 +71,7 @@ export enum Page {
 export enum WizardEntryPoint {
 	Default = 'Default',
 	SaveAndClose = 'SaveAndClose',
-	RetryMigration = 'RetryMigration,'
+	RetryMigration = 'RetryMigration',
 }
 
 export interface DatabaseBackupModel {
