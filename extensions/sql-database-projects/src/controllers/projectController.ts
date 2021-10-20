@@ -864,11 +864,10 @@ export class ProjectsController {
 	 * 			outputFolder: 'C:\Source',
 	 * 			projectName: 'MyProject'}
 	 */
-	public async selectAutorestProjectLocation(specPath: string): Promise<{ newProjectFolder: string, outputFolder: string, projectName: string } | undefined> {
+	public async selectAutorestProjectLocation(projectName: string): Promise<{ newProjectFolder: string, outputFolder: string, projectName: string } | undefined> {
 		let valid = false;
 		let newProjectFolder: string = '';
 		let outputFolder: string = '';
-		let projectName: string = '';
 
 		let quickpickSelection = await vscode.window.showQuickPick(
 			[constants.browseEllipsisWithIcon],
@@ -893,7 +892,6 @@ export class ProjectsController {
 
 			outputFolder = folders[0].fsPath;
 
-			projectName = path.basename(specPath, path.extname(specPath));
 			newProjectFolder = path.join(outputFolder, projectName);
 
 			if (await utils.exists(newProjectFolder)) {
@@ -909,12 +907,20 @@ export class ProjectsController {
 			}
 		}
 
-		await fs.mkdir(newProjectFolder);
 		return { newProjectFolder, outputFolder, projectName };
 	}
 
 	public async generateAutorestFiles(specPath: string, newProjectFolder: string): Promise<string | undefined> {
-		return this.autorestHelper.generateAutorestFiles(specPath, newProjectFolder);
+		await fs.mkdir(newProjectFolder, { recursive: true });
+
+		return vscode.window.withProgress(
+			{
+				location: vscode.ProgressLocation.Notification,
+				title: constants.generatingProjectFromAutorest(path.basename(specPath)),
+				cancellable: false
+			}, async (_progress, _token) => {
+				return this.autorestHelper.generateAutorestFiles(specPath, newProjectFolder);
+			});
 	}
 
 	public async openProjectInWorkspace(projectFilePath: string): Promise<void> {
@@ -925,6 +931,25 @@ export class ProjectsController {
 		workspaceApi.showProjectsView();
 	}
 
+	public async promptForAutorestProjectName(defaultName?: string): Promise<string | undefined> {
+		let name: string | undefined = await vscode.window.showInputBox({
+			ignoreFocusOut: true,
+			prompt: constants.autorestProjectName,
+			value: defaultName,
+			validateInput: (value) => {
+				return value.trim() ? undefined : constants.nameMustNotBeEmpty;
+			}
+		});
+
+		if (name === undefined) {
+			return; // cancelled by user
+		}
+
+		name = name.trim();
+
+		return name;
+	}
+
 	public async generateProjectFromOpenApiSpec(): Promise<Project | undefined> {
 		try {
 			// 1. select spec file
@@ -933,13 +958,19 @@ export class ProjectsController {
 				return;
 			}
 
-			// 2. select location, make new folder
-			const projectInfo = await this.selectAutorestProjectLocation(specPath!);
+			// 2. prompt for project name
+			const projectName = await this.promptForAutorestProjectName(path.basename(specPath, path.extname(specPath)));
+			if (!projectName) {
+				return;
+			}
+
+			// 3. select location, make new folder
+			const projectInfo = await this.selectAutorestProjectLocation(projectName!);
 			if (!projectInfo) {
 				return;
 			}
 
-			// 3. run AutoRest to generate .sql files
+			// 4. run AutoRest to generate .sql files
 			const result = await this.generateAutorestFiles(specPath, projectInfo.newProjectFolder);
 			if (!result) { // user canceled operation when choosing how to run autorest
 				return;
@@ -953,7 +984,7 @@ export class ProjectsController {
 				return;
 			}
 
-			// 4. create new SQL project
+			// 5. create new SQL project
 			const newProjFilePath = await this.createNewProject({
 				newProjName: projectInfo.projectName,
 				folderUri: vscode.Uri.file(projectInfo.outputFolder),
@@ -962,7 +993,7 @@ export class ProjectsController {
 
 			const project = await Project.openProject(newProjFilePath);
 
-			// 5. add generated files to SQL project
+			// 6. add generated files to SQL project
 			await project.addToProject(fileFolderList.filter(f => !f.fsPath.endsWith(constants.autorestPostDeploymentScriptName))); // Add generated file structure to the project
 
 			const postDeploymentScript: vscode.Uri | undefined = this.findPostDeploymentScript(fileFolderList);
@@ -971,7 +1002,7 @@ export class ProjectsController {
 				await project.addScriptItem(path.relative(project.projectFolderPath, postDeploymentScript.fsPath), undefined, templates.postDeployScript);
 			}
 
-			// 6. add project to workspace and open
+			// 7. add project to workspace and open
 			await this.openProjectInWorkspace(newProjFilePath);
 
 			return project;
