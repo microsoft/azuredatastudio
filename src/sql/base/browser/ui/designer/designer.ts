@@ -27,6 +27,7 @@ import { Button, IButtonStyles } from 'sql/base/browser/ui/button/button';
 import { ButtonColumn } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
 import { Codicon } from 'vs/base/common/codicons';
 import { Color } from 'vs/base/common/color';
+import { LoadingSpinner } from 'sql/base/browser/ui/loadingSpinner/loadingSpinner';
 
 export interface IDesignerStyle {
 	tabbedPanelStyles?: ITabbedPanelStyles;
@@ -44,6 +45,7 @@ export type CreateComponentFunc = (container: HTMLElement, component: DesignerDa
 export type SetComponentValueFunc = (definition: DesignerDataPropertyInfo, component: DesignerUIComponent, data: DesignerViewModel) => void;
 
 export class Designer extends Disposable implements IThemable {
+	private _loadingSpinner: LoadingSpinner;
 	private _horizontalSplitViewContainer: HTMLElement;
 	private _verticalSplitViewContainer: HTMLElement;
 	private _tabbedPanelContainer: HTMLElement;
@@ -89,6 +91,7 @@ export class Designer extends Disposable implements IThemable {
 				}
 			}, this._contextViewProvider
 		);
+		this._loadingSpinner = new LoadingSpinner(this._container, { showText: true, fullSize: true });
 		this._verticalSplitViewContainer = DOM.$('.designer-component');
 		this._horizontalSplitViewContainer = DOM.$('.container');
 		this._contentContainer = DOM.$('.content-container');
@@ -201,7 +204,9 @@ export class Designer extends Disposable implements IThemable {
 	private async initializeDesignerView(): Promise<void> {
 		this._propertiesPane.clear();
 		DOM.clearNode(this._topContentContainer);
+		const handle = this.startLoading(localize('designer.loadingDesigner', "Loading designer..."));
 		const view = await this._input.getView();
+		this.stopLoading(handle, localize('designer.loadingDesignerCompleted', "Loading designer completed"));
 		if (view.components) {
 			view.components.forEach(component => {
 				this.createComponent(this._topContentContainer, component, component.propertyName, true, true);
@@ -268,7 +273,9 @@ export class Designer extends Disposable implements IThemable {
 			return;
 		}
 		await this.applyEdit(edit);
+		const handle = this.startLoading(localize('designer.processingChanges', "Processing changes..."));
 		const result = await this._input.processEdit(edit);
+		this.stopLoading(handle, localize('designer.processingChangesCompleted', "Processing changes completed"));
 		if (result.isValid) {
 			this._supressEditProcessing = true;
 			await this.updateComponentValues();
@@ -415,8 +422,10 @@ export class Designer extends Disposable implements IThemable {
 					ariaLabel: inputProperties.title,
 					type: inputProperties.inputType,
 				});
-				input.onDidChange(async (newValue) => {
-					await this.handleEdit({ type: DesignerEditType.Update, property: editIdentifier, value: newValue });
+				input.onLoseFocus(async (args) => {
+					if (args.hasChanged) {
+						await this.handleEdit({ type: DesignerEditType.Update, property: editIdentifier, value: args.value });
+					}
 				});
 				if (setWidth && inputProperties.width !== undefined) {
 					input.width = inputProperties.width as number;
@@ -566,5 +575,23 @@ export class Designer extends Disposable implements IThemable {
 		}
 		this.styleComponent(component);
 		return component;
+	}
+
+	private startLoading(message: string): NodeJS.Timeout {
+		// For a smooth user experience, only show the loading indicator if the request is not returned in 500ms.
+		return setTimeout(() => {
+			this._loadingSpinner.loadingMessage = message;
+			this._loadingSpinner.loading = true;
+			this._container.removeChild(this._verticalSplitViewContainer);
+		}, 500);
+	}
+
+	private stopLoading(handle: NodeJS.Timeout, message: string): void {
+		clearTimeout(handle);
+		if (this._loadingSpinner.loading) {
+			this._loadingSpinner.loadingCompletedMessage = message;
+			this._loadingSpinner.loading = false;
+			this._container.appendChild(this._verticalSplitViewContainer);
+		}
 	}
 }
