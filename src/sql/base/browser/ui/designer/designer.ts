@@ -577,7 +577,7 @@ export class Designer extends Disposable implements IThemable {
 		return component;
 	}
 
-	private startLoading(message: string): NodeJS.Timeout {
+	private startLoading(message: string): any {
 		// For a smooth user experience, only show the loading indicator if the request is not returned in 500ms.
 		return setTimeout(() => {
 			this._loadingSpinner.loadingMessage = message;
@@ -586,7 +586,7 @@ export class Designer extends Disposable implements IThemable {
 		}, 500);
 	}
 
-	private stopLoading(handle: NodeJS.Timeout, message: string): void {
+	private stopLoading(handle: any, message: string): void {
 		clearTimeout(handle);
 		if (this._loadingSpinner.loading) {
 			this._loadingSpinner.loadingCompletedMessage = message;
