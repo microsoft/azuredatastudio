@@ -84,7 +84,7 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 	private static readonly ACTION_HEIGHT = 48;
 	private static readonly ACCOUNTS_ACTION_INDEX = 0;
 
-	private static readonly GEAR_ICON = settingsViewBarIcon; // registerIcon('settings-view-bar-icon', Codicon.settingsGear, localize('settingsViewBarIcon', "Settings icon in the view bar.")); // {{SQL CARBON EDIT}} exporting to use it in getting started tour
+	//private static readonly GEAR_ICON = settingsViewBarIcon; // registerIcon('settings-view-bar-icon', Codicon.settingsGear, localize('settingsViewBarIcon', "Settings icon in the view bar.")); // {{SQL CARBON EDIT}} exporting to use it in getting started tour
 	private static readonly ACCOUNTS_ICON = registerIcon('accounts-view-bar-icon', Codicon.account, localize('accountsViewBarIcon', "Accounts icon in the view bar."));
 
 	//#region IView
@@ -530,11 +530,11 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 			preventLoopNavigation: true
 		}));
 
-		this.globalActivityAction = this._register(new ActivityAction({
+		/*this.globalActivityAction = this._register(new ActivityAction({
 			id: 'workbench.actions.manage',
 			name: localize('manage', "Manage"),
 			cssClass: ThemeIcon.asClassName(ActivitybarPart.GEAR_ICON)
-		}));
+		}));*/
 
 		if (this.accountsVisibilityPreference) {
 			this.accountsActivityAction = this._register(new ActivityAction({
@@ -546,7 +546,7 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 			this.globalActivityActionBar.push(this.accountsActivityAction, { index: ActivitybarPart.ACCOUNTS_ACTION_INDEX });
 		}
 
-		this.globalActivityActionBar.push(this.globalActivityAction);
+		//this.globalActivityActionBar.push(this.globalActivityAction);
 	}
 
 	private toggleAccountsActivity() {

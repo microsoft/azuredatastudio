@@ -536,7 +536,7 @@ export abstract class Layout extends Disposable implements IWorkbenchLayoutServi
 		this.state.editor.editorsToOpen = this.resolveEditorsToOpen(fileService);
 
 		// Panel visibility
-		this.state.panel.hidden = this.storageService.getBoolean(Storage.PANEL_HIDDEN, StorageScope.WORKSPACE, true);
+		this.state.panel.hidden = true; //this.storageService.getBoolean(Storage.PANEL_HIDDEN, StorageScope.WORKSPACE, true);
 
 		// Whether or not the panel was last maximized
 		this.state.panel.wasLastMaximized = this.storageService.getBoolean(Storage.PANEL_LAST_IS_MAXIMIZED, StorageScope.WORKSPACE, false);
