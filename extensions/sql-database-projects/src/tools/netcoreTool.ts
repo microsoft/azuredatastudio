@@ -24,6 +24,7 @@ export const winPlatform: string = 'win32';
 export const macPlatform: string = 'darwin';
 export const linuxPlatform: string = 'linux';
 export const minSupportedNetCoreVersion: string = '3.1.0';
+export const maxSupportedNetCoreVersion: string = '6.0.0';	// un-set this to allow latest
 
 export const enum netCoreInstallState {
 	netCoreNotPresent,
@@ -122,8 +123,8 @@ export class NetCoreTool extends ShellExecutionHelper {
 	}
 
 	/**
-	 * This function checks if the installed dotnet version is atleast minSupportedNetCoreVersion.
-	 * Versions lower than minSupportedNetCoreVersion aren't supported for building projects.
+	 * This function checks if the installed dotnet version is between minSupportedNetCoreVersion (inclusive) and maxSupportedNetCoreVersion (exclusive).
+	 * When maxSupportedNetCoreVersion is not set, the latest dotnet version is assumed to be supported and only the min version is checked.
 	 * Returns: True if installed dotnet version is supported, false otherwise.
 	 * 			Undefined if dotnet isn't installed.
 	 */
@@ -145,8 +146,13 @@ export class NetCoreTool extends ShellExecutionHelper {
 					this.netCoreSdkInstalledVersion = Buffer.concat(stdoutBuffers).toString('utf8').trim();
 
 					try {
-						if (semver.gte(this.netCoreSdkInstalledVersion, minSupportedNetCoreVersion)) {		// Net core version greater than or equal to minSupportedNetCoreVersion are supported for Build
-							isSupported = true;
+						// minSupportedDotnetVersion <= supported version < maxSupportedDotnetVersion
+						if (semver.gte(this.netCoreSdkInstalledVersion, minSupportedNetCoreVersion)) {
+							if (maxSupportedNetCoreVersion) {
+								isSupported = semver.lt(this.netCoreSdkInstalledVersion, maxSupportedNetCoreVersion);
+							} else {
+								isSupported = true;		// maxSupportedNetCoreVersion is latest available
+							}
 						} else {
 							isSupported = false;
 						}
