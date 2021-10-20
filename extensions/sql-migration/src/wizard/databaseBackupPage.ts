@@ -458,7 +458,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		return flexContainer;
 	}
 
-
 	private createTargetDatabaseContainer(): azdata.FlexContainer {
 		const headerCssStyles: azdata.CssStyles = {
 			...styles.LABEL_CSS,
@@ -755,7 +754,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		return container;
 	}
 
-
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		if (this.migrationStateModel.refreshDatabaseBackupPage) {
 			if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.DatabaseBackup)) {
@@ -770,11 +768,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 			if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.MigrationMode)) {
 				if (this.migrationStateModel.savedInfo.networkContainerType === NetworkContainerType.NETWORK_SHARE) {
-					this._networkShareButton.checked = true;
+					await this.switchNetworkContainerFields(NetworkContainerType.NETWORK_SHARE);
 				} else {
-					this._networkShareButton.checked = false;
-					this._networkTableContainer.display = 'none';
-					await this._networkShareContainer.updateCssStyles({ 'display': 'none' });
+					await this.switchNetworkContainerFields(NetworkContainerType.BLOB_CONTAINER);
 				}
 			} else {
 				this._networkShareButton.checked = false;
@@ -1113,9 +1109,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	}
 
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
-		if (this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.BLOB_CONTAINER) {
-			this.wizard.nextButton.enabled = true;
-		}
 	}
 
 	private async switchNetworkContainerFields(containerType: NetworkContainerType): Promise<void> {
@@ -1152,7 +1145,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		});
 		await this.validateFields();
 	}
-
 
 	private async validateFields(): Promise<void> {
 		await this._sqlSourceUsernameInput.validate();

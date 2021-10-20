@@ -142,7 +142,7 @@ export class SqlDatabaseTree {
 				...styles.BOLD_NOTE_CSS,
 				'margin': '0px 15px 0px 15px'
 			},
-			value: constants.DATABASES(0, this._model._databaseAssessment.length)
+			value: constants.DATABASES(0, this._model._databaseAssessment?.length)
 		}).component();
 		return this._databaseCount;
 	}
@@ -187,10 +187,7 @@ export class SqlDatabaseTree {
 		).component();
 
 		this._disposables.push(this._databaseTable.onDataChanged(async () => {
-			await this._databaseCount.updateProperties({
-				'value': constants.DATABASES(this.selectedDbs().length, this._model._databaseAssessment.length)
-			});
-			this._model._databaseSelection = <azdata.DeclarativeTableCellValue[][]>this._databaseTable.dataValues;
+			await this.updateValuesOnSelection();
 		}));
 
 		this._disposables.push(this._databaseTable.onRowSelected(async (e) => {
@@ -200,7 +197,7 @@ export class SqlDatabaseTree {
 				this._activeIssues = [];
 			}
 			this._dbName.value = this._dbNames[e.row];
-			this._recommendationTitle.value = constants.ISSUES_COUNT(this._activeIssues.length);
+			this._recommendationTitle.value = constants.ISSUES_COUNT(this._activeIssues?.length);
 			this._recommendation.value = constants.ISSUES_DETAILS;
 			await this._resultComponent.updateCssStyles({
 				'display': 'block'
@@ -307,7 +304,7 @@ export class SqlDatabaseTree {
 				'display': 'none'
 			});
 			this._recommendation.value = constants.WARNINGS_DETAILS;
-			this._recommendationTitle.value = constants.WARNINGS_COUNT(this._activeIssues.length);
+			this._recommendationTitle.value = constants.WARNINGS_COUNT(this._activeIssues?.length);
 			if (this._targetType === MigrationTargetType.SQLMI) {
 				await this.refreshResults();
 			}
@@ -424,7 +421,7 @@ export class SqlDatabaseTree {
 	}
 
 	private handleFailedAssessment(): boolean {
-		const failedAssessment: boolean = this._model._assessmentResults.assessmentError !== undefined
+		const failedAssessment: boolean = this._model._assessmentResults?.assessmentError !== undefined
 			|| (this._model._assessmentResults?.errors?.length || 0) > 0;
 		if (failedAssessment) {
 			this._dialog.message = {
@@ -439,12 +436,12 @@ export class SqlDatabaseTree {
 
 	private getAssessmentError(): string {
 		const errors: string[] = [];
-		const assessmentError = this._model._assessmentResults.assessmentError;
+		const assessmentError = this._model._assessmentResults?.assessmentError;
 		if (assessmentError) {
 			errors.push(`message: ${assessmentError.message}${EOL}stack: ${assessmentError.stack}`);
 		}
 		if (this._model?._assessmentResults?.errors?.length! > 0) {
-			errors.push(...this._model._assessmentResults.errors?.map(
+			errors.push(...this._model._assessmentResults?.errors?.map(
 				e => `message: ${e.message}${EOL}errorSummary: ${e.errorSummary}${EOL}possibleCauses: ${e.possibleCauses}${EOL}guidance: ${e.guidance}${EOL}errorId: ${e.errorId}`)!);
 		}
 
@@ -791,7 +788,7 @@ export class SqlDatabaseTree {
 
 	public async refreshResults(): Promise<void> {
 		if (this._targetType === MigrationTargetType.SQLMI) {
-			if (this._activeIssues.length === 0) {
+			if (this._activeIssues?.length === 0) {
 				/// show no issues here
 				await this._assessmentsTable.updateCssStyles({
 					'display': 'none',
@@ -858,7 +855,7 @@ export class SqlDatabaseTree {
 			|| [];
 
 		await this._assessmentResultsTable.setDataValues(assessmentResults);
-		this._assessmentResultsTable.selectedRow = assessmentResults.length > 0 ? 0 : -1;
+		this._assessmentResultsTable.selectedRow = assessmentResults?.length > 0 ? 0 : -1;
 	}
 
 	public async refreshAssessmentDetails(selectedIssue?: SqlMigrationAssessmentResultItem): Promise<void> {
@@ -872,7 +869,7 @@ export class SqlDatabaseTree {
 		await this._impactedObjectsTable.setDataValues(this._impactedObjects.map(
 			(object) => [{ value: object.objectType }, { value: object.name }]));
 
-		this._impactedObjectsTable.selectedRow = this._impactedObjects.length > 0 ? 0 : -1;
+		this._impactedObjectsTable.selectedRow = this._impactedObjects?.length > 0 ? 0 : -1;
 	}
 
 	public refreshImpactedObject(impactedObject?: SqlMigrationImpactedObjectInfo): void {
@@ -927,17 +924,17 @@ export class SqlDatabaseTree {
 						style: styleLeft
 					},
 					{
-						value: this._model._assessmentResults.issues.length,
+						value: this._model._assessmentResults?.issues?.length,
 						style: styleRight
 					}
 				]
 			];
-			this._model._assessmentResults.databaseAssessments.sort((db1, db2) => {
-				return db2.issues.length - db1.issues.length;
+			this._model._assessmentResults?.databaseAssessments.sort((db1, db2) => {
+				return db2.issues?.length - db1.issues?.length;
 			});
 			// Reset the dbName list so that it is in sync with the table
-			this._dbNames = this._model._assessmentResults.databaseAssessments.map(da => da.name);
-			this._model._assessmentResults.databaseAssessments.forEach((db) => {
+			this._dbNames = this._model._assessmentResults?.databaseAssessments.map(da => da.name);
+			this._model._assessmentResults?.databaseAssessments.forEach((db) => {
 				let selectable = true;
 				if (db.issues.find(item => item.databaseRestoreFails)) {
 					selectable = false;
@@ -954,7 +951,7 @@ export class SqlDatabaseTree {
 							style: styleLeft
 						},
 						{
-							value: db.issues.length,
+							value: db.issues?.length,
 							style: styleRight
 						}
 					]
@@ -965,8 +962,22 @@ export class SqlDatabaseTree {
 		if ((this._model.resumeAssessment && this._model.savedInfo.closedPage >= Page.SKURecommendation)) {
 			await this._databaseTable.setDataValues(this._model.savedInfo.migrationDatabases);
 		} else {
+			if (this._model.retryMigration) {
+				const sourceDatabaseName = this._model.savedInfo.databaseList[0];
+				const sourceDatabaseIndex = this._dbNames.indexOf(sourceDatabaseName);
+				this._databaseTableValues[sourceDatabaseIndex][0].value = true;
+			}
+
 			await this._databaseTable.setDataValues(this._databaseTableValues);
+			await this.updateValuesOnSelection();
 		}
+	}
+
+	private async updateValuesOnSelection() {
+		await this._databaseCount.updateProperties({
+			'value': constants.DATABASES(this.selectedDbs()?.length, this._model._databaseAssessment?.length)
+		});
+		this._model._databaseSelection = <azdata.DeclarativeTableCellValue[][]>this._databaseTable.dataValues;
 	}
 
 	// undo when bug #16445 is fixed

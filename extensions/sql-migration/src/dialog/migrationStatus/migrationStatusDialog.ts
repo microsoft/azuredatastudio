@@ -14,7 +14,7 @@ import { clearDialogMessage, convertTimeDifferenceToDuration, displayDialogError
 import { SqlMigrationServiceDetailsDialog } from '../sqlMigrationService/sqlMigrationServiceDetailsDialog';
 import { ConfirmCutoverDialog } from '../migrationCutover/confirmCutoverDialog';
 import { MigrationCutoverDialogModel } from '../migrationCutover/migrationCutoverDialogModel';
-import { getMigrationTargetType, getMigrationMode } from '../../constants/helper';
+import { getMigrationTargetType, getMigrationMode, canRetryMigration } from '../../constants/helper';
 import { RetryMigrationDialog } from '../retryMigration/retryMigrationDialog';
 
 const refreshFrequency: SupportedAutoRefreshIntervals = 180000;
@@ -99,13 +99,6 @@ export class MigrationStatusDialog {
 		);
 
 	private canCutoverMigration = (status: string | undefined) => status === MigrationStatus.InProgress;
-
-	private canRetryMigration = (status: string | undefined) => (
-		status !== MigrationStatus.InProgress &&
-		status !== MigrationStatus.Creating &&
-		status !== MigrationStatus.Completing &&
-		status !== MigrationStatus.Canceling
-	);
 
 	private createSearchAndRefreshContainer(): azdata.FlexContainer {
 		this._searchBox = this._view.modelBuilder.inputBox().withProps({
@@ -320,7 +313,7 @@ export class MigrationStatusDialog {
 				try {
 					clearDialogMessage(this._dialogObject);
 					const migration = this._model._migrations.find(migration => migration.migrationContext.id === migrationId);
-					if (this.canRetryMigration(migration?.migrationContext.properties.migrationStatus)) {
+					if (canRetryMigration(migration?.migrationContext.properties.migrationStatus)) {
 						let retryMigrationDialog = new RetryMigrationDialog(this._context, migration!);
 						await retryMigrationDialog.openDialog();
 					}
@@ -446,7 +439,7 @@ export class MigrationStatusDialog {
 			menuCommands.push(MenuCommands.CancelMigration);
 		}
 
-		if (this.canRetryMigration(migrationStatus)) {
+		if (canRetryMigration(migrationStatus)) {
 			menuCommands.push(MenuCommands.RetryMigration);
 		}
 

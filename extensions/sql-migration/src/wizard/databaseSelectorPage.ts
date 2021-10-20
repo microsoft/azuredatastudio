@@ -280,8 +280,14 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		} else {
 			if (this.migrationStateModel.retryMigration) {
 				const sourceDatabaseName = this.migrationStateModel.savedInfo.databaseList[0];
-				const sourceDatabaseIndex = this._dbNames.indexOf(sourceDatabaseName);
-				this._databaseTableValues[sourceDatabaseIndex][0].value = true;
+				this._databaseTableValues.forEach((row, index) => {
+					const dbName = row[1].value as string;
+					if (dbName?.toLowerCase() === sourceDatabaseName?.toLowerCase()) {
+						row[0].value = true;
+					} else {
+						row[0].enabled = false;
+					}
+				});
 			}
 			await this._databaseSelectorTable.setDataValues(this._databaseTableValues);
 			await this.updateValuesOnSelection();

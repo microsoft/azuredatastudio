@@ -534,7 +534,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		const serverName = (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
 		const errors: string[] = [];
 		try {
-			if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage)) {
+			if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage) {
 				this.migrationStateModel._assessmentResults = <ServerAssessment>this.migrationStateModel.savedInfo.serverAssessment;
 			} else {
 				await this.migrationStateModel.getDatabaseAssessments(MigrationTargetType.SQLMI);
@@ -545,7 +545,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				errors.push(`message: ${assessmentError.message}${EOL}stack: ${assessmentError.stack}`);
 			}
 			if (this.migrationStateModel?._assessmentResults?.errors?.length! > 0) {
-				errors.push(...this.migrationStateModel._assessmentResults.errors?.map(
+				errors.push(...this.migrationStateModel._assessmentResults?.errors?.map(
 					e => `message: ${e.message}${EOL}errorSummary: ${e.errorSummary}${EOL}possibleCauses: ${e.possibleCauses}${EOL}guidance: ${e.guidance}${EOL}errorId: ${e.errorId}`)!);
 			}
 
@@ -631,7 +631,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 			if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.SKURecommendation && this._managedInstanceSubscriptionDropdown.values)) {
 				this._managedInstanceSubscriptionDropdown.values!.forEach((subscription, index) => {
-					if ((<azdata.CategoryValue>subscription).name === this.migrationStateModel.savedInfo?.subscription?.id) {
+					if ((<azdata.CategoryValue>subscription).name.toLowerCase() === this.migrationStateModel.savedInfo?.subscription?.id.toLowerCase()) {
 						selectDropDownIndex(this._managedInstanceSubscriptionDropdown, index);
 					}
 				});
@@ -648,7 +648,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			this._azureResourceGroupDropdown.values = await this.migrationStateModel.getAzureResourceGroupDropdownValues(this.migrationStateModel._targetSubscription);
 			if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.SKURecommendation && this._azureResourceGroupDropdown.values)) {
 				this._azureResourceGroupDropdown.values.forEach((resourceGroup, index) => {
-					if (resourceGroup.name === this.migrationStateModel.savedInfo?.resourceGroup?.id) {
+					if (resourceGroup.name.toLowerCase() === this.migrationStateModel.savedInfo?.resourceGroup?.id.toLowerCase()) {
 						selectDropDownIndex(this._azureResourceGroupDropdown, index);
 					}
 				});
@@ -693,7 +693,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 			if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.SKURecommendation && this._resourceDropdown.values)) {
 				this._resourceDropdown.values.forEach((resource, index) => {
-					if (resource.displayName === this.migrationStateModel.savedInfo?.targetServerInstance?.name) {
+					if (resource.displayName.toLowerCase() === this.migrationStateModel.savedInfo?.targetServerInstance?.name.toLowerCase()) {
 						selectDropDownIndex(this._resourceDropdown, index);
 					}
 				});
@@ -786,8 +786,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this._targetContainer.display = (this.migrationStateModel._migrationDbs.length === 0) ? 'none' : 'inline';
 
 		if (this.migrationStateModel._assessmentResults) {
-			const dbCount = this.migrationStateModel._assessmentResults.databaseAssessments?.length;
-			const dbWithoutIssuesCount = this.migrationStateModel._assessmentResults.databaseAssessments?.filter(db => db.issues?.length === 0).length;
+			const dbCount = this.migrationStateModel._assessmentResults?.databaseAssessments?.length;
+			const dbWithoutIssuesCount = this.migrationStateModel._assessmentResults?.databaseAssessments?.filter(db => db.issues?.length === 0).length;
 			this._rbg.cards[0].descriptions[1].textValue = constants.CAN_BE_MIGRATED(dbWithoutIssuesCount, dbCount);
 			this._rbg.cards[1].descriptions[1].textValue = constants.CAN_BE_MIGRATED(dbCount, dbCount);
 

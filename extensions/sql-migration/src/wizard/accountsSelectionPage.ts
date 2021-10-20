@@ -113,7 +113,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 					});
 					if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.AzureAccount)) {
 						(<azdata.CategoryValue[]>this._azureAccountsDropdown.values)?.forEach((account, index) => {
-							if (account.name === this.migrationStateModel.savedInfo.azureAccount?.displayInfo.userId) {
+							if (account.name.toLowerCase() === this.migrationStateModel.savedInfo.azureAccount?.displayInfo.userId.toLowerCase()) {
 								selectDropDownIndex(this._azureAccountsDropdown, index);
 							}
 						});

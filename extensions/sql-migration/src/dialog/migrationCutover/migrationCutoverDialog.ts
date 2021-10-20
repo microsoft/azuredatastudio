@@ -14,6 +14,7 @@ import { EOL } from 'os';
 import { ConfirmCutoverDialog } from './confirmCutoverDialog';
 import { RetryMigrationDialog } from '../retryMigration/retryMigrationDialog';
 import * as styles from '../../constants/styles';
+import { canRetryMigration } from '../../constants/helper';
 
 const refreshFrequency: SupportedAutoRefreshIntervals = 30000;
 const statusImageSize: number = 14;
@@ -749,11 +750,7 @@ export class MigrationCutoverDialog {
 				migrationStatusTextValue === MigrationStatus.Creating ||
 				migrationStatusTextValue === MigrationStatus.InProgress;
 
-			this._retryButton.enabled =
-				migrationStatusTextValue !== MigrationStatus.InProgress &&
-				migrationStatusTextValue !== MigrationStatus.Creating &&
-				migrationStatusTextValue !== MigrationStatus.Completing &&
-				migrationStatusTextValue !== MigrationStatus.Canceling;
+			this._retryButton.enabled = canRetryMigration(migrationStatusTextValue);
 
 		} catch (e) {
 			displayDialogErrorMessage(this._dialogObject, loc.MIGRATION_STATUS_REFRESH_ERROR, e);
