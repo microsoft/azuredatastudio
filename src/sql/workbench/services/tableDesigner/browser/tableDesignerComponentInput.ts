@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { DesignerData, DesignerEdit, DesignerEditResult, DesignerComponentInput, DesignerView, DesignerTab, DesignerDataPropertyInfo, DropDownProperties, DesignerTableProperties, DesignerState } from 'sql/base/browser/ui/designer/interfaces';
+import { DesignerViewModel, DesignerEdit, DesignerEditResult, DesignerComponentInput, DesignerView, DesignerTab, DesignerDataPropertyInfo, DropDownProperties, DesignerTableProperties, DesignerState } from 'sql/base/browser/ui/designer/interfaces';
 import { TableDesignerProvider } from 'sql/workbench/services/tableDesigner/common/interface';
 import { localize } from 'vs/nls';
 import { designers } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -13,11 +13,12 @@ import { INotificationService, Severity } from 'vs/platform/notification/common/
 
 export class TableDesignerComponentInput implements DesignerComponentInput {
 
-	private _data: DesignerData;
+	private _viewModel: DesignerViewModel;
 	private _view: DesignerView;
 	private _valid: boolean = true;
 	private _dirty: boolean = false;
 	private _saving: boolean = false;
+	private _processing: boolean = false;
 	private _onStateChange = new Emitter<DesignerState>();
 
 	public readonly onStateChange: Event<DesignerState> = this._onStateChange.event;
@@ -39,6 +40,10 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		return this._saving;
 	}
 
+	get processing(): boolean {
+		return this._processing;
+	}
+
 	get objectTypeDisplayName(): string {
 		return localize('tableDesigner.tableObjectType', "Table");
 	}
@@ -50,19 +55,20 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		return this._view;
 	}
 
-	async getData(): Promise<DesignerData> {
-		if (!this._data) {
+	async getViewModel(): Promise<DesignerViewModel> {
+		if (!this._viewModel) {
 			await this.initialize();
 		}
-		return this._data;
+		return this._viewModel;
 	}
 
 	async processEdit(edit: DesignerEdit): Promise<DesignerEditResult> {
-		const result = await this._provider.processTableEdit(this._tableInfo, this._data!, edit);
+		this.updateState(this.valid, this.dirty, this.saving, true);
+		const result = await this._provider.processTableEdit(this._tableInfo, this._viewModel!, edit);
 		if (result.isValid) {
-			this._data = result.data;
+			this._viewModel = result.viewModel;
 		}
-		this.updateState(result.isValid, true, this.saving);
+		this.updateState(result.isValid, true, this.saving, false);
 		return {
 			isValid: result.isValid,
 			errors: result.errors
@@ -75,38 +81,41 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			message: localize('tableDesigner.savingChanges', "Saving table designer changes...")
 		});
 		try {
-			this.updateState(this.valid, this.dirty, true);
-			await this._provider.saveTable(this._tableInfo, this._data);
-			this.updateState(true, false, false);
+			this.updateState(this.valid, this.dirty, true, true);
+			await this._provider.saveTable(this._tableInfo, this._viewModel);
+			this.updateState(true, false, false, false);
 			notificationHandle.updateMessage(localize('tableDesigner.savedChangeSuccess', "The changes have been successfully saved."));
 		} catch (error) {
 			notificationHandle.updateSeverity(Severity.Error);
 			notificationHandle.updateMessage(localize('tableDesigner.saveChangeError', "An error occured while saving changes: {0}", error?.message ?? error));
-			this.updateState(this.valid, this.dirty, false);
+			this.updateState(this.valid, this.dirty, false, false);
 		}
 	}
 
 	async revert(): Promise<void> {
-		this.updateState(true, false, false);
+		this.updateState(true, false, false, false);
 	}
 
-	private updateState(valid: boolean, dirty: boolean, saving: boolean): void {
-		if (this._dirty !== dirty || this._valid !== valid || this._saving !== saving) {
+	private updateState(valid: boolean, dirty: boolean, saving: boolean, processing: boolean): void {
+		if (this._dirty !== dirty || this._valid !== valid || this._saving !== saving || this._processing !== processing) {
 			this._dirty = dirty;
 			this._valid = valid;
 			this._saving = saving;
+			this._processing = processing;
 			this._onStateChange.fire({
 				valid: this._valid,
 				dirty: this._dirty,
-				saving: this._saving
+				saving: this._saving,
+				processing: this._processing
 			});
 		}
 	}
 
 	private async initialize(): Promise<void> {
+		this.updateState(this.valid, this.dirty, this.saving, true);
 		const designerInfo = await this._provider.getTableDesignerInfo(this._tableInfo);
-
-		this._data = designerInfo.data;
+		this.updateState(this.valid, this.dirty, this.saving, false);
+		this._viewModel = designerInfo.viewModel;
 		this.setDefaultData();
 
 		const advancedTabComponents: DesignerDataPropertyInfo[] = [
@@ -180,8 +189,8 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			}
 		];
 
-		if (designerInfo.view.addtionalTableColumnProperties) {
-			columnProperties.push(...designerInfo.view.addtionalTableColumnProperties);
+		if (designerInfo.view.additionalTableColumnProperties) {
+			columnProperties.push(...designerInfo.view.additionalTableColumnProperties);
 		}
 
 		const columnsTab = <DesignerTab>{
@@ -208,7 +217,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		};
 
 		const tabs = [columnsTab, advancedTab];
-		if (designerInfo.view.addtionalTabs) {
+		if (designerInfo.view.additionalTabs) {
 			tabs.push(...tabs);
 		}
 
@@ -226,7 +235,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 	}
 
 	private setDefaultData(): void {
-		const properties = Object.keys(this._data);
+		const properties = Object.keys(this._viewModel);
 		this.setDefaultInputData(properties, designers.TableProperty.Name);
 		this.setDefaultInputData(properties, designers.TableProperty.Schema);
 		this.setDefaultInputData(properties, designers.TableProperty.Description);
@@ -234,7 +243,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 
 	private setDefaultInputData(allProperties: string[], property: string): void {
 		if (allProperties.indexOf(property) === -1) {
-			this._data[property] = {};
+			this._viewModel[property] = {};
 		}
 	}
 }

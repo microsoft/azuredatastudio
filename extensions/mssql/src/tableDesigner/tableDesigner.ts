@@ -7,15 +7,17 @@ import { AppContext } from '../appContext';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { sqlProviderName } from '../constants';
+import { generateUuid } from 'vscode-languageclient/lib/utils/uuid';
 
 export function registerTableDesignerCommands(appContext: AppContext) {
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.newTable', async (context: azdata.ObjectExplorerContext) => {
-		const connectionUri = await azdata.connection.getUriForConnection(context.connectionProfile.id);
+		const connectionString = await azdata.connection.getConnectionString(context.connectionProfile.id, true);
 		await azdata.designers.openTableDesigner(sqlProviderName, {
 			server: context.connectionProfile.serverName,
 			database: context.connectionProfile.databaseName,
 			isNewTable: true,
-			connectionUri: connectionUri
+			id: generateUuid(),
+			connectionString: connectionString
 		});
 	}));
 
@@ -24,6 +26,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 		const database = context.connectionProfile.databaseName;
 		const schema = context.nodeInfo.metadata.schema;
 		const name = context.nodeInfo.metadata.name;
+		const connectionString = await azdata.connection.getConnectionString(context.connectionProfile.id, true);
 		const connectionUri = await azdata.connection.getUriForConnection(context.connectionProfile.id);
 		await azdata.designers.openTableDesigner(sqlProviderName, {
 			server: server,
@@ -31,9 +34,8 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 			isNewTable: false,
 			name: name,
 			schema: schema,
-			id: `${server}|${database}|${schema}|${name}`,
-			connectionUri: connectionUri
+			id: `${connectionUri}|${database}|${schema}|${name}`,
+			connectionString: connectionString
 		});
 	}));
-
 }

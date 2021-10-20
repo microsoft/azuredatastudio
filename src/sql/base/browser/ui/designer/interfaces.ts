@@ -22,9 +22,9 @@ export interface DesignerComponentInput {
 	getView(): Promise<DesignerView>;
 
 	/**
-	 * Gets the data.
+	 * Gets the view model.
 	 */
-	getData(): Promise<DesignerData>;
+	getViewModel(): Promise<DesignerViewModel>;
 
 	/**
 	 * Process the edit made in the designer.
@@ -52,6 +52,7 @@ export interface DesignerState {
 	valid: boolean;
 	dirty: boolean;
 	saving: boolean;
+	processing: boolean;
 }
 
 export const NameProperty = 'name';
@@ -68,7 +69,7 @@ export interface DesignerTab {
 	components: DesignerDataPropertyInfo[];
 }
 
-export interface DesignerData {
+export interface DesignerViewModel {
 	[key: string]: InputBoxProperties | CheckBoxProperties | DropDownProperties | DesignerTableProperties;
 }
 

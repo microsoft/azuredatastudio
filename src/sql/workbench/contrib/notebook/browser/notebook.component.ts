@@ -476,21 +476,28 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				viewsDropdownMenuActionViewItem.setActionContext(this._notebookParams.notebookUri);
 			}
 
-			this._actionBar.setContent([
-				{ element: buttonDropdownContainer },
-				{ action: this._runAllCellsAction },
-				{ element: Taskbar.createTaskbarSeparator() },
-				{ element: kernelContainer },
-				{ element: attachToContainer },
-				{ element: spacerElement },
-			]);
-
 			if (this._showToolbarActions) {
-				this._actionBar.addElement(viewsDropdownContainer);
-				this._actionBar.addAction(collapseCellsAction);
-				this._actionBar.addAction(clearResultsButton);
-				this._actionBar.addAction(this._trustedAction);
-				this._actionBar.addAction(runParametersAction);
+				this._actionBar.setContent([
+					{ element: buttonDropdownContainer },
+					{ action: this._runAllCellsAction },
+					{ element: Taskbar.createTaskbarSeparator() },
+					{ element: kernelContainer },
+					{ element: attachToContainer },
+					{ element: spacerElement },
+					{ element: viewsDropdownContainer },
+					{ action: collapseCellsAction },
+					{ action: clearResultsButton },
+					{ action: this._trustedAction },
+					{ action: runParametersAction },
+				]);
+			} else {
+				this._actionBar.setContent([
+					{ element: buttonDropdownContainer },
+					{ action: this._runAllCellsAction },
+					{ element: Taskbar.createTaskbarSeparator() },
+					{ element: kernelContainer },
+					{ element: attachToContainer },
+				]);
 			}
 		} else {
 			let kernelContainer = document.createElement('div');
@@ -523,18 +530,25 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			this._actionBar = new Taskbar(taskbar, { actionViewItemProvider: action => this.actionItemProvider(action as Action) });
 			this._actionBar.context = this._notebookParams.notebookUri;
 
-			this._actionBar.setContent([
-				{ action: addCodeCellButton },
-				{ action: addTextCellButton },
-				{ element: kernelContainer },
-				{ element: attachToContainer },
-				{ action: this._runAllCellsAction },
-			]);
-
 			if (this._showToolbarActions) {
-				this._actionBar.addAction(this._trustedAction);
-				this._actionBar.addAction(clearResultsButton);
-				this._actionBar.addAction(collapseCellsAction);
+				this._actionBar.setContent([
+					{ action: addCodeCellButton },
+					{ action: addTextCellButton },
+					{ element: kernelContainer },
+					{ element: attachToContainer },
+					{ action: this._trustedAction },
+					{ action: this._runAllCellsAction },
+					{ action: clearResultsButton },
+					{ action: collapseCellsAction },
+				]);
+			} else {
+				this._actionBar.setContent([
+					{ action: addCodeCellButton },
+					{ action: addTextCellButton },
+					{ element: kernelContainer },
+					{ element: attachToContainer },
+					{ action: this._runAllCellsAction },
+				]);
 			}
 		}
 	}
