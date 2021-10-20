@@ -85,6 +85,7 @@ describe('BookTocManagerTests', function () {
 		let rootFolderPath: string;
 		let root2FolderPath: string;
 		const subfolder = 'Subfolder';
+		const subfolder2 = 'Subfolder2';
 
 		afterEach(function (): void {
 			sinon.restore();
@@ -94,7 +95,7 @@ describe('BookTocManagerTests', function () {
 			rootFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
 			bookFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
 			root2FolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
-			notebooks = ['notebook1.ipynb', 'notebook2.ipynb', 'notebook3.ipynb', 'index.md'];
+			notebooks = ['notebook1.ipynb', 'notebook2.ipynb', 'notebook3.ipynb', 'index.md', 'notebook4.ipynb', 'notebook5.ipynb'];
 
 			await fs.mkdir(rootFolderPath);
 			await fs.writeFile(path.join(rootFolderPath, notebooks[0]), '');
@@ -104,6 +105,8 @@ describe('BookTocManagerTests', function () {
 
 			await fs.mkdir(root2FolderPath);
 			await fs.mkdir(path.join(root2FolderPath, subfolder));
+			await fs.mkdir(path.join(root2FolderPath, subfolder, subfolder2));
+
 			await fs.writeFile(path.join(root2FolderPath, notebooks[0]), '');
 			await fs.writeFile(path.join(root2FolderPath, subfolder, notebooks[1]), '');
 			await fs.writeFile(path.join(root2FolderPath, subfolder, notebooks[2]), '');
@@ -144,6 +147,52 @@ describe('BookTocManagerTests', function () {
 			let listFiles = await fs.promises.readdir(bookFolderPath);
 			should(bookTocManager.tableofContents.length).be.equal(4);
 			should(listFiles.length).be.equal(7);
+		});
+
+		it ('should create a table of contents with sections if folder contains subfolders', async () => {
+			await fs.writeFile(path.join(root2FolderPath, subfolder, subfolder2, notebooks[4]), '');
+			await fs.writeFile(path.join(root2FolderPath, subfolder, subfolder2, notebooks[5]), '');
+
+			let bookTocManager: BookTocManager = new BookTocManager();
+			await bookTocManager.createBook(bookFolderPath, root2FolderPath);
+			let listFiles = await fs.promises.readdir(bookFolderPath);
+			should(bookTocManager.tableofContents.length).be.equal(3);
+			should(listFiles.length).be.equal(5);
+
+			let expectedSubSections: IJupyterBookSectionV2[] = [{
+				title: 'notebook4',
+				file: path.posix.join(path.posix.sep, subfolder, subfolder2, 'notebook4')
+			},
+			{
+				title: 'notebook5',
+				file: path.posix.join(path.posix.sep, subfolder, subfolder2, 'notebook5')
+			}];
+
+			let expectedSection: IJupyterBookSectionV2[] = [{
+				title: 'index',
+				file: path.posix.join(path.posix.sep, subfolder, 'index')
+			},
+			{
+				title: 'notebook2',
+				file: path.posix.join(path.posix.sep, subfolder, 'notebook2')
+			},
+			{
+				title: 'notebook3',
+				file: path.posix.join(path.posix.sep, subfolder, 'notebook3')
+			},
+			{
+				title: 'Subfolder2',
+				file: path.posix.join(path.posix.sep, subfolder, subfolder2, 'notebook4'),
+				sections : expectedSubSections
+			}];
+
+			const index = bookTocManager.tableofContents.findIndex(entry => entry.file === path.posix.join(path.posix.sep, subfolder, 'index'));
+			should(index).not.be.equal(-1, 'Should find a section with the Subfolder entry');
+			if (index !== -1) {
+				should(equalTOC(bookTocManager.tableofContents[index].sections, expectedSection)).be.true();
+				let subsection = bookTocManager.tableofContents[index].sections.find(entry => entry.file === path.posix.join(path.posix.sep, subfolder, subfolder2, 'notebook4'));
+				should(equalSections(subsection, expectedSection[3])).be.true('Should find a subsection with the subfolder inside the subfolder');
+			}
 		});
 	});
 
