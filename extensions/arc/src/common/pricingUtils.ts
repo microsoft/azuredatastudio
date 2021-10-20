@@ -6,7 +6,7 @@
 import { InputValueType } from 'resource-deployment';
 import * as loc from '../localizedConstants';
 
-export class SqlManagedInstanceGeneralPurpose {
+class SqlManagedInstanceGeneralPurpose {
 	public static tierName: string = loc.generalPurposeLabel;
 	public static basePricePerCore: number = 80;
 	public static licenseIncludedPricePerCore: number = 153;
@@ -23,7 +23,7 @@ export class SqlManagedInstanceGeneralPurpose {
 	public static defaultReplicaValue = 1;
 }
 
-export class SqlManagedInstanceBusinessCritical {
+class SqlManagedInstanceBusinessCritical {
 	public static tierName: string = loc.businessCriticalLabel;
 
 	// Set to real values when BC is ready

@@ -1324,7 +1324,7 @@ function createAzureSubscriptionComponent(
 			width: context.fieldInfo.inputWidth,
 			enabled: false
 		});
-		setValueFunc = () => { };
+		setValueFunc = (value) => { };
 	} else {
 		subscriptionInputInfo = createDropdownInputInfo(context.view, {
 			defaultValue: defaultValue,
@@ -1347,7 +1347,7 @@ function createAzureSubscriptionComponent(
 			const inputValue = (await subscriptionInputInfo.getValue())?.toString() || '';
 			return subscriptionValueToSubscriptionMap.get(inputValue)?.id || inputValue;
 		},
-		setValue: () => setValueFunc,
+		setValue: (value: InputValueType) => setValueFunc,
 		getDisplayValue: subscriptionInputInfo.getDisplayValue,
 		onValueChanged: subscriptionInputInfo.onValueChanged
 	});

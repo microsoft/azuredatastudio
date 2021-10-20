@@ -66,11 +66,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<arc.IE
 	context.subscriptions.push(rdApi.registerValueProvider({
 		id: 'params-to-cost-per-vcore',
 		getValue: async (mapping: { [key: string]: rd.InputValueType }) => {
-			try {
-				return pricing.fullPriceForOneVCore(mapping);
-			} catch (e) {
-				throw e;
-			}
+			return pricing.fullPriceForOneVCore(mapping);
 		}
 	}));
 
@@ -78,11 +74,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<arc.IE
 	context.subscriptions.push(rdApi.registerValueProvider({
 		id: 'params-to-vcore-limit',
 		getValue: async (mapping: { [key: string]: rd.InputValueType }) => {
-			try {
-				return 'x ' + pricing.numCores(mapping).toString();
-			} catch (e) {
-				throw e;
-			}
+			return 'x ' + pricing.numCores(mapping).toString();
 		}
 	}));
 
@@ -90,11 +82,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<arc.IE
 	context.subscriptions.push(rdApi.registerValueProvider({
 		id: 'params-to-hybrid-benefit-discount',
 		getValue: async (mapping: { [key: string]: rd.InputValueType }) => {
-			try {
-				return '- ' + pricing.azureHybridBenefitDiscount(mapping).toString();
-			} catch (e) {
-				throw e;
-			}
+			return '- ' + pricing.azureHybridBenefitDiscount(mapping).toString();
 		}
 	}));
 
@@ -102,11 +90,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<arc.IE
 	context.subscriptions.push(rdApi.registerValueProvider({
 		id: 'params-to-estimated-cost',
 		getValue: async (mapping: { [key: string]: rd.InputValueType }) => {
-			try {
-				return pricing.total(mapping).toString() + ' USD';
-			} catch (e) {
-				throw e;
-			}
+			return pricing.total(mapping).toString() + ' USD';
 		}
 	}));
 
