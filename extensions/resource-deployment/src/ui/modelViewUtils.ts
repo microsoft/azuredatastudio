@@ -101,7 +101,6 @@ export interface FilePickerInputs {
 }
 interface ReadOnlyFieldInputs {
 	label: azdata.TextComponent;
-	variableName?: azdata.TextComponent;
 	text?: azdata.TextComponent;
 }
 
@@ -343,7 +342,7 @@ export function initializeWizardPage(context: WizardPageContext): void {
 		}));
 		await hookUpDynamicEnablement(context);
 		await hookUpDynamicOptions(context);
-		await hookUpValueProviders(context); // all of the content for all pages is registered
+		await hookUpValueProviders(context);
 		const formBuilder = view.modelBuilder.formContainer().withFormItems(
 			sections.map(section => { return { title: '', component: section }; }),
 			{
@@ -916,9 +915,7 @@ function processEvaluatedTextField(context: FieldContext): ReadOnlyFieldInputs {
 			readOnlyField.text!.value = await substituteVariableValues(context.inputComponents, context.fieldInfo.defaultValue);
 			return readOnlyField.text!.value;
 		},
-		setValue: (value: InputValueType) => {
-			readOnlyField.text!.value = value?.toString();
-		},
+		setValue: (value: InputValueType) => readOnlyField.text!.value = value?.toString(),
 		onValueChanged: onChangedEmitter.event,
 	});
 	return readOnlyField;
