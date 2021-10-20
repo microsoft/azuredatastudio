@@ -275,24 +275,13 @@ export function copyConnectionStringToClipboard(type: string): string { return l
 export function copyValueToClipboard(valueName: string): string { return localize({ key: 'arc.copyValueToClipboard', comment: ['{0} is the name of the type of value being copied (e.g. Coordinator endpoint)'] }, "Copy {0} to clipboard", valueName); }
 
 // Pricing Constants
-export const generalPurpose = localize('arc.generalPurpose', "GeneralPurpose");
-export const businessCritical = localize('arc.businessCritical', "BusinessCritical");
 export const replicaOne = localize('arc.replicaOne', "1 replica");
 export const replicaTwo = localize('arc.replicaTwo', "2 replicas");
 export const replicaThree = localize('arc.replicaThree', "3 replicas");
 export const licenseIncluded = localize('arc.licenseIncluded', "LicenseIncluded");
 export const basePrice = localize('arc.basePrice', "BasePrice");
-export const sqlManagedInstancePricingLink = localize('arc.sqlManagedInstancePricingLink', "https://aka.ms/ArcSQLBilling");
-export const replicasFieldLabel = localize('arc.replicasFieldLabel', "AZDATA_NB_VAR_SQL_REPLICAS");
-export const serviceTierFieldLabel = localize('arc.serviceTierFieldLabel', "AZDATA_NB_VAR_SQL_SERVICE_TIER");
-export const devUseFieldLabel = localize('arc.devUseFieldLabel', "AZDATA_NB_VAR_SQL_DEV_USE");
-export const vcoresLimitFieldLabel = localize('arc.vcoresLimitFieldLabel', "AZDATA_NB_VAR_SQL_CORES_LIMIT");
-export const licenseTypeFieldLabel = localize('arc.licenseTypeFieldLabel', "AZDATA_NB_VAR_SQL_LICENSE_TYPE");
 export const generalPurposeLabel = localize('arc.generalPurposeLabel', "General Purpose (Up to 24 vCores and 128 Gi of RAM, standard high availability)");
 export const businessCriticalLabel = localize('arc.businessCriticalLabel', "[PREVIEW] Business Critical (Unlimited vCores and RAM, advanced high availability)");
-export const multiply = localize('arc.multiply', "x ");
-export const negative = localize('arc.negative', "- ");
-export const USD = localize('arc.USD', " USD");
 
 // Errors
 export const pgConnectionRequired = localize('arc.pgConnectionRequired', "A connection is required to show and set database engine settings.");

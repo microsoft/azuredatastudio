@@ -44,17 +44,22 @@ export class AzureHybridLicenseTypes {
 	public static basePrice: string = loc.basePrice;
 }
 
-export const SqlManagedInstancePricingLink: string = loc.sqlManagedInstancePricingLink;
+export const SqlManagedInstancePricingLink: string = 'https://aka.ms/ArcSQLBilling';
+
+export const serviceTierVarName = 'AZDATA_NB_VAR_SQL_SERVICE_TIER';
+export const devUseVarName = 'AZDATA_NB_VAR_SQL_DEV_USE';
+export const vcoresLimitVarName = 'AZDATA_NB_VAR_SQL_CORES_LIMIT';
+export const licenseTypeVarName = 'AZDATA_NB_VAR_SQL_LICENSE_TYPE';
 
 // Estimated base price for one vCore.
 export function estimatedBasePriceForOneVCore(mapping: { [key: string]: InputValueType }): number {
 	let price = 0;
-	if (mapping[loc.devUseFieldLabel] === 'true') {
+	if (mapping[devUseVarName] === 'true') {
 		price = 0;
-	} else if (mapping[loc.devUseFieldLabel] === 'false') {
-		if (mapping[loc.serviceTierFieldLabel] === SqlManagedInstanceGeneralPurpose.tierName) {
+	} else if (mapping[devUseVarName] === 'false') {
+		if (mapping[serviceTierVarName] === SqlManagedInstanceGeneralPurpose.tierName) {
 			price = SqlManagedInstanceGeneralPurpose.basePricePerCore;
-		} else if (mapping[loc.serviceTierFieldLabel] === SqlManagedInstanceBusinessCritical.tierName) {
+		} else if (mapping[serviceTierVarName] === SqlManagedInstanceBusinessCritical.tierName) {
 			price = SqlManagedInstanceBusinessCritical.basePricePerCore;
 		}
 	}
@@ -64,12 +69,12 @@ export function estimatedBasePriceForOneVCore(mapping: { [key: string]: InputVal
 // Estimated SQL server license price for one vCore.
 export function estimatedSqlServerLicensePriceForOneVCore(mapping: { [key: string]: InputValueType }): number {
 	let price = 0;
-	if (mapping[loc.devUseFieldLabel] === 'true') {
+	if (mapping[devUseVarName] === 'true') {
 		price = 0;
-	} else if (mapping[loc.devUseFieldLabel] === 'false') {
-		if (mapping[loc.serviceTierFieldLabel] === SqlManagedInstanceGeneralPurpose.tierName) {
+	} else if (mapping[devUseVarName] === 'false') {
+		if (mapping[serviceTierVarName] === SqlManagedInstanceGeneralPurpose.tierName) {
 			price = SqlManagedInstanceGeneralPurpose.licenseIncludedPricePerCore - SqlManagedInstanceGeneralPurpose.basePricePerCore;
-		} else if (mapping[loc.serviceTierFieldLabel] === SqlManagedInstanceBusinessCritical.tierName) {
+		} else if (mapping[serviceTierVarName] === SqlManagedInstanceBusinessCritical.tierName) {
 			price = SqlManagedInstanceBusinessCritical.licenseIncludedPricePerCore - SqlManagedInstanceBusinessCritical.basePricePerCore;
 		}
 	}
@@ -83,7 +88,7 @@ export function fullPriceForOneVCore(mapping: { [key: string]: InputValueType })
 
 // Gets number of vCores limit specified
 export function numCores(mapping: { [key: string]: InputValueType }): number {
-	return mapping[loc.vcoresLimitFieldLabel] ? <number>mapping[loc.vcoresLimitFieldLabel] : 0;
+	return mapping[vcoresLimitVarName] ? <number>mapping[vcoresLimitVarName] : 0;
 }
 
 // Full price for all selected vCores.
@@ -99,7 +104,7 @@ export function vCoreSqlServerLicensePriceForAllCores(mapping: { [key: string]: 
 // If the customer doesn't already have SQL Server License, AHB discount is set to zero because the price will be included
 // in the total cost. If they already have it (they checked the box), then a discount will be applied.
 export function azureHybridBenefitDiscount(mapping: { [key: string]: InputValueType }): number {
-	if (mapping[loc.licenseTypeFieldLabel] === 'true') {
+	if (mapping[licenseTypeVarName] === 'true') {
 		return vCoreSqlServerLicensePriceForAllCores(mapping);
 	} else {
 		return 0;

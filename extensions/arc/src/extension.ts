@@ -79,7 +79,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<arc.IE
 		id: 'params-to-vcore-limit',
 		getValue: async (mapping: { [key: string]: rd.InputValueType }) => {
 			try {
-				return loc.multiply + pricing.numCores(mapping).toString();
+				return 'x ' + pricing.numCores(mapping).toString();
 			} catch (e) {
 				throw e;
 			}
@@ -91,7 +91,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<arc.IE
 		id: 'params-to-hybrid-benefit-discount',
 		getValue: async (mapping: { [key: string]: rd.InputValueType }) => {
 			try {
-				return loc.negative + pricing.azureHybridBenefitDiscount(mapping).toString();
+				return '- ' + pricing.azureHybridBenefitDiscount(mapping).toString();
 			} catch (e) {
 				throw e;
 			}
@@ -103,7 +103,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<arc.IE
 		id: 'params-to-estimated-cost',
 		getValue: async (mapping: { [key: string]: rd.InputValueType }) => {
 			try {
-				return pricing.total(mapping).toString() + loc.USD;
+				return pricing.total(mapping).toString() + ' USD';
 			} catch (e) {
 				throw e;
 			}
