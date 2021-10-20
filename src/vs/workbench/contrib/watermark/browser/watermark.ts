@@ -17,32 +17,32 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 // import { OpenFolderAction, OpenFileFolderAction, OpenFileAction } from 'vs/workbench/browser/actions/workspaceActions';
 // import { ShowAllCommandsAction } from 'vs/workbench/contrib/quickaccess/browser/commandsQuickAccess';
 import { Parts, IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
-import { FindInFilesActionId } from 'vs/workbench/contrib/search/common/constants';
+//import { FindInFilesActionId } from 'vs/workbench/contrib/search/common/constants';
 import * as dom from 'vs/base/browser/dom';
 import { KeybindingLabel } from 'vs/base/browser/ui/keybindingLabel/keybindingLabel';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { assertIsDefined } from 'vs/base/common/types';
 import { workbenchConfigurationNodeBase } from 'vs/workbench/common/configuration';
-import { NEW_UNTITLED_FILE_COMMAND_ID } from 'vs/workbench/contrib/files/browser/fileCommands';
+//import { NEW_UNTITLED_FILE_COMMAND_ID } from 'vs/workbench/contrib/files/browser/fileCommands';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachKeybindingLabelStyler } from 'vs/platform/theme/common/styler';
 
 // {{SQL CARBON EDIT}}
-import { NewNotebookAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
-import * as locConstants from 'sql/base/common/locConstants';
+//import { NewNotebookAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
+//import * as locConstants from 'sql/base/common/locConstants';
 
 const $ = dom.$;
 
-interface WatermarkEntry {
+/*interface WatermarkEntry {
 	text: string;
 	id: string;
 	mac?: boolean;
-}
+}*/
 
 // {{SQL CARBON EDIT}}
-const newSqlFile: WatermarkEntry = { text: locConstants.watermarkNewSqlFile, id: NEW_UNTITLED_FILE_COMMAND_ID };
-const newNotebook: WatermarkEntry = { text: locConstants.watermarkNewNotebook, id: NewNotebookAction.ID };
+//const newSqlFile: WatermarkEntry = { text: locConstants.watermarkNewSqlFile, id: NEW_UNTITLED_FILE_COMMAND_ID };
+//const newNotebook: WatermarkEntry = { text: locConstants.watermarkNewNotebook, id: NewNotebookAction.ID };
 
 /*const showCommands: WatermarkEntry = { text: nls.localize('watermark.showCommands', "Show All Commands"), id: ShowAllCommandsAction.ID };
 const quickAccess: WatermarkEntry = { text: nls.localize('watermark.quickAccess', "Go to File"), id: 'workbench.action.quickOpen' };
@@ -53,20 +53,20 @@ const openRecent: WatermarkEntry = { text: nls.localize('watermark.openRecent', 
 const newUntitledFile: WatermarkEntry = { text: nls.localize('watermark.newUntitledFile', "New Untitled File"), id: NEW_UNTITLED_FILE_COMMAND_ID };
 const newUntitledFileMacOnly: WatermarkEntry = Object.assign({ mac: true }, newUntitledFile);
 const toggleTerminal: WatermarkEntry = { text: nls.localize({ key: 'watermark.toggleTerminal', comment: ['toggle is a verb here'] }, "Toggle Terminal"), id: TERMINAL_COMMAND_ID.TOGGLE };*/
-const findInFiles: WatermarkEntry = { text: nls.localize('watermark.findInFiles', "Find in Files"), id: FindInFilesActionId };
+//const findInFiles: WatermarkEntry = { text: nls.localize('watermark.findInFiles', "Find in Files"), id: FindInFilesActionId };
 // const startDebugging: WatermarkEntry = { text: nls.localize('watermark.startDebugging', "Start Debugging"), id: StartAction.ID }; {{SQL CARBON EDIT}} no unused
 
 // {{SQL CARBON EDIT}} - Replace noFolderEntries and folderEntries
 const noFolderEntries = [
-	newSqlFile,
-	newNotebook,
-	findInFiles
+	//newSqlFile,
+	//newNotebook,
+	//findInFiles
 ];
 
 const folderEntries = [
-	newSqlFile,
-	newNotebook,
-	findInFiles
+	//newSqlFile,
+	//newNotebook,
+	//findInFiles
 ];
 // {{SQL CARBON EDIT}} - End
 
