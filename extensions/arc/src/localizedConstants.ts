@@ -278,8 +278,6 @@ export function copyValueToClipboard(valueName: string): string { return localiz
 export const replicaOne = localize('arc.replicaOne', "1 replica");
 export const replicaTwo = localize('arc.replicaTwo', "2 replicas");
 export const replicaThree = localize('arc.replicaThree', "3 replicas");
-export const licenseIncluded = localize('arc.licenseIncluded', "LicenseIncluded");
-export const basePrice = localize('arc.basePrice', "BasePrice");
 export const generalPurposeLabel = localize('arc.generalPurposeLabel', "General Purpose (Up to 24 vCores and 128 Gi of RAM, standard high availability)");
 export const businessCriticalLabel = localize('arc.businessCriticalLabel', "[PREVIEW] Business Critical (Unlimited vCores and RAM, advanced high availability)");
 

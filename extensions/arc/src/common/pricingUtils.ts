@@ -39,11 +39,6 @@ export class SqlManagedInstanceBusinessCritical {
 	public static defaultReplicaValue = 3;
 }
 
-export class AzureHybridLicenseTypes {
-	public static licenseIncluded: string = loc.licenseIncluded;
-	public static basePrice: string = loc.basePrice;
-}
-
 export const SqlManagedInstancePricingLink: string = 'https://aka.ms/ArcSQLBilling';
 
 export const serviceTierVarName = 'AZDATA_NB_VAR_SQL_SERVICE_TIER';
