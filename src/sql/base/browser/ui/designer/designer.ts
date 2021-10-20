@@ -204,7 +204,8 @@ export class Designer extends Disposable implements IThemable {
 	private async initializeDesignerView(): Promise<void> {
 		this._propertiesPane.clear();
 		DOM.clearNode(this._topContentContainer);
-		const handle = this.startLoading(localize('designer.loadingDesigner', "Loading designer..."));
+		// For initialization, we would want to show the loading indicator immediately.
+		const handle = this.startLoading(localize('designer.loadingDesigner', "Loading designer..."), 0);
 		const view = await this._input.getView();
 		this.stopLoading(handle, localize('designer.loadingDesignerCompleted', "Loading designer completed"));
 		if (view.components) {
@@ -577,13 +578,13 @@ export class Designer extends Disposable implements IThemable {
 		return component;
 	}
 
-	private startLoading(message: string): any {
-		// For a smooth user experience, only show the loading indicator if the request is not returned in 500ms.
+	private startLoading(message: string, timeout: number = 500): any {
+		// To make the experience smoother, only show the loading indicator if the request is not returning in 500ms(default value).
 		return setTimeout(() => {
 			this._loadingSpinner.loadingMessage = message;
 			this._loadingSpinner.loading = true;
 			this._container.removeChild(this._verticalSplitViewContainer);
-		}, 500);
+		}, timeout);
 	}
 
 	private stopLoading(handle: any, message: string): void {
