@@ -11,7 +11,7 @@ import * as semver from 'semver';
 import { isNullOrUndefined } from 'util';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { DoNotAskAgain, Install, NetCoreInstallationConfirmation, NetCoreSupportedVersionInstallationConfirmation, UpdateNetCoreLocation } from '../common/constants';
+import { DoNotAskAgain, Install, NetCoreInstallationConfirmation, NetCoreSupportedVersionInstallationConfirmation, NetCoreVersionDowngradeConfirmation, UpdateNetCoreLocation } from '../common/constants';
 import * as utils from '../common/utils';
 import { ShellCommandOptions, ShellExecutionHelper } from './shellExecutionHelper';
 const localize = nls.loadMessageBundle();
@@ -19,17 +19,19 @@ const localize = nls.loadMessageBundle();
 export const DBProjectConfigurationKey: string = 'sqlDatabaseProjects';
 export const NetCoreInstallLocationKey: string = 'netCoreSDKLocation';
 export const NetCoreDoNotAskAgainKey: string = 'netCoreDoNotAsk';
+export const NetCoreDowngradeDoNotAskAgainKey: string = 'netCoreDowngradeDoNotAsk';
 export const NetCoreNonWindowsDefaultPath = '/usr/local/share';
 export const winPlatform: string = 'win32';
 export const macPlatform: string = 'darwin';
 export const linuxPlatform: string = 'linux';
 export const minSupportedNetCoreVersion: string = '3.1.0';
-export const maxSupportedNetCoreVersion: string = '6.0.0';	// un-set this to allow latest
+export const maxSupportedNetCoreVersionCutoff: string = '6.0.0';	// un-set this to allow latest
 
 export const enum netCoreInstallState {
 	netCoreNotPresent,
 	netCoreVersionNotSupported,
-	netCoreVersionSupported
+	netCoreVersionSupported,
+	netCoreVersionTooHigh
 }
 
 const dotnet = os.platform() === 'win32' ? 'dotnet.exe' : 'dotnet';
@@ -47,8 +49,10 @@ export class NetCoreTool extends ShellExecutionHelper {
 	 */
 	public async findOrInstallNetCore(): Promise<boolean> {
 		if ((!this.isNetCoreInstallationPresent || !await this.isNetCoreVersionSupported())) {
-			if (vscode.workspace.getConfiguration(DBProjectConfigurationKey)[NetCoreDoNotAskAgainKey] !== true) {
+			if (this.netCoreInstallState === netCoreInstallState.netCoreVersionSupported && vscode.workspace.getConfiguration(DBProjectConfigurationKey)[NetCoreDoNotAskAgainKey] !== true) {
 				void this.showInstallDialog();		// Removing await so that Build and extension load process doesn't wait on user input
+			} else if (this.netCoreInstallState === netCoreInstallState.netCoreVersionTooHigh && vscode.workspace.getConfiguration(DBProjectConfigurationKey)[NetCoreDowngradeDoNotAskAgainKey] !== true) {
+				void this.showDowngradeDialog();
 			}
 			return false;
 		}
@@ -78,6 +82,15 @@ export class NetCoreTool extends ShellExecutionHelper {
 		} else if (result === DoNotAskAgain) {
 			const config = vscode.workspace.getConfiguration(DBProjectConfigurationKey);
 			await config.update(NetCoreDoNotAskAgainKey, true, vscode.ConfigurationTarget.Global);
+		}
+	}
+
+	public async showDowngradeDialog(): Promise<void> {
+		let result = await vscode.window.showErrorMessage(NetCoreVersionDowngradeConfirmation(this.netCoreSdkInstalledVersion!), DoNotAskAgain);
+
+		if (result === DoNotAskAgain) {
+			const config = vscode.workspace.getConfiguration(DBProjectConfigurationKey);
+			await config.update(NetCoreDowngradeDoNotAskAgainKey, true, vscode.ConfigurationTarget.Global);
 		}
 	}
 
@@ -123,8 +136,8 @@ export class NetCoreTool extends ShellExecutionHelper {
 	}
 
 	/**
-	 * This function checks if the installed dotnet version is between minSupportedNetCoreVersion (inclusive) and maxSupportedNetCoreVersion (exclusive).
-	 * When maxSupportedNetCoreVersion is not set, the latest dotnet version is assumed to be supported and only the min version is checked.
+	 * This function checks if the installed dotnet version is between minSupportedNetCoreVersion (inclusive) and maxSupportedNetCoreVersionCutoff (exclusive).
+	 * When maxSupportedNetCoreVersionCutoff is not set, the latest dotnet version is assumed to be supported and only the min version is checked.
 	 * Returns: True if installed dotnet version is supported, false otherwise.
 	 * 			Undefined if dotnet isn't installed.
 	 */
@@ -132,7 +145,7 @@ export class NetCoreTool extends ShellExecutionHelper {
 		try {
 			const spawn = child_process.spawn;
 			let child: child_process.ChildProcessWithoutNullStreams;
-			let isSupported: boolean | undefined = undefined;
+			let installState: netCoreInstallState = netCoreInstallState.netCoreVersionSupported;
 			const stdoutBuffers: Buffer[] = [];
 
 			child = spawn('dotnet --version', [], {
@@ -148,13 +161,19 @@ export class NetCoreTool extends ShellExecutionHelper {
 					try {
 						// minSupportedDotnetVersion <= supported version < maxSupportedDotnetVersion
 						if (semver.gte(this.netCoreSdkInstalledVersion, minSupportedNetCoreVersion)) {
-							if (maxSupportedNetCoreVersion) {
-								isSupported = semver.lt(this.netCoreSdkInstalledVersion, maxSupportedNetCoreVersion);
+							// If maxSupportedNetCoreVersionCutoff is not set, the latest .NET version is allowed
+							if (maxSupportedNetCoreVersionCutoff) {
+								if (semver.lt(this.netCoreSdkInstalledVersion, maxSupportedNetCoreVersionCutoff)) {
+									installState = netCoreInstallState.netCoreVersionSupported;
+								} else {
+									installState = netCoreInstallState.netCoreVersionTooHigh;
+								}
 							} else {
-								isSupported = true;		// maxSupportedNetCoreVersion is latest available
+								installState = netCoreInstallState.netCoreVersionSupported;
 							}
 						} else {
-							isSupported = false;
+							// .NET version is too low
+							installState = netCoreInstallState.netCoreVersionNotSupported;
 						}
 						resolve({ stdout: this.netCoreSdkInstalledVersion });
 					} catch (err) {
@@ -169,13 +188,8 @@ export class NetCoreTool extends ShellExecutionHelper {
 				});
 			});
 
-			if (isSupported) {
-				this.netCoreInstallState = netCoreInstallState.netCoreVersionSupported;
-			} else {
-				this.netCoreInstallState = netCoreInstallState.netCoreVersionNotSupported;
-			}
-
-			return isSupported;
+			this.netCoreInstallState = installState;
+			return installState === netCoreInstallState.netCoreVersionSupported;
 		} catch (err) {
 			console.log(err);
 			this.netCoreInstallState = netCoreInstallState.netCoreNotPresent;
