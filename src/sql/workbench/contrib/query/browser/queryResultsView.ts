@@ -25,6 +25,7 @@ import { URI } from 'vs/base/common/uri';
 import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { ILogService } from 'vs/platform/log/common/log';
+import { TextResultsMessagePanel } from 'sql/workbench/contrib/query/browser/textResultsMessagePanel';
 
 class MessagesView extends Disposable implements IPanelView {
 	private messagePanel: MessagePanel;
@@ -32,7 +33,7 @@ class MessagesView extends Disposable implements IPanelView {
 
 	constructor(private instantiationService: IInstantiationService) {
 		super();
-		this.messagePanel = this._register(this.instantiationService.createInstance(MessagePanel));
+		this.messagePanel = this._register(this.instantiationService.createInstance(TextResultsMessagePanel));
 		this.messagePanel.render(this.container);
 	}
 
@@ -112,6 +113,7 @@ class ResultsView extends Disposable implements IPanelView {
 		this.gridPanel.state = val;
 	}
 }
+
 class ResultsTab implements IPanelTab {
 	public readonly title = nls.localize('resultsTabTitle', "Results");
 	public readonly identifier = 'resultsTab';

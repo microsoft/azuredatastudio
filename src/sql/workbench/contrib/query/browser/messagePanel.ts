@@ -88,15 +88,15 @@ class IdentityProvider implements IIdentityProvider<IResultMessageIntern> {
 }
 
 export class MessagePanel extends Disposable {
-	private model = new Model();
+	protected model = new Model();
 	private container = $('.message-tree');
 	private styleElement = createStyleSheet(this.container);
 
-	private queryRunnerDisposables = this._register(new DisposableStore());
-	private _treeStates = new Map<string, IDataTreeViewState>();
-	private currenturi: string;
+	protected queryRunnerDisposables = this._register(new DisposableStore());
+	protected _treeStates = new Map<string, IDataTreeViewState>();
+	protected currenturi: string;
 
-	private tree: WorkbenchDataTree<Model, IResultMessageIntern, FuzzyScore>;
+	protected tree: WorkbenchDataTree<Model, IResultMessageIntern, FuzzyScore>;
 
 	constructor(
 		@IInstantiationService instantiationService: IInstantiationService,
@@ -104,7 +104,7 @@ export class MessagePanel extends Disposable {
 		@IContextMenuService private readonly contextMenuService: IContextMenuService,
 		@IClipboardService private readonly clipboardService: IClipboardService,
 		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService,
-		@IConfigurationService private configurationService: IConfigurationService
+		@IConfigurationService protected configurationService: IConfigurationService
 	) {
 		super();
 		const wordWrap = this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').messages.wordwrap;
@@ -225,7 +225,7 @@ export class MessagePanel extends Disposable {
 		}
 	}
 
-	private reset() {
+	protected reset() {
 		this.model.messages = [];
 		this.model.totalExecuteMessage = undefined;
 		this.tree.updateChildren();

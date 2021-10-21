@@ -879,7 +879,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	}
 }
 
-class GridTable<T> extends GridTableBase<T> {
+export class GridTable<T> extends GridTableBase<T> {
 	private _gridDataProvider: IGridDataProvider;
 	constructor(
 		private _runner: QueryRunner,
