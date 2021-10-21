@@ -11,7 +11,7 @@ import * as semver from 'semver';
 import { isNullOrUndefined } from 'util';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { DoNotAskAgain, Install, NetCoreInstallationConfirmation, NetCoreSupportedVersionInstallationConfirmation, NetCoreVersionDowngradeConfirmation, UpdateNetCoreLocation } from '../common/constants';
+import { DoNotAskAgain, DoNotShowAgain, Install, NetCoreInstallationConfirmation, NetCoreSupportedVersionInstallationConfirmation, NetCoreVersionDowngradeConfirmation, UpdateNetCoreLocation } from '../common/constants';
 import * as utils from '../common/utils';
 import { ShellCommandOptions, ShellExecutionHelper } from './shellExecutionHelper';
 const localize = nls.loadMessageBundle();
@@ -19,7 +19,7 @@ const localize = nls.loadMessageBundle();
 export const DBProjectConfigurationKey: string = 'sqlDatabaseProjects';
 export const NetCoreInstallLocationKey: string = 'netCoreSDKLocation';
 export const NetCoreDoNotAskAgainKey: string = 'netCoreDoNotAsk';
-export const NetCoreDowngradeDoNotAskAgainKey: string = 'netCoreDowngradeDoNotAsk';
+export const NetCoreDowngradeDoNotShowAgainKey: string = 'netCoreDowngradeDoNotShow';
 export const NetCoreNonWindowsDefaultPath = '/usr/local/share';
 export const winPlatform: string = 'win32';
 export const macPlatform: string = 'darwin';
@@ -51,7 +51,7 @@ export class NetCoreTool extends ShellExecutionHelper {
 		if ((!this.isNetCoreInstallationPresent || !await this.isNetCoreVersionSupported())) {
 			if (this.netCoreInstallState === netCoreInstallState.netCoreVersionSupported && vscode.workspace.getConfiguration(DBProjectConfigurationKey)[NetCoreDoNotAskAgainKey] !== true) {
 				void this.showInstallDialog();		// Removing await so that Build and extension load process doesn't wait on user input
-			} else if (this.netCoreInstallState === netCoreInstallState.netCoreVersionTooHigh && vscode.workspace.getConfiguration(DBProjectConfigurationKey)[NetCoreDowngradeDoNotAskAgainKey] !== true) {
+			} else if (this.netCoreInstallState === netCoreInstallState.netCoreVersionTooHigh && vscode.workspace.getConfiguration(DBProjectConfigurationKey)[NetCoreDowngradeDoNotShowAgainKey] !== true) {
 				void this.showDowngradeDialog();
 			}
 			return false;
@@ -86,11 +86,11 @@ export class NetCoreTool extends ShellExecutionHelper {
 	}
 
 	public async showDowngradeDialog(): Promise<void> {
-		let result = await vscode.window.showErrorMessage(NetCoreVersionDowngradeConfirmation(this.netCoreSdkInstalledVersion!), DoNotAskAgain);
+		const result = await vscode.window.showErrorMessage(NetCoreVersionDowngradeConfirmation(this.netCoreSdkInstalledVersion!), DoNotShowAgain);
 
-		if (result === DoNotAskAgain) {
+		if (result === DoNotShowAgain) {
 			const config = vscode.workspace.getConfiguration(DBProjectConfigurationKey);
-			await config.update(NetCoreDowngradeDoNotAskAgainKey, true, vscode.ConfigurationTarget.Global);
+			await config.update(NetCoreDowngradeDoNotShowAgainKey, true, vscode.ConfigurationTarget.Global);
 		}
 	}
 
@@ -205,6 +205,8 @@ export class NetCoreTool extends ShellExecutionHelper {
 		if (!(await this.findOrInstallNetCore())) {
 			if (this.netCoreInstallState === netCoreInstallState.netCoreNotPresent) {
 				throw new DotNetError(NetCoreInstallationConfirmation);
+			} else if (this.netCoreInstallState === netCoreInstallState.netCoreVersionTooHigh && vscode.workspace.getConfiguration(DBProjectConfigurationKey)[NetCoreDowngradeDoNotShowAgainKey] === true) {
+				// Assume user has used global.json to override SDK version and proceed with build as is
 			} else {
 				throw new DotNetError(NetCoreSupportedVersionInstallationConfirmation(this.netCoreSdkInstalledVersion!));
 			}
