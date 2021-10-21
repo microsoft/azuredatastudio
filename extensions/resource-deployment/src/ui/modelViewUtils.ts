@@ -473,9 +473,8 @@ async function hookUpValueProviders(context: WizardPageContext): Promise<void> {
 				const provider = await valueProviderService.getValueProvider(field.valueProvider.providerId);
 
 				let targetComponentLabelToComponent: { [label: string]: InputComponentInfo<InputComponent>; } = {};
-				let targetComponentLabelToValue: { [label: string]: InputValueType; } = {};
 
-				field.valueProvider.triggerFields.forEach(async (triggerField) => {
+				field.valueProvider.triggerFields.forEach((triggerField) => {
 					const targetComponent = context.inputComponents[triggerField];
 					if (!targetComponent) {
 						console.error(`Could not find target component ${triggerField} when hooking up value providers for ${field.label}`);
@@ -486,10 +485,11 @@ async function hookUpValueProviders(context: WizardPageContext): Promise<void> {
 
 				// If one triggerfield changes value, update the new field value.
 				const updateFields = async () => {
+					let targetComponentLabelToValue: { [label: string]: InputValueType; } = {};
 					for (let label in targetComponentLabelToComponent) {
 						targetComponentLabelToValue[label] = await targetComponentLabelToComponent[label].getValue();
 					}
-					let newFieldValue = await provider.getValue(targetComponentLabelToValue ?? {});
+					let newFieldValue = await provider.getValue(targetComponentLabelToValue);
 					fieldComponent.setValue(newFieldValue);
 				};
 

@@ -90,7 +90,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<arc.IE
 	context.subscriptions.push(rdApi.registerValueProvider({
 		id: 'params-to-estimated-cost',
 		getValue: async (mapping: { [key: string]: rd.InputValueType }) => {
-			return pricing.total(mapping).toString() + ' USD';
+			return pricing.total(mapping).toString() + ' ' + loc.USD;
 		}
 	}));
 

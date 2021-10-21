@@ -5,7 +5,6 @@
 declare module 'resource-deployment' {
 	import * as azdata from 'azdata';
 	import * as vscode from 'vscode';
-	import * as arc from 'arc';
 
 	export const enum ErrorType {
 		userCancelled,
@@ -27,6 +26,10 @@ declare module 'resource-deployment' {
 
 	export type InputValueType = string | number | boolean | undefined;
 
+	/**
+	 * Gets a calculated value based on the given input values.
+	 * @param triggerValues A map of the trigger field names and their current values specified in the valueProvider field info
+	*/
 	export interface IValueProvider {
 		readonly id: string,
 		getValue(triggerValues: string | {[key: string]: InputValueType}): Promise<InputValueType>;
