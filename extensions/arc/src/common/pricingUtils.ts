@@ -6,31 +6,31 @@
 import { InputValueType } from 'resource-deployment';
 import * as loc from '../localizedConstants';
 
-class SqlManagedInstanceGeneralPurpose {
-	public static tierName: string = loc.generalPurposeLabel;
-	public static basePricePerCore: number = 80;
-	public static licenseIncludedPricePerCore: number = 153;
-	public static maxMemorySize: number = 128;
-	public static maxVCores: number = 24;
+export const SqlManagedInstanceGeneralPurpose = {
+	tierName: loc.generalPurposeLabel,
+	basePricePerCore: 80,
+	licenseIncludedPricePerCore: 153,
+	maxMemorySize: 128,
+	maxVCores: 24,
 
-	public static replicaOptions = [
+	replicaOptions: [
 		{
 			text: loc.replicaOne,
 			value: 1,
 		}
-	];
+	],
 
-	public static defaultReplicaValue = 1;
-}
+	defaultReplicaValue: 1
+};
 
-class SqlManagedInstanceBusinessCritical {
-	public static tierName: string = loc.businessCriticalLabel;
+const SqlManagedInstanceBusinessCritical = {
+	tierName: loc.businessCriticalLabel,
 
 	// Set to real values when BC is ready
-	public static basePricePerCore: number = 0;
-	public static licenseIncludedPricePerCore: number = 0;
+	basePricePerCore: 0,
+	licenseIncludedPricePerCore: 0,
 
-	public static replicaOptions = [
+	replicaOptions: [
 		{
 			text: loc.replicaTwo,
 			value: 2,
@@ -39,10 +39,10 @@ class SqlManagedInstanceBusinessCritical {
 			text: loc.replicaThree,
 			value: 3,
 		}
-	];
+	],
 
-	public static defaultReplicaValue = 3;
-}
+	defaultReplicaValue: 3
+};
 
 export const SqlManagedInstancePricingLink: string = 'https://aka.ms/ArcSQLBilling';
 

@@ -495,9 +495,9 @@ async function hookUpValueProviders(context: WizardPageContext): Promise<void> {
 
 				// Set the onValueChanged behavior for each component
 				for (let label in targetComponentLabelToComponent) {
-					targetComponentLabelToComponent[label].onValueChanged(() => {
+					context.onNewDisposableCreated(targetComponentLabelToComponent[label].onValueChanged(() => {
 						updateFields();
-					});
+					}));
 				}
 				await updateFields();
 			}
