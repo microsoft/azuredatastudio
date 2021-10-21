@@ -1,8 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file original="src/sql/base/browser/ui/designer/designer" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="designer.loadingDesigner">
+      <source xml:lang="en">Loading designer...</source>
+    </trans-unit>
+    <trans-unit id="designer.loadingDesignerCompleted">
+      <source xml:lang="en">Loading designer completed</source>
+    </trans-unit>
     <trans-unit id="designer.newRowText">
       <source xml:lang="en">Add New</source>
+    </trans-unit>
+    <trans-unit id="designer.processingChanges">
+      <source xml:lang="en">Processing changes...</source>
+    </trans-unit>
+    <trans-unit id="designer.processingChangesCompleted">
+      <source xml:lang="en">Processing changes completed</source>
     </trans-unit>
     <trans-unit id="designer.removeRowText">
       <source xml:lang="en">Remove</source>
@@ -19,6 +31,14 @@
       <source xml:lang="en">Properties - {0} {1}</source>
       <note>{0} is the place holder for object type
 {1} is the place holder for object name</note>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/base/browser/ui/loadingSpinner/loadingSpinner" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="loadingCompletedMessage">
+      <source xml:lang="en">Loading completed</source>
+    </trans-unit>
+    <trans-unit id="loadingMessage">
+      <source xml:lang="en">Loading</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/base/browser/ui/loadingSpinner/loadingSpinner.component" source-language="en" datatype="plaintext"><body>
@@ -345,6 +365,9 @@
     </trans-unit>
     <trans-unit id="calloutDialogShadowColor">
       <source xml:lang="en">Callout dialog box shadow color.</source>
+    </trans-unit>
+    <trans-unit id="designer.paneSeparator">
+      <source xml:lang="en">The pane separator color.</source>
     </trans-unit>
     <trans-unit id="extensionPackGradientColorOne">
       <source xml:lang="en">The top color for the extension pack gradient</source>

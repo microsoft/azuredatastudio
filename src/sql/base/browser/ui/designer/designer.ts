@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { DesignerComponentInput, DesignerEditType, DesignerTab, DesignerEdit, DesignerEditIdentifier, DesignerData, DesignerDataPropertyInfo, DesignerTableComponentRowData, DesignerTableProperties, InputBoxProperties, DropDownProperties, CheckBoxProperties, DesignerComponentTypeName } from 'sql/base/browser/ui/designer/interfaces';
+import { DesignerComponentInput, DesignerEditType, DesignerTab, DesignerEdit, DesignerEditIdentifier, DesignerViewModel, DesignerDataPropertyInfo, DesignerTableComponentRowData, DesignerTableProperties, InputBoxProperties, DropDownProperties, CheckBoxProperties, DesignerComponentTypeName } from 'sql/base/browser/ui/designer/interfaces';
 import { IPanelTab, ITabbedPanelStyles, TabbedPanel } from 'sql/base/browser/ui/panel/panel';
 import * as DOM from 'vs/base/browser/dom';
 import { Event } from 'vs/base/common/event';
@@ -26,6 +26,8 @@ import { DesignerPropertiesPane, PropertiesPaneObjectContext } from 'sql/base/br
 import { Button, IButtonStyles } from 'sql/base/browser/ui/button/button';
 import { ButtonColumn } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
 import { Codicon } from 'vs/base/common/codicons';
+import { Color } from 'vs/base/common/color';
+import { LoadingSpinner } from 'sql/base/browser/ui/loadingSpinner/loadingSpinner';
 
 export interface IDesignerStyle {
 	tabbedPanelStyles?: ITabbedPanelStyles;
@@ -34,14 +36,16 @@ export interface IDesignerStyle {
 	selectBoxStyles?: ISelectBoxStyles;
 	checkboxStyles?: ICheckboxStyles;
 	buttonStyles?: IButtonStyles;
+	paneSeparator?: Color;
 }
 
 export type DesignerUIComponent = InputBox | Checkbox | Table<Slick.SlickData> | SelectBox;
 
 export type CreateComponentFunc = (container: HTMLElement, component: DesignerDataPropertyInfo, editIdentifier: DesignerEditIdentifier) => DesignerUIComponent;
-export type SetComponentValueFunc = (definition: DesignerDataPropertyInfo, component: DesignerUIComponent, data: DesignerData) => void;
+export type SetComponentValueFunc = (definition: DesignerDataPropertyInfo, component: DesignerUIComponent, data: DesignerViewModel) => void;
 
 export class Designer extends Disposable implements IThemable {
+	private _loadingSpinner: LoadingSpinner;
 	private _horizontalSplitViewContainer: HTMLElement;
 	private _verticalSplitViewContainer: HTMLElement;
 	private _tabbedPanelContainer: HTMLElement;
@@ -87,6 +91,7 @@ export class Designer extends Disposable implements IThemable {
 				}
 			}, this._contextViewProvider
 		);
+		this._loadingSpinner = new LoadingSpinner(this._container, { showText: true, fullSize: true });
 		this._verticalSplitViewContainer = DOM.$('.designer-component');
 		this._horizontalSplitViewContainer = DOM.$('.container');
 		this._contentContainer = DOM.$('.content-container');
@@ -138,8 +143,8 @@ export class Designer extends Disposable implements IThemable {
 
 		this._propertiesPane = new DesignerPropertiesPane(this._propertiesPaneContainer, (container, component, identifier) => {
 			return this.createComponent(container, component, identifier, false, false);
-		}, (definition, component, data) => {
-			this.setComponentValue(definition, component, data);
+		}, (definition, component, viewModel) => {
+			this.setComponentValue(definition, component, viewModel);
 		}, (component) => {
 			this.styleComponent(component);
 		});
@@ -173,11 +178,11 @@ export class Designer extends Disposable implements IThemable {
 		});
 		this._propertiesPane.style();
 		this._verticalSplitView.style({
-			separatorBorder: styles.selectBoxStyles.selectBorder
+			separatorBorder: styles.paneSeparator
 		});
 
 		this._horizontalSplitView.style({
-			separatorBorder: styles.selectBoxStyles.selectBorder
+			separatorBorder: styles.paneSeparator
 		});
 
 		this._buttons.forEach((button) => {
@@ -199,7 +204,10 @@ export class Designer extends Disposable implements IThemable {
 	private async initializeDesignerView(): Promise<void> {
 		this._propertiesPane.clear();
 		DOM.clearNode(this._topContentContainer);
+		// For initialization, we would want to show the loading indicator immediately.
+		const handle = this.startLoading(localize('designer.loadingDesigner', "Loading designer..."), 0);
 		const view = await this._input.getView();
+		this.stopLoading(handle, localize('designer.loadingDesignerCompleted', "Loading designer completed"));
 		if (view.components) {
 			view.components.forEach(component => {
 				this.createComponent(this._topContentContainer, component, component.propertyName, true, true);
@@ -218,45 +226,45 @@ export class Designer extends Disposable implements IThemable {
 	}
 
 	private async updatePropertiesPane(newContext: PropertiesPaneObjectContext): Promise<void> {
-		const data = await this._input.getData();
+		const viewModel = await this._input.getViewModel();
 		let type: string;
 		let components: DesignerDataPropertyInfo[];
-		let inputData: DesignerData;
+		let inputViewModel: DesignerViewModel;
 		let context: PropertiesPaneObjectContext;
 		if (newContext !== 'root') {
 			context = newContext;
-			const tableData = data[newContext.parentProperty] as DesignerTableProperties;
+			const tableData = viewModel[newContext.parentProperty] as DesignerTableProperties;
 			const tableProperties = this._componentMap.get(newContext.parentProperty).defintion.componentProperties as DesignerTableProperties;
-			inputData = tableData.data[newContext.index] as DesignerData;
+			inputViewModel = tableData.data[newContext.index] as DesignerViewModel;
 			components = tableProperties.itemProperties;
 			type = tableProperties.objectTypeDisplayName;
 		}
 
-		if (!inputData) {
+		if (!inputViewModel) {
 			context = 'root';
 			components = [];
 			this._componentMap.forEach(value => {
 				components.push(value.defintion);
 			});
 			type = this._input.objectTypeDisplayName;
-			inputData = data;
+			inputViewModel = viewModel;
 		}
 
-		if (inputData) {
+		if (inputViewModel) {
 			this._propertiesPane.show({
 				context: context,
 				type: type,
 				components: components,
-				data: inputData
+				viewModel: inputViewModel
 			});
 		}
 	}
 
 	private async updateComponentValues(): Promise<void> {
-		const data = await this._input.getData();
+		const viewModel = await this._input.getViewModel();
 		// data[ScriptPropertyName] -- todo- set the script editor
 		this._componentMap.forEach((value) => {
-			this.setComponentValue(value.defintion, value.component, data);
+			this.setComponentValue(value.defintion, value.component, viewModel);
 		});
 		await this.updatePropertiesPane(this._propertiesPane.context ?? 'root');
 	}
@@ -266,13 +274,15 @@ export class Designer extends Disposable implements IThemable {
 			return;
 		}
 		await this.applyEdit(edit);
+		const handle = this.startLoading(localize('designer.processingChanges', "Processing changes..."));
 		const result = await this._input.processEdit(edit);
+		this.stopLoading(handle, localize('designer.processingChangesCompleted', "Processing changes completed"));
 		if (result.isValid) {
 			this._supressEditProcessing = true;
 			await this.updateComponentValues();
 			if (edit.type === DesignerEditType.Add) {
 				// Move focus to the first cell of the newly added row.
-				const data = await this._input.getData();
+				const data = await this._input.getViewModel();
 				const propertyName = edit.property as string;
 				const tableData = data[propertyName] as DesignerTableProperties;
 				const table = this._componentMap.get(propertyName).component as Table<Slick.SlickData>;
@@ -285,18 +295,24 @@ export class Designer extends Disposable implements IThemable {
 	}
 
 	private async applyEdit(edit: DesignerEdit): Promise<void> {
-		const data = await this._input.getData();
+		const viewModel = await this._input.getViewModel();
 		switch (edit.type) {
 			case DesignerEditType.Update:
 				if (typeof edit.property === 'string') {
 					// if the type of the property is string then the property is a top level property
-					const componentData = data[edit.property];
+					if (!viewModel[edit.property]) {
+						viewModel[edit.property] = {};
+					}
+					const componentData = viewModel[edit.property];
 					const componentType = this._componentMap.get(edit.property).defintion.componentType;
 					this.setComponentData(componentType, componentData, edit.value);
 				} else {
 					const columnPropertyName = edit.property.property;
 					const tableInfo = this._componentMap.get(edit.property.parentProperty).defintion.componentProperties as DesignerTableProperties;
-					const tableProperties = data[edit.property.parentProperty] as DesignerTableProperties;
+					const tableProperties = viewModel[edit.property.parentProperty] as DesignerTableProperties;
+					if (!tableProperties.data[edit.property.index][columnPropertyName]) {
+						tableProperties.data[edit.property.index][columnPropertyName] = {};
+					}
 					const componentData = tableProperties.data[edit.property.index][columnPropertyName];
 					const itemProperty = tableInfo.itemProperties.find(property => property.propertyName === columnPropertyName);
 					if (itemProperty) {
@@ -334,19 +350,23 @@ export class Designer extends Disposable implements IThemable {
 		};
 	}
 
-	private setComponentValue(definition: DesignerDataPropertyInfo, component: DesignerUIComponent, data: DesignerData): void {
+	private setComponentValue(definition: DesignerDataPropertyInfo, component: DesignerUIComponent, viewModel: DesignerViewModel): void {
+		// Skip the property if it is not in the data model
+		if (!viewModel[definition.propertyName]) {
+			return;
+		}
 		this._supressEditProcessing = true;
 		switch (definition.componentType) {
 			case 'input':
 				const input = component as InputBox;
-				const inputData = data[definition.propertyName] as InputBoxProperties;
+				const inputData = viewModel[definition.propertyName] as InputBoxProperties;
 				input.setEnabled(inputData.enabled ?? true);
 				input.value = inputData.value?.toString() ?? '';
 				break;
 			case 'table':
 				const table = component as Table<Slick.SlickData>;
 				const tableDataView = table.getData() as TableDataView<Slick.SlickData>;
-				const newData = (data[definition.propertyName] as DesignerTableProperties).data;
+				const newData = (viewModel[definition.propertyName] as DesignerTableProperties).data;
 				let activeCell: Slick.Cell;
 				if (table.container.contains(document.activeElement)) {
 					// Note down the current active cell if the focus is currently in the table
@@ -362,7 +382,7 @@ export class Designer extends Disposable implements IThemable {
 				break;
 			case 'checkbox':
 				const checkbox = component as Checkbox;
-				const checkboxData = data[definition.propertyName] as CheckBoxProperties;
+				const checkboxData = viewModel[definition.propertyName] as CheckBoxProperties;
 				if (checkboxData.enabled === false) {
 					checkbox.disable();
 				} else {
@@ -373,7 +393,7 @@ export class Designer extends Disposable implements IThemable {
 			case 'dropdown':
 				const dropdown = component as SelectBox;
 				const defaultDropdownData = definition.componentProperties as DropDownProperties;
-				const dropdownData = data[definition.propertyName] as DropDownProperties;
+				const dropdownData = viewModel[definition.propertyName] as DropDownProperties;
 				if (dropdownData.enabled === false) {
 					dropdown.disable();
 				} else {
@@ -403,8 +423,10 @@ export class Designer extends Disposable implements IThemable {
 					ariaLabel: inputProperties.title,
 					type: inputProperties.inputType,
 				});
-				input.onDidChange(async (newValue) => {
-					await this.handleEdit({ type: DesignerEditType.Update, property: editIdentifier, value: newValue });
+				input.onLoseFocus(async (args) => {
+					if (args.hasChanged) {
+						await this.handleEdit({ type: DesignerEditType.Update, property: editIdentifier, value: args.value });
+					}
 				});
 				if (setWidth && inputProperties.width !== undefined) {
 					input.width = inputProperties.width as number;
@@ -519,8 +541,8 @@ export class Designer extends Disposable implements IThemable {
 					isFontIcon: true
 				});
 				deleteRowColumn.onClick(async (e) => {
-					const data = await this._input.getData();
-					(data[componentDefinition.propertyName] as DesignerTableProperties).data.splice(e.row, 1);
+					const viewModel = await this._input.getViewModel();
+					(viewModel[componentDefinition.propertyName] as DesignerTableProperties).data.splice(e.row, 1);
 					await this.handleEdit({
 						type: DesignerEditType.Remove,
 						property: componentDefinition.propertyName,
@@ -554,5 +576,23 @@ export class Designer extends Disposable implements IThemable {
 		}
 		this.styleComponent(component);
 		return component;
+	}
+
+	private startLoading(message: string, timeout: number = 500): any {
+		// To make the experience smoother, only show the loading indicator if the request is not returning in 500ms(default value).
+		return setTimeout(() => {
+			this._loadingSpinner.loadingMessage = message;
+			this._loadingSpinner.loading = true;
+			this._container.removeChild(this._verticalSplitViewContainer);
+		}, timeout);
+	}
+
+	private stopLoading(handle: any, message: string): void {
+		clearTimeout(handle);
+		if (this._loadingSpinner.loading) {
+			this._loadingSpinner.loadingCompletedMessage = message;
+			this._loadingSpinner.loading = false;
+			this._container.appendChild(this._verticalSplitViewContainer);
+		}
 	}
 }

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import { DoNotAskAgain, Install, nodeButNotAutorestFound, nodeNotFound } from '../common/constants';
+import { DoNotAskAgain, Install, nodeButNotAutorestFound, nodeNotFound, nodeButNotAutorestFoundPrompt, runViaNpx, installGlobally } from '../common/constants';
 import * as utils from '../common/utils';
 import * as semver from 'semver';
 import { DBProjectConfigurationKey } from './netcoreTool';
@@ -48,7 +48,15 @@ export class AutorestHelper extends ShellExecutionHelper {
 
 		if (await utils.detectCommandInstallation(npxCommand)) {
 			this._outputChannel.appendLine(nodeButNotAutorestFound);
-			return `${npxCommand} ${autorestCommand}`;
+
+			const response = await vscode.window.showInformationMessage(nodeButNotAutorestFoundPrompt, installGlobally, runViaNpx);
+
+			if (response === installGlobally) {
+				await this.runStreamedCommand('npm install autorest -g', this._outputChannel);
+				return autorestCommand;
+			} else if (response === runViaNpx) {
+				return `${npxCommand} ${autorestCommand}`;
+			}
 		}
 
 		return undefined;
@@ -63,7 +71,7 @@ export class AutorestHelper extends ShellExecutionHelper {
 	public async generateAutorestFiles(specPath: string, outputFolder: string): Promise<string | undefined> {
 		const commandExecutable = await this.detectInstallation();
 
-		if (commandExecutable === undefined) {
+		if (!commandExecutable) {
 			// unable to find autorest or npx
 
 			if (vscode.workspace.getConfiguration(DBProjectConfigurationKey)[nodejsDoNotAskAgainKey] !== true) {
@@ -101,6 +109,6 @@ export class AutorestHelper extends ShellExecutionHelper {
 	 */
 	public constructAutorestCommand(executable: string, specPath: string, outputFolder: string): string {
 		// TODO: should --clear-output-folder be included? We should always be writing to a folder created just for this, but potentially risky
-		return `${executable} --use:${autorestPackageName}@${this.autorestSqlPackageVersion} --input-file="${specPath}" --output-folder="${outputFolder}" --clear-output-folder`;
+		return `${executable} --use:${autorestPackageName}@${this.autorestSqlPackageVersion} --input-file="${specPath}" --output-folder="${outputFolder}" --clear-output-folder --verbose`;
 	}
 }

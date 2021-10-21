@@ -5,6 +5,7 @@
 
 import { AzureAccount } from 'azurecore';
 import * as nls from 'vscode-nls';
+import { EOL } from 'os';
 import { MigrationStatus } from '../models/migrationLocalStorage';
 import { MigrationSourceAuthenticationType } from '../models/stateMachine';
 const localize = nls.loadMessageBundle();
@@ -19,7 +20,7 @@ export function WIZARD_TITLE(instanceName: string): string {
 // Resume Migration Dialog
 export const RESUME_TITLE = localize('sql.migration.resume.title', "Run migration workflow again");
 export const START_MIGRATION = localize('sql.migration.resume.start', "Start with migration assessment again (recommended)");
-export const CONTINUE_MIGRATION = localize('sql.migration.resume.contine', "Continue last migration attempt...");
+export const CONTINUE_MIGRATION = localize('sql.migration.resume.continue', "Continue last migration attempt...");
 
 // Assessments Progress Page
 export const ASSESSMENT_BLOCKING_ISSUE_TITLE = localize('sql.migration.assessments.blocking.issue', 'This is a blocking issue that will prevent the database migration from succeeding.');
@@ -32,9 +33,21 @@ export const SKU_RECOMMENDATION_PAGE_TITLE = localize('sql.migration.wizard.sku.
 export const SKU_RECOMMENDATION_ALL_SUCCESSFUL = (databaseCount: number): string => {
 	return localize('sql.migration.wizard.sku.all', "Based on the assessment results, all {0} of your databases in an online state can be migrated to Azure SQL.", databaseCount);
 };
+export const SKU_RECOMMENDATION_ERROR = localize('sql.migration.wizard.sku.error', "An error occurred while assessing your databases.");
 export const SKU_RECOMMENDATION_ASSESSMENT_ERROR = (serverName: string): string => {
 	return localize('sql.migration.wizard.sku.assessment.error', "An error occurred while assessing the server '{0}'.", serverName);
 };
+export const SKU_RECOMMENDATION_ASSESSMENT_UNEXPECTED_ERROR = (serverName: string, error: Error): string => {
+	return localize(
+		'sql.migration.wizard.sku.assessment.unexpected.error',
+		"An unexpected error occurred while assessing the server '{0}'.{3}Message: {1}{3}stack: {2}",
+		serverName,
+		error.message,
+		error.stack,
+		EOL);
+};
+export const SKU_RECOMMENDATION_ASSESSMENT_ERROR_BYPASS = localize('sql.migration.wizard.sku.assessment.error.bypass', 'Check this option to skip assessment and continue the migration.');
+export const SKU_RECOMMENDATION_ASSESSMENT_ERROR_DETAIL = localize('sql.migration.wizard.sku.assessment.error.detail', '[There are no assessment results to validate readiness of your database migration. By checking this box, you acknowledge you want to proceed migrating your database to the desired Azure SQL target.]',);
 export const REFRESH_ASSESSMENT_BUTTON_LABEL = localize('sql.migration.refresh.assessment.button.label', "Refresh assessment");
 export const SKU_RECOMMENDATION_CHOOSE_A_TARGET = localize('sql.migration.wizard.sku.choose_a_target', "Choose your Azure SQL target");
 export const SKU_RECOMMENDATION_SUBSCRIPTION_INFO = localize('sql.migration.sku.subscription', "Subscription name for your Azure SQL target");
@@ -55,6 +68,9 @@ export const SELECT_TARGET_TO_CONTINUE = localize('sql.migration.select.target.t
 export const SELECT_DATABASE_TO_MIGRATE = localize('sql.migration.select.database.to.migrate', "Select the databases to migrate.");
 export const ASSESSMENT_COMPLETED = (serverName: string): string => {
 	return localize('sql.migration.generic.congratulations', "We have completed the assessment of your SQL Server instance '{0}'.", serverName);
+};
+export const ASSESSMENT_FAILED = (serverName: string): string => {
+	return localize('sql.migration.asessment.failed', "The assessment of your SQL Server instance '{0}' failed.", serverName);
 };
 export function ASSESSMENT_TILE(serverName: string): string {
 	return localize('sql.migration.assessment', "Assessment results for '{0}'", serverName);
@@ -170,13 +186,13 @@ export const DATABASE_MIGRATION_SERVICE_AUTHENTICATION_KEYS = localize('sql.migr
 export const CREATE_MIGRATION_SERVICE_TITLE = localize('sql.migration.services.dialog.title', "Create Azure Database Migration Service");
 export const MIGRATION_SERVICE_SUBSCRIPTION_INFO = localize('sql.migration.services.subscription', "Subscription name for your Azure Database Migration Service.");
 export const MIGRATION_SERVICE_LOCATION_INFO = localize('sql.migration.services.location', "Azure region for your Azure Database Migration Service. This should be the same region as your target Azure SQL.");
-export const MIGRATION_SERVICE_RESOURCE_GROUP_INFO = localize('sql.migration.services.resourcegroup', "Resource group for your Azure Database Migration Service.");
+export const MIGRATION_SERVICE_RESOURCE_GROUP_INFO = localize('sql.migration.services.resource.group', "Resource group for your Azure Database Migration Service.");
 export const MIGRATION_SERVICE_NAME_INFO = localize('sql.migration.services.name', "Azure Database Migration Service name.");
 export const MIGRATION_SERVICE_TARGET_INFO = localize('sql.migration.services.target', "Azure SQL target selected as default.");
 export const MIGRATION_SERVICE_DIALOG_DESCRIPTION = localize('sql.migration.services.container.description', "Enter the information below to add a new Azure Database Migration Service.");
 export const LOADING_MIGRATION_SERVICES = localize('sql.migration.service.container.loading.help', "Loading Migration Services");
 export const SERVICE_CONTAINER_HEADING = localize('sql.migration.service.container.heading', "Setup integration runtime");
-export const SERVICE_CONTAINER_DESCRIPTION1 = localize('sql.migration.service.container.container.description1', "Azure Database Migration Service leverages Azure Data Factory's self-hosted integration runtime to upload backups from on-premises network fie share to Azure.");
+export const SERVICE_CONTAINER_DESCRIPTION1 = localize('sql.migration.service.container.container.description1', "Azure Database Migration Service leverages Azure Data Factory's self-hosted integration runtime to upload backups from on-premises network file share to Azure.");
 export const SERVICE_CONTAINER_DESCRIPTION2 = localize('sql.migration.service.container.container.description2', "Follow the instructions below to setup self-hosted integration runtime.");
 export const SERVICE_STEP1 = localize('sql.migration.ir.setup.step1', "Step 1: {0}");
 export const SERVICE_STEP1_LINK = localize('sql.migration.option', "Download and install integration runtime");
@@ -227,7 +243,7 @@ export const COPY_THROUGHPUT_INFO = localize('sql.migration.copy.throughput.info
 export const WARNING = localize('sql.migration.warning', "Warning");
 export const ERROR = localize('sql.migration.error', "Error");
 export const LEARN_MORE = localize('sql.migration.learn.more', "Learn more");
-export const LEARN_MORE_ABOUT_PRE_REQS = localize('sql.migration.learn.more.pre.reqs', "Learn more about things you need before starting a migration.");
+export const LEARN_MORE_ABOUT_PRE_REQS = localize('sql.migration.learn.more.prerequisites', "Learn more about things you need before starting a migration.");
 export const SUBSCRIPTION = localize('sql.migration.subscription', "Subscription");
 export const STORAGE_ACCOUNT = localize('sql.migration.storage.account', "Storage account");
 export const RESOURCE_GROUP = localize('sql.migration.resourceGroups', "Resource group");
@@ -496,6 +512,8 @@ export const ISSUES_DETAILS = localize('sql.migration.issues.details', "Issue de
 export const SELECT_DB_PROMPT = localize('sql.migration.select.prompt', "Click on SQL Server instance or any of the databases on the left to view its details.");
 export const NO_ISSUES_FOUND_VM = localize('sql.migration.no.issues.vm', "No issues found for migrating to SQL Server on Azure Virtual Machine.");
 export const NO_ISSUES_FOUND_MI = localize('sql.migration.no.issues.mi', "No issues found for migrating to SQL Server on Azure SQL Managed Instance.");
+export const NO_RESULTS_AVAILABLE = localize('sql.migration.no.results', 'Assessment results are unavailable.');
+
 export function IMPACT_OBJECT_TYPE(objectType?: string): string {
 	return objectType ? localize('sql.migration.impact.object.type', "Type: {0}", objectType) : '';
 }
@@ -519,7 +537,14 @@ export const AUTHENTICATION_TYPE = localize('sql.migration.authentication.type',
 export const REFRESH_BUTTON_LABEL = localize('sql.migration.status.refresh.label', 'Refresh');
 
 // Saved Assessment Dialog
-
 export const NEXT_LABEL = localize('sql.migration.saved.assessment.next', "Next");
 export const CANCEL_LABEL = localize('sql.migration.saved.assessment.cancel', "Cancel");
 export const SAVED_ASSESSMENT_RESULT = localize('sql.migration.saved.assessment.result', "Saved assessment result");
+
+// Retry Migration
+export const MIGRATION_CANNOT_RETRY = localize('sql.migration.cannot.retry', 'Migration cannot be retried.');
+export const RETRY_MIGRATION = localize('sql.migration.retry.migration', "Retry migration");
+export const MIGRATION_RETRY_ERROR = localize('sql.migration.retry.migration.error', 'An error occurred while retrying the migration.');
+
+export const INVALID_OWNER_URI = localize('sql.migration.invalid.owner.uri.error', 'Cannot connect to the database due to invalid OwnerUri (Parameter \'OwnerUri\')');
+export const DATABASE_BACKUP_PAGE_LOAD_ERROR = localize('sql.migration.database.backup.load.error', 'An error occurred while accessing database details.');

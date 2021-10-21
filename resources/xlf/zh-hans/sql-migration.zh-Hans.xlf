@@ -51,12 +51,12 @@
         <target state="translated">正在进行评估</target>
       </trans-unit>
       <trans-unit id="sql.migration.assessment.in.progress.content">
-        <source xml:lang="en">We are assessing the databases in your SQL server instance {0} to identify the right Azure SQL target.
+        <source xml:lang="en">We are assessing the databases in your SQL Server instance {0} to identify the right Azure SQL target.
 
 This may take some time.</source>
-        <target state="translated">我们正在评估 SQL Server 实例 {0} 中的数据库，以标识正确的 Azure SQL 目标。
+        <target state="translated">我们正在评估 SQL Server 实例 {0} 中的数据库，以识别正确的 Azure SQL 目标。
 
- 这可能需要一些时间才能完成。</target>
+这可能需要一些时间才能完成。</target>
       </trans-unit>
       <trans-unit id="sql.migration.assessment.migration.warning">
         <source xml:lang="en">Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines.</source>
@@ -143,6 +143,10 @@ This may take some time.</source>
         <target state="translated">Blob 容器</target>
       </trans-unit>
       <trans-unit id="sql.migration.blob.resourceGroup.select">
+        <source xml:lang="en">Select a resource group.</source>
+        <target state="translated">选择资源组。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.blob.resourceGroup.select.prompt">
         <source xml:lang="en">Select a resource group value first.</source>
         <target state="translated">首先选择资源组值。</target>
       </trans-unit>
@@ -155,8 +159,8 @@ This may take some time.</source>
         <target state="translated">提供包含备份的 Azure 存储 Blob 容器。</target>
       </trans-unit>
       <trans-unit id="sql.migration.blob.storage.subscription.label">
-        <source xml:lang="en">Select the subscription that contains the storage account.</source>
-        <target state="translated">选择包含存储帐户的订阅。</target>
+        <source xml:lang="en">Subscription</source>
+        <target state="translated">订阅</target>
       </trans-unit>
       <trans-unit id="sql.migration.blob.storage.table.help">
         <source xml:lang="en">Enter target database name and select resource group, storage account and container for the selected source databases.</source>
@@ -461,6 +465,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.enter.your.sql.cred">
         <source xml:lang="en">Enter the credentials for the source SQL Server instance. These credentials will be used while migrating databases to Azure SQL.</source>
         <target state="translated">输入源 SQL Server 实例的凭据。将数据库迁移到 Azure SQL 时将使用这些凭据。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.error">
+        <source xml:lang="en">Error</source>
+        <target state="translated">错误</target>
       </trans-unit>
       <trans-unit id="sql.migration.failed">
         <source xml:lang="en">Migrations failed</source>
@@ -975,8 +983,8 @@ This may take some time.</source>
         <target state="translated">{0} 秒</target>
       </trans-unit>
       <trans-unit id="sql.migration.select.azure.mi">
-        <source xml:lang="en">Select your target Azure subscription and your target Azure SQL Managed Instance</source>
-        <target state="translated">选择目标 Azure 订阅和目标 Azure SQL 托管实例</target>
+        <source xml:lang="en">Select your target Azure subscription and your target Azure SQL Managed Instance.</source>
+        <target state="translated">选择目标 Azure 订阅和目标 Azure SQL 托管实例。</target>
       </trans-unit>
       <trans-unit id="sql.migration.select.azure.vm">
         <source xml:lang="en">Select your target Azure Subscription and your target SQL Server on Azure Virtual Machine for your target.</source>
@@ -1365,6 +1373,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.view.select.button.label">
         <source xml:lang="en">View/Select</source>
         <target state="translated">查看/选择</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.warning">
+        <source xml:lang="en">Warning</source>
+        <target state="translated">警告</target>
       </trans-unit>
       <trans-unit id="sql.migration.warnings">
         <source xml:lang="en">Warnings</source>
