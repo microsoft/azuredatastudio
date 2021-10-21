@@ -197,6 +197,14 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		}));
 
 		await this._view.initializeModel(this._rootContainer);
+
+		if (this.hasSavedInfo()) {
+			if (this.migrationStateModel.savedInfo.migrationTargetType === MigrationTargetType.SQLMI) {
+				this.migrationStateModel._miDbs = this.migrationStateModel.savedInfo.databaseList;
+			} else {
+				this.migrationStateModel._vmDbs = this.migrationStateModel.savedInfo.databaseList;
+			}
+		}
 	}
 
 	private createStatusComponent(view: azdata.ModelView): azdata.TextComponent {
@@ -300,7 +308,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		}).component();
 
 		let serverName = '';
-		if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.serverName) {
+		if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.serverName)) {
 			serverName = this.migrationStateModel.serverName;
 		} else {
 			serverName = (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
@@ -505,7 +513,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			this.migrationStateModel._migrationDbs = miDbs;
 		} else {
 			this._viewAssessmentsHelperText.value = constants.SKU_RECOMMENDATION_VIEW_ASSESSMENT_VM;
-			if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.SKURecommendation) {
+			if ((this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.SKURecommendation)) {
 				this._databaseSelectedHelperText.value = constants.TOTAL_DATABASES_SELECTED(this.migrationStateModel.savedInfo.databaseList.length, this.migrationStateModel._databaseAssessment.length);
 			} else {
 				this._databaseSelectedHelperText.value = constants.TOTAL_DATABASES_SELECTED(vmDbs.length, this.migrationStateModel._databaseAssessment.length);
@@ -540,12 +548,12 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				await this.migrationStateModel.getDatabaseAssessments(MigrationTargetType.SQLMI);
 			}
 
-			const assessmentError = this.migrationStateModel._assessmentResults.assessmentError;
+			const assessmentError = this.migrationStateModel._assessmentResults?.assessmentError;
 			if (assessmentError) {
 				errors.push(`message: ${assessmentError.message}${EOL}stack: ${assessmentError.stack}`);
 			}
 			if (this.migrationStateModel?._assessmentResults?.errors?.length! > 0) {
-				errors.push(...this.migrationStateModel._assessmentResults.errors?.map(
+				errors.push(...this.migrationStateModel._assessmentResults?.errors?.map(
 					e => `message: ${e.message}${EOL}errorSummary: ${e.errorSummary}${EOL}possibleCauses: ${e.possibleCauses}${EOL}guidance: ${e.guidance}${EOL}errorId: ${e.errorId}`)!);
 			}
 
@@ -566,11 +574,11 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			} else {
 				this._assessmentStatusIcon.iconPath = IconPathHelper.completedMigration;
 				this._igComponent.value = constants.ASSESSMENT_COMPLETED(serverName);
-				this._detailsComponent.value = constants.SKU_RECOMMENDATION_ALL_SUCCESSFUL(this.migrationStateModel._assessmentResults.databaseAssessments.length);
+				this._detailsComponent.value = constants.SKU_RECOMMENDATION_ALL_SUCCESSFUL(this.migrationStateModel._assessmentResults?.databaseAssessments?.length);
 			}
 		}
 
-		if ((this.migrationStateModel.resumeAssessment) && this.migrationStateModel.savedInfo.closedPage >= Page.SKURecommendation) {
+		if (this.hasSavedInfo()) {
 			if (this.migrationStateModel.savedInfo.migrationTargetType) {
 				this._rbg.selectedCardId = this.migrationStateModel.savedInfo.migrationTargetType;
 				await this.refreshCardText();
@@ -602,9 +610,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		await this.assessmentGroupContainer.updateCssStyles({ 'display': display });
 		this.assessmentGroupContainer.display = display;
 
-		display = this._rbg.selectedCardId
+		display = (this._rbg.selectedCardId
 			&& (!failedAssessment || this._skipAssessmentCheckbox.checked)
-			&& this.migrationStateModel._migrationDbs.length > 0
+			&& this.migrationStateModel._migrationDbs.length > 0)
 			? 'inline'
 			: 'none';
 		await this._targetContainer.updateCssStyles({ 'display': display });
@@ -614,7 +622,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	}
 
 	private async populateSubscriptionDropdown(): Promise<void> {
-		if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.SKURecommendation) {
+		if (this.hasSavedInfo()) {
 			this.migrationStateModel._azureAccount = <azdata.Account>this.migrationStateModel.savedInfo.azureAccount;
 		}
 		if (!this.migrationStateModel._targetSubscription) {
@@ -628,9 +636,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				this._managedInstanceSubscriptionDropdown.loading = false;
 				this._resourceDropdown.loading = false;
 			}
-			if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= 2 && this._managedInstanceSubscriptionDropdown.values) {
-				this._managedInstanceSubscriptionDropdown.values.forEach((subscription, index) => {
-					if ((<azdata.CategoryValue>subscription).name === this.migrationStateModel.savedInfo?.subscription?.id) {
+			if (this.hasSavedInfo() && this._managedInstanceSubscriptionDropdown.values) {
+				this._managedInstanceSubscriptionDropdown.values!.forEach((subscription, index) => {
+					if ((<azdata.CategoryValue>subscription).name.toLowerCase() === this.migrationStateModel.savedInfo?.subscription?.id.toLowerCase()) {
 						selectDropDownIndex(this._managedInstanceSubscriptionDropdown, index);
 					}
 				});
@@ -645,9 +653,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this._azureLocationDropdown.loading = true;
 		try {
 			this._azureResourceGroupDropdown.values = await this.migrationStateModel.getAzureResourceGroupDropdownValues(this.migrationStateModel._targetSubscription);
-			if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= 2 && this._azureResourceGroupDropdown.values) {
+			if (this.hasSavedInfo() && this._azureResourceGroupDropdown.values) {
 				this._azureResourceGroupDropdown.values.forEach((resourceGroup, index) => {
-					if (resourceGroup.name === this.migrationStateModel.savedInfo?.resourceGroup?.id) {
+					if (resourceGroup.name.toLowerCase() === this.migrationStateModel.savedInfo?.resourceGroup?.id.toLowerCase()) {
 						selectDropDownIndex(this._azureResourceGroupDropdown, index);
 					}
 				});
@@ -655,7 +663,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				selectDropDownIndex(this._azureResourceGroupDropdown, 0);
 			}
 			this._azureLocationDropdown.values = await this.migrationStateModel.getAzureLocationDropdownValues(this.migrationStateModel._targetSubscription);
-			if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= 2 && this._azureLocationDropdown.values) {
+			if (this.hasSavedInfo() && this._azureLocationDropdown.values) {
 				this._azureLocationDropdown.values.forEach((location, index) => {
 					if (location.displayName === this.migrationStateModel.savedInfo?.location?.displayName) {
 						selectDropDownIndex(this._azureLocationDropdown, index);
@@ -690,9 +698,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 					this.migrationStateModel._location,
 					this.migrationStateModel._resourceGroup);
 			}
-			if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= 2 && this._resourceDropdown.values) {
+			if (this.hasSavedInfo() && this._resourceDropdown.values) {
 				this._resourceDropdown.values.forEach((resource, index) => {
-					if (resource.displayName === this.migrationStateModel.savedInfo?.targetServerInstance?.name) {
+					if (resource.displayName.toLowerCase() === this.migrationStateModel.savedInfo?.targetServerInstance?.name.toLowerCase()) {
 						selectDropDownIndex(this._resourceDropdown, index);
 					}
 				});
@@ -708,9 +716,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
-			if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.SKURecommendation) {
-				this.migrationStateModel._migrationDbs = this.migrationStateModel.savedInfo.databaseList;
-			}
 			const errors: string[] = [];
 			this.wizard.message = {
 				text: '',
@@ -785,8 +790,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this._targetContainer.display = (this.migrationStateModel._migrationDbs.length === 0) ? 'none' : 'inline';
 
 		if (this.migrationStateModel._assessmentResults) {
-			const dbCount = this.migrationStateModel._assessmentResults.databaseAssessments?.length;
-			const dbWithoutIssuesCount = this.migrationStateModel._assessmentResults.databaseAssessments?.filter(db => db.issues?.length === 0).length;
+			const dbCount = this.migrationStateModel._assessmentResults?.databaseAssessments?.length;
+			const dbWithoutIssuesCount = this.migrationStateModel._assessmentResults?.databaseAssessments?.filter(db => db.issues?.length === 0).length;
 			this._rbg.cards[0].descriptions[1].textValue = constants.CAN_BE_MIGRATED(dbWithoutIssuesCount, dbCount);
 			this._rbg.cards[1].descriptions[1].textValue = constants.CAN_BE_MIGRATED(dbCount, dbCount);
 
@@ -836,6 +841,10 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 		}).component();
 		return this._assessmentInfo;
+	}
+
+	private hasSavedInfo(): boolean {
+		return this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.SKURecommendation);
 	}
 }
 
