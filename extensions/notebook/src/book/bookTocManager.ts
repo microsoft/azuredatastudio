@@ -89,26 +89,26 @@ export class BookTocManager implements IBookTocManager {
 		let toc: JupyterBookSection[] = [];
 		for (const content of contents) {
 			try {
-				const contentStat = (await fs.promises.stat(path.join(directory, content)));
+				const contentStat = (await fs.promises.stat(path.posix.join(directory, content)));
 				const parsedFile = path.parse(content);
 				if (contentStat.isFile() && allowedFileExtensions.includes(parsedFile.ext)) {
-					let filePath = directory === rootDirectory ? path.posix.join(path.posix.sep, parsedFile.name) : path.posix.join(path.posix.sep, path.relative(rootDirectory, directory), parsedFile.name);
+					let filePath = directory === rootDirectory ? path.posix.join(path.posix.sep, parsedFile.name) : path.posix.join(path.posix.sep, path.posix.relative(rootDirectory, directory), parsedFile.name);
 					const section: JupyterBookSection = {
 						title: parsedFile.name,
 						file: filePath
 					};
 					toc.push(section);
 				} else if (contentStat.isDirectory()) {
-					let files = await fs.promises.readdir(path.join(directory, content));
+					let files = await fs.promises.readdir(path.posix.join(directory, content));
 					let initFile = this.getInitFile(files);
-					let filePath = directory === rootDirectory ? path.posix.join(path.posix.sep, parsedFile.name, initFile.name) : path.posix.join(path.posix.sep, path.relative(rootDirectory, directory), parsedFile.name, initFile.name);
+					let filePath = directory === rootDirectory ? path.posix.join(path.posix.sep, parsedFile.name, initFile.name) : path.posix.join(path.posix.sep, path.posix.relative(rootDirectory, directory), parsedFile.name, initFile.name);
 					let section: JupyterBookSection = {};
 					section = {
 						title: parsedFile.name,
 						file: filePath,
 						expand_sections: true,
 						numbered: false,
-						sections: await this.createTocFromDir(files, path.join(directory, content), rootDirectory)
+						sections: await this.createTocFromDir(files, path.posix.join(directory, content), rootDirectory)
 					};
 					toc.push(section);
 				}
