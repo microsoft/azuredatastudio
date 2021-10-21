@@ -45,6 +45,10 @@
             "type": "boolean",
             "description": "%sqlDatabaseProjects.netCoreDoNotAsk%"
           },
+          "sqlDatabaseProjects.netCoreDowngradeDoNotShow": {
+            "type": "boolean",
+            "description": "%sqlDatabaseProjects.netCoreDowngradeDoNotShow%"
+          },
           "sqlDatabaseProjects.nodejsDoNotAsk": {
             "type": "boolean",
             "description": "%sqlDatabaseProjects.nodejsDoNotAsk%"
