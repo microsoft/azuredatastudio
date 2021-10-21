@@ -38,7 +38,7 @@ export class RetryMigrationDialog {
 			selectedDatabases: [],
 
 			// SKURecommendation
-			databaseAssessment: [sourceDatabaseName],
+			databaseAssessment: [],
 			databaseList: [sourceDatabaseName],
 			migrationDatabases: [],
 			serverAssessment: null,

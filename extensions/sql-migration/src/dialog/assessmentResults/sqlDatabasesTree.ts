@@ -959,10 +959,10 @@ export class SqlDatabaseTree {
 			});
 		}
 		await this._instanceTable.setDataValues(instanceTableValues);
-		if ((this._model.resumeAssessment && this._model.savedInfo.closedPage >= Page.SKURecommendation)) {
+		if (this._model.resumeAssessment && this._model.savedInfo.closedPage >= Page.SKURecommendation && this._targetType === this._model.savedInfo.migrationTargetType) {
 			await this._databaseTable.setDataValues(this._model.savedInfo.migrationDatabases);
 		} else {
-			if (this._model.retryMigration) {
+			if (this._model.retryMigration && this._targetType === this._model.savedInfo.migrationTargetType) {
 				const sourceDatabaseName = this._model.savedInfo.databaseList[0];
 				const sourceDatabaseIndex = this._dbNames.indexOf(sourceDatabaseName);
 				this._databaseTableValues[sourceDatabaseIndex][0].value = true;
