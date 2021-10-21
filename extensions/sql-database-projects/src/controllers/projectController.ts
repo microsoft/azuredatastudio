@@ -834,7 +834,7 @@ export class ProjectsController {
 
 	public async selectAutorestSpecFile(): Promise<string | undefined> {
 		let quickpickSelection = await vscode.window.showQuickPick(
-			[constants.browseEllipsis],
+			[constants.browseEllipsisWithIcon],
 			{ title: constants.selectSpecFile, ignoreFocusOut: true });
 		if (!quickpickSelection) {
 			return;
