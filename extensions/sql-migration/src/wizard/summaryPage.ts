@@ -112,7 +112,7 @@ export class SummaryPage extends MigrationWizardPage {
 			]
 		);
 
-		if (this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE && this.migrationStateModel._nodeNames.length > 0) {
+		if (this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE && this.migrationStateModel._nodeNames?.length > 0) {
 			this._flexContainer.addItem(createInformationRow(this._view, constants.SHIR, this.migrationStateModel._nodeNames.join(', ')));
 		}
 	}
