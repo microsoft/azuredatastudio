@@ -637,7 +637,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						tailSource.splice(0, 1, partialSource);
 					}
 					//Remove the trailing empty line after the cursor
-					if (tailSource[0] === '\r\n') {
+					if (tailSource[0] === '\r\n' || tailSource[0] === '\n') {
 						tailSource.splice(0, 1);
 					}
 					tailCell.source = tailSource;
