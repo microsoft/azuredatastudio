@@ -721,11 +721,17 @@
     <trans-unit id="sqlDatabaseProjects.NetCoreSupportedVersionInstallationConfirmation">
       <source xml:lang="en">Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK supported version location in settings if already installed.</source>
     </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.NetCoreVersionDowngradeConfirmation">
+      <source xml:lang="en">Installed .NET SDK version {0} is newer than the currently supported versions. Project build will not work. Please install .NET Core SDK version 3.1 and include a global.json in the project folder specifying the SDK version to use. [More Information](https://docs.microsoft.com/dotnet/core/versions/selection)</source>
+    </trans-unit>
     <trans-unit id="sqlDatabaseProjects.UpdateNetCoreLocation">
       <source xml:lang="en">Update Location</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.doNotAskAgain">
       <source xml:lang="en">Don't Ask Again</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.doNotShowAgain">
+      <source xml:lang="en">Don't Show Again</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.outputChannel">
       <source xml:lang="en">Database Projects</source>
@@ -867,6 +873,9 @@
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.netCoreDoNotAsk">
       <source xml:lang="en">Whether to prompt the user to install .NET Core when not detected.</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.netCoreDowngradeDoNotShow">
+      <source xml:lang="en">Whether to prompt the user to set .NET SDK version when a newer unsupported version is detected.</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.netCoreInstallLocation">
       <source xml:lang="en">Full path to .NET Core SDK on the machine.</source>
