@@ -189,9 +189,8 @@ describe('BookTocManagerTests', function () {
 			const index = bookTocManager.tableofContents.findIndex(entry => entry.file === path.posix.join(path.posix.sep, subfolder, 'index'));
 			should(index).not.be.equal(-1, 'Should find a section with the Subfolder entry');
 			if (index !== -1) {
-				should(equalTOC(bookTocManager.tableofContents[index].sections, expectedSection)).be.true();
 				let subsection = bookTocManager.tableofContents[index].sections.find(entry => entry.file === path.posix.join(path.posix.sep, subfolder, subfolder2, 'notebook4'));
-				should(equalSections(subsection, expectedSection[3])).be.true('Should find a subsection with the subfolder inside the subfolder');
+				should(equalSections(subsection, expectedSection[3])).be.true('Should find a subsection with the subfolder2 inside the subfolder');
 			}
 		});
 	});
