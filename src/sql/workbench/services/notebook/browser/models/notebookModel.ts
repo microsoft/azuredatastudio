@@ -636,6 +636,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						partialSource = source.slice(tailRange.startLineNumber - 1, tailRange.startLineNumber)[0].slice(tailRange.startColumn - 1);
 						tailSource.splice(0, 1, partialSource);
 					}
+					//Remove the trailing empty line after the cursor
+					if (tailSource[0] === '\r\n') {
+						tailSource.splice(0, 1);
+					}
 					tailCell.source = tailSource;
 					tailCellIndex = newCellIndex + 1;
 					this.insertCell(tailCell, tailCellIndex);
