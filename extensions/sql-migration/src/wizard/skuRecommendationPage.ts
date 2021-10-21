@@ -561,7 +561,7 @@ errorId: ${e.errorId}
 		if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.SKURecommendation) {
 			this.migrationStateModel._azureAccount = <azdata.Account>this.migrationStateModel.savedInfo.azureAccount;
 		}
-		if (!this.migrationStateModel._targetSubscription) {
+		if (!this.migrationStateModel._targetSubscription || this.migrationStateModel.resumeAssessment) {
 			this._managedInstanceSubscriptionDropdown.loading = true;
 			this._resourceDropdown.loading = true;
 			try {

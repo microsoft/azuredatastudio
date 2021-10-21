@@ -6,9 +6,9 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { EOL } from 'os';
-import { getStorageAccountAccessKeys, SqlManagedInstance, SqlVMServer } from '../api/azure';
+import { getStorageAccountAccessKeys, SqlManagedInstance, SqlVMServer, Subscription } from '../api/azure';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { Blob, MigrationMode, MigrationSourceAuthenticationType, MigrationStateModel, MigrationTargetType, NetworkContainerType, Page, StateChangeEvent } from '../models/stateMachine';
+import { Blob, MigrationMode, MigrationSourceAuthenticationType, MigrationStateModel, MigrationTargetType, NetworkContainerType, NetworkShare, Page, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
@@ -283,7 +283,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}
 			return true;
 		}).component();
-		if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.MigrationMode) {
+		if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.DatabaseBackup) {
 			this._networkSharePath.value = this.migrationStateModel.savedInfo.networkShare?.networkShareLocation;
 		}
 		this._disposables.push(this._networkSharePath.onTextChanged(async (value) => {
@@ -760,6 +760,13 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
+		if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.DatabaseBackup) {
+			this.migrationStateModel._databaseBackup.networkContainerType = <NetworkContainerType>this.migrationStateModel.savedInfo.networkContainerType;
+			this.migrationStateModel._databaseBackup.networkShare = <NetworkShare>this.migrationStateModel.savedInfo.networkShare;
+			this.migrationStateModel._databaseBackup.subscription = <Subscription>this.migrationStateModel.savedInfo.targetSubscription;
+			this.migrationStateModel._databaseBackup.blobs = this.migrationStateModel.savedInfo.blobs;
+			this.migrationStateModel._targetDatabaseNames = this.migrationStateModel.savedInfo.targetDatabaseNames;
+		}
 		if (this.migrationStateModel.refreshDatabaseBackupPage) {
 			if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.DatabaseBackup) {
 				this.migrationStateModel._migrationDbs = this.migrationStateModel.savedInfo.databaseList;
@@ -771,9 +778,10 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				column.width = isOfflineMigration ? WIZARD_TABLE_COLUMN_WIDTH_SMALL : WIZARD_TABLE_COLUMN_WIDTH;
 			});
 
-			if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.MigrationMode) {
+			if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.DatabaseBackup) {
 				if (this.migrationStateModel.savedInfo.networkContainerType === NetworkContainerType.NETWORK_SHARE) {
 					this._networkShareButton.checked = true;
+					this.wizard.nextButton.enabled = true;
 				} else {
 					this._networkShareButton.checked = false;
 					this._networkTableContainer.display = 'none';
@@ -785,9 +793,10 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				await this._networkShareContainer.updateCssStyles({ 'display': 'none' });
 			}
 
-			if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.MigrationMode) {
+			if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.DatabaseBackup) {
 				if (this.migrationStateModel.savedInfo.networkContainerType === NetworkContainerType.BLOB_CONTAINER) {
 					this._blobContainerButton.checked = true;
+					this.wizard.nextButton.enabled = true;
 				} else {
 					this._blobContainerButton.checked = false;
 					this._blobTableContainer.display = 'none';
@@ -798,9 +807,12 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				this._blobTableContainer.display = 'none';
 				await this._blobContainer.updateCssStyles({ 'display': 'none' });
 			}
+			if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.DatabaseBackup) {
 
-			await this._targetDatabaseContainer.updateCssStyles({ 'display': 'none' });
-			await this._networkShareStorageAccountDetails.updateCssStyles({ 'display': 'none' });
+			} else {
+				await this._targetDatabaseContainer.updateCssStyles({ 'display': 'none' });
+				await this._networkShareStorageAccountDetails.updateCssStyles({ 'display': 'none' });
+			}
 			const connectionProfile = await this.migrationStateModel.getSourceConnectionProfile();
 			const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>((await this.migrationStateModel.getSourceConnectionProfile()).providerId, azdata.DataProviderType.QueryProvider);
 			const query = 'select SUSER_NAME()';
