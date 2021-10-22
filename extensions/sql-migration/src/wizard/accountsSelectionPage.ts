@@ -120,9 +120,11 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 					}
 
 				}
-				this.migrationStateModel._subscriptions = undefined!;
-				this.migrationStateModel._targetSubscription = undefined!;
-				this.migrationStateModel._databaseBackup.subscription = undefined!;
+				if (!(this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.Summary)) {
+					this.migrationStateModel._subscriptions = undefined!;
+					this.migrationStateModel._targetSubscription = undefined!;
+					this.migrationStateModel._databaseBackup.subscription = undefined!;
+				}
 				await this._azureAccountsDropdown.validate();
 			}
 		}));
