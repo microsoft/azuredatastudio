@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { DesignerViewModel, DesignerEdit, DesignerEditResult, DesignerComponentInput, DesignerView, DesignerTab, DesignerDataPropertyInfo, DropDownProperties, DesignerTableProperties, DesignerState } from 'sql/base/browser/ui/designer/interfaces';
+import { DesignerViewModel, DesignerEdit, DesignerComponentInput, DesignerView, DesignerTab, DesignerDataPropertyInfo, DropDownProperties, DesignerTableProperties, DesignerEditProcessedEventArgs, DesignerAction, DesignerStateChangedEventArgs } from 'sql/base/browser/ui/designer/interfaces';
 import { TableDesignerProvider } from 'sql/workbench/services/tableDesigner/common/interface';
 import { localize } from 'vs/nls';
 import { designers } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -17,11 +17,14 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 	private _view: DesignerView;
 	private _valid: boolean = true;
 	private _dirty: boolean = false;
-	private _saving: boolean = false;
-	private _processing: boolean = false;
-	private _onStateChange = new Emitter<DesignerState>();
+	private _pendingAction?: DesignerAction = undefined;
+	private _onStateChange = new Emitter<DesignerStateChangedEventArgs>();
+	private _onInitialized = new Emitter<void>();
+	private _onEditProcessed = new Emitter<DesignerEditProcessedEventArgs>();
 
-	public readonly onStateChange: Event<DesignerState> = this._onStateChange.event;
+	public readonly onInitialized: Event<void> = this._onInitialized.event;
+	public readonly onEditProcessed: Event<DesignerEditProcessedEventArgs> = this._onEditProcessed.event;
+	public readonly onStateChange: Event<DesignerStateChangedEventArgs> = this._onStateChange.event;
 
 	constructor(private readonly _provider: TableDesignerProvider,
 		private _tableInfo: azdata.designers.TableInfo,
@@ -36,43 +39,44 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		return this._dirty;
 	}
 
-	get saving(): boolean {
-		return this._saving;
-	}
-
-	get processing(): boolean {
-		return this._processing;
+	get pendingAction(): DesignerAction | undefined {
+		return this._pendingAction;
 	}
 
 	get objectTypeDisplayName(): string {
 		return localize('tableDesigner.tableObjectType', "Table");
 	}
 
-	async getView(): Promise<DesignerView> {
-		if (!this._view) {
-			await this.initialize();
-		}
+	get view(): DesignerView {
 		return this._view;
 	}
 
-	async getViewModel(): Promise<DesignerViewModel> {
-		if (!this._viewModel) {
-			await this.initialize();
-		}
+	get viewModel(): DesignerViewModel {
 		return this._viewModel;
 	}
 
-	async processEdit(edit: DesignerEdit): Promise<DesignerEditResult> {
-		this.updateState(this.valid, this.dirty, this.saving, true);
-		const result = await this._provider.processTableEdit(this._tableInfo, this._viewModel!, edit);
-		if (result.isValid) {
-			this._viewModel = result.viewModel;
-		}
-		this.updateState(result.isValid, true, this.saving, false);
-		return {
-			isValid: result.isValid,
-			errors: result.errors
-		};
+	processEdit(edit: DesignerEdit): void {
+		this.updateState(this.valid, this.dirty, 'processEdit');
+		this._provider.processTableEdit(this._tableInfo, this._viewModel!, edit).then(
+			result => {
+				if (result.isValid) {
+					this._viewModel = result.viewModel;
+				}
+				this.updateState(result.isValid, true, undefined);
+
+				this._onEditProcessed.fire({
+					edit: edit,
+					result: {
+						isValid: result.isValid,
+						errors: result.errors
+					}
+				});
+			},
+			error => {
+				this._notificationService.error(localize('tableDesigner.errorProcessingEdit', "An error occured while processing the change: {0}", error?.message ?? error));
+				this.updateState(this.valid, this.dirty);
+			}
+		);
 	}
 
 	async save(): Promise<void> {
@@ -81,40 +85,66 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			message: localize('tableDesigner.savingChanges', "Saving table designer changes...")
 		});
 		try {
-			this.updateState(this.valid, this.dirty, true, true);
+			this.updateState(this.valid, this.dirty, 'save');
 			await this._provider.saveTable(this._tableInfo, this._viewModel);
-			this.updateState(true, false, false, false);
+			this.updateState(true, false);
 			notificationHandle.updateMessage(localize('tableDesigner.savedChangeSuccess', "The changes have been successfully saved."));
 		} catch (error) {
 			notificationHandle.updateSeverity(Severity.Error);
 			notificationHandle.updateMessage(localize('tableDesigner.saveChangeError', "An error occured while saving changes: {0}", error?.message ?? error));
-			this.updateState(this.valid, this.dirty, false, false);
+			this.updateState(this.valid, this.dirty);
 		}
 	}
 
 	async revert(): Promise<void> {
-		this.updateState(true, false, false, false);
+		this.updateState(true, false);
 	}
 
-	private updateState(valid: boolean, dirty: boolean, saving: boolean, processing: boolean): void {
-		if (this._dirty !== dirty || this._valid !== valid || this._saving !== saving || this._processing !== processing) {
-			this._dirty = dirty;
-			this._valid = valid;
-			this._saving = saving;
-			this._processing = processing;
-			this._onStateChange.fire({
+	private updateState(valid: boolean, dirty: boolean, pendingAction?: DesignerAction): void {
+		if (this._dirty !== dirty || this._valid !== valid || this._pendingAction !== pendingAction) {
+			const previousState = {
 				valid: this._valid,
 				dirty: this._dirty,
-				saving: this._saving,
-				processing: this._processing
+				pendingAction: this._pendingAction
+			};
+
+			this._dirty = dirty;
+			this._valid = valid;
+			this._pendingAction = pendingAction;
+
+			const currentState = {
+				valid: this._valid,
+				dirty: this._dirty,
+				pendingAction: this._pendingAction
+			};
+			this._onStateChange.fire({
+				currentState,
+				previousState,
 			});
 		}
 	}
 
-	private async initialize(): Promise<void> {
-		this.updateState(this.valid, this.dirty, this.saving, true);
-		const designerInfo = await this._provider.getTableDesignerInfo(this._tableInfo);
-		this.updateState(this.valid, this.dirty, this.saving, false);
+	initialize(): void {
+		if (this._view !== undefined) {
+			this._onInitialized.fire();
+			return;
+		}
+
+		if (this.pendingAction === 'initialize') {
+			return;
+		}
+
+		this.updateState(this.valid, this.dirty, 'initialize');
+		this._provider.getTableDesignerInfo(this._tableInfo).then(result => {
+			this.doInitialization(result);
+			this._onInitialized.fire();
+		}, error => {
+			this._notificationService.error(localize('tableDesigner.errorInitializingTableDesigner', "An error occured while initializing the table designer: {0}", error?.message ?? error));
+		});
+	}
+
+	private doInitialization(designerInfo: azdata.designers.TableDesignerInfo): void {
+		this.updateState(true, false);
 		this._viewModel = designerInfo.viewModel;
 		this.setDefaultData();
 

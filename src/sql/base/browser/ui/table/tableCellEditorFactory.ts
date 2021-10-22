@@ -7,7 +7,7 @@ import * as DOM from 'vs/base/browser/dom';
 
 export interface ITableCellEditorOptions {
 	valueGetter?: (item: Slick.SlickData, column: Slick.Column<Slick.SlickData>) => string,
-	valueSetter?: (context: any, row: number, item: Slick.SlickData, column: Slick.Column<Slick.SlickData>, value: string) => Promise<void>,
+	valueSetter?: (context: any, row: number, item: Slick.SlickData, column: Slick.Column<Slick.SlickData>, value: string) => void,
 	optionsGetter?: (item: Slick.SlickData, column: Slick.Column<Slick.SlickData>) => string[],
 	editorStyler: (component: InputBox | SelectBox) => void
 }
@@ -72,9 +72,9 @@ export class TableCellEditorFactory {
 				this._input.value = this._originalValue;
 			}
 
-			public async applyValue(item: Slick.SlickData, state: string): Promise<void> {
+			public applyValue(item: Slick.SlickData, state: string): void {
 				const activeCell = this._args.grid.getActiveCell();
-				await self._options.valueSetter(context, activeCell.row, item, this._args.column, state);
+				self._options.valueSetter(context, activeCell.row, item, this._args.column, state);
 			}
 
 			public isValueChanged(): boolean {
