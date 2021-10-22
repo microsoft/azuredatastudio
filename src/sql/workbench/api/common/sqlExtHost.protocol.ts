@@ -942,6 +942,9 @@ export interface MainThreadNotebookShape extends IDisposable {
 	$unregisterExecuteProvider(handle: number): void;
 	$onFutureMessage(futureId: number, type: FutureMessageType, payload: azdata.nb.IMessage): void;
 	$onFutureDone(futureId: number, done: INotebookFutureDone): void;
+
+	// VSCode notebook compatibility APIs
+	$createNotebookController(extension: IExtensionDescription, id: string, viewType: string, label: string, handler?: (cells: vscode.NotebookCell[], notebook: vscode.NotebookDocument, controller: vscode.NotebookController) => void | Thenable<void>, rendererScripts?: vscode.NotebookRendererScript[]): vscode.NotebookController;
 }
 
 export interface INotebookDocumentsAndEditorsDelta {

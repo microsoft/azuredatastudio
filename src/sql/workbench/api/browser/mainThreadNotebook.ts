@@ -17,6 +17,9 @@ import { LocalContentManager } from 'sql/workbench/services/notebook/common/loca
 import { Deferred } from 'sql/base/common/promise';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import type { FutureInternal } from 'sql/workbench/services/notebook/browser/interfaces';
+import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
+import { NotebookCell, NotebookDocument, NotebookController, NotebookRendererScript } from 'vscode';
+import { ADSNotebookController } from 'sql/workbench/api/browser/adsNotebookController';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadNotebook)
 export class MainThreadNotebook extends Disposable implements MainThreadNotebookShape {
@@ -96,7 +99,10 @@ export class MainThreadNotebook extends Disposable implements MainThreadNotebook
 		if (future) {
 			future.onDone(done);
 		}
+	}
 
+	public $createNotebookController(extension: IExtensionDescription, id: string, viewType: string, label: string, handler?: (cells: NotebookCell[], notebook: NotebookDocument, controller: NotebookController) => void | Thenable<void>, rendererScripts?: NotebookRendererScript[]): NotebookController {
+		return new ADSNotebookController(extension, id, viewType, label, this.notebookService, handler, extension.enableProposedApi ? rendererScripts : undefined);
 	}
 	//#endregion
 }
