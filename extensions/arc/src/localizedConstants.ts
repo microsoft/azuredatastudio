@@ -60,9 +60,9 @@ export const type = localize('arc.type', "Type");
 export const status = localize('arc.status', "Status");
 export const database = localize('arc.database', "Database");
 export const sourceDatabase = localize('arc.sourceDatabase', "Source database");
-export const earliestPitrRestorePoint = localize('arc.earliestPitrRestorePoint', "Earliest PITR restore point");
-export const latestpitrRestorePoint = localize('arc.latestpitrRestorePoint', "Latest PITR restore point");
-export const pitr = localize('arc.pitr', "Point-in-time restore (PITR)");
+export const earliestPitrRestorePoint = localize('arc.earliestPitrRestorePoint', "Earliest Point in time restore point");
+export const latestpitrRestorePoint = localize('arc.latestpitrRestorePoint', "Latest Point in time restore point");
+export const pitr = localize('arc.pitr', "Point-in-time restore");
 export const projectDetails = localize('arc.projectDetails', "Project Details");
 export const projectDetailsText = localize('arc.projectDetailsText', "Select the subscription to manage deployed resources. Use resource groups like folders to organize and manage all your resources.");
 export const sourceDetails = localize('arc.sourceDetails', "Source Details");
@@ -126,6 +126,8 @@ export const loading = localize('arc.loading', "Loading...");
 export const refreshToEnterCredentials = localize('arc.refreshToEnterCredentials', "Refresh node to enter credentials");
 export const noInstancesAvailable = localize('arc.noInstancesAvailable', "No instances available");
 export const connectToServer = localize('arc.connecToServer', "Connect to Server");
+export const validate = localize('arc.validate', "Validate");
+export const validateDescription = localize('arc.validateDescription', "Validates if the restore operation can be successful or not by returning earliest and latest restore time window.");
 export const connectToController = localize('arc.connectToController', "Connect to Existing Controller");
 export function connectToMSSql(name: string): string { return localize('arc.connectToMSSql', "Connect to SQL managed instance - Azure Arc ({0})", name); }
 export function connectToPGSql(name: string): string { return localize('arc.connectToPGSql', "Connect to PostgreSQL Hyperscale - Azure Arc ({0})", name); }
