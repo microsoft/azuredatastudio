@@ -46,7 +46,7 @@ export class NotebookEditorComponent extends AngularDisposable {
 	public views: NotebookViewsExtension;
 	public activeView: INotebookView;
 	public viewMode: ViewMode;
-	public ViewMode = ViewMode;
+	public ViewMode = ViewMode; //For use of the enum in the template
 
 	constructor(
 		@Inject(ILogService) private readonly logService: ILogService,

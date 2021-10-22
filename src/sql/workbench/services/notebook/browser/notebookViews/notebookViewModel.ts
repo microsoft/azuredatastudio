@@ -51,11 +51,11 @@ export class NotebookViewModel implements INotebookView {
 	}
 
 	protected initializeCell(cell: ICellModel, idx: number) {
-		let meta = this._notebookViews.getCellMetadata(cell);
+		let meta = this._notebookViews.getExtensionCellMetadata(cell);
 
 		if (!meta) {
 			this._notebookViews.initializeCell(cell);
-			meta = this._notebookViews.getCellMetadata(cell);
+			meta = this._notebookViews.getExtensionCellMetadata(cell);
 		}
 
 		// Ensure that we are not duplicting view entries in cell metadata
@@ -91,7 +91,7 @@ export class NotebookViewModel implements INotebookView {
 	}
 
 	public getCellMetadata(cell: ICellModel): INotebookViewCell {
-		const meta = this._notebookViews.getCellMetadata(cell);
+		const meta = this._notebookViews.getExtensionCellMetadata(cell);
 		return meta?.views?.find(view => view.guid === this.guid);
 	}
 
