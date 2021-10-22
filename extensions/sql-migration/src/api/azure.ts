@@ -33,7 +33,7 @@ export async function getLocations(account: azdata.Account, subscription: Subscr
 	const response = await api.getLocations(account, subscription, true);
 	const dataMigrationResourceProvider = (await api.makeAzureRestRequest(account, subscription, `/subscriptions/${subscription.id}/providers/Microsoft.DataMigration?api-version=2021-04-01`, azurecore.HttpRequestMethod.GET)).response.data;
 	const sqlMigratonResource = dataMigrationResourceProvider.resourceTypes.find((r: any) => r.resourceType === 'SqlMigrationServices');
-	const sqlMigrationResourceLocations = sqlMigratonResource.locations;
+	const sqlMigrationResourceLocations: string[] = (sqlMigratonResource.locations as string[]).filter((loc, i, arr) => i === arr.indexOf(loc));
 
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
