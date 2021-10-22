@@ -482,7 +482,7 @@
       <source xml:lang="en">No (default)</source>
     </trans-unit>
     <trans-unit id="nodeButNotAutorestFound">
-      <source xml:lang="en">Autorest tool not found in system path, but found Node.js.  Running via npx.  Please execute 'npm install autorest -g' to install permanently.</source>
+      <source xml:lang="en">Autorest tool not found in system path, but found Node.js.  Prompting user for how to proceed.  Execute 'npm install autorest -g' to install permanently and avoid this message.</source>
     </trans-unit>
     <trans-unit id="nodeButNotAutorestFoundPrompt">
       <source xml:lang="en">Autorest is not installed. To proceed, choose whether to run Autorest from a temporary location via 'npx' or install Autorest globally then run.</source>
@@ -721,11 +721,17 @@
     <trans-unit id="sqlDatabaseProjects.NetCoreSupportedVersionInstallationConfirmation">
       <source xml:lang="en">Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK supported version location in settings if already installed.</source>
     </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.NetCoreVersionDowngradeConfirmation">
+      <source xml:lang="en">Installed .NET SDK version {0} is newer than the currently supported versions. Project build will not work. Please install .NET Core SDK version 3.1 and include a global.json in the project folder specifying the SDK version to use. [More Information](https://docs.microsoft.com/dotnet/core/versions/selection)</source>
+    </trans-unit>
     <trans-unit id="sqlDatabaseProjects.UpdateNetCoreLocation">
       <source xml:lang="en">Update Location</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.doNotAskAgain">
       <source xml:lang="en">Don't Ask Again</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.doNotShowAgain">
+      <source xml:lang="en">Don't Show Again</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.outputChannel">
       <source xml:lang="en">Database Projects</source>
@@ -789,6 +795,15 @@
     </trans-unit>
     <trans-unit id="updateProjectForRoundTrip">
       <source xml:lang="en">The targets, references, and system database references need to be updated to build this project. If the project is created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
+    </trans-unit>
+    <trans-unit id="userSelectionCancelled">
+      <source xml:lang="en">User has cancelled selection for how to run autorest.</source>
+    </trans-unit>
+    <trans-unit id="userSelectionInstallGlobally">
+      <source xml:lang="en">User selected to install autorest gloablly.  Installing now...</source>
+    </trans-unit>
+    <trans-unit id="userSelectionRunNpx">
+      <source xml:lang="en">User selected to run via npx.</source>
     </trans-unit>
     <trans-unit id="valueCannotBeEmpty">
       <source xml:lang="en">Value cannot be empty</source>
@@ -867,6 +882,9 @@
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.netCoreDoNotAsk">
       <source xml:lang="en">Whether to prompt the user to install .NET Core when not detected.</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.netCoreDowngradeDoNotShow">
+      <source xml:lang="en">Whether to prompt the user to set .NET SDK version when a newer unsupported version is detected.</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.netCoreInstallLocation">
       <source xml:lang="en">Full path to .NET Core SDK on the machine.</source>
