@@ -174,6 +174,10 @@ export async function getLocations(appContext: AppContext, account?: AzureAccoun
 			result.errors.push(error);
 		}
 	}));
+
+	result.locations = result.locations.filter(
+		(loc, i, arr) => i === arr.indexOf(loc));
+
 	return result;
 }
 
