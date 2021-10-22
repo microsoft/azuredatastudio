@@ -13,9 +13,9 @@ import { INotebookView, INotebookViewCell, INotebookViewCellMetadata, INotebookV
 
 export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetadata, INotebookViewCellMetadata> implements INotebookViews {
 	static readonly defaultViewName = localize('notebookView.untitledView', "Untitled View");
+	static readonly extension = 'notebookviews';
 
 	readonly maxNameIterationAttempts = 100;
-	readonly extension = 'azuredatastudio';
 	override readonly version = 1;
 
 	protected _metadata: INotebookViewMetadata | undefined;
@@ -24,12 +24,12 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 	private _onActiveViewChanged = new Emitter<void>();
 
 	constructor(protected _notebook: INotebookModel) {
-		super();
+		super(NotebookViewsExtension.extension);
 		this.load();
 	}
 
 	public load(): void {
-		this._metadata = this.getNotebookMetadata();
+		this._metadata = this.getExtensionMetadata();
 
 		if (this._metadata) {
 			this._metadata.views = this._metadata.views.map(view => NotebookViewModel.load(view.guid, this));
@@ -38,7 +38,7 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 	}
 
 	public initialize() {
-		this._metadata = this.getNotebookMetadata();
+		this._metadata = this.getExtensionMetadata();
 
 		if (!this._metadata) {
 			this.initializeNotebook();
@@ -69,7 +69,7 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 			views: []
 		};
 
-		this.setCellMetadata(cell, meta);
+		this.setExtensionCellMetadata(cell, meta);
 	}
 
 	public createNewView(name?: string): INotebookView {
@@ -99,9 +99,9 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 			// Remove view data for each cell
 			if (removedView.length === 1) {
 				this._notebook?.cells.forEach((cell) => {
-					let meta = this.getCellMetadata(cell);
+					let meta = this.getExtensionCellMetadata(cell);
 					meta.views = meta.views.filter(x => x.guid !== removedView[0].guid);
-					this.setCellMetadata(cell, meta);
+					this.setExtensionCellMetadata(cell, meta);
 				});
 			}
 		}
@@ -128,13 +128,13 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 	}
 
 	public updateCell(cell: ICellModel, currentView: INotebookView, cellData: INotebookViewCell, override: boolean = false) {
-		const cellMetadata = this.getCellMetadata(cell);
+		const cellMetadata = this.getExtensionCellMetadata(cell);
 		if (cellMetadata) {
 			const viewToUpdate = cellMetadata.views.findIndex(view => view.guid === currentView.guid);
 
 			if (viewToUpdate >= 0) {
 				cellMetadata.views[viewToUpdate] = override ? cellData : { ...cellMetadata.views[viewToUpdate], ...cellData };
-				this.setCellMetadata(cell, cellMetadata);
+				this.setExtensionCellMetadata(cell, cellMetadata);
 			}
 		}
 	}
@@ -152,11 +152,11 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 	}
 
 	public getCells(): INotebookViewCellMetadata[] {
-		return this._notebook.cells.map(cell => this.getCellMetadata(cell));
+		return this._notebook.cells.map(cell => this.getExtensionCellMetadata(cell));
 	}
 
-	public override getNotebookMetadata(): INotebookViewMetadata {
-		return super.getNotebookMetadata(this._notebook);
+	public override getExtensionMetadata(): INotebookViewMetadata {
+		return super.getExtensionMetadata(this._notebook);
 	}
 
 	public getActiveView(): INotebookView {
@@ -172,7 +172,7 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 
 	public commit() {
 		this._metadata = Object.assign({}, this._metadata);
-		this.setNotebookMetadata(this._notebook, this._metadata);
+		this.setExtensionMetadata(this._notebook, this._metadata);
 	}
 
 	public viewNameIsTaken(name: string): boolean {

@@ -80,12 +80,12 @@ suite('NotebookViews', function (): void {
 		notebookViews.notebook.addCell(CellTypes.Code, 0);
 		const cell = notebookViews.notebook.cells[0];
 
-		assert.strictEqual(notebookViews.getNotebookMetadata(), undefined);
-		assert.strictEqual(notebookViews.getCellMetadata(cell), undefined);
+		assert.strictEqual(notebookViews.getExtensionMetadata(), undefined);
+		assert.strictEqual(notebookViews.getExtensionCellMetadata(cell), undefined);
 
 		//Check that the view is created
 		notebookViews.createNewView(defaultViewName);
-		assert.notStrictEqual(notebookViews.getNotebookMetadata(), undefined);
+		assert.notStrictEqual(notebookViews.getExtensionMetadata(), undefined);
 	});
 
 	test('create new view', async function (): Promise<void> {
