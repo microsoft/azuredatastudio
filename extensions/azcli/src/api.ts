@@ -140,6 +140,7 @@ export function getAzApi(localAzDiscovered: Promise<IAzTool | undefined>, azTool
 						managedInstance?: string,
 						time?: string,
 						noWait?: boolean,
+						dryRun?: boolean
 					},
 					namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars) => {
 					await localAzDiscovered;

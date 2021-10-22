@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as azExt from 'az-ext';
 import { Deferred } from '../../common/promise';
 import * as loc from '../../localizedConstants';
 import * as vscode from 'vscode';
@@ -13,8 +14,12 @@ import { MiaaModel, PITRModel, DatabaseModel } from '../../models/miaaModel';
 import * as azurecore from 'azurecore';
 import { ControllerModel } from '../../models/controllerModel';
 
+
 export class RestoreSqlDialog extends InitializingComponent {
 	protected modelBuilder!: azdata.ModelBuilder;
+	protected disposables: vscode.Disposable[] = [];
+	private _restoreResult: azExt.SqlMiDbRestoreResult | undefined;
+	private readonly _azApi: azExt.IExtension;
 	private pitrSettings: PITRModel = {
 		instanceName: '-',
 		resourceGroupName: '-',
@@ -26,20 +31,34 @@ export class RestoreSqlDialog extends InitializingComponent {
 		latestPitr: '-',
 	};
 
+	public pitrArgs = {
+		destName: '',
+		managedInstance: '',
+		time: '',
+		noWait: false,
+		dryRun: true
+	};
 	private earliestRestorePointInputBox!: azdata.InputBoxComponent;
 	private latestRestorePointInputBox!: azdata.InputBoxComponent;
 	private subscriptionInputBox!: azdata.InputBoxComponent;
 	private resourceGroupInputBox!: azdata.InputBoxComponent;
 	private sourceDbInputBox!: azdata.InputBoxComponent;
-	private restorePointInputBox!: azdata.InputBoxComponent;
+	protected restorePointInputBox!: azdata.InputBoxComponent;
 	private databaseNameInputBox!: azdata.InputBoxComponent;
 	private instanceInputBox!: azdata.InputBoxComponent;
+	private validateButton!: azdata.ButtonComponent;
+	private restorePointContainer!: azdata.DivContainer;
 	protected _completionPromise = new Deferred<PITRModel | undefined>();
 	private _azurecoreApi: azurecore.IExtension;
 	constructor(protected _miaaModel: MiaaModel, protected _controllerModel: ControllerModel, protected _database: DatabaseModel) {
 		super();
 		this._azurecoreApi = vscode.extensions.getExtension(azurecore.extension.name)?.exports;
+		this.refreshPitrSettings();
+		this._azApi = vscode.extensions.getExtension(azExt.extension.name)?.exports;
+	}
 
+	public get restoreResult(): azExt.SqlMiDbRestoreResult | undefined {
+		return this._restoreResult;
 	}
 
 	public showDialog(dialogTitle: string): azdata.window.Dialog {
@@ -71,7 +90,6 @@ export class RestoreSqlDialog extends InitializingComponent {
 					ariaLabel: loc.resourceGroup,
 					value: this.pitrSettings.resourceGroupName
 				}).component();
-
 			const sourceDetailsTitle = this.modelBuilder.text().withProps({
 				value: loc.sourceDetails,
 				CSSStyles: { ...cssStyles.title }
@@ -85,7 +103,6 @@ export class RestoreSqlDialog extends InitializingComponent {
 					ariaLabel: loc.sourceDatabase,
 					value: this._database.name
 				}).component();
-
 			this.earliestRestorePointInputBox = this.modelBuilder.inputBox()
 				.withProps({
 					enabled: false,
@@ -104,15 +121,73 @@ export class RestoreSqlDialog extends InitializingComponent {
 				.withProps({
 					readOnly: false,
 					ariaLabel: loc.restorePoint,
-					value: ''
+					value: this.pitrSettings.restorePoint,
 				}).component();
+			this.disposables.push(
+				this.restorePointInputBox.onTextChanged(() => {
+					this.pitrSettings.restorePoint = this.restorePointInputBox.value ?? '';
+					this.validateButton.enabled = true;
+				}));
+			this.restorePointContainer = this.modelBuilder.divContainer().component();
+
+			this.validateButton = this.modelBuilder.button()
+				.withProps({
+					label: loc.validate,
+					enabled: false,
+					description: loc.validateDescription,
+					CSSStyles: { 'max-width': '125px', 'margin-left': '40%' }
+				}).component();
+
+			this.restorePointContainer.addItem(this.restorePointInputBox, { CSSStyles: { 'text-align': 'center', 'margin-top': '20px' } });
+			this.restorePointContainer.addItem(this.validateButton);
+			this.disposables.push(
+				this.validateButton!.onDidClick(async () => {
+					this.validateButton!.enabled = false;
+					try {
+						await vscode.window.withProgress(
+							{
+								location: vscode.ProgressLocation.SourceControl,
+								title: loc.updatingInstance(loc.restore),
+								cancellable: false
+							},
+
+							async (_progress, _token): Promise<void> => {
+								this.pitrArgs.destName = this.pitrSettings.dbName;
+								this.pitrArgs.managedInstance = this.pitrSettings.instanceName;
+								this.pitrArgs.time = this.pitrSettings.restorePoint;
+								const res = await this._azApi.az.sql.midbarc.restore(
+									this.pitrSettings.dbName, this.pitrArgs, this._miaaModel.controllerModel.info.namespace, this._miaaModel.controllerModel.azAdditionalEnvVars);
+								try {
+									await this._miaaModel.refresh();
+									await this.refreshPitrSettings();
+									this._restoreResult = res.stdout;
+								} catch (error) {
+									vscode.window.showErrorMessage(loc.refreshFailed(error));
+								}
+								//this.earliestRestorePointInputBox = res[""];
+								// this._restoreResult = res.stdout;
+								// console.warn(res1);
+								// console.error(this._restoreResult?.restorePoint);
+								// console.log(res);
+							}
+						);
+
+						// eslint-disable-next-line code-no-unexternalized-strings
+						// let res1 ="abcd";
+
+					} catch {
+						this.validateButton!.enabled = true;
+					}
+				}));
 			const databaseDetailsTitle = this.modelBuilder.text().withProps({
 				value: loc.databaseDetails,
 				CSSStyles: { ...cssStyles.title }
 			}).component();
+
 			const databaseDetailsTextLabel = this.modelBuilder.text().withProps({
 				value: loc.databaseDetailsText,
 			}).component();
+
 			this.databaseNameInputBox = this.modelBuilder.inputBox()
 				.withProps({
 					readOnly: false,
@@ -187,10 +262,18 @@ export class RestoreSqlDialog extends InitializingComponent {
 							title: loc.latestpitrRestorePoint,
 
 						},
+						// {
+						// 	component: this.restorePointInputBox,
+						// 	title: loc.restorePoint,
+						// 	required: true
+						// },
+						// {
+						// 	component: this.validateButton,
+						// 	title: loc.validate,
+						// },
 						{
-							component: this.restorePointInputBox,
-							title: loc.restorePoint,
-							required: true
+							component: this.restorePointContainer,
+							title: loc.validateDescription,
 						},
 						{
 							component: databaseDetailsTitle,
@@ -266,7 +349,8 @@ export class RestoreSqlDialog extends InitializingComponent {
 		this.pitrSettings.location = this._azurecoreApi.getRegionDisplayName(this._controllerModel?.controllerConfig?.spec.settings.azure.location) || this.pitrSettings.location;
 		this.pitrSettings.subscriptionId = this._controllerModel?.controllerConfig?.spec.settings.azure.subscription || this.pitrSettings.subscriptionId;
 		this.pitrSettings.dbName = this._database.name;
-		this.pitrSettings.restorePoint = this._database.lastBackup;
+		this.pitrSettings.restorePoint = '';
+		this.pitrSettings.latestPitr = this._database.lastBackup;
 		this.pitrSettings.earliestPitr = '';
 	}
 }
