@@ -125,12 +125,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 	}
 
 	initialize(): void {
-		if (this._view !== undefined) {
-			this._onInitialized.fire();
-			return;
-		}
-
-		if (this.pendingAction === 'initialize') {
+		if (this._view !== undefined || this.pendingAction === 'initialize') {
 			return;
 		}
 

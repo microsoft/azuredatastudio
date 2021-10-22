@@ -201,7 +201,7 @@ export class Designer extends Disposable implements IThemable {
 	public setInput(input: DesignerComponentInput): void {
 		// Save state
 		if (this._input) {
-			this._input.DesignerUIState = this.getUIState();
+			this._input.designerUIState = this.getUIState();
 		}
 
 		// Clean up
@@ -213,15 +213,14 @@ export class Designer extends Disposable implements IThemable {
 		DOM.clearNode(this._topContentContainer);
 		this._tabbedPanel.clearTabs();
 		this._propertiesPane.clear();
-		if (this._inputDisposable !== undefined) {
-			this._inputDisposable.dispose();
-		}
+		this._inputDisposable?.dispose();
+
 
 		// Initialize with new input
 		this._input = input;
 		this._inputDisposable = new DisposableStore();
 		this._inputDisposable.add(this._input.onInitialized(() => {
-			this.handleInputInitializedEvent();
+			this.initializeDesigner();
 		}));
 		this._inputDisposable.add(this._input.onEditProcessed((args) => {
 			this.handleEditProcessedEvent(args);
@@ -230,7 +229,11 @@ export class Designer extends Disposable implements IThemable {
 			this.handleInputStateChangedEvent(args);
 		}));
 
-		this._input.initialize();
+		if (this._input.view === undefined) {
+			this._input.initialize();
+		} else {
+			this.initializeDesigner();
+		}
 		if (this._input.pendingAction) {
 			this.updateLoadingStatus(this._input.pendingAction, true, false);
 		}
@@ -241,7 +244,7 @@ export class Designer extends Disposable implements IThemable {
 		this._inputDisposable?.dispose();
 	}
 
-	private handleInputInitializedEvent(): void {
+	private initializeDesigner(): void {
 		const view = this._input.view;
 		if (view.components) {
 			view.components.forEach(component => {
@@ -301,14 +304,12 @@ export class Designer extends Disposable implements IThemable {
 				timeout = 500;
 				break;
 			default:
-				break;
+				return;
 		}
-		if (message) {
-			if (showLoading) {
-				this.startLoading(message, useDelay ? timeout : 0);
-			} else {
-				this.stopLoading(message);
-			}
+		if (showLoading) {
+			this.startLoading(message, useDelay ? timeout : 0);
+		} else {
+			this.stopLoading(message);
 		}
 	}
 
@@ -360,7 +361,7 @@ export class Designer extends Disposable implements IThemable {
 		this.updatePropertiesPane(this._propertiesPane.context ?? 'root');
 	}
 
-	private async handleEdit(edit: DesignerEdit): Promise<void> {
+	private handleEdit(edit: DesignerEdit): void {
 		if (this._supressEditProcessing) {
 			return;
 		}
@@ -680,8 +681,8 @@ export class Designer extends Disposable implements IThemable {
 	}
 
 	private restoreUIState(): void {
-		if (this._input.DesignerUIState) {
-			this._tabbedPanel.showTab(this._input.DesignerUIState.activeTabId);
+		if (this._input.designerUIState) {
+			this._tabbedPanel.showTab(this._input.designerUIState.activeTabId);
 		}
 	}
 }

@@ -43,7 +43,7 @@ export interface DesignerComponentInput {
 	initialize(): void;
 
 	/**
-	 * Start processing the edit made in the designer, the OnEditProcessed
+	 * Start processing the edit made in the designer, the OnEditProcessed event will be fired when the processing is done.
 	 * @param edit the information about the edit.
 	 */
 	processEdit(edit: DesignerEdit): void;
@@ -66,7 +66,7 @@ export interface DesignerComponentInput {
 	/**
 	 * The UI state of the designer, used to restore the state.
 	 */
-	DesignerUIState?: DesignerUIState;
+	designerUIState?: DesignerUIState;
 }
 
 export interface DesignerUIState {
