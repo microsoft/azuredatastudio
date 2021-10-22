@@ -88,7 +88,7 @@
 	"arc.sql.invalid.instance.name": "Instance name must consist of lower case alphanumeric characters or '-', start with a letter, end with an alphanumeric character, and be 13 characters or fewer in length.",
 	"arc.storage-class.dc.label": "Storage Class",
 	"arc.sql.storage-class.dc.description": "The storage class to be used for all data and logs persistent volumes for all data controller pods that require them.",
-	"arc.sql.high.availability.label": "High Availability",
+	"arc.sql.replicas": "Replicas",
 	"arc.sql.high.availability.description": "Enable additional replicas for high availabilty. The compute and storage configuration selected below will be applied to all replicas. Choose from: General Purpose (Up to 24 vCores and 128 Gi of RAM, standard high availability) or [PREVIEW] Business Critical (Unlimited vCores and RAM, advanced high availability).",
 	"arc.sql.service.tier.general.purpose": "GeneralPurpose",
 	"arc.sql.service.tier.business.critical": "BusinessCritical",
