@@ -11,8 +11,8 @@ import { URI, UriComponents } from 'vs/base/common/uri';
 
 import { IDisposable } from 'vs/base/common/lifecycle';
 
-import * as azdata from 'azdata';
-import * as vscode from 'vscode';
+import type * as azdata from 'azdata';
+import type * as vscode from 'vscode';
 
 import { ITreeComponentItem } from 'sql/workbench/common/views';
 import { ITaskHandlerDescription } from 'sql/workbench/services/tasks/common/tasks';
@@ -929,6 +929,10 @@ export interface ExtHostNotebookShape {
 	// Provider registration
 	$registerExecuteProvider(provider: azdata.nb.NotebookExecuteProvider): vscode.Disposable;
 	$registerSerializationProvider(provider: azdata.nb.NotebookSerializationProvider): vscode.Disposable;
+
+	// VSCode notebook compatibility APIs
+	$registerNotebookSerializer(notebookType: string, serializer: vscode.NotebookSerializer, options?: vscode.NotebookDocumentContentOptions, registration?: vscode.NotebookRegistrationData): vscode.Disposable;
+	$createNotebookController(extension: IExtensionDescription, id: string, viewType: string, label: string, handler?: (cells: vscode.NotebookCell[], notebook: vscode.NotebookDocument, controller: vscode.NotebookController) => void | Thenable<void>, rendererScripts?: vscode.NotebookRendererScript[]): vscode.NotebookController;
 }
 
 export interface MainThreadNotebookShape extends IDisposable {

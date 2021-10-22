@@ -20,7 +20,8 @@ import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKe
 import { ExtHostNotebookShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { IProductService } from 'vs/platform/product/common/productService';
-import { Disposable } from 'vscode';
+import { Disposable, NotebookCell, NotebookController, NotebookDocument, NotebookDocumentContentOptions, NotebookRegistrationData, NotebookRendererScript, NotebookSerializer } from 'vscode';
+import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 
 suite('MainThreadNotebook Tests', () => {
 
@@ -182,6 +183,12 @@ suite('MainThreadNotebook Tests', () => {
 });
 
 class ExtHostNotebookStub implements ExtHostNotebookShape {
+	$registerNotebookSerializer(notebookType: string, serializer: NotebookSerializer, options?: NotebookDocumentContentOptions, registration?: NotebookRegistrationData): Disposable {
+		throw new Error('Method not implemented.');
+	}
+	$createNotebookController(extension: IExtensionDescription, id: string, viewType: string, label: string, handler?: (cells: NotebookCell[], notebook: NotebookDocument, controller: NotebookController) => void | Thenable<void>, rendererScripts?: NotebookRendererScript[]): NotebookController {
+		throw new Error('Method not implemented.');
+	}
 	$registerExecuteProvider(provider: azdata.nb.NotebookExecuteProvider): Disposable {
 		throw new Error('Method not implemented.');
 	}

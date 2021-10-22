@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { VSCodeContentManager } from 'vs/workbench/api/common/vscodeSerializationProvider';
+import { VSCodeContentManager } from 'sql/workbench/api/common/vscodeSerializationProvider';
 import type * as vscode from 'vscode';
 import type * as azdata from 'azdata';
 import * as sinon from 'sinon';

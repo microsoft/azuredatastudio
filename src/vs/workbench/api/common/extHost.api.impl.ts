@@ -92,8 +92,6 @@ import { matchesScheme } from 'vs/platform/opener/common/opener';
 // import { ExtHostNotebookDocuments } from 'vs/workbench/api/common/extHostNotebookDocuments'; {{SQL CARBON EDIT}}
 import * as nls from 'vs/nls';
 import { SqlExtHostContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { VSCodeSerializationProvider } from 'vs/workbench/api/common/vscodeSerializationProvider';
-import { ADSNotebookController, VSCodeExecuteProvider } from 'vs/workbench/api/common/adsNotebookController';
 
 // {{SQL CARBON EDIT}}
 const functionalityNotSupportedError = nls.localize('vscodeFunctionalityNotSupportedError', "This VSCode functionality is not supported in Azure Data Studio.");
@@ -932,8 +930,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 				// return extHostNotebook.onDidCloseNotebookDocument;
 			},
 			registerNotebookSerializer(viewType: string, serializer: vscode.NotebookSerializer, options?: vscode.NotebookDocumentContentOptions, registration?: vscode.NotebookRegistrationData) {
-				let serializationProvider = new VSCodeSerializationProvider(viewType, serializer);
-				return sqlExtHostNotebook.$registerSerializationProvider(serializationProvider);
+				return sqlExtHostNotebook.$registerNotebookSerializer(viewType, serializer, options, registration);
 			},
 			registerNotebookContentProvider: (viewType: string, provider: vscode.NotebookContentProvider, options?: vscode.NotebookDocumentContentOptions, registration?: vscode.NotebookRegistrationData) => {
 				// {{SQL CARBON EDIT}}
@@ -1152,10 +1149,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 		// namespace: notebook
 		const notebooks: typeof vscode.notebooks = {
 			createNotebookController(id: string, notebookType: string, label: string, handler?, rendererScripts?: vscode.NotebookRendererScript[]) {
-				let controller = new ADSNotebookController(extension, id, notebookType, label, handler, extension.enableProposedApi ? rendererScripts : undefined);
-				let executeProvider = new VSCodeExecuteProvider(controller);
-				sqlExtHostNotebook.$registerExecuteProvider(executeProvider);
-				return controller;
+				return sqlExtHostNotebook.$createNotebookController(extension, id, notebookType, label, handler, rendererScripts);
 			},
 			registerNotebookCellStatusBarItemProvider: (notebookType: string, provider: vscode.NotebookCellStatusBarItemProvider) => {
 				// {{SQL CARBON EDIT}}

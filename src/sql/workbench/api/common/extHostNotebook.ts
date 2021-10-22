@@ -3,8 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
-import * as vscode from 'vscode';
+import type * as azdata from 'azdata';
+import type * as vscode from 'vscode';
 
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { Disposable } from 'vs/workbench/api/common/extHostTypes';
@@ -13,6 +13,9 @@ import { URI, UriComponents } from 'vs/base/common/uri';
 
 import { ExtHostNotebookShape, MainThreadNotebookShape, SqlMainContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IExecuteManagerDetails, INotebookSessionDetails, INotebookKernelDetails, INotebookFutureDetails, FutureMessageType, ISerializationManagerDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { ADSNotebookController, VSCodeExecuteProvider } from 'sql/workbench/api/common/adsNotebookController';
+import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
+import { VSCodeSerializationProvider } from 'sql/workbench/api/common/vscodeSerializationProvider';
 
 type Adapter = azdata.nb.NotebookSerializationProvider | azdata.nb.SerializationManager | azdata.nb.NotebookExecuteProvider | azdata.nb.ExecuteManager | azdata.nb.ISession | azdata.nb.IKernel | azdata.nb.IFuture;
 
@@ -25,6 +28,16 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 	// Notebook URI to manager lookup.
 	constructor(_mainContext: IMainContext) {
 		this._proxy = _mainContext.getProxy(SqlMainContext.MainThreadNotebook);
+	}
+	$registerNotebookSerializer(notebookType: string, serializer: vscode.NotebookSerializer, options?: vscode.NotebookDocumentContentOptions, registration?: vscode.NotebookRegistrationData): vscode.Disposable {
+		let serializationProvider = new VSCodeSerializationProvider(notebookType, serializer);
+		return this.$registerSerializationProvider(serializationProvider);
+	}
+	$createNotebookController(extension: IExtensionDescription, id: string, viewType: string, label: string, handler?: (cells: vscode.NotebookCell[], notebook: vscode.NotebookDocument, controller: vscode.NotebookController) => void | Thenable<void>, rendererScripts?: vscode.NotebookRendererScript[]): vscode.NotebookController {
+		let controller = new ADSNotebookController(extension, id, viewType, label, handler, extension.enableProposedApi ? rendererScripts : undefined);
+		let executeProvider = new VSCodeExecuteProvider(controller);
+		this.$registerExecuteProvider(executeProvider);
+		return controller;
 	}
 
 	//#region APIs called by main thread
