@@ -38,11 +38,11 @@ export async function getLocations(account: azdata.Account, subscription: Subscr
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
 	}
-	sortResourceArrayByName(response.locations);
 
-	const filteredLocations = response.locations.filter(loc => {
-		return sqlMigrationResourceLocations.includes(loc.displayName);
-	});
+	const filteredLocations = response.locations
+		.filter(loc => sqlMigrationResourceLocations.includes(loc.displayName));
+
+	sortResourceArrayByName(filteredLocations);
 
 	return filteredLocations;
 }
