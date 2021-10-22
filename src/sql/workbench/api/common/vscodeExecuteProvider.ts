@@ -5,13 +5,6 @@
 
 import type * as vscode from 'vscode';
 import type * as azdata from 'azdata';
-// import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
-// import { INotebookKernelDto2 } from 'vs/workbench/api/common/extHost.protocol';
-// import { Emitter } from 'vs/base/common/event';
-// import * as extHostTypeConverters from 'vs/workbench/api/common/extHostTypeConverters';
-// import { Registry } from 'vs/platform/registry/common/platform';
-// import { INotebookProviderRegistry, NotebookProviderRegistryId } from 'sql/workbench/services/notebook/common/notebookRegistry';
-// import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 
 class VSCodeFuture implements azdata.nb.IFuture {
 	private _inProgress = true;
