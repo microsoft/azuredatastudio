@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file original="extensions/arc/dist/localizedConstants" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="arc.USD">
+      <source xml:lang="en">USD</source>
+    </trans-unit>
     <trans-unit id="arc.addingWorkerNodes">
       <source xml:lang="en">adding worker nodes</source>
     </trans-unit>
@@ -24,6 +27,9 @@
     </trans-unit>
     <trans-unit id="arc.backupsStorage">
       <source xml:lang="en">{0} backups</source>
+    </trans-unit>
+    <trans-unit id="arc.businessCriticalLabel">
+      <source xml:lang="en">[PREVIEW] Business Critical (Unlimited vCores and RAM, advanced high availability)</source>
     </trans-unit>
     <trans-unit id="arc.cancel">
       <source xml:lang="en">Cancel</source>
@@ -349,6 +355,9 @@
     <trans-unit id="arc.fullyQualifiedDomain">
       <source xml:lang="en">Fully qualified domain</source>
     </trans-unit>
+    <trans-unit id="arc.generalPurposeLabel">
+      <source xml:lang="en">General Purpose (Up to 24 vCores and 128 Gi of RAM, standard high availability)</source>
+    </trans-unit>
     <trans-unit id="arc.grafanaDashboard">
       <source xml:lang="en">Grafana Dashboard</source>
     </trans-unit>
@@ -672,6 +681,15 @@
     </trans-unit>
     <trans-unit id="arc.rememberPassword">
       <source xml:lang="en">Remember Password</source>
+    </trans-unit>
+    <trans-unit id="arc.replicaOne">
+      <source xml:lang="en">1 replica</source>
+    </trans-unit>
+    <trans-unit id="arc.replicaThree">
+      <source xml:lang="en">3 replicas</source>
+    </trans-unit>
+    <trans-unit id="arc.replicaTwo">
+      <source xml:lang="en">2 replicas</source>
     </trans-unit>
     <trans-unit id="arc.resetAllToDefault">
       <source xml:lang="en">Reset all to default</source>
@@ -1244,6 +1262,75 @@
     <trans-unit id="arc.sql.cores-request.description">
       <source xml:lang="en">The request for cores of the managed instance as an integer.</source>
     </trans-unit>
+    <trans-unit id="arc.sql.cost.summary">
+      <source xml:lang="en">Cost Summary</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.additional.charge">
+      <source xml:lang="en">Additional charge per usage. See {0} for more detail.</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.admin.account">
+      <source xml:lang="en">Administrator account</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.azure.hybrid.benefit.discount">
+      <source xml:lang="en">Azure Hybrid Benefit discount (in USD)</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.basics">
+      <source xml:lang="en">Basics</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.business.critical">
+      <source xml:lang="en">Business Critical</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.cost.vcore">
+      <source xml:lang="en">Cost per vCore (in USD)</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.custom.location">
+      <source xml:lang="en">Custom location</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.estimated.cost.per.month">
+      <source xml:lang="en">Estimated cost per month</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.general.purpose">
+      <source xml:lang="en">General Purpose</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.instance.name">
+      <source xml:lang="en">Instance name</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.managed.instance.admin.login">
+      <source xml:lang="en">Managed Instance admin login</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.pricing.details">
+      <source xml:lang="en">pricing details</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.resource.group">
+      <source xml:lang="en">Resource group</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.service.tier">
+      <source xml:lang="en">Service Tier</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.service.tier.learn.more.description">
+      <source xml:lang="en">Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical. {0}</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.service.tier.learn.more.text">
+      <source xml:lang="en">Learn more</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.sql.connection.info">
+      <source xml:lang="en">SQL Connection Information</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.sql.instance.settings">
+      <source xml:lang="en">SQL Instance Settings</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.sql.miaa">
+      <source xml:lang="en">SQL managed instance - Azure Arc</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.sql.miaa.cost.summary">
+      <source xml:lang="en">SQL Managed Instance - Azure Arc Cost Summary</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.subscription">
+      <source xml:lang="en">Subscription</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.vcore.limit">
+      <source xml:lang="en">CPU vCores Limit</source>
+    </trans-unit>
     <trans-unit id="arc.sql.dev.use.description">
       <source xml:lang="en">Check the box to indicate this instance will be used for development or testing purposes only. This instance will not be billed.</source>
     </trans-unit>
@@ -1270,6 +1357,12 @@
     </trans-unit>
     <trans-unit id="arc.sql.invalid.username">
       <source xml:lang="en">sa username is disabled, please choose another username</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.license.type.description">
+      <source xml:lang="en">Apply the Azure Hybrid Benefit if you already own a SQL Server License</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.license.type.label">
+      <source xml:lang="en">I already have a SQL Server License</source>
     </trans-unit>
     <trans-unit id="arc.sql.memory-limit.description">
       <source xml:lang="en">The limit of the capacity of the managed instance as an integer.</source>
@@ -1318,6 +1411,9 @@
     </trans-unit>
     <trans-unit id="arc.sql.storage-class.logs.description">
       <source xml:lang="en">The storage class to be used for logs (/var/log). If no value is specified, the default storage class will be used.</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.summary.arc.by.microsoft">
+      <source xml:lang="en">by Microsoft</source>
     </trans-unit>
     <trans-unit id="arc.sql.three.replicas">
       <source xml:lang="en">3 replicas</source>
@@ -1391,6 +1487,9 @@
     </trans-unit>
     <trans-unit id="command.editConnection.title">
       <source xml:lang="en">Edit Connection</source>
+    </trans-unit>
+    <trans-unit id="command.estimateCostSqlMiaa.title">
+      <source xml:lang="en">Estimate Cost of SQL Managed Instance - Azure Arc</source>
     </trans-unit>
     <trans-unit id="command.refresh.title">
       <source xml:lang="en">Refresh</source>
