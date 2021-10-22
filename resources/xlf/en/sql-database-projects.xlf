@@ -482,7 +482,7 @@
       <source xml:lang="en">No (default)</source>
     </trans-unit>
     <trans-unit id="nodeButNotAutorestFound">
-      <source xml:lang="en">Autorest tool not found in system path, but found Node.js.  Running via npx.  Please execute 'npm install autorest -g' to install permanently.</source>
+      <source xml:lang="en">Autorest tool not found in system path, but found Node.js.  Prompting user for how to proceed.  Execute 'npm install autorest -g' to install permanently and avoid this message.</source>
     </trans-unit>
     <trans-unit id="nodeButNotAutorestFoundPrompt">
       <source xml:lang="en">Autorest is not installed. To proceed, choose whether to run Autorest from a temporary location via 'npx' or install Autorest globally then run.</source>
@@ -795,6 +795,15 @@
     </trans-unit>
     <trans-unit id="updateProjectForRoundTrip">
       <source xml:lang="en">The targets, references, and system database references need to be updated to build this project. If the project is created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
+    </trans-unit>
+    <trans-unit id="userSelectionCancelled">
+      <source xml:lang="en">User has cancelled selection for how to run autorest.</source>
+    </trans-unit>
+    <trans-unit id="userSelectionInstallGlobally">
+      <source xml:lang="en">User selected to install autorest gloablly.  Installing now...</source>
+    </trans-unit>
+    <trans-unit id="userSelectionRunNpx">
+      <source xml:lang="en">User selected to run via npx.</source>
     </trans-unit>
     <trans-unit id="valueCannotBeEmpty">
       <source xml:lang="en">Value cannot be empty</source>
