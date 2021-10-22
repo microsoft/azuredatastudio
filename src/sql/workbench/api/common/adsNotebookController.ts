@@ -11,6 +11,7 @@ import { Emitter } from 'vs/base/common/event';
 import * as extHostTypeConverters from 'vs/workbench/api/common/extHostTypeConverters';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { INotebookProviderRegistry, NotebookProviderRegistryId } from 'sql/workbench/services/notebook/common/notebookRegistry';
+import { MainThreadNotebookDocumentsAndEditorsShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 // import { INotebookEditor, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 // import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 
@@ -329,6 +330,7 @@ export class ADSNotebookController implements vscode.NotebookController {
 		private _id: string,
 		private _viewType: string,
 		private _label: string,
+		private _notebookDocProxy: MainThreadNotebookDocumentsAndEditorsShape,
 		private _handler?: (cells: vscode.NotebookCell[], notebook: vscode.NotebookDocument, controller: vscode.NotebookController) => void | Thenable<void>,
 		preloads?: vscode.NotebookRendererScript[]
 	) {
@@ -417,7 +419,7 @@ export class ADSNotebookController implements vscode.NotebookController {
 	}
 
 	public createNotebookCellExecution(cell: vscode.NotebookCell): vscode.NotebookCellExecution {
-		return new ADSNotebookCellExecution(cell);
+		return new ADSNotebookCellExecution(cell, this._notebookDocProxy);
 	}
 
 	public dispose(): void {
@@ -439,10 +441,8 @@ export class ADSNotebookController implements vscode.NotebookController {
 
 class ADSNotebookCellExecution implements vscode.NotebookCellExecution {
 	private _executionOrder: number;
-	// private _editor: INotebookEditor;
 
-	constructor(private readonly _cell: vscode.NotebookCell) { //, @INotebookService private _notebookService: INotebookService) {
-		// this._editor = this._notebookService.findNotebookEditor(this._cell.notebook.uri);
+	constructor(private readonly _cell: vscode.NotebookCell, notebookDocProxy: MainThreadNotebookDocumentsAndEditorsShape) {
 	}
 
 	public get cell(): vscode.NotebookCell {
@@ -470,12 +470,7 @@ class ADSNotebookCellExecution implements vscode.NotebookCellExecution {
 	}
 
 	public async clearOutput(cell?: vscode.NotebookCell): Promise<void> {
-		// if (cell) {
-		// 	let innerCell = this._editor.cells ? this._editor.cells[cell.index] : undefined;
-		// 	if (innerCell) {
-		// 		return this._editor.clearOutput(innerCell).then();
-		// 	}
-		// }
+		throw new Error('Method not implemented.');
 	}
 
 	public replaceOutput(out: vscode.NotebookCellOutput | vscode.NotebookCellOutput[], cell?: vscode.NotebookCell): Thenable<void> {
