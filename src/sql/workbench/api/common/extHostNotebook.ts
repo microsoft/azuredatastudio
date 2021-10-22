@@ -239,7 +239,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 	//#endregion
 
 	//#region APIs called by extensions
-	$registerExecuteProvider(provider: azdata.nb.NotebookExecuteProvider): vscode.Disposable {
+	registerExecuteProvider(provider: azdata.nb.NotebookExecuteProvider): vscode.Disposable {
 		if (!provider || !provider.providerId) {
 			throw new Error(localize('executeProviderRequired', "A NotebookExecuteProvider with valid providerId must be passed to this method"));
 		}
@@ -248,7 +248,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		return this._createDisposable(handle);
 	}
 
-	$registerSerializationProvider(provider: azdata.nb.NotebookSerializationProvider): vscode.Disposable {
+	registerSerializationProvider(provider: azdata.nb.NotebookSerializationProvider): vscode.Disposable {
 		if (!provider || !provider.providerId) {
 			throw new Error(localize('serializationProviderRequired', "A NotebookSerializationProvider with valid providerId must be passed to this method"));
 		}
@@ -259,14 +259,14 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 
 	$registerNotebookSerializer(notebookType: string, serializer: vscode.NotebookSerializer, options?: vscode.NotebookDocumentContentOptions, registration?: vscode.NotebookRegistrationData): vscode.Disposable {
 		let serializationProvider = new VSCodeSerializationProvider(notebookType, serializer);
-		return this.$registerSerializationProvider(serializationProvider);
+		return this.registerSerializationProvider(serializationProvider);
 	}
 
 	$createNotebookController(extension: IExtensionDescription, id: string, viewType: string, label: string, handler?: (cells: vscode.NotebookCell[], notebook: vscode.NotebookDocument, controller: vscode.NotebookController) => void | Thenable<void>, rendererScripts?: vscode.NotebookRendererScript[]): vscode.NotebookController {
 		// Have to create a notebook controller through the proxy, since it uses the notebook service.
 		let controller = this._proxy.$createNotebookController(extension, id, viewType, label, handler, rendererScripts);
 		let executeProvider = new VSCodeExecuteProvider(controller);
-		this.$registerExecuteProvider(executeProvider);
+		this.registerExecuteProvider(executeProvider);
 		return controller;
 	}
 	//#endregion

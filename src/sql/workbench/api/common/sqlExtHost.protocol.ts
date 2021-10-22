@@ -926,10 +926,6 @@ export interface ExtHostNotebookShape {
 	$sendInputReply(futureId: number, content: azdata.nb.IInputReply): void;
 	$disposeFuture(futureId: number): void;
 
-	// Provider registration
-	$registerExecuteProvider(provider: azdata.nb.NotebookExecuteProvider): vscode.Disposable;
-	$registerSerializationProvider(provider: azdata.nb.NotebookSerializationProvider): vscode.Disposable;
-
 	// VSCode notebook compatibility APIs
 	$registerNotebookSerializer(notebookType: string, serializer: vscode.NotebookSerializer, options?: vscode.NotebookDocumentContentOptions, registration?: vscode.NotebookRegistrationData): vscode.Disposable;
 	$createNotebookController(extension: IExtensionDescription, id: string, viewType: string, label: string, handler?: (cells: vscode.NotebookCell[], notebook: vscode.NotebookDocument, controller: vscode.NotebookController) => void | Thenable<void>, rendererScripts?: vscode.NotebookRendererScript[]): vscode.NotebookController;

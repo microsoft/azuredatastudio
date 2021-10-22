@@ -189,12 +189,6 @@ class ExtHostNotebookStub implements ExtHostNotebookShape {
 	$createNotebookController(extension: IExtensionDescription, id: string, viewType: string, label: string, handler?: (cells: NotebookCell[], notebook: NotebookDocument, controller: NotebookController) => void | Thenable<void>, rendererScripts?: NotebookRendererScript[]): NotebookController {
 		throw new Error('Method not implemented.');
 	}
-	$registerExecuteProvider(provider: azdata.nb.NotebookExecuteProvider): Disposable {
-		throw new Error('Method not implemented.');
-	}
-	$registerSerializationProvider(provider: azdata.nb.NotebookSerializationProvider): Disposable {
-		throw new Error('Method not implemented.');
-	}
 	$getSerializationManagerDetails(providerHandle: number, notebookUri: UriComponents): Thenable<ISerializationManagerDetails> {
 		throw new Error('Method not implemented.');
 	}
