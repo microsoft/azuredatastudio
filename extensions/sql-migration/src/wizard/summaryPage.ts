@@ -172,7 +172,6 @@ export class SummaryPage extends MigrationWizardPage {
 				flexContainer.addItems(
 					[
 						createInformationRow(this._view, constants.TYPE, constants.BLOB_CONTAINER),
-						//databasebackup.subscription is null
 						createInformationRow(this._view, constants.SUMMARY_AZURE_STORAGE_SUBSCRIPTION, this.migrationStateModel._databaseBackup.subscription.name)
 					]
 				);
