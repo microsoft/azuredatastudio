@@ -153,30 +153,26 @@ export async function getLocations(appContext: AppContext, account?: AzureAccoun
 		result.errors.push(error);
 		return result;
 	}
-	await Promise.all(account.properties.tenants.map(async (tenant: { id: string; }) => {
-		try {
-			const path = `/subscriptions/${subscription.id}/locations?api-version=2020-01-01`;
-			const response = await makeHttpRequest(account, subscription, path, HttpRequestMethod.GET, undefined, ignoreErrors);
-			result.locations.push(...response.response.data.value);
-			result.errors.push(...response.errors);
-		} catch (err) {
-			const error = new Error(localize('azure.accounts.getLocations.queryError', "Error fetching locations for account {0} ({1}) subscription {2} ({3}) tenant {4} : {5}",
-				account.displayInfo.displayName,
-				account.displayInfo.userId,
-				subscription.id,
-				subscription.name,
-				tenant.id,
-				err instanceof Error ? err.message : err));
-			console.warn(error);
-			if (!ignoreErrors) {
-				throw error;
-			}
-			result.errors.push(error);
-		}
-	}));
 
-	result.locations = result.locations.filter(
-		(loc, i, arr) => i === arr.indexOf(loc));
+	try {
+		const path = `/subscriptions/${subscription.id}/locations?api-version=2020-01-01`;
+		const response = await makeHttpRequest(account, subscription, path, HttpRequestMethod.GET, undefined, ignoreErrors);
+		result.locations.push(...response.response.data.value);
+		result.errors.push(...response.errors);
+	} catch (err) {
+		const error = new Error(localize('azure.accounts.getLocations.queryError', "Error fetching locations for account {0} ({1}) subscription {2} ({3}) tenant {4} : {5}",
+			account.displayInfo.displayName,
+			account.displayInfo.userId,
+			subscription.id,
+			subscription.name,
+			account.properties.tenants[0].id,
+			err instanceof Error ? err.message : err));
+		console.warn(error);
+		if (!ignoreErrors) {
+			throw error;
+		}
+		result.errors.push(error);
+	}
 
 	return result;
 }
