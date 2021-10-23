@@ -26,6 +26,7 @@ export let sqlProjectMissingVersionBaseline: string;
 export let sqlProjectInvalidVersionBaseline: string;
 export let sqlProjectCustomCollationBaseline: string;
 export let sqlProjectInvalidCollationBaseline: string;
+export let newStyleProjectFileBaseline: string;
 
 const baselineFolderPath = __dirname;
 
@@ -49,6 +50,7 @@ export async function loadBaselines() {
 	sqlProjectInvalidVersionBaseline = await loadBaseline(baselineFolderPath, 'sqlProjectInvalidVersionBaseline.xml');
 	sqlProjectCustomCollationBaseline = await loadBaseline(baselineFolderPath, 'sqlProjectCustomCollationBaseline.xml');
 	sqlProjectInvalidCollationBaseline = await loadBaseline(baselineFolderPath, 'sqlProjectInvalidCollationBaseline.xml');
+	newStyleProjectFileBaseline = await loadBaseline(baselineFolderPath, 'newStyleSqlProjectBaseline.xml');
 }
 
 async function loadBaseline(baselineFolderPath: string, fileName: string): Promise<string> {
