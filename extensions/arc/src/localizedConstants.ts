@@ -60,14 +60,15 @@ export const type = localize('arc.type', "Type");
 export const status = localize('arc.status', "Status");
 export const database = localize('arc.database', "Database");
 export const sourceDatabase = localize('arc.sourceDatabase', "Source database");
-export const earliestPitrRestorePoint = localize('arc.earliestPitrRestorePoint', "Earliest Point in time restore point");
-export const latestpitrRestorePoint = localize('arc.latestpitrRestorePoint', "Latest Point in time restore point");
+export const earliestPitrRestorePoint = localize('arc.earliestPitrRestorePoint', "Earliest Point-in-time restore time");
+export const latestpitrRestorePoint = localize('arc.latestpitrRestorePoint', "Latest Point-in-time restore time");
 export const pitr = localize('arc.pitr', "Point-in-time restore");
 export const projectDetails = localize('arc.projectDetails', "Project Details");
 export const projectDetailsText = localize('arc.projectDetailsText', "Select the subscription to manage deployed resources. Use resource groups like folders to organize and manage all your resources.");
 export const sourceDetails = localize('arc.sourceDetails', "Source Details");
 export const sourceDetailsText = localize('arc.sourceDetailsText', "Select a backup source and provide details. Additional settings will be defaulted where possible based on the selected backup.");
-export const databaseDetails = localize('arc.databaseDetails', "Database Details");
+export const databaseDetails = localize('arc.databaseDetails', "Destination Details");
+export const restorePointDetails = localize('arc.restorePointDetails', "Restore Point Details");
 export const databaseDetailsText = localize('arc.databaseDetailsText', "Enter the required settings for this database, including a name and a target managed instance. By default, the source instance is selected.");
 export const restore = localize('arc.restore', "Restore");
 export const instance = localize('arc.instance', "Instance");
@@ -127,7 +128,7 @@ export const refreshToEnterCredentials = localize('arc.refreshToEnterCredentials
 export const noInstancesAvailable = localize('arc.noInstancesAvailable', "No instances available");
 export const connectToServer = localize('arc.connecToServer', "Connect to Server");
 export const validate = localize('arc.validate', "Validate");
-export const validateDescription = localize('arc.validateDescription', "Validates if the restore operation can be successful or not by returning earliest and latest restore time window.");
+export const validateDescription = localize('arc.validateDescription', "Use 'Validate' button to check if the restore operation is valid one and to auto fill the earliest and latest restore times.");
 export const connectToController = localize('arc.connectToController', "Connect to Existing Controller");
 export function connectToMSSql(name: string): string { return localize('arc.connectToMSSql', "Connect to SQL managed instance - Azure Arc ({0})", name); }
 export function connectToPGSql(name: string): string { return localize('arc.connectToPGSql', "Connect to PostgreSQL Hyperscale - Azure Arc ({0})", name); }
@@ -291,6 +292,8 @@ export const couldNotFindControllerRegistration = localize('arc.couldNotFindCont
 export const dropMultipleExtensions = localize('arc.dropMultipleExtensions', "Currently dropping another extension, try again once that is completed.");
 export function updateExtensionsFailed(error: any): string { return localize('arc.updateExtensionsFailed', "Editing extensions failed. {0}", getErrorMessage(error)); }
 export function refreshFailed(error: any): string { return localize('arc.refreshFailed', "Refresh failed. {0}", getErrorMessage(error)); }
+export function restoreMessage(msg: any): string { return localize('arc.restoreMessage', "{0} Use a timestamp from '{1}' to '{2}'.", getErrorMessage(msg), earliestPitrRestorePoint, latestpitrRestorePoint); }
+export function restoreTimeWindowUpdateFailed(error: any): string { return localize('arc.restoreTimeWindowUpdateFailed', "Point in time restore time windows update failed. {0}", getErrorMessage(error)); }
 export function resetFailed(error: any): string { return localize('arc.resetFailed', "Reset failed. {0}", getErrorMessage(error)); }
 export function openDashboardFailed(error: any): string { return localize('arc.openDashboardFailed', "Error opening dashboard. {0}", getErrorMessage(error)); }
 export function instanceDeletionFailed(name: string, error: any): string { return localize('arc.instanceDeletionFailed', "Failed to delete instance {0}. {1}", name, getErrorMessage(error)); }

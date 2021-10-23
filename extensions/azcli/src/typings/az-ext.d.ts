@@ -174,9 +174,14 @@ declare module 'az-ext' {
 	}
 
 	export interface SqlMiDbRestoreResult {
-		sourceDatabase: string,
-		destDatabase: string,
-		restorePoint: string
+		destDatabase: string, //testDbToRestore
+		earliestRestoreTime: string, // "2020-08-19T20:25:11Z"
+		latestRestoreTime: string,  //"2020-08-19T20:25:11Z"
+		message: string, //Dry run for restore operation succeeded.
+		observedGeneration: number, //1
+		restorePoint: string, // "2020-08-19T20:25:11Z"
+		sourceDatabase: string, //testDb
+		state: string //Completed
 	}
 
 	export interface PostgresServerShowResult {

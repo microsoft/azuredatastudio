@@ -185,6 +185,7 @@ export class AzTool implements azExt.IAzApi {
 					managedInstance?: string,
 					time?: string,
 					noWait?: boolean,
+					dryRun?: boolean
 				},
 				namespace: string,
 				additionalEnvVars?: azExt.AdditionalEnvVars
@@ -194,6 +195,7 @@ export class AzTool implements azExt.IAzApi {
 				if (args.managedInstance) { argsArray.push('--managed-instance', args.managedInstance); }
 				if (args.time) { argsArray.push('--time', args.time); }
 				if (args.noWait) { argsArray.push('--no-wait'); }
+				if (args.dryRun) { argsArray.push('--dry-run'); }
 				return this.executeCommand<azExt.SqlMiDbRestoreResult>(argsArray, additionalEnvVars);
 			}
 		}
