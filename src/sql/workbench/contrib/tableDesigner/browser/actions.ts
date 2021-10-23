@@ -34,7 +34,7 @@ export class SaveTableChangesAction extends Action {
 	}
 
 	private updateState(): void {
-		this.enabled = this._input.dirty && this._input.valid && !this._input.processing;
+		this.enabled = this._input.dirty && this._input.valid && this._input.pendingAction === undefined;
 	}
 
 	override dispose() {
