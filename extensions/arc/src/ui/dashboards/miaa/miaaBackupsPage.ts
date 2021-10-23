@@ -41,7 +41,8 @@ export class MiaaBackupsPage extends DashboardPage {
 		destName: '',
 		managedInstance: '',
 		time: '',
-		noWait: true
+		noWait: true,
+		dryRun: false
 	};
 
 	public get title(): string {
@@ -292,7 +293,7 @@ export class MiaaBackupsPage extends DashboardPage {
 				if (args) {
 					try {
 						restoreButton.enabled = false;
-						this.pitrArgs.destName = args.dbName;
+						this.pitrArgs.destName = args.destDbName;
 						this.pitrArgs.managedInstance = args.instanceName;
 						this.pitrArgs.time = `"${args.restorePoint}"`;
 						await vscode.window.withProgress(
