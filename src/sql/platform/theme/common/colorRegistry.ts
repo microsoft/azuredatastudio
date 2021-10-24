@@ -88,3 +88,4 @@ export const calloutDialogShadowColor = registerColor('calloutDialog.shadow', { 
 
 // Designer
 export const DesignerPaneSeparator = registerColor('designer.paneSeparator', { light: '#DDDDDD', dark: '#8A8886', hc: contrastBorder }, nls.localize('designer.paneSeparator', 'The pane separator color.'));
+export const DesignerGroupHeaderBackground = registerColor('designer.groupHeaderBackground', { dark: '#252526', light: '#F3F3F3', hc: '#000000' }, nls.localize('designer.groupHeaderBackground', "Background color of the group header in designer."));

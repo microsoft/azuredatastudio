@@ -147,6 +147,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			{
 				componentType: 'dropdown',
 				propertyName: designers.TableProperty.Schema,
+				group: 'Group 1',
 				componentProperties: <DropDownProperties>{
 					title: localize('tableDesigner.schemaTitle', "Schema"),
 					values: designerInfo.schemas
@@ -154,6 +155,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			}, {
 				componentType: 'input',
 				propertyName: designers.TableProperty.Description,
+				group: 'Group 2',
 				componentProperties: {
 					title: localize('tableDesigner.descriptionTitle', "Description")
 				}
@@ -173,6 +175,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			{
 				componentType: 'input',
 				propertyName: designers.TableColumnProperty.Name,
+				group: 'Group 1',
 				componentProperties: {
 					title: localize('tableDesigner.columnNameTitle', "Name"),
 					width: 150
@@ -180,6 +183,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			}, {
 				componentType: 'dropdown',
 				propertyName: designers.TableColumnProperty.Type,
+				group: 'Group 2',
 				componentProperties: {
 					title: localize('tableDesigner.columnTypeTitle', "Type"),
 					width: 100,
@@ -188,6 +192,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			}, {
 				componentType: 'input',
 				propertyName: designers.TableColumnProperty.Length,
+				group: 'Group 1',
 				componentProperties: {
 					title: localize('tableDesigner.columnLengthTitle', "Length"),
 					width: 75
@@ -195,6 +200,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			}, {
 				componentType: 'input',
 				propertyName: designers.TableColumnProperty.DefaultValue,
+				group: 'Group 2',
 				componentProperties: {
 					title: localize('tableDesigner.columnDefaultValueTitle', "Default Value"),
 					width: 150
@@ -202,12 +208,14 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			}, {
 				componentType: 'checkbox',
 				propertyName: designers.TableColumnProperty.AllowNulls,
+				group: 'Group 1',
 				componentProperties: {
 					title: localize('tableDesigner.columnAllowNullTitle', "Allow Nulls"),
 				}
 			}, {
 				componentType: 'checkbox',
 				propertyName: designers.TableColumnProperty.IsPrimaryKey,
+				group: 'Group 1',
 				componentProperties: {
 					title: localize('tableDesigner.columnIsPrimaryKeyTitle', "Primary Key"),
 				}
