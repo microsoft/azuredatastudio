@@ -387,7 +387,7 @@ function toExtension(galleryExtension: IRawGalleryExtension, version: IRawGaller
 		categories: galleryExtension.categories || [],
 		tags: galleryExtension.tags || [],
 		releaseDate: Date.parse(galleryExtension.releaseDate),
-		lastUpdated: Date.parse(galleryExtension.lastUpdated),
+		lastUpdated: Date.parse(version.lastUpdated), // {{SQL CARBON EDIT}} We don't have the lastUpdated at the top level currently
 		webExtension: !!galleryExtension.tags?.includes(WEB_EXTENSION_TAG),
 		assets,
 		properties: {
