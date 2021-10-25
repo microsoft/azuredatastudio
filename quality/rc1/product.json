@@ -30,5 +30,6 @@
 		"wingroup.windeploy.ntdev.microsoft.com",
 		"ddnet.microsoft.com",
 		"europe.corp.microsoft.com"
-	]
+	],
+	"urlProtocol": "azuredatastudio"
 }
