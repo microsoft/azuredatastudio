@@ -84,7 +84,7 @@ steps:
 
 - script: |
     set -e
-    yarn npm-run-all -lp sqllint extensions-lint strict-vscode
+    yarn npm-run-all -lp sqllint extensions-lint
   displayName: SQL Hygiene
 
 - script: |
