@@ -82,6 +82,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 					}
 					if (this.migrationStateModel._azureAccount?.isStale) {
 						this.wizard.message = {
+							level: azdata.window.MessageLevel.Error,
 							text: constants.ACCOUNT_STALE_ERROR(this.migrationStateModel._azureAccount)
 						};
 						return false;
@@ -193,8 +194,6 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 				this.migrationStateModel._targetSubscription = undefined!;
 				this.migrationStateModel._databaseBackup.subscription = undefined!;
 			}
-			const selectedAzureAccount = this.migrationStateModel.getAccount(selectedIndex);
-			this.migrationStateModel._azureAccount = deepClone(selectedAzureAccount);
 
 		}));
 
@@ -233,16 +232,24 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		this.wizard.registerNavigationValidator(async pageChangeInfo => {
 			try {
-				if (!this.migrationStateModel._azureAccount?.isStale) {
+				this.wizard.message = { text: '', };
+
+				if (this.migrationStateModel._azureAccount && !this.migrationStateModel._azureAccount?.isStale) {
 					const subscriptions = await getSubscriptions(this.migrationStateModel._azureAccount);
 					if (subscriptions?.length > 0) {
 						return true;
 					}
 				}
 
-				this.wizard.message = { text: constants.ACCOUNT_STALE_ERROR(this.migrationStateModel._azureAccount) };
+				this.wizard.message = {
+					level: azdata.window.MessageLevel.Error,
+					text: constants.ACCOUNT_STALE_ERROR(this.migrationStateModel._azureAccount),
+				};
 			} catch (error) {
-				this.wizard.message = { text: constants.ACCOUNT_ACCESS_ERROR(this.migrationStateModel._azureAccount, error) };
+				this.wizard.message = {
+					level: azdata.window.MessageLevel.Error,
+					text: constants.ACCOUNT_ACCESS_ERROR(this.migrationStateModel._azureAccount, error),
+				};
 			}
 
 			return false;
