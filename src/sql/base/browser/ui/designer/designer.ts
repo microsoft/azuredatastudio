@@ -517,6 +517,7 @@ export class Designer extends Disposable implements IThemable {
 			}
 		});
 
+		// only show groups when there are multiple of them.
 		if (groupNames.length < 2) {
 			componentsToCreate.forEach(component => {
 				uiComponents.push(this.createComponent(container, component, identifierGetter(component), componentMap, setWidth));
