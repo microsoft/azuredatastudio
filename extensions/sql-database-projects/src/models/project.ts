@@ -244,7 +244,7 @@ export class Project implements ISqlProject {
 		TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, TelemetryActions.updateProjectForRoundtrip);
 
 		if (!this._importedTargets.includes(constants.NetCoreTargets)) {
-			const result = await window.showWarningMessage(constants.updateProjectForRoundTrip, constants.yesString, constants.noString);
+			const result = await window.showWarningMessage(constants.updateProjectForRoundTrip(this.projectFileName), constants.yesString, constants.noString);
 			if (result === constants.yesString) {
 				await fs.copyFile(this._projectFilePath, this._projectFilePath + '_backup');
 				await this.updateImportToSupportRoundTrip();
@@ -253,7 +253,7 @@ export class Project implements ISqlProject {
 				await this.updateSystemDatabaseReferencesInProjFile();
 			}
 		} else if (this.containsSSDTOnlySystemDatabaseReferences()) {
-			const result = await window.showWarningMessage(constants.updateProjectDatabaseReferencesForRoundTrip, constants.yesString, constants.noString);
+			const result = await window.showWarningMessage(constants.updateProjectDatabaseReferencesForRoundTrip(this.projectFileName), constants.yesString, constants.noString);
 			if (result === constants.yesString) {
 				await fs.copyFile(this._projectFilePath, this._projectFilePath + '_backup');
 				await this.updateSystemDatabaseReferencesInProjFile();
