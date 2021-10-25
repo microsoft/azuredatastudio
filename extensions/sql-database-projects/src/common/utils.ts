@@ -12,7 +12,6 @@ import * as glob from 'fast-glob';
 import * as dataworkspace from 'dataworkspace';
 import * as mssql from '../../../mssql';
 import * as vscodeMssql from 'vscode-mssql';
-import * as childProcess from 'child_process';
 import * as fse from 'fs-extra';
 import * as which from 'which';
 import { promises as fs } from 'fs';
@@ -420,53 +419,6 @@ export async function createFolderIfNotExist(folderPath: string): Promise<void> 
 	} catch {
 		// Ignore if failed
 	}
-}
-
-export async function executeCommand(cmd: string, outputChannel: vscode.OutputChannel, sensitiveData: string[] = [], timeout: number = 5 * 60 * 1000): Promise<string> {
-	return new Promise<string>((resolve, reject) => {
-		if (outputChannel) {
-			let cmdOutputMessage = cmd;
-
-			sensitiveData.forEach(element => {
-				cmdOutputMessage = cmdOutputMessage.replace(element, '***');
-			});
-
-			outputChannel.appendLine(`    > ${cmdOutputMessage}`);
-		}
-		let child = childProcess.exec(cmd, {
-			timeout: timeout
-		}, (err, stdout) => {
-			if (err) {
-
-				// removing sensitive data from the exception
-				sensitiveData.forEach(element => {
-					err.cmd = err.cmd?.replace(element, '***');
-					err.message = err.message?.replace(element, '***');
-				});
-				reject(err);
-			} else {
-				resolve(stdout);
-			}
-		});
-
-		// Add listeners to print stdout and stderr if an output channel was provided
-
-		if (child?.stdout) {
-			child.stdout.on('data', data => { outputDataChunk(outputChannel, data, '    stdout: '); });
-		}
-		if (child?.stderr) {
-			child.stderr.on('data', data => { outputDataChunk(outputChannel, data, '    stderr: '); });
-		}
-	});
-}
-
-export function outputDataChunk(outputChannel: vscode.OutputChannel, data: string | Buffer, header: string): void {
-	data.toString().split(/\r?\n/)
-		.forEach(line => {
-			if (outputChannel) {
-				outputChannel.appendLine(header + line);
-			}
-		});
 }
 
 export async function retry<T>(

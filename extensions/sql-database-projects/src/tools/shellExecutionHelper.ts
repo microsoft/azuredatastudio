@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as cp from 'promisify-child-process';
+import * as childProcess from 'child_process';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
@@ -50,11 +51,11 @@ export class ShellExecutionHelper {
 
 		child.stdout!.on('data', (data: string | Buffer) => {
 			stdoutData.push(data.toString());
-			this.outputDataChunk(data, outputChannel, localize('sqlDatabaseProjects.RunCommand.stdout', "    stdout: "));
+			ShellExecutionHelper.outputDataChunk(outputChannel, data, localize('sqlDatabaseProjects.RunCommand.stdout', "    stdout: "));
 		});
 
 		child.stderr!.on('data', (data: string | Buffer) => {
-			this.outputDataChunk(data, outputChannel, localize('sqlDatabaseProjects.RunCommand.stderr', "    stderr: "));
+			ShellExecutionHelper.outputDataChunk(outputChannel, data, localize('sqlDatabaseProjects.RunCommand.stderr', "    stderr: "));
 		});
 
 		await child;
@@ -62,10 +63,49 @@ export class ShellExecutionHelper {
 		return stdoutData.join('');
 	}
 
-	private outputDataChunk(data: string | Buffer, outputChannel: vscode.OutputChannel, header: string): void {
+	public static async executeCommand(cmd: string, outputChannel: vscode.OutputChannel, sensitiveData: string[] = [], timeout: number = 5 * 60 * 1000): Promise<string> {
+		return new Promise<string>((resolve, reject) => {
+			if (outputChannel) {
+				let cmdOutputMessage = cmd;
+
+				sensitiveData.forEach(element => {
+					cmdOutputMessage = cmdOutputMessage.replace(element, '***');
+				});
+
+				outputChannel.appendLine(`    > ${cmdOutputMessage}`);
+			}
+			let child = childProcess.exec(cmd, {
+				timeout: timeout
+			}, (err, stdout) => {
+				if (err) {
+					// removing sensitive data from the exception
+					sensitiveData.forEach(element => {
+						err.cmd = err.cmd?.replace(element, '***');
+						err.message = err.message?.replace(element, '***');
+					});
+					reject(err);
+				} else {
+					resolve(stdout);
+				}
+			});
+
+			// Add listeners to print stdout and stderr if an output channel was provided
+
+			if (child?.stdout) {
+				child.stdout.on('data', data => { this.outputDataChunk(outputChannel, data, '    stdout: '); });
+			}
+			if (child?.stderr) {
+				child.stderr.on('data', data => { this.outputDataChunk(outputChannel, data, '    stderr: '); });
+			}
+		});
+	}
+
+	private static outputDataChunk(outputChannel: vscode.OutputChannel, data: string | Buffer, header: string): void {
 		data.toString().split(/\r?\n/)
 			.forEach(line => {
-				outputChannel.appendLine(header + line);
+				if (outputChannel) {
+					outputChannel.appendLine(header + line);
+				}
 			});
 	}
 }
