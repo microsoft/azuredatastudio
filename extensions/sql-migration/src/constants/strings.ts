@@ -101,7 +101,7 @@ export function ACCOUNT_STALE_ERROR(account: AzureAccount) {
 export function ACCOUNT_ACCESS_ERROR(account: AzureAccount, error: Error) {
 	return localize(
 		'azure.accounts.accountAccessError',
-		"An error occurred while accessing the selected account '{0}' and tenant '{1}' . Select 'Link account' and refresh the account, or select a different account. Error '{2}'",
+		"An error occurred while accessing the selected account '{0}' and tenant '{1}'. Select 'Link account' and refresh the account, or select a different account. Error '{2}'",
 		`${account?.displayInfo?.displayName} (${account?.displayInfo?.userId})`,
 		`${account?.properties?.tenants[0]?.displayName} (${account?.properties?.tenants[0]?.userId})`,
 		error.message);
