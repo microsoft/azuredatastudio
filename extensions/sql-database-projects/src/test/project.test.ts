@@ -944,7 +944,7 @@ describe('Project: round trip updates', function (): void {
 		should(project.importedTargets.length).equal(3); // additional target should exist by default
 	});
 
-	it('Should not show warning message for new msbuild sdk style project', async function (): Promise<void> {
+	it('Should not show update project warning message when opening msbuild sdk style project', async function (): Promise<void> {
 		// setup test files
 		const folderPath = await testUtils.generateTestFolderPath();
 		const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.newStyleProjectFileBaseline, folderPath);
@@ -952,7 +952,7 @@ describe('Project: round trip updates', function (): void {
 
 		const project = await Project.openProject(Uri.file(sqlProjPath).fsPath);
 		should(spy.notCalled).be.true();
-		should(project.isNewStyleProject).be.true();
+		should(project.isMsbuildSdkStyleProject).be.true();
 	});
 });
 

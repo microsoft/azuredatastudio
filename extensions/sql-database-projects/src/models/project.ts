@@ -33,7 +33,7 @@ export class Project implements ISqlProject {
 	private _preDeployScripts: FileProjectEntry[] = [];
 	private _postDeployScripts: FileProjectEntry[] = [];
 	private _noneDeployScripts: FileProjectEntry[] = [];
-	private _isNewStyleProject: boolean = false;
+	private _isMsbuildSdkStyleProject: boolean = false;
 
 	public get dacpacOutputPath(): string {
 		return path.join(this.projectFolderPath, 'bin', 'Debug', `${this._projectFileName}.dacpac`);
@@ -87,8 +87,8 @@ export class Project implements ISqlProject {
 		return this._noneDeployScripts;
 	}
 
-	public get isNewStyleProject(): boolean {
-		return this._isNewStyleProject;
+	public get isMsbuildSdkStyleProject(): boolean {
+		return this._isMsbuildSdkStyleProject;
 	}
 
 	private projFileXmlDoc: any = undefined;
@@ -121,7 +121,7 @@ export class Project implements ISqlProject {
 		// check if this is a new msbuild sdk style project
 		const sdkNodes = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.Sdk);
 		if (sdkNodes.length > 0) {
-			this._isNewStyleProject = sdkNodes[0].getAttribute(constants.Name) === constants.sqlMsbuildSdk;
+			this._isMsbuildSdkStyleProject = sdkNodes[0].getAttribute(constants.Name) === constants.sqlMsbuildSdk;
 		}
 
 		// get projectGUID
@@ -249,7 +249,7 @@ export class Project implements ISqlProject {
 
 	public async updateProjectForRoundTrip(): Promise<void> {
 		if (this._importedTargets.includes(constants.NetCoreTargets) && !this.containsSSDTOnlySystemDatabaseReferences() // old style project check
-			|| this.isNewStyleProject) { // new style project check
+			|| this.isMsbuildSdkStyleProject) { // new style project check
 			return;
 		}
 
