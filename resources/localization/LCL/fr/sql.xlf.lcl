@@ -1116,6 +1116,9 @@
       <Item ItemId=";src/sql/base/browser/ui/designer/designer.designer.loadingDesignerCompleted" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Loading designer completed]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Chargement du concepteur terminé]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1131,12 +1134,18 @@
       <Item ItemId=";src/sql/base/browser/ui/designer/designer.designer.processingChanges" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Processing changes...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Changements de traitement...]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/browser/ui/designer/designer.designer.processingChangesCompleted" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Processing changes completed]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Traitement des modifications terminé]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

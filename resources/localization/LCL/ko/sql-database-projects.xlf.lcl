@@ -2230,6 +2230,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.sqlDatabaseProjects.NetCoreVersionDowngradeConfirmation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Installed .NET SDK version {0} is newer than the currently supported versions. Project build will not work. Please install .NET Core SDK version 3.1 and include a global.json in the project folder specifying the SDK version to use. [More Information]5D;(https://docs.microsoft.com/dotnet/core/versions/selection)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[설치된 .NET SDK 버전 {0}이(가) 현재 지원되는 버전보다 최신입니다. 프로젝트 빌드가 작동하지 않습니다. .NET Core SDK 버전 3.1을 설치하고 사용할 SDK 버전을 지정하는 global.json을 프로젝트 폴더에 포함시키세요. [자세한 정보]5D;(https://docs.microsoft.com/dotnet/core/versions/selection)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2656,6 +2659,9 @@
       <Item ItemId=";extensions/sql-database-projects/package.sqlDatabaseProjects.netCoreDowngradeDoNotShow" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Whether to prompt the user to set .NET SDK version when a newer unsupported version is detected.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[지원되지 않는 최신 버전이 탐지될 때 사용자에게 .NET SDK 버전을 설정하라는 메시지를 표시할지 여부를 나타냅니다.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
