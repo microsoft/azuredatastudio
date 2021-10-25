@@ -127,8 +127,6 @@ export const loading = localize('arc.loading', "Loading...");
 export const refreshToEnterCredentials = localize('arc.refreshToEnterCredentials', "Refresh node to enter credentials");
 export const noInstancesAvailable = localize('arc.noInstancesAvailable', "No instances available");
 export const connectToServer = localize('arc.connecToServer', "Connect to Server");
-export const validate = localize('arc.validate', "Validate");
-export const validateDescription = localize('arc.validateDescription', "Click 'Validate' to check if the restore operation is a valid one and auto-fill the earliest and latest restore times.");
 export const connectToController = localize('arc.connectToController', "Connect to Existing Controller");
 export function connectToMSSql(name: string): string { return localize('arc.connectToMSSql', "Connect to SQL managed instance - Azure Arc ({0})", name); }
 export function connectToPGSql(name: string): string { return localize('arc.connectToPGSql', "Connect to PostgreSQL Hyperscale - Azure Arc ({0})", name); }
@@ -292,7 +290,6 @@ export const couldNotFindControllerRegistration = localize('arc.couldNotFindCont
 export const dropMultipleExtensions = localize('arc.dropMultipleExtensions', "Currently dropping another extension, try again once that is completed.");
 export function updateExtensionsFailed(error: any): string { return localize('arc.updateExtensionsFailed', "Editing extensions failed. {0}", getErrorMessage(error)); }
 export function refreshFailed(error: any): string { return localize('arc.refreshFailed', "Refresh failed. {0}", getErrorMessage(error)); }
-export function restoreMessage(msg: any): string { return localize('arc.restoreMessage', "{0} Use a timestamp from '{1}' to '{2}'.", getErrorMessage(msg), earliestPitrRestorePoint, latestpitrRestorePoint); }
 export function restoreTimeWindowUpdateFailed(error: any): string { return localize('arc.restoreTimeWindowUpdateFailed', "Point in time restore time windows update failed. {0}", getErrorMessage(error)); }
 export function resetFailed(error: any): string { return localize('arc.resetFailed', "Reset failed. {0}", getErrorMessage(error)); }
 export function openDashboardFailed(error: any): string { return localize('arc.openDashboardFailed', "Error opening dashboard. {0}", getErrorMessage(error)); }

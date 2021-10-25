@@ -13,7 +13,6 @@ import { InitializingComponent } from '../components/initializingComponent';
 import { MiaaModel, PITRModel, DatabaseModel } from '../../models/miaaModel';
 import * as azurecore from 'azurecore';
 import { ControllerModel } from '../../models/controllerModel';
-import { UserCancelledError } from '../../common/api';
 
 export class RestoreSqlDialog extends InitializingComponent {
 	protected modelBuilder!: azdata.ModelBuilder;
@@ -47,7 +46,6 @@ export class RestoreSqlDialog extends InitializingComponent {
 	private restorePointInputBox!: azdata.InputBoxComponent;
 	private databaseNameInputBox!: azdata.InputBoxComponent;
 	private instanceInputBox!: azdata.InputBoxComponent;
-	private validateButton!: azdata.ButtonComponent;
 	private restorePointContainer!: azdata.DivContainer;
 	protected _completionPromise = new Deferred<PITRModel | undefined>();
 	private _azurecoreApi: azurecore.IExtension;
@@ -102,6 +100,7 @@ export class RestoreSqlDialog extends InitializingComponent {
 			}).component();
 			const sourceDetailsTextLabel = this.modelBuilder.text().withProps({
 				value: loc.sourceDetailsText,
+				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' }
 			}).component();
 			this.sourceDbInputBox = this.modelBuilder.inputBox()
 				.withProps({
@@ -131,72 +130,23 @@ export class RestoreSqlDialog extends InitializingComponent {
 				}).component();
 			this.disposables.push(
 				this.restorePointInputBox.onTextChanged(() => {
-					this._pitrSettings.restorePoint = this.restorePointInputBox.value ?? '';
-					this.validateButton.enabled = true;
+					if ((this.getTimeStamp(this.restorePointInputBox.value) >= this.getTimeStamp(this.earliestRestorePointInputBox.value)
+						&& this.getTimeStamp(this.restorePointInputBox.value) <= this.getTimeStamp(this.earliestRestorePointInputBox.value))) {
+						this._pitrSettings.restorePoint = this.restorePointInputBox.value ?? '';
+						dialog.okButton.enabled = true;
+					}
+					else {
+						dialog.okButton.enabled = false;
+					}
+
+
 				}));
 			this.restorePointContainer = this.modelBuilder.divContainer().component();
 			const pitrDetailsTitle = this.modelBuilder.text().withProps({
 				value: loc.restorePointDetails,
 				CSSStyles: { ...cssStyles.title }
 			}).component();
-			const validateDetailsTextLabel = this.modelBuilder.text().withProps({
-				value: loc.validateDescription,
-			}).component();
-			this.validateButton = this.modelBuilder.button()
-				.withProps({
-					label: loc.validate,
-					enabled: false,
-					description: loc.validateDescription,
-					CSSStyles: { 'max-width': '125px', 'margin-left': '40%' }
-				}).component();
-			this.restorePointContainer.addItem(this.restorePointInputBox, { CSSStyles: { 'align-self': 'start', 'text-align': 'center' } });
-			this.restorePointContainer.addItem(validateDetailsTextLabel, { CSSStyles: { 'margin-top': '40px' } });
-			this.restorePointContainer.addItem(this.validateButton, { CSSStyles: { 'align-self': 'end', 'text-align': 'right' } });
-			this.disposables.push(
-				this.validateButton!.onDidClick(async () => {
-					this.validateButton!.enabled = false;
-					try {
-						await vscode.window.withProgress(
-							{
-								location: vscode.ProgressLocation.Window,
-								title: loc.updatingInstance(loc.restore),
-								cancellable: false
-							},
 
-							async (_progress, _token): Promise<void> => {
-								this._pitrArgs.destName = this._pitrSettings.destDbName;
-								this._pitrArgs.managedInstance = this._pitrSettings.instanceName;
-								this._pitrArgs.time = this._pitrSettings.restorePoint;
-								this._pitrArgs.noWait = false;
-								this._pitrArgs.dryRun = true;
-								const res = await this._azApi.az.sql.midbarc.restore(
-									this._pitrSettings.dbName, this._pitrArgs, this._miaaModel.controllerModel.info.namespace, this._miaaModel.controllerModel.azAdditionalEnvVars);
-								try {
-									await this._miaaModel.refresh();
-
-									this._restoreResult = res.stdout;
-									if (this._pitrArgs.dryRun) {
-										await this.updatePitrTimeWindow(this._restoreResult.earliestRestoreTime, this._restoreResult.latestRestoreTime);
-									}
-									if (this._restoreResult.state === 'Completed') {
-										vscode.window.showInformationMessage(loc.restoreMessage(this._restoreResult.message));
-									}
-									else if (this._restoreResult.state === 'Failed') {
-										vscode.window.showErrorMessage(loc.restoreMessage(this._restoreResult.message));
-									}
-									console.log(this._restoreResult);
-								} catch (error) {
-									vscode.window.showErrorMessage(loc.refreshFailed(error));
-								}
-							}
-						);
-					} catch (err) {
-						if (!(err instanceof UserCancelledError)) {
-							vscode.window.showErrorMessage(loc.restoreMessage(err));
-						}
-						this.validateButton!.enabled = true;
-					}
-				}));
 			const destinationDetailsTitle = this.modelBuilder.text().withProps({
 				value: loc.databaseDetails,
 				CSSStyles: { ...cssStyles.title }
@@ -204,6 +154,7 @@ export class RestoreSqlDialog extends InitializingComponent {
 
 			const databaseDetailsTextLabel = this.modelBuilder.text().withProps({
 				value: loc.databaseDetailsText,
+				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' }
 			}).component();
 
 			this.databaseNameInputBox = this.modelBuilder.inputBox()
@@ -215,10 +166,6 @@ export class RestoreSqlDialog extends InitializingComponent {
 			this.disposables.push(
 				this.databaseNameInputBox.onTextChanged(() => {
 					this._pitrSettings.destDbName = this.databaseNameInputBox.value ?? '';
-					if (this.restorePointInputBox?.value) {
-						this.validateButton.enabled = true;
-					}
-
 				}));
 			this.instanceInputBox = this.modelBuilder.inputBox()
 				.withProps({
@@ -384,4 +331,32 @@ export class RestoreSqlDialog extends InitializingComponent {
 		this.earliestRestorePointInputBox.value = earliestPitr;
 		this.latestRestorePointInputBox.value = latestPitr;
 	}
+
+	public async executeDryRun(): Promise<void> {
+		await vscode.window.withProgress(
+			{
+				location: vscode.ProgressLocation.Window,
+				title: loc.updatingInstance(loc.restore),
+				cancellable: false
+			},
+			async (_progress, _token): Promise<void> => {
+				this._pitrArgs.destName = this._database.name + '-' + Date.now().toString();
+				this._pitrArgs.managedInstance = this._pitrSettings.instanceName;
+				this._pitrArgs.time = new Date().toISOString();
+				this._pitrArgs.noWait = false;
+				this._pitrArgs.dryRun = true;
+				const res = await this._azApi.az.sql.midbarc.restore(
+					this._pitrSettings.dbName, this._pitrArgs, this._miaaModel.controllerModel.info.namespace, this._miaaModel.controllerModel.azAdditionalEnvVars);
+				this._restoreResult = res.stdout;
+				if (this._pitrArgs.dryRun) {
+					await this.updatePitrTimeWindow(this._restoreResult.earliestRestoreTime, this._restoreResult.latestRestoreTime);
+				}
+			});
+	}
+
+
+	public getTimeStamp(dateTime: string | undefined): number {
+		return dateTime ? (new Date(dateTime)).getTime() : 0;
+	}
+
 }
