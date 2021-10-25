@@ -834,7 +834,7 @@ export class ProjectsController {
 
 	public async selectAutorestSpecFile(): Promise<string | undefined> {
 		let quickpickSelection = await vscode.window.showQuickPick(
-			[constants.browseEllipsis],
+			[constants.browseEllipsisWithIcon],
 			{ title: constants.selectSpecFile, ignoreFocusOut: true });
 		if (!quickpickSelection) {
 			return;
@@ -864,14 +864,13 @@ export class ProjectsController {
 	 * 			outputFolder: 'C:\Source',
 	 * 			projectName: 'MyProject'}
 	 */
-	public async selectAutorestProjectLocation(specPath: string): Promise<{ newProjectFolder: string, outputFolder: string, projectName: string } | undefined> {
+	public async selectAutorestProjectLocation(projectName: string): Promise<{ newProjectFolder: string, outputFolder: string, projectName: string } | undefined> {
 		let valid = false;
 		let newProjectFolder: string = '';
 		let outputFolder: string = '';
-		let projectName: string = '';
 
 		let quickpickSelection = await vscode.window.showQuickPick(
-			[constants.browseEllipsis],
+			[constants.browseEllipsisWithIcon],
 			{ title: constants.selectProjectLocation, ignoreFocusOut: true });
 		if (!quickpickSelection) {
 			return;
@@ -893,13 +892,12 @@ export class ProjectsController {
 
 			outputFolder = folders[0].fsPath;
 
-			projectName = path.basename(specPath, path.extname(specPath));
 			newProjectFolder = path.join(outputFolder, projectName);
 
 			if (await utils.exists(newProjectFolder)) {
 
 				quickpickSelection = await vscode.window.showQuickPick(
-					[constants.browseEllipsis],
+					[constants.browseEllipsisWithIcon],
 					{ title: constants.folderAlreadyExistsChooseNewLocation(newProjectFolder), ignoreFocusOut: true });
 				if (!quickpickSelection) {
 					return;
@@ -909,12 +907,20 @@ export class ProjectsController {
 			}
 		}
 
-		await fs.mkdir(newProjectFolder);
 		return { newProjectFolder, outputFolder, projectName };
 	}
 
-	public async generateAutorestFiles(specPath: string, newProjectFolder: string): Promise<void> {
-		await this.autorestHelper.generateAutorestFiles(specPath, newProjectFolder);
+	public async generateAutorestFiles(specPath: string, newProjectFolder: string): Promise<string | undefined> {
+		await fs.mkdir(newProjectFolder, { recursive: true });
+
+		return vscode.window.withProgress(
+			{
+				location: vscode.ProgressLocation.Notification,
+				title: constants.generatingProjectFromAutorest(path.basename(specPath)),
+				cancellable: false
+			}, async (_progress, _token) => {
+				return this.autorestHelper.generateAutorestFiles(specPath, newProjectFolder);
+			});
 	}
 
 	public async openProjectInWorkspace(projectFilePath: string): Promise<void> {
@@ -925,6 +931,25 @@ export class ProjectsController {
 		workspaceApi.showProjectsView();
 	}
 
+	public async promptForAutorestProjectName(defaultName?: string): Promise<string | undefined> {
+		let name: string | undefined = await vscode.window.showInputBox({
+			ignoreFocusOut: true,
+			prompt: constants.autorestProjectName,
+			value: defaultName,
+			validateInput: (value) => {
+				return value.trim() ? undefined : constants.nameMustNotBeEmpty;
+			}
+		});
+
+		if (name === undefined) {
+			return; // cancelled by user
+		}
+
+		name = name.trim();
+
+		return name;
+	}
+
 	public async generateProjectFromOpenApiSpec(): Promise<Project | undefined> {
 		try {
 			// 1. select spec file
@@ -933,16 +958,33 @@ export class ProjectsController {
 				return;
 			}
 
-			// 2. select location, make new folder
-			const projectInfo = await this.selectAutorestProjectLocation(specPath!);
+			// 2. prompt for project name
+			const projectName = await this.promptForAutorestProjectName(path.basename(specPath, path.extname(specPath)));
+			if (!projectName) {
+				return;
+			}
+
+			// 3. select location, make new folder
+			const projectInfo = await this.selectAutorestProjectLocation(projectName!);
 			if (!projectInfo) {
 				return;
 			}
 
-			// 3. run AutoRest to generate .sql files
-			await this.generateAutorestFiles(specPath, projectInfo.newProjectFolder);
+			// 4. run AutoRest to generate .sql files
+			const result = await this.generateAutorestFiles(specPath, projectInfo.newProjectFolder);
+			if (!result) { // user canceled operation when choosing how to run autorest
+				return;
+			}
 
-			// 4. create new SQL project
+			const fileFolderList: vscode.Uri[] | undefined = await this.getSqlFileList(projectInfo.newProjectFolder);
+
+			if (!fileFolderList || fileFolderList.length === 0) {
+				void vscode.window.showInformationMessage(constants.noSqlFilesGenerated);
+				this._outputChannel.show();
+				return;
+			}
+
+			// 5. create new SQL project
 			const newProjFilePath = await this.createNewProject({
 				newProjName: projectInfo.projectName,
 				folderUri: vscode.Uri.file(projectInfo.outputFolder),
@@ -951,8 +993,7 @@ export class ProjectsController {
 
 			const project = await Project.openProject(newProjFilePath);
 
-			// 5. add generated files to SQL project
-			let fileFolderList: vscode.Uri[] = await this.getSqlFileList(project.projectFolderPath);
+			// 6. add generated files to SQL project
 			await project.addToProject(fileFolderList.filter(f => !f.fsPath.endsWith(constants.autorestPostDeploymentScriptName))); // Add generated file structure to the project
 
 			const postDeploymentScript: vscode.Uri | undefined = this.findPostDeploymentScript(fileFolderList);
@@ -961,12 +1002,13 @@ export class ProjectsController {
 				await project.addScriptItem(path.relative(project.projectFolderPath, postDeploymentScript.fsPath), undefined, templates.postDeployScript);
 			}
 
-			// 6. add project to workspace and open
+			// 7. add project to workspace and open
 			await this.openProjectInWorkspace(newProjFilePath);
 
 			return project;
 		} catch (err) {
 			void vscode.window.showErrorMessage(constants.generatingProjectFailed(utils.getErrorMessage(err)));
+			this._outputChannel.show();
 			return;
 		}
 	}
@@ -986,17 +1028,20 @@ export class ProjectsController {
 			default:
 				throw new Error(constants.multipleMostDeploymentScripts(results.length));
 		}
-
 	}
 
-	private async getSqlFileList(folder: string): Promise<vscode.Uri[]> {
+	private async getSqlFileList(folder: string): Promise<vscode.Uri[] | undefined> {
+		if (!(await utils.exists(folder))) {
+			return undefined;
+		}
+
 		const entries = await fs.readdir(folder, { withFileTypes: true });
 
 		const folders = entries.filter(dir => dir.isDirectory()).map(dir => path.join(folder, dir.name));
-		const files = entries.filter(file => !file.isDirectory() && path.extname(file.name) === '.sql').map(file => vscode.Uri.file(path.join(folder, file.name)));
+		const files = entries.filter(file => !file.isDirectory() && path.extname(file.name) === constants.sqlFileExtension).map(file => vscode.Uri.file(path.join(folder, file.name)));
 
 		for (const folder of folders) {
-			files.push(...await this.getSqlFileList(folder));
+			files.push(...(await this.getSqlFileList(folder) ?? []));
 		}
 
 		return files;

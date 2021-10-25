@@ -82,6 +82,9 @@ export class SplitCellAction extends CellActionBase {
 		this._register(context.cell.onCurrentEditModeChanged(currentMode => {
 			this.enabled = currentMode === CellEditModes.WYSIWYG ? false : true;
 		}));
+		this._register(context.cell.notebookModel.onCellTypeChanged(_ => {
+			this.enabled = context.cell.currentMode === CellEditModes.WYSIWYG ? false : true;
+		}));
 	}
 }
 

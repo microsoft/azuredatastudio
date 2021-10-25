@@ -237,6 +237,7 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 	constructor(private _title: string,
 		private _resource: URI,
 		private _textInput: TextInput,
+		private _showActions: boolean,
 		@ITextModelService private textModelService: ITextModelService,
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@INotebookService private notebookService: INotebookService,
@@ -514,6 +515,10 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 		} else {
 			return this.textInput.matches(otherInput);
 		}
+	}
+
+	public get showActions(): boolean {
+		return this._showActions;
 	}
 }
 

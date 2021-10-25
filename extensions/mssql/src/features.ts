@@ -1108,7 +1108,7 @@ export class TableDesignerFeature extends SqlOpsFeature<undefined> {
 	protected registerProvider(options: undefined): Disposable {
 		const client = this._client;
 
-		const getTableDesignerInfo = async (tableInfo: azdata.designers.TableInfo): Promise<azdata.designers.TableDesignerInfo> => {
+		const getTableDesignerInfo = (tableInfo: azdata.designers.TableInfo): Thenable<azdata.designers.TableDesignerInfo> => {
 			try {
 				return client.sendRequest(contracts.GetTableDesignerInfoRequest.type, tableInfo);
 			}
@@ -1117,10 +1117,10 @@ export class TableDesignerFeature extends SqlOpsFeature<undefined> {
 				return Promise.reject(e);
 			}
 		};
-		const processTableEdit = async (tableInfo: azdata.designers.TableInfo, data: azdata.designers.DesignerData, tableChangeInfo: azdata.designers.DesignerEdit): Promise<azdata.designers.DesignerEditResult> => {
+		const processTableEdit = (tableInfo: azdata.designers.TableInfo, viewModel: azdata.designers.DesignerViewModel, tableChangeInfo: azdata.designers.DesignerEdit): Thenable<azdata.designers.DesignerEditResult> => {
 			let params: contracts.TableDesignerEditRequestParams = {
 				tableInfo: tableInfo,
-				data: data,
+				viewModel: viewModel,
 				tableChangeInfo: tableChangeInfo
 			};
 			try {
@@ -1132,10 +1132,36 @@ export class TableDesignerFeature extends SqlOpsFeature<undefined> {
 			}
 		};
 
+		const saveTable = (tableInfo: azdata.designers.TableInfo, viewModel: azdata.designers.DesignerViewModel): Thenable<void> => {
+			let params: contracts.SaveTableDesignerChangesRequestParams = {
+				tableInfo: tableInfo,
+				viewModel: viewModel
+			};
+			try {
+				return client.sendRequest(contracts.SaveTableDesignerChangesRequest.type, params);
+			}
+			catch (e) {
+				client.logFailedRequest(contracts.SaveTableDesignerChangesRequest.type, e);
+				return Promise.reject(e);
+			}
+		};
+
+		const disposeTableDesigner = (tableInfo: azdata.designers.TableInfo): Thenable<void> => {
+			try {
+				return client.sendRequest(contracts.DisposeTableDesignerRequest.type, tableInfo);
+			}
+			catch (e) {
+				client.logFailedRequest(contracts.DisposeTableDesignerRequest.type, e);
+				return Promise.reject(e);
+			}
+		};
+
 		return azdata.dataprotocol.registerTableDesignerProvider({
 			providerId: client.providerId,
 			getTableDesignerInfo,
-			processTableEdit
+			processTableEdit,
+			saveTable,
+			disposeTableDesigner
 		});
 	}
 }

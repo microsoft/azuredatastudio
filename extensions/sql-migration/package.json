@@ -2,7 +2,7 @@
 	"name": "sql-migration",
 	"displayName": "%displayName%",
 	"description": "%description%",
-	"version": "0.1.8",
+	"version": "0.1.9",
 	"publisher": "Microsoft",
 	"preview": true,
 	"license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
@@ -81,6 +81,11 @@
 				"command": "sqlmigration.cancel.migration",
 				"title": "%cancel-migration-menu%",
 				"category": "%migration-context-menu-category%"
+			},
+      {
+				"command": "sqlmigration.retry.migration",
+				"title": "%retry-migration-menu%",
+				"category": "%migration-context-menu-category%"
 			}
 		],
 		"menu": {
@@ -115,6 +120,10 @@
 				},
 				{
 					"command": "sqlmigration.cancel.migration",
+					"when": "false"
+				},
+        {
+					"command": "sqlmigration.retry.migration",
 					"when": "false"
 				}
 			]

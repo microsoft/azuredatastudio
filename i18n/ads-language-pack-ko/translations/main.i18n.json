@@ -10271,6 +10271,7 @@
 			"schema.connectionOptions": "연결 옵션",
 			"schema.displayName": "공급자의 표시 이름",
 			"schema.iconPath": "서버 유형의 아이콘 경로",
+			"schema.isQueryProvider": "Whether the provider is also a query provider. The default value is true.",
 			"schema.notebookKernelAlias": "공급자의 Notebook 커널 별칭",
 			"schema.providerId": "공급자의 일반 ID"
 		},
@@ -10787,6 +10788,7 @@
 			"codePreview": "코드 셀",
 			"optionCodeCell": "코드 셀",
 			"optionTextCell": "텍스트 셀",
+			"splitCell": "셀 분할",
 			"textPreview": "텍스트 셀"
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/code.component": {
@@ -11225,7 +11227,7 @@
 		},
 		"sql/workbench/contrib/query/browser/queryResultsView": {
 			"messagesTabTitle": "메시지",
-			"queryResults.queryEditorCrashError": "The query editor ran into an issue and has stopped working. Please save and reopen it.",
+			"queryResults.queryEditorCrashError": "쿼리 편집기에 문제가 발생하여 작동이 중지되었습니다. 저장하고 다시 여세요.",
 			"resultsTabTitle": "결과"
 		},
 		"sql/workbench/contrib/query/browser/statusBarItems": {
@@ -11981,6 +11983,39 @@
 		"sql/workbench/services/query/common/queryManagement": {
 			"queryManagement.noQueryRunnerForUri": "{0} URI에 대한 쿼리 실행기를 찾을 수 없습니다.",
 			"queryManagement.uriAlreadyHasQueryRunner": "URI: {0} 예외에는 쿼리 실행기를 이미 가지고 있습니다."
+		},
+		"sql/base/browser/ui/designer/designer": {
+			"designer.newRowText": "새로 추가",
+			"designer.removeRowText": "제거",
+			"tableDesigner.unknownComponentType": "구성 요소 형식: {0}이(가) 지원되지 않음"
+		},
+		"sql/base/browser/ui/designer/designerPropertiesPane": {
+			"tableDesigner.propertiesPaneTitle": "속성",
+			"tableDesigner.propertiesPaneTitleWithContext": "속성 - {0} {1}"
+		},
+		"sql/workbench/browser/editor/tableDesigner/tableDesignerInput": {
+			"tableDesigner.newTable": "새 테이블"
+		},
+		"sql/workbench/contrib/tableDesigner/browser/actions": {
+			"tableDesigner.saveTableChanges": "변경 내용 저장"
+		},
+		"sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput": {
+			"tableDesigner.advancedTab": "고급",
+			"tableDesigner.columnAllowNullTitle": "Null 허용",
+			"tableDesigner.columnDefaultValueTitle": "기본값",
+			"tableDesigner.columnIsPrimaryKeyTitle": "기본 키",
+			"tableDesigner.columnLengthTitle": "길이",
+			"tableDesigner.columnNameTitle": "이름",
+			"tableDesigner.columnTypeName": "열",
+			"tableDesigner.columnTypeTitle": "형식",
+			"tableDesigner.columnsTabTitle": "열",
+			"tableDesigner.descriptionTitle": "설명",
+			"tableDesigner.nameTitle": "테이블 이름",
+			"tableDesigner.saveChangeError": "변경 내용을 저장하는 동안 오류가 발생했습니다. {0}",
+			"tableDesigner.savedChangeSuccess": "변경 내용이 저장되었습니다.",
+			"tableDesigner.savingChanges": "테이블 디자이너 변경 내용을 저장하는 중...",
+			"tableDesigner.schemaTitle": "스키마",
+			"tableDesigner.tableObjectType": "테이블"
 		}
 	}
 }

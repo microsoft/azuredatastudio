@@ -111,7 +111,7 @@
 		},
 		"dist/dialog/configurePython/configurePathPage": {
 			"configurePython.browseButtonText": "Examinar",
-			"configurePython.descriptionWithKernel": "The '{0}' kernel requires a Python runtime to be configured and dependencies to be installed.",
+			"configurePython.descriptionWithKernel": "El kernel de \"{0}\" requiere que se configure un entorno de ejecución de Python y que se instalen dependencias.",
 			"configurePython.descriptionWithoutKernel": "Los kernel del cuaderno requieren que se configure un entorno de ejecución de Python y que se instalen dependencias.",
 			"configurePython.existingInstall": "Usar la instalación de Python existente",
 			"configurePython.installationType": "Tipo de instalación",
@@ -140,7 +140,7 @@
 			"configurePython.pkgNameColumn": "Nombre",
 			"configurePython.requiredDependencies": "Instalar dependencias de kernel necesarias",
 			"configurePython.requiredVersionColumn": "Versión necesaria",
-			"msgNoRequirementsForKernel": "No packages are required by default for the kernel '{0}'"
+			"msgNoRequirementsForKernel": "No se requiere ningún paquete de forma predeterminada para el kernel \"{0}\"."
 		},
 		"dist/dialog/managePackages/addNewPackageTab": {
 			"managePackages.addNewTabTitle": "Añadir nuevos",

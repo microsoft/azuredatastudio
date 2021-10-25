@@ -5,10 +5,10 @@
 
 import * as azdata from 'azdata';
 import 'mocha';
+import { InputValueType } from 'resource-deployment';
 import * as should from 'should';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
-import { InputValueType } from '../../../ui/modelViewUtils';
 import { createValidation, GreaterThanOrEqualsValidation, IntegerValidation, LessThanOrEqualsValidation, RegexValidation, validateInputBoxComponent, Validation, ValidationType } from '../../../ui/validation/validations';
 
 const inputBox = <azdata.InputBoxComponent>{

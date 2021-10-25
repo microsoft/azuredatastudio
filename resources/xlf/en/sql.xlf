@@ -1,6 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file original="src/sql/base/browser/ui/designer/designer" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="designer.loadingDesigner">
+      <source xml:lang="en">Loading designer...</source>
+    </trans-unit>
+    <trans-unit id="designer.loadingDesignerCompleted">
+      <source xml:lang="en">Loading designer completed</source>
+    </trans-unit>
+    <trans-unit id="designer.newRowText">
+      <source xml:lang="en">Add New</source>
+    </trans-unit>
+    <trans-unit id="designer.processingChanges">
+      <source xml:lang="en">Processing changes...</source>
+    </trans-unit>
+    <trans-unit id="designer.processingChangesCompleted">
+      <source xml:lang="en">Processing changes completed</source>
+    </trans-unit>
+    <trans-unit id="designer.removeRowText">
+      <source xml:lang="en">Remove</source>
+    </trans-unit>
     <trans-unit id="tableDesigner.unknownComponentType">
       <source xml:lang="en">The component type: {0} is not supported</source>
     </trans-unit>
@@ -13,6 +31,14 @@
       <source xml:lang="en">Properties - {0} {1}</source>
       <note>{0} is the place holder for object type
 {1} is the place holder for object name</note>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/base/browser/ui/loadingSpinner/loadingSpinner" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="loadingCompletedMessage">
+      <source xml:lang="en">Loading completed</source>
+    </trans-unit>
+    <trans-unit id="loadingMessage">
+      <source xml:lang="en">Loading</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/base/browser/ui/loadingSpinner/loadingSpinner.component" source-language="en" datatype="plaintext"><body>
@@ -339,6 +365,9 @@
     </trans-unit>
     <trans-unit id="calloutDialogShadowColor">
       <source xml:lang="en">Callout dialog box shadow color.</source>
+    </trans-unit>
+    <trans-unit id="designer.paneSeparator">
+      <source xml:lang="en">The pane separator color.</source>
     </trans-unit>
     <trans-unit id="extensionPackGradientColorOne">
       <source xml:lang="en">The top color for the extension pack gradient</source>
@@ -1390,6 +1419,9 @@
     </trans-unit>
     <trans-unit id="schema.iconPath">
       <source xml:lang="en">Icon path for the server type</source>
+    </trans-unit>
+    <trans-unit id="schema.isQueryProvider">
+      <source xml:lang="en">Whether the provider is also a query provider. The default value is true.</source>
     </trans-unit>
     <trans-unit id="schema.notebookKernelAlias">
       <source xml:lang="en">Notebook Kernel Alias for the provider</source>
@@ -4136,6 +4168,11 @@ Error: {1}</source>
       <source xml:lang="en">An error occurred refreshing node '{0}': {1}</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/contrib/tableDesigner/browser/actions" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="tableDesigner.saveTableChanges">
+      <source xml:lang="en">Save Changes</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/contrib/tasks/browser/tasks.contribution" source-language="en" datatype="plaintext"><body>
     <trans-unit id="inProgressTasksChangesBadge">
       <source xml:lang="en">{0} in progress tasks</source>
@@ -5694,6 +5731,9 @@ Error: {1}</source>
     <trans-unit id="tableDesigner.columnDefaultValueTitle">
       <source xml:lang="en">Default Value</source>
     </trans-unit>
+    <trans-unit id="tableDesigner.columnIsPrimaryKeyTitle">
+      <source xml:lang="en">Primary Key</source>
+    </trans-unit>
     <trans-unit id="tableDesigner.columnLengthTitle">
       <source xml:lang="en">Length</source>
     </trans-unit>
@@ -5714,6 +5754,15 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="tableDesigner.nameTitle">
       <source xml:lang="en">Table name</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.saveChangeError">
+      <source xml:lang="en">An error occured while saving changes: {0}</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.savedChangeSuccess">
+      <source xml:lang="en">The changes have been successfully saved.</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.savingChanges">
+      <source xml:lang="en">Saving table designer changes...</source>
     </trans-unit>
     <trans-unit id="tableDesigner.schemaTitle">
       <source xml:lang="en">Schema</source>

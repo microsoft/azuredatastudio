@@ -107,7 +107,7 @@ steps:
     set -e
     node ./node_modules/playwright/install.js
     APP_ROOT=$(Agent.BuildDirectory)/vscode-reh-web-linux-x64
-    xvfb-run yarn smoketest --build "$(Agent.BuildDirectory)/vscode-reh-web-linux-x64" --web --headless --screenshots "$(Build.ArtifactStagingDirectory)/smokeshots"
+    xvfb-run yarn smoketest --build "$(Agent.BuildDirectory)/vscode-reh-web-linux-x64" --web --headless --screenshots "$(Build.ArtifactStagingDirectory)/smokeshots" --log "$(Build.ArtifactStagingDirectory)/logs/web/smoke.log"
   displayName: Run smoke tests (Browser)
   continueOnError: true
   condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))

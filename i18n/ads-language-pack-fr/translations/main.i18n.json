@@ -10271,6 +10271,7 @@
 			"schema.connectionOptions": "Options de connexion",
 			"schema.displayName": "Nom d'affichage du fournisseur",
 			"schema.iconPath": "Chemin de l'icône du type de serveur",
+			"schema.isQueryProvider": "Whether the provider is also a query provider. The default value is true.",
 			"schema.notebookKernelAlias": "Alias du noyau de notebook pour le fournisseur",
 			"schema.providerId": "ID courant du fournisseur"
 		},
@@ -10787,6 +10788,7 @@
 			"codePreview": "Cellule de code",
 			"optionCodeCell": "Cellule de code",
 			"optionTextCell": "Cellule de texte",
+			"splitCell": "Fractionner la cellule",
 			"textPreview": "Cellule de texte"
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/code.component": {
@@ -11225,7 +11227,7 @@
 		},
 		"sql/workbench/contrib/query/browser/queryResultsView": {
 			"messagesTabTitle": "Messages",
-			"queryResults.queryEditorCrashError": "The query editor ran into an issue and has stopped working. Please save and reopen it.",
+			"queryResults.queryEditorCrashError": "L’éditeur de requête a rencontré un problème et a cessé de fonctionner. Enregistrez et rouvrez-le.",
 			"resultsTabTitle": "Résultats"
 		},
 		"sql/workbench/contrib/query/browser/statusBarItems": {
@@ -11981,6 +11983,39 @@
 		"sql/workbench/services/query/common/queryManagement": {
 			"queryManagement.noQueryRunnerForUri": "Impossible de trouver Query Runner pour l’uri :{0}",
 			"queryManagement.uriAlreadyHasQueryRunner": "Uri : {0} a déjà un Runner de requête de manière inattendue."
+		},
+		"sql/base/browser/ui/designer/designer": {
+			"designer.newRowText": "Ajouter nouveau",
+			"designer.removeRowText": "Supprimer",
+			"tableDesigner.unknownComponentType": "Le type de composant : {0} n’est pas pris en charge."
+		},
+		"sql/base/browser/ui/designer/designerPropertiesPane": {
+			"tableDesigner.propertiesPaneTitle": "Propriétés",
+			"tableDesigner.propertiesPaneTitleWithContext": "Propriétés - {0} {1}"
+		},
+		"sql/workbench/browser/editor/tableDesigner/tableDesignerInput": {
+			"tableDesigner.newTable": "Nouvelle table"
+		},
+		"sql/workbench/contrib/tableDesigner/browser/actions": {
+			"tableDesigner.saveTableChanges": "Enregistrer les modifications"
+		},
+		"sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput": {
+			"tableDesigner.advancedTab": "Avancé",
+			"tableDesigner.columnAllowNullTitle": "Autoriser les valeurs Null",
+			"tableDesigner.columnDefaultValueTitle": "Valeur par défaut",
+			"tableDesigner.columnIsPrimaryKeyTitle": "Clé primaire",
+			"tableDesigner.columnLengthTitle": "Longueur",
+			"tableDesigner.columnNameTitle": "Nom",
+			"tableDesigner.columnTypeName": "Colonne",
+			"tableDesigner.columnTypeTitle": "Type",
+			"tableDesigner.columnsTabTitle": "Colonnes",
+			"tableDesigner.descriptionTitle": "Description",
+			"tableDesigner.nameTitle": "Nom de la table",
+			"tableDesigner.saveChangeError": "Une erreur s’est produite lors de l’enregistrement des modifications : {0}",
+			"tableDesigner.savedChangeSuccess": "Les modifications ont été enregistrées avec succès.",
+			"tableDesigner.savingChanges": "Enregistrement des modifications du concepteur de tables...",
+			"tableDesigner.schemaTitle": "Schéma",
+			"tableDesigner.tableObjectType": "Table"
 		}
 	}
 }

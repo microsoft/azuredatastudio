@@ -79,8 +79,13 @@ steps:
 
 - script: |
     set -e
-    yarn npm-run-all -lp core-ci extensions-ci hygiene eslint valid-layers-check sqllint extensions-lint
+    yarn npm-run-all -lp core-ci extensions-ci hygiene eslint valid-layers-check
   displayName: Compile & Hygiene
+
+- script: |
+    set -e
+    yarn npm-run-all -lp sqllint extensions-lint strict-vscode
+  displayName: SQL Hygiene
 
 - script: |
     set -e

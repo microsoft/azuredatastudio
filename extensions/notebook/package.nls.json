@@ -27,6 +27,7 @@
 	"notebook.command.italicizeText": "Italicize Markdown Text",
 	"notebook.command.underlineText": "Underline Markdown Text",
 	"notebook.command.codeBlock": "Add Code Block",
+	"notebook.command.highlightText": "Highlight Markdown Text",
 	"title.analyzeJupyterNotebook": "Analyze in Notebook",
 	"title.newJupyterNotebook": "New Notebook",
 	"title.openJupyterNotebook": "Open Notebook",

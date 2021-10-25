@@ -87,9 +87,9 @@
         <target state="translated">建立</target>
       </trans-unit>
       <trans-unit id="duplicateFileError">
-        <source xml:lang="en">File {0} already exists in the destination folder {1} 
+        <source xml:lang="en">File {0} already exists in the destination folder {1}
  The file has been renamed to {2} to prevent data loss.</source>
-        <target state="translated">檔案 {0} 已存在於目的地資料夾 {1} 中 
+        <target state="translated">檔案 {0} 已存在於目的地資料夾 {1} 中
  檔案已重新命名為 {2}，以避免資料遺失。</target>
       </trans-unit>
       <trans-unit id="editBookError">
@@ -398,7 +398,7 @@
       </trans-unit>
       <trans-unit id="configurePython.descriptionWithKernel">
         <source xml:lang="en">The '{0}' kernel requires a Python runtime to be configured and dependencies to be installed.</source>
-        <target state="new">The '{0}' kernel requires a Python runtime to be configured and dependencies to be installed.</target>
+        <target state="translated">'{0}' 核心需要設定 Python 執行階段並安裝相依性。</target>
       </trans-unit>
       <trans-unit id="configurePython.descriptionWithoutKernel">
         <source xml:lang="en">Notebook kernels require a Python runtime to be configured and dependencies to be installed.</source>
@@ -506,7 +506,7 @@
       </trans-unit>
       <trans-unit id="msgNoRequirementsForKernel">
         <source xml:lang="en">No packages are required by default for the kernel '{0}'</source>
-        <target state="new">No packages are required by default for the kernel '{0}'</target>
+        <target state="translated">核心 '{0}' 預設不需要任何封裝</target>
       </trans-unit>
     </body>
   </file>

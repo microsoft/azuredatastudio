@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file original="extensions/arc/dist/localizedConstants" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="arc.USD">
+      <source xml:lang="en">USD</source>
+    </trans-unit>
     <trans-unit id="arc.addingWorkerNodes">
       <source xml:lang="en">adding worker nodes</source>
+    </trans-unit>
+    <trans-unit id="arc.apply">
+      <source xml:lang="en">Apply</source>
     </trans-unit>
     <trans-unit id="arc.arcDeploymentDeprecation">
       <source xml:lang="en">The Arc Deployment extension has been replaced by the Arc extension and has been uninstalled.</source>
@@ -16,8 +22,14 @@
     <trans-unit id="arc.backup">
       <source xml:lang="en">Backup</source>
     </trans-unit>
+    <trans-unit id="arc.backups">
+      <source xml:lang="en">Backups</source>
+    </trans-unit>
     <trans-unit id="arc.backupsStorage">
       <source xml:lang="en">{0} backups</source>
+    </trans-unit>
+    <trans-unit id="arc.businessCriticalLabel">
+      <source xml:lang="en">[PREVIEW] Business Critical (Unlimited vCores and RAM, advanced high availability)</source>
     </trans-unit>
     <trans-unit id="arc.cancel">
       <source xml:lang="en">Cancel</source>
@@ -54,6 +66,12 @@
     </trans-unit>
     <trans-unit id="arc.configurationPerNode">
       <source xml:lang="en">Configuration (per node)</source>
+    </trans-unit>
+    <trans-unit id="arc.configureRP">
+      <source xml:lang="en">Configure retention policy</source>
+    </trans-unit>
+    <trans-unit id="arc.configureRetentionPolicyButton">
+      <source xml:lang="en">Configure Retention Policy</source>
     </trans-unit>
     <trans-unit id="arc.confirmNewPassword">
       <source xml:lang="en">Confirm the new password</source>
@@ -193,11 +211,20 @@
     <trans-unit id="arc.dataStorage">
       <source xml:lang="en">{0} data</source>
     </trans-unit>
+    <trans-unit id="arc.database">
+      <source xml:lang="en">Database</source>
+    </trans-unit>
     <trans-unit id="arc.databaseCreated">
       <source xml:lang="en">Database {0} created</source>
     </trans-unit>
     <trans-unit id="arc.databaseCreationFailed">
       <source xml:lang="en">Failed to create database {0}. {1}</source>
+    </trans-unit>
+    <trans-unit id="arc.databaseDetails">
+      <source xml:lang="en">Database Details</source>
+    </trans-unit>
+    <trans-unit id="arc.databaseDetailsText">
+      <source xml:lang="en">Enter the required settings for this database, including a name and a target managed instance. By default, the source instance is selected.</source>
     </trans-unit>
     <trans-unit id="arc.databaseName">
       <source xml:lang="en">Database name</source>
@@ -234,6 +261,9 @@
     </trans-unit>
     <trans-unit id="arc.dropMultipleExtensions">
       <source xml:lang="en">Currently dropping another extension, try again once that is completed.</source>
+    </trans-unit>
+    <trans-unit id="arc.earliestPitrRestorePoint">
+      <source xml:lang="en">Earliest PITR restore point</source>
     </trans-unit>
     <trans-unit id="arc.emergency">
       <source xml:lang="en">Emergency</source>
@@ -325,6 +355,9 @@
     <trans-unit id="arc.fullyQualifiedDomain">
       <source xml:lang="en">Fully qualified domain</source>
     </trans-unit>
+    <trans-unit id="arc.generalPurposeLabel">
+      <source xml:lang="en">General Purpose (Up to 24 vCores and 128 Gi of RAM, standard high availability)</source>
+    </trans-unit>
     <trans-unit id="arc.grafanaDashboard">
       <source xml:lang="en">Grafana Dashboard</source>
     </trans-unit>
@@ -336,6 +369,9 @@
     </trans-unit>
     <trans-unit id="arc.installingExtension">
       <source xml:lang="en">Installing extension '{0}'...</source>
+    </trans-unit>
+    <trans-unit id="arc.instance">
+      <source xml:lang="en">Instance</source>
     </trans-unit>
     <trans-unit id="arc.instanceDeleted">
       <source xml:lang="en">Instance '{0}' deleted</source>
@@ -369,6 +405,9 @@
     </trans-unit>
     <trans-unit id="arc.lastTransition">
       <source xml:lang="en">Last transition</source>
+    </trans-unit>
+    <trans-unit id="arc.latestpitrRestorePoint">
+      <source xml:lang="en">Latest PITR restore point</source>
     </trans-unit>
     <trans-unit id="arc.learnAboutNodeParameters">
       <source xml:lang="en">Learn more about database engine settings for Azure Arc-enabled PostgreSQL Hyperscale</source>
@@ -405,6 +444,9 @@
     </trans-unit>
     <trans-unit id="arc.miaaAdmin">
       <source xml:lang="en">Managed instance admin</source>
+    </trans-unit>
+    <trans-unit id="arc.miaaBackupsDatabasesDescription">
+      <source xml:lang="en">Databases with available backups are displayed below. Restore databases to this instance or any other instance within the same custom location.</source>
     </trans-unit>
     <trans-unit id="arc.miaaComputeAndStorageDescriptionPartOne">
       <source xml:lang="en">You can scale your Azure SQL managed instance - Azure Arc by</source>
@@ -541,6 +583,12 @@
     <trans-unit id="arc.pgSqlType">
       <source xml:lang="en">PostgreSQL Hyperscale - Azure Arc</source>
     </trans-unit>
+    <trans-unit id="arc.pitr">
+      <source xml:lang="en">Point-in-time restore (PITR)</source>
+    </trans-unit>
+    <trans-unit id="arc.pitrInfo">
+      <source xml:lang="en">Specify how long you want to keep your point-in-time backups. Customize this for backup availability.</source>
+    </trans-unit>
     <trans-unit id="arc.podConditionsTable">
       <source xml:lang="en">Pod conditions table</source>
     </trans-unit>
@@ -595,6 +643,12 @@
     <trans-unit id="arc.preloaded Extensions">
       <source xml:lang="en">Preloaded Extensions</source>
     </trans-unit>
+    <trans-unit id="arc.projectDetails">
+      <source xml:lang="en">Project Details</source>
+    </trans-unit>
+    <trans-unit id="arc.projectDetailsText">
+      <source xml:lang="en">Select the subscription to manage deployed resources. Use resource groups like folders to organize and manage all your resources.</source>
+    </trans-unit>
     <trans-unit id="arc.properties">
       <source xml:lang="en">Properties</source>
     </trans-unit>
@@ -628,6 +682,15 @@
     <trans-unit id="arc.rememberPassword">
       <source xml:lang="en">Remember Password</source>
     </trans-unit>
+    <trans-unit id="arc.replicaOne">
+      <source xml:lang="en">1 replica</source>
+    </trans-unit>
+    <trans-unit id="arc.replicaThree">
+      <source xml:lang="en">3 replicas</source>
+    </trans-unit>
+    <trans-unit id="arc.replicaTwo">
+      <source xml:lang="en">2 replicas</source>
+    </trans-unit>
     <trans-unit id="arc.resetAllToDefault">
       <source xml:lang="en">Reset all to default</source>
     </trans-unit>
@@ -649,8 +712,23 @@
     <trans-unit id="arc.resourceHealthDescription">
       <source xml:lang="en">Resource health can tell you if your resource is running as expected.</source>
     </trans-unit>
+    <trans-unit id="arc.restore">
+      <source xml:lang="en">Restore</source>
+    </trans-unit>
+    <trans-unit id="arc.restoreDatabase">
+      <source xml:lang="en">Restore Database</source>
+    </trans-unit>
+    <trans-unit id="arc.restoreInfo">
+      <source xml:lang="en">Restore a database to an Azure Arc enabled SQL Managed Instance of your choice.</source>
+    </trans-unit>
+    <trans-unit id="arc.restorePoint">
+      <source xml:lang="en">Restore point (UTC)</source>
+    </trans-unit>
     <trans-unit id="arc.restoring">
       <source xml:lang="en">Restoring</source>
+    </trans-unit>
+    <trans-unit id="arc.retentionDays">
+      <source xml:lang="en">Point-In-Time Recovery retention (days)</source>
     </trans-unit>
     <trans-unit id="arc.running">
       <source xml:lang="en">Running</source>
@@ -688,6 +766,15 @@
     <trans-unit id="arc.settings">
       <source xml:lang="en">Settings</source>
     </trans-unit>
+    <trans-unit id="arc.sourceDatabase">
+      <source xml:lang="en">Source database</source>
+    </trans-unit>
+    <trans-unit id="arc.sourceDetails">
+      <source xml:lang="en">Source Details</source>
+    </trans-unit>
+    <trans-unit id="arc.sourceDetailsText">
+      <source xml:lang="en">Select a backup source and provide details. Additional settings will be defaulted where possible based on the selected backup.</source>
+    </trans-unit>
     <trans-unit id="arc.state">
       <source xml:lang="en">State</source>
     </trans-unit>
@@ -696,6 +783,9 @@
     </trans-unit>
     <trans-unit id="arc.storagePerNode">
       <source xml:lang="en">storage per node</source>
+    </trans-unit>
+    <trans-unit id="arc.subscription">
+      <source xml:lang="en">Subscription</source>
     </trans-unit>
     <trans-unit id="arc.subscriptionId">
       <source xml:lang="en">Subscription ID</source>
@@ -1172,6 +1262,75 @@
     <trans-unit id="arc.sql.cores-request.description">
       <source xml:lang="en">The request for cores of the managed instance as an integer.</source>
     </trans-unit>
+    <trans-unit id="arc.sql.cost.summary">
+      <source xml:lang="en">Cost Summary</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.additional.charge">
+      <source xml:lang="en">Additional charge per usage. See {0} for more detail.</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.admin.account">
+      <source xml:lang="en">Administrator account</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.azure.hybrid.benefit.discount">
+      <source xml:lang="en">Azure Hybrid Benefit discount (in USD)</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.basics">
+      <source xml:lang="en">Basics</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.business.critical">
+      <source xml:lang="en">Business Critical</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.cost.vcore">
+      <source xml:lang="en">Cost per vCore (in USD)</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.custom.location">
+      <source xml:lang="en">Custom location</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.estimated.cost.per.month">
+      <source xml:lang="en">Estimated cost per month</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.general.purpose">
+      <source xml:lang="en">General Purpose</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.instance.name">
+      <source xml:lang="en">Instance name</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.managed.instance.admin.login">
+      <source xml:lang="en">Managed Instance admin login</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.pricing.details">
+      <source xml:lang="en">pricing details</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.resource.group">
+      <source xml:lang="en">Resource group</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.service.tier">
+      <source xml:lang="en">Service Tier</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.service.tier.learn.more.description">
+      <source xml:lang="en">Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical. {0}</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.service.tier.learn.more.text">
+      <source xml:lang="en">Learn more</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.sql.connection.info">
+      <source xml:lang="en">SQL Connection Information</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.sql.instance.settings">
+      <source xml:lang="en">SQL Instance Settings</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.sql.miaa">
+      <source xml:lang="en">SQL managed instance - Azure Arc</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.sql.miaa.cost.summary">
+      <source xml:lang="en">SQL Managed Instance - Azure Arc Cost Summary</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.subscription">
+      <source xml:lang="en">Subscription</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.vcore.limit">
+      <source xml:lang="en">CPU vCores Limit</source>
+    </trans-unit>
     <trans-unit id="arc.sql.dev.use.description">
       <source xml:lang="en">Check the box to indicate this instance will be used for development or testing purposes only. This instance will not be billed.</source>
     </trans-unit>
@@ -1198,6 +1357,12 @@
     </trans-unit>
     <trans-unit id="arc.sql.invalid.username">
       <source xml:lang="en">sa username is disabled, please choose another username</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.license.type.description">
+      <source xml:lang="en">Apply the Azure Hybrid Benefit if you already own a SQL Server License</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.license.type.label">
+      <source xml:lang="en">I already have a SQL Server License</source>
     </trans-unit>
     <trans-unit id="arc.sql.memory-limit.description">
       <source xml:lang="en">The limit of the capacity of the managed instance as an integer.</source>
@@ -1246,6 +1411,9 @@
     </trans-unit>
     <trans-unit id="arc.sql.storage-class.logs.description">
       <source xml:lang="en">The storage class to be used for logs (/var/log). If no value is specified, the default storage class will be used.</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.summary.arc.by.microsoft">
+      <source xml:lang="en">by Microsoft</source>
     </trans-unit>
     <trans-unit id="arc.sql.three.replicas">
       <source xml:lang="en">3 replicas</source>
@@ -1319,6 +1487,9 @@
     </trans-unit>
     <trans-unit id="command.editConnection.title">
       <source xml:lang="en">Edit Connection</source>
+    </trans-unit>
+    <trans-unit id="command.estimateCostSqlMiaa.title">
+      <source xml:lang="en">Estimate Cost of SQL Managed Instance - Azure Arc</source>
     </trans-unit>
     <trans-unit id="command.refresh.title">
       <source xml:lang="en">Refresh</source>

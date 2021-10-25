@@ -25,6 +25,7 @@ import { IQueryManagementService } from 'sql/workbench/services/query/common/que
 import { ServerInfoContextKey } from 'sql/workbench/services/connection/common/serverInfoContextKey';
 import { fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 
 /**
  *  Provides actions for the server tree elements
@@ -36,7 +37,8 @@ export class ServerTreeActionProvider {
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IQueryManagementService private _queryManagementService: IQueryManagementService,
 		@IMenuService private menuService: IMenuService,
-		@IContextKeyService private _contextKeyService: IContextKeyService
+		@IContextKeyService private _contextKeyService: IContextKeyService,
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService
 	) {
 	}
 
@@ -68,6 +70,7 @@ export class ServerTreeActionProvider {
 	 */
 	private getConnectionActions(tree: AsyncServerTree | ITree, profile: ConnectionProfile): IAction[] {
 		let node = new TreeNode(NodeType.Server, '', false, '', '', '', undefined, undefined, undefined, undefined);
+		node.connection = profile;
 		return this.getAllActions({
 			tree: tree,
 			profile: profile,
@@ -146,7 +149,7 @@ export class ServerTreeActionProvider {
 				serverInfoContextKey.set(serverInfo);
 			}
 		}
-		let treeNodeContextKey = new TreeNodeContextKey(scopedContextService);
+		let treeNodeContextKey = new TreeNodeContextKey(scopedContextService, this._capabilitiesService);
 		if (context.treeNode) {
 			treeNodeContextKey.set(context.treeNode);
 		}

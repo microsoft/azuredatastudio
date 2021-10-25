@@ -87,9 +87,9 @@
         <target state="translated">Crear</target>
       </trans-unit>
       <trans-unit id="duplicateFileError">
-        <source xml:lang="en">File {0} already exists in the destination folder {1} 
+        <source xml:lang="en">File {0} already exists in the destination folder {1}
  The file has been renamed to {2} to prevent data loss.</source>
-        <target state="translated">El archivo {0} ya existe en la carpeta de destino {1}. 
+        <target state="translated">El archivo {0} ya existe en la carpeta de destino {1}.
  Se ha cambiado el nombre del archivo a {2} para evitar la pérdida de datos.</target>
       </trans-unit>
       <trans-unit id="editBookError">
@@ -398,7 +398,7 @@
       </trans-unit>
       <trans-unit id="configurePython.descriptionWithKernel">
         <source xml:lang="en">The '{0}' kernel requires a Python runtime to be configured and dependencies to be installed.</source>
-        <target state="new">The '{0}' kernel requires a Python runtime to be configured and dependencies to be installed.</target>
+        <target state="translated">El kernel de "{0}" requiere que se configure un entorno de ejecución de Python y que se instalen dependencias.</target>
       </trans-unit>
       <trans-unit id="configurePython.descriptionWithoutKernel">
         <source xml:lang="en">Notebook kernels require a Python runtime to be configured and dependencies to be installed.</source>
@@ -506,7 +506,7 @@
       </trans-unit>
       <trans-unit id="msgNoRequirementsForKernel">
         <source xml:lang="en">No packages are required by default for the kernel '{0}'</source>
-        <target state="new">No packages are required by default for the kernel '{0}'</target>
+        <target state="translated">No se requiere ningún paquete de forma predeterminada para el kernel "{0}".</target>
       </trans-unit>
     </body>
   </file>

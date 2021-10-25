@@ -31,6 +31,9 @@
     <trans-unit id="sql.migration.apply">
       <source xml:lang="en">Apply</source>
     </trans-unit>
+    <trans-unit id="sql.migration.asessment.failed">
+      <source xml:lang="en">The assessment of your SQL Server instance '{0}' failed.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.assessment">
       <source xml:lang="en">Assessment results for '{0}'</source>
     </trans-unit>
@@ -38,7 +41,7 @@
       <source xml:lang="en">Assessment in progress</source>
     </trans-unit>
     <trans-unit id="sql.migration.assessment.in.progress.content">
-      <source xml:lang="en">We are assessing the databases in your SQL server instance {0} to identify the right Azure SQL target.
+      <source xml:lang="en">We are assessing the databases in your SQL Server instance {0} to identify the right Azure SQL target.
 
 This may take some time.</source>
     </trans-unit>
@@ -118,7 +121,7 @@ This may take some time.</source>
       <source xml:lang="en">Provide the Azure Storage Blob Container that contains the backups.</source>
     </trans-unit>
     <trans-unit id="sql.migration.blob.storage.subscription.label">
-      <source xml:lang="en">Select the subscription that contains the storage account.</source>
+      <source xml:lang="en">Subscription</source>
     </trans-unit>
     <trans-unit id="sql.migration.blob.storage.table.help">
       <source xml:lang="en">Enter target database name and select resource group, storage account and container for the selected source databases.</source>
@@ -143,6 +146,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.cannot.cutover">
       <source xml:lang="en">Migration is not in progress and cannot be cutover.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.cannot.retry">
+      <source xml:lang="en">Migration cannot be retried.</source>
     </trans-unit>
     <trans-unit id="sql.migration.cannot.start.cutover.error">
       <source xml:lang="en">The cutover process cannot start until all the migrations are done. To return the latest file status, refresh your browser window.</source>
@@ -266,6 +272,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.database.already.exists">
       <source xml:lang="en">Database '{0}' already exists on the target managed instance '{1}'.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.database.backup.load.error">
+      <source xml:lang="en">An error occurred while accessing database details.</source>
     </trans-unit>
     <trans-unit id="sql.migration.database.migration">
       <source xml:lang="en">Databases for migration</source>
@@ -426,6 +435,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.invalid.network.share.location">
       <source xml:lang="en">Invalid network share location format. Example: {0}</source>
     </trans-unit>
+    <trans-unit id="sql.migration.invalid.owner.uri.error">
+      <source xml:lang="en">Cannot connect to the database due to invalid OwnerUri (Parameter 'OwnerUri')</source>
+    </trans-unit>
     <trans-unit id="sql.migration.invalid.resourceGroup.error">
       <source xml:lang="en"> To continue, select a valid resource group.</source>
     </trans-unit>
@@ -504,7 +516,7 @@ This may take some time.</source>
     <trans-unit id="sql.migration.learn.more">
       <source xml:lang="en">Learn more</source>
     </trans-unit>
-    <trans-unit id="sql.migration.learn.more.pre.reqs">
+    <trans-unit id="sql.migration.learn.more.prerequisites">
       <source xml:lang="en">Learn more about things you need before starting a migration.</source>
     </trans-unit>
     <trans-unit id="sql.migration.location">
@@ -627,6 +639,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.no.pending.backups">
       <source xml:lang="en">No pending backups. Click refresh to check current status.</source>
     </trans-unit>
+    <trans-unit id="sql.migration.no.results">
+      <source xml:lang="en">Assessment results are unavailable.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.no.storageAccount.found">
       <source xml:lang="en">No storage account found.</source>
     </trans-unit>
@@ -702,7 +717,7 @@ This may take some time.</source>
     <trans-unit id="sql.migration.resourceGroups">
       <source xml:lang="en">Resource group</source>
     </trans-unit>
-    <trans-unit id="sql.migration.resume.contine">
+    <trans-unit id="sql.migration.resume.continue">
       <source xml:lang="en">Continue last migration attempt...</source>
     </trans-unit>
     <trans-unit id="sql.migration.resume.start">
@@ -710,6 +725,12 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.resume.title">
       <source xml:lang="en">Run migration workflow again</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.retry.migration">
+      <source xml:lang="en">Retry migration</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.retry.migration.error">
+      <source xml:lang="en">An error occurred while retrying the migration.</source>
     </trans-unit>
     <trans-unit id="sql.migration.rg.created">
       <source xml:lang="en">Resource group created</source>
@@ -736,7 +757,7 @@ This may take some time.</source>
       <source xml:lang="en">{0} sec</source>
     </trans-unit>
     <trans-unit id="sql.migration.select.azure.mi">
-      <source xml:lang="en">Select your target Azure subscription and your target Azure SQL Managed Instance</source>
+      <source xml:lang="en">Select your target Azure subscription and your target Azure SQL Managed Instance.</source>
     </trans-unit>
     <trans-unit id="sql.migration.select.azure.vm">
       <source xml:lang="en">Select your target Azure Subscription and your target SQL Server on Azure Virtual Machine for your target.</source>
@@ -760,7 +781,7 @@ This may take some time.</source>
       <source xml:lang="en">Ensure that the service account running the source SQL Server instance has read privileges on the network share.</source>
     </trans-unit>
     <trans-unit id="sql.migration.service.container.container.description1">
-      <source xml:lang="en">Azure Database Migration Service leverages Azure Data Factory's self-hosted integration runtime to upload backups from on-premises network fie share to Azure.</source>
+      <source xml:lang="en">Azure Database Migration Service leverages Azure Data Factory's self-hosted integration runtime to upload backups from on-premises network file share to Azure.</source>
     </trans-unit>
     <trans-unit id="sql.migration.service.container.container.description2">
       <source xml:lang="en">Follow the instructions below to setup self-hosted integration runtime.</source>
@@ -816,7 +837,7 @@ This may take some time.</source>
     <trans-unit id="sql.migration.services.name">
       <source xml:lang="en">Azure Database Migration Service name.</source>
     </trans-unit>
-    <trans-unit id="sql.migration.services.resourcegroup">
+    <trans-unit id="sql.migration.services.resource.group">
       <source xml:lang="en">Resource group for your Azure Database Migration Service.</source>
     </trans-unit>
     <trans-unit id="sql.migration.services.subscription">
@@ -1068,8 +1089,20 @@ This may take some time.</source>
     <trans-unit id="sql.migration.wizard.sku.assessment.error">
       <source xml:lang="en">An error occurred while assessing the server '{0}'.</source>
     </trans-unit>
+    <trans-unit id="sql.migration.wizard.sku.assessment.error.bypass">
+      <source xml:lang="en">Check this option to skip assessment and continue the migration.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.wizard.sku.assessment.error.detail">
+      <source xml:lang="en">[There are no assessment results to validate readiness of your database migration. By checking this box, you acknowledge you want to proceed migrating your database to the desired Azure SQL target.]</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.wizard.sku.assessment.unexpected.error">
+      <source xml:lang="en">An unexpected error occurred while assessing the server '{0}'.{3}Message: {1}{3}stack: {2}</source>
+    </trans-unit>
     <trans-unit id="sql.migration.wizard.sku.choose_a_target">
       <source xml:lang="en">Choose your Azure SQL target</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.wizard.sku.error">
+      <source xml:lang="en">An error occurred while assessing your databases.</source>
     </trans-unit>
     <trans-unit id="sql.migration.wizard.sku.title">
       <source xml:lang="en">Azure SQL target</source>
@@ -1125,6 +1158,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="new-support-request-command">
       <source xml:lang="en">New support request</source>
+    </trans-unit>
+    <trans-unit id="retry-migration-menu">
+      <source xml:lang="en">Retry migration</source>
     </trans-unit>
     <trans-unit id="send-feedback-command">
       <source xml:lang="en">Feedback</source>

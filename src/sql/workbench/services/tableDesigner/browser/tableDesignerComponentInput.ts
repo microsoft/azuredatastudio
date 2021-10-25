@@ -4,53 +4,143 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { DesignerData, DesignerEdit, DesignerEditResult, DesignerComponentInput, DesignerView, DesignerTab, DesignerDataPropertyInfo, DropDownProperties, DesignerTableProperties } from 'sql/base/browser/ui/designer/interfaces';
+import { DesignerViewModel, DesignerEdit, DesignerComponentInput, DesignerView, DesignerTab, DesignerDataPropertyInfo, DropDownProperties, DesignerTableProperties, DesignerEditProcessedEventArgs, DesignerAction, DesignerStateChangedEventArgs } from 'sql/base/browser/ui/designer/interfaces';
 import { TableDesignerProvider } from 'sql/workbench/services/tableDesigner/common/interface';
 import { localize } from 'vs/nls';
 import { designers } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { Emitter, Event } from 'vs/base/common/event';
+import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 
 export class TableDesignerComponentInput implements DesignerComponentInput {
 
-	private _data: DesignerData;
+	private _viewModel: DesignerViewModel;
 	private _view: DesignerView;
+	private _valid: boolean = true;
+	private _dirty: boolean = false;
+	private _pendingAction?: DesignerAction = undefined;
+	private _onStateChange = new Emitter<DesignerStateChangedEventArgs>();
+	private _onInitialized = new Emitter<void>();
+	private _onEditProcessed = new Emitter<DesignerEditProcessedEventArgs>();
+
+	public readonly onInitialized: Event<void> = this._onInitialized.event;
+	public readonly onEditProcessed: Event<DesignerEditProcessedEventArgs> = this._onEditProcessed.event;
+	public readonly onStateChange: Event<DesignerStateChangedEventArgs> = this._onStateChange.event;
 
 	constructor(private readonly _provider: TableDesignerProvider,
-		private _tableInfo: azdata.designers.TableInfo) {
+		private _tableInfo: azdata.designers.TableInfo,
+		@INotificationService private readonly _notificationService: INotificationService) {
+	}
+
+	get valid(): boolean {
+		return this._valid;
+	}
+
+	get dirty(): boolean {
+		return this._dirty;
+	}
+
+	get pendingAction(): DesignerAction | undefined {
+		return this._pendingAction;
 	}
 
 	get objectTypeDisplayName(): string {
 		return localize('tableDesigner.tableObjectType', "Table");
 	}
 
-	async getView(): Promise<DesignerView> {
-		if (!this._view) {
-			await this.initialize();
-		}
+	get view(): DesignerView {
 		return this._view;
 	}
 
-	async getData(): Promise<DesignerData> {
-		if (!this._data) {
-			await this.initialize();
-		}
-		return this._data;
+	get viewModel(): DesignerViewModel {
+		return this._viewModel;
 	}
 
-	async processEdit(edit: DesignerEdit): Promise<DesignerEditResult> {
-		const result = await this._provider.processTableEdit(this._tableInfo, this._data!, edit);
-		if (result.isValid) {
-			this._data = result.data;
-		}
-		return {
-			isValid: result.isValid,
-			errors: result.errors
-		};
+	processEdit(edit: DesignerEdit): void {
+		this.updateState(this.valid, this.dirty, 'processEdit');
+		this._provider.processTableEdit(this._tableInfo, this._viewModel!, edit).then(
+			result => {
+				if (result.isValid) {
+					this._viewModel = result.viewModel;
+				}
+				this.updateState(result.isValid, true, undefined);
+
+				this._onEditProcessed.fire({
+					edit: edit,
+					result: {
+						isValid: result.isValid,
+						errors: result.errors
+					}
+				});
+			},
+			error => {
+				this._notificationService.error(localize('tableDesigner.errorProcessingEdit', "An error occured while processing the change: {0}", error?.message ?? error));
+				this.updateState(this.valid, this.dirty);
+			}
+		);
 	}
 
-	private async initialize(): Promise<void> {
-		const designerInfo = await this._provider.getTableDesignerInfo(this._tableInfo);
+	async save(): Promise<void> {
+		const notificationHandle = this._notificationService.notify({
+			severity: Severity.Info,
+			message: localize('tableDesigner.savingChanges', "Saving table designer changes...")
+		});
+		try {
+			this.updateState(this.valid, this.dirty, 'save');
+			await this._provider.saveTable(this._tableInfo, this._viewModel);
+			this.updateState(true, false);
+			notificationHandle.updateMessage(localize('tableDesigner.savedChangeSuccess', "The changes have been successfully saved."));
+		} catch (error) {
+			notificationHandle.updateSeverity(Severity.Error);
+			notificationHandle.updateMessage(localize('tableDesigner.saveChangeError', "An error occured while saving changes: {0}", error?.message ?? error));
+			this.updateState(this.valid, this.dirty);
+		}
+	}
 
-		this._data = designerInfo.data;
+	async revert(): Promise<void> {
+		this.updateState(true, false);
+	}
+
+	private updateState(valid: boolean, dirty: boolean, pendingAction?: DesignerAction): void {
+		if (this._dirty !== dirty || this._valid !== valid || this._pendingAction !== pendingAction) {
+			const previousState = {
+				valid: this._valid,
+				dirty: this._dirty,
+				pendingAction: this._pendingAction
+			};
+
+			this._dirty = dirty;
+			this._valid = valid;
+			this._pendingAction = pendingAction;
+
+			const currentState = {
+				valid: this._valid,
+				dirty: this._dirty,
+				pendingAction: this._pendingAction
+			};
+			this._onStateChange.fire({
+				currentState,
+				previousState,
+			});
+		}
+	}
+
+	initialize(): void {
+		if (this._view !== undefined || this.pendingAction === 'initialize') {
+			return;
+		}
+
+		this.updateState(this.valid, this.dirty, 'initialize');
+		this._provider.getTableDesignerInfo(this._tableInfo).then(result => {
+			this.doInitialization(result);
+			this._onInitialized.fire();
+		}, error => {
+			this._notificationService.error(localize('tableDesigner.errorInitializingTableDesigner', "An error occured while initializing the table designer: {0}", error?.message ?? error));
+		});
+	}
+
+	private doInitialization(designerInfo: azdata.designers.TableDesignerInfo): void {
+		this.updateState(true, false);
+		this._viewModel = designerInfo.viewModel;
 		this.setDefaultData();
 
 		const advancedTabComponents: DesignerDataPropertyInfo[] = [
@@ -115,11 +205,17 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				componentProperties: {
 					title: localize('tableDesigner.columnAllowNullTitle', "Allow Nulls"),
 				}
+			}, {
+				componentType: 'checkbox',
+				propertyName: designers.TableColumnProperty.IsPrimaryKey,
+				componentProperties: {
+					title: localize('tableDesigner.columnIsPrimaryKeyTitle', "Primary Key"),
+				}
 			}
 		];
 
-		if (designerInfo.view.addtionalTableColumnProperties) {
-			columnProperties.push(...designerInfo.view.addtionalTableColumnProperties);
+		if (designerInfo.view.additionalTableColumnProperties) {
+			columnProperties.push(...designerInfo.view.additionalTableColumnProperties);
 		}
 
 		const columnsTab = <DesignerTab>{
@@ -135,7 +231,8 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 							designers.TableColumnProperty.Type,
 							designers.TableColumnProperty.Length,
 							designers.TableColumnProperty.DefaultValue,
-							designers.TableColumnProperty.AllowNulls
+							designers.TableColumnProperty.AllowNulls,
+							designers.TableColumnProperty.IsPrimaryKey
 						],
 						itemProperties: columnProperties,
 						objectTypeDisplayName: localize('tableDesigner.columnTypeName', "Column")
@@ -145,7 +242,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		};
 
 		const tabs = [columnsTab, advancedTab];
-		if (designerInfo.view.addtionalTabs) {
+		if (designerInfo.view.additionalTabs) {
 			tabs.push(...tabs);
 		}
 
@@ -163,7 +260,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 	}
 
 	private setDefaultData(): void {
-		const properties = Object.keys(this._data);
+		const properties = Object.keys(this._viewModel);
 		this.setDefaultInputData(properties, designers.TableProperty.Name);
 		this.setDefaultInputData(properties, designers.TableProperty.Schema);
 		this.setDefaultInputData(properties, designers.TableProperty.Description);
@@ -171,7 +268,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 
 	private setDefaultInputData(allProperties: string[], property: string): void {
 		if (allProperties.indexOf(property) === -1) {
-			this._data[property] = {};
+			this._viewModel[property] = {};
 		}
 	}
 }

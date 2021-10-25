@@ -7,14 +7,14 @@ import { TableDesignerInput } from 'sql/workbench/browser/editor/tableDesigner/t
 import { TableDesignerEditor } from 'sql/workbench/contrib/tableDesigner/browser/tableDesignerEditor';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { EditorPaneDescriptor, IEditorPaneRegistry } from 'vs/workbench/browser/editor';
+import { EditorDescriptor, IEditorRegistry } from 'vs/workbench/browser/editor';
 import { EditorExtensions } from 'vs/workbench/common/editor';
 
-const tableDesignerDescriptor = EditorPaneDescriptor.create(
+const tableDesignerDescriptor = EditorDescriptor.create(
 	TableDesignerEditor,
 	TableDesignerEditor.ID,
 	'TableDesignerEditor'
 );
 
-Registry.as<IEditorPaneRegistry>(EditorExtensions.EditorPane)
-	.registerEditorPane(tableDesignerDescriptor, [new SyncDescriptor(TableDesignerInput)]);
+Registry.as<IEditorRegistry>(EditorExtensions.Editors)
+	.registerEditor(tableDesignerDescriptor, [new SyncDescriptor(TableDesignerInput)]);

@@ -74,6 +74,10 @@ export class CellToolbarComponent {
 		let moveCellDownButton = this.instantiationService.createInstance(MoveCellAction, 'notebook.MoveCellDown', 'masked-icon move-down', this.buttonMoveDown);
 		let moveCellUpButton = this.instantiationService.createInstance(MoveCellAction, 'notebook.MoveCellUp', 'masked-icon move-up', this.buttonMoveUp);
 
+		let splitCellButton = this.instantiationService.createInstance(SplitCellAction, 'notebook.SplitCellAtCursor', this.buttonSplitCell, 'masked-icon icon-split-cell');
+		splitCellButton.setListener(context);
+		splitCellButton.enabled = this.cellModel.cellType !== 'markdown';
+
 		let deleteButton = this.instantiationService.createInstance(DeleteCellAction, 'notebook.DeleteCell', 'masked-icon delete', this.buttonDelete);
 
 		let moreActionsContainer = DOM.$('li.action-item');
@@ -110,6 +114,7 @@ export class CellToolbarComponent {
 			{ element: addCellDropdownContainer },
 			{ action: moveCellDownButton },
 			{ action: moveCellUpButton },
+			{ action: splitCellButton },
 			{ action: deleteButton },
 			{ element: moreActionsContainer });
 

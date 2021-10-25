@@ -87,9 +87,9 @@
         <target state="translated">만들기</target>
       </trans-unit>
       <trans-unit id="duplicateFileError">
-        <source xml:lang="en">File {0} already exists in the destination folder {1} 
+        <source xml:lang="en">File {0} already exists in the destination folder {1}
  The file has been renamed to {2} to prevent data loss.</source>
-        <target state="translated">대상 폴더 {1}에 {0} 파일이 이미 있습니다. 
+        <target state="translated">대상 폴더 {1}에 {0} 파일이 이미 있습니다.
  데이터 손실을 방지하기 위해 파일 이름이 {2}(으)로 바뀌었습니다.</target>
       </trans-unit>
       <trans-unit id="editBookError">
@@ -398,7 +398,7 @@
       </trans-unit>
       <trans-unit id="configurePython.descriptionWithKernel">
         <source xml:lang="en">The '{0}' kernel requires a Python runtime to be configured and dependencies to be installed.</source>
-        <target state="new">The '{0}' kernel requires a Python runtime to be configured and dependencies to be installed.</target>
+        <target state="translated">‘{0}’ 커널을 사용하려면 Python 런타임을 구성하고 종속성을 설치해야 합니다.</target>
       </trans-unit>
       <trans-unit id="configurePython.descriptionWithoutKernel">
         <source xml:lang="en">Notebook kernels require a Python runtime to be configured and dependencies to be installed.</source>
@@ -506,7 +506,7 @@
       </trans-unit>
       <trans-unit id="msgNoRequirementsForKernel">
         <source xml:lang="en">No packages are required by default for the kernel '{0}'</source>
-        <target state="new">No packages are required by default for the kernel '{0}'</target>
+        <target state="translated">'{0}' 커널에는 기본적으로 패키지가 필요하지 않습니다.</target>
       </trans-unit>
     </body>
   </file>

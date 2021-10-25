@@ -87,9 +87,9 @@
         <target state="translated">作成</target>
       </trans-unit>
       <trans-unit id="duplicateFileError">
-        <source xml:lang="en">File {0} already exists in the destination folder {1} 
+        <source xml:lang="en">File {0} already exists in the destination folder {1}
  The file has been renamed to {2} to prevent data loss.</source>
-        <target state="translated">ファイル {0} は、ターゲット フォルダー {1} に既に存在しています 
+        <target state="translated">ファイル {0} は、ターゲット フォルダー {1} に既に存在しています
  データの損失を防ぐために、ファイルの名前が {2} に変更されました。</target>
       </trans-unit>
       <trans-unit id="editBookError">
@@ -398,7 +398,7 @@
       </trans-unit>
       <trans-unit id="configurePython.descriptionWithKernel">
         <source xml:lang="en">The '{0}' kernel requires a Python runtime to be configured and dependencies to be installed.</source>
-        <target state="new">The '{0}' kernel requires a Python runtime to be configured and dependencies to be installed.</target>
+        <target state="translated">'{0}' カーネルにって、Python ランタイムを構成し、依存関係をインストールする必要があります。</target>
       </trans-unit>
       <trans-unit id="configurePython.descriptionWithoutKernel">
         <source xml:lang="en">Notebook kernels require a Python runtime to be configured and dependencies to be installed.</source>
@@ -506,7 +506,7 @@
       </trans-unit>
       <trans-unit id="msgNoRequirementsForKernel">
         <source xml:lang="en">No packages are required by default for the kernel '{0}'</source>
-        <target state="new">No packages are required by default for the kernel '{0}'</target>
+        <target state="translated">既定では、カーネル '{0}' にはパッケージは必要ありません</target>
       </trans-unit>
     </body>
   </file>
