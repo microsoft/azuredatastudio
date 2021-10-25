@@ -58,6 +58,11 @@ export class RestoreSqlDialog extends InitializingComponent {
 		this._azApi = vscode.extensions.getExtension(azExt.extension.name)?.exports;
 	}
 
+	protected dispose(): void {
+		this.disposables.forEach(d => d.dispose());
+		this.disposables.length = 0;
+	}
+
 	public get restoreResult(): azExt.SqlMiDbRestoreResult | undefined {
 		return this._restoreResult;
 	}
@@ -322,7 +327,13 @@ export class RestoreSqlDialog extends InitializingComponent {
 
 		dialog.okButton.label = loc.restore;
 		dialog.cancelButton.label = loc.cancel;
-		dialog.registerCloseValidator(async () => await this.validate());
+		dialog.registerCloseValidator(async () => {
+			const isValidated = await this.validate();
+			if (isValidated) {
+				this.dispose();
+			}
+			return isValidated;
+		});
 		dialog.okButton.onClick(() => {
 			this._pitrSettings.subscriptionId = this.subscriptionInputBox.value ?? '';
 			this._pitrSettings.instanceName = this.instanceInputBox.value ?? '';
