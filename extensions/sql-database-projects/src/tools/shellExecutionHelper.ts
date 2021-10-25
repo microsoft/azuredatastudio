@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as cp from 'promisify-child-process';
-import * as childProcess from 'child_process';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
@@ -23,9 +22,15 @@ export class ShellExecutionHelper {
 	/**
 	 * spawns the shell command with arguments and redirects the error and output to ADS output channel
 	 */
-	public async runStreamedCommand(command: string, outputChannel: vscode.OutputChannel, options?: ShellCommandOptions): Promise<string> {
+	public async runStreamedCommand(command: string, options?: ShellCommandOptions, sensitiveData: string[] = [], timeout: number = 5 * 60 * 1000): Promise<string> {
 		const stdoutData: string[] = [];
-		outputChannel.appendLine(`    > ${command}`);
+
+		let cmdOutputMessage = command;
+		sensitiveData.forEach(element => {
+			cmdOutputMessage = cmdOutputMessage.replace(element, '***');
+		});
+
+		this._outputChannel.appendLine(`    > ${cmdOutputMessage}`);
 
 		const spawnOptions = {
 			cwd: options && options.workingDirectory,
@@ -34,70 +39,49 @@ export class ShellExecutionHelper {
 			maxBuffer: 10 * 1024 * 1024, // 10 Mb of output can be captured.
 			shell: true,
 			detached: false,
-			windowsHide: true
+			windowsHide: true,
+			timeout: timeout
 		};
 
-		const child = cp.spawn(command, [], spawnOptions);
-		outputChannel.show();
+		try {
+			const child = cp.spawn(command, [], spawnOptions);
+			this._outputChannel.show();
 
-		// Add listeners to print stdout and stderr and exit code
-		void child.on('exit', (code: number | null, signal: string | null) => {
-			if (code !== null) {
-				outputChannel.appendLine(localize('sqlDatabaseProjects.RunStreamedCommand.ExitedWithCode', "    >>> {0}    … exited with code: {1}", command, code));
-			} else {
-				outputChannel.appendLine(localize('sqlDatabaseProjects.RunStreamedCommand.ExitedWithSignal', "    >>> {0}   … exited with signal: {1}", command, signal));
-			}
-		});
-
-		child.stdout!.on('data', (data: string | Buffer) => {
-			stdoutData.push(data.toString());
-			ShellExecutionHelper.outputDataChunk(outputChannel, data, localize('sqlDatabaseProjects.RunCommand.stdout', "    stdout: "));
-		});
-
-		child.stderr!.on('data', (data: string | Buffer) => {
-			ShellExecutionHelper.outputDataChunk(outputChannel, data, localize('sqlDatabaseProjects.RunCommand.stderr', "    stderr: "));
-		});
-
-		await child;
-
-		return stdoutData.join('');
-	}
-
-	public static async executeCommand(cmd: string, outputChannel: vscode.OutputChannel, sensitiveData: string[] = [], timeout: number = 5 * 60 * 1000): Promise<string> {
-		return new Promise<string>((resolve, reject) => {
-			if (outputChannel) {
-				let cmdOutputMessage = cmd;
-
-				sensitiveData.forEach(element => {
-					cmdOutputMessage = cmdOutputMessage.replace(element, '***');
-				});
-
-				outputChannel.appendLine(`    > ${cmdOutputMessage}`);
-			}
-			let child = childProcess.exec(cmd, {
-				timeout: timeout
-			}, (err, stdout) => {
-				if (err) {
-					// removing sensitive data from the exception
-					sensitiveData.forEach(element => {
-						err.cmd = err.cmd?.replace(element, '***');
-						err.message = err.message?.replace(element, '***');
-					});
-					reject(err);
+			// Add listeners to print stdout and stderr and exit code
+			void child.on('exit', (code: number | null, signal: string | null) => {
+				if (code !== null) {
+					this._outputChannel.appendLine(localize('sqlDatabaseProjects.RunStreamedCommand.ExitedWithCode', "    >>> {0}    … exited with code: {1}", command, code));
 				} else {
-					resolve(stdout);
+					this._outputChannel.appendLine(localize('sqlDatabaseProjects.RunStreamedCommand.ExitedWithSignal', "    >>> {0}   … exited with signal: {1}", command, signal));
 				}
 			});
 
-			// Add listeners to print stdout and stderr if an output channel was provided
+			child.stdout!.on('data', (data: string | Buffer) => {
+				stdoutData.push(data.toString());
+				ShellExecutionHelper.outputDataChunk(this._outputChannel, data, localize('sqlDatabaseProjects.RunCommand.stdout', "    stdout: "));
+			});
 
-			if (child?.stdout) {
-				child.stdout.on('data', data => { this.outputDataChunk(outputChannel, data, '    stdout: '); });
-			}
-			if (child?.stderr) {
-				child.stderr.on('data', data => { this.outputDataChunk(outputChannel, data, '    stderr: '); });
-			}
-		});
+			child.stderr!.on('data', (data: string | Buffer) => {
+				ShellExecutionHelper.outputDataChunk(this._outputChannel, data, localize('sqlDatabaseProjects.RunCommand.stderr', "    stderr: "));
+			});
+
+			await child;
+
+			return stdoutData.join('');
+		}
+		catch (err) {
+			// removing sensitive data from the exception
+			sensitiveData.forEach(element => {
+				err.cmd = err.cmd?.replace(element, '***');
+				err.message = err.message?.replace(element, '***');
+			});
+
+			throw err;
+		}
+	}
+
+	public static async executeCommand(cmd: string, outputChannel: vscode.OutputChannel, sensitiveData: string[] = [], timeout: number = 5 * 60 * 1000): Promise<string> {
+		return new ShellExecutionHelper(outputChannel).runStreamedCommand(cmd, undefined, sensitiveData, timeout);
 	}
 
 	private static outputDataChunk(outputChannel: vscode.OutputChannel, data: string | Buffer, header: string): void {
