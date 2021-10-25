@@ -264,6 +264,7 @@ export class QueryEditor extends EditorPane {
 				this._listDatabasesActionItem = this.instantiationService.createInstance(actions.ListDatabasesActionItem, this, action);
 				this._register(this._listDatabasesActionItem.attachStyler(this.themeService));
 			}
+			return this._listDatabasesActionItem;
 		}
 
 		return null;

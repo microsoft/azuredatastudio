@@ -198,6 +198,10 @@ body.web {
 	width: 16px;
 	height: 16px;
 	line-height: 16px;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	right: 6px;
 	margin: auto;
 	pointer-events: none;
 }
