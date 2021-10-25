@@ -37,11 +37,12 @@ export interface IDesignerStyle {
 	checkboxStyles?: ICheckboxStyles;
 	buttonStyles?: IButtonStyles;
 	paneSeparator?: Color;
+	groupHeaderBackground?: Color;
 }
 
 export type DesignerUIComponent = InputBox | Checkbox | Table<Slick.SlickData> | SelectBox;
 
-export type CreateComponentFunc = (container: HTMLElement, component: DesignerDataPropertyInfo, editIdentifier: DesignerEditIdentifier) => DesignerUIComponent;
+export type CreateComponentsFunc = (container: HTMLElement, components: DesignerDataPropertyInfo[], editIdentifierGetter: (property: DesignerDataPropertyInfo) => DesignerEditIdentifier) => DesignerUIComponent[];
 export type SetComponentValueFunc = (definition: DesignerDataPropertyInfo, component: DesignerUIComponent, data: DesignerViewModel) => void;
 
 export class Designer extends Disposable implements IThemable {
@@ -65,6 +66,7 @@ export class Designer extends Disposable implements IThemable {
 	private _buttons: Button[] = [];
 	private _inputDisposable: DisposableStore;
 	private _loadingTimeoutHandle: any;
+	private _groupHeaders: HTMLElement[] = [];
 
 	constructor(private readonly _container: HTMLElement,
 		private readonly _contextViewProvider: IContextViewProvider) {
@@ -143,12 +145,10 @@ export class Designer extends Disposable implements IThemable {
 			onDidChange: Event.None
 		}, Sizing.Distribute);
 
-		this._propertiesPane = new DesignerPropertiesPane(this._propertiesPaneContainer, (container, component, identifier) => {
-			return this.createComponent(container, component, identifier, false, false);
+		this._propertiesPane = new DesignerPropertiesPane(this._propertiesPaneContainer, (container, components, identifierGetter) => {
+			return this.createComponents(container, components, this._propertiesPane.componentMap, this._propertiesPane.groupHeaders, identifierGetter, false, true);
 		}, (definition, component, viewModel) => {
 			this.setComponentValue(definition, component, viewModel);
-		}, (component) => {
-			this.styleComponent(component);
 		});
 		const editor = DOM.$('div');
 		editor.innerText = 'script pane placeholder';
@@ -171,6 +171,12 @@ export class Designer extends Disposable implements IThemable {
 		}
 	}
 
+	private styleGroupHeader(header: HTMLElement): void {
+		if (this._styles.groupHeaderBackground) {
+			header.style.backgroundColor = this._styles.groupHeaderBackground.toString();
+		}
+	}
+
 	public style(styles: IDesignerStyle): void {
 		this._styles = styles;
 		this._componentMap.forEach((value, key, map) => {
@@ -178,7 +184,9 @@ export class Designer extends Disposable implements IThemable {
 				this.styleComponent(value.component);
 			}
 		});
-		this._propertiesPane.style();
+		this._propertiesPane.componentMap.forEach((value) => {
+			this.styleComponent(value.component);
+		});
 		this._verticalSplitView.style({
 			separatorBorder: styles.paneSeparator
 		});
@@ -189,6 +197,14 @@ export class Designer extends Disposable implements IThemable {
 
 		this._buttons.forEach((button) => {
 			this.styleComponent(button);
+		});
+
+		this._groupHeaders.forEach((header) => {
+			this.styleGroupHeader(header);
+		});
+
+		this._propertiesPane.groupHeaders.forEach((header) => {
+			this.styleGroupHeader(header);
 		});
 	}
 
@@ -214,6 +230,7 @@ export class Designer extends Disposable implements IThemable {
 		this._tabbedPanel.clearTabs();
 		this._propertiesPane.clear();
 		this._inputDisposable?.dispose();
+		this._groupHeaders = [];
 
 
 		// Initialize with new input
@@ -247,9 +264,7 @@ export class Designer extends Disposable implements IThemable {
 	private initializeDesigner(): void {
 		const view = this._input.view;
 		if (view.components) {
-			view.components.forEach(component => {
-				this.createComponent(this._topContentContainer, component, component.propertyName, true, true);
-			});
+			this.createComponents(this._topContentContainer, view.components, this._componentMap, this._groupHeaders, component => component.propertyName, true, false);
 		}
 		view.tabs.forEach(tab => {
 			this._tabbedPanel.pushTab(this.createTabView(tab));
@@ -415,8 +430,8 @@ export class Designer extends Disposable implements IThemable {
 	}
 
 	private createTabView(tab: DesignerTab): IPanelTab {
-		const view = new DesignerTabPanelView(tab, (container, component, identifier) => {
-			return this.createComponent(container, component, identifier, true, false);
+		const view = new DesignerTabPanelView(tab, (container, components, identifierGetter) => {
+			return this.createComponents(container, components, this._componentMap, this._groupHeaders, identifierGetter, true, false);
 		});
 		return {
 			identifier: tab.title,
@@ -487,7 +502,47 @@ export class Designer extends Disposable implements IThemable {
 		this._supressEditProcessing = false;
 	}
 
-	private createComponent(container: HTMLElement, componentDefinition: DesignerDataPropertyInfo, editIdentifier: DesignerEditIdentifier, addToComponentMap: boolean, setWidth: boolean): DesignerUIComponent {
+	private createComponents(container: HTMLElement,
+		components: DesignerDataPropertyInfo[],
+		componentMap: Map<string, { defintion: DesignerDataPropertyInfo, component: DesignerUIComponent }>,
+		groupHeaders: HTMLElement[],
+		identifierGetter: (definition: DesignerDataPropertyInfo) => DesignerEditIdentifier,
+		setWidth: boolean, skipTableCreation: boolean = false): DesignerUIComponent[] {
+		const uiComponents = [];
+		const groupNames = [];
+		const componentsToCreate = skipTableCreation ? components.filter(component => component.componentType !== 'table') : components;
+		componentsToCreate.forEach(component => {
+			if (component.group && groupNames.indexOf(component.group) === -1) {
+				groupNames.push(component.group);
+			}
+		});
+
+		// only show groups when there are multiple of them.
+		if (groupNames.length < 2) {
+			componentsToCreate.forEach(component => {
+				uiComponents.push(this.createComponent(container, component, identifierGetter(component), componentMap, setWidth));
+			});
+		} else {
+			groupNames.forEach(group => {
+				const groupHeader = container.appendChild(DOM.$('div.full-row'));
+				groupHeaders.push(groupHeader);
+				this.styleGroupHeader(groupHeader);
+				groupHeader.innerText = group;
+				componentsToCreate.forEach(component => {
+					if (component.group === group) {
+						uiComponents.push(this.createComponent(container, component, identifierGetter(component), componentMap, setWidth));
+					}
+				});
+			});
+		}
+		return uiComponents;
+	}
+
+	private createComponent(container: HTMLElement,
+		componentDefinition: DesignerDataPropertyInfo,
+		editIdentifier: DesignerEditIdentifier,
+		componentMap: Map<string, { defintion: DesignerDataPropertyInfo, component: DesignerUIComponent }>,
+		setWidth: boolean): DesignerUIComponent {
 		let component: DesignerUIComponent;
 		switch (componentDefinition.componentType) {
 			case 'input':
@@ -642,12 +697,11 @@ export class Designer extends Disposable implements IThemable {
 			default:
 				throw new Error(localize('tableDesigner.unknownComponentType', "The component type: {0} is not supported", componentDefinition.componentType));
 		}
-		if (addToComponentMap) {
-			this._componentMap.set(componentDefinition.propertyName, {
-				defintion: componentDefinition,
-				component: component
-			});
-		}
+		componentMap.set(componentDefinition.propertyName, {
+			defintion: componentDefinition,
+			component: component
+		});
+
 		this.styleComponent(component);
 		return component;
 	}
