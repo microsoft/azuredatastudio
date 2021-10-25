@@ -349,7 +349,7 @@ export class QueryEditor extends EditorPane {
 	public override async setInput(newInput: QueryEditorInput, options: IEditorOptions, context: IEditorOpenContext, token: CancellationToken): Promise<void> {
 		const oldInput = this.input;
 
-		if (newInput.matches(oldInput)) {
+		if (oldInput && newInput.matches(oldInput)) {
 			return Promise.resolve();
 		}
 
