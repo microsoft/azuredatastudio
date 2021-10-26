@@ -199,7 +199,7 @@ export class MessagePanel extends Disposable {
 		this.onMessage(runner.messages, true);
 	}
 
-	private onMessage(message: IQueryMessage | IQueryMessage[], setInput: boolean = false) {
+	protected onMessage(message: IQueryMessage | IQueryMessage[], setInput: boolean = false) {
 		if (isArray(message)) {
 			this.model.messages.push(...message);
 		} else {

@@ -3,14 +3,16 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { hyperLinkFormatter, textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
-import { GridPanelState, GridTableState } from 'sql/workbench/common/editor/query/gridTableState';
-import { GridTable } from 'sql/workbench/contrib/query/browser/gridPanel';
+// import { GridTable } from 'sql/workbench/contrib/query/browser/gridPanel';
 import { MessagePanel } from 'sql/workbench/contrib/query/browser/messagePanel';
-import { ResultSetSummary } from 'sql/workbench/services/query/common/query';
-import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
-import { dispose } from 'vs/base/common/lifecycle';
+import { IGridDataProvider } from 'sql/workbench/services/query/common/gridDataProvider';
+import { /*IQueryMessage,*/ ResultSetSummary } from 'sql/workbench/services/query/common/query';
+import QueryRunner, { QueryGridDataProvider } from 'sql/workbench/services/query/common/queryRunner';
+import { Disposable, dispose } from 'vs/base/common/lifecycle';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
+import { localize } from 'vs/nls';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
@@ -18,9 +20,8 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ILogService } from 'vs/platform/log/common/log';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 
-export class TextResultsMessagePanel extends MessagePanel {
-	private tables: Array<GridTable<any>> = [];
-	private _state: GridPanelState | undefined;
+export class TextResultsMessagePanel<T> extends MessagePanel {
+	private tables: Array<Table<any>> = [];
 	private runner: QueryRunner;
 
 	constructor(
@@ -41,14 +42,10 @@ export class TextResultsMessagePanel extends MessagePanel {
 	}
 
 	public override clear() {
-		const reset = () => {
-			dispose(this.tables);
-			this.tables = [];
+		dispose(this.tables);
+		this.tables = [];
 
-			super.reset();
-		};
-
-		reset();
+		super.reset();
 	}
 
 	public override set queryRunner(runner: QueryRunner) {
@@ -56,12 +53,9 @@ export class TextResultsMessagePanel extends MessagePanel {
 
 		this.runner = runner;
 
-		this.queryRunnerDisposables.add(runner.onResultSet(this.onResultSet, this));
-		this.queryRunnerDisposables.add(runner.onResultSetUpdate(this.updateResultSet, this));
+		this.queryRunnerDisposables.add(this.runner.onResultSet(this.onResultSet, this));
+		this.queryRunnerDisposables.add(this.runner.onResultSetUpdate(this.updateResultSet, this));
 		this.queryRunnerDisposables.add(this.runner.onQueryStart(() => {
-			if (this.state) {
-				this.state.tableStates = [];
-			}
 			this.clear();
 		}));
 	}
@@ -111,9 +105,8 @@ export class TextResultsMessagePanel extends MessagePanel {
 		}
 	}
 
-	// TODO lewissanchez - Will need to move away from using a GridTable type to a newly defined Table DTO.
 	private addResultSet(resultSet: ResultSetSummary[]) {
-		const tables: Array<GridTable<any>> = [];
+		const tables: Array<Table<any>> = [];
 
 		for (const set of resultSet) {
 			// ensure we aren't adding a resultSet that is already visible
@@ -121,22 +114,7 @@ export class TextResultsMessagePanel extends MessagePanel {
 				continue;
 			}
 
-			// Searching for the table state with a matching batch ID and result ID.
-			let tableState: GridTableState;
-			if (this.state) {
-				tableState = this.state.tableStates.find(e => e.batchId === set.batchId && e.resultId === set.id);
-			}
-			// Creates an instance of a GridTable State if we couldn't find one with specified set ID and batch ID.
-			// GridTableState is to track the UI state of the grid (i.e. Is it sorted, expanded, etc?)
-			if (!tableState) {
-				tableState = new GridTableState(set.id, set.batchId);
-				if (this.state) {
-					this.state.tableStates.push(tableState);
-				}
-			}
-
-			// Instantiates and pushes table
-			const table = this.instantiationService.createInstance(GridTable, this.runner, set, tableState);
+			const table = this.instantiationService.createInstance(Table, this.runner, set);
 			tables.push(table);
 		}
 
@@ -149,24 +127,142 @@ export class TextResultsMessagePanel extends MessagePanel {
 			}
 		}
 	}
+}
 
-	// These are not needed if we're just rendering text query results that are stateless.
-	public set state(val: GridPanelState) {
-		this._state = val;
-		if (this.state) {
-			this.tables.map(t => {
-				let state = this.state.tableStates.find(s => s.batchId === t.resultSet.batchId && s.resultId === t.resultSet.id);
-				if (!state) {
-					this.state.tableStates.push(t.state);
-				}
-				if (state) {
-					t.state = state;
-				}
-			});
+class Table<T> extends Disposable {
+	public isOnlyTable: boolean = true;
+	public gridDataProvider: IGridDataProvider;
+	public columns: Slick.Column<T>[];
+
+	constructor(
+		private runner: QueryRunner,
+		public resultSet: ResultSetSummary,
+		@IInstantiationService private readonly instantiationService: IInstantiationService
+	) {
+		super();
+
+		this.columns = this.resultSet.columnInfo.map((c, i) => {
+			let isLinked = c.isXml || c.isJson;
+
+			return <Slick.Column<T>>{
+				id: i.toString(),
+				name: c.columnName === 'Microsoft SQL Server 2005 XML Showplan'
+					? localize('xmlShowplan', "XML Showplan")
+					: escape(c.columnName),
+				field: i.toString(),
+				formatter: isLinked ? hyperLinkFormatter : textFormatter,
+				width: c.columnSize
+			};
+		});
+
+		this.gridDataProvider = this.instantiationService.createInstance(QueryGridDataProvider, this.runner, resultSet.batchId, resultSet.id);
+	}
+
+	public updateResult(resultSet: ResultSetSummary) {
+		this.resultSet = resultSet;
+
+		if (this.resultSet.complete) {
+			let offset = 0;
+			this.renderData(offset, resultSet.rowCount);
 		}
 	}
 
-	public get state() {
-		return this._state;
+	private renderData(offset: number, count: number): Thenable<T[]> {
+		return this.gridDataProvider.getRowData(offset, count).then(response => {
+			if (!response) {
+				return [];
+			}
+
+			let dataRows = response.rows.map(r => {
+				let dataWithSchema = {};
+
+				for (let i = 0; i < this.columns.length; i++) {
+					dataWithSchema[this.columns[i].field] = {
+						displayValue: r[i].displayValue,
+						ariaLabel: escape(r[i].displayValue),
+						isNull: r[i].isNull,
+						invariantCultureDisplayValue: r[i].invariantCultureDisplayValue
+					};
+				}
+				return dataWithSchema as T;
+			});
+
+			let columnSizes = this.calculateColumnSizes();
+			let headers = this.assembleTableHeader(columnSizes);
+			let formattedRows = this.formatTableData(dataRows, columnSizes);
+
+			return dataRows;
+		});
+	}
+
+	private calculateColumnSizes(): number[] {
+		let columnSizes: number[] = [];
+
+		for (const column of this.columns) {
+			let colSize = column.width;
+			if (column.name.length > colSize) {
+				colSize = column.name.length;
+			}
+
+			columnSizes.push(colSize);
+		}
+
+		return columnSizes;
+	}
+
+	private assembleTableHeader(columnSizes: number[]): string[] {
+		let tableHeader: string[] = [];
+
+		let columnNames = '';
+		for (let i = 0; i < this.columns.length; ++i) {
+			columnNames += (this.columns[i].name !== undefined) ? this.columns[i].name : '';
+
+			if (i < this.columns.length - 1) {
+				columnNames += ' '.repeat(columnSizes[i] - this.columns[i].name.length).concat(' ');
+			}
+		}
+		tableHeader.push(columnNames);
+
+		let headingDivider = columnSizes.map((size, i) => {
+			let columnUnderline = '-'.repeat(size);
+
+			if (i < this.columns.length - 1) {
+				columnUnderline += ' ';
+			}
+
+			return columnUnderline;
+		}).join('');
+		tableHeader.push(headingDivider);
+
+		return tableHeader;
+	}
+
+	private formatTableData(dataRows: any[], columnSizes: number[]): string[] {
+		let formattedRows: string[] = [];
+
+		let rows: IRow[] = dataRows;
+		rows.forEach(r => {
+			let row = '';
+
+			for (let i = 0; i < this.columns.length; ++i) {
+				row += r[i].displayValue;
+
+				if (i < this.columns.length - 1) {
+					row += ' '.repeat(columnSizes[i] - r[i].displayValue.length).concat(' ');
+				}
+			}
+
+			formattedRows.push(row);
+		});
+
+		return formattedRows;
 	}
 }
+
+interface IRow {
+	displayValue: string;
+	ariaLabel: string;
+	isNull: boolean;
+	invariantCultureDisplayValue: string;
+}
+
