@@ -35,13 +35,14 @@ import { CreateProjectFromDatabaseDialog } from '../dialogs/createProjectFromDat
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { IconPathHelper } from '../common/iconHelper';
 import { DashboardData, PublishData, Status } from '../models/dashboardData/dashboardData';
-import { launchPublishDatabaseQuickpick } from '../dialogs/publishDatabaseQuickpick';
+import { getPublishDatabaseSettings, launchPublishTargetOption } from '../dialogs/publishDatabaseQuickpick';
 import { launchPublishToDockerContainerQuickpick } from '../dialogs/deployDatabaseQuickpick';
 import { DeployService } from '../models/deploy/deployService';
 import { SqlTargetPlatform } from 'sqldbproj';
 import { AutorestHelper } from '../tools/autorestHelper';
 import { createNewProjectFromDatabaseWithQuickpick } from '../dialogs/createProjectFromDatabaseQuickpick';
 import { addDatabaseReferenceQuickpick } from '../dialogs/addDatabaseReferenceQuickpick';
+import { IDeployProfile } from '../models/deploy/deployProfile';
 
 const maxTableLength = 10;
 
@@ -263,10 +264,9 @@ export class ProjectsController {
 	 * Publishes a project to docker container
 	 * @param treeNode a treeItem in a project's hierarchy, to be used to obtain a Project
 	 */
-	public async publishToDockerContainer(context: Project | dataworkspace.WorkspaceTreeItem): Promise<void> {
+	public async publishToDockerContainer(context: Project | dataworkspace.WorkspaceTreeItem, deployProfile: IDeployProfile): Promise<void> {
 		const project: Project = this.getProjectFromContext(context);
 		try {
-			let deployProfile = await launchPublishToDockerContainerQuickpick(project);
 			if (deployProfile && deployProfile.deploySettings) {
 				let connectionUri: string | undefined;
 				if (deployProfile.localDbSetting) {
@@ -312,6 +312,7 @@ export class ProjectsController {
 			let publishDatabaseDialog = this.getPublishDialog(project);
 
 			publishDatabaseDialog.publish = async (proj, prof) => this.publishOrScriptProject(proj, prof, true);
+			publishDatabaseDialog.publishToContainer = async (proj, prof) => this.publishToDockerContainer(proj, prof);
 			publishDatabaseDialog.generateScript = async (proj, prof) => this.publishOrScriptProject(proj, prof, false);
 			publishDatabaseDialog.readPublishProfile = async (profileUri) => readPublishProfile(profileUri);
 
@@ -319,8 +320,40 @@ export class ProjectsController {
 
 			return publishDatabaseDialog;
 		} else {
-			void launchPublishDatabaseQuickpick(project, this);
+			void this.publishDatabase(project);
 			return undefined;
+		}
+	}
+
+	/**
+	* Create flow for Publishing a database using only VS Code-native APIs such as QuickPick
+	*/
+	private async publishDatabase(project: Project): Promise<void> {
+		const publishTarget = await launchPublishTargetOption();
+
+		// Return when user hits escape
+		if (!publishTarget) {
+			return undefined;
+		}
+
+		if (publishTarget === constants.publishToDockerContainer) {
+			const deployProfile = await launchPublishToDockerContainerQuickpick(project);
+			if (deployProfile && deployProfile.deploySettings) {
+				await this.publishToDockerContainer(project, deployProfile);
+			}
+		} else {
+			let settings: IDeploySettings | undefined = await getPublishDatabaseSettings(project);
+
+			if (settings) {
+				// 5. Select action to take
+				const action = await vscode.window.showQuickPick(
+					[constants.generateScriptButtonText, constants.publish],
+					{ title: constants.chooseAction, ignoreFocusOut: true });
+				if (!action) {
+					return;
+				}
+				await this.publishOrScriptProject(project, settings, action === constants.publish);
+			}
 		}
 	}
 
