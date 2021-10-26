@@ -983,7 +983,7 @@
                     "fields": [
                       {
                         "type": "options",
-                        "label": "%arc.sql.high.availability.label%",
+                        "label": "%arc.sql.replicas%",
                         "description": "%arc.sql.high.availability.description%",
                         "required": true,
                         "variableName": "AZDATA_NB_VAR_SQL_REPLICAS",
@@ -1253,7 +1253,6 @@
                       {
                         "label": "%arc.sql.cost.summary.estimated.cost.per.month%",
                         "type": "readonly_text",
-                        "variableName": "AZDATA_NB_VAR_SQL_ESTIMATED_COST",
                         "defaultValue": "0.00 USD",
                         "valueProvider": {
                           "providerId": "params-to-estimated-cost",
