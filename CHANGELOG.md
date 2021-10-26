@@ -1,5 +1,43 @@
 # Change Log
 
+ ## Version 1.33.0
+* Release date: October 27, 2021
+* Release status: General Availability
+## What's new in this version
+* New Notebook Features:
+    *  Notebook Views 
+    *  Split cell support 
+    * Keyboard shortcuts for Markdown Toolbar Cells 
+       * Ctrl/Cmd + B = Bold Text
+       * Ctrl/Cmd + I = Italicize Text
+       * Ctrl/Cmd + U = Underline Text
+       * Ctrl/Cmd + Shift + K = Add Code Block
+       * Ctrl/Cmd + Shift + H = Highlight Text
+    * Book improvements 
+       * Add a new section
+       * Drag and Drop
+  
+* Extension Updates:
+    *  Azure Monitor 
+    *  Azure SQL Migration 
+    *  Cms
+    *  Dacpac
+    *  Import
+    *  Kusto
+    *  Langpacks
+    *  Profiler
+    *  Schema Compare
+    *  Sql Database Projects
+
+* Bug Fixes
+  * Notebook linking improvements
+   * Horizontal Scrollbar improvement (when word wrap is off in MD Splitview / MD mode) in Notebooks
+   * Vertical Scrollbar improvement for MD Splitview in Notebooks
+
+
+
+
+
 ## Version 1.32.0
 * Release date: August 18, 2021
 * Release status: General Availability
