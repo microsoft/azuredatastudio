@@ -42,8 +42,8 @@ export class VSCodeContentManager implements azdata.nb.ContentManager {
 				};
 			}),
 			metadata: notebookData.metadata ?? {},
-			nbformat: 4,
-			nbformat_minor: 2
+			nbformat: notebookData['nbformat'] ?? 4,
+			nbformat_minor: notebookData['nbformat_minor'] ?? 2
 		};
 	}
 
