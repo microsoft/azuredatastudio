@@ -96,6 +96,9 @@ export class VSCodeContentManager implements azdata.nb.ContentManager {
 			}),
 			metadata: notebook.metadata
 		};
+		notebookData['nbformat'] = notebook.nbformat ?? 4;
+		notebookData['nbformat_minor'] = notebook.nbformat_minor ?? 2;
+
 		let bytes = await this._serializer.serializeNotebook(notebookData, new CancellationTokenSource().token);
 		let buffer = VSBuffer.wrap(bytes);
 		return buffer.toString();
