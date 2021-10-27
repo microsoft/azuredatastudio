@@ -223,6 +223,22 @@ export class NotebookService extends Disposable implements INotebookService {
 		lifecycleService.onWillShutdown(() => this.shutdown());
 	}
 
+	public async canResolveProvider(providerId: string): Promise<boolean> {
+		await this._extensionService.activateByEvent(`onNotebook:*`);
+
+		let upperCaseProvider = providerId.toUpperCase();
+		if (!this._providerToStandardKernels.has(upperCaseProvider)) {
+			await this._extensionService.whenInstalledExtensionsRegistered();
+			await this._extensionService.activateByEvent(`onNotebook:${providerId}`);
+			if (this._providerToStandardKernels.has(upperCaseProvider)) {
+				return true;
+			} else {
+				await this._extensionService.activateByEvent(`*`);
+			}
+		}
+		return this._providerToStandardKernels.has(upperCaseProvider);
+	}
+
 	public async openNotebook(resource: UriComponents, options: INotebookShowOptions): Promise<IEditorPane | undefined> {
 		const uri = URI.revive(resource);
 
