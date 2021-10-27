@@ -245,6 +245,7 @@ export class Project implements ISqlProject {
 
 	/**
 	 *  Checks for the 3 possible ways a project can reference the sql msbuild sdk
+	 *  https://docs.microsoft.com/en-us/visualstudio/msbuild/how-to-use-project-sdk?view=vs-2019
 	 *  @returns true if the project is an msbuild sdk style project, false if it isn't
 	 */
 	public CheckForMsbuildSdkStyleProject(): boolean {
