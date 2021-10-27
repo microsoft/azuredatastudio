@@ -1057,25 +1057,6 @@ export class ProjectsController {
 		return new AddDatabaseReferenceDialog(project);
 	}
 
-	public async updateProjectForRoundTrip(project: Project) {
-		if (project.importedTargets.includes(constants.NetCoreTargets) && !project.containsSSDTOnlySystemDatabaseReferences()) {
-			return;
-		}
-
-		if (!project.importedTargets.includes(constants.NetCoreTargets)) {
-			const result = await vscode.window.showWarningMessage(constants.updateProjectForRoundTrip, constants.yesString, constants.noString);
-			if (result === constants.yesString) {
-				await project.updateProjectForRoundTrip();
-				await project.updateSystemDatabaseReferencesInProjFile();
-			}
-		} else if (project.containsSSDTOnlySystemDatabaseReferences()) {
-			const result = await vscode.window.showWarningMessage(constants.updateProjectDatabaseReferencesForRoundTrip, constants.yesString, constants.noString);
-			if (result === constants.yesString) {
-				await project.updateSystemDatabaseReferencesInProjFile();
-			}
-		}
-	}
-
 	private async addTemplateFiles(newProjFilePath: string, projectTypeId: string): Promise<void> {
 		if (projectTypeId === constants.emptySqlDatabaseProjectTypeId || newProjFilePath === '') {
 			return;
