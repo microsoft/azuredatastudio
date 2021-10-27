@@ -328,8 +328,8 @@ export class RestoreSqlDialog extends InitializingComponent {
 		this._pitrSettings.subscriptionId = this._controllerModel?.controllerConfig?.spec.settings.azure.subscription || this._pitrSettings.subscriptionId;
 		this._pitrSettings.dbName = this._database.name || this._pitrSettings.dbName;
 		this._pitrSettings.restorePoint = this._restoreResult?.restorePoint?.toString() || this._pitrSettings.restorePoint || '';
-		this._pitrSettings.latestPitr = this._restoreResult?.latestRestoreTime?.toString() || this._database.lastBackup || this._pitrSettings.latestPitr;
-		this._pitrSettings.earliestPitr = this._restoreResult?.earliestRestoreTime?.toString() || this._pitrSettings.earliestPitr || '';
+		this._pitrSettings.latestPitr = this._database.lastBackup || this._restoreResult?.latestRestoreTime?.toString() || this._database.lastBackup || this._pitrSettings.latestPitr;
+		this._pitrSettings.earliestPitr = this._database.earliestBackup || this._restoreResult?.earliestRestoreTime?.toString() || this._pitrSettings.earliestPitr || '';
 		this._pitrSettings.destDbName = this._pitrSettings.destDbName;
 	}
 

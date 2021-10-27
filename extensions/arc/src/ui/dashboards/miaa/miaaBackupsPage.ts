@@ -9,6 +9,7 @@ import * as azExt from 'az-ext';
 import * as loc from '../../../localizedConstants';
 import { IconPathHelper, cssStyles } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
+import { Deferred } from '../../../common/promise';
 import { MiaaModel, RPModel, DatabaseModel, systemDbs } from '../../../models/miaaModel';
 import { ControllerModel } from '../../../models/controllerModel';
 import { ConfigureRPOSqlDialog } from '../../dialogs/configureRPOSqlDialog';
@@ -24,6 +25,7 @@ export class MiaaBackupsPage extends DashboardPage {
 			this._miaaModel.onConfigUpdated(() => this.eventuallyRunOnInitialized(() => this.handleDatabasesUpdated()))
 		);
 	}
+	private _refreshPromise: Deferred<void> | undefined = undefined;
 	private _databasesContainer!: azdata.DivContainer;
 	private _configureRetentionPolicyButton!: azdata.ButtonComponent;
 	private _connectToServerLoading!: azdata.LoadingComponent;
@@ -251,7 +253,7 @@ export class MiaaBackupsPage extends DashboardPage {
 	}
 
 	private handleDatabasesUpdated(): void {
-		this._miaaModel.databases.forEach(d => { this.executeDryRun(d, true); console.log(d.earliestBackup); console.log(d.lastBackup); });
+		Promise.all(this._miaaModel.databases.map(async d => { await this.executeDryRun(d, true); }));
 		// If we were able to get the databases it means we have a good connection so update the username too
 		let databaseDisplay = this._miaaModel.databases.map(d => [
 			d.name,
@@ -334,73 +336,45 @@ export class MiaaBackupsPage extends DashboardPage {
 		return restoreButton;
 	}
 
-	// public executeDryRun(): void {
-	// 	this._miaaModel.databases.forEach(async d => {
-	// 			if(systemDbs.indexOf(d.name) === -1)
-	// 			{
-	// 				try
-	// 				{
-	// 					if(this._databaseTimeWindow)
-	// 					this._pitrArgs.destName = d.name + '-' + Date.now().toString();
-	// 					this._pitrArgs.managedInstance = this._miaaModel.info.name;
-	// 					this._pitrArgs.time = new Date().toISOString();
-	// 					this._pitrArgs.noWait = false;
-	// 					this._pitrArgs.dryRun = true;
-	// 					let res = await this._azApi.az.sql.midbarc.restore(
-	// 						d.name, this._pitrArgs, this._miaaModel.controllerModel.info.namespace, this._miaaModel.controllerModel.azAdditionalEnvVars);
-	// 					const restoreResult = res.stdout;
-
-	// 					if(restoreResult)
-	// 					{
-	// 						const earliestTime = restoreResult['earliestRestoreTime'];
-	// 						const latestTime = restoreResult['latestRestoreTime'];
-	// 						this._databaseTimeWindow.set(d.name, [earliestTime,latestTime ]);
-	// 					}
-	// 				}
-	// 				catch
-	// 				{
-	// 					this._databaseTimeWindow.set(d.name, ['', '']);
-	// 				}
-	// 			}
-	// 		});
-	// 	}
-
 	public async executeDryRun(d: DatabaseModel, earliestTimeRequired: boolean): Promise<void> {
-		if (systemDbs.indexOf(d.name) === -1 && earliestTimeRequired) {
-			try {
-				//Execute dryRun for earliestTime and save latest time as well so there is one call to az cli
-				this._pitrArgs.destName = d.name + '-' + Date.now().toString();
-				this._pitrArgs.managedInstance = this._miaaModel.info.name;
-				this._pitrArgs.time = new Date().toISOString();
-				this._pitrArgs.noWait = false;
-				this._pitrArgs.dryRun = true;
-				let res = await this._azApi.az.sql.midbarc.restore(
-					d.name, this._pitrArgs, this._miaaModel.controllerModel.info.namespace, this._miaaModel.controllerModel.azAdditionalEnvVars);
-				const restoreResult = res.stdout;
-
-				if (restoreResult) {
-					const earliestTime = restoreResult['earliestRestoreTime'];
-					const latestTime = restoreResult['latestRestoreTime'];
-					console.log('earliestTime in executeDryRun: ' + earliestTime);
-					console.log('latesttime in executeDryRun: ' + latestTime);
-					this._databaseTimeWindow.set(d.name, [earliestTime, latestTime]);
+		if (this._refreshPromise) {
+			return this._refreshPromise.promise;
+		}
+		this._refreshPromise = new Deferred();
+		try {
+			if (systemDbs.indexOf(d.name) === -1 && earliestTimeRequired) {
+				try {
+					//Execute dryRun for earliestTime and save latest time as well so there is one call to az cli
+					this._pitrArgs.destName = d.name + '-' + Date.now().toString();
+					this._pitrArgs.managedInstance = this._miaaModel.info.name;
+					this._pitrArgs.time = new Date().toISOString();
+					this._pitrArgs.noWait = false;
+					this._pitrArgs.dryRun = true;
+					const result = await this._azApi.az.sql.midbarc.restore(
+						d.name, this._pitrArgs, this._miaaModel.controllerModel.info.namespace, this._miaaModel.controllerModel.azAdditionalEnvVars);
+					const restoreResult = result.stdout;
+					if (restoreResult) {
+						const earliestTime = restoreResult['earliestRestoreTime'];
+						const latestTime = restoreResult['latestRestoreTime'];
+						console.log('earliestTime in executeDryRun: ' + earliestTime);
+						console.log('latesttime in executeDryRun: ' + latestTime);
+						this._databaseTimeWindow.set(d.name, [earliestTime, latestTime]);
+					}
+				}
+				catch
+				{
+					this._databaseTimeWindow.set(d.name, ['', '']);
+					console.log('earliestTime in executeDryRun 1:' + this._databaseTimeWindow?.get(d.name)?.[0] ?? '');
+					console.log('earliestTime in executeDryRun: 2 ' + this._databaseTimeWindow?.get(d.name)?.[1] ?? '');
 				}
 			}
-			catch
-			{
-				this._databaseTimeWindow.set(d.name, ['', '']);
-			}
-			console.log('earliestTime in executeDryRun 1:' + this._databaseTimeWindow?.get(d.name)?.[0] ?? '');
-			console.log('earliestTime in executeDryRun: 2 ' + this._databaseTimeWindow?.get(d.name)?.[1] ?? '');
-			//const timeValues = this._databaseTimeWindow.get(d.name);
-			// if(earliestTimeRequired)
-			// {
-			// 	return timeValues ? timeValues[0]: '';
-			// }
-			// else
-			// {
-			// 	return timeValues ? timeValues[1]: '';
-			// }
+			this._refreshPromise.resolve();
+		}
+		catch (err) {
+			this._refreshPromise.reject(err);
+			throw err;
+		} finally {
+			this._refreshPromise = undefined;
 		}
 	}
 
