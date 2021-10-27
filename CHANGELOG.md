@@ -7,26 +7,26 @@
 * New Notebook Features:
     *  Notebook Views 
     *  Split cell support 
-    * Keyboard shortcuts for Markdown Toolbar Cells 
+    *  Keyboard shortcuts for Markdown Toolbar Cells 
        * Ctrl/Cmd + B = Bold Text
        * Ctrl/Cmd + I = Italicize Text
        * Ctrl/Cmd + U = Underline Text
        * Ctrl/Cmd + Shift + K = Add Code Block
        * Ctrl/Cmd + Shift + H = Highlight Text
-    * Book improvements 
+    *  Book improvements 
        * Add a new section
        * Drag and Drop
   
 * Extension Updates:
-    *  Import
-    *  Langpack
-    *  Schema Compare
-    *  Sql Database Projects
+    * Import
+    * Langpacks
+    * Schema Compare
+    * Sql Database Projects
 
 * Bug Fixes
-  * Notebook linking improvements
-  * Horizontal Scrollbar improvement (when word wrap is off in MD Splitview / MD mode) in Notebooks
-  * Vertical Scrollbar improvement for MD Splitview in Notebooks
+    * Notebook linking improvements
+    * Horizontal Scrollbar improvement (when word wrap is off in MD Splitview / MD mode) in Notebooks
+    * Vertical Scrollbar improvement for MD Splitview in Notebooks
 
 ## Version 1.32.0
 * Release date: August 18, 2021
