@@ -1,6 +1,6 @@
 {
-	"extension-displayName": "Data workspace",
-	"extension-description": "Data workspace",
+	"extension-displayName": "Data Workspace",
+	"extension-description": "Additional common functionality for database projects",
 	"data-workspace-view-container-name": "Projects",
 	"main-view-name": "Projects",
 	"new-command": "New",

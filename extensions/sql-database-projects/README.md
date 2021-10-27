@@ -11,7 +11,8 @@ Please report issues and feature requests [here.](https://github.com/microsoft/a
 
 * Create a new database project by going to the **Projects** viewlet or by searching **Projects: New** in the command palette.
 * Existing database projects can be opened by going to the **Projects** viewlet or by searching **Projects: Open Existing** in the command palette.
-* Start from an existing database by using **Create Project From Database** from the command palette or database context menu.
+* Start from an existing database by using the **Create Project From Database** from the command palette or database context menu.
+* Start from an OpenAPI/Swagger spec by using the **Generate SQL Project from OpenAPI/Swagger spec** command
 
 ## Code of Conduct
 

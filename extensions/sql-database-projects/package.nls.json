@@ -1,4 +1,6 @@
 {
+	"displayName": "SQL Database Projects",
+	"description": "Allows users to develop and publish database schemas for MSSQL Databases",
 	"title.projectsView": "Projects",
 
 	"sqlDatabaseProjects.displayName": "Database Projects",
