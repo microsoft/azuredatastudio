@@ -253,7 +253,7 @@ export class MiaaBackupsPage extends DashboardPage {
 	}
 
 	private handleDatabasesUpdated(): void {
-		Promise.all(this._miaaModel.databases.map(async d => { await this.executeDryRun(d, true); }));
+		Promise.all(this._miaaModel.databases.map(async d => { await this.executeDryRun(d); }));
 		// If we were able to get the databases it means we have a good connection so update the username too
 		let databaseDisplay = this._miaaModel.databases.map(d => [
 			d.name,
@@ -336,13 +336,13 @@ export class MiaaBackupsPage extends DashboardPage {
 		return restoreButton;
 	}
 
-	public async executeDryRun(d: DatabaseModel, earliestTimeRequired: boolean): Promise<void> {
+	public async executeDryRun(d: DatabaseModel): Promise<void> {
 		if (this._refreshPromise) {
 			return this._refreshPromise.promise;
 		}
 		this._refreshPromise = new Deferred();
 		try {
-			if (systemDbs.indexOf(d.name) === -1 && earliestTimeRequired) {
+			if (systemDbs.indexOf(d.name) === -1) {
 				try {
 					//Execute dryRun for earliestTime and save latest time as well so there is one call to az cli
 					this._pitrArgs.destName = d.name + '-' + Date.now().toString();
