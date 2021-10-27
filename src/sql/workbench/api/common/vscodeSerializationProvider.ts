@@ -17,7 +17,7 @@ export class VSCodeContentManager implements azdata.nb.ContentManager {
 	public async deserializeNotebook(contents: string): Promise<azdata.nb.INotebookContents> {
 		let buffer = VSBuffer.fromString(contents);
 		let notebookData = await this._serializer.deserializeNotebook(buffer.buffer, new CancellationTokenSource().token);
-		return {
+		let result = {
 			cells: notebookData.cells.map<azdata.nb.ICellContents>(cell => {
 				return {
 					cell_type: cell.kind === NotebookCellKind.Code ? 'code' : 'markdown',
@@ -42,9 +42,14 @@ export class VSCodeContentManager implements azdata.nb.ContentManager {
 				};
 			}),
 			metadata: notebookData.metadata ?? {},
-			nbformat: notebookData['nbformat'] ?? 4,
-			nbformat_minor: notebookData['nbformat_minor'] ?? 2
+			nbformat: notebookData.metadata?.custom?.nbformat ?? 4,
+			nbformat_minor: notebookData.metadata?.custom?.nbformat_minor ?? 2
 		};
+
+		// Clear out extra lingering vscode custom metadata
+		delete result.metadata.custom;
+
+		return result;
 	}
 
 	public static convertToVscodeCellOutput(output: azdata.nb.ICellOutput): vscode.NotebookCellOutputItem[] {
@@ -96,8 +101,10 @@ export class VSCodeContentManager implements azdata.nb.ContentManager {
 			}),
 			metadata: notebook.metadata
 		};
-		notebookData['nbformat'] = notebook.nbformat ?? 4;
-		notebookData['nbformat_minor'] = notebook.nbformat_minor ?? 2;
+		notebookData.metadata.custom = {
+			nbformat: notebook.nbformat,
+			nbformat_minor: notebook.nbformat_minor
+		};
 
 		let bytes = await this._serializer.serializeNotebook(notebookData, new CancellationTokenSource().token);
 		let buffer = VSBuffer.wrap(bytes);

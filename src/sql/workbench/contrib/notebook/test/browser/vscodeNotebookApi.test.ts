@@ -59,12 +59,12 @@ suite('Notebook Serializer', () => {
 			}
 		}],
 		metadata: {
-			'kernelspec': {
+			kernelspec: {
 				name: 'python3',
 				display_name: 'Python 3',
 				language: 'python'
 			},
-			'language_info': {
+			language_info: {
 				name: 'python',
 				version: '3.8.10',
 				mimetype: 'text/x-python',
@@ -72,8 +72,12 @@ suite('Notebook Serializer', () => {
 					name: 'ipython',
 					version: '3'
 				}
+			},
+			custom: {
+				nbformat: 4,
+				nbformat_minor: 2
 			}
-		}
+		},
 	};
 
 	const expectedDeserializedNotebook: azdata.nb.INotebookContents = {
@@ -93,8 +97,8 @@ suite('Notebook Serializer', () => {
 				}
 			}
 		},
-		nbformat_minor: 2,
 		nbformat: 4,
+		nbformat_minor: 2,
 		cells: [
 			{
 				cell_type: 'code',
@@ -183,6 +187,10 @@ suite('Notebook Serializer', () => {
 					name: 'ipython',
 					version: '3'
 				}
+			},
+			custom: {
+				nbformat: 4,
+				nbformat_minor: 2
 			}
 		}
 	};
