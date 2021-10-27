@@ -29,13 +29,14 @@ export type PITRModel = {
 	latestPitr: string,
 	destDbName: string
 };
+
 export const systemDbs = ['master', 'msdb', 'tempdb', 'model'];
 export class MiaaModel extends ResourceModel {
 
 	private _config: azExt.SqlMiShowResult | undefined;
 	private _databases: DatabaseModel[] = [];
 	private readonly _onConfigUpdated = new vscode.EventEmitter<azExt.SqlMiShowResult | undefined>();
-	private readonly _onDatabasesUpdated = new vscode.EventEmitter<DatabaseModel[]>();
+	public readonly _onDatabasesUpdated = new vscode.EventEmitter<DatabaseModel[]>();
 	private readonly _azApi: azExt.IExtension;
 	public onConfigUpdated = this._onConfigUpdated.event;
 	public onDatabasesUpdated = this._onDatabasesUpdated.event;
@@ -45,12 +46,20 @@ export class MiaaModel extends ResourceModel {
 		recoveryPointObjective: '',
 		retentionDays: ''
 	};
+	private _databaseTimeWindow: Map<string, string[]>;
 
 	private _refreshPromise: Deferred<void> | undefined = undefined;
-
+	public _pitrArgs = {
+		destName: '',
+		managedInstance: '',
+		time: '',
+		noWait: true,
+		dryRun: false
+	};
 	constructor(_controllerModel: ControllerModel, private _miaaInfo: MiaaResourceInfo, registration: Registration, private _treeDataProvider: AzureArcTreeDataProvider) {
 		super(_controllerModel, _miaaInfo, registration);
 		this._azApi = <azExt.IExtension>vscode.extensions.getExtension(azExt.extension.name)?.exports;
+		this._databaseTimeWindow = new Map<string, string[]>();
 	}
 
 	/**
@@ -159,10 +168,19 @@ export class MiaaModel extends ResourceModel {
 		if (!databases) {
 			throw new Error('Could not fetch databases');
 		}
-		if (databases.length > 0 && typeof (databases[0]) === 'object') {
-			this._databases = (<azdata.DatabaseInfo[]>databases).map(db => { return { name: db.options['name'], status: db.options['state'], earliestBackup: '', lastBackup: db.options['lastBackup'] }; });
-		} else {
-			this._databases = (<string[]>databases).map(db => { return { name: db, status: '-', earliestBackup: '', lastBackup: '' }; });
+		else {
+			if (databases.length > 0 && typeof (databases[0]) === 'object') {
+				this._databases = (<azdata.DatabaseInfo[]>databases).map(db => {
+					this.executeDryRun((<azdata.DatabaseInfo>db).options['name']);
+					return {
+						name: db.options['name'], status: db.options['state'],
+						earliestBackup: this._databaseTimeWindow.get(db.options['name'])?.[0] ?? '',
+						lastBackup: this._databaseTimeWindow.get(db.options['name'])?.[1] ?? db.options['lastBackup'] ?? ''
+					};
+				});
+			} else {
+				this._databases = (<string[]>databases).map(db => { return { name: db, status: '-', earliestBackup: '', lastBackup: '' }; });
+			}
 		}
 		this.databasesLastUpdated = new Date();
 		this._onDatabasesUpdated.fire(this._databases);
@@ -207,4 +225,34 @@ export class MiaaModel extends ResourceModel {
 		await this._treeDataProvider.saveControllers();
 	}
 
+	public async executeDryRun(dbName: string): Promise<void> {
+		if ((systemDbs.indexOf(dbName) === -1) && (Date.now() - this.getTimeStamp(this._databaseTimeWindow.get(dbName)?.[1]) >= 60000)) {
+			try {
+				//Execute dryRun for earliestTime and save latest time as well so there is one call to az cli
+				this._pitrArgs.destName = dbName + '-' + Date.now().toString();
+				this._pitrArgs.managedInstance = this.info.name;
+				this._pitrArgs.time = new Date().toISOString();
+				this._pitrArgs.noWait = false;
+				this._pitrArgs.dryRun = true;
+				const result = await this._azApi.az.sql.midbarc.restore(
+					dbName, this._pitrArgs, this.controllerModel.info.namespace, this.controllerModel.azAdditionalEnvVars);
+				const restoreResult = result.stdout;
+				if (restoreResult) {
+					const earliestTime = restoreResult['earliestRestoreTime'];
+					const latestTime = restoreResult['latestRestoreTime'];
+					console.log('earliestTime in executeDryRun: ' + earliestTime);
+					console.log('latesttime in executeDryRun: ' + latestTime);
+					this._databaseTimeWindow.set(dbName, [earliestTime, latestTime]);
+				}
+			}
+			catch
+			{
+				this._databaseTimeWindow.set(dbName, ['', '']);
+			}
+		}
+
+	}
+	public getTimeStamp(dateTime: string | undefined): number {
+		return dateTime ? (new Date(dateTime)).getTime() : 0;
+	}
 }
