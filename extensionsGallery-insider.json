@@ -1474,14 +1474,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.11.0",
-							"lastUpdated": "5/13/2021",
+							"version": "1.12.0",
+							"lastUpdated": "10/22/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/schema-compare/schema-compare-1.11.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/schema-compare/schema-compare-1.12.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -1779,14 +1779,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.32.0",
-							"lastUpdated": "8/11/2021",
+							"version": "1.33.0",
+							"lastUpdated": "10/7/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.32.0/ads-language-pack-de-1.32.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.33.0/ads-language-pack-de-1.33.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -1816,7 +1816,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.32.0"
+									"value": ">=1.33.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -1844,14 +1844,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.32.0",
-							"lastUpdated": "8/11/2021",
+							"version": "1.33.0",
+							"lastUpdated": "10/7/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.32.0/ads-language-pack-es-1.32.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.33.0/ads-language-pack-es-1.33.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -1881,7 +1881,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.32.0"
+									"value": ">=1.33.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -1909,14 +1909,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.32.0",
-							"lastUpdated": "8/11/2021",
+							"version": "1.33.0",
+							"lastUpdated": "10/7/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.32.0/ads-language-pack-fr-1.32.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.33.0/ads-language-pack-fr-1.33.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -1946,7 +1946,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.32.0"
+									"value": ">=1.33.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -1974,14 +1974,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.32.0",
-							"lastUpdated": "8/11/2021",
+							"version": "1.33.0",
+							"lastUpdated": "10/7/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.32.0/ads-language-pack-it-1.32.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.33.0/ads-language-pack-it-1.33.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -2011,7 +2011,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.32.0"
+									"value": ">=1.33.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -2039,14 +2039,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.32.0",
-							"lastUpdated": "8/11/2021",
+							"version": "1.33.0",
+							"lastUpdated": "10/7/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.32.0/ads-language-pack-ko-1.32.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.33.0/ads-language-pack-ko-1.33.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -2076,7 +2076,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.32.0"
+									"value": ">=1.33.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -2104,14 +2104,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.32.0",
-							"lastUpdated": "8/11/2021",
+							"version": "1.33.0",
+							"lastUpdated": "10/7/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.32.0/ads-language-pack-pt-br-1.32.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.33.0/ads-language-pack-pt-br-1.33.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -2141,7 +2141,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.32.0"
+									"value": ">=1.33.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -2169,14 +2169,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.32.0",
-							"lastUpdated": "8/11/2021",
+							"version": "1.33.0",
+							"lastUpdated": "10/7/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.32.0/ads-language-pack-ru-1.32.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.33.0/ads-language-pack-ru-1.33.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -2206,7 +2206,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.32.0"
+									"value": ">=1.33.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -2234,14 +2234,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.32.0",
-							"lastUpdated": "8/11/2021",
+							"version": "1.33.0",
+							"lastUpdated": "10/7/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.32.0/ads-language-pack-zh-hans-1.32.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.33.0/ads-language-pack-zh-hans-1.33.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -2271,7 +2271,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.32.0"
+									"value": ">=1.33.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -2299,14 +2299,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.32.0",
-							"lastUpdated": "8/11/2021",
+							"version": "1.33.0",
+							"lastUpdated": "10/7/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.32.0/ads-language-pack-zh-hant-1.32.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.33.0/ads-language-pack-zh-hant-1.33.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -2336,7 +2336,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.32.0"
+									"value": ">=1.33.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -2364,14 +2364,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.32.0",
-							"lastUpdated": "8/11/2021",
+							"version": "1.33.0",
+							"lastUpdated": "10/7/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.32.0/ads-language-pack-ja-1.32.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.33.0/ads-language-pack-ja-1.33.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -2401,7 +2401,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.32.0"
+									"value": ">=1.33.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -3434,14 +3434,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.12.0",
-							"lastUpdated": "08/11/2021",
+							"version": "0.13.0",
+							"lastUpdated": "10/22/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-database-projects/sql-database-projects-0.12.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-database-projects/sql-database-projects-0.13.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -4097,14 +4097,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.1.8",
-							"lastUpdated": "08/18/2021",
+							"version": "0.1.9",
+							"lastUpdated": "10/21/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-migration/sql-migration-0.1.8.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-migration/sql-migration-0.1.9.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
