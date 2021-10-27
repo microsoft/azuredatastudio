@@ -18,25 +18,15 @@
        * Drag and Drop
   
 * Extension Updates:
-    *  Azure Monitor 
-    *  Azure SQL Migration 
-    *  Cms
-    *  Dacpac
     *  Import
-    *  Kusto
-    *  Langpacks
-    *  Profiler
+    *  Langpack
     *  Schema Compare
     *  Sql Database Projects
 
 * Bug Fixes
   * Notebook linking improvements
-   * Horizontal Scrollbar improvement (when word wrap is off in MD Splitview / MD mode) in Notebooks
-   * Vertical Scrollbar improvement for MD Splitview in Notebooks
-
-
-
-
+  * Horizontal Scrollbar improvement (when word wrap is off in MD Splitview / MD mode) in Notebooks
+  * Vertical Scrollbar improvement for MD Splitview in Notebooks
 
 ## Version 1.32.0
 * Release date: August 18, 2021
