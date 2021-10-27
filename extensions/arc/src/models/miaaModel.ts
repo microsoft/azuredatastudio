@@ -16,7 +16,7 @@ import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
 import { ControllerModel, Registration } from './controllerModel';
 import { ResourceModel } from './resourceModel';
 
-export type DatabaseModel = { name: string, status: string, lastBackup: string };
+export type DatabaseModel = { name: string, status: string, earliestBackup: string, lastBackup: string };
 export type RPModel = { recoveryPointObjective: string, retentionDays: string };
 export type PITRModel = {
 	instanceName: string,
@@ -160,9 +160,9 @@ export class MiaaModel extends ResourceModel {
 			throw new Error('Could not fetch databases');
 		}
 		if (databases.length > 0 && typeof (databases[0]) === 'object') {
-			this._databases = (<azdata.DatabaseInfo[]>databases).map(db => { return { name: db.options['name'], status: db.options['state'], lastBackup: db.options['lastBackup'] }; });
+			this._databases = (<azdata.DatabaseInfo[]>databases).map(db => { return { name: db.options['name'], status: db.options['state'], earliestBackup: '', lastBackup: db.options['lastBackup'] }; });
 		} else {
-			this._databases = (<string[]>databases).map(db => { return { name: db, status: '-', lastBackup: '' }; });
+			this._databases = (<string[]>databases).map(db => { return { name: db, status: '-', earliestBackup: '', lastBackup: '' }; });
 		}
 		this.databasesLastUpdated = new Date();
 		this._onDatabasesUpdated.fire(this._databases);
