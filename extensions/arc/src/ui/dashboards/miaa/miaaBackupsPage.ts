@@ -18,6 +18,7 @@ export class MiaaBackupsPage extends DashboardPage {
 	constructor(modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, private _controllerModel: ControllerModel, private _miaaModel: MiaaModel) {
 		super(modelView, dashboard);
 		this._azApi = vscode.extensions.getExtension(azExt.extension.name)?.exports;
+		this._databaseTimeWindow = new Map<string, string[]>();
 		this.disposables.push(
 			this._miaaModel.onDatabasesUpdated(() => this.eventuallyRunOnInitialized(() => this.handleDatabasesUpdated())),
 			this._miaaModel.onConfigUpdated(() => this.eventuallyRunOnInitialized(() => this.handleDatabasesUpdated()))
@@ -31,13 +32,13 @@ export class MiaaBackupsPage extends DashboardPage {
 	private _databasesTable!: azdata.DeclarativeTableComponent;
 	private _databasesMessage!: azdata.TextComponent;
 	private readonly _azApi: azExt.IExtension;
-
+	private _databaseTimeWindow: Map<string, string[]>;
 	public saveArgs: RPModel = {
 		recoveryPointObjective: '',
 		retentionDays: ''
 	};
 
-	public pitrArgs = {
+	public _pitrArgs = {
 		destName: '',
 		managedInstance: '',
 		time: '',
@@ -67,7 +68,7 @@ export class MiaaBackupsPage extends DashboardPage {
 			.component();
 		const content = this.modelView.modelBuilder.divContainer().component();
 		this._databasesContainer = this.modelView.modelBuilder.divContainer().component();
-		root.addItem(content, { CSSStyles: { 'margin': '20px' } });
+		root.addItem(content, { CSSStyles: { 'margin': '5px' } });
 		const databaseTitle = this.modelView.modelBuilder.text().withProps({
 			value: loc.databases,
 			CSSStyles: { ...cssStyles.title },
@@ -132,10 +133,18 @@ export class MiaaBackupsPage extends DashboardPage {
 					rowCssStyles: cssStyles.tableRow
 				},
 				{
+					displayName: loc.earliestPitrRestorePoint,
+					valueType: azdata.DeclarativeDataType.string,
+					isReadOnly: true,
+					width: '30%',
+					headerCssStyles: cssStyles.tableHeader,
+					rowCssStyles: cssStyles.tableRow
+				},
+				{
 					displayName: loc.latestpitrRestorePoint,
 					valueType: azdata.DeclarativeDataType.string,
 					isReadOnly: true,
-					width: '50%',
+					width: '30%',
 					headerCssStyles: cssStyles.tableHeader,
 					rowCssStyles: cssStyles.tableRow
 				},
@@ -143,7 +152,7 @@ export class MiaaBackupsPage extends DashboardPage {
 					displayName: loc.restore,
 					valueType: azdata.DeclarativeDataType.component,
 					isReadOnly: true,
-					width: '20%',
+					width: '10%',
 					headerCssStyles: cssStyles.tableHeader,
 					rowCssStyles: cssStyles.tableRow,
 				}
@@ -242,16 +251,19 @@ export class MiaaBackupsPage extends DashboardPage {
 	}
 
 	private handleDatabasesUpdated(): void {
+		this._miaaModel.databases.forEach(d => { this.executeDryRun(d, true); console.log(d.earliestBackup); console.log(d.lastBackup); });
 		// If we were able to get the databases it means we have a good connection so update the username too
 		let databaseDisplay = this._miaaModel.databases.map(d => [
 			d.name,
-			d.lastBackup,
+			this._databaseTimeWindow?.get(d.name)?.[0] ?? '',
+			this._databaseTimeWindow?.get(d.name)?.[1] ?? '',
 			this.createRestoreButton(d)]);
 		let databasesValues = databaseDisplay.map(d => {
 			return d.map((value): azdata.DeclarativeTableCellValue => {
 				return { value: value };
 			});
 		});
+
 		this._databasesTable.setDataValues(databasesValues);
 
 		this._databasesTableLoading.loading = false;
@@ -293,9 +305,9 @@ export class MiaaBackupsPage extends DashboardPage {
 				if (args) {
 					try {
 						restoreButton.enabled = false;
-						this.pitrArgs.destName = args.destDbName;
-						this.pitrArgs.managedInstance = args.instanceName;
-						this.pitrArgs.time = `"${args.restorePoint}"`;
+						this._pitrArgs.destName = args.destDbName;
+						this._pitrArgs.managedInstance = args.instanceName;
+						this._pitrArgs.time = `"${args.restorePoint}"`;
 						await vscode.window.withProgress(
 							{
 								location: vscode.ProgressLocation.Notification,
@@ -304,7 +316,7 @@ export class MiaaBackupsPage extends DashboardPage {
 							},
 							async (_progress, _token): Promise<void> => {
 								await this._azApi.az.sql.midbarc.restore(
-									db.name, this.pitrArgs, this._miaaModel.controllerModel.info.namespace, this._miaaModel.controllerModel.azAdditionalEnvVars);
+									db.name, this._pitrArgs, this._miaaModel.controllerModel.info.namespace, this._miaaModel.controllerModel.azAdditionalEnvVars);
 								try {
 									await this._miaaModel.refresh();
 								} catch (error) {
@@ -321,4 +333,76 @@ export class MiaaBackupsPage extends DashboardPage {
 			}));
 		return restoreButton;
 	}
+
+	// public executeDryRun(): void {
+	// 	this._miaaModel.databases.forEach(async d => {
+	// 			if(systemDbs.indexOf(d.name) === -1)
+	// 			{
+	// 				try
+	// 				{
+	// 					if(this._databaseTimeWindow)
+	// 					this._pitrArgs.destName = d.name + '-' + Date.now().toString();
+	// 					this._pitrArgs.managedInstance = this._miaaModel.info.name;
+	// 					this._pitrArgs.time = new Date().toISOString();
+	// 					this._pitrArgs.noWait = false;
+	// 					this._pitrArgs.dryRun = true;
+	// 					let res = await this._azApi.az.sql.midbarc.restore(
+	// 						d.name, this._pitrArgs, this._miaaModel.controllerModel.info.namespace, this._miaaModel.controllerModel.azAdditionalEnvVars);
+	// 					const restoreResult = res.stdout;
+
+	// 					if(restoreResult)
+	// 					{
+	// 						const earliestTime = restoreResult['earliestRestoreTime'];
+	// 						const latestTime = restoreResult['latestRestoreTime'];
+	// 						this._databaseTimeWindow.set(d.name, [earliestTime,latestTime ]);
+	// 					}
+	// 				}
+	// 				catch
+	// 				{
+	// 					this._databaseTimeWindow.set(d.name, ['', '']);
+	// 				}
+	// 			}
+	// 		});
+	// 	}
+
+	public async executeDryRun(d: DatabaseModel, earliestTimeRequired: boolean): Promise<void> {
+		if (systemDbs.indexOf(d.name) === -1 && earliestTimeRequired) {
+			try {
+				//Execute dryRun for earliestTime and save latest time as well so there is one call to az cli
+				this._pitrArgs.destName = d.name + '-' + Date.now().toString();
+				this._pitrArgs.managedInstance = this._miaaModel.info.name;
+				this._pitrArgs.time = new Date().toISOString();
+				this._pitrArgs.noWait = false;
+				this._pitrArgs.dryRun = true;
+				let res = await this._azApi.az.sql.midbarc.restore(
+					d.name, this._pitrArgs, this._miaaModel.controllerModel.info.namespace, this._miaaModel.controllerModel.azAdditionalEnvVars);
+				const restoreResult = res.stdout;
+
+				if (restoreResult) {
+					const earliestTime = restoreResult['earliestRestoreTime'];
+					const latestTime = restoreResult['latestRestoreTime'];
+					console.log('earliestTime in executeDryRun: ' + earliestTime);
+					console.log('latesttime in executeDryRun: ' + latestTime);
+					this._databaseTimeWindow.set(d.name, [earliestTime, latestTime]);
+				}
+			}
+			catch
+			{
+				this._databaseTimeWindow.set(d.name, ['', '']);
+			}
+			console.log('earliestTime in executeDryRun 1:' + this._databaseTimeWindow?.get(d.name)?.[0] ?? '');
+			console.log('earliestTime in executeDryRun: 2 ' + this._databaseTimeWindow?.get(d.name)?.[1] ?? '');
+			//const timeValues = this._databaseTimeWindow.get(d.name);
+			// if(earliestTimeRequired)
+			// {
+			// 	return timeValues ? timeValues[0]: '';
+			// }
+			// else
+			// {
+			// 	return timeValues ? timeValues[1]: '';
+			// }
+		}
+	}
+
 }
+

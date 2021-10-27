@@ -18,7 +18,7 @@ export class RestoreSqlDialog extends InitializingComponent {
 	protected modelBuilder!: azdata.ModelBuilder;
 	protected disposables: vscode.Disposable[] = [];
 	private _restoreResult: azExt.SqlMiDbRestoreResult | undefined;
-	private readonly _azApi: azExt.IExtension;
+	//private readonly _azApi: azExt.IExtension;
 	private _pitrSettings: PITRModel = {
 		instanceName: '',
 		resourceGroupName: '',
@@ -31,13 +31,13 @@ export class RestoreSqlDialog extends InitializingComponent {
 		destDbName: '',
 	};
 
-	private _pitrArgs = {
-		destName: '',
-		managedInstance: '',
-		time: '',
-		noWait: false,
-		dryRun: true
-	};
+	// private _pitrArgs = {
+	// 	destName: '',
+	// 	managedInstance: '',
+	// 	time: '',
+	// 	noWait: false,
+	// 	dryRun: true
+	// };
 	private earliestRestorePointInputBox!: azdata.InputBoxComponent;
 	private latestRestorePointInputBox!: azdata.InputBoxComponent;
 	private subscriptionInputBox!: azdata.InputBoxComponent;
@@ -46,14 +46,13 @@ export class RestoreSqlDialog extends InitializingComponent {
 	private restorePointInputBox!: azdata.InputBoxComponent;
 	private databaseNameInputBox!: azdata.InputBoxComponent;
 	private instanceInputBox!: azdata.InputBoxComponent;
-	private restorePointContainer!: azdata.DivContainer;
 	protected _completionPromise = new Deferred<PITRModel | undefined>();
 	private _azurecoreApi: azurecore.IExtension;
 	constructor(protected _miaaModel: MiaaModel, protected _controllerModel: ControllerModel, protected _database: DatabaseModel) {
 		super();
 		this._azurecoreApi = vscode.extensions.getExtension(azurecore.extension.name)?.exports;
 		this.refreshPitrSettings();
-		this._azApi = vscode.extensions.getExtension(azExt.extension.name)?.exports;
+		//this._azApi = vscode.extensions.getExtension(azExt.extension.name)?.exports;
 	}
 
 	protected dispose(): void {
@@ -81,6 +80,7 @@ export class RestoreSqlDialog extends InitializingComponent {
 			}).component();
 			const projectDetailsTextLabel = this.modelBuilder.text().withProps({
 				value: loc.projectDetailsText,
+				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' }
 			}).component();
 			this.subscriptionInputBox = this.modelBuilder.inputBox()
 				.withProps({
@@ -108,6 +108,10 @@ export class RestoreSqlDialog extends InitializingComponent {
 					ariaLabel: loc.sourceDatabase,
 					value: this._database.name
 				}).component();
+			const restoreDetailsTextLabel = this.modelBuilder.text().withProps({
+				value: loc.restorePointText,
+				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' }
+			}).component();
 			this.earliestRestorePointInputBox = this.modelBuilder.inputBox()
 				.withProps({
 					enabled: false,
@@ -141,7 +145,6 @@ export class RestoreSqlDialog extends InitializingComponent {
 
 
 				}));
-			this.restorePointContainer = this.modelBuilder.divContainer().component();
 			const pitrDetailsTitle = this.modelBuilder.text().withProps({
 				value: loc.restorePointDetails,
 				CSSStyles: { ...cssStyles.title }
@@ -244,6 +247,9 @@ export class RestoreSqlDialog extends InitializingComponent {
 							component: pitrDetailsTitle
 						},
 						{
+							component: restoreDetailsTextLabel,
+						},
+						{
 							component: this.earliestRestorePointInputBox,
 							title: loc.earliestPitrRestorePoint,
 
@@ -254,7 +260,7 @@ export class RestoreSqlDialog extends InitializingComponent {
 
 						},
 						{
-							component: this.restorePointContainer,
+							component: this.restorePointInputBox,
 							title: loc.restorePoint,
 						},
 					],
@@ -271,7 +277,7 @@ export class RestoreSqlDialog extends InitializingComponent {
 			this.instanceInputBox.focus();
 			this.initialized = true;
 		});
-
+		//this.executeDryRun(); // excute dryRun to populate correct time stamps
 		dialog.okButton.label = loc.restore;
 		dialog.cancelButton.label = loc.cancel;
 		dialog.registerCloseValidator(async () => {
@@ -331,29 +337,6 @@ export class RestoreSqlDialog extends InitializingComponent {
 		this.earliestRestorePointInputBox.value = earliestPitr;
 		this.latestRestorePointInputBox.value = latestPitr;
 	}
-
-	public async executeDryRun(): Promise<void> {
-		await vscode.window.withProgress(
-			{
-				location: vscode.ProgressLocation.Window,
-				title: loc.updatingInstance(loc.restore),
-				cancellable: false
-			},
-			async (_progress, _token): Promise<void> => {
-				this._pitrArgs.destName = this._database.name + '-' + Date.now().toString();
-				this._pitrArgs.managedInstance = this._pitrSettings.instanceName;
-				this._pitrArgs.time = new Date().toISOString();
-				this._pitrArgs.noWait = false;
-				this._pitrArgs.dryRun = true;
-				const res = await this._azApi.az.sql.midbarc.restore(
-					this._pitrSettings.dbName, this._pitrArgs, this._miaaModel.controllerModel.info.namespace, this._miaaModel.controllerModel.azAdditionalEnvVars);
-				this._restoreResult = res.stdout;
-				if (this._pitrArgs.dryRun) {
-					await this.updatePitrTimeWindow(this._restoreResult.earliestRestoreTime, this._restoreResult.latestRestoreTime);
-				}
-			});
-	}
-
 
 	public getTimeStamp(dateTime: string | undefined): number {
 		return dateTime ? (new Date(dateTime)).getTime() : 0;
