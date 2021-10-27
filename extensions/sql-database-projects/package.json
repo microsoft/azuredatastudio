@@ -1,7 +1,7 @@
 {
   "name": "sql-database-projects",
   "displayName": "SQL Database Projects",
-  "description": "The SQL Database Projects extension for Azure Data Studio and VS Code allows users to develop and publish database schemas.",
+  "description": "Allows users to develop and publish database schemas for MSSQL Databases",
   "version": "0.14.0",
   "publisher": "Microsoft",
   "preview": true,
