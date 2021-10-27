@@ -5,10 +5,9 @@
 
 import { hyperLinkFormatter, textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
-// import { GridTable } from 'sql/workbench/contrib/query/browser/gridPanel';
 import { MessagePanel } from 'sql/workbench/contrib/query/browser/messagePanel';
 import { IGridDataProvider } from 'sql/workbench/services/query/common/gridDataProvider';
-import { /*IQueryMessage,*/ ResultSetSummary } from 'sql/workbench/services/query/common/query';
+import { IQueryMessage, ResultSetSummary } from 'sql/workbench/services/query/common/query';
 import QueryRunner, { QueryGridDataProvider } from 'sql/workbench/services/query/common/queryRunner';
 import { Disposable, dispose } from 'vs/base/common/lifecycle';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
@@ -20,7 +19,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ILogService } from 'vs/platform/log/common/log';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 
-export class TextResultsMessagePanel<T> extends MessagePanel {
+export class TextResultsMessagePanel extends MessagePanel {
 	private tables: Array<Table<any>> = [];
 	private runner: QueryRunner;
 
@@ -76,8 +75,6 @@ export class TextResultsMessagePanel<T> extends MessagePanel {
 				this.addResultSet(resultsToAdd);
 			}
 		}
-
-		// this.tree.setInput(this.model, this._treeStates.get(this.currenturi));
 	}
 
 	private updateResultSet(resultSet: ResultSetSummary | ResultSetSummary[]) {
@@ -92,7 +89,7 @@ export class TextResultsMessagePanel<T> extends MessagePanel {
 			for (let set of resultsToUpdate) {
 				let table = this.tables.find(t => t.resultSet.batchId === set.batchId && t.resultSet.id === set.id);
 				if (table) {
-					table.updateResult(set);
+					table.updateResult(set, this.onMessage);
 				} else {
 					this.logService.warn('Got result set update request for non-existant table');
 				}
@@ -115,6 +112,7 @@ export class TextResultsMessagePanel<T> extends MessagePanel {
 			}
 
 			const table = this.instantiationService.createInstance(Table, this.runner, set);
+
 			tables.push(table);
 		}
 
@@ -158,26 +156,27 @@ class Table<T> extends Disposable {
 		this.gridDataProvider = this.instantiationService.createInstance(QueryGridDataProvider, this.runner, resultSet.batchId, resultSet.id);
 	}
 
-	public updateResult(resultSet: ResultSetSummary) {
+	public updateResult(resultSet: ResultSetSummary, postQueryResults: (message: IQueryMessage | IQueryMessage[], setInput: boolean, self: any) => void) {
 		this.resultSet = resultSet;
 
 		if (this.resultSet.complete) {
 			let offset = 0;
-			this.renderData(offset, resultSet.rowCount);
+			this.getData(offset, resultSet.rowCount, postQueryResults);
 		}
 	}
 
-	private renderData(offset: number, count: number): Thenable<T[]> {
-		return this.gridDataProvider.getRowData(offset, count).then(response => {
+	private getData(offset: number, count: number, postQueryResults: (message: IQueryMessage | IQueryMessage[], setInput: boolean, self: any) => void): Thenable<void> {
+		let self = this;
+		return self.gridDataProvider.getRowData(offset, count).then(response => {
 			if (!response) {
-				return [];
+				return;
 			}
 
-			let dataRows = response.rows.map(r => {
+			let rawData = response.rows.map(r => {
 				let dataWithSchema = {};
 
-				for (let i = 0; i < this.columns.length; i++) {
-					dataWithSchema[this.columns[i].field] = {
+				for (let i = 0; i < self.columns.length; i++) {
+					dataWithSchema[self.columns[i].field] = {
 						displayValue: r[i].displayValue,
 						ariaLabel: escape(r[i].displayValue),
 						isNull: r[i].isNull,
@@ -187,15 +186,11 @@ class Table<T> extends Disposable {
 				return dataWithSchema as T;
 			});
 
-			let columnSizes = this.calculateColumnSizes();
-			let headers = this.assembleTableHeader(columnSizes);
-			let formattedRows = this.formatTableData(dataRows, columnSizes);
-
-			return dataRows;
+			postQueryResults(self.formatQueryResults(rawData), false, self);
 		});
 	}
 
-	private calculateColumnSizes(): number[] {
+	private calculateColumnWidths(): number[] {
 		let columnSizes: number[] = [];
 
 		for (const column of this.columns) {
@@ -210,7 +205,7 @@ class Table<T> extends Disposable {
 		return columnSizes;
 	}
 
-	private assembleTableHeader(columnSizes: number[]): string[] {
+	private buildHeader(columnSizes: number[]): string[] {
 		let tableHeader: string[] = [];
 
 		let columnNames = '';
@@ -237,7 +232,7 @@ class Table<T> extends Disposable {
 		return tableHeader;
 	}
 
-	private formatTableData(dataRows: any[], columnSizes: number[]): string[] {
+	private formatData(dataRows: any[], columnSizes: number[]): string[] {
 		let formattedRows: string[] = [];
 
 		let rows: IRow[] = dataRows;
@@ -256,6 +251,19 @@ class Table<T> extends Disposable {
 		});
 
 		return formattedRows;
+	}
+
+	private formatQueryResults(dataRows: any[]) {
+		let columnWidths = this.calculateColumnWidths();
+		let formattedTable = this.buildHeader(columnWidths);
+		formattedTable = formattedTable.concat(this.formatData(dataRows, columnWidths));
+
+		let queryMessage = {
+			message: formattedTable.join('\n'),
+			isError: false
+		} as IQueryMessage;
+
+		return queryMessage;
 	}
 }
 
