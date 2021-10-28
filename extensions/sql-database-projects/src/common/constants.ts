@@ -21,6 +21,7 @@ export const msdb = 'msdb';
 export const msdbDacpac = 'msdb.dacpac';
 export const MicrosoftDatatoolsSchemaSqlSql = 'Microsoft.Data.Tools.Schema.Sql.Sql';
 export const databaseSchemaProvider = 'DatabaseSchemaProvider';
+export const sqlMsbuildSdk = 'Microsoft.Build.Sql';
 
 // Project Provider
 export const emptySqlDatabaseProjectTypeId = 'EmptySqlDbProj';
@@ -245,8 +246,8 @@ export const invalidSqlConnectionString = localize('invalidSqlConnectionString',
 export const extractTargetRequired = localize('extractTargetRequired', "Target information for extract is required to create database project.");
 export const schemaCompareNotInstalled = localize('schemaCompareNotInstalled', "Schema compare extension installation is required to run schema compare");
 export const buildFailedCannotStartSchemaCompare = localize('buildFailedCannotStartSchemaCompare', "Schema compare could not start because build failed");
-export const updateProjectForRoundTrip = localize('updateProjectForRoundTrip', "The targets, references, and system database references need to be updated to build this project. If the project is created in SSDT, it will continue to work in both tools. Do you want to update the project?");
-export const updateProjectDatabaseReferencesForRoundTrip = localize('updateProjectDatabaseReferencesForRoundTrip', "The system database references need to be updated to build this project. If the project is created in SSDT, it will continue to work in both tools. Do you want to update the project?");
+export function updateProjectForRoundTrip(projectName: string) { return localize('updateProjectForRoundTrip', "The targets, references, and system database references need to be updated to build the project '{0}'. If the project was created in SSDT, it will continue to work in both tools. Do you want to update the project?", projectName); }
+export function updateProjectDatabaseReferencesForRoundTrip(projectName: string) { return localize('updateProjectDatabaseReferencesForRoundTrip', "The system database references need to be updated to build the project '{0}'. If the project was created in SSDT, it will continue to work in both tools. Do you want to update the project?", projectName); }
 export const databaseReferenceTypeRequired = localize('databaseReferenceTypeRequired', "Database reference type is required for adding a reference to a database");
 export const systemDatabaseReferenceRequired = localize('systemDatabaseReferenceRequired', "System database selection is required for adding a reference to a system database");
 export const dacpacFileLocationRequired = localize('dacpacFileLocationRequired', "Dacpac file location is required for adding a reference to a database");
@@ -360,6 +361,7 @@ export const Private = 'Private';
 export const ProjectGuid = 'ProjectGuid';
 export const Type = 'Type';
 export const ExternalStreamingJob: string = 'ExternalStreamingJob';
+export const Sdk: string = 'Sdk';
 
 /** Name of the property item in the project file that defines default database collation. */
 export const DefaultCollationProperty = 'DefaultCollation';
