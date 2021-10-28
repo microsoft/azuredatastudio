@@ -59,6 +59,10 @@ export class TextResultsMessagePanel extends MessagePanel {
 		}));
 	}
 
+	public postResults(message: IQueryMessage) {
+		this.onMessage(message);
+	}
+
 	private onResultSet(resultSet: ResultSetSummary | ResultSetSummary[]) {
 		let resultsToAdd: ResultSetSummary[];
 		if (!Array.isArray(resultSet)) {
@@ -89,7 +93,7 @@ export class TextResultsMessagePanel extends MessagePanel {
 			for (let set of resultsToUpdate) {
 				let table = this.tables.find(t => t.resultSet.batchId === set.batchId && t.resultSet.id === set.id);
 				if (table) {
-					table.updateResult(set, this.onMessage);
+					table.updateResult(set);
 				} else {
 					this.logService.warn('Got result set update request for non-existant table');
 				}
@@ -111,7 +115,7 @@ export class TextResultsMessagePanel extends MessagePanel {
 				continue;
 			}
 
-			const table = this.instantiationService.createInstance(Table, this.runner, set);
+			const table = this.instantiationService.createInstance(Table, this.runner, set, this);
 
 			tables.push(table);
 		}
@@ -135,6 +139,7 @@ class Table<T> extends Disposable {
 	constructor(
 		private runner: QueryRunner,
 		public resultSet: ResultSetSummary,
+		private textResultsMessagePanel: TextResultsMessagePanel,
 		@IInstantiationService private readonly instantiationService: IInstantiationService
 	) {
 		super();
@@ -156,37 +161,37 @@ class Table<T> extends Disposable {
 		this.gridDataProvider = this.instantiationService.createInstance(QueryGridDataProvider, this.runner, resultSet.batchId, resultSet.id);
 	}
 
-	public updateResult(resultSet: ResultSetSummary, postQueryResults: (message: IQueryMessage | IQueryMessage[], setInput: boolean, self: any) => void) {
+	public updateResult(resultSet: ResultSetSummary) {
 		this.resultSet = resultSet;
 
 		if (this.resultSet.complete) {
 			let offset = 0;
-			this.getData(offset, resultSet.rowCount, postQueryResults);
+			this.getData(offset, resultSet.rowCount);
 		}
 	}
 
-	private getData(offset: number, count: number, postQueryResults: (message: IQueryMessage | IQueryMessage[], setInput: boolean, self: any) => void): Thenable<void> {
-		let self = this;
-		return self.gridDataProvider.getRowData(offset, count).then(response => {
+	private getData(offset: number, count: number): Thenable<void> {
+		return this.gridDataProvider.getRowData(offset, count).then(response => {
 			if (!response) {
 				return;
 			}
 
-			let rawData = response.rows.map(r => {
+			let rawData = response.rows.map(row => {
 				let dataWithSchema = {};
 
-				for (let i = 0; i < self.columns.length; i++) {
-					dataWithSchema[self.columns[i].field] = {
-						displayValue: r[i].displayValue,
-						ariaLabel: escape(r[i].displayValue),
-						isNull: r[i].isNull,
-						invariantCultureDisplayValue: r[i].invariantCultureDisplayValue
+				for (let col = 0; col < this.columns.length; col++) {
+					dataWithSchema[this.columns[col].field] = {
+						displayValue: row[col].displayValue,
+						ariaLabel: escape(row[col].displayValue),
+						isNull: row[col].isNull,
+						invariantCultureDisplayValue: row[col].invariantCultureDisplayValue
 					};
 				}
 				return dataWithSchema as T;
 			});
 
-			postQueryResults(self.formatQueryResults(rawData), false, self);
+			let formattedResults = this.formatQueryResults(rawData);
+			this.textResultsMessagePanel.postResults(formattedResults);
 		});
 	}
 

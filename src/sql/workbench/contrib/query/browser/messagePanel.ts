@@ -199,18 +199,16 @@ export class MessagePanel extends Disposable {
 		this.onMessage(runner.messages, true);
 	}
 
-	protected onMessage(message: IQueryMessage | IQueryMessage[], setInput: boolean = false, self: any = undefined) {
-		self = self ? self : this;
-
+	protected onMessage(message: IQueryMessage | IQueryMessage[], setInput: boolean = false) {
 		if (isArray(message)) {
-			self.model.messages.push(...message);
+			this.model.messages.push(...message);
 		} else {
-			self.model.messages.push(message);
+			this.model.messages.push(message);
 		}
 		if (setInput) {
-			self.tree.setInput(self.model, self._treeStates.get(self.currenturi));
+			this.tree.setInput(this.model, this._treeStates.get(this.currenturi));
 		} else {
-			self.tree.updateChildren();
+			this.tree.updateChildren();
 		}
 	}
 
