@@ -133,7 +133,7 @@ class DialogImpl extends ModelViewPanelImpl implements azdata.window.Dialog {
 	private _renderFooter: boolean;
 	private _dialogProperties: IDialogProperties;
 
-	private _onClosed = new Emitter<string>();
+	private _onClosed = new Emitter<azdata.window.CloseReason>();
 	public onClosed = this._onClosed.event;
 
 	constructor(extHostModelViewDialog: ExtHostModelViewDialog,
@@ -243,7 +243,7 @@ class DialogImpl extends ModelViewPanelImpl implements azdata.window.Dialog {
 		}
 	}
 
-	public handleOnClosed(reason: string): void {
+	public handleOnClosed(reason: azdata.window.CloseReason): void {
 		this._onClosed.fire(reason);
 	}
 }
@@ -704,7 +704,7 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		return editor.handleSave();
 	}
 
-	public $onClosed(handle: number, reason: string): void {
+	public $onClosed(handle: number, reason: azdata.window.CloseReason): void {
 		let dialog = this._objectsByHandle.get(handle) as DialogImpl;
 		dialog.handleOnClosed(reason);
 	}

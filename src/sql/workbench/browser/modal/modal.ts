@@ -148,7 +148,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	private _modalShowingContext: IContextKey<Array<string>>;
 	private readonly _staticKey: string;
 
-	private _onClosed = new Emitter<string>();
+	private _onClosed = new Emitter<HideReason>();
 	public onClosed = this._onClosed.event;
 
 	/**
@@ -480,7 +480,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	/**
 	 * Hides the modal and removes key listeners
 	 */
-	protected hide(reason?: HideReason, currentPageName?: string): void {
+	protected hide(reason: HideReason = 'close', currentPageName?: string): void {
 		this._modalShowingContext.get()!.pop();
 		this._bodyContainer!.remove();
 		this.disposableStore.clear();
@@ -492,7 +492,7 @@ export abstract class Modal extends Disposable implements IThemable {
 			})
 			.send();
 		this.restoreKeyboardFocus();
-		this._onClosed.fire(reason ?? '');
+		this._onClosed.fire(reason);
 	}
 
 	private restoreKeyboardFocus() {
