@@ -29,8 +29,7 @@ export class CreateProjectFromDatabaseDialog {
 	private formBuilder: azdataType.FormBuilder | undefined;
 	private connectionId: string | undefined;
 	private toDispose: vscode.Disposable[] = [];
-	private initDialogComplete!: Deferred<void>;
-	private initDialogPromise: Promise<void> = new Promise<void>((resolve, reject) => this.initDialogComplete = { resolve, reject });
+	private initDialogComplete: Deferred = new Deferred();
 
 	public createProjectFromDatabaseCallback: ((model: ImportDataModel) => any) | undefined;
 
@@ -51,7 +50,7 @@ export class CreateProjectFromDatabaseDialog {
 		this.dialog.cancelButton.label = constants.cancelButtonText;
 
 		getAzdataApi()!.window.openDialog(this.dialog);
-		await this.initDialogPromise;
+		await this.initDialogComplete.promise;
 
 		if (this.profile) {
 			await this.updateConnectionComponents(getConnectionName(this.profile), this.profile.id, this.profile.databaseName!);
