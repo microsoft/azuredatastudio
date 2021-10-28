@@ -573,3 +573,28 @@ export async function showInfoMessageWithOutputChannel(message: string, outputCh
 	}
 }
 
+/**
+ * Recursively gets all the sql files at any depth in a folder
+ * @param folderPath
+ */
+export async function getSqlFilesInFolder(folderPath: string): Promise<string[]> {
+	// path needs to use forward slashes for glob to work
+	const escapedPath = glob.escapePath(folderPath.replace(/\\/g, '/'));
+	const sqlFilter = path.posix.join(escapedPath, '**', '*.sql');
+	const results = await glob(sqlFilter);
+
+	return results;
+}
+
+/**
+ * Recursively gets all the folders at any depth in the given folder
+ * @param folderPath
+ */
+export async function getFoldersInFolder(folderPath: string): Promise<string[]> {
+	// path needs to use forward slashes for glob to work
+	const escapedPath = glob.escapePath(folderPath.replace(/\\/g, '/'));
+	const folderFilter = path.posix.join(escapedPath + '/**');
+	const results = await glob(folderFilter, { onlyDirectories: true });
+
+	return results;
+}

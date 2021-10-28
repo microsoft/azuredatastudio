@@ -123,20 +123,37 @@ export class Project implements ISqlProject {
 		// get projectGUID
 		this._projectGuid = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ProjectGuid)[0].childNodes[0].nodeValue;
 
-		// find all folders and files to include
+		// glob style getting files and folders
+		if (this._isMsbuildSdkStyleProject) {
+			const files = await utils.getSqlFilesInFolder(this.projectFolderPath);
+			files.forEach(f => {
+				this._files.push(this.createFileProjectEntry(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(f)), EntryType.File));
+			});
+
+			const folders = await utils.getFoldersInFolder(this.projectFolderPath);
+			folders.forEach(f => {
+				this._files.push(this.createFileProjectEntry(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(f)), EntryType.Folder));
+			});
+		}
+
 		for (let ig = 0; ig < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ItemGroup).length; ig++) {
 			const itemGroup = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ItemGroup)[ig];
 
+			// find all folders and files to include that are specified in the project file
 			const buildElements = itemGroup.getElementsByTagName(constants.Build);
 			for (let b = 0; b < buildElements.length; b++) {
-				this._files.push(this.createFileProjectEntry(buildElements[b].getAttribute(constants.Include), EntryType.File, buildElements[b].getAttribute(constants.Type)));
+				const relativePath = buildElements[b].getAttribute(constants.Include);
+				if (!this._files.find(f => f.relativePath === relativePath)) {
+					this._files.push(this.createFileProjectEntry(relativePath, EntryType.File, buildElements[b].getAttribute(constants.Type)));
+				}
 			}
 
 			const folderElements = itemGroup.getElementsByTagName(constants.Folder);
 			for (let f = 0; f < folderElements.length; f++) {
+				const relativePath = folderElements[f].getAttribute(constants.Include);
 				// don't add Properties folder since it isn't supported for now
-				if (folderElements[f].getAttribute(constants.Include) !== constants.Properties) {
-					this._files.push(this.createFileProjectEntry(folderElements[f].getAttribute(constants.Include), EntryType.Folder));
+				if (relativePath !== constants.Properties && !this._files.find(f => f.relativePath === utils.trimChars(relativePath, '\\'))) {
+					this._files.push(this.createFileProjectEntry(relativePath, EntryType.Folder));
 				}
 			}
 
@@ -144,7 +161,8 @@ export class Project implements ISqlProject {
 			let preDeployScriptCount: number = 0;
 			const preDeploy = itemGroup.getElementsByTagName(constants.PreDeploy);
 			for (let pre = 0; pre < preDeploy.length; pre++) {
-				this._preDeployScripts.push(this.createFileProjectEntry(preDeploy[pre].getAttribute(constants.Include), EntryType.File));
+				const relativePath = preDeploy[pre].getAttribute(constants.Include);
+				this._preDeployScripts.push(this.createFileProjectEntry(relativePath, EntryType.File));
 				preDeployScriptCount++;
 			}
 
@@ -152,7 +170,8 @@ export class Project implements ISqlProject {
 			let postDeployScriptCount: number = 0;
 			const postDeploy = itemGroup.getElementsByTagName(constants.PostDeploy);
 			for (let post = 0; post < postDeploy.length; post++) {
-				this._postDeployScripts.push(this.createFileProjectEntry(postDeploy[post].getAttribute(constants.Include), EntryType.File));
+				const relativePath = postDeploy[post].getAttribute(constants.Include);
+				this._postDeployScripts.push(this.createFileProjectEntry(relativePath, EntryType.File));
 				postDeployScriptCount++;
 			}
 
