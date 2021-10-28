@@ -9,7 +9,7 @@ import * as azExt from 'az-ext';
 import * as vscode from 'vscode';
 import { UserCancelledError } from '../common/api';
 import { Deferred } from '../common/promise';
-import { parseIpAndPort } from '../common/utils';
+import { getTimeStamp, parseIpAndPort } from '../common/utils';
 import * as loc from '../localizedConstants';
 import { ConnectToMiaaSqlDialog } from '../ui/dialogs/connectMiaaDialog';
 import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
@@ -36,7 +36,7 @@ export class MiaaModel extends ResourceModel {
 	private _config: azExt.SqlMiShowResult | undefined;
 	private _databases: DatabaseModel[] = [];
 	private readonly _onConfigUpdated = new vscode.EventEmitter<azExt.SqlMiShowResult | undefined>();
-	public readonly _onDatabasesUpdated = new vscode.EventEmitter<DatabaseModel[]>();
+	private readonly _onDatabasesUpdated = new vscode.EventEmitter<DatabaseModel[]>();
 	private readonly _azApi: azExt.IExtension;
 	public onConfigUpdated = this._onConfigUpdated.event;
 	public onDatabasesUpdated = this._onDatabasesUpdated.event;
@@ -49,7 +49,7 @@ export class MiaaModel extends ResourceModel {
 	private _databaseTimeWindow: Map<string, string[]>;
 
 	private _refreshPromise: Deferred<void> | undefined = undefined;
-	public _pitrArgs = {
+	private _pitrArgs = {
 		destName: '',
 		managedInstance: '',
 		time: '',
@@ -172,7 +172,7 @@ export class MiaaModel extends ResourceModel {
 		else {
 			if (databases.length > 0 && typeof (databases[0]) === 'object') {
 				for (let i in databases) {
-					const di: azdata.DatabaseInfo = <azdata.DatabaseInfo><unknown>databases[i];
+					const di: azdata.DatabaseInfo = <azdata.DatabaseInfo>databases[i];
 					const name = di.options['name'];
 					await this.executeDryRun(di.options['name']);
 					const dm: DatabaseModel = {
@@ -228,8 +228,10 @@ export class MiaaModel extends ResourceModel {
 		await this._treeDataProvider.saveControllers();
 	}
 
-	public async executeDryRun(dbName: string): Promise<void> {
-		if ((systemDbs.indexOf(dbName) === -1) && (Date.now() - this.getTimeStamp(this._databaseTimeWindow.get(dbName)?.[1]) >= 300000)) {
+	protected async executeDryRun(dbName: string): Promise<void> {
+		// Allow next dry Run to be executed only after 5(300000 ms ) minutes from current time as the log backups are
+		// generated only at 5 minutes interval
+		if ((systemDbs.indexOf(dbName) === -1) && (Date.now() - getTimeStamp(this._databaseTimeWindow.get(dbName)?.[1]) >= 300000)) {
 			try {
 				//Execute dryRun for earliestTime and save latest time as well so there is one call to az cli
 				this._pitrArgs.destName = dbName + '-' + Date.now().toString();
@@ -254,8 +256,5 @@ export class MiaaModel extends ResourceModel {
 			}
 		}
 
-	}
-	public getTimeStamp(dateTime: string | undefined): number {
-		return dateTime ? (new Date(dateTime)).getTime() : 0;
 	}
 }

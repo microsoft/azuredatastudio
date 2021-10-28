@@ -363,3 +363,7 @@ export function debounce(delay: number): Function {
 		};
 	});
 }
+
+export function getTimeStamp(dateTime: string | undefined): number {
+	return dateTime ? (new Date(dateTime)).getTime() : 0;
+}
