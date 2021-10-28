@@ -29,6 +29,8 @@ export let sqlProjectInvalidCollationBaseline: string;
 export let newStyleProjectSdkNodeBaseline: string;
 export let newStyleProjectSdkProjectAttributeBaseline: string;
 export let newStyleProjectSdkImportAttributeBaseline: string;
+export let openNewStyleSqlProjectBaseline: string;
+export let openNewStyleSqlProjectWithFilesSpecifiedBaseline: string;
 
 const baselineFolderPath = __dirname;
 
@@ -55,6 +57,8 @@ export async function loadBaselines() {
 	newStyleProjectSdkNodeBaseline = await loadBaseline(baselineFolderPath, 'newStyleSqlProjectSdkNodeBaseline.xml');
 	newStyleProjectSdkProjectAttributeBaseline = await loadBaseline(baselineFolderPath, 'newStyleSqlProjectSdkProjectAttributeBaseline.xml');
 	newStyleProjectSdkImportAttributeBaseline = await loadBaseline(baselineFolderPath, 'newStyleSqlProjectSdkImportAttributeBaseline.xml');
+	openNewStyleSqlProjectBaseline = await loadBaseline(baselineFolderPath, 'openNewStyleSqlProjectBaseline.xml');
+	openNewStyleSqlProjectWithFilesSpecifiedBaseline = await loadBaseline(baselineFolderPath, 'openNewStyleSqlProjectWithFilesSpecifiedBaseline.xml');
 }
 
 async function loadBaseline(baselineFolderPath: string, fileName: string): Promise<string> {

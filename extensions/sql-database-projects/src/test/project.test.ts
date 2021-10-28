@@ -827,6 +827,69 @@ describe('Project: sqlproj content operations', function (): void {
 	});
 });
 
+describe('Project: Msbuild sdk style project content operations', function (): void {
+	before(async function (): Promise<void> {
+		await baselines.loadBaselines();
+	});
+
+	beforeEach(function (): void {
+		sinon.restore();
+	});
+
+	it('Should read project from sqlproj and files and folders by globbing', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openNewStyleSqlProjectBaseline);
+		let fileList: Uri[] = [];
+		await testUtils.createDummyFileStructureWithPrePostDeployScripts(true, fileList, path.dirname(projFilePath));
+		should(fileList.length).equal(19);
+
+		const project: Project = await Project.openProject(projFilePath);
+
+		// Files and folders
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(2);
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(15);
+
+		// SqlCmdVariables
+		should(Object.keys(project.sqlCmdVariables).length).equal(2);
+		should(project.sqlCmdVariables['ProdDatabaseName']).equal('MyProdDatabase');
+		should(project.sqlCmdVariables['BackupDatabaseName']).equal('MyBackupDatabase');
+
+		// Database references
+		// should only have one database reference even though there are two master.dacpac references (1 for ADS and 1 for SSDT)
+		should(project.databaseReferences.length).equal(1);
+		should(project.databaseReferences[0].databaseName).containEql(constants.master);
+		should(project.databaseReferences[0] instanceof SystemDatabaseReferenceProjectEntry).equal(true);
+
+		// // Pre-post deployment scripts
+		should(project.preDeployScripts.length).equal(1);
+		should(project.postDeployScripts.length).equal(1);
+		should(project.noneDeployScripts.length).equal(2);
+		should(project.preDeployScripts.find(f => f.type === EntryType.File && f.relativePath === 'Script.PreDeployment1.sql')).not.equal(undefined, 'File Script.PreDeployment1.sql not read');
+		should(project.postDeployScripts.find(f => f.type === EntryType.File && f.relativePath === 'Script.PostDeployment1.sql')).not.equal(undefined, 'File Script.PostDeployment1.sql not read');
+		should(project.noneDeployScripts.find(f => f.type === EntryType.File && f.relativePath === 'Script.PreDeployment2.sql')).not.equal(undefined, 'File Script.PostDeployment2.sql not read');
+		should(project.noneDeployScripts.find(f => f.type === EntryType.File && f.relativePath === 'folder1\\Script.PostDeployment1.sql')).not.equal(undefined, 'File folder1\\Script.PostDeployment1.sql not read');
+	});
+
+	it('Should handle files listed in sqlproj', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openNewStyleSqlProjectWithFilesSpecifiedBaseline);
+		let fileList: Uri[] = [];
+		await testUtils.createDummyFileStructure(true, fileList, path.dirname(projFilePath));
+
+		const project: Project = await Project.openProject(projFilePath);
+
+		// Files and folders
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(2);
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(12);
+
+		// these are also listed in the sqlproj, but there shouldn't be duplicate entries for them
+		should(project.files.filter(f => f.relativePath === 'folder1\\file2.sql').length).equal(1);
+		should(project.files.filter(f => f.relativePath === 'file1.sql').length).equal(1);
+		should(project.files.filter(f => f.relativePath === 'folder1').length).equal(1);
+
+		// this file is outside project folder that was specified in sqlproj
+		should(project.files.filter(f => f.relativePath === '..\\Test\\Test.sql').length).equal(1);
+	});
+});
+
 describe('Project: add SQLCMD Variables', function (): void {
 	before(async function (): Promise<void> {
 		await baselines.loadBaselines();
