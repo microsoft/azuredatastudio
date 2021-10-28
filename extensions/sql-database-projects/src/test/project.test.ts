@@ -861,9 +861,9 @@ describe('Project: Msbuild sdk style project content operations', function (): v
 		should(project.postDeployScripts.length).equal(1);
 		should(project.noneDeployScripts.length).equal(2);
 		should(project.preDeployScripts.find(f => f.type === EntryType.File && f.relativePath === 'Script.PreDeployment1.sql')).not.equal(undefined, 'File Script.PreDeployment1.sql not read');
+		should(project.noneDeployScripts.find(f => f.type === EntryType.File && f.relativePath === 'Script.PreDeployment2.sql')).not.equal(undefined, 'File Script.PreDeployment2.sql not read');
 		should(project.postDeployScripts.find(f => f.type === EntryType.File && f.relativePath === 'Script.PostDeployment1.sql')).not.equal(undefined, 'File Script.PostDeployment1.sql not read');
-		should(project.noneDeployScripts.find(f => f.type === EntryType.File && f.relativePath === 'Script.PreDeployment2.sql')).not.equal(undefined, 'File Script.PostDeployment2.sql not read');
-		should(project.noneDeployScripts.find(f => f.type === EntryType.File && f.relativePath === 'folder1\\Script.PostDeployment1.sql')).not.equal(undefined, 'File folder1\\Script.PostDeployment1.sql not read');
+		should(project.noneDeployScripts.find(f => f.type === EntryType.File && f.relativePath === 'folder1\\Script.PostDeployment2.sql')).not.equal(undefined, 'File folder1\\Script.PostDeployment2.sql not read');
 	});
 
 	it('Should handle files listed in sqlproj', async function (): Promise<void> {

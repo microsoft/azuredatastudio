@@ -26,7 +26,7 @@
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment1.sql" />
-    <None Include="folder1\Script.PostDeployment1.sql" />
+    <None Include="folder1\Script.PostDeployment2.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Condition="'$(NetCoreBuild)' == 'true'" Include="$(NETCoreTargetsPath)\SystemDacpacs\150\master.dacpac">

@@ -156,7 +156,7 @@ export async function createDummyFileStructureWithPrePostDeployScripts(createLis
 	// add post-deploy scripts
 	const postdeployscript1 = path.join(testFolderPath, 'Script.PostDeployment1.sql');
 	await fs.writeFile(postdeployscript1, '');
-	const postdeployscript2 = path.join(testFolderPath, 'Folder1', 'Script.PostDeployment2.sql');
+	const postdeployscript2 = path.join(testFolderPath, 'folder1', 'Script.PostDeployment2.sql');
 	await fs.writeFile(postdeployscript2, '');
 
 	if (createList) {
