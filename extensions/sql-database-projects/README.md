@@ -1,9 +1,17 @@
 # Microsoft SQL Server Database Projects for Azure Data Studio and VS Code
 
-Microsoft SQL Server Database Projects for Azure Data Studio and VS Code includes:
+## Overview
 
-## Database Projects
-The Database Projects extension provides a way to design, edit, and publish schemas for SQL databases from a source controlled project.
+Microsoft SQL Server Database Projects for Azure Data Studio and VS Code provides a way to design, edit, and publish schemas for SQL databases from a source controlled project.
+
+### VS Code
+
+This extension is bundled into the `SQL Server (MSSQL)` extension for VS Code and will be installed automatically when that extension is updated or installed.
+
+### Azure Data Studio
+
+This extension is provided as a separate extension in the marketplace.
+
 
 Please report issues and feature requests [here.](https://github.com/microsoft/azuredatastudio/issues)
 

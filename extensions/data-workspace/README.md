@@ -1,6 +1,16 @@
 # Microsoft Data Workspace for Azure Data Studio and VS Code
 
+## Overview
+
 This extension provides additional common functionality for database projects in Azure Data Studio and VS Code. It requires other extensions to contribute support for specific project types.
+
+### VS Code
+
+This extension is bundled into the `SQL Server (MSSQL)` extension for VS Code and is required by the `SQL Database Projects` extension. It will be installed automatically when those extensions are updated or installed.
+
+### Azure Data Studio
+
+This extension is provided as a separate extension in the marketplace. It is required by the `SQL Database Projects` extension and will be installed automatically when that extension is installed.
 
 ## Code of Conduct
 
