@@ -123,7 +123,7 @@ export class Project implements ISqlProject {
 		// get projectGUID
 		this._projectGuid = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ProjectGuid)[0].childNodes[0].nodeValue;
 
-		// glob style getting files and folders
+		// glob style getting files and folders for new msbuild sdk style projects
 		if (this._isMsbuildSdkStyleProject) {
 			const files = await utils.getSqlFilesInFolder(this.projectFolderPath);
 			files.forEach(f => {
@@ -143,6 +143,8 @@ export class Project implements ISqlProject {
 			const buildElements = itemGroup.getElementsByTagName(constants.Build);
 			for (let b = 0; b < buildElements.length; b++) {
 				const relativePath = buildElements[b].getAttribute(constants.Include);
+
+				// only add file if it wasn't already added
 				if (!this._files.find(f => f.relativePath === relativePath)) {
 					this._files.push(this.createFileProjectEntry(relativePath, EntryType.File, buildElements[b].getAttribute(constants.Type)));
 				}
@@ -151,7 +153,7 @@ export class Project implements ISqlProject {
 			const folderElements = itemGroup.getElementsByTagName(constants.Folder);
 			for (let f = 0; f < folderElements.length; f++) {
 				const relativePath = folderElements[f].getAttribute(constants.Include);
-				// don't add Properties folder since it isn't supported for now
+				// don't add Properties folder since it isn't supported for now and don't add if the folder was already added
 				if (relativePath !== constants.Properties && !this._files.find(f => f.relativePath === utils.trimChars(relativePath, '\\'))) {
 					this._files.push(this.createFileProjectEntry(relativePath, EntryType.Folder));
 				}
@@ -161,8 +163,7 @@ export class Project implements ISqlProject {
 			let preDeployScriptCount: number = 0;
 			const preDeploy = itemGroup.getElementsByTagName(constants.PreDeploy);
 			for (let pre = 0; pre < preDeploy.length; pre++) {
-				const relativePath = preDeploy[pre].getAttribute(constants.Include);
-				this._preDeployScripts.push(this.createFileProjectEntry(relativePath, EntryType.File));
+				this._preDeployScripts.push(this.createFileProjectEntry(preDeploy[pre].getAttribute(constants.Include), EntryType.File));
 				preDeployScriptCount++;
 			}
 
@@ -170,8 +171,7 @@ export class Project implements ISqlProject {
 			let postDeployScriptCount: number = 0;
 			const postDeploy = itemGroup.getElementsByTagName(constants.PostDeploy);
 			for (let post = 0; post < postDeploy.length; post++) {
-				const relativePath = postDeploy[post].getAttribute(constants.Include);
-				this._postDeployScripts.push(this.createFileProjectEntry(relativePath, EntryType.File));
+				this._postDeployScripts.push(this.createFileProjectEntry(postDeploy[post].getAttribute(constants.Include), EntryType.File));
 				postDeployScriptCount++;
 			}
 

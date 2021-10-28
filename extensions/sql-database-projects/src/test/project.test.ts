@@ -838,10 +838,7 @@ describe('Project: Msbuild sdk style project content operations', function (): v
 
 	it('Should read project from sqlproj and files and folders by globbing', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.openNewStyleSqlProjectBaseline);
-		let fileList: Uri[] = [];
-		await testUtils.createDummyFileStructureWithPrePostDeployScripts(true, fileList, path.dirname(projFilePath));
-		should(fileList.length).equal(19);
-
+		await testUtils.createDummyFileStructureWithPrePostDeployScripts(false, undefined, path.dirname(projFilePath));
 		const project: Project = await Project.openProject(projFilePath);
 
 		// Files and folders

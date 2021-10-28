@@ -581,9 +581,7 @@ export async function getSqlFilesInFolder(folderPath: string): Promise<string[]>
 	// path needs to use forward slashes for glob to work
 	const escapedPath = glob.escapePath(folderPath.replace(/\\/g, '/'));
 	const sqlFilter = path.posix.join(escapedPath, '**', '*.sql');
-	const results = await glob(sqlFilter);
-
-	return results;
+	return await glob(sqlFilter);
 }
 
 /**
@@ -594,7 +592,5 @@ export async function getFoldersInFolder(folderPath: string): Promise<string[]> 
 	// path needs to use forward slashes for glob to work
 	const escapedPath = glob.escapePath(folderPath.replace(/\\/g, '/'));
 	const folderFilter = path.posix.join(escapedPath + '/**');
-	const results = await glob(folderFilter, { onlyDirectories: true });
-
-	return results;
+	return await glob(folderFilter, { onlyDirectories: true });
 }
