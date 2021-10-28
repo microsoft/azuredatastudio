@@ -18,7 +18,6 @@ export class MiaaBackupsPage extends DashboardPage {
 	constructor(modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, private _controllerModel: ControllerModel, private _miaaModel: MiaaModel) {
 		super(modelView, dashboard);
 		this._azApi = vscode.extensions.getExtension(azExt.extension.name)?.exports;
-		this._miaaModel.refresh();
 		this.disposables.push(
 			this._miaaModel.onDatabasesUpdated(() => this.eventuallyRunOnInitialized(() => this.handleDatabasesUpdated())),
 			this._miaaModel.onConfigUpdated(() => this.eventuallyRunOnInitialized(() => this.handleDatabasesUpdated()))
@@ -255,11 +254,13 @@ export class MiaaBackupsPage extends DashboardPage {
 		//Promise.all(this._miaaModel.databases.map(async d => { await this.executeDryRun(d); }));
 		//this._miaaModel._onDatabasesUpdated.fire(this._miaaModel.databases);
 		// If we were able to get the databases it means we have a good connection so update the username too
+		this._miaaModel.refresh();
 		let databaseDisplay = this._miaaModel.databases.map(d => [
 			d.name,
 			d.earliestBackup,
 			d.lastBackup,
 			this.createRestoreButton(d)]);
+
 		let databasesValues = databaseDisplay.map(d => {
 			return d.map((value): azdata.DeclarativeTableCellValue => {
 				return { value: value };

@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as azExt from 'az-ext';
 import { Deferred } from '../../common/promise';
 import * as loc from '../../localizedConstants';
 import * as vscode from 'vscode';
@@ -16,18 +15,16 @@ import { ControllerModel } from '../../models/controllerModel';
 
 export class RestoreSqlDialog extends InitializingComponent {
 	protected modelBuilder!: azdata.ModelBuilder;
-	protected disposables: vscode.Disposable[] = [];
-	private _restoreResult: azExt.SqlMiDbRestoreResult | undefined;
-	private _pitrSettings: PITRModel = {
-		instanceName: '',
-		resourceGroupName: '',
-		location: '',
-		subscriptionId: '',
-		dbName: '',
-		restorePoint: '',
-		earliestPitr: '',
-		latestPitr: '',
-		destDbName: '',
+	private pitrSettings: PITRModel = {
+		instanceName: '-',
+		resourceGroupName: '-',
+		location: '-',
+		subscriptionId: '-',
+		dbName: '-',
+		restorePoint: '-',
+		earliestPitr: '-',
+		latestPitr: '-',
+		destDbName: '-',
 	};
 
 	private earliestRestorePointInputBox!: azdata.InputBoxComponent;
@@ -40,19 +37,11 @@ export class RestoreSqlDialog extends InitializingComponent {
 	private instanceInputBox!: azdata.InputBoxComponent;
 	protected _completionPromise = new Deferred<PITRModel | undefined>();
 	private _azurecoreApi: azurecore.IExtension;
+	protected disposables: vscode.Disposable[] = [];
 	constructor(protected _miaaModel: MiaaModel, protected _controllerModel: ControllerModel, protected _database: DatabaseModel) {
 		super();
 		this._azurecoreApi = vscode.extensions.getExtension(azurecore.extension.name)?.exports;
 		this.refreshPitrSettings();
-	}
-
-	protected dispose(): void {
-		this.disposables.forEach(d => d.dispose());
-		this.disposables.length = 0;
-	}
-
-	public get restoreResult(): azExt.SqlMiDbRestoreResult | undefined {
-		return this._restoreResult;
 	}
 
 	public showDialog(dialogTitle: string): azdata.window.Dialog {
@@ -71,20 +60,20 @@ export class RestoreSqlDialog extends InitializingComponent {
 			}).component();
 			const projectDetailsTextLabel = this.modelBuilder.text().withProps({
 				value: loc.projectDetailsText,
-				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' }
 			}).component();
 			this.subscriptionInputBox = this.modelBuilder.inputBox()
 				.withProps({
 					enabled: false,
 					ariaLabel: loc.subscription,
-					value: this._pitrSettings.subscriptionId
+					value: this.pitrSettings.subscriptionId
 				}).component();
 			this.resourceGroupInputBox = this.modelBuilder.inputBox()
 				.withProps({
 					enabled: false,
 					ariaLabel: loc.resourceGroup,
-					value: this._pitrSettings.resourceGroupName
+					value: this.pitrSettings.resourceGroupName
 				}).component();
+
 			const sourceDetailsTitle = this.modelBuilder.text().withProps({
 				value: loc.sourceDetails,
 				CSSStyles: { ...cssStyles.title }
@@ -121,18 +110,19 @@ export class RestoreSqlDialog extends InitializingComponent {
 				.withProps({
 					readOnly: false,
 					ariaLabel: loc.restorePoint,
-					value: this._pitrSettings.restorePoint,
+					value: ''
 				}).component();
 			this.disposables.push(
 				this.restorePointInputBox.onTextChanged(() => {
 					if (this.earliestRestorePointInputBox) {
 						if ((this.getTimeStamp(this.restorePointInputBox.value) >= this.getTimeStamp(this.earliestRestorePointInputBox.value)
 							&& this.getTimeStamp(this.restorePointInputBox.value) <= this.getTimeStamp(this.latestRestorePointInputBox.value))) {
-							this._pitrSettings.restorePoint = this.restorePointInputBox.value ?? '';
+							this.pitrSettings.restorePoint = this.restorePointInputBox.value ?? '';
 							dialog.okButton.enabled = true;
 						}
 						else {
 							dialog.okButton.enabled = false;
+							throw new Error('Value out of range, select timestamp from Earliest Point in Time to Latest Point in time.');
 						}
 					}
 					else {
@@ -143,17 +133,14 @@ export class RestoreSqlDialog extends InitializingComponent {
 				value: loc.restorePointDetails,
 				CSSStyles: { ...cssStyles.title }
 			}).component();
-
 			const destinationDetailsTitle = this.modelBuilder.text().withProps({
 				value: loc.databaseDetails,
 				CSSStyles: { ...cssStyles.title }
 			}).component();
-
 			const databaseDetailsTextLabel = this.modelBuilder.text().withProps({
 				value: loc.databaseDetailsText,
 				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' }
 			}).component();
-
 			this.databaseNameInputBox = this.modelBuilder.inputBox()
 				.withProps({
 					readOnly: false,
@@ -162,13 +149,13 @@ export class RestoreSqlDialog extends InitializingComponent {
 				}).component();
 			this.disposables.push(
 				this.databaseNameInputBox.onTextChanged(() => {
-					this._pitrSettings.destDbName = this.databaseNameInputBox.value ?? '';
+					this.pitrSettings.destDbName = this.databaseNameInputBox.value ?? '';
 				}));
 			this.instanceInputBox = this.modelBuilder.inputBox()
 				.withProps({
 					enabled: false,
 					ariaLabel: loc.instance,
-					value: this._pitrSettings.instanceName
+					value: this.pitrSettings.instanceName
 				}).component();
 			const info = this.modelBuilder.text().withProps({
 				value: loc.restoreInfo,
@@ -272,18 +259,19 @@ export class RestoreSqlDialog extends InitializingComponent {
 			this.instanceInputBox.focus();
 			this.initialized = true;
 		});
+
 		dialog.okButton.label = loc.restore;
 		dialog.cancelButton.label = loc.cancel;
 		dialog.registerCloseValidator(async () => await this.validate());
 		dialog.okButton.onClick(() => {
-			this._pitrSettings.subscriptionId = this.subscriptionInputBox.value ?? '';
-			this._pitrSettings.instanceName = this.instanceInputBox.value ?? '';
-			this._pitrSettings.resourceGroupName = this.resourceGroupInputBox.value ?? '';
-			this._pitrSettings.dbName = this.databaseNameInputBox.value ?? '';
-			this._pitrSettings.earliestPitr = this.earliestRestorePointInputBox.value ?? '';
-			this._pitrSettings.latestPitr = this.latestRestorePointInputBox.value ?? '';
-			this._pitrSettings.restorePoint = this.restorePointInputBox.value ?? '';
-			this._completionPromise.resolve(this._pitrSettings);
+			this.pitrSettings.subscriptionId = this.subscriptionInputBox.value ?? '';
+			this.pitrSettings.instanceName = this.instanceInputBox.value ?? '';
+			this.pitrSettings.resourceGroupName = this.resourceGroupInputBox.value ?? '';
+			this.pitrSettings.dbName = this.databaseNameInputBox.value ?? '';
+			this.pitrSettings.earliestPitr = this.earliestRestorePointInputBox.value ?? '';
+			this.pitrSettings.latestPitr = this.latestRestorePointInputBox.value ?? '';
+			this.pitrSettings.restorePoint = this.restorePointInputBox.value ?? '';
+			this._completionPromise.resolve(this.pitrSettings);
 		});
 		azdata.window.openDialog(dialog);
 		return dialog;
@@ -302,7 +290,6 @@ export class RestoreSqlDialog extends InitializingComponent {
 	}
 
 	private handleCancel(): void {
-		this.dispose();
 		this._completionPromise.resolve(undefined);
 	}
 
@@ -311,17 +298,14 @@ export class RestoreSqlDialog extends InitializingComponent {
 	}
 
 	public refreshPitrSettings(): void {
-		this._pitrSettings.instanceName = this._miaaModel?.config?.metadata.name || this._pitrSettings.instanceName;
-		this._pitrSettings.resourceGroupName = this._controllerModel?.controllerConfig?.spec.settings.azure.resourceGroup || this._pitrSettings.resourceGroupName;
-		this._pitrSettings.location = this._azurecoreApi.getRegionDisplayName(this._controllerModel?.controllerConfig?.spec.settings.azure.location) || this._pitrSettings.location;
-		this._pitrSettings.subscriptionId = this._controllerModel?.controllerConfig?.spec.settings.azure.subscription || this._pitrSettings.subscriptionId;
-		this._pitrSettings.dbName = this._database.name || this._pitrSettings.dbName;
-		this._pitrSettings.restorePoint = this._restoreResult?.restorePoint?.toString() || this._pitrSettings.restorePoint || '';
-		this._pitrSettings.latestPitr = this._database.lastBackup ?? this._pitrSettings.latestPitr;
-		this._pitrSettings.earliestPitr = this._database.earliestBackup ?? this._pitrSettings.earliestPitr ?? '';
-		this._pitrSettings.destDbName = this._pitrSettings.destDbName;
+		this.pitrSettings.instanceName = this._miaaModel?.config?.metadata.name || this.pitrSettings.instanceName;
+		this.pitrSettings.resourceGroupName = this._controllerModel?.controllerConfig?.spec.settings.azure.resourceGroup || this.pitrSettings.resourceGroupName;
+		this.pitrSettings.location = this._azurecoreApi.getRegionDisplayName(this._controllerModel?.controllerConfig?.spec.settings.azure.location) || this.pitrSettings.location;
+		this.pitrSettings.subscriptionId = this._controllerModel?.controllerConfig?.spec.settings.azure.subscription || this.pitrSettings.subscriptionId;
+		this.pitrSettings.dbName = this._database.name;
+		this.pitrSettings.restorePoint = this._database.lastBackup;
+		this.pitrSettings.earliestPitr = '';
 	}
-
 	public updatePitrTimeWindow(earliestPitr: string, latestPitr: string): void {
 		this.earliestRestorePointInputBox.value = earliestPitr;
 		this.latestRestorePointInputBox.value = latestPitr;

@@ -171,14 +171,19 @@ export class MiaaModel extends ResourceModel {
 		}
 		else {
 			if (databases.length > 0 && typeof (databases[0]) === 'object') {
-				this._databases = (<azdata.DatabaseInfo[]>databases).map(db => {
-					this.executeDryRun((<azdata.DatabaseInfo>db).options['name']);
+
+				const promises = await (<azdata.DatabaseInfo[]>databases).map(async db => {
+					new Promise((resolve) => {
+						setTimeout(() => resolve(
+							this.executeDryRun((<azdata.DatabaseInfo>db).options['name'])), 300000);
+					});
 					return {
 						name: db.options['name'], status: db.options['state'],
 						earliestBackup: this._databaseTimeWindow.get(db.options['name'])?.[0] ?? '',
 						lastBackup: this._databaseTimeWindow.get(db.options['name'])?.[1] ?? db.options['lastBackup'] ?? ''
 					};
 				});
+				this._databases = await Promise.all(promises);
 			} else {
 				this._databases = (<string[]>databases).map(db => { return { name: db, status: '-', earliestBackup: '', lastBackup: '' }; });
 			}
