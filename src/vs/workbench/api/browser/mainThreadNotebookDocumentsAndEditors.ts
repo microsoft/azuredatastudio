@@ -10,7 +10,7 @@ import { URI } from 'vs/base/common/uri';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { MainThreadNotebookDocuments } from 'vs/workbench/api/browser/mainThreadNotebookDocuments';
 import { MainThreadNotebookEditors } from 'vs/workbench/api/browser/mainThreadNotebookEditors';
-import { extHostCustomer } from 'vs/workbench/api/common/extHostCustomers';
+// import { extHostCustomer } from 'vs/workbench/api/common/extHostCustomers'; {{SQL CARBON EDIT}}
 import { editorGroupToViewColumn } from 'vs/workbench/common/editor';
 import { getNotebookEditorFromEditorPane, IActiveNotebookEditor, INotebookEditor } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
 import { INotebookEditorService } from 'vs/workbench/contrib/notebook/browser/notebookEditorService';
@@ -68,7 +68,7 @@ class NotebookAndEditorState {
 	}
 }
 
-@extHostCustomer
+// @extHostCustomer {{SQL CARBON EDIT}}
 export class MainThreadNotebooksAndEditors {
 
 	private readonly _onDidAddNotebooks = new Emitter<NotebookTextModel[]>();

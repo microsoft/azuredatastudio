@@ -8,13 +8,13 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 import { Emitter } from 'vs/base/common/event';
 import { DisposableStore, dispose, IDisposable } from 'vs/base/common/lifecycle';
 import { URI } from 'vs/base/common/uri';
-import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
+// import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers'; {{SQL CARBON EDIT}}
 import { INotebookCellStatusBarService } from 'vs/workbench/contrib/notebook/common/notebookCellStatusBarService';
 import { INotebookCellStatusBarItemProvider, INotebookContributionData, NotebookDataDto, TransientCellMetadata, TransientDocumentMetadata, TransientOptions } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 import { INotebookContentProvider, INotebookService } from 'vs/workbench/contrib/notebook/common/notebookService';
-import { ExtHostContext, ExtHostNotebookShape, IExtHostContext, MainContext, MainThreadNotebookShape, NotebookExtensionDescription } from '../common/extHost.protocol';
+import { ExtHostContext, ExtHostNotebookShape, IExtHostContext, MainThreadNotebookShape, NotebookExtensionDescription } from '../common/extHost.protocol'; // {{SQL CARBON EDIT}} Remove MainContext
 
-@extHostNamedCustomer(MainContext.MainThreadNotebook)
+// @extHostNamedCustomer(MainContext.MainThreadNotebook) {{SQL CARBON EDIT}}
 export class MainThreadNotebooks implements MainThreadNotebookShape {
 
 	private readonly _disposables = new DisposableStore();
