@@ -53,7 +53,7 @@ export async function load(profileUri: vscode.Uri, dacfxService: utils.IDacFxSer
 	const optionsResult = await dacfxService.getOptionsFromProfile(profileUri.fsPath);
 
 	// get all SQLCMD variables to include from the profile
-	const sqlCmdVariables = utils.readSqlCmdVariables(profileXmlDoc);
+	const sqlCmdVariables = utils.readSqlCmdVariables(profileXmlDoc, true);
 
 	return {
 		databaseName: targetDbName,

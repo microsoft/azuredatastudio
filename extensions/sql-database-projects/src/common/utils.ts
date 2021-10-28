@@ -156,14 +156,15 @@ export function convertSlashesForSqlProj(filePath: string): string {
 /**
  * Read SQLCMD variables from xmlDoc and return them
  * @param xmlDoc xml doc to read SQLCMD variables from. Format must be the same that sqlproj and publish profiles use
+ * @param publishProfile true if reading from publish profile
  */
-export function readSqlCmdVariables(xmlDoc: any): Record<string, string> {
+export function readSqlCmdVariables(xmlDoc: any, publishProfile: boolean): Record<string, string> {
 	let sqlCmdVariables: Record<string, string> = {};
 	for (let i = 0; i < xmlDoc.documentElement.getElementsByTagName(constants.SqlCmdVariable)?.length; i++) {
 		const sqlCmdVar = xmlDoc.documentElement.getElementsByTagName(constants.SqlCmdVariable)[i];
 		const varName = sqlCmdVar.getAttribute(constants.Include);
 
-		if (sqlCmdVar.getElementsByTagName(constants.DefaultValue)[0] !== undefined) {
+		if (!publishProfile && sqlCmdVar.getElementsByTagName(constants.DefaultValue)[0] !== undefined) {
 			// project file path
 			sqlCmdVariables[varName] = sqlCmdVar.getElementsByTagName(constants.DefaultValue)[0].childNodes[0].nodeValue;
 		}
