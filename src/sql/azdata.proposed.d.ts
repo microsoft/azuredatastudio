@@ -610,6 +610,11 @@ declare module 'azdata' {
 			 * Default is undefined.
 			 */
 			dialogProperties?: IDialogProperties;
+
+			/**
+			 * Fired when the dialog is closed for any reason. The value indicates the reason it was closed (such as 'ok' or 'cancel')
+			 */
+			onClosed: vscode.Event<string>;
 		}
 
 		export interface Wizard {
