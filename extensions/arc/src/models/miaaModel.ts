@@ -102,6 +102,7 @@ export class MiaaModel extends ResourceModel {
 				this.configLastUpdated = new Date();
 				this.rpSettings.retentionDays = this._config?.spec?.backup?.retentionPeriodInDays?.toString() ?? '';
 				this._onConfigUpdated.fire(this._config);
+				this._onDatabasesUpdated.fire(this._databases);
 			} catch (err) {
 				// If an error occurs show a message so the user knows something failed but still
 				// fire the event so callers can know to update (e.g. so dashboards don't show the
