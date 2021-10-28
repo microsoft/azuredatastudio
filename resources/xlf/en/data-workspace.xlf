@@ -153,12 +153,6 @@
     <trans-unit id="data-workspace-view-container-name">
       <source xml:lang="en">Projects</source>
     </trans-unit>
-    <trans-unit id="extension-description">
-      <source xml:lang="en">Data workspace</source>
-    </trans-unit>
-    <trans-unit id="extension-displayName">
-      <source xml:lang="en">Data workspace</source>
-    </trans-unit>
     <trans-unit id="main-view-name">
       <source xml:lang="en">Projects</source>
     </trans-unit>
