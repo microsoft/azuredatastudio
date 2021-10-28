@@ -20,7 +20,6 @@ export class MiaaBackupsPage extends DashboardPage {
 		this._azApi = vscode.extensions.getExtension(azExt.extension.name)?.exports;
 		this.disposables.push(
 			this._miaaModel.onDatabasesUpdated(() => this.eventuallyRunOnInitialized(() => this.handleDatabasesUpdated())),
-			this._miaaModel.onConfigUpdated(() => this.eventuallyRunOnInitialized(() => this.handleDatabasesUpdated()))
 		);
 	}
 	//private _refreshPromise: Deferred<void> | undefined = undefined;
@@ -254,7 +253,6 @@ export class MiaaBackupsPage extends DashboardPage {
 		//Promise.all(this._miaaModel.databases.map(async d => { await this.executeDryRun(d); }));
 		//this._miaaModel._onDatabasesUpdated.fire(this._miaaModel.databases);
 		// If we were able to get the databases it means we have a good connection so update the username too
-		this._miaaModel.refresh();
 		let databaseDisplay = this._miaaModel.databases.map(d => [
 			d.name,
 			d.earliestBackup,
