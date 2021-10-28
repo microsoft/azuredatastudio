@@ -10,7 +10,7 @@ This extension is bundled into the `SQL Server (MSSQL)` extension for VS Code an
 
 ### Azure Data Studio
 
-This extension is provided as a separate extension in the marketplace. It is required by the `SQL Database Projects` extension and will be installed automatically when that extension is installed.
+This extension is built into Azure Data Studio and will show up under the list of builtin extensions.
 
 ## Code of Conduct
 
