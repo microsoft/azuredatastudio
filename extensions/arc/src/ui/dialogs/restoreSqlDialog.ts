@@ -112,6 +112,24 @@ export class RestoreSqlDialog extends InitializingComponent {
 					ariaLabel: loc.restorePoint,
 					value: '',
 					validationErrorMessage: loc.restorePointErrorrMessage,
+				}).withValidation(async () => {
+					try {
+						if (this.earliestRestorePointInputBox.value) {
+							if ((this.getTimeStamp(this.restorePointInputBox.value) >= this.getTimeStamp(this.earliestRestorePointInputBox.value)
+								&& this.getTimeStamp(this.restorePointInputBox.value) <= this.getTimeStamp(this.latestRestorePointInputBox.value))) {
+								this.pitrSettings.restorePoint = this.restorePointInputBox.value ?? '';
+								return true;
+							}
+							else {
+								return false;
+							}
+						}
+					}
+					catch (err) {
+						throw err;
+						return false;
+					}
+					return true;
 				}).component();
 			this.disposables.push(
 				this.restorePointInputBox.onTextChanged(() => {

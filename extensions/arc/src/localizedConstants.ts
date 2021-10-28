@@ -80,6 +80,7 @@ export const extensionsDescription = localize('arc.extensionsDescription', "Post
 export const extensionsFunction = localize('arc.extensionsFunction', "Some extensions must be loaded into PostgreSQL at startup time before they can be used. These preloaded extensions can be viewed and edited  below.");
 export function extensionsAddFunction(extensions: string): string { return localize('arc.extensionsAddFunction', "Some extensions must be loaded into PostgreSQL at startup time before they can be used. To edit, type in comma separated list of valid extensions: ({0}).", extensions); }
 export function extensionsAddErrorrMessage(extensions: string): string { return localize('arc.extensionsAddErrorrMessage', "Value should be either of the following: ({0}).", extensions); }
+export const restorePointErrorrMessage = localize('arc.restorePointErrorrMessage', "Value should be in betwween Earliest and Latest Point in time");
 export const extensionsLearnMore = localize('arc.extensionsLearnMore', "Learn more about PostgreSQL extensions.");
 export const extensionsTableLoading = localize('arc.extensionsTableLoading', "Table of preloaded extensions are loading.");
 export const extensionsTableLabel = localize('arc.extensionsTableLabel', "Table of preloaded extensions.");
