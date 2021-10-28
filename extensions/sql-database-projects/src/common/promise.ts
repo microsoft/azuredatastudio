@@ -6,7 +6,20 @@
 /**
  * Deferred promise
  */
-export interface Deferred<T> {
-	resolve: (result: T | Promise<T>) => void;
-	reject: (reason: any) => void;
+export class Deferred<T = void> {
+	promise: Promise<T>;
+	resolve!: (value: T | PromiseLike<T>) => void;
+	reject!: (reason?: any) => void;
+	constructor() {
+		this.promise = new Promise<T>((resolve, reject) => {
+			this.resolve = resolve;
+			this.reject = reject;
+		});
+	}
+
+	then<TResult>(onfulfilled?: (value: T) => TResult | Thenable<TResult>, onrejected?: (reason: any) => TResult | Thenable<TResult>): Thenable<TResult>;
+	then<TResult>(onfulfilled?: (value: T) => TResult | Thenable<TResult>, onrejected?: (reason: any) => void): Thenable<TResult>;
+	then<TResult>(onfulfilled?: (value: T) => TResult | Thenable<TResult>, onrejected?: (reason: any) => TResult | Thenable<TResult>): Thenable<TResult> {
+		return this.promise.then(onfulfilled, onrejected);
+	}
 }
