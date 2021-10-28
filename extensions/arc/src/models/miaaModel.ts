@@ -171,17 +171,19 @@ export class MiaaModel extends ResourceModel {
 		}
 		else {
 			if (databases.length > 0 && typeof (databases[0]) === 'object') {
-				for (let i in databases) {
-					const di: azdata.DatabaseInfo = <azdata.DatabaseInfo>databases[i];
-					const name = di.options['name'];
-					await this.executeDryRun(di.options['name']);
-					const dm: DatabaseModel = {
-						name: name, status: di.options['state'], earliestBackup: this._databaseTimeWindow.get(name)?.[0] ?? '',
-						lastBackup: this._databaseTimeWindow.get(name)?.[1] ?? ''
-					};
-					this._databases[i] = dm;
-				}
-			} else {
+				await Promise.all([(<azdata.DatabaseInfo[]>databases).forEach(async di => {
+					await this.executeDryRun(<string>di.options['name']).then((result: string[]) => {
+						let dm: DatabaseModel = {
+							name: di.options['name'], status: di.options['state'], earliestBackup: result?.[0] ?? '',
+							lastBackup: result?.[1] ?? ''
+						};
+						this._databases.push(dm);
+					}).catch();//ignore
+				})]).then(() =>
+					this._databases.forEach(d => { this._databaseTimeWindow.set(d.name, [d.earliestBackup, d.lastBackup]); })
+				);
+			}
+			else {
 				this._databases = (<string[]>databases).map(db => { return { name: db, status: '-', earliestBackup: '', lastBackup: '' }; });
 			}
 		}
@@ -228,7 +230,7 @@ export class MiaaModel extends ResourceModel {
 		await this._treeDataProvider.saveControllers();
 	}
 
-	protected async executeDryRun(dbName: string): Promise<void> {
+	protected async executeDryRun(dbName: string): Promise<string[]> {
 		// Allow next dry Run to be executed only after 5(300000 ms ) minutes from current time as the log backups are
 		// generated only at 5 minutes interval
 		if ((systemDbs.indexOf(dbName) === -1) && (Date.now() - getTimeStamp(this._databaseTimeWindow.get(dbName)?.[1]) >= 300000)) {
@@ -239,22 +241,28 @@ export class MiaaModel extends ResourceModel {
 				this._pitrArgs.time = new Date().toISOString();
 				this._pitrArgs.noWait = false;
 				this._pitrArgs.dryRun = true;
-				const result = await this._azApi.az.sql.midbarc.restore(
+				let result = await this._azApi.az.sql.midbarc.restore(
 					dbName, this._pitrArgs, this.controllerModel.info.namespace, this.controllerModel.azAdditionalEnvVars);
-				const restoreResult = result.stdout;
+				let restoreResult = result.stdout;
 				if (restoreResult) {
-					const earliestTime = restoreResult['earliestRestoreTime'];
-					const latestTime = restoreResult['latestRestoreTime'];
+					let earliestTime = restoreResult['earliestRestoreTime'];
+					let latestTime = restoreResult['latestRestoreTime'];
 					console.log(loc.earliestPitrRestorePoint + '-' + dbName + ':' + earliestTime);
 					console.log(loc.latestpitrRestorePoint + '-' + dbName + ':' + latestTime);
-					this._databaseTimeWindow.set(dbName, [earliestTime, latestTime]);
+					//this._databaseTimeWindow.set(dbName, [earliestTime, latestTime]);
+					return [earliestTime, latestTime];
 				}
+				return [this._databaseTimeWindow.get(dbName)?.[0] ?? '', this._databaseTimeWindow.get(dbName)?.[1] ?? ''];
 			}
 			catch (err) {
 				console.log(err);
-				this._databaseTimeWindow.set(dbName, ['', '']);
+				//this._databaseTimeWindow.set(dbName, ['', '']);
+				return ['', ''];
 			}
-		}
 
+		}
+		return [this._databaseTimeWindow.get(dbName)?.[0] ?? '', this._databaseTimeWindow.get(dbName)?.[1] ?? ''];
 	}
 }
+
+
