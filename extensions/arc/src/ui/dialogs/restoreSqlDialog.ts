@@ -18,7 +18,6 @@ export class RestoreSqlDialog extends InitializingComponent {
 	protected modelBuilder!: azdata.ModelBuilder;
 	protected disposables: vscode.Disposable[] = [];
 	private _restoreResult: azExt.SqlMiDbRestoreResult | undefined;
-	//private readonly _azApi: azExt.IExtension;
 	private _pitrSettings: PITRModel = {
 		instanceName: '',
 		resourceGroupName: '',
@@ -31,13 +30,6 @@ export class RestoreSqlDialog extends InitializingComponent {
 		destDbName: '',
 	};
 
-	// private _pitrArgs = {
-	// 	destName: '',
-	// 	managedInstance: '',
-	// 	time: '',
-	// 	noWait: false,
-	// 	dryRun: true
-	// };
 	private earliestRestorePointInputBox!: azdata.InputBoxComponent;
 	private latestRestorePointInputBox!: azdata.InputBoxComponent;
 	private subscriptionInputBox!: azdata.InputBoxComponent;
@@ -52,7 +44,6 @@ export class RestoreSqlDialog extends InitializingComponent {
 		super();
 		this._azurecoreApi = vscode.extensions.getExtension(azurecore.extension.name)?.exports;
 		this.refreshPitrSettings();
-		//this._azApi = vscode.extensions.getExtension(azExt.extension.name)?.exports;
 	}
 
 	protected dispose(): void {
@@ -134,16 +125,19 @@ export class RestoreSqlDialog extends InitializingComponent {
 				}).component();
 			this.disposables.push(
 				this.restorePointInputBox.onTextChanged(() => {
-					if ((this.getTimeStamp(this.restorePointInputBox.value) >= this.getTimeStamp(this.earliestRestorePointInputBox.value)
-						&& this.getTimeStamp(this.restorePointInputBox.value) <= this.getTimeStamp(this.earliestRestorePointInputBox.value))) {
-						this._pitrSettings.restorePoint = this.restorePointInputBox.value ?? '';
-						dialog.okButton.enabled = true;
+					if (this.earliestRestorePointInputBox) {
+						if ((this.getTimeStamp(this.restorePointInputBox.value) >= this.getTimeStamp(this.earliestRestorePointInputBox.value)
+							&& this.getTimeStamp(this.restorePointInputBox.value) <= this.getTimeStamp(this.latestRestorePointInputBox.value))) {
+							this._pitrSettings.restorePoint = this.restorePointInputBox.value ?? '';
+							dialog.okButton.enabled = true;
+						}
+						else {
+							dialog.okButton.enabled = false;
+						}
 					}
 					else {
-						dialog.okButton.enabled = false;
+						dialog.okButton.enabled = true;
 					}
-
-
 				}));
 			const pitrDetailsTitle = this.modelBuilder.text().withProps({
 				value: loc.restorePointDetails,
@@ -262,6 +256,7 @@ export class RestoreSqlDialog extends InitializingComponent {
 						{
 							component: this.restorePointInputBox,
 							title: loc.restorePoint,
+							required: true
 						},
 					],
 					title: ''
@@ -277,16 +272,9 @@ export class RestoreSqlDialog extends InitializingComponent {
 			this.instanceInputBox.focus();
 			this.initialized = true;
 		});
-		//this.executeDryRun(); // excute dryRun to populate correct time stamps
 		dialog.okButton.label = loc.restore;
 		dialog.cancelButton.label = loc.cancel;
-		dialog.registerCloseValidator(async () => {
-			const isValidated = await this.validate();
-			if (isValidated) {
-				this.dispose();
-			}
-			return isValidated;
-		});
+		dialog.registerCloseValidator(async () => await this.validate());
 		dialog.okButton.onClick(() => {
 			this._pitrSettings.subscriptionId = this.subscriptionInputBox.value ?? '';
 			this._pitrSettings.instanceName = this.instanceInputBox.value ?? '';
@@ -314,6 +302,7 @@ export class RestoreSqlDialog extends InitializingComponent {
 	}
 
 	private handleCancel(): void {
+		this.dispose();
 		this._completionPromise.resolve(undefined);
 	}
 
@@ -341,5 +330,4 @@ export class RestoreSqlDialog extends InitializingComponent {
 	public getTimeStamp(dateTime: string | undefined): number {
 		return dateTime ? (new Date(dateTime)).getTime() : 0;
 	}
-
 }
