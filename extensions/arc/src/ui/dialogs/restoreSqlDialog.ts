@@ -110,7 +110,8 @@ export class RestoreSqlDialog extends InitializingComponent {
 				.withProps({
 					readOnly: false,
 					ariaLabel: loc.restorePoint,
-					value: ''
+					value: '',
+					validationErrorMessage: loc.restorePointErrorrMessage,
 				}).component();
 			this.disposables.push(
 				this.restorePointInputBox.onTextChanged(() => {
@@ -122,7 +123,6 @@ export class RestoreSqlDialog extends InitializingComponent {
 						}
 						else {
 							dialog.okButton.enabled = false;
-							throw new Error('Value out of range, select timestamp from Earliest Point in Time to Latest Point in time.');
 						}
 					}
 					else {
