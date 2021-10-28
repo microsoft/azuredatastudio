@@ -171,19 +171,16 @@ export class MiaaModel extends ResourceModel {
 		}
 		else {
 			if (databases.length > 0 && typeof (databases[0]) === 'object') {
-
-				const promises = await (<azdata.DatabaseInfo[]>databases).map(async db => {
-					new Promise((resolve) => {
-						setTimeout(() => resolve(
-							this.executeDryRun((<azdata.DatabaseInfo>db).options['name'])), 300000);
-					});
-					return {
-						name: db.options['name'], status: db.options['state'],
-						earliestBackup: this._databaseTimeWindow.get(db.options['name'])?.[0] ?? '',
-						lastBackup: this._databaseTimeWindow.get(db.options['name'])?.[1] ?? db.options['lastBackup'] ?? ''
+				for (let i in databases) {
+					const di: azdata.DatabaseInfo = <azdata.DatabaseInfo><unknown>databases[i];
+					const name = di.options['name'];
+					await this.executeDryRun(di.options['name']);
+					const dm: DatabaseModel = {
+						name: name, status: di.options['state'], earliestBackup: this._databaseTimeWindow.get(name)?.[0] ?? '',
+						lastBackup: this._databaseTimeWindow.get(name)?.[1] ?? ''
 					};
-				});
-				this._databases = await Promise.all(promises);
+					this._databases[i] = dm;
+				}
 			} else {
 				this._databases = (<string[]>databases).map(db => { return { name: db, status: '-', earliestBackup: '', lastBackup: '' }; });
 			}
@@ -232,7 +229,7 @@ export class MiaaModel extends ResourceModel {
 	}
 
 	public async executeDryRun(dbName: string): Promise<void> {
-		if ((systemDbs.indexOf(dbName) === -1) && (Date.now() - this.getTimeStamp(this._databaseTimeWindow.get(dbName)?.[1]) >= 60000)) {
+		if ((systemDbs.indexOf(dbName) === -1) && (Date.now() - this.getTimeStamp(this._databaseTimeWindow.get(dbName)?.[1]) >= 300000)) {
 			try {
 				//Execute dryRun for earliestTime and save latest time as well so there is one call to az cli
 				this._pitrArgs.destName = dbName + '-' + Date.now().toString();
