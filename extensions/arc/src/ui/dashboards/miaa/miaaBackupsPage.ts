@@ -22,7 +22,6 @@ export class MiaaBackupsPage extends DashboardPage {
 			this._miaaModel.onDatabasesUpdated(() => this.eventuallyRunOnInitialized(() => this.handleDatabasesUpdated())),
 		);
 	}
-	//private _refreshPromise: Deferred<void> | undefined = undefined;
 	private _databasesContainer!: azdata.DivContainer;
 	private _configureRetentionPolicyButton!: azdata.ButtonComponent;
 	private _connectToServerLoading!: azdata.LoadingComponent;
@@ -250,8 +249,6 @@ export class MiaaBackupsPage extends DashboardPage {
 	}
 
 	private handleDatabasesUpdated(): void {
-		//Promise.all(this._miaaModel.databases.map(async d => { await this.executeDryRun(d); }));
-		//this._miaaModel._onDatabasesUpdated.fire(this._miaaModel.databases);
 		// If we were able to get the databases it means we have a good connection so update the username too
 		let databaseDisplay = this._miaaModel.databases.map(d => [
 			d.name,
