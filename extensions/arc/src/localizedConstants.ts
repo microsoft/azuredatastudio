@@ -60,8 +60,8 @@ export const type = localize('arc.type', "Type");
 export const status = localize('arc.status', "Status");
 export const database = localize('arc.database', "Database");
 export const sourceDatabase = localize('arc.sourceDatabase', "Source database");
-export const earliestPitrRestorePoint = localize('arc.earliestPitrRestorePoint', "Earliest Point in time");
-export const latestpitrRestorePoint = localize('arc.latestpitrRestorePoint', "Latest Point in time");
+export const earliestPitrRestorePoint = localize('arc.earliestPitrRestorePoint', "Earliest point in time");
+export const latestpitrRestorePoint = localize('arc.latestpitrRestorePoint', "Latest point in time");
 export const pitr = localize('arc.pitr', "Point in time restore");
 export const projectDetails = localize('arc.projectDetails', "Project Details");
 export const projectDetailsText = localize('arc.projectDetailsText', "Select the subscription to manage deployed resources. Use resource groups like folders to organize and manage all your resources.");
@@ -80,7 +80,7 @@ export const extensionsDescription = localize('arc.extensionsDescription', "Post
 export const extensionsFunction = localize('arc.extensionsFunction', "Some extensions must be loaded into PostgreSQL at startup time before they can be used. These preloaded extensions can be viewed and edited  below.");
 export function extensionsAddFunction(extensions: string): string { return localize('arc.extensionsAddFunction', "Some extensions must be loaded into PostgreSQL at startup time before they can be used. To edit, type in comma separated list of valid extensions: ({0}).", extensions); }
 export function extensionsAddErrorrMessage(extensions: string): string { return localize('arc.extensionsAddErrorrMessage', "Value should be either of the following: ({0}).", extensions); }
-export const restorePointErrorrMessage = localize('arc.restorePointErrorrMessage', "Value should be in betwween Earliest and Latest Point in time");
+export const restorePointErrorrMessage = localize('arc.restorePointErrorrMessage', "Value should be in betwween Earliest and Latest point in time");
 export const extensionsLearnMore = localize('arc.extensionsLearnMore', "Learn more about PostgreSQL extensions.");
 export const extensionsTableLoading = localize('arc.extensionsTableLoading', "Table of preloaded extensions are loading.");
 export const extensionsTableLabel = localize('arc.extensionsTableLabel', "Table of preloaded extensions.");
@@ -195,7 +195,7 @@ export const miaaComputeAndStorageDescriptionPartOne = localize('arc.miaaCompute
 export const miaaBackupsDatabasesDescription = localize('arc.miaaBackupsDatabasesDescription', "Databases with available backups are displayed below. Restore databases to this instance or any other instance within the same custom location.");
 export const pitrInfo = localize('arc.pitrInfo', "Specify how long you want to keep your point-in-time backups. Customize this for backup availability.");
 export const restoreInfo = localize('arc.restoreInfo', "Restore a database to an Azure Arc enabled SQL Managed Instance of your choice.");
-export const restorePointText = localize('arc.restorePointText', "Enter a restore point in the specified time format with in given range of earliest and latest restore time.");
+export const restorePointText = localize('arc.restorePointText', "Enter a restore point in the specified time format within given range of earliest and latest restore time.");
 export const postgresComputeAndStorageDescriptionPartTwo = localize('arc.postgres.computeAndStorageDescriptionPartTwo', "PostgreSQL Hyperscale server group by");
 export const computeAndStorageDescriptionPartThree = localize('arc.computeAndStorageDescriptionPartThree', "without downtime and by");
 export const computeAndStorageDescriptionPartFour = localize('arc.computeAndStorageDescriptionPartFour', "Before doing so, you need to ensure");
@@ -292,7 +292,7 @@ export const couldNotFindControllerRegistration = localize('arc.couldNotFindCont
 export const dropMultipleExtensions = localize('arc.dropMultipleExtensions', "Currently dropping another extension, try again once that is completed.");
 export function updateExtensionsFailed(error: any): string { return localize('arc.updateExtensionsFailed', "Editing extensions failed. {0}", getErrorMessage(error)); }
 export function refreshFailed(error: any): string { return localize('arc.refreshFailed', "Refresh failed. {0}", getErrorMessage(error)); }
-export function restoreTimeWindowUpdateFailed(error: any): string { return localize('arc.restoreTimeWindowUpdateFailed', "Point in time restore time windows update failed. {0}", getErrorMessage(error)); }
+export function restoreTimeWindowUpdateFailed(error: any): string { return localize('arc.restoreTimeWindowUpdateFailed', "Point in time restore time window update failed. {0}", getErrorMessage(error)); }
 export function resetFailed(error: any): string { return localize('arc.resetFailed', "Reset failed. {0}", getErrorMessage(error)); }
 export function openDashboardFailed(error: any): string { return localize('arc.openDashboardFailed', "Error opening dashboard. {0}", getErrorMessage(error)); }
 export function instanceDeletionFailed(name: string, error: any): string { return localize('arc.instanceDeletionFailed', "Failed to delete instance {0}. {1}", name, getErrorMessage(error)); }

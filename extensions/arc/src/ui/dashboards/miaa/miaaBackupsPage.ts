@@ -30,13 +30,13 @@ export class MiaaBackupsPage extends DashboardPage {
 	private _databasesTable!: azdata.DeclarativeTableComponent;
 	private _databasesMessage!: azdata.TextComponent;
 	private readonly _azApi: azExt.IExtension;
-	//private _databaseTimeWindow: Map<string, string[]>;
-	public saveArgs: RPModel = {
+
+	private _saveArgs: RPModel = {
 		recoveryPointObjective: '',
 		retentionDays: ''
 	};
 
-	public _pitrArgs = {
+	private _pitrArgs = {
 		destName: '',
 		managedInstance: '',
 		time: '',
@@ -206,13 +206,13 @@ export class MiaaBackupsPage extends DashboardPage {
 			this._configureRetentionPolicyButton.onDidClick(async () => {
 				const retentionPolicySqlDialog = new ConfigureRPOSqlDialog(this._miaaModel);
 				this.refreshRD();
-				retentionPolicySqlDialog.showDialog(loc.configureRP, this.saveArgs.retentionDays);
+				retentionPolicySqlDialog.showDialog(loc.configureRP, this._saveArgs.retentionDays);
 
 				let rpArg = await retentionPolicySqlDialog.waitForClose();
 				if (rpArg) {
 					try {
 						this._configureRetentionPolicyButton.enabled = false;
-						this.saveArgs.retentionDays = rpArg.retentionDays;
+						this._saveArgs.retentionDays = rpArg.retentionDays;
 						await vscode.window.withProgress(
 							{
 								location: vscode.ProgressLocation.Notification,
@@ -221,7 +221,7 @@ export class MiaaBackupsPage extends DashboardPage {
 							},
 							async (_progress, _token): Promise<void> => {
 								await this._azApi.az.sql.miarc.edit(
-									this._miaaModel.info.name, this.saveArgs, this._miaaModel.controllerModel.info.namespace, this._miaaModel.controllerModel.azAdditionalEnvVars);
+									this._miaaModel.info.name, this._saveArgs, this._miaaModel.controllerModel.info.namespace, this._miaaModel.controllerModel.azAdditionalEnvVars);
 
 								try {
 									await this._miaaModel.refresh();
@@ -282,7 +282,7 @@ export class MiaaBackupsPage extends DashboardPage {
 	}
 
 	private refreshRD(): void {
-		this.saveArgs.retentionDays = this._miaaModel.config?.spec?.backup?.retentionPeriodInDays.toString() ?? '';
+		this._saveArgs.retentionDays = this._miaaModel.config?.spec?.backup?.retentionPeriodInDays.toString() ?? '';
 	}
 
 	// Create restore button for every database entry in the database table

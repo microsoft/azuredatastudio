@@ -5,6 +5,7 @@
 
 import * as azdata from 'azdata';
 import { Deferred } from '../../common/promise';
+import { getTimeStamp } from '../../common/utils';
 import * as loc from '../../localizedConstants';
 import * as vscode from 'vscode';
 import { cssStyles } from '../../constants';
@@ -115,8 +116,8 @@ export class RestoreSqlDialog extends InitializingComponent {
 				}).withValidation(async () => {
 					try {
 						if (this.earliestRestorePointInputBox.value) {
-							if ((this.getTimeStamp(this.restorePointInputBox.value) >= this.getTimeStamp(this.earliestRestorePointInputBox.value)
-								&& this.getTimeStamp(this.restorePointInputBox.value) <= this.getTimeStamp(this.latestRestorePointInputBox.value))) {
+							if ((getTimeStamp(this.restorePointInputBox.value) >= getTimeStamp(this.earliestRestorePointInputBox.value)
+								&& getTimeStamp(this.restorePointInputBox.value) <= getTimeStamp(this.latestRestorePointInputBox.value))) {
 								this.pitrSettings.restorePoint = this.restorePointInputBox.value ?? '';
 								return true;
 							}
@@ -131,22 +132,6 @@ export class RestoreSqlDialog extends InitializingComponent {
 					}
 					return true;
 				}).component();
-			this.disposables.push(
-				this.restorePointInputBox.onTextChanged(() => {
-					if (this.earliestRestorePointInputBox) {
-						if ((this.getTimeStamp(this.restorePointInputBox.value) >= this.getTimeStamp(this.earliestRestorePointInputBox.value)
-							&& this.getTimeStamp(this.restorePointInputBox.value) <= this.getTimeStamp(this.latestRestorePointInputBox.value))) {
-							this.pitrSettings.restorePoint = this.restorePointInputBox.value ?? '';
-							dialog.okButton.enabled = true;
-						}
-						else {
-							dialog.okButton.enabled = false;
-						}
-					}
-					else {
-						dialog.okButton.enabled = true;
-					}
-				}));
 			const pitrDetailsTitle = this.modelBuilder.text().withProps({
 				value: loc.restorePointDetails,
 				CSSStyles: { ...cssStyles.title }
@@ -329,7 +314,4 @@ export class RestoreSqlDialog extends InitializingComponent {
 		this.latestRestorePointInputBox.value = latestPitr;
 	}
 
-	public getTimeStamp(dateTime: string | undefined): number {
-		return dateTime ? (new Date(dateTime)).getTime() : 0;
-	}
 }
