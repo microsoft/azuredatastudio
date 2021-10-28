@@ -243,13 +243,13 @@ export class MiaaModel extends ResourceModel {
 				if (restoreResult) {
 					const earliestTime = restoreResult['earliestRestoreTime'];
 					const latestTime = restoreResult['latestRestoreTime'];
-					console.log('earliestTime in executeDryRun: ' + earliestTime);
-					console.log('latesttime in executeDryRun: ' + latestTime);
+					console.log(loc.earliestPitrRestorePoint + '-' + dbName + ':' + earliestTime);
+					console.log(loc.latestpitrRestorePoint + '-' + dbName + ':' + latestTime);
 					this._databaseTimeWindow.set(dbName, [earliestTime, latestTime]);
 				}
 			}
-			catch
-			{
+			catch (err) {
+				console.log(err);
 				this._databaseTimeWindow.set(dbName, ['', '']);
 			}
 		}
