@@ -367,3 +367,7 @@ export function debounce(delay: number): Function {
 export function getTimeStamp(dateTime: string | undefined): number {
 	return dateTime ? (new Date(dateTime)).getTime() : 0;
 }
+
+export function checkISOTimeString(dateTime: string): boolean {
+	return /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d.*Z/.test(dateTime);
+}

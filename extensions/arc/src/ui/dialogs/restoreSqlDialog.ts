@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import { Deferred } from '../../common/promise';
-import { getTimeStamp } from '../../common/utils';
+import { getTimeStamp, checkISOTimeString } from '../../common/utils';
 import * as loc from '../../localizedConstants';
 import * as vscode from 'vscode';
 import { cssStyles } from '../../constants';
@@ -53,11 +53,11 @@ export class RestoreSqlDialog extends InitializingComponent {
 			this.refreshPitrSettings();
 			const pitrTitle = this.modelBuilder.text().withProps({
 				value: loc.pitr,
-				CSSStyles: { ...cssStyles.title }
+				CSSStyles: { ...cssStyles.title, 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' },
 			}).component();
 			const projectDetailsTitle = this.modelBuilder.text().withProps({
 				value: loc.projectDetails,
-				CSSStyles: { ...cssStyles.title }
+				CSSStyles: { ...cssStyles.title, 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' }
 			}).component();
 			const projectDetailsTextLabel = this.modelBuilder.text().withProps({
 				value: loc.projectDetailsText,
@@ -78,7 +78,7 @@ export class RestoreSqlDialog extends InitializingComponent {
 
 			const sourceDetailsTitle = this.modelBuilder.text().withProps({
 				value: loc.sourceDetails,
-				CSSStyles: { ...cssStyles.title }
+				CSSStyles: { ...cssStyles.title, 'margin-block-end': '0px', 'max-width': 'auto' }
 			}).component();
 			const sourceDetailsTextLabel = this.modelBuilder.text().withProps({
 				value: loc.sourceDetailsText,
@@ -113,9 +113,10 @@ export class RestoreSqlDialog extends InitializingComponent {
 					readOnly: false,
 					ariaLabel: loc.restorePoint,
 					value: '',
-					validationErrorMessage: loc.restorePointErrorrMessage,
+					validationErrorMessage: loc.restorePointErrorMessage(this.earliestRestorePointInputBox.value ?? loc.earliestPitrRestorePoint, this.latestRestorePointInputBox.value ?? loc.latestpitrRestorePoint),
 				}).withValidation(async () => {
 					try {
+						if (!checkISOTimeString(this.restorePointInputBox.value ?? '')) { return false; }
 						if (this.earliestRestorePointInputBox.value) {
 							if ((getTimeStamp(this.restorePointInputBox.value) >= getTimeStamp(this.earliestRestorePointInputBox.value)
 								&& getTimeStamp(this.restorePointInputBox.value) <= getTimeStamp(this.latestRestorePointInputBox.value))) {
@@ -135,11 +136,11 @@ export class RestoreSqlDialog extends InitializingComponent {
 				}).component();
 			const pitrDetailsTitle = this.modelBuilder.text().withProps({
 				value: loc.restorePointDetails,
-				CSSStyles: { ...cssStyles.title }
+				CSSStyles: { ...cssStyles.title, 'margin-block-end': '0px', 'max-width': 'auto' }
 			}).component();
 			const destinationDetailsTitle = this.modelBuilder.text().withProps({
 				value: loc.databaseDetails,
-				CSSStyles: { ...cssStyles.title }
+				CSSStyles: { ...cssStyles.title, 'margin-block-end': '0px', 'max-width': 'auto' }
 			}).component();
 			const databaseDetailsTextLabel = this.modelBuilder.text().withProps({
 				value: loc.databaseDetailsText,
@@ -163,7 +164,7 @@ export class RestoreSqlDialog extends InitializingComponent {
 				}).component();
 			const info = this.modelBuilder.text().withProps({
 				value: loc.restoreInfo,
-				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' }
+				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'max-width': 'auto' }
 			}).component();
 
 			const link = this.modelBuilder.hyperlink().withProps({
