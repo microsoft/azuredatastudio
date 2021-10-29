@@ -160,9 +160,13 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	}
 
 	private getServerInfo() {
-		let databaseName = this.databaseName ? this.databaseName : '<default>';
-		let userName = this.userName ? this.userName : 'Windows Authentication';
-		return this.serverName + ', ' + databaseName + ' (' + userName + ')';
+		let title = this.serverName;
+		if (this.serverCapabilities.connectionOptions.find(option => option.specialValueType === ConnectionOptionSpecialType.databaseName)) {
+			const databaseName = this.databaseName ? this.databaseName : '<default>';
+			title += `, ${databaseName}`;
+		}
+		title += ` (${this.userName ? this.userName : this.authenticationType})`;
+		return title;
 	}
 
 	/**
@@ -244,7 +248,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 		for (let index = 0; index < idNames.length; index++) {
 			let value = this.options[idNames[index]!];
 			value = value ? value : '';
-			idValues.push(`${idNames[index]}${ProviderConnectionInfo.nameValueSeparator}${value}`);
+			idValues.push(`${idNames[index]}${ProviderConnectionInfo.nameValueSeparator}${value} `);
 		}
 
 		return ProviderConnectionInfo.ProviderPropertyName + ProviderConnectionInfo.nameValueSeparator +
