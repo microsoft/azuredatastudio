@@ -69,7 +69,7 @@ export const sourceDetails = localize('arc.sourceDetails', "Source Details");
 export const sourceDetailsText = localize('arc.sourceDetailsText', "Select a backup source and provide details. Additional settings will be defaulted where possible based on the selected database.");
 export const databaseDetails = localize('arc.databaseDetails', "Destination Details");
 export const restorePointDetails = localize('arc.restorePointDetails', "Restore Point Details");
-export const databaseDetailsText = localize('arc.databaseDetailsText', "Enter the required settings for target database, name and SQL managed instance. By default, the source managed instance is selected.");
+export const databaseDetailsText = localize('arc.databaseDetailsText', "Enter the required settings for target database name and SQL managed instance. By default, the source managed instance is selected.");
 export const restore = localize('arc.restore', "Restore");
 export const instance = localize('arc.instance', "Instance");
 export const restorePoint = localize('arc.restorePoint', "Restore point (UTC), in a time format: 'YYYY-MM-DDTHH:MM:SSZ");
@@ -80,7 +80,7 @@ export const extensionsDescription = localize('arc.extensionsDescription', "Post
 export const extensionsFunction = localize('arc.extensionsFunction', "Some extensions must be loaded into PostgreSQL at startup time before they can be used. These preloaded extensions can be viewed and edited  below.");
 export function extensionsAddFunction(extensions: string): string { return localize('arc.extensionsAddFunction', "Some extensions must be loaded into PostgreSQL at startup time before they can be used. To edit, type in comma separated list of valid extensions: ({0}).", extensions); }
 export function extensionsAddErrorrMessage(extensions: string): string { return localize('arc.extensionsAddErrorrMessage', "Value should be either of the following: ({0}).", extensions); }
-export const restorePointErrorrMessage = localize('arc.restorePointErrorrMessage', "Value should be in betwween Earliest and Latest point in time");
+export const restorePointErrorrMessage = localize('arc.restorePointErrorrMessage', "Value should be in between earliest and latest point in time");
 export const extensionsLearnMore = localize('arc.extensionsLearnMore', "Learn more about PostgreSQL extensions.");
 export const extensionsTableLoading = localize('arc.extensionsTableLoading', "Table of preloaded extensions are loading.");
 export const extensionsTableLabel = localize('arc.extensionsTableLabel', "Table of preloaded extensions.");
@@ -194,7 +194,7 @@ export const postgresComputeAndStorageDescriptionPartOne = localize('arc.postgre
 export const miaaComputeAndStorageDescriptionPartOne = localize('arc.miaaComputeAndStorageDescriptionPartOne', "You can scale your Azure SQL managed instance - Azure Arc by");
 export const miaaBackupsDatabasesDescription = localize('arc.miaaBackupsDatabasesDescription', "Databases with available backups are displayed below. Restore databases to this instance or any other instance within the same custom location.");
 export const pitrInfo = localize('arc.pitrInfo', "Specify how long you want to keep your point-in-time backups. Customize this for backup availability.");
-export const restoreInfo = localize('arc.restoreInfo', "Restore a database to an Azure Arc enabled SQL Managed Instance of your choice.");
+export const restoreInfo = localize('arc.restoreInfo', "Restore a database to an Azure Arc enabled SQL Managed Instance.");
 export const restorePointText = localize('arc.restorePointText', "Enter a restore point in the specified time format within given range of earliest and latest restore time.");
 export const postgresComputeAndStorageDescriptionPartTwo = localize('arc.postgres.computeAndStorageDescriptionPartTwo', "PostgreSQL Hyperscale server group by");
 export const computeAndStorageDescriptionPartThree = localize('arc.computeAndStorageDescriptionPartThree', "without downtime and by");

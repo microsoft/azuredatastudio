@@ -61,6 +61,7 @@ export class RestoreSqlDialog extends InitializingComponent {
 			}).component();
 			const projectDetailsTextLabel = this.modelBuilder.text().withProps({
 				value: loc.projectDetailsText,
+				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' }
 			}).component();
 			this.subscriptionInputBox = this.modelBuilder.inputBox()
 				.withProps({
@@ -162,7 +163,7 @@ export class RestoreSqlDialog extends InitializingComponent {
 				}).component();
 			const info = this.modelBuilder.text().withProps({
 				value: loc.restoreInfo,
-				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
+				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px', 'max-width': 'auto' }
 			}).component();
 
 			const link = this.modelBuilder.hyperlink().withProps({
