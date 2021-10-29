@@ -16,10 +16,6 @@ const defaultOptions: IAutoColumnSizeOptions = {
 	extraColumnHeaderWidth: 0
 };
 
-// Set the max number of rows to scan to 10 since the result grid viewport in query editor is usually around 10 rows but can go up to 20 rows for notebooks.
-// In most cases, 10 rows are enough to get a reasonable width and will cut down measuring costs for large notebooks.
-const MAX_ROWS_TO_SCAN = 10;
-
 export class AutoColumnSize<T extends Slick.SlickData> implements Slick.Plugin<T> {
 	private _grid!: Slick.Grid<T>;
 	private _$container!: JQuery;
@@ -166,7 +162,7 @@ export class AutoColumnSize<T extends Slick.SlickData> implements Slick.Plugin<T
 		let data = this._grid.getData() as Slick.DataProvider<T>;
 		let viewPort = this._grid.getViewport();
 		let start = Math.max(0, viewPort.top);
-		let end = Math.min(data.getLength(), MAX_ROWS_TO_SCAN);
+		let end = Math.min(data.getLength(), viewPort.bottom);
 		let allTexts: Array<string>[] = [];
 		let rowElements: JQuery[] = [];
 
@@ -183,6 +179,9 @@ export class AutoColumnSize<T extends Slick.SlickData> implements Slick.Plugin<T
 		let templates = this.getMaxTextTemplates(allTexts, columnDefs, colIndices, data, rowElements);
 
 		let widths = this.getTemplateWidths(rowElements, templates);
+		rowElements.forEach(rowElement => {
+			this.deleteRow(rowElement);
+		});
 
 		return widths.map((width) => Math.min(this._options.maxWidth, width));
 	}
@@ -193,7 +192,7 @@ export class AutoColumnSize<T extends Slick.SlickData> implements Slick.Plugin<T
 		let data = this._grid.getData() as Slick.DataProvider<T>;
 		let viewPort = this._grid.getViewport();
 		let start = Math.max(0, viewPort.top);
-		let end = Math.min(data.getLength(), MAX_ROWS_TO_SCAN);
+		let end = Math.min(data.getLength(), viewPort.bottom);
 		for (let i = start; i < end; i++) {
 			texts.push(data.getItem(i)[columnDef.field!]);
 		}

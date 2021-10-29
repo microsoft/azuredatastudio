@@ -336,10 +336,13 @@
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.restartConfirmation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Data Studio needs to be restarted for the project to be created and added to the workspace, do this now?]]></Val>
+          <Val><![CDATA[Azure Data Studio needs to be restarted for the project to be added to the workspace. Restart now?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[必須將 Azure Data Studio 重新開機，才能建立專案並將其新增至工作區，立即執行此動作嗎?]]></Val>
+            <Val><![CDATA[需要重新啟動 Azure Data Studio，專案才能新增到工作區。立即重新啟動?]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure Data Studio needs to be restarted for the project to be created and added to the workspace, do this now?]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -537,6 +540,15 @@
           <Val><![CDATA[Full path to folder where new projects are saved by default.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[預設儲存新專案之資料夾的完整路徑。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/data-workspace/package.projects.excludedProjectsDescription" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[List of projects in the workspace to exclude from the projects viewlet]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[工作區中要從專案 Viewlet 排除的專案清單]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

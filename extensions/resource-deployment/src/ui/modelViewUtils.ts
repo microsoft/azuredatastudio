@@ -7,7 +7,7 @@ import { azureResource } from 'azureResource';
 import * as fs from 'fs';
 import { EOL } from 'os';
 import * as path from 'path';
-import { IOptionsSourceProvider } from 'resource-deployment';
+import { InputValueType, IOptionsSourceProvider } from 'resource-deployment';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { getDateTimeString, getErrorMessage, isUserCancelledError, throwUnless } from '../common/utils';
@@ -33,7 +33,6 @@ const localize = nls.loadMessageBundle();
 */
 
 export type Validator = () => { valid: boolean, message: string };
-export type InputValueType = string | number | undefined;
 export type InputComponent = azdata.TextComponent | azdata.InputBoxComponent | azdata.DropDownComponent | azdata.CheckBoxComponent | RadioGroupLoadingComponentBuilder;
 export type InputComponentInfo<T extends InputComponent> = {
 	component: T;
@@ -471,20 +470,35 @@ async function hookUpValueProviders(context: WizardPageContext): Promise<void> {
 			if (field.valueProvider) {
 				const fieldKey = field.variableName || field.label;
 				const fieldComponent = context.inputComponents[fieldKey];
-				const targetComponent = context.inputComponents[field.valueProvider.triggerField];
-				if (!targetComponent) {
-					console.error(`Could not find target component ${field.valueProvider.triggerField} when hooking up value providers for ${field.label}`);
-					return;
-				}
 				const provider = await valueProviderService.getValueProvider(field.valueProvider.providerId);
+
+				let targetComponentLabelToComponent: { [label: string]: InputComponentInfo<InputComponent>; } = {};
+
+				field.valueProvider.triggerFields.forEach((triggerField) => {
+					const targetComponent = context.inputComponents[triggerField];
+					if (!targetComponent) {
+						console.error(`Could not find target component ${triggerField} when hooking up value providers for ${field.label}`);
+						return;
+					}
+					targetComponentLabelToComponent[triggerField] = targetComponent;
+				});
+
+				// If one triggerfield changes value, update the new field value.
 				const updateFields = async () => {
-					const targetComponentValue = await targetComponent.getValue();
-					const newFieldValue = await provider.getValue(targetComponentValue?.toString() ?? '');
+					let targetComponentLabelToValue: { [label: string]: InputValueType; } = {};
+					for (let label in targetComponentLabelToComponent) {
+						targetComponentLabelToValue[label] = await targetComponentLabelToComponent[label].getValue();
+					}
+					let newFieldValue = await provider.getValue(targetComponentLabelToValue);
 					fieldComponent.setValue(newFieldValue);
 				};
-				targetComponent.onValueChanged(() => {
-					updateFields();
-				});
+
+				// Set the onValueChanged behavior for each component
+				for (let label in targetComponentLabelToComponent) {
+					context.onNewDisposableCreated(targetComponentLabelToComponent[label].onValueChanged(() => {
+						updateFields();
+					}));
+				}
 				await updateFields();
 			}
 		}));
@@ -863,6 +877,18 @@ function processReadonlyTextField(context: FieldContext, allowEvaluation: boolea
 	const text = context.fieldInfo.defaultValue !== undefined
 		? createLabel(context.view, { text: context.fieldInfo.defaultValue, description: '', required: false, width: context.fieldInfo.inputWidth })
 		: undefined;
+	if (text) {
+		// If we created the text component then add it to our list of inputs so other fields can utilize it
+		const onChangedEmitter = new vscode.EventEmitter<void>(); // Stub event since we don't currently support updating this when the dependent fields change
+		context.onNewDisposableCreated(onChangedEmitter);
+		context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, {
+			component: text,
+			getValue: async (): Promise<InputValueType> => typeof text.value === 'string' ? text.value : text.value?.join(EOL),
+			setValue: (value: InputValueType) => text.value = value?.toString(),
+			onValueChanged: onChangedEmitter.event,
+		});
+	}
+
 	addLabelInputPairToContainer(context.view, context.components, label, text, context.fieldInfo);
 	return { label: label, text: text };
 }

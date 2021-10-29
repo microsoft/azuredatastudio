@@ -336,10 +336,13 @@
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.restartConfirmation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure Data Studio needs to be restarted for the project to be created and added to the workspace, do this now?]]></Val>
+          <Val><![CDATA[Azure Data Studio needs to be restarted for the project to be added to the workspace. Restart now?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure Data Studio muss neu gestartet werden, damit das Projekt erstellt und dem Arbeitsbereich hinzugefügt wird, jetzt ausführen?]]></Val>
+            <Val><![CDATA[Azure Data Studio muss neu gestartet werden, damit das Projekt in den Arbeitsbereich hinzugefügt wird. Jetzt neu starten?]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure Data Studio needs to be restarted for the project to be created and added to the workspace, do this now?]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -537,6 +540,15 @@
           <Val><![CDATA[Full path to folder where new projects are saved by default.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Vollständiger Pfad zu dem Ordner, in dem neue Projekte standardmäßig gespeichert werden.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/data-workspace/package.projects.excludedProjectsDescription" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[List of projects in the workspace to exclude from the projects viewlet]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Liste der Projekte im Arbeitsbereich, die aus dem Projekte-Viewlet ausgeschlossen werden sollen]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

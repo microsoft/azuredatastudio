@@ -315,6 +315,10 @@
       {
         "command": "notebook.command.codeBlock",
         "title": "%notebook.command.codeBlock%"
+      },
+      {
+        "command": "notebook.command.highlightText",
+        "title": "%notebook.command.highlightText%"
       }
     ],
     "languages": [
@@ -472,6 +476,10 @@
         },
         {
           "command": "notebook.command.codeBlock",
+          "when": "activeEditor == workbench.editor.notebookEditor && editorLangId == markdown"
+        },
+        {
+          "command": "notebook.command.highlightText",
           "when": "activeEditor == workbench.editor.notebookEditor && editorLangId == markdown"
         }
       ],
@@ -666,6 +674,11 @@
       {
         "command": "notebook.command.codeBlock",
         "key": "Ctrl+Shift+K",
+        "when": "activeEditor == workbench.editor.notebookEditor && editorLangId == markdown"
+      },
+      {
+        "command": "notebook.command.highlightText",
+        "key": "Ctrl+Shift+H",
         "when": "activeEditor == workbench.editor.notebookEditor && editorLangId == markdown"
       }
     ],

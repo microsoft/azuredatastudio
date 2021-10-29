@@ -11,6 +11,7 @@ import * as constants from '../constants/strings';
 import { createHeadingTextComponent, createInformationRow, createLabelTextComponent } from './wizardController';
 import { getResourceGroupFromId } from '../api/azure';
 import { TargetDatabaseSummaryDialog } from '../dialog/targetDatabaseSummary/targetDatabaseSummaryDialog';
+import * as styles from '../constants/styles';
 
 export class SummaryPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -49,10 +50,9 @@ export class SummaryPage extends MigrationWizardPage {
 			url: '',
 			label: this.migrationStateModel._migrationDbs.length.toString(),
 			CSSStyles: {
+				...styles.BODY_CSS,
 				'margin': '0px',
 				'width': '300px',
-				'font-size': '13px',
-				'line-height': '24px'
 			}
 		}).component();
 
@@ -70,10 +70,8 @@ export class SummaryPage extends MigrationWizardPage {
 				[
 					createLabelTextComponent(this._view, constants.SUMMARY_DATABASE_COUNT_LABEL,
 						{
-							'margin': '0px',
+							...styles.BODY_CSS,
 							'width': '300px',
-							'font-size': '13px',
-							'line-height': '24px'
 						}
 					),
 					targetDatabaseHyperlink
@@ -87,7 +85,7 @@ export class SummaryPage extends MigrationWizardPage {
 
 		this._flexContainer.addItems(
 			[
-				await createHeadingTextComponent(this._view, constants.ACCOUNTS_SELECTION_PAGE_TITLE),
+				await createHeadingTextComponent(this._view, constants.ACCOUNTS_SELECTION_PAGE_TITLE, true),
 				createInformationRow(this._view, constants.ACCOUNTS_SELECTION_PAGE_TITLE, this.migrationStateModel._azureAccount.displayInfo.displayName),
 
 				await createHeadingTextComponent(this._view, constants.SOURCE_DATABASES),
@@ -114,7 +112,7 @@ export class SummaryPage extends MigrationWizardPage {
 			]
 		);
 
-		if (this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE && this.migrationStateModel._nodeNames.length > 0) {
+		if (this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE && this.migrationStateModel._nodeNames?.length > 0) {
 			this._flexContainer.addItem(createInformationRow(this._view, constants.SHIR, this.migrationStateModel._nodeNames.join(', ')));
 		}
 	}

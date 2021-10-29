@@ -426,4 +426,8 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 	public set ariaLabel(value: string) {
 		this._tableContainer.setAttribute('aria-label', value);
 	}
+
+	public get container(): HTMLElement {
+		return this._tableContainer;
+	}
 }

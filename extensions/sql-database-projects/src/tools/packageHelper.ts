@@ -65,7 +65,11 @@ export class PackageHelper {
 			if (project) {
 				await this.addPackage(project, packageName, packageVersion);
 			} else {
-				void vscode.window.showInformationMessage(`To use SQL bindings, ensure your Azure Functions project has a reference to ${constants.sqlExtensionPackageName}`);
+				void vscode.window.showInformationMessage(constants.addPackageReferenceMessage, constants.moreInformation).then((result) => {
+					if (result === constants.moreInformation) {
+						void vscode.env.openExternal(vscode.Uri.parse(constants.sqlBindingsHelpLink));
+					}
+				});
 			}
 		} catch (e) {
 			void vscode.window.showErrorMessage(e.message);

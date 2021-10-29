@@ -126,6 +126,16 @@
         "command": "mssql.showLogFile",
         "category": "MSSQL",
         "title": "%title.showLogFile%"
+      },
+      {
+        "command": "mssql.newTable",
+        "category": "MSSQL",
+        "title": "%title.newTable%"
+      },
+      {
+        "command": "mssql.designTable",
+        "category": "MSSQL",
+        "title": "%title.designTable%"
       }
     ],
     "outputChannels": [
@@ -426,6 +436,14 @@
         },
         {
           "command": "mssqlCluster.task.openClusterDashboard",
+          "when": "false"
+        },
+        {
+          "command": "mssql.newTable",
+          "when": "false"
+        },
+        {
+          "command": "mssql.designTable",
           "when": "false"
         }
       ],
