@@ -42,6 +42,8 @@ import { IRange } from 'vs/editor/common/core/range';
 import { UntitledQueryEditorInput } from 'sql/base/query/browser/untitledQueryEditorInput';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IEditorOptions } from 'vs/platform/editor/common/editor';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { ConnectionOptionSpecialType } from 'sql/platform/connection/common/interfaces';
 
 const QUERY_EDITOR_VIEW_STATE_PREFERENCE_KEY = 'queryEditorViewState';
 
@@ -107,6 +109,7 @@ export class QueryEditor extends EditorPane {
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@IModeService private readonly modeService: IModeService,
+		@ICapabilitiesService private readonly capabilitiesService: ICapabilitiesService
 	) {
 		super(QueryEditor.ID, telemetryService, themeService, storageService);
 
@@ -267,7 +270,6 @@ export class QueryEditor extends EditorPane {
 
 	private setTaskbarContent(): void {
 		// Create HTML Elements for the taskbar
-		const separator = Taskbar.createTaskbarSeparator();
 		let content: ITaskbarContent[];
 		const previewFeaturesEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
 		let connectionProfile = this.connectionManagementService.getConnectionProfile(this.input?.uri);
@@ -284,7 +286,7 @@ export class QueryEditor extends EditorPane {
 			content = [
 				{ action: this._runQueryAction },
 				{ action: this._cancelQueryAction },
-				{ element: separator },
+				{ element: Taskbar.createTaskbarSeparator() },
 				{ action: this._toggleConnectDatabaseAction },
 				{ action: this._changeConnectionAction },
 				{ action: this._listDatabasesAction }
@@ -298,40 +300,32 @@ export class QueryEditor extends EditorPane {
 			content = [
 				{ action: this._runQueryAction },
 				{ action: this._cancelQueryAction },
-				{ element: separator },
+				{ element: Taskbar.createTaskbarSeparator() },
 				{ action: this._toggleConnectDatabaseAction },
-				{ action: this._changeConnectionAction },
-				{ action: this._listDatabasesAction }
+				{ action: this._changeConnectionAction }
 			];
 		}
 		else {
-			if (previewFeaturesEnabled) {
-				content = [
-					{ action: this._runQueryAction },
-					{ action: this._cancelQueryAction },
-					{ element: separator },
-					{ action: this._toggleConnectDatabaseAction },
-					{ action: this._changeConnectionAction },
-					{ action: this._listDatabasesAction },
-				];
+			content = [
+				{ action: this._runQueryAction },
+				{ action: this._cancelQueryAction },
+				{ element: Taskbar.createTaskbarSeparator() },
+				{ action: this._toggleConnectDatabaseAction },
+				{ action: this._changeConnectionAction }
+			];
 
-				if (providerId === 'MSSQL') {
-					content.push({ element: separator },
-						{ action: this._estimatedQueryPlanAction },
-						{ action: this._toggleSqlcmdMode }
-					);
+			// Only show the databases dropdown if the connection provider supports it.
+			if (this.capabilitiesService.getCapabilities(providerId).connection.connectionOptions.find(option => option.specialValueType === ConnectionOptionSpecialType.databaseName)) {
+				content.push({ action: this._listDatabasesAction });
+			}
 
-					content.push({ action: this._exportAsNotebookAction });
-				}
-			} else {
-				content = [
-					{ action: this._runQueryAction },
-					{ action: this._cancelQueryAction },
-					{ element: separator },
-					{ action: this._toggleConnectDatabaseAction },
-					{ action: this._changeConnectionAction },
-					{ action: this._listDatabasesAction }
-				];
+			if (previewFeaturesEnabled && providerId === 'MSSQL') {
+				content.push(
+					{ element: Taskbar.createTaskbarSeparator() },
+					{ action: this._estimatedQueryPlanAction },
+					{ action: this._toggleSqlcmdMode },
+					{ action: this._exportAsNotebookAction }
+				);
 			}
 		}
 
