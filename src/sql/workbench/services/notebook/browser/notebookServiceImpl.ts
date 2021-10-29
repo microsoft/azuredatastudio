@@ -224,6 +224,9 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	public async canResolveProvider(providerId: string): Promise<boolean> {
+		if (!providerId) {
+			return false;
+		}
 		await this._extensionService.activateByEvent(`onNotebook:*`);
 
 		let upperCaseProvider = providerId.toUpperCase();
