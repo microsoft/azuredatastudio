@@ -257,7 +257,7 @@ export class MiaaModel extends ResourceModel {
 				}
 			}
 			catch (err) {
-				console.log(err);
+				console.log(loc.pitr + ' ' + loc.failed + ':' + err);
 				this._databaseTimeWindow.set(dbName, ['', '']);
 			}
 		}
