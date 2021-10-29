@@ -49,13 +49,6 @@ export class MiaaModel extends ResourceModel {
 	private _databaseTimeWindow: Map<string, string[]>;
 
 	private _refreshPromise: Deferred<void> | undefined = undefined;
-	private _pitrArgs = {
-		destName: '',
-		managedInstance: '',
-		time: '',
-		noWait: true,
-		dryRun: false
-	};
 	constructor(_controllerModel: ControllerModel, private _miaaInfo: MiaaResourceInfo, registration: Registration, private _treeDataProvider: AzureArcTreeDataProvider) {
 		super(_controllerModel, _miaaInfo, registration);
 		this._azApi = <azExt.IExtension>vscode.extensions.getExtension(azExt.extension.name)?.exports;
@@ -149,6 +142,7 @@ export class MiaaModel extends ResourceModel {
 			throw error;
 		}
 	}
+
 	public async getDatabases(promptForConnection: boolean = true): Promise<void> {
 		if (!this._connectionProfile) {
 			await this.getConnectionProfile(promptForConnection);
@@ -173,15 +167,16 @@ export class MiaaModel extends ResourceModel {
 			if (databases.length > 0 && typeof (databases[0]) === 'object') {
 				await Promise.all([(<azdata.DatabaseInfo[]>databases).forEach(async di => {
 					await this.executeDryRun(<string>di.options['name']).then((result: string[]) => {
-						let dm: DatabaseModel = {
-							name: di.options['name'], status: di.options['state'], earliestBackup: result?.[0] ?? '',
-							lastBackup: result?.[1] ?? ''
-						};
-						this._databases.push(dm);
+						this._databaseTimeWindow.set(di.options['name'], [result?.[0], result?.[1]]);
 					}).catch();//ignore
-				})]).then(() =>
-					this._databases.forEach(d => { this._databaseTimeWindow.set(d.name, [d.earliestBackup, d.lastBackup]); })
-				);
+				})]).then(() => {
+					this._databases = (<azdata.DatabaseInfo[]>databases).map(db => {
+						return {
+							name: db.options['name'], status: db.options['state'], earliestBackup: this._databaseTimeWindow.get(db.options['name'])?.[0] ?? '',
+							lastBackup: this._databaseTimeWindow.get(db.options['name'])?.[1] ?? ''
+						};
+					});
+				});
 			}
 			else {
 				this._databases = (<string[]>databases).map(db => { return { name: db, status: '-', earliestBackup: '', lastBackup: '' }; });
@@ -233,16 +228,18 @@ export class MiaaModel extends ResourceModel {
 	protected async executeDryRun(dbName: string): Promise<string[]> {
 		// Allow next dry Run to be executed only after 5(300000 ms ) minutes from current time as the log backups are
 		// generated only at 5 minutes interval
+		let pitrArgs = {
+			destName: dbName + '-' + Date.now().toString(),
+			managedInstance: this.info.name,
+			time: new Date().toISOString(),
+			noWait: false,
+			dryRun: true,
+		};
 		if ((systemDbs.indexOf(dbName) === -1) && (Date.now() - getTimeStamp(this._databaseTimeWindow.get(dbName)?.[1]) >= 300000)) {
 			try {
 				//Execute dryRun for earliestTime and save latest time as well so there is one call to az cli
-				this._pitrArgs.destName = dbName + '-' + Date.now().toString();
-				this._pitrArgs.managedInstance = this.info.name;
-				this._pitrArgs.time = new Date().toISOString();
-				this._pitrArgs.noWait = false;
-				this._pitrArgs.dryRun = true;
 				let result = await this._azApi.az.sql.midbarc.restore(
-					dbName, this._pitrArgs, this.controllerModel.info.namespace, this.controllerModel.azAdditionalEnvVars);
+					dbName, pitrArgs, this.controllerModel.info.namespace, this.controllerModel.azAdditionalEnvVars);
 				let restoreResult = result.stdout;
 				if (restoreResult) {
 					let earliestTime = restoreResult['earliestRestoreTime'];
