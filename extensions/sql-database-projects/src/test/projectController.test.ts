@@ -395,12 +395,12 @@ describe('ProjectsController', function (): void {
 					return Promise.resolve(undefined);
 				});
 
-				let dialogPromise = projController.object.publishProject(proj);
+				void projController.object.publishProject(proj);
 				await publishDialog.object.publishClick();
 
 				should(holler).equal(publishHoller, 'executionCallback() is supposed to have been setup and called for Publish scenario');
 
-				dialogPromise = projController.object.publishProject(proj);
+				void projController.object.publishProject(proj);
 				await publishDialog.object.generateScriptClick();
 
 				should(holler).equal(generateHoller, 'executionCallback() is supposed to have been setup and called for GenerateScript scenario');
