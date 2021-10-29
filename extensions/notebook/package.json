@@ -297,6 +297,10 @@
         "title": "%title.undoNotebookView%"
       },
       {
+        "command": "notebook.command.redoNotebookView",
+        "title": "%title.redoNotebookView%"
+      },
+      {
         "command": "notebook.command.boldText",
         "title": "%notebook.command.boldText%"
       },
@@ -448,6 +452,10 @@
         },
         {
           "command": "notebook.command.undoNotebookView",
+          "when": "false"
+        },
+        {
+          "command": "notebook.command.redoNotebookView",
           "when": "false"
         },
         {
@@ -632,6 +640,12 @@
         "command": "notebook.command.undoNotebookView",
         "key": "ctrl+z",
         "mac": "cmd+z",
+        "when": "focusedView"
+      },
+      {
+        "command": "notebook.command.redoNotebookView",
+        "key": "ctrl+y",
+        "mac": "cmd+shift+z",
         "when": "focusedView"
       },
       {

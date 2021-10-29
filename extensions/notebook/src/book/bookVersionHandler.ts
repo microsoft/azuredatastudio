@@ -19,6 +19,12 @@ export function getTocPath(version: string, bookPath: string): string {
 	return BookVersion.v1 === version ? path.posix.join(bookPath, '_data', 'toc.yml') : path.posix.join(bookPath, '_toc.yml');
 }
 
+export function getBookPathFromTocPath(tocPath: string): string {
+	const tocV1 = path.posix.join(path.posix.sep, '_data', 'toc.yml');
+	const tocV2 = path.posix.join(path.posix.sep, '_toc.yml');
+	return tocPath.includes(tocV2) ? tocPath.split(tocV2)[0] : tocPath.split(tocV1)[0];
+}
+
 /**
  * Parses a section to JupyterSection, which is the union of  Jupyter Book v1 and v2 interfaces.
  * There are conflicting properties between v1 and v2 Jupyter Book toc properties,
