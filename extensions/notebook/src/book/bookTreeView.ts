@@ -703,7 +703,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	getUntitledNotebookUri(resource: string): vscode.Uri {
 		let untitledFileName = vscode.Uri.parse(`untitled:${resource}`);
-		if (!this.currentBook.getAllNotebooks().get(untitledFileName.fsPath) && !this.currentBook.getAllNotebooks().get(path.basename(untitledFileName.fsPath))) {
+		if (this.currentBook && !this.currentBook.getAllNotebooks().get(untitledFileName.fsPath) && !this.currentBook.getAllNotebooks().get(path.basename(untitledFileName.fsPath))) {
 			let notebook = this.currentBook.getAllNotebooks().get(resource);
 			this.currentBook.getAllNotebooks().set(path.basename(untitledFileName.fsPath), notebook);
 		}
