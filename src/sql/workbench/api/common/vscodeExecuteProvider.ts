@@ -70,7 +70,7 @@ class VSCodeKernel implements azdata.nb.IKernel {
 
 	constructor(private readonly _controller: vscode.NotebookController, private readonly _options: azdata.nb.ISessionOptions, language: string) {
 		this._id = this._options.kernelId ?? (VSCodeKernel.kernelId++).toString();
-		this._name = this._options.kernelName ?? this._controller.id;
+		this._name = this._options.kernelName ?? this._controller.notebookType;
 		this._info = {
 			protocol_version: '',
 			implementation: '',
@@ -295,7 +295,7 @@ export class VSCodeExecuteProvider implements azdata.nb.NotebookExecuteProvider 
 	}
 
 	public get providerId(): string {
-		return this._controller.id;
+		return this._controller.notebookType;
 	}
 
 	public getExecuteManager(notebookUri: vscode.Uri): Thenable<azdata.nb.ExecuteManager> {

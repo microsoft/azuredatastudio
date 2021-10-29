@@ -84,7 +84,7 @@ export class ADSNotebookController implements vscode.NotebookController {
 
 	public set supportedLanguages(value) {
 		this._kernelData.supportedLanguages = value;
-		notebookRegistry.updateProviderDescriptionLanguages(this._id, value);
+		notebookRegistry.updateProviderDescriptionLanguages(this._viewType, value);
 	}
 
 	public get supportsExecutionOrder() {
