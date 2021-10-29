@@ -164,6 +164,9 @@ export function readSqlCmdVariables(xmlDoc: any, publishProfile: boolean): Recor
 		const sqlCmdVar = xmlDoc.documentElement.getElementsByTagName(constants.SqlCmdVariable)[i];
 		const varName = sqlCmdVar.getAttribute(constants.Include);
 
+		// Publish profiles only support Value, so don't use DefaultValue even if it's there
+		// SSDT uses the Value (like <Value>$(SqlCmdVar__1)</Value>) where there
+		// are local variable values you can set in VS in the properties. Since we don't support that in ADS, only DefaultValue is supported for sqlproj.
 		if (!publishProfile && sqlCmdVar.getElementsByTagName(constants.DefaultValue)[0] !== undefined) {
 			// project file path
 			sqlCmdVariables[varName] = sqlCmdVar.getElementsByTagName(constants.DefaultValue)[0].childNodes[0].nodeValue;
