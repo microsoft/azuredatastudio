@@ -269,64 +269,43 @@ export class QueryEditor extends EditorPane {
 	}
 
 	private setTaskbarContent(): void {
-		// Create HTML Elements for the taskbar
-		let content: ITaskbarContent[];
 		const previewFeaturesEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
-		let connectionProfile = this.connectionManagementService.getConnectionProfile(this.input?.uri);
-		let fileExtension = path.extname(this.input?.uri || '');
+		const connectionProfile = this.connectionManagementService.getConnectionProfile(this.input?.uri);
+		const fileExtension = path.extname(this.input?.uri || '');
 		const providerId = connectionProfile?.providerName ||
 			this.connectionManagementService.getProviderIdFromUri(this.input?.uri) ||
 			this.connectionManagementService.getDefaultProviderId();
-		// TODO: Make it more generic, some way for extensions to register the commands it supports
-		if ((providerId === 'KUSTO') || this.modeService.getExtensions('Kusto').indexOf(fileExtension) > -1) {
-			if (this.input instanceof UntitledQueryEditorInput) {		// Sets proper language mode for untitled query editor based on the connection selected by user.
+		const content: ITaskbarContent[] = [
+			{ action: this._runQueryAction },
+			{ action: this._cancelQueryAction },
+			{ element: Taskbar.createTaskbarSeparator() },
+			{ action: this._toggleConnectDatabaseAction },
+			{ action: this._changeConnectionAction }
+		];
+
+		// TODO: Allow query provider to provide the language mode.
+		if (this.input instanceof UntitledQueryEditorInput) {
+			if ((providerId === 'KUSTO') || this.modeService.getExtensions('Kusto').indexOf(fileExtension) > -1) {
 				this.input.setMode('kusto');
 			}
-
-			content = [
-				{ action: this._runQueryAction },
-				{ action: this._cancelQueryAction },
-				{ element: Taskbar.createTaskbarSeparator() },
-				{ action: this._toggleConnectDatabaseAction },
-				{ action: this._changeConnectionAction },
-				{ action: this._listDatabasesAction }
-			];
-		}
-		else if (providerId === 'LOGANALYTICS' || this.modeService.getExtensions('LogAnalytics').indexOf(fileExtension) > -1) {
-			if (this.input instanceof UntitledQueryEditorInput) {
+			else if (providerId === 'LOGANALYTICS' || this.modeService.getExtensions('LogAnalytics').indexOf(fileExtension) > -1) {
 				this.input.setMode('loganalytics');
 			}
-
-			content = [
-				{ action: this._runQueryAction },
-				{ action: this._cancelQueryAction },
-				{ element: Taskbar.createTaskbarSeparator() },
-				{ action: this._toggleConnectDatabaseAction },
-				{ action: this._changeConnectionAction }
-			];
 		}
-		else {
-			content = [
-				{ action: this._runQueryAction },
-				{ action: this._cancelQueryAction },
+
+		// Only show the databases dropdown if the connection provider supports it.
+		if (this.capabilitiesService.getCapabilities(providerId).connection?.connectionOptions?.find(option => option.specialValueType === ConnectionOptionSpecialType.databaseName)) {
+			content.push({ action: this._listDatabasesAction });
+		}
+
+		// TODO: Allow extensions to contribute toolbar actions.
+		if (previewFeaturesEnabled && providerId === 'MSSQL') {
+			content.push(
 				{ element: Taskbar.createTaskbarSeparator() },
-				{ action: this._toggleConnectDatabaseAction },
-				{ action: this._changeConnectionAction }
-			];
-
-			// Only show the databases dropdown if the connection provider supports it.
-			if (this.capabilitiesService.getCapabilities(providerId).connection.connectionOptions.find(option => option.specialValueType === ConnectionOptionSpecialType.databaseName)) {
-				content.push({ action: this._listDatabasesAction });
-			}
-
-			if (previewFeaturesEnabled && providerId === 'MSSQL') {
-				content.push(
-					{ element: Taskbar.createTaskbarSeparator() },
-					{ action: this._estimatedQueryPlanAction },
-					{ action: this._toggleSqlcmdMode },
-					{ action: this._exportAsNotebookAction }
-				);
-			}
+				{ action: this._estimatedQueryPlanAction },
+				{ action: this._toggleSqlcmdMode },
+				{ action: this._exportAsNotebookAction }
+			);
 		}
 
 		this.taskbar.setContent(content);

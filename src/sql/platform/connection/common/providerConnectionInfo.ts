@@ -161,11 +161,11 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 
 	private getServerInfo() {
 		let title = this.serverName;
-		if (this.serverCapabilities.connectionOptions.find(option => option.specialValueType === ConnectionOptionSpecialType.databaseName)) {
-			const databaseName = this.databaseName ? this.databaseName : '<default>';
-			title += `, ${databaseName}`;
+		// Only show database name if the provider supports it.
+		if (this.serverCapabilities?.connectionOptions?.find(option => option.specialValueType === ConnectionOptionSpecialType.databaseName)) {
+			title += `, ${this.databaseName || '<default>'}`;
 		}
-		title += ` (${this.userName ? this.userName : this.authenticationType})`;
+		title += ` (${this.userName || this.authenticationType})`;
 		return title;
 	}
 

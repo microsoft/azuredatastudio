@@ -233,7 +233,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 				if (profile.databaseName) {
 					title += `.${profile.databaseName}`;
 				}
-				title += ` (${profile.userName ? profile.userName : profile.authenticationType})`;
+				title += ` (${profile.userName || profile.authenticationType})`;
 			} else {
 				title += localize('disconnected', "disconnected");
 			}
