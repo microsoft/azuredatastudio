@@ -188,3 +188,18 @@ export interface DesignerEditResult {
 	isValid: boolean;
 	errors?: { message: string, property?: DesignerEditIdentifier }[];
 }
+
+export interface DesignerTextEditor {
+	/**
+	 * Gets or sets the content of the text editor
+	 */
+	content: string;
+	/**
+	 * Gets or sets a boolean value indicating whether the editor is readonly
+	 */
+	readonly: boolean;
+	/**
+	 * Event fired when the content is changed by user
+	 */
+	readonly onDidContentChange: Event<string>;
+}
