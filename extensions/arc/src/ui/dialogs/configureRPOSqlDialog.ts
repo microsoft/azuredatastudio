@@ -32,7 +32,7 @@ export class ConfigureRPOSqlDialog extends InitializingComponent {
 			this.retentionDaysInputBox = this.modelBuilder.inputBox()
 				.withProps({
 					readOnly: false,
-					min: 1,
+					min: 0,
 					max: 35,
 					inputType: 'number',
 					ariaLabel: loc.retentionDays,
