@@ -105,9 +105,9 @@ export class CopyResultAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		private configurationService: IConfigurationService,
 		private copyHeader: boolean,
-		private accountForNumberColumn = true
+		private accountForNumberColumn: boolean,
+		@IConfigurationService private configurationService: IConfigurationService
 	) {
 		super(id, label);
 	}
