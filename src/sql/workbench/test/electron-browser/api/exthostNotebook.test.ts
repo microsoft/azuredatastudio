@@ -14,6 +14,7 @@ import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { ExtHostNotebook } from 'sql/workbench/api/common/extHostNotebook';
 import { MainThreadNotebookShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IExecuteManagerDetails, ISerializationManagerDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 
 suite('ExtHostNotebook Tests', () => {
 
@@ -28,6 +29,7 @@ suite('ExtHostNotebook Tests', () => {
 			$registerExecuteProvider: (providerId, handle) => undefined,
 			$unregisterSerializationProvider: (handle) => undefined,
 			$unregisterExecuteProvider: (handle) => undefined,
+			$createNotebookController: (extension, id, viewType, label, handler, rendererScripts) => undefined,
 			dispose: () => undefined
 		});
 		let mainContext = <IMainContext>{
@@ -192,6 +194,42 @@ suite('ExtHostNotebook Tests', () => {
 			mockProxy.verify(p => p.$unregisterExecuteProvider(TypeMoq.It.isValue(savedHandle)), TypeMoq.Times.never());
 		});
 	});
+
+	suite('VSCode API Compatibility', () => {
+		const providerId = 'testProvider';
+		setup(() => {
+			mockProxy.setup(p =>
+				p.$createNotebookController(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isValue(providerId), TypeMoq.It.isAny()))
+				.returns(() => new NotebookControllerStub(providerId));
+		});
+
+		test('Should register a serialization provider when calling registerNotebookSerializer', () => {
+			let serializerMock = TypeMoq.Mock.ofType(NotebookSerializerStub);
+			extHostNotebook.$registerNotebookSerializer(providerId, serializerMock.object);
+			mockProxy.verify(p =>
+				p.$registerSerializationProvider(TypeMoq.It.isValue(providerId), TypeMoq.It.isAny()), TypeMoq.Times.once());
+		});
+
+		test('Should register an execute provider when calling createNotebookController', () => {
+			let extensionDescription: IExtensionDescription = {
+				name: 'TestExtension',
+				publisher: 'TestPublisher',
+				version: '0.0.1',
+				engines: { vscode: '1000', azdata: '900' },
+				identifier: undefined,
+				isBuiltin: true,
+				isUserBuiltin: true,
+				isUnderDevelopment: true,
+				extensionLocation: undefined
+			};
+			let controller = extHostNotebook.$createNotebookController(extensionDescription, 'testControllerId', providerId, 'testLabel');
+			assert(controller, 'Notebook Controller should not be undefined.');
+			mockProxy.verify(p =>
+				p.$createNotebookController(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isValue(providerId), TypeMoq.It.isAny()), TypeMoq.Times.once());
+			mockProxy.verify(p =>
+				p.$registerExecuteProvider(TypeMoq.It.isValue(providerId), TypeMoq.It.isAny()), TypeMoq.Times.once());
+		});
+	});
 });
 
 class SerializationProviderStub implements azdata.nb.NotebookSerializationProvider {
@@ -227,4 +265,48 @@ class ExecuteManagerStub implements azdata.nb.ExecuteManager {
 	get serverManager(): azdata.nb.ServerManager {
 		return undefined;
 	}
+}
+
+class NotebookSerializerStub implements vscode.NotebookSerializer {
+	deserializeNotebook(content: Uint8Array, token: vscode.CancellationToken): vscode.NotebookData | Thenable<vscode.NotebookData> {
+		throw new Error('Method not implemented.');
+	}
+	serializeNotebook(data: vscode.NotebookData, token: vscode.CancellationToken): Uint8Array | Thenable<Uint8Array> {
+		throw new Error('Method not implemented.');
+	}
+}
+
+class NotebookControllerStub implements vscode.NotebookController {
+	constructor(providerId: string) {
+		this.notebookType = providerId;
+	}
+
+	id: string;
+	notebookType: string;
+	supportedLanguages?: string[];
+	label: string;
+	description?: string;
+	detail?: string;
+	supportsExecutionOrder?: boolean;
+	createNotebookCellExecution(cell: vscode.NotebookCell): vscode.NotebookCellExecution {
+		throw new Error('Method not implemented.');
+	}
+	executeHandler: (cells: vscode.NotebookCell[], notebook: vscode.NotebookDocument, controller: vscode.NotebookController) => void | Thenable<void>;
+	interruptHandler?: (notebook: vscode.NotebookDocument) => void | Thenable<void>;
+	onDidChangeSelectedNotebooks: vscode.Event<{ notebook: vscode.NotebookDocument; selected: boolean; }>;
+	updateNotebookAffinity(notebook: vscode.NotebookDocument, affinity: vscode.NotebookControllerAffinity): void {
+		throw new Error('Method not implemented.');
+	}
+	dispose(): void {
+		throw new Error('Method not implemented.');
+	}
+	rendererScripts: vscode.NotebookRendererScript[];
+	onDidReceiveMessage: vscode.Event<{ editor: vscode.NotebookEditor; message: any; }>;
+	postMessage(message: any, editor?: vscode.NotebookEditor): Thenable<boolean> {
+		throw new Error('Method not implemented.');
+	}
+	asWebviewUri(localResource: vscode.Uri): vscode.Uri {
+		throw new Error('Method not implemented.');
+	}
+
 }
