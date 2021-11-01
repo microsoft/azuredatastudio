@@ -36,7 +36,7 @@
           {
             "name": "validations-wizard",
             "notebookWizard": {
-              "notebook": "%deployment-notebook-1%",
+              "notebook": "./notebooks/deploy-x-data-service-1.ipynb",
               "runNotebook": false,
               "codeCellInsertionPosition": 1,
               "actionText": "%deploy.wizard.action%",
@@ -132,7 +132,7 @@
           {
             "name": "test-wizard",
             "notebookWizard": {
-              "notebook": "%deployment-notebook-1%",
+              "notebook": "./notebooks/deploy-x-data-service-1.ipynb",
               "type": "new-arc-control-plane",
               "runNotebook": false,
               "codeCellInsertionPosition": 1,
@@ -466,7 +466,7 @@
           {
             "name": "edition_evaluation",
             "dialog": {
-              "notebook": "%deployment-notebook-1%",
+              "notebook": "./notebooks/deploy-x-data-service-1.ipynb",
               "title": "%dialog-title-1%",
               "name": "dialog1",
               "tabs": [
@@ -525,7 +525,7 @@
           {
             "name": "edition_standard",
             "dialog": {
-              "notebook": "%deployment-notebook-2%",
+              "notebook": "./notebooks/deploy-x-data-service-2.ipynb",
               "title": "%dialog-title-2%",
               "name": "dialog2",
               "tabs": [
