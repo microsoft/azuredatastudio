@@ -12,6 +12,12 @@
     "vscode": "*",
     "azdata": ">=1.19.0"
   },
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onCommand:azdata.resource.deploy"
+	],
   "repository": {
     "type": "git",
     "url": "https://github.com/Microsoft/azuredatastudio.git"
@@ -21,6 +27,11 @@
     "microsoft.notebook",
     "microsoft.resource-deployment"
   ],
+  "main": "./out/extension",
+  "scripts": {
+    "compile": "node node_modules/typescript/bin/tsc -p ./tsconfig.json",
+    "watch": "node node_modules/typescript/bin/tsc --watch -p ./tsconfig.json"
+  },
   "contributes": {
     "resourceDeploymentTypes": [
       {
@@ -120,20 +131,35 @@
         ]
       },
       {
-        "name": "test-wizard",
-        "displayName": "%resource.type.wizard.display.name%",
-        "description": "%resource.type.wizard.description%",
+        "name": "sample-deployment-type",
+        "displayName": "%resource.type.sample.display.name%",
+        "description": "%resource.type.sample.description%",
         "platforms": "*",
         "icon": {
           "light": "./images/book.svg",
           "dark": "./images/book_inverse.svg"
         },
+        "options": [
+          {
+            "name": "sample-type",
+            "displayName": "%option-sample-type%",
+            "values": [
+              {
+                "name": "wizard",
+                "displayName": "%option-wizard%"
+              },
+              {
+                "name": "value-provider",
+                "displayName": "%option-value-provider%"
+              }
+            ]
+          }
+        ],
         "providers": [
           {
             "name": "test-wizard",
             "notebookWizard": {
               "notebook": "./notebooks/deploy-x-data-service-1.ipynb",
-              "type": "new-arc-control-plane",
               "runNotebook": false,
               "codeCellInsertionPosition": 1,
               "actionText": "%deploy.wizard.action%",
@@ -413,7 +439,94 @@
                 "name": "kubectl"
               }
             ],
-            "when": true
+            "when": "sample-type=wizard"
+          },
+          {
+            "name": "sample-value-provider",
+            "notebookWizard": {
+              "notebook": "./notebooks/empty-notebook.ipynb",
+              "codeCellInsertionPosition": 1,
+              "actionText": "%deploy.wizard.action%",
+              "title": "%sample.value-provider.title%",
+              "name": "sample.value-provider",
+              "labelPosition": "left",
+              "generateSummaryPage": false,
+              "pages": [
+                {
+                  "title": "%sample.value-provider.single.title%",
+                  "sections": [
+                    {
+                      "fields": [
+                        {
+                          "type": "readonly_text",
+                          "label": "%sample.value-provider.single.field.label%",
+                          "labelWidth": "600px",
+                          "isEvaluated": true,
+                          "defaultValue": "",
+                          "valueProvider": {
+                            "providerId": "sample-resource-deployment.sample-value-provider",
+                            "triggerFields": [
+                              "AZDATA_NB_VAR_SAMPLE_VALUE_PROVIDER_SINGLE_NAME"
+                            ]
+                          }
+                        },
+                        {
+                          "label": "%sample.value-provider.trigger-name.label%",
+                          "type": "text",
+                          "variableName": "AZDATA_NB_VAR_SAMPLE_VALUE_PROVIDER_SINGLE_NAME",
+                          "defaultValue": "<Name>",
+                          "required": true
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "title": "%sample.value-provider.multiple.title%",
+                  "sections": [
+                    {
+                      "fields": [
+                        {
+                          "type": "readonly_text",
+                          "label": "%sample.value-provider.multiple.field.label%",
+                          "labelWidth": "600px",
+                          "defaultValue": "",
+                          "valueProvider": {
+                            "providerId": "sample-resource-deployment.sample-value-provider",
+                            "triggerFields": [
+                              "AZDATA_NB_VAR_SAMPLE_VALUE_PROVIDER_MULTIPLE_NAME",
+                              "AZDATA_NB_VAR_SAMPLE_VALUE_PROVIDER_MULTIPLE_PLACE"
+                            ]
+                          }
+                        },
+                        {
+                          "label": "%sample.value-provider.trigger-name.label%",
+                          "type": "text",
+                          "variableName": "AZDATA_NB_VAR_SAMPLE_VALUE_PROVIDER_MULTIPLE_NAME",
+                          "defaultValue": "<Name>",
+                          "required": true
+                        },
+                        {
+                          "type": "options",
+                          "label": "%sample.value-provider.trigger-place.label%",
+                          "required": true,
+                          "variableName": "AZDATA_NB_VAR_SAMPLE_VALUE_PROVIDER_MULTIPLE_PLACE",
+                          "editable": true,
+                          "defaultValue": "Seattle",
+                          "options": [
+                            "Seattle",
+                            "Redmond",
+                            "Bellevue"
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "requiredTools": [ ],
+            "when": "sample-type=value-provider"
           }
         ],
         "agreements": [
@@ -592,5 +705,13 @@
         ]
       }
     ]
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+    "@types/azdata": "^1.33.0",
+    "@types/vscode": "^1.61.0",
+    "@types/node": "14.x",
+    "typescript": "^4.4.0-dev.20210607"
   }
 }
