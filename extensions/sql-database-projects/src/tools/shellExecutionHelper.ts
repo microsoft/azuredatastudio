@@ -80,10 +80,6 @@ export class ShellExecutionHelper {
 		}
 	}
 
-	public static async executeCommand(cmd: string, outputChannel: vscode.OutputChannel, sensitiveData: string[] = [], timeout: number = 5 * 60 * 1000): Promise<string> {
-		return new ShellExecutionHelper(outputChannel).runStreamedCommand(cmd, undefined, sensitiveData, timeout);
-	}
-
 	private static outputDataChunk(outputChannel: vscode.OutputChannel, data: string | Buffer, header: string): void {
 		data.toString().split(/\r?\n/)
 			.forEach(line => {

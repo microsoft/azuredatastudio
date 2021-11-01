@@ -23,11 +23,11 @@ interface DockerImageSpec {
 }
 export class DeployService {
 
-	constructor(private _outputChannel: vscode.OutputChannel,
-		private _shellExecutionHelper: ShellExecutionHelper | undefined = undefined) {
-		_shellExecutionHelper = _shellExecutionHelper ?? new ShellExecutionHelper(this._outputChannel);
+	constructor(private _outputChannel: vscode.OutputChannel, shellExecutionHelper: ShellExecutionHelper | undefined = undefined) {
+		this._shellExecutionHelper = shellExecutionHelper ?? new ShellExecutionHelper(this._outputChannel);
 	}
 
+	private _shellExecutionHelper: ShellExecutionHelper;
 	private DefaultSqlRetryTimeoutInSec: number = 10;
 	private DefaultSqlNumberOfRetries: number = 3;
 
@@ -405,10 +405,7 @@ RUN ["/bin/bash", "/opt/commands/start.sh"]
 	}
 
 	public async executeCommand(cmd: string, sensitiveData: string[] = [], timeout: number = 5 * 60 * 1000): Promise<string> {
-		if (this._shellExecutionHelper) {
-			return await this._shellExecutionHelper.runStreamedCommand(cmd, undefined, sensitiveData, timeout);
-		}
-		return '';
+		return await this._shellExecutionHelper.runStreamedCommand(cmd, undefined, sensitiveData, timeout);
 	}
 
 	public async getCurrentDockerContainer(imageLabel: string): Promise<string[]> {
