@@ -8,6 +8,8 @@ import { DataService } from 'sql/workbench/services/query/common/dataService';
 import { GridActionProvider } from 'sql/workbench/contrib/editData/browser/gridActions';
 import { localize } from 'vs/nls';
 import { IAction, Action } from 'vs/base/common/actions';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export class EditDataGridActionProvider extends GridActionProvider {
 
@@ -15,9 +17,11 @@ export class EditDataGridActionProvider extends GridActionProvider {
 		dataService: DataService,
 		selectAllCallback: (index: number) => void,
 		private _deleteRowCallback: (index: number) => void,
-		private _revertRowCallback: () => void
+		private _revertRowCallback: () => void,
+		@IConfigurationService configurationService: IConfigurationService,
+		@IInstantiationService instantiationService: IInstantiationService
 	) {
-		super(dataService, selectAllCallback);
+		super(dataService, selectAllCallback, instantiationService, configurationService);
 	}
 	/**
 	 * Return actions given a click on an edit data grid
