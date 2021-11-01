@@ -6,11 +6,12 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
+import { MigrationStateModel, Page, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import { deepClone, findDropDownItemIndex, selectDropDownIndex } from '../api/utils';
 import { getSubscriptions } from '../api/azure';
+import * as styles from '../constants/styles';
 
 export class AccountsSelectionPage extends MigrationWizardPage {
 	private _azureAccountsDropdown!: azdata.DropDownComponent;
@@ -20,18 +21,34 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.ACCOUNTS_SELECTION_PAGE_TITLE), migrationStateModel);
-		this.wizardPage.description = constants.ACCOUNTS_SELECTION_PAGE_DESCRIPTION;
 	}
 
 	protected async registerContent(view: azdata.ModelView): Promise<void> {
+		const pageDescription = {
+			title: '',
+			component: view.modelBuilder.text().withProps({
+				value: constants.ACCOUNTS_SELECTION_PAGE_DESCRIPTION,
+				CSSStyles: {
+					...styles.BODY_CSS,
+					'margin': '0',
+				}
+			}).component()
+		};
+
+		this.wizard.customButtons[0].enabled = true;
 		const form = view.modelBuilder.formContainer()
 			.withFormItems(
 				[
+					pageDescription,
 					await this.createAzureAccountsDropdown(view),
 					await this.createAzureTenantContainer(view),
 				]
-			);
-		await view.initializeModel(form.component());
+			).withProps({
+				CSSStyles: {
+					'padding-top': '0'
+				}
+			}).component();
+		await view.initializeModel(form);
 		await this.populateAzureAccountsDropdown();
 		this._disposables.push(view.onClosed(e =>
 			this._disposables.forEach(
@@ -43,8 +60,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 		const azureAccountLabel = view.modelBuilder.text().withProps({
 			value: constants.ACCOUNTS_SELECTION_PAGE_TITLE,
 			CSSStyles: {
-				'font-size': '13px',
-				'font-weight': 'bold',
+				...styles.LABEL_CSS
 			}
 		}).component();
 
@@ -66,6 +82,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 					}
 					if (this.migrationStateModel._azureAccount?.isStale) {
 						this.wizard.message = {
+							level: azdata.window.MessageLevel.Error,
 							text: constants.ACCOUNT_STALE_ERROR(this.migrationStateModel._azureAccount)
 						};
 						return false;
@@ -95,6 +112,14 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 					await this._accountTenantFlexContainer.updateCssStyles({
 						'display': 'none'
 					});
+					if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.AzureAccount)) {
+						(<azdata.CategoryValue[]>this._azureAccountsDropdown.values)?.forEach((account, index) => {
+							if (account.name.toLowerCase() === this.migrationStateModel.savedInfo.azureAccount?.displayInfo.userId.toLowerCase()) {
+								selectDropDownIndex(this._azureAccountsDropdown, index);
+							}
+						});
+					}
+
 				}
 				this.migrationStateModel._subscriptions = undefined!;
 				this.migrationStateModel._targetSubscription = undefined!;
@@ -108,7 +133,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 				label: constants.ACCOUNT_LINK_BUTTON_LABEL,
 				url: '',
 				CSSStyles: {
-					'font-size': '13px',
+					...styles.BODY_CSS
 				}
 			})
 			.component();
@@ -144,8 +169,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 		const azureTenantDropdownLabel = view.modelBuilder.text().withProps({
 			value: constants.AZURE_TENANT,
 			CSSStyles: {
-				'font-size': '13px',
-				'font-weight': 'bold'
+				...styles.LABEL_CSS
 			}
 		}).component();
 
@@ -162,12 +186,15 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 			 * All azure requests will only run on this tenant from now on
 			 */
 			const selectedIndex = findDropDownItemIndex(this._accountTenantDropdown, value);
+			const selectedTenant = this.migrationStateModel.getTenant(selectedIndex);
+			this.migrationStateModel._azureTenant = deepClone(selectedTenant);
 			if (selectedIndex > -1) {
 				this.migrationStateModel._azureAccount.properties.tenants = [this.migrationStateModel.getTenant(selectedIndex)];
 				this.migrationStateModel._subscriptions = undefined!;
 				this.migrationStateModel._targetSubscription = undefined!;
 				this.migrationStateModel._databaseBackup.subscription = undefined!;
 			}
+
 		}));
 
 		this._accountTenantFlexContainer = view.modelBuilder.flexContainer()
@@ -205,16 +232,24 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		this.wizard.registerNavigationValidator(async pageChangeInfo => {
 			try {
-				if (!this.migrationStateModel._azureAccount?.isStale) {
+				this.wizard.message = { text: '', };
+
+				if (this.migrationStateModel._azureAccount && !this.migrationStateModel._azureAccount?.isStale) {
 					const subscriptions = await getSubscriptions(this.migrationStateModel._azureAccount);
 					if (subscriptions?.length > 0) {
 						return true;
 					}
 				}
 
-				this.wizard.message = { text: constants.ACCOUNT_STALE_ERROR(this.migrationStateModel._azureAccount) };
+				this.wizard.message = {
+					level: azdata.window.MessageLevel.Error,
+					text: constants.ACCOUNT_STALE_ERROR(this.migrationStateModel._azureAccount),
+				};
 			} catch (error) {
-				this.wizard.message = { text: constants.ACCOUNT_ACCESS_ERROR(this.migrationStateModel._azureAccount, error) };
+				this.wizard.message = {
+					level: azdata.window.MessageLevel.Error,
+					text: constants.ACCOUNT_ACCESS_ERROR(this.migrationStateModel._azureAccount, error),
+				};
 			}
 
 			return false;

@@ -10,7 +10,7 @@ import { ServerConnection, SessionManager } from '@jupyterlab/services';
 import { JupyterSessionManager } from './jupyterSessionManager';
 import { LocalJupyterServerManager } from './jupyterServerManager';
 
-export class JupyterNotebookManager implements nb.NotebookManager, vscode.Disposable {
+export class JupyterExecuteManager implements nb.ExecuteManager, vscode.Disposable {
 	protected _serverSettings: ServerConnection.ISettings;
 	private _sessionManager: JupyterSessionManager;
 
@@ -20,9 +20,6 @@ export class JupyterNotebookManager implements nb.NotebookManager, vscode.Dispos
 			this.setServerSettings(this._serverManager.serverSettings);
 			this._sessionManager.installation = this._serverManager.instanceOptions.install;
 		});
-	}
-	public get contentManager(): nb.ContentManager {
-		return undefined;
 	}
 
 	public get sessionManager(): nb.SessionManager {

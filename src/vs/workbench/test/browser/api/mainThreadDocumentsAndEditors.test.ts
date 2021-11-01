@@ -28,6 +28,7 @@ import { TestNotificationService } from 'vs/platform/notification/test/common/te
 import { TestTextResourcePropertiesService, TestWorkingCopyFileService } from 'vs/workbench/test/common/workbenchTestServices';
 import { UriIdentityService } from 'vs/workbench/services/uriIdentity/common/uriIdentityService';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 
 suite('MainThreadDocumentsAndEditors', () => {
 
@@ -100,7 +101,10 @@ suite('MainThreadDocumentsAndEditors', () => {
 					return Promise.resolve('clipboard_contents');
 				}
 			},
-			new TestPathService()
+			new TestPathService(),
+			<INotebookService>{ // {{SQL CARBON EDIT}}
+				getSupportedFileExtensions: () => ['ipynb']
+			}
 		);
 	});
 

@@ -126,6 +126,16 @@
         "command": "mssql.showLogFile",
         "category": "MSSQL",
         "title": "%title.showLogFile%"
+      },
+      {
+        "command": "mssql.newTable",
+        "category": "MSSQL",
+        "title": "%title.newTable%"
+      },
+      {
+        "command": "mssql.designTable",
+        "category": "MSSQL",
+        "title": "%title.designTable%"
       }
     ],
     "outputChannels": [
@@ -426,6 +436,14 @@
         },
         {
           "command": "mssqlCluster.task.openClusterDashboard",
+          "when": "false"
+        },
+        {
+          "command": "mssql.newTable",
+          "when": "false"
+        },
+        {
+          "command": "mssql.designTable",
           "when": "false"
         }
       ],
@@ -1265,7 +1283,7 @@
     "find-remove": "1.2.1",
     "request": "^2.88.0",
     "request-light": "^0.3.0",
-    "@microsoft/ads-service-downloader": "0.2.2",
+    "@microsoft/ads-service-downloader": "0.2.3",
     "stream-meter": "^1.0.4",
     "through2": "^3.0.1",
     "tough-cookie": "^3.0.1",

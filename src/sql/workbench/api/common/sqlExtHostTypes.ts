@@ -381,7 +381,8 @@ export enum DataProviderType {
 	SerializationProvider = 'SerializationProvider',
 	IconProvider = 'IconProvider',
 	SqlAssessmentServicesProvider = 'SqlAssessmentServicesProvider',
-	DataGridProvider = 'DataGridProvider'
+	DataGridProvider = 'DataGridProvider',
+	TableDesignerProvider = 'TableDesignerProvider'
 }
 
 export enum DeclarativeDataType {
@@ -551,9 +552,13 @@ export class SqlThemeIcon {
 	}
 }
 
-export interface INotebookManagerDetails {
+export interface ISerializationManagerDetails {
 	handle: number;
 	hasContentManager: boolean;
+}
+
+export interface IExecuteManagerDetails {
+	handle: number;
 	hasServerManager: boolean;
 }
 
@@ -900,4 +905,29 @@ export enum TextType {
 	Error = 'Error',
 	UnorderedList = 'UnorderedList',
 	OrderedList = 'OrderedList'
+}
+
+export namespace designers {
+	export enum TableProperty {
+		Schema = 'schema',
+		Name = 'name',
+		Description = 'description',
+		Columns = 'columns',
+		Script = 'script'
+	}
+
+	export enum TableColumnProperty {
+		Name = 'name',
+		Type = 'type',
+		AllowNulls = 'allowNulls',
+		DefaultValue = 'defaultValue',
+		Length = 'length',
+		IsPrimaryKey = 'isPrimaryKey'
+	}
+
+	export enum DesignerEditType {
+		Add = 0,
+		Remove = 1,
+		Update = 2
+	}
 }

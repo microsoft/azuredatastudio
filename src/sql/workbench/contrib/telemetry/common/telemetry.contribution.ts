@@ -34,7 +34,7 @@ export class SqlTelemetryContribution extends Disposable implements IWorkbenchCo
 						'selectNextSuggestion'].some(id => id === e.commandId) &&
 						// Events from src\vs\editor\contrib\wordOperations\wordOperations.ts
 						!e.commandId.startsWith('cursor') &&
-						!e.commandId.startsWith('_vscode_delegate')) {
+						!e.commandId.startsWith('_')) { // Commands starting with _ are internal commands which generally aren't useful to us currently
 						// Note - this event is duplicated in extHostCommands to also ensure logging of all commands contributed by extensions
 						telemetryService.sendActionEvent(TelemetryView.Shell, TelemetryAction.adsCommandExecuted, e.commandId);
 					}

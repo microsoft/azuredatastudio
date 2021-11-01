@@ -158,9 +158,9 @@ export class PickPackagesPage extends BasePage {
 				this.requiredPackagesTable.data = requiredPkgVersions.map(pkg => [pkg.name, pkg.existingVersion ?? '-', pkg.requiredVersion]);
 				this.model.packagesToInstall = requiredPackages;
 			} else {
-				this.instance.showErrorMessage(localize('msgUnsupportedKernel', "Could not retrieve packages for kernel {0}", kernelName));
+				this.instance.showInfoMessage(localize('msgNoRequirementsForKernel', "No packages are required by default for the kernel '{0}'", kernelName));
 				this.requiredPackagesTable.data = [['-', '-', '-']];
-				this.model.packagesToInstall = undefined;
+				this.model.packagesToInstall = [];
 			}
 		} finally {
 			this.instance.wizard.doneButton.enabled = true;

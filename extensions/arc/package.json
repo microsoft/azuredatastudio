@@ -915,7 +915,7 @@
             "pages": [
               {
                 "title": "%arc.sql.wizard.page1.title%",
-                "labelWidth": "175px",
+                "labelWidth": "190px",
                 "inputWidth": "280px",
                 "sections": [
                   {
@@ -983,17 +983,30 @@
                     "fields": [
                       {
                         "type": "options",
-                        "label": "%arc.sql.replicas.label%",
-                        "description": "%arc.sql.replicas.description%",
+                        "label": "%arc.sql.replicas%",
+                        "description": "%arc.sql.high.availability.description%",
                         "required": true,
                         "variableName": "AZDATA_NB_VAR_SQL_REPLICAS",
                         "options": {
                           "values": [
-                            "1",
-                            "3"
+                            "%arc.sql.two.replicas%",
+                            "%arc.sql.three.replicas%"
                           ],
-                          "defaultValue": "1",
+                          "defaultValue": "%arc.sql.two.replicas%",
                           "optionsType": "radio"
+                        },
+                        "dynamicOptions":
+                        {
+                          "target": "AZDATA_NB_VAR_SQL_SERVICE_TIER",
+                          "alternates": [
+                            {
+                              "selection": "%arc.sql.service.tier.general.purpose%",
+                              "alternateValues": [
+                                "%arc.sql.one.replica%"
+                              ],
+                              "defaultValue": "%arc.sql.one.replica%"
+                            }
+                          ]
                         }
                       },
                       {
@@ -1004,6 +1017,31 @@
                         "required": false
                       },
                       {
+                        "label": "%arc.sql.volume.size.data.label%",
+                        "description": "%arc.sql.volume.size.data.description%",
+                        "variableName": "AZDATA_NB_VAR_SQL_VOLUME_SIZE_DATA",
+                        "type": "number",
+                        "defaultValue": "5",
+                        "min": 1,
+                        "required": true
+                      },
+                      {
+                        "label": "%arc.storage-class.datalogs.label%",
+                        "description": "%arc.sql.storage-class.datalogs.description%",
+                        "variableName": "AZDATA_NB_VAR_SQL_STORAGE_CLASS_DATALOGS",
+                        "type": "kube_storage_class",
+                        "required": false
+                      },
+                      {
+                        "label": "%arc.sql.volume.size.datalogs.label%",
+                        "description": "%arc.sql.volume.size.datalogs.description%",
+                        "variableName": "AZDATA_NB_VAR_SQL_VOLUME_SIZE_DATALOGS",
+                        "type": "number",
+                        "defaultValue": "5",
+                        "min": 1,
+                        "required": true
+                      },
+                      {
                         "label": "%arc.storage-class.logs.label%",
                         "description": "%arc.sql.storage-class.logs.description%",
                         "variableName": "AZDATA_NB_VAR_SQL_STORAGE_CLASS_LOGS",
@@ -1011,11 +1049,37 @@
                         "required": false
                       },
                       {
+                        "label": "%arc.sql.volume.size.logs.label%",
+                        "description": "%arc.sql.volume.size.logs.description%",
+                        "variableName": "AZDATA_NB_VAR_SQL_VOLUME_SIZE_LOGS",
+                        "type": "number",
+                        "defaultValue": "5",
+                        "min": 1,
+                        "required": true
+                      },
+                      {
+                        "label": "%arc.storage-class.backups.label%",
+                        "description": "%arc.sql.storage-class.backups.description%",
+                        "variableName": "AZDATA_NB_VAR_SQL_STORAGE_CLASS_BACKUPS",
+                        "type": "kube_storage_class",
+                        "required": false
+                      },
+                      {
+                        "label": "%arc.sql.volume.size.backups.label%",
+                        "description": "%arc.sql.volume.size.backups.description%",
+                        "variableName": "AZDATA_NB_VAR_SQL_VOLUME_SIZE_BACKUPS",
+                        "type": "number",
+                        "defaultValue": "5",
+                        "min": 1,
+                        "required": true
+                      },
+                      {
                         "label": "%arc.cores-request.label%",
                         "description": "%arc.sql.cores-request.description%",
                         "variableName": "AZDATA_NB_VAR_SQL_CORES_REQUEST",
                         "type": "number",
                         "min": 1,
+                        "defaultValue": 2,
                         "required": false,
                         "validations": [
                           {
@@ -1032,6 +1096,7 @@
                         "type": "number",
                         "min": 1,
                         "required": false,
+                        "defaultValue": 4,
                         "validations": [
                           {
                             "type": ">=",
@@ -1046,6 +1111,7 @@
                         "variableName": "AZDATA_NB_VAR_SQL_MEMORY_REQUEST",
                         "type": "number",
                         "min": 2,
+                        "defaultValue": 4,
                         "required": false,
                         "validations": [
                           {
@@ -1061,6 +1127,7 @@
                         "variableName": "AZDATA_NB_VAR_SQL_MEMORY_LIMIT",
                         "type": "number",
                         "min": 2,
+                        "defaultValue": 8,
                         "required": false,
                         "validations": [
                           {
@@ -1069,10 +1136,138 @@
                             "description": "%memory.limit.greater.than.or.equal.to.requested.memory%"
                           }
                         ]
+                      },
+                      {
+                        "type": "options",
+                        "label": "%arc.sql.service.tier.label%",
+                        "variableName": "AZDATA_NB_VAR_SQL_SERVICE_TIER",
+                        "description": "%arc.sql.service.tier.description%",
+                        "required": true,
+                        "options": {
+                          "values": [
+                            "%arc.sql.service.tier.business.critical%",
+                            "%arc.sql.service.tier.general.purpose%"
+                          ],
+                          "defaultValue": "%arc.sql.service.tier.business.critical%",
+                          "optionsType": "radio"
+                        }
+                      },
+                      {
+                        "type": "checkbox",
+                        "label": "%arc.sql.dev.use.label%",
+                        "variableName": "AZDATA_NB_VAR_SQL_DEV_USE",
+                        "description": "%arc.sql.dev.use.description%",
+                        "defaultValue": false
+                      },
+                      {
+                        "type": "checkbox",
+                        "label": "%arc.sql.license.type.label%",
+                        "variableName": "AZDATA_NB_VAR_SQL_LICENSE_TYPE",
+                        "description": "%arc.sql.license.type.description%",
+                        "defaultValue": false
+                      }
+                    ]
+                  },
+                  {
+                    "title": "%arc.sql.instance.retention.policy.title%",
+                    "fields": [
+                      {
+                        "type": "readonly_text",
+                        "label": "%arc.sql.pitr.retention.description%",
+                        "labelWidth": "600px",
+                        "enabled": true,
+                        "fieldHeight": "10px",
+                        "links": [
+                          {
+                            "text": "%arc.agreement.sql.help.text.learn.more%",
+                            "url": "https://docs.microsoft.com/azure/azure-arc/data/point-in-time-restore"
+                          }
+                        ]
+                      },
+                      {
+                        "label": "%arc.sql.retention.days.label%",
+                        "description": "%arc.sql.retention.days.description%",
+                        "variableName": "AZDATA_NB_VAR_SQL_RETENTION_DAYS",
+                        "type": "number",
+                        "min": 0,
+                        "max": 35,
+                        "required": false
+                      }
+                    ]
+                  },
+                  {
+                    "title": "%arc.sql.cost.summary%",
+                    "fields": [
+                      {
+                        "label": "%arc.sql.cost.summary.additional.charge%",
+                        "type": "readonly_text",
+                        "enabled": true,
+                        "labelWidth": "750px",
+                        "links": [
+                          {
+                            "text": "%arc.sql.cost.summary.pricing.details%",
+                            "url": "https://aka.ms/ArcSQLBilling"
+                          }
+                        ]
+                      },
+                      {
+                        "label": "%arc.sql.cost.summary.cost.vcore%",
+                        "type": "readonly_text",
+                        "isEvaluated": true,
+                        "defaultValue": "0.00 USD",
+                        "valueProvider": {
+                          "providerId": "params-to-cost-per-vcore",
+                          "triggerFields": [
+                            "AZDATA_NB_VAR_SQL_DEV_USE",
+                            "AZDATA_NB_VAR_SQL_SERVICE_TIER"
+                          ]
+                        }
+                      },
+                      {
+                        "label": "%arc.sql.cost.summary.vcore.limit%",
+                        "type": "readonly_text",
+                        "isEvaluated": true,
+                        "defaultValue": "x 4",
+                        "valueProvider": {
+                          "providerId": "params-to-vcore-limit",
+                          "triggerFields": [
+                            "AZDATA_NB_VAR_SQL_CORES_LIMIT"
+                          ]
+                        }
+                      },
+                      {
+                        "label": "%arc.sql.cost.summary.azure.hybrid.benefit.discount%",
+                        "type": "readonly_text",
+                        "isEvaluated": true,
+                        "defaultValue": "- 0",
+                        "valueProvider": {
+                          "providerId": "params-to-hybrid-benefit-discount",
+                          "triggerFields": [
+                            "AZDATA_NB_VAR_SQL_CORES_LIMIT",
+                            "AZDATA_NB_VAR_SQL_DEV_USE",
+                            "AZDATA_NB_VAR_SQL_SERVICE_TIER",
+                            "AZDATA_NB_VAR_SQL_LICENSE_TYPE"
+                          ]
+                        }
+                      },
+                      {
+                        "label": "%arc.sql.cost.summary.estimated.cost.per.month%",
+                        "type": "readonly_text",
+                        "defaultValue": "0.00 USD",
+                        "valueProvider": {
+                          "providerId": "params-to-estimated-cost",
+                          "triggerFields": [
+                            "AZDATA_NB_VAR_SQL_REPLICAS",
+                            "AZDATA_NB_VAR_SQL_CORES_LIMIT",
+                            "AZDATA_NB_VAR_SQL_DEV_USE",
+                            "AZDATA_NB_VAR_SQL_SERVICE_TIER",
+                            "AZDATA_NB_VAR_SQL_LICENSE_TYPE"
+                          ]
+                        }
                       }
                     ]
                   }
-                ]
+                 ]
               }
             ]
           },

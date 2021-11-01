@@ -18,12 +18,13 @@ export class FileNotebookInput extends NotebookInput {
 		title: string,
 		resource: URI,
 		textInput: FileEditorInput,
+		showActions: boolean,
 		@ITextModelService textModelService: ITextModelService,
 		@IInstantiationService instantiationService: IInstantiationService,
 		@INotebookService notebookService: INotebookService,
 		@IExtensionService extensionService: IExtensionService
 	) {
-		super(title, resource, textInput, textModelService, instantiationService, notebookService, extensionService);
+		super(title, resource, textInput, showActions, textModelService, instantiationService, notebookService, extensionService);
 	}
 
 	public override get textInput(): FileEditorInput {

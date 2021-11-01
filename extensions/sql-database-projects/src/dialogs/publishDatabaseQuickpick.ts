@@ -31,7 +31,7 @@ export async function getPublishDatabaseSettings(project: Project, promptForConn
 			reject();
 		});
 		quickPick.onDidChangeSelection(async items => {
-			if (items[0].label === constants.browseForProfile) {
+			if (items[0].label === constants.browseForProfileWithIcon) {
 				const locations = await promptForPublishProfile(project.projectFolderPath);
 				if (!locations) {
 					// Clear items so that this event will trigger again if they select the same item
@@ -208,6 +208,12 @@ export async function getPublishDatabaseSettings(project: Project, promptForConn
 */
 export async function launchPublishDatabaseQuickpick(project: Project, projectController: ProjectsController): Promise<void> {
 	const publishTarget = await launchPublishTargetOption();
+
+	// Return when user hits escape
+	if (!publishTarget) {
+		return undefined;
+	}
+
 	if (publishTarget === constants.publishToDockerContainer) {
 		await projectController.publishToDockerContainer(project);
 	} else {

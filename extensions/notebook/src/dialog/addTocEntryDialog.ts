@@ -7,10 +7,10 @@ import * as path from 'path';
 import { pathExists } from 'fs-extra';
 import * as loc from '../common/localizedConstants';
 import { IBookTocManager } from '../book/bookTocManager';
-import { confirmMessageDialog, FileExtension } from '../common/utils';
+import { confirmMessageDialog, FileExtension, BookTreeItemType } from '../common/utils';
 import { IPrompter } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
-import { BookTreeItem, BookTreeItemType } from '../book/bookTreeItem';
+import { BookTreeItem } from '../book/bookTreeItem';
 import { TocEntryPathHandler } from '../book/tocEntryPathHandler';
 
 export class AddTocEntryDialog {

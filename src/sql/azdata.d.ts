@@ -2182,11 +2182,11 @@ declare module 'azdata' {
 			/**
 			 * The token to use
 			 */
-			token: string,
+			token: string;
 			/**
 			 * What type of token this is (such as Bearer)
 			 */
-			tokenType?: string | undefined
+			tokenType?: string | undefined;
 		}
 
 		/**
@@ -2582,7 +2582,7 @@ declare module 'azdata' {
 		 * @param options Options to configure the editor
 		 * @param name The name used to identify the editor in telemetry
 		 */
-		export function createModelViewEditor(title: string, options?: ModelViewEditorOptions, name?: string,): ModelViewEditor;
+		export function createModelViewEditor(title: string, options?: ModelViewEditorOptions, name?: string): ModelViewEditor;
 
 		export interface ModelViewEditor extends window.ModelViewPanel {
 			/**
@@ -3575,13 +3575,13 @@ declare module 'azdata' {
 		fileContent?: string | undefined;
 
 		/**
-		* Specifies the type of button this is. Default is Normal.
-		*/
+		 * Specifies the type of button this is. Default is Normal.
+		 */
 		buttonType?: ButtonType;
 
 		/**
-		* Description text to display inside button element.
-		*/
+		 * Description text to display inside button element.
+		 */
 		description?: string;
 
 		/**
@@ -3592,7 +3592,7 @@ declare module 'azdata' {
 		/**
 		 * The file type filter used for the file input dialog box - only used when the button type is File
 		 */
-		fileType?: string
+		fileType?: string;
 	}
 
 	export interface LoadingComponentProperties extends ComponentProperties {
@@ -4429,6 +4429,31 @@ declare module 'azdata' {
 		export function getQueryDocument(fileUri: string): Thenable<QueryDocument>;
 	}
 
+	/**
+	 * Represents the tab of TabbedPanelComponent
+	 */
+	export interface Tab {
+		/**
+		 * Title of the tab
+		 */
+		title: string;
+
+		/**
+		 * Content component of the tab
+		 */
+		content: Component;
+
+		/**
+		 * Id of the tab
+		 */
+		id: string;
+
+		/**
+		 * Icon of the tab
+		 */
+		icon?: IconPath;
+	}
+
 	export interface DashboardTab extends Tab {
 		/**
 		 * Toolbar of the tab, optional.
@@ -4919,23 +4944,8 @@ declare module 'azdata' {
 			deleteCell(index: number): void;
 		}
 
-		/**
-		 * Register a notebook provider. The supported file types handled by this
-		 * provider are defined in the `package.json:
-		 * ```json
-		 * {
-		 *    "contributes": {
-		 *       "notebook.providers": [{
-		 *          "provider": "providername",
-		 *          "fileExtensions": ["FILEEXT"]
-		 *        }]
-		 *    }
-		 * }
-		 * ```
-		 * @param notebook provider
-		 * @returns disposable
-		 */
-		export function registerNotebookProvider(provider: NotebookProvider): vscode.Disposable;
+		export function registerSerializationProvider(provider: NotebookSerializationProvider): vscode.Disposable;
+		export function registerExecuteProvider(provider: NotebookExecuteProvider): vscode.Disposable;
 
 		export interface IStandardKernel {
 			readonly name: string;
@@ -4943,24 +4953,27 @@ declare module 'azdata' {
 			readonly connectionProviderIds: string[];
 		}
 
-		export interface NotebookProvider {
+		export interface NotebookSerializationProvider {
 			readonly providerId: string;
-			/**
-			 * @deprecated standardKernels will be removed in an upcoming release. Standard kernel contribution
-			 * should happen via JSON for extensions. Until this is removed, notebook providers can safely return an empty array.
-			 */
-			readonly standardKernels: IStandardKernel[];
-			getNotebookManager(notebookUri: vscode.Uri): Thenable<NotebookManager>;
+			getSerializationManager(notebookUri: vscode.Uri): Thenable<SerializationManager>;
+		}
+
+		export interface NotebookExecuteProvider {
+			readonly providerId: string;
+			getExecuteManager(notebookUri: vscode.Uri): Thenable<ExecuteManager>;
 			handleNotebookClosed(notebookUri: vscode.Uri): void;
 		}
 
-		export interface NotebookManager {
+		export interface SerializationManager {
 			/**
 			 * Manages reading and writing contents to/from files.
 			 * Files may be local or remote, with this manager giving them a chance to convert and migrate
 			 * from specific notebook file types to and from a standard type for this UI
 			 */
 			readonly contentManager: ContentManager;
+		}
+
+		export interface ExecuteManager {
 			/**
 			 * A SessionManager that handles starting, stopping and handling notifications around sessions.
 			 * Each notebook has 1 session associated with it, and the session is responsible
@@ -5009,7 +5022,7 @@ declare module 'azdata' {
 			/* Reads contents from a Uri representing a local or remote notebook and returns a
 			 * JSON object containing the cells and metadata about the notebook
 			 */
-			getNotebookContents(notebookUri: vscode.Uri): Thenable<INotebookContents>;
+			deserializeNotebook(contents: string): Thenable<INotebookContents>;
 
 			/**
 			 * Save a file.
@@ -5021,7 +5034,7 @@ declare module 'azdata' {
 			 * @returns A thenable which resolves with the file content model when the
 			 *   file is saved.
 			 */
-			save(notebookUri: vscode.Uri, notebook: INotebookContents): Thenable<INotebookContents>;
+			serializeNotebook(notebook: INotebookContents): Thenable<string>;
 		}
 
 		/**

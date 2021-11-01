@@ -242,6 +242,10 @@ export function instanceOfDynamicEnablementInfo(obj: any): obj is DynamicEnablem
 	return (<DynamicEnablementInfo>obj)?.target !== undefined && (<DynamicEnablementInfo>obj)?.value !== undefined;
 }
 
+export function instanceOfDynamicOptionsInfo(obj: any): obj is DynamicOptionsInfo {
+	return (<DynamicOptionsInfo>obj)?.target !== undefined && (<DynamicOptionsInfo>obj)?.alternates !== undefined;
+}
+
 export interface DialogInfoBase {
 	title: string;
 	name: string;
@@ -290,9 +294,20 @@ export interface DynamicEnablementInfo {
 	value: string
 }
 
+export interface DynamicOptionsInfo {
+	target: string,
+	alternates: DynamicOptionsAlternates[]
+}
+
+export interface DynamicOptionsAlternates {
+	selection: string,
+	alternateValues: string[],
+	defaultValue: string
+}
+
 export interface ValueProviderInfo {
 	providerId: string,
-	triggerField: string
+	triggerFields: string[]
 }
 
 export interface FieldInfoBase {
@@ -340,6 +355,7 @@ export interface FieldInfo extends SubFieldInfo, FieldInfoBase {
 	links?: azdata.LinkArea[];
 	editable?: boolean; // for editable drop-down,
 	enabled?: boolean | DynamicEnablementInfo;
+	dynamicOptions?: DynamicOptionsInfo;
 	isEvaluated?: boolean;
 	validations?: ValidationInfo[];
 	valueProvider?: ValueProviderInfo;
