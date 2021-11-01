@@ -9,17 +9,19 @@ import { GridActionProvider } from 'sql/workbench/contrib/editData/browser/gridA
 import { localize } from 'vs/nls';
 import { IAction, Action } from 'vs/base/common/actions';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export class EditDataGridActionProvider extends GridActionProvider {
 
 	constructor(
 		dataService: DataService,
-		configurationService: IConfigurationService,
 		selectAllCallback: (index: number) => void,
 		private _deleteRowCallback: (index: number) => void,
-		private _revertRowCallback: () => void
+		private _revertRowCallback: () => void,
+		@IConfigurationService configurationService: IConfigurationService,
+		@IInstantiationService instantiationService: IInstantiationService
 	) {
-		super(dataService, configurationService, selectAllCallback);
+		super(dataService, selectAllCallback, instantiationService, configurationService);
 	}
 	/**
 	 * Return actions given a click on an edit data grid
