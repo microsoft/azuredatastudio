@@ -31,7 +31,7 @@ export async function getPublishDatabaseSettings(project: Project, promptForConn
 			reject();
 		});
 		quickPick.onDidChangeSelection(async items => {
-			if (items[0].label === constants.browseForProfile) {
+			if (items[0].label === constants.browseForProfileWithIcon) {
 				const locations = await promptForPublishProfile(project.projectFolderPath);
 				if (!locations) {
 					// Clear items so that this event will trigger again if they select the same item

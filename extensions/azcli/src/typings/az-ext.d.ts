@@ -173,6 +173,17 @@ declare module 'az-ext' {
 		}
 	}
 
+	export interface SqlMiDbRestoreResult {
+		destDatabase: string, //testDbToRestore
+		earliestRestoreTime: string, // "2020-08-19T20:25:11Z"
+		latestRestoreTime: string,  //"2020-08-19T20:25:11Z"
+		message: string, //Dry run for restore operation succeeded.
+		observedGeneration: number, //1
+		restorePoint: string, // "2020-08-19T20:25:11Z"
+		sourceDatabase: string, //testDb
+		state: string //Completed
+	}
+
 	export interface PostgresServerShowResult {
 		apiVersion: string, // "arcdata.microsoft.com/v1alpha1"
 		kind: string, // "postgresql"
@@ -336,10 +347,11 @@ declare module 'az-ext' {
 						managedInstance?: string, //sqlmi1
 						time?: string, //2021-10-12T11:16:30.000Z
 						noWait?: boolean, //true
+						dryRun?: boolean, //true
 					},
 					namespace?: string,
 					additionalEnvVars?: AdditionalEnvVars
-				): Promise<AzOutput<void>>
+				): Promise<AzOutput<SqlMiDbRestoreResult>>
 			}
 		},
 		getPath(): Promise<string>,

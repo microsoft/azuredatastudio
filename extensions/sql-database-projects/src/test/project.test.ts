@@ -906,6 +906,10 @@ describe('Project: round trip updates', function (): void {
 		await baselines.loadBaselines();
 	});
 
+	beforeEach(function (): void {
+		sinon.restore();
+	});
+
 	it('Should update SSDT project to work in ADS', async function (): Promise<void> {
 		await testUpdateInRoundTrip(baselines.SSDTProjectFileBaseline, baselines.SSDTProjectAfterUpdateBaseline);
 	});
@@ -943,6 +947,29 @@ describe('Project: round trip updates', function (): void {
 
 		should(project.importedTargets.length).equal(3); // additional target should exist by default
 	});
+
+	it('Should not show update project warning message when opening msbuild sdk style project using Sdk node', async function (): Promise<void> {
+		await shouldNotShowUpdateWarning(baselines.newStyleProjectSdkNodeBaseline);
+	});
+
+	it('Should not show update project warning message when opening msbuild sdk style project using Project node with Sdk attribute', async function (): Promise<void> {
+		await shouldNotShowUpdateWarning(baselines.newStyleProjectSdkProjectAttributeBaseline);
+	});
+
+	it('Should not show update project warning message when opening msbuild sdk style project using Import node with Sdk attribute', async function (): Promise<void> {
+		await shouldNotShowUpdateWarning(baselines.newStyleProjectSdkImportAttributeBaseline);
+	});
+
+	async function shouldNotShowUpdateWarning(baselineFile: string): Promise<void> {
+		// setup test files
+		const folderPath = await testUtils.generateTestFolderPath();
+		const sqlProjPath = await testUtils.createTestSqlProjFile(baselineFile, folderPath);
+		const spy = sinon.spy(window, 'showWarningMessage');
+
+		const project = await Project.openProject(Uri.file(sqlProjPath).fsPath);
+		should(spy.notCalled).be.true();
+		should(project.isMsbuildSdkStyleProject).be.true();
+	}
 });
 
 async function testUpdateInRoundTrip(fileBeforeupdate: string, fileAfterUpdate: string): Promise<void> {
@@ -960,5 +987,3 @@ async function testUpdateInRoundTrip(fileBeforeupdate: string, fileAfterUpdate: 
 	should(stub.calledOnce).be.true('showWarningMessage should have been called exactly once');
 	sinon.restore();
 }
-
-
