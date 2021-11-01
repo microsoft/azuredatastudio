@@ -774,7 +774,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					column.width = isOfflineMigration ? WIZARD_TABLE_COLUMN_WIDTH_SMALL : WIZARD_TABLE_COLUMN_WIDTH;
 				});
 
-				if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.MigrationMode)) {
+				if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.DatabaseBackup)) {
 					if (this.migrationStateModel.savedInfo.networkContainerType === NetworkContainerType.NETWORK_SHARE) {
 						this._networkShareButton.checked = true;
 					} else {
@@ -784,7 +784,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					}
 				}
 
-				if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.MigrationMode)) {
+				if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.DatabaseBackup)) {
 					if (this.migrationStateModel.savedInfo.networkContainerType === NetworkContainerType.BLOB_CONTAINER) {
 						this._blobContainerButton.checked = true;
 					} else {
@@ -794,9 +794,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					}
 				}
 
-				if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.DatabaseBackup) {
-
-				} else {
+				if (!(this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.DatabaseBackup)) {
 					await this._targetDatabaseContainer.updateCssStyles({ 'display': 'none' });
 					await this._networkShareStorageAccountDetails.updateCssStyles({ 'display': 'none' });
 				}
