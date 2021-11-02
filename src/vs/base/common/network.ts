@@ -94,7 +94,7 @@ export namespace Schemas {
 }
 
 class RemoteAuthoritiesImpl {
-	private readonly _defaultWebPort = 80;
+	private readonly _defaultWebPort = 80; // {{SQL CARBON EDIT}}
 
 	private readonly _hosts: { [authority: string]: string | undefined; } = Object.create(null);
 	private readonly _ports: { [authority: string]: number | undefined; } = Object.create(null);
