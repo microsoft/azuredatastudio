@@ -5,6 +5,9 @@
 
 import { localize } from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
+//import { ICommandService } from 'vs/platform/commands/common/commands';
+//import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
+//import { ICompositeBar } from 'vs/workbench/browser/parts/compositeBarActions';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { IExtensionsWorkbenchService, VIEWLET_ID, IExtensionsViewPaneContainer } from 'vs/workbench/contrib/extensions/common/extensions';
 import { IExtensionRecommendation } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
@@ -12,6 +15,9 @@ import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { URI } from 'vs/base/common/uri';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { PagedModel } from 'vs/base/common/paging';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+//import { CompositeBar } from 'vs/workbench/browser/parts/compositeBar';
+//import { ICompositeBar } from 'vs/workbench/browser/parts/compositeBarActions';
 
 function getScenarioID(scenarioType: string) {
 	return 'workbench.extensions.action.show' + scenarioType;
@@ -83,5 +89,81 @@ export class OpenExtensionAuthoringDocsAction extends Action {
 
 	override async run(): Promise<void> {
 		await this.openerService.open(URI.parse(OpenExtensionAuthoringDocsAction.extensionAuthoringDocsURI));
+	}
+}
+
+export class HidePanel extends Action {
+	static readonly ID = 'workbench.extensions.action.hidePanel';
+	static readonly LABEL = localize('hidePanel', "Hide the panel...");
+
+	constructor(
+		id: string = HideExtensionMenu.ID,
+		label: string = HideExtensionMenu.LABEL,
+		@IWorkbenchLayoutService private readonly layoutService: IWorkbenchLayoutService
+	) {
+		super(id, label, 'panel');
+	}
+
+	override async run(): Promise<void> {
+		this.layoutService.setPanelHidden(true);
+	}
+}
+
+export class HideSettings extends Action {
+	static readonly ID = 'workbench.extensions.action.hideSettings';
+	static readonly LABEL = localize('hideSettings', "Hide the settings icon...");
+
+	constructor(
+		id: string = HideExtensionMenu.ID,
+		label: string = HideExtensionMenu.LABEL,
+	) {
+		super(id, label);
+	}
+
+	override async run(): Promise<void> {
+		let allActionItems = Array.from(document.getElementsByClassName('action-item icon'));
+		let manageElement = allActionItems.filter((el) => el.ariaLabel === 'Manage');
+		manageElement[0].parentNode.removeChild(manageElement[0]);
+	}
+}
+
+
+export class HideExtensionMenu extends Action {
+	static readonly ID = 'workbench.extensions.action.hideExtensionsMenu';
+	static readonly LABEL = localize('hideExtensionsMenu', "Hide the extension viewlet...");
+
+	constructor(
+		id: string = HideExtensionMenu.ID,
+		label: string = HideExtensionMenu.LABEL//,
+		//private compositeBar: ICompositeBar
+		//@ICommandService private readonly commandService: ICommandService,
+		//@IContextViewService private readonly contextViewService: IContextViewService,
+		//@ICompositeBar private readonly compositeBar: ICompositeBar
+	) {
+		super(id, label, 'panel');
+	}
+
+	override async run(): Promise<void> {
+		let array = ['Search', 'Explorer', 'Source Control', 'Extensions'];
+		let uiElement = document.querySelector('[aria-label="Active View Switcher"]');
+		let childRemoveIndices = [];
+		for (let i = 0; i < uiElement.children.length; i++) {
+			let aria = uiElement.children[i].ariaLabel;
+			for (let j = 0; j < array.length; j++) {
+				if (aria.includes(array[j])) {
+					childRemoveIndices.push(i);
+				}
+			}
+		}
+
+		for (let i = childRemoveIndices.length - 1; i >= 0; i--) {
+			uiElement.removeChild(uiElement.children[childRemoveIndices[i]]);
+		}
+
+		//await this.commandService.executeCommand('workbench.view.extensions');
+		//this.compositeBar.unpin('workbench.view.extensions');
+
+		//let bottomPanel = document.getElementById('workbench.parts.panel');
+		//bottomPanel.parentNode.removeChild(bottomPanel);
 	}
 }

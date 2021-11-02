@@ -3,12 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/commands';
+import { KeyMod, KeyCode, KeyChord } from 'vs/base/common/keyCodes';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IWorkbenchActionRegistry, Extensions as WorkbenchActionExtensions } from 'vs/workbench/common/actions';
 import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
 import { ExtensionsLabel, IExtensionGalleryService, IGalleryExtension } from 'vs/platform/extensionManagement/common/extensionManagement';
-import { OpenExtensionAuthoringDocsAction } from 'sql/workbench/contrib/extensions/browser/extensionsActions';
+import { OpenExtensionAuthoringDocsAction, HideExtensionMenu, HideSettings, HidePanel } from 'sql/workbench/contrib/extensions/browser/extensionsActions';
 import { localize } from 'vs/nls';
 import { deepClone } from 'vs/base/common/objects';
 
@@ -16,6 +17,33 @@ import { deepClone } from 'vs/base/common/objects';
 const actionRegistry = Registry.as<IWorkbenchActionRegistry>(WorkbenchActionExtensions.WorkbenchActions);
 actionRegistry.registerWorkbenchAction(SyncActionDescriptor.from(OpenExtensionAuthoringDocsAction), 'Extensions: Author an Extension...', ExtensionsLabel);
 
+actionRegistry.registerWorkbenchAction(
+	SyncActionDescriptor.create(
+		HideExtensionMenu,
+		HideExtensionMenu.ID,
+		HideExtensionMenu.LABEL,
+		{ primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyMod.CtrlCmd | KeyCode.KEY_V) }
+	),
+	HideExtensionMenu.LABEL
+);
+actionRegistry.registerWorkbenchAction(
+	SyncActionDescriptor.create(
+		HideSettings,
+		HideSettings.ID,
+		HideSettings.LABEL,
+		{ primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyMod.CtrlCmd | KeyCode.KEY_V) }
+	),
+	HideSettings.LABEL
+);
+actionRegistry.registerWorkbenchAction(
+	SyncActionDescriptor.create(
+		HidePanel,
+		HidePanel.ID,
+		HidePanel.LABEL,
+		{ primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyMod.CtrlCmd | KeyCode.KEY_V) }
+	),
+	HidePanel.LABEL
+);
 // Register Commands
 CommandsRegistry.registerCommand('azdata.extension.open', (accessor: ServicesAccessor, extension: { id: string }) => {
 	if (extension && extension.id) {
@@ -49,3 +77,27 @@ CommandsRegistry.registerCommand({
 		}
 	}
 });
+
+/*CommandsRegistry.registerCommand({
+	id: 'workbench.extensions.hideExtensionsMenu',
+	description: {
+		description: localize('workbench.extensions.hideExtensionsMenu.description', "Hide extension menu"),
+		args: [
+			{
+				name: localize('workbench.extensions.hideExtensionsMenu.arg.name', "Extension id"),
+				schema: {
+					'type': ['string']
+				}
+			}
+		]
+	},
+	handler: async (accessor, arg: string): Promise<IGalleryExtension> => {
+		const extensionGalleryService = accessor.get(IExtensionGalleryService);
+		const extension = await extensionGalleryService.getCompatibleExtension({ id: arg });
+		if (extension) {
+			return deepClone(extension);
+		} else {
+			throw new Error(localize('notFound', "Extension '{0}' not found.", arg));
+		}
+	}
+});*/
