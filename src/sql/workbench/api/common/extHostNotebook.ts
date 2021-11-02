@@ -13,9 +13,6 @@ import { URI, UriComponents } from 'vs/base/common/uri';
 
 import { ExtHostNotebookShape, MainThreadNotebookShape, SqlMainContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IExecuteManagerDetails, INotebookSessionDetails, INotebookKernelDetails, INotebookFutureDetails, FutureMessageType, ISerializationManagerDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { VSCodeExecuteProvider } from 'sql/workbench/api/common/vscodeExecuteProvider';
-import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
-import { VSCodeSerializationProvider } from 'sql/workbench/api/common/vscodeSerializationProvider';
 
 type Adapter = azdata.nb.NotebookSerializationProvider | azdata.nb.SerializationManager | azdata.nb.NotebookExecuteProvider | azdata.nb.ExecuteManager | azdata.nb.ISession | azdata.nb.IKernel | azdata.nb.IFuture;
 
@@ -236,10 +233,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		});
 	}
 
-	//#endregion
-
-	//#region APIs called by extensions
-	registerExecuteProvider(provider: azdata.nb.NotebookExecuteProvider): vscode.Disposable {
+	$registerExecuteProvider(provider: azdata.nb.NotebookExecuteProvider): vscode.Disposable {
 		if (!provider || !provider.providerId) {
 			throw new Error(localize('executeProviderRequired', "A NotebookExecuteProvider with valid providerId must be passed to this method"));
 		}
@@ -248,26 +242,13 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		return this._createDisposable(handle);
 	}
 
-	registerSerializationProvider(provider: azdata.nb.NotebookSerializationProvider): vscode.Disposable {
+	$registerSerializationProvider(provider: azdata.nb.NotebookSerializationProvider): vscode.Disposable {
 		if (!provider || !provider.providerId) {
 			throw new Error(localize('serializationProviderRequired', "A NotebookSerializationProvider with valid providerId must be passed to this method"));
 		}
 		const handle = this._addNewAdapter(provider);
 		this._proxy.$registerSerializationProvider(provider.providerId, handle);
 		return this._createDisposable(handle);
-	}
-
-	$registerNotebookSerializer(notebookType: string, serializer: vscode.NotebookSerializer, options?: vscode.NotebookDocumentContentOptions, registration?: vscode.NotebookRegistrationData): vscode.Disposable {
-		let serializationProvider = new VSCodeSerializationProvider(notebookType, serializer);
-		return this.registerSerializationProvider(serializationProvider);
-	}
-
-	$createNotebookController(extension: IExtensionDescription, id: string, viewType: string, label: string, handler?: (cells: vscode.NotebookCell[], notebook: vscode.NotebookDocument, controller: vscode.NotebookController) => void | Thenable<void>, rendererScripts?: vscode.NotebookRendererScript[]): vscode.NotebookController {
-		// Have to create a notebook controller through the proxy, since it uses the notebook service.
-		let controller = this._proxy.$createNotebookController(extension, id, viewType, label, handler, rendererScripts);
-		let executeProvider = new VSCodeExecuteProvider(controller);
-		this.registerExecuteProvider(executeProvider);
-		return controller;
 	}
 	//#endregion
 

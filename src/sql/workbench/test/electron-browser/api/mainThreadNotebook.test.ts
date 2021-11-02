@@ -183,6 +183,12 @@ suite('MainThreadNotebook Tests', () => {
 });
 
 class ExtHostNotebookStub implements ExtHostNotebookShape {
+	$registerExecuteProvider(provider: azdata.nb.NotebookExecuteProvider): Disposable {
+		throw new Error('Method not implemented.');
+	}
+	$registerSerializationProvider(provider: azdata.nb.NotebookSerializationProvider): Disposable {
+		throw new Error('Method not implemented.');
+	}
 	$registerNotebookSerializer(notebookType: string, serializer: NotebookSerializer, options?: NotebookDocumentContentOptions, registration?: NotebookRegistrationData): Disposable {
 		throw new Error('Method not implemented.');
 	}

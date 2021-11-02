@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import type * as vscode from 'vscode';
 import { SqlExtHostContext, SqlMainContext, ExtHostNotebookShape, MainThreadNotebookShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { Disposable } from 'vs/base/common/lifecycle';
@@ -18,8 +19,9 @@ import { Deferred } from 'sql/base/common/promise';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import type { FutureInternal } from 'sql/workbench/services/notebook/browser/interfaces';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
-import { NotebookCell, NotebookDocument, NotebookController, NotebookRendererScript } from 'vscode';
 import { ADSNotebookController } from 'sql/workbench/api/browser/adsNotebookController';
+import { VSCodeSerializationProvider } from 'sql/workbench/api/common/vscodeSerializationProvider';
+import { VSCodeExecuteProvider } from 'sql/workbench/api/common/vscodeExecuteProvider';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadNotebook)
 export class MainThreadNotebook extends Disposable implements MainThreadNotebookShape {
@@ -101,8 +103,22 @@ export class MainThreadNotebook extends Disposable implements MainThreadNotebook
 		}
 	}
 
-	public $createNotebookController(extension: IExtensionDescription, id: string, viewType: string, label: string, handler?: (cells: NotebookCell[], notebook: NotebookDocument, controller: NotebookController) => void | Thenable<void>, rendererScripts?: NotebookRendererScript[]): NotebookController {
-		return new ADSNotebookController(extension, id, viewType, label, this.notebookService, handler, extension.enableProposedApi ? rendererScripts : undefined);
+	// public $createNotebookController(extension: IExtensionDescription, id: string, viewType: string, label: string, handler?: (cells: NotebookCell[], notebook: NotebookDocument, controller: NotebookController) => void | Thenable<void>, rendererScripts?: NotebookRendererScript[]): NotebookController {
+	// 	return new ADSNotebookController(extension, id, viewType, label, this.notebookService, handler, extension.enableProposedApi ? rendererScripts : undefined);
+	// }
+
+
+	$registerNotebookSerializer(notebookType: string, serializer: vscode.NotebookSerializer, options?: vscode.NotebookDocumentContentOptions, registration?: vscode.NotebookRegistrationData): vscode.Disposable {
+		let serializationProvider = new VSCodeSerializationProvider(notebookType, serializer);
+		return this._proxy.$registerSerializationProvider(serializationProvider);
+	}
+
+	$createNotebookController(extension: IExtensionDescription, id: string, viewType: string, label: string, handler?: (cells: vscode.NotebookCell[], notebook: vscode.NotebookDocument, controller: vscode.NotebookController) => void | Thenable<void>, rendererScripts?: vscode.NotebookRendererScript[]): vscode.NotebookController {
+		// Have to create a notebook controller through the proxy, since it uses the notebook service.
+		let controller = new ADSNotebookController(extension, id, viewType, label, this.notebookService, handler, extension.enableProposedApi ? rendererScripts : undefined);
+		let executeProvider = new VSCodeExecuteProvider(controller);
+		this._proxy.$registerExecuteProvider(executeProvider);
+		return controller;
 	}
 	//#endregion
 }

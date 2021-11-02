@@ -887,6 +887,9 @@ export interface MainThreadQueryEditorShape extends IDisposable {
 }
 
 export interface ExtHostNotebookShape {
+	// Provider registration APIs
+	$registerExecuteProvider(provider: azdata.nb.NotebookExecuteProvider): vscode.Disposable;
+	$registerSerializationProvider(provider: azdata.nb.NotebookSerializationProvider): vscode.Disposable;
 
 	/**
 	 * Looks up a notebook manager for a given notebook URI
@@ -926,10 +929,6 @@ export interface ExtHostNotebookShape {
 	// Future APIs
 	$sendInputReply(futureId: number, content: azdata.nb.IInputReply): void;
 	$disposeFuture(futureId: number): void;
-
-	// VSCode notebook compatibility APIs
-	$registerNotebookSerializer(notebookType: string, serializer: vscode.NotebookSerializer, options?: vscode.NotebookDocumentContentOptions, registration?: vscode.NotebookRegistrationData): vscode.Disposable;
-	$createNotebookController(extension: IExtensionDescription, id: string, viewType: string, label: string, handler?: (cells: vscode.NotebookCell[], notebook: vscode.NotebookDocument, controller: vscode.NotebookController) => void | Thenable<void>, rendererScripts?: vscode.NotebookRendererScript[]): vscode.NotebookController;
 }
 
 export interface MainThreadNotebookShape extends IDisposable {
@@ -941,6 +940,7 @@ export interface MainThreadNotebookShape extends IDisposable {
 	$onFutureDone(futureId: number, done: INotebookFutureDone): void;
 
 	// VSCode notebook compatibility APIs
+	$registerNotebookSerializer(notebookType: string, serializer: vscode.NotebookSerializer, options?: vscode.NotebookDocumentContentOptions, registration?: vscode.NotebookRegistrationData): vscode.Disposable;
 	$createNotebookController(extension: IExtensionDescription, id: string, viewType: string, label: string, handler?: (cells: vscode.NotebookCell[], notebook: vscode.NotebookDocument, controller: vscode.NotebookController) => void | Thenable<void>, rendererScripts?: vscode.NotebookRendererScript[]): vscode.NotebookController;
 }
 
