@@ -15,6 +15,12 @@
   "activationEvents": [
     "*"
   ],
+	"capabilities": {
+    "virtualWorkspaces": false,
+    "untrustedWorkspaces": {
+      "supported": true
+    }
+	},
   "repository": {
 		"type": "git",
 		"url": "https://github.com/Microsoft/azuredatastudio.git"
