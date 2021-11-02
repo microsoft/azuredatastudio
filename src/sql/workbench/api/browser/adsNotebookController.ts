@@ -28,7 +28,7 @@ export class ADSNotebookController implements vscode.NotebookController {
 	private readonly _onDidChangeSelection = new Emitter<SelectionChangedEvent>();
 	private readonly _onDidReceiveMessage = new Emitter<MessageReceivedEvent>();
 
-	public readonly languagesAdded = new Deferred<void>();
+	private readonly _languagesAdded = new Deferred<void>();
 
 	constructor(
 		private _extension: IExtensionDescription,
@@ -47,6 +47,10 @@ export class ADSNotebookController implements vscode.NotebookController {
 			label: this._label || this._extension.identifier.value,
 			preloads: preloads ? preloads.map(extHostTypeConverters.NotebookRendererScript.from) : []
 		};
+	}
+
+	public get languagesAdded(): Promise<void> {
+		return this._languagesAdded.promise;
 	}
 
 	public get id(): string { return this._id; }
@@ -92,7 +96,7 @@ export class ADSNotebookController implements vscode.NotebookController {
 	public set supportedLanguages(value: string[]) {
 		this._kernelData.supportedLanguages = value;
 		notebookRegistry.updateProviderDescriptionLanguages(this._viewType, value);
-		this.languagesAdded.resolve();
+		this._languagesAdded.resolve();
 	}
 
 	public get supportsExecutionOrder(): boolean {
