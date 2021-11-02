@@ -274,8 +274,12 @@ class VSCodeSessionManager implements azdata.nb.SessionManager {
 class VSCodeExecuteManager implements azdata.nb.ExecuteManager {
 	private readonly _sessionManager: azdata.nb.SessionManager;
 
-	constructor(controller: vscode.NotebookController) {
-		this._sessionManager = new VSCodeSessionManager(controller);
+	constructor(private readonly _controller: vscode.NotebookController) {
+		this._sessionManager = new VSCodeSessionManager(_controller);
+	}
+
+	public get providerId(): string {
+		return this._controller.notebookType;
 	}
 
 	public get sessionManager(): azdata.nb.SessionManager {
@@ -288,14 +292,12 @@ class VSCodeExecuteManager implements azdata.nb.ExecuteManager {
 }
 
 export class VSCodeExecuteProvider implements azdata.nb.NotebookExecuteProvider {
+	public readonly providerId: string;
 	private readonly _executeManager: azdata.nb.ExecuteManager;
 
 	constructor(private readonly _controller: vscode.NotebookController) {
 		this._executeManager = new VSCodeExecuteManager(this._controller);
-	}
-
-	public get providerId(): string {
-		return this._controller.notebookType;
+		this.providerId = this._controller.notebookType;
 	}
 
 	public getExecuteManager(notebookUri: vscode.Uri): Thenable<azdata.nb.ExecuteManager> {

@@ -127,12 +127,8 @@ class VSCodeSerializationManager implements azdata.nb.SerializationManager {
 export class VSCodeSerializationProvider implements azdata.nb.NotebookSerializationProvider {
 	private _manager: VSCodeSerializationManager;
 
-	constructor(private readonly _providerId: string, serializer: vscode.NotebookSerializer) {
+	constructor(public readonly providerId: string, serializer: vscode.NotebookSerializer) {
 		this._manager = new VSCodeSerializationManager(serializer);
-	}
-
-	public get providerId(): string {
-		return this._providerId;
 	}
 
 	public getSerializationManager(notebookUri: vscode.Uri): Thenable<azdata.nb.SerializationManager> {

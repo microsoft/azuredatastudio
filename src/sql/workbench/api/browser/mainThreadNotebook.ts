@@ -20,8 +20,8 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import type { FutureInternal } from 'sql/workbench/services/notebook/browser/interfaces';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { ADSNotebookController } from 'sql/workbench/api/browser/adsNotebookController';
-import { VSCodeSerializationProvider } from 'sql/workbench/api/common/vscodeSerializationProvider';
-import { VSCodeExecuteProvider } from 'sql/workbench/api/common/vscodeExecuteProvider';
+import { VSCodeSerializationProvider } from 'sql/workbench/api/browser/vscodeSerializationProvider';
+import { VSCodeExecuteProvider } from 'sql/workbench/api/browser/vscodeExecuteProvider';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadNotebook)
 export class MainThreadNotebook extends Disposable implements MainThreadNotebookShape {
