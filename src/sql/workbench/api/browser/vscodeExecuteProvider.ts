@@ -225,7 +225,7 @@ class VSCodeSessionManager implements azdata.nb.SessionManager {
 	}
 
 	public get ready(): Thenable<void> {
-		return this._controller.languagesAdded;
+		return this._controller.languagesAdded.promise;
 	}
 
 	public get specs(): azdata.nb.IAllKernels {
