@@ -85,7 +85,7 @@ export class ADSNotebookController implements vscode.NotebookController {
 		this._kernelData.description = value;
 	}
 
-	public get supportedLanguages(): string[] {
+	public get supportedLanguages(): string[] | undefined {
 		return this._kernelData.supportedLanguages;
 	}
 
