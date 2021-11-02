@@ -12,6 +12,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { INotebookProviderRegistry, NotebookProviderRegistryId } from 'sql/workbench/services/notebook/common/notebookRegistry';
 import { INotebookEditor, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { Deferred } from 'sql/base/common/promise';
 
 const notebookRegistry = Registry.as<INotebookProviderRegistry>(NotebookProviderRegistryId);
 
@@ -26,6 +27,8 @@ export class ADSNotebookController implements vscode.NotebookController {
 
 	private readonly _onDidChangeSelection = new Emitter<SelectionChangedEvent>();
 	private readonly _onDidReceiveMessage = new Emitter<MessageReceivedEvent>();
+
+	public readonly languagesAdded = new Deferred<void>();
 
 	constructor(
 		private _extension: IExtensionDescription,
@@ -89,6 +92,7 @@ export class ADSNotebookController implements vscode.NotebookController {
 	public set supportedLanguages(value: string[]) {
 		this._kernelData.supportedLanguages = value;
 		notebookRegistry.updateProviderDescriptionLanguages(this._viewType, value);
+		this.languagesAdded.resolve();
 	}
 
 	public get supportsExecutionOrder(): boolean {

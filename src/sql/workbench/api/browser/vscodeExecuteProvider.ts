@@ -5,6 +5,7 @@
 
 import type * as vscode from 'vscode';
 import type * as azdata from 'azdata';
+import { ADSNotebookController } from 'sql/workbench/api/browser/adsNotebookController';
 
 class VSCodeFuture implements azdata.nb.IFuture {
 	private _inProgress = true;
@@ -68,7 +69,7 @@ class VSCodeKernel implements azdata.nb.IKernel {
 	private readonly _info: azdata.nb.IInfoReply;
 	private readonly _kernelSpec: azdata.nb.IKernelSpec;
 
-	constructor(private readonly _controller: vscode.NotebookController, private readonly _options: azdata.nb.ISessionOptions, language: string) {
+	constructor(private readonly _controller: ADSNotebookController, private readonly _options: azdata.nb.ISessionOptions, language: string) {
 		this._id = this._options.kernelId ?? (VSCodeKernel.kernelId++).toString();
 		this._name = this._options.kernelName ?? this._controller.notebookType;
 		this._info = {
@@ -160,7 +161,7 @@ class VSCodeKernel implements azdata.nb.IKernel {
 class VSCodeSession implements azdata.nb.ISession {
 	private _kernel: VSCodeKernel;
 	private _defaultKernelLoaded = false;
-	constructor(controller: vscode.NotebookController, private readonly _options: azdata.nb.ISessionOptions, language: string) {
+	constructor(controller: ADSNotebookController, private readonly _options: azdata.nb.ISessionOptions, language: string) {
 		this._kernel = new VSCodeKernel(controller, this._options, language);
 	}
 
@@ -216,15 +217,15 @@ class VSCodeSession implements azdata.nb.ISession {
 class VSCodeSessionManager implements azdata.nb.SessionManager {
 	private _sessions: azdata.nb.ISession[] = [];
 
-	constructor(private readonly _controller: vscode.NotebookController) {
+	constructor(private readonly _controller: ADSNotebookController) {
 	}
 
 	public get isReady(): boolean {
-		return true;
+		return this._controller.supportedLanguages?.length > 0;
 	}
 
 	public get ready(): Thenable<void> {
-		return Promise.resolve();
+		return this._controller.languagesAdded;
 	}
 
 	public get specs(): azdata.nb.IAllKernels {
@@ -272,7 +273,7 @@ class VSCodeExecuteManager implements azdata.nb.ExecuteManager {
 	public readonly providerId: string;
 	private readonly _sessionManager: azdata.nb.SessionManager;
 
-	constructor(controller: vscode.NotebookController) {
+	constructor(controller: ADSNotebookController) {
 		this.providerId = controller.notebookType;
 		this._sessionManager = new VSCodeSessionManager(controller);
 	}
@@ -290,7 +291,7 @@ export class VSCodeExecuteProvider implements azdata.nb.NotebookExecuteProvider 
 	public readonly providerId: string;
 	private readonly _executeManager: azdata.nb.ExecuteManager;
 
-	constructor(controller: vscode.NotebookController) {
+	constructor(controller: ADSNotebookController) {
 		this._executeManager = new VSCodeExecuteManager(controller);
 		this.providerId = controller.notebookType;
 	}
