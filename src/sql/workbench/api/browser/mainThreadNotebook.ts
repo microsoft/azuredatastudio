@@ -109,7 +109,7 @@ export class MainThreadNotebook extends Disposable implements MainThreadNotebook
 	}
 
 	$createNotebookController(extension: IExtensionDescription, id: string, viewType: string, label: string, handler?: (cells: vscode.NotebookCell[], notebook: vscode.NotebookDocument, controller: vscode.NotebookController) => void | Thenable<void>, rendererScripts?: vscode.NotebookRendererScript[]): vscode.NotebookController {
-		let controller = new ADSNotebookController(extension, id, viewType, label, this.notebookService, handler, extension.enableProposedApi ? rendererScripts : undefined);
+		let controller = new ADSNotebookController(extension, id, viewType, label, undefined, handler, extension.enableProposedApi ? rendererScripts : undefined);
 		let executeProvider = new VSCodeExecuteProvider(controller);
 		this._register(this._proxy.$registerExecuteProvider(executeProvider));
 		return controller;
