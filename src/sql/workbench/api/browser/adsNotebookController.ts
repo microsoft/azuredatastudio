@@ -4,10 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import type * as vscode from 'vscode';
-// import type * as azdata from 'azdata';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { INotebookKernelDto2 } from 'vs/workbench/api/common/extHost.protocol';
-import { Emitter } from 'vs/base/common/event';
+import { Emitter, Event } from 'vs/base/common/event';
 import * as extHostTypeConverters from 'vs/workbench/api/common/extHostTypeConverters';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { INotebookProviderRegistry, NotebookProviderRegistryId } from 'sql/workbench/services/notebook/common/notebookRegistry';
@@ -16,12 +15,17 @@ import { ICellModel } from 'sql/workbench/services/notebook/browser/models/model
 
 const notebookRegistry = Registry.as<INotebookProviderRegistry>(NotebookProviderRegistryId);
 
+type SelectionChangedEvent = { selected: boolean, notebook: vscode.NotebookDocument; };
+type MessageReceivedEvent = { editor: vscode.NotebookEditor, message: any; };
+type ExecutionHandler = (cells: vscode.NotebookCell[], notebook: vscode.NotebookDocument, controller: vscode.NotebookController) => void | Thenable<void>;
+type InterruptHandler = (notebook: vscode.NotebookDocument) => void | Thenable<void>;
+
 export class ADSNotebookController implements vscode.NotebookController {
 	private readonly _kernelData: INotebookKernelDto2;
 	private _interruptHandler: (notebook: vscode.NotebookDocument) => void | Thenable<void>;
 
-	private readonly _onDidChangeSelection = new Emitter<{ selected: boolean, notebook: vscode.NotebookDocument; }>();
-	private readonly _onDidReceiveMessage = new Emitter<{ editor: vscode.NotebookEditor, message: any; }>();
+	private readonly _onDidChangeSelection = new Emitter<SelectionChangedEvent>();
+	private readonly _onDidReceiveMessage = new Emitter<MessageReceivedEvent>();
 
 	constructor(
 		private _extension: IExtensionDescription,
@@ -29,7 +33,7 @@ export class ADSNotebookController implements vscode.NotebookController {
 		private _viewType: string,
 		private _label: string,
 		private _notebookService: INotebookService,
-		private _handler?: (cells: vscode.NotebookCell[], notebook: vscode.NotebookDocument, controller: vscode.NotebookController) => void | Thenable<void>,
+		private _handler?: ExecutionHandler,
 		preloads?: vscode.NotebookRendererScript[]
 	) {
 		this._kernelData = {
@@ -42,76 +46,76 @@ export class ADSNotebookController implements vscode.NotebookController {
 		};
 	}
 
-	public get id() { return this._id; }
+	public get id(): string { return this._id; }
 
-	public get notebookType() { return this._viewType; }
+	public get notebookType(): string { return this._viewType; }
 
-	public get onDidChangeSelectedNotebooks() {
+	public get onDidChangeSelectedNotebooks(): Event<SelectionChangedEvent> {
 		return this._onDidChangeSelection.event;
 	}
 
-	public get onDidReceiveMessage() {
+	public get onDidReceiveMessage(): Event<MessageReceivedEvent> {
 		return this._onDidReceiveMessage.event;
 	}
 
-	public get label() {
+	public get label(): string {
 		return this._kernelData.label;
 	}
 
-	public set label(value) {
+	public set label(value: string) {
 		this._kernelData.label = value ?? this._extension.displayName ?? this._extension.name;
 	}
 
-	public get detail() {
+	public get detail(): string {
 		return this._kernelData.detail ?? '';
 	}
 
-	public set detail(value) {
+	public set detail(value: string) {
 		this._kernelData.detail = value;
 	}
 
-	public get description() {
+	public get description(): string {
 		return this._kernelData.description ?? '';
 	}
 
-	public set description(value) {
+	public set description(value: string) {
 		this._kernelData.description = value;
 	}
 
-	public get supportedLanguages() {
+	public get supportedLanguages(): string[] {
 		return this._kernelData.supportedLanguages;
 	}
 
-	public set supportedLanguages(value) {
+	public set supportedLanguages(value: string[]) {
 		this._kernelData.supportedLanguages = value;
 		notebookRegistry.updateProviderDescriptionLanguages(this._viewType, value);
 	}
 
-	public get supportsExecutionOrder() {
+	public get supportsExecutionOrder(): boolean {
 		return this._kernelData.supportsExecutionOrder ?? false;
 	}
 
-	public set supportsExecutionOrder(value) {
+	public set supportsExecutionOrder(value: boolean) {
 		this._kernelData.supportsExecutionOrder = value;
 	}
 
-	public get rendererScripts() {
+	public get rendererScripts(): vscode.NotebookRendererScript[] {
 		return this._kernelData.preloads ? this._kernelData.preloads.map(extHostTypeConverters.NotebookRendererScript.to) : [];
 	}
 
-	public get executeHandler() {
+	public get executeHandler(): ExecutionHandler {
 		return this._handler;
 	}
 
-	public set executeHandler(value) {
+	public set executeHandler(value: ExecutionHandler) {
 		this._handler = value;
 	}
 
-	public get interruptHandler() {
+	public get interruptHandler(): InterruptHandler {
 		return this._interruptHandler;
 	}
 
-	public set interruptHandler(value) {
+	public set interruptHandler(value: InterruptHandler) {
 		this._interruptHandler = value;
 		this._kernelData.supportsInterrupt = Boolean(value);
 	}
