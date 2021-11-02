@@ -39,14 +39,14 @@ export async function readPublishProfile(profileUri: vscode.Uri): Promise<Publis
  */
 export async function load(profileUri: vscode.Uri, dacfxService: utils.IDacFxService): Promise<PublishProfile> {
 	const profileText = await fs.readFile(profileUri.fsPath);
-	const profileXmlDoc = new xmldom.DOMParser().parseFromString(profileText.toString());
+	const profileXmlDoc: Document = new xmldom.DOMParser().parseFromString(profileText.toString());
 
 	// read target database name
 	let targetDbName: string = '';
 	let targetDatabaseNameCount = profileXmlDoc.documentElement.getElementsByTagName(constants.targetDatabaseName).length;
 	if (targetDatabaseNameCount > 0) {
 		// if there is more than one TargetDatabaseName nodes, SSDT uses the name in the last one so we'll do the same here
-		targetDbName = profileXmlDoc.documentElement.getElementsByTagName(constants.targetDatabaseName)[targetDatabaseNameCount - 1].textContent;
+		targetDbName = profileXmlDoc.documentElement.getElementsByTagName(constants.targetDatabaseName)[targetDatabaseNameCount - 1].textContent!;
 	}
 
 	const connectionInfo = await readConnectionString(profileXmlDoc);
