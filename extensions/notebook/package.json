@@ -13,6 +13,12 @@
   "activationEvents": [
     "*"
   ],
+	"capabilities": {
+    "virtualWorkspaces": false,
+    "untrustedWorkspaces": {
+      "supported": true
+    }
+	},
   "contributes": {
     "configuration": {
       "type": "object",
