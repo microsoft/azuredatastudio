@@ -29,6 +29,12 @@
     "Microsoft.mssql",
     "Microsoft.schema-compare"
   ],
+	"capabilities": {
+    "virtualWorkspaces": false,
+    "untrustedWorkspaces": {
+      "supported": true
+    }
+	},
   "contributes": {
     "projects": [
       "sqlproj"
