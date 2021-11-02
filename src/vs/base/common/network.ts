@@ -136,7 +136,7 @@ class RemoteAuthoritiesImpl {
 		}
 		return URI.from({
 			scheme: platform.isWeb ? this._preferredWebSchema : Schemas.vscodeRemoteResource,
-			authority: platform.isWeb && port === this._defaultWebPort ? `${host}` : `${host}:${port}`, // {{SQL CARBON EDIT}} appending port to authority causes same-origin-policy violation in web mode.
+			authority: platform.isWeb && port === this._defaultWebPort ? `${host}` : `${host}:${port}`, // {{SQL CARBON EDIT}} addresses same-origin-policy violation in web mode when port number is in authority, but not in URI.
 			path: `/vscode-remote-resource`,
 			query
 		});
