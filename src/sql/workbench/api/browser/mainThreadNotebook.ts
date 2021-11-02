@@ -103,11 +103,6 @@ export class MainThreadNotebook extends Disposable implements MainThreadNotebook
 		}
 	}
 
-	// public $createNotebookController(extension: IExtensionDescription, id: string, viewType: string, label: string, handler?: (cells: NotebookCell[], notebook: NotebookDocument, controller: NotebookController) => void | Thenable<void>, rendererScripts?: NotebookRendererScript[]): NotebookController {
-	// 	return new ADSNotebookController(extension, id, viewType, label, this.notebookService, handler, extension.enableProposedApi ? rendererScripts : undefined);
-	// }
-
-
 	$registerNotebookSerializer(notebookType: string, serializer: vscode.NotebookSerializer, options?: vscode.NotebookDocumentContentOptions, registration?: vscode.NotebookRegistrationData): vscode.Disposable {
 		let serializationProvider = new VSCodeSerializationProvider(notebookType, serializer);
 		return this._proxy.$registerSerializationProvider(serializationProvider);
