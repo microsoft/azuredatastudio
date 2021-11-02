@@ -112,7 +112,7 @@ export class MainThreadNotebook extends Disposable implements MainThreadNotebook
 		// Have to create a notebook controller through the proxy, since it uses the notebook service.
 		let controller = new ADSNotebookController(extension, id, viewType, label, this.notebookService, handler, extension.enableProposedApi ? rendererScripts : undefined);
 		let executeProvider = new VSCodeExecuteProvider(controller);
-		this._proxy.$registerExecuteProvider(executeProvider);
+		this._register(this._proxy.$registerExecuteProvider(executeProvider));
 		return controller;
 	}
 	//#endregion
