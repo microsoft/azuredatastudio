@@ -888,6 +888,9 @@ export interface MainThreadQueryEditorShape extends IDisposable {
 
 export interface ExtHostNotebookShape {
 	// Provider registration APIs
+	//
+	// Note: Never call these methods from their MainThreadNotebook equivalents, since that will cause a recursive loop.
+	// These methods are only exposed here to allow for Extension API redirection for VSCode Notebooks.
 	$registerExecuteProvider(provider: azdata.nb.NotebookExecuteProvider): vscode.Disposable;
 	$registerSerializationProvider(provider: azdata.nb.NotebookSerializationProvider): vscode.Disposable;
 
