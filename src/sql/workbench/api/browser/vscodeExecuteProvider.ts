@@ -154,9 +154,6 @@ class VSCodeKernel implements azdata.nb.IKernel {
 
 	public async interrupt(): Promise<void> {
 		// TODO: implement
-		// if (this._controller.interruptHandler) {
-		// 	await this._controller.interruptHandler(undefined);
-		// }
 	}
 }
 
@@ -267,7 +264,7 @@ class VSCodeSessionManager implements azdata.nb.SessionManager {
 	}
 
 	public dispose(): void {
-		this._controller.dispose();
+		// No-op
 	}
 }
 
