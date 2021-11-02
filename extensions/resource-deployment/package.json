@@ -2,7 +2,7 @@
   "name": "resource-deployment",
   "displayName": "%extension-displayName%",
   "description": "%extension-description%",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
