@@ -125,12 +125,12 @@ export class Project implements ISqlProject {
 
 		// glob style getting files and folders for new msbuild sdk style projects
 		if (this._isMsbuildSdkStyleProject) {
-			const files = await utils.getSqlFilesInFolder(this.projectFolderPath);
+			const files = await utils.getSqlFilesInFolder(this.projectFolderPath, true);
 			files.forEach(f => {
 				this._files.push(this.createFileProjectEntry(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(f)), EntryType.File));
 			});
 
-			const folders = await utils.getFoldersInFolder(this.projectFolderPath);
+			const folders = await utils.getFoldersInFolder(this.projectFolderPath, true);
 			folders.forEach(f => {
 				this._files.push(this.createFileProjectEntry(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(f)), EntryType.Folder));
 			});
