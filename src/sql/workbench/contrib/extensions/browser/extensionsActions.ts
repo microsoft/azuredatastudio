@@ -122,7 +122,7 @@ export class HideSettings extends Action {
 
 	override async run(): Promise<void> {
 		let allActionItems = Array.from(document.getElementsByClassName('action-item icon'));
-		let manageElement = allActionItems.filter((el) => el.ariaLabel === 'Manage');
+		let manageElement = allActionItems.filter((el) => el.getAttribute('aria-label') === 'Manage');
 		manageElement[0].parentNode.removeChild(manageElement[0]);
 	}
 }
@@ -148,7 +148,7 @@ export class HideExtensionMenu extends Action {
 		let uiElement = document.querySelector('[aria-label="Active View Switcher"]');
 		let childRemoveIndices = [];
 		for (let i = 0; i < uiElement.children.length; i++) {
-			let aria = uiElement.children[i].ariaLabel;
+			let aria = uiElement.children[i].getAttribute('aria-label');
 			for (let j = 0; j < array.length; j++) {
 				if (aria.includes(array[j])) {
 					childRemoveIndices.push(i);
