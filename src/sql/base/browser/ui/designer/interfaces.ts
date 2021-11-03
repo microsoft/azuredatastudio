@@ -205,7 +205,7 @@ export interface DesignerTextEditor {
 	readonly onDidContentChange: Event<string>;
 
 	/**
-	 * Lays out the text editorwith given dimensions
+	 * Lays out the text editor with given dimensions
 	 */
 	layout(dimensions: Dimension): void;
 }
