@@ -154,16 +154,29 @@ export interface DesignerTableProperties extends ComponentProperties {
 	columns?: string[];
 
 	/**
-	 * The display name of the object type
+	 * The display name of the object type.
 	 */
 	objectTypeDisplayName: string;
 
 	/**
-	 * the properties of the table data item
+	 * The properties of the table data item.
 	 */
 	itemProperties?: DesignerDataPropertyInfo[];
 
+	/**
+	 * The data to be displayed.
+	 */
 	data?: DesignerTableComponentRowData[];
+
+	/**
+	 * Whether user can add new rows to the table. The default value is true.
+	 */
+	canAddRows?: boolean;
+
+	/**
+	 * Whether user can remove rows from the table. The default value is true.
+	 */
+	canRemoveRows?: boolean;
 }
 
 export interface DesignerTableComponentRowData {
