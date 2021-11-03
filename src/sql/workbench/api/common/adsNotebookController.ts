@@ -27,6 +27,7 @@ export class ADSNotebookController implements vscode.NotebookController {
 	private readonly _onDidReceiveMessage = new Emitter<MessageReceivedEvent>();
 
 	private readonly _languagesAdded = new Deferred<void>();
+	private readonly _executionHandlerAdded = new Deferred<void>();
 
 	constructor(
 		private _extension: IExtensionDescription,
@@ -44,10 +45,17 @@ export class ADSNotebookController implements vscode.NotebookController {
 			label: this._label || this._extension.identifier.value,
 			preloads: preloads ? preloads.map(extHostTypeConverters.NotebookRendererScript.from) : []
 		};
+		if (this._handler) {
+			this._executionHandlerAdded.resolve();
+		}
 	}
 
 	public get languagesAdded(): Promise<void> {
 		return this._languagesAdded.promise;
+	}
+
+	public get executionHandlerAdded(): Promise<void> {
+		return this._executionHandlerAdded.promise;
 	}
 
 	public get id(): string { return this._id; }
@@ -114,6 +122,7 @@ export class ADSNotebookController implements vscode.NotebookController {
 
 	public set executeHandler(value: ExecutionHandler) {
 		this._handler = value;
+		this._executionHandlerAdded.resolve();
 	}
 
 	public get interruptHandler(): InterruptHandler {
