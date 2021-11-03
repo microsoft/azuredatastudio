@@ -174,3 +174,41 @@ export async function createListOfFiles(filePath?: string): Promise<Uri[]> {
 
 	return fileFolderList;
 }
+
+/**
+ * TestFolder directory structure
+ * 		- file1.sql
+ * 		- folder1
+ * 			-file1.sql
+ * 			-file2.sql
+ * 			-test1.sql
+ * 			-test2.sql
+ * 			-testLongerName.sql
+ *	 	- folder2
+ * 			-file1.sql
+ * 			-file2.sql
+ *
+ */
+export async function createOtherDummyFiles(testFolderPath: string): Promise<string> {
+	let filePath = path.join(testFolderPath, 'file1.sql');
+	await fs.writeFile(filePath, '');
+
+	for (let dirCount = 1; dirCount <= 2; dirCount++) {
+		let dirName = path.join(testFolderPath, `folder${dirCount}`);
+		await fs.mkdir(dirName, { recursive: true });
+
+		for (let fileCount = 1; fileCount <= 2; fileCount++) {
+			let fileName = path.join(dirName, `file${fileCount}.sql`);
+			await fs.writeFile(fileName, '');
+		}
+	}
+
+	const test1 = path.join(testFolderPath, 'folder1', 'test1.sql');
+	await fs.writeFile(test1, '');
+	const test2 = path.join(testFolderPath, 'folder1', 'test2.sql');
+	await fs.writeFile(test2, '');
+	const testLongerName = path.join(testFolderPath, 'folder1', 'testLongerName.sql');
+	await fs.writeFile(testLongerName, '');
+
+	return testFolderPath;
+}

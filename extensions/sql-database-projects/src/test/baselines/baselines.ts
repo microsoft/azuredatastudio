@@ -31,6 +31,7 @@ export let newStyleProjectSdkProjectAttributeBaseline: string;
 export let newStyleProjectSdkImportAttributeBaseline: string;
 export let openNewStyleSqlProjectBaseline: string;
 export let openNewStyleSqlProjectWithFilesSpecifiedBaseline: string;
+export let openNewStyleSqlProjectWithGlobsSpecifiedBaseline: string;
 
 const baselineFolderPath = __dirname;
 
@@ -59,6 +60,7 @@ export async function loadBaselines() {
 	newStyleProjectSdkImportAttributeBaseline = await loadBaseline(baselineFolderPath, 'newStyleSqlProjectSdkImportAttributeBaseline.xml');
 	openNewStyleSqlProjectBaseline = await loadBaseline(baselineFolderPath, 'openNewStyleSqlProjectBaseline.xml');
 	openNewStyleSqlProjectWithFilesSpecifiedBaseline = await loadBaseline(baselineFolderPath, 'openNewStyleSqlProjectWithFilesSpecifiedBaseline.xml');
+	openNewStyleSqlProjectWithGlobsSpecifiedBaseline = await loadBaseline(baselineFolderPath, 'openNewStyleSqlProjectWithGlobsSpecifiedBaseline.xml');
 }
 
 async function loadBaseline(baselineFolderPath: string, fileName: string): Promise<string> {

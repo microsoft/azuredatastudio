@@ -143,10 +143,25 @@ export class Project implements ISqlProject {
 			const buildElements = itemGroup.getElementsByTagName(constants.Build);
 			for (let b = 0; b < buildElements.length; b++) {
 				const relativePath = buildElements[b].getAttribute(constants.Include);
+				const fullPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(relativePath));
 
-				// only add file if it wasn't already added
-				if (!this._files.find(f => f.relativePath === relativePath)) {
-					this._files.push(this.createFileProjectEntry(relativePath, EntryType.File, buildElements[b].getAttribute(constants.Type)));
+				// msbuild sdk style projects can handle other globbing patterns like <Build Include="folder1\*.sql" /> and <Build Include="Production*.sql" />
+				if (this._isMsbuildSdkStyleProject && !(await utils.exists(fullPath))) {
+					// add files from the glob pattern
+					const files = await utils.globWithPattern(fullPath);
+					files.forEach(f => {
+						if (!this._files.find(f => f.relativePath === relativePath)) {
+							this._files.push(this.createFileProjectEntry(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(f)), EntryType.File));
+						}
+					});
+
+					// TODO: add support for <Build Remove="file.sql">
+
+				} else {
+					// only add file if it wasn't already added
+					if (!this._files.find(f => f.relativePath === relativePath)) {
+						this._files.push(this.createFileProjectEntry(relativePath, EntryType.File, buildElements[b].getAttribute(constants.Type)));
+					}
 				}
 			}
 

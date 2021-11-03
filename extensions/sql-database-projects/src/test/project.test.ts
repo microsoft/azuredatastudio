@@ -868,22 +868,48 @@ describe('Project: Msbuild sdk style project content operations', function (): v
 
 	it('Should handle files listed in sqlproj', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.openNewStyleSqlProjectWithFilesSpecifiedBaseline);
-		let fileList: Uri[] = [];
-		await testUtils.createDummyFileStructure(true, fileList, path.dirname(projFilePath));
+		await testUtils.createDummyFileStructure(false, undefined, path.dirname(projFilePath));
 
 		const project: Project = await Project.openProject(projFilePath);
 
 		// Files and folders
 		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(2);
-		should(project.files.filter(f => f.type === EntryType.File).length).equal(12);
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(11);
 
 		// these are also listed in the sqlproj, but there shouldn't be duplicate entries for them
 		should(project.files.filter(f => f.relativePath === 'folder1\\file2.sql').length).equal(1);
 		should(project.files.filter(f => f.relativePath === 'file1.sql').length).equal(1);
 		should(project.files.filter(f => f.relativePath === 'folder1').length).equal(1);
+	});
 
-		// this file is outside project folder that was specified in sqlproj
-		should(project.files.filter(f => f.relativePath === '..\\Test\\Test.sql').length).equal(1);
+	it('Should handle globbing patterns listed in sqlproj', async function (): Promise<void> {
+		const testFolderPath = await testUtils.generateTestFolderPath();
+		const mainProjectPath =  path.join(testFolderPath, 'project');
+		const otherFolderPath = path.join(testFolderPath, 'other');
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openNewStyleSqlProjectWithGlobsSpecifiedBaseline, mainProjectPath);
+		await testUtils.createDummyFileStructure(false, undefined, path.dirname(projFilePath));
+
+		// create files outside of project folder that are included in the project file
+		await fs.mkdir(otherFolderPath);
+		await testUtils.createOtherDummyFiles(otherFolderPath);
+
+		const project: Project = await Project.openProject(projFilePath);
+
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(17);
+
+		// make sure all the correct files from the globbing patterns were included
+		// ..\other\folder1\test?.sql
+		should(project.files.filter(f => f.relativePath === '..\\other\\folder1\\test1.sql').length).equal(1);
+		should(project.files.filter(f => f.relativePath === '..\\other\\folder1\\test2.sql').length).equal(1);
+		should(project.files.filter(f => f.relativePath === '..\\other\\folder1\\testLongerName.sql').length).equal(0);
+
+		// ..\other\folder1\file*.sql
+		should(project.files.filter(f => f.relativePath === '..\\other\\folder1\\file1.sql').length).equal(1);
+		should(project.files.filter(f => f.relativePath === '..\\other\\folder1\\file2.sql').length).equal(1);
+
+		// ..\other\folder2\*.sql
+		should(project.files.filter(f => f.relativePath === '..\\other\\folder2\\file1.sql').length).equal(1);
+		should(project.files.filter(f => f.relativePath === '..\\other\\folder2\\file2.sql').length).equal(1);
 	});
 });
 
