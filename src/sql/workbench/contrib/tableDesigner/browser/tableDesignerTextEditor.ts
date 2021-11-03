@@ -15,7 +15,6 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { UntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 
-// TODO: Implement the text editor
 export class TableDesignerTextEditor implements DesignerTextEditor {
 	private _content: string;
 	private _readonly: boolean;
