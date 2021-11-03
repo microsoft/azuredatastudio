@@ -10,6 +10,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { Schemas } from 'vs/base/common/network';
 import { URI } from 'vs/base/common/uri';
 import { ITextModel } from 'vs/editor/common/model';
+import { IModelService } from 'vs/editor/common/services/modelService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { UntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
@@ -28,7 +29,9 @@ export class TableDesignerTextEditor implements DesignerTextEditor {
 
 	constructor(
 		private _container: HTMLElement,
-		@IInstantiationService private _instantiationService: IInstantiationService) {
+		@IInstantiationService private _instantiationService: IInstantiationService,
+		@IModelService private _modelService: IModelService
+	) {
 		this._editor = this._instantiationService.createInstance(TableDesignerBaseTextEditor);
 		this._editor.create(this._container);
 		this._editor.setVisible(true);
@@ -50,6 +53,8 @@ export class TableDesignerTextEditor implements DesignerTextEditor {
 
 	set content(val: string) {
 		this._content = val;
+		this._modelService.updateModel(this._editorModel, this._content);
+		this._contentChangeEventEmitter.fire(this._content);
 	}
 
 	get readonly(): boolean {

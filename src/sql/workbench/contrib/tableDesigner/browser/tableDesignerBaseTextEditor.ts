@@ -64,7 +64,6 @@ export class TableDesignerBaseTextEditor extends BaseTextEditor {
 			options.minimap = {
 				enabled: false
 			};
-			options.readOnly = true;
 		}
 		return options;
 	}
