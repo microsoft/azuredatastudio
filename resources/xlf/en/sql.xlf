@@ -5749,6 +5749,12 @@ Error: {1}</source>
     <trans-unit id="tableDesigner.columnNameTitle">
       <source xml:lang="en">Name</source>
     </trans-unit>
+    <trans-unit id="tableDesigner.columnPrecisionTitle">
+      <source xml:lang="en">Precision</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.columnScaleTitle">
+      <source xml:lang="en">Scale</source>
+    </trans-unit>
     <trans-unit id="tableDesigner.columnTypeName">
       <source xml:lang="en">Column</source>
     </trans-unit>
