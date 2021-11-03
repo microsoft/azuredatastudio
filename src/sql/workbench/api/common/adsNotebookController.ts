@@ -10,8 +10,6 @@ import { Emitter, Event } from 'vs/base/common/event';
 import * as extHostTypeConverters from 'vs/workbench/api/common/extHostTypeConverters';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { INotebookProviderRegistry, NotebookProviderRegistryId } from 'sql/workbench/services/notebook/common/notebookRegistry';
-import { INotebookEditor, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
-import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { Deferred } from 'sql/base/common/promise';
 
 const notebookRegistry = Registry.as<INotebookProviderRegistry>(NotebookProviderRegistryId);
@@ -35,7 +33,6 @@ export class ADSNotebookController implements vscode.NotebookController {
 		private _id: string,
 		private _viewType: string,
 		private _label: string,
-		private _notebookService: INotebookService,
 		private _handler?: ExecutionHandler,
 		preloads?: vscode.NotebookRendererScript[]
 	) {
@@ -129,7 +126,7 @@ export class ADSNotebookController implements vscode.NotebookController {
 	}
 
 	public createNotebookCellExecution(cell: vscode.NotebookCell): vscode.NotebookCellExecution {
-		return new ADSNotebookCellExecution(cell, this._notebookService);
+		return new ADSNotebookCellExecution(cell);
 	}
 
 	public dispose(): void {
@@ -150,23 +147,9 @@ export class ADSNotebookController implements vscode.NotebookController {
 }
 
 class ADSNotebookCellExecution implements vscode.NotebookCellExecution {
-	private _notebookEditor: INotebookEditor;
-
-	constructor(private readonly _cell: vscode.NotebookCell, private readonly _notebookService: INotebookService) {
-	}
-
-	private get editor(): INotebookEditor {
-		if (!this._notebookEditor) {
-			this._notebookEditor = this._notebookService.findNotebookEditor(this._cell.notebook.uri);
-		}
-		return this._notebookEditor;
-	}
-
-	private get innerCell(): ICellModel {
-		if (this.editor?.cells && this._cell.index > 0) {
-			return this.editor.cells[this._cell.index];
-		}
-		return undefined;
+	private _executionOrder: number;
+	constructor(private readonly _cell: vscode.NotebookCell) {
+		this._executionOrder = this._cell.executionSummary?.executionOrder ?? -1;
 	}
 
 	public get cell(): vscode.NotebookCell {
@@ -178,13 +161,11 @@ class ADSNotebookCellExecution implements vscode.NotebookCellExecution {
 	}
 
 	public get executionOrder(): number {
-		return this.innerCell?.executionCount ?? -1;
+		return this._executionOrder;
 	}
 
 	public set executionOrder(order: number) {
-		if (this.innerCell) {
-			this.innerCell.executionCount = order;
-		}
+		this._executionOrder = order;
 	}
 
 	public start(startTime?: number): void {
@@ -196,9 +177,7 @@ class ADSNotebookCellExecution implements vscode.NotebookCellExecution {
 	}
 
 	public async clearOutput(cell?: vscode.NotebookCell): Promise<void> {
-		if (this.editor && this.innerCell) {
-			return this.editor.clearOutput(this.innerCell).then();
-		}
+		throw new Error('Method not implemented.');
 	}
 
 	public replaceOutput(out: vscode.NotebookCellOutput | vscode.NotebookCellOutput[], cell?: vscode.NotebookCell): Thenable<void> {

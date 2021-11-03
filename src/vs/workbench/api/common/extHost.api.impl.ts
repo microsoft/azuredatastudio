@@ -91,7 +91,7 @@ import { matchesScheme } from 'vs/platform/opener/common/opener';
 // import { ExtHostNotebookEditors } from 'vs/workbench/api/common/extHostNotebookEditors'; {{SQL CARBON EDIT}}
 // import { ExtHostNotebookDocuments } from 'vs/workbench/api/common/extHostNotebookDocuments'; {{SQL CARBON EDIT}}
 import * as nls from 'vs/nls';
-import { SqlMainContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
+import { ExtHostNotebook } from 'sql/workbench/api/common/extHostNotebook';
 
 // {{SQL CARBON EDIT}}
 const functionalityNotSupportedError = nls.localize('vscodeFunctionalityNotSupportedError', "This VSCode functionality is not supported in Azure Data Studio.");
@@ -103,7 +103,7 @@ export interface IExtensionApiFactory {
 /**
  * This method instantiates and returns the extension API surface
  */
-export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): IExtensionApiFactory {
+export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, extHostNotebook: ExtHostNotebook): IExtensionApiFactory { // {{SQL CARBON EDIT}}
 
 	// services
 	const initData = accessor.get(IExtHostInitDataService);
@@ -178,9 +178,6 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 	const extHostWebviewViews = rpcProtocol.set(ExtHostContext.ExtHostWebviewViews, new ExtHostWebviewViews(rpcProtocol, extHostWebviews));
 	const extHostTesting = rpcProtocol.set(ExtHostContext.ExtHostTesting, new ExtHostTesting(rpcProtocol, extHostDocumentsAndEditors, extHostWorkspace));
 	const extHostUriOpeners = rpcProtocol.set(ExtHostContext.ExtHostUriOpeners, new ExtHostUriOpeners(rpcProtocol));
-
-	// {{SQL CARBON EDIT}}
-	const sqlMainNotebook = rpcProtocol.getProxy(SqlMainContext.MainThreadNotebook);
 
 	// Check that no named customers are missing
 	// {{SQL CARBON EDIT}} filter out the services we don't expose
@@ -930,7 +927,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 				// return extHostNotebook.onDidCloseNotebookDocument;
 			},
 			registerNotebookSerializer(viewType: string, serializer: vscode.NotebookSerializer, options?: vscode.NotebookDocumentContentOptions, registration?: vscode.NotebookRegistrationData) {
-				return sqlMainNotebook.$registerNotebookSerializer(viewType, serializer, options, registration);
+				return extHostNotebook.registerNotebookSerializer(viewType, serializer, options, registration);
 			},
 			registerNotebookContentProvider: (viewType: string, provider: vscode.NotebookContentProvider, options?: vscode.NotebookDocumentContentOptions, registration?: vscode.NotebookRegistrationData) => {
 				// {{SQL CARBON EDIT}}
@@ -1149,7 +1146,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 		// namespace: notebook
 		const notebooks: typeof vscode.notebooks = {
 			createNotebookController(id: string, notebookType: string, label: string, handler?, rendererScripts?: vscode.NotebookRendererScript[]) {
-				return sqlMainNotebook.$createNotebookController(extension, id, notebookType, label, handler, rendererScripts);
+				return extHostNotebook.createNotebookController(extension, id, notebookType, label, handler, rendererScripts);
 			},
 			registerNotebookCellStatusBarItemProvider: (notebookType: string, provider: vscode.NotebookCellStatusBarItemProvider) => {
 				// {{SQL CARBON EDIT}}

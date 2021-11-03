@@ -54,16 +54,17 @@ export interface IAdsExtensionApiFactory {
  * This method instantiates and returns the extension API surface
  */
 export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): IExtensionApiFactory {
-	const { azdata } = createAdsApiFactory(accessor);
+	const { azdata, extHostNotebook } = createAdsApiFactory(accessor);
 	return {
 		azdata,
-		vscode: vsApiFactory(accessor)
+		vscode: vsApiFactory(accessor, extHostNotebook)
 	};
 }
 
 
 export interface IAdsExtensionApiFactory {
 	azdata: IAzdataExtensionApiFactory;
+	extHostNotebook: ExtHostNotebook
 }
 
 /**
@@ -552,10 +553,10 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 					return extHostNotebookDocumentsAndEditors.showNotebookDocument(uri, showOptions);
 				},
 				registerSerializationProvider(provider: azdata.nb.NotebookSerializationProvider): vscode.Disposable {
-					return extHostNotebook.$registerSerializationProvider(provider);
+					return extHostNotebook.registerSerializationProvider(provider);
 				},
 				registerExecuteProvider(provider: azdata.nb.NotebookExecuteProvider): vscode.Disposable {
-					return extHostNotebook.$registerExecuteProvider(provider);
+					return extHostNotebook.registerExecuteProvider(provider);
 				},
 				registerNavigationProvider(provider: azdata.nb.NavigationProvider): vscode.Disposable {
 					return extHostNotebookDocumentsAndEditors.registerNavigationProvider(provider);
@@ -631,6 +632,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				TextType: sqlExtHostTypes.TextType,
 				designers: designers
 			};
-		}
+		},
+		extHostNotebook: extHostNotebook
 	};
 }

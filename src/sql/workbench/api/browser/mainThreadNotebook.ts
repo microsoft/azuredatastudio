@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import type * as vscode from 'vscode';
 import { SqlExtHostContext, SqlMainContext, ExtHostNotebookShape, MainThreadNotebookShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { Disposable } from 'vs/base/common/lifecycle';
@@ -18,10 +17,6 @@ import { LocalContentManager } from 'sql/workbench/services/notebook/common/loca
 import { Deferred } from 'sql/base/common/promise';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import type { FutureInternal } from 'sql/workbench/services/notebook/browser/interfaces';
-import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
-import { ADSNotebookController } from 'sql/workbench/api/browser/adsNotebookController';
-import { VSCodeSerializationProvider } from 'sql/workbench/api/browser/vscodeSerializationProvider';
-import { VSCodeExecuteProvider } from 'sql/workbench/api/browser/vscodeExecuteProvider';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadNotebook)
 export class MainThreadNotebook extends Disposable implements MainThreadNotebookShape {
@@ -101,18 +96,6 @@ export class MainThreadNotebook extends Disposable implements MainThreadNotebook
 		if (future) {
 			future.onDone(done);
 		}
-	}
-
-	$registerNotebookSerializer(notebookType: string, serializer: vscode.NotebookSerializer, options?: vscode.NotebookDocumentContentOptions, registration?: vscode.NotebookRegistrationData): vscode.Disposable {
-		let serializationProvider = new VSCodeSerializationProvider(notebookType, serializer);
-		return this._proxy.$registerSerializationProvider(serializationProvider);
-	}
-
-	$createNotebookController(extension: IExtensionDescription, id: string, viewType: string, label: string, handler?: (cells: vscode.NotebookCell[], notebook: vscode.NotebookDocument, controller: vscode.NotebookController) => void | Thenable<void>, rendererScripts?: vscode.NotebookRendererScript[]): vscode.NotebookController {
-		let controller = new ADSNotebookController(extension, id, viewType, label, undefined, handler, extension.enableProposedApi ? rendererScripts : undefined);
-		let executeProvider = new VSCodeExecuteProvider(controller);
-		this._register(this._proxy.$registerExecuteProvider(executeProvider));
-		return controller;
 	}
 	//#endregion
 }

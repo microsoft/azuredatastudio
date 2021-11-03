@@ -24,11 +24,8 @@ suite('ExtHostNotebook Tests', () => {
 	let executeProviderMock: TypeMoq.Mock<ExecuteProviderStub>;
 	setup(() => {
 		mockProxy = TypeMoq.Mock.ofInstance(<MainThreadNotebookShape>{
-			$registerSerializationProvider: (providerId, handle) => undefined,
-			$registerExecuteProvider: (providerId, handle) => undefined,
 			$unregisterSerializationProvider: (handle) => undefined,
 			$unregisterExecuteProvider: (handle) => undefined,
-			$createNotebookController: (extension, id, viewType, label, handler, rendererScripts) => undefined,
 			dispose: () => undefined
 		});
 		let mainContext = <IMainContext>{
@@ -74,8 +71,8 @@ suite('ExtHostNotebook Tests', () => {
 					});
 
 				// Register the provider so we can test behavior with this present
-				extHostNotebook.$registerSerializationProvider(serializationProviderMock.object);
-				extHostNotebook.$registerExecuteProvider(executeProviderMock.object);
+				extHostNotebook.registerSerializationProvider(serializationProviderMock.object);
+				extHostNotebook.registerExecuteProvider(executeProviderMock.object);
 			});
 
 			test('Should return a serialization manager with correct info on content manager existence', async () => {
@@ -152,7 +149,7 @@ suite('ExtHostNotebook Tests', () => {
 		});
 
 		test('Should register with a new handle to the proxy', () => {
-			extHostNotebook.$registerSerializationProvider(serializationProviderMock.object);
+			extHostNotebook.registerSerializationProvider(serializationProviderMock.object);
 			mockProxy.verify(p =>
 				p.$registerSerializationProvider(TypeMoq.It.isValue(serializationProviderMock.object.providerId),
 					TypeMoq.It.isAnyNumber()), TypeMoq.Times.once());
@@ -161,7 +158,7 @@ suite('ExtHostNotebook Tests', () => {
 		});
 
 		test('Should not call unregister on disposing', () => {
-			let disposable = extHostNotebook.$registerSerializationProvider(serializationProviderMock.object);
+			let disposable = extHostNotebook.registerSerializationProvider(serializationProviderMock.object);
 			disposable.dispose();
 			mockProxy.verify(p => p.$unregisterSerializationProvider(TypeMoq.It.isValue(savedHandle)), TypeMoq.Times.never());
 		});
@@ -179,7 +176,7 @@ suite('ExtHostNotebook Tests', () => {
 		});
 
 		test('Should register with a new handle to the proxy', () => {
-			extHostNotebook.$registerExecuteProvider(executeProviderMock.object);
+			extHostNotebook.registerExecuteProvider(executeProviderMock.object);
 			mockProxy.verify(p =>
 				p.$registerExecuteProvider(TypeMoq.It.isValue(executeProviderMock.object.providerId),
 					TypeMoq.It.isAnyNumber()), TypeMoq.Times.once());
@@ -188,7 +185,7 @@ suite('ExtHostNotebook Tests', () => {
 		});
 
 		test('Should not call unregister on disposing', () => {
-			let disposable = extHostNotebook.$registerExecuteProvider(executeProviderMock.object);
+			let disposable = extHostNotebook.registerExecuteProvider(executeProviderMock.object);
 			disposable.dispose();
 			mockProxy.verify(p => p.$unregisterExecuteProvider(TypeMoq.It.isValue(savedHandle)), TypeMoq.Times.never());
 		});

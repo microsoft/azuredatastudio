@@ -887,13 +887,6 @@ export interface MainThreadQueryEditorShape extends IDisposable {
 }
 
 export interface ExtHostNotebookShape {
-	// Provider registration APIs
-	//
-	// Note: Never call these methods from their MainThreadNotebook equivalents, since that will cause a recursive loop.
-	// These methods are only exposed here to allow for Extension API redirection for VSCode Notebooks.
-	$registerExecuteProvider(provider: azdata.nb.NotebookExecuteProvider): vscode.Disposable;
-	$registerSerializationProvider(provider: azdata.nb.NotebookSerializationProvider): vscode.Disposable;
-
 	/**
 	 * Looks up a notebook manager for a given notebook URI
 	 * @returns handle of the manager to be used when sending
@@ -941,10 +934,6 @@ export interface MainThreadNotebookShape extends IDisposable {
 	$unregisterExecuteProvider(handle: number): void;
 	$onFutureMessage(futureId: number, type: FutureMessageType, payload: azdata.nb.IMessage): void;
 	$onFutureDone(futureId: number, done: INotebookFutureDone): void;
-
-	// VSCode notebook compatibility APIs
-	$registerNotebookSerializer(notebookType: string, serializer: vscode.NotebookSerializer, options?: vscode.NotebookDocumentContentOptions, registration?: vscode.NotebookRegistrationData): vscode.Disposable;
-	$createNotebookController(extension: IExtensionDescription, id: string, viewType: string, label: string, handler?: (cells: vscode.NotebookCell[], notebook: vscode.NotebookDocument, controller: vscode.NotebookController) => void | Thenable<void>, rendererScripts?: vscode.NotebookRendererScript[]): vscode.NotebookController;
 }
 
 export interface INotebookDocumentsAndEditorsDelta {

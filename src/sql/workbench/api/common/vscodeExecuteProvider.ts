@@ -5,7 +5,7 @@
 
 import type * as vscode from 'vscode';
 import type * as azdata from 'azdata';
-import { ADSNotebookController } from 'sql/workbench/api/browser/adsNotebookController';
+import { ADSNotebookController } from 'sql/workbench/api/common/adsNotebookController';
 
 class VSCodeFuture implements azdata.nb.IFuture {
 	private _inProgress = true;
