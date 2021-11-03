@@ -8,11 +8,7 @@ import { IExtensionDescription } from 'vs/platform/extensions/common/extensions'
 import { INotebookKernelDto2 } from 'vs/workbench/api/common/extHost.protocol';
 import { Emitter, Event } from 'vs/base/common/event';
 import * as extHostTypeConverters from 'vs/workbench/api/common/extHostTypeConverters';
-import { Registry } from 'vs/platform/registry/common/platform';
-import { INotebookProviderRegistry, NotebookProviderRegistryId } from 'sql/workbench/services/notebook/common/notebookRegistry';
 import { Deferred } from 'sql/base/common/promise';
-
-const notebookRegistry = Registry.as<INotebookProviderRegistry>(NotebookProviderRegistryId);
 
 type SelectionChangedEvent = { selected: boolean, notebook: vscode.NotebookDocument; };
 type MessageReceivedEvent = { editor: vscode.NotebookEditor, message: any; };
@@ -34,6 +30,7 @@ export class ADSNotebookController implements vscode.NotebookController {
 		private _id: string,
 		private _viewType: string,
 		private _label: string,
+		private _addLanguagesHandler: (providerId, languages) => void,
 		private _handler?: ExecutionHandler,
 		preloads?: vscode.NotebookRendererScript[]
 	) {
@@ -100,8 +97,7 @@ export class ADSNotebookController implements vscode.NotebookController {
 
 	public set supportedLanguages(value: string[]) {
 		this._kernelData.supportedLanguages = value;
-		notebookRegistry.updateProviderDescriptionLanguages(this._viewType, value);
-		this._languagesAdded.resolve();
+		this._addLanguagesHandler(this._viewType, value);
 	}
 
 	public get supportsExecutionOrder(): boolean {

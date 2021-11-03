@@ -261,10 +261,15 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 	}
 
 	createNotebookController(extension: IExtensionDescription, id: string, viewType: string, label: string, handler?: (cells: vscode.NotebookCell[], notebook: vscode.NotebookDocument, controller: vscode.NotebookController) => void | Thenable<void>, rendererScripts?: vscode.NotebookRendererScript[]): vscode.NotebookController {
-		let controller = new ADSNotebookController(extension, id, viewType, label, handler, extension.enableProposedApi ? rendererScripts : undefined);
+		let addLanguagesHandler = (id, languages) => this.updateProviderDescriptionLanguages(id, languages);
+		let controller = new ADSNotebookController(extension, id, viewType, label, addLanguagesHandler, handler, extension.enableProposedApi ? rendererScripts : undefined);
 		let executeProvider = new VSCodeExecuteProvider(controller);
 		this.registerExecuteProvider(executeProvider);
 		return controller;
+	}
+
+	updateProviderDescriptionLanguages(providerId: string, languages: string[]): void {
+		this._proxy.$updateProviderDescriptionLanguages(providerId, languages);
 	}
 	//#endregion
 
