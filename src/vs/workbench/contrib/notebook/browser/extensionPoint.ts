@@ -193,9 +193,18 @@ const adsNotebookRegistry = Registry.as<INotebookProviderRegistry>(NotebookProvi
 notebooksExtensionPoint.setHandler(extensions => {
 	for (let extension of extensions) {
 		for (const notebookContribution of extension.value) {
+			// Remove any leading regex characters from the filename pattern
+			let extensions = notebookContribution.selector?.map(s => {
+				let lastDotPosition = s.filenamePattern?.lastIndexOf('.');
+				if (lastDotPosition > 0) {
+					return s.filenamePattern.slice(lastDotPosition);
+				}
+				return s.filenamePattern;
+			}).filter(ext => ext !== undefined);
+
 			let adsProvider: ProviderDescriptionRegistration = {
 				provider: notebookContribution.type,
-				fileExtensions: notebookContribution.selector?.map(s => s.filenamePattern.slice(2)) ?? [], // Use slice to remove leading wildcard. VSCode passes something like *.ipynb, while ADS expects just ipynb
+				fileExtensions: extensions ?? [],
 				standardKernels: [] // Kernels get added later when a NotebookController is created for this provider
 			};
 			adsNotebookRegistry.registerProviderDescription(adsProvider);
