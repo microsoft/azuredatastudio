@@ -110,6 +110,7 @@ export interface DesignerViewModel {
 
 export interface DesignerDataPropertyInfo {
 	propertyName: string;
+	description?: string;
 	componentType: DesignerComponentTypeName;
 	group?: string;
 	componentProperties?: InputBoxProperties | CheckBoxProperties | DropDownProperties | DesignerTableProperties;
