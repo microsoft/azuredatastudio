@@ -190,7 +190,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				propertyName: designers.TableColumnProperty.Length,
 				componentProperties: {
 					title: localize('tableDesigner.columnLengthTitle', "Length"),
-					width: 75
+					width: 60
 				}
 			}, {
 				componentType: 'input',
@@ -211,12 +211,37 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				componentProperties: {
 					title: localize('tableDesigner.columnIsPrimaryKeyTitle', "Primary Key"),
 				}
+			}, {
+				componentType: 'input',
+				propertyName: designers.TableColumnProperty.Precision,
+				componentProperties: {
+					title: localize('tableDesigner.columnPrecisionTitle', "Precision"),
+					width: 60
+				}
+			}, {
+				componentType: 'input',
+				propertyName: designers.TableColumnProperty.Scale,
+				componentProperties: {
+					title: localize('tableDesigner.columnScaleTitle', "Scale"),
+					width: 60
+				}
 			}
 		];
 
 		if (designerInfo.view.additionalTableColumnProperties) {
 			columnProperties.push(...designerInfo.view.additionalTableColumnProperties);
 		}
+
+		const columnsTableProperties = designerInfo.view.columnsTableProperties || [
+			designers.TableColumnProperty.Name,
+			designers.TableColumnProperty.Type,
+			designers.TableColumnProperty.Length,
+			designers.TableColumnProperty.Precision,
+			designers.TableColumnProperty.Scale,
+			designers.TableColumnProperty.IsPrimaryKey,
+			designers.TableColumnProperty.AllowNulls,
+			designers.TableColumnProperty.DefaultValue,
+		];
 
 		const columnsTab = <DesignerTab>{
 			title: localize('tableDesigner.columnsTabTitle', "Columns"),
@@ -226,14 +251,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 					propertyName: designers.TableProperty.Columns,
 					componentProperties: <DesignerTableProperties>{
 						ariaLabel: localize('tableDesigner.columnsTabTitle', "Columns"),
-						columns: [
-							designers.TableColumnProperty.Name,
-							designers.TableColumnProperty.Type,
-							designers.TableColumnProperty.Length,
-							designers.TableColumnProperty.DefaultValue,
-							designers.TableColumnProperty.AllowNulls,
-							designers.TableColumnProperty.IsPrimaryKey
-						],
+						columns: columnsTableProperties,
 						itemProperties: columnProperties,
 						objectTypeDisplayName: localize('tableDesigner.columnTypeName', "Column")
 					}
