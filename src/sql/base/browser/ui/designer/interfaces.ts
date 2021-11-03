@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { PanelTabIdentifier } from 'sql/base/browser/ui/panel/panel';
+import { Dimension } from 'vs/base/browser/dom';
 import { Event } from 'vs/base/common/event';
 
 export interface DesignerComponentInput {
@@ -202,4 +203,9 @@ export interface DesignerTextEditor {
 	 * Event fired when the content is changed by user
 	 */
 	readonly onDidContentChange: Event<string>;
+
+	/**
+	 * Lays out the text editorwith given dimensions
+	 */
+	layout(dimensions: Dimension): void;
 }

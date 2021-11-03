@@ -9,6 +9,9 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { Disposable } from 'vs/base/common/lifecycle';
 import * as DOM from 'vs/base/browser/dom';
 import { CreateComponentsFunc } from 'sql/base/browser/ui/designer/designer';
+import { Event, Emitter } from 'vs/base/common/event';
+import { IView } from 'vs/base/browser/ui/splitview/splitview';
+import { clamp } from 'vs/base/common/numbers';
 
 const ButtonHeight = 30;
 const HorizontalPadding = 10;
@@ -36,5 +39,62 @@ export class DesignerTabPanelView extends Disposable implements IPanelView {
 		this._tables.forEach(table => {
 			table.layout(new DOM.Dimension(dimension.width - HorizontalPadding, dimension.height - VerticalPadding - ButtonHeight));
 		});
+	}
+}
+
+export class BasicView implements IView {
+	public get element(): HTMLElement {
+		return this._element;
+	}
+	private _onDidChange = new Emitter<number>();
+	public readonly onDidChange: Event<number> = this._onDidChange.event;
+
+	private _collapsed = false;
+	private size: number;
+	private previousSize: number;
+	private _minimumSize: number;
+	public get minimumSize(): number {
+		return this._minimumSize;
+	}
+
+	private _maximumSize: number;
+	public get maximumSize(): number {
+		return this._maximumSize;
+	}
+
+	constructor(
+		private _defaultMinimumSize: number,
+		private _defaultMaximumSize: number,
+		private _layout: (size: number) => void,
+		private _element: HTMLElement,
+		private options: { headersize?: number } = {}
+	) {
+		this._minimumSize = _defaultMinimumSize;
+		this._maximumSize = _defaultMaximumSize;
+	}
+
+	public layout(size: number): void {
+		this.size = size;
+		this._layout(size);
+	}
+
+	public set collapsed(val: boolean) {
+		if (val !== this._collapsed && this.options.headersize) {
+			this._collapsed = val;
+			if (this.collapsed) {
+				this.previousSize = this.size;
+				this._minimumSize = this.options.headersize;
+				this._maximumSize = this.options.headersize;
+				this._onDidChange.fire(undefined);
+			} else {
+				this._maximumSize = this._defaultMaximumSize;
+				this._minimumSize = this._defaultMinimumSize;
+				this._onDidChange.fire(clamp(this.previousSize, this.minimumSize, this.maximumSize));
+			}
+		}
+	}
+
+	public get collapsed(): boolean {
+		return this._collapsed;
 	}
 }
