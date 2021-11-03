@@ -147,8 +147,8 @@
         <target state="translated">원격 GIT 리포지토리</target>
       </trans-unit>
       <trans-unit id="dataworkspace.restartConfirmation">
-        <source xml:lang="en">Azure Data Studio needs to be restarted for the project to be created and added to the workspace, do this now?</source>
-        <target state="translated">프로젝트를 만들고 작업 영역에 추가하려면 Azure Data Studio를 다시 시작해야 합니다. 지금 다시 시작할까요?</target>
+        <source xml:lang="en">Azure Data Studio needs to be restarted for the project to be added to the workspace. Restart now?</source>
+        <target state="translated">프로젝트를 작업 영역에 추가하려면 Azure Data Studio를 다시 시작해야 합니다. 지금 다시 시작하시겠습니까?</target>
       </trans-unit>
       <trans-unit id="dataworkspace.select">
         <source xml:lang="en">Select</source>
@@ -255,6 +255,10 @@ To learn more about projects [read our docs](https://aka.ms/azuredatastudio-proj
       <trans-unit id="projects.defaultProjectSaveLocation">
         <source xml:lang="en">Full path to folder where new projects are saved by default.</source>
         <target state="translated">새 프로젝트가 기본적으로 저장되는 폴더의 전체 경로입니다.</target>
+      </trans-unit>
+      <trans-unit id="projects.excludedProjectsDescription">
+        <source xml:lang="en">List of projects in the workspace to exclude from the projects viewlet</source>
+        <target state="translated">프로젝트 뷰렛에서 제외할 작업 영역의 프로젝트 목록</target>
       </trans-unit>
       <trans-unit id="projects.showNotAddedProjectsInWorkspacePrompt">
         <source xml:lang="en">Always show information message when the current workspace folders contain projects that have not been added to the workspace's projects.</source>

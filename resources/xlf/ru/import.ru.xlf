@@ -18,6 +18,14 @@
         <source xml:lang="en">Column Name</source>
         <target state="translated">Имя столбца</target>
       </trans-unit>
+      <trans-unit id="flatFileImport.columnTableTitle">
+        <source xml:lang="en">Column</source>
+        <target state="translated">Столбец</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.createDerivedColumn">
+        <source xml:lang="en">Create derived column</source>
+        <target state="translated">Создать производный столбец</target>
+      </trans-unit>
       <trans-unit id="flatFileImport.dataType">
         <source xml:lang="en">Data Type</source>
         <target state="translated">Тип данных</target>
@@ -30,6 +38,26 @@
         <source xml:lang="en">Database name</source>
         <target state="translated">Имя базы данных</target>
       </trans-unit>
+      <trans-unit id="flatFileImport.deriverColumnInstruction1">
+        <source xml:lang="en">Select the columns of data on the left required to derive your new column</source>
+        <target state="translated">Выберите слева столбцы данных, необходимые для создания производного столбца</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.deriverColumnInstruction2">
+        <source xml:lang="en">Select a row and specify an example transformation that you would like applied to the rest of the column</source>
+        <target state="translated">Выберите строку и укажите пример преобразование, которое следует применить к остальной части столбца</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.deriverColumnInstruction3">
+        <source xml:lang="en">Click "Preview Transformation" to preview the transformation</source>
+        <target state="translated">Нажмите кнопку "Предварительный просмотр преобразования", чтобы просмотреть преобразование</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.deriverColumnInstruction4">
+        <source xml:lang="en">Refine your transformation until you have the desired column</source>
+        <target state="translated">Корректируйте преобразование, пока не получится нужный столбец</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.deriverColumnInstruction5">
+        <source xml:lang="en">Specify the new derived column's name and click "Done"</source>
+        <target state="translated">Укажите имя нового производного столбца и нажмите кнопку "Готово"</target>
+      </trans-unit>
       <trans-unit id="flatFileImport.fileImport">
         <source xml:lang="en">File to be imported</source>
         <target state="translated">Импортируемый файл</target>
@@ -37,6 +65,10 @@
       <trans-unit id="flatFileImport.fileTextboxTitle">
         <source xml:lang="en">Location of the file to be imported</source>
         <target state="translated">Расположение файла для импорта</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.headerIntructionText">
+        <source xml:lang="en">Welcome to the Derived Column Tool! To get started, please follow the steps below:</source>
+        <target state="translated">Добро пожаловать в инструмент создания производных столбцов. Чтобы начать, выполните следующие действия:</target>
       </trans-unit>
       <trans-unit id="flatFileImport.importData">
         <source xml:lang="en">Import Data</source>
@@ -78,6 +110,10 @@
         <source xml:lang="en">Summary</source>
         <target state="translated">Сводка</target>
       </trans-unit>
+      <trans-unit id="flatFileImport.previewTransformation">
+        <source xml:lang="en">Preview Transformation</source>
+        <target state="translated">Предварительный просмотр преобразования</target>
+      </trans-unit>
       <trans-unit id="flatFileImport.primaryKey">
         <source xml:lang="en">Primary Key</source>
         <target state="translated">Первичный ключ</target>
@@ -98,6 +134,14 @@
         <source xml:lang="en">Table schema</source>
         <target state="translated">Схема таблицы</target>
       </trans-unit>
+      <trans-unit id="flatFileImport.selectAllColumns">
+        <source xml:lang="en">Select all columns</source>
+        <target state="translated">Выделить все столбцы</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.selectColumn">
+        <source xml:lang="en">Select column {0}</source>
+        <target state="translated">Выберите столбец {0}</target>
+      </trans-unit>
       <trans-unit id="flatFileImport.serverDropdownTitle">
         <source xml:lang="en">Server the database is in</source>
         <target state="translated">База данных сервера в</target>
@@ -105,6 +149,18 @@
       <trans-unit id="flatFileImport.serverName">
         <source xml:lang="en">Server name</source>
         <target state="translated">Имя сервера</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.specifyDerivedColNameTitle">
+        <source xml:lang="en">Column Name</source>
+        <target state="translated">Имя столбца</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.specifyTransformation">
+        <source xml:lang="en">Specify Transformation</source>
+        <target state="translated">Укажите преобразование</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.specifyTransformationForRow">
+        <source xml:lang="en">Specify transformation for row {0}</source>
+        <target state="translated">Укажите преобразование для строки {0}</target>
       </trans-unit>
       <trans-unit id="flatFileImport.success.norows">
         <source xml:lang="en">✔ You have successfully inserted the data into a table.</source>

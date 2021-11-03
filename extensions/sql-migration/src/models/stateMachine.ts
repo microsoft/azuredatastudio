@@ -68,6 +68,12 @@ export enum Page {
 	Summary
 }
 
+export enum WizardEntryPoint {
+	Default = 'Default',
+	SaveAndClose = 'SaveAndClose',
+	RetryMigration = 'RetryMigration',
+}
+
 export interface DatabaseBackupModel {
 	migrationMode: MigrationMode;
 	networkContainerType: NetworkContainerType;
@@ -115,12 +121,19 @@ export interface SavedInfo {
 	selectedDatabases: azdata.DeclarativeTableCellValue[][];
 	migrationTargetType: MigrationTargetType | null;
 	migrationDatabases: azdata.DeclarativeTableCellValue[][];
+	databaseList: string[];
 	subscription: azureResource.AzureResourceSubscription | null;
 	location: azureResource.AzureLocation | null;
 	resourceGroup: azureResource.AzureResourceResourceGroup | null;
 	targetServerInstance: azureResource.AzureSqlManagedInstance | SqlVMServer | null;
 	migrationMode: MigrationMode | null;
 	databaseAssessment: string[] | null;
+	networkContainerType: NetworkContainerType | null;
+	networkShare: NetworkShare | null;
+	targetSubscription: azureResource.AzureResourceSubscription | null;
+	blobs: Blob[];
+	targetDatabaseNames: string[];
+	migrationServiceId: string | null;
 }
 
 
@@ -176,6 +189,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public refreshDatabaseBackupPage!: boolean;
 
 	public _databaseSelection!: azdata.DeclarativeTableCellValue[][];
+	public retryMigration!: boolean;
 	public resumeAssessment!: boolean;
 	public savedInfo!: SavedInfo;
 	public closedPage!: number;
@@ -225,6 +239,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		const ownerUri = await azdata.connection.getUriForConnection(this.sourceConnectionId);
 		try {
 			const response = (await this.migrationService.getAssessments(ownerUri, this._databaseAssessment))!;
+			this._assessmentApiResponse = response;
 			if (response?.assessmentResult) {
 				response.assessmentResult.items = response.assessmentResult.items?.filter(
 					issue => issue.appliesToMigrationTargetPlatform === targetType);
@@ -232,24 +247,41 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				response.assessmentResult.databases?.forEach(
 					database => database.items = database.items?.filter(
 						issue => issue.appliesToMigrationTargetPlatform === targetType));
+				this._assessmentResults = {
+					issues: this._assessmentApiResponse?.assessmentResult?.items || [],
+					databaseAssessments: this._assessmentApiResponse?.assessmentResult?.databases?.map(d => {
+						return {
+							name: d.name,
+							issues: d.items,
+							errors: d.errors,
+						};
+					}) ?? [],
+					errors: this._assessmentApiResponse?.errors ?? []
+				};
+			} else {
+				this._assessmentResults = {
+					issues: [],
+					databaseAssessments: this._databaseAssessment?.map(database => {
+						return {
+							name: database,
+							issues: [],
+							errors: []
+						};
+					}) ?? [],
+					errors: response?.errors ?? [],
+				};
 			}
 
-			this._assessmentApiResponse = response;
-			this._assessmentResults = {
-				issues: this._assessmentApiResponse?.assessmentResult?.items || [],
-				databaseAssessments: this._assessmentApiResponse?.assessmentResult?.databases?.map(d => {
-					return {
-						name: d.name,
-						issues: d.items,
-						errors: d.errors
-					};
-				}) ?? [],
-				errors: this._assessmentApiResponse?.errors ?? []
-			};
 		} catch (error) {
 			this._assessmentResults = {
 				issues: [],
-				databaseAssessments: [],
+				databaseAssessments: this._databaseAssessment?.map(database => {
+					return {
+						name: database,
+						issues: [],
+						errors: []
+					};
+				}) ?? [],
 				errors: [],
 				assessmentError: error
 			};
@@ -263,7 +295,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	private async generateAssessmentTelemetry(): Promise<void> {
 		try {
 
-			let serverIssues = this._assessmentResults.issues.map(i => {
+			let serverIssues = this._assessmentResults?.issues.map(i => {
 				return {
 					ruleId: i.ruleId,
 					count: i.impactedObjects.length
@@ -271,7 +303,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			});
 
 			const serverAssessmentErrorsMap: Map<number, number> = new Map();
-			this._assessmentApiResponse.assessmentResult.errors.forEach(e => {
+			this._assessmentApiResponse?.assessmentResult?.errors?.forEach(e => {
 				serverAssessmentErrorsMap.set(e.errorId, serverAssessmentErrorsMap.get(e.errorId) ?? 0 + 1);
 			});
 
@@ -285,8 +317,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				);
 			});
 
-			const startTime = new Date(this._assessmentApiResponse.startTime);
-			const endTime = new Date(this._assessmentApiResponse.endedTime);
+			const startTime = new Date(this._assessmentApiResponse?.startTime);
+			const endTime = new Date(this._assessmentApiResponse?.endedTime);
 
 			sendSqlMigrationActionEvent(
 				TelemetryViews.MigrationWizardTargetSelectionPage,
@@ -296,33 +328,33 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					'tenantId': this._azureAccount.properties.tenants[0].id,
 					'subscriptionId': this._targetSubscription?.id,
 					'resourceGroup': this._resourceGroup?.name,
-					'hashedServerName': hashString(this._assessmentApiResponse.assessmentResult.name),
+					'hashedServerName': hashString(this._assessmentApiResponse?.assessmentResult?.name),
 					'startTime': startTime.toString(),
 					'endTime': endTime.toString(),
-					'serverVersion': this._assessmentApiResponse.assessmentResult.serverVersion,
-					'serverEdition': this._assessmentApiResponse.assessmentResult.serverEdition,
-					'platform': this._assessmentApiResponse.assessmentResult.serverHostPlatform,
-					'engineEdition': this._assessmentApiResponse.assessmentResult.serverEngineEdition,
+					'serverVersion': this._assessmentApiResponse?.assessmentResult?.serverVersion,
+					'serverEdition': this._assessmentApiResponse?.assessmentResult?.serverEdition,
+					'platform': this._assessmentApiResponse?.assessmentResult?.serverHostPlatform,
+					'engineEdition': this._assessmentApiResponse?.assessmentResult?.serverEngineEdition,
 					'serverIssues': JSON.stringify(serverIssues),
-					'serverErrors': JSON.stringify(serverErrors)
+					'serverErrors': JSON.stringify(serverErrors),
 				},
 				{
-					'issuesCount': this._assessmentResults.issues.length,
-					'warningsCount': this._assessmentResults.databaseAssessments.reduce((count, d) => count + d.issues.length, 0),
+					'issuesCount': this._assessmentResults?.issues.length,
+					'warningsCount': this._assessmentResults?.databaseAssessments.reduce((count, d) => count + d.issues.length, 0),
 					'durationInMilliseconds': endTime.getTime() - startTime.getTime(),
-					'databaseCount': this._assessmentResults.databaseAssessments.length,
-					'serverHostCpuCount': this._assessmentApiResponse.assessmentResult.cpuCoreCount,
-					'serverHostPhysicalMemoryInBytes': this._assessmentApiResponse.assessmentResult.physicalServerMemory,
-					'serverDatabases': this._assessmentApiResponse.assessmentResult.numberOfUserDatabases,
-					'serverDatabasesReadyForMigration': this._assessmentApiResponse.assessmentResult.sqlManagedInstanceTargetReadiness.numberOfDatabasesReadyForMigration,
-					'offlineDatabases': this._assessmentApiResponse.assessmentResult.sqlManagedInstanceTargetReadiness.numberOfNonOnlineDatabases
+					'databaseCount': this._assessmentResults?.databaseAssessments.length,
+					'serverHostCpuCount': this._assessmentApiResponse?.assessmentResult?.cpuCoreCount,
+					'serverHostPhysicalMemoryInBytes': this._assessmentApiResponse?.assessmentResult?.physicalServerMemory,
+					'serverDatabases': this._assessmentApiResponse?.assessmentResult?.numberOfUserDatabases,
+					'serverDatabasesReadyForMigration': this._assessmentApiResponse?.assessmentResult?.sqlManagedInstanceTargetReadiness?.numberOfDatabasesReadyForMigration,
+					'offlineDatabases': this._assessmentApiResponse?.assessmentResult?.sqlManagedInstanceTargetReadiness?.numberOfNonOnlineDatabases,
 				}
 			);
 
 			const databaseWarningsMap: Map<string, number> = new Map();
 			const databaseErrorsMap: Map<number, number> = new Map();
 
-			this._assessmentApiResponse.assessmentResult.databases.forEach(d => {
+			this._assessmentApiResponse?.assessmentResult?.databases.forEach(d => {
 
 				sendSqlMigrationActionEvent(
 					TelemetryViews.MigrationWizardTargetSelectionPage,
@@ -596,12 +628,12 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public async getManagedInstanceValues(subscription: azureResource.AzureResourceSubscription, location: azureResource.AzureLocation, resourceGroup: azureResource.AzureResourceResourceGroup): Promise<azdata.CategoryValue[]> {
 		let managedInstanceValues: azdata.CategoryValue[] = [];
-		if (!this._azureAccount) {
+		if (!this._azureAccount || !subscription) {
 			return managedInstanceValues;
 		}
 		try {
 			this._targetManagedInstances = (await getAvailableManagedInstanceProducts(this._azureAccount, subscription)).filter((mi) => {
-				if (mi.location.toLowerCase() === location.name.toLowerCase() && mi.resourceGroup?.toLowerCase() === resourceGroup?.name.toLowerCase()) {
+				if (mi.location.toLowerCase() === location?.name.toLowerCase() && mi.resourceGroup?.toLowerCase() === resourceGroup?.name.toLowerCase()) {
 					return true;
 				}
 				return false;
@@ -648,7 +680,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		try {
 			if (this._azureAccount && subscription && resourceGroup) {
 				this._targetSqlVirtualMachines = (await getAvailableSqlVMs(this._azureAccount, subscription, resourceGroup)).filter((virtualMachine) => {
-					if (virtualMachine.location === location.name) {
+					if (virtualMachine?.location?.toLowerCase() === location?.name?.toLowerCase()) {
 						if (virtualMachine.properties.sqlImageOffer) {
 							return virtualMachine.properties.sqlImageOffer.toLowerCase().includes('-ws'); //filtering out all non windows sql vms.
 						}
@@ -905,8 +937,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					password: this._sqlServerPassword
 				},
 				scope: this._targetServerInstance.id,
-				autoCutoverConfiguration: {
-					autoCutover: isOfflineMigration
+				offlineConfiguration: {
+					offline: isOfflineMigration
 				}
 			}
 		};
@@ -927,8 +959,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						};
 
 						if (isOfflineMigration) {
-							requestBody.properties.autoCutoverConfiguration = {
-								autoCutover: isOfflineMigration,
+							requestBody.properties.offlineConfiguration = {
+								offline: isOfflineMigration,
 								lastBackupName: this._databaseBackup.blobs[i]?.lastBackupFile
 							};
 						}
@@ -961,8 +993,14 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				);
 				response.databaseMigration.properties.sourceDatabaseName = this._migrationDbs[i];
 				response.databaseMigration.properties.backupConfiguration = requestBody.properties.backupConfiguration!;
-				response.databaseMigration.properties.autoCutoverConfiguration = requestBody.properties.autoCutoverConfiguration!;
+				response.databaseMigration.properties.offlineConfiguration = requestBody.properties.offlineConfiguration!;
 
+				let wizardEntryPoint = WizardEntryPoint.Default;
+				if (this.resumeAssessment) {
+					wizardEntryPoint = WizardEntryPoint.SaveAndClose;
+				} else if (this.retryMigration) {
+					wizardEntryPoint = WizardEntryPoint.RetryMigration;
+				}
 				if (response.status === 201 || response.status === 200) {
 					sendSqlMigrationActionEvent(
 						TelemetryViews.MigrationWizardSummaryPage,
@@ -974,14 +1012,15 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 							'resourceGroup': this._resourceGroup?.name,
 							'location': this._targetServerInstance.location,
 							'targetType': this._targetType,
-							'hashedServerName': hashString(this._assessmentApiResponse.assessmentResult.name),
+							'hashedServerName': hashString(this._assessmentApiResponse?.assessmentResult?.name),
 							'hashedDatabaseName': hashString(this._migrationDbs[i]),
 							'migrationMode': isOfflineMigration ? 'offline' : 'online',
 							'migrationStartTime': new Date().toString(),
 							'targetDatabaseName': this._targetDatabaseNames[i],
 							'serverName': this._targetServerInstance.name,
 							'sqlMigrationServiceId': Buffer.from(this._sqlMigrationService?.id!).toString('base64'),
-							'irRegistered': (this._nodeNames.length > 0).toString()
+							'irRegistered': (this._nodeNames.length > 0).toString(),
+							'wizardEntryPoint': wizardEntryPoint,
 						},
 						{
 						}
@@ -1019,20 +1058,32 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			selectedDatabases: [],
 			migrationTargetType: null,
 			migrationDatabases: [],
+			databaseList: [],
 			subscription: null,
 			location: null,
 			resourceGroup: null,
 			targetServerInstance: null,
 			migrationMode: null,
-			databaseAssessment: null
+			databaseAssessment: null,
+			networkContainerType: null,
+			networkShare: null,
+			targetSubscription: null,
+			blobs: [],
+			targetDatabaseNames: [],
+			migrationServiceId: null,
 		};
 		switch (currentPage) {
 			case Page.Summary:
 
 			case Page.IntegrationRuntime:
+				saveInfo.migrationServiceId = this._sqlMigrationService?.id!;
 
 			case Page.DatabaseBackup:
-
+				saveInfo.networkContainerType = this._databaseBackup.networkContainerType;
+				saveInfo.networkShare = this._databaseBackup.networkShare;
+				saveInfo.targetSubscription = this._databaseBackup.subscription;
+				saveInfo.blobs = this._databaseBackup.blobs;
+				saveInfo.targetDatabaseNames = this._targetDatabaseNames;
 			case Page.MigrationMode:
 				saveInfo.migrationMode = this._databaseBackup.migrationMode;
 			case Page.SKURecommendation:
@@ -1040,6 +1091,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				saveInfo.databaseAssessment = this._databaseAssessment;
 				saveInfo.serverAssessment = this._assessmentResults;
 				saveInfo.migrationDatabases = this._databaseSelection;
+				saveInfo.databaseList = this._migrationDbs;
 				saveInfo.subscription = this._targetSubscription;
 				saveInfo.location = this._location;
 				saveInfo.resourceGroup = this._resourceGroup;

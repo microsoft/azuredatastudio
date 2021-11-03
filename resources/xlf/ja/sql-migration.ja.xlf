@@ -51,10 +51,10 @@
         <target state="translated">評価の実行中</target>
       </trans-unit>
       <trans-unit id="sql.migration.assessment.in.progress.content">
-        <source xml:lang="en">We are assessing the databases in your SQL server instance {0} to identify the right Azure SQL target.
+        <source xml:lang="en">We are assessing the databases in your SQL Server instance {0} to identify the right Azure SQL target.
 
 This may take some time.</source>
-        <target state="translated">適切な Azure SQL ターゲットを特定するために、SQL サーバー インスタンス {0} でデータベースを評価しています。
+        <target state="translated">適切な Azure SQL ターゲットを特定するために、SQL Server インスタンス {0} でデータベースを評価しています。
 
 これには時間がかかることがあります。</target>
       </trans-unit>
@@ -143,6 +143,10 @@ This may take some time.</source>
         <target state="translated">BLOB コンテナー</target>
       </trans-unit>
       <trans-unit id="sql.migration.blob.resourceGroup.select">
+        <source xml:lang="en">Select a resource group.</source>
+        <target state="translated">リソース グループを選択します。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.blob.resourceGroup.select.prompt">
         <source xml:lang="en">Select a resource group value first.</source>
         <target state="translated">最初にリソース グループの値を選択します。</target>
       </trans-unit>
@@ -155,8 +159,8 @@ This may take some time.</source>
         <target state="translated">バックアップを含む Azure Storage Blob コンテナーを指定します。</target>
       </trans-unit>
       <trans-unit id="sql.migration.blob.storage.subscription.label">
-        <source xml:lang="en">Select the subscription that contains the storage account.</source>
-        <target state="translated">ストレージ アカウントを含むサブスクリプションを選択します。</target>
+        <source xml:lang="en">Subscription</source>
+        <target state="translated">サブスクリプション</target>
       </trans-unit>
       <trans-unit id="sql.migration.blob.storage.table.help">
         <source xml:lang="en">Enter target database name and select resource group, storage account and container for the selected source databases.</source>
@@ -261,6 +265,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.cutover.card">
         <source xml:lang="en">Completing cutover</source>
         <target state="translated">カットオーバーを完了しています</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.cutover.error">
+        <source xml:lang="en">An error occurred while initiating cutover.</source>
+        <target state="translated">一括開始中にエラーが発生しました。</target>
       </trans-unit>
       <trans-unit id="sql.migration.cutover.help.main">
         <source xml:lang="en">Perform the following steps before you complete cutover.</source>
@@ -457,6 +465,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.enter.your.sql.cred">
         <source xml:lang="en">Enter the credentials for the source SQL Server instance. These credentials will be used while migrating databases to Azure SQL.</source>
         <target state="translated">ソース SQL Server インスタンスの資格情報を入力します。これらの資格情報は、データベースを Azure SQL に移行する場合に使用されます。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.error">
+        <source xml:lang="en">Error</source>
+        <target state="translated">エラー</target>
       </trans-unit>
       <trans-unit id="sql.migration.failed">
         <source xml:lang="en">Migrations failed</source>
@@ -926,9 +938,37 @@ This may take some time.</source>
         <source xml:lang="en">Resource group</source>
         <target state="translated">リソース グループ</target>
       </trans-unit>
+      <trans-unit id="sql.migration.resume.contine">
+        <source xml:lang="en">Continue last migration attempt...</source>
+        <target state="translated">前の以降の接続を続行します...</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.resume.start">
+        <source xml:lang="en">Start with migration assessment again (recommended)</source>
+        <target state="translated">移行評価を再度開始する (推奨)</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.resume.title">
+        <source xml:lang="en">Run migration workflow again</source>
+        <target state="translated">移行ワークフローを再度実行する</target>
+      </trans-unit>
       <trans-unit id="sql.migration.rg.created">
         <source xml:lang="en">Resource group created</source>
         <target state="translated">リソース グループが作成されました</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.save.close">
+        <source xml:lang="en">Save and close</source>
+        <target state="translated">保存して閉じる</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.saved.assessment.cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">キャンセル</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.saved.assessment.next">
+        <source xml:lang="en">Next</source>
+        <target state="translated">次へ</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.saved.assessment.result">
+        <source xml:lang="en">Saved assessment result</source>
+        <target state="translated">保存済みの評価結果</target>
       </trans-unit>
       <trans-unit id="sql.migration.search">
         <source xml:lang="en">Search</source>
@@ -943,8 +983,8 @@ This may take some time.</source>
         <target state="translated">{0} 秒</target>
       </trans-unit>
       <trans-unit id="sql.migration.select.azure.mi">
-        <source xml:lang="en">Select your target Azure subscription and your target Azure SQL Managed Instance</source>
-        <target state="translated">対象の Azure サブスクリプションと対象の Azure SQL Managed Instance を選択します</target>
+        <source xml:lang="en">Select your target Azure subscription and your target Azure SQL Managed Instance.</source>
+        <target state="translated">対象の Azure サブスクリプションと対象の Azure SQL Managed Instance を選択します。</target>
       </trans-unit>
       <trans-unit id="sql.migration.select.azure.vm">
         <source xml:lang="en">Select your target Azure Subscription and your target SQL Server on Azure Virtual Machine for your target.</source>
@@ -1158,6 +1198,10 @@ This may take some time.</source>
         <source xml:lang="en">SQL Virtual Machine</source>
         <target state="translated">SQL 仮想マシン</target>
       </trans-unit>
+      <trans-unit id="sql.migration.start.migration.button">
+        <source xml:lang="en">Start migration</source>
+        <target state="translated">移行の開始</target>
+      </trans-unit>
       <trans-unit id="sql.migration.start.time">
         <source xml:lang="en">Start time</source>
         <target state="translated">開始時刻</target>
@@ -1165,6 +1209,14 @@ This may take some time.</source>
       <trans-unit id="sql.migration.status">
         <source xml:lang="en">Status</source>
         <target state="translated">状態</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.add.account">
+        <source xml:lang="en">Add account</source>
+        <target state="translated">アカウントを追加</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.add.account.MESSAGE">
+        <source xml:lang="en">Add your Azure account to view existing migrations and their status.</source>
+        <target state="translated">Azure アカウントを追加して、既存の移行とその状態を表示します。</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.canceling">
         <source xml:lang="en">Canceling</source>
@@ -1321,6 +1373,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.view.select.button.label">
         <source xml:lang="en">View/Select</source>
         <target state="translated">表示/選択</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.warning">
+        <source xml:lang="en">Warning</source>
+        <target state="translated">警告</target>
       </trans-unit>
       <trans-unit id="sql.migration.warnings">
         <source xml:lang="en">Warnings</source>

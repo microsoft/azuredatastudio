@@ -23,6 +23,7 @@ import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvent
 import type { FutureInternal } from 'sql/workbench/services/notebook/browser/interfaces';
 import { ICellValue, ResultSetSummary } from 'sql/workbench/services/query/common/query';
 import { QueryResultId } from 'sql/workbench/services/notebook/browser/models/cell';
+import { IPosition } from 'vs/editor/common/core/position';
 
 export enum ViewMode {
 	Notebook,
@@ -539,6 +540,7 @@ export interface ICellModel {
 	cellSourceChanged: boolean;
 	readonly savedConnectionName: string | undefined;
 	attachments: nb.ICellAttachments | undefined;
+	readonly onCurrentEditModeChanged: Event<CellEditModes>;
 	readonly currentMode: CellEditModes;
 	/**
 	 * Adds image as an attachment to cell metadata
@@ -548,6 +550,15 @@ export interface ICellModel {
 	 * Returns the name of the attachment added to metadata.
 	 */
 	addAttachment(mimeType: string, base64Encoding: string, name: string): string;
+	richTextCursorPosition: ICaretPosition;
+	markdownCursorPosition: IPosition;
+}
+
+export interface ICaretPosition {
+	startElementNodes: number[];
+	startOffset: number;
+	endElementNodes: number[];
+	endOffset: number;
 }
 
 export interface IModelFactory {

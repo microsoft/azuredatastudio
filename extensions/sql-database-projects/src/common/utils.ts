@@ -156,20 +156,24 @@ export function convertSlashesForSqlProj(filePath: string): string {
 /**
  * Read SQLCMD variables from xmlDoc and return them
  * @param xmlDoc xml doc to read SQLCMD variables from. Format must be the same that sqlproj and publish profiles use
+ * @param publishProfile true if reading from publish profile
  */
-export function readSqlCmdVariables(xmlDoc: any): Record<string, string> {
+export function readSqlCmdVariables(xmlDoc: Document, publishProfile: boolean): Record<string, string> {
 	let sqlCmdVariables: Record<string, string> = {};
 	for (let i = 0; i < xmlDoc.documentElement.getElementsByTagName(constants.SqlCmdVariable)?.length; i++) {
 		const sqlCmdVar = xmlDoc.documentElement.getElementsByTagName(constants.SqlCmdVariable)[i];
-		const varName = sqlCmdVar.getAttribute(constants.Include);
+		const varName = sqlCmdVar.getAttribute(constants.Include)!;
 
-		if (sqlCmdVar.getElementsByTagName(constants.DefaultValue)[0] !== undefined) {
+		// Publish profiles only support Value, so don't use DefaultValue even if it's there
+		// SSDT uses the Value (like <Value>$(SqlCmdVar__1)</Value>) where there
+		// are local variable values you can set in VS in the properties. Since we don't support that in ADS, only DefaultValue is supported for sqlproj.
+		if (!publishProfile && sqlCmdVar.getElementsByTagName(constants.DefaultValue)[0] !== undefined) {
 			// project file path
-			sqlCmdVariables[varName] = sqlCmdVar.getElementsByTagName(constants.DefaultValue)[0].childNodes[0].nodeValue;
+			sqlCmdVariables[varName] = sqlCmdVar.getElementsByTagName(constants.DefaultValue)[0].childNodes[0].nodeValue!;
 		}
 		else {
 			// profile path
-			sqlCmdVariables[varName] = sqlCmdVar.getElementsByTagName(constants.Value)[0].childNodes[0].nodeValue;
+			sqlCmdVariables[varName] = sqlCmdVar.getElementsByTagName(constants.Value)[0].childNodes[0].nodeValue!;
 		}
 	}
 
@@ -437,6 +441,12 @@ export async function executeCommand(cmd: string, outputChannel: vscode.OutputCh
 			timeout: timeout
 		}, (err, stdout) => {
 			if (err) {
+
+				// removing sensitive data from the exception
+				sensitiveData.forEach(element => {
+					err.cmd = err.cmd?.replace(element, '***');
+					err.message = err.message?.replace(element, '***');
+				});
 				reject(err);
 			} else {
 				resolve(stdout);
@@ -538,8 +548,8 @@ export function validateSqlServerPortNumber(port: string | undefined): boolean {
 	return !isNaN(valueAsNum) && valueAsNum > 0 && valueAsNum < 65535;
 }
 
-export function isEmptyString(password: string | undefined): boolean {
-	return password === undefined || password === '';
+export function isEmptyString(input: string | undefined): boolean {
+	return input === undefined || input === '';
 }
 
 export function isValidSQLPassword(password: string, userName: string = 'sa'): boolean {
@@ -552,3 +562,18 @@ export function isValidSQLPassword(password: string, userName: string = 'sa'): b
 	const hasNonAlphas = /\W/.test(password) ? 1 : 0;
 	return !containsUserName && password.length >= 8 && password.length <= 128 && (hasUpperCase + hasLowerCase + hasNumbers + hasNonAlphas >= 3);
 }
+
+export async function showErrorMessageWithOutputChannel(errorMessageFunc: (error: string) => string, error: any, outputChannel: vscode.OutputChannel): Promise<void> {
+	const result = await vscode.window.showErrorMessage(errorMessageFunc(getErrorMessage(error)), constants.checkoutOutputMessage);
+	if (result === constants.checkoutOutputMessage) {
+		outputChannel.show();
+	}
+}
+
+export async function showInfoMessageWithOutputChannel(message: string, outputChannel: vscode.OutputChannel): Promise<void> {
+	const result = await vscode.window.showInformationMessage(message, constants.checkoutOutputMessage);
+	if (result === constants.checkoutOutputMessage) {
+		outputChannel.show();
+	}
+}
+

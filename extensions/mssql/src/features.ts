@@ -1082,3 +1082,87 @@ export class ProfilerFeature extends SqlOpsFeature<undefined> {
 	}
 }
 
+
+/**
+ * Table Designer Feature
+ * TODO: Move this feature to data protocol client repo once stablized
+ */
+export class TableDesignerFeature extends SqlOpsFeature<undefined> {
+	private static readonly messagesTypes: RPCMessageType[] = [
+		contracts.ProcessTableDesignerEditRequest.type,
+	];
+	constructor(client: SqlOpsDataClient) {
+		super(client, TableDesignerFeature.messagesTypes);
+	}
+
+	public fillClientCapabilities(capabilities: ClientCapabilities): void {
+	}
+
+	public initialize(capabilities: ServerCapabilities): void {
+		this.register(this.messages, {
+			id: UUID.generateUuid(),
+			registerOptions: undefined
+		});
+	}
+
+	protected registerProvider(options: undefined): Disposable {
+		const client = this._client;
+
+		const getTableDesignerInfo = (tableInfo: azdata.designers.TableInfo): Thenable<azdata.designers.TableDesignerInfo> => {
+			try {
+				return client.sendRequest(contracts.GetTableDesignerInfoRequest.type, tableInfo);
+			}
+			catch (e) {
+				client.logFailedRequest(contracts.GetTableDesignerInfoRequest.type, e);
+				return Promise.reject(e);
+			}
+		};
+		const processTableEdit = (tableInfo: azdata.designers.TableInfo, viewModel: azdata.designers.DesignerViewModel, tableChangeInfo: azdata.designers.DesignerEdit): Thenable<azdata.designers.DesignerEditResult> => {
+			let params: contracts.TableDesignerEditRequestParams = {
+				tableInfo: tableInfo,
+				viewModel: viewModel,
+				tableChangeInfo: tableChangeInfo
+			};
+			try {
+				return client.sendRequest(contracts.ProcessTableDesignerEditRequest.type, params);
+			}
+			catch (e) {
+				client.logFailedRequest(contracts.ProcessTableDesignerEditRequest.type, e);
+				return Promise.reject(e);
+			}
+		};
+
+		const saveTable = (tableInfo: azdata.designers.TableInfo, viewModel: azdata.designers.DesignerViewModel): Thenable<void> => {
+			let params: contracts.SaveTableDesignerChangesRequestParams = {
+				tableInfo: tableInfo,
+				viewModel: viewModel
+			};
+			try {
+				return client.sendRequest(contracts.SaveTableDesignerChangesRequest.type, params);
+			}
+			catch (e) {
+				client.logFailedRequest(contracts.SaveTableDesignerChangesRequest.type, e);
+				return Promise.reject(e);
+			}
+		};
+
+		const disposeTableDesigner = (tableInfo: azdata.designers.TableInfo): Thenable<void> => {
+			try {
+				return client.sendRequest(contracts.DisposeTableDesignerRequest.type, tableInfo);
+			}
+			catch (e) {
+				client.logFailedRequest(contracts.DisposeTableDesignerRequest.type, e);
+				return Promise.reject(e);
+			}
+		};
+
+		return azdata.dataprotocol.registerTableDesignerProvider({
+			providerId: client.providerId,
+			getTableDesignerInfo,
+			processTableEdit,
+			saveTable,
+			disposeTableDesigner
+		});
+	}
+}
+

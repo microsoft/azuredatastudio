@@ -1,7 +1,7 @@
 {
   "name": "data-workspace",
-  "displayName": "%extension-displayName%",
-  "description": "%extension-description%",
+  "displayName": "Data Workspace",
+  "description": "Additional common functionality for database projects",
   "version": "0.1.0",
   "publisher": "Microsoft",
   "preview": true,
@@ -20,6 +20,12 @@
     "type": "git",
     "url": "https://github.com/Microsoft/azuredatastudio.git"
   },
+	"capabilities": {
+    "virtualWorkspaces": false,
+    "untrustedWorkspaces": {
+      "supported": true
+    }
+	},
   "extensionDependencies": [],
   "contributes": {
     "configuration": [
@@ -171,7 +177,7 @@
     ]
   },
   "dependencies": {
-    "fast-glob": "^3.1.0",
+    "fast-glob": "^3.2.7",
     "@microsoft/ads-extension-telemetry": "^1.1.5",
     "vscode-nls": "^4.0.0"
   },

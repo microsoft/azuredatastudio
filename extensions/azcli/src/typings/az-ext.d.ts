@@ -141,6 +141,9 @@ declare module 'az-ext' {
 			uid: string // "cea737aa-3f82-4f6a-9bed-2b51c2c33dff"
 		},
 		spec: {
+			backup?: {
+				retentionPeriodInDays: number, // 1
+			}
 			scheduling?: {
 				default?: {
 					resources?: {
@@ -168,6 +171,17 @@ declare module 'az-ext' {
 			metricsDashboard: string, // https://127.0.0.1:30777/grafana/d/40q72HnGk/sql-managed-instance-metrics?var-hostname=miaa1-0
 			primaryEndpoint?: string // "10.91.86.39:32718"
 		}
+	}
+
+	export interface SqlMiDbRestoreResult {
+		destDatabase: string, //testDbToRestore
+		earliestRestoreTime: string, // "2020-08-19T20:25:11Z"
+		latestRestoreTime: string,  //"2020-08-19T20:25:11Z"
+		message: string, //Dry run for restore operation succeeded.
+		observedGeneration: number, //1
+		restorePoint: string, // "2020-08-19T20:25:11Z"
+		sourceDatabase: string, //testDb
+		state: string //Completed
 	}
 
 	export interface PostgresServerShowResult {
@@ -314,15 +328,30 @@ declare module 'az-ext' {
 				edit(
 					name: string,
 					args: {
-						coresLimit?: string,
-						coresRequest?: string,
-						memoryLimit?: string,
-						memoryRequest?: string,
-						noWait?: boolean,
+						coresLimit?: string, //2
+						coresRequest?: string, //1
+						memoryLimit?: string, // 2Gi
+						memoryRequest?: string, //1Gi
+						noWait?: boolean, //true
+						retentionDays?: string, //5
 					},
 					namespace?: string,
 					additionalEnvVars?: AdditionalEnvVars
 				): Promise<AzOutput<void>>
+			},
+			midbarc: {
+				restore(
+					name: string,
+					args: {
+						destName?: string, //testDb
+						managedInstance?: string, //sqlmi1
+						time?: string, //2021-10-12T11:16:30.000Z
+						noWait?: boolean, //true
+						dryRun?: boolean, //true
+					},
+					namespace?: string,
+					additionalEnvVars?: AdditionalEnvVars
+				): Promise<AzOutput<SqlMiDbRestoreResult>>
 			}
 		},
 		getPath(): Promise<string>,
