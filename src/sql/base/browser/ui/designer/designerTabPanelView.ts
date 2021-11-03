@@ -42,7 +42,7 @@ export class DesignerTabPanelView extends Disposable implements IPanelView {
 	}
 }
 
-export class BasicView implements IView {
+export class DesignerTextEditorBasicView implements IView {
 	public get element(): HTMLElement {
 		return this._element;
 	}
