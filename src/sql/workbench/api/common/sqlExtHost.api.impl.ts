@@ -46,10 +46,6 @@ export interface IExtensionApiFactory {
 	vscode: vsIApiFactory;
 }
 
-export interface IAdsExtensionApiFactory {
-	azdata: IAzdataExtensionApiFactory;
-}
-
 /**
  * This method instantiates and returns the extension API surface
  */
@@ -61,10 +57,9 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 	};
 }
 
-
 export interface IAdsExtensionApiFactory {
 	azdata: IAzdataExtensionApiFactory;
-	extHostNotebook: ExtHostNotebook
+	extHostNotebook: ExtHostNotebook; // Needed for VSCode Notebook API redirection
 }
 
 /**
