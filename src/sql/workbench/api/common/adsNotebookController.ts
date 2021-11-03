@@ -17,11 +17,11 @@ const notebookRegistry = Registry.as<INotebookProviderRegistry>(NotebookProvider
 type SelectionChangedEvent = { selected: boolean, notebook: vscode.NotebookDocument; };
 type MessageReceivedEvent = { editor: vscode.NotebookEditor, message: any; };
 type ExecutionHandler = (cells: vscode.NotebookCell[], notebook: vscode.NotebookDocument, controller: vscode.NotebookController) => void | Thenable<void>;
-type InterruptHandler = (notebook: vscode.NotebookDocument) => void | Thenable<void>;
+type InterruptHandler = (notebook: vscode.NotebookDocument) => void | Promise<void>;
 
 export class ADSNotebookController implements vscode.NotebookController {
 	private readonly _kernelData: INotebookKernelDto2;
-	private _interruptHandler: (notebook: vscode.NotebookDocument) => void | Thenable<void>;
+	private _interruptHandler: (notebook: vscode.NotebookDocument) => void | Promise<void>;
 
 	private readonly _onDidChangeSelection = new Emitter<SelectionChangedEvent>();
 	private readonly _onDidReceiveMessage = new Emitter<MessageReceivedEvent>();
@@ -134,15 +134,15 @@ export class ADSNotebookController implements vscode.NotebookController {
 	}
 
 	public updateNotebookAffinity(notebook: vscode.NotebookDocument, affinity: vscode.NotebookControllerAffinity): void {
-		throw new Error('Method not implemented.');
+		// No-op
 	}
 
 	public postMessage(message: any, editor?: vscode.NotebookEditor): Thenable<boolean> {
-		throw new Error('Method not implemented.');
+		return Promise.resolve(true);
 	}
 
 	public asWebviewUri(localResource: vscode.Uri): vscode.Uri {
-		throw new Error('Method not implemented.');
+		return undefined;
 	}
 }
 
@@ -177,22 +177,22 @@ class ADSNotebookCellExecution implements vscode.NotebookCellExecution {
 	}
 
 	public async clearOutput(cell?: vscode.NotebookCell): Promise<void> {
-		throw new Error('Method not implemented.');
+		// No-op
 	}
 
-	public replaceOutput(out: vscode.NotebookCellOutput | vscode.NotebookCellOutput[], cell?: vscode.NotebookCell): Thenable<void> {
-		throw new Error('Method not implemented.');
+	public async replaceOutput(out: vscode.NotebookCellOutput | vscode.NotebookCellOutput[], cell?: vscode.NotebookCell): Promise<void> {
+		// No-op
 	}
 
-	public appendOutput(out: vscode.NotebookCellOutput | vscode.NotebookCellOutput[], cell?: vscode.NotebookCell): Thenable<void> {
-		throw new Error('Method not implemented.');
+	public async appendOutput(out: vscode.NotebookCellOutput | vscode.NotebookCellOutput[], cell?: vscode.NotebookCell): Promise<void> {
+		// No-op
 	}
 
-	public replaceOutputItems(items: vscode.NotebookCellOutputItem | vscode.NotebookCellOutputItem[], output: vscode.NotebookCellOutput): Thenable<void> {
-		throw new Error('Method not implemented.');
+	public async replaceOutputItems(items: vscode.NotebookCellOutputItem | vscode.NotebookCellOutputItem[], output: vscode.NotebookCellOutput): Promise<void> {
+		// No-op
 	}
 
-	public appendOutputItems(items: vscode.NotebookCellOutputItem | vscode.NotebookCellOutputItem[], output: vscode.NotebookCellOutput): Thenable<void> {
-		throw new Error('Method not implemented.');
+	public async appendOutputItems(items: vscode.NotebookCellOutputItem | vscode.NotebookCellOutputItem[], output: vscode.NotebookCellOutput): Promise<void> {
+		// No-op
 	}
 }
