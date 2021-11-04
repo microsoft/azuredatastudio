@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file original="src/sql/base/browser/ui/designer/designer" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="designer.generalGroupName">
+      <source xml:lang="en">General</source>
+    </trans-unit>
     <trans-unit id="designer.loadingDesigner">
       <source xml:lang="en">Loading designer...</source>
     </trans-unit>
@@ -4188,6 +4191,11 @@ Error: {1}</source>
       <source xml:lang="en">Save Changes</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/contrib/tableDesigner/browser/tableDesignerTextEditor" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="designer.textEditorAriaLabel">
+      <source xml:lang="en">Designer text editor.</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/contrib/tasks/browser/tasks.contribution" source-language="en" datatype="plaintext"><body>
     <trans-unit id="inProgressTasksChangesBadge">
       <source xml:lang="en">{0} in progress tasks</source>
@@ -5737,9 +5745,6 @@ Error: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="tableDesigner.advancedTab">
-      <source xml:lang="en">Advanced</source>
-    </trans-unit>
     <trans-unit id="tableDesigner.columnAllowNullTitle">
       <source xml:lang="en">Allow Nulls</source>
     </trans-unit>
@@ -5778,6 +5783,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="tableDesigner.errorProcessingEdit">
       <source xml:lang="en">An error occured while processing the change: {0}</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.generalTab">
+      <source xml:lang="en">General</source>
     </trans-unit>
     <trans-unit id="tableDesigner.nameTitle">
       <source xml:lang="en">Table name</source>
