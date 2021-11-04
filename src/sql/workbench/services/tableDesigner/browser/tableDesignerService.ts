@@ -44,12 +44,10 @@ export class TableDesignerService implements ITableDesignerService {
 	}
 
 	public async openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo): Promise<void> {
-		this._adsTelemetryService.createActionEvent(TelemetryView.TableDesigner, TelemetryAction.Open).withAdditionalProperties(
-			{
-				provider: providerId,
-				newTable: tableInfo.isNewTable
-			}
-		).send();
+		this._adsTelemetryService.createActionEvent(TelemetryView.TableDesigner, TelemetryAction.Open).withAdditionalProperties({
+			provider: providerId,
+			newTable: tableInfo.isNewTable
+		}).send();
 		const provider = this.getProvider(providerId);
 		const tableDesignerInput = this._instantiationService.createInstance(TableDesignerInput, provider, tableInfo);
 		await this._editorService.openEditor(tableDesignerInput, { pinned: true }, ACTIVE_GROUP);
