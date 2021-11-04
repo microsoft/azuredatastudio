@@ -221,10 +221,10 @@
       <source xml:lang="en">Failed to create database {0}. {1}</source>
     </trans-unit>
     <trans-unit id="arc.databaseDetails">
-      <source xml:lang="en">Database Details</source>
+      <source xml:lang="en">Destination Details</source>
     </trans-unit>
     <trans-unit id="arc.databaseDetailsText">
-      <source xml:lang="en">Enter the required settings for this database, including a name and a target managed instance. By default, the source instance is selected.</source>
+      <source xml:lang="en">Enter the required settings for target database name and SQL managed instance. By default, the source managed instance is selected.</source>
     </trans-unit>
     <trans-unit id="arc.databaseName">
       <source xml:lang="en">Database name</source>
@@ -263,7 +263,7 @@
       <source xml:lang="en">Currently dropping another extension, try again once that is completed.</source>
     </trans-unit>
     <trans-unit id="arc.earliestPitrRestorePoint">
-      <source xml:lang="en">Earliest PITR restore point</source>
+      <source xml:lang="en">Earliest point in time</source>
     </trans-unit>
     <trans-unit id="arc.emergency">
       <source xml:lang="en">Emergency</source>
@@ -407,7 +407,7 @@
       <source xml:lang="en">Last transition</source>
     </trans-unit>
     <trans-unit id="arc.latestpitrRestorePoint">
-      <source xml:lang="en">Latest PITR restore point</source>
+      <source xml:lang="en">Latest point in time</source>
     </trans-unit>
     <trans-unit id="arc.learnAboutNodeParameters">
       <source xml:lang="en">Learn more about database engine settings for Azure Arc-enabled PostgreSQL Hyperscale</source>
@@ -584,7 +584,7 @@
       <source xml:lang="en">PostgreSQL Hyperscale - Azure Arc</source>
     </trans-unit>
     <trans-unit id="arc.pitr">
-      <source xml:lang="en">Point-in-time restore (PITR)</source>
+      <source xml:lang="en">Point in time restore</source>
     </trans-unit>
     <trans-unit id="arc.pitrInfo">
       <source xml:lang="en">Specify how long you want to keep your point-in-time backups. Customize this for backup availability.</source>
@@ -719,10 +719,22 @@
       <source xml:lang="en">Restore Database</source>
     </trans-unit>
     <trans-unit id="arc.restoreInfo">
-      <source xml:lang="en">Restore a database to an Azure Arc enabled SQL Managed Instance of your choice.</source>
+      <source xml:lang="en">Restore a database to an Azure Arc enabled SQL Managed Instance.</source>
     </trans-unit>
     <trans-unit id="arc.restorePoint">
-      <source xml:lang="en">Restore point (UTC)</source>
+      <source xml:lang="en">Restore point (UTC), in a time format: 'YYYY-MM-DDTHH:MM:SSZ</source>
+    </trans-unit>
+    <trans-unit id="arc.restorePointDetails">
+      <source xml:lang="en">Restore Point Details</source>
+    </trans-unit>
+    <trans-unit id="arc.restorePointErrorrMessage">
+      <source xml:lang="en">Provide time in correct format and within range: {0} to {1}</source>
+    </trans-unit>
+    <trans-unit id="arc.restorePointText">
+      <source xml:lang="en">Enter a restore point in the specified time format within given range of earliest and latest restore time.</source>
+    </trans-unit>
+    <trans-unit id="arc.restoreTimeWindowUpdateFailed">
+      <source xml:lang="en">Point in time restore time window update failed. {0}</source>
     </trans-unit>
     <trans-unit id="arc.restoring">
       <source xml:lang="en">Restoring</source>
@@ -773,7 +785,7 @@
       <source xml:lang="en">Source Details</source>
     </trans-unit>
     <trans-unit id="arc.sourceDetailsText">
-      <source xml:lang="en">Select a backup source and provide details. Additional settings will be defaulted where possible based on the selected backup.</source>
+      <source xml:lang="en">Select a backup source and provide details. Additional settings will be defaulted where possible based on the selected database.</source>
     </trans-unit>
     <trans-unit id="arc.state">
       <source xml:lang="en">State</source>
@@ -1383,7 +1395,7 @@
       <source xml:lang="en">Specify how long you want to keep your point-in-time backups.</source>
     </trans-unit>
     <trans-unit id="arc.sql.retention.days.label">
-      <source xml:lang="en">PITR retention (days)</source>
+      <source xml:lang="en">Point in time retention (days)</source>
     </trans-unit>
     <trans-unit id="arc.sql.service.tier.business.critical">
       <source xml:lang="en">BusinessCritical</source>
