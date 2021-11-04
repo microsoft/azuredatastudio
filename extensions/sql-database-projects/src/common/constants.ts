@@ -370,6 +370,8 @@ export const PostDeployElements = localize('postDeployElements', "PostDeploy Ele
 export const NoneElements = localize('noneElements', "None Elements");
 export const ImportElements = localize('importElements', "Import Elements");
 export const ProjectReferenceNameElement = localize('projectReferenceNameElement', "Project reference name element");
+export const ProjectReferenceElement = localize('projectReferenceElement', "Project reference");
+export const DacpacReferenceElement = localize('dacpacReferenceElement', "Dacpac reference");
 
 /** Name of the property item in the project file that defines default database collation. */
 export const DefaultCollationProperty = 'DefaultCollation';

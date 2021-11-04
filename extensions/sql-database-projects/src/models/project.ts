@@ -124,8 +124,9 @@ export class Project implements ISqlProject {
 		// get projectGUID
 		try {
 			this._projectGuid = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ProjectGuid)[0].childNodes[0].nodeValue!;
-		} catch {
+		} catch (e) {
 			void window.showErrorMessage(constants.errorReadingProject(constants.ProjectGuid, this.projectFilePath));
+			console.error(utils.getErrorMessage(e));
 		}
 
 		// find all folders and files to include
@@ -137,8 +138,9 @@ export class Project implements ISqlProject {
 				for (let b = 0; b < buildElements.length; b++) {
 					this._files.push(this.createFileProjectEntry(buildElements[b].getAttribute(constants.Include)!, EntryType.File, buildElements[b].getAttribute(constants.Type)!));
 				}
-			} catch {
+			} catch (e) {
 				void window.showErrorMessage(constants.errorReadingProject(constants.BuildElements, this.projectFilePath));
+				console.error(utils.getErrorMessage(e));
 			}
 
 			try {
@@ -149,8 +151,9 @@ export class Project implements ISqlProject {
 						this._files.push(this.createFileProjectEntry(folderElements[f].getAttribute(constants.Include)!, EntryType.Folder));
 					}
 				}
-			} catch {
+			} catch (e) {
 				void window.showErrorMessage(constants.errorReadingProject(constants.Folder, this.projectFilePath));
+				console.error(utils.getErrorMessage(e));
 			}
 
 			// find all pre-deployment scripts to include
@@ -161,8 +164,9 @@ export class Project implements ISqlProject {
 					this._preDeployScripts.push(this.createFileProjectEntry(preDeploy[pre].getAttribute(constants.Include)!, EntryType.File));
 					preDeployScriptCount++;
 				}
-			} catch {
+			} catch (e) {
 				void window.showErrorMessage(constants.errorReadingProject(constants.PreDeployElements, this.projectFilePath));
+				console.error(utils.getErrorMessage(e));
 			}
 
 			// find all post-deployment scripts to include
@@ -173,8 +177,9 @@ export class Project implements ISqlProject {
 					this._postDeployScripts.push(this.createFileProjectEntry(postDeploy[post].getAttribute(constants.Include)!, EntryType.File));
 					postDeployScriptCount++;
 				}
-			} catch {
+			} catch (e) {
 				void window.showErrorMessage(constants.errorReadingProject(constants.PostDeployElements, this.projectFilePath));
+				console.error(utils.getErrorMessage(e));
 			}
 
 			if (preDeployScriptCount > 1 || postDeployScriptCount > 1) {
@@ -187,8 +192,9 @@ export class Project implements ISqlProject {
 				for (let n = 0; n < noneItems.length; n++) {
 					this._noneDeployScripts.push(this.createFileProjectEntry(noneItems[n].getAttribute(constants.Include)!, EntryType.File));
 				}
-			} catch {
+			} catch (e) {
 				void window.showErrorMessage(constants.errorReadingProject(constants.NoneElements, this.projectFilePath));
+				console.error(utils.getErrorMessage(e));
 			}
 		}
 
@@ -199,74 +205,87 @@ export class Project implements ISqlProject {
 				const importTarget = importElements[i];
 				this._importedTargets.push(importTarget.getAttribute(constants.Project)!);
 			}
-		} catch {
+		} catch (e) {
 			void window.showErrorMessage(constants.errorReadingProject(constants.ImportElements, this.projectFilePath));
+			console.error(utils.getErrorMessage(e));
 		}
 
 		// find all SQLCMD variables to include
 		try {
 			this._sqlCmdVariables = utils.readSqlCmdVariables(this.projFileXmlDoc, false);
-		} catch {
+		} catch (e) {
 			void window.showErrorMessage(constants.errorReadingProject(constants.sqlCmdVariables, this.projectFilePath));
+			console.error(utils.getErrorMessage(e));
 		}
 
 		// find all database references to include
 		const references = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ArtifactReference);
 		for (let r = 0; r < references.length; r++) {
-			if (references[r].getAttribute(constants.Condition) !== constants.NotNetCoreCondition) {
-				const filepath = references[r].getAttribute(constants.Include);
-				if (!filepath) {
-					throw new Error(constants.invalidDatabaseReference);
+			try {
+				if (references[r].getAttribute(constants.Condition) !== constants.NotNetCoreCondition) {
+					const filepath = references[r].getAttribute(constants.Include);
+					if (!filepath) {
+						throw new Error(constants.invalidDatabaseReference);
+					}
+
+					const nameNodes = references[r].getElementsByTagName(constants.DatabaseVariableLiteralValue);
+					const name = nameNodes.length === 1 ? nameNodes[0].childNodes[0].nodeValue! : undefined;
+
+					const suppressMissingDependenciesErrorNode = references[r].getElementsByTagName(constants.SuppressMissingDependenciesErrors);
+					const suppressMissingDependencies = suppressMissingDependenciesErrorNode.length === 1 ? (suppressMissingDependenciesErrorNode[0].childNodes[0].nodeValue === constants.True) : false;
+
+					const path = utils.convertSlashesForSqlProj(this.getSystemDacpacUri(`${name}.dacpac`).fsPath);
+					if (path.includes(filepath)) {
+						this._databaseReferences.push(new SystemDatabaseReferenceProjectEntry(
+							Uri.file(filepath),
+							this.getSystemDacpacSsdtUri(`${name}.dacpac`),
+							name,
+							suppressMissingDependencies));
+					} else {
+						this._databaseReferences.push(new DacpacReferenceProjectEntry({
+							dacpacFileLocation: Uri.file(utils.getPlatformSafeFileEntryPath(filepath)),
+							databaseName: name,
+							suppressMissingDependenciesErrors: suppressMissingDependencies
+						}));
+					}
 				}
-
-				const nameNodes = references[r].getElementsByTagName(constants.DatabaseVariableLiteralValue);
-				const name = nameNodes.length === 1 ? nameNodes[0].childNodes[0].nodeValue! : undefined;
-
-				const suppressMissingDependenciesErrorNode = references[r].getElementsByTagName(constants.SuppressMissingDependenciesErrors);
-				const suppressMissingDependencies = suppressMissingDependenciesErrorNode.length === 1 ? (suppressMissingDependenciesErrorNode[0].childNodes[0].nodeValue === constants.True) : false;
-
-				const path = utils.convertSlashesForSqlProj(this.getSystemDacpacUri(`${name}.dacpac`).fsPath);
-				if (path.includes(filepath)) {
-					this._databaseReferences.push(new SystemDatabaseReferenceProjectEntry(
-						Uri.file(filepath),
-						this.getSystemDacpacSsdtUri(`${name}.dacpac`),
-						name,
-						suppressMissingDependencies));
-				} else {
-					this._databaseReferences.push(new DacpacReferenceProjectEntry({
-						dacpacFileLocation: Uri.file(utils.getPlatformSafeFileEntryPath(filepath)),
-						databaseName: name,
-						suppressMissingDependenciesErrors: suppressMissingDependencies
-					}));
-				}
+			} catch (e) {
+				void window.showErrorMessage(constants.errorReadingProject(constants.DacpacReferenceElement, this.projectFilePath));
+				console.error(utils.getErrorMessage(e));
 			}
 		}
 
 		// find project references
 		const projectReferences = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ProjectReference);
 		for (let r = 0; r < projectReferences.length; r++) {
-			const filepath = projectReferences[r].getAttribute(constants.Include);
-			if (!filepath) {
-				throw new Error(constants.invalidDatabaseReference);
-			}
-
-			const nameNodes = projectReferences[r].getElementsByTagName(constants.Name);
-			let name = '';
 			try {
-				name = nameNodes[0].childNodes[0].nodeValue!;
-			} catch {
-				void window.showErrorMessage(constants.errorReadingProject(constants.ProjectReferenceNameElement, this.projectFilePath));
+				const filepath = projectReferences[r].getAttribute(constants.Include);
+				if (!filepath) {
+					throw new Error(constants.invalidDatabaseReference);
+				}
+
+				const nameNodes = projectReferences[r].getElementsByTagName(constants.Name);
+				let name = '';
+				try {
+					name = nameNodes[0].childNodes[0].nodeValue!;
+				} catch (e) {
+					void window.showErrorMessage(constants.errorReadingProject(constants.ProjectReferenceNameElement, this.projectFilePath));
+					console.error(utils.getErrorMessage(e));
+				}
+
+				const suppressMissingDependenciesErrorNode = projectReferences[r].getElementsByTagName(constants.SuppressMissingDependenciesErrors);
+				const suppressMissingDependencies = suppressMissingDependenciesErrorNode.length === 1 ? (suppressMissingDependenciesErrorNode[0].childNodes[0].nodeValue === constants.True) : false;
+
+				this._databaseReferences.push(new SqlProjectReferenceProjectEntry({
+					projectRelativePath: Uri.file(utils.getPlatformSafeFileEntryPath(filepath)),
+					projectName: name,
+					projectGuid: '', // don't care when just reading project as a reference
+					suppressMissingDependenciesErrors: suppressMissingDependencies
+				}));
+			} catch (e) {
+				void window.showErrorMessage(constants.errorReadingProject(constants.ProjectReferenceElement, this.projectFilePath));
+				console.error(utils.getErrorMessage(e));
 			}
-
-			const suppressMissingDependenciesErrorNode = projectReferences[r].getElementsByTagName(constants.SuppressMissingDependenciesErrors);
-			const suppressMissingDependencies = suppressMissingDependenciesErrorNode.length === 1 ? (suppressMissingDependenciesErrorNode[0].childNodes[0].nodeValue === constants.True) : false;
-
-			this._databaseReferences.push(new SqlProjectReferenceProjectEntry({
-				projectRelativePath: Uri.file(utils.getPlatformSafeFileEntryPath(filepath)),
-				projectName: name,
-				projectGuid: '', // don't care when just reading project as a reference
-				suppressMissingDependenciesErrors: suppressMissingDependencies
-			}));
 		}
 	}
 
