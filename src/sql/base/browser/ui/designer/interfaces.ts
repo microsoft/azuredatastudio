@@ -196,16 +196,12 @@ export interface DesignerTextEditor {
 	 */
 	content: string;
 	/**
-	 * Gets or sets a boolean value indicating whether the editor is readonly
-	 */
-	readonly: boolean;
-	/**
 	 * Event fired when the content is changed by user
 	 */
 	readonly onDidContentChange: Event<string>;
 
 	/**
-	 * Lays out the text editor with given dimensions
+	 * Update the size of the editor
 	 */
 	layout(dimensions: Dimension): void;
 }

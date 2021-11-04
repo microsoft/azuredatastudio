@@ -17,7 +17,6 @@ import * as nls from 'vs/nls';
 import * as DOM from 'vs/base/browser/dom';
 import { TextResourceEditorModel } from 'vs/workbench/common/editor/textResourceEditorModel';
 import * as editorCommon from 'vs/editor/common/editorCommon';
-
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -35,7 +34,6 @@ class TableDesignerCodeEditor extends CodeEditorWidget {
 
 export class TableDesignerTextEditor extends BaseTextEditor implements DesignerTextEditor {
 	private _content: string;
-	private _readonly: boolean;
 	private _contentChangeEventEmitter: Emitter<string> = new Emitter<string>();
 	readonly onDidContentChange: Event<string> = this._contentChangeEventEmitter.event;
 
@@ -78,13 +76,13 @@ export class TableDesignerTextEditor extends BaseTextEditor implements DesignerT
 			options.inDiffEditor = false;
 			options.scrollBeyondLastLine = false;
 			options.folding = false;
-			options.renderWhitespace = 'none';
-			options.wordWrap = 'on';
+			options.renderWhitespace = 'all';
+			options.wordWrap = 'off';
 			options.renderIndentGuides = false;
 			options.rulers = [];
 			options.glyphMargin = true;
 			options.minimap = {
-				enabled: false
+				enabled: true
 			};
 		}
 		return options;
@@ -98,7 +96,7 @@ export class TableDesignerTextEditor extends BaseTextEditor implements DesignerT
 	}
 
 	protected getAriaLabel(): string {
-		return nls.localize('designerTextEditorAriaLabel', "Designer editor for event text. Readonly");
+		return nls.localize('designer.textEditorAriaLabel', "Designer text editor.");
 	}
 
 	public override layout(dimension: DOM.Dimension) {
@@ -112,13 +110,7 @@ export class TableDesignerTextEditor extends BaseTextEditor implements DesignerT
 	set content(val: string) {
 		this._content = val;
 		this._modelService.updateModel(this._editorModel, this._content);
-	}
-
-	get readonly(): boolean {
-		return this._readonly;
-	}
-
-	set readonly(val: boolean) {
-		this._readonly = val;
+		this._untitledTextEditorModel.setDirty(false);
+		this.layout(new DOM.Dimension(this._container.clientWidth, this._container.clientHeight));
 	}
 }

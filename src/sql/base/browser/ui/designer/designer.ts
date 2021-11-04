@@ -26,7 +26,7 @@ import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { localize } from 'vs/nls';
 import { TableCellEditorFactory } from 'sql/base/browser/ui/table/tableCellEditorFactory';
 import { CheckBoxColumn } from 'sql/base/browser/ui/table/plugins/checkboxColumn.plugin';
-import { DesignerTabPanelView, DesignerTextEditorBasicView } from 'sql/base/browser/ui/designer/designerTabPanelView';
+import { DesignerTabPanelView } from 'sql/base/browser/ui/designer/designerTabPanelView';
 import { DesignerPropertiesPane, PropertiesPaneObjectContext } from 'sql/base/browser/ui/designer/designerPropertiesPane';
 import { Button, IButtonStyles } from 'sql/base/browser/ui/button/button';
 import { ButtonColumn } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
@@ -73,7 +73,6 @@ export class Designer extends Disposable implements IThemable {
 	private _loadingTimeoutHandle: any;
 	private _groupHeaders: HTMLElement[] = [];
 	private _textEditor: DesignerTextEditor;
-	private _editorTabbedPanel: TabbedPanel;
 
 	constructor(private readonly _container: HTMLElement,
 		textEditorCreator: (container: HTMLElement) => DesignerTextEditor,
@@ -126,17 +125,16 @@ export class Designer extends Disposable implements IThemable {
 			maximumSize: Number.POSITIVE_INFINITY,
 			onDidChange: Event.None
 		}, Sizing.Distribute);
-
 		this._textEditor = textEditorCreator(this._editorContainer);
-		let paneContainer = this._createTextEditorPane();
-		let panelView = new DesignerTextEditorBasicView(
-			300,
-			Number.POSITIVE_INFINITY,
-			size => this._editorTabbedPanel.layout(new DOM.Dimension(DOM.getTotalWidth(this._verticalSplitViewContainer), size)),
-			paneContainer,
-			{ headersize: 35 }
-		);
-		this._verticalSplitView.addView(panelView, Sizing.Distribute);
+		this._verticalSplitView.addView({
+			element: this._editorContainer,
+			layout: size => {
+				this._textEditor.layout(new DOM.Dimension(this._editorContainer.clientWidth, size));
+			},
+			minimumSize: 100,
+			maximumSize: Number.POSITIVE_INFINITY,
+			onDidChange: Event.None
+		}, Sizing.Distribute);
 
 		this._horizontalSplitView.addView({
 			element: this._contentContainer,
@@ -161,21 +159,6 @@ export class Designer extends Disposable implements IThemable {
 		}, (definition, component, viewModel) => {
 			this.setComponentValue(definition, component, viewModel);
 		});
-	}
-
-	private _createTextEditorPane(): HTMLElement {
-		let tabbedPanelContainer = document.createElement('div');
-		this._editorTabbedPanel = new TabbedPanel(tabbedPanelContainer);
-
-		this._editorTabbedPanel.pushTab({
-			identifier: 'editor',
-			title: localize('designer.scriptTitle', "Script"),
-			view: {
-				layout: dim => this._textEditor.layout(dim),
-				render: parent => parent.appendChild(this._editorContainer)
-			}
-		});
-		return tabbedPanelContainer;
 	}
 
 	private styleComponent(component: TabbedPanel | InputBox | Checkbox | Table<Slick.SlickData> | SelectBox | Button): void {
@@ -394,7 +377,6 @@ export class Designer extends Disposable implements IThemable {
 		const viewModel = this._input.viewModel;
 		const scriptProperty = viewModel[ScriptProperty] as InputBoxProperties;
 		this._textEditor.content = scriptProperty.value;
-		this._textEditor.readonly = scriptProperty.enabled === false;
 		this._componentMap.forEach((value) => {
 			this.setComponentValue(value.defintion, value.component, viewModel);
 		});
