@@ -234,12 +234,12 @@ suite.skip('NotebookService:', function (): void {
 		assert.deepStrictEqual(notebookService.getProvidersForFileType('ipynb'), ['sql'], 'sql provider should be registered for ipynb extension');
 
 		const otherProviderRegistration: ProviderDescriptionRegistration = {
-			fileExtensions: 'ipynb',
-			standardKernels: {
+			fileExtensions: ['ipynb'],
+			standardKernels: [{
 				name: 'kernel1',
 				connectionProviderIds: [],
 				displayName: 'Kernel 1'
-			},
+			}],
 			provider: 'otherProvider'
 		};
 
@@ -249,7 +249,7 @@ suite.skip('NotebookService:', function (): void {
 		assert.deepStrictEqual(notebookService.getProvidersForFileType('ipynb'), ['sql', 'otherProvider'], 'otherProvider should also be registered for ipynb extension');
 		assert.deepStrictEqual(notebookService.getSupportedFileExtensions(), ['IPYNB'], 'Only IPYNB should be registered as supported file extension');
 		assert.strictEqual(notebookService.getStandardKernelsForProvider('otherProvider').length, 1, 'otherProvider kernel info could not be found');
-		assert.deepStrictEqual(notebookService.getStandardKernelsForProvider('otherProvider')[0], otherProviderRegistration.standardKernels, 'otherProviderRegistration standard kernels does not match');
+		assert.deepStrictEqual(notebookService.getStandardKernelsForProvider('otherProvider')[0], otherProviderRegistration.standardKernels[0], 'otherProviderRegistration standard kernels does not match');
 	});
 
 	test('tests that dispose() method calls dispose on underlying disposable objects exactly once', async () => {
