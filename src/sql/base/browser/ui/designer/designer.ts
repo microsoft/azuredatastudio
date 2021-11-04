@@ -134,7 +134,7 @@ export class Designer extends Disposable implements IThemable {
 			layout: size => {
 				this.layoutTabbedPanel();
 			},
-			minimumSize: 200,
+			minimumSize: 400,
 			maximumSize: Number.POSITIVE_INFINITY,
 			onDidChange: Event.None
 		}, Sizing.Distribute);
@@ -514,7 +514,7 @@ export class Designer extends Disposable implements IThemable {
 		const groupNames = [];
 		const componentsToCreate = skipTableCreation ? components.filter(component => component.componentType !== 'table') : components;
 		componentsToCreate.forEach(component => {
-			if (component.group && groupNames.indexOf(component.group) === -1) {
+			if (groupNames.indexOf(component.group) === -1) {
 				groupNames.push(component.group);
 			}
 		});
@@ -529,7 +529,7 @@ export class Designer extends Disposable implements IThemable {
 				const groupHeader = container.appendChild(DOM.$('div.full-row'));
 				groupHeaders.push(groupHeader);
 				this.styleGroupHeader(groupHeader);
-				groupHeader.innerText = group;
+				groupHeader.innerText = group ?? localize('designer.generalGroupName', "General");
 				componentsToCreate.forEach(component => {
 					if (component.group === group) {
 						uiComponents.push(this.createComponent(container, component, identifierGetter(component), componentMap, setWidth));
@@ -591,24 +591,26 @@ export class Designer extends Disposable implements IThemable {
 				break;
 			case 'table':
 				const tableProperties = componentDefinition.componentProperties as DesignerTableProperties;
-				const buttonContainer = container.appendChild(DOM.$('.full-row')).appendChild(DOM.$('.add-row-button-container'));
-				const addNewText = localize('designer.newRowText', "Add New");
-				const addRowButton = new Button(buttonContainer, {
-					title: addNewText,
-					secondary: true
-				});
-				addRowButton.onDidClick(() => {
-					this.handleEdit({
-						type: DesignerEditType.Add,
-						property: componentDefinition.propertyName,
+				if (tableProperties.canAddRows !== false) {
+					const buttonContainer = container.appendChild(DOM.$('.full-row')).appendChild(DOM.$('.add-row-button-container'));
+					const addNewText = localize('designer.newRowText', "Add New");
+					const addRowButton = new Button(buttonContainer, {
+						title: addNewText,
+						secondary: true
 					});
-				});
-				this.styleComponent(addRowButton);
-				addRowButton.label = addNewText;
-				addRowButton.icon = {
-					id: `add-row-button new codicon`
-				};
-				this._buttons.push(addRowButton);
+					addRowButton.onDidClick(() => {
+						this.handleEdit({
+							type: DesignerEditType.Add,
+							property: componentDefinition.propertyName,
+						});
+					});
+					this.styleComponent(addRowButton);
+					addRowButton.label = addNewText;
+					addRowButton.icon = {
+						id: `add-row-button new codicon`
+					};
+					this._buttons.push(addRowButton);
+				}
 				const tableContainer = container.appendChild(DOM.$('.full-row'));
 				const table = new Table(tableContainer, {
 					dataProvider: new TableDataView()
@@ -664,24 +666,26 @@ export class Designer extends Disposable implements IThemable {
 							};
 					}
 				});
-				const deleteRowColumn = new ButtonColumn({
-					id: 'deleteRow',
-					iconCssClass: Codicon.trash.classNames,
-					title: localize('designer.removeRowText', "Remove"),
-					width: 20,
-					resizable: false,
-					isFontIcon: true
-				});
-				deleteRowColumn.onClick((e) => {
-					(this._input.viewModel[componentDefinition.propertyName] as DesignerTableProperties).data.splice(e.row, 1);
-					this.handleEdit({
-						type: DesignerEditType.Remove,
-						property: componentDefinition.propertyName,
-						value: e.item
+				if (tableProperties.canRemoveRows !== false) {
+					const deleteRowColumn = new ButtonColumn({
+						id: 'deleteRow',
+						iconCssClass: Codicon.trash.classNames,
+						title: localize('designer.removeRowText', "Remove"),
+						width: 20,
+						resizable: false,
+						isFontIcon: true
 					});
-				});
-				table.registerPlugin(deleteRowColumn);
-				columns.push(deleteRowColumn.definition);
+					deleteRowColumn.onClick((e) => {
+						(this._input.viewModel[componentDefinition.propertyName] as DesignerTableProperties).data.splice(e.row, 1);
+						this.handleEdit({
+							type: DesignerEditType.Remove,
+							property: componentDefinition.propertyName,
+							value: e.item
+						});
+					});
+					table.registerPlugin(deleteRowColumn);
+					columns.push(deleteRowColumn.definition);
+				}
 				table.columns = columns;
 				table.grid.onBeforeEditCell.subscribe((e, data): boolean => {
 					return data.item[data.column.field].enabled !== false;

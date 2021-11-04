@@ -232,7 +232,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			columnProperties.push(...designerInfo.view.additionalTableColumnProperties);
 		}
 
-		const columnsTableProperties = designerInfo.view.columnsTableProperties || [
+		const columnsTableProperties = designerInfo.view.columnsTableProperties?.length > 0 ? designerInfo.view.columnsTableProperties : [
 			designers.TableColumnProperty.Name,
 			designers.TableColumnProperty.Type,
 			designers.TableColumnProperty.Length,
@@ -253,7 +253,9 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 						ariaLabel: localize('tableDesigner.columnsTabTitle', "Columns"),
 						columns: columnsTableProperties,
 						itemProperties: columnProperties,
-						objectTypeDisplayName: localize('tableDesigner.columnTypeName', "Column")
+						objectTypeDisplayName: localize('tableDesigner.columnTypeName', "Column"),
+						canAddRows: designerInfo.view.canAddColumns,
+						canRemoveRows: designerInfo.view.canRemoveColumns
 					}
 				}
 			]
