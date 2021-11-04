@@ -493,31 +493,6 @@ declare module 'azdata' {
 	}
 
 	/**
-	 * Represents the tab of TabbedPanelComponent
-	 */
-	export interface Tab {
-		/**
-		 * Title of the tab
-		 */
-		title: string;
-
-		/**
-		 * Content component of the tab
-		 */
-		content: Component;
-
-		/**
-		 * Id of the tab
-		 */
-		id: string;
-
-		/**
-		 * Icon of the tab
-		 */
-		icon?: IconPath;
-	}
-
-	/**
 	 * Represents the tab group of TabbedPanelComponent
 	 */
 	export interface TabGroup {
@@ -604,6 +579,11 @@ declare module 'azdata' {
 
 	export namespace window {
 
+		/**
+		 * The reason that the dialog was closed
+		 */
+		export type CloseReason = 'close' | 'cancel' | 'ok';
+
 		export interface Dialog {
 			/**
 			 * Width of the dialog.
@@ -635,6 +615,11 @@ declare module 'azdata' {
 			 * Default is undefined.
 			 */
 			dialogProperties?: IDialogProperties;
+
+			/**
+			 * Fired when the dialog is closed for any reason. The value indicates the reason it was closed (such as 'ok' or 'cancel')
+			 */
+			onClosed: vscode.Event<CloseReason>;
 		}
 
 		export interface Wizard {
@@ -1017,17 +1002,23 @@ declare module 'azdata' {
 			/**
 			 * Process the table change.
 			 * @param table the table information
-			 * @param data the object contains the state of the table designer
+			 * @param viewModel the object contains the state of the table designer
 			 * @param tableChangeInfo the information about the change user made through the UI.
 			 */
-			processTableEdit(table: TableInfo, data: DesignerData, tableChangeInfo: DesignerEdit): Thenable<DesignerEditResult>;
+			processTableEdit(table: TableInfo, viewModel: DesignerViewModel, tableChangeInfo: DesignerEdit): Thenable<DesignerEditResult>;
 
 			/**
 			 * Save the table
 			 * @param table the table information
-			 * @param data the object contains the state of the table designer
+			 * @param viewModel the object contains the state of the table designer
 			 */
-			saveTable(table: TableInfo, data: DesignerData): Thenable<void>;
+			saveTable(table: TableInfo, viewModel: DesignerViewModel): Thenable<void>;
+
+			/**
+			 * Notify the provider that the table designer has been closed.
+			 * @param table the table information
+			 */
+			disposeTableDesigner(table: TableInfo): Thenable<void>;
 		}
 
 		/**
@@ -1055,9 +1046,9 @@ declare module 'azdata' {
 			 */
 			isNewTable: boolean;
 			/**
-			 * If this is not a new table, the id will be set to uniquely identify a table.
+			 * Unique identifier of the table. Will be used to decide whether a designer is already opened for the table.
 			 */
-			id?: string;
+			id: string;
 			/**
 			 * Extension can store additional information that the provider needs to uniquely identify a table.
 			 */
@@ -1073,9 +1064,9 @@ declare module 'azdata' {
 			 */
 			view: TableDesignerView;
 			/**
-			 * The data model.
+			 * The initial state of the designer.
 			 */
-			data: DesignerData;
+			viewModel: DesignerViewModel;
 			/**
 			 * The supported column types
 			 */
@@ -1107,7 +1098,9 @@ declare module 'azdata' {
 			Length = 'length',
 			Name = 'name',
 			Type = 'type',
-			IsPrimaryKey = 'isPrimaryKey'
+			IsPrimaryKey = 'isPrimaryKey',
+			Precision = 'precision',
+			Scale = 'scale'
 		}
 
 		/**
@@ -1121,17 +1114,21 @@ declare module 'azdata' {
 			/**
 			 * Additional table column properties.Common table properties are handled by Azure Data Studio. see {@link TableColumnProperty}
 			 */
-			addtionalTableColumnProperties?: DesignerDataPropertyInfo[];
+			additionalTableColumnProperties?: DesignerDataPropertyInfo[];
 			/**
 			 * Additional tabs.
 			 */
-			addtionalTabs?: DesignerTab[];
+			additionalTabs?: DesignerTab[];
+			/**
+			 * The properties to be displayed in the columns table. Default values are: Name, Type, Length, Precision, Scale, IsPrimaryKey, AllowNulls, DefaultValue.
+			 */
+			columnsTableProperties?: string[];
 		}
 
 		/**
-		 * The data model object of the designer.
+		 * The view model of the designer.
 		 */
-		export interface DesignerData {
+		export interface DesignerViewModel {
 			[key: string]: InputBoxProperties | CheckBoxProperties | DropDownProperties | DesignerTableProperties;
 		}
 
@@ -1157,6 +1154,11 @@ declare module 'azdata' {
 			 * The property name
 			 */
 			propertyName: string;
+
+			/**
+			 * The description of the property
+			 */
+			description?: string;
 			/**
 			 * The component type
 			 */
@@ -1254,9 +1256,9 @@ declare module 'azdata' {
 		 */
 		export interface DesignerEditResult {
 			/**
-			 * The data model object.
+			 * The view model object.
 			 */
-			data: DesignerData;
+			viewModel: DesignerViewModel;
 			/**
 			 * Whether the current state is valid.
 			 */

@@ -108,11 +108,7 @@ class SQLMigration {
 					await wizardController.openWizard(connectionId);
 				}
 			}
-
 		}
-
-
-
 	}
 
 	private checkSavedInfo(serverName: string): SavedInfo | undefined {
@@ -138,7 +134,7 @@ let sqlMigration: SQLMigration;
 export async function activate(context: vscode.ExtensionContext) {
 	sqlMigration = new SQLMigration(context);
 	await sqlMigration.registerCommands();
-	let widget = new DashboardWidget();
+	let widget = new DashboardWidget(context);
 	widget.register();
 }
 

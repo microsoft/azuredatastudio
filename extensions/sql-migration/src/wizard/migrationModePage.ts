@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { MigrationMode, MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
+import { MigrationMode, MigrationStateModel, Page, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import * as styles from '../constants/styles';
 
@@ -59,7 +59,7 @@ export class MigrationModePage extends MigrationWizardPage {
 		});
 	}
 	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
-		if (this.originalMigrationMode !== this.migrationStateModel._databaseBackup.migrationMode) {
+		if (this.originalMigrationMode !== this.migrationStateModel._databaseBackup.migrationMode || this.migrationStateModel.resumeAssessment) {
 			this.migrationStateModel.refreshDatabaseBackupPage = true;
 		}
 
@@ -113,7 +113,7 @@ export class MigrationModePage extends MigrationWizardPage {
 			}
 		}).component();
 
-		if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= 3) {
+		if (this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.MigrationMode)) {
 			if (this.migrationStateModel.savedInfo.migrationMode === MigrationMode.ONLINE) {
 				onlineButton.checked = true;
 				offlineButton.checked = false;

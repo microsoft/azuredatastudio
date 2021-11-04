@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import { DoNotAskAgain, Install, nodeButNotAutorestFound, nodeNotFound } from '../common/constants';
+import * as constants from '../common/constants';
 import * as utils from '../common/utils';
 import * as semver from 'semver';
 import { DBProjectConfigurationKey } from './netcoreTool';
@@ -45,10 +45,23 @@ export class AutorestHelper extends ShellExecutionHelper {
 		if (await utils.detectCommandInstallation(autorestCommand)) {
 			return autorestCommand;
 		}
+		else if (await utils.detectCommandInstallation(npxCommand)) {
+			this._outputChannel.appendLine(constants.nodeButNotAutorestFound);
+			const response = await vscode.window.showInformationMessage(constants.nodeButNotAutorestFoundPrompt, constants.installGlobally, constants.runViaNpx);
 
-		if (await utils.detectCommandInstallation(npxCommand)) {
-			this._outputChannel.appendLine(nodeButNotAutorestFound);
-			return `${npxCommand} ${autorestCommand}`;
+			if (response === constants.installGlobally) {
+				this._outputChannel.appendLine(constants.userSelectionInstallGlobally);
+				await this.runStreamedCommand('npm install autorest -g', this._outputChannel);
+				return autorestCommand;
+			} else if (response === constants.runViaNpx) {
+				this._outputChannel.appendLine(constants.userSelectionRunNpx);
+				return `${npxCommand} ${autorestCommand}`;
+			} else {
+				this._outputChannel.appendLine(constants.userSelectionCancelled);
+			}
+		}
+		else {
+			this._outputChannel.appendLine(constants.nodeNotFound);
 		}
 
 		return undefined;
@@ -63,22 +76,21 @@ export class AutorestHelper extends ShellExecutionHelper {
 	public async generateAutorestFiles(specPath: string, outputFolder: string): Promise<string | undefined> {
 		const commandExecutable = await this.detectInstallation();
 
-		if (commandExecutable === undefined) {
+		if (!commandExecutable) {
 			// unable to find autorest or npx
 
 			if (vscode.workspace.getConfiguration(DBProjectConfigurationKey)[nodejsDoNotAskAgainKey] !== true) {
-				this._outputChannel.appendLine(nodeNotFound);
 				return; // user doesn't want to be prompted about installing it
 			}
 
 			// prompt user to install Node.js
-			const result = await vscode.window.showErrorMessage(nodeNotFound, DoNotAskAgain, Install);
+			const result = await vscode.window.showErrorMessage(constants.nodeNotFound, constants.DoNotAskAgain, constants.Install);
 
-			if (result === Install) {
+			if (result === constants.Install) {
 				//open install link
 				const nodejsInstallationUrl = 'https://nodejs.dev/download';
 				await vscode.env.openExternal(vscode.Uri.parse(nodejsInstallationUrl));
-			} else if (result === DoNotAskAgain) {
+			} else if (result === constants.DoNotAskAgain) {
 				const config = vscode.workspace.getConfiguration(DBProjectConfigurationKey);
 				await config.update(nodejsDoNotAskAgainKey, true, vscode.ConfigurationTarget.Global);
 			}
@@ -101,6 +113,6 @@ export class AutorestHelper extends ShellExecutionHelper {
 	 */
 	public constructAutorestCommand(executable: string, specPath: string, outputFolder: string): string {
 		// TODO: should --clear-output-folder be included? We should always be writing to a folder created just for this, but potentially risky
-		return `${executable} --use:${autorestPackageName}@${this.autorestSqlPackageVersion} --input-file="${specPath}" --output-folder="${outputFolder}" --clear-output-folder`;
+		return `${executable} --use:${autorestPackageName}@${this.autorestSqlPackageVersion} --input-file="${specPath}" --output-folder="${outputFolder}" --clear-output-folder --verbose`;
 	}
 }

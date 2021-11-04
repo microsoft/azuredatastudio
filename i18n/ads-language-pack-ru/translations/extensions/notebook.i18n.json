@@ -111,7 +111,7 @@
 		},
 		"dist/dialog/configurePython/configurePathPage": {
 			"configurePython.browseButtonText": "Обзор",
-			"configurePython.descriptionWithKernel": "The '{0}' kernel requires a Python runtime to be configured and dependencies to be installed.",
+			"configurePython.descriptionWithKernel": "Для ядра \"{0}\" требуется настроить среду выполнения Python и установить зависимости.",
 			"configurePython.descriptionWithoutKernel": "Для ядер записных книжек требуется настроить среду выполнения Python и установить зависимости.",
 			"configurePython.existingInstall": "Использовать существующую установку Python",
 			"configurePython.installationType": "Тип установки",
@@ -140,7 +140,7 @@
 			"configurePython.pkgNameColumn": "Имя",
 			"configurePython.requiredDependencies": "Установка необходимых зависимостей ядра",
 			"configurePython.requiredVersionColumn": "Требуемая версия",
-			"msgNoRequirementsForKernel": "No packages are required by default for the kernel '{0}'"
+			"msgNoRequirementsForKernel": "По умолчанию пакеты не требуются для ядра \"{0}\"."
 		},
 		"dist/dialog/managePackages/addNewPackageTab": {
 			"managePackages.addNewTabTitle": "Добавить новый",

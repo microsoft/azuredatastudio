@@ -19,6 +19,9 @@ import { IEditorOpenContext } from 'vs/workbench/common/editor';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { SaveTableChangesAction } from 'sql/workbench/contrib/tableDesigner/browser/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
+import { DesignerPaneSeparator } from 'sql/platform/theme/common/colorRegistry';
+import { TableDesignerTextEditor } from 'sql/workbench/contrib/tableDesigner/browser/tableDesignerTextEditor';
 
 export class TableDesignerEditor extends EditorPane {
 	public static readonly ID: string = 'workbench.editor.tableDesigner';
@@ -57,8 +60,16 @@ export class TableDesignerEditor extends EditorPane {
 		this._saveChangesAction = this._instantiationService.createInstance(SaveTableChangesAction);
 		this._saveChangesAction.enabled = false;
 		actionbar.push(this._saveChangesAction, { icon: true, label: false });
-		this._designer = new Designer(designerContainer, this._contextViewService);
+		this._designer = new Designer(designerContainer, (editorContainer) => {
+			return this._instantiationService.createInstance(TableDesignerTextEditor, editorContainer);
+		}, this._contextViewService);
 		this._register(attachDesignerStyler(this._designer, this.themeService));
+		this._register(registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
+			const border = theme.getColor(DesignerPaneSeparator);
+			if (border) {
+				collector.addRule(`.table-designer-main-container .actionbar-container { border-color: ${border};}`);
+			}
+		}));
 	}
 
 	layout(dimension: DOM.Dimension): void {

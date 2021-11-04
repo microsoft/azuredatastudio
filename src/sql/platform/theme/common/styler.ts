@@ -384,7 +384,9 @@ export function attachDesignerStyler(widget: any, themeService: IThemeService): 
 			selectBoxStyles: selectBoxStyles,
 			tableStyles: tableStyles,
 			checkboxStyles: checkboxStyles,
-			buttonStyles: buttonStyles
+			buttonStyles: buttonStyles,
+			paneSeparator: cr.resolveColorValue(sqlcr.DesignerPaneSeparator, colorTheme),
+			groupHeaderBackground: cr.resolveColorValue(sqlcr.GroupHeaderBackground, colorTheme)
 		});
 	}
 

@@ -10271,6 +10271,7 @@
 			"schema.connectionOptions": "Opções de conexão",
 			"schema.displayName": "Nome de Exibição do provedor",
 			"schema.iconPath": "Caminho do ícone do tipo de servidor",
+			"schema.isQueryProvider": "Whether the provider is also a query provider. The default value is true.",
 			"schema.notebookKernelAlias": "Alias do Kernel do Notebook para o provedor",
 			"schema.providerId": "ID comum do provedor"
 		},
@@ -10787,6 +10788,7 @@
 			"codePreview": "Célula de código",
 			"optionCodeCell": "Célula de código",
 			"optionTextCell": "Célula de texto",
+			"splitCell": "Dividir célula",
 			"textPreview": "Célula de texto"
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/code.component": {
@@ -11225,7 +11227,7 @@
 		},
 		"sql/workbench/contrib/query/browser/queryResultsView": {
 			"messagesTabTitle": "Mensagens",
-			"queryResults.queryEditorCrashError": "The query editor ran into an issue and has stopped working. Please save and reopen it.",
+			"queryResults.queryEditorCrashError": "O editor de consultas teve um problema e parou de funcionar. Salve ele e abra novamente.",
 			"resultsTabTitle": "Resultados"
 		},
 		"sql/workbench/contrib/query/browser/statusBarItems": {
@@ -11981,6 +11983,39 @@
 		"sql/workbench/services/query/common/queryManagement": {
 			"queryManagement.noQueryRunnerForUri": "Não foi possível localizar o Executor de Consulta para o uri: {0}",
 			"queryManagement.uriAlreadyHasQueryRunner": "Uri: {0} inesperadamente já tem um executor de consulta."
+		},
+		"sql/base/browser/ui/designer/designer": {
+			"designer.newRowText": "Adicionar Novo",
+			"designer.removeRowText": "Remover",
+			"tableDesigner.unknownComponentType": "O tipo de componente: {0} não tem suporte"
+		},
+		"sql/base/browser/ui/designer/designerPropertiesPane": {
+			"tableDesigner.propertiesPaneTitle": "Propriedades",
+			"tableDesigner.propertiesPaneTitleWithContext": "Propriedades - {0} {1}"
+		},
+		"sql/workbench/browser/editor/tableDesigner/tableDesignerInput": {
+			"tableDesigner.newTable": "Nova Tabela"
+		},
+		"sql/workbench/contrib/tableDesigner/browser/actions": {
+			"tableDesigner.saveTableChanges": "Salvar Alterações"
+		},
+		"sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput": {
+			"tableDesigner.advancedTab": "Avançado",
+			"tableDesigner.columnAllowNullTitle": "Permitir Valores Nulos",
+			"tableDesigner.columnDefaultValueTitle": "Valor Padrão",
+			"tableDesigner.columnIsPrimaryKeyTitle": "Chave Primária",
+			"tableDesigner.columnLengthTitle": "Comprimento",
+			"tableDesigner.columnNameTitle": "Nome",
+			"tableDesigner.columnTypeName": "Coluna",
+			"tableDesigner.columnTypeTitle": "Tipo",
+			"tableDesigner.columnsTabTitle": "Colunas",
+			"tableDesigner.descriptionTitle": "Descrição",
+			"tableDesigner.nameTitle": "Nome da tabela",
+			"tableDesigner.saveChangeError": "Ocorreu um erro ao salvar as alterações: {0}",
+			"tableDesigner.savedChangeSuccess": "As alterações foram salvas com sucesso.",
+			"tableDesigner.savingChanges": "Alterações no designer da mesa de salvamento...",
+			"tableDesigner.schemaTitle": "Esquema",
+			"tableDesigner.tableObjectType": "Tabela"
 		}
 	}
 }

@@ -316,7 +316,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Language]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Idioma]]></Val>
+            <Val><![CDATA[Lenguaje]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1979,6 +1979,15 @@
           <Val><![CDATA[Add Code Block]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Agregar bloque de código]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/notebook/package.notebook.command.highlightText" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Highlight Markdown Text]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Resaltar texto de Markdown]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

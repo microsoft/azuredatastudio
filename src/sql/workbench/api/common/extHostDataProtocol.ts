@@ -892,16 +892,20 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	}
 
 	// Table Designer
-	public override $getTableDesignerInfo(handle, table: azdata.designers.TableInfo): Thenable<azdata.designers.TableDesignerInfo> {
+	public override $getTableDesignerInfo(handle: number, table: azdata.designers.TableInfo): Thenable<azdata.designers.TableDesignerInfo> {
 		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).getTableDesignerInfo(table);
 	}
 
-	public override $processTableDesignerEdit(handle, table: azdata.designers.TableInfo, data: azdata.designers.DesignerData, edit: azdata.designers.DesignerEdit): Thenable<azdata.designers.DesignerEditResult> {
-		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).processTableEdit(table, data, edit);
+	public override $processTableDesignerEdit(handle: number, table: azdata.designers.TableInfo, viewModel: azdata.designers.DesignerViewModel, edit: azdata.designers.DesignerEdit): Thenable<azdata.designers.DesignerEditResult> {
+		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).processTableEdit(table, viewModel, edit);
 	}
 
-	public override $saveTable(handle, table: azdata.designers.TableInfo, data: azdata.designers.DesignerData): Thenable<void> {
-		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).saveTable(table, data);
+	public override $saveTable(handle: number, table: azdata.designers.TableInfo, viewModel: azdata.designers.DesignerViewModel): Thenable<void> {
+		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).saveTable(table, viewModel);
+	}
+
+	public override $disposeTableDesigner(handle: number, table: azdata.designers.TableInfo): Thenable<void> {
+		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).disposeTableDesigner(table);
 	}
 
 	public override $openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo): Promise<void> {

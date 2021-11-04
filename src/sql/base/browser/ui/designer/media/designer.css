@@ -89,3 +89,11 @@
 	padding-left: 17px;
 	background-position: 2px center;
 }
+
+.designer-component .top-content-container .components-grid {
+	padding-bottom: 10px;
+}
+
+.designer-component .content-container .tabbedPanel {
+	border-width: 0px;
+}

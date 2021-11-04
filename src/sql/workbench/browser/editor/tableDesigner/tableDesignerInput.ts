@@ -12,6 +12,7 @@ import * as azdata from 'azdata';
 import { GroupIdentifier, IEditorInput, IRevertOptions, ISaveOptions } from 'vs/workbench/common/editor';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 const NewTable: string = localize('tableDesigner.newTable', "New Table");
 
@@ -28,7 +29,9 @@ export class TableDesignerInput extends EditorInput {
 		super();
 		this._designerComponentInput = this._instantiationService.createInstance(TableDesignerComponentInput, this._provider, this._tableInfo);
 		this._register(this._designerComponentInput.onStateChange((e) => {
-			this._onDidChangeDirty.fire();
+			if (e.currentState.dirty !== e.previousState.dirty) {
+				this._onDidChangeDirty.fire();
+			}
 		}));
 		const existingNames = editorService.editors.map(editor => editor.getName());
 
@@ -65,7 +68,7 @@ export class TableDesignerInput extends EditorInput {
 	}
 
 	override isSaving(): boolean {
-		return this._designerComponentInput.saving;
+		return this._designerComponentInput.pendingAction === 'save';
 	}
 
 	override async save(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
@@ -78,12 +81,13 @@ export class TableDesignerInput extends EditorInput {
 	}
 
 	override matches(otherInput: any): boolean {
-		// For existing tables, the table designer provider will give us unique id, we can use it to do the match.
-		// For new tables, we can do the match using their names.
 		return otherInput instanceof TableDesignerInput
 			&& this._provider.providerId === otherInput._provider.providerId
-			&& this._tableInfo.isNewTable === otherInput._tableInfo.isNewTable
-			&& (!this._tableInfo.isNewTable || this.getName() === otherInput.getName())
-			&& (this._tableInfo.isNewTable || this._tableInfo.id === otherInput._tableInfo.id);
+			&& this._tableInfo.id === otherInput._tableInfo.id;
+	}
+
+	override dispose(): void {
+		super.dispose();
+		this._provider.disposeTableDesigner(this._tableInfo).then(undefined, err => onUnexpectedError(err));
 	}
 }

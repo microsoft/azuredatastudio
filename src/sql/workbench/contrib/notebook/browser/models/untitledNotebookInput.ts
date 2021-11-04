@@ -25,7 +25,7 @@ export class UntitledNotebookInput extends NotebookInput {
 		@INotebookService notebookService: INotebookService,
 		@IExtensionService extensionService: IExtensionService
 	) {
-		super(title, resource, textInput, textModelService, instantiationService, notebookService, extensionService);
+		super(title, resource, textInput, true, textModelService, instantiationService, notebookService, extensionService);
 	}
 
 	public override get textInput(): UntitledTextEditorInput {
