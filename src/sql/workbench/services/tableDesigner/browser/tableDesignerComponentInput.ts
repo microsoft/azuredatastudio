@@ -165,7 +165,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		}
 
 		const advancedTab = <DesignerTab>{
-			title: localize('tableDesigner.advancedTab', "Advanced"),
+			title: localize('tableDesigner.generalTab', "General"),
 			components: advancedTabComponents
 		};
 
