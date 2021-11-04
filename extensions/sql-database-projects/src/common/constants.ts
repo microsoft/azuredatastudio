@@ -105,7 +105,7 @@ export const dataSourceDropdownTitle = localize('dataSourceDropdownTitle', "Data
 export const noDataSourcesText = localize('noDataSourcesText', "No data sources in this project");
 export const loadProfilePlaceholderText = localize('loadProfilePlaceholderText', "Load profile...");
 export const profileReadError = (err: any) => localize('profileReadError', "Error loading the publish profile. {0}", utils.getErrorMessage(err));
-export const sqlCmdTableLabel = localize('sqlCmdTableLabel', "SQLCMD Variables");
+export const sqlCmdVariables = localize('sqlCmdTableLabel', "SQLCMD Variables");
 export const sqlCmdVariableColumn = localize('sqlCmdVariableColumn', "Name");
 export const sqlCmdValueColumn = localize('sqlCmdValueColumn', "Value");
 export const loadSqlCmdVarsButtonTitle = localize('reloadValuesFromProjectButtonTitle', "Reload values from project");
@@ -286,7 +286,7 @@ export function unableToFindSqlCmdVariable(variableName: string) { return locali
 export function unableToFindDatabaseReference(reference: string) { return localize('unableToFindReference', "Unable to find database reference {0}", reference); }
 export function invalidGuid(guid: string) { return localize('invalidGuid', "Specified GUID is invalid: {0}", guid); }
 export function invalidTargetPlatform(targetPlatform: string, supportedTargetPlatforms: string[]) { return localize('invalidTargetPlatform', "Invalid target platform: {0}. Supported target platforms: {1}", targetPlatform, supportedTargetPlatforms.toString()); }
-
+export function errorReadingProject(section: string, path: string) { return localize('errorReadingProjectGuid', "Error trying to read {0} of project '{1}'", section, path); }
 
 // Action types
 export const deleteAction = localize('deleteAction', 'Delete');
@@ -362,6 +362,16 @@ export const ProjectGuid = 'ProjectGuid';
 export const Type = 'Type';
 export const ExternalStreamingJob: string = 'ExternalStreamingJob';
 export const Sdk: string = 'Sdk';
+
+export const BuildElements = localize('buildElements', "Build Elements");
+export const FolderElements = localize('folderElements', "Folder Elements");
+export const PreDeployElements = localize('preDeployElements', "PreDeploy Elements");
+export const PostDeployElements = localize('postDeployElements', "PostDeploy Elements");
+export const NoneElements = localize('noneElements', "None Elements");
+export const ImportElements = localize('importElements', "Import Elements");
+export const ProjectReferenceNameElement = localize('projectReferenceNameElement', "Project reference name element");
+export const ProjectReferenceElement = localize('projectReferenceElement', "Project reference");
+export const DacpacReferenceElement = localize('dacpacReferenceElement', "Dacpac reference");
 
 /** Name of the property item in the project file that defines default database collation. */
 export const DefaultCollationProperty = 'DefaultCollation';

@@ -120,40 +120,66 @@ export class Project implements ISqlProject {
 
 		// check if this is a new msbuild sdk style project
 		this._isMsbuildSdkStyleProject = this.CheckForMsbuildSdkStyleProject();
+
 		// get projectGUID
-		this._projectGuid = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ProjectGuid)[0].childNodes[0].nodeValue!;
+		try {
+			this._projectGuid = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ProjectGuid)[0].childNodes[0].nodeValue!;
+		} catch (e) {
+			void window.showErrorMessage(constants.errorReadingProject(constants.ProjectGuid, this.projectFilePath));
+			console.error(utils.getErrorMessage(e));
+		}
 
 		// find all folders and files to include
 		for (let ig = 0; ig < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup).length; ig++) {
 			const itemGroup = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup)[ig];
 
-			const buildElements = itemGroup.getElementsByTagName(constants.Build);
-			for (let b = 0; b < buildElements.length; b++) {
-				this._files.push(this.createFileProjectEntry(buildElements[b].getAttribute(constants.Include)!, EntryType.File, buildElements[b].getAttribute(constants.Type)!));
+			try {
+				const buildElements = itemGroup.getElementsByTagName(constants.Build);
+				for (let b = 0; b < buildElements.length; b++) {
+					this._files.push(this.createFileProjectEntry(buildElements[b].getAttribute(constants.Include)!, EntryType.File, buildElements[b].getAttribute(constants.Type)!));
+				}
+			} catch (e) {
+				void window.showErrorMessage(constants.errorReadingProject(constants.BuildElements, this.projectFilePath));
+				console.error(utils.getErrorMessage(e));
 			}
 
-			const folderElements = itemGroup.getElementsByTagName(constants.Folder);
-			for (let f = 0; f < folderElements.length; f++) {
-				// don't add Properties folder since it isn't supported for now
-				if (folderElements[f].getAttribute(constants.Include) !== constants.Properties) {
-					this._files.push(this.createFileProjectEntry(folderElements[f].getAttribute(constants.Include)!, EntryType.Folder));
+			try {
+				const folderElements = itemGroup.getElementsByTagName(constants.Folder);
+				for (let f = 0; f < folderElements.length; f++) {
+					// don't add Properties folder since it isn't supported for now
+					if (folderElements[f].getAttribute(constants.Include) !== constants.Properties) {
+						this._files.push(this.createFileProjectEntry(folderElements[f].getAttribute(constants.Include)!, EntryType.Folder));
+					}
 				}
+			} catch (e) {
+				void window.showErrorMessage(constants.errorReadingProject(constants.Folder, this.projectFilePath));
+				console.error(utils.getErrorMessage(e));
 			}
 
 			// find all pre-deployment scripts to include
 			let preDeployScriptCount: number = 0;
-			const preDeploy = itemGroup.getElementsByTagName(constants.PreDeploy);
-			for (let pre = 0; pre < preDeploy.length; pre++) {
-				this._preDeployScripts.push(this.createFileProjectEntry(preDeploy[pre].getAttribute(constants.Include)!, EntryType.File));
-				preDeployScriptCount++;
+			try {
+				const preDeploy = itemGroup.getElementsByTagName(constants.PreDeploy);
+				for (let pre = 0; pre < preDeploy.length; pre++) {
+					this._preDeployScripts.push(this.createFileProjectEntry(preDeploy[pre].getAttribute(constants.Include)!, EntryType.File));
+					preDeployScriptCount++;
+				}
+			} catch (e) {
+				void window.showErrorMessage(constants.errorReadingProject(constants.PreDeployElements, this.projectFilePath));
+				console.error(utils.getErrorMessage(e));
 			}
 
 			// find all post-deployment scripts to include
 			let postDeployScriptCount: number = 0;
-			const postDeploy = itemGroup.getElementsByTagName(constants.PostDeploy);
-			for (let post = 0; post < postDeploy.length; post++) {
-				this._postDeployScripts.push(this.createFileProjectEntry(postDeploy[post].getAttribute(constants.Include)!, EntryType.File));
-				postDeployScriptCount++;
+			try {
+				const postDeploy = itemGroup.getElementsByTagName(constants.PostDeploy);
+				for (let post = 0; post < postDeploy.length; post++) {
+					this._postDeployScripts.push(this.createFileProjectEntry(postDeploy[post].getAttribute(constants.Include)!, EntryType.File));
+					postDeployScriptCount++;
+				}
+			} catch (e) {
+				void window.showErrorMessage(constants.errorReadingProject(constants.PostDeployElements, this.projectFilePath));
+				console.error(utils.getErrorMessage(e));
 			}
 
 			if (preDeployScriptCount > 1 || postDeployScriptCount > 1) {
@@ -161,74 +187,105 @@ export class Project implements ISqlProject {
 			}
 
 			// find all none-deployment scripts to include
-			const noneItems = itemGroup.getElementsByTagName(constants.None);
-			for (let n = 0; n < noneItems.length; n++) {
-				this._noneDeployScripts.push(this.createFileProjectEntry(noneItems[n].getAttribute(constants.Include)!, EntryType.File));
+			try {
+				const noneItems = itemGroup.getElementsByTagName(constants.None);
+				for (let n = 0; n < noneItems.length; n++) {
+					this._noneDeployScripts.push(this.createFileProjectEntry(noneItems[n].getAttribute(constants.Include)!, EntryType.File));
+				}
+			} catch (e) {
+				void window.showErrorMessage(constants.errorReadingProject(constants.NoneElements, this.projectFilePath));
+				console.error(utils.getErrorMessage(e));
 			}
 		}
 
 		// find all import statements to include
-		const importElements = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Import);
-		for (let i = 0; i < importElements.length; i++) {
-			const importTarget = importElements[i];
-			this._importedTargets.push(importTarget.getAttribute(constants.Project)!);
+		try {
+			const importElements = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Import);
+			for (let i = 0; i < importElements.length; i++) {
+				const importTarget = importElements[i];
+				this._importedTargets.push(importTarget.getAttribute(constants.Project)!);
+			}
+		} catch (e) {
+			void window.showErrorMessage(constants.errorReadingProject(constants.ImportElements, this.projectFilePath));
+			console.error(utils.getErrorMessage(e));
 		}
 
 		// find all SQLCMD variables to include
-		this._sqlCmdVariables = utils.readSqlCmdVariables(this.projFileXmlDoc, false);
+		try {
+			this._sqlCmdVariables = utils.readSqlCmdVariables(this.projFileXmlDoc, false);
+		} catch (e) {
+			void window.showErrorMessage(constants.errorReadingProject(constants.sqlCmdVariables, this.projectFilePath));
+			console.error(utils.getErrorMessage(e));
+		}
 
 		// find all database references to include
 		const references = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ArtifactReference);
 		for (let r = 0; r < references.length; r++) {
-			if (references[r].getAttribute(constants.Condition) !== constants.NotNetCoreCondition) {
-				const filepath = references[r].getAttribute(constants.Include);
-				if (!filepath) {
-					throw new Error(constants.invalidDatabaseReference);
+			try {
+				if (references[r].getAttribute(constants.Condition) !== constants.NotNetCoreCondition) {
+					const filepath = references[r].getAttribute(constants.Include);
+					if (!filepath) {
+						throw new Error(constants.invalidDatabaseReference);
+					}
+
+					const nameNodes = references[r].getElementsByTagName(constants.DatabaseVariableLiteralValue);
+					const name = nameNodes.length === 1 ? nameNodes[0].childNodes[0].nodeValue! : undefined;
+
+					const suppressMissingDependenciesErrorNode = references[r].getElementsByTagName(constants.SuppressMissingDependenciesErrors);
+					const suppressMissingDependencies = suppressMissingDependenciesErrorNode.length === 1 ? (suppressMissingDependenciesErrorNode[0].childNodes[0].nodeValue === constants.True) : false;
+
+					const path = utils.convertSlashesForSqlProj(this.getSystemDacpacUri(`${name}.dacpac`).fsPath);
+					if (path.includes(filepath)) {
+						this._databaseReferences.push(new SystemDatabaseReferenceProjectEntry(
+							Uri.file(filepath),
+							this.getSystemDacpacSsdtUri(`${name}.dacpac`),
+							name,
+							suppressMissingDependencies));
+					} else {
+						this._databaseReferences.push(new DacpacReferenceProjectEntry({
+							dacpacFileLocation: Uri.file(utils.getPlatformSafeFileEntryPath(filepath)),
+							databaseName: name,
+							suppressMissingDependenciesErrors: suppressMissingDependencies
+						}));
+					}
 				}
-
-				const nameNodes = references[r].getElementsByTagName(constants.DatabaseVariableLiteralValue);
-				const name = nameNodes.length === 1 ? nameNodes[0].childNodes[0].nodeValue! : undefined;
-
-				const suppressMissingDependenciesErrorNode = references[r].getElementsByTagName(constants.SuppressMissingDependenciesErrors);
-				const suppressMissingDependencies = suppressMissingDependenciesErrorNode[0].childNodes[0].nodeValue === constants.True;
-
-				const path = utils.convertSlashesForSqlProj(this.getSystemDacpacUri(`${name}.dacpac`).fsPath);
-				if (path.includes(filepath)) {
-					this._databaseReferences.push(new SystemDatabaseReferenceProjectEntry(
-						Uri.file(filepath),
-						this.getSystemDacpacSsdtUri(`${name}.dacpac`),
-						name,
-						suppressMissingDependencies));
-				} else {
-					this._databaseReferences.push(new DacpacReferenceProjectEntry({
-						dacpacFileLocation: Uri.file(utils.getPlatformSafeFileEntryPath(filepath)),
-						databaseName: name,
-						suppressMissingDependenciesErrors: suppressMissingDependencies
-					}));
-				}
+			} catch (e) {
+				void window.showErrorMessage(constants.errorReadingProject(constants.DacpacReferenceElement, this.projectFilePath));
+				console.error(utils.getErrorMessage(e));
 			}
 		}
 
 		// find project references
 		const projectReferences = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ProjectReference);
 		for (let r = 0; r < projectReferences.length; r++) {
-			const filepath = projectReferences[r].getAttribute(constants.Include);
-			if (!filepath) {
-				throw new Error(constants.invalidDatabaseReference);
+			try {
+				const filepath = projectReferences[r].getAttribute(constants.Include);
+				if (!filepath) {
+					throw new Error(constants.invalidDatabaseReference);
+				}
+
+				const nameNodes = projectReferences[r].getElementsByTagName(constants.Name);
+				let name = '';
+				try {
+					name = nameNodes[0].childNodes[0].nodeValue!;
+				} catch (e) {
+					void window.showErrorMessage(constants.errorReadingProject(constants.ProjectReferenceNameElement, this.projectFilePath));
+					console.error(utils.getErrorMessage(e));
+				}
+
+				const suppressMissingDependenciesErrorNode = projectReferences[r].getElementsByTagName(constants.SuppressMissingDependenciesErrors);
+				const suppressMissingDependencies = suppressMissingDependenciesErrorNode.length === 1 ? (suppressMissingDependenciesErrorNode[0].childNodes[0].nodeValue === constants.True) : false;
+
+				this._databaseReferences.push(new SqlProjectReferenceProjectEntry({
+					projectRelativePath: Uri.file(utils.getPlatformSafeFileEntryPath(filepath)),
+					projectName: name,
+					projectGuid: '', // don't care when just reading project as a reference
+					suppressMissingDependenciesErrors: suppressMissingDependencies
+				}));
+			} catch (e) {
+				void window.showErrorMessage(constants.errorReadingProject(constants.ProjectReferenceElement, this.projectFilePath));
+				console.error(utils.getErrorMessage(e));
 			}
-
-			const nameNodes = projectReferences[r].getElementsByTagName(constants.Name);
-			const name = nameNodes[0].childNodes[0].nodeValue!;
-
-			const suppressMissingDependenciesErrorNode = projectReferences[r].getElementsByTagName(constants.SuppressMissingDependenciesErrors);
-			const suppressMissingDependencies = suppressMissingDependenciesErrorNode[0].childNodes[0].nodeValue === constants.True;
-
-			this._databaseReferences.push(new SqlProjectReferenceProjectEntry({
-				projectRelativePath: Uri.file(utils.getPlatformSafeFileEntryPath(filepath)),
-				projectName: name,
-				projectGuid: '', // don't care when just reading project as a reference
-				suppressMissingDependenciesErrors: suppressMissingDependencies
-			}));
 		}
 	}
 
