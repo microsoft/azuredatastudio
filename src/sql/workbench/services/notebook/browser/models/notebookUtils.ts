@@ -40,7 +40,7 @@ export function getStandardKernelsForProvider(providerId: string, notebookServic
 	if (!providerId || !notebookService) {
 		return [];
 	}
-	let standardKernels = notebookService.getStandardKernelsForProvider(providerId);
+	let standardKernels = notebookService.getStandardKernelsForProvider(providerId) ?? [];
 	standardKernels.forEach(kernel => {
 		Object.assign(<IStandardKernelWithProvider>kernel, {
 			name: kernel.name,

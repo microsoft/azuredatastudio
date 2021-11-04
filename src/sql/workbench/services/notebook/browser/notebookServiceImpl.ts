@@ -420,14 +420,12 @@ export class NotebookService extends Disposable implements INotebookService {
 		return Array.from(this._fileToProviderDescriptions.keys());
 	}
 
-	getProvidersForFileType(fileType: string): string[] {
-		fileType = fileType.toUpperCase();
-		let providers = this._fileToProviderDescriptions.get(fileType);
-
-		return providers ? providers.map(provider => provider.provider) : undefined;
+	getProvidersForFileType(fileType: string): string[] | undefined {
+		let providers = this._fileToProviderDescriptions.get(fileType.toUpperCase());
+		return providers?.map(provider => provider.provider);
 	}
 
-	getStandardKernelsForProvider(provider: string): nb.IStandardKernel[] {
+	getStandardKernelsForProvider(provider: string): nb.IStandardKernel[] | undefined {
 		return this._providerToStandardKernels.get(provider.toUpperCase());
 	}
 
