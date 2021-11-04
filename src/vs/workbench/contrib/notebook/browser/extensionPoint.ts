@@ -193,11 +193,11 @@ const adsNotebookRegistry = Registry.as<INotebookProviderRegistry>(NotebookProvi
 notebooksExtensionPoint.setHandler(extensions => {
 	for (let extension of extensions) {
 		for (const notebookContribution of extension.value) {
-			// Remove any leading regex characters from the filename pattern
+			// Remove any leading regex characters and period from the filename pattern
 			let extensions = notebookContribution.selector?.map(s => {
 				let lastDotPosition = s.filenamePattern?.lastIndexOf('.');
-				if (lastDotPosition > 0) {
-					return s.filenamePattern.slice(lastDotPosition);
+				if (lastDotPosition >= 0) {
+					return s.filenamePattern.slice(lastDotPosition + 1);
 				}
 				return s.filenamePattern;
 			}).filter(ext => ext !== undefined);
