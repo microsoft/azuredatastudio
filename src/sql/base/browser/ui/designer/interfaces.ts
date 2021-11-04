@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { PanelTabIdentifier } from 'sql/base/browser/ui/panel/panel';
+import { Dimension } from 'vs/base/browser/dom';
 import { Event } from 'vs/base/common/event';
 
 export interface DesignerComponentInput {
@@ -209,11 +210,12 @@ export interface DesignerTextEditor {
 	 */
 	content: string;
 	/**
-	 * Gets or sets a boolean value indicating whether the editor is readonly
-	 */
-	readonly: boolean;
-	/**
 	 * Event fired when the content is changed by user
 	 */
 	readonly onDidContentChange: Event<string>;
+
+	/**
+	 * Update the size of the editor
+	 */
+	layout(dimensions: Dimension): void;
 }
