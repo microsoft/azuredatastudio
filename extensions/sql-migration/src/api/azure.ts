@@ -38,11 +38,11 @@ export async function getLocations(account: azdata.Account, subscription: Subscr
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
 	}
-	sortResourceArrayByName(response.locations);
 
-	const filteredLocations = response.locations.filter(loc => {
-		return sqlMigrationResourceLocations.includes(loc.displayName);
-	});
+	const filteredLocations = response.locations
+		.filter(loc => sqlMigrationResourceLocations.includes(loc.displayName));
+
+	sortResourceArrayByName(filteredLocations);
 
 	return filteredLocations;
 }
@@ -51,7 +51,7 @@ export type AzureProduct = azureResource.AzureGraphResource;
 
 export async function getResourceGroups(account: azdata.Account, subscription: Subscription): Promise<azureResource.AzureResourceResourceGroup[]> {
 	const api = await getAzureCoreAPI();
-	const result = await api.getResourceGroups(account, subscription, false);
+	const result = await api.getResourceGroups(account, subscription, true);
 	sortResourceArrayByName(result.resourceGroups);
 	return result.resourceGroups;
 }
@@ -360,6 +360,15 @@ export function getResourceGroupFromId(id: string): string {
 
 export function getFullResourceGroupFromId(id: string): string {
 	return id.replace(RegExp('/providers/.*'), '').toLowerCase();
+}
+
+export function getResourceName(id: string): string {
+	const splitResourceId = id.split('/');
+	return splitResourceId[splitResourceId.length - 1];
+}
+
+export function getBlobContainerId(resourceGroupId: string, storageAccountName: string, blobContainerName: string): string {
+	return `${resourceGroupId}/providers/Microsoft.Storage/storageAccounts/${storageAccountName}/blobServices/default/containers/${blobContainerName}`;
 }
 
 export interface SqlMigrationServiceProperties {

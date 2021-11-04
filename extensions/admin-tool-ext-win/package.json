@@ -15,6 +15,12 @@
   "scripts": {
     "postinstall": "node ./build/postinstall.js"
   },
+	"capabilities": {
+    "virtualWorkspaces": false,
+    "untrustedWorkspaces": {
+      "supported": true
+    }
+	},
   "activationEvents": [
     "onCommand:adminToolExtWin.launchSsmsMinPropertiesDialog",
     "onCommand:adminToolExtWin.launchSsmsMinGswDialog"

@@ -3,34 +3,51 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { PanelTabIdentifier } from 'sql/base/browser/ui/panel/panel';
+import { Dimension } from 'vs/base/browser/dom';
 import { Event } from 'vs/base/common/event';
 
 export interface DesignerComponentInput {
 	/**
 	 * The event that is triggerd when the designer state changes.
 	 */
-	readonly onStateChange: Event<DesignerState>;
+	readonly onStateChange: Event<DesignerStateChangedEventArgs>;
+
+	/**
+	 * The event that is triggerd when the designer information is loaded.
+	 */
+	readonly onInitialized: Event<void>;
+
+	/**
+	 * The event that is triggerd when an edit is processed.
+	 */
+	readonly onEditProcessed: Event<DesignerEditProcessedEventArgs>;
 
 	/**
 	 * Gets the object type display name.
 	 */
-
 	readonly objectTypeDisplayName: string;
+
 	/**
 	 * Gets the designer view specification.
 	 */
-	getView(): Promise<DesignerView>;
+	readonly view: DesignerView;
 
 	/**
 	 * Gets the view model.
 	 */
-	getViewModel(): Promise<DesignerViewModel>;
+	readonly viewModel: DesignerViewModel;
 
 	/**
-	 * Process the edit made in the designer.
+	 * Start initilizing the designer input object.
+	 */
+	initialize(): void;
+
+	/**
+	 * Start processing the edit made in the designer, the OnEditProcessed event will be fired when the processing is done.
 	 * @param edit the information about the edit.
 	 */
-	processEdit(edit: DesignerEdit): Promise<DesignerEditResult>;
+	processEdit(edit: DesignerEdit): void;
 
 	/**
 	 * A boolean value indicating whether the current state is valid.
@@ -43,15 +60,35 @@ export interface DesignerComponentInput {
 	readonly dirty: boolean;
 
 	/**
-	 * A boolean value indicating whether the changes are being saved.
+	 * Current in progress action.
 	 */
-	readonly saving: boolean;
+	readonly pendingAction?: DesignerAction;
+
+	/**
+	 * The UI state of the designer, used to restore the state.
+	 */
+	designerUIState?: DesignerUIState;
 }
 
+export interface DesignerUIState {
+	activeTabId: PanelTabIdentifier;
+}
+
+export type DesignerAction = 'save' | 'initialize' | 'processEdit';
+
+export interface DesignerEditProcessedEventArgs {
+	result: DesignerEditResult;
+	edit: DesignerEdit
+}
+
+export interface DesignerStateChangedEventArgs {
+	currentState: DesignerState,
+	previousState: DesignerState
+}
 export interface DesignerState {
 	valid: boolean;
 	dirty: boolean;
-	saving: boolean;
+	pendingAction?: DesignerAction
 }
 
 export const NameProperty = 'name';
@@ -74,6 +111,7 @@ export interface DesignerViewModel {
 
 export interface DesignerDataPropertyInfo {
 	propertyName: string;
+	description?: string;
 	componentType: DesignerComponentTypeName;
 	group?: string;
 	componentProperties?: InputBoxProperties | CheckBoxProperties | DropDownProperties | DesignerTableProperties;
@@ -117,16 +155,29 @@ export interface DesignerTableProperties extends ComponentProperties {
 	columns?: string[];
 
 	/**
-	 * The display name of the object type
+	 * The display name of the object type.
 	 */
 	objectTypeDisplayName: string;
 
 	/**
-	 * the properties of the table data item
+	 * The properties of the table data item.
 	 */
 	itemProperties?: DesignerDataPropertyInfo[];
 
+	/**
+	 * The data to be displayed.
+	 */
 	data?: DesignerTableComponentRowData[];
+
+	/**
+	 * Whether user can add new rows to the table. The default value is true.
+	 */
+	canAddRows?: boolean;
+
+	/**
+	 * Whether user can remove rows from the table. The default value is true.
+	 */
+	canRemoveRows?: boolean;
 }
 
 export interface DesignerTableComponentRowData {
@@ -151,4 +202,20 @@ export type DesignerEditIdentifier = string | { parentProperty: string, index: n
 export interface DesignerEditResult {
 	isValid: boolean;
 	errors?: { message: string, property?: DesignerEditIdentifier }[];
+}
+
+export interface DesignerTextEditor {
+	/**
+	 * Gets or sets the content of the text editor
+	 */
+	content: string;
+	/**
+	 * Event fired when the content is changed by user
+	 */
+	readonly onDidContentChange: Event<string>;
+
+	/**
+	 * Update the size of the editor
+	 */
+	layout(dimensions: Dimension): void;
 }

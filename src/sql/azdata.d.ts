@@ -2182,11 +2182,11 @@ declare module 'azdata' {
 			/**
 			 * The token to use
 			 */
-			token: string,
+			token: string;
 			/**
 			 * What type of token this is (such as Bearer)
 			 */
-			tokenType?: string | undefined
+			tokenType?: string | undefined;
 		}
 
 		/**
@@ -2582,7 +2582,7 @@ declare module 'azdata' {
 		 * @param options Options to configure the editor
 		 * @param name The name used to identify the editor in telemetry
 		 */
-		export function createModelViewEditor(title: string, options?: ModelViewEditorOptions, name?: string,): ModelViewEditor;
+		export function createModelViewEditor(title: string, options?: ModelViewEditorOptions, name?: string): ModelViewEditor;
 
 		export interface ModelViewEditor extends window.ModelViewPanel {
 			/**
@@ -3575,13 +3575,13 @@ declare module 'azdata' {
 		fileContent?: string | undefined;
 
 		/**
-		* Specifies the type of button this is. Default is Normal.
-		*/
+		 * Specifies the type of button this is. Default is Normal.
+		 */
 		buttonType?: ButtonType;
 
 		/**
-		* Description text to display inside button element.
-		*/
+		 * Description text to display inside button element.
+		 */
 		description?: string;
 
 		/**
@@ -3592,7 +3592,7 @@ declare module 'azdata' {
 		/**
 		 * The file type filter used for the file input dialog box - only used when the button type is File
 		 */
-		fileType?: string
+		fileType?: string;
 	}
 
 	export interface LoadingComponentProperties extends ComponentProperties {
@@ -4427,6 +4427,31 @@ declare module 'azdata' {
 		 * Get a QueryDocument object for a file URI
 		 */
 		export function getQueryDocument(fileUri: string): Thenable<QueryDocument>;
+	}
+
+	/**
+	 * Represents the tab of TabbedPanelComponent
+	 */
+	export interface Tab {
+		/**
+		 * Title of the tab
+		 */
+		title: string;
+
+		/**
+		 * Content component of the tab
+		 */
+		content: Component;
+
+		/**
+		 * Id of the tab
+		 */
+		id: string;
+
+		/**
+		 * Icon of the tab
+		 */
+		icon?: IconPath;
 	}
 
 	export interface DashboardTab extends Tab {

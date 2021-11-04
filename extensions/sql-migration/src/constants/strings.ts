@@ -92,10 +92,19 @@ export function accountLinkedMessage(count: number): string {
 }
 export const AZURE_TENANT = localize('sql.migration.azure.tenant', "Azure AD tenant");
 export function ACCOUNT_STALE_ERROR(account: AzureAccount) {
-	return localize('azure.accounts.accountStaleError', "The access token for selected account '{0}' is no longer valid. Select 'Link account' and refresh the account, or select a different account.", `${account.displayInfo.displayName} (${account.displayInfo.userId})`);
+	return localize(
+		'azure.accounts.accountStaleError',
+		"The access token for selected account '{0}' and tenant '{1}' is no longer valid. Select 'Link account' and refresh the account, or select a different account.",
+		`${account?.displayInfo?.displayName} (${account?.displayInfo?.userId})`,
+		`${account?.properties?.tenants[0]?.displayName} (${account?.properties?.tenants[0]?.userId})`);
 }
 export function ACCOUNT_ACCESS_ERROR(account: AzureAccount, error: Error) {
-	return localize('azure.accounts.accountAccessError', "An error occurred while accessing the selected account '{0}'. Select 'Link account' and refresh the account, or select a different account. Error '{1}'", `${account.displayInfo.displayName} (${account.displayInfo.userId})`, error.message);
+	return localize(
+		'azure.accounts.accountAccessError',
+		"An error occurred while accessing the selected account '{0}' and tenant '{1}'. Select 'Link account' and refresh the account, or select a different account. Error '{2}'",
+		`${account?.displayInfo?.displayName} (${account?.displayInfo?.userId})`,
+		`${account?.properties?.tenants[0]?.displayName} (${account?.properties?.tenants[0]?.userId})`,
+		error.message);
 }
 
 // database backup page
@@ -537,7 +546,14 @@ export const AUTHENTICATION_TYPE = localize('sql.migration.authentication.type',
 export const REFRESH_BUTTON_LABEL = localize('sql.migration.status.refresh.label', 'Refresh');
 
 // Saved Assessment Dialog
-
 export const NEXT_LABEL = localize('sql.migration.saved.assessment.next', "Next");
 export const CANCEL_LABEL = localize('sql.migration.saved.assessment.cancel', "Cancel");
 export const SAVED_ASSESSMENT_RESULT = localize('sql.migration.saved.assessment.result', "Saved assessment result");
+
+// Retry Migration
+export const MIGRATION_CANNOT_RETRY = localize('sql.migration.cannot.retry', 'Migration cannot be retried.');
+export const RETRY_MIGRATION = localize('sql.migration.retry.migration', "Retry migration");
+export const MIGRATION_RETRY_ERROR = localize('sql.migration.retry.migration.error', 'An error occurred while retrying the migration.');
+
+export const INVALID_OWNER_URI = localize('sql.migration.invalid.owner.uri.error', 'Cannot connect to the database due to invalid OwnerUri (Parameter \'OwnerUri\')');
+export const DATABASE_BACKUP_PAGE_LOAD_ERROR = localize('sql.migration.database.backup.load.error', 'An error occurred while accessing database details.');

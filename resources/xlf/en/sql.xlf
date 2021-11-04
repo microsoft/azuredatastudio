@@ -1,11 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file original="src/sql/base/browser/ui/designer/designer" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="designer.generalGroupName">
+      <source xml:lang="en">General</source>
+    </trans-unit>
+    <trans-unit id="designer.loadingDesigner">
+      <source xml:lang="en">Loading designer...</source>
+    </trans-unit>
+    <trans-unit id="designer.loadingDesignerCompleted">
+      <source xml:lang="en">Designer is loaded</source>
+    </trans-unit>
     <trans-unit id="designer.newRowText">
       <source xml:lang="en">Add New</source>
     </trans-unit>
+    <trans-unit id="designer.processingChanges">
+      <source xml:lang="en">Processing changes...</source>
+    </trans-unit>
+    <trans-unit id="designer.processingChangesCompleted">
+      <source xml:lang="en">Changes have been processed</source>
+    </trans-unit>
     <trans-unit id="designer.removeRowText">
       <source xml:lang="en">Remove</source>
+    </trans-unit>
+    <trans-unit id="designer.savingChanges">
+      <source xml:lang="en">Saving changes...</source>
+    </trans-unit>
+    <trans-unit id="designer.savingChangesCompleted">
+      <source xml:lang="en">Changes have been saved</source>
     </trans-unit>
     <trans-unit id="tableDesigner.unknownComponentType">
       <source xml:lang="en">The component type: {0} is not supported</source>
@@ -19,6 +40,14 @@
       <source xml:lang="en">Properties - {0} {1}</source>
       <note>{0} is the place holder for object type
 {1} is the place holder for object name</note>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/base/browser/ui/loadingSpinner/loadingSpinner" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="loadingCompletedMessage">
+      <source xml:lang="en">Loading completed</source>
+    </trans-unit>
+    <trans-unit id="loadingMessage">
+      <source xml:lang="en">Loading</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/base/browser/ui/loadingSpinner/loadingSpinner.component" source-language="en" datatype="plaintext"><body>
@@ -238,6 +267,12 @@
     <trans-unit id="watermark.newSqlFile">
       <source xml:lang="en">New SQL File</source>
     </trans-unit>
+    <trans-unit id="workspace.trust.description">
+      <source xml:lang="en">Controls whether or not workspace trust is enabled within Azure Data Studio.</source>
+    </trans-unit>
+    <trans-unit id="workspace.trust.emptyWindow.description">
+      <source xml:lang="en">Controls whether or not the empty window is trusted by default within Azure Data Studio. When used with `#{0}#`, you can enable the full functionality of Azure Data Studio without prompting in an empty window.</source>
+    </trans-unit>
 </body></file>
   <file original="src/sql/base/parts/editableDropdown/browser/dropdown" source-language="en" datatype="plaintext"><body>
     <trans-unit id="editableDropdown.errorValidate">
@@ -366,6 +401,9 @@
     </trans-unit>
     <trans-unit id="gradientTwo">
       <source xml:lang="en">The bottom color for the banner image gradient</source>
+    </trans-unit>
+    <trans-unit id="groupHeaderBackground">
+      <source xml:lang="en">Background color of the group header.</source>
     </trans-unit>
     <trans-unit id="infoBox.errorBackground">
       <source xml:lang="en">InfoBox: The background color when the notification type is error.</source>
@@ -4153,6 +4191,11 @@ Error: {1}</source>
       <source xml:lang="en">Save Changes</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/contrib/tableDesigner/browser/tableDesignerTextEditor" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="designer.textEditorAriaLabel">
+      <source xml:lang="en">Designer text editor.</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/contrib/tasks/browser/tasks.contribution" source-language="en" datatype="plaintext"><body>
     <trans-unit id="inProgressTasksChangesBadge">
       <source xml:lang="en">{0} in progress tasks</source>
@@ -5702,9 +5745,6 @@ Error: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="tableDesigner.advancedTab">
-      <source xml:lang="en">Advanced</source>
-    </trans-unit>
     <trans-unit id="tableDesigner.columnAllowNullTitle">
       <source xml:lang="en">Allow Nulls</source>
     </trans-unit>
@@ -5720,6 +5760,12 @@ Error: {1}</source>
     <trans-unit id="tableDesigner.columnNameTitle">
       <source xml:lang="en">Name</source>
     </trans-unit>
+    <trans-unit id="tableDesigner.columnPrecisionTitle">
+      <source xml:lang="en">Precision</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.columnScaleTitle">
+      <source xml:lang="en">Scale</source>
+    </trans-unit>
     <trans-unit id="tableDesigner.columnTypeName">
       <source xml:lang="en">Column</source>
     </trans-unit>
@@ -5731,6 +5777,15 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="tableDesigner.descriptionTitle">
       <source xml:lang="en">Description</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.errorInitializingTableDesigner">
+      <source xml:lang="en">An error occured while initializing the table designer: {0}</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.errorProcessingEdit">
+      <source xml:lang="en">An error occured while processing the change: {0}</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.generalTab">
+      <source xml:lang="en">General</source>
     </trans-unit>
     <trans-unit id="tableDesigner.nameTitle">
       <source xml:lang="en">Table name</source>

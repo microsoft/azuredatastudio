@@ -493,31 +493,6 @@ declare module 'azdata' {
 	}
 
 	/**
-	 * Represents the tab of TabbedPanelComponent
-	 */
-	export interface Tab {
-		/**
-		 * Title of the tab
-		 */
-		title: string;
-
-		/**
-		 * Content component of the tab
-		 */
-		content: Component;
-
-		/**
-		 * Id of the tab
-		 */
-		id: string;
-
-		/**
-		 * Icon of the tab
-		 */
-		icon?: IconPath;
-	}
-
-	/**
 	 * Represents the tab group of TabbedPanelComponent
 	 */
 	export interface TabGroup {
@@ -604,6 +579,11 @@ declare module 'azdata' {
 
 	export namespace window {
 
+		/**
+		 * The reason that the dialog was closed
+		 */
+		export type CloseReason = 'close' | 'cancel' | 'ok';
+
 		export interface Dialog {
 			/**
 			 * Width of the dialog.
@@ -635,6 +615,11 @@ declare module 'azdata' {
 			 * Default is undefined.
 			 */
 			dialogProperties?: IDialogProperties;
+
+			/**
+			 * Fired when the dialog is closed for any reason. The value indicates the reason it was closed (such as 'ok' or 'cancel')
+			 */
+			onClosed: vscode.Event<CloseReason>;
 		}
 
 		export interface Wizard {
@@ -1113,7 +1098,9 @@ declare module 'azdata' {
 			Length = 'length',
 			Name = 'name',
 			Type = 'type',
-			IsPrimaryKey = 'isPrimaryKey'
+			IsPrimaryKey = 'isPrimaryKey',
+			Precision = 'precision',
+			Scale = 'scale'
 		}
 
 		/**
@@ -1132,6 +1119,18 @@ declare module 'azdata' {
 			 * Additional tabs.
 			 */
 			additionalTabs?: DesignerTab[];
+			/**
+			 * The properties to be displayed in the columns table. Default values are: Name, Type, Length, Precision, Scale, IsPrimaryKey, AllowNulls, DefaultValue.
+			 */
+			columnsTableProperties?: string[];
+			/**
+			 * Whether user can add columns. The default value is true.
+			 */
+			canAddColumns?: boolean;
+			/**
+			 * Whether user can remove columns. The default value is true.
+			 */
+			canRemoveColumns?: boolean;
 		}
 
 		/**
@@ -1163,6 +1162,11 @@ declare module 'azdata' {
 			 * The property name
 			 */
 			propertyName: string;
+
+			/**
+			 * The description of the property
+			 */
+			description?: string;
 			/**
 			 * The component type
 			 */
@@ -1205,6 +1209,16 @@ declare module 'azdata' {
 			 * The data to be displayed.
 			 */
 			data?: DesignerTableComponentDataItem[];
+
+			/**
+			 * Whether user can add new rows to the table. The default value is true.
+			 */
+			canAddRows?: boolean;
+
+			/**
+			 * Whether user can remove rows from the table. The default value is true.
+			 */
+			canRemoveRows?: boolean;
 		}
 
 		/**

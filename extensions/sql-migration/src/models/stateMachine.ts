@@ -71,6 +71,7 @@ export enum Page {
 export enum WizardEntryPoint {
 	Default = 'Default',
 	SaveAndClose = 'SaveAndClose',
+	RetryMigration = 'RetryMigration',
 }
 
 export interface DatabaseBackupModel {
@@ -188,6 +189,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public refreshDatabaseBackupPage!: boolean;
 
 	public _databaseSelection!: azdata.DeclarativeTableCellValue[][];
+	public retryMigration!: boolean;
 	public resumeAssessment!: boolean;
 	public savedInfo!: SavedInfo;
 	public closedPage!: number;
@@ -293,7 +295,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	private async generateAssessmentTelemetry(): Promise<void> {
 		try {
 
-			let serverIssues = this._assessmentResults.issues.map(i => {
+			let serverIssues = this._assessmentResults?.issues.map(i => {
 				return {
 					ruleId: i.ruleId,
 					count: i.impactedObjects.length
@@ -337,10 +339,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					'serverErrors': JSON.stringify(serverErrors),
 				},
 				{
-					'issuesCount': this._assessmentResults.issues.length,
-					'warningsCount': this._assessmentResults.databaseAssessments.reduce((count, d) => count + d.issues.length, 0),
+					'issuesCount': this._assessmentResults?.issues.length,
+					'warningsCount': this._assessmentResults?.databaseAssessments.reduce((count, d) => count + d.issues.length, 0),
 					'durationInMilliseconds': endTime.getTime() - startTime.getTime(),
-					'databaseCount': this._assessmentResults.databaseAssessments.length,
+					'databaseCount': this._assessmentResults?.databaseAssessments.length,
 					'serverHostCpuCount': this._assessmentApiResponse?.assessmentResult?.cpuCoreCount,
 					'serverHostPhysicalMemoryInBytes': this._assessmentApiResponse?.assessmentResult?.physicalServerMemory,
 					'serverDatabases': this._assessmentApiResponse?.assessmentResult?.numberOfUserDatabases,
@@ -626,12 +628,12 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public async getManagedInstanceValues(subscription: azureResource.AzureResourceSubscription, location: azureResource.AzureLocation, resourceGroup: azureResource.AzureResourceResourceGroup): Promise<azdata.CategoryValue[]> {
 		let managedInstanceValues: azdata.CategoryValue[] = [];
-		if (!this._azureAccount) {
+		if (!this._azureAccount || !subscription) {
 			return managedInstanceValues;
 		}
 		try {
 			this._targetManagedInstances = (await getAvailableManagedInstanceProducts(this._azureAccount, subscription)).filter((mi) => {
-				if (mi.location.toLowerCase() === location.name.toLowerCase() && mi.resourceGroup?.toLowerCase() === resourceGroup?.name.toLowerCase()) {
+				if (mi.location.toLowerCase() === location?.name.toLowerCase() && mi.resourceGroup?.toLowerCase() === resourceGroup?.name.toLowerCase()) {
 					return true;
 				}
 				return false;
@@ -678,7 +680,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		try {
 			if (this._azureAccount && subscription && resourceGroup) {
 				this._targetSqlVirtualMachines = (await getAvailableSqlVMs(this._azureAccount, subscription, resourceGroup)).filter((virtualMachine) => {
-					if (virtualMachine.location === location.name) {
+					if (virtualMachine?.location?.toLowerCase() === location?.name?.toLowerCase()) {
 						if (virtualMachine.properties.sqlImageOffer) {
 							return virtualMachine.properties.sqlImageOffer.toLowerCase().includes('-ws'); //filtering out all non windows sql vms.
 						}
@@ -996,6 +998,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				let wizardEntryPoint = WizardEntryPoint.Default;
 				if (this.resumeAssessment) {
 					wizardEntryPoint = WizardEntryPoint.SaveAndClose;
+				} else if (this.retryMigration) {
+					wizardEntryPoint = WizardEntryPoint.RetryMigration;
 				}
 				if (response.status === 201 || response.status === 200) {
 					sendSqlMigrationActionEvent(

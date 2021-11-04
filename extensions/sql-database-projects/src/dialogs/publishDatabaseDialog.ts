@@ -17,6 +17,7 @@ import { cssStyles } from '../common/uiConstants';
 import { getConnectionName, getDockerBaseImages } from './utils';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { IDeployProfile } from '../models/deploy/deployProfile';
+import { Deferred } from '../common/promise';
 
 interface DataSourceDropdownValue extends azdataType.CategoryValue {
 	dataSource: SqlConnectionDataSource;
@@ -53,6 +54,8 @@ export class PublishDatabaseDialog {
 	private profileUsed: boolean = false;
 	private serverName: string | undefined;
 
+	private completionPromise: Deferred = new Deferred();
+
 	private toDispose: vscode.Disposable[] = [];
 
 	public publish: ((proj: Project, profile: IDeploySettings) => any) | undefined;
@@ -62,6 +65,7 @@ export class PublishDatabaseDialog {
 
 	constructor(private project: Project) {
 		this.dialog = utils.getAzdataApi()!.window.createModelViewDialog(constants.publishDialogName, 'sqlProjectPublishDialog');
+		this.toDispose.push(this.dialog.onClosed(_ => this.completionPromise.resolve()));
 		this.publishTab = utils.getAzdataApi()!.window.createTab(constants.publishDialogName);
 	}
 
@@ -81,6 +85,10 @@ export class PublishDatabaseDialog {
 		this.dialog.customButtons.push(generateScriptButton);
 
 		utils.getAzdataApi()!.window.openDialog(this.dialog);
+	}
+
+	public waitForClose(): Promise<void> {
+		return this.completionPromise.promise;
 	}
 
 	private dispose(): void {

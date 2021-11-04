@@ -29,7 +29,9 @@ export class TableDesignerInput extends EditorInput {
 		super();
 		this._designerComponentInput = this._instantiationService.createInstance(TableDesignerComponentInput, this._provider, this._tableInfo);
 		this._register(this._designerComponentInput.onStateChange((e) => {
-			this._onDidChangeDirty.fire();
+			if (e.currentState.dirty !== e.previousState.dirty) {
+				this._onDidChangeDirty.fire();
+			}
 		}));
 		const existingNames = editorService.editors.map(editor => editor.getName());
 
@@ -66,7 +68,7 @@ export class TableDesignerInput extends EditorInput {
 	}
 
 	override isSaving(): boolean {
-		return this._designerComponentInput.saving;
+		return this._designerComponentInput.pendingAction === 'save';
 	}
 
 	override async save(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
