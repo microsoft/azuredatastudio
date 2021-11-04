@@ -28,6 +28,7 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
 import { ITextEditorOptions } from 'vs/platform/editor/common/editor';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 class TableDesignerCodeEditor extends CodeEditorWidget {
 }
@@ -59,7 +60,7 @@ export class TableDesignerTextEditor extends BaseTextEditor implements DesignerT
 		this.setVisible(true);
 		this._untitledTextEditorModel = this.instantiationService.createInstance(UntitledTextEditorModel, URI.from({ scheme: Schemas.untitled }), false, undefined, 'sql', undefined);
 		this._editorInput = this.instantiationService.createInstance(UntitledTextEditorInput, this._untitledTextEditorModel);
-		this.setInput(this._editorInput, undefined, undefined);
+		this.setInput(this._editorInput, undefined, undefined).catch(onUnexpectedError);
 		this._editorInput.resolve().then((model) => {
 			this._editorModel = model.textEditorModel;
 		});
