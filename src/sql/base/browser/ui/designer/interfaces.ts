@@ -110,6 +110,7 @@ export interface DesignerViewModel {
 
 export interface DesignerDataPropertyInfo {
 	propertyName: string;
+	description?: string;
 	componentType: DesignerComponentTypeName;
 	group?: string;
 	componentProperties?: InputBoxProperties | CheckBoxProperties | DropDownProperties | DesignerTableProperties;
@@ -187,4 +188,19 @@ export type DesignerEditIdentifier = string | { parentProperty: string, index: n
 export interface DesignerEditResult {
 	isValid: boolean;
 	errors?: { message: string, property?: DesignerEditIdentifier }[];
+}
+
+export interface DesignerTextEditor {
+	/**
+	 * Gets or sets the content of the text editor
+	 */
+	content: string;
+	/**
+	 * Gets or sets a boolean value indicating whether the editor is readonly
+	 */
+	readonly: boolean;
+	/**
+	 * Event fired when the content is changed by user
+	 */
+	readonly onDidContentChange: Event<string>;
 }

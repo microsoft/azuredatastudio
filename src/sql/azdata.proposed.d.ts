@@ -579,6 +579,11 @@ declare module 'azdata' {
 
 	export namespace window {
 
+		/**
+		 * The reason that the dialog was closed
+		 */
+		export type CloseReason = 'close' | 'cancel' | 'ok';
+
 		export interface Dialog {
 			/**
 			 * Width of the dialog.
@@ -610,6 +615,11 @@ declare module 'azdata' {
 			 * Default is undefined.
 			 */
 			dialogProperties?: IDialogProperties;
+
+			/**
+			 * Fired when the dialog is closed for any reason. The value indicates the reason it was closed (such as 'ok' or 'cancel')
+			 */
+			onClosed: vscode.Event<CloseReason>;
 		}
 
 		export interface Wizard {
@@ -1088,7 +1098,9 @@ declare module 'azdata' {
 			Length = 'length',
 			Name = 'name',
 			Type = 'type',
-			IsPrimaryKey = 'isPrimaryKey'
+			IsPrimaryKey = 'isPrimaryKey',
+			Precision = 'precision',
+			Scale = 'scale'
 		}
 
 		/**
@@ -1107,6 +1119,10 @@ declare module 'azdata' {
 			 * Additional tabs.
 			 */
 			additionalTabs?: DesignerTab[];
+			/**
+			 * The properties to be displayed in the columns table. Default values are: Name, Type, Length, Precision, Scale, IsPrimaryKey, AllowNulls, DefaultValue.
+			 */
+			columnsTableProperties?: string[];
 		}
 
 		/**
@@ -1138,6 +1154,11 @@ declare module 'azdata' {
 			 * The property name
 			 */
 			propertyName: string;
+
+			/**
+			 * The description of the property
+			 */
+			description?: string;
 			/**
 			 * The component type
 			 */

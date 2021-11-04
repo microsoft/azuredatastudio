@@ -851,6 +851,7 @@ export interface ExtHostModelViewDialogShape {
 	$validateNavigation(handle: number, info: azdata.window.WizardPageChangeInfo): Thenable<boolean>;
 	$validateDialogClose(handle: number): Thenable<boolean>;
 	$handleSave(handle: number): Thenable<boolean>;
+	$onClosed(handle: number, reason: azdata.window.CloseReason): void;
 }
 
 export interface MainThreadModelViewDialogShape extends IDisposable {
