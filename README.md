@@ -131,7 +131,7 @@ Copyright (c) Microsoft Corporation. All rights reserved.
 
 Licensed under the [Source EULA](LICENSE.txt).
 
-[win-user]: https://go.microsoft.com/fwlink/?linkid=2176805
+[win-user]: https://go.microsoft.com/fwlink/?linkid=2176805 
 [win-system]: https://go.microsoft.com/fwlink/?linkid=2175910
 [win-zip]: https://go.microsoft.com/fwlink/?linkid=2176806
 [osx-zip]: https://go.microsoft.com/fwlink/?linkid=2176807
