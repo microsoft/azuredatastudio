@@ -13,7 +13,7 @@ import { GroupIdentifier, IEditorInput, IRevertOptions, ISaveOptions } from 'vs/
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { onUnexpectedError } from 'vs/base/common/errors';
-import { Schemas } from 'vs/base/common/network';
+import { Schemas } from 'sql/base/common/schemas';
 
 const NewTable: string = localize('tableDesigner.newTable', "New Table");
 
@@ -55,7 +55,7 @@ export class TableDesignerInput extends EditorInput {
 
 	public get resource(): URI {
 		return URI.from({
-			scheme: Schemas.tmp,
+			scheme: Schemas.tableDesigner,
 			path: 'table-designer'
 		});
 	}
