@@ -989,7 +989,7 @@
                     "fields": [
                       {
                         "type": "options",
-                        "label": "%arc.sql.high.availability.label%",
+                        "label": "%arc.sql.replicas.label%",
                         "description": "%arc.sql.high.availability.description%",
                         "required": true,
                         "variableName": "AZDATA_NB_VAR_SQL_REPLICAS",
@@ -1085,6 +1085,7 @@
                         "variableName": "AZDATA_NB_VAR_SQL_CORES_REQUEST",
                         "type": "number",
                         "min": 1,
+                        "defaultValue": 2,
                         "required": false,
                         "validations": [
                           {
@@ -1100,6 +1101,7 @@
                         "variableName": "AZDATA_NB_VAR_SQL_CORES_LIMIT",
                         "type": "number",
                         "min": 1,
+                        "defaultValue": 4,
                         "required": false,
                         "validations": [
                           {
@@ -1115,6 +1117,7 @@
                         "variableName": "AZDATA_NB_VAR_SQL_MEMORY_REQUEST",
                         "type": "number",
                         "min": 2,
+                        "defaultValue": 4,
                         "required": false,
                         "validations": [
                           {
@@ -1130,6 +1133,7 @@
                         "variableName": "AZDATA_NB_VAR_SQL_MEMORY_LIMIT",
                         "type": "number",
                         "min": 2,
+                        "defaultValue": 8,
                         "required": false,
                         "validations": [
                           {
@@ -1159,8 +1163,14 @@
                         "label": "%arc.sql.dev.use.label%",
                         "description": "%arc.sql.dev.use.description%",
                         "defaultValue": "false",
-                        "variableName": "AZDATA_NB_VAR_SQL_DEV_USE",
-                        "required": true
+                        "variableName": "AZDATA_NB_VAR_SQL_DEV_USE"
+                      },
+                      {
+                        "type": "checkbox",
+                        "label": "%arc.sql.license.type.label%",
+                        "variableName": "AZDATA_NB_VAR_SQL_LICENSE_TYPE",
+                        "description": "%arc.sql.license.type.description%",
+                        "defaultValue": false
                       }
                     ]
                   },
