@@ -910,6 +910,9 @@ describe('Project: Msbuild sdk style project content operations', function (): v
 		// ..\other\folder2\*.sql
 		should(project.files.filter(f => f.relativePath === '..\\other\\folder2\\file1.sql').length).equal(1);
 		should(project.files.filter(f => f.relativePath === '..\\other\\folder2\\file2.sql').length).equal(1);
+
+		// make sure no duplicates from folder1\*.sql
+		should(project.files.filter(f => f.relativePath === 'folder1\\file1.sql').length).equal(1);
 	});
 });
 

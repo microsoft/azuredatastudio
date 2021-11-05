@@ -155,10 +155,11 @@ export class Project implements ISqlProject {
 					// msbuild sdk style projects can handle other globbing patterns like <Build Include="folder1\*.sql" /> and <Build Include="Production*.sql" />
 					if (this._isMsbuildSdkStyleProject && !(await utils.exists(fullPath))) {
 						// add files from the glob pattern
-						const files = await utils.globWithPattern(fullPath);
-						files.forEach(f => {
-							if (!this._files.find(f => f.relativePath === relativePath)) {
-								this._files.push(this.createFileProjectEntry(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(f)), EntryType.File));
+						const globFiles = await utils.globWithPattern(fullPath);
+						globFiles.forEach(gf => {
+							const newFileRelativePath = utils.convertSlashesForSqlProj(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(gf)));
+							if (!this._files.find(f => f.relativePath === newFileRelativePath)) {
+								this._files.push(this.createFileProjectEntry(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(gf)), EntryType.File));
 							}
 						});
 
