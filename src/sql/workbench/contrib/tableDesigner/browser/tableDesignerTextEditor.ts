@@ -53,7 +53,6 @@ export class TableDesignerTextEditor extends BaseTextEditor implements DesignerT
 		@IThemeService themeService: IThemeService,
 		@IEditorService editorService: IEditorService,
 		@IEditorGroupsService editorGroupService: IEditorGroupsService
-
 	) {
 		super(TableDesignerTextEditor.ID, telemetryService, instantiationService, storageService, configurationService, themeService, editorService, editorGroupService);
 		this.create(this._container);
