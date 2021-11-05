@@ -178,7 +178,9 @@ class NotebookProviderRegistry implements INotebookProviderRegistry {
 			};
 		});
 		registration.standardKernels = kernels;
-		this._providerDescriptionRegistration.set(providerId, registration);
+
+		// Update provider description with new info
+		this.registerProviderDescription(registration);
 	}
 
 	registerProviderDescription(registration: ProviderDescriptionRegistration): void {
