@@ -76,6 +76,7 @@ for (const ext of argv.extensions) {
 	console.log(`Command used: ${command}`);
 
 	if (os.platform() === 'darwin') {
+		// passing in env on mac causes the executing the command to fail, so only pass in env for windows and linux
 		console.log(execSync(command, { stdio: 'inherit'}));
 	} else {
 		const env = {
