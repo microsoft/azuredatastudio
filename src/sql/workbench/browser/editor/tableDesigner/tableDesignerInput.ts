@@ -56,7 +56,7 @@ export class TableDesignerInput extends EditorInput {
 	public get resource(): URI {
 		return URI.from({
 			scheme: Schemas.tmp,
-			path: '_table'
+			path: 'table-designer'
 		});
 	}
 

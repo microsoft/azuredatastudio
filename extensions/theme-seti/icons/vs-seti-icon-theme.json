@@ -1518,7 +1518,7 @@
 		"scmp_dark": {
 			"iconPath": "./images/scmp_inverse.svg"
 		},
-		"table": {
+		"table-designer": {
 			"iconPath": "./images/table.svg"
 		}
 	},
@@ -1812,7 +1812,7 @@
 		"dashboard": "_shell",
 		"profiler": "_csv",
 		"Schema Compare": "scmp_dark",
-		"table": "table"
+		"table-designer": "table-designer"
 	},
 	"languageIds": {
 		"bat": "_windows",
