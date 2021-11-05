@@ -43,7 +43,7 @@ export function getStandardKernelsForProvider(providerId: string, notebookServic
 	let standardKernels = notebookService.getStandardKernelsForProvider(providerId);
 	if (!standardKernels || standardKernels.length === 0) {
 		// Fall back to using SQL provider instead
-		standardKernels = notebookService.getStandardKernelsForProvider(SQL_NOTEBOOK_PROVIDER);
+		standardKernels = notebookService.getStandardKernelsForProvider(SQL_NOTEBOOK_PROVIDER) ?? [];
 	}
 	standardKernels.forEach(kernel => {
 		Object.assign(<IStandardKernelWithProvider>kernel, {
