@@ -165,8 +165,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	public get executeManager(): IExecuteManager | undefined {
 		let manager = this.executeManagers.find(manager => manager.providerId === this._providerId);
 		if (!manager) {
-			// Note: this seems like a less than ideal scenario. We should ideally pass in the "correct" provider ID and allow there to be a default,
-			// instead of assuming in the NotebookModel constructor that the option is either SQL or Jupyter
 			manager = this.executeManagers.find(manager => manager.providerId === SQL_NOTEBOOK_PROVIDER);
 		}
 		return manager;
