@@ -129,14 +129,48 @@ export class Project implements ISqlProject {
 			console.error(utils.getErrorMessage(e));
 		}
 
-		// find all folders and files to include
-		for (let ig = 0; ig < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup).length; ig++) {
-			const itemGroup = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup)[ig];
+		// glob style getting files and folders for new msbuild sdk style projects
+		if (this._isMsbuildSdkStyleProject) {
+			const files = await utils.getSqlFilesInFolder(this.projectFolderPath, true);
+			files.forEach(f => {
+				this._files.push(this.createFileProjectEntry(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(f)), EntryType.File));
+			});
 
+			const folders = await utils.getFoldersInFolder(this.projectFolderPath, true);
+			folders.forEach(f => {
+				this._files.push(this.createFileProjectEntry(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(f)), EntryType.Folder));
+			});
+		}
+
+		for (let ig = 0; ig < this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ItemGroup).length; ig++) {
+			const itemGroup = this.projFileXmlDoc.documentElement.getElementsByTagName(constants.ItemGroup)[ig];
+
+			// find all folders and files to include that are specified in the project file
 			try {
 				const buildElements = itemGroup.getElementsByTagName(constants.Build);
 				for (let b = 0; b < buildElements.length; b++) {
-					this._files.push(this.createFileProjectEntry(buildElements[b].getAttribute(constants.Include)!, EntryType.File, buildElements[b].getAttribute(constants.Type)!));
+					const relativePath = buildElements[b].getAttribute(constants.Include)!;
+					const fullPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(relativePath));
+
+					// msbuild sdk style projects can handle other globbing patterns like <Build Include="folder1\*.sql" /> and <Build Include="Production*.sql" />
+					if (this._isMsbuildSdkStyleProject && !(await utils.exists(fullPath))) {
+						// add files from the glob pattern
+						const globFiles = await utils.globWithPattern(fullPath);
+						globFiles.forEach(gf => {
+							const newFileRelativePath = utils.convertSlashesForSqlProj(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(gf)));
+							if (!this._files.find(f => f.relativePath === newFileRelativePath)) {
+								this._files.push(this.createFileProjectEntry(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(gf)), EntryType.File));
+							}
+						});
+
+						// TODO: add support for <Build Remove="file.sql">
+
+					} else {
+						// only add file if it wasn't already added
+						if (!this._files.find(f => f.relativePath === relativePath)) {
+							this._files.push(this.createFileProjectEntry(relativePath, EntryType.File, buildElements[b].getAttribute(constants.Type)!));
+						}
+					}
 				}
 			} catch (e) {
 				void window.showErrorMessage(constants.errorReadingProject(constants.BuildElements, this.projectFilePath));
@@ -146,9 +180,10 @@ export class Project implements ISqlProject {
 			try {
 				const folderElements = itemGroup.getElementsByTagName(constants.Folder);
 				for (let f = 0; f < folderElements.length; f++) {
-					// don't add Properties folder since it isn't supported for now
-					if (folderElements[f].getAttribute(constants.Include) !== constants.Properties) {
-						this._files.push(this.createFileProjectEntry(folderElements[f].getAttribute(constants.Include)!, EntryType.Folder));
+					const relativePath = folderElements[f].getAttribute(constants.Include)!;
+					// don't add Properties folder since it isn't supported for now and don't add if the folder was already added
+					if (relativePath !== constants.Properties && !this._files.find(f => f.relativePath === utils.trimChars(relativePath, '\\'))) {
+						this._files.push(this.createFileProjectEntry(relativePath, EntryType.Folder));
 					}
 				}
 			} catch (e) {
