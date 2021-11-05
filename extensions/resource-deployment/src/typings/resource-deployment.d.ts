@@ -23,20 +23,13 @@ declare module 'resource-deployment' {
 		getVariableValue?: (variableName: string, input: string) => Promise<string> | string;
 		getIsPassword?: (variableName: string) => boolean | Promise<boolean>;
 	}
-
-	export type InputValueType = string | number | boolean | undefined;
-
 	export interface IValueProvider {
 		/**
 		 * The ID associated with this value provider. Fields use this ID in the package.json to indicate which provider to use to get the value for that field.
 		 * Each ID must be globally unique - an error will be thrown if the same ID is already registered.
 		 */
 		readonly id: string,
-		/**
-		 * Gets a calculated value based on the given input values.
-		 * @param triggerValues A map of the trigger field names and their current values specified in the valueProvider field info
-		*/
-		getValue(triggerValues: {[key: string]: InputValueType}): Promise<InputValueType>;
+		getValue(triggerValue: string): Promise<string>;
 	}
 
 	/**

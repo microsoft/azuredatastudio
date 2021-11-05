@@ -989,7 +989,7 @@
                     "fields": [
                       {
                         "type": "options",
-                        "label": "%arc.sql.replicas%",
+                        "label": "%arc.sql.replicas.label%",
                         "description": "%arc.sql.high.availability.description%",
                         "required": true,
                         "variableName": "AZDATA_NB_VAR_SQL_REPLICAS",
@@ -1085,7 +1085,6 @@
                         "variableName": "AZDATA_NB_VAR_SQL_CORES_REQUEST",
                         "type": "number",
                         "min": 1,
-                        "defaultValue": 2,
                         "required": false,
                         "validations": [
                           {
@@ -1117,7 +1116,6 @@
                         "variableName": "AZDATA_NB_VAR_SQL_MEMORY_REQUEST",
                         "type": "number",
                         "min": 2,
-                        "defaultValue": 4,
                         "required": false,
                         "validations": [
                           {
@@ -1133,7 +1131,6 @@
                         "variableName": "AZDATA_NB_VAR_SQL_MEMORY_LIMIT",
                         "type": "number",
                         "min": 2,
-                        "defaultValue": 8,
                         "required": false,
                         "validations": [
                           {
@@ -1161,16 +1158,10 @@
                       {
                         "type": "checkbox",
                         "label": "%arc.sql.dev.use.label%",
-                        "variableName": "AZDATA_NB_VAR_SQL_DEV_USE",
                         "description": "%arc.sql.dev.use.description%",
-                        "defaultValue": false
-                      },
-                      {
-                        "type": "checkbox",
-                        "label": "%arc.sql.license.type.label%",
-                        "variableName": "AZDATA_NB_VAR_SQL_LICENSE_TYPE",
-                        "description": "%arc.sql.license.type.description%",
-                        "defaultValue": false
+                        "defaultValue": "false",
+                        "variableName": "AZDATA_NB_VAR_SQL_DEV_USE",
+                        "required": true
                       }
                     ]
                   },
@@ -1198,78 +1189,6 @@
                         "min": 0,
                         "max": 35,
                         "required": false
-                      }
-                    ]
-                  },
-                  {
-                    "title": "%arc.sql.cost.summary%",
-                    "fields": [
-                      {
-                        "label": "%arc.sql.cost.summary.additional.charge%",
-                        "type": "readonly_text",
-                        "enabled": true,
-                        "labelWidth": "750px",
-                        "links": [
-                          {
-                            "text": "%arc.sql.cost.summary.pricing.details%",
-                            "url": "https://aka.ms/ArcSQLBilling"
-                          }
-                        ]
-                      },
-                      {
-                        "label": "%arc.sql.cost.summary.cost.vcore%",
-                        "type": "readonly_text",
-                        "isEvaluated": true,
-                        "defaultValue": "0.00 USD",
-                        "valueProvider": {
-                          "providerId": "params-to-cost-per-vcore",
-                          "triggerFields": [
-                            "AZDATA_NB_VAR_SQL_DEV_USE",
-                            "AZDATA_NB_VAR_SQL_SERVICE_TIER"
-                          ]
-                        }
-                      },
-                      {
-                        "label": "%arc.sql.cost.summary.vcore.limit%",
-                        "type": "readonly_text",
-                        "isEvaluated": true,
-                        "defaultValue": "x 4",
-                        "valueProvider": {
-                          "providerId": "params-to-vcore-limit",
-                          "triggerFields": [
-                            "AZDATA_NB_VAR_SQL_CORES_LIMIT"
-                          ]
-                        }
-                      },
-                      {
-                        "label": "%arc.sql.cost.summary.azure.hybrid.benefit.discount%",
-                        "type": "readonly_text",
-                        "isEvaluated": true,
-                        "defaultValue": "- 0",
-                        "valueProvider": {
-                          "providerId": "params-to-hybrid-benefit-discount",
-                          "triggerFields": [
-                            "AZDATA_NB_VAR_SQL_CORES_LIMIT",
-                            "AZDATA_NB_VAR_SQL_DEV_USE",
-                            "AZDATA_NB_VAR_SQL_SERVICE_TIER",
-                            "AZDATA_NB_VAR_SQL_LICENSE_TYPE"
-                          ]
-                        }
-                      },
-                      {
-                        "label": "%arc.sql.cost.summary.estimated.cost.per.month%",
-                        "type": "readonly_text",
-                        "defaultValue": "0.00 USD",
-                        "valueProvider": {
-                          "providerId": "params-to-estimated-cost",
-                          "triggerFields": [
-                            "AZDATA_NB_VAR_SQL_REPLICAS",
-                            "AZDATA_NB_VAR_SQL_CORES_LIMIT",
-                            "AZDATA_NB_VAR_SQL_DEV_USE",
-                            "AZDATA_NB_VAR_SQL_SERVICE_TIER",
-                            "AZDATA_NB_VAR_SQL_LICENSE_TYPE"
-                          ]
-                        }
                       }
                     ]
                   }
