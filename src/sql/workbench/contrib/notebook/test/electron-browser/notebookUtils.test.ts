@@ -36,7 +36,11 @@ suite('notebookUtils', function (): void {
 		// getStandardKernelsForProvider
 		mockNotebookService.setup(n => n.getStandardKernelsForProvider(TypeMoq.It.isAnyString()))
 			.returns((provider) => {
-				return [testKernel];
+				if (provider === testProvider) {
+					return [testKernel];
+				} else {
+					return undefined;
+				}
 			});
 	}
 
@@ -94,6 +98,9 @@ suite('notebookUtils', function (): void {
 			connectionProviderIds: ['testId1', 'testId2'],
 			notebookProvider: 'testProvider'
 		}]);
+
+		result = getStandardKernelsForProvider('NotARealProvider', mockNotebookService.object);
+		assert.deepStrictEqual(result, []);
 	});
 
 	test('tryMatchCellMagic Test', async function (): Promise<void> {
