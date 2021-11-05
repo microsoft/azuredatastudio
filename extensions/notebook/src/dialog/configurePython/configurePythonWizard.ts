@@ -128,6 +128,13 @@ export class ConfigurePythonWizard {
 		await this._wizard.close();
 	}
 
+	public showInfoMessage(errorMsg: string) {
+		this._wizard.message = <azdata.window.DialogMessage>{
+			text: errorMsg,
+			level: azdata.window.MessageLevel.Information
+		};
+	}
+
 	public showErrorMessage(errorMsg: string) {
 		this._wizard.message = <azdata.window.DialogMessage>{
 			text: errorMsg,

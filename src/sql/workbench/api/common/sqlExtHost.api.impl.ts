@@ -380,6 +380,10 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				return extHostDataProvider.$registerDataGridProvider(provider);
 			};
 
+			let registerTableDesignerProvider = (provider: azdata.designers.TableDesignerProvider): vscode.Disposable => {
+				return extHostDataProvider.$registerTableDesignerProvider(provider);
+			};
+
 			// namespace: dataprotocol
 			const dataprotocol: typeof azdata.dataprotocol = {
 				registerBackupProvider,
@@ -400,6 +404,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				registerSerializationProvider,
 				registerSqlAssessmentServicesProvider,
 				registerDataGridProvider,
+				registerTableDesignerProvider,
 				onDidChangeLanguageFlavor(listener: (e: azdata.DidChangeLanguageFlavorParams) => any, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
 					return extHostDataProvider.onDidChangeLanguageFlavor(listener, thisArgs, disposables);
 				},
@@ -546,8 +551,11 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				showNotebookDocument(uri: vscode.Uri, showOptions: azdata.nb.NotebookShowOptions) {
 					return extHostNotebookDocumentsAndEditors.showNotebookDocument(uri, showOptions);
 				},
-				registerNotebookProvider(provider: azdata.nb.NotebookProvider): vscode.Disposable {
-					return extHostNotebook.registerNotebookProvider(provider);
+				registerSerializationProvider(provider: azdata.nb.NotebookSerializationProvider): vscode.Disposable {
+					return extHostNotebook.registerSerializationProvider(provider);
+				},
+				registerExecuteProvider(provider: azdata.nb.NotebookExecuteProvider): vscode.Disposable {
+					return extHostNotebook.registerExecuteProvider(provider);
 				},
 				registerNavigationProvider(provider: azdata.nb.NavigationProvider): vscode.Disposable {
 					return extHostNotebookDocumentsAndEditors.registerNavigationProvider(provider);
@@ -559,6 +567,15 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 			const sqlAssessment: typeof azdata.sqlAssessment = {
 				SqlAssessmentResultItemKind: sqlExtHostTypes.SqlAssessmentResultItemKind,
 				SqlAssessmentTargetType: sqlExtHostTypes.SqlAssessmentTargetType
+			};
+
+			const designers: typeof azdata.designers = {
+				TableProperty: sqlExtHostTypes.designers.TableProperty,
+				TableColumnProperty: sqlExtHostTypes.designers.TableColumnProperty,
+				DesignerEditType: sqlExtHostTypes.designers.DesignerEditType,
+				openTableDesigner(providerId, tableInfo: azdata.designers.TableInfo): Promise<void> {
+					return extHostDataProvider.$openTableDesigner(providerId, tableInfo);
+				}
 			};
 
 			return {
@@ -611,7 +628,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				DatabaseEngineEdition: sqlExtHostTypes.DatabaseEngineEdition,
 				TabOrientation: sqlExtHostTypes.TabOrientation,
 				sqlAssessment,
-				TextType: sqlExtHostTypes.TextType
+				TextType: sqlExtHostTypes.TextType,
+				designers: designers
 			};
 		}
 	};

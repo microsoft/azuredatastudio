@@ -308,7 +308,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 		assertIncludeExcludeResult(excludeResult3, true, 0, 0);
 	});
 
-	test('Schema compare dacpac to database comparison with publishing some changes and then compare again', async function () {
+	test('Schema compare dacpac to database comparison with publishing some changes and then compare again @UNSTABLE@', async function () {
 		this.timeout(testTimeout);
 		const server = await getStandaloneServer();
 		const ownerUri = await getConnectionUri(server);
@@ -391,7 +391,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 		}
 	});
 
-	test('Schema compare dacpac to database comparison with publishing all changes and then compare again', async function () {
+	test('Schema compare dacpac to database comparison with publishing all changes and then compare again @UNSTABLE@', async function () {
 		this.timeout(testTimeout);
 		const server = await getStandaloneServer();
 		const ownerUri = await getConnectionUri(server);

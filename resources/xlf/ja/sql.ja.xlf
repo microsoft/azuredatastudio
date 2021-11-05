@@ -1,5 +1,35 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="src/sql/base/browser/ui/designer/designer" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="designer.newRowText">
+        <source xml:lang="en">Add New</source>
+        <target state="translated">新規追加</target>
+      </trans-unit>
+      <trans-unit id="designer.removeRowText">
+        <source xml:lang="en">Remove</source>
+        <target state="translated">削除</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.unknownComponentType">
+        <source xml:lang="en">The component type: {0} is not supported</source>
+        <target state="translated">コンポーネントの種類: {0} はサポートされていません</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/base/browser/ui/designer/designerPropertiesPane" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="tableDesigner.propertiesPaneTitle">
+        <source xml:lang="en">Properties</source>
+        <target state="translated">プロパティ</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.propertiesPaneTitleWithContext">
+        <source xml:lang="en">Properties - {0} {1}</source>
+        <note>{0} is the place holder for object type
+{1} is the place holder for object name</note>
+        <target state="translated">プロパティ - {0} {1}</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/base/browser/ui/loadingSpinner/loadingSpinner.component" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="loadingCompletedMessage">
@@ -373,6 +403,18 @@
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/platform/connection/common/connectionStatusManager" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="connectionStatusManager.noConnectionForUri">
+        <source xml:lang="en">Could not find connection with uri: {0}</source>
+        <target state="translated">URI '{0}' の接続 が見つかりませんでした。</target>
+      </trans-unit>
+      <trans-unit id="connectionStatusManager.uriAlreadyInConnectionsList">
+        <source xml:lang="en">There is already a connection with uri: {0}</source>
+        <target state="translated">URI を持つ接続が既に存在します: {0}</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/platform/dashboard/browser/insightRegistry" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="schema.dashboardWidgets.InsightsRegistry">
@@ -739,13 +781,25 @@
   </file>
   <file original="src/sql/workbench/api/common/extHostNotebook" source-language="en" datatype="plaintext" target-language="ja">
     <body>
-      <trans-unit id="errNoManager">
-        <source xml:lang="en">No Manager found</source>
-        <target state="translated">マネージャーが見つかりません</target>
+      <trans-unit id="errNoExecuteManager">
+        <source xml:lang="en">No execute manager found</source>
+        <target state="translated">実行マネージャーが見つかりません</target>
       </trans-unit>
-      <trans-unit id="errNoProvider">
-        <source xml:lang="en">no notebook provider found</source>
-        <target state="translated">ノートブック プロバイダーが見つかりません</target>
+      <trans-unit id="errNoExecuteProvider">
+        <source xml:lang="en">No notebook execute provider found</source>
+        <target state="translated">ノートブック実行プロバイダーが見つかりません</target>
+      </trans-unit>
+      <trans-unit id="errNoSerializationManager">
+        <source xml:lang="en">No serialization manager found</source>
+        <target state="translated">シリアル化マネージャーが見つかりません</target>
+      </trans-unit>
+      <trans-unit id="errNoSerializationProvider">
+        <source xml:lang="en">No notebook serialization provider found</source>
+        <target state="translated">ノートブック シリアル化プロバイダーが見つかりません</target>
+      </trans-unit>
+      <trans-unit id="executeProviderRequired">
+        <source xml:lang="en">A NotebookExecuteProvider with valid providerId must be passed to this method</source>
+        <target state="translated">有効な providerId を持つ NotebookExecuteProvider をこのメソッドに渡す必要があります</target>
       </trans-unit>
       <trans-unit id="noContentManager">
         <source xml:lang="en">Notebook Manager for notebook {0} does not have a content manager. Cannot perform operations on it</source>
@@ -759,17 +813,17 @@
         <source xml:lang="en">Notebook Manager for notebook {0} does not have a session manager. Cannot perform operations on it</source>
         <target state="translated">ノートブック {0} の Notebook Manager にセッション マネージャーがありません。それに対して操作を実行できません</target>
       </trans-unit>
-      <trans-unit id="providerRequired">
-        <source xml:lang="en">A NotebookProvider with valid providerId must be passed to this method</source>
-        <target state="translated">有効な providerId を持つ NotebookProvider をこのメソッドに渡す必要があります</target>
+      <trans-unit id="serializationProviderRequired">
+        <source xml:lang="en">A NotebookSerializationProvider with valid providerId must be passed to this method</source>
+        <target state="translated">有効な providerId を持つ NotebookSerializationProvider をこのメソッドに渡す必要があります</target>
       </trans-unit>
     </body>
   </file>
   <file original="src/sql/workbench/api/common/extHostNotebookDocumentsAndEditors" source-language="en" datatype="plaintext" target-language="ja">
     <body>
-      <trans-unit id="providerRequired">
-        <source xml:lang="en">A NotebookProvider with valid providerId must be passed to this method</source>
-        <target state="translated">有効な providerId を持つ NotebookProvider をこのメソッドに渡す必要があります</target>
+      <trans-unit id="navigationProviderRequired">
+        <source xml:lang="en">A NavigationProvider with valid providerId must be passed to this method</source>
+        <target state="translated">有効な providerId を持つ NavigationProvider をこのメソッドに渡す必要があります</target>
       </trans-unit>
     </body>
   </file>
@@ -861,6 +915,14 @@
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/browser/editor/tableDesigner/tableDesignerInput" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="tableDesigner.newTable">
+        <source xml:lang="en">New Table</source>
+        <target state="translated">新しいテーブル</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/browser/modal/modal" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="closeMessage">
@@ -911,6 +973,10 @@
   </file>
   <file original="src/sql/workbench/browser/modal/optionsDialogHelper" source-language="en" datatype="plaintext" target-language="ja">
     <body>
+      <trans-unit id="optionsDialog.defaultGroupName">
+        <source xml:lang="en">General</source>
+        <target state="translated">全般</target>
+      </trans-unit>
       <trans-unit id="optionsDialog.invalidInput">
         <source xml:lang="en">Invalid input.  Numeric value expected.</source>
         <target state="translated">無効な入力です。数値が必要です。</target>
@@ -947,6 +1013,10 @@
   </file>
   <file original="src/sql/workbench/browser/modelComponents/dropdown.component" source-language="en" datatype="plaintext" target-language="ja">
     <body>
+      <trans-unit id="defaultDropdownErrorMessage">
+        <source xml:lang="en">Please fill out this field.</source>
+        <target state="translated">このフィールドに入力してください。</target>
+      </trans-unit>
       <trans-unit id="loadingCompletedMessage">
         <source xml:lang="en">Loading completed</source>
         <target state="translated">読み込み完了</target>
@@ -1835,6 +1905,30 @@
         <source xml:lang="en">Attempt to parse the contents of the clipboard when the connection dialog is opened or a paste is performed.</source>
         <target state="translated">接続ダイアログが開いたり、解析が実行されたりするときにクリップボードの内容の解析を試行します。</target>
       </trans-unit>
+      <trans-unit id="connection.showUnsupportedServerVersionWarning">
+        <source xml:lang="en">Whether to show the warning message when user connects to a server version that is not supported by Azure Data Studio.</source>
+        <target state="translated">Azure Data Studio でサポートされていないサーバー バージョンにユーザーが接続した場合に警告メッセージを表示するかどうか。</target>
+      </trans-unit>
+      <trans-unit id="sql.defaultAuthenticationType.AzureMFA">
+        <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
+        <target state="translated">Azure Active Directory - MFA サポート付きユニバーサル</target>
+      </trans-unit>
+      <trans-unit id="sql.defaultAuthenticationType.AzureMFAAndUser">
+        <source xml:lang="en">Azure Active Directory - Password</source>
+        <target state="translated">Azure Active Directory - パスワード</target>
+      </trans-unit>
+      <trans-unit id="sql.defaultAuthenticationType.Integrated">
+        <source xml:lang="en">Windows Authentication</source>
+        <target state="translated">Windows 認証</target>
+      </trans-unit>
+      <trans-unit id="sql.defaultAuthenticationType.SqlLogin">
+        <source xml:lang="en">Sql Login</source>
+        <target state="translated">SQL ログイン</target>
+      </trans-unit>
+      <trans-unit id="sql.defaultAuthenticationTypeDescription">
+        <source xml:lang="en">Default authentication type to use when connecting to Azure resources. </source>
+        <target state="translated">Azure リソースに接続するときに使用する既定の認証の種類です。</target>
+      </trans-unit>
       <trans-unit id="sql.defaultEngineDescription">
         <source xml:lang="en">Default SQL Engine to use. This drives default language provider in .sql files and the default to use when creating a new connection.</source>
         <target state="translated">使用する既定の SQL エンジン。.sql ファイル内の既定の言語プロバイダーが駆動され、新しい接続が作成されるときに既定で使用されます。</target>
@@ -1866,6 +1960,10 @@
       <trans-unit id="schema.iconPath">
         <source xml:lang="en">Icon path for the server type</source>
         <target state="translated">サーバーの種類のアイコン パス</target>
+      </trans-unit>
+      <trans-unit id="schema.isQueryProvider">
+        <source xml:lang="en">Whether the provider is also a query provider. The default value is true.</source>
+        <target state="translated">プロバイダーがクエリ プロバイダーであるかどうか。既定値は true です。</target>
       </trans-unit>
       <trans-unit id="schema.notebookKernelAlias">
         <source xml:lang="en">Notebook Kernel Alias for the provider</source>
@@ -3685,6 +3783,10 @@ Error: {1}</source>
         <source xml:lang="en">Text cell</source>
         <target state="translated">テキスト セル</target>
       </trans-unit>
+      <trans-unit id="splitCell">
+        <source xml:lang="en">Split cell</source>
+        <target state="translated">セルを分割する</target>
+      </trans-unit>
       <trans-unit id="textPreview">
         <source xml:lang="en">Text cell</source>
         <target state="translated">テキスト セル</target>
@@ -5265,6 +5367,10 @@ Error: {1}</source>
         <source xml:lang="en">Messages</source>
         <target state="translated">メッセージ</target>
       </trans-unit>
+      <trans-unit id="queryResults.queryEditorCrashError">
+        <source xml:lang="en">The query editor ran into an issue and has stopped working. Please save and reopen it.</source>
+        <target state="translated">クエリ エディターで問題が発生し、動作を停止しました。保存してからもう一度開いてください。</target>
+      </trans-unit>
       <trans-unit id="resultsTabTitle">
         <source xml:lang="en">Results</source>
         <target state="translated">結果</target>
@@ -5690,6 +5796,14 @@ Error: {1}</source>
       <trans-unit id="refreshError">
         <source xml:lang="en">An error occurred refreshing node '{0}': {1}</source>
         <target state="translated">ノード '{0}' の更新でエラーが発生しました: {1}</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/tableDesigner/browser/actions" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="tableDesigner.saveTableChanges">
+        <source xml:lang="en">Save Changes</source>
+        <target state="translated">変更内容を保存</target>
       </trans-unit>
     </body>
   </file>
@@ -6645,9 +6759,29 @@ Error: {1}</source>
         <source xml:lang="en">Are you sure you want to cancel this connection?</source>
         <target state="translated">この接続をキャンセルしてもよろしいですか?</target>
       </trans-unit>
+      <trans-unit id="connection.invalidConnectionResult">
+        <source xml:lang="en">Connection result is invalid</source>
+        <target state="translated">接続結果が無効です</target>
+      </trans-unit>
+      <trans-unit id="connection.neverShowUnsupportedVersionWarning">
+        <source xml:lang="en">Don't show again</source>
+        <target state="translated">今後は表示しない</target>
+      </trans-unit>
       <trans-unit id="connection.noAzureAccount">
         <source xml:lang="en">Failed to get Azure account token for connection</source>
         <target state="translated">接続用の Azure アカウント トークンの取得に失敗しました</target>
+      </trans-unit>
+      <trans-unit id="connection.refreshAzureTokenFailure">
+        <source xml:lang="en">Failed to refresh Azure account token for connection</source>
+        <target state="translated">接続用の Azure アカウント トークンの更新に失敗しました</target>
+      </trans-unit>
+      <trans-unit id="connection.unsupportedServerVersionWarning">
+        <source xml:lang="en">The server version is not supported by Azure Data Studio, you may still connect to it but some features in Azure Data Studio might not work as expected.</source>
+        <target state="translated">サーバー バージョンが Azure Data Studio でサポートされていません。接続できますが、Azure Data Studio の一部の機能が適切に機能しない可能性があります。</target>
+      </trans-unit>
+      <trans-unit id="connectionManagementService.noProviderForUri">
+        <source xml:lang="en">Could not find provider for uri: {0}</source>
+        <target state="translated">URI のプロバイダーが見つかりませんでした:{0}</target>
       </trans-unit>
       <trans-unit id="connectionNotAcceptedError">
         <source xml:lang="en">Connection Not Accepted</source>
@@ -7274,9 +7408,9 @@ Error: {1}</source>
         <source xml:lang="en">Contributes notebook language.</source>
         <target state="translated">ノートブックの言語を提供します。</target>
       </trans-unit>
-      <trans-unit id="vscode.extension.contributes.notebook.providers">
-        <source xml:lang="en">Contributes notebook providers.</source>
-        <target state="translated">ノートブック プロバイダーを提供します。</target>
+      <trans-unit id="vscode.extension.contributes.notebook.providersDescriptions">
+        <source xml:lang="en">Contributes notebook provider descriptions.</source>
+        <target state="translated">ノートブック プロバイダーの説明を提供します。</target>
       </trans-unit>
     </body>
   </file>
@@ -7484,6 +7618,18 @@ Error: {1}</source>
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/services/query/common/queryManagement" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="queryManagement.noQueryRunnerForUri">
+        <source xml:lang="en">Could not find Query Runner for uri: {0}</source>
+        <target state="translated">URI のクエリ ランナーが見つかりませんでした:{0}</target>
+      </trans-unit>
+      <trans-unit id="queryManagement.uriAlreadyHasQueryRunner">
+        <source xml:lang="en">Uri: {0} unexpectedly already has a query runner.</source>
+        <target state="translated">URI: {0}には予期しないクエリ ランナーが既に存在します。</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/services/query/common/queryModelService" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="commitEditFailed">
@@ -7493,6 +7639,14 @@ Error: {1}</source>
       <trans-unit id="msgCancelQueryFailed">
         <source xml:lang="en">Canceling the query failed: {0}</source>
         <target state="translated">失敗したクエリのキャンセル中: {0}</target>
+      </trans-unit>
+      <trans-unit id="queryModelService.noQueryFoundForUri">
+        <source xml:lang="en">No Query found for {0}</source>
+        <target state="translated">{0}のクエリがありません</target>
+      </trans-unit>
+      <trans-unit id="queryModelService.uriAlreadyHasQuery">
+        <source xml:lang="en">{0} already has an existing query</source>
+        <target state="translated">{0} には既存のクエリが既に存在します</target>
       </trans-unit>
       <trans-unit id="runQueryBatchStartLine">
         <source xml:lang="en">Line {0}</source>
@@ -7817,6 +7971,74 @@ Error: {1}</source>
       <trans-unit id="serverGroup.editServerGroup">
         <source xml:lang="en">Edit server group</source>
         <target state="translated">サーバー グループの編集</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="tableDesigner.advancedTab">
+        <source xml:lang="en">Advanced</source>
+        <target state="translated">詳細設定</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.columnAllowNullTitle">
+        <source xml:lang="en">Allow Nulls</source>
+        <target state="translated">Null を許容</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.columnDefaultValueTitle">
+        <source xml:lang="en">Default Value</source>
+        <target state="translated">既定値</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.columnIsPrimaryKeyTitle">
+        <source xml:lang="en">Primary Key</source>
+        <target state="translated">主キー</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.columnLengthTitle">
+        <source xml:lang="en">Length</source>
+        <target state="translated">長さ</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.columnNameTitle">
+        <source xml:lang="en">Name</source>
+        <target state="translated">名前</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.columnTypeName">
+        <source xml:lang="en">Column</source>
+        <target state="translated">列</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.columnTypeTitle">
+        <source xml:lang="en">Type</source>
+        <target state="translated">種類</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.columnsTabTitle">
+        <source xml:lang="en">Columns</source>
+        <target state="translated">列</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.descriptionTitle">
+        <source xml:lang="en">Description</source>
+        <target state="translated">説明</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.nameTitle">
+        <source xml:lang="en">Table name</source>
+        <target state="translated">テーブル名</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.saveChangeError">
+        <source xml:lang="en">An error occured while saving changes: {0}</source>
+        <target state="translated">変更の保存中にエラーが発生しました: {0}</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.savedChangeSuccess">
+        <source xml:lang="en">The changes have been successfully saved.</source>
+        <target state="translated">変更が正常に保存されました。</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.savingChanges">
+        <source xml:lang="en">Saving table designer changes...</source>
+        <target state="translated">テーブル デザイナーの変更を保存しています...</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.schemaTitle">
+        <source xml:lang="en">Schema</source>
+        <target state="translated">スキーマ</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.tableObjectType">
+        <source xml:lang="en">Table</source>
+        <target state="translated">テーブル</target>
       </trans-unit>
     </body>
   </file>

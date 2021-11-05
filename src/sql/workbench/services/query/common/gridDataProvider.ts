@@ -142,6 +142,6 @@ function removeNewLines(inputString: string): string {
 		return 'null';
 	}
 
-	let outputString: string = inputString.replace(/(\r\n|\n|\r)/gm, '');
+	let outputString: string = inputString.replace(/(\r\n|\n|\r)/gm, ' ');
 	return outputString;
 }

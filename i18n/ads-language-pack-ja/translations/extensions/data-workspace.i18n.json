@@ -45,7 +45,7 @@
 			"dataworkspace.projectParentDirectoryNotExistError": "選択したプロジェクトの場所 '{0}' は存在しないか、ディレクトリではありません。",
 			"dataworkspace.projectsFailedToLoad": "一部のプロジェクトを読み込めませんでした。詳細を表示するには、[開発者コンソールを開く] (command:workbench.action.toggleDevTools)",
 			"dataworkspace.remoteGitRepo": "リモート git リポジトリ",
-			"dataworkspace.restartConfirmation": "プロジェクトを作成してワークスペースに追加するには、Azure Data Studio を再起動する必要があります。今すぐ実行しますか?",
+			"dataworkspace.restartConfirmation": "プロジェクトをワークスペースに追加するには、Azure Data Studio を再起動する必要があります。今すぐ再起動しますか?",
 			"dataworkspace.select": "選択",
 			"dataworkspace.selectProjectLocation": "プロジェクトの場所を選択",
 			"dataworkspace.selectProjectType": "プロジェクトの種類を選択します",
@@ -70,6 +70,7 @@
 			"projects-view-no-project-content": "現在のワークスペースでプロジェクトが開かれていません。\r\n[新規作成] (command:projects.new)\r\n[既存のものを開く] (command:projects.openExisting)\r\nプロジェクトの詳細情報については、[ドキュメントを読む] ( https://aka.ms/azuredatastudio-projects) をご覧ください。\r\n",
 			"projects-view-no-workspace-content": "新規作成するか、既存のものを開いて作業を開始します。\r\n[新規作成] (command:projects.new)\r\n[既存のものを開く] (command:projects.openExisting)\r\nプロジェクトの詳細情報については、[ドキュメントを読む] ( https://aka.ms/azuredatastudio-projects) をご覧ください。",
 			"projects.defaultProjectSaveLocation": "新しいプロジェクトがデフォルトで保存されるフォルダーへのフルパス。 ",
+			"projects.excludedProjectsDescription": "プロジェクト ビューレットから除外するワークスペース内のプロジェクトの一覧",
 			"projects.showNotAddedProjectsInWorkspacePrompt": "ワークスペースのプロジェクトにまだ追加されていないプロジェクトが現在のワークスペースフォルダーに含まれている場合は、情報メッセージを常に表示します。",
 			"refresh-workspace-command": "最新の情報に更新",
 			"remove-project-command": "プロジェクトの削除"

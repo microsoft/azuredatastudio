@@ -13,12 +13,12 @@ import { URI } from 'vs/base/common/uri';
 
 import { ClientSession } from 'sql/workbench/services/notebook/browser/models/clientSession';
 import { SessionManager, EmptySession } from 'sql/workbench/contrib/notebook/test/emptySessionClasses';
-import { NotebookManagerStub, ServerManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
+import { ExecuteManagerStub, ServerManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 
 suite('Client Session', function (): void {
 	let path = URI.file('my/notebook.ipynb');
-	let notebookManager: NotebookManagerStub;
+	let notebookManager: ExecuteManagerStub;
 	let serverManager: ServerManagerStub;
 	let mockSessionManager: TypeMoq.Mock<nb.SessionManager>;
 	let notificationService: TypeMoq.Mock<INotificationService>;
@@ -27,19 +27,19 @@ suite('Client Session', function (): void {
 	setup(() => {
 		serverManager = new ServerManagerStub();
 		mockSessionManager = TypeMoq.Mock.ofType(SessionManager);
-		notebookManager = new NotebookManagerStub();
+		notebookManager = new ExecuteManagerStub();
 		notebookManager.serverManager = serverManager;
 		notebookManager.sessionManager = mockSessionManager.object;
 		notificationService = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService, TypeMoq.MockBehavior.Loose);
 
 		session = new ClientSession({
-			notebookManager: notebookManager,
+			executeManager: notebookManager,
 			notebookUri: path,
 			notificationService: notificationService.object,
 			kernelSpec: { name: 'python', display_name: 'Python 3', language: 'python' }
 		});
 
-		let serverlessNotebookManager = new NotebookManagerStub();
+		let serverlessNotebookManager = new ExecuteManagerStub();
 		serverlessNotebookManager.sessionManager = mockSessionManager.object;
 	});
 
@@ -169,7 +169,7 @@ suite('Client Session', function (): void {
 
 		let remoteSession = new ClientSession({
 			kernelSpec: { name: 'python', display_name: 'Python 3', language: 'python' },
-			notebookManager: newNotebookManager,
+			executeManager: newNotebookManager,
 			notebookUri: path,
 			notificationService: notificationService.object
 		});

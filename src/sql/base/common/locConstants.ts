@@ -44,3 +44,5 @@ export function localizationsContributionActivateLanguagePack(locale: string): s
 export const watermarkNewSqlFile = localize('watermark.newSqlFile', "New SQL File");
 export const watermarkNewNotebook = localize('watermark.newNotebook', "New Notebook");
 export const desktopContributionMiinstallVsix = localize({ key: 'miinstallVsix', comment: ['&& denotes a mnemonic'] }, "Install Extension from VSIX Package");
+export const workspaceTrustDescription = localize('workspace.trust.description', "Controls whether or not workspace trust is enabled within Azure Data Studio.");
+export function workspaceTrustEmptyWindowDescription(settingName: string): string { return localize('workspace.trust.emptyWindow.description', "Controls whether or not the empty window is trusted by default within Azure Data Studio. When used with `#{0}#`, you can enable the full functionality of Azure Data Studio without prompting in an empty window.", settingName); }

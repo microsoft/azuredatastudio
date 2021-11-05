@@ -45,7 +45,7 @@
 			"dataworkspace.projectParentDirectoryNotExistError": "Выбранное расположение проекта \"{0}\" не существует или не является каталогом.",
 			"dataworkspace.projectsFailedToLoad": "Не удалось загрузить некоторые проекты. Чтобы просмотреть дополнительные сведения, [откройте консоль разработчика](command:workbench.action.toggleDevTools)",
 			"dataworkspace.remoteGitRepo": "Удаленный репозиторий Git",
-			"dataworkspace.restartConfirmation": "Чтобы создать проект и добавить его в рабочую область, необходимо перезагрузить Azure Data Studio. Сделать это сейчас?",
+			"dataworkspace.restartConfirmation": "Чтобы добавить проект в рабочую область, необходимо перезагрузить Azure Data Studio. Перезагрузить сейчас?",
 			"dataworkspace.select": "Выбрать",
 			"dataworkspace.selectProjectLocation": "Выбрать расположение проекта",
 			"dataworkspace.selectProjectType": "Выбрать файл проекта",
@@ -70,6 +70,7 @@
 			"projects-view-no-project-content": "В текущей рабочей области нет открытых проектов.\r\n[Создать новый](command:projects.new)\r\n[Открыть существующий](command:projects.openExisting)\r\nЧтобы узнать больше о наших проектах, [см. нашу документацию](https://aka.ms/azuredatastudio-projects).\r\n",
 			"projects-view-no-workspace-content": "Создайте новый или откройте существующий, чтобы начать работу.\r\n[Создать новый](command:projects.new)\r\n[Открыть существующий](command:projects.openExisting)\r\nЧтобы узнать больше о наших проектах, [см. нашу документацию](https://aka.ms/azuredatastudio-projects).",
 			"projects.defaultProjectSaveLocation": "Полный путь к папке, в которой по умолчанию сохраняются новые проекты.",
+			"projects.excludedProjectsDescription": "Список проектов в рабочей области, исключаемых из вьюлета проектов",
 			"projects.showNotAddedProjectsInWorkspacePrompt": "Всегда показывать информационное сообщение, если текущие папки рабочей области содержат проекты, которые не были добавлены в проекты рабочей области.",
 			"refresh-workspace-command": "Обновить",
 			"remove-project-command": "Удалить проект"

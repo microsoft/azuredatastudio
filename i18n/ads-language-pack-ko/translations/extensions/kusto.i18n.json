@@ -59,7 +59,7 @@
 			"kusto.connectionOptions.authType.categoryValues.azureMFA": "Azure Active Directory - MFA가 지원되는 유니버설",
 			"kusto.connectionOptions.authType.categoryValues.none": "인증 없음",
 			"kusto.connectionOptions.authType.categoryValues.sqlLogin": "사용자 인증",
-			"kusto.connectionOptions.authType.description": "Kusto Server를 사용하여 인증하는 방법을 지정합니다.",
+			"kusto.connectionOptions.authType.description": "Kusto 서버를 사용하여 인증하는 방법을 지정합니다.",
 			"kusto.connectionOptions.authType.displayName": "인증 유형",
 			"kusto.connectionOptions.connectRetryCount.description": "연결 복구 시도의 횟수",
 			"kusto.connectionOptions.connectRetryCount.displayName": "연결 다시 시도 횟수",

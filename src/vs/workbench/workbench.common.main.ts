@@ -210,6 +210,8 @@ import { IAssessmentService } from 'sql/workbench/services/assessment/common/int
 import { AssessmentService } from 'sql/workbench/services/assessment/common/assessmentService';
 import { DataGridProviderService } from 'sql/workbench/services/dataGridProvider/browser/dataGridProviderService';
 import { IDataGridProviderService } from 'sql/workbench/services/dataGridProvider/common/dataGridProviderService';
+import { ITableDesignerService } from 'sql/workbench/services/tableDesigner/common/interface';
+import { TableDesignerService } from 'sql/workbench/services/tableDesigner/browser/tableDesignerService';
 
 registerSingleton(IDashboardService, DashboardService);
 registerSingleton(IDashboardViewService, DashboardViewService);
@@ -249,6 +251,7 @@ registerSingleton(IObjectExplorerService, ObjectExplorerService);
 registerSingleton(IOEShimService, OEShimService);
 registerSingleton(IAssessmentService, AssessmentService);
 registerSingleton(IDataGridProviderService, DataGridProviderService);
+registerSingleton(ITableDesignerService, TableDesignerService);
 
 //#endregion
 
@@ -391,7 +394,7 @@ import 'vs/workbench/contrib/surveys/browser/languageSurveys.contribution';
 // Welcome
 import 'vs/workbench/contrib/welcome/overlay/browser/welcomeOverlay';
 import 'vs/workbench/contrib/welcome/page/browser/welcomePage.contribution';
-import 'vs/workbench/contrib/welcome/gettingStarted/browser/gettingStarted.contribution';
+// import 'vs/workbench/contrib/welcome/gettingStarted/browser/gettingStarted.contribution'; // {{SQL CARBON EDIT}} - remove vscode getting started
 import 'vs/workbench/contrib/welcome/walkThrough/browser/walkThrough.contribution';
 
 // Call Hierarchy
@@ -520,5 +523,8 @@ import 'sql/workbench/contrib/azure/browser/azure.contribution';
 
 // Charts
 import 'sql/workbench/contrib/charts/browser/charts.contribution';
+
+// table designer
+import 'sql/workbench/contrib/tableDesigner/browser/tableDesigner.contribution';
 
 //#endregion

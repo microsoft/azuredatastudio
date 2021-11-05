@@ -29,6 +29,7 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { attachModalDialogStyler } from 'sql/workbench/common/styler';
 import { ServiceOptionType } from 'sql/platform/connection/common/interfaces';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
+import { GroupHeaderBackground } from 'sql/platform/theme/common/colorRegistry';
 
 export interface IOptionsDialogOptions extends IModalOptions {
 	cancelLabel?: string;
@@ -99,7 +100,7 @@ export class OptionsDialog extends Modal {
 	private updateTheme(theme: IColorTheme): void {
 		const borderColor = theme.getColor(contrastBorder);
 		const border = borderColor ? borderColor.toString() : '';
-		const backgroundColor = theme.getColor(SIDE_BAR_BACKGROUND);
+		const backgroundColor = theme.getColor(GroupHeaderBackground);
 		if (this._dividerBuilder) {
 			this._dividerBuilder.style.borderTopWidth = border ? '1px' : '';
 			this._dividerBuilder.style.borderTopStyle = border ? 'solid' : '';

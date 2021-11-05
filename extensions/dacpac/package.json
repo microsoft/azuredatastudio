@@ -2,7 +2,7 @@
   "name": "dacpac",
   "displayName": "SQL Server Dacpac",
   "description": "SQL Server Dacpac for Azure Data Studio.",
-  "version": "1.9.1",
+  "version": "1.10.0",
   "publisher": "Microsoft",
   "preview": false,
   "engines": {
@@ -20,6 +20,12 @@
     "type": "git",
     "url": "https://github.com/Microsoft/azuredatastudio.git"
   },
+	"capabilities": {
+    "virtualWorkspaces": false,
+    "untrustedWorkspaces": {
+      "supported": true
+    }
+	},
   "extensionDependencies": [
     "Microsoft.mssql"
   ],

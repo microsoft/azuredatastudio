@@ -12,7 +12,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { URI } from 'vs/base/common/uri';
 
-import { NotebookManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
+import { ExecuteManagerStub, SerializationManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
 import { IClientSession, INotebookModelOptions, NotebookContentChange, IClientSessionOptions, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
@@ -29,7 +29,7 @@ import { ServiceCollection } from 'vs/platform/instantiation/common/serviceColle
 import { NullLogService } from 'vs/platform/log/common/log';
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
-import { NotebookEditorContentManager } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
+import { NotebookEditorContentLoader } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { SessionManager } from 'sql/workbench/contrib/notebook/test/emptySessionClasses';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
@@ -138,7 +138,8 @@ let instantiationService: IInstantiationService;
 let configurationService: IConfigurationService;
 
 suite('notebook model', function (): void {
-	let notebookManagers = [new NotebookManagerStub()];
+	let serializationManagers = [new SerializationManagerStub()];
+	let executeManagers = [new ExecuteManagerStub()];
 	let mockSessionManager: TypeMoq.Mock<nb.SessionManager>;
 	let memento: TypeMoq.Mock<Memento>;
 	let queryConnectionService: TypeMoq.Mock<TestConnectionManagementService>;
@@ -146,7 +147,7 @@ suite('notebook model', function (): void {
 	const logService = new NullLogService();
 	setup(() => {
 		mockSessionManager = TypeMoq.Mock.ofType(SessionManager);
-		notebookManagers[0].sessionManager = mockSessionManager.object;
+		executeManagers[0].sessionManager = mockSessionManager.object;
 		sessionReady = new Deferred<void>();
 		notificationService = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService, TypeMoq.MockBehavior.Loose);
 		capabilitiesService = new TestCapabilitiesService();
@@ -160,8 +161,9 @@ suite('notebook model', function (): void {
 		defaultModelOptions = {
 			notebookUri: defaultUri,
 			factory: new ModelFactory(instantiationService),
-			notebookManagers,
-			contentManager: undefined,
+			serializationManagers: serializationManagers,
+			executeManagers: executeManagers,
+			contentLoader: undefined,
 			notificationService: notificationService.object,
 			connectionService: queryConnectionService.object,
 			providerId: 'SQL',
@@ -171,7 +173,7 @@ suite('notebook model', function (): void {
 			capabilitiesService: capabilitiesService
 		};
 		clientSessionOptions = {
-			notebookManager: defaultModelOptions.notebookManagers[0],
+			executeManager: defaultModelOptions.executeManagers[0],
 			notebookUri: defaultModelOptions.notebookUri,
 			notificationService: notificationService.object,
 			kernelSpec: defaultModelOptions.defaultKernel
@@ -200,9 +202,9 @@ suite('notebook model', function (): void {
 			nbformat_minor: 5
 		};
 
-		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(emptyNotebook));
-		defaultModelOptions.contentManager = mockContentManager.object;
+		defaultModelOptions.contentLoader = mockContentManager.object;
 		// When I initialize the model
 		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
 		await model.loadContents();
@@ -216,9 +218,9 @@ suite('notebook model', function (): void {
 
 	test('Should use trusted state set in model load', async function (): Promise<void> {
 		// Given a notebook
-		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
-		defaultModelOptions.contentManager = mockContentManager.object;
+		defaultModelOptions.contentLoader = mockContentManager.object;
 		// When I initialize the model
 		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
 		await model.loadContents(true);
@@ -231,9 +233,9 @@ suite('notebook model', function (): void {
 	test('Should throw if model load fails', async function (): Promise<void> {
 		// Given a call to get Contents fails
 		let error = new Error('File not found');
-		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.reject(error));//.throws(error);
-		defaultModelOptions.contentManager = mockContentManager.object;
+		defaultModelOptions.contentLoader = mockContentManager.object;
 
 		// When I initalize the model
 		// Then it should throw
@@ -245,9 +247,9 @@ suite('notebook model', function (): void {
 
 	test('Should convert cell info to CellModels', async function (): Promise<void> {
 		// Given a notebook with 2 cells
-		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
-		defaultModelOptions.contentManager = mockContentManager.object;
+		defaultModelOptions.contentLoader = mockContentManager.object;
 
 		// When I initalize the model
 		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
@@ -261,18 +263,18 @@ suite('notebook model', function (): void {
 
 	test('Should handle multiple notebook managers', async function (): Promise<void> {
 		// Given a notebook with 2 cells
-		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
-		defaultModelOptions.contentManager = mockContentManager.object;
+		defaultModelOptions.contentLoader = mockContentManager.object;
 
-		let defaultNotebookManager = new NotebookManagerStub();
+		let defaultNotebookManager = new ExecuteManagerStub();
 		defaultNotebookManager.providerId = 'SQL';
 
-		let jupyterNotebookManager = new NotebookManagerStub();
+		let jupyterNotebookManager = new ExecuteManagerStub();
 		jupyterNotebookManager.providerId = 'jupyter';
 
 		// Setup 2 notebook managers
-		defaultModelOptions.notebookManagers = [defaultNotebookManager, jupyterNotebookManager];
+		defaultModelOptions.executeManagers = [defaultNotebookManager, jupyterNotebookManager];
 
 		// Change default notebook provider id to jupyter
 		defaultModelOptions.providerId = 'jupyter';
@@ -282,7 +284,7 @@ suite('notebook model', function (): void {
 		await model.loadContents();
 
 		// I expect the default provider to be jupyter
-		assert.strictEqual(model.notebookManager.providerId, 'jupyter', 'Notebook manager provider id incorrect');
+		assert.strictEqual(model.executeManager.providerId, 'jupyter', 'Notebook manager provider id incorrect');
 
 		// Similarly, change default notebook provider id to SQL
 		defaultModelOptions.providerId = 'SQL';
@@ -292,13 +294,13 @@ suite('notebook model', function (): void {
 		await model.loadContents();
 
 		// I expect the default provider to be SQL
-		assert.strictEqual(model.notebookManager.providerId, 'SQL', 'Notebook manager provider id incorrect after 2nd model load');
+		assert.strictEqual(model.executeManager.providerId, 'SQL', 'Notebook manager provider id incorrect after 2nd model load');
 
 		// Check that the getters return  the correct values
-		assert.strictEqual(model.notebookManagers.length, 2, 'There should be 2 notebook managers');
-		assert(!isUndefinedOrNull(model.getNotebookManager('SQL')), 'SQL notebook manager is not defined');
-		assert(!isUndefinedOrNull(model.getNotebookManager('jupyter')), 'Jupyter notebook manager is not defined');
-		assert(isUndefinedOrNull(model.getNotebookManager('foo')), 'foo notebook manager is incorrectly defined');
+		assert.strictEqual(model.executeManagers.length, 2, 'There should be 2 notebook managers');
+		assert(!isUndefinedOrNull(model.getExecuteManager('SQL')), 'SQL notebook manager is not defined');
+		assert(!isUndefinedOrNull(model.getExecuteManager('jupyter')), 'Jupyter notebook manager is not defined');
+		assert(isUndefinedOrNull(model.getExecuteManager('foo')), 'foo notebook manager is incorrectly defined');
 
 		// Check other properties to ensure that they're returning as expected
 		// No server manager was passed into the notebook manager stub, so expect hasServerManager to return false
@@ -308,9 +310,9 @@ suite('notebook model', function (): void {
 
 	test('Should set active cell correctly', async function (): Promise<void> {
 		// Given a notebook with 2 cells
-		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
-		defaultModelOptions.contentManager = mockContentManager.object;
+		defaultModelOptions.contentLoader = mockContentManager.object;
 
 		// When I initalize the model
 		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
@@ -364,10 +366,10 @@ suite('notebook model', function (): void {
 	});
 
 	test('Should set notebook parameter and injected parameter cell correctly', async function (): Promise<void> {
-		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedParameterizedNotebookContent));
 		defaultModelOptions.notebookUri = defaultUri;
-		defaultModelOptions.contentManager = mockContentManager.object;
+		defaultModelOptions.contentLoader = mockContentManager.object;
 
 		// When I initialize the model
 		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
@@ -392,10 +394,10 @@ suite('notebook model', function (): void {
 	});
 
 	test('Should set notebookUri parameters to new cell correctly', async function (): Promise<void> {
-		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContentOneCell));
 		defaultModelOptions.notebookUri = notebookUriParams;
-		defaultModelOptions.contentManager = mockContentManager.object;
+		defaultModelOptions.contentLoader = mockContentManager.object;
 
 		// When I initialize the model
 		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
@@ -412,14 +414,14 @@ suite('notebook model', function (): void {
 	});
 
 	test('Should set notebookUri parameters to new cell after parameters cell correctly', async function (): Promise<void> {
-		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
 		let expectedNotebookContentParameterCell = expectedNotebookContentOneCell;
 		//Set the cell to be tagged as parameter cell
 		expectedNotebookContentParameterCell.cells[0].metadata.tags = ['parameters'];
 
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContentParameterCell));
 		defaultModelOptions.notebookUri = notebookUriParams;
-		defaultModelOptions.contentManager = mockContentManager.object;
+		defaultModelOptions.contentLoader = mockContentManager.object;
 
 		// When I initialize the model
 		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
@@ -436,11 +438,11 @@ suite('notebook model', function (): void {
 	});
 
 	test('Should set notebookUri parameters to new cell after injected parameters cell correctly', async function (): Promise<void> {
-		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
 
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedParameterizedNotebookContent));
 		defaultModelOptions.notebookUri = notebookUriParams;
-		defaultModelOptions.contentManager = mockContentManager.object;
+		defaultModelOptions.contentLoader = mockContentManager.object;
 
 		// When I initialize the model
 		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
@@ -457,9 +459,9 @@ suite('notebook model', function (): void {
 	});
 
 	test('Should move first cell below second cell correctly', async function (): Promise<void> {
-		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
-		defaultModelOptions.contentManager = mockContentManager.object;
+		defaultModelOptions.contentLoader = mockContentManager.object;
 
 		// When I initialize the model
 		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
@@ -477,9 +479,9 @@ suite('notebook model', function (): void {
 	});
 
 	test('Should move second cell up above the first cell correctly', async function (): Promise<void> {
-		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
-		defaultModelOptions.contentManager = mockContentManager.object;
+		defaultModelOptions.contentLoader = mockContentManager.object;
 
 		// When I initialize the model
 		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
@@ -498,9 +500,9 @@ suite('notebook model', function (): void {
 
 	test('Should delete cells correctly', async function (): Promise<void> {
 		// Given a notebook with 2 cells
-		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
-		defaultModelOptions.contentManager = mockContentManager.object;
+		defaultModelOptions.contentLoader = mockContentManager.object;
 
 		// When I initalize the model
 		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
@@ -549,9 +551,9 @@ suite('notebook model', function (): void {
 	});
 
 	test('Should notify cell on metadata change', async function (): Promise<void> {
-		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
-		defaultModelOptions.contentManager = mockContentManager.object;
+		defaultModelOptions.contentLoader = mockContentManager.object;
 
 		// When I initalize the model
 		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
@@ -566,9 +568,9 @@ suite('notebook model', function (): void {
 	});
 
 	test('Should set cell language correctly after cell type conversion', async function (): Promise<void> {
-		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
-		defaultModelOptions.contentManager = mockContentManager.object;
+		defaultModelOptions.contentLoader = mockContentManager.object;
 
 		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
 		await model.loadContents();
@@ -594,9 +596,9 @@ suite('notebook model', function (): void {
 	});
 
 	test('Should load contents but then go to error state if client session startup fails', async function (): Promise<void> {
-		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContentOneCell));
-		defaultModelOptions.contentManager = mockContentManager.object;
+		defaultModelOptions.contentLoader = mockContentManager.object;
 
 		// Given I have a session that fails to start
 		sessionReady.resolve();
@@ -608,7 +610,7 @@ suite('notebook model', function (): void {
 		await model.requestModelLoad();
 		// starting client session fails at startSessionInstance due to:
 		// Cannot set property 'defaultKernelLoaded' of undefined
-		await assert.rejects(async () => { await model.startSession(notebookManagers[0]); });
+		await assert.rejects(async () => { await model.startSession(executeManagers[0]); });
 		// Then I expect load to succeed
 		assert.strictEqual(model.cells.length, 1);
 		assert(model.clientSession);
@@ -623,15 +625,15 @@ suite('notebook model', function (): void {
 		let model = await loadModelAndStartClientSession(expectedNotebookContent);
 
 		assert.strictEqual(model.inErrorState, false);
-		assert.strictEqual(model.notebookManagers.length, 1);
+		assert.strictEqual(model.executeManagers.length, 1);
 		assert.deepStrictEqual(model.clientSession, mockClientSession);
 	});
 
 	test('Should notify on trust set', async function () {
 		// Given a notebook that's been loaded
-		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
-		defaultModelOptions.contentManager = mockContentManager.object;
+		defaultModelOptions.contentLoader = mockContentManager.object;
 		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
 		await model.requestModelLoad();
 
@@ -697,9 +699,9 @@ suite('notebook model', function (): void {
 		expectedNotebookContent.metadata['custom-object'] = { prop1: 'value1', prop2: 'value2' };
 
 		// Given a notebook
-		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
-		defaultModelOptions.contentManager = mockContentManager.object;
+		defaultModelOptions.contentLoader = mockContentManager.object;
 		// When I initialize the model
 		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined, queryConnectionService.object, configurationService);
 		await model.loadContents();
@@ -808,9 +810,9 @@ suite('notebook model', function (): void {
 			nbformat: 4,
 			nbformat_minor: 5
 		};
-		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(notebook));
-		defaultModelOptions.contentManager = mockContentManager.object;
+		defaultModelOptions.contentLoader = mockContentManager.object;
 
 		// And a matching connection profile
 		let expectedConnectionProfile = <ConnectionProfile>{
@@ -858,9 +860,9 @@ suite('notebook model', function (): void {
 			nbformat: 4,
 			nbformat_minor: 5
 		};
-		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(notebook));
-		defaultModelOptions.contentManager = mockContentManager.object;
+		defaultModelOptions.contentLoader = mockContentManager.object;
 
 		// When I initialize the model
 		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
@@ -885,9 +887,9 @@ suite('notebook model', function (): void {
 	});
 
 	test('Should keep kernel alias as language info kernel alias name even if kernel spec is seralized as SQL', async function () {
-		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedKernelAliasNotebookContentOneCell));
-		defaultModelOptions.contentManager = mockContentManager.object;
+		defaultModelOptions.contentLoader = mockContentManager.object;
 
 		queryConnectionService.setup(c => c.getActiveConnections(TypeMoq.It.isAny())).returns(() => null);
 
@@ -904,9 +906,9 @@ suite('notebook model', function (): void {
 	});
 
 	async function loadModelAndStartClientSession(notebookContent: nb.INotebookContents): Promise<NotebookModel> {
-		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentManager);
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(notebookContent));
-		defaultModelOptions.contentManager = mockContentManager.object;
+		defaultModelOptions.contentLoader = mockContentManager.object;
 
 		queryConnectionService.setup(c => c.getActiveConnections(TypeMoq.It.isAny())).returns(() => null);
 
@@ -921,7 +923,7 @@ suite('notebook model', function (): void {
 
 		await model.requestModelLoad();
 
-		await model.startSession(notebookManagers[0]);
+		await model.startSession(executeManagers[0]);
 
 		// Then I expect load to succeed
 		assert(!isUndefinedOrNull(model.clientSession), 'clientSession should exist after session is started');

@@ -180,7 +180,7 @@
       </trans-unit>
       <trans-unit id="kusto.connectionOptions.authType.description">
         <source xml:lang="en">Specifies the method of authenticating with Kusto Server</source>
-        <target state="translated">Gibt die Methode für die Authentifizierung bei KUSTO Server an</target>
+        <target state="translated">Gibt die Methode für die Authentifizierung bei Kusto-Server an</target>
       </trans-unit>
       <trans-unit id="kusto.connectionOptions.authType.displayName">
         <source xml:lang="en">Authentication type</source>
@@ -228,7 +228,7 @@
       </trans-unit>
       <trans-unit id="kusto.connectionOptions.failoverPartner.description">
         <source xml:lang="en">The name or network address of the instance of Kusto Server that acts as a failover partner</source>
-        <target state="translated">Der Name oder die Netzwerkadresse der KUSTO Server-Instanz, die als Failoverpartner fungiert</target>
+        <target state="translated">Der Name oder die Netzwerkadresse der Kusto-Server-Instanz, die als Failoverpartner fungiert</target>
       </trans-unit>
       <trans-unit id="kusto.connectionOptions.failoverPartner.displayName">
         <source xml:lang="en">Failover partner</source>
@@ -264,7 +264,7 @@
       </trans-unit>
       <trans-unit id="kusto.connectionOptions.serverName.description">
         <source xml:lang="en">Kusto cluster name</source>
-        <target state="translated">KUSTO-Clustername</target>
+        <target state="translated">Kusto-Clustername</target>
       </trans-unit>
       <trans-unit id="kusto.connectionOptions.serverName.displayName">
         <source xml:lang="en">Cluster</source>
@@ -280,7 +280,7 @@
       </trans-unit>
       <trans-unit id="kusto.connectionOptions.workstationId.description">
         <source xml:lang="en">The name of the workstation connecting to Kusto Server</source>
-        <target state="translated">Der Name der Arbeitsstation, die eine Verbindung mit KUSTO Server herstellt</target>
+        <target state="translated">Der Name der Arbeitsstation, die eine Verbindung mit dem Kusto-Server herstellt</target>
       </trans-unit>
       <trans-unit id="kusto.connectionOptions.workstationId.displayName">
         <source xml:lang="en">Workstation Id</source>

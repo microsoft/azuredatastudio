@@ -18,6 +18,14 @@
         <source xml:lang="en">Column Name</source>
         <target state="translated">Spaltenname</target>
       </trans-unit>
+      <trans-unit id="flatFileImport.columnTableTitle">
+        <source xml:lang="en">Column</source>
+        <target state="translated">Spalte</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.createDerivedColumn">
+        <source xml:lang="en">Create derived column</source>
+        <target state="translated">Abgeleitete Spalte erstellen</target>
+      </trans-unit>
       <trans-unit id="flatFileImport.dataType">
         <source xml:lang="en">Data Type</source>
         <target state="translated">Datentyp</target>
@@ -30,6 +38,26 @@
         <source xml:lang="en">Database name</source>
         <target state="translated">Datenbankname</target>
       </trans-unit>
+      <trans-unit id="flatFileImport.deriverColumnInstruction1">
+        <source xml:lang="en">Select the columns of data on the left required to derive your new column</source>
+        <target state="translated">Wählen Sie die Datenspalten auf der linken Seite aus, die zum Ableiten der neuen Spalte erforderlich sind</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.deriverColumnInstruction2">
+        <source xml:lang="en">Select a row and specify an example transformation that you would like applied to the rest of the column</source>
+        <target state="translated">Wählen Sie eine Zeile aus, und geben Sie eine Beispieltransformation an, die Sie auf den Rest der Spalte anwenden möchten</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.deriverColumnInstruction3">
+        <source xml:lang="en">Click "Preview Transformation" to preview the transformation</source>
+        <target state="translated">Klicken Sie auf "Vorschau der Transformation anzeigen", um eine Vorschau der Transformation anzuzeigen</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.deriverColumnInstruction4">
+        <source xml:lang="en">Refine your transformation until you have the desired column</source>
+        <target state="translated">Verfeinern Sie Ihre Transformation, bis Sie die gewünschte Spalte erhalten</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.deriverColumnInstruction5">
+        <source xml:lang="en">Specify the new derived column's name and click "Done"</source>
+        <target state="translated">Geben Sie den Namen der neuen abgeleiteten Spalte an und klicken Sie auf "Fertig"</target>
+      </trans-unit>
       <trans-unit id="flatFileImport.fileImport">
         <source xml:lang="en">File to be imported</source>
         <target state="translated">Zu importierende Datei</target>
@@ -37,6 +65,10 @@
       <trans-unit id="flatFileImport.fileTextboxTitle">
         <source xml:lang="en">Location of the file to be imported</source>
         <target state="translated">Speicherort der zu importierenden Datei</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.headerIntructionText">
+        <source xml:lang="en">Welcome to the Derived Column Tool! To get started, please follow the steps below:</source>
+        <target state="translated">Willkommen beim Tool für abgeleitete Spalten! Führen Sie die folgenden Schritte aus, um loszulegen:</target>
       </trans-unit>
       <trans-unit id="flatFileImport.importData">
         <source xml:lang="en">Import Data</source>
@@ -78,6 +110,10 @@
         <source xml:lang="en">Summary</source>
         <target state="translated">Zusammenfassung</target>
       </trans-unit>
+      <trans-unit id="flatFileImport.previewTransformation">
+        <source xml:lang="en">Preview Transformation</source>
+        <target state="translated">Vorschau der Transformation</target>
+      </trans-unit>
       <trans-unit id="flatFileImport.primaryKey">
         <source xml:lang="en">Primary Key</source>
         <target state="translated">Primärschlüssel</target>
@@ -98,6 +134,14 @@
         <source xml:lang="en">Table schema</source>
         <target state="translated">Tabellenschema</target>
       </trans-unit>
+      <trans-unit id="flatFileImport.selectAllColumns">
+        <source xml:lang="en">Select all columns</source>
+        <target state="translated">Alle Spalten auswählen</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.selectColumn">
+        <source xml:lang="en">Select column {0}</source>
+        <target state="translated">Spalte {0} auswählen</target>
+      </trans-unit>
       <trans-unit id="flatFileImport.serverDropdownTitle">
         <source xml:lang="en">Server the database is in</source>
         <target state="translated">Server, auf dem sich die Datenbank befindet</target>
@@ -105,6 +149,18 @@
       <trans-unit id="flatFileImport.serverName">
         <source xml:lang="en">Server name</source>
         <target state="translated">Servername</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.specifyDerivedColNameTitle">
+        <source xml:lang="en">Column Name</source>
+        <target state="translated">Spaltenname</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.specifyTransformation">
+        <source xml:lang="en">Specify Transformation</source>
+        <target state="translated">Transformation angeben</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.specifyTransformationForRow">
+        <source xml:lang="en">Specify transformation for row {0}</source>
+        <target state="translated">Transformation für Zeile {0} angeben</target>
       </trans-unit>
       <trans-unit id="flatFileImport.success.norows">
         <source xml:lang="en">✔ You have successfully inserted the data into a table.</source>

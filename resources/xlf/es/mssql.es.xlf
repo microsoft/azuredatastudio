@@ -1534,6 +1534,10 @@
         <source xml:lang="en">Configure Python for Notebooks</source>
         <target state="translated">Configurar Python para Notebooks</target>
       </trans-unit>
+      <trans-unit id="title.designTable">
+        <source xml:lang="en">Design</source>
+        <target state="translated">Diseño</target>
+      </trans-unit>
       <trans-unit id="title.endpoints">
         <source xml:lang="en">Service Endpoints</source>
         <target state="translated">Puntos de conexión de servicio</target>
@@ -1545,6 +1549,10 @@
       <trans-unit id="title.newSparkJob">
         <source xml:lang="en">New Spark Job</source>
         <target state="translated">Nuevo trabajo de Spark</target>
+      </trans-unit>
+      <trans-unit id="title.newTable">
+        <source xml:lang="en">New Table</source>
+        <target state="translated">Nueva tabla</target>
       </trans-unit>
       <trans-unit id="title.openClusterDashboard">
         <source xml:lang="en">Cluster
