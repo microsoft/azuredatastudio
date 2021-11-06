@@ -74,12 +74,18 @@ for (const ext of argv.extensions) {
 
 	const command = `${process.env.INTEGRATION_TEST_ELECTRON_PATH} ${LINUX_EXTRA_ARGS} --extensionDevelopmentPath=${path.join(__dirname, '..', 'extensions', ext)} --extensionTestsPath=${path.join(__dirname, '..', 'extensions', ext, 'out', 'test')} --user-data-dir=${VSCODEUSERDATADIR} --extensions-dir=${VSCODEEXTENSIONSDIR} --remote-debugging-port=9222 --disable-telemetry --disable-crash-reporter --disable-updates --no-cached-data --disable-keytar`;
 	console.log(`Command used: ${command}`);
-	const env = {
-		VSCODE_CLI: 1,
-		ELECTRON_ENABLE_STACK_DUMPING: 1,
-		ELECTRON_ENABLE_LOGGING: 1
-	};
-	console.log(execSync(command, { stdio: 'inherit', env: env}));
+
+	if (os.platform() === 'darwin') {
+		// passing in env on mac causes the executing the command to fail, so only pass in env for windows and linux
+		console.log(execSync(command, { stdio: 'inherit'}));
+	} else {
+		const env = {
+			VSCODE_CLI: 1,
+			ELECTRON_ENABLE_STACK_DUMPING: 1,
+			ELECTRON_ENABLE_LOGGING: 1
+		};
+		console.log(execSync(command, { stdio: 'inherit', env: env}));
+	}
 
 	// clean up
 	if (!process.env.NO_CLEANUP) {
