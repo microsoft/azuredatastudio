@@ -521,7 +521,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		if (message.includes('could not translate host name')) {
 			errorMessage = message.concat('\nCauses:\nUsing the wrong hostname or problems with DNS resolution.\nSuggestions:\nCheck that the server address or hostname is the full address.');
 		}
-		if (message.includes('could not connect to server: Operation timed out')) {
+		if (message.includes('could not connect to server: Connection timed out')) {
 			errorMessage = message.concat(`\nSuggestions:\nCheck that the firewall settings allow connections from the user's address.`);
 		}
 		this._logService.error(errorMessage);
