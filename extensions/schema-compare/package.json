@@ -2,7 +2,7 @@
   "name": "schema-compare",
   "displayName": "%displayName%",
   "description": "%description%",
-  "version": "1.12.0",
+  "version": "1.13.0",
   "publisher": "Microsoft",
   "preview": false,
   "engines": {
@@ -23,6 +23,12 @@
   "extensionDependencies": [
     "Microsoft.mssql"
   ],
+	"capabilities": {
+    "virtualWorkspaces": false,
+    "untrustedWorkspaces": {
+      "supported": true
+    }
+	},
   "contributes": {
     "commands": [
       {

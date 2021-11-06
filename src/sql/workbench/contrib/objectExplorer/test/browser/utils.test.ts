@@ -47,7 +47,7 @@ suite('Connection Utilities tests', () => {
 
 
 	test('isMaster - test if isMaster recognizes Connection Profile as server connection', () => {
-		assert(ConnectionUtils.isMaster(connection));
+		assert(ConnectionUtils.isServerConnection(connection));
 	});
 
 	test('parseTimeString - test if time is parsed correctly', () => {

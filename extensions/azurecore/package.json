@@ -18,6 +18,12 @@
     "type": "git",
     "url": "https://github.com/Microsoft/azuredatastudio.git"
   },
+	"capabilities": {
+    "virtualWorkspaces": false,
+    "untrustedWorkspaces": {
+      "supported": true
+    }
+	},
   "contributes": {
     "resourceViewResources": [
       {
@@ -322,18 +328,13 @@
         }
       ]
     },
-    "resourceDeploymentValueProviders": [
-      {
-        "id": "subscription-id-to-tenant-id"
-      }
-    ],
     "hasAzureResourceProviders": true
   },
   "dependencies": {
     "@azure/arm-resourcegraph": "^4.0.0",
     "@azure/arm-subscriptions": "^3.0.0",
     "@azure/storage-blob": "^12.6.0",
-    "axios": "^0.21.1",
+    "axios": "^0.21.4",
     "node-fetch": "^2.6.1",
     "qs": "^6.9.1",
     "vscode-nls": "^4.0.0",

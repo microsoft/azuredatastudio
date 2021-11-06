@@ -50,16 +50,16 @@ suite('NotebookMarkdownRenderer', () => {
 
 	test('link from local file path', () => {
 		let result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `[Link to File Path](someFileurl)`, isTrusted: true });
-		assert.strictEqual(result.innerHTML, `<p><a href="someFileurl" data-href="someFileurl" title="someFileurl" is-absolute="false">Link to File Path</a></p>`);
+		assert.strictEqual(result.innerHTML, `<p><a href="someFileurl" data-href="someFileurl" title="someFileurl" is-markdown="true" is-absolute="false">Link to File Path</a></p>`);
 	});
 
 	test('link from relative file path', () => {
 		notebookMarkdownRenderer.setNotebookURI(URI.parse(`foo/temp/file1.txt`));
 		let result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `[Link to relative path](../test/build/someimageurl)`, isTrusted: true });
 		if (process.platform === 'win32') {
-			assert.strictEqual(result.innerHTML, `<p><a href="\\foo\\test\\build\\someimageurl" data-href="\\foo\\test\\build\\someimageurl" title="\\foo\\test\\build\\someimageurl" is-absolute="false">Link to relative path</a></p>`);
+			assert.strictEqual(result.innerHTML, `<p><a href="\\foo\\test\\build\\someimageurl" data-href="\\foo\\test\\build\\someimageurl" title="\\foo\\test\\build\\someimageurl" is-markdown="true" is-absolute="false">Link to relative path</a></p>`);
 		} else {
-			assert.strictEqual(result.innerHTML, `<p><a href="/foo/test/build/someimageurl" data-href="/foo/test/build/someimageurl" title="/foo/test/build/someimageurl" is-absolute="false">Link to relative path</a></p>`);
+			assert.strictEqual(result.innerHTML, `<p><a href="/foo/test/build/someimageurl" data-href="/foo/test/build/someimageurl" title="/foo/test/build/someimageurl" is-markdown="true" is-absolute="false">Link to relative path</a></p>`);
 		}
 	});
 
@@ -72,17 +72,17 @@ suite('NotebookMarkdownRenderer', () => {
 
 	test('email in markdown format renders properly', () => {
 		let result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `[test@email.com](mailto:test@email.com)`, isTrusted: true });
-		assert.strictEqual(result.innerHTML, `<p><a href="mailto:test@email.com" data-href="mailto:test@email.com" title="mailto:test@email.com" is-absolute="false">test@email.com</a></p>`);
+		assert.strictEqual(result.innerHTML, `<p><a href="mailto:test@email.com" data-href="mailto:test@email.com" title="mailto:test@email.com" is-markdown="true" is-absolute="false">test@email.com</a></p>`);
 	});
 
 	test('email inserted directly renders properly', () => {
 		let result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `test@email.com`, isTrusted: true });
-		assert.strictEqual(result.innerHTML, `<p><a href="mailto:test@email.com" data-href="mailto:test@email.com" title="mailto:test@email.com" is-absolute="false">test@email.com</a></p>`);
+		assert.strictEqual(result.innerHTML, `<p><a href="mailto:test@email.com" data-href="mailto:test@email.com" title="mailto:test@email.com" is-markdown="true" is-absolute="false">test@email.com</a></p>`);
 	});
 
 	test('link to https with query parameters', () => {
 		let result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `[test](https://www.test.com?test=&test2=)`, isTrusted: true });
-		assert.strictEqual(result.innerHTML, `<p><a href="https://www.test.com?test=&amp;test2=" data-href="https://www.test.com?test=&amp;test2=" title="https://www.test.com?test=&amp;test2=" is-absolute="false">test</a></p>`);
+		assert.strictEqual(result.innerHTML, `<p><a href="https://www.test.com?test=&amp;test2=" data-href="https://www.test.com?test=&amp;test2=" title="https://www.test.com?test=&amp;test2=" is-markdown="true" is-absolute="false">test</a></p>`);
 	});
 
 	test('cell attachment image', () => {

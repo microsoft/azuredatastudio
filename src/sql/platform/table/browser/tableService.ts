@@ -9,11 +9,11 @@ import { RawContextKey, IContextKey, ContextKeyExpr, IContextKeyService } from '
 import { DisposableStore, IDisposable, combinedDisposable, toDisposable } from 'vs/base/common/lifecycle';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { createStyleSheet } from 'vs/base/browser/dom';
-import { attachHighPerfTableStyler as attachTableStyler, defaultHighPerfTableStyles } from 'sql/platform/theme/common/styler';
+import { attachHighPerfTableStyler as attachTableStyler, defaultHighPerfTableStyles, IHighPerfTableStyleOverrides } from 'sql/platform/theme/common/styler';
 import { InputFocusedContextKey } from 'vs/platform/contextkey/common/contextkeys';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ITableDataSource, ITableColumn } from 'sql/base/browser/ui/table/highPerf/table';
-import { IColorMapping, computeStyles } from 'vs/platform/theme/common/styler';
+import { computeStyles } from 'vs/platform/theme/common/styler';
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 
 export const ITableService = createDecorator<ITableService>('tableService');
@@ -118,7 +118,7 @@ function toWorkbenchTableOptions<T>(options: ITableOptions<T>): [ITableOptions<T
 }
 
 export interface IWorkbenchTableOptions<T> extends ITableOptions<T> {
-	readonly overrideStyles?: IColorMapping;
+	readonly overrideStyles?: IHighPerfTableStyleOverrides;
 }
 
 export class WorkbenchTable<T> extends Table<T> {

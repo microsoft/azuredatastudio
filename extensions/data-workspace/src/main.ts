@@ -62,6 +62,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 		return vscode.commands.executeCommand('workbench.action.closeFolder');
 	}));
 
+	context.subscriptions.push(vscode.commands.registerCommand('projects.removeProject', async (treeItem: WorkspaceTreeItem) => {
+		await workspaceService.removeProject(vscode.Uri.file(treeItem.element.project.projectFilePath));
+	}));
+
 	context.subscriptions.push(vscode.commands.registerCommand('projects.manageProject', async (treeItem: WorkspaceTreeItem) => {
 		const dashboard = new ProjectDashboard(workspaceService, treeItem);
 		await dashboard.showDashboard();

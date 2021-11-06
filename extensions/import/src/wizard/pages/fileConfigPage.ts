@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { ImportPage } from '../api/importPage';
 import * as constants from '../../common/constants';
-import * as fs from 'fs';
+import { promises as fs } from 'fs';
 
 export class FileConfigPage extends ImportPage {
 
@@ -85,7 +85,6 @@ export class FileConfigPage extends ImportPage {
 		this._schemaLoader = schemaLoader;
 	}
 
-
 	private tableNames: string[] = [];
 
 	async start(): Promise<boolean> {
@@ -144,6 +143,7 @@ export class FileConfigPage extends ImportPage {
 				this.model.server = connectionValue.connection;
 				await this.populateDatabaseDropdown();
 			}
+			await this.populateDatabaseDropdown();
 		});
 
 		return {
@@ -198,33 +198,35 @@ export class FileConfigPage extends ImportPage {
 		this.databaseDropdown.values = [];
 		this.schemaDropdown.values = [];
 
-		if (!this.model.server) {
-			//TODO handle error case
-			this.databaseDropdown.loading = false;
-			return false;
-		}
-
-		let defaultServerDatabase = this.model.server.options.database;
-
-		let values: any[];
 		try {
-			values = await this.getDatabaseValues();
-		} catch (error) {
-			// This code is used in case of contained databases when the query will return an error.
-			console.log(error);
-			values = [{ displayName: defaultServerDatabase, name: defaultServerDatabase }];
-			this.databaseDropdown.editable = false;
+			if (!this.model.server) {
+				//TODO handle error case
+				this.databaseDropdown.loading = false;
+				return false;
+			}
+
+			let defaultServerDatabase = this.model.server.options.database;
+
+			let values: azdata.CategoryValue[];
+			try {
+				values = await this.getDatabaseValues();
+			} catch (error) {
+				// This code is used in case of contained databases when the query will return an error.
+				console.log(error);
+				values = [{ displayName: defaultServerDatabase, name: defaultServerDatabase }];
+				this.databaseDropdown.editable = false;
+			}
+
+			this.model.database = defaultServerDatabase;
+
+			this.databaseDropdown.updateProperties({
+				values: values
+			});
+
+			this.databaseDropdown.value = { displayName: this.model.database, name: this.model.database };
+		} finally {
+			this.databaseDropdown.loading = false;
 		}
-
-		this.model.database = defaultServerDatabase;
-
-		this.databaseDropdown.updateProperties({
-			values: values
-		});
-
-		this.databaseDropdown.value = { displayName: this.model.database, name: this.model.database };
-		this.databaseDropdown.loading = false;
-
 		return true;
 	}
 
@@ -232,9 +234,21 @@ export class FileConfigPage extends ImportPage {
 		this.fileTextBox = this.view.modelBuilder.inputBox().withProps({
 			required: true,
 			validationErrorMessage: constants.invalidFileLocationError
-		}).withValidation((component) => {
-			return fs.existsSync(component.value);
+		}).withValidation(async (component) => {
+			if (component.value) {
+				try {
+					await fs.access(component.value);
+					return true;
+				} catch (e) {
+					return false;
+				}
+			}
+			return false;
 		}).component();
+
+		this.fileTextBox.onTextChanged(e => {
+			this.model.newFileSelected = true;
+		});
 
 		this.fileButton = this.view.modelBuilder.button().withProps({
 			label: constants.browseFilesText,
@@ -242,6 +256,7 @@ export class FileConfigPage extends ImportPage {
 		}).component();
 
 		this.fileButton.onDidClick(async (click) => {
+			this.model.newFileSelected = true;
 			let fileUris = await vscode.window.showOpenDialog(
 				{
 					canSelectFiles: true,
@@ -324,6 +339,7 @@ export class FileConfigPage extends ImportPage {
 		}).component();
 
 		this.tableNameTextBox.onTextChanged((tableName) => {
+			this.model.newFileSelected = true;
 			this.model.table = tableName;
 		});
 
@@ -415,33 +431,6 @@ export class FileConfigPage extends ImportPage {
 		delete this.model.database;
 		delete this.model.schema;
 	}
-
-	// private async populateTableNames(): Promise<boolean> {
-	// 	this.tableNames = [];
-	// 	let databaseName = (<azdata.CategoryValue>this.databaseDropdown.value).name;
-	//
-	// 	if (!databaseName || databaseName.length === 0) {
-	// 		this.tableNames = [];
-	// 		return false;
-	// 	}
-	//
-	// 	let connectionUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
-	// 	let queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(this.model.server.providerName, azdata.DataProviderType.QueryProvider);
-	// 	let results: azdata.SimpleExecuteResult;
-	//
-	// 	try {
-	// 		//let query = sqlstring.format('USE ?; SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = \'BASE TABLE\'', [databaseName]);
-	// 		//results = await queryProvider.runQueryAndReturn(connectionUri, query);
-	// 	} catch (e) {
-	// 		return false;
-	// 	}
-	//
-	// 	this.tableNames = results.rows.map(row => {
-	// 		return row[0].displayValue;
-	// 	});
-	//
-	// 	return true;
-	// }
 }
 
 

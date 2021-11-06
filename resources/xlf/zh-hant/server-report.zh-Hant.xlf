@@ -4,19 +4,19 @@
     <body>
       <trans-unit id="XEventsFailed">
         <source xml:lang="en">XEvents operation failed.</source>
-        <target state="new">XEvents operation failed.</target>
+        <target state="translated">XEvents 作業失敗。</target>
       </trans-unit>
       <trans-unit id="XEventsNotSupported">
         <source xml:lang="en">XEvents sessions not supported.</source>
-        <target state="new">XEvents sessions not supported.</target>
+        <target state="translated">不支援 Xevent 工作階段。</target>
       </trans-unit>
       <trans-unit id="XEventsStarted">
         <source xml:lang="en">XEvents sessions started for PageContention and ObjectContention.</source>
-        <target state="new">XEvents sessions started for PageContention and ObjectContention.</target>
+        <target state="translated">已為 PageContention 和 ObjectContention 啟動 Xevent 工作階段。</target>
       </trans-unit>
       <trans-unit id="XEventsStopped">
         <source xml:lang="en">XEvents sessions PageContention and ObjectContention removed.</source>
-        <target state="new">XEvents sessions PageContention and ObjectContention removed.</target>
+        <target state="translated">Xevent 工作階段 PageContention 和 ObjectContention 已移除。</target>
       </trans-unit>
     </body>
   </file>

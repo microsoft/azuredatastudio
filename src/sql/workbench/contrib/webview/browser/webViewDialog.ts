@@ -33,8 +33,6 @@ export class WebViewDialog extends Modal {
 
 	private _onOk = new Emitter<void>();
 	public onOk: Event<void> = this._onOk.event;
-	private _onClosed = new Emitter<void>();
-	public onClosed: Event<void> = this._onClosed.event;
 	private _onMessage = new Emitter<any>();
 
 	private readonly id = generateUuid();
@@ -141,7 +139,6 @@ export class WebViewDialog extends Modal {
 
 	public close(hideReason: HideReason = 'close') {
 		this.hide(hideReason);
-		this._onClosed.fire();
 	}
 
 	public sendMessage(message: any): void {

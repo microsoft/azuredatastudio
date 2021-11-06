@@ -233,7 +233,6 @@ export class RunQueryAction extends QueryTaskbarAction {
 			editor = this.editor;
 		}
 
-		await this.connectionManagementService.refreshAzureAccountTokenIfNecessary(this.editor.input.uri);
 		if (this.isConnected(editor)) {
 			// Hide IntelliSense suggestions list when running query to match SSMS behavior
 			this.commandService?.executeCommand('hideSuggestWidget');
@@ -306,7 +305,6 @@ export class EstimatedQueryPlanAction extends QueryTaskbarAction {
 
 	public override async run(): Promise<void> {
 		if (!this.editor.isSelectionEmpty()) {
-			await this.connectionManagementService.refreshAzureAccountTokenIfNecessary(this.editor.input.uri);
 			if (this.isConnected(this.editor)) {
 				// If we are already connected, run the query
 				this.runQuery(this.editor);
@@ -346,7 +344,6 @@ export class ActualQueryPlanAction extends QueryTaskbarAction {
 
 	public override async run(): Promise<void> {
 		if (!this.editor.isSelectionEmpty()) {
-			await this.connectionManagementService.refreshAzureAccountTokenIfNecessary(this.editor.input.uri);
 			if (this.isConnected(this.editor)) {
 				// If we are already connected, run the query
 				this.runQuery(this.editor);
@@ -794,6 +791,11 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 	}
 
 	private updateConnection(databaseName: string): void {
+		// Ignore if the database name is not provided, this happens when the query editor connection is changed to
+		// a provider that does not support database.
+		if (!databaseName) {
+			return;
+		}
 		this._isConnected = true;
 		this._currentDatabaseName = databaseName;
 		// Set the value immediately to the initial database so the user can see that, and then

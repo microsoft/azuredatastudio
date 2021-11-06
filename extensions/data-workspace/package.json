@@ -1,7 +1,7 @@
 {
   "name": "data-workspace",
-  "displayName": "%extension-displayName%",
-  "description": "%extension-description%",
+  "displayName": "Data Workspace",
+  "description": "Additional common functionality for database projects",
   "version": "0.1.0",
   "publisher": "Microsoft",
   "preview": true,
@@ -20,16 +20,22 @@
     "type": "git",
     "url": "https://github.com/Microsoft/azuredatastudio.git"
   },
+	"capabilities": {
+    "virtualWorkspaces": false,
+    "untrustedWorkspaces": {
+      "supported": true
+    }
+	},
   "extensionDependencies": [],
   "contributes": {
     "configuration": [
       {
         "title": "Projects",
         "properties": {
-          "dataworkspace.projects": {
+          "dataworkspace.excludedProjects": {
             "type": "array",
             "default": [],
-            "description": ""
+            "description": "%projects.excludedProjectsDescription%"
           },
           "projects.defaultProjectSaveLocation": {
             "type": "string",
@@ -67,6 +73,10 @@
         "title": "%close-workspace-command%",
         "category": "",
         "icon": "$(close)"
+      },
+      {
+        "command": "projects.removeProject",
+        "title": "%remove-project-command%"
       },
       {
         "command": "projects.manageProject",
@@ -109,6 +119,10 @@
           "when": "false"
         },
         {
+          "command": "projects.removeProject",
+          "when": "false"
+        },
+        {
           "command": "projects.openExisting"
         },
         {
@@ -121,6 +135,11 @@
           "command": "projects.manageProject",
           "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project && azdataAvailable",
           "group": "0_projectsFirst@1"
+        },
+        {
+          "command": "projects.removeProject",
+          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project",
+          "group": "9_dbProjectsLast@9"
         }
       ]
     },
@@ -158,7 +177,7 @@
     ]
   },
   "dependencies": {
-    "fast-glob": "^3.1.0",
+    "fast-glob": "^3.2.7",
     "@microsoft/ads-extension-telemetry": "^1.1.5",
     "vscode-nls": "^4.0.0"
   },

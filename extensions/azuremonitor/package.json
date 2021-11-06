@@ -1,7 +1,7 @@
 {
   "name": "azuremonitor",
   "description": "%azuremonitor.description%",
-  "version": "0.1.6",
+  "version": "0.1.8",
   "publisher": "Microsoft",
   "aiKey": "AIF-444c3af9-8e69-4462-ab49-4191e6ad1916",
   "activationEvents": [
@@ -16,6 +16,12 @@
     "type": "git",
     "url": "https://github.com/Microsoft/azuredatastudio.git"
   },
+	"capabilities": {
+    "virtualWorkspaces": false,
+    "untrustedWorkspaces": {
+      "supported": true
+    }
+	},
   "typings": "./src/azuremonitor",
   "contributes": {
     "connectionProvider": {
@@ -108,20 +114,6 @@
           "objectType": null,
           "categoryValues": null,
           "isRequired": true,
-          "isArray": false
-        },
-        {
-          "specialValueType": "databaseName",
-          "isIdentity": true,
-          "name": "database",
-          "displayName": "%azuremonitor.connectionOptions.databaseName.displayName%",
-          "description": "%azuremonitor.connectionOptions.databaseName.description%",
-          "groupName": "%azuremonitor.connectionProperties.groupName.source%",
-          "valueType": "string",
-          "defaultValue": null,
-          "objectType": null,
-          "categoryValues": null,
-          "isRequired": false,
           "isArray": false
         }
       ]
@@ -220,7 +212,7 @@
     "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#1.2.2",
     "figures": "^2.0.0",
     "find-remove": "1.2.1",
-    "@microsoft/ads-service-downloader": "0.2.2",
+    "@microsoft/ads-service-downloader": "0.2.3",
     "vscode-extension-telemetry": "0.1.0",
     "vscode-languageclient": "5.2.1",
     "vscode-nls": "^4.0.0"

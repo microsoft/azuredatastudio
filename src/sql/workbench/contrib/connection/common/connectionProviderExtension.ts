@@ -30,6 +30,10 @@ const ConnectionProviderContrib: IJSONSchema = {
 			type: 'string',
 			description: localize('schema.notebookKernelAlias', "Notebook Kernel Alias for the provider")
 		},
+		isQueryProvider: {
+			type: 'boolean',
+			description: localize('schema.isQueryProvider', "Whether the provider is also a query provider. The default value is true.")
+		},
 		iconPath: {
 			description: localize('schema.iconPath', "Icon path for the server type"),
 			oneOf: [

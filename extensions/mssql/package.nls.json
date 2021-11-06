@@ -183,5 +183,8 @@
 	"databasesListProperties.status": "Status",
 	"databasesListProperties.size": "Size (MB)",
 	"databasesListProperties.lastBackup": "Last backup",
-	"objectsListProperties.name": "Name"
+	"objectsListProperties.name": "Name",
+
+	"title.newTable": "New Table",
+	"title.designTable": "Design"
 }

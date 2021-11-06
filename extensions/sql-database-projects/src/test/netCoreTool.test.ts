@@ -62,10 +62,9 @@ describe('NetCoreTool: Net core tests', function (): void {
 	it('should run a command successfully', async function (): Promise<void> {
 		const netcoreTool = new NetCoreTool(testContext.outputChannel);
 		const dummyFile =  path.join(await generateTestFolderPath(), 'dummy.dacpac');
-		const outputChannel = vscode.window.createOutputChannel('db project test');
 
 		try {
-			await netcoreTool.runStreamedCommand('echo test > ' + getQuotedPath(dummyFile), outputChannel, undefined);
+			await netcoreTool.runStreamedCommand('echo test > ' + getQuotedPath(dummyFile), undefined);
 			const text = await fs.promises.readFile(dummyFile);
 			should(text.toString().trim()).equal('test');
 		}

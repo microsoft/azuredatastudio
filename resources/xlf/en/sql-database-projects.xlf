@@ -16,6 +16,9 @@
     <trans-unit id="PublishHistory">
       <source xml:lang="en">Publish History</source>
     </trans-unit>
+    <trans-unit id="SettingAlreadyExists">
+      <source xml:lang="en">Local app setting '{0}' already exists. Overwrite?</source>
+    </trans-unit>
     <trans-unit id="Status">
       <source xml:lang="en">Status</source>
     </trans-unit>
@@ -46,11 +49,17 @@
     <trans-unit id="addPackage">
       <source xml:lang="en">Add Package</source>
     </trans-unit>
+    <trans-unit id="addPackageReferenceMessage">
+      <source xml:lang="en">To use SQL bindings, ensure your Azure Functions project has a reference to {0}</source>
+    </trans-unit>
     <trans-unit id="appSettingPrompt">
       <source xml:lang="en">Would you like to update Azure Function local.settings.json with the new connection string?</source>
     </trans-unit>
     <trans-unit id="at">
       <source xml:lang="en">at</source>
+    </trans-unit>
+    <trans-unit id="autorestProjectName">
+      <source xml:lang="en">New SQL project name</source>
     </trans-unit>
     <trans-unit id="browseButtonText">
       <source xml:lang="en">Browse folder</source>
@@ -63,6 +72,9 @@
     </trans-unit>
     <trans-unit id="buildAction">
       <source xml:lang="en">Build</source>
+    </trans-unit>
+    <trans-unit id="buildElements">
+      <source xml:lang="en">Build Elements</source>
     </trans-unit>
     <trans-unit id="buildFailedCannotStartSchemaCompare">
       <source xml:lang="en">Schema compare could not start because build failed</source>
@@ -79,6 +91,9 @@
     <trans-unit id="changeTargetPlatformAction">
       <source xml:lang="en">Change Target Platform</source>
     </trans-unit>
+    <trans-unit id="checkoutOutputMessage">
+      <source xml:lang="en">Check output pane for more details</source>
+    </trans-unit>
     <trans-unit id="chooseAction">
       <source xml:lang="en">Choose action</source>
     </trans-unit>
@@ -90,6 +105,9 @@
     </trans-unit>
     <trans-unit id="cleaningDockerImagesMessage">
       <source xml:lang="en">Cleaning existing deployments...</source>
+    </trans-unit>
+    <trans-unit id="confirmPassword">
+      <source xml:lang="en">Confirm SQL server admin password</source>
     </trans-unit>
     <trans-unit id="connectingToSqlServerOnDockerMessage">
       <source xml:lang="en">Connecting to SQL Server on Docker</source>
@@ -106,8 +124,14 @@
     <trans-unit id="connectionStringSettingPlaceholder">
       <source xml:lang="en">Connection string setting specified in "local.settings.json"</source>
     </trans-unit>
+    <trans-unit id="containerAlreadyExistForProject">
+      <source xml:lang="en">Other servers on container already exist for the project. Do you want to delete them?</source>
+    </trans-unit>
     <trans-unit id="createNew">
       <source xml:lang="en">Create New</source>
+    </trans-unit>
+    <trans-unit id="createNewLocalAppSetting">
+      <source xml:lang="en">Create new local app setting</source>
     </trans-unit>
     <trans-unit id="createProjectDialogOkButtonText">
       <source xml:lang="en">Create</source>
@@ -132,6 +156,9 @@
     </trans-unit>
     <trans-unit id="dacpacNotOnSameDrive">
       <source xml:lang="en">Dacpac references need to be located on the same drive as the project file. The project file is located at {0}</source>
+    </trans-unit>
+    <trans-unit id="dacpacReferenceElement">
+      <source xml:lang="en">Dacpac reference</source>
     </trans-unit>
     <trans-unit id="dacpacText">
       <source xml:lang="en">Data-tier application (.dacpac)</source>
@@ -217,23 +244,11 @@
     <trans-unit id="deployDbTaskName">
       <source xml:lang="en">Deploying SQL Db Project Locally</source>
     </trans-unit>
-    <trans-unit id="deployProjectFailed">
-      <source xml:lang="en">Failed to deploy project. Check output pane for more details. {0}</source>
-    </trans-unit>
     <trans-unit id="deployProjectFailedMessage">
       <source xml:lang="en">Failed to open a connection to the deployed database'</source>
     </trans-unit>
-    <trans-unit id="deployProjectSucceed">
-      <source xml:lang="en">Database project deployed successfully</source>
-    </trans-unit>
     <trans-unit id="deployScriptExists">
       <source xml:lang="en">A {0} script already exists. The new script will not be included in build.</source>
-    </trans-unit>
-    <trans-unit id="deployToDockerContainer">
-      <source xml:lang="en">Deploy to docker container</source>
-    </trans-unit>
-    <trans-unit id="deployToExistingServer">
-      <source xml:lang="en">Deploy to existing server</source>
     </trans-unit>
     <trans-unit id="differentDbDifferentServer">
       <source xml:lang="en">Different database, different server</source>
@@ -252,6 +267,9 @@
     </trans-unit>
     <trans-unit id="dockerLogMessage">
       <source xml:lang="en">Docker logs: '{0}'</source>
+    </trans-unit>
+    <trans-unit id="dockerNotRunningError">
+      <source xml:lang="en">Failed to verify docker. Please make sure docker is installed and running. Error: '{0}'</source>
     </trans-unit>
     <trans-unit id="done">
       <source xml:lang="en">Done</source>
@@ -274,11 +292,17 @@
     <trans-unit id="enterConnStringTemplateDescription">
       <source xml:lang="en">Enter a template for SQL connection string</source>
     </trans-unit>
+    <trans-unit id="enterConnectionString">
+      <source xml:lang="en">Enter connection string</source>
+    </trans-unit>
     <trans-unit id="enterConnectionStringEnvName">
       <source xml:lang="en">Enter connection string environment variable name</source>
     </trans-unit>
     <trans-unit id="enterConnectionStringEnvNameDescription">
       <source xml:lang="en">Enter environment variable for SQL connection string</source>
+    </trans-unit>
+    <trans-unit id="enterConnectionStringSettingName">
+      <source xml:lang="en">Enter connection string setting name</source>
     </trans-unit>
     <trans-unit id="enterConnectionStringTemplate">
       <source xml:lang="en">Enter connection string template</source>
@@ -290,16 +314,19 @@
       <source xml:lang="en">Enter new value for variable '{0}'</source>
     </trans-unit>
     <trans-unit id="enterPassword">
-      <source xml:lang="en">Enter password or press enter to use the generated password</source>
+      <source xml:lang="en">Enter SQL Server admin password</source>
     </trans-unit>
     <trans-unit id="enterPortNumber">
-      <source xml:lang="en">Enter port number or press enter to use the default value</source>
+      <source xml:lang="en">Enter SQL server port number or press enter to use the default value</source>
     </trans-unit>
     <trans-unit id="enterSystemDbName">
       <source xml:lang="en">Enter a database name for this system database</source>
     </trans-unit>
     <trans-unit id="errorFindingBuildFilesLocation">
       <source xml:lang="en">Error finding build files location: {0}</source>
+    </trans-unit>
+    <trans-unit id="errorReadingProjectGuid">
+      <source xml:lang="en">Error trying to read {0} of project '{1}'</source>
     </trans-unit>
     <trans-unit id="exampleUsage">
       <source xml:lang="en">Example Usage</source>
@@ -318,6 +345,9 @@
     </trans-unit>
     <trans-unit id="extractTargetRequired">
       <source xml:lang="en">Target information for extract is required to create database project.</source>
+    </trans-unit>
+    <trans-unit id="failedToParse">
+      <source xml:lang="en">Failed to parse "{0}": {1}.</source>
     </trans-unit>
     <trans-unit id="file">
       <source xml:lang="en">File</source>
@@ -343,6 +373,9 @@
     <trans-unit id="folderAlreadyExistsChooseNewLocation">
       <source xml:lang="en">A folder with the name '{0}' already exists on disk at this location. Please choose another location.</source>
     </trans-unit>
+    <trans-unit id="folderElements">
+      <source xml:lang="en">Folder Elements</source>
+    </trans-unit>
     <trans-unit id="folderFriendlyName">
       <source xml:lang="en">Folder</source>
     </trans-unit>
@@ -355,11 +388,23 @@
     <trans-unit id="generateScriptButtonText">
       <source xml:lang="en">Generate Script</source>
     </trans-unit>
+    <trans-unit id="generatingProjectFailed">
+      <source xml:lang="en">Generating project via AutoRest failed.  Check output pane for more details. Error: {0}</source>
+    </trans-unit>
+    <trans-unit id="generatingProjectFromAutorest">
+      <source xml:lang="en">Generating new SQL project from {0}...  Check output window for details.</source>
+    </trans-unit>
     <trans-unit id="hr">
       <source xml:lang="en">hr</source>
     </trans-unit>
+    <trans-unit id="importElements">
+      <source xml:lang="en">Import Elements</source>
+    </trans-unit>
     <trans-unit id="input">
       <source xml:lang="en">Input</source>
+    </trans-unit>
+    <trans-unit id="installGlobally">
+      <source xml:lang="en">Install globally</source>
     </trans-unit>
     <trans-unit id="invalidDataSchemaProvider">
       <source xml:lang="en">Invalid DSP in .sqlproj file</source>
@@ -379,11 +424,17 @@
     <trans-unit id="invalidPropertyValue">
       <source xml:lang="en">Invalid value specified for the property '{0}' in .sqlproj file</source>
     </trans-unit>
+    <trans-unit id="invalidSQLPassword">
+      <source xml:lang="en">SQL Server password doesn't meet the password complexity requirement. For more information see https://docs.microsoft.com/sql/relational-databases/security/password-policy</source>
+    </trans-unit>
     <trans-unit id="invalidSqlConnectionString">
       <source xml:lang="en">Invalid SQL connection string</source>
     </trans-unit>
     <trans-unit id="invalidTargetPlatform">
       <source xml:lang="en">Invalid target platform: {0}. Supported target platforms: {1}</source>
+    </trans-unit>
+    <trans-unit id="jsonParseError">
+      <source xml:lang="en">{0} near line "{1}", column "{2}"</source>
     </trans-unit>
     <trans-unit id="loadProfilePlaceholderText">
       <source xml:lang="en">Load profile...</source>
@@ -397,8 +448,14 @@
     <trans-unit id="missingVersion">
       <source xml:lang="en">Missing 'version' entry in {0}</source>
     </trans-unit>
+    <trans-unit id="moreInformation">
+      <source xml:lang="en">More Information</source>
+    </trans-unit>
     <trans-unit id="msec">
       <source xml:lang="en">msec</source>
+    </trans-unit>
+    <trans-unit id="multipleMostDeploymentScripts">
+      <source xml:lang="en">Unexpected number of {0} files: {1}</source>
     </trans-unit>
     <trans-unit id="multipleSqlProjFilesSelected">
       <source xml:lang="en">Multiple .sqlproj files selected; please select only one.</source>
@@ -427,6 +484,9 @@
     <trans-unit id="noFileExist">
       <source xml:lang="en">File {0} doesn't exist</source>
     </trans-unit>
+    <trans-unit id="noSqlFilesGenerated">
+      <source xml:lang="en">No .sql files were generated by Autorest. Please confirm that your spec contains model definitions, or check the output log for details.</source>
+    </trans-unit>
     <trans-unit id="noSqlProjFilesSelected">
       <source xml:lang="en">No .sqlproj file selected; please select one.</source>
     </trans-unit>
@@ -435,6 +495,18 @@
     </trans-unit>
     <trans-unit id="noStringDefault">
       <source xml:lang="en">No (default)</source>
+    </trans-unit>
+    <trans-unit id="nodeButNotAutorestFound">
+      <source xml:lang="en">Autorest tool not found in system path, but found Node.js.  Prompting user for how to proceed.  Execute 'npm install autorest -g' to install permanently and avoid this message.</source>
+    </trans-unit>
+    <trans-unit id="nodeButNotAutorestFoundPrompt">
+      <source xml:lang="en">Autorest is not installed. To proceed, choose whether to run Autorest from a temporary location via 'npx' or install Autorest globally then run.</source>
+    </trans-unit>
+    <trans-unit id="nodeNotFound">
+      <source xml:lang="en">Neither Autorest nor Node.js (npx) found in system path.  Please install Node.js for Autorest generation to work.</source>
+    </trans-unit>
+    <trans-unit id="noneElements">
+      <source xml:lang="en">None Elements</source>
     </trans-unit>
     <trans-unit id="notValidVariableName">
       <source xml:lang="en">The variable name '{0}' is not valid.</source>
@@ -454,11 +526,20 @@
     <trans-unit id="parentTreeItemUnknown">
       <source xml:lang="en">Cannot access parent of provided tree item</source>
     </trans-unit>
+    <trans-unit id="passwordNotMatch">
+      <source xml:lang="en">SQL Server password doesn't match the confirmation password</source>
+    </trans-unit>
     <trans-unit id="portMustNotBeNumber">
       <source xml:lang="en">Port must a be number</source>
     </trans-unit>
+    <trans-unit id="postDeployElements">
+      <source xml:lang="en">PostDeploy Elements</source>
+    </trans-unit>
     <trans-unit id="postDeployScriptFriendlyName">
       <source xml:lang="en">Script.PostDeployment</source>
+    </trans-unit>
+    <trans-unit id="preDeployElements">
+      <source xml:lang="en">PreDeploy Elements</source>
     </trans-unit>
     <trans-unit id="preDeployScriptFriendlyName">
       <source xml:lang="en">Script.PreDeployment</source>
@@ -493,6 +574,12 @@
     <trans-unit id="projectNamePlaceholderText">
       <source xml:lang="en">Enter project name</source>
     </trans-unit>
+    <trans-unit id="projectReferenceElement">
+      <source xml:lang="en">Project reference</source>
+    </trans-unit>
+    <trans-unit id="projectReferenceNameElement">
+      <source xml:lang="en">Project reference name element</source>
+    </trans-unit>
     <trans-unit id="publish">
       <source xml:lang="en">Publish</source>
     </trans-unit>
@@ -502,8 +589,23 @@
     <trans-unit id="publishDialogName">
       <source xml:lang="en">Publish project</source>
     </trans-unit>
+    <trans-unit id="publishProjectSucceed">
+      <source xml:lang="en">Database project published successfully</source>
+    </trans-unit>
     <trans-unit id="publishSettingsFiles">
       <source xml:lang="en">Publish Settings File</source>
+    </trans-unit>
+    <trans-unit id="publishToContainerFailed">
+      <source xml:lang="en">Failed to publish to container. {0}</source>
+    </trans-unit>
+    <trans-unit id="publishToDockerContainer">
+      <source xml:lang="en">Publish to new server in a container</source>
+    </trans-unit>
+    <trans-unit id="publishToExistingServer">
+      <source xml:lang="en">Publish to existing server</source>
+    </trans-unit>
+    <trans-unit id="publishingProjectMessage">
+      <source xml:lang="en">Publishing project in a container...</source>
     </trans-unit>
     <trans-unit id="referenceRadioButtonsGroupTitle">
       <source xml:lang="en">Type</source>
@@ -535,11 +637,20 @@
     <trans-unit id="retryWaitMessage">
       <source xml:lang="en">Waiting for {0} seconds before another attempt for operation '{1}'</source>
     </trans-unit>
+    <trans-unit id="runViaNpx">
+      <source xml:lang="en">Run via npx</source>
+    </trans-unit>
     <trans-unit id="runningDockerMessage">
       <source xml:lang="en">Building and running the docker container ...</source>
     </trans-unit>
     <trans-unit id="sameDatabase">
       <source xml:lang="en">Same database</source>
+    </trans-unit>
+    <trans-unit id="save">
+      <source xml:lang="en">Save</source>
+    </trans-unit>
+    <trans-unit id="saveChangesInFile">
+      <source xml:lang="en">There are unsaved changes in the current file. Save now?</source>
     </trans-unit>
     <trans-unit id="schema">
       <source xml:lang="en">Schema</source>
@@ -562,6 +673,9 @@
     <trans-unit id="selectAzureFunction">
       <source xml:lang="en">Select an Azure function in the current file to add SQL binding to</source>
     </trans-unit>
+    <trans-unit id="selectBaseImage">
+      <source xml:lang="en">Select the base SQL Server docker image</source>
+    </trans-unit>
     <trans-unit id="selectBindingType">
       <source xml:lang="en">Select type of binding</source>
     </trans-unit>
@@ -574,9 +688,6 @@
     <trans-unit id="selectDatabase">
       <source xml:lang="en">Select database</source>
     </trans-unit>
-    <trans-unit id="selectDeployOption">
-      <source xml:lang="en">Select where to deploy the project to</source>
-    </trans-unit>
     <trans-unit id="selectFolderStructure">
       <source xml:lang="en">Select folder structure</source>
     </trans-unit>
@@ -588,6 +699,15 @@
     </trans-unit>
     <trans-unit id="selectProjectLocation">
       <source xml:lang="en">Select project location</source>
+    </trans-unit>
+    <trans-unit id="selectPublishOption">
+      <source xml:lang="en">Select where to publish the project to</source>
+    </trans-unit>
+    <trans-unit id="selectSetting">
+      <source xml:lang="en">Select SQL connection string setting from local.settings.json</source>
+    </trans-unit>
+    <trans-unit id="selectSpecFile">
+      <source xml:lang="en">Select OpenAPI/Swagger spec file</source>
     </trans-unit>
     <trans-unit id="selectString">
       <source xml:lang="en">Select</source>
@@ -607,6 +727,9 @@
     <trans-unit id="sourceDatabase">
       <source xml:lang="en">Source database</source>
     </trans-unit>
+    <trans-unit id="specSelectionText">
+      <source xml:lang="en">OpenAPI/Swagger spec</source>
+    </trans-unit>
     <trans-unit id="sqlCmdTableLabel">
       <source xml:lang="en">SQLCMD Variables</source>
     </trans-unit>
@@ -619,7 +742,7 @@
     <trans-unit id="sqlConnectionStringFriendly">
       <source xml:lang="en">SQL connection string</source>
     </trans-unit>
-    <trans-unit id="sqlDatabaseProjects.InstallNetCore">
+    <trans-unit id="sqlDatabaseProjects.Install">
       <source xml:lang="en">Install</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.NetCoreInstallationConfirmation">
@@ -628,17 +751,23 @@
     <trans-unit id="sqlDatabaseProjects.NetCoreSupportedVersionInstallationConfirmation">
       <source xml:lang="en">Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK supported version location in settings if already installed.</source>
     </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.NetCoreVersionDowngradeConfirmation">
+      <source xml:lang="en">Installed .NET SDK version {0} is newer than the currently supported versions. Project build will not work. Please install .NET Core SDK version 3.1 and include a global.json in the project folder specifying the SDK version to use. [More Information](https://docs.microsoft.com/dotnet/core/versions/selection)</source>
+    </trans-unit>
     <trans-unit id="sqlDatabaseProjects.UpdateNetCoreLocation">
       <source xml:lang="en">Update Location</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.doNotAskAgain">
       <source xml:lang="en">Don't Ask Again</source>
     </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.doNotShowAgain">
+      <source xml:lang="en">Don't Show Again</source>
+    </trans-unit>
     <trans-unit id="sqlDatabaseProjects.outputChannel">
       <source xml:lang="en">Database Projects</source>
     </trans-unit>
-    <trans-unit id="sqlObjectToQuery">
-      <source xml:lang="en">SQL object to query</source>
+    <trans-unit id="sqlTableOrViewToQuery">
+      <source xml:lang="en">SQL table or view to query</source>
     </trans-unit>
     <trans-unit id="sqlTableToUpsert">
       <source xml:lang="en">SQL table to upsert into</source>
@@ -692,13 +821,25 @@
       <source xml:lang="en">Unrecognized version: </source>
     </trans-unit>
     <trans-unit id="updateProjectDatabaseReferencesForRoundTrip">
-      <source xml:lang="en">The system database references need to be updated to build this project. If the project is created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
+      <source xml:lang="en">The system database references need to be updated to build the project '{0}'. If the project was created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
     </trans-unit>
     <trans-unit id="updateProjectForRoundTrip">
-      <source xml:lang="en">The targets, references, and system database references need to be updated to build this project. If the project is created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
+      <source xml:lang="en">The targets, references, and system database references need to be updated to build the project '{0}'. If the project was created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
+    </trans-unit>
+    <trans-unit id="userSelectionCancelled">
+      <source xml:lang="en">User has cancelled selection for how to run autorest.</source>
+    </trans-unit>
+    <trans-unit id="userSelectionInstallGlobally">
+      <source xml:lang="en">User selected to install autorest gloablly.  Installing now...</source>
+    </trans-unit>
+    <trans-unit id="userSelectionRunNpx">
+      <source xml:lang="en">User selected to run via npx.</source>
     </trans-unit>
     <trans-unit id="valueCannotBeEmpty">
       <source xml:lang="en">Value cannot be empty</source>
+    </trans-unit>
+    <trans-unit id="valueMustNotBeEmpty">
+      <source xml:lang="en">Value must not be empty</source>
     </trans-unit>
     <trans-unit id="viewFriendlyName">
       <source xml:lang="en">View</source>
@@ -711,6 +852,8 @@
     <trans-unit id="sqlDatabaseProject.RunCommand.ErroredOut">
       <source xml:lang="en">	&gt;&gt;&gt; {0}   … errored out: {1}</source>
     </trans-unit>
+</body></file>
+  <file original="extensions/sql-database-projects/dist/tools/shellExecutionHelper" source-language="en" datatype="plaintext"><body>
     <trans-unit id="sqlDatabaseProjects.RunCommand.stderr">
       <source xml:lang="en">    stderr: </source>
     </trans-unit>
@@ -734,6 +877,9 @@
     <trans-unit id="sqlDatabaseProjects.addSqlBinding">
       <source xml:lang="en">Add SQL Binding</source>
     </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.autorestSqlVersion">
+      <source xml:lang="en">Which version of Autorest.Sql to use from NPM.  Latest will be used if not set.</source>
+    </trans-unit>
     <trans-unit id="sqlDatabaseProjects.build">
       <source xml:lang="en">Build</source>
     </trans-unit>
@@ -749,9 +895,6 @@
     <trans-unit id="sqlDatabaseProjects.delete">
       <source xml:lang="en">Delete</source>
     </trans-unit>
-    <trans-unit id="sqlDatabaseProjects.deployLocal">
-      <source xml:lang="en">Deploy</source>
-    </trans-unit>
     <trans-unit id="sqlDatabaseProjects.description">
       <source xml:lang="en">Design and publish SQL database schemas</source>
     </trans-unit>
@@ -764,8 +907,14 @@
     <trans-unit id="sqlDatabaseProjects.exclude">
       <source xml:lang="en">Exclude from project</source>
     </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.generateProjectFromOpenApiSpec">
+      <source xml:lang="en">Generate SQL Project from OpenAPI/Swagger spec</source>
+    </trans-unit>
     <trans-unit id="sqlDatabaseProjects.netCoreDoNotAsk">
       <source xml:lang="en">Whether to prompt the user to install .NET Core when not detected.</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.netCoreDowngradeDoNotShow">
+      <source xml:lang="en">Whether to prompt the user to set .NET SDK version when a newer unsupported version is detected.</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.netCoreInstallLocation">
       <source xml:lang="en">Full path to .NET Core SDK on the machine.</source>
@@ -799,6 +948,9 @@
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.newView">
       <source xml:lang="en">Add View</source>
+    </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.nodejsDoNotAsk">
+      <source xml:lang="en">Whether to prompt the user to install Node.js when not detected.</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.open">
       <source xml:lang="en">Open Database Project</source>

@@ -9933,15 +9933,18 @@
 			"treeView.notRegistered": "ID '{0}' のツリー ビューは登録されていません。"
 		},
 		"sql/workbench/api/common/extHostNotebook": {
-			"errNoManager": "マネージャーが見つかりません",
-			"errNoProvider": "ノートブック プロバイダーが見つかりません",
+			"errNoExecuteManager": "実行マネージャーが見つかりません",
+			"errNoExecuteProvider": "ノートブック実行プロバイダーが見つかりません",
+			"errNoSerializationManager": "シリアル化マネージャーが見つかりません",
+			"errNoSerializationProvider": "ノートブック シリアル化プロバイダーが見つかりません",
+			"executeProviderRequired": "有効な providerId を持つ NotebookExecuteProvider をこのメソッドに渡す必要があります",
 			"noContentManager": "ノートブック {0} の Notebook Manager にコンテンツ マネージャーがありません。それに対して操作を実行できません",
 			"noServerManager": "ノートブック {0} の Notebook Manager にサーバー マネージャーがありません。それに対して操作を実行できません",
 			"noSessionManager": "ノートブック {0} の Notebook Manager にセッション マネージャーがありません。それに対して操作を実行できません",
-			"providerRequired": "有効な providerId を持つ NotebookProvider をこのメソッドに渡す必要があります"
+			"serializationProviderRequired": "有効な providerId を持つ NotebookSerializationProvider をこのメソッドに渡す必要があります"
 		},
 		"sql/workbench/api/common/extHostNotebookDocumentsAndEditors": {
-			"providerRequired": "有効な providerId を持つ NotebookProvider をこのメソッドに渡す必要があります"
+			"navigationProviderRequired": "有効な providerId を持つ NavigationProvider をこのメソッドに渡す必要があります"
 		},
 		"sql/workbench/browser/actions": {
 			"clearSavedAccounts": "保存されているすべてのアカウントのクリア",
@@ -9985,6 +9988,7 @@
 			"optionsDialog.ok": "OK"
 		},
 		"sql/workbench/browser/modal/optionsDialogHelper": {
+			"optionsDialog.defaultGroupName": "全般",
 			"optionsDialog.invalidInput": "無効な入力です。数値が必要です。",
 			"optionsDialog.missingRequireField": " が必須です。"
 		},
@@ -9997,6 +10001,7 @@
 			"declarativeTable.showActions": "アクションの表示"
 		},
 		"sql/workbench/browser/modelComponents/dropdown.component": {
+			"defaultDropdownErrorMessage": "このフィールドに入力してください。",
 			"loadingCompletedMessage": "読み込み完了",
 			"loadingMessage": "読み込み中"
 		},
@@ -10250,6 +10255,12 @@
 		},
 		"sql/workbench/contrib/connection/browser/connection.contribution": {
 			"connection.parseClipboardForConnectionStringDescription": "接続ダイアログが開いたり、解析が実行されたりするときにクリップボードの内容の解析を試行します。",
+			"connection.showUnsupportedServerVersionWarning": "Azure Data Studio でサポートされていないサーバー バージョンにユーザーが接続した場合に警告メッセージを表示するかどうか。",
+			"sql.defaultAuthenticationType.AzureMFA": "Azure Active Directory - MFA サポート付きユニバーサル",
+			"sql.defaultAuthenticationType.AzureMFAAndUser": "Azure Active Directory - パスワード",
+			"sql.defaultAuthenticationType.Integrated": "Windows 認証",
+			"sql.defaultAuthenticationType.SqlLogin": "SQL ログイン",
+			"sql.defaultAuthenticationTypeDescription": "Azure リソースに接続するときに使用する既定の認証の種類です。",
 			"sql.defaultEngineDescription": "使用する既定の SQL エンジン。.sql ファイル内の既定の言語プロバイダーが駆動され、新しい接続が作成されるときに既定で使用されます。",
 			"sql.maxRecentConnectionsDescription": "接続リストに格納する最近使用された接続の最大数。"
 		},
@@ -10260,6 +10271,7 @@
 			"schema.connectionOptions": "接続のオプション",
 			"schema.displayName": "プロバイダーの表示名",
 			"schema.iconPath": "サーバーの種類のアイコン パス",
+			"schema.isQueryProvider": "プロバイダーがクエリ プロバイダーであるかどうか。既定値は true です。",
 			"schema.notebookKernelAlias": "プロバイダーの Notebook カーネル別名",
 			"schema.providerId": "プロバイダーの共通 ID"
 		},
@@ -10776,6 +10788,7 @@
 			"codePreview": "コード セル",
 			"optionCodeCell": "コード セル",
 			"optionTextCell": "テキスト セル",
+			"splitCell": "セルを分割する",
 			"textPreview": "テキスト セル"
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/code.component": {
@@ -11214,6 +11227,7 @@
 		},
 		"sql/workbench/contrib/query/browser/queryResultsView": {
 			"messagesTabTitle": "メッセージ",
+			"queryResults.queryEditorCrashError": "クエリ エディターで問題が発生し、動作を停止しました。保存してからもう一度開いてください。",
 			"resultsTabTitle": "結果"
 		},
 		"sql/workbench/contrib/query/browser/statusBarItems": {
@@ -11605,7 +11619,12 @@
 		},
 		"sql/workbench/services/connection/browser/connectionManagementService": {
 			"cancelConnectionConfirmation": "この接続をキャンセルしてもよろしいですか?",
+			"connection.invalidConnectionResult": "接続結果が無効です",
+			"connection.neverShowUnsupportedVersionWarning": "今後は表示しない",
 			"connection.noAzureAccount": "接続用の Azure アカウント トークンの取得に失敗しました",
+			"connection.refreshAzureTokenFailure": "接続用の Azure アカウント トークンの更新に失敗しました",
+			"connection.unsupportedServerVersionWarning": "サーバー バージョンが Azure Data Studio でサポートされていません。接続できますが、Azure Data Studio の一部の機能が適切に機能しない可能性があります。",
+			"connectionManagementService.noProviderForUri": "URI のプロバイダーが見つかりませんでした:{0}",
 			"connectionNotAcceptedError": "接続が承認されていません",
 			"connectionService.no": "いいえ",
 			"connectionService.yes": "はい"
@@ -11792,7 +11811,7 @@
 			"carbon.extension.contributes.notebook.provider": "ノートブック プロバイダーの識別子。",
 			"carbon.extension.contributes.notebook.standardKernels": "このノートブック プロバイダーへの標準装備が必要なカーネル",
 			"vscode.extension.contributes.notebook.languagemagics": "ノートブックの言語を提供します。",
-			"vscode.extension.contributes.notebook.providers": "ノートブック プロバイダーを提供します。"
+			"vscode.extension.contributes.notebook.providersDescriptions": "ノートブック プロバイダーの説明を提供します。"
 		},
 		"sql/workbench/services/objectExplorer/browser/asyncServerTreeRenderer": {
 			"loading": "読み込んでいます..."
@@ -11856,6 +11875,8 @@
 		"sql/workbench/services/query/common/queryModelService": {
 			"commitEditFailed": "行のコミットに失敗しました: ",
 			"msgCancelQueryFailed": "失敗したクエリのキャンセル中: {0}",
+			"queryModelService.noQueryFoundForUri": "{0}のクエリがありません",
+			"queryModelService.uriAlreadyHasQuery": "{0} には既存のクエリが既に存在します",
 			"runQueryBatchStartLine": "行 {0}",
 			"runQueryBatchStartMessage": "次の場所でクエリの実行を開始しました: ",
 			"runQueryStringBatchStartMessage": "クエリ「{0}」の実行を開始しました",
@@ -11954,6 +11975,47 @@
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "はじめに(&&S)",
 			"showReleaseNotes": "「はじめに」を表示する"
+		},
+		"sql/platform/connection/common/connectionStatusManager": {
+			"connectionStatusManager.noConnectionForUri": "URI '{0}' の接続 が見つかりませんでした。",
+			"connectionStatusManager.uriAlreadyInConnectionsList": "URI を持つ接続が既に存在します: {0}"
+		},
+		"sql/workbench/services/query/common/queryManagement": {
+			"queryManagement.noQueryRunnerForUri": "URI のクエリ ランナーが見つかりませんでした:{0}",
+			"queryManagement.uriAlreadyHasQueryRunner": "URI: {0}には予期しないクエリ ランナーが既に存在します。"
+		},
+		"sql/base/browser/ui/designer/designer": {
+			"designer.newRowText": "新規追加",
+			"designer.removeRowText": "削除",
+			"tableDesigner.unknownComponentType": "コンポーネントの種類: {0} はサポートされていません"
+		},
+		"sql/base/browser/ui/designer/designerPropertiesPane": {
+			"tableDesigner.propertiesPaneTitle": "プロパティ",
+			"tableDesigner.propertiesPaneTitleWithContext": "プロパティ - {0} {1}"
+		},
+		"sql/workbench/browser/editor/tableDesigner/tableDesignerInput": {
+			"tableDesigner.newTable": "新しいテーブル"
+		},
+		"sql/workbench/contrib/tableDesigner/browser/actions": {
+			"tableDesigner.saveTableChanges": "変更内容を保存"
+		},
+		"sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput": {
+			"tableDesigner.advancedTab": "詳細設定",
+			"tableDesigner.columnAllowNullTitle": "Null を許容",
+			"tableDesigner.columnDefaultValueTitle": "既定値",
+			"tableDesigner.columnIsPrimaryKeyTitle": "主キー",
+			"tableDesigner.columnLengthTitle": "長さ",
+			"tableDesigner.columnNameTitle": "名前",
+			"tableDesigner.columnTypeName": "列",
+			"tableDesigner.columnTypeTitle": "種類",
+			"tableDesigner.columnsTabTitle": "列",
+			"tableDesigner.descriptionTitle": "説明",
+			"tableDesigner.nameTitle": "テーブル名",
+			"tableDesigner.saveChangeError": "変更の保存中にエラーが発生しました: {0}",
+			"tableDesigner.savedChangeSuccess": "変更が正常に保存されました。",
+			"tableDesigner.savingChanges": "テーブル デザイナーの変更を保存しています...",
+			"tableDesigner.schemaTitle": "スキーマ",
+			"tableDesigner.tableObjectType": "テーブル"
 		}
 	}
 }

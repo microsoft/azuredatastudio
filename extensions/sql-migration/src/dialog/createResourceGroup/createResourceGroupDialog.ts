@@ -9,6 +9,7 @@ import { azureResource } from 'azureResource';
 import { EventEmitter } from 'events';
 import { createResourceGroup } from '../../api/azure';
 import * as constants from '../../constants/strings';
+import * as styles from '../../constants/styles';
 
 export class CreateResourceGroupDialog {
 	private _dialogObject!: azdata.window.Dialog;
@@ -42,15 +43,14 @@ export class CreateResourceGroupDialog {
 			const resourceGroupDescription = view.modelBuilder.text().withProps({
 				value: constants.RESOURCE_GROUP_DESCRIPTION,
 				CSSStyles: {
-					'font-size': '13px',
-					'margin-bottom': '10px'
+					...styles.BODY_CSS,
+					'margin-bottom': '8px'
 				}
 			}).component();
 			const nameLabel = view.modelBuilder.text().withProps({
 				value: constants.NAME,
 				CSSStyles: {
-					'font-size': '13px',
-					'font-weight': 'bold',
+					...styles.LABEL_CSS
 				}
 			}).component();
 
@@ -65,8 +65,8 @@ export class CreateResourceGroupDialog {
 				return valid;
 			}).component();
 
-			this._disposables.push(resourceGroupName.onTextChanged(e => {
-				errorBox.updateCssStyles({
+			this._disposables.push(resourceGroupName.onTextChanged(async e => {
+				await errorBox.updateCssStyles({
 					'display': 'none'
 				});
 			}));
@@ -78,7 +78,7 @@ export class CreateResourceGroupDialog {
 			}).component();
 
 			this._disposables.push(okButton.onDidClick(async e => {
-				errorBox.updateCssStyles({
+				await errorBox.updateCssStyles({
 					'display': 'none'
 				});
 				okButton.enabled = false;
@@ -88,12 +88,12 @@ export class CreateResourceGroupDialog {
 					const resourceGroup = await createResourceGroup(this._azureAccount, this._subscription, resourceGroupName.value!, this._location);
 					this._creationEvent.emit('done', resourceGroup);
 				} catch (e) {
-					errorBox.updateCssStyles({
+					await errorBox.updateCssStyles({
 						'display': 'inline'
 					});
 					errorBox.text = e.toString();
 					cancelButton.enabled = true;
-					resourceGroupName.validate();
+					await resourceGroupName.validate();
 				} finally {
 					loading.loading = false;
 				}
@@ -182,8 +182,8 @@ export class CreateResourceGroupDialog {
 					d => { try { d.dispose(); } catch { } });
 			}));
 
-			return view.initializeModel(form).then(v => {
-				resourceGroupName.focus();
+			return view.initializeModel(form).then(async v => {
+				await resourceGroupName.focus();
 			});
 		});
 		this._dialogObject.okButton.label = constants.APPLY;

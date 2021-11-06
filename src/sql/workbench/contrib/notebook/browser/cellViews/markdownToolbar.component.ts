@@ -5,7 +5,7 @@
 import 'vs/css!./markdownToolbar';
 import * as DOM from 'vs/base/browser/dom';
 import { Button, IButtonStyles } from 'sql/base/browser/ui/button/button';
-import { Component, Input, Inject, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, Inject, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { localize } from 'vs/nls';
 import { CellEditModes, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { ITaskbarContent, Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
@@ -35,6 +35,34 @@ const linksRegex = /\[(?<text>.+)\]\((?<url>[^ ]+)(?: "(?<title>.+)")?\)/;
 })
 export class MarkdownToolbarComponent extends AngularDisposable {
 	@ViewChild('mdtoolbar', { read: ElementRef }) private mdtoolbar: ElementRef;
+
+	@HostListener('document:keydown', ['$event'])
+	async onkeydown(e: KeyboardEvent) {
+		if (this.cellModel?.currentMode === CellEditModes.SPLIT || this.cellModel?.currentMode === CellEditModes.MARKDOWN) {
+			let markdownTextTransformer = new MarkdownTextTransformer(this._notebookService, this.cellModel);
+			if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+				// Bold Text
+				DOM.EventHelper.stop(e, true);
+				await markdownTextTransformer.transformText(MarkdownButtonType.BOLD);
+			} else if ((e.ctrlKey || e.metaKey) && e.key === 'i') {
+				// Italicize text
+				DOM.EventHelper.stop(e, true);
+				await markdownTextTransformer.transformText(MarkdownButtonType.ITALIC);
+			} else if ((e.ctrlKey || e.metaKey) && e.key === 'u') {
+				// Underline text
+				DOM.EventHelper.stop(e, true);
+				await markdownTextTransformer.transformText(MarkdownButtonType.UNDERLINE);
+			} else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'k') {
+				// Code Block
+				DOM.EventHelper.stop(e, true);
+				await markdownTextTransformer.transformText(MarkdownButtonType.CODE);
+			} else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'h') {
+				// Highlight Text
+				DOM.EventHelper.stop(e, true);
+				await markdownTextTransformer.transformText(MarkdownButtonType.HIGHLIGHT);
+			}
+		}
+	}
 
 	public previewFeaturesEnabled: boolean = false;
 
@@ -221,6 +249,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 			}
 		}
 		this._notebookEditor = this._notebookService.findNotebookEditor(this.cellModel?.notebookModel?.notebookUri);
+		this.updateActiveViewAction();
 	}
 
 	public async onInsertButtonClick(event: MouseEvent, type: MarkdownButtonType): Promise<void> {
@@ -244,7 +273,9 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 				let linkUrl = notebookLink.getLinkUrl();
 				// Otherwise, re-focus on the output element, and insert the link directly.
 				this.output?.nativeElement?.focus();
-				document.execCommand('insertHTML', false, `<a href="${escape(linkUrl)}" title="${escape(linkUrl)}" is-absolute=${notebookLink.isAbsolutePath}>${escape(linkCalloutResult?.insertUnescapedLinkLabel)}</a>`);
+				// Need to encode URI here in order for user to click the proper encoded link in WYSIWYG
+				let encodedLinkURL = encodeURI(linkUrl);
+				document.execCommand('insertHTML', false, `<a href="${encodedLinkURL}" title="${encodedLinkURL}" is-encoded="true" is-absolute=${notebookLink.isAbsolutePath}>${escape(linkCalloutResult?.insertUnescapedLinkLabel)}</a>`);
 				return;
 			}
 		} else if (type === MarkdownButtonType.IMAGE_PREVIEW) {
@@ -289,12 +320,22 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		}
 	}
 
-	public removeActiveClassFromModeActions() {
+	private removeActiveClassFromModeActions() {
 		const activeClass = ' active';
 		for (let action of [this._toggleTextViewAction, this._toggleSplitViewAction, this._toggleMarkdownViewAction]) {
 			if (action.class.includes(activeClass)) {
 				action.class = action.class.replace(activeClass, '');
 			}
+		}
+	}
+
+	public updateActiveViewAction() {
+		this.removeActiveClassFromModeActions();
+		const activeClass = ' active';
+		switch (this.cellModel.currentMode) {
+			case CellEditModes.MARKDOWN: this._toggleMarkdownViewAction.class += activeClass; break;
+			case CellEditModes.SPLIT: this._toggleSplitViewAction.class += activeClass; break;
+			case CellEditModes.WYSIWYG: this._toggleTextViewAction.class += activeClass; break;
 		}
 	}
 
