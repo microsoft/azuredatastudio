@@ -456,37 +456,25 @@
       </Item>
       <Item ItemId=";extensions/data-workspace/package.data-workspace-view-container-name" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Projects]]></Val>
+          <Val><![CDATA[Database Projects]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[프로젝트]]></Val>
+            <Val><![CDATA[데이터베이스 프로젝트]]></Val>
           </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/data-workspace/package.extension-description" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Data workspace]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[데이터 작업 영역]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/data-workspace/package.extension-displayName" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Data workspace]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[데이터 작업 영역]]></Val>
-          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Projects]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/package.main-view-name" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Projects]]></Val>
+          <Val><![CDATA[Database Projects]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[프로젝트]]></Val>
+            <Val><![CDATA[데이터베이스 프로젝트]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Projects]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
