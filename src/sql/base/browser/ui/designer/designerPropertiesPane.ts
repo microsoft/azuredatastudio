@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { CreateComponentsFunc, DesignerUIComponent, SetComponentValueFunc } from 'sql/base/browser/ui/designer/designer';
-import { DesignerViewModel, DesignerDataPropertyInfo, InputBoxProperties, NameProperty } from 'sql/base/browser/ui/designer/interfaces';
+import { DesignerViewModel, DesignerDataPropertyInfo } from 'sql/base/browser/ui/designer/interfaces';
 import * as DOM from 'vs/base/browser/dom';
 import { equals } from 'vs/base/common/objects';
 import { localize } from 'vs/nls';
@@ -69,11 +69,10 @@ export class DesignerPropertiesPane {
 				};
 			});
 		}
-		const name = (<InputBoxProperties>item.viewModel[NameProperty])?.value ?? '';
 		this._titleElement.innerText = localize({
 			key: 'tableDesigner.propertiesPaneTitleWithContext',
-			comment: ['{0} is the place holder for object type', '{1} is the place holder for object name']
-		}, "Properties - {0} {1}", item.type, name);
+			comment: ['{0} is the place holder for object type']
+		}, "{0} Properties", item.type);
 		this._componentMap.forEach((value) => {
 			this._setComponentValue(value.defintion, value.component, item.viewModel);
 		});
