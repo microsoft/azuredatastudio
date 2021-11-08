@@ -19,7 +19,7 @@ import * as loc from '../common/localizedConstants';
 import * as glob from 'fast-glob';
 import { getPinnedNotebooks, confirmMessageDialog, getNotebookType, FileExtension, IPinnedNotebook, BookTreeItemType } from '../common/utils';
 import { IBookPinManager, BookPinManager } from './bookPinManager';
-import { BookTocManager, IBookTocManager, quickPickResults } from './bookTocManager';
+import { BookTocManager, IBookTocManager, quickPickResults, tocState } from './bookTocManager';
 import { CreateBookDialog } from '../dialog/createBookDialog';
 import { AddTocEntryDialog } from '../dialog/addTocEntryDialog';
 import { getContentPath, getBookPathFromTocPath } from './bookVersionHandler';
@@ -47,9 +47,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	public currentBook: BookModel;
 	supportedTypes = ['text/treeitems'];
 
-	public undoTocFiles: Map<string, string>[] = [];
+	public undoTocFiles: any[] = [];
 	public undoMovedFiles: Map<string, string>[] = [];
-	public redoTocFiles: Map<string, string>[] = [];
+	public redoTocFiles: any[] = [];
 	public redoMovedFiles: Map<string, string>[] = [];
 
 	constructor(workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext, openAsUntitled: boolean, view: string, public providerId: string) {
@@ -231,7 +231,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				this.bookTocManager = new BookTocManager(bookModel, targetBookModel);
 				await this.bookTocManager.updateBook(items, targetBookItem, targetSection);
 				this.undoMovedFiles.push(this.bookTocManager.movedFiles);
-				this.undoTocFiles.push(this.bookTocManager.tocFiles);
+				this.undoTocFiles.push(this.bookTocManager.tocStates);
 			}
 		}
 	}
@@ -766,7 +766,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					this.bookTocManager.enableDnd = true;
 					await this.bookTocManager.updateBook(items, target);
 					this.undoMovedFiles.push(this.bookTocManager.movedFiles);
-					this.undoTocFiles.push(this.bookTocManager.tocFiles);
+					this.undoTocFiles.push(this.bookTocManager.tocStates);
 				}
 			}
 		}
@@ -797,53 +797,49 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	public async undo(): Promise<void> {
 		if (this.undoTocFiles?.length > 0 && this.undoMovedFiles?.length > 0) {
-			try {
-				let toc = this.undoTocFiles.pop();
-				let files = this.undoMovedFiles.pop();
-				this.redoMovedFiles.push(files);
-				this.redoTocFiles.push(toc);
-				// return files to previous file path
-				for (const [src, dest] of files.entries()) {
-					await fs.move(dest, src);
-				}
-				// restore toc files
-				for (const [tocPath, contents] of toc.entries()) {
-					let bookPath = getBookPathFromTocPath(tocPath);
-					let book = this.books.find(b => b.bookPath === bookPath);
-					const yamlFile = await yaml.safeLoad(contents);
-					await fs.writeFile(tocPath, yaml.safeDump(yamlFile, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
-					await book.reinitializeContents();
-				}
+			let tocFiles: Map<string, tocState> = this.undoTocFiles.pop();
+			let files = this.undoMovedFiles.pop();
+			this.redoMovedFiles.push(files);
+			this.redoTocFiles.push(tocFiles);
+			// restore toc files
+			for (const [tocPath, contents] of tocFiles.entries()) {
+				await this.undoAndRedo(tocPath, contents.previous);
 			}
-			catch (e) {
-				void vscode.window.showErrorMessage(loc.undoError(e instanceof Error ? e.message : e));
+			// return files to previous file path
+			for (const [src, dest] of files.entries()) {
+				await fs.move(dest, src);
 			}
 		}
 	}
 
 	public async redo(): Promise<void> {
 		if (this.redoTocFiles?.length > 0 && this.redoMovedFiles?.length > 0) {
-			try {
-				let toc = this.redoTocFiles.pop();
-				let files = this.redoMovedFiles.pop();
-				this.undoMovedFiles.push(files);
-				this.undoTocFiles.push(toc);
-				// return files to previous file path
-				for (const [src, dest] of files.entries()) {
-					await fs.move(dest, src);
-				}
-				// restore toc files
-				for (const [tocPath, contents] of toc.entries()) {
-					let bookPath = getBookPathFromTocPath(tocPath);
-					let book = this.books.find(b => b.bookPath === bookPath);
-					const yamlFile = await yaml.safeLoad(contents);
-					await fs.writeFile(tocPath, yaml.safeDump(yamlFile, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
-					await book.reinitializeContents();
-				}
+			let tocFiles: Map<string, tocState> = this.redoTocFiles.pop();
+			let files = this.redoMovedFiles.pop();
+			this.undoMovedFiles.push(files);
+			this.undoTocFiles.push(tocFiles);
+			// restore toc files
+			for (const [tocPath, contents] of tocFiles.entries()) {
+				await this.undoAndRedo(tocPath, contents.current);
 			}
-			catch (e) {
-				void vscode.window.showErrorMessage(loc.redoError(e instanceof Error ? e.message : e));
+			// return files to previous file path
+			for (const [src, dest] of files.entries()) {
+				await fs.move(src, dest);
 			}
+		}
+	}
+
+	public async undoAndRedo(tocPath: string, toc: string) {
+		try {
+			// restore toc files
+			const yamlFile = await yaml.safeLoad(toc);
+			let bookPath = getBookPathFromTocPath(tocPath);
+			let book = this.books.find(b => b.bookPath === bookPath);
+			await fs.writeFile(tocPath, yaml.safeDump(yamlFile, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
+			await book.reinitializeContents();
+		}
+		catch (e) {
+			void vscode.window.showErrorMessage(loc.undoError(e instanceof Error ? e.message : e));
 		}
 	}
 

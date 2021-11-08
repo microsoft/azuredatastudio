@@ -21,13 +21,17 @@ export interface IBookTocManager {
 	addNewTocEntry(pathDetails: TocEntryPathHandler, bookItem: BookTreeItem, isSection?: boolean): Promise<void>;
 	recovery(): Promise<void>;
 	movedFiles: Map<string, string>;
-	tocFiles: Map<string, string>;
+	tocStates: Map<string, tocState>;
 	enableDnd: boolean;
 }
 
 export interface quickPickResults {
 	quickPickSection?: vscode.QuickPickItem,
 	book?: BookTreeItem
+}
+export interface tocState {
+	current: string,
+	previous: string
 }
 
 const allowedFileExtensions: string[] = [FileExtension.Markdown, FileExtension.Notebook];
@@ -40,6 +44,7 @@ export class BookTocManager implements IBookTocManager {
 	public tableofContents: JupyterBookSection[] = [];
 	public newSection: JupyterBookSection = {};
 	public movedFiles: Map<string, string> = new Map<string, string>();
+	public tocStates: Map<string, tocState> = new Map<string, tocState>();
 	private _modifiedDirectory: Set<string> = new Set<string>();
 	public tocFiles: Map<string, string> = new Map<string, string>();
 	private sourceBookContentPath: string;
@@ -207,7 +212,13 @@ export class BookTocManager implements IBookTocManager {
 			isModified = true;
 		}
 		if (isModified) {
-			await fs.writeFile(tocPath, yaml.safeDump(this.tableofContents, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
+			let newToc = yaml.safeDump(this.tableofContents, { lineWidth: Infinity, noRefs: true, skipInvalid: true });
+			await fs.writeFile(tocPath, newToc);
+			const state: tocState = {
+				current: newToc,
+				previous: tocFile
+			};
+			this.tocStates.set(tocPath, state);
 		} else {
 			throw (new Error(loc.sectionNotFound(findSection.title, tocPath)));
 		}
