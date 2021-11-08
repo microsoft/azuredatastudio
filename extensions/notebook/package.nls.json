@@ -62,6 +62,6 @@
 	"title.pinNotebook": "Pin Notebook",
 	"title.unpinNotebook": "Unpin Notebook",
 	"title.moveTo": "Move to ...",
-	"title.undoNotebookView": "Undo operation in notebooks view",
-	"title.redoNotebookView": "Redo operation in notebooks view"
+	"title.undoNotebookView": "Undo operation in Notebooks view",
+	"title.redoNotebookView": "Redo operation in Notebooks view"
 }

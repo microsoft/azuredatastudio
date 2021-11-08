@@ -648,13 +648,13 @@
         "command": "notebook.command.undoNotebookView",
         "key": "ctrl+z",
         "mac": "cmd+z",
-        "when": "focusedView"
+        "when": "focusedView == bookTreeView"
       },
       {
         "command": "notebook.command.redoNotebookView",
         "key": "ctrl+y",
         "mac": "cmd+shift+z",
-        "when": "focusedView"
+        "when": "focusedView == bookTreeView"
       },
       {
         "command": "notebook.command.boldText",
