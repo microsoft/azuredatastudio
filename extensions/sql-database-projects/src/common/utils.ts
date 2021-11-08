@@ -12,7 +12,6 @@ import * as glob from 'fast-glob';
 import * as dataworkspace from 'dataworkspace';
 import * as mssql from '../../../mssql';
 import * as vscodeMssql from 'vscode-mssql';
-import * as childProcess from 'child_process';
 import * as fse from 'fs-extra';
 import * as which from 'which';
 import { promises as fs } from 'fs';
@@ -426,53 +425,6 @@ export async function createFolderIfNotExist(folderPath: string): Promise<void> 
 	}
 }
 
-export async function executeCommand(cmd: string, outputChannel: vscode.OutputChannel, sensitiveData: string[] = [], timeout: number = 5 * 60 * 1000): Promise<string> {
-	return new Promise<string>((resolve, reject) => {
-		if (outputChannel) {
-			let cmdOutputMessage = cmd;
-
-			sensitiveData.forEach(element => {
-				cmdOutputMessage = cmdOutputMessage.replace(element, '***');
-			});
-
-			outputChannel.appendLine(`    > ${cmdOutputMessage}`);
-		}
-		let child = childProcess.exec(cmd, {
-			timeout: timeout
-		}, (err, stdout) => {
-			if (err) {
-
-				// removing sensitive data from the exception
-				sensitiveData.forEach(element => {
-					err.cmd = err.cmd?.replace(element, '***');
-					err.message = err.message?.replace(element, '***');
-				});
-				reject(err);
-			} else {
-				resolve(stdout);
-			}
-		});
-
-		// Add listeners to print stdout and stderr if an output channel was provided
-
-		if (child?.stdout) {
-			child.stdout.on('data', data => { outputDataChunk(outputChannel, data, '    stdout: '); });
-		}
-		if (child?.stderr) {
-			child.stderr.on('data', data => { outputDataChunk(outputChannel, data, '    stderr: '); });
-		}
-	});
-}
-
-export function outputDataChunk(outputChannel: vscode.OutputChannel, data: string | Buffer, header: string): void {
-	data.toString().split(/\r?\n/)
-		.forEach(line => {
-			if (outputChannel) {
-				outputChannel.appendLine(header + line);
-			}
-		});
-}
-
 export async function retry<T>(
 	name: string,
 	attempt: () => Promise<T>,
@@ -577,3 +529,52 @@ export async function showInfoMessageWithOutputChannel(message: string, outputCh
 	}
 }
 
+/**
+ * Returns the results of the glob pattern
+ * @param pattern Glob pattern to search for
+ */
+export async function globWithPattern(pattern: string): Promise<string[]> {
+	const forwardSlashPattern = pattern.replace(/\\/g, '/');
+	return await glob(forwardSlashPattern);
+}
+
+/**
+ * Recursively gets all the sql files at any depth in a folder
+ * @param folderPath
+ * @param ignoreBinObj ignore sql files in bin and obj folders
+ */
+export async function getSqlFilesInFolder(folderPath: string, ignoreBinObj?: boolean): Promise<string[]> {
+	// path needs to use forward slashes for glob to work
+	folderPath = folderPath.replace(/\\/g, '/');
+	const sqlFilter = path.posix.join(folderPath, '**', '*.sql');
+
+	if (ignoreBinObj) {
+		// don't add files in bin and obj folders
+		const binIgnore = path.posix.join(folderPath, 'bin', '**', '*.sql');
+		const objIgnore = path.posix.join(folderPath, 'obj', '**', '*.sql');
+
+		return await glob(sqlFilter, { ignore: [binIgnore, objIgnore] });
+	} else {
+		return await glob(sqlFilter);
+	}
+}
+
+/**
+ * Recursively gets all the folders at any depth in the given folder
+ * @param folderPath
+ * @param ignoreBinObj ignore bin and obj folders
+ */
+export async function getFoldersInFolder(folderPath: string, ignoreBinObj?: boolean): Promise<string[]> {
+	// path needs to use forward slashes for glob to work
+	const escapedPath = glob.escapePath(folderPath.replace(/\\/g, '/'));
+	const folderFilter = path.posix.join(escapedPath, '/**');
+
+	if (ignoreBinObj) {
+		// don't add bin and obj folders
+		const binIgnore = path.posix.join(escapedPath, 'bin');
+		const objIgnore = path.posix.join(escapedPath, 'obj');
+		return await glob(folderFilter, { onlyDirectories: true, ignore: [binIgnore, objIgnore] });
+	} else {
+		return await glob(folderFilter, { onlyDirectories: true });
+	}
+}

@@ -498,6 +498,11 @@
           "command": "mssqlCluster.livy.cmd.submitFileToSparkJob",
           "when": "nodeType == mssqlCluster:file && nodeSubType =~/:spark:/",
           "group": "1mssqlCluster@6"
+        },
+        {
+          "command": "mssql.designTable",
+          "when": "connectionProvider == MSSQL && nodeType == Table && config.tableDesigner.enableFeature",
+          "group": "0_query@3"
         }
       ],
       "notebook/toolbar": [
