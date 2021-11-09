@@ -33,6 +33,7 @@ export class DesignerPropertiesPane {
 		this._titleElement = titleContainer.appendChild(DOM.$('div'));
 		this._contentElement = container.appendChild(DOM.$('.properties-content.components-grid'));
 		this._titleElement.innerText = localize('tableDesigner.propertiesPaneTitle', "Properties");
+		this.createDescriptionComponent(container, localize('designer.propertyDescription', "Description"));
 	}
 
 	public get groupHeaders(): HTMLElement[] {
@@ -55,6 +56,13 @@ export class DesignerPropertiesPane {
 		this._groupHeaders = [];
 		DOM.clearNode(this._contentElement);
 		this._currentContext = undefined;
+	}
+
+	private createDescriptionComponent(container: HTMLElement, title?: string) {
+		const descriptionContainer = container.appendChild(DOM.$('.description-component'));
+		descriptionContainer.appendChild(DOM.$('')).appendChild(DOM.$('.description-component-label')).innerText = title ?? '';
+		const contentContainer = descriptionContainer.appendChild(DOM.$('.description-component-content'));
+		contentContainer.innerText = 'Test';
 	}
 
 	public show(item: ObjectInfo): void {
