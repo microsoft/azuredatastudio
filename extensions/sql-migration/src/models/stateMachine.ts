@@ -179,8 +179,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	private _skuRecommendations: SKURecommendations | undefined;
 	public _assessmentResults!: ServerAssessment;
+	public _skuRecommendationResults!: SkuRecommendation[];
 	public _runAssessments: boolean = true;
 	private _assessmentApiResponse!: mssql.AssessmentResult;
+	private _skuRecommendationApiResponse!:mssql.SkuRecommendationsResult
 	public mementoString: string;
 
 	public _vmDbs: string[] = [];
@@ -290,6 +292,52 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		// Generating all the telemetry asynchronously as we don't need to block the user for it.
 		this.generateAssessmentTelemetry().catch(e => console.error(e));
 		return this._assessmentResults;
+	}
+
+	public async getSkuRecommendations(perfQueryIntervalInSec: number,
+		targetPlatform: string,
+		targetSqlInstance: string,
+		targetPercentile: number,
+		scalingFactor: number,
+		startTime: string,
+		endTime: string,
+		elasticStrategy: boolean,
+		databaseAllowList: string[],
+		databaseDenyList: string[]) : Promise<SkuRecommendation[]> {		/////
+		try {
+			const response = (await this.migrationService.getSkuRecommendations(perfQueryIntervalInSec,
+				targetPlatform,
+				targetSqlInstance,
+				targetPercentile,
+				scalingFactor,
+				startTime,
+				endTime,
+				elasticStrategy,
+				databaseAllowList,
+				databaseDenyList))!;
+			this._skuRecommendationApiResponse = response;
+			console.log("raw API response:");
+			console.log(this._skuRecommendationApiResponse);
+			console.log("results:")
+			console.log(response?.recommendationResults)
+			if (response?.recommendationResults) {
+				console.log("yes")
+				this._skuRecommendationResults = response?.recommendationResults.map(r => {
+					return {
+						resultText: r.sqlInstanceName + ": " + r.targetSku.computeSize 		//
+					};
+				}) ?? ["fail"]
+			} else {
+				console.log("no")
+				this._skuRecommendationResults = []
+			}
+
+		} catch (error) {
+
+		}
+
+		// this.generateAssessmentTelemetry().catch(e => console.error(e));
+		return this._skuRecommendationResults;
 	}
 
 	private async generateAssessmentTelemetry(): Promise<void> {
@@ -1115,4 +1163,8 @@ export interface ServerAssessment {
 	}[];
 	errors?: mssql.ErrorModel[];
 	assessmentError?: Error;
+}
+
+export interface SkuRecommendation {
+	resultText: string;
 }

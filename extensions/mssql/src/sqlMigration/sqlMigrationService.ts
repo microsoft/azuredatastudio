@@ -40,4 +40,37 @@ export class SqlMigrationService implements mssql.ISqlMigrationService {
 
 		return undefined;
 	}
+
+	async getSkuRecommendations(perfQueryIntervalInSec: number,
+		targetPlatform: string,
+		targetSqlInstance: string,
+		targetPercentile: number,
+		scalingFactor: number,
+		startTime: string,
+		endTime: string,
+		elasticStrategy: boolean,
+		databaseAllowList: string[],
+		databaseDenyList: string[]) : Promise<mssql.SkuRecommendationsResult | undefined> {
+		let params: contracts.SqlMigrationSkuRecommendationsParams = {
+			perfQueryIntervalInSec,
+			targetPlatform,
+			targetSqlInstance,
+			targetPercentile,
+			scalingFactor,
+			startTime,
+			endTime,
+			elasticStrategy,
+			databaseAllowList,
+			databaseDenyList
+		};
+
+		try {
+			return this.client.sendRequest(contracts.GetSqlMigrationSkuRecommendationsRequest.type, params);
+		}
+		catch (e) {
+			this.client.logFailedRequest(contracts.GetSqlMigrationSkuRecommendationsRequest.type, e);
+		}
+
+		return undefined;
+	}
 }

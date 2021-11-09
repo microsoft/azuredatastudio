@@ -602,6 +602,47 @@ export interface AssessmentResult {
 	errors: ErrorModel[];
 }
 
+export interface AzureSqlSkuCategory
+{
+	sqlTargetPlatform: string;		//
+	computeTier: string;			//
+	sqlPurchasingModel: string;
+	sqlServiceTier: string;
+	hardwareType: string;
+}
+
+export interface AzureSqlSku
+{
+	category: AzureSqlSkuCategory;
+	computeSize: number;
+	predictedDataSizeInMb: number;
+	predictedLogSizeInMb: number;
+	storageMaxSizeInMb: number;
+}
+
+export interface AzureSqlSkuMonthlyCost
+{
+	computeCost: number;
+	storageCost: number;
+	totalCost: number;
+}
+
+export interface SkuRecommendationResult
+{
+	sqlInstanceName: string;
+	databaseName: string;
+	targetSku: AzureSqlSku;
+	monthlyCost: AzureSqlSkuMonthlyCost;
+	ranking: number;
+	positiveJustifications: string[];
+	negativeJustifications: string[];
+}
+
+export interface SkuRecommendationsResult {
+	recommendationResults: SkuRecommendationResult[];
+}
+
 export interface ISqlMigrationService {
 	getAssessments(ownerUri: string, databases: string[]): Promise<AssessmentResult | undefined>;
+	getSkuRecommendations(perfQueryIntervalInSec: number, targetPlatform: string, targetSqlInstance: string, targetPercentile: number, scalingFactor: number, startTime: string, endTime: string, elasticStrategy: boolean, databaseAllowList: string[], databaseDenyList: string[]): Promise<SkuRecommendationsResult | undefined>;
 }

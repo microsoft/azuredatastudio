@@ -546,6 +546,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				this.migrationStateModel._assessmentResults = <ServerAssessment>this.migrationStateModel.savedInfo.serverAssessment;
 			} else {
 				await this.migrationStateModel.getDatabaseAssessments(MigrationTargetType.SQLMI);
+				await this.migrationStateModel.getSkuRecommendations(30, "AzureSqlManagedInstance", "DESKTOP-RATRUON", 95, 100, "1900-01-01 00:00:00", "2200-01-01 00:00:00", false, [], []);			/////	entry point
+				console.log("final results:");
+				console.log(this.migrationStateModel._skuRecommendationResults);
 			}
 
 			const assessmentError = this.migrationStateModel._assessmentResults?.assessmentError;
@@ -792,8 +795,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		if (this.migrationStateModel._assessmentResults) {
 			const dbCount = this.migrationStateModel._assessmentResults?.databaseAssessments?.length;
 			const dbWithoutIssuesCount = this.migrationStateModel._assessmentResults?.databaseAssessments?.filter(db => db.issues?.length === 0).length;
-			this._rbg.cards[0].descriptions[1].textValue = constants.CAN_BE_MIGRATED(dbWithoutIssuesCount, dbCount);
-			this._rbg.cards[1].descriptions[1].textValue = constants.CAN_BE_MIGRATED(dbCount, dbCount);
+			this._rbg.cards[0].descriptions[1].textValue = constants.CAN_BE_MIGRATED(dbWithoutIssuesCount, dbCount, this.migrationStateModel._skuRecommendationResults[0].resultText);		//
+			this._rbg.cards[1].descriptions[1].textValue = constants.CAN_BE_MIGRATED(dbCount, dbCount, "");
 
 			await this._rbg.updateProperties({ cards: this._rbg.cards });
 		} else {

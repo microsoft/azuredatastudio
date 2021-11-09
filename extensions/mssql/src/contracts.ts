@@ -1023,6 +1023,23 @@ export namespace GetSqlMigrationAssessmentItemsRequest {
 	export const type = new RequestType<SqlMigrationAssessmentParams, mssql.AssessmentResult, void, void>('migration/getassessments');
 }
 
+export interface SqlMigrationSkuRecommendationsParams {
+	perfQueryIntervalInSec: number;
+	targetPlatform: string;
+	targetSqlInstance: string;
+	targetPercentile: number;
+	scalingFactor: number;
+	startTime: string;
+	endTime: string;
+	elasticStrategy: boolean;
+	databaseAllowList: string[];
+	databaseDenyList: string[];
+}
+
+export namespace GetSqlMigrationSkuRecommendationsRequest {
+	export const type = new RequestType<SqlMigrationSkuRecommendationsParams, mssql.SkuRecommendationsResult, void, void>('migration/getskurecommendations');
+}
+
 // ------------------------------- <Sql Migration> -----------------------------
 
 // ------------------------------- < Table Designer > ------------------------------------
