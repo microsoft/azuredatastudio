@@ -10,6 +10,7 @@
 		"jsdoc"
 	],
 	"rules": {
+		"no-cond-assign": 2,
 		"@typescript-eslint/no-floating-promises": [
 			"error",
 			{

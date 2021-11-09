@@ -31,6 +31,7 @@ import { promises as fs } from 'fs';
 import { IconPathHelper } from './iconHelper';
 import * as nls from 'vscode-nls';
 import { INotebookConvertService } from './notebookConvert/notebookConvertService';
+import { registerTableDesignerCommands } from './tableDesigner/tableDesigner';
 
 const localize = nls.loadMessageBundle();
 const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', "This sample code loads the file into a data frame and shows the first 10 results.");
@@ -103,6 +104,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 			void vscode.window.showErrorMessage(localize('mssql.errorConvertingToSQL', "An error occurred converting the Notebook document to SQL. Error : {0}", err.toString()));
 		}
 	});
+
+	registerTableDesignerCommands(appContext);
 
 	return createMssqlApi(appContext, server);
 }

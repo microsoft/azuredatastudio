@@ -99,6 +99,20 @@ steps:
     yarn gulp vscode-reh-web-linux-x64-min
   displayName: Compile
 
+- script: |
+    set -e
+    yarn gulp compile-extensions
+  displayName: Compile Extensions
+
+- script: |
+    set -e
+    node ./node_modules/playwright/install.js
+    APP_ROOT=$(Agent.BuildDirectory)/vscode-reh-web-linux-x64
+    xvfb-run yarn smoketest --build "$(Agent.BuildDirectory)/vscode-reh-web-linux-x64" --web --headless --screenshots "$(Build.ArtifactStagingDirectory)/smokeshots" --log "$(Build.ArtifactStagingDirectory)/logs/web/smoke.log"
+  displayName: Run smoke tests (Browser)
+  continueOnError: true
+  condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+
 # - script: |
 #     set -e
 #     AZURE_STORAGE_ACCOUNT="$(sourcemap-storage-account)" \
@@ -156,7 +170,7 @@ steps:
   displayName: 'Install .NET Core sdk for signing'
   inputs:
     packageType: sdk
-    version: 2.1.x
+    version: 5.0.x
     installationPath: $(Agent.ToolsDirectory)/dotnet
 
 - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1

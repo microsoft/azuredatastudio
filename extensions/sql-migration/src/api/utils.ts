@@ -163,7 +163,11 @@ export function findDropDownItemIndex(dropDown: DropDownComponent, value: string
 }
 
 export function hashString(value: string): string {
-	return crypto.createHash('sha512').update(value).digest('hex');
+	if (value?.length > 0) {
+		return crypto.createHash('sha512').update(value).digest('hex');
+	}
+
+	return '';
 }
 
 export function debounce(delay: number): Function {
@@ -228,6 +232,14 @@ export function get12HourTime(date: Date | undefined): string {
 		minute: '2-digit'
 	};
 	return (date ? date : new Date()).toLocaleTimeString([], localeTimeStringOptions);
+}
+
+export function displayDialogErrorMessage(dialog: window.Dialog, text: string, error: Error): void {
+	dialog.message = {
+		level: window.MessageLevel.Error,
+		text: text,
+		description: error.message,
+	};
 }
 
 export function clearDialogMessage(dialog: window.Dialog): void {

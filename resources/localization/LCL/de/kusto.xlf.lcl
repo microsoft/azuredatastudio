@@ -356,7 +356,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Specifies the method of authenticating with Kusto Server]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Gibt die Methode für die Authentifizierung bei KUSTO Server an]]></Val>
+            <Val><![CDATA[Gibt die Methode für die Authentifizierung bei Kusto-Server an]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -464,7 +464,7 @@
         <Str Cat="Text">
           <Val><![CDATA[The name or network address of the instance of Kusto Server that acts as a failover partner]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Der Name oder die Netzwerkadresse der KUSTO Server-Instanz, die als Failoverpartner fungiert]]></Val>
+            <Val><![CDATA[Der Name oder die Netzwerkadresse der Kusto-Server-Instanz, die als Failoverpartner fungiert]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -545,7 +545,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Kusto cluster name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[KUSTO-Clustername]]></Val>
+            <Val><![CDATA[Kusto-Clustername]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -581,7 +581,7 @@
         <Str Cat="Text">
           <Val><![CDATA[The name of the workstation connecting to Kusto Server]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Der Name der Arbeitsstation, die eine Verbindung mit KUSTO Server herstellt]]></Val>
+            <Val><![CDATA[Der Name der Arbeitsstation, die eine Verbindung mit dem Kusto-Server herstellt]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

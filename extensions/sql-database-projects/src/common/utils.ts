@@ -12,10 +12,10 @@ import * as glob from 'fast-glob';
 import * as dataworkspace from 'dataworkspace';
 import * as mssql from '../../../mssql';
 import * as vscodeMssql from 'vscode-mssql';
+import * as fse from 'fs-extra';
+import * as which from 'which';
 import { promises as fs } from 'fs';
 import { Project } from '../models/project';
-import * as childProcess from 'child_process';
-import * as fse from 'fs-extra';
 
 export interface ValidationResult {
 	errorMessage: string;
@@ -155,20 +155,24 @@ export function convertSlashesForSqlProj(filePath: string): string {
 /**
  * Read SQLCMD variables from xmlDoc and return them
  * @param xmlDoc xml doc to read SQLCMD variables from. Format must be the same that sqlproj and publish profiles use
+ * @param publishProfile true if reading from publish profile
  */
-export function readSqlCmdVariables(xmlDoc: any): Record<string, string> {
+export function readSqlCmdVariables(xmlDoc: Document, publishProfile: boolean): Record<string, string> {
 	let sqlCmdVariables: Record<string, string> = {};
 	for (let i = 0; i < xmlDoc.documentElement.getElementsByTagName(constants.SqlCmdVariable)?.length; i++) {
 		const sqlCmdVar = xmlDoc.documentElement.getElementsByTagName(constants.SqlCmdVariable)[i];
-		const varName = sqlCmdVar.getAttribute(constants.Include);
+		const varName = sqlCmdVar.getAttribute(constants.Include)!;
 
-		if (sqlCmdVar.getElementsByTagName(constants.DefaultValue)[0] !== undefined) {
+		// Publish profiles only support Value, so don't use DefaultValue even if it's there
+		// SSDT uses the Value (like <Value>$(SqlCmdVar__1)</Value>) where there
+		// are local variable values you can set in VS in the properties. Since we don't support that in ADS, only DefaultValue is supported for sqlproj.
+		if (!publishProfile && sqlCmdVar.getElementsByTagName(constants.DefaultValue)[0] !== undefined) {
 			// project file path
-			sqlCmdVariables[varName] = sqlCmdVar.getElementsByTagName(constants.DefaultValue)[0].childNodes[0].nodeValue;
+			sqlCmdVariables[varName] = sqlCmdVar.getElementsByTagName(constants.DefaultValue)[0].childNodes[0].nodeValue!;
 		}
 		else {
 			// profile path
-			sqlCmdVariables[varName] = sqlCmdVar.getElementsByTagName(constants.Value)[0].childNodes[0].nodeValue;
+			sqlCmdVariables[varName] = sqlCmdVar.getElementsByTagName(constants.Value)[0].childNodes[0].nodeValue!;
 		}
 	}
 
@@ -434,41 +438,6 @@ export async function createFolderIfNotExist(folderPath: string): Promise<void> 
 	}
 }
 
-export async function executeCommand(cmd: string, outputChannel: vscode.OutputChannel, timeout: number = 5 * 60 * 1000): Promise<string> {
-	return new Promise<string>((resolve, reject) => {
-		if (outputChannel) {
-			outputChannel.appendLine(`    > ${cmd}`);
-		}
-		let child = childProcess.exec(cmd, {
-			timeout: timeout
-		}, (err, stdout) => {
-			if (err) {
-				reject(err);
-			} else {
-				resolve(stdout);
-			}
-		});
-
-		// Add listeners to print stdout and stderr if an output channel was provided
-
-		if (child?.stdout) {
-			child.stdout.on('data', data => { outputDataChunk(outputChannel, data, '    stdout: '); });
-		}
-		if (child?.stderr) {
-			child.stderr.on('data', data => { outputDataChunk(outputChannel, data, '    stderr: '); });
-		}
-	});
-}
-
-export function outputDataChunk(outputChannel: vscode.OutputChannel, data: string | Buffer, header: string): void {
-	data.toString().split(/\r?\n/)
-		.forEach(line => {
-			if (outputChannel) {
-				outputChannel.appendLine(header + line);
-			}
-		});
-}
-
 export async function retry<T>(
 	name: string,
 	attempt: () => Promise<T>,
@@ -503,6 +472,23 @@ export async function retry<T>(
 }
 
 /**
+ * Detects whether the specified command-line command is available on the current machine
+ */
+export async function detectCommandInstallation(command: string): Promise<boolean> {
+	try {
+		const found = await which(command);
+
+		if (found) {
+			return true;
+		}
+	} catch (err) {
+		console.log(getErrorMessage(err));
+	}
+
+	return false;
+}
+
+/**
  * Gets all the projects of the specified extension in the folder
  * @param folder
  * @param projectExtension project extension to filter on
@@ -517,4 +503,91 @@ export async function getAllProjectsInFolder(folder: vscode.Uri, projectExtensio
 
 	// glob will return an array of file paths with forward slashes, so they need to be converted back if on windows
 	return (await glob(projFilter)).map(p => vscode.Uri.file(path.resolve(p)));
+}
+
+export function validateSqlServerPortNumber(port: string | undefined): boolean {
+	if (!port) {
+		return false;
+	}
+	const valueAsNum = +port;
+	return !isNaN(valueAsNum) && valueAsNum > 0 && valueAsNum < 65535;
+}
+
+export function isEmptyString(input: string | undefined): boolean {
+	return input === undefined || input === '';
+}
+
+export function isValidSQLPassword(password: string, userName: string = 'sa'): boolean {
+	// Validate SQL Server password
+	const containsUserName = password && userName !== undefined && password.toUpperCase().includes(userName.toUpperCase());
+	// Instead of using one RegEx, I am separating it to make it more readable.
+	const hasUpperCase = /[A-Z]/.test(password) ? 1 : 0;
+	const hasLowerCase = /[a-z]/.test(password) ? 1 : 0;
+	const hasNumbers = /\d/.test(password) ? 1 : 0;
+	const hasNonAlphas = /\W/.test(password) ? 1 : 0;
+	return !containsUserName && password.length >= 8 && password.length <= 128 && (hasUpperCase + hasLowerCase + hasNumbers + hasNonAlphas >= 3);
+}
+
+export async function showErrorMessageWithOutputChannel(errorMessageFunc: (error: string) => string, error: any, outputChannel: vscode.OutputChannel): Promise<void> {
+	const result = await vscode.window.showErrorMessage(errorMessageFunc(getErrorMessage(error)), constants.checkoutOutputMessage);
+	if (result === constants.checkoutOutputMessage) {
+		outputChannel.show();
+	}
+}
+
+export async function showInfoMessageWithOutputChannel(message: string, outputChannel: vscode.OutputChannel): Promise<void> {
+	const result = await vscode.window.showInformationMessage(message, constants.checkoutOutputMessage);
+	if (result === constants.checkoutOutputMessage) {
+		outputChannel.show();
+	}
+}
+
+/**
+ * Returns the results of the glob pattern
+ * @param pattern Glob pattern to search for
+ */
+export async function globWithPattern(pattern: string): Promise<string[]> {
+	const forwardSlashPattern = pattern.replace(/\\/g, '/');
+	return await glob(forwardSlashPattern);
+}
+
+/**
+ * Recursively gets all the sql files at any depth in a folder
+ * @param folderPath
+ * @param ignoreBinObj ignore sql files in bin and obj folders
+ */
+export async function getSqlFilesInFolder(folderPath: string, ignoreBinObj?: boolean): Promise<string[]> {
+	// path needs to use forward slashes for glob to work
+	folderPath = folderPath.replace(/\\/g, '/');
+	const sqlFilter = path.posix.join(folderPath, '**', '*.sql');
+
+	if (ignoreBinObj) {
+		// don't add files in bin and obj folders
+		const binIgnore = path.posix.join(folderPath, 'bin', '**', '*.sql');
+		const objIgnore = path.posix.join(folderPath, 'obj', '**', '*.sql');
+
+		return await glob(sqlFilter, { ignore: [binIgnore, objIgnore] });
+	} else {
+		return await glob(sqlFilter);
+	}
+}
+
+/**
+ * Recursively gets all the folders at any depth in the given folder
+ * @param folderPath
+ * @param ignoreBinObj ignore bin and obj folders
+ */
+export async function getFoldersInFolder(folderPath: string, ignoreBinObj?: boolean): Promise<string[]> {
+	// path needs to use forward slashes for glob to work
+	const escapedPath = glob.escapePath(folderPath.replace(/\\/g, '/'));
+	const folderFilter = path.posix.join(escapedPath, '/**');
+
+	if (ignoreBinObj) {
+		// don't add bin and obj folders
+		const binIgnore = path.posix.join(escapedPath, 'bin');
+		const objIgnore = path.posix.join(escapedPath, 'obj');
+		return await glob(folderFilter, { onlyDirectories: true, ignore: [binIgnore, objIgnore] });
+	} else {
+		return await glob(folderFilter, { onlyDirectories: true });
+	}
 }

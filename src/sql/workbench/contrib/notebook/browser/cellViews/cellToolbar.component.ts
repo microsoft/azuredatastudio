@@ -10,7 +10,7 @@ import { localize } from 'vs/nls';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { DeleteCellAction, EditCellAction, CellToggleMoreActions, MoveCellAction } from 'sql/workbench/contrib/notebook/browser/cellToolbarActions';
+import { DeleteCellAction, EditCellAction, CellToggleMoreActions, MoveCellAction, SplitCellAction } from 'sql/workbench/contrib/notebook/browser/cellToolbarActions';
 import { AddCellAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { DropdownMenuActionViewItem } from 'sql/base/browser/ui/buttonMenu/buttonMenu';
@@ -33,6 +33,7 @@ export class CellToolbarComponent {
 	public buttonMoveDown = localize('buttonMoveDown', "Move cell down");
 	public buttonMoveUp = localize('buttonMoveUp', "Move cell up");
 	public buttonDelete = localize('buttonDelete', "Delete");
+	public buttonSplitCell = localize('splitCell', "Split cell");
 
 	@Input() cellModel: ICellModel;
 	@Input() model: NotebookModel;
@@ -69,6 +70,10 @@ export class CellToolbarComponent {
 		let moveCellDownButton = this.instantiationService.createInstance(MoveCellAction, 'notebook.MoveCellDown', 'masked-icon move-down', this.buttonMoveDown);
 		let moveCellUpButton = this.instantiationService.createInstance(MoveCellAction, 'notebook.MoveCellUp', 'masked-icon move-up', this.buttonMoveUp);
 
+		let splitCellButton = this.instantiationService.createInstance(SplitCellAction, 'notebook.SplitCellAtCursor', this.buttonSplitCell, 'masked-icon icon-split-cell');
+		splitCellButton.setListener(context);
+		splitCellButton.enabled = this.cellModel.cellType !== 'markdown';
+
 		let deleteButton = this.instantiationService.createInstance(DeleteCellAction, 'notebook.DeleteCell', 'masked-icon delete', this.buttonDelete);
 
 		let moreActionsContainer = DOM.$('li.action-item');
@@ -96,12 +101,15 @@ export class CellToolbarComponent {
 
 		let taskbarContent: ITaskbarContent[] = [];
 		if (this.cellModel?.cellType === CellTypes.Markdown) {
-			taskbarContent.push({ action: this._editCellAction });
+			taskbarContent.push(
+				{ action: this._editCellAction }
+			);
 		}
 		taskbarContent.push(
 			{ element: addCellDropdownContainer },
 			{ action: moveCellDownButton },
 			{ action: moveCellUpButton },
+			{ action: splitCellButton },
 			{ action: deleteButton },
 			{ element: moreActionsContainer });
 

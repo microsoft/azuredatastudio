@@ -1,8 +1,8 @@
 {
   "name": "sql-database-projects",
   "displayName": "SQL Database Projects",
-  "description": "The SQL Database Projects extension for Azure Data Studio and VS Code allows users to develop and publish database schemas.",
-  "version": "0.13.0",
+  "description": "Enables users to develop and publish database schemas for MSSQL Databases",
+  "version": "0.14.0",
   "publisher": "Microsoft",
   "preview": true,
   "engines": {
@@ -18,6 +18,7 @@
     "onCommand:sqlDatabaseProjects.createProjectFromDatabase",
     "onCommand:sqlDatabaseProjects.updateProjectFromDatabase",
     "onCommand:sqlDatabaseProjects.addSqlBinding",
+    "onCommand:sqlDatabaseProjects.generateProjectFromOpenApiSpec",
     "workspaceContains:**/*.sqlproj",
     "onView:dataworkspace.views.main"
   ],
@@ -30,6 +31,12 @@
     "Microsoft.mssql",
     "Microsoft.schema-compare"
   ],
+	"capabilities": {
+    "virtualWorkspaces": false,
+    "untrustedWorkspaces": {
+      "supported": true
+    }
+	},
   "contributes": {
     "projects": [
       "sqlproj"
@@ -45,6 +52,18 @@
           "sqlDatabaseProjects.netCoreDoNotAsk": {
             "type": "boolean",
             "description": "%sqlDatabaseProjects.netCoreDoNotAsk%"
+          },
+          "sqlDatabaseProjects.netCoreDowngradeDoNotShow": {
+            "type": "boolean",
+            "description": "%sqlDatabaseProjects.netCoreDowngradeDoNotShow%"
+          },
+          "sqlDatabaseProjects.nodejsDoNotAsk": {
+            "type": "boolean",
+            "description": "%sqlDatabaseProjects.nodejsDoNotAsk%"
+          },
+          "sqlDatabaseProjects.autorestSqlVersion": {
+            "type": "string",
+            "description": "%sqlDatabaseProjects.autorestSqlVersion%"
           }
         }
       }
@@ -116,11 +135,6 @@
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
-				"command": "sqlDatabaseProjects.deployLocal",
-				"title": "%sqlDatabaseProjects.deployLocal%",
-				"category": "%sqlDatabaseProjects.displayName%"
-			},
-      {
         "command": "sqlDatabaseProjects.properties",
         "title": "%sqlDatabaseProjects.properties%",
         "category": "%sqlDatabaseProjects.displayName%"
@@ -168,8 +182,9 @@
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
-        "command": "sqlDatabaseProjects.addSqlBinding",
-        "title": "%sqlDatabaseProjects.addSqlBinding%"
+        "command": "sqlDatabaseProjects.generateProjectFromOpenApiSpec",
+        "title": "%sqlDatabaseProjects.generateProjectFromOpenApiSpec%",
+        "category": "%sqlDatabaseProjects.displayName%"
       }
     ],
     "menus": {
@@ -181,6 +196,11 @@
         },
         {
           "command": "sqlDatabaseProjects.updateProjectFromDatabase",
+          "when": "view == dataworkspace.views.main",
+          "group": "1_currentWorkspace@2"
+        },
+        {
+          "command": "sqlDatabaseProjects.generateProjectFromOpenApiSpec",
           "when": "view == dataworkspace.views.main",
           "group": "1_currentWorkspace@2"
         }
@@ -235,10 +255,6 @@
           "when": "false"
         },
         {
-          "command": "sqlDatabaseProjects.deployLocal",
-          "when": "false"
-        },
-        {
           "command": "sqlDatabaseProjects.properties",
           "when": "false"
         },
@@ -276,10 +292,6 @@
         {
           "command": "sqlDatabaseProjects.changeTargetPlatform",
           "when": "false"
-        },
-        {
-          "command": "sqlDatabaseProjects.addSqlBinding",
-          "when": "editorLangId == csharp && !azdataAvailable"
         }
       ],
       "view/item/context": [
@@ -291,11 +303,6 @@
         {
           "command": "sqlDatabaseProjects.publish",
           "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project",
-          "group": "1_dbProjectsFirst@2"
-        },
-        {
-          "command": "sqlDatabaseProjects.deployLocal",
-          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project && !azdataAvailable",
           "group": "1_dbProjectsFirst@2"
         },
         {
@@ -431,21 +438,24 @@
     }
   },
   "dependencies": {
-    "@types/xml-formatter": "^1.1.0",
     "@microsoft/ads-extension-telemetry": "^1.1.5",
-    "fast-glob": "^3.1.0",
+    "fast-glob": "^3.2.7",
     "fs-extra": "^5.0.0",
-    "generate-password": "^1.6.0",
     "jsonc-parser": "^2.3.1",
     "promisify-child-process": "^3.1.1",
+    "semver": "^7.3.5",
     "vscode-languageclient": "^5.3.0-next.1",
     "vscode-nls": "^4.1.2",
+    "which": "^2.0.2",
     "xml-formatter": "^2.1.0",
     "xmldom": "^0.3.0"
   },
   "devDependencies": {
+    "@types/fs-extra": "^5.0.0",
     "@types/mocha": "^5.2.5",
     "@types/sinon": "^9.0.4",
+    "@types/which": "^2.0.1",
+    "@types/xml-formatter": "^1.1.0",
     "@types/xmldom": "^0.1.29",
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.17.0",
@@ -454,9 +464,7 @@
     "sinon": "^9.0.2",
     "tslint": "^5.8.0",
     "typemoq": "^2.1.0",
-    "typescript": "^2.6.1",
-    "vscodetestcover": "^1.1.0",
-    "@types/fs-extra": "^5.0.0"
+    "vscodetestcover": "^1.1.0"
   },
   "__metadata": {
     "id": "70",

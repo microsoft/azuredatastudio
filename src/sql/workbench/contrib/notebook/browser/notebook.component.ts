@@ -54,6 +54,7 @@ import { CellToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cel
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 import { MaskedLabeledMenuItemActionItem } from 'sql/platform/actions/browser/menuEntryActionViewItem';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
+import { Emitter } from 'vs/base/common/event';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -84,6 +85,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private navigationResult: nb.NavigationResult;
 	public previewFeaturesEnabled: boolean = false;
 	public doubleClickEditEnabled: boolean;
+	private _onScroll = new Emitter<void>();
+	// Don't show the right hand toolbar actions if the notebook is created in a diff editor.
+	private _showToolbarActions: boolean = this._notebookParams.input.showActions;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -223,6 +227,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	//Saves scrollTop value on scroll change
 	public scrollHandler(event: Event) {
 		this._scrollTop = (<HTMLElement>event.srcElement).scrollTop;
+		this.model.onScroll.fire();
 	}
 
 	public unselectActiveCell() {
@@ -339,6 +344,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._register(this._model.kernelChanged((kernelArgs) => this.handleKernelChanged(kernelArgs)));
 		this._register(this._model.onCellTypeChanged(() => this.detectChanges()));
 		this._register(this._model.layoutChanged(() => this.detectChanges()));
+		this._register(this.model.onScroll.event(() => this._onScroll.fire()));
 
 		this.setLoading(false);
 		// Check if URI fragment is present; if it is, navigate to section by default
@@ -470,19 +476,29 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				viewsDropdownMenuActionViewItem.setActionContext(this._notebookParams.notebookUri);
 			}
 
-			this._actionBar.setContent([
-				{ element: buttonDropdownContainer },
-				{ action: this._runAllCellsAction },
-				{ element: Taskbar.createTaskbarSeparator() },
-				{ element: kernelContainer },
-				{ element: attachToContainer },
-				{ element: spacerElement },
-				{ element: viewsDropdownContainer },
-				{ action: collapseCellsAction },
-				{ action: clearResultsButton },
-				{ action: this._trustedAction },
-				{ action: runParametersAction },
-			]);
+			if (this._showToolbarActions) {
+				this._actionBar.setContent([
+					{ element: buttonDropdownContainer },
+					{ action: this._runAllCellsAction },
+					{ element: Taskbar.createTaskbarSeparator() },
+					{ element: kernelContainer },
+					{ element: attachToContainer },
+					{ element: spacerElement },
+					{ element: viewsDropdownContainer },
+					{ action: collapseCellsAction },
+					{ action: clearResultsButton },
+					{ action: this._trustedAction },
+					{ action: runParametersAction },
+				]);
+			} else {
+				this._actionBar.setContent([
+					{ element: buttonDropdownContainer },
+					{ action: this._runAllCellsAction },
+					{ element: Taskbar.createTaskbarSeparator() },
+					{ element: kernelContainer },
+					{ element: attachToContainer },
+				]);
+			}
 		} else {
 			let kernelContainer = document.createElement('div');
 			let kernelDropdown = this.instantiationService.createInstance(KernelsDropdown, kernelContainer, this.contextViewService, this.modelReady);
@@ -514,16 +530,26 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			this._actionBar = new Taskbar(taskbar, { actionViewItemProvider: action => this.actionItemProvider(action as Action) });
 			this._actionBar.context = this._notebookParams.notebookUri;
 
-			this._actionBar.setContent([
-				{ action: addCodeCellButton },
-				{ action: addTextCellButton },
-				{ element: kernelContainer },
-				{ element: attachToContainer },
-				{ action: this._trustedAction },
-				{ action: this._runAllCellsAction },
-				{ action: clearResultsButton },
-				{ action: collapseCellsAction },
-			]);
+			if (this._showToolbarActions) {
+				this._actionBar.setContent([
+					{ action: addCodeCellButton },
+					{ action: addTextCellButton },
+					{ element: kernelContainer },
+					{ element: attachToContainer },
+					{ action: this._trustedAction },
+					{ action: this._runAllCellsAction },
+					{ action: clearResultsButton },
+					{ action: collapseCellsAction },
+				]);
+			} else {
+				this._actionBar.setContent([
+					{ action: addCodeCellButton },
+					{ action: addTextCellButton },
+					{ element: kernelContainer },
+					{ element: attachToContainer },
+					{ action: this._runAllCellsAction },
+				]);
+			}
 		}
 	}
 
@@ -585,12 +611,14 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	 * the primary array to the end of the toolbar.
 	 */
 	private fillInActionsForCurrentContext(): void {
-		let primary: IAction[] = [];
-		let secondary: IAction[] = [];
-		let notebookBarMenu = this.menuService.createMenu(MenuId.NotebookToolbar, this.contextKeyService);
-		let groups = notebookBarMenu.getActions({ arg: null, shouldForwardArgs: true });
-		fillInActions(groups, { primary, secondary }, false, g => g === '', Number.MAX_SAFE_INTEGER, (action: SubmenuAction, group: string, groupSize: number) => group === undefined || group === '');
-		this.addPrimaryContributedActions(primary);
+		if (this._showToolbarActions) {
+			let primary: IAction[] = [];
+			let secondary: IAction[] = [];
+			let notebookBarMenu = this.menuService.createMenu(MenuId.NotebookToolbar, this.contextKeyService);
+			let groups = notebookBarMenu.getActions({ arg: null, shouldForwardArgs: true });
+			fillInActions(groups, { primary, secondary }, false, g => g === '', Number.MAX_SAFE_INTEGER, (action: SubmenuAction, group: string, groupSize: number) => group === undefined || group === '');
+			this.addPrimaryContributedActions(primary);
+		}
 	}
 
 	private detectChanges(): void {

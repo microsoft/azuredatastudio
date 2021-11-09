@@ -541,8 +541,7 @@ export interface SqlMigrationAssessmentResultItem {
 	rulesetVersion: string;
 	rulesetName: string;
 	ruleId: string;
-	targetType: azdata.sqlAssessment.SqlAssessmentTargetType;
-	targetName: string;
+	targetType: string;
 	checkId: string;
 	tags: string[];
 	displayName: string;
@@ -556,6 +555,7 @@ export interface SqlMigrationAssessmentResultItem {
 	issueCategory: string;
 	databaseName: string;
 	impactedObjects: SqlMigrationImpactedObjectInfo[];
+	databaseRestoreFails: boolean;
 }
 
 export interface ServerTargetReadiness {

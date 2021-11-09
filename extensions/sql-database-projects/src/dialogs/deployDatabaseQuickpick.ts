@@ -5,9 +5,9 @@
 
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
-import { AppSettingType, IDeployProfile, ILocalDbSetting } from '../models/deploy/deployProfile';
+import * as utils from '../common/utils';
+import { AppSettingType, IDeployAppIntegrationProfile, IDeployProfile, ILocalDbSetting } from '../models/deploy/deployProfile';
 import { Project } from '../models/project';
-import * as generator from 'generate-password';
 import { getPublishDatabaseSettings } from './publishDatabaseQuickpick';
 import * as path from 'path';
 import * as fse from 'fs-extra';
@@ -15,73 +15,7 @@ import * as fse from 'fs-extra';
 /**
  * Create flow for Deploying a database using only VS Code-native APIs such as QuickPick
  */
-export async function launchDeployDatabaseQuickpick(project: Project): Promise<IDeployProfile | undefined> {
-
-	// Show options to user for deploy to existing server or docker
-
-	const deployOption = await vscode.window.showQuickPick(
-		[constants.deployToExistingServer, constants.deployToDockerContainer],
-		{ title: constants.selectDeployOption, ignoreFocusOut: true });
-
-	// Return when user hits escape
-	if (!deployOption) {
-		return undefined;
-	}
-
-	let localDbSetting: ILocalDbSetting | undefined;
-	// Deploy to docker selected
-	if (deployOption === constants.deployToDockerContainer) {
-		let portNumber = await vscode.window.showInputBox({
-			title: constants.enterPortNumber,
-			ignoreFocusOut: true,
-			value: constants.defaultPortNumber,
-			validateInput: input => isNaN(+input) ? constants.portMustBeNumber : undefined
-		}
-		);
-
-		// Return when user hits escape
-		if (!portNumber) {
-			return undefined;
-		}
-
-		let password: string | undefined = generator.generate({
-			length: 10,
-			numbers: true,
-			symbols: true,
-			lowercase: true,
-			uppercase: true,
-			exclude: '`"\'' // Exclude the chars that cannot be included in the password. Some chars can make the command fail in the terminal
-		});
-		password = await vscode.window.showInputBox({
-			title: constants.enterPassword,
-			ignoreFocusOut: true,
-			value: password,
-			password: true
-		}
-		);
-
-		// Return when user hits escape
-		if (!password) {
-			return undefined;
-		}
-
-		localDbSetting = {
-			serverName: 'localhost',
-			userName: 'sa',
-			dbName: project.projectFileName,
-			password: password,
-			port: +portNumber,
-		};
-	}
-	let deploySettings = await getPublishDatabaseSettings(project, deployOption !== constants.deployToDockerContainer);
-
-	// Return when user hits escape
-	if (!deploySettings) {
-		return undefined;
-	}
-
-	// TODO: Ask for SQL CMD Variables or profile
-
+export async function launchDeployAppIntegrationQuickpick(project: Project): Promise<IDeployAppIntegrationProfile | undefined> {
 	let envVarName: string | undefined = '';
 	const integrateWithAzureFunctions: boolean = true; //TODO: get value from settings or quickpick
 
@@ -116,7 +50,7 @@ export async function launchDeployDatabaseQuickpick(project: Project): Promise<I
 					title: constants.enterConnectionStringEnvName,
 					ignoreFocusOut: true,
 					value: constants.defaultConnectionStringEnvVarName,
-					validateInput: input => input === '' ? constants.valueCannotBeEmpty : undefined,
+					validateInput: input => utils.isEmptyString(input) ? constants.valueCannotBeEmpty : undefined,
 					placeHolder: constants.enterConnectionStringEnvNameDescription
 				}
 			);
@@ -128,15 +62,101 @@ export async function launchDeployDatabaseQuickpick(project: Project): Promise<I
 		}
 	}
 
-	if (localDbSetting && deploySettings) {
-		deploySettings.serverName = localDbSetting.serverName;
+	return {
+		envVariableName: envVarName,
+		appSettingFile: settingExist ? localSettings : undefined,
+		appSettingType: settingExist ? AppSettingType.AzureFunction : AppSettingType.None
+	};
+}
+
+/**
+ * Create flow for publishing a database to docker container using only VS Code-native APIs such as QuickPick
+ */
+export async function launchPublishToDockerContainerQuickpick(project: Project): Promise<IDeployProfile | undefined> {
+
+	let localDbSetting: ILocalDbSetting | undefined;
+	// Deploy to docker selected
+	let portNumber = await vscode.window.showInputBox({
+		title: constants.enterPortNumber,
+		ignoreFocusOut: true,
+		value: constants.defaultPortNumber,
+		validateInput: input => !utils.validateSqlServerPortNumber(input) ? constants.portMustBeNumber : undefined
 	}
+	);
+
+	// Return when user hits escape
+	if (!portNumber) {
+		return undefined;
+	}
+
+	let password: string | undefined = '';
+	password = await vscode.window.showInputBox({
+		title: constants.enterPassword,
+		ignoreFocusOut: true,
+		value: password,
+		validateInput: input => !utils.isValidSQLPassword(input) ? constants.invalidSQLPasswordMessage : undefined,
+		password: true
+	}
+	);
+
+	// Return when user hits escape
+	if (!password) {
+		return undefined;
+	}
+
+	let confirmPassword: string | undefined = '';
+	confirmPassword = await vscode.window.showInputBox({
+		title: constants.confirmPassword,
+		ignoreFocusOut: true,
+		value: confirmPassword,
+		validateInput: input => input !== password ? constants.passwordNotMatch : undefined,
+		password: true
+	}
+	);
+
+	// Return when user hits escape
+	if (!confirmPassword) {
+		return undefined;
+	}
+
+	const baseImage = await vscode.window.showQuickPick(
+		[
+			`${constants.sqlServerDockerRegistry}/${constants.sqlServerDockerRepository}:2017-latest`,
+			`${constants.sqlServerDockerRegistry}/${constants.sqlServerDockerRepository}:2019-latest`,
+			`${constants.sqlServerDockerRegistry}/${constants.azureSqlEdgeDockerRepository}:latest`
+		],
+		{ title: constants.selectBaseImage, ignoreFocusOut: true });
+
+	// Return when user hits escape
+	if (!baseImage) {
+		return undefined;
+	}
+
+	localDbSetting = {
+		serverName: 'localhost',
+		userName: 'sa',
+		dbName: project.projectFileName,
+		password: password,
+		port: +portNumber,
+		dockerBaseImage: baseImage
+	};
+
+	let deploySettings = await getPublishDatabaseSettings(project, false);
+
+	// Return when user hits escape
+	if (!deploySettings) {
+		return undefined;
+	}
+
+	// Server name should be set to localhost
+	deploySettings.serverName = localDbSetting.serverName;
+
+	// Get the database name from deploy settings
+	localDbSetting.dbName = deploySettings.databaseName;
+
 
 	return {
 		localDbSetting: localDbSetting,
-		envVariableName: envVarName,
-		appSettingFile: settingExist ? localSettings : undefined,
 		deploySettings: deploySettings,
-		appSettingType: settingExist ? AppSettingType.AzureFunction : AppSettingType.None
 	};
 }

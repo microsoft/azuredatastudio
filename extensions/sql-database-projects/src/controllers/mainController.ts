@@ -6,6 +6,7 @@
 import type * as azdataType from 'azdata';
 import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
+import * as vscodeMssql from 'vscode-mssql';
 import * as templates from '../templates/templates';
 import * as path from 'path';
 
@@ -54,8 +55,7 @@ export default class MainController implements vscode.Disposable {
 		vscode.commands.registerCommand('sqlDatabaseProjects.properties', async (node: WorkspaceTreeItem) => { return vscode.window.showErrorMessage(`Properties not yet implemented: ${node.element.uri.path}`); }); // TODO
 
 		vscode.commands.registerCommand('sqlDatabaseProjects.build', async (node: WorkspaceTreeItem) => { return this.projectsController.buildProject(node); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.publish', async (node: WorkspaceTreeItem) => { this.projectsController.publishProject(node); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.deployLocal', async (node: WorkspaceTreeItem) => { return this.projectsController.deployProject(node); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.publish', async (node: WorkspaceTreeItem) => { return this.projectsController.publishProject(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.schemaCompare', async (node: WorkspaceTreeItem) => { return this.projectsController.schemaCompare(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.schemaCompareGetTargetScripts', async (projectFilePath: string): Promise<string[]> => { return await this.projectsController.schemaCompareGetTargetScripts(projectFilePath); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.schemaCompareGetDsp', async (projectFilePath: string): Promise<string> => { return await this.projectsController.schemaCompareGetDsp(projectFilePath); });
@@ -63,6 +63,8 @@ export default class MainController implements vscode.Disposable {
 		vscode.commands.registerCommand('sqlDatabaseProjects.schemaCompareShowProjectsView', async () => { await this.projectsController.schemaCompareShowProjectsView(); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.createProjectFromDatabase', async (profile: azdataType.IConnectionProfile) => { await this.projectsController.createProjectFromDatabase(profile); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.updateProjectFromDatabase', async (node: azdataType.IConnectionProfile | WorkspaceTreeItem) => { await this.projectsController.updateProjectFromDatabase(node); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.createProjectFromDatabase', async (context: azdataType.IConnectionProfile | vscodeMssql.ITreeNodeInfo | undefined) => { return this.projectsController.createProjectFromDatabase(context); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.generateProjectFromOpenApiSpec', async () => { return this.projectsController.generateProjectFromOpenApiSpec(); });
 
 		vscode.commands.registerCommand('sqlDatabaseProjects.newScript', async (node: WorkspaceTreeItem) => { return this.projectsController.addItemPromptFromNode(node, templates.script); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.newPreDeploymentScript', async (node: WorkspaceTreeItem) => { return this.projectsController.addItemPromptFromNode(node, templates.preDeployScript); });

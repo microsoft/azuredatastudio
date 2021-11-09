@@ -45,7 +45,7 @@
 			"dataworkspace.projectParentDirectoryNotExistError": "O local do projeto selecionado '{0}' não existe ou não é um diretório.",
 			"dataworkspace.projectsFailedToLoad": "Ocorreu um erro ao carregar alguns projetos. Para exibir mais detalhes, [abra o console do desenvolvedor](command:workbench.action.toggleDevTools)",
 			"dataworkspace.remoteGitRepo": "Repositório git remoto",
-			"dataworkspace.restartConfirmation": "O Azure Data Studio precisa ser reiniciado para que o projeto seja criado e adicionado ao espaço de trabalho, fazer isso agora?",
+			"dataworkspace.restartConfirmation": "O Azure Data Studio precisa ser reiniciado para que o projeto possa ser adicionado ao espaço de trabalho. Reiniciar agora?",
 			"dataworkspace.select": "Selecionar",
 			"dataworkspace.selectProjectLocation": "Selecionar o local do projeto",
 			"dataworkspace.selectProjectType": "Selecionar o tipo de projeto",
@@ -70,6 +70,7 @@
 			"projects-view-no-project-content": "Não há projetos abertos no espaço de trabalho atual.\r\n[Criar novo](command:projects.new)\r\n[Abrir existente](command:projects.openExisting)\r\nPara saber mais sobre projetos [leia nossos documentos](https://aka.ms/azuredatastudio-projects).\r\n",
 			"projects-view-no-workspace-content": "Crie novos ou abra existentes para começar.\r\n[Criar novo](command:projects.new)\r\n[Abrir existente](command:projects.openExisting)\r\nPara saber mais sobre projetos [leia nossos documentos](https://aka.ms/azuredatastudio-projects).",
 			"projects.defaultProjectSaveLocation": "Caminho completo para a pasta em que novos projetos são salvos por padrão.",
+			"projects.excludedProjectsDescription": "Lista de projetos no espaço de trabalho a serem excluídos da visualização dos projetos",
 			"projects.showNotAddedProjectsInWorkspacePrompt": "Sempre mostre a mensagem de informações quando as pastas do espaço de trabalho atuais contiverem projetos que não foram adicionados aos projetos do espaço de trabalho.",
 			"refresh-workspace-command": "Atualizar",
 			"remove-project-command": "Remover projeto"

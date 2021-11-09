@@ -34,8 +34,7 @@ export class UpdateProjectFromDatabaseDialog {
 	private project: Project | undefined;
 	private action: UpdateAction | undefined;
 	private toDispose: vscode.Disposable[] = [];
-	private initDialogComplete!: Deferred<void>;
-	private initDialogPromise: Promise<void> = new Promise<void>((resolve, reject) => this.initDialogComplete = { resolve, reject });
+	private initDialogComplete: Deferred = new Deferred();
 
 	public updateProjectFromDatabaseCallback: ((model: UpdateDataModel) => any) | undefined;
 
@@ -73,7 +72,7 @@ export class UpdateProjectFromDatabaseDialog {
 		this.dialog.cancelButton.label = constants.cancelButtonText;
 
 		getAzdataApi()!.window.openDialog(this.dialog);
-		await this.initDialogPromise;
+		await this.initDialogComplete.promise;
 
 		this.tryEnableUpdateButton();
 	}

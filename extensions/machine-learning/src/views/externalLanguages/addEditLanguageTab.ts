@@ -68,7 +68,7 @@ export class AddEditLanguageTab extends LanguageViewBase {
 	public get updatedData(): LanguageUpdateModel {
 		return {
 			language: {
-				name: this.languageName?.value || '',
+				name: this.languageName?.value as string || '',
 				contents: this._languageUpdateModel.language.contents
 			},
 			content: this.languageView?.updatedContent || this._languageUpdateModel.content,

@@ -16,6 +16,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { IViewDescriptorService } from 'vs/workbench/common/views';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 
 export class TestConnectionDialogWidget extends ConnectionDialogWidget {
 	constructor(
@@ -34,8 +35,9 @@ export class TestConnectionDialogWidget extends ConnectionDialogWidget {
 		@IClipboardService clipboardService: IClipboardService,
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
-		@IConfigurationService configurationService: IConfigurationService
+		@IConfigurationService configurationService: IConfigurationService,
+		@ICapabilitiesService capabilitiesService: ICapabilitiesService
 	) {
-		super(providerDisplayNameOptions, selectedProviderType, providerNameToDisplayNameMap, _instantiationService, _connectionManagementService, _contextMenuService, _contextViewService, themeService, layoutService, telemetryService, contextKeyService, clipboardService, logService, textResourcePropertiesService, configurationService);
+		super(providerDisplayNameOptions, selectedProviderType, providerNameToDisplayNameMap, _instantiationService, _connectionManagementService, _contextMenuService, _contextViewService, themeService, layoutService, telemetryService, contextKeyService, clipboardService, logService, textResourcePropertiesService, configurationService, capabilitiesService);
 	}
 }

@@ -31,7 +31,7 @@ export class NotebookEditorInputAssociation implements ILanguageAssociation {
 
 	convertInput(activeEditor: IEditorInput): NotebookInput | DiffNotebookInput | undefined {
 		if (activeEditor instanceof FileEditorInput) {
-			return this.instantiationService.createInstance(FileNotebookInput, activeEditor.getName(), activeEditor.resource, activeEditor);
+			return this.instantiationService.createInstance(FileNotebookInput, activeEditor.getName(), activeEditor.resource, activeEditor, true);
 		} else if (activeEditor instanceof UntitledTextEditorInput) {
 			return this.instantiationService.createInstance(UntitledNotebookInput, activeEditor.getName(), activeEditor.resource, activeEditor);
 		} else if (activeEditor instanceof DiffEditorInput) {
@@ -65,7 +65,7 @@ export class FileNoteBookEditorInputSerializer implements IEditorInputSerializer
 	deserialize(instantiationService: IInstantiationService, serializedEditorInput: string): FileNotebookInput | undefined {
 		const factory = editorInputFactoryRegistry.getEditorInputSerializer(FILE_EDITOR_INPUT_ID);
 		const fileEditorInput = factory.deserialize(instantiationService, serializedEditorInput) as FileEditorInput;
-		return instantiationService.createInstance(FileNotebookInput, fileEditorInput.getName(), fileEditorInput.resource, fileEditorInput);
+		return instantiationService.createInstance(FileNotebookInput, fileEditorInput.getName(), fileEditorInput.resource, fileEditorInput, true);
 	}
 
 	canSerialize(): boolean { // we can always serialize notebooks
