@@ -9,12 +9,13 @@ import * as path from 'path';
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
 
-import { Project, SystemDatabase } from '../models/project';
+import { Project } from '../models/project';
 import { cssStyles } from '../common/uiConstants';
 import { IconPathHelper } from '../common/iconHelper';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { Deferred } from '../common/promise';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
+import { SystemDatabase } from '../models/projectEntry';
 
 export enum ReferenceType {
 	project,
