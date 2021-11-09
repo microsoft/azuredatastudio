@@ -94,6 +94,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.businessCriticalLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[BusinessCritical]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[BusinessCritical]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -670,8 +673,8 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.databaseDetailsText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enter the required settings for target database name and SQL managed instance. By default, the source managed instance is selected.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Geben Sie die erforderlichen Einstellungen für diese Datenbank ein, einschließlich eines Namens und einer verwalteten Zielinstanz. Standardmäßig wird die Quellinstanz ausgewählt.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Geben Sie die erforderlichen Einstellungen für den Namen der Zieldatenbank und die verwaltete SQL-Instanz ein. Standardmäßig ist die verwaltete Quellinstanz ausgewählt.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Enter the required settings for this database, including a name and a target managed instance. By default, the source instance is selected.]]></Val>
@@ -790,8 +793,8 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.earliestPitrRestorePoint" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Earliest point in time]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Frühester PITR-Wiederherstellungspunkt ]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Frühester Zeitpunkt]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Earliest PITR restore point]]></Val>
@@ -1072,6 +1075,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.generalPurposeLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[GeneralPurpose]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[GeneralPurpose]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1222,8 +1228,8 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.latestpitrRestorePoint" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Latest point in time]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Letzter PITR-Wiederherstellungspunkt]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Letzter Zeitpunkt]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Latest PITR restore point]]></Val>
@@ -2164,8 +2170,8 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.restoreInfo" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Restore a database to an Azure Arc enabled SQL Managed Instance.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Stellen Sie eine Datenbank in einem SQL Managed Instance mit Azure Arc-Unterstützung Ihrer Wahl wieder her.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Stellen Sie eine Datenbank in einer SQL Managed Instance mit Azure Arc-Unterstützung wieder her.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Restore a database to an Azure Arc enabled SQL Managed Instance of your choice.]]></Val>
@@ -2176,8 +2182,8 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.restorePoint" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Restore point (UTC), in a time format: 'YYYY-MM-DDTHH:MM:SSZ]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Wiederherstellungspunkt (UTC)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Wiederherstellungspunkt (UTC) in einem Zeitformat: „JJJJ-MM-TTTHH:MM:SSZ]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Restore point (UTC)]]></Val>
@@ -2188,24 +2194,36 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.restorePointDetails" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Restore Point Details]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Details zum Wiederherstellungspunkt]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.restorePointErrorrMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Provide time in correct format and within range: {0} to {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Zeit im richtigen Format und innerhalb des gültigen Bereichs angeben: {0} für {1}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.restorePointText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enter a restore point in the specified time format within given range of earliest and latest restore time.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Geben Sie einen Wiederherstellungspunkt im angegebenen Zeitformat innerhalb des angegebenen Bereichs der frühesten und letzten Wiederherstellungszeit ein.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.restoreTimeWindowUpdateFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Point in time restore time window update failed. {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Fehler beim Aktualisieren des Zeitfensters für die Zeitpunktwiederherstellung. {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2356,7 +2374,7 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.sourceDetailsText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select a backup source and provide details. Additional settings will be defaulted where possible based on the selected database.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Wählen Sie eine Sicherungsquelle aus und geben Sie Details an. Zusätzliche Einstellungen werden basierend auf der ausgewählten Sicherung nach Möglichkeit auf den Standardwert festgelegt.]]></Val>
           </Tgt>
           <Prev Cat="Text">
@@ -3820,12 +3838,18 @@
       <Item ItemId=";extensions/arc/package.arc.sql.cost.summary" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cost Summary]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Kostenzusammenfassung]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/package.arc.sql.cost.summary.additional.charge" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Additional charge per usage. See {0} for more detail.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Zusätzliche Gebühren pro Nutzung. Weitere Informationen finden Sie unter {0}.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3841,6 +3865,9 @@
       <Item ItemId=";extensions/arc/package.arc.sql.cost.summary.azure.hybrid.benefit.discount" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Hybrid Benefit discount (in USD)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure-Hybridvorteil-Rabatt (in USD)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3865,6 +3892,9 @@
       <Item ItemId=";extensions/arc/package.arc.sql.cost.summary.cost.vcore" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cost per vCore (in USD)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Kosten pro V-Kern (in USD)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3907,6 +3937,9 @@
       <Item ItemId=";extensions/arc/package.arc.sql.cost.summary.managed.instance.admin.login" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Managed Instance admin login]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Administratoranmeldung für verwaltete Instanz]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3958,12 +3991,18 @@
       <Item ItemId=";extensions/arc/package.arc.sql.cost.summary.sql.connection.info" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SQL Connection Information]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[SQL-Verbindungsinformationen]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/package.arc.sql.cost.summary.sql.instance.settings" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SQL Instance Settings]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[SQL-Instanzeinstellungen]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3979,6 +4018,9 @@
       <Item ItemId=";extensions/arc/package.arc.sql.cost.summary.sql.miaa.cost.summary" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SQL Managed Instance - Azure Arc Cost Summary]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[SQL Managed Instance – Azure Arc-Kostenzusammenfassung]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4021,8 +4063,8 @@
       <Item ItemId=";extensions/arc/package.arc.sql.high.availability.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enable additional replicas for high availabilty. The compute and storage configuration selected below will be applied to all replicas. Choose from: General Purpose (Up to 24 vCores and 128 Gi of RAM, standard high availability) or [PREVIEW]5D; Business Critical (Unlimited vCores and RAM, advanced high availability).]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Aktivieren Sie zusätzliche Replikate, um Hochverfügbarkeit zu erzielen. Die nachstehend ausgewählte Konfiguration für Compute- und Speicherressourcen wird auf alle Replikate angewendet.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Aktivieren Sie zusätzliche Replikate für hohe Verfügbarkeit. Die unten ausgewählte Compute- und Speicherkonfiguration wird auf alle Replikate angewendet. Wählen Sie aus: Universell (bis zu 24 virtuelle Kerne und 128 Gi RAM, Standard-Hochverfügbarkeit) oder [VORSCHAU]5D; Unternehmenskritisch (unbegrenzte virtuelle Kerne und RAM, erweiterte hohe Verfügbarkeit).]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Enable additional replicas for high availabilty. The compute and storage configuration selected below will be applied to all replicas.]]></Val>
@@ -4078,12 +4120,18 @@
       <Item ItemId=";extensions/arc/package.arc.sql.license.type.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Apply the Azure Hybrid Benefit if you already own a SQL Server License]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Wenden Sie den Azure-Hybridvorteil an, wenn Sie bereits über eine SQL Server-Lizenz verfügen.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/package.arc.sql.license.type.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[I already have a SQL Server License]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ich habe bereits eine SQL Server-Lizenz]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -4156,8 +4204,8 @@
       <Item ItemId=";extensions/arc/package.arc.sql.retention.days.label" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Point in time retention (days)]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[PITR-Aufbewahrung (Tage)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Zeitpunktaufbewahrung (Tage)]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[PITR retention (days)]]></Val>
@@ -4168,8 +4216,8 @@
       <Item ItemId=";extensions/arc/package.arc.sql.service.tier.business.critical" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[BusinessCritical]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[[VORSCHAU]5D; Unternehmenskritisch (Unbegrenzte virtuelle Kerne und RAM, erweiterte Hochverfügbarkeit)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[BusinessCritical]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[[PREVIEW]5D; Business Critical (Unlimited vCores and RAM, advanced high availability)]]></Val>
@@ -4189,8 +4237,8 @@
       <Item ItemId=";extensions/arc/package.arc.sql.service.tier.general.purpose" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[GeneralPurpose]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Universell (bis zu 24 virtuelle Kerne und 128 Gi RAM, Standard-Hochverfügbarkeit)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[GeneralPurpose]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[General Purpose (Up to 24 vCores and 128 Gi of RAM, standard high availability)]]></Val>
@@ -4492,6 +4540,9 @@
       <Item ItemId=";extensions/arc/package.command.estimateCostSqlMiaa.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Estimate Cost of SQL Managed Instance - Azure Arc]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Geschätzte Kosten für SQL Managed Instance – Azure Arc]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

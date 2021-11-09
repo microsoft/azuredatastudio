@@ -458,7 +458,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Database Projects]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Proyecto de base de datos]]></Val>
+            <Val><![CDATA[Proyectos de base de datos]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Projects]]></Val>
@@ -470,7 +470,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Database Projects]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Proyecto de base de datos]]></Val>
+            <Val><![CDATA[Proyectos de base de datos]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Projects]]></Val>

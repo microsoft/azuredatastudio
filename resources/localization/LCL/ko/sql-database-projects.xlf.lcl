@@ -262,6 +262,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.buildElements" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Build Elements]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[빌드 요소]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -520,6 +523,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.dacpacReferenceElement" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Dacpac reference]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Dacpac 참조]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1027,6 +1033,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.errorReadingProjectGuid" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error trying to read {0} of project '{1}']]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA['{1}' 프로젝트의 {0}을(를) 읽는 동안 오류가 발생했습니다.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1168,6 +1177,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.folderElements" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Folder Elements]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[폴더 요소]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1240,6 +1252,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.importElements" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Import Elements]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[요소 가져오기]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1534,8 +1549,8 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.nodeButNotAutorestFound" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Autorest tool not found in system path, but found Node.js.  Prompting user for how to proceed.  Execute 'npm install autorest -g' to install permanently and avoid this message.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Autorest 도구는 시스템 경로에 없지만 Node.js는 찾았습니다.  npx를 통해 실행. 영구적으로 설치하려면 'npm install autorest -g'를 실행하세요.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Autorest 도구는 시스템 경로에 없지만 Node.js는 찾았습니다. 사용자에게 진행 방법을 묻는 메시지를 표시합니다. 영구적으로 설치하고 이 메시지를 피하려면 'npm install autorest -g'를 실행하세요.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Autorest tool not found in system path, but found Node.js.  Running via npx.  Please execute 'npm install autorest -g' to install permanently.]]></Val>
@@ -1567,6 +1582,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.noneElements" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[None Elements]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[요소 없음]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1645,6 +1663,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.postDeployElements" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[PostDeploy Elements]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[요소 사후 배포]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1660,6 +1681,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.preDeployElements" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[PreDeploy Elements]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[요소 사전 배포]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1777,6 +1801,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.projectReferenceNameElement" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Project reference name element]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[프로젝트 참조 이름 요소]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2503,8 +2530,8 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.updateProjectDatabaseReferencesForRoundTrip" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The system database references need to be updated to build the project '{0}'. If the project was created in SSDT, it will continue to work in both tools. Do you want to update the project?]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[이 프로젝트를 빌드하려면 시스템 데이터베이스 참조를 업데이트해야 합니다. 프로젝트가 SSDT에서 만들어지면 두 도구에서 계속 작동합니다. 프로젝트를 업데이트하시겠습니까?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA['{0}' 프로젝트를 빌드하려면 시스템 데이터베이스 참조를 업데이트해야 합니다. 프로젝트가 SSDT에서 생성된 경우 두 도구 모두에서 계속 작동합니다. 프로젝트를 업데이트하시겠습니까?]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[The system database references need to be updated to build this project. If the project is created in SSDT, it will continue to work in both tools. Do you want to update the project?]]></Val>
@@ -2515,8 +2542,8 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.updateProjectForRoundTrip" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The targets, references, and system database references need to be updated to build the project '{0}'. If the project was created in SSDT, it will continue to work in both tools. Do you want to update the project?]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[이 프로젝트를 빌드하려면 대상, 참조 및 시스템 데이터베이스 참조를 업데이트해야 합니다. 프로젝트가 SSDT에서 만들어지면 두 도구에서 계속 작동합니다. 프로젝트를 업데이트하시겠습니까?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA['{0}' 프로젝트를 빌드하려면 대상, 참조 및 시스템 데이터베이스 참조를 업데이트해야 합니다. 프로젝트가 SSDT에서 생성된 경우 두 도구 모두에서 계속 작동합니다. 프로젝트를 업데이트하시겠습니까?]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[The targets, references, and system database references need to be updated to build this project. If the project is created in SSDT, it will continue to work in both tools. Do you want to update the project?]]></Val>
@@ -2527,18 +2554,27 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.userSelectionCancelled" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[User has cancelled selection for how to run autorest.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[사용자가 autorest 실행 방법에 대한 선택을 취소했습니다.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.userSelectionInstallGlobally" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[User selected to install autorest gloablly.  Installing now...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[autorest를 전역적으로 설치하도록 선택한 사용자입니다. 지금 설치 중입니다...]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.userSelectionRunNpx" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[User selected to run via npx.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[사용자가 npx를 통해 실행하도록 선택했습니다.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

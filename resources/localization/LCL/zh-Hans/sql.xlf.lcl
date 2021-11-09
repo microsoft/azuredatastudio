@@ -1109,6 +1109,9 @@
         <Item ItemId=";(...) Designer" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[An error occured while initializing the table designer: {0}]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[初始化表设计器时出错: {0}]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1134,8 +1137,8 @@
       <Item ItemId=";src/sql/base/browser/ui/designer/designer.designer.loadingDesignerCompleted" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Designer is loaded]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[加载设计器已完成]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[已加载设计器]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Loading designer completed]]></Val>
@@ -1164,8 +1167,8 @@
       <Item ItemId=";src/sql/base/browser/ui/designer/designer.designer.processingChangesCompleted" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Changes have been processed]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[处理更改已完成]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[已处理更改]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Processing changes completed]]></Val>
@@ -1194,6 +1197,9 @@
       <Item ItemId=";src/sql/base/browser/ui/designer/designer.designer.savingChangesCompleted" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Changes have been saved]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[更改已保存]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1815,12 +1821,18 @@
       <Item ItemId=";src/sql/base/common/locConstants.workspace.trust.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Controls whether or not workspace trust is enabled within Azure Data Studio.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[控制是否在 Azure Data Studio 内启用工作区信任。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.workspace.trust.emptyWindow.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Controls whether or not the empty window is trusted by default within Azure Data Studio. When used with `#{0}#`, you can enable the full functionality of Azure Data Studio without prompting in an empty window.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[控制空窗口在 zure Data Studio 中是否默认受信任。当与 `#{0}#` 一起使用时，可以启用 zure Data Studio 的完整功能，而无需在空窗口中进行提示。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2160,6 +2172,9 @@
       <Item ItemId=";src/sql/platform/theme/common/colorRegistry.groupHeaderBackground" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Background color of the group header.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[组标题的背景色。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -11646,12 +11661,18 @@
       <Item ItemId=";src/sql/workbench/contrib/tableDesigner/browser/tableDesigner.contribution.tableDesigner.featureEnabledDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Controls whether the table designer feature is enabled. Default value is false.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[控制是否启用表设计器功能。默认值为 false。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/tableDesigner/browser/tableDesignerTextEditor.designer.textEditorAriaLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Designer text editor.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[设计器文本编辑器。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -15885,6 +15906,9 @@
       <Item ItemId=";src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput.tableDesigner.errorProcessingEdit" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[An error occured while processing the change: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[处理更改时出错: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
