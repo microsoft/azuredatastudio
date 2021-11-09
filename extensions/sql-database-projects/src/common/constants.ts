@@ -328,6 +328,7 @@ export const ItemGroup = 'ItemGroup';
 export const Build = 'Build';
 export const Folder = 'Folder';
 export const Include = 'Include';
+export const Remove = 'Remove';
 export const Import = 'Import';
 export const Project = 'Project';
 export const Condition = 'Condition';
