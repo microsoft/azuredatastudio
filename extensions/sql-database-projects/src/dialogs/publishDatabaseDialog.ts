@@ -46,7 +46,7 @@ export class PublishDatabaseDialog {
 	private serverAdminPasswordTextBox: azdataType.InputBoxComponent | undefined;
 	private serverConfigAdminPasswordTextBox: azdataType.InputBoxComponent | undefined;
 	private serverPortTextBox: azdataType.InputBoxComponent | undefined;
-
+	private existingServerSelected: boolean = true;
 	private connectionId: string | undefined;
 	private connectionIsDataSource: boolean | undefined;
 	private sqlCmdVars: Record<string, string> | undefined;
@@ -86,6 +86,11 @@ export class PublishDatabaseDialog {
 
 		utils.getAzdataApi()!.window.openDialog(this.dialog);
 	}
+
+	public set publishToExistingServer(v: boolean) {
+		this.existingServerSelected = v;
+	}
+
 
 	public waitForClose(): Promise<void> {
 		return this.completionPromise.promise;
@@ -210,7 +215,7 @@ export class PublishDatabaseDialog {
 	}
 
 	public async publishClick(): Promise<void> {
-		if (this.existingServerRadioButton?.checked) {
+		if (this.existingServerSelected) {
 			const settings: IDeploySettings = {
 				databaseName: this.getTargetDatabaseName(),
 				serverName: this.getServerName(),
@@ -228,13 +233,13 @@ export class PublishDatabaseDialog {
 					dbName: this.getTargetDatabaseName(),
 					dockerBaseImage: this.getBaseDockerImageName(),
 					password: this.serverAdminPasswordTextBox?.value || '',
-					port: +(this.serverPortTextBox?.value || ''),
+					port: +(this.serverPortTextBox?.value || constants.defaultPortNumber),
 					serverName: constants.defaultLocalServerName,
 					userName: constants.defaultLocalServerAdminName
 				},
 				deploySettings: {
 					databaseName: this.getTargetDatabaseName(),
-					serverName: this.getServerName(),
+					serverName: constants.defaultLocalServerName,
 					connectionUri: '',
 					sqlCmdVariables: this.getSqlCmdVariablesForPublish(),
 					deploymentOptions: await this.getDeploymentOptions(),
@@ -343,6 +348,9 @@ export class PublishDatabaseDialog {
 	}
 
 	private createPublishTypeRadioButtons(view: azdataType.ModelView): azdataType.Component {
+		const publishToLabel = view.modelBuilder.text().withProps({
+			value: 'Publish To'
+		}).component();
 		this.existingServerRadioButton = view.modelBuilder.radioButton()
 			.withProps({
 				name: 'publishType',
@@ -366,7 +374,7 @@ export class PublishDatabaseDialog {
 
 		let flexRadioButtonsModel: azdataType.FlexContainer = view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
-			.withItems([this.existingServerRadioButton, this.dockerServerRadioButton])
+			.withItems([publishToLabel, this.existingServerRadioButton, this.dockerServerRadioButton])
 			.withProps({ ariaRole: 'radiogroup' })
 			.component();
 
@@ -374,6 +382,7 @@ export class PublishDatabaseDialog {
 	}
 
 	private onPublishTypeChange(existingServer: boolean) {
+		this.existingServerSelected = existingServer;
 		this.tryEnableGenerateScriptAndOkButtons();
 		if (existingServer) {
 			if (this.connectionRow) {
@@ -505,7 +514,7 @@ export class PublishDatabaseDialog {
 
 	private createLocalDbInfoRow(view: azdataType.ModelView): azdataType.FlexContainer {
 		this.serverPortTextBox = view.modelBuilder.inputBox().withProps({
-			value: '',
+			value: constants.defaultPortNumber,
 			ariaLabel: constants.serverPortNumber,
 			placeHolder: constants.serverPortNumber,
 			width: cssStyles.publishDialogTextboxWidth,
