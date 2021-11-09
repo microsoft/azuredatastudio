@@ -43,20 +43,17 @@ let providerDescriptionType: IJSONSchema = {
 			type: 'array',
 			items: {
 				type: 'object',
-				items: {
-					type: 'object',
-					properties: {
-						name: {
+				properties: {
+					name: {
+						type: 'string'
+					},
+					displayName: {
+						type: 'string'
+					},
+					connectionProviderIds: {
+						type: 'array',
+						items: {
 							type: 'string'
-						},
-						displayName: {
-							type: 'string'
-						},
-						connectionProviderIds: {
-							type: 'array',
-							items: {
-								type: 'string'
-							}
 						}
 					}
 				}
