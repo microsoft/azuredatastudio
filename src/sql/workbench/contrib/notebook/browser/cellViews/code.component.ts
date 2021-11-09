@@ -263,7 +263,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			this.onCellCollapse(isCollapsed);
 		}));
 		this._register(this.cellModel.onCurrentEditModeChanged((e) => {
-			let preview = e === CellEditModes.WYSIWYG;
+			let preview = e !== CellEditModes.MARKDOWN;
 			if (!preview && this._cellModel.cellSourceChanged) {
 				this.updateModel();
 				this._cellModel.cellSourceChanged = false;
