@@ -162,8 +162,8 @@ export class Project implements ISqlProject {
 	 * @returns Set of files included in project as specified by the sqlproj
 	 */
 	async loadFilesInProject(): Promise<void> {
-		let filesSet: Set<string> = new Set();
-		let entriesWithType: { relativePath: string, typeAttribute: string }[] = [];
+		const filesSet: Set<string> = new Set();
+		const entriesWithType: { relativePath: string, typeAttribute: string }[] = [];
 
 		// default glob include pattern for msbuild sdk style projects
 		if (this._isMsbuildSdkStyleProject) {
