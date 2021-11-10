@@ -10,6 +10,7 @@ import { localize } from 'vs/nls';
 import { designers } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { Emitter, Event } from 'vs/base/common/event';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
+import { deepClone, equals } from 'vs/base/common/objects';
 
 export class TableDesignerComponentInput implements DesignerComponentInput {
 
@@ -21,6 +22,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 	private _onStateChange = new Emitter<DesignerStateChangedEventArgs>();
 	private _onInitialized = new Emitter<void>();
 	private _onEditProcessed = new Emitter<DesignerEditProcessedEventArgs>();
+	private _originalViewModel: DesignerViewModel;
 
 	public readonly onInitialized: Event<void> = this._onInitialized.event;
 	public readonly onEditProcessed: Event<DesignerEditProcessedEventArgs> = this._onEditProcessed.event;
@@ -59,10 +61,8 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		this.updateState(this.valid, this.dirty, 'processEdit');
 		this._provider.processTableEdit(this._tableInfo, this._viewModel!, edit).then(
 			result => {
-				if (result.isValid) {
-					this._viewModel = result.viewModel;
-				}
-				this.updateState(result.isValid, true, undefined);
+				this._viewModel = result.viewModel;
+				this.updateState(result.isValid, !equals(this._viewModel, this._originalViewModel), undefined);
 
 				this._onEditProcessed.fire({
 					edit: edit,
@@ -87,6 +87,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		try {
 			this.updateState(this.valid, this.dirty, 'save');
 			await this._provider.saveTable(this._tableInfo, this._viewModel);
+			this._originalViewModel = this._viewModel;
 			this.updateState(true, false);
 			notificationHandle.updateMessage(localize('tableDesigner.savedChangeSuccess', "The changes have been successfully saved."));
 		} catch (error) {
@@ -141,6 +142,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 	private doInitialization(designerInfo: azdata.designers.TableDesignerInfo): void {
 		this.updateState(true, false);
 		this._viewModel = designerInfo.viewModel;
+		this._originalViewModel = deepClone(this._viewModel);
 		this.setDefaultData();
 
 		const generalTabComponents: DesignerDataPropertyInfo[] = [
