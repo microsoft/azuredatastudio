@@ -1159,10 +1159,9 @@ declare module 'azdata' {
 		 */
 		export interface DesignerDataPropertyInfo {
 			/**
-			 * The property name
+			 * The property name. Note: '/' character should not be used in the property name, it is reserved as the path separator. {@link DesignerEditPath}
 			 */
 			propertyName: string;
-
 			/**
 			 * The description of the property
 			 */
@@ -1271,16 +1270,17 @@ declare module 'azdata' {
 		/**
 		 * The path of the edit target.
 		 * Table designer support nested tables, Below are the 3 scenarios and their expected path format.
+		 * Note: 'index-{x}' in the description below represents the index of the object in the list.
 		 * 1. 'Add' scenario
-		 *    a. Level1Property. example: add a column to the columns property.
-		 *    b. Level1Property/index1/Level2Property. example: add a column mapping to a foreign key.
+		 *    a. 'propertyName1'. Example: add a column to the columns property: 'columns'.
+		 *    b. 'propertyName1/index-1/propertyName2'. Example: add a column mapping to the first foreign key: 'foreignKeys/0/mappings'.
 		 * 2. 'Update' scenario
-		 *    a. Level1Property. example: update the name of the table.
-		 *    b. Level1Property/index1/Level2Property. example: update the name of a column.
-		 *    c. Level1Property/index1/Level2Property/index2/Level3Property. example: update the source column of an entry in a foreign key's column mapping table.
+		 *    a. 'propertyName1'. Example: update the name of the table: 'name'.
+		 *    b. 'propertyName1/index-1/propertyName2'. Example: update the name of a column: 'columns/0/name'.
+		 *    c. 'propertyName1/index-1/propertyName2/index-2/propertyName3'. Example: update the source column of an entry in a foreign key's column mapping table: 'foreignKeys/0/mappings/0/source'.
 		 * 3. 'Remove' scenario
-		 *    a. Level1Property/index1. example: remove a column from the columns property.
-		 *    b. Level1Property/index1/Level2Property/index2: Example: remove a column mapping from a foreign key's column mapping table.
+		 *    a. 'propertyName1/index-1'. Example: remove a column from the columns property: 'columns/0'.
+		 *    b. 'propertyName1/index-1/propertyName2/index-2': Example: remove a column mapping from a foreign key's column mapping table: 'foreignKeys/0/mappings/0'.
 		 */
 		export type DesignerEditPath = string;
 

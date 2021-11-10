@@ -36,6 +36,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { DesignerScriptEditor } from 'sql/workbench/browser/designer/designerScriptEditor';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { joinPath, splitPath } from 'sql/workbench/browser/designer/designerEditPathUtils';
 
 export interface IDesignerStyle {
 	tabbedPanelStyles?: ITabbedPanelStyles;
@@ -93,7 +94,7 @@ export class Designer extends Disposable implements IThemable {
 				valueSetter: (parentPath: string, row: number, item: DesignerTableComponentRowData, column: Slick.Column<Slick.SlickData>, value: string): void => {
 					this.handleEdit({
 						type: DesignerEditType.Update,
-						path: this.joinPath(parentPath, row, column.field),
+						path: joinPath(parentPath, row, column.field),
 						value: value
 					});
 				},
@@ -295,7 +296,7 @@ export class Designer extends Disposable implements IThemable {
 				this.updateComponentValues();
 				if (edit.type === DesignerEditType.Add) {
 					// For tables in the main view, move focus to the first cell of the newly added row, and the properties pane will be showing the new object.
-					const pathSegments = this.splitPath(edit.path);
+					const pathSegments = splitPath(edit.path);
 					if (pathSegments.length === 1) {
 						const tableData = this._input.viewModel[pathSegments[0]] as DesignerTableProperties;
 						const table = this._componentMap.get(pathSegments[0]).component as Table<Slick.SlickData>;
@@ -375,7 +376,7 @@ export class Designer extends Disposable implements IThemable {
 		let type: string;
 		let components: DesignerDataPropertyInfo[];
 		let objectViewModel: DesignerViewModel;
-		const pathSegments = this.splitPath(objectPath);
+		const pathSegments = splitPath(objectPath);
 		if (pathSegments.length === 0) { // root object
 			type = this._input.objectTypeDisplayName;
 			components = [];
@@ -536,7 +537,7 @@ export class Designer extends Disposable implements IThemable {
 		componentMap: Map<string, { defintion: DesignerDataPropertyInfo, component: DesignerUIComponent }>,
 		setWidth: boolean,
 		isMainView: boolean): DesignerUIComponent {
-		const propertyPath = this.joinPath(parentPath, componentDefinition.propertyName);
+		const propertyPath = joinPath(parentPath, componentDefinition.propertyName);
 		let component: DesignerUIComponent;
 		switch (componentDefinition.componentType) {
 			case 'input':
@@ -636,7 +637,7 @@ export class Designer extends Disposable implements IThemable {
 							checkboxColumn.onChange((e) => {
 								this.handleEdit({
 									type: DesignerEditType.Update,
-									path: this.joinPath(propertyPath, e.row, propertyDefinition.propertyName),
+									path: joinPath(propertyPath, e.row, propertyDefinition.propertyName),
 									value: e.value
 								});
 							});
@@ -671,7 +672,7 @@ export class Designer extends Disposable implements IThemable {
 					deleteRowColumn.onClick((e) => {
 						this.handleEdit({
 							type: DesignerEditType.Remove,
-							path: this.joinPath(propertyPath, e.row)
+							path: joinPath(propertyPath, e.row)
 						});
 					});
 					table.registerPlugin(deleteRowColumn);
@@ -684,7 +685,7 @@ export class Designer extends Disposable implements IThemable {
 				if (isMainView === true) {
 					table.grid.onActiveCellChanged.subscribe((e, data) => {
 						if (data.row !== undefined) {
-							this.updatePropertiesPane(this.joinPath(propertyPath, data.row));
+							this.updatePropertiesPane(joinPath(propertyPath, data.row));
 						} else {
 							this.updatePropertiesPane(DesignerRootObjectPath);
 						}
@@ -736,13 +737,5 @@ export class Designer extends Disposable implements IThemable {
 		if (this._input.designerUIState) {
 			this._tabbedPanel.showTab(this._input.designerUIState.activeTabId);
 		}
-	}
-
-	private joinPath(...parts: (string | number)[]): string {
-		return parts.filter(s => s !== '').join('/');
-	}
-
-	private splitPath(path: DesignerEditPath = DesignerRootObjectPath): string[] {
-		return path.split('/').filter(s => s !== '');
 	}
 }
