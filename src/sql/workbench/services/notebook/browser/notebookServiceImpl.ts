@@ -325,7 +325,7 @@ export class NotebookService extends Disposable implements INotebookService {
 
 	private handleNewProviderDescriptions(p: { id: string; registration: ProviderDescriptionRegistration }) {
 		let registration = p.registration;
-		if (registration.fileExtensions) {
+		if (registration.fileExtensions?.length > 0) {
 			let extensions = registration.fileExtensions;
 			if (!this._serializationProviders.has(p.id)) {
 				// Only add a new provider descriptor if the provider
@@ -335,12 +335,11 @@ export class NotebookService extends Disposable implements INotebookService {
 					this._serializationProviders.set(p.id, new SerializationProviderDescriptor(p.id));
 				}
 			}
-
 			for (let fileType of extensions) {
 				this.addFileProvider(fileType, registration);
 			}
 		}
-		if (registration.standardKernels) {
+		if (registration.standardKernels?.length > 0) {
 			if (!this._executeProviders.has(p.id)) {
 				this._executeProviders.set(p.id, new ExecuteProviderDescriptor(p.id));
 			}
@@ -435,14 +434,12 @@ export class NotebookService extends Disposable implements INotebookService {
 		return Array.from(this._fileToProviderDescriptions.keys());
 	}
 
-	getProvidersForFileType(fileType: string): string[] {
-		fileType = fileType.toUpperCase();
-		let providers = this._fileToProviderDescriptions.get(fileType);
-
-		return providers ? providers.map(provider => provider.provider) : undefined;
+	getProvidersForFileType(fileType: string): string[] | undefined {
+		let providers = this._fileToProviderDescriptions.get(fileType.toUpperCase());
+		return providers?.map(provider => provider.provider);
 	}
 
-	getStandardKernelsForProvider(provider: string): nb.IStandardKernel[] {
+	getStandardKernelsForProvider(provider: string): nb.IStandardKernel[] | undefined {
 		return this._providerToStandardKernels.get(provider.toUpperCase());
 	}
 

@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { DesignerTextEditor } from 'sql/base/browser/ui/designer/interfaces';
+import { DesignerTextEditor } from 'sql/workbench/browser/designer/interfaces';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Schemas } from 'vs/base/common/network';
 import { URI } from 'vs/base/common/uri';
@@ -30,10 +30,10 @@ import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
 import { ITextEditorOptions } from 'vs/platform/editor/common/editor';
 import { onUnexpectedError } from 'vs/base/common/errors';
 
-class TableDesignerCodeEditor extends CodeEditorWidget {
+class DesignerCodeEditor extends CodeEditorWidget {
 }
 
-export class TableDesignerTextEditor extends BaseTextEditor implements DesignerTextEditor {
+export class DesignerScriptEditor extends BaseTextEditor implements DesignerTextEditor {
 	private _content: string;
 	private _contentChangeEventEmitter: Emitter<string> = new Emitter<string>();
 	readonly onDidContentChange: Event<string> = this._contentChangeEventEmitter.event;
@@ -54,7 +54,7 @@ export class TableDesignerTextEditor extends BaseTextEditor implements DesignerT
 		@IEditorService editorService: IEditorService,
 		@IEditorGroupsService editorGroupService: IEditorGroupsService
 	) {
-		super(TableDesignerTextEditor.ID, telemetryService, instantiationService, storageService, configurationService, themeService, editorService, editorGroupService);
+		super(DesignerScriptEditor.ID, telemetryService, instantiationService, storageService, configurationService, themeService, editorService, editorGroupService);
 		this.create(this._container);
 		this.setVisible(true);
 		this._untitledTextEditorModel = this.instantiationService.createInstance(UntitledTextEditorModel, URI.from({ scheme: Schemas.untitled }), false, undefined, 'sql', undefined);
@@ -66,7 +66,7 @@ export class TableDesignerTextEditor extends BaseTextEditor implements DesignerT
 	}
 
 	public override createEditorControl(parent: HTMLElement, configuration: IEditorOptions): editorCommon.IEditor {
-		return this.instantiationService.createInstance(TableDesignerCodeEditor, parent, configuration, {});
+		return this.instantiationService.createInstance(DesignerCodeEditor, parent, configuration, {});
 	}
 
 	protected override getConfigurationOverrides(): IEditorOptions {
