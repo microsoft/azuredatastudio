@@ -151,7 +151,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	public get serializationManager(): ISerializationManager | undefined {
 		let manager = this.serializationManagers.find(manager => manager.providerId === this._providerId);
 		if (!manager) {
-			manager = this.serializationManagers.find(manager => manager.providerId === DEFAULT_NOTEBOOK_PROVIDER);
+			manager = this.serializationManagers.find(manager => manager.providerId === SQL_NOTEBOOK_PROVIDER);
 		}
 		return manager;
 	}
@@ -167,9 +167,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	public get executeManager(): IExecuteManager | undefined {
 		let manager = this.executeManagers.find(manager => manager.providerId === this._providerId);
 		if (!manager) {
-			// Note: this seems like a less than ideal scenario. We should ideally pass in the "correct" provider ID and allow there to be a default,
-			// instead of assuming in the NotebookModel constructor that the option is either SQL or Jupyter
-			manager = this.executeManagers.find(manager => manager.providerId === DEFAULT_NOTEBOOK_PROVIDER);
+			manager = this.executeManagers.find(manager => manager.providerId === SQL_NOTEBOOK_PROVIDER);
 		}
 		return manager;
 	}
