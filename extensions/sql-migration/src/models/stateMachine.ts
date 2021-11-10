@@ -36,7 +36,7 @@ export enum State {
 	EXIT,
 }
 
-export enum MigrationTargetType {
+export enum MigrationTargetType {			//
 	SQLVM = 'AzureSqlVirtualMachine',
 	SQLMI = 'AzureSqlManagedInstance',
 	SQLDB = 'AzureSqlDatabase'
@@ -179,7 +179,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	private _skuRecommendations: SKURecommendations | undefined;
 	public _assessmentResults!: ServerAssessment;
-	public _skuRecommendationResults!: SkuRecommendation[];
+	public _sqlDbSkuRecommendationResults!: SkuRecommendation[];
+	public _sqlMiSkuRecommendationResults!: SkuRecommendation[];
+	public _sqlVmSkuRecommendationResults!: SkuRecommendation[];
 	public _runAssessments: boolean = true;
 	private _assessmentApiResponse!: mssql.AssessmentResult;
 	private _skuRecommendationApiResponse!:mssql.SkuRecommendationsResult
@@ -318,18 +320,30 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			this._skuRecommendationApiResponse = response;
 			console.log("raw API response:");
 			console.log(this._skuRecommendationApiResponse);
-			console.log("results:")
-			console.log(response?.recommendationResults)
-			if (response?.recommendationResults) {
-				console.log("yes")
-				this._skuRecommendationResults = response?.recommendationResults.map(r => {
+			// console.log("results:")
+			// console.log(response?.recommendationResults)
+			if (response?.sqlDbRecommendationResults && response?.sqlMiRecommendationResults && response?.sqlVmRecommendationResults) {
+				console.log("sqldb, sqlmi, and sqlvm all returned results")
+				this._sqlDbSkuRecommendationResults = response?.sqlDbRecommendationResults.map(r => {
 					return {
-						resultText: r.sqlInstanceName + ": " + r.targetSku.computeSize 		//
+						resultText: r.databaseName + ": " + r.targetSku.computeSize + " " + r.targetSku.category.sqlServiceTier		//
 					};
-				}) ?? ["fail"]
+				}) ?? []
+				this._sqlMiSkuRecommendationResults = response?.sqlMiRecommendationResults.map(r => {
+					return {
+						resultText: r.sqlInstanceName + ": " + r.targetSku.computeSize + " " + r.targetSku.category.sqlServiceTier		//
+					};
+				}) ?? []
+				this._sqlVmSkuRecommendationResults = response?.sqlVmRecommendationResults.map(r => {
+					return {
+						resultText: r.sqlInstanceName + ": " + r.targetSku.computeSize + " " + r.targetSku.category.sqlServiceTier		//
+					};
+				}) ?? []
 			} else {
-				console.log("no")
-				this._skuRecommendationResults = []
+				console.log("no results returned")
+				this._sqlDbSkuRecommendationResults = []
+				this._sqlMiSkuRecommendationResults = []
+				this._sqlVmSkuRecommendationResults = []
 			}
 
 		} catch (error) {
@@ -337,7 +351,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		}
 
 		// this.generateAssessmentTelemetry().catch(e => console.error(e));
-		return this._skuRecommendationResults;
+		return this._sqlDbSkuRecommendationResults.concat(this._sqlMiSkuRecommendationResults, this._sqlVmSkuRecommendationResults);
 	}
 
 	private async generateAssessmentTelemetry(): Promise<void> {

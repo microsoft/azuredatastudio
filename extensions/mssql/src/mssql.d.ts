@@ -639,7 +639,10 @@ export interface SkuRecommendationResult
 }
 
 export interface SkuRecommendationsResult {
-	recommendationResults: SkuRecommendationResult[];
+	sqlDbRecommendationResults: SkuRecommendationResult[];
+	sqlMiRecommendationResults: SkuRecommendationResult[];
+	sqlVmRecommendationResults: SkuRecommendationResult[];
+
 }
 
 export interface ISqlMigrationService {
