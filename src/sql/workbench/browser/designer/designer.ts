@@ -36,7 +36,6 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { DesignerScriptEditor } from 'sql/workbench/browser/designer/designerScriptEditor';
 import { INotificationService } from 'vs/platform/notification/common/notification';
-import { joinPath, splitPath } from 'sql/workbench/browser/designer/designerEditPathUtils';
 
 export interface IDesignerStyle {
 	tabbedPanelStyles?: ITabbedPanelStyles;
@@ -91,10 +90,10 @@ export class Designer extends Disposable implements IThemable {
 				valueGetter: (item, column): string => {
 					return item[column.field].value;
 				},
-				valueSetter: (parentPath: string, row: number, item: DesignerTableComponentRowData, column: Slick.Column<Slick.SlickData>, value: string): void => {
+				valueSetter: (parentPath: DesignerEditPath, row: number, item: DesignerTableComponentRowData, column: Slick.Column<Slick.SlickData>, value: string): void => {
 					this.handleEdit({
 						type: DesignerEditType.Update,
-						path: joinPath(parentPath, row, column.field),
+						path: [...parentPath, row, column.field],
 						value: value
 					});
 				},
@@ -296,10 +295,10 @@ export class Designer extends Disposable implements IThemable {
 				this.updateComponentValues();
 				if (edit.type === DesignerEditType.Add) {
 					// For tables in the main view, move focus to the first cell of the newly added row, and the properties pane will be showing the new object.
-					const pathSegments = splitPath(edit.path);
-					if (pathSegments.length === 1) {
-						const tableData = this._input.viewModel[pathSegments[0]] as DesignerTableProperties;
-						const table = this._componentMap.get(pathSegments[0]).component as Table<Slick.SlickData>;
+					if (edit.path.length === 1) {
+						const propertyName = edit.path[0] as string;
+						const tableData = this._input.viewModel[propertyName] as DesignerTableProperties;
+						const table = this._componentMap.get(propertyName).component as Table<Slick.SlickData>;
 						table.setActiveCell(tableData.data.length - 1, 0);
 					}
 				} else if (edit.type === DesignerEditType.Update) {
@@ -376,8 +375,7 @@ export class Designer extends Disposable implements IThemable {
 		let type: string;
 		let components: DesignerDataPropertyInfo[];
 		let objectViewModel: DesignerViewModel;
-		const pathSegments = splitPath(objectPath);
-		if (pathSegments.length === 0) { // root object
+		if (objectPath.length === 0) { // root object
 			type = this._input.objectTypeDisplayName;
 			components = [];
 			components.push(...this._input.view.components);
@@ -385,9 +383,9 @@ export class Designer extends Disposable implements IThemable {
 				components.push(...tab.components);
 			});
 			objectViewModel = this._input.viewModel;
-		} else if (pathSegments.length === 2) { // second level object
-			const parentPropertyName = pathSegments[0];
-			const objectIndex = parseInt(pathSegments[1]);
+		} else if (objectPath.length === 2) { // second level object
+			const parentPropertyName = objectPath[0] as string;
+			const objectIndex = objectPath[1] as number;
 			const tableData = this._input.viewModel[parentPropertyName] as DesignerTableProperties;
 			const tableProperties = this._componentMap.get(parentPropertyName).defintion.componentProperties as DesignerTableProperties;
 			objectViewModel = tableData.data[objectIndex] as DesignerViewModel;
@@ -537,7 +535,7 @@ export class Designer extends Disposable implements IThemable {
 		componentMap: Map<string, { defintion: DesignerDataPropertyInfo, component: DesignerUIComponent }>,
 		setWidth: boolean,
 		isMainView: boolean): DesignerUIComponent {
-		const propertyPath = joinPath(parentPath, componentDefinition.propertyName);
+		const propertyPath = [...parentPath, componentDefinition.propertyName];
 		let component: DesignerUIComponent;
 		switch (componentDefinition.componentType) {
 			case 'input':
@@ -637,7 +635,7 @@ export class Designer extends Disposable implements IThemable {
 							checkboxColumn.onChange((e) => {
 								this.handleEdit({
 									type: DesignerEditType.Update,
-									path: joinPath(propertyPath, e.row, propertyDefinition.propertyName),
+									path: [...propertyPath, e.row, propertyDefinition.propertyName],
 									value: e.value
 								});
 							});
@@ -647,7 +645,7 @@ export class Designer extends Disposable implements IThemable {
 							return {
 								name: dropdownProperties.title,
 								field: propertyDefinition.propertyName,
-								editor: this._tableCellEditorFactory.getSelectBoxEditorClass(componentDefinition.propertyName, dropdownProperties.values as string[]),
+								editor: this._tableCellEditorFactory.getSelectBoxEditorClass(propertyPath, dropdownProperties.values as string[]),
 								width: dropdownProperties.width as number
 							};
 						default:
@@ -655,7 +653,7 @@ export class Designer extends Disposable implements IThemable {
 							return {
 								name: inputProperties.title,
 								field: propertyDefinition.propertyName,
-								editor: this._tableCellEditorFactory.getTextEditorClass(componentDefinition.propertyName, inputProperties.inputType),
+								editor: this._tableCellEditorFactory.getTextEditorClass(propertyPath, inputProperties.inputType),
 								width: inputProperties.width as number
 							};
 					}
@@ -672,7 +670,7 @@ export class Designer extends Disposable implements IThemable {
 					deleteRowColumn.onClick((e) => {
 						this.handleEdit({
 							type: DesignerEditType.Remove,
-							path: joinPath(propertyPath, e.row)
+							path: [...propertyPath, e.row]
 						});
 					});
 					table.registerPlugin(deleteRowColumn);
@@ -685,7 +683,7 @@ export class Designer extends Disposable implements IThemable {
 				if (isMainView === true) {
 					table.grid.onActiveCellChanged.subscribe((e, data) => {
 						if (data.row !== undefined) {
-							this.updatePropertiesPane(joinPath(propertyPath, data.row));
+							this.updatePropertiesPane([...propertyPath, data.row]);
 						} else {
 							this.updatePropertiesPane(DesignerRootObjectPath);
 						}

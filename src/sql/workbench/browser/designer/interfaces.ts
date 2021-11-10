@@ -198,8 +198,8 @@ export interface DesignerEdit {
 	value?: any;
 }
 
-export type DesignerEditPath = string;
-export const DesignerRootObjectPath: string = '';
+export type DesignerEditPath = (string | number)[];
+export const DesignerRootObjectPath: DesignerEditPath = [];
 
 export interface DesignerEditResult {
 	isValid: boolean;
