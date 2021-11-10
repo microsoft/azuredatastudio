@@ -915,10 +915,10 @@ export class Project implements ISqlProject {
 		// if it's still included by a glob
 		if (this.isMsbuildSdkStyleProject) {
 			await this.serializeToProjFile(this.projFileXmlDoc);
-			await this.readProjFile();
+			const currentFiles = await this.getFilesInProject(false);
 
 			// only add a node to exclude the file if it's still included by a glob
-			if (this.files.find(f => f.relativePath === utils.convertSlashesForSqlProj(path))) {
+			if (currentFiles.has(utils.convertSlashesForSqlProj(path))) {
 				const removeFileNode = this.projFileXmlDoc!.createElement(constants.Build);
 				removeFileNode.setAttribute(constants.Remove, utils.convertSlashesForSqlProj(path));
 				this.findOrCreateItemGroup(constants.Build).appendChild(removeFileNode);
@@ -1272,6 +1272,9 @@ export class Project implements ISqlProject {
 		}); // TODO: replace <any>
 
 		await fs.writeFile(this._projectFilePath, xml);
+
+		// update projFileXmlDoc since the file was updated
+		this.projFileXmlDoc = new xmldom.DOMParser().parseFromString(xml);
 	}
 
 	/**
