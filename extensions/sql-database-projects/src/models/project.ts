@@ -159,7 +159,6 @@ export class Project implements ISqlProject {
 	/**
 	 * Gets all the files specified by <Build Inlude="..."> and removes all the files specified by <Build Remove="...">
 	 * and all files included by the default glob of the folder of the sqlproj if it's an msbuild sdk style project
-	 * @returns Set of files included in project as specified by the sqlproj
 	 */
 	async loadFilesInProject(): Promise<void> {
 		const filesSet: Set<string> = new Set();
