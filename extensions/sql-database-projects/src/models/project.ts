@@ -892,7 +892,7 @@ export class Project implements ISqlProject {
 		itemGroup.appendChild(newFileNode);
 	}
 
-	private removeFileFromProjFile(path: string): void {
+	private async removeFileFromProjFile(path: string): Promise<void> {
 		const fileNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Build);
 		const preDeployNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.PreDeploy);
 		const postDeployNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.PostDeploy);
@@ -900,12 +900,31 @@ export class Project implements ISqlProject {
 		const nodes = [fileNodes, preDeployNodes, postDeployNodes, noneNodes];
 
 		let deleted = false;
+
+		// remove the <Build Include="..."> entry if there is one
 		for (let i = 0; i < nodes.length; i++) {
 			deleted = this.removeNode(path, nodes[i]);
 
-			if (deleted) {
+			// still might need to add a <Build Remove="..."> node if this is an msbuild sdk style project
+			if (deleted && !this.isMsbuildSdkStyleProject) {
 				return;
 			}
+		}
+
+		// if it's an msbuild sdk style project, we'll need to add a <Build Remove="..."> entry to remove this file
+		// if it's still included by a glob
+		if (this.isMsbuildSdkStyleProject) {
+			await this.serializeToProjFile(this.projFileXmlDoc);
+			await this.readProjFile();
+
+			// only add a node to exclude the file if it's still included by a glob
+			if (this.files.find(f => f.relativePath === utils.convertSlashesForSqlProj(path))) {
+				const removeFileNode = this.projFileXmlDoc!.createElement(constants.Build);
+				removeFileNode.setAttribute(constants.Remove, utils.convertSlashesForSqlProj(path));
+				this.findOrCreateItemGroup(constants.Build).appendChild(removeFileNode);
+			}
+
+			return;
 		}
 
 		throw new Error(constants.unableToFindObject(path, constants.fileObject));
@@ -1226,7 +1245,7 @@ export class Project implements ISqlProject {
 		for (const entry of entries) {
 			switch (entry.type) {
 				case EntryType.File:
-					this.removeFileFromProjFile((<FileProjectEntry>entry).relativePath);
+					await this.removeFileFromProjFile((<FileProjectEntry>entry).relativePath);
 					break;
 				case EntryType.Folder:
 					this.removeFolderFromProjFile((<FileProjectEntry>entry).relativePath);
