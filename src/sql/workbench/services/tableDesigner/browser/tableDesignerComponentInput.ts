@@ -87,6 +87,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		try {
 			this.updateState(this.valid, this.dirty, 'save');
 			await this._provider.saveTable(this._tableInfo, this._viewModel);
+			this._originalViewModel = this._viewModel;
 			this.updateState(true, false);
 			notificationHandle.updateMessage(localize('tableDesigner.savedChangeSuccess', "The changes have been successfully saved."));
 		} catch (error) {
