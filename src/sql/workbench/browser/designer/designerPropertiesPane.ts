@@ -4,18 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { CreateComponentsFunc, DesignerUIComponent, SetComponentValueFunc } from 'sql/workbench/browser/designer/designer';
-import { DesignerViewModel, DesignerDataPropertyInfo } from 'sql/workbench/browser/designer/interfaces';
+import { DesignerViewModel, DesignerDataPropertyInfo, DesignerEditPath } from 'sql/workbench/browser/designer/interfaces';
 import * as DOM from 'vs/base/browser/dom';
 import { equals } from 'vs/base/common/objects';
 import { localize } from 'vs/nls';
 
-export type PropertiesPaneObjectContext = 'root' | {
-	parentProperty: string;
-	index: number;
-};
-
 export interface ObjectInfo {
-	context: PropertiesPaneObjectContext;
+	path: DesignerEditPath;
 	type: string;
 	components: DesignerDataPropertyInfo[];
 	viewModel: DesignerViewModel;
@@ -24,7 +19,7 @@ export interface ObjectInfo {
 export class DesignerPropertiesPane {
 	private _titleElement: HTMLElement;
 	private _contentElement: HTMLElement;
-	private _currentContext?: PropertiesPaneObjectContext;
+	private _objectPath: DesignerEditPath;
 	private _componentMap = new Map<string, { defintion: DesignerDataPropertyInfo, component: DesignerUIComponent }>();
 	private _groupHeaders: HTMLElement[] = [];
 
@@ -43,8 +38,8 @@ export class DesignerPropertiesPane {
 		return this._componentMap;
 	}
 
-	public get context(): PropertiesPaneObjectContext | undefined {
-		return this._currentContext;
+	public get objectPath(): DesignerEditPath {
+		return this._objectPath;
 	}
 
 	public clear(): void {
@@ -54,20 +49,14 @@ export class DesignerPropertiesPane {
 		this._componentMap.clear();
 		this._groupHeaders = [];
 		DOM.clearNode(this._contentElement);
-		this._currentContext = undefined;
+		this._objectPath = undefined;
 	}
 
 	public show(item: ObjectInfo): void {
-		if (!equals(item.context, this._currentContext)) {
+		if (!equals(item.path, this._objectPath)) {
 			this.clear();
-			this._currentContext = item.context;
-			this._createComponents(this._contentElement, item.components, (property) => {
-				return this._currentContext === 'root' ? property.propertyName : {
-					parentProperty: this._currentContext.parentProperty,
-					index: this._currentContext.index,
-					property: property.propertyName
-				};
-			});
+			this._objectPath = item.path;
+			this._createComponents(this._contentElement, item.components, this.objectPath);
 		}
 		this._titleElement.innerText = localize({
 			key: 'tableDesigner.propertiesPaneTitleWithContext',

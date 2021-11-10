@@ -1176,6 +1176,10 @@ declare module 'azdata' {
 			 */
 			group?: string;
 			/**
+			 * Whether the property should be displayed in the properties view. The default value is true.
+			 */
+			showInPropertiesView?: boolean;
+			/**
 			 * The properties of the component.
 			 */
 			componentProperties: InputBoxProperties | CheckBoxProperties | DropDownProperties | DesignerTableProperties;
@@ -1255,9 +1259,9 @@ declare module 'azdata' {
 			 */
 			type: DesignerEditType;
 			/**
-			 * the property that was edited
+			 * the path of the edit target.
 			 */
-			property: DesignerEditIdentifier;
+			path: DesignerEditPath;
 			/**
 			 * the new value
 			 */
@@ -1265,9 +1269,20 @@ declare module 'azdata' {
 		}
 
 		/**
-		 * The identifier of a property. The value is string typed if the property belongs to the root object, otherwise the type of the value is an object.
+		 * The path of the edit target.
+		 * Table designer support nested tables, Below are the 3 scenarios and their expected path format.
+		 * 1. 'Add' scenario
+		 *    a. Level1Property. example: add a column to the columns property.
+		 *    b. Level1Property/index1/Level2Property. example: add a column mapping to a foreign key.
+		 * 2. 'Update' scenario
+		 *    a. Level1Property. example: update the name of the table.
+		 *    b. Level1Property/index1/Level2Property. example: update the name of a column.
+		 *    c. Level1Property/index1/Level2Property/index2/Level3Property. example: update the source column of an entry in a foreign key's column mapping table.
+		 * 3. 'Remove' scenario
+		 *    a. Level1Property/index1. example: remove a column from the columns property.
+		 *    b. Level1Property/index1/Level2Property/index2: Example: remove a column mapping from a foreign key's column mapping table.
 		 */
-		export type DesignerEditIdentifier = string | { parentProperty: string, index: number, property: string };
+		export type DesignerEditPath = string;
 
 		/**
 		 * The result returned by the table designer provider after handling an edit request.
@@ -1284,7 +1299,7 @@ declare module 'azdata' {
 			/**
 			 * Error messages of current state, and the property the caused the error.
 			 */
-			errors?: { message: string, property?: DesignerEditIdentifier }[];
+			errors?: { message: string, property?: DesignerEditPath }[];
 		}
 	}
 }
