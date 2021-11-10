@@ -973,10 +973,21 @@ describe('Project: Msbuild sdk style project content operations', function (): v
 		await project.exclude(project.files.find(f => f.relativePath === '..\\other\\file1.sql')!);
 		should(project.files.filter(f => f.relativePath === '..\\other\\file1.sql').length).equal(0);
 
-		// make sure a <Build Remove="folder\file1.sql"> was added
-		// const projFileText = (await fs.readFile(projFilePath)).toString();
-		// should(projFileText.includes('<Build Remove="folder\\file1.sql"')).equal(true);
+		// exclude glob included file from an outside folder
+		should(project.files.filter(f => f.relativePath === '..\\other\\folder1\\test2.sql').length).equal(1);
+		await project.exclude(project.files.find(f => f.relativePath === '..\\other\\folder1\\test2.sql')!);
+		should(project.files.filter(f => f.relativePath === '..\\other\\folder1\\test2.sql').length).equal(0);
 
+		// make sure a <Build Remove="folder\file1.sql"> was added
+		const projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText.includes('<Build Remove="folder1\\file1.sql" />')).equal(true, projFileText);
+
+		// make sure  <Build Include="..\other\file1.sql"> was removed and no <Build Remove"..."> was added for it
+		should(projFileText.includes('<Build Include="..\\other\\file1.sql" />')).equal(false, projFileText);
+		should(projFileText.includes('<Build Remove="..\\other\\file1.sql" />')).equal(false, projFileText);
+
+		// make sure a <Build Remove="..\other\folder1\test2.sql"> was added
+		should(projFileText.includes('<Build Remove="..\\other\\folder1\\test2.sql" />')).equal(true, projFileText);
 	});
 });
 
