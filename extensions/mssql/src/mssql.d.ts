@@ -602,22 +602,63 @@ export interface AssessmentResult {
 	errors: ErrorModel[];
 }
 
+//
+
+export enum AzureSqlPaaSServiceTier {
+	GeneralPurpose = 0,
+	BusinessCritical = 1,
+	HyperScale = 2
+}
+
+export enum ComputeTier {
+	Provisioned = 0,
+	ServerLess = 1,
+}
+
 export interface AzureSqlSkuCategory
 {
-	sqlTargetPlatform: string;		//
-	computeTier: string;			//
-	sqlPurchasingModel: string;
-	sqlServiceTier: string;
-	hardwareType: string;
+	sqlTargetPlatform: number;		//
+	computeTier: number;			//
+	sqlPurchasingModel: number;
+	sqlServiceTier: number;
+	hardwareType: number;
+}
+
+export interface AzureManagedDiskSku
+{
+	tier: string;
+	size: string;
+	caching: string;
+}
+
+export interface AzureVirtualMachineSku
+{
+	virtualMachineFamily: string;
+	sizeName: string;
+	computeSize: number;
+	azureSkuName: string;
+	vCPUsAvailable: number;
 }
 
 export interface AzureSqlSku
 {
+	// AzureSqlSku
 	category: AzureSqlSkuCategory;
 	computeSize: number;
+
+	// class AzureSqlPaaSSku : AzureSqlSku
 	predictedDataSizeInMb: number;
 	predictedLogSizeInMb: number;
 	storageMaxSizeInMb: number;
+
+	// class AzureSqlIaaSSku : AzureSqlSku
+	virtualMachineSize: AzureVirtualMachineSku;
+    dataDiskSizes: AzureManagedDiskSku[];
+    logDiskSizes: AzureManagedDiskSku[];
+    tempDbDiskSizes: AzureManagedDiskSku[];
+	// predictedDataSizeInMb: number;
+	// predictedLogSizeInMb: number;
+
 }
 
 export interface AzureSqlSkuMonthlyCost

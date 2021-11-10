@@ -307,6 +307,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		databaseAllowList: string[],
 		databaseDenyList: string[]) : Promise<SkuRecommendation[]> {		/////
 		try {
+			console.log("starting sku rec");
 			const response = (await this.migrationService.getSkuRecommendations(perfQueryIntervalInSec,
 				targetPlatform,
 				targetSqlInstance,
@@ -320,23 +321,22 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			this._skuRecommendationApiResponse = response;
 			console.log("raw API response:");
 			console.log(this._skuRecommendationApiResponse);
-			// console.log("results:")
-			// console.log(response?.recommendationResults)
+
 			if (response?.sqlDbRecommendationResults && response?.sqlMiRecommendationResults && response?.sqlVmRecommendationResults) {
 				console.log("sqldb, sqlmi, and sqlvm all returned results")
 				this._sqlDbSkuRecommendationResults = response?.sqlDbRecommendationResults.map(r => {
 					return {
-						resultText: r.databaseName + ": " + r.targetSku.computeSize + " " + r.targetSku.category.sqlServiceTier		//
+						resultText: r.databaseName + ": " + r.targetSku.computeSize + " core " + mssql.AzureSqlPaaSServiceTier[r.targetSku.category.sqlServiceTier]		//
 					};
 				}) ?? []
 				this._sqlMiSkuRecommendationResults = response?.sqlMiRecommendationResults.map(r => {
 					return {
-						resultText: r.sqlInstanceName + ": " + r.targetSku.computeSize + " " + r.targetSku.category.sqlServiceTier		//
+						resultText: r.sqlInstanceName + ": " + r.targetSku.computeSize + " core " + mssql.AzureSqlPaaSServiceTier[r.targetSku.category.sqlServiceTier]		//
 					};
 				}) ?? []
 				this._sqlVmSkuRecommendationResults = response?.sqlVmRecommendationResults.map(r => {
 					return {
-						resultText: r.sqlInstanceName + ": " + r.targetSku.computeSize + " " + r.targetSku.category.sqlServiceTier		//
+						resultText: r.sqlInstanceName + ": " + r.targetSku.virtualMachineSize.vCPUsAvailable + " core " + r.targetSku.virtualMachineSize.azureSkuName		//
 					};
 				}) ?? []
 			} else {

@@ -798,7 +798,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		if (this.migrationStateModel._assessmentResults) {
 			const dbCount = this.migrationStateModel._assessmentResults?.databaseAssessments?.length;
 			const dbWithoutIssuesCount = this.migrationStateModel._assessmentResults?.databaseAssessments?.filter(db => db.issues?.length === 0).length;
-			this._rbg.cards[0].descriptions[1].textValue = constants.CAN_BE_MIGRATED(dbWithoutIssuesCount, dbCount, this.migrationStateModel._sqlMiSkuRecommendationResults[0].resultText);		//
+			this._rbg.cards[0].descriptions[1].textValue = constants.CAN_BE_MIGRATED(dbWithoutIssuesCount, dbCount, this.migrationStateModel._sqlMiSkuRecommendationResults[0].resultText + " " + this.migrationStateModel._sqlDbSkuRecommendationResults.map(r => r.resultText).join(" / "));		//
 			this._rbg.cards[1].descriptions[1].textValue = constants.CAN_BE_MIGRATED(dbCount, dbCount, this.migrationStateModel._sqlVmSkuRecommendationResults[0].resultText);
 
 			await this._rbg.updateProperties({ cards: this._rbg.cards });
