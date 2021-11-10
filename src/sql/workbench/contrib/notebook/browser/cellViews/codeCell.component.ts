@@ -38,7 +38,6 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 		this._model.updateActiveCell(undefined);
 	}
 
-	private _model: NotebookModel;
 	private _activeCellId: string;
 
 	public inputDeferred: Deferred<string>;

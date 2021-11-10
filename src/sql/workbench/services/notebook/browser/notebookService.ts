@@ -199,11 +199,13 @@ export class NotebookRange extends Range {
 	}
 	cell: ICellModel;
 	isMarkdownSourceCell: boolean;
+	isCodeOutput: boolean;
 
-	constructor(cell: ICellModel, startLineNumber: number, startColumn: number, endLineNumber: number, endColumn: number, markdownEditMode?: boolean) {
+	constructor(cell: ICellModel, startLineNumber: number, startColumn: number, endLineNumber: number, endColumn: number, markdownEditMode?: boolean, codeOutput?: boolean) {
 		super(startLineNumber, startColumn, endLineNumber, endColumn);
 		this.updateActiveCell(cell);
 		this.isMarkdownSourceCell = markdownEditMode ? markdownEditMode : false;
+		this.isCodeOutput = codeOutput ? codeOutput : false;
 	}
 }
 

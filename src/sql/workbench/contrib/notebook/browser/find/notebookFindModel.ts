@@ -25,6 +25,7 @@ import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { ActiveEditorContext } from 'vs/workbench/common/editor';
 import { NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
+import { nb } from 'azdata';
 
 function _normalizeOptions(options: model.IModelDecorationOptions): ModelDecorationOptions {
 	if (options instanceof ModelDecorationOptions) {
@@ -569,6 +570,42 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 					});
 				}
 			}
+		}
+		if (cell.cellType === 'code' && cell.outputs.length > 0) {
+			cell.outputs.forEach(output => {
+				let findStartResults: number[] = [];
+				switch (output.output_type) {
+					case 'stream':
+						let cellValFormatted = output as nb.IStreamResult;
+						findStartResults = this.search(cellValFormatted.text.toString(), exp, matchCase, wholeWord, maxMatches - findResults.length);
+						findStartResults?.forEach(start => {
+							// lineNumber: j+1 since notebook editors aren't zero indexed.
+							let range = new NotebookRange(cell, 0, start, 0, start + exp.length, false, true);
+							findResults.push(range);
+						});
+						break;
+					case 'error':
+						let errorValue = output as nb.IErrorResult;
+						findStartResults = this.search(errorValue.traceback.toString(), exp, matchCase, wholeWord, maxMatches - findResults.length);
+						findStartResults.forEach(start => {
+							// lineNumber: j+1 since notebook editors aren't zero indexed.
+							let range = new NotebookRange(cell, 0, start, 0, start + exp.length, false, true);
+							findResults.push(range);
+						});
+						break;
+					case 'execute_result':
+						let executeResult = output as nb.IExecuteResult;
+						findStartResults = this.search(executeResult.data, exp, matchCase, wholeWord, maxMatches - findResults.length);
+						findStartResults?.forEach(start => {
+							// lineNumber: j+1 since notebook editors aren't zero indexed.
+							let range = new NotebookRange(cell, 0, start, 0, start + exp.length, false, true);
+							findResults.push(range);
+						});
+						break;
+					default:
+						break;
+				}
+			});
 		}
 		return findResults;
 	}

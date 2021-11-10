@@ -20,6 +20,7 @@ import { localize } from 'vs/nls';
 import * as types from 'vs/base/common/types';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { CellView } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
+import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 
 export const OUTPUT_SELECTOR: string = 'output-component';
 const USER_SELECT_CLASS = 'actionselect';
@@ -46,7 +47,8 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 		@Inject(IThemeService) private _themeService: IThemeService,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeref: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _ref: ElementRef,
-		@Inject(forwardRef(() => ComponentFactoryResolver)) private _componentFactoryResolver: ComponentFactoryResolver
+		@Inject(forwardRef(() => ComponentFactoryResolver)) private _componentFactoryResolver: ComponentFactoryResolver,
+		@Inject(INotebookService) override _notebookService: INotebookService
 	) {
 		super();
 	}

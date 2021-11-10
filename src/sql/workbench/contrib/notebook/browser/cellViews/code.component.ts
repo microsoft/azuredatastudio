@@ -91,7 +91,6 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 	private _editor: QueryTextEditor;
 	private _editorInput: UntitledTextEditorInput;
 	private _editorModel: ITextModel;
-	private _model: NotebookModel;
 	private _activeCellId: string;
 	private _layoutEmitter = new Emitter<void>();
 
