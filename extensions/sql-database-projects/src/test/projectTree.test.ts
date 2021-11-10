@@ -8,10 +8,11 @@ import * as vscode from 'vscode';
 import * as os from 'os';
 import * as path from 'path';
 
-import { Project, EntryType } from '../models/project';
+import { Project } from '../models/project';
 import { FolderNode, FileNode, sortFileFolderNodes } from '../models/tree/fileFolderTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { DatabaseProjectItemType } from '../common/constants';
+import { EntryType } from '../models/projectEntry';
 
 describe('Project Tree tests', function (): void {
 	it('Should correctly order tree nodes by type, then by name', function (): void {
