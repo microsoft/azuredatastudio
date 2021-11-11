@@ -152,7 +152,7 @@ export class Project implements ISqlProject {
 
 				// <Build Include....>
 				for (let b = 0; b < buildElements.length; b++) {
-					const relativePath = buildElements[b].getAttribute(constants.Include)!;
+					let relativePath = buildElements[b].getAttribute(constants.Include)!;
 
 					if (relativePath) {
 						const fullPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(relativePath));
@@ -170,9 +170,14 @@ export class Project implements ISqlProject {
 						} else {
 							// only add file if it wasn't already added
 							if (!this._files.find(f => f.relativePath === relativePath)) {
-								// SSDT encodes @ to %40, so we need to decode that and any other characters that might have been encoded
-								const decodedRelativePath = decodeURIComponent(relativePath);
-								this._files.push(this.createFileProjectEntry(decodedRelativePath, EntryType.File, buildElements[b].getAttribute(constants.Type)!));
+								// SSDT encodes @ to %40, so we need to decode that so that it shows correctly in the tree
+								// I didn't find any other characters that get encoded, so this check is specifically for %40 to have lower risk of accidentally breaking something
+								// but we can decode all relative paths in the future if we find other characters that get encoded
+								if (relativePath.includes('%40')) {
+									relativePath = decodeURIComponent(relativePath);
+								}
+
+								this._files.push(this.createFileProjectEntry(relativePath, EntryType.File, buildElements[b].getAttribute(constants.Type)!));
 							}
 						}
 					}
