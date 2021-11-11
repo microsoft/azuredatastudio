@@ -148,7 +148,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			{
 				componentType: 'dropdown',
 				propertyName: designers.TableProperty.Schema,
-				description: TablePropertyDescriptions.NAME,
+				description: TablePropertyDescriptions.SCHEMA,
 				componentProperties: <DropDownProperties>{
 					title: localize('tableDesigner.schemaTitle', "Schema"),
 					values: designerInfo.schemas
@@ -281,6 +281,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			components: [{
 				componentType: 'input',
 				propertyName: designers.TableColumnProperty.Name,
+				description: TablePropertyDescriptions.NAME,
 				componentProperties: {
 					title: localize('tableDesigner.nameTitle', "Table name"),
 					width: 200

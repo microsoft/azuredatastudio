@@ -28,12 +28,18 @@ export class DesignerPropertiesPane {
 	private _componentMap = new Map<string, { defintion: DesignerDataPropertyInfo, component: DesignerUIComponent }>();
 	private _groupHeaders: HTMLElement[] = [];
 
+	// Description variables
+	private _descriptionContainer: HTMLElement;
+	private _descriptionTitleContainer: HTMLElement;
+	private _descriptionTextContainer: HTMLElement;
+	private _showDescription: boolean = false;
+
 	constructor(container: HTMLElement, private _createComponents: CreateComponentsFunc, private _setComponentValue: SetComponentValueFunc) {
 		const titleContainer = container.appendChild(DOM.$('.title-container'));
 		this._titleElement = titleContainer.appendChild(DOM.$('div'));
 		this._contentElement = container.appendChild(DOM.$('.properties-content.components-grid'));
 		this._titleElement.innerText = localize('tableDesigner.propertiesPaneTitle', "Properties");
-		this.createDescriptionComponent(container, localize('designer.propertyDescription', "Description"));
+		this.createDescriptionComponent(container);
 	}
 
 	public get groupHeaders(): HTMLElement[] {
@@ -48,6 +54,16 @@ export class DesignerPropertiesPane {
 		return this._currentContext;
 	}
 
+	public set showDescription(value: boolean) {
+		this._showDescription = value;
+		this._descriptionContainer.style.visibility = this._showDescription ? 'visible' : 'hidden';
+	}
+
+	public setDescriptionText(property: string, description: string) {
+		this._descriptionTitleContainer.innerText = property;
+		this._descriptionTextContainer.innerText = description;
+	}
+
 	public clear(): void {
 		this._componentMap.forEach((value) => {
 			value.component.dispose();
@@ -58,11 +74,11 @@ export class DesignerPropertiesPane {
 		this._currentContext = undefined;
 	}
 
-	private createDescriptionComponent(container: HTMLElement, title?: string) {
-		const descriptionContainer = container.appendChild(DOM.$('.description-component'));
-		descriptionContainer.appendChild(DOM.$('')).appendChild(DOM.$('.description-component-label')).innerText = title ?? '';
-		const contentContainer = descriptionContainer.appendChild(DOM.$('.description-component-content'));
-		contentContainer.innerText = 'Test';
+	private createDescriptionComponent(container: HTMLElement) {
+		this._descriptionContainer = container.appendChild(DOM.$('.description-component'));
+		this._descriptionTitleContainer = this._descriptionContainer.appendChild(DOM.$('')).appendChild(DOM.$('.description-component-label'));
+		this._descriptionTextContainer = this._descriptionContainer.appendChild(DOM.$('.description-component-content'));
+		this._descriptionContainer.style.visibility = this._showDescription ? 'visible' : 'hidden';
 	}
 
 	public show(item: ObjectInfo): void {

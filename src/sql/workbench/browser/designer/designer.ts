@@ -549,12 +549,24 @@ export class Designer extends Disposable implements IThemable {
 		return uiComponents;
 	}
 
+	// Shows the description for a property in the properties pane
+	// if the property has a description
+	private showDescription(hasDescription: boolean, definition: DesignerDataPropertyInfo) {
+		if (hasDescription) {
+			this._propertiesPane.setDescriptionText(definition.componentProperties.title, definition.description);
+			this._propertiesPane.showDescription = true;
+		} else {
+			this._propertiesPane.showDescription = false;
+		}
+	}
+
 	private createComponent(container: HTMLElement,
 		componentDefinition: DesignerDataPropertyInfo,
 		editIdentifier: DesignerEditIdentifier,
 		componentMap: Map<string, { defintion: DesignerDataPropertyInfo, component: DesignerUIComponent }>,
 		setWidth: boolean): DesignerUIComponent {
 		let component: DesignerUIComponent;
+		const hasDescription: boolean = componentDefinition?.description ? true : false;
 		switch (componentDefinition.componentType) {
 			case 'input':
 				container.appendChild(DOM.$('')).appendChild(DOM.$('span.component-label')).innerText = componentDefinition.componentProperties?.title ?? '';
@@ -568,6 +580,10 @@ export class Designer extends Disposable implements IThemable {
 					if (args.hasChanged) {
 						this.handleEdit({ type: DesignerEditType.Update, property: editIdentifier, value: args.value });
 					}
+					this._propertiesPane.showDescription = false;
+				});
+				input.onInputFocus(() => {
+					this.showDescription(hasDescription, componentDefinition);
 				});
 				if (setWidth && inputProperties.width !== undefined) {
 					input.width = inputProperties.width as number;
@@ -584,6 +600,9 @@ export class Designer extends Disposable implements IThemable {
 				dropdown.onDidSelect((e) => {
 					this.handleEdit({ type: DesignerEditType.Update, property: editIdentifier, value: e.selected });
 				});
+				dropdown.onDidFocus(() => {
+					this.showDescription(hasDescription, componentDefinition);
+				});
 				component = dropdown;
 				break;
 			case 'checkbox':
@@ -595,6 +614,9 @@ export class Designer extends Disposable implements IThemable {
 				});
 				checkbox.onChange((newValue) => {
 					this.handleEdit({ type: DesignerEditType.Update, property: editIdentifier, value: newValue });
+				});
+				checkbox.onFocus(() => {
+					this.showDescription(hasDescription, componentDefinition);
 				});
 				component = checkbox;
 				break;
