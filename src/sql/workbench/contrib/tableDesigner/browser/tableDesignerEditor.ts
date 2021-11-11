@@ -10,7 +10,6 @@ import { TableDesignerInput } from 'sql/workbench/browser/editor/tableDesigner/t
 import *  as DOM from 'vs/base/browser/dom';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { CancellationToken } from 'vs/base/common/cancellation';
-import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IEditorOptions } from 'vs/platform/editor/common/editor';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -32,8 +31,7 @@ export class TableDesignerEditor extends EditorPane {
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IWorkbenchThemeService themeService: IWorkbenchThemeService,
 		@IStorageService storageService: IStorageService,
-		@IContextViewService private _contextViewService: IContextViewService,
-		@IInstantiationService private _instantiationService: IInstantiationService
+		@IInstantiationService private _instantiationService: IInstantiationService,
 	) {
 		super(TableDesignerEditor.ID, telemetryService, themeService, storageService);
 	}
@@ -60,7 +58,7 @@ export class TableDesignerEditor extends EditorPane {
 		this._saveChangesAction.enabled = false;
 		actionbar.push(this._saveChangesAction, { icon: true, label: false });
 
-		this._designer = new Designer(designerContainer, this._instantiationService, this._contextViewService);
+		this._designer = this._instantiationService.createInstance(Designer, designerContainer);
 		this._register(attachDesignerStyler(this._designer, this.themeService));
 		this._register(registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
 			const border = theme.getColor(DesignerPaneSeparator);
