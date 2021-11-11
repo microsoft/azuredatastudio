@@ -122,8 +122,8 @@ export const enum SchemaDifferenceType {
 
 export const enum SchemaCompareEndpointType {
 	Database = 0,
-	Project = 1,
-	Dacpac = 2
+	Dacpac = 1,
+	Project = 2,
 	// must be kept in-sync with SchemaCompareEndpointType in SQL Tools Service
 	// located at \src\Microsoft.SqlTools.ServiceLayer\SchemaCompare\Contracts\SchemaCompareRequest.cs
 }
