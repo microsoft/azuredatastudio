@@ -137,18 +137,12 @@ input#accordion:checked ~ .accordion-content,
 }
 
 .all-jobs > .back-button-icon {
-	content: url("back.svg");
 	width: 20px;
 	margin-right: 10px;
 	float: left;
 	cursor: pointer;
 	padding-left: 13px;
 	padding-bottom: 10px;
-}
-
-.vs-dark .all-jobs > .back-button-icon,
-.hc-black .all-jobs > .back-button-icon {
-	content: url("back_inverse.svg");
 }
 
 .vs .action-label.codicon.newStepIcon {

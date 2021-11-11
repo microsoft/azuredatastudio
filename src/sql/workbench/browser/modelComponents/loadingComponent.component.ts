@@ -22,7 +22,7 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 	selector: 'modelview-loadingComponent',
 	template: `
 		<div class="modelview-loadingComponent-container" aria-busy="true" *ngIf="loading" [ngStyle]="CSSStyles">
-			<div class="modelview-loadingComponent-spinner" [title]="getStatusText()" #spinnerElement></div>
+			<div class="modelview-loadingComponent-spinner codicon in-progress" [title]="getStatusText()" #spinnerElement></div>
 			<div *ngIf="showText" class="modelview-loadingComponent-status-text">{{getStatusText()}}</div>
 		</div>
 		<model-component-wrapper #childElement [descriptor]="_component" [modelStore]="modelStore" *ngIf="_component" [ngClass]="{'modelview-loadingComponent-content-loading': loading}">

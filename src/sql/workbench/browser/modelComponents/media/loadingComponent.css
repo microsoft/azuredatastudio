@@ -14,15 +14,6 @@
 	margin-left: 5px;
 }
 
-.vs .modelview-loadingComponent-spinner {
-	content: url("loading.svg");
-}
-
-.vs-dark .modelview-loadingComponent-spinner,
-.hc-black .modelview-loadingComponent-spinner {
-	content: url("loading_inverse.svg");
-}
-
 .modelview-loadingComponent-spinner {
 	height: 20px;
 	padding-top: 5px;

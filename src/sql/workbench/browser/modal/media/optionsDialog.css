@@ -47,39 +47,24 @@
 	align-items: center;
 }
 
-.backButtonIcon {
-	content: url('back.svg');
-	width: 20px;
-	margin-right: 10px;
-	float: left;
-	cursor: pointer;
-}
-
-.hc-black .backButtonIcon,
-.vs-dark .backButtonIcon {
-	content: url('back_inverse.svg');
-}
-
 .optionsDialog-options .optionsDialog-description {
 	height: 90px;
 	margin: 15px;
 	overflow-y: auto;
 }
 
-.optionsDialog-options .optionsDialog-description .modal-title {
+.backButtonIcon {
+	width: 20px;
+	margin-right: 10px;
+	float: left;
+	cursor: pointer;
+}
+
+.optionsDialog-options .optionsDialog-description .modal-title.codicon.info {
 	background-repeat: no-repeat;
 	background-position: 2px center;
 	padding-left: 25px;
 	background-size: 16px;
-}
-
-.vs .optionsDialog-options .optionsDialog-description .modal-title {
-	background-image: url('info_notification.svg')
-}
-
-.vs-dark .optionsDialog-options .optionsDialog-description .modal-title,
-.hc-black .optionsDialog-options .optionsDialog-description .modal-title {
-	background-image: url('info_notification_inverse.svg')
 }
 
 .optionsDialog-options {

@@ -30,6 +30,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { Emitter } from 'vs/base/common/event';
+import { Codicon } from 'vs/base/common/codicons';
 
 export enum MessageLevel {
 	Error = 0,
@@ -246,6 +247,7 @@ export abstract class Modal extends Disposable implements IThemable {
 					this._backButton.icon = {
 						id: 'backButtonIcon'
 					};
+					DOM.prepend(this._backButton.element, DOM.$('span' + Codicon.arrowLeft.cssSelector));
 					this._backButton.title = localize('modal.back', "Back");
 				}
 

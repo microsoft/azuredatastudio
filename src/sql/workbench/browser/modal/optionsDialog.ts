@@ -93,6 +93,7 @@ export class OptionsDialog extends Modal {
 		const descriptionContainer = append(this._body, $('div.optionsDialog-description'));
 
 		this._optionTitle = append(descriptionContainer, $('div.modal-title'));
+		this._optionTitle.classList.add('codicon', 'info');
 		this._optionDescription = append(descriptionContainer, $('div.optionsDialog-description-content'));
 	}
 

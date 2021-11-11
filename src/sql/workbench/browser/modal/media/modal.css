@@ -26,6 +26,7 @@
 
 .modal .modal-header {
 	padding: 15px;
+	display: flex;
 }
 
 .modal .codicon.in-progress {
