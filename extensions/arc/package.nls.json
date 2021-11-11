@@ -28,7 +28,7 @@
 	"arc.data.controller.project.details.title": "Azure details",
 	"arc.data.controller.project.details.description": "Select the subscription to manage deployed resources and costs. Use resource groups like folders to organize and manage all your resources.",
 	"arc.data.controller.details.title": "Data controller details",
-	"arc.data.controller.details.description": "Provide a namespace, name and storage class for your Azure Arc data controller. This name will be used to identify your Arc instance for remote management and monitoring.",
+	"arc.data.controller.details.description": "For indirect mode, provide a namespace, name and storage class for your Azure Arc data controller. This name will be used to identify your Arc instance for remote management and monitoring. For direct mode you do not need to provide a namespace, but please provide the custom location name.",
 	"arc.data.controller.connectivity.mode": "Connectivity mode",
 	"arc.data.controller.indirect": "Indirect",
 	"arc.data.controller.direct": "Direct",
