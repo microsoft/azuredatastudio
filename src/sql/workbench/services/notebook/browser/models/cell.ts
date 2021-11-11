@@ -73,8 +73,6 @@ export class CellModel extends Disposable implements ICellModel {
 	private _isCollapsed: boolean;
 	private _onCollapseStateChanged = new Emitter<boolean>();
 	private _modelContentChangedEvent: IModelContentChangedEvent;
-	private _onCellPreviewChanged = new Emitter<boolean>();
-	private _onCellMarkdownChanged = new Emitter<boolean>();
 	private _isCommandExecutionSettingEnabled: boolean = false;
 	private _showPreview: boolean = true;
 	private _showMarkdown: boolean = false;
@@ -422,7 +420,6 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public set showPreview(val: boolean) {
 		this._showPreview = val;
-		this._onCellPreviewChanged.fire(this._showPreview);
 		this.doModeUpdates();
 	}
 
@@ -432,7 +429,6 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public set showMarkdown(val: boolean) {
 		this._showMarkdown = val;
-		this._onCellMarkdownChanged.fire(this._showMarkdown);
 		this.doModeUpdates();
 	}
 
@@ -452,14 +448,6 @@ export class CellModel extends Disposable implements ICellModel {
 	}
 	public set cellSourceChanged(val: boolean) {
 		this._cellSourceChanged = val;
-	}
-
-	public get onCellPreviewModeChanged(): Event<boolean> {
-		return this._onCellPreviewChanged.event;
-	}
-
-	public get onCellMarkdownModeChanged(): Event<boolean> {
-		return this._onCellMarkdownChanged.event;
 	}
 
 	public get onParameterStateChanged(): Event<boolean> {

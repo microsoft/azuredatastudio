@@ -215,7 +215,15 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			}
 			this._changeRef.detectChanges();
 		}));
-		this._register(this.cellModel.onCellPreviewModeChanged(preview => {
+		this._register(this.cellModel.onCurrentEditModeChanged(editMode => {
+			let markdown: boolean = editMode !== CellEditModes.WYSIWYG;
+			if (!markdown) {
+				let editorControl = this.cellEditors.length > 0 ? this.cellEditors[0].getEditor().getControl() : undefined;
+				if (editorControl) {
+					let selection = editorControl.getSelection();
+					this.cellModel.markdownCursorPosition = selection?.getPosition();
+				}
+			}
 			// On preview mode change, get the cursor position (get the position only when the selection node is a text node)
 			if (window.getSelection() && window.getSelection().focusNode?.nodeName === '#text' && window.getSelection().getRangeAt(0)) {
 				let selection = window.getSelection().getRangeAt(0);
@@ -247,17 +255,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 					this.cellModel.richTextCursorPosition = cursorPosition;
 				}
 			}
-			this.previewMode = preview;
-			this.focusIfPreviewMode();
-		}));
-		this._register(this.cellModel.onCellMarkdownModeChanged(markdown => {
-			if (!markdown) {
-				let editorControl = this.cellEditors.length > 0 ? this.cellEditors[0].getEditor().getControl() : undefined;
-				if (editorControl) {
-					let selection = editorControl.getSelection();
-					this.cellModel.markdownCursorPosition = selection?.getPosition();
-				}
-			}
+			this.previewMode = editMode !== CellEditModes.MARKDOWN;
 			this.markdownMode = markdown;
 			this.focusIfPreviewMode();
 		}));

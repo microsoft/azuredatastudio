@@ -113,6 +113,7 @@ export interface DesignerDataPropertyInfo {
 	propertyName: string;
 	description?: string;
 	componentType: DesignerComponentTypeName;
+	showInPropertiesView?: boolean;
 	group?: string;
 	componentProperties?: InputBoxProperties | CheckBoxProperties | DropDownProperties | DesignerTableProperties;
 }
@@ -193,15 +194,16 @@ export enum DesignerEditType {
 
 export interface DesignerEdit {
 	type: DesignerEditType;
-	property: DesignerEditIdentifier;
+	path: DesignerEditPath;
 	value?: any;
 }
 
-export type DesignerEditIdentifier = string | { parentProperty: string, index: number, property: string };
+export type DesignerEditPath = (string | number)[];
+export const DesignerRootObjectPath: DesignerEditPath = [];
 
 export interface DesignerEditResult {
 	isValid: boolean;
-	errors?: { message: string, property?: DesignerEditIdentifier }[];
+	errors?: { message: string, property?: DesignerEditPath }[];
 }
 
 export interface DesignerTextEditor {

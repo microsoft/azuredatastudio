@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { DesignerTab } from 'sql/workbench/browser/designer/interfaces';
+import { DesignerRootObjectPath, DesignerTab } from 'sql/workbench/browser/designer/interfaces';
 import { IPanelView } from 'sql/base/browser/ui/panel/panel';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { Disposable } from 'vs/base/common/lifecycle';
@@ -20,7 +20,7 @@ export class DesignerTabPanelView extends Disposable implements IPanelView {
 	constructor(private readonly _tab: DesignerTab, private _createComponents: CreateComponentsFunc) {
 		super();
 		this._componentsContainer = DOM.$('.components-grid');
-		const uiComponents = this._createComponents(this._componentsContainer, this._tab.components, component => component.propertyName);
+		const uiComponents = this._createComponents(this._componentsContainer, this._tab.components, DesignerRootObjectPath);
 		uiComponents.forEach(component => {
 			if (component instanceof Table) {
 				this._tables.push(component);
