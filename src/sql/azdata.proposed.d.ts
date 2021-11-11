@@ -1104,7 +1104,7 @@ declare module 'azdata' {
 		}
 
 		/**
-		 * The table designer view definition
+		 * The table designer view definition.
 		 */
 		export interface TableDesignerView {
 			/**
@@ -1141,11 +1141,11 @@ declare module 'azdata' {
 		}
 
 		/**
-		 * The definition of a designer tab
+		 * The definition of a designer tab.
 		 */
 		export interface DesignerTab {
 			/**
-			 * The title of the tab
+			 * The title of the tab.
 			 */
 			title: string;
 			/**
@@ -1163,11 +1163,11 @@ declare module 'azdata' {
 			 */
 			propertyName: string;
 			/**
-			 * The description of the property
+			 * The description of the property.
 			 */
 			description?: string;
 			/**
-			 * The component type
+			 * The component type.
 			 */
 			componentType: DesignerComponentTypeName;
 			/**
@@ -1199,12 +1199,12 @@ declare module 'azdata' {
 			columns?: string[];
 
 			/**
-			 * The display name of the object type
+			 * The display name of the object type.
 			 */
 			objectTypeDisplayName: string;
 
 			/**
-			 * the properties of the table data item
+			 * the properties of the table data item.
 			 */
 			itemProperties?: DesignerDataPropertyInfo[];
 
@@ -1236,15 +1236,15 @@ declare module 'azdata' {
 		 */
 		export enum DesignerEditType {
 			/**
-			 * Add a row to a table
+			 * Add a row to a table.
 			 */
 			Add = 0,
 			/**
-			 * Remove a row from a table
+			 * Remove a row from a table.
 			 */
 			Remove = 1,
 			/**
-			 * Update a property
+			 * Update a property.
 			 */
 			Update = 2
 		}
@@ -1254,7 +1254,7 @@ declare module 'azdata' {
 		 */
 		export interface DesignerEdit {
 			/**
-			 * The edit type
+			 * The edit type.
 			 */
 			type: DesignerEditType;
 			/**
@@ -1262,7 +1262,7 @@ declare module 'azdata' {
 			 */
 			path: DesignerEditPath;
 			/**
-			 * the new value
+			 * the new value.
 			 */
 			value?: any;
 		}
