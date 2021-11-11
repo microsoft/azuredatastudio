@@ -148,7 +148,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 					{
 						title: constants.enterConnectionString,
 						ignoreFocusOut: true,
-						value: 'Server=localhost;Initial Catalog={db_name};Persist Security Info=False;User ID=sa;Password={your_password}',
+						value: 'Server=localhost;Initial Catalog={db_name};User ID=sa;Password={your_password};Persist Security Info=False',
 						validateInput: input => input ? undefined : constants.valueMustNotBeEmpty
 					}
 				) ?? '';
