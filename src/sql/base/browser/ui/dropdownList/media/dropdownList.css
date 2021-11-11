@@ -23,12 +23,6 @@
 	flex: 0 0 15px;
 	height: 10px;
 	width: 10px;
-	content: url("dropdownarrow.svg");
 	align-self: center;
 	padding-right: 10px;
-}
-
-.vs-dark .monaco-dropdown > .dropdown-icon,
-.hc-black .monaco-dropdown > .dropdown-icon {
-	content: url("dropdownarrow_inverse.svg");
 }

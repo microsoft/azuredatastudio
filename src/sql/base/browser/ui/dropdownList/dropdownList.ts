@@ -56,7 +56,7 @@ export class DropdownList extends Dropdown {
 			}));
 		}
 
-		DOM.append(this.element, DOM.$('div.dropdown-icon'));
+		DOM.append(this.element, DOM.$('span.codicon-chevron-down'));
 
 		[DOM.EventType.CLICK, DOM.EventType.MOUSE_DOWN, GestureEventType.Tap].forEach(event => {
 			this._register(DOM.addDisposableListener(this.element, event, e => DOM.EventHelper.stop(e, true))); // prevent default click behaviour to trigger
