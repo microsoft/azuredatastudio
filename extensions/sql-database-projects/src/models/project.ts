@@ -170,7 +170,9 @@ export class Project implements ISqlProject {
 						} else {
 							// only add file if it wasn't already added
 							if (!this._files.find(f => f.relativePath === relativePath)) {
-								this._files.push(this.createFileProjectEntry(relativePath, EntryType.File, buildElements[b].getAttribute(constants.Type)!));
+								// SSDT encodes @ to %40, so we need to decode that and any other characters that might have been encoded
+								const decodedRelativePath = decodeURIComponent(relativePath);
+								this._files.push(this.createFileProjectEntry(decodedRelativePath, EntryType.File, buildElements[b].getAttribute(constants.Type)!));
 							}
 						}
 					}

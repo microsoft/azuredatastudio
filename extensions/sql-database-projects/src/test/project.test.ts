@@ -1092,6 +1092,19 @@ describe('Project: round trip updates', function (): void {
 		should(spy.notCalled).be.true();
 		should(project.isMsbuildSdkStyleProject).be.true();
 	}
+
+	it('Should handle SSDT encoded characters in file names in sqlproj', async function (): Promise<void> {
+		sinon.stub(window, 'showWarningMessage').returns(<any>Promise.resolve(constants.yesString));
+
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.SSDTProjectFileBaseline);
+		const project = await Project.openProject(projFilePath); // project gets updated if needed in openProject()
+
+		// verify that test%40info.sql got read as test@info.sql
+		const projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText.includes('Tables\\Test%40Info.sql')).equal(true);
+		should(project.files.filter(f => f.relativePath === 'Tables\\Test@Info.sql').length).equal(1);
+	});
+
 });
 
 async function testUpdateInRoundTrip(fileBeforeupdate: string, fileAfterUpdate: string): Promise<void> {

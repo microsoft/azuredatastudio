@@ -63,6 +63,7 @@
   <ItemGroup>
     <Build Include="Tables\Users.sql" />
     <Build Include="Tables\Action History.sql" />
+    <Build Include="Tables\Test%40Info.sql" />
     <Build Include="Views\Maintenance\Database Performance.sql" />
   </ItemGroup>
   <ItemGroup>
