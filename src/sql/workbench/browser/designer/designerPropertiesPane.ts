@@ -77,6 +77,7 @@ export class DesignerPropertiesPane {
 	private createDescriptionComponent(container: HTMLElement) {
 		this._descriptionContainer = container.appendChild(DOM.$('.description-component'));
 		this._descriptionTitleContainer = this._descriptionContainer.appendChild(DOM.$('')).appendChild(DOM.$('.description-component-label'));
+		this._descriptionTitleContainer.classList.add('codicon', 'info');
 		this._descriptionTextContainer = this._descriptionContainer.appendChild(DOM.$('.description-component-content'));
 		this._descriptionContainer.style.visibility = this._showDescription ? 'visible' : 'hidden';
 	}
