@@ -279,6 +279,7 @@ after(async function () {
 	if (opts.log) {
 		const logsDir = path.join(userDataDir, 'logs');
 		const destLogsDir = path.join(path.dirname(opts.log), 'logs');
+		// {{ SQL CARBON EDIT }} Checks for the existence of the logs directory before accessing.
 		if (fs.existsSync(logsDir)) {
 			await new Promise((c, e) => ncp(logsDir, destLogsDir, err => err ? e(err) : c(undefined)));
 		}
