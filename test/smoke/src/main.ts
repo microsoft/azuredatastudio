@@ -275,16 +275,6 @@ before(async function () {
 
 after(async function () {
 	await new Promise(c => setTimeout(c, 500)); // wait for shutdown
-
-	if (opts.log) {
-		const logsDir = path.join(userDataDir, 'logs');
-		const destLogsDir = path.join(path.dirname(opts.log), 'logs');
-		// {{ SQL CARBON EDIT }} Checks for the existence of the logs directory before accessing.
-		if (fs.existsSync(logsDir)) {
-			await new Promise((c, e) => ncp(logsDir, destLogsDir, err => err ? e(err) : c(undefined)));
-		}
-	}
-
 	await new Promise((c, e) => rimraf(testDataPath, { maxBusyTries: 10 }, err => err ? e(err) : c(undefined)));
 });
 
