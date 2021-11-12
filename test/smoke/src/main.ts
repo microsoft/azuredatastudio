@@ -37,7 +37,18 @@ import { setup as setupLaunchTests } from './areas/workbench/launch.test';*/
 
 const tmpDir = tmp.dirSync({ prefix: 't' }) as { name: string; removeCallback: Function; };
 const testDataPath = tmpDir.name;
-process.once('exit', () => rimraf.sync(testDataPath));
+if (fs.existsSync(tmpDir.name)) {
+	console.log(`Directory: ${tmpDir.name} exists.`);
+} else {
+	console.log(`Directory: ${tmpDir.name} does not exist.`);
+}
+const testLogPath = tmpDir.name + '/d/logs';
+if (fs.existsSync(testLogPath)) {
+	console.log(`Log directory ${testLogPath} exists.`);
+} else {
+	console.log(`Log directory ${testLogPath} does not exist.`);
+}
+
 
 const [, , ...args] = process.argv;
 const opts = minimist(args, {
