@@ -118,6 +118,11 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 		}
 
 		existingSettings.unshift({ label: constants.createNewLocalAppSettingWithIcon, isCreateNew: true });
+		if (existingSettings.find(s => s.label === constants.sqlConnectionStringSetting)) {
+			existingSettings.unshift({ label: constants.sqlConnectionStringSetting, isCreateNew: true });
+		} else {
+			existingSettings.unshift({ label: constants.sqlConnectionStringSettingWithIcon, isCreateNew: true });
+		}
 
 		while (!connectionStringSettingName) {
 			const selectedSetting = await vscode.window.showQuickPick(existingSettings, {
@@ -131,17 +136,22 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 			}
 
 			if (selectedSetting.isCreateNew) {
-				const newConnectionStringSettingName = await vscode.window.showInputBox(
-					{
-						title: constants.enterConnectionStringSettingName,
-						ignoreFocusOut: true,
-						validateInput: input => input ? undefined : constants.nameMustNotBeEmpty
-					}
-				) ?? '';
+				let newConnectionStringSettingName;
+				if (selectedSetting.label === constants.createNewLocalAppSettingWithIcon) {
+					newConnectionStringSettingName = await vscode.window.showInputBox(
+						{
+							title: constants.enterConnectionStringSettingName,
+							ignoreFocusOut: true,
+							validateInput: input => input ? undefined : constants.nameMustNotBeEmpty
+						}
+					) ?? '';
 
-				if (!newConnectionStringSettingName) {
-					// go back to select setting quickpick if user escapes from inputting the setting name in case they changed their mind
-					continue;
+					if (!newConnectionStringSettingName) {
+						// go back to select setting quickpick if user escapes from inputting the setting name in case they changed their mind
+						continue;
+					}
+				} else {
+					newConnectionStringSettingName = constants.sqlConnectionStringSetting;
 				}
 
 				const newConnectionStringValue = await vscode.window.showInputBox(
