@@ -128,7 +128,7 @@ export class PublishDatabaseDialog {
 						component: <azdataType.DeclarativeTableComponent>this.sqlCmdVariablesTable
 					}
 				],
-				title: constants.sqlCmdTableLabel
+				title: constants.sqlCmdVariables
 			};
 
 			const profileRow = this.createProfileRow(view);
@@ -614,7 +614,7 @@ export class PublishDatabaseDialog {
 		this.sqlCmdVars = { ...this.project.sqlCmdVariables };
 
 		const table = view.modelBuilder.declarativeTable().withProps({
-			ariaLabel: constants.sqlCmdTableLabel,
+			ariaLabel: constants.sqlCmdVariables,
 			dataValues: this.convertSqlCmdVarsToTableFormat(this.sqlCmdVars),
 			columns: [
 				{

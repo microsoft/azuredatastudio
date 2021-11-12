@@ -7,7 +7,7 @@ import 'vs/css!./code';
 import { OnInit, Component, Input, Inject, ElementRef, ViewChild, Output, EventEmitter, OnChanges, SimpleChange, forwardRef, ChangeDetectorRef } from '@angular/core';
 
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
-import { ICellModel, CellExecutionState } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { ICellModel, CellExecutionState, CellEditModes } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { RunCellAction, CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
@@ -262,8 +262,9 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		this._register(this.cellModel.onCollapseStateChanged(isCollapsed => {
 			this.onCellCollapse(isCollapsed);
 		}));
-		this._register(this.cellModel.onCellPreviewModeChanged((e) => {
-			if (!e && this._cellModel.cellSourceChanged) {
+		this._register(this.cellModel.onCurrentEditModeChanged((e) => {
+			let preview = e !== CellEditModes.MARKDOWN;
+			if (!preview && this._cellModel.cellSourceChanged) {
 				this.updateModel();
 				this._cellModel.cellSourceChanged = false;
 			}

@@ -14,6 +14,7 @@ import * as vscode from 'vscode';
 import * as os from 'os';
 import { ConnectionResult } from 'azdata';
 import * as templates from '../../templates/templates';
+import { ShellExecutionHelper } from '../../tools/shellExecutionHelper';
 
 interface DockerImageSpec {
 	label: string;
@@ -22,9 +23,11 @@ interface DockerImageSpec {
 }
 export class DeployService {
 
-	constructor(private _outputChannel: vscode.OutputChannel) {
+	constructor(private _outputChannel: vscode.OutputChannel, shellExecutionHelper: ShellExecutionHelper | undefined = undefined) {
+		this._shellExecutionHelper = shellExecutionHelper ?? new ShellExecutionHelper(this._outputChannel);
 	}
 
+	private _shellExecutionHelper: ShellExecutionHelper;
 	private DefaultSqlRetryTimeoutInSec: number = 10;
 	private DefaultSqlNumberOfRetries: number = 3;
 
@@ -92,7 +95,7 @@ export class DeployService {
 
 	private async verifyDocker(): Promise<void> {
 		try {
-			await utils.executeCommand(`docker version --format {{.Server.APIVersion}}`, this._outputChannel);
+			await this.executeCommand(`docker version --format {{.Server.APIVersion}}`);
 			// TODO verify min version
 		} catch (error) {
 			throw Error(constants.dockerNotRunningError(utils.getErrorMessage(error)));
@@ -170,7 +173,7 @@ export class DeployService {
 			// Waiting a bit to make sure docker container doesn't crash
 			//
 			const runningDockerId = await utils.retry('Validating the docker container', async () => {
-				return await utils.executeCommand(`docker ps -q -a --filter label=${imageSpec.label} -q`, this._outputChannel);
+				return this.executeCommand(`docker ps -q -a --filter label=${imageSpec.label} -q`);
 			}, (dockerId) => {
 				return Promise.resolve({ validated: dockerId !== undefined, errorMessage: constants.dockerContainerNotRunningErrorMessage });
 			}, (dockerId) => {
@@ -186,7 +189,7 @@ export class DeployService {
 				this.logToOutput(constants.dockerContainerFailedToRunErrorMessage);
 				if (createdDockerId) {
 					// Get the docker logs if docker was created but crashed
-					await utils.executeCommand(constants.dockerLogMessage(createdDockerId), this._outputChannel);
+					await this.executeCommand(constants.dockerLogMessage(createdDockerId));
 				}
 			}
 
@@ -201,13 +204,13 @@ export class DeployService {
 
 		// Running commands to build the docker image
 		this.logToOutput('Building docker image ...');
-		await utils.executeCommand(`docker pull ${profile.dockerBaseImage}`, this._outputChannel);
-		await utils.executeCommand(`docker build -f ${dockerFilePath} -t ${dockerImageSpec.tag} ${root}`, this._outputChannel);
-		await utils.executeCommand(`docker images --filter label=${dockerImageSpec.label}`, this._outputChannel);
+		await this.executeCommand(`docker pull ${profile.dockerBaseImage}`);
+		await this.executeCommand(`docker build -f ${dockerFilePath} -t ${dockerImageSpec.tag} ${root}`);
+		await this.executeCommand(`docker images --filter label=${dockerImageSpec.label}`);
 
 		this.logToOutput('Running docker container ...');
-		await utils.executeCommand(`docker run -p ${profile.port}:1433 -e "MSSQL_SA_PASSWORD=${profile.password}" -d --name ${dockerImageSpec.containerName} ${dockerImageSpec.tag}`, this._outputChannel, sensitiveData);
-		return await utils.executeCommand(`docker ps -q -a --filter label=${dockerImageSpec.label} -q`, this._outputChannel);
+		await this.executeCommand(`docker run -p ${profile.port}:1433 -e "MSSQL_SA_PASSWORD=${profile.password}" -d --name ${dockerImageSpec.containerName} ${dockerImageSpec.tag}`, sensitiveData);
+		return await this.executeCommand(`docker ps -q -a --filter label=${dockerImageSpec.label} -q`);
 	}
 
 	private async getConnectionString(connectionUri: string): Promise<string | undefined> {
@@ -379,7 +382,7 @@ export class DeployService {
 		//
 		await this.createFile(startFilePath, 'echo starting the container!');
 		if (os.platform() !== 'win32') {
-			await utils.executeCommand(`chmod +x '${startFilePath}'`, this._outputChannel);
+			await this.executeCommand(`chmod +x '${startFilePath}'`);
 		}
 
 		// Create the Dockerfile
@@ -401,8 +404,12 @@ RUN ["/bin/bash", "/opt/commands/start.sh"]
 		await fse.writeFile(filePath, content);
 	}
 
+	public async executeCommand(cmd: string, sensitiveData: string[] = [], timeout: number = 5 * 60 * 1000): Promise<string> {
+		return await this._shellExecutionHelper.runStreamedCommand(cmd, undefined, sensitiveData, timeout);
+	}
+
 	public async getCurrentDockerContainer(imageLabel: string): Promise<string[]> {
-		const currentIds = await utils.executeCommand(`docker ps -q -a --filter label=${imageLabel}`, this._outputChannel);
+		const currentIds = await this.executeCommand(`docker ps -q -a --filter label=${imageLabel}`);
 		return currentIds ? currentIds.split(/\r?\n/) : [];
 	}
 
@@ -412,7 +419,7 @@ RUN ["/bin/bash", "/opt/commands/start.sh"]
 			if (id) {
 				for (let commandId = 0; commandId < commandsToClean.length; commandId++) {
 					const command = commandsToClean[commandId];
-					await utils.executeCommand(`${command} ${id}`, this._outputChannel);
+					await this.executeCommand(`${command} ${id}`);
 				}
 			}
 		}
