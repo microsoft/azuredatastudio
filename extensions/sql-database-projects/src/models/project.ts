@@ -1359,7 +1359,7 @@ export class Project implements ISqlProject {
 		// If folder doesn't exist, create it
 		await fs.mkdir(absoluteFolderPath, { recursive: true });
 
-		// don't need to add the folder to the sqlproj if this is an msbuild sdk style project because globbing will get all the folder
+		// don't need to add the folder to the sqlproj if this is an msbuild sdk style project because globbing will get the folders
 		if (this.isMsbuildSdkStyleProject) {
 			return this.createFileProjectEntry(relativeFolderPath, EntryType.Folder);
 		}
