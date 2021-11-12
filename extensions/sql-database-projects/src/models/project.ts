@@ -122,30 +122,15 @@ export class Project implements ISqlProject {
 		// check if this is a new msbuild sdk style project
 		this._isMsbuildSdkStyleProject = this.CheckForMsbuildSdkStyleProject();
 
-		await this.loadFilesInProject();
-		await this.loadFolders();
-		this.loadPrePostDeployScripts();
-		this.loadDatabaseReferences();
+		// get files and folders
+		this._files = await this.readFilesInProject();
+		this.files.push(...await this.readFolders());
 
-		// get projectGUID
-		try {
-			this._projectGuid = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ProjectGuid)[0].childNodes[0].nodeValue!;
-		} catch (e) {
-			void window.showErrorMessage(constants.errorReadingProject(constants.ProjectGuid, this.projectFilePath));
-			console.error(utils.getErrorMessage(e));
-		}
-
-		// find all import statements to include
-		try {
-			const importElements = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Import);
-			for (let i = 0; i < importElements.length; i++) {
-				const importTarget = importElements[i];
-				this._importedTargets.push(importTarget.getAttribute(constants.Project)!);
-			}
-		} catch (e) {
-			void window.showErrorMessage(constants.errorReadingProject(constants.ImportElements, this.projectFilePath));
-			console.error(utils.getErrorMessage(e));
-		}
+		this._preDeployScripts = this.readPreDeployScripts();
+		this._postDeployScripts = this.readPostDeployScripts();
+		this._noneDeployScripts = this.readNoneDeployScripts();
+		this._databaseReferences = this.readDatabaseReferences();
+		this._importedTargets = this.readImportedTargets();
 
 		// find all SQLCMD variables to include
 		try {
@@ -154,13 +139,21 @@ export class Project implements ISqlProject {
 			void window.showErrorMessage(constants.errorReadingProject(constants.sqlCmdVariables, this.projectFilePath));
 			console.error(utils.getErrorMessage(e));
 		}
+
+		// get projectGUID
+		try {
+			this._projectGuid = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ProjectGuid)[0].childNodes[0].nodeValue!;
+		} catch (e) {
+			void window.showErrorMessage(constants.errorReadingProject(constants.ProjectGuid, this.projectFilePath));
+			console.error(utils.getErrorMessage(e));
+		}
 	}
 
 	/**
 	 * Gets all the files specified by <Build Inlude="..."> and removes all the files specified by <Build Remove="...">
 	 * and all files included by the default glob of the folder of the sqlproj if it's an msbuild sdk style project
 	 */
-	async loadFilesInProject(): Promise<void> {
+	private async readFilesInProject(): Promise<FileProjectEntry[]> {
 		const filesSet: Set<string> = new Set();
 		const entriesWithType: { relativePath: string, typeAttribute: string }[] = [];
 
@@ -234,18 +227,22 @@ export class Project implements ISqlProject {
 		}
 
 		// create a FileProjectEntry for each file
+		const fileEntries: FileProjectEntry[] = [];
 		filesSet.forEach(f => {
 			const typeEntry = entriesWithType.find(e => e.relativePath === f);
-			this._files.push(this.createFileProjectEntry(f, EntryType.File, typeEntry ? typeEntry.typeAttribute : undefined));
+			fileEntries.push(this.createFileProjectEntry(f, EntryType.File, typeEntry ? typeEntry.typeAttribute : undefined));
 		});
+
+		return fileEntries;
 	}
 
-	async loadFolders(): Promise<void> {
+	private async readFolders(): Promise<FileProjectEntry[]> {
+		const folderEntries: FileProjectEntry[] = [];
 		// glob style getting folders for new msbuild sdk style projects
 		if (this._isMsbuildSdkStyleProject) {
 			const folders = await utils.getFoldersInFolder(this.projectFolderPath, true);
 			folders.forEach(f => {
-				this._files.push(this.createFileProjectEntry(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(f)), EntryType.Folder));
+				folderEntries.push(this.createFileProjectEntry(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(f)), EntryType.Folder));
 			});
 		}
 
@@ -257,8 +254,8 @@ export class Project implements ISqlProject {
 				for (let f = 0; f < folderElements.length; f++) {
 					const relativePath = folderElements[f].getAttribute(constants.Include)!;
 					// don't add Properties folder since it isn't supported for now and don't add if the folder was already added
-					if (relativePath !== constants.Properties && !this._files.find(f => f.relativePath === utils.trimChars(relativePath, '\\'))) {
-						this._files.push(this.createFileProjectEntry(relativePath, EntryType.Folder));
+					if (relativePath !== constants.Properties && !folderEntries.find(f => f.relativePath === utils.trimChars(relativePath, '\\'))) {
+						folderEntries.push(this.createFileProjectEntry(relativePath, EntryType.Folder));
 					}
 				}
 			} catch (e) {
@@ -266,55 +263,88 @@ export class Project implements ISqlProject {
 				console.error(utils.getErrorMessage(e));
 			}
 		}
+
+		return folderEntries;
 	}
 
-	loadPrePostDeployScripts(): void {
+	private readPreDeployScripts(): FileProjectEntry[] {
+		const preDeployScripts: FileProjectEntry[] = [];
+		// find all pre-deployment scripts to include
+		let preDeployScriptCount: number = 0;
+
 		for (let ig = 0; ig < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup).length; ig++) {
 			const itemGroup = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup)[ig];
-			// find all pre-deployment scripts to include
-			let preDeployScriptCount: number = 0;
+
 			try {
 				const preDeploy = itemGroup.getElementsByTagName(constants.PreDeploy);
 				for (let pre = 0; pre < preDeploy.length; pre++) {
-					this._preDeployScripts.push(this.createFileProjectEntry(preDeploy[pre].getAttribute(constants.Include)!, EntryType.File));
+					preDeployScripts.push(this.createFileProjectEntry(preDeploy[pre].getAttribute(constants.Include)!, EntryType.File));
 					preDeployScriptCount++;
 				}
 			} catch (e) {
 				void window.showErrorMessage(constants.errorReadingProject(constants.PreDeployElements, this.projectFilePath));
 				console.error(utils.getErrorMessage(e));
 			}
+		}
 
-			// find all post-deployment scripts to include
-			let postDeployScriptCount: number = 0;
+		if (preDeployScriptCount > 1) {
+			void window.showWarningMessage(constants.prePostDeployCount, constants.okString);
+		}
+
+		return preDeployScripts;
+	}
+
+	private readPostDeployScripts(): FileProjectEntry[] {
+		const postDeployScripts: FileProjectEntry[] = [];
+		// find all post-deployment scripts to include
+		let postDeployScriptCount: number = 0;
+
+		for (let ig = 0; ig < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup).length; ig++) {
+			const itemGroup = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup)[ig];
+
 			try {
 				const postDeploy = itemGroup.getElementsByTagName(constants.PostDeploy);
 				for (let post = 0; post < postDeploy.length; post++) {
-					this._postDeployScripts.push(this.createFileProjectEntry(postDeploy[post].getAttribute(constants.Include)!, EntryType.File));
+					postDeployScripts.push(this.createFileProjectEntry(postDeploy[post].getAttribute(constants.Include)!, EntryType.File));
 					postDeployScriptCount++;
 				}
 			} catch (e) {
 				void window.showErrorMessage(constants.errorReadingProject(constants.PostDeployElements, this.projectFilePath));
 				console.error(utils.getErrorMessage(e));
 			}
+		}
 
-			if (preDeployScriptCount > 1 || postDeployScriptCount > 1) {
-				void window.showWarningMessage(constants.prePostDeployCount, constants.okString);
-			}
+		if (postDeployScriptCount > 1) {
+			void window.showWarningMessage(constants.prePostDeployCount, constants.okString);
+		}
+
+		return postDeployScripts;
+	}
+
+	private readNoneDeployScripts(): FileProjectEntry[] {
+		const noneDeployScripts: FileProjectEntry[] = [];
+
+		for (let ig = 0; ig < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup).length; ig++) {
+			const itemGroup = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup)[ig];
 
 			// find all none-deployment scripts to include
 			try {
 				const noneItems = itemGroup.getElementsByTagName(constants.None);
 				for (let n = 0; n < noneItems.length; n++) {
-					this._noneDeployScripts.push(this.createFileProjectEntry(noneItems[n].getAttribute(constants.Include)!, EntryType.File));
+					noneDeployScripts.push(this.createFileProjectEntry(noneItems[n].getAttribute(constants.Include)!, EntryType.File));
 				}
 			} catch (e) {
 				void window.showErrorMessage(constants.errorReadingProject(constants.NoneElements, this.projectFilePath));
 				console.error(utils.getErrorMessage(e));
 			}
 		}
+
+		return noneDeployScripts;
 	}
 
-	loadDatabaseReferences(): void {
+	private readDatabaseReferences(): IDatabaseReferenceProjectEntry[] {
+		const databaseReferenceEntries: IDatabaseReferenceProjectEntry[] = [];
+
 		// database(system db and dacpac) references
 		const references = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ArtifactReference);
 		for (let r = 0; r < references.length; r++) {
@@ -333,13 +363,13 @@ export class Project implements ISqlProject {
 
 					const path = utils.convertSlashesForSqlProj(this.getSystemDacpacUri(`${name}.dacpac`).fsPath);
 					if (path.includes(filepath)) {
-						this._databaseReferences.push(new SystemDatabaseReferenceProjectEntry(
+						databaseReferenceEntries.push(new SystemDatabaseReferenceProjectEntry(
 							Uri.file(filepath),
 							this.getSystemDacpacSsdtUri(`${name}.dacpac`),
 							name,
 							suppressMissingDependencies));
 					} else {
-						this._databaseReferences.push(new DacpacReferenceProjectEntry({
+						databaseReferenceEntries.push(new DacpacReferenceProjectEntry({
 							dacpacFileLocation: Uri.file(utils.getPlatformSafeFileEntryPath(filepath)),
 							databaseName: name,
 							suppressMissingDependenciesErrors: suppressMissingDependencies
@@ -373,7 +403,7 @@ export class Project implements ISqlProject {
 				const suppressMissingDependenciesErrorNode = projectReferences[r].getElementsByTagName(constants.SuppressMissingDependenciesErrors);
 				const suppressMissingDependencies = suppressMissingDependenciesErrorNode.length === 1 ? (suppressMissingDependenciesErrorNode[0].childNodes[0].nodeValue === constants.True) : false;
 
-				this._databaseReferences.push(new SqlProjectReferenceProjectEntry({
+				databaseReferenceEntries.push(new SqlProjectReferenceProjectEntry({
 					projectRelativePath: Uri.file(utils.getPlatformSafeFileEntryPath(filepath)),
 					projectName: name,
 					projectGuid: '', // don't care when just reading project as a reference
@@ -384,6 +414,26 @@ export class Project implements ISqlProject {
 				console.error(utils.getErrorMessage(e));
 			}
 		}
+
+		return databaseReferenceEntries;
+	}
+
+	private readImportedTargets(): string[] {
+		const imports: string[] = [];
+
+		// find all import statements to include
+		try {
+			const importElements = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Import);
+			for (let i = 0; i < importElements.length; i++) {
+				const importTarget = importElements[i];
+				imports.push(importTarget.getAttribute(constants.Project)!);
+			}
+		} catch (e) {
+			void window.showErrorMessage(constants.errorReadingProject(constants.ImportElements, this.projectFilePath));
+			console.error(utils.getErrorMessage(e));
+		}
+
+		return imports;
 	}
 
 	private resetProject(): void {
