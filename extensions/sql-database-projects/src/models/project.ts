@@ -593,7 +593,10 @@ export class Project implements ISqlProject {
 		}
 
 		// Ensure that parent folder item exist in the project for the corresponding file path
-		await this.ensureFolderItems(path.relative(this.projectFolderPath, path.dirname(absoluteFilePath)));
+		// msbuild sdk projects use globbing to get the folders, so we don't need to do this
+		if (!this.isMsbuildSdkStyleProject) {
+			await this.ensureFolderItems(path.relative(this.projectFolderPath, path.dirname(absoluteFilePath)));
+		}
 
 		// Check if file already has been added to sqlproj
 		const normalizedRelativeFilePath = utils.convertSlashesForSqlProj(relativeFilePath);
@@ -863,7 +866,7 @@ export class Project implements ISqlProject {
 		return outputItemGroup;
 	}
 
-	private addFileToProjFile(path: string, xmlTag: string, attributes?: Map<string, string>): void {
+	private async addFileToProjFile(path: string, xmlTag: string, attributes?: Map<string, string>): Promise<void> {
 		let itemGroup;
 
 		if (xmlTag === constants.PreDeploy || xmlTag === constants.PostDeploy) {
@@ -876,6 +879,14 @@ export class Project implements ISqlProject {
 			}
 		}
 		else {
+			const currentFiles = await this.readFilesInProject();
+
+			// don't need to add an entry if it's already included by a glob pattern
+			// unless it has an attribute that needs to be added, like external streaming job which needs it so it can be determined if validation can run on it
+			if (attributes?.size === 0 && currentFiles.find(f => f.relativePath === utils.convertSlashesForSqlProj(path))) {
+				return;
+			}
+
 			itemGroup = this.findOrCreateItemGroup(xmlTag);
 		}
 
@@ -1202,7 +1213,7 @@ export class Project implements ISqlProject {
 	private async addToProjFile(entry: ProjectEntry, xmlTag?: string, attributes?: Map<string, string>): Promise<void> {
 		switch (entry.type) {
 			case EntryType.File:
-				this.addFileToProjFile((<FileProjectEntry>entry).relativePath, xmlTag ? xmlTag : constants.Build, attributes);
+				await this.addFileToProjFile((<FileProjectEntry>entry).relativePath, xmlTag ? xmlTag : constants.Build, attributes);
 				break;
 			case EntryType.Folder:
 				this.addFolderToProjFile((<FileProjectEntry>entry).relativePath);
