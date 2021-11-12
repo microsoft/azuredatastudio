@@ -593,10 +593,7 @@ export class Project implements ISqlProject {
 		}
 
 		// Ensure that parent folder item exist in the project for the corresponding file path
-		// msbuild sdk projects use globbing to get the folders, so we don't need to do this
-		if (!this.isMsbuildSdkStyleProject) {
-			await this.ensureFolderItems(path.relative(this.projectFolderPath, path.dirname(absoluteFilePath)));
-		}
+		await this.ensureFolderItems(path.relative(this.projectFolderPath, path.dirname(absoluteFilePath)));
 
 		// Check if file already has been added to sqlproj
 		const normalizedRelativeFilePath = utils.convertSlashesForSqlProj(relativeFilePath);
@@ -1361,6 +1358,11 @@ export class Project implements ISqlProject {
 
 		// If folder doesn't exist, create it
 		await fs.mkdir(absoluteFolderPath, { recursive: true });
+
+		// don't need to add the folder to the sqlproj if this is an msbuild sdk style project because globbing will get all the folder
+		if (this.isMsbuildSdkStyleProject) {
+			return this.createFileProjectEntry(relativeFolderPath, EntryType.Folder);
+		}
 
 		// Add project file entries for all folders in the path.
 		// SSDT expects all folders to be explicitly listed in the project file, so we construct
