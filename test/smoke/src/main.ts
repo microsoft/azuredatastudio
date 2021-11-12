@@ -10,6 +10,7 @@ import * as minimist from 'minimist';
 import * as tmp from 'tmp';
 import * as rimraf from 'rimraf';
 import * as mkdirp from 'mkdirp';
+import { ncp } from 'ncp';
 import {
 	Application,
 	Quality,
@@ -274,6 +275,19 @@ before(async function () {
 
 after(async function () {
 	await new Promise(c => setTimeout(c, 500)); // wait for shutdown
+
+	if (opts.log) {
+		const logsDir = path.join(userDataDir, 'logs');
+		const destLogsDir = path.join(path.dirname(opts.log), 'logs');
+		if (fs.existsSync(logsDir)) {
+			console.log(`Path to log dir: ${logsDir} available for copying.`);
+		} else {
+			console.log(`Path to log dir: ${logsDir} not available for copying.`);
+		}
+
+		await new Promise((c, e) => ncp(logsDir, destLogsDir, err => err ? e(err) : c(undefined)));
+	}
+
 	await new Promise((c, e) => rimraf(testDataPath, { maxBusyTries: 10 }, err => err ? e(err) : c(undefined)));
 });
 
