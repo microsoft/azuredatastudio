@@ -118,8 +118,10 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 		}
 
 		existingSettings.unshift({ label: constants.createNewLocalAppSettingWithIcon, isCreateNew: true });
-		if (existingSettings.find(s => s.label === constants.sqlConnectionStringSetting)) {
-			existingSettings.unshift({ label: constants.sqlConnectionStringSetting, isCreateNew: true });
+		let index = existingSettings.findIndex(s => s.label === constants.sqlConnectionStringSetting);
+		if (index > -1) {
+			let sqlConnectionString = existingSettings.splice(index, 1)[0];
+			existingSettings.unshift(sqlConnectionString);
 		} else {
 			existingSettings.unshift({ label: constants.sqlConnectionStringSettingWithIcon, isCreateNew: true });
 		}
