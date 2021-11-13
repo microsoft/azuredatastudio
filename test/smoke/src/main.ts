@@ -284,10 +284,13 @@ after(async function () {
 		/**
 		 * The logs directory is not present during the ADS web build, but is during the Darwin build.
 		 * In situations where the directory is missing and a copy attempt is made, bash exits with code 255 and raises an error
-		 * explaining that there's no such file or directory. This check prevents that error from occurring.
+		 * explaining that there's no such file or directory. This prevents that error from occurring.
 		 */
-		if (fs.existsSync(logsDir)) {
+		try {
 			await new Promise((c, e) => ncp(logsDir, destLogsDir, err => err ? e(err) : c(undefined)));
+		}
+		catch (ex) {
+			console.warn(`Caught exception from ncp: ${ex}`);
 		}
 	}
 
