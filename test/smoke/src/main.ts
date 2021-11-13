@@ -279,13 +279,16 @@ after(async function () {
 	if (opts.log) {
 		const logsDir = path.join(userDataDir, 'logs');
 		const destLogsDir = path.join(path.dirname(opts.log), 'logs');
-		if (fs.existsSync(logsDir)) {
-			console.log(`Path to log dir: ${logsDir} available for copying.`);
-		} else {
-			console.log(`Path to log dir: ${logsDir} not available for copying.`);
-		}
 
-		await new Promise((c, e) => ncp(logsDir, destLogsDir, err => err ? e(err) : c(undefined)));
+		// {{ SQL CARBON EDIT }}
+		/**
+		 * The logs directory is not present during the ADS web build, but is during the Darwin build.
+		 * In situations where the directory is missing and a copy attempt is made, bash exits with code 255 and raises an error
+		 * explaining that there's no such file or directory. This check prevents that error from occurring.
+		 */
+		if (fs.existsSync(logsDir)) {
+			await new Promise((c, e) => ncp(logsDir, destLogsDir, err => err ? e(err) : c(undefined)));
+		}
 	}
 
 	await new Promise((c, e) => rimraf(testDataPath, { maxBusyTries: 10 }, err => err ? e(err) : c(undefined)));
