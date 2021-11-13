@@ -1033,7 +1033,6 @@ export interface SqlMigrationSkuRecommendationsParams {
 	endTime: string;
 	elasticStrategy: boolean;
 	databaseAllowList: string[];
-	databaseDenyList: string[];
 }
 
 export namespace GetSqlMigrationSkuRecommendationsRequest {

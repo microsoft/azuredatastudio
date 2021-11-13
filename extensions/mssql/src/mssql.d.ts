@@ -604,17 +604,6 @@ export interface AssessmentResult {
 
 //
 
-export enum AzureSqlPaaSServiceTier {
-	GeneralPurpose = 0,
-	BusinessCritical = 1,
-	HyperScale = 2
-}
-
-export enum ComputeTier {
-	Provisioned = 0,
-	ServerLess = 1,
-}
-
 export interface AzureSqlSkuCategory
 {
 	sqlTargetPlatform: number;		//
@@ -688,5 +677,5 @@ export interface SkuRecommendationsResult {
 
 export interface ISqlMigrationService {
 	getAssessments(ownerUri: string, databases: string[]): Promise<AssessmentResult | undefined>;
-	getSkuRecommendations(perfQueryIntervalInSec: number, targetPlatform: string, targetSqlInstance: string, targetPercentile: number, scalingFactor: number, startTime: string, endTime: string, elasticStrategy: boolean, databaseAllowList: string[], databaseDenyList: string[]): Promise<SkuRecommendationsResult | undefined>;
+	getSkuRecommendations(perfQueryIntervalInSec: number, targetPlatform: string, targetSqlInstance: string, targetPercentile: number, scalingFactor: number, startTime: string, endTime: string, elasticStrategy: boolean, databaseAllowList: string[]): Promise<SkuRecommendationsResult | undefined>;
 }

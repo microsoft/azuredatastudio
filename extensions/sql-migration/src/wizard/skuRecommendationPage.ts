@@ -546,12 +546,30 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				this.migrationStateModel._assessmentResults = <ServerAssessment>this.migrationStateModel.savedInfo.serverAssessment;
 			} else {
 				await this.migrationStateModel.getDatabaseAssessments(MigrationTargetType.SQLMI);
-				await this.migrationStateModel.getSkuRecommendations(30, "AzureSqlManagedInstance", "DESKTOP-RATRUON", 95, 100, "1900-01-01 00:00:00", "2200-01-01 00:00:00", false, [], []);			/////	entry point
+
+				// TO-DO: read preferences selected from UI
+				const perfQueryIntervalInSec = 30;
+				const targetPlatform = "";	// currently doesn't need to be passed, always does all 3 separately
+				const targetPercentile = 95;
+				const scalingFactor = 100;
+				const startTime = "1900-01-01 00:00:00";
+				const endTime = "2200-01-01 00:00:00";
+				const elasticStrategy = false;
+
+				await this.migrationStateModel.getSkuRecommendations(perfQueryIntervalInSec,
+					targetPlatform,
+					serverName,
+					targetPercentile,
+					scalingFactor,
+					startTime,
+					endTime,
+					elasticStrategy,
+					this.migrationStateModel._databaseAssessment);
+
 				console.log("final results:");
 				console.log(this.migrationStateModel._sqlDbSkuRecommendationResults);
 				console.log(this.migrationStateModel._sqlMiSkuRecommendationResults);
 				console.log(this.migrationStateModel._sqlVmSkuRecommendationResults);
-
 			}
 
 			const assessmentError = this.migrationStateModel._assessmentResults?.assessmentError;

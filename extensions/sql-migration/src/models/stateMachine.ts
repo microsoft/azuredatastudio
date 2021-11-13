@@ -304,9 +304,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		startTime: string,
 		endTime: string,
 		elasticStrategy: boolean,
-		databaseAllowList: string[],
-		databaseDenyList: string[]) : Promise<SkuRecommendation[]> {		/////
+		databaseAllowList: string[]) : Promise<SkuRecommendation[]> {
 		try {
+			console.log("instance name:");
+			console.log((await this.getSourceConnectionProfile()).serverName);
 			console.log("starting sku rec");
 			const response = (await this.migrationService.getSkuRecommendations(perfQueryIntervalInSec,
 				targetPlatform,
@@ -316,8 +317,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				startTime,
 				endTime,
 				elasticStrategy,
-				databaseAllowList,
-				databaseDenyList))!;
+				databaseAllowList))!;
 			this._skuRecommendationApiResponse = response;
 			console.log("raw API response:");
 			console.log(this._skuRecommendationApiResponse);
@@ -326,12 +326,12 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				console.log("sqldb, sqlmi, and sqlvm all returned results")
 				this._sqlDbSkuRecommendationResults = response?.sqlDbRecommendationResults.map(r => {
 					return {
-						resultText: r.databaseName + ": " + r.targetSku.computeSize + " core " + mssql.AzureSqlPaaSServiceTier[r.targetSku.category.sqlServiceTier]		//
+						resultText: r.databaseName + ": " + r.targetSku.computeSize + " core " + ((r.targetSku.category.sqlServiceTier) == 0 ? "GeneralPurpose" : "BusinessCritical") + (r.targetSku.storageMaxSizeInMb / 1024) + " GB"		//
 					};
 				}) ?? []
 				this._sqlMiSkuRecommendationResults = response?.sqlMiRecommendationResults.map(r => {
 					return {
-						resultText: r.sqlInstanceName + ": " + r.targetSku.computeSize + " core " + mssql.AzureSqlPaaSServiceTier[r.targetSku.category.sqlServiceTier]		//
+						resultText: r.sqlInstanceName + ": " + r.targetSku.computeSize + " core " + ((r.targetSku.category.sqlServiceTier) == 0 ? "GeneralPurpose" : "BusinessCritical") + (r.targetSku.storageMaxSizeInMb / 1024) + " GB"		//
 					};
 				}) ?? []
 				this._sqlVmSkuRecommendationResults = response?.sqlVmRecommendationResults.map(r => {
@@ -339,6 +339,14 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						resultText: r.sqlInstanceName + ": " + r.targetSku.virtualMachineSize.vCPUsAvailable + " core " + r.targetSku.virtualMachineSize.azureSkuName		//
 					};
 				}) ?? []
+
+
+				console.log("this._sqlDbSkuRecommendationResults: ");
+				console.log(this._sqlDbSkuRecommendationResults);
+				console.log("this._sqlMiSkuRecommendationResults: ");
+				console.log(this._sqlMiSkuRecommendationResults);
+				console.log("this._sqlVmSkuRecommendationResults: ");
+				console.log(this._sqlVmSkuRecommendationResults);
 			} else {
 				console.log("no results returned")
 				this._sqlDbSkuRecommendationResults = []
@@ -347,7 +355,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			}
 
 		} catch (error) {
-
+			console.log("error:");
+			console.log(error);
 		}
 
 		// this.generateAssessmentTelemetry().catch(e => console.error(e));

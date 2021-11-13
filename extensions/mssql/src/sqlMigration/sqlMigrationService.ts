@@ -49,8 +49,7 @@ export class SqlMigrationService implements mssql.ISqlMigrationService {
 		startTime: string,
 		endTime: string,
 		elasticStrategy: boolean,
-		databaseAllowList: string[],
-		databaseDenyList: string[]) : Promise<mssql.SkuRecommendationsResult | undefined> {
+		databaseAllowList: string[]) : Promise<mssql.SkuRecommendationsResult | undefined> {
 		let params: contracts.SqlMigrationSkuRecommendationsParams = {
 			perfQueryIntervalInSec,
 			targetPlatform,
@@ -60,8 +59,7 @@ export class SqlMigrationService implements mssql.ISqlMigrationService {
 			startTime,
 			endTime,
 			elasticStrategy,
-			databaseAllowList,
-			databaseDenyList
+			databaseAllowList
 		};
 
 		try {
