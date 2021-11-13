@@ -322,7 +322,6 @@ export class ProjectsController {
 			return publishDatabaseDialog.waitForClose();
 		} else {
 			void this.publishDatabase(project);
-			return undefined;
 		}
 	}
 

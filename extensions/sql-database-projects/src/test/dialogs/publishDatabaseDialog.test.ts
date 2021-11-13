@@ -67,7 +67,7 @@ describe('Publish Database Dialog', () => {
 		const proj = await testUtils.createTestProject(baselines.openProjectFileBaseline);
 		const dialog = TypeMoq.Mock.ofType(PublishDatabaseDialog, undefined, undefined, proj);
 		dialog.setup(x => x.getConnectionUri()).returns(() => { return Promise.resolve('Mock|Connection|Uri'); });
-		dialog.setup(x => x.getTargetDatabaseName()).returns(() => 'MockDatabaseName');
+		dialog.setup(x => x.targetDatabaseName).returns(() => 'MockDatabaseName');
 		dialog.setup(x => x.getSqlCmdVariablesForPublish()).returns(() => proj.sqlCmdVariables);
 		dialog.setup(x => x.getDeploymentOptions()).returns(() => { return Promise.resolve(mockDacFxOptionsResult.deploymentOptions); });
 		dialog.setup(x => x.getServerName()).returns(() => 'MockServer');
