@@ -21,17 +21,13 @@ export interface IBookTocManager {
 	addNewTocEntry(pathDetails: TocEntryPathHandler, bookItem: BookTreeItem, isSection?: boolean): Promise<void>;
 	recovery(): Promise<void>;
 	movedFiles: Map<string, string>;
-	tocStates: Map<string, tocState>;
+	tocFiles: Map<string, JupyterBookSection[]>[];
 	enableDnd: boolean;
 }
 
 export interface quickPickResults {
 	quickPickSection?: vscode.QuickPickItem,
 	book?: BookTreeItem
-}
-export interface tocState {
-	current: string,
-	previous: string
 }
 
 const allowedFileExtensions: string[] = [FileExtension.Markdown, FileExtension.Notebook];
@@ -44,9 +40,10 @@ export class BookTocManager implements IBookTocManager {
 	public tableofContents: JupyterBookSection[] = [];
 	public newSection: JupyterBookSection = {};
 	public movedFiles: Map<string, string> = new Map<string, string>();
-	public tocStates: Map<string, tocState> = new Map<string, tocState>();
+	public tocStates: Map<string, JupyterBookSection[]> = new Map<string, JupyterBookSection[]>();
+	private _initialToc: Map<string, JupyterBookSection[]> = new Map<string, JupyterBookSection[]>();
+	public tocFiles: Map<string, JupyterBookSection[]>[] = [];
 	private _modifiedDirectory: Set<string> = new Set<string>();
-	public tocFiles: Map<string, string> = new Map<string, string>();
 	private sourceBookContentPath: string;
 	private targetBookContentPath: string;
 	private _enableDnd: boolean = false;
@@ -157,9 +154,8 @@ export class BookTocManager implements IBookTocManager {
 			await fs.move(value, key);
 		}
 
-		for (const [key, value] of this.tocFiles.entries()) {
-			const yamlFile = await yaml.safeLoad(value);
-			await fs.writeFile(key, yaml.safeDump(yamlFile, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
+		for (const [key, value] of this._initialToc.entries()) {
+			await fs.writeFile(key, yaml.safeDump(value, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
 		}
 	}
 
@@ -201,8 +197,9 @@ export class BookTocManager implements IBookTocManager {
 	async updateTOC(version: BookVersion, tocPath: string, findSection?: JupyterBookSection, addSection?: JupyterBookSection): Promise<void> {
 		const tocFile = await fs.readFile(tocPath, 'utf8');
 		this.tableofContents = yaml.safeLoad(tocFile);
-		if (!this.tocFiles.has(tocPath)) {
-			this.tocFiles.set(tocPath, tocFile);
+		const toc = yaml.safeLoad(tocFile);
+		if (!this._initialToc.has(tocPath)) {
+			this._initialToc.set(tocPath, toc);
 		}
 		let isModified = false;
 		if (findSection) {
@@ -212,13 +209,8 @@ export class BookTocManager implements IBookTocManager {
 			isModified = true;
 		}
 		if (isModified) {
-			let newToc = yaml.safeDump(this.tableofContents, { lineWidth: Infinity, noRefs: true, skipInvalid: true });
-			await fs.writeFile(tocPath, newToc);
-			const state: tocState = {
-				current: newToc,
-				previous: tocFile
-			};
-			this.tocStates.set(tocPath, state);
+			await fs.writeFile(tocPath, yaml.safeDump(this.tableofContents, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
+			this.tocStates.set(tocPath, this.tableofContents);
 		} else {
 			throw (new Error(loc.sectionNotFound(findSection.title, tocPath)));
 		}
@@ -473,6 +465,8 @@ export class BookTocManager implements IBookTocManager {
 					}
 				}
 			}
+			this.tocFiles.push(this._initialToc);
+			this.tocFiles.push(this.tocStates);
 		}
 	}
 
