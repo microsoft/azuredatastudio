@@ -208,8 +208,7 @@ export class NetCoreTool extends ShellExecutionHelper {
 			} else if (this.netCoreInstallState === netCoreInstallState.netCoreVersionTooHigh && vscode.workspace.getConfiguration(DBProjectConfigurationKey)[NetCoreDowngradeDoNotShowAgainKey] === true) {
 				// Assume user has used global.json to override SDK version and proceed with build as is
 			} else {
-				// don't continue building if the user hasn't selected the do not show again on the warnings shown from findOrInstallNetCore()
-				return '';
+				throw new DotNetError(NetCoreSupportedVersionInstallationConfirmation(this.netCoreSdkInstalledVersion!));
 			}
 		}
 
