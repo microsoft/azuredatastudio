@@ -118,13 +118,6 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 		}
 
 		existingSettings.unshift({ label: constants.createNewLocalAppSettingWithIcon, isCreateNew: true });
-		let index = existingSettings.findIndex(s => s.label === constants.sqlConnectionStringSetting);
-		if (index > -1) {
-			let sqlConnectionString = existingSettings.splice(index, 1)[0];
-			existingSettings.unshift(sqlConnectionString);
-		} else {
-			existingSettings.unshift({ label: constants.sqlConnectionStringSettingWithIcon, description: constants.newTextWithParantheses, isCreateNew: true });
-		}
 
 		while (!connectionStringSettingName) {
 			const selectedSetting = await vscode.window.showQuickPick(existingSettings, {
@@ -138,22 +131,18 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 			}
 
 			if (selectedSetting.isCreateNew) {
-				let newConnectionStringSettingName;
-				if (selectedSetting.label === constants.createNewLocalAppSettingWithIcon) {
-					newConnectionStringSettingName = await vscode.window.showInputBox(
-						{
-							title: constants.enterConnectionStringSettingName,
-							ignoreFocusOut: true,
-							validateInput: input => input ? undefined : constants.nameMustNotBeEmpty
-						}
-					) ?? '';
-
-					if (!newConnectionStringSettingName) {
-						// go back to select setting quickpick if user escapes from inputting the setting name in case they changed their mind
-						continue;
+				const newConnectionStringSettingName = await vscode.window.showInputBox(
+					{
+						title: constants.enterConnectionStringSettingName,
+						ignoreFocusOut: true,
+						value: constants.sqlConnectionStringSetting,
+						validateInput: input => input ? undefined : constants.nameMustNotBeEmpty
 					}
-				} else {
-					newConnectionStringSettingName = constants.sqlConnectionStringSetting;
+				) ?? '';
+
+				if (!newConnectionStringSettingName) {
+					// go back to select setting quickpick if user escapes from inputting the setting name in case they changed their mind
+					continue;
 				}
 
 				const newConnectionStringValue = await vscode.window.showInputBox(
@@ -222,4 +211,3 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 	// 6. Add sql extension package reference to project. If the reference is already there, it doesn't get added again
 	await packageHelper.addPackageToAFProjectContainingFile(uri, constants.sqlExtensionPackageName);
 }
-
