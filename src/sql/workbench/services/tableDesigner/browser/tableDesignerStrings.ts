@@ -6,13 +6,13 @@
 import { localize } from 'vs/nls';
 
 export const TablePropertyDescriptions = {
-	NAME: localize('designer.table.description.name', "The name of the schema object."),
+	NAME: localize('designer.table.description.name', "The name of the table object."),
 	DESCRIPTION: localize('designer.table.description.description', "Description for the table."),
 	SCHEMA: localize('designer.table.description.schema', "The schema that contains the table.")
 };
 
 export const ColumnPropertyDescriptions = {
-	NAME: localize('designer.column.description.name', "The name of the schema object."),
+	NAME: localize('designer.column.description.name', "The name of the column object."),
 	ALLOW_NULLS: localize('designer.column.description.allowNulls', "Specifies whether the column may have a NULL value."),
 	DATA_TYPE: localize('designer.column.description.dataType', "Displays the data type name for the column"),
 	DEFAULT_VALUE_OR_BINDING: localize('designer.column.description.defaultValueBinding', "A predefined global default value for the column or binding."),
