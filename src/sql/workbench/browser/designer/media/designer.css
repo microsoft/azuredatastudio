@@ -101,12 +101,12 @@
 .designer-component .components-grid .full-row.group-header {
 	font-weight: bold;
 	line-height: 25px;
-	overflow-y: auto;
 }
 
 .designer-component .description-component {
 	margin: 15px;
 	height: 90px;
+	overflow-y: auto;
 }
 
 .designer-component .description-component-label.codicon.info {
