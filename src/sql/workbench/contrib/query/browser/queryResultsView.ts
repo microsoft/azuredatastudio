@@ -23,6 +23,8 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { Event } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import { ILogService } from 'vs/platform/log/common/log';
 
 class MessagesView extends Disposable implements IPanelView {
 	private messagePanel: MessagePanel;
@@ -170,7 +172,9 @@ export class QueryResultsView extends Disposable {
 		container: HTMLElement,
 		@IThemeService themeService: IThemeService,
 		@IInstantiationService private instantiationService: IInstantiationService,
-		@IQueryModelService private queryModelService: IQueryModelService
+		@IQueryModelService private queryModelService: IQueryModelService,
+		@INotificationService private notificationService: INotificationService,
+		@ILogService private logService: ILogService
 	) {
 		super();
 		this.resultsTab = this._register(new ResultsTab(instantiationService));
@@ -312,6 +316,13 @@ export class QueryResultsView extends Disposable {
 				dynamicTab.captureState(input.state.dynamicModelViewTabsState);
 			});
 			let info = this.queryModelService._getQueryInfo(input.uri) || this.queryModelService._getQueryInfo(URI.parse(input.uri).toString(true));
+
+			if (info?.queryRunner?.isDisposed) {
+				this.logService.error(`The query runner for '${input.uri}' has been disposed.`);
+				this.notificationService.error(nls.localize('queryResults.queryEditorCrashError', "The query editor ran into an issue and has stopped working. Please save and reopen it."));
+				return;
+			}
+
 			if (info?.queryRunner) {
 				this.setQueryRunner(info.queryRunner);
 			} else {

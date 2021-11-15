@@ -18,6 +18,14 @@
         <source xml:lang="en">Column Name</source>
         <target state="translated">列名</target>
       </trans-unit>
+      <trans-unit id="flatFileImport.columnTableTitle">
+        <source xml:lang="en">Column</source>
+        <target state="translated">列</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.createDerivedColumn">
+        <source xml:lang="en">Create derived column</source>
+        <target state="translated">派生列を作成する</target>
+      </trans-unit>
       <trans-unit id="flatFileImport.dataType">
         <source xml:lang="en">Data Type</source>
         <target state="translated">データ型</target>
@@ -30,6 +38,26 @@
         <source xml:lang="en">Database name</source>
         <target state="translated">データベース名</target>
       </trans-unit>
+      <trans-unit id="flatFileImport.deriverColumnInstruction1">
+        <source xml:lang="en">Select the columns of data on the left required to derive your new column</source>
+        <target state="translated">新しい列の派生に必要な左側のデータの列を選択します</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.deriverColumnInstruction2">
+        <source xml:lang="en">Select a row and specify an example transformation that you would like applied to the rest of the column</source>
+        <target state="translated">行を選択し、列の残りの部分に適用する変換例を指定します</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.deriverColumnInstruction3">
+        <source xml:lang="en">Click "Preview Transformation" to preview the transformation</source>
+        <target state="translated">"変換をプレビュー" をクリックして変換をプレビューします</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.deriverColumnInstruction4">
+        <source xml:lang="en">Refine your transformation until you have the desired column</source>
+        <target state="translated">目的の列になるまで、変換を絞り込みます</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.deriverColumnInstruction5">
+        <source xml:lang="en">Specify the new derived column's name and click "Done"</source>
+        <target state="translated">新しい派生列の名前を指定して、"完了" をクリックします</target>
+      </trans-unit>
       <trans-unit id="flatFileImport.fileImport">
         <source xml:lang="en">File to be imported</source>
         <target state="translated">インポートするファイル</target>
@@ -37,6 +65,10 @@
       <trans-unit id="flatFileImport.fileTextboxTitle">
         <source xml:lang="en">Location of the file to be imported</source>
         <target state="translated">インポートするファイルの場所</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.headerIntructionText">
+        <source xml:lang="en">Welcome to the Derived Column Tool! To get started, please follow the steps below:</source>
+        <target state="translated">派生列ツールへようこそ! 開始するには、以下の手順に従ってください。</target>
       </trans-unit>
       <trans-unit id="flatFileImport.importData">
         <source xml:lang="en">Import Data</source>
@@ -78,6 +110,10 @@
         <source xml:lang="en">Summary</source>
         <target state="translated">概要</target>
       </trans-unit>
+      <trans-unit id="flatFileImport.previewTransformation">
+        <source xml:lang="en">Preview Transformation</source>
+        <target state="translated">変換をプレビューする</target>
+      </trans-unit>
       <trans-unit id="flatFileImport.primaryKey">
         <source xml:lang="en">Primary Key</source>
         <target state="translated">主キー</target>
@@ -98,6 +134,14 @@
         <source xml:lang="en">Table schema</source>
         <target state="translated">テーブル スキーマ</target>
       </trans-unit>
+      <trans-unit id="flatFileImport.selectAllColumns">
+        <source xml:lang="en">Select all columns</source>
+        <target state="translated">すべての列を選択</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.selectColumn">
+        <source xml:lang="en">Select column {0}</source>
+        <target state="translated">列 {0} を選択する</target>
+      </trans-unit>
       <trans-unit id="flatFileImport.serverDropdownTitle">
         <source xml:lang="en">Server the database is in</source>
         <target state="translated">データベースが含まれるサーバー</target>
@@ -105,6 +149,18 @@
       <trans-unit id="flatFileImport.serverName">
         <source xml:lang="en">Server name</source>
         <target state="translated">サーバー名</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.specifyDerivedColNameTitle">
+        <source xml:lang="en">Column Name</source>
+        <target state="translated">列名</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.specifyTransformation">
+        <source xml:lang="en">Specify Transformation</source>
+        <target state="translated">変換を指定する</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.specifyTransformationForRow">
+        <source xml:lang="en">Specify transformation for row {0}</source>
+        <target state="translated">行 {0} に変換を指定する</target>
       </trans-unit>
       <trans-unit id="flatFileImport.success.norows">
         <source xml:lang="en">✔ You have successfully inserted the data into a table.</source>

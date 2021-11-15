@@ -43,7 +43,7 @@ export abstract class MigrationWizardPage {
 			return this.handleStateChange(e);
 		});
 
-		this.enableQueueProcessor();
+		await this.enableQueueProcessor();
 	}
 
 	private queueActive = false;

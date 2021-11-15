@@ -1024,3 +1024,33 @@ export namespace GetSqlMigrationAssessmentItemsRequest {
 }
 
 // ------------------------------- <Sql Migration> -----------------------------
+
+// ------------------------------- < Table Designer > ------------------------------------
+
+export interface TableDesignerEditRequestParams {
+	tableInfo: azdata.designers.TableInfo,
+	tableChangeInfo: azdata.designers.DesignerEdit,
+	viewModel: azdata.designers.DesignerViewModel
+}
+
+export interface SaveTableDesignerChangesRequestParams {
+	tableInfo: azdata.designers.TableInfo,
+	viewModel: azdata.designers.DesignerViewModel
+}
+
+export namespace GetTableDesignerInfoRequest {
+	export const type = new RequestType<azdata.designers.TableInfo, azdata.designers.TableDesignerInfo, void, void>('tabledesigner/gettabledesignerinfo');
+}
+
+export namespace ProcessTableDesignerEditRequest {
+	export const type = new RequestType<TableDesignerEditRequestParams, azdata.designers.DesignerEditResult, void, void>('tabledesigner/processedit');
+}
+
+export namespace SaveTableDesignerChangesRequest {
+	export const type = new RequestType<SaveTableDesignerChangesRequestParams, void, void, void>('tabledesigner/savechanges');
+}
+
+export namespace DisposeTableDesignerRequest {
+	export const type = new RequestType<azdata.designers.TableInfo, void, void, void>('tabledesigner/dispose');
+}
+// ------------------------------- < Table Designer > ------------------------------------

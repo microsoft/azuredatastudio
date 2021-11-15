@@ -19,6 +19,7 @@ import { RemoteBookDialogModel } from './dialog/remoteBookDialogModel';
 import { IconPathHelper } from './common/iconHelper';
 import { ExtensionContextHelper } from './common/extensionContextHelper';
 import { BookTreeItem } from './book/bookTreeItem';
+import Logger from './common/logger';
 
 const localize = nls.loadMessageBundle();
 
@@ -30,6 +31,12 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	IconPathHelper.setExtensionContext(extensionContext);
 
 	const appContext = new AppContext(extensionContext);
+	Logger.initialize(appContext.outputChannel);
+	// TODO: Notebook doesn't work without root setting enabled in web mode. Once we start using non-root containers, we can remove this code.
+	const config = vscode.workspace.getConfiguration('notebook');
+	if (vscode.env.uiKind === vscode.UIKind.Web) {
+		await config.update('allowRoot', true, vscode.ConfigurationTarget.Global);
+	}
 	/**
 	 *  									***** IMPORTANT *****
 	 * If changes are made to bookTreeView.openBook, please ensure backwards compatibility with its current state.
@@ -51,6 +58,7 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.removeNotebook', (book: BookTreeItem) => bookTreeViewProvider.removeNotebook(book)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.addNotebook', (book: BookTreeItem) => bookTreeViewProvider.createNotebook(book)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.addMarkdown', (book: BookTreeItem) => bookTreeViewProvider.createMarkdownFile(book)));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.addSection', (book: BookTreeItem) => bookTreeViewProvider.createSection(book)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.createBook', () => bookTreeViewProvider.createBook()));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.openNotebookFolder', (folderPath?: string, urlToOpen?: string, showPreview?: boolean) => bookTreeViewProvider.openNotebookFolder(folderPath, urlToOpen, showPreview)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.pinNotebook', async (book: BookTreeItem) => {
@@ -129,6 +137,18 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('books.command.openLocalizedBooks', async () => {
 		const urlToOpen: string = 'https://aka.ms/localized-BDC-book';
 		await vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(urlToOpen));
+	}));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.boldText', async () => {
+		await appContext.notebookUtils.toggleMarkdownStyle('bold');
+	}));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.italicizeText', async () => {
+		await appContext.notebookUtils.toggleMarkdownStyle('italic');
+	}));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.underlineText', async () => {
+		await appContext.notebookUtils.toggleMarkdownStyle('underline');
+	}));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.codeBlock', async () => {
+		await appContext.notebookUtils.toggleMarkdownStyle('formatBlock', false, 'pre');
 	}));
 
 	controller = new JupyterController(appContext);

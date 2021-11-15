@@ -18,6 +18,14 @@
         <source xml:lang="en">Column Name</source>
         <target state="translated">資料行名稱</target>
       </trans-unit>
+      <trans-unit id="flatFileImport.columnTableTitle">
+        <source xml:lang="en">Column</source>
+        <target state="translated">資料行</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.createDerivedColumn">
+        <source xml:lang="en">Create derived column</source>
+        <target state="translated">建立衍生的資料行</target>
+      </trans-unit>
       <trans-unit id="flatFileImport.dataType">
         <source xml:lang="en">Data Type</source>
         <target state="translated">資料類型</target>
@@ -30,6 +38,26 @@
         <source xml:lang="en">Database name</source>
         <target state="translated">資料庫名稱</target>
       </trans-unit>
+      <trans-unit id="flatFileImport.deriverColumnInstruction1">
+        <source xml:lang="en">Select the columns of data on the left required to derive your new column</source>
+        <target state="translated">在左側選取要衍生新資料行所需的資料行</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.deriverColumnInstruction2">
+        <source xml:lang="en">Select a row and specify an example transformation that you would like applied to the rest of the column</source>
+        <target state="translated">選取資料列，並指定您想要套用到其餘資料行的範例轉換</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.deriverColumnInstruction3">
+        <source xml:lang="en">Click "Preview Transformation" to preview the transformation</source>
+        <target state="translated">按一下 [預覽轉換] 以預覽轉換</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.deriverColumnInstruction4">
+        <source xml:lang="en">Refine your transformation until you have the desired column</source>
+        <target state="translated">縮小轉換範圍，直到取得所需的資料行為止</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.deriverColumnInstruction5">
+        <source xml:lang="en">Specify the new derived column's name and click "Done"</source>
+        <target state="translated">指定新的衍生資料行名稱，然後按一下 [完成]</target>
+      </trans-unit>
       <trans-unit id="flatFileImport.fileImport">
         <source xml:lang="en">File to be imported</source>
         <target state="translated">要匯入的檔案</target>
@@ -37,6 +65,10 @@
       <trans-unit id="flatFileImport.fileTextboxTitle">
         <source xml:lang="en">Location of the file to be imported</source>
         <target state="translated">要匯入檔案的位置</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.headerIntructionText">
+        <source xml:lang="en">Welcome to the Derived Column Tool! To get started, please follow the steps below:</source>
+        <target state="translated">歡迎使用衍生的資料行工具! 若要開始使用，請遵循下列步驟:</target>
       </trans-unit>
       <trans-unit id="flatFileImport.importData">
         <source xml:lang="en">Import Data</source>
@@ -78,6 +110,10 @@
         <source xml:lang="en">Summary</source>
         <target state="translated">摘要</target>
       </trans-unit>
+      <trans-unit id="flatFileImport.previewTransformation">
+        <source xml:lang="en">Preview Transformation</source>
+        <target state="translated">預覽轉換</target>
+      </trans-unit>
       <trans-unit id="flatFileImport.primaryKey">
         <source xml:lang="en">Primary Key</source>
         <target state="translated">主索引鍵</target>
@@ -98,6 +134,14 @@
         <source xml:lang="en">Table schema</source>
         <target state="translated">資料表結構描述</target>
       </trans-unit>
+      <trans-unit id="flatFileImport.selectAllColumns">
+        <source xml:lang="en">Select all columns</source>
+        <target state="translated">選取所有資料行</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.selectColumn">
+        <source xml:lang="en">Select column {0}</source>
+        <target state="translated">選取資料行 {0}</target>
+      </trans-unit>
       <trans-unit id="flatFileImport.serverDropdownTitle">
         <source xml:lang="en">Server the database is in</source>
         <target state="translated">資料庫所在的伺服器</target>
@@ -105,6 +149,18 @@
       <trans-unit id="flatFileImport.serverName">
         <source xml:lang="en">Server name</source>
         <target state="translated">伺服器名稱</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.specifyDerivedColNameTitle">
+        <source xml:lang="en">Column Name</source>
+        <target state="translated">資料行名稱</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.specifyTransformation">
+        <source xml:lang="en">Specify Transformation</source>
+        <target state="translated">指定轉換</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.specifyTransformationForRow">
+        <source xml:lang="en">Specify transformation for row {0}</source>
+        <target state="translated">指定資料列 {0} 的轉換</target>
       </trans-unit>
       <trans-unit id="flatFileImport.success.norows">
         <source xml:lang="en">✔ You have successfully inserted the data into a table.</source>

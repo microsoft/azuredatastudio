@@ -104,6 +104,12 @@ export default class QueryRunner extends Disposable {
 		return this._hasCompleted;
 	}
 
+	private _isDisposed: boolean = false;
+
+	get isDisposed(): boolean {
+		return this._isDisposed;
+	}
+
 	/**
 	 * For public use only, for private use, directly access the member
 	 */
@@ -417,8 +423,10 @@ export default class QueryRunner extends Disposable {
 	}
 
 	public override dispose() {
+		this.logService.info(`Disposing the query runner of: '${this.uri}'', call stack: ${new Error().stack}`);
 		this._batchSets = undefined!;
 		super.dispose();
+		this._isDisposed = true;
 	}
 
 	public changeConnectionUri(oldUri: string, newUri: string): Promise<void> {

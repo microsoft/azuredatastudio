@@ -59,7 +59,7 @@ export class MigrationLocalStorage {
 			}
 			validMigrations.push(migration);
 		}
-		this.context.globalState.update(this.mementoToken, validMigrations);
+		await this.context.globalState.update(this.mementoToken, validMigrations);
 		return result;
 	}
 
@@ -77,7 +77,7 @@ export class MigrationLocalStorage {
 		}
 	}
 
-	public static saveMigration(
+	public static async saveMigration(
 		connectionProfile: azdata.connection.ConnectionProfile,
 		migrationContext: DatabaseMigration,
 		targetMI: SqlManagedInstance | SqlVMServer,
@@ -85,7 +85,7 @@ export class MigrationLocalStorage {
 		subscription: azureResource.AzureResourceSubscription,
 		controller: SqlMigrationService,
 		asyncURL: string,
-		sessionId: string): void {
+		sessionId: string): Promise<void> {
 		try {
 			let migrationMementos: MigrationContext[] = this.context.globalState.get(this.mementoToken) || [];
 			migrationMementos = migrationMementos.filter(m => m.migrationContext.id !== migrationContext.id);
@@ -99,14 +99,14 @@ export class MigrationLocalStorage {
 				asyncUrl: asyncURL,
 				sessionId: sessionId
 			});
-			this.context.globalState.update(this.mementoToken, migrationMementos);
+			await this.context.globalState.update(this.mementoToken, migrationMementos);
 		} catch (e) {
 			console.log(e);
 		}
 	}
 
-	public static clearMigrations() {
-		this.context.globalState.update(this.mementoToken, ([] as MigrationContext[]));
+	public static async clearMigrations(): Promise<void> {
+		await this.context.globalState.update(this.mementoToken, ([] as MigrationContext[]));
 	}
 
 	public static removeMigrationSecrets(migration: DatabaseMigration): DatabaseMigration {
@@ -153,4 +153,14 @@ export enum ProvisioningState {
 	Failed = 'Failed',
 	Succeeded = 'Succeeded',
 	Creating = 'Creating'
+}
+
+export enum BackupFileInfoStatus {
+	Arrived = 'Arrived',
+	Uploading = 'Uploading',
+	Uploaded = 'Uploaded',
+	Restoring = 'Restoring',
+	Restored = 'Restored',
+	Canceled = 'Canceled',
+	Ignored = 'Ignored'
 }

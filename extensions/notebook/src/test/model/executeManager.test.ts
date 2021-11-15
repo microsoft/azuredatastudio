@@ -14,10 +14,10 @@ import { JupyterServerInstallation } from '../../jupyter/jupyterServerInstallati
 import { Deferred } from '../../common/promise';
 import { MockExtensionContext } from '../common/stubs';
 import { JupyterSessionManager } from '../../jupyter/jupyterSessionManager';
-import { JupyterNotebookManager } from '../../jupyter/jupyterNotebookManager';
+import { JupyterExecuteManager } from '../../jupyter/jupyterExecuteManager';
 import { initInstallAndInstance } from './serverManager.test';
 
-describe('Jupyter Notebook Manager', function (): void {
+describe('Jupyter Execute Manager', function (): void {
 	const pythonKernelSpec: azdata.nb.IKernelSpec = {
 		name: 'python3',
 		display_name: 'Python 3'
@@ -25,7 +25,7 @@ describe('Jupyter Notebook Manager', function (): void {
 	let expectedPath = 'my/notebook.ipynb';
 	let serverManager: LocalJupyterServerManager;
 	let sessionManager: JupyterSessionManager;
-	let notebookManager: JupyterNotebookManager;
+	let executeManager: JupyterExecuteManager;
 	let deferredInstall: Deferred<void>;
 	let mockExtensionContext: MockExtensionContext;
 	let mockFactory: TypeMoq.IMock<ServerInstanceFactory>;
@@ -48,48 +48,37 @@ describe('Jupyter Notebook Manager', function (): void {
 		serverManager = new LocalJupyterServerManager(serverManagerOptions);
 
 		sessionManager = new JupyterSessionManager();
-		notebookManager = new JupyterNotebookManager(serverManager, sessionManager);
+		executeManager = new JupyterExecuteManager(serverManager, sessionManager);
 	});
 
 	it('Server settings should be set', async function (): Promise<void> {
-		should(notebookManager.serverSettings).be.undefined();
+		should(executeManager.serverSettings).be.undefined();
 		let expectedUri = vscode.Uri.parse('http://localhost:1234?token=abcdefghijk');
 		initInstallAndInstance(expectedUri, mockFactory);
 		deferredInstall.resolve();
 
 		// When I start the server
 		await serverManager.startServer(pythonKernelSpec);
-		should(notebookManager.serverSettings.baseUrl).equal('http://localhost:1234', 'Server settings did not match expected value');
+		should(executeManager.serverSettings.baseUrl).equal('http://localhost:1234', 'Server settings did not match expected value');
 	});
 
 	it('Session Manager should exist', async function (): Promise<void> {
-		should(notebookManager.sessionManager).deepEqual(sessionManager);
+		should(executeManager.sessionManager).deepEqual(sessionManager);
 	});
 
 	it('Server Manager should exist', async function (): Promise<void> {
-		should(notebookManager.serverManager).deepEqual(serverManager);
-	});
-
-	it('Content manager should always be undefined', async function (): Promise<void> {
-		should(notebookManager.contentManager).be.undefined();
-		let expectedUri = vscode.Uri.parse('http://localhost:1234?token=abcdefghijk');
-		initInstallAndInstance(expectedUri, mockFactory);
-		deferredInstall.resolve();
-
-		// When I start the server
-		await serverManager.startServer(pythonKernelSpec);
-		should(notebookManager.contentManager).be.undefined();
+		should(executeManager.serverManager).deepEqual(serverManager);
 	});
 
 	it('Session and server managers should be shutdown/stopped on dispose', async function(): Promise<void> {
 		let sessionManager = TypeMoq.Mock.ofType<JupyterSessionManager>();
 		let serverManager = TypeMoq.Mock.ofType<LocalJupyterServerManager>();
-		notebookManager = new JupyterNotebookManager(serverManager.object, sessionManager.object);
+		executeManager = new JupyterExecuteManager(serverManager.object, sessionManager.object);
 		sessionManager.setup(s => s.shutdownAll()).returns(() => new Promise((resolve) => resolve()));
 		serverManager.setup(s => s.stopServer()).returns(() => new Promise((resolve) => resolve()));
 
-		// After I dispose the notebook manager
-		notebookManager.dispose();
+		// After I dispose the execute manager
+		executeManager.dispose();
 
 		// Session and server managers should be shutdown/stopped
 		sessionManager.verify((s) => s.shutdownAll(), TypeMoq.Times.once());

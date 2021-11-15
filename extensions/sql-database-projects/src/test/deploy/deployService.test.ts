@@ -11,10 +11,13 @@ import { DeployService } from '../../models/deploy/deployService';
 import { Project } from '../../models/project';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import * as childProcess from 'child_process';
 import { AppSettingType, IDeployProfile } from '../../models/deploy/deployProfile';
-let fse = require('fs-extra');
-let path = require('path');
+import * as UUID from 'vscode-languageclient/lib/utils/uuid';
+import * as fse from 'fs-extra';
+import * as path from 'path';
+import * as constants from '../../common/constants';
+import { ShellExecutionHelper } from '../../tools/shellExecutionHelper';
+import * as TypeMoq from 'typemoq';
 
 export interface TestContext {
 	outputChannel: vscode.OutputChannel;
@@ -66,28 +69,54 @@ describe('deploy service', function (): void {
 	it('Should deploy a database to docker container successfully', async function (): Promise<void> {
 		const testContext = createContext();
 		const deployProfile: IDeployProfile = {
-			appSettingType: AppSettingType.AzureFunction,
-			appSettingFile: '',
-			deploySettings: undefined,
-			envVariableName: '',
 			localDbSetting: {
 				dbName: 'test',
 				password: 'PLACEHOLDER',
 				port: 1433,
 				serverName: 'localhost',
-				userName: 'sa'
+				userName: 'sa',
+				dockerBaseImage: 'image',
+				connectionRetryTimeout: 1
 			}
 		};
 		const projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
 		const project1 = await Project.openProject(vscode.Uri.file(projFilePath).fsPath);
-		const deployService = new DeployService(testContext.outputChannel);
+		const shellExecutionHelper = TypeMoq.Mock.ofType(ShellExecutionHelper);
+		shellExecutionHelper.setup(x => x.runStreamedCommand(TypeMoq.It.isAny(),
+		undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('id'));
+		const deployService = new DeployService(testContext.outputChannel, shellExecutionHelper.object);
 		sandbox.stub(azdata.connection, 'connect').returns(Promise.resolve(mockConnectionResult));
 		sandbox.stub(azdata.connection, 'getUriForConnection').returns(Promise.resolve('connection'));
+		sandbox.stub(vscode.window, 'showWarningMessage').returns(<any>Promise.resolve(constants.yesString));
 		sandbox.stub(azdata.tasks, 'startBackgroundOperation').callThrough();
-		sandbox.stub(childProcess, 'exec').yields(undefined, 'id');
+
 		let connection = await deployService.deploy(deployProfile, project1);
 		should(connection).equals('connection');
 
+	});
+
+	it('Should fail the deploy if docker is not running', async function (): Promise<void> {
+		const testContext = createContext();
+		const deployProfile: IDeployProfile = {
+			localDbSetting: {
+				dbName: 'test',
+				password: 'PLACEHOLDER',
+				port: 1433,
+				serverName: 'localhost',
+				userName: 'sa',
+				dockerBaseImage: 'image',
+				connectionRetryTimeout: 1
+			}
+		};
+		const projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const project1 = await Project.openProject(vscode.Uri.file(projFilePath).fsPath);
+		const shellExecutionHelper = TypeMoq.Mock.ofType(ShellExecutionHelper);
+		shellExecutionHelper.setup(x => x.runStreamedCommand(TypeMoq.It.isAny(),
+		undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.reject('error'));
+		const deployService = new DeployService(testContext.outputChannel, shellExecutionHelper.object);
+		sandbox.stub(azdata.tasks, 'startBackgroundOperation').callThrough();
+
+		await should(deployService.deploy(deployProfile, project1)).rejected();
 	});
 
 	it('Should retry connecting to the server', async function (): Promise<void> {
@@ -97,17 +126,22 @@ describe('deploy service', function (): void {
 			password: 'PLACEHOLDER',
 			port: 1433,
 			serverName: 'localhost',
-			userName: 'sa'
+			userName: 'sa',
+			dockerBaseImage: 'image',
+			connectionRetryTimeout: 1
 		};
 
-		const deployService = new DeployService(testContext.outputChannel);
+		const shellExecutionHelper = TypeMoq.Mock.ofType(ShellExecutionHelper);
+		shellExecutionHelper.setup(x => x.runStreamedCommand(TypeMoq.It.isAny(),
+		undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('id'));
+		const deployService = new DeployService(testContext.outputChannel, shellExecutionHelper.object);
 		let connectionStub = sandbox.stub(azdata.connection, 'connect');
 		connectionStub.onFirstCall().returns(Promise.resolve(mockFailedConnectionResult));
 		connectionStub.onSecondCall().returns(Promise.resolve(mockConnectionResult));
 		sandbox.stub(azdata.connection, 'getUriForConnection').returns(Promise.resolve('connection'));
 		sandbox.stub(azdata.tasks, 'startBackgroundOperation').callThrough();
-		sandbox.stub(childProcess, 'exec').yields(undefined, 'id');
-		let connection = await deployService.getConnection(localDbSettings, false, 'master', 2);
+
+		let connection = await deployService.getConnection(localDbSettings, false, 'master');
 		should(connection).equals('connection');
 	});
 
@@ -137,22 +171,29 @@ describe('deploy service', function (): void {
 		await fse.writeFile(filePath, settingContent);
 
 		const deployProfile: IDeployProfile = {
-			appSettingType: AppSettingType.AzureFunction,
-			appSettingFile: filePath,
-			deploySettings: undefined,
-			envVariableName: 'SQLConnectionString',
 			localDbSetting: {
 				dbName: 'test',
 				password: 'PLACEHOLDER',
 				port: 1433,
 				serverName: 'localhost',
-				userName: 'sa'
+				userName: 'sa',
+				dockerBaseImage: 'image'
 			}
 		};
 
-		const deployService = new DeployService(testContext.outputChannel);
-		sandbox.stub(childProcess, 'exec').yields(undefined, 'id');
-		await deployService.updateAppSettings(deployProfile);
+		const appInteg = {
+			appSettingType: AppSettingType.AzureFunction,
+			appSettingFile: filePath,
+			deploySettings: undefined,
+			envVariableName: 'SQLConnectionString'
+		};
+
+		const shellExecutionHelper = TypeMoq.Mock.ofType(ShellExecutionHelper);
+		shellExecutionHelper.setup(x => x.runStreamedCommand(TypeMoq.It.isAny(),
+		undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('id'));
+		const deployService = new DeployService(testContext.outputChannel, shellExecutionHelper.object);
+
+		await deployService.updateAppSettings(appInteg, deployProfile);
 		let newContent = JSON.parse(fse.readFileSync(filePath, 'utf8'));
 		should(newContent).deepEqual(expected);
 
@@ -184,39 +225,86 @@ describe('deploy service', function (): void {
 		await fse.writeFile(filePath, settingContent);
 
 		const deployProfile: IDeployProfile = {
-			appSettingType: AppSettingType.AzureFunction,
-			appSettingFile: filePath,
+
 			deploySettings: {
 				connectionUri: 'connection',
 				databaseName: 'test',
 				serverName: 'test'
 			},
-			envVariableName: 'SQLConnectionString',
 			localDbSetting: undefined
 		};
 
-		const deployService = new DeployService(testContext.outputChannel);
+		const appInteg = {
+			appSettingType: AppSettingType.AzureFunction,
+			appSettingFile: filePath,
+			envVariableName: 'SQLConnectionString',
+		};
+		const shellExecutionHelper = TypeMoq.Mock.ofType(ShellExecutionHelper);
+		shellExecutionHelper.setup(x => x.runStreamedCommand(TypeMoq.It.isAny(),
+		undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve('id'));
+		const deployService = new DeployService(testContext.outputChannel, shellExecutionHelper.object);
 		let connection = new azdata.connection.ConnectionProfile();
 		sandbox.stub(azdata.connection, 'getConnection').returns(Promise.resolve(connection));
-		sandbox.stub(childProcess, 'exec').yields(undefined, 'id');
+
 		sandbox.stub(azdata.connection, 'getConnectionString').returns(Promise.resolve('connectionString'));
-		await deployService.updateAppSettings(deployProfile);
+		await deployService.updateAppSettings(appInteg, deployProfile);
 		let newContent = JSON.parse(fse.readFileSync(filePath, 'utf8'));
 		should(newContent).deepEqual(expected);
-
 	});
 
 	it('Should clean a list of docker images successfully', async function (): Promise<void> {
 		const testContext = createContext();
-		const deployService = new DeployService(testContext.outputChannel);
-
-		let process = sandbox.stub(childProcess, 'exec').yields(undefined, `
-		id
+		const shellExecutionHelper = TypeMoq.Mock.ofType(ShellExecutionHelper);
+		shellExecutionHelper.setup(x => x.runStreamedCommand(TypeMoq.It.isAny(),
+		undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(`id
 		id2
-		id3`);
+		id3`));
+		const deployService = new DeployService(testContext.outputChannel, shellExecutionHelper.object);
+		const ids = await deployService.getCurrentDockerContainer('label');
+		await deployService.cleanDockerObjects(ids, ['docker stop', 'docker rm']);
+		shellExecutionHelper.verify(x => x.runStreamedCommand(TypeMoq.It.isAny(), undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.exactly(7));
+	});
 
-		await deployService.cleanDockerObjects(`docker ps -q -a --filter label=test`, ['docker stop', 'docker rm']);
-		should(process.calledThrice);
+	it('Should create docker image info correctly', () => {
+		const testContext = createContext();
+		const deployService = new DeployService(testContext.outputChannel);
+		const id = UUID.generateUuid().toLocaleLowerCase();
+		const baseImage = 'baseImage:latest';
+		const tag = baseImage.replace(':', '-').replace(constants.sqlServerDockerRegistry, '').replace(/[^a-zA-Z0-9_,\-]/g, '').toLocaleLowerCase();
+
+		should(deployService.getDockerImageSpec('project-name123_test', baseImage, id)).deepEqual({
+			label: `${constants.dockerImageLabelPrefix}-project-name123_test`,
+			containerName: `${constants.dockerImageNamePrefix}-project-name123_test-${id}`,
+			tag: `${constants.dockerImageNamePrefix}-project-name123_test-${tag}`
+		});
+		should(deployService.getDockerImageSpec('project-name1', baseImage, id)).deepEqual({
+			label: `${constants.dockerImageLabelPrefix}-project-name1`,
+			containerName: `${constants.dockerImageNamePrefix}-project-name1-${id}`,
+			tag: `${constants.dockerImageNamePrefix}-project-name1-${tag}`
+		});
+		should(deployService.getDockerImageSpec('project-name2$#', baseImage, id)).deepEqual({
+			label: `${constants.dockerImageLabelPrefix}-project-name2`,
+			containerName: `${constants.dockerImageNamePrefix}-project-name2-${id}`,
+			tag: `${constants.dockerImageNamePrefix}-project-name2-${tag}`
+		});
+		should(deployService.getDockerImageSpec('project - name3', baseImage, id)).deepEqual({
+			label: `${constants.dockerImageLabelPrefix}-project-name3`,
+			containerName: `${constants.dockerImageNamePrefix}-project-name3-${id}`,
+			tag: `${constants.dockerImageNamePrefix}-project-name3-${tag}`
+		});
+		should(deployService.getDockerImageSpec('project_name4', baseImage, id)).deepEqual({
+			label: `${constants.dockerImageLabelPrefix}-project_name4`,
+			containerName: `${constants.dockerImageNamePrefix}-project_name4-${id}`,
+			tag: `${constants.dockerImageNamePrefix}-project_name4-${tag}`
+		});
+
+
+		const reallyLongName = new Array(128 + 1).join('a').replace(/[^a-zA-Z0-9_,\-]/g, '');
+		const imageProjectName = reallyLongName.substring(0, 128 - (constants.dockerImageNamePrefix.length + tag.length + 2));
+		should(deployService.getDockerImageSpec(reallyLongName, baseImage, id)).deepEqual({
+			label: `${constants.dockerImageLabelPrefix}-${imageProjectName}`,
+			containerName: `${constants.dockerImageNamePrefix}-${imageProjectName}-${id}`,
+			tag: `${constants.dockerImageNamePrefix}-${imageProjectName}-${tag}`
+		});
 	});
 });
-
