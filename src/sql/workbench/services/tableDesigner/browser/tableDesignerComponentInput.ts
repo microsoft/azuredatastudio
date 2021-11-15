@@ -264,9 +264,148 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			]
 		};
 
-		const tabs = [columnsTab, generalTab];
+		const foreignKeyColumnMappingProperties: DesignerDataPropertyInfo[] = [
+			{
+				componentType: 'dropdown',
+				propertyName: designers.ForeignKeyColumnMappingProperty.ForeignKeyColumn,
+				componentProperties: {
+					title: localize('tableDesigner.foreignKeyColumn', "Foreign Key Column"),
+					width: 150
+				}
+			},
+			{
+				componentType: 'dropdown',
+				propertyName: designers.ForeignKeyColumnMappingProperty.PrimaryKeyColumn,
+				componentProperties: {
+					title: localize('tableDesigner.primaryKeyColumn', "Primary Key Column"),
+					width: 150
+				}
+			},
+		];
+
+		const foreignKeyProperties: DesignerDataPropertyInfo[] = [
+			{
+				componentType: 'input',
+				propertyName: designers.TableForeignKeyProperty.Name,
+				componentProperties: {
+					title: localize('tableDesigner.foreignKeyNameTitle', "Name"),
+					width: 300
+				}
+			},
+			{
+				componentType: 'dropdown',
+				propertyName: designers.TableForeignKeyProperty.PrimaryKeyTable,
+				componentProperties: {
+					title: localize('tableDesigner.PrimaryKeyTableName', "Primary Key Table"),
+					width: 200
+				}
+			},
+			{
+				componentType: 'dropdown',
+				propertyName: designers.TableForeignKeyProperty.OnUpdateAction,
+				componentProperties: {
+					title: localize('tableDesigner.foreignKeyOnUpdateAction', "On Update Action"),
+					width: 100
+				}
+			},
+			{
+				componentType: 'dropdown',
+				propertyName: designers.TableForeignKeyProperty.OnDeleteAction,
+				componentProperties: {
+					title: localize('tableDesigner.foreignKeyOnDeleteAction', "On Delete Action"),
+					width: 100
+				}
+			},
+			{
+				componentType: 'table',
+				propertyName: designers.TableForeignKeyProperty.Columns,
+				group: localize('tableDesigner.foreignKeyColumns', "Column Mapping"),
+				componentProperties: <DesignerTableProperties>{
+					ariaLabel: localize('tableDesigner.foreignKeyColumns', "Column Mapping"),
+					columns: [designers.ForeignKeyColumnMappingProperty.ForeignKeyColumn, designers.ForeignKeyColumnMappingProperty.PrimaryKeyColumn],
+					itemProperties: foreignKeyColumnMappingProperties,
+					objectTypeDisplayName: '',
+					canAddRows: designerInfo.view.canAddForeignKeys,
+					canRemoveRows: designerInfo.view.canRemoveColumns,
+				}
+			},
+		];
+
+		if (designerInfo.view.additionalForeignKeyProperties) {
+			foreignKeyProperties.push(...designerInfo.view.additionalForeignKeyProperties);
+		}
+
+		const foreignKeysTableProperties = designerInfo.view.foreignKeysTableProperties?.length > 0 ? designerInfo.view.foreignKeysTableProperties : [
+			designers.TableForeignKeyProperty.Name,
+			designers.TableForeignKeyProperty.PrimaryKeyTable,
+		];
+
+		const foreignKeysTab = <DesignerTab>{
+			title: localize('tableDesigner.foreignKeysTabTitle', "Foreign Keys"),
+			components: [
+				{
+					componentType: 'table',
+					propertyName: designers.TableProperty.ForeignKeys,
+					showInPropertiesView: false,
+					componentProperties: <DesignerTableProperties>{
+						ariaLabel: localize('tableDesigner.foreignKeysTabTitle', "Foreign Keys"),
+						columns: foreignKeysTableProperties,
+						itemProperties: foreignKeyProperties,
+						objectTypeDisplayName: localize('tableDesigner.columnTypeName', "Column"),
+						canAddRows: designerInfo.view.canAddForeignKeys,
+						canRemoveRows: designerInfo.view.canRemoveForeignKeys
+					}
+				}
+			]
+		};
+
+		const checkConstraintProperties: DesignerDataPropertyInfo[] = [
+			{
+				componentType: 'input',
+				propertyName: designers.TableCheckConstraintProperty.Name,
+				description: localize('tableDesigner.checkConstraintNameDescription', "Name of the check constraint."),
+				componentProperties: {
+					title: localize('tableDesigner.checkConstraintNameTitle', "Name"),
+					width: 200
+				}
+			}, {
+				componentType: 'input',
+				propertyName: designers.TableCheckConstraintProperty.Expression,
+				description: localize('tableDesigner.checkConstraintExpressionDescription', "The expression defining the check constraint."),
+				componentProperties: {
+					title: localize('tableDesigner.checkConstraintExpressionTitle', "Expression"),
+					width: 300
+				}
+			}
+		];
+
+		if (designerInfo.view.additionalCheckConstraintProperties) {
+			checkConstraintProperties.push(...designerInfo.view.additionalCheckConstraintProperties);
+		}
+
+		const checkConstraintsTab = <DesignerTab>{
+			title: localize('tableDesigner.checkConstraintsTabTitle', "Check Constraints"),
+			components: [
+				{
+					componentType: 'table',
+					propertyName: designers.TableProperty.CheckConstraints,
+					showInPropertiesView: false,
+					componentProperties: <DesignerTableProperties>{
+						ariaLabel: localize('tableDesigner.checkConstraintsTabTitle', "Check Constraints"),
+						columns: [designers.TableCheckConstraintProperty.Name, designers.TableCheckConstraintProperty.Expression],
+						itemProperties: checkConstraintProperties,
+						objectTypeDisplayName: localize('tableDesigner.checkConstraintTypeName', "Check Constraint"),
+						canAddRows: designerInfo.view.canAddCheckConstraints,
+						canRemoveRows: designerInfo.view.canRemoveCheckConstraints
+					}
+				}
+			]
+		};
+
+		const tabs = [columnsTab, foreignKeysTab, checkConstraintsTab, generalTab];
+
 		if (designerInfo.view.additionalTabs) {
-			tabs.push(...tabs);
+			tabs.push(...designerInfo.view.additionalTabs);
 		}
 
 		this._view = {
