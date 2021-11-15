@@ -5,7 +5,7 @@
 
 import * as path from 'vs/base/common/path';
 import { nb, ServerInfo } from 'azdata';
-import { DEFAULT_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_FILETYPE, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
+import { DEFAULT_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_FILETYPE, INotebookService, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
 import { URI } from 'vs/base/common/uri';
 
 export const clusterEndpointsProperty = 'clusterEndpoints';
@@ -41,6 +41,10 @@ export function getStandardKernelsForProvider(providerId: string, notebookServic
 		return [];
 	}
 	let standardKernels = notebookService.getStandardKernelsForProvider(providerId);
+	if (!standardKernels || standardKernels.length === 0) {
+		// Fall back to using SQL provider instead
+		standardKernels = notebookService.getStandardKernelsForProvider(SQL_NOTEBOOK_PROVIDER) ?? [];
+	}
 	standardKernels.forEach(kernel => {
 		Object.assign(<IStandardKernelWithProvider>kernel, {
 			name: kernel.name,
