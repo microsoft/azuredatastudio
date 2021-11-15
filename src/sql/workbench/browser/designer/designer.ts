@@ -531,8 +531,8 @@ export class Designer extends Disposable implements IThemable {
 
 	// Shows the description for a property in the properties pane
 	// if the property has a description
-	private showDescription(hasDescription: boolean, definition: DesignerDataPropertyInfo) {
-		if (hasDescription) {
+	private showDescription(showDescription: boolean, definition: DesignerDataPropertyInfo) {
+		if (showDescription) {
 			this._propertiesPane.setDescriptionText(definition.componentProperties.title, definition.description);
 			this._propertiesPane.showDescription = true;
 		} else {
@@ -549,6 +549,7 @@ export class Designer extends Disposable implements IThemable {
 		const propertyPath = [...parentPath, componentDefinition.propertyName];
 		let component: DesignerUIComponent;
 		const hasDescription: boolean = componentDefinition?.description ? true : false;
+		const showDescription = hasDescription && !isMainView;
 		switch (componentDefinition.componentType) {
 			case 'input':
 				container.appendChild(DOM.$('')).appendChild(DOM.$('span.component-label')).innerText = componentDefinition.componentProperties?.title ?? '';
@@ -565,7 +566,7 @@ export class Designer extends Disposable implements IThemable {
 					this._propertiesPane.showDescription = false;
 				});
 				input.onInputFocus(() => {
-					this.showDescription(hasDescription, componentDefinition);
+					this.showDescription(showDescription, componentDefinition);
 				});
 				if (setWidth && inputProperties.width !== undefined) {
 					input.width = inputProperties.width as number;
@@ -583,7 +584,7 @@ export class Designer extends Disposable implements IThemable {
 					this.handleEdit({ type: DesignerEditType.Update, path: propertyPath, value: e.selected });
 				});
 				dropdown.onDidFocus(() => {
-					this.showDescription(hasDescription, componentDefinition);
+					this.showDescription(showDescription, componentDefinition);
 				});
 				component = dropdown;
 				break;
@@ -598,7 +599,7 @@ export class Designer extends Disposable implements IThemable {
 					this.handleEdit({ type: DesignerEditType.Update, path: propertyPath, value: newValue });
 				});
 				checkbox.onFocus(() => {
-					this.showDescription(hasDescription, componentDefinition);
+					this.showDescription(showDescription, componentDefinition);
 				});
 				component = checkbox;
 				break;
