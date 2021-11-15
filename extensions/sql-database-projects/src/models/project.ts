@@ -915,10 +915,10 @@ export class Project implements ISqlProject {
 		// if it's still included by a glob
 		if (this.isMsbuildSdkStyleProject) {
 			await this.serializeToProjFile(this.projFileXmlDoc);
-			const currentFiles = await this.getFilesInProject(false);
+			const currentFiles = await this.readFilesInProject();
 
 			// only add a node to exclude the file if it's still included by a glob
-			if (currentFiles.has(utils.convertSlashesForSqlProj(path))) {
+			if (currentFiles.find(f => f.relativePath === utils.convertSlashesForSqlProj(path))) {
 				const removeFileNode = this.projFileXmlDoc!.createElement(constants.Build);
 				removeFileNode.setAttribute(constants.Remove, utils.convertSlashesForSqlProj(path));
 				this.findOrCreateItemGroup(constants.Build).appendChild(removeFileNode);
