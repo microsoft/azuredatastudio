@@ -123,7 +123,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 			let sqlConnectionString = existingSettings.splice(index, 1)[0];
 			existingSettings.unshift(sqlConnectionString);
 		} else {
-			existingSettings.unshift({ label: constants.sqlConnectionStringSettingWithIcon, isCreateNew: true });
+			existingSettings.unshift({ label: constants.sqlConnectionStringSettingWithIcon, description: constants.newTextWithParantheses, isCreateNew: true });
 		}
 
 		while (!connectionStringSettingName) {
