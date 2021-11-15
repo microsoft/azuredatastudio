@@ -809,7 +809,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			let tocFiles: Map<string, JupyterBookSection[]> = this.undoTocFiles.pop();
 			// restore toc files
 			for (const [tocPath, contents] of tocFiles.entries()) {
-				await this.undoAndRedo(tocPath, contents);
+				await this.applyTocChanges(tocPath, contents);
 			}
 			// return files to previous file path
 			for (const [src, dest] of files.entries()) {
