@@ -826,7 +826,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			this.undoTocFiles.push(tocFiles);
 			// restore toc files
 			for (const [tocPath, contents] of tocFiles.entries()) {
-				await this.undoAndRedo(tocPath, contents);
+				await this.applyTocChanges(tocPath, contents);
 			}
 			// return files to previous file path
 			for (const [src, dest] of files.entries()) {
@@ -835,7 +835,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	public async undoAndRedo(tocPath: string, toc: JupyterBookSection[]) {
+	public async applyTocChanges(tocPath: string, toc: JupyterBookSection[]) {
 		try {
 			// restore toc files
 			let bookPath = getBookPathFromTocPath(tocPath);
