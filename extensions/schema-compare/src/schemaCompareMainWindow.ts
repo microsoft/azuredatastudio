@@ -343,21 +343,20 @@ export class SchemaCompareMainWindow {
 					.withAdditionalProperties({
 						operationId: this.comparisonResult.operationId
 					}).send();
+
 				vscode.window.showErrorMessage(loc.compareErrorMessage(this.comparisonResult?.errorMessage));
+
+				// reset state so a new comparison can be made
+				this.resetWindow();
+
 				return;
 			}
+
 			TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaComparisonFinished')
 				.withAdditionalProperties({
 					'endTime': Date.now().toString(),
 					'operationId': this.comparisonResult.operationId
 				}).send();
-
-			vscode.window.showErrorMessage(loc.compareErrorMessage(this.comparisonResult?.errorMessage));
-
-			// reset state so a new comparison can be made
-			this.resetWindow();
-
-			return;
 		}
 
 		let data = this.getAllDifferences(this.comparisonResult.differences);
