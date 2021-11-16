@@ -17,6 +17,7 @@ import { ResultSetSubset } from 'sql/workbench/services/query/common/query';
 import { isUndefined } from 'vs/base/common/types';
 import { ILogService } from 'vs/platform/log/common/log';
 import * as nls from 'vs/nls';
+import { queryResultsMode } from 'sql/workbench/common/editor/query/queryResultsMode';
 
 export const SERVICE_ID = 'queryManagementService';
 
@@ -82,7 +83,7 @@ export interface IQueryManagementService {
  */
 export interface IQueryRequestHandler {
 	cancelQuery(ownerUri: string): Promise<azdata.QueryCancelResult>;
-	runQuery(ownerUri: string, selection?: azdata.ISelectionData, runOptions?: ExecutionPlanOptions): Promise<void>;
+	runQuery(ownerUri: string, selection?: azdata.ISelectionData, runOptions?: ExecutionPlanOptions, queryResultsDisplayMode?: string): Promise<void>;
 	runQueryStatement(ownerUri: string, line: number, column: number): Promise<void>;
 	runQueryString(ownerUri: string, queryString: string): Promise<void>;
 	runQueryAndReturn(ownerUri: string, queryString: string): Promise<azdata.SimpleExecuteResult>;
@@ -230,7 +231,7 @@ export class QueryManagementService implements IQueryManagementService {
 	public runQuery(ownerUri: string, range?: IRange, runOptions?: ExecutionPlanOptions): Promise<void> {
 		this.addTelemetry(TelemetryKeys.TelemetryAction.RunQuery, ownerUri, runOptions);
 		return this._runAction(ownerUri, (runner) => {
-			return runner.runQuery(ownerUri, rangeToSelectionData(range), runOptions);
+			return runner.runQuery(ownerUri, rangeToSelectionData(range), runOptions, queryResultsMode.selectedMode);
 		});
 	}
 

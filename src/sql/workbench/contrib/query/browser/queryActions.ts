@@ -186,6 +186,10 @@ CommandsRegistry.registerCommand({
 	}
 });
 
+
+// TODO lewissanchez - not sure if this is needed since registration is happening in query.contributions.ts
+export const QUERY_RESULTS_TO_TEXT = 'ResultsToText';
+
 /**
  * Action class that runs a query in the active SQL text document.
  */

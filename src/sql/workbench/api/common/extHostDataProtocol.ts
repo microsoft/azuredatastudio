@@ -272,12 +272,12 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<azdata.QueryProvider>(handle).cancelQuery(ownerUri);
 	}
 
-	override $runQuery(handle: number, ownerUri: string, selection: azdata.ISelectionData, runOptions?: azdata.ExecutionPlanOptions): Thenable<void> {
+	override $runQuery(handle: number, ownerUri: string, selection: azdata.ISelectionData, runOptions?: azdata.ExecutionPlanOptions, queryResultsDisplayMode?: string): Thenable<void> {
 		if (this.uriTransformer) {
 			ownerUri = this._getTransformedUri(ownerUri, this.uriTransformer.transformIncoming);
 		}
 
-		return this._resolveProvider<azdata.QueryProvider>(handle).runQuery(ownerUri, selection, runOptions);
+		return this._resolveProvider<azdata.QueryProvider>(handle).runQuery(ownerUri, selection, runOptions, queryResultsDisplayMode);
 	}
 
 	override $runQueryStatement(handle: number, ownerUri: string, line: number, column: number): Thenable<void> {
