@@ -828,7 +828,7 @@ describe('Project: sqlproj content operations', function (): void {
 	});
 });
 
-describe('Project: Msbuild sdk style project content operations', function (): void {
+describe('Project: sdk style project content operations', function (): void {
 	before(async function (): Promise<void> {
 		await baselines.loadBaselines();
 	});
@@ -949,7 +949,7 @@ describe('Project: Msbuild sdk style project content operations', function (): v
 	});
 
 	it('Should only add Build entries to sqlproj for files not included by project folder glob and external streaming jobs', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.openNewStyleSqlProjectBaseline);
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectBaseline);
 		const project = await Project.openProject(projFilePath);
 
 		const folderPath = 'Stored Procedures';
@@ -1110,15 +1110,15 @@ describe('Project: round trip updates', function (): void {
 		should(project.importedTargets.length).equal(3); // additional target should exist by default
 	});
 
-	it('Should not show update project warning message when opening msbuild sdk style project using Sdk node', async function (): Promise<void> {
+	it('Should not show update project warning message when opening sdk style project using Sdk node', async function (): Promise<void> {
 		await shouldNotShowUpdateWarning(baselines.newSdkStyleProjectSdkNodeBaseline);
 	});
 
-	it('Should not show update project warning message when opening msbuild sdk style project using Project node with Sdk attribute', async function (): Promise<void> {
+	it('Should not show update project warning message when opening sdk style project using Project node with Sdk attribute', async function (): Promise<void> {
 		await shouldNotShowUpdateWarning(baselines.newSdkStyleProjectSdkProjectAttributeBaseline);
 	});
 
-	it('Should not show update project warning message when opening msbuild sdk style project using Import node with Sdk attribute', async function (): Promise<void> {
+	it('Should not show update project warning message when opening sdk style project using Import node with Sdk attribute', async function (): Promise<void> {
 		await shouldNotShowUpdateWarning(baselines.newStyleProjectSdkImportAttributeBaseline);
 	});
 
