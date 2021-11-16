@@ -21,7 +21,7 @@ export const msdb = 'msdb';
 export const msdbDacpac = 'msdb.dacpac';
 export const MicrosoftDatatoolsSchemaSqlSql = 'Microsoft.Data.Tools.Schema.Sql.Sql';
 export const databaseSchemaProvider = 'DatabaseSchemaProvider';
-export const sqlMsbuildSdk = 'Microsoft.Build.Sql';
+export const sqlProjectSdk = 'Microsoft.Build.Sql';
 
 // Project Provider
 export const emptySqlDatabaseProjectTypeId = 'EmptySqlDbProj';
