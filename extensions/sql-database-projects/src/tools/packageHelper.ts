@@ -72,7 +72,7 @@ export class PackageHelper {
 				});
 			}
 		} catch (e) {
-			void vscode.window.showErrorMessage(e.message);
+			void vscode.window.showErrorMessage(e.message, constants.checkoutOutputMessage);
 		}
 	}
 }
