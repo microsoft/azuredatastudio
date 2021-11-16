@@ -27,6 +27,7 @@ import { IRange, Range } from 'vs/editor/common/core/range';
 import { BatchSummary, IQueryMessage, ResultSetSummary, QueryExecuteSubsetParams, CompleteBatchSummary, IResultMessage, ResultSetSubset, BatchStartSummary } from './query';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
+import { queryResultsMode } from 'sql/workbench/common/editor/query/queryResultsMode';
 
 /*
 * Query Runner class which handles running a query, reports the results to the content manager,
@@ -82,6 +83,10 @@ export default class QueryRunner extends Disposable {
 	private _queryEndTime?: Date;
 	public get queryEndTime(): Date | undefined {
 		return this._queryEndTime;
+	}
+
+	public get queryResultsDisplayMode(): string {
+		return queryResultsMode.selectedMode;
 	}
 
 	// CONSTRUCTOR /////////////////////////////////////////////////////////

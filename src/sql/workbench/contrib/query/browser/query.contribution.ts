@@ -47,6 +47,7 @@ import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/file
 import { IEditorOverrideService, ContributedEditorPriority } from 'vs/workbench/services/editor/common/editorOverrideService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ILogService } from 'vs/platform/log/common/log';
+import { ChangeQueryResultsDisplayAction } from 'sql/workbench/contrib/query/browser/queryResultsDisplaySettings';
 
 export const QueryEditorVisibleCondition = ContextKeyExpr.has(queryContext.queryEditorVisibleId);
 export const ResultsGridFocusCondition = ContextKeyExpr.and(ContextKeyExpr.has(queryContext.resultsVisibleId), ContextKeyExpr.has(queryContext.resultsGridFocussedId));
@@ -215,6 +216,16 @@ actionRegistry.registerWorkbenchAction(
 		QueryEditorVisibleCondition
 	),
 	ToggleFocusBetweenQueryEditorAndResultsAction.LABEL
+);
+
+// Register Query Results Display Action
+actionRegistry.registerWorkbenchAction(
+	SyncActionDescriptor.create(
+		ChangeQueryResultsDisplayAction,
+		ChangeQueryResultsDisplayAction.ID,
+		ChangeQueryResultsDisplayAction.LABEL
+	),
+	'Change Query Results Display Settings'
 );
 
 // Register Flavor Action

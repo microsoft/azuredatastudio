@@ -851,7 +851,7 @@ declare module 'azdata' {
 
 	export interface QueryProvider extends DataProvider {
 		cancelQuery(ownerUri: string): Thenable<QueryCancelResult>;
-		runQuery(ownerUri: string, selection: ISelectionData, runOptions?: ExecutionPlanOptions): Thenable<void>;
+		runQuery(ownerUri: string, selection: ISelectionData, runOptions?: ExecutionPlanOptions, queryResultsDisplayMode?: string): Thenable<void>;
 		runQueryStatement(ownerUri: string, line: number, column: number): Thenable<void>;
 		runQueryString(ownerUri: string, queryString: string): Thenable<void>;
 		runQueryAndReturn(ownerUri: string, queryString: string): Thenable<SimpleExecuteResult>;

@@ -110,8 +110,8 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 			cancelQuery(ownerUri: string): Promise<azdata.QueryCancelResult> {
 				return Promise.resolve(self._proxy.$cancelQuery(handle, ownerUri));
 			},
-			runQuery(ownerUri: string, selection: azdata.ISelectionData, runOptions?: azdata.ExecutionPlanOptions): Promise<void> {
-				return Promise.resolve(self._proxy.$runQuery(handle, ownerUri, selection, runOptions));
+			runQuery(ownerUri: string, selection: azdata.ISelectionData, runOptions?: azdata.ExecutionPlanOptions, queryResultsDisplayMode?: string): Promise<void> {
+				return Promise.resolve(self._proxy.$runQuery(handle, ownerUri, selection, runOptions, queryResultsDisplayMode));
 			},
 			runQueryStatement(ownerUri: string, line: number, column: number): Promise<void> {
 				return Promise.resolve(self._proxy.$runQueryStatement(handle, ownerUri, line, column));
