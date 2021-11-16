@@ -27,13 +27,13 @@ export let sqlProjectMissingVersionBaseline: string;
 export let sqlProjectInvalidVersionBaseline: string;
 export let sqlProjectCustomCollationBaseline: string;
 export let sqlProjectInvalidCollationBaseline: string;
-export let newStyleProjectSdkNodeBaseline: string;
-export let newStyleProjectSdkProjectAttributeBaseline: string;
+export let newMsbuildSdkStyleProjectSdkNodeBaseline: string;
+export let newMsbuildSdkStyleProjectSdkProjectAttributeBaseline: string;
 export let newStyleProjectSdkImportAttributeBaseline: string;
-export let openNewStyleSqlProjectBaseline: string;
-export let openNewStyleSqlProjectWithFilesSpecifiedBaseline: string;
-export let openNewStyleSqlProjectWithGlobsSpecifiedBaseline: string;
-export let openNewStyleSqlProjectWithBuildRemoveBaseline: string;
+export let openMsbuildSdkStyleSqlProjectBaseline: string;
+export let openMsbuildSdkStyleSqlProjectWithFilesSpecifiedBaseline: string;
+export let openMsbuildSdkStyleSqlProjectWithGlobsSpecifiedBaseline: string;
+export let openMsbuildSdkStyleSqlProjectWithBuildRemoveBaseline: string;
 
 const baselineFolderPath = __dirname;
 
@@ -58,13 +58,13 @@ export async function loadBaselines() {
 	sqlProjectInvalidVersionBaseline = await loadBaseline(baselineFolderPath, 'sqlProjectInvalidVersionBaseline.xml');
 	sqlProjectCustomCollationBaseline = await loadBaseline(baselineFolderPath, 'sqlProjectCustomCollationBaseline.xml');
 	sqlProjectInvalidCollationBaseline = await loadBaseline(baselineFolderPath, 'sqlProjectInvalidCollationBaseline.xml');
-	newStyleProjectSdkNodeBaseline = await loadBaseline(baselineFolderPath, 'newStyleSqlProjectSdkNodeBaseline.xml');
-	newStyleProjectSdkProjectAttributeBaseline = await loadBaseline(baselineFolderPath, 'newStyleSqlProjectSdkProjectAttributeBaseline.xml');
-	newStyleProjectSdkImportAttributeBaseline = await loadBaseline(baselineFolderPath, 'newStyleSqlProjectSdkImportAttributeBaseline.xml');
-	openNewStyleSqlProjectBaseline = await loadBaseline(baselineFolderPath, 'openNewStyleSqlProjectBaseline.xml');
-	openNewStyleSqlProjectWithFilesSpecifiedBaseline = await loadBaseline(baselineFolderPath, 'openNewStyleSqlProjectWithFilesSpecifiedBaseline.xml');
-	openNewStyleSqlProjectWithGlobsSpecifiedBaseline = await loadBaseline(baselineFolderPath, 'openNewStyleSqlProjectWithGlobsSpecifiedBaseline.xml');
-	openNewStyleSqlProjectWithBuildRemoveBaseline = await loadBaseline(baselineFolderPath, 'openNewStyleSqlProjectWithBuildRemoveBaseline.xml');
+	newMsbuildSdkStyleProjectSdkNodeBaseline = await loadBaseline(baselineFolderPath, 'newMsbuildSdkStyleSqlProjectSdkNodeBaseline.xml');
+	newMsbuildSdkStyleProjectSdkProjectAttributeBaseline = await loadBaseline(baselineFolderPath, 'newMsbuildSdkStyleSqlProjectSdkProjectAttributeBaseline.xml');
+	newStyleProjectSdkImportAttributeBaseline = await loadBaseline(baselineFolderPath, 'newMsbuildSdkStyleSqlProjectSdkImportAttributeBaseline.xml');
+	openMsbuildSdkStyleSqlProjectBaseline = await loadBaseline(baselineFolderPath, 'openMsbuildSdkStyleSqlProjectBaseline.xml');
+	openMsbuildSdkStyleSqlProjectWithFilesSpecifiedBaseline = await loadBaseline(baselineFolderPath, 'openMsbuildSdkStyleSqlProjectWithFilesSpecifiedBaseline.xml');
+	openMsbuildSdkStyleSqlProjectWithGlobsSpecifiedBaseline = await loadBaseline(baselineFolderPath, 'openMsbuildSdkStyleSqlProjectWithGlobsSpecifiedBaseline.xml');
+	openMsbuildSdkStyleSqlProjectWithBuildRemoveBaseline = await loadBaseline(baselineFolderPath, 'openMsbuildSdkStyleSqlProjectWithBuildRemoveBaseline.xml');
 }
 
 async function loadBaseline(baselineFolderPath: string, fileName: string): Promise<string> {

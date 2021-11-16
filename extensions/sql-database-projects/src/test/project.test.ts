@@ -838,7 +838,7 @@ describe('Project: Msbuild sdk style project content operations', function (): v
 	});
 
 	it('Should read project from sqlproj and files and folders by globbing', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.openNewStyleSqlProjectBaseline);
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openMsbuildSdkStyleSqlProjectBaseline);
 		await testUtils.createDummyFileStructureWithPrePostDeployScripts(false, undefined, path.dirname(projFilePath));
 		const project: Project = await Project.openProject(projFilePath);
 
@@ -868,7 +868,7 @@ describe('Project: Msbuild sdk style project content operations', function (): v
 	});
 
 	it('Should handle files listed in sqlproj', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.openNewStyleSqlProjectWithFilesSpecifiedBaseline);
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openMsbuildSdkStyleSqlProjectWithFilesSpecifiedBaseline);
 		await testUtils.createDummyFileStructure(false, undefined, path.dirname(projFilePath));
 
 		const project: Project = await Project.openProject(projFilePath);
@@ -887,7 +887,7 @@ describe('Project: Msbuild sdk style project content operations', function (): v
 		const testFolderPath = await testUtils.generateTestFolderPath();
 		const mainProjectPath =  path.join(testFolderPath, 'project');
 		const otherFolderPath = path.join(testFolderPath, 'other');
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.openNewStyleSqlProjectWithGlobsSpecifiedBaseline, mainProjectPath);
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openMsbuildSdkStyleSqlProjectWithGlobsSpecifiedBaseline, mainProjectPath);
 		await testUtils.createDummyFileStructure(false, undefined, path.dirname(projFilePath));
 
 		// create files outside of project folder that are included in the project file
@@ -920,7 +920,7 @@ describe('Project: Msbuild sdk style project content operations', function (): v
 		const testFolderPath = await testUtils.generateTestFolderPath();
 		const mainProjectPath =  path.join(testFolderPath, 'project');
 		const otherFolderPath = path.join(testFolderPath, 'other');
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.openNewStyleSqlProjectWithBuildRemoveBaseline, mainProjectPath);
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openMsbuildSdkStyleSqlProjectWithBuildRemoveBaseline, mainProjectPath);
 		await testUtils.createDummyFileStructure(false, undefined, path.dirname(projFilePath));
 
 		// create files outside of project folder that are included in the project file
@@ -1071,11 +1071,11 @@ describe('Project: round trip updates', function (): void {
 	});
 
 	it('Should not show update project warning message when opening msbuild sdk style project using Sdk node', async function (): Promise<void> {
-		await shouldNotShowUpdateWarning(baselines.newStyleProjectSdkNodeBaseline);
+		await shouldNotShowUpdateWarning(baselines.newMsbuildSdkStyleProjectSdkNodeBaseline);
 	});
 
 	it('Should not show update project warning message when opening msbuild sdk style project using Project node with Sdk attribute', async function (): Promise<void> {
-		await shouldNotShowUpdateWarning(baselines.newStyleProjectSdkProjectAttributeBaseline);
+		await shouldNotShowUpdateWarning(baselines.newMsbuildSdkStyleProjectSdkProjectAttributeBaseline);
 	});
 
 	it('Should not show update project warning message when opening msbuild sdk style project using Import node with Sdk attribute', async function (): Promise<void> {
