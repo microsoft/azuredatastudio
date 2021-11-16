@@ -554,7 +554,7 @@ export class Designer extends Disposable implements IThemable {
 					}
 				});
 				input.onInputFocus(() => {
-					this._propertiesPane.setDescriptionText(showDescription, componentDefinition);
+					this._propertiesPane.updateDescription(showDescription, componentDefinition);
 				});
 				if (setWidth && inputProperties.width !== undefined) {
 					input.width = inputProperties.width as number;
@@ -572,7 +572,7 @@ export class Designer extends Disposable implements IThemable {
 					this.handleEdit({ type: DesignerEditType.Update, path: propertyPath, value: e.selected });
 				});
 				dropdown.onDidFocus(() => {
-					this._propertiesPane.setDescriptionText(showDescription, componentDefinition);
+					this._propertiesPane.updateDescription(showDescription, componentDefinition);
 				});
 				component = dropdown;
 				break;
@@ -587,7 +587,7 @@ export class Designer extends Disposable implements IThemable {
 					this.handleEdit({ type: DesignerEditType.Update, path: propertyPath, value: newValue });
 				});
 				checkbox.onFocus(() => {
-					this._propertiesPane.setDescriptionText(showDescription, componentDefinition);
+					this._propertiesPane.updateDescription(showDescription, componentDefinition);
 				});
 				component = checkbox;
 				break;

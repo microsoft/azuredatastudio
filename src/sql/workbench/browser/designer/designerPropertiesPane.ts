@@ -54,7 +54,7 @@ export class DesignerPropertiesPane {
 		this._descriptionContainer.style.visibility = this._showDescription ? 'visible' : 'hidden';
 	}
 
-	public setDescriptionText(showDescription: boolean, definition: DesignerDataPropertyInfo) {
+	public updateDescription(showDescription: boolean, definition: DesignerDataPropertyInfo) {
 		if (showDescription) {
 			const title: string = definition.componentProperties.title;
 			const description: string = definition.description;
@@ -81,7 +81,8 @@ export class DesignerPropertiesPane {
 		this._descriptionTitleContainer = this._descriptionContainer.appendChild(DOM.$('')).appendChild(DOM.$('.description-component-label'));
 		this._descriptionTitleContainer.classList.add('codicon', 'info');
 		this._descriptionTextContainer = this._descriptionContainer.appendChild(DOM.$('.description-component-content'));
-		this._descriptionContainer.style.visibility = this._showDescription ? 'visible' : 'hidden';
+		this._descriptionTitleContainer.innerText = '';
+		this._descriptionTextContainer.innerText = '';
 	}
 
 	public show(item: ObjectInfo): void {
