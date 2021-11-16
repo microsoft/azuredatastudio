@@ -537,8 +537,6 @@ export class Designer extends Disposable implements IThemable {
 		isMainView: boolean): DesignerUIComponent {
 		const propertyPath = [...parentPath, componentDefinition.propertyName];
 		let component: DesignerUIComponent;
-		const hasDescription: boolean = componentDefinition?.description ? true : false;
-		const showDescription = hasDescription && !isMainView;
 		switch (componentDefinition.componentType) {
 			case 'input':
 				container.appendChild(DOM.$('')).appendChild(DOM.$('span.component-label')).innerText = componentDefinition.componentProperties?.title ?? '';
@@ -554,7 +552,9 @@ export class Designer extends Disposable implements IThemable {
 					}
 				});
 				input.onInputFocus(() => {
-					this._propertiesPane.updateDescription(showDescription, componentDefinition);
+					if (!isMainView) {
+						this._propertiesPane.updateDescription(componentDefinition);
+					}
 				});
 				if (setWidth && inputProperties.width !== undefined) {
 					input.width = inputProperties.width as number;
@@ -572,7 +572,9 @@ export class Designer extends Disposable implements IThemable {
 					this.handleEdit({ type: DesignerEditType.Update, path: propertyPath, value: e.selected });
 				});
 				dropdown.onDidFocus(() => {
-					this._propertiesPane.updateDescription(showDescription, componentDefinition);
+					if (!isMainView) {
+						this._propertiesPane.updateDescription(componentDefinition);
+					}
 				});
 				component = dropdown;
 				break;
@@ -587,7 +589,9 @@ export class Designer extends Disposable implements IThemable {
 					this.handleEdit({ type: DesignerEditType.Update, path: propertyPath, value: newValue });
 				});
 				checkbox.onFocus(() => {
-					this._propertiesPane.updateDescription(showDescription, componentDefinition);
+					if (!isMainView) {
+						this._propertiesPane.updateDescription(componentDefinition);
+					}
 				});
 				component = checkbox;
 				break;

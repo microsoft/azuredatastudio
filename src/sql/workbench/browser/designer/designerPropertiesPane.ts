@@ -27,7 +27,6 @@ export class DesignerPropertiesPane {
 	private _descriptionContainer: HTMLElement;
 	private _descriptionTitleContainer: HTMLElement;
 	private _descriptionTextContainer: HTMLElement;
-	private _showDescription: boolean = false;
 
 	constructor(container: HTMLElement, private _createComponents: CreateComponentsFunc, private _setComponentValue: SetComponentValueFunc) {
 		const titleContainer = container.appendChild(DOM.$('.title-container'));
@@ -49,20 +48,12 @@ export class DesignerPropertiesPane {
 		return this._objectPath;
 	}
 
-	private set showDescription(value: boolean) {
-		this._showDescription = value;
-		this._descriptionContainer.style.visibility = this._showDescription ? 'visible' : 'hidden';
-	}
-
-	public updateDescription(showDescription: boolean, definition: DesignerDataPropertyInfo) {
-		if (showDescription) {
-			const title: string = definition.componentProperties.title;
-			const description: string = definition.description;
+	public updateDescription(definition: DesignerDataPropertyInfo) {
+		const title: string = definition.componentProperties.title;
+		const description: string = definition.description;
+		if (title && description) {
 			this._descriptionTitleContainer.innerText = title;
 			this._descriptionTextContainer.innerText = description;
-			this.showDescription = true;
-		} else {
-			this.showDescription = false;
 		}
 	}
 
