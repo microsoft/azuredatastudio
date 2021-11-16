@@ -529,17 +529,6 @@ export class Designer extends Disposable implements IThemable {
 		return uiComponents;
 	}
 
-	// Shows the description for a property in the properties pane
-	// if the property has a description
-	private showDescription(showDescription: boolean, definition: DesignerDataPropertyInfo) {
-		if (showDescription) {
-			this._propertiesPane.setDescriptionText(definition.componentProperties.title, definition.description);
-			this._propertiesPane.showDescription = true;
-		} else {
-			this._propertiesPane.showDescription = false;
-		}
-	}
-
 	private createComponent(container: HTMLElement,
 		componentDefinition: DesignerDataPropertyInfo,
 		parentPath: DesignerEditPath,
@@ -563,10 +552,9 @@ export class Designer extends Disposable implements IThemable {
 					if (args.hasChanged) {
 						this.handleEdit({ type: DesignerEditType.Update, path: propertyPath, value: args.value });
 					}
-					this._propertiesPane.showDescription = false;
 				});
 				input.onInputFocus(() => {
-					this.showDescription(showDescription, componentDefinition);
+					this._propertiesPane.setDescriptionText(showDescription, componentDefinition);
 				});
 				if (setWidth && inputProperties.width !== undefined) {
 					input.width = inputProperties.width as number;
@@ -584,7 +572,7 @@ export class Designer extends Disposable implements IThemable {
 					this.handleEdit({ type: DesignerEditType.Update, path: propertyPath, value: e.selected });
 				});
 				dropdown.onDidFocus(() => {
-					this.showDescription(showDescription, componentDefinition);
+					this._propertiesPane.setDescriptionText(showDescription, componentDefinition);
 				});
 				component = dropdown;
 				break;
@@ -599,7 +587,7 @@ export class Designer extends Disposable implements IThemable {
 					this.handleEdit({ type: DesignerEditType.Update, path: propertyPath, value: newValue });
 				});
 				checkbox.onFocus(() => {
-					this.showDescription(showDescription, componentDefinition);
+					this._propertiesPane.setDescriptionText(showDescription, componentDefinition);
 				});
 				component = checkbox;
 				break;

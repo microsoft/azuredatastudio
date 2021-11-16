@@ -49,14 +49,21 @@ export class DesignerPropertiesPane {
 		return this._objectPath;
 	}
 
-	public set showDescription(value: boolean) {
+	private set showDescription(value: boolean) {
 		this._showDescription = value;
 		this._descriptionContainer.style.visibility = this._showDescription ? 'visible' : 'hidden';
 	}
 
-	public setDescriptionText(property: string, description: string) {
-		this._descriptionTitleContainer.innerText = property;
-		this._descriptionTextContainer.innerText = description;
+	public setDescriptionText(showDescription: boolean, definition: DesignerDataPropertyInfo) {
+		if (showDescription) {
+			const title: string = definition.componentProperties.title;
+			const description: string = definition.description;
+			this._descriptionTitleContainer.innerText = title;
+			this._descriptionTextContainer.innerText = description;
+			this.showDescription = true;
+		} else {
+			this.showDescription = false;
+		}
 	}
 
 	public clear(): void {
