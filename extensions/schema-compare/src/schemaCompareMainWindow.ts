@@ -824,7 +824,6 @@ export class SchemaCompareMainWindow {
 	}
 
 	public async publishChanges(): Promise<void> {
-
 		// need only yes button - since the modal dialog has a default cancel
 		const yesString = loc.YesButtonText;
 		await vscode.window.showWarningMessage(loc.applyConfirmation, { modal: true }, yesString).then(async (result) => {
@@ -838,22 +837,8 @@ export class SchemaCompareMainWindow {
 				// disable apply and generate script buttons because the results are no longer valid after applying the changes
 				this.setButtonsForRecompare();
 
-				const service = await this.getService();
-				let result = undefined;
-
-				if (this.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Database) {
-					result = await service.schemaComparePublishDatabaseChanges(this.comparisonResult.operationId, this.targetEndpointInfo.serverName, this.targetEndpointInfo.databaseName, azdata.TaskExecutionMode.execute);
-				} else {
-					if (!vscode.extensions.getExtension(loc.sqlDatabaseProjectExtensionId)) {
-						await vscode.window.showErrorMessage(loc.noProjectExtensionApply);
-						return;
-					} else {
-						result = await vscode.commands.executeCommand(loc.sqlDatabaseProjectsPublishChanges, this.comparisonResult.operationId, this.targetEndpointInfo.projectFilePath, this.targetEndpointInfo.folderStructure);
-						if (!result.success) {
-							await vscode.window.showErrorMessage(loc.applyError);
-						}
-					}
-				}
+				const service: mssql.ISchemaCompareService = await this.getService();
+				const result = await service.schemaComparePublishChanges(this.comparisonResult.operationId, this.targetEndpointInfo.serverName, this.targetEndpointInfo.databaseName, azdata.TaskExecutionMode.execute);
 
 				if (!result || !result.success) {
 					TelemetryReporter.createErrorEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareApplyFailed', undefined, getTelemetryErrorType(result.errorMessage))
@@ -868,6 +853,7 @@ export class SchemaCompareMainWindow {
 					this.applyButton.enabled = true;
 					this.applyButton.title = loc.applyEnabledMessage;
 				}
+
 				TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareApplyEnded')
 					.withAdditionalProperties({
 						'endTime': Date.now().toString(),
