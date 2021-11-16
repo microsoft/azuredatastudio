@@ -952,7 +952,7 @@ describe('Project: sdk style project content operations', function (): void {
 		const testFolderPath = await testUtils.generateTestFolderPath();
 		const mainProjectPath =  path.join(testFolderPath, 'project');
 		const otherFolderPath = path.join(testFolderPath, 'other');
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.openNewStyleSqlProjectWithGlobsSpecifiedBaseline, mainProjectPath);
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectWithGlobsSpecifiedBaseline, mainProjectPath);
 		await testUtils.createDummyFileStructure(false, undefined, path.dirname(projFilePath));
 
 		// create files outside of project folder that are included in the project file

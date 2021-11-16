@@ -913,16 +913,23 @@ export class Project implements ISqlProject {
 		for (let i = 0; i < nodes.length; i++) {
 			deleted = this.removeNode(path, nodes[i]);
 
-			// still might need to add a <Build Remove="..."> node if this is an msbuild sdk style project
-			if (deleted && !this.isMsbuildSdkStyleProject) {
-				return;
+			if (deleted) {
+				// still might need to add a <Build Remove="..."> node if this is an sdk style project
+				if (this.isSdkStyleProject) {
+					break;
+				} else {
+					return;
+				}
 			}
 		}
 
-		// if it's an msbuild sdk style project, we'll need to add a <Build Remove="..."> entry to remove this file
-		// if it's still included by a glob
-		if (this.isMsbuildSdkStyleProject) {
-			await this.serializeToProjFile(this.projFileXmlDoc);
+		// if it's an sdk style project, we'll need to add a <Build Remove="..."> entry to remove this file if it's
+		// still included by a glob
+		if (this.isSdkStyleProject) {
+			// write any changes from removing an include node and get the current files included in the project
+			if (deleted) {
+				await this.serializeToProjFile(this.projFileXmlDoc);
+			}
 			const currentFiles = await this.readFilesInProject();
 
 			// only add a node to exclude the file if it's still included by a glob
