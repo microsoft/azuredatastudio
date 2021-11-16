@@ -23,11 +23,17 @@ export class DesignerPropertiesPane {
 	private _componentMap = new Map<string, { defintion: DesignerDataPropertyInfo, component: DesignerUIComponent }>();
 	private _groupHeaders: HTMLElement[] = [];
 
+	// Description variables
+	private _descriptionContainer: HTMLElement;
+	private _descriptionTitleContainer: HTMLElement;
+	private _descriptionTextContainer: HTMLElement;
+
 	constructor(container: HTMLElement, private _createComponents: CreateComponentsFunc, private _setComponentValue: SetComponentValueFunc) {
 		const titleContainer = container.appendChild(DOM.$('.title-container'));
 		this._titleElement = titleContainer.appendChild(DOM.$('div'));
 		this._contentElement = container.appendChild(DOM.$('.properties-content.components-grid'));
 		this._titleElement.innerText = localize('tableDesigner.propertiesPaneTitle', "Properties");
+		this.createDescriptionComponent(container);
 	}
 
 	public get groupHeaders(): HTMLElement[] {
@@ -42,6 +48,15 @@ export class DesignerPropertiesPane {
 		return this._objectPath;
 	}
 
+	public updateDescription(definition: DesignerDataPropertyInfo) {
+		const title: string = definition.componentProperties.title;
+		const description: string = definition.description;
+		if (title && description) {
+			this._descriptionTitleContainer.innerText = title;
+			this._descriptionTextContainer.innerText = description;
+		}
+	}
+
 	public clear(): void {
 		this._componentMap.forEach((value) => {
 			value.component.dispose();
@@ -50,6 +65,15 @@ export class DesignerPropertiesPane {
 		this._groupHeaders = [];
 		DOM.clearNode(this._contentElement);
 		this._objectPath = undefined;
+	}
+
+	private createDescriptionComponent(container: HTMLElement) {
+		this._descriptionContainer = container.appendChild(DOM.$('.description-component'));
+		this._descriptionTitleContainer = this._descriptionContainer.appendChild(DOM.$('')).appendChild(DOM.$('.description-component-label'));
+		this._descriptionTitleContainer.classList.add('codicon', 'info');
+		this._descriptionTextContainer = this._descriptionContainer.appendChild(DOM.$('.description-component-content'));
+		this._descriptionTitleContainer.innerText = '';
+		this._descriptionTextContainer.innerText = '';
 	}
 
 	public show(item: ObjectInfo): void {
