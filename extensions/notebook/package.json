@@ -13,12 +13,12 @@
   "activationEvents": [
     "*"
   ],
-	"capabilities": {
+  "capabilities": {
     "virtualWorkspaces": false,
     "untrustedWorkspaces": {
       "supported": true
     }
-	},
+  },
   "contributes": {
     "configuration": {
       "type": "object",
@@ -686,48 +686,50 @@
         ]
       }
     ],
-    "notebook.providers": [{
-      "provider": "jupyter",
-      "fileExtensions": [
-        "IPYNB"
-      ],
-      "standardKernels": [
-        {
-          "name": "pysparkkernel",
-          "displayName": "PySpark",
-          "connectionProviderIds": [
-            "MSSQL"
-          ],
-          "blockedOnSAW": true
-        },
-        {
-          "name": "sparkkernel",
-          "displayName": "Spark | Scala",
-          "connectionProviderIds": [
-            "MSSQL"
-          ],
-          "blockedOnSAW": true
-        },
-        {
-          "name": "sparkrkernel",
-          "displayName": "Spark | R",
-          "connectionProviderIds": [
-            "MSSQL"
-          ],
-          "blockedOnSAW": true
-        },
-        {
-          "name": "python3",
-          "displayName": "Python 3",
-          "connectionProviderIds": []
-        },
-        {
-          "name": "powershell",
-          "displayName": "PowerShell",
-          "connectionProviderIds": []
-        }
-      ]
-    }]
+    "notebook.providers": [
+      {
+        "provider": "jupyter",
+        "fileExtensions": [
+          "IPYNB"
+        ],
+        "standardKernels": [
+          {
+            "name": "pysparkkernel",
+            "displayName": "PySpark",
+            "connectionProviderIds": [
+              "MSSQL"
+            ],
+            "blockedOnSAW": true
+          },
+          {
+            "name": "sparkkernel",
+            "displayName": "Spark | Scala",
+            "connectionProviderIds": [
+              "MSSQL"
+            ],
+            "blockedOnSAW": true
+          },
+          {
+            "name": "sparkrkernel",
+            "displayName": "Spark | R",
+            "connectionProviderIds": [
+              "MSSQL"
+            ],
+            "blockedOnSAW": true
+          },
+          {
+            "name": "python3",
+            "displayName": "Python 3",
+            "connectionProviderIds": []
+          },
+          {
+            "name": "powershell",
+            "displayName": "PowerShell",
+            "connectionProviderIds": []
+          }
+        ]
+      }
+    ]
   },
   "dependencies": {
     "@jupyterlab/services": "^3.2.1",
@@ -768,7 +770,8 @@
     "vscodetestcover": "^1.1.0"
   },
   "resolutions": {
-    "url-parse": "^1.5.1"
+    "url-parse": "^1.5.1",
+    "json-schema": "0.4.0"
   },
   "enableProposedApi": true
 }
