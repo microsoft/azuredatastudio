@@ -313,11 +313,9 @@ export class SchemaCompareDialog {
 			});
 
 			this.sourceServerComponent = this.createSourceServerDropdown();
-
 			this.sourceDatabaseComponent = this.createSourceDatabaseDropdown();
 
 			this.targetServerComponent = this.createTargetServerDropdown();
-
 			this.targetDatabaseComponent = this.createTargetDatabaseDropdown();
 
 			this.sourceDacpacComponent = this.createFileBrowser(false, true, this.schemaCompareMainWindow.sourceEndpointInfo);
