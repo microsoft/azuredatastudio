@@ -17,7 +17,7 @@ import { ShellCommandOptions, ShellExecutionHelper } from './shellExecutionHelpe
 const localize = nls.loadMessageBundle();
 
 export const DBProjectConfigurationKey: string = 'sqlDatabaseProjects';
-export const NetCoreInstallLocationKey: string = 'netCoreSDK Location';
+export const NetCoreInstallLocationKey: string = 'netCoreSDKLocation';
 export const NetCoreDoNotAskAgainKey: string = 'netCoreDoNotAsk';
 export const NetCoreDowngradeDoNotShowAgainKey: string = 'netCoreDowngradeDoNotShow';
 export const NetCoreNonWindowsDefaultPath = '/usr/local/share';
