@@ -947,6 +947,46 @@ describe('Project: Msbuild sdk style project content operations', function (): v
 		// <Build Remove="file1.sql" />
 		should(project.files.filter(f => f.relativePath === 'file1.sql').length).equal(0);
 	});
+
+	it('Should only add Build entries to sqlproj for files not included by project folder glob and external streaming jobs', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openNewStyleSqlProjectBaseline);
+		const project = await Project.openProject(projFilePath);
+
+		const folderPath = 'Stored Procedures';
+		const scriptPath = path.join(folderPath, 'Fake Stored Proc.sql');
+		const scriptContents = 'SELECT \'This is not actually a stored procedure.\'';
+
+		const scriptPathTagged = 'Fake External Streaming Job.sql';
+		const scriptContentsTagged = 'EXEC sys.sp_create_streaming_job \'job\', \'SELECT 7\'';
+
+		const outsideFolderScriptPath = path.join('..', 'Other Fake Stored Proc.sql');
+		const outsideFolderScriptContents = 'SELECT \'This is also not actually a stored procedure.\'';
+
+		const otherFolderPath = 'OtherFolder';
+
+		await project.addScriptItem(scriptPath, scriptContents);
+		await project.addScriptItem(scriptPathTagged, scriptContentsTagged, templates.externalStreamingJob);
+		await project.addScriptItem(outsideFolderScriptPath, outsideFolderScriptContents);
+		await project.addFolderItem(otherFolderPath);
+
+		const newProject = await Project.openProject(projFilePath);
+
+		should(newProject.files.find(f => f.type === EntryType.Folder && f.relativePath === convertSlashesForSqlProj(folderPath))).not.equal(undefined);
+		should(newProject.files.find(f => f.type === EntryType.File && f.relativePath === convertSlashesForSqlProj(scriptPath))).not.equal(undefined);
+		should(newProject.files.find(f => f.type === EntryType.File && f.relativePath === convertSlashesForSqlProj(scriptPathTagged))).not.equal(undefined);
+		should(newProject.files.find(f => f.type === EntryType.File && f.relativePath === convertSlashesForSqlProj(scriptPathTagged))?.sqlObjectType).equal(constants.ExternalStreamingJob);
+		should(newProject.files.find(f => f.type === EntryType.File && f.relativePath === convertSlashesForSqlProj(outsideFolderScriptPath))).not.equal(undefined);
+		should(newProject.files.find(f => f.type === EntryType.Folder && f.relativePath === convertSlashesForSqlProj(otherFolderPath))).not.equal(undefined);
+
+		// only the external streaming job and file outside of the project folder should have been added to the sqlproj
+		const projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText.includes('<Folder Include="Stored Procedures" />')).equal(false, projFileText);
+		should(projFileText.includes('<Build Include="Stored Procedures\\Fake Stored Proc.sql" />')).equal(false, projFileText);
+		should(projFileText.includes('<Build Include="Fake External Streaming Job.sql" Type="ExternalStreamingJob" />')).equal(true, projFileText);
+		should(projFileText.includes('<Build Include="..\\Other Fake Stored Proc.sql" />')).equal(true, projFileText);
+		should(projFileText.includes('<Folder Include="OtherFolder" />')).equal(false, projFileText);
+	});
+
 });
 
 describe('Project: add SQLCMD Variables', function (): void {
