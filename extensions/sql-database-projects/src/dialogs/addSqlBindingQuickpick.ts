@@ -118,6 +118,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 		}
 
 		existingSettings.unshift({ label: constants.createNewLocalAppSettingWithIcon, isCreateNew: true });
+		let sqlConnectionStringSettingExists = existingSettings.find(s => s.label === constants.sqlConnectionStringSetting);
 
 		while (!connectionStringSettingName) {
 			const selectedSetting = await vscode.window.showQuickPick(existingSettings, {
@@ -135,7 +136,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 					{
 						title: constants.enterConnectionStringSettingName,
 						ignoreFocusOut: true,
-						value: constants.sqlConnectionStringSetting,
+						value: sqlConnectionStringSettingExists ? '' : constants.sqlConnectionStringSetting,
 						validateInput: input => input ? undefined : constants.nameMustNotBeEmpty
 					}
 				) ?? '';
