@@ -43,7 +43,7 @@
       {
         "title": "%sqlDatabaseProjects.Settings%",
         "properties": {
-          "sqlDatabaseProjects.netCoreSDK Location": {
+          "sqlDatabaseProjects.netCoreSDKLocation": {
             "type": "string",
             "description": "%sqlDatabaseProjects.netCoreInstallLocation%"
           },
