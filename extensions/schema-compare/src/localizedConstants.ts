@@ -329,7 +329,6 @@ export function openScmpErrorMessage(errorMessage: string): string { return loca
 export const applyError: string = localize('schemaCompare.applyError', "There was an error updating the project");
 export const dspErrorSource: string = localize('schemaCompareDialog.dspErrorSource', "The source .sqlproj file does not specify a database schema component");
 export const dspErrorTarget: string = localize('schemaCompareDialog.dspErrorTarget', "The target .sqlproj file does not specify a database schema component");
-export const dspErrorSourceAndTarget: string = localize('schemaCompareDialog.dspErrorSourceAndTarget', "The .sqlproj files do not specify a database schema component");
 export const noProjectExtension: string = localize('schemaCompareDialog.noProjectExtension', "The sql-database-projects extension is required to perform schema comparison with database projects");
 export const noProjectExtensionApply: string = localize('schemaCompareDialog.noProjectExtensionApply', "The sql-database-projects extension is required to apply changes to a project");
 
