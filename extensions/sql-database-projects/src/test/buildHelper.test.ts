@@ -24,7 +24,7 @@ describe('BuildHelper: Build Helper tests', function (): void {
 		}
 	});
 
-	it('Should get correct build arguments for msbuild sdk style projects', function (): void {
+	it('Should get correct build arguments for sdk style projects', function (): void {
 		// update settings and validate
 		const buildHelper = new BuildHelper();
 		const resultArg = buildHelper.constructBuildArguments('dummy\\project path\\more space in path', 'dummy\\dll path', true);
