@@ -30,7 +30,7 @@ export class CosmosDbMongoTreeDataProvider extends ResourceTreeDataProviderBase<
 
 		return {
 			id: `Cosmosdb_${databaseServer.id ? databaseServer.id : databaseServer.name}`,
-			label: databaseServer.name,
+			label: `${databaseServer.name} (CosmosDB Mongo API)`,
 			iconPath: {
 				dark: this._extensionContext.asAbsolutePath('resources/dark/cosmosdb_inverse.svg'),
 				light: this._extensionContext.asAbsolutePath('resources/light/cosmosdb.svg')
