@@ -20,7 +20,7 @@ jobs:
 - job: macOS
   condition: and(succeeded(), eq(variables['VSCODE_BUILD_MACOS'], 'true'), ne(variables['VSCODE_QUALITY'], 'saw'))
   pool:
-    vmImage: macOS-latest
+    vmImage: 'macOS-10.15'
   dependsOn:
   - Compile
   steps:
@@ -30,7 +30,7 @@ jobs:
 - job: macOS_Signing
   condition: and(succeeded(), eq(variables['VSCODE_BUILD_MACOS'], 'true'), eq(variables['signed'], true), ne(variables['VSCODE_QUALITY'], 'saw'))
   pool:
-    vmImage: macOS-latest
+    vmImage: 'macOS-10.15'
   dependsOn:
   - macOS
   steps:
@@ -53,7 +53,7 @@ jobs:
 - job: Windows
   condition: and(succeeded(), eq(variables['VSCODE_BUILD_WIN32'], 'true'))
   pool:
-    vmImage: VS2017-Win2016
+    vmImage: 'windows-2019'
   dependsOn:
   - Compile
   steps:
