@@ -193,9 +193,12 @@ export class Project implements ISqlProject {
 								filesSet.add(newFileRelativePath);
 							});
 						} else {
-							// only add file if it wasn't already added
-							if (!this._files.find(f => f.relativePath === includeRelativePath)) {
-								this._files.push(this.createFileProjectEntry(includeRelativePath, EntryType.File, buildElements[b].getAttribute(constants.Type)!));
+							filesSet.add(includeRelativePath);
+
+							// Right now only used for external streaming jobs
+							const typeAttribute = buildElements[b].getAttribute(constants.Type)!;
+							if (typeAttribute) {
+								entriesWithType.push({ relativePath: includeRelativePath, typeAttribute: typeAttribute });
 							}
 						}
 					}
