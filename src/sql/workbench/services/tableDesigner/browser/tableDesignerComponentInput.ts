@@ -145,6 +145,40 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		this._originalViewModel = deepClone(this._viewModel);
 		this.setDefaultData();
 
+		const tabs = [];
+
+		if (designerInfo.view.showColumnsTab) {
+			tabs.push(this.getColumnsTab(designerInfo));
+		}
+
+		if (designerInfo.view.showForeignKeysTab) {
+			tabs.push(this.getForeignKeysTab(designerInfo));
+		}
+
+		if (designerInfo.view.showCheckConstraintsTab) {
+			tabs.push(this.getCheckConstraintsTab(designerInfo));
+		}
+
+		if (designerInfo.view.additionalTabs) {
+			tabs.push(...designerInfo.view.additionalTabs);
+		}
+
+		tabs.push(this.getGeneralTab(designerInfo));
+
+		this._view = {
+			components: [{
+				componentType: 'input',
+				propertyName: designers.TableColumnProperty.Name,
+				componentProperties: {
+					title: localize('tableDesigner.nameTitle', "Table name"),
+					width: 200
+				}
+			}],
+			tabs: tabs
+		};
+	}
+
+	private getGeneralTab(designerInfo: azdata.designers.TableDesignerInfo): DesignerTab {
 		const generalTabComponents: DesignerDataPropertyInfo[] = [
 			{
 				componentType: 'dropdown',
@@ -166,10 +200,13 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			generalTabComponents.push(...designerInfo.view.additionalTableProperties);
 		}
 
-		const generalTab = <DesignerTab>{
+		return <DesignerTab>{
 			title: localize('tableDesigner.generalTab', "General"),
 			components: generalTabComponents
 		};
+	}
+
+	private getColumnsTab(designerInfo: azdata.designers.TableDesignerInfo): DesignerTab {
 
 		const columnProperties: DesignerDataPropertyInfo[] = [
 			{
@@ -245,7 +282,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			designers.TableColumnProperty.DefaultValue,
 		];
 
-		const columnsTab = <DesignerTab>{
+		return <DesignerTab>{
 			title: localize('tableDesigner.columnsTabTitle', "Columns"),
 			components: [
 				{
@@ -263,6 +300,9 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				}
 			]
 		};
+	}
+
+	private getForeignKeysTab(designerInfo: azdata.designers.TableDesignerInfo): DesignerTab {
 
 		const foreignKeyColumnMappingProperties: DesignerDataPropertyInfo[] = [
 			{
@@ -340,7 +380,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			designers.TableForeignKeyProperty.PrimaryKeyTable,
 		];
 
-		const foreignKeysTab = <DesignerTab>{
+		return <DesignerTab>{
 			title: localize('tableDesigner.foreignKeysTabTitle', "Foreign Keys"),
 			components: [
 				{
@@ -358,7 +398,9 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				}
 			]
 		};
+	}
 
+	private getCheckConstraintsTab(designerInfo: azdata.designers.TableDesignerInfo): DesignerTab {
 		const checkConstraintProperties: DesignerDataPropertyInfo[] = [
 			{
 				componentType: 'input',
@@ -383,7 +425,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			checkConstraintProperties.push(...designerInfo.view.additionalCheckConstraintProperties);
 		}
 
-		const checkConstraintsTab = <DesignerTab>{
+		return <DesignerTab>{
 			title: localize('tableDesigner.checkConstraintsTabTitle', "Check Constraints"),
 			components: [
 				{
@@ -401,26 +443,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				}
 			]
 		};
-
-		const tabs = [columnsTab, foreignKeysTab, checkConstraintsTab, generalTab];
-
-		if (designerInfo.view.additionalTabs) {
-			tabs.push(...designerInfo.view.additionalTabs);
-		}
-
-		this._view = {
-			components: [{
-				componentType: 'input',
-				propertyName: designers.TableColumnProperty.Name,
-				componentProperties: {
-					title: localize('tableDesigner.nameTitle', "Table name"),
-					width: 200
-				}
-			}],
-			tabs: tabs
-		};
 	}
-
 	private setDefaultData(): void {
 		const properties = Object.keys(this._viewModel);
 		this.setDefaultInputData(properties, designers.TableProperty.Name);

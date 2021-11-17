@@ -1143,6 +1143,10 @@ declare module 'azdata' {
 			 */
 			additionalTableProperties?: DesignerDataPropertyInfo[];
 			/**
+			 * Whether to show columns tab. The default value is false.
+			 */
+			showColumnsTab?: boolean;
+			/**
 			 * Additional table column properties. Common table columns properties are handled by Azure Data Studio. see {@link TableColumnProperty}
 			 */
 			additionalTableColumnProperties?: DesignerDataPropertyInfo[];
@@ -1151,13 +1155,17 @@ declare module 'azdata' {
 			 */
 			columnsTableProperties?: string[];
 			/**
-			 * Whether user can add columns. The default value is true.
+			 * Whether user can add columns. The default value is false.
 			 */
 			canAddColumns?: boolean;
 			/**
-			 * Whether user can remove columns. The default value is true.
+			 * Whether user can remove columns. The default value is false.
 			 */
 			canRemoveColumns?: boolean;
+			/**
+			 * Whether to show foreign keys tab. The default value is false.
+			 */
+			showForeignKeysTab?: boolean;
 			/**
 			 * Additional foreign key properties. Common foreign key properties are handled by Azure Data Studio. see {@link TableForeignKeyProperty}
 			 */
@@ -1167,23 +1175,27 @@ declare module 'azdata' {
 			 */
 			foreignKeysTableProperties?: string[];
 			/**
-			 * Whether user can add foreign keys. The default value is true.
+			 * Whether user can add foreign keys. The default value is false.
 			 */
 			canAddForeignKeys?: boolean;
 			/**
-			 * Whether user can remove foreign keys. The default value is true.
+			 * Whether user can remove foreign keys. The default value is false.
 			 */
 			canRemoveForeignKeys?: boolean;
 			/**
-			 * Whether user can add check constraints keys. The default value is true.
+			 * Whether to show check constraints tab. The default value is false.
 			 */
-			canAddCheckConstraints?: boolean;
+			showCheckConstraintsTab?: boolean;
 			/**
 			 * Additional check constraint properties. Common check constraint properties are handled by Azure Data Studio. see {@link TableCheckConstraintProperty}
 			 */
 			additionalCheckConstraintProperties?: DesignerDataPropertyInfo[];
 			/**
-			 * Whether user can remove check constraints. The default value is true.
+			 * Whether user can add check constraints keys. The default value is false.
+			 */
+			canAddCheckConstraints?: boolean;
+			/**
+			 * Whether user can remove check constraints. The default value is false.
 			 */
 			canRemoveCheckConstraints?: boolean;
 			/**

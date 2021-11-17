@@ -585,7 +585,7 @@ export class Designer extends Disposable implements IThemable {
 					container.appendChild(DOM.$('.full-row')).appendChild(DOM.$('span.component-label')).innerText = componentDefinition.componentProperties?.title ?? '';
 				}
 				const tableProperties = componentDefinition.componentProperties as DesignerTableProperties;
-				if (tableProperties.canAddRows !== false) {
+				if (tableProperties.canAddRows) {
 					const buttonContainer = container.appendChild(DOM.$('.full-row')).appendChild(DOM.$('.add-row-button-container'));
 					const addNewText = localize('designer.newRowText', "Add New");
 					const addRowButton = new Button(buttonContainer, {
@@ -658,7 +658,7 @@ export class Designer extends Disposable implements IThemable {
 							};
 					}
 				});
-				if (tableProperties.canRemoveRows !== false) {
+				if (tableProperties.canRemoveRows) {
 					const deleteRowColumn = new ButtonColumn({
 						id: 'deleteRow',
 						iconCssClass: Codicon.trash.classNames,
