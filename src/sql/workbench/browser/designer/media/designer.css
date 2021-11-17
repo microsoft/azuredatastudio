@@ -102,3 +102,25 @@
 	font-weight: bold;
 	line-height: 25px;
 }
+
+.designer-component .description-component {
+	margin: 15px;
+	height: 90px;
+	overflow-y: auto;
+}
+
+.designer-component .description-component-label.codicon.info {
+	background-repeat: no-repeat;
+	background-position: 2px center;
+	padding-left: 25px;
+	background-size: 16px;
+	font-size: 15px;
+	font-weight: 600;
+	margin-block-start: 0px;
+	scroll-margin-block-end: 0px;
+}
+
+.designer-component .description-component-content {
+	padding-top: 10px;
+	padding-left: 25px;
+}
