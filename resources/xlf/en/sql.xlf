@@ -5816,6 +5816,41 @@ Error: {1}</source>
       <source xml:lang="en">Table</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/services/tableDesigner/browser/tableDesignerStrings" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="designer.column.description.allowNulls">
+      <source xml:lang="en">Specifies whether the column may have a NULL value.</source>
+    </trans-unit>
+    <trans-unit id="designer.column.description.dataType">
+      <source xml:lang="en">Displays the data type name for the column</source>
+    </trans-unit>
+    <trans-unit id="designer.column.description.defaultValueBinding">
+      <source xml:lang="en">A predefined global default value for the column or binding.</source>
+    </trans-unit>
+    <trans-unit id="designer.column.description.description">
+      <source xml:lang="en">Description for the column.</source>
+    </trans-unit>
+    <trans-unit id="designer.column.description.length">
+      <source xml:lang="en">The maximum length (in characters) that can be stored in this database object.</source>
+    </trans-unit>
+    <trans-unit id="designer.column.description.name">
+      <source xml:lang="en">The name of the column object.</source>
+    </trans-unit>
+    <trans-unit id="designer.column.description.precision">
+      <source xml:lang="en">For numeric data, the maximum number of decimal digits that can be stored in this database object.</source>
+    </trans-unit>
+    <trans-unit id="designer.column.description.primaryKey">
+      <source xml:lang="en">Specifies whether the column is included in the primary key for the table.</source>
+    </trans-unit>
+    <trans-unit id="designer.table.description.description">
+      <source xml:lang="en">Description for the table.</source>
+    </trans-unit>
+    <trans-unit id="designer.table.description.name">
+      <source xml:lang="en">The name of the table object.</source>
+    </trans-unit>
+    <trans-unit id="designer.table.description.schema">
+      <source xml:lang="en">The schema that contains the table.</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/services/tasks/common/tasksService" source-language="en" datatype="plaintext"><body>
     <trans-unit id="InProgressWarning">
       <source xml:lang="en">1 or more tasks are in progress. Are you sure you want to quit?</source>

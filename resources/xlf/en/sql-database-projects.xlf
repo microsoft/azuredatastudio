@@ -52,6 +52,9 @@
     <trans-unit id="addPackageReferenceMessage">
       <source xml:lang="en">To use SQL bindings, ensure your Azure Functions project has a reference to {0}</source>
     </trans-unit>
+    <trans-unit id="addSqlBindingPackageError">
+      <source xml:lang="en">Error adding Sql Binding extension package to project</source>
+    </trans-unit>
     <trans-unit id="appSettingPrompt">
       <source xml:lang="en">Would you like to update Azure Function local.settings.json with the new connection string?</source>
     </trans-unit>
@@ -914,7 +917,7 @@
       <source xml:lang="en">Whether to prompt the user to install .NET Core when not detected.</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.netCoreDowngradeDoNotShow">
-      <source xml:lang="en">Whether to prompt the user to set .NET SDK version when a newer unsupported version is detected.</source>
+      <source xml:lang="en">Whether to prompt the user to install .NET SDK version and add global.json to project when a newer unsupported version is detected.</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.netCoreInstallLocation">
       <source xml:lang="en">Full path to .NET Core SDK on the machine.</source>
