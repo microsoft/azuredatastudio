@@ -28,17 +28,12 @@ export class CosmosDbMongoTreeDataProvider extends ResourceTreeDataProviderBase<
 	protected getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: azdata.Account): azdata.TreeItem {
 		console.log(`getTreeItemForResource ${databaseServer.name}`);
 
-		// TODO: How to pass these over to extension via payload?
-		// const azureArmEndpoint = account.properties.providerSettings.settings.armResource.endpoint;
-		// const subscriptionId = databaseServer.subscription.id;
-		// const resourceGroup = databaseServer.resourceGroup;
-
 		return {
 			id: `Cosmosdb_${databaseServer.id ? databaseServer.id : databaseServer.name}`,
 			label: databaseServer.name,
 			iconPath: {
-				dark: this._extensionContext.asAbsolutePath('resources/dark/sql_server_inverse.svg'),
-				light: this._extensionContext.asAbsolutePath('resources/light/sql_server.svg')
+				dark: this._extensionContext.asAbsolutePath('resources/dark/cosmosdb_inverse.svg'),
+				light: this._extensionContext.asAbsolutePath('resources/light/cosmosdb.svg')
 			},
 			collapsibleState: TreeItemCollapsibleState.None,
 			contextValue: AzureResourceItemType.cosmosDBMongoAccount,
