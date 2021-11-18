@@ -719,10 +719,22 @@ export class NotebookEditorOverrideContribution extends Disposable implements IW
 		});
 	}
 
-	private registerLanguageExtensions(langExtensions: string[]) {
+	private registerEditorOverrides(): void {
+		this._registeredOverrides.clear();
+		let allExtensions: string[] = [];
+
+		// List of built-in language IDs to associate the query editor for. These are case sensitive.
+		NotebookEditorInputAssociation.languages.forEach(lang => {
+			const langExtensions = this._modeService.getExtensions(lang);
+			allExtensions = allExtensions.concat(langExtensions);
+		});
+
+		// Add newly registered file extensions
+		allExtensions = allExtensions.concat(this._newFileExtensions);
+
 		// Create the selector from the list of all the language extensions we want to associate with the
-		// notebook editor (filtering out any languages which didn't have any extensions registered yet)
-		const selector = `*{${langExtensions.join(',')}}`;
+		// notebook editor
+		const selector = `*{${allExtensions.join(',')}}`;
 		this._registeredOverrides.add(this._editorOverrideService.registerEditor(
 			selector,
 			{
@@ -746,22 +758,6 @@ export class NotebookEditorOverrideContribution extends Disposable implements IW
 				return { editor: newInput, options: options, group: group };
 			}
 		));
-	}
-
-	private registerEditorOverrides(): void {
-		this._registeredOverrides.clear();
-		let allExtensions: string[] = [];
-
-		// List of built-in language IDs to associate the query editor for. These are case sensitive.
-		NotebookEditorInputAssociation.languages.forEach(lang => {
-			const langExtensions = this._modeService.getExtensions(lang);
-			allExtensions = allExtensions.concat(langExtensions);
-		});
-
-		// Add newly registered file extensions
-		allExtensions = allExtensions.concat(this._newFileExtensions);
-
-		this.registerLanguageExtensions(allExtensions);
 	}
 
 	private tryConvertInput(input: IEditorInput): IEditorInput | undefined {
