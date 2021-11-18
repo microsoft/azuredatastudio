@@ -12,11 +12,12 @@ import * as testUtils from './testUtils';
 import * as constants from '../common/constants';
 
 import { promises as fs } from 'fs';
-import { Project, EntryType, SystemDatabase, SystemDatabaseReferenceProjectEntry, SqlProjectReferenceProjectEntry } from '../models/project';
+import { Project } from '../models/project';
 import { exists, convertSlashesForSqlProj } from '../common/utils';
 import { Uri, window } from 'vscode';
 import { IDacpacReferenceSettings, IProjectReferenceSettings, ISystemDatabaseReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { SqlTargetPlatform } from 'sqldbproj';
+import { EntryType, SystemDatabaseReferenceProjectEntry, SqlProjectReferenceProjectEntry, SystemDatabase } from '../models/projectEntry';
 
 let projFilePath: string;
 
@@ -827,6 +828,167 @@ describe('Project: sqlproj content operations', function (): void {
 	});
 });
 
+describe('Project: sdk style project content operations', function (): void {
+	before(async function (): Promise<void> {
+		await baselines.loadBaselines();
+	});
+
+	beforeEach(function (): void {
+		sinon.restore();
+	});
+
+	it('Should read project from sqlproj and files and folders by globbing', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectBaseline);
+		await testUtils.createDummyFileStructureWithPrePostDeployScripts(false, undefined, path.dirname(projFilePath));
+		const project: Project = await Project.openProject(projFilePath);
+
+		// Files and folders
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(2);
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(15);
+
+		// SqlCmdVariables
+		should(Object.keys(project.sqlCmdVariables).length).equal(2);
+		should(project.sqlCmdVariables['ProdDatabaseName']).equal('MyProdDatabase');
+		should(project.sqlCmdVariables['BackupDatabaseName']).equal('MyBackupDatabase');
+
+		// Database references
+		// should only have one database reference even though there are two master.dacpac references (1 for ADS and 1 for SSDT)
+		should(project.databaseReferences.length).equal(1);
+		should(project.databaseReferences[0].databaseName).containEql(constants.master);
+		should(project.databaseReferences[0] instanceof SystemDatabaseReferenceProjectEntry).equal(true);
+
+		// // Pre-post deployment scripts
+		should(project.preDeployScripts.length).equal(1);
+		should(project.postDeployScripts.length).equal(1);
+		should(project.noneDeployScripts.length).equal(2);
+		should(project.preDeployScripts.find(f => f.type === EntryType.File && f.relativePath === 'Script.PreDeployment1.sql')).not.equal(undefined, 'File Script.PreDeployment1.sql not read');
+		should(project.noneDeployScripts.find(f => f.type === EntryType.File && f.relativePath === 'Script.PreDeployment2.sql')).not.equal(undefined, 'File Script.PreDeployment2.sql not read');
+		should(project.postDeployScripts.find(f => f.type === EntryType.File && f.relativePath === 'Script.PostDeployment1.sql')).not.equal(undefined, 'File Script.PostDeployment1.sql not read');
+		should(project.noneDeployScripts.find(f => f.type === EntryType.File && f.relativePath === 'folder1\\Script.PostDeployment2.sql')).not.equal(undefined, 'File folder1\\Script.PostDeployment2.sql not read');
+	});
+
+	it('Should handle files listed in sqlproj', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectWithFilesSpecifiedBaseline);
+		await testUtils.createDummyFileStructure(false, undefined, path.dirname(projFilePath));
+
+		const project: Project = await Project.openProject(projFilePath);
+
+		// Files and folders
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(2);
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(11);
+
+		// these are also listed in the sqlproj, but there shouldn't be duplicate entries for them
+		should(project.files.filter(f => f.relativePath === 'folder1\\file2.sql').length).equal(1);
+		should(project.files.filter(f => f.relativePath === 'file1.sql').length).equal(1);
+		should(project.files.filter(f => f.relativePath === 'folder1').length).equal(1);
+	});
+
+	it('Should handle globbing patterns listed in sqlproj', async function (): Promise<void> {
+		const testFolderPath = await testUtils.generateTestFolderPath();
+		const mainProjectPath =  path.join(testFolderPath, 'project');
+		const otherFolderPath = path.join(testFolderPath, 'other');
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectWithGlobsSpecifiedBaseline, mainProjectPath);
+		await testUtils.createDummyFileStructure(false, undefined, path.dirname(projFilePath));
+
+		// create files outside of project folder that are included in the project file
+		await fs.mkdir(otherFolderPath);
+		await testUtils.createOtherDummyFiles(otherFolderPath);
+
+		const project: Project = await Project.openProject(projFilePath);
+
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(17);
+
+		// make sure all the correct files from the globbing patterns were included
+		// ..\other\folder1\test?.sql
+		should(project.files.filter(f => f.relativePath === '..\\other\\folder1\\test1.sql').length).equal(1);
+		should(project.files.filter(f => f.relativePath === '..\\other\\folder1\\test2.sql').length).equal(1);
+		should(project.files.filter(f => f.relativePath === '..\\other\\folder1\\testLongerName.sql').length).equal(0);
+
+		// ..\other\folder1\file*.sql
+		should(project.files.filter(f => f.relativePath === '..\\other\\folder1\\file1.sql').length).equal(1);
+		should(project.files.filter(f => f.relativePath === '..\\other\\folder1\\file2.sql').length).equal(1);
+
+		// ..\other\folder2\*.sql
+		should(project.files.filter(f => f.relativePath === '..\\other\\folder2\\file1.sql').length).equal(1);
+		should(project.files.filter(f => f.relativePath === '..\\other\\folder2\\file2.sql').length).equal(1);
+
+		// make sure no duplicates from folder1\*.sql
+		should(project.files.filter(f => f.relativePath === 'folder1\\file1.sql').length).equal(1);
+	});
+
+	it('Should handle Build Remove in sqlproj', async function (): Promise<void> {
+		const testFolderPath = await testUtils.generateTestFolderPath();
+		const mainProjectPath =  path.join(testFolderPath, 'project');
+		const otherFolderPath = path.join(testFolderPath, 'other');
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectWithBuildRemoveBaseline, mainProjectPath);
+		await testUtils.createDummyFileStructure(false, undefined, path.dirname(projFilePath));
+
+		// create files outside of project folder that are included in the project file
+		await fs.mkdir(otherFolderPath);
+		await testUtils.createOtherDummyFiles(otherFolderPath);
+
+		const project: Project = await Project.openProject(projFilePath);
+
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(6);
+
+		// make sure all the correct files from the globbing patterns were included and excluded
+		// <Build Include="..\other\folder1\file*.sql" />
+		// <Build Remove="..\other\folder1\file1.sql" />
+		should(project.files.filter(f => f.relativePath === '..\\other\\folder1\\file1.sql').length).equal(0);
+		should(project.files.filter(f => f.relativePath === '..\\other\\folder1\\file2.sql').length).equal(1);
+
+		// <Build Remove="folder1\*.sql" />
+		should(project.files.filter(f => f.relativePath === 'folder1\\file1.sql').length).equal(0);
+		should(project.files.filter(f => f.relativePath === 'folder1\\file2.sql').length).equal(0);
+		should(project.files.filter(f => f.relativePath === 'folder1\\file3.sql').length).equal(0);
+		should(project.files.filter(f => f.relativePath === 'folder1\\file4.sql').length).equal(0);
+		should(project.files.filter(f => f.relativePath === 'folder1\\file5.sql').length).equal(0);
+
+		// <Build Remove="file1.sql" />
+		should(project.files.filter(f => f.relativePath === 'file1.sql').length).equal(0);
+	});
+
+	it('Should only add Build entries to sqlproj for files not included by project folder glob and external streaming jobs', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectBaseline);
+		const project = await Project.openProject(projFilePath);
+
+		const folderPath = 'Stored Procedures';
+		const scriptPath = path.join(folderPath, 'Fake Stored Proc.sql');
+		const scriptContents = 'SELECT \'This is not actually a stored procedure.\'';
+
+		const scriptPathTagged = 'Fake External Streaming Job.sql';
+		const scriptContentsTagged = 'EXEC sys.sp_create_streaming_job \'job\', \'SELECT 7\'';
+
+		const outsideFolderScriptPath = path.join('..', 'Other Fake Stored Proc.sql');
+		const outsideFolderScriptContents = 'SELECT \'This is also not actually a stored procedure.\'';
+
+		const otherFolderPath = 'OtherFolder';
+
+		await project.addScriptItem(scriptPath, scriptContents);
+		await project.addScriptItem(scriptPathTagged, scriptContentsTagged, templates.externalStreamingJob);
+		await project.addScriptItem(outsideFolderScriptPath, outsideFolderScriptContents);
+		await project.addFolderItem(otherFolderPath);
+
+		const newProject = await Project.openProject(projFilePath);
+
+		should(newProject.files.find(f => f.type === EntryType.Folder && f.relativePath === convertSlashesForSqlProj(folderPath))).not.equal(undefined);
+		should(newProject.files.find(f => f.type === EntryType.File && f.relativePath === convertSlashesForSqlProj(scriptPath))).not.equal(undefined);
+		should(newProject.files.find(f => f.type === EntryType.File && f.relativePath === convertSlashesForSqlProj(scriptPathTagged))).not.equal(undefined);
+		should(newProject.files.find(f => f.type === EntryType.File && f.relativePath === convertSlashesForSqlProj(scriptPathTagged))?.sqlObjectType).equal(constants.ExternalStreamingJob);
+		should(newProject.files.find(f => f.type === EntryType.File && f.relativePath === convertSlashesForSqlProj(outsideFolderScriptPath))).not.equal(undefined);
+		should(newProject.files.find(f => f.type === EntryType.Folder && f.relativePath === convertSlashesForSqlProj(otherFolderPath))).not.equal(undefined);
+
+		// only the external streaming job and file outside of the project folder should have been added to the sqlproj
+		const projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText.includes('<Folder Include="Stored Procedures" />')).equal(false, projFileText);
+		should(projFileText.includes('<Build Include="Stored Procedures\\Fake Stored Proc.sql" />')).equal(false, projFileText);
+		should(projFileText.includes('<Build Include="Fake External Streaming Job.sql" Type="ExternalStreamingJob" />')).equal(true, projFileText);
+		should(projFileText.includes('<Build Include="..\\Other Fake Stored Proc.sql" />')).equal(true, projFileText);
+		should(projFileText.includes('<Folder Include="OtherFolder" />')).equal(false, projFileText);
+	});
+
+});
+
 describe('Project: add SQLCMD Variables', function (): void {
 	before(async function (): Promise<void> {
 		await baselines.loadBaselines();
@@ -948,15 +1110,15 @@ describe('Project: round trip updates', function (): void {
 		should(project.importedTargets.length).equal(3); // additional target should exist by default
 	});
 
-	it('Should not show update project warning message when opening msbuild sdk style project using Sdk node', async function (): Promise<void> {
-		await shouldNotShowUpdateWarning(baselines.newStyleProjectSdkNodeBaseline);
+	it('Should not show update project warning message when opening sdk style project using Sdk node', async function (): Promise<void> {
+		await shouldNotShowUpdateWarning(baselines.newSdkStyleProjectSdkNodeBaseline);
 	});
 
-	it('Should not show update project warning message when opening msbuild sdk style project using Project node with Sdk attribute', async function (): Promise<void> {
-		await shouldNotShowUpdateWarning(baselines.newStyleProjectSdkProjectAttributeBaseline);
+	it('Should not show update project warning message when opening sdk style project using Project node with Sdk attribute', async function (): Promise<void> {
+		await shouldNotShowUpdateWarning(baselines.newSdkStyleProjectSdkProjectAttributeBaseline);
 	});
 
-	it('Should not show update project warning message when opening msbuild sdk style project using Import node with Sdk attribute', async function (): Promise<void> {
+	it('Should not show update project warning message when opening sdk style project using Import node with Sdk attribute', async function (): Promise<void> {
 		await shouldNotShowUpdateWarning(baselines.newStyleProjectSdkImportAttributeBaseline);
 	});
 
@@ -968,7 +1130,7 @@ describe('Project: round trip updates', function (): void {
 
 		const project = await Project.openProject(Uri.file(sqlProjPath).fsPath);
 		should(spy.notCalled).be.true();
-		should(project.isMsbuildSdkStyleProject).be.true();
+		should(project.isSdkStyleProject).be.true();
 	}
 });
 

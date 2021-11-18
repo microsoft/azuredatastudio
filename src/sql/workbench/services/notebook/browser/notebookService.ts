@@ -72,9 +72,9 @@ export interface INotebookService {
 
 	getSupportedFileExtensions(): string[];
 
-	getProvidersForFileType(fileType: string): string[];
+	getProvidersForFileType(fileType: string): string[] | undefined;
 
-	getStandardKernelsForProvider(provider: string): azdata.nb.IStandardKernel[];
+	getStandardKernelsForProvider(provider: string): azdata.nb.IStandardKernel[] | undefined;
 
 	getOrCreateSerializationManager(providerId: string, uri: URI): Promise<ISerializationManager>;
 

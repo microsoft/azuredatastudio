@@ -97,7 +97,11 @@ export class SchemaCompareDialog {
 				databaseName: '',
 				ownerUri: '',
 				packageFilePath: this.sourceTextBox.value,
-				connectionDetails: undefined
+				connectionDetails: undefined,
+				projectFilePath: '',
+				folderStructure: '',
+				targetScripts: [],
+				dataSchemaProvider: ''
 			};
 		} else {
 			const sourceServerDropdownValue = this.sourceServerDropdown.value as ConnectionDropdownValue;
@@ -111,7 +115,11 @@ export class SchemaCompareDialog {
 				ownerUri: ownerUri,
 				packageFilePath: '',
 				connectionDetails: undefined,
-				connectionName: sourceServerDropdownValue.connection.options.connectionName
+				connectionName: sourceServerDropdownValue.connection.options.connectionName,
+				projectFilePath: '',
+				folderStructure: '',
+				targetScripts: [],
+				dataSchemaProvider: ''
 			};
 		}
 
@@ -123,7 +131,11 @@ export class SchemaCompareDialog {
 				databaseName: '',
 				ownerUri: '',
 				packageFilePath: this.targetTextBox.value,
-				connectionDetails: undefined
+				connectionDetails: undefined,
+				projectFilePath: '',
+				folderStructure: '',
+				targetScripts: [],
+				dataSchemaProvider: ''
 			};
 		} else {
 			const targetServerDropdownValue = this.targetServerDropdown.value as ConnectionDropdownValue;
@@ -137,7 +149,11 @@ export class SchemaCompareDialog {
 				ownerUri: ownerUri,
 				packageFilePath: '',
 				connectionDetails: undefined,
-				connectionName: targetServerDropdownValue.connection.options.connectionName
+				connectionName: targetServerDropdownValue.connection.options.connectionName,
+				projectFilePath: '',
+				folderStructure: '',
+				targetScripts: [],
+				dataSchemaProvider: ''
 			};
 		}
 

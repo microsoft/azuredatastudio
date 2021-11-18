@@ -17,7 +17,7 @@ import type * as mssqlVscode from 'vscode-mssql';
 
 import { promises as fs } from 'fs';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
-import { Project, reservedProjectFolders, FileProjectEntry, SqlProjectReferenceProjectEntry, IDatabaseReferenceProjectEntry } from '../models/project';
+import { Project, reservedProjectFolders } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
 import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
 import { IDeploySettings } from '../models/IDeploySettings';
@@ -42,6 +42,7 @@ import { SqlTargetPlatform } from 'sqldbproj';
 import { AutorestHelper } from '../tools/autorestHelper';
 import { createNewProjectFromDatabaseWithQuickpick } from '../dialogs/createProjectFromDatabaseQuickpick';
 import { addDatabaseReferenceQuickpick } from '../dialogs/addDatabaseReferenceQuickpick';
+import { FileProjectEntry, IDatabaseReferenceProjectEntry, SqlProjectReferenceProjectEntry } from '../models/projectEntry';
 
 const maxTableLength = 10;
 
@@ -229,7 +230,7 @@ export class ProjectsController {
 		const options: ShellCommandOptions = {
 			commandTitle: 'Build',
 			workingDirectory: project.projectFolderPath,
-			argument: this.buildHelper.constructBuildArguments(project.projectFilePath, this.buildHelper.extensionBuildDirPath)
+			argument: this.buildHelper.constructBuildArguments(project.projectFilePath, this.buildHelper.extensionBuildDirPath, project.isSdkStyleProject)
 		};
 
 		try {
@@ -258,7 +259,8 @@ export class ProjectsController {
 
 			const message = utils.getErrorMessage(err);
 			if (err instanceof DotNetError) {
-				void vscode.window.showErrorMessage(message);
+				// DotNetErrors already get shown by the netCoreTool so just show this one in the console
+				console.error(message);
 			} else {
 				void vscode.window.showErrorMessage(constants.projBuildFailed(message));
 			}
