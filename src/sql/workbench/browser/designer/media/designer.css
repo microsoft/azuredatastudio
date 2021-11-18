@@ -79,7 +79,6 @@
 
 .designer-component .add-row-button-container {
 	display: flex;
-	flex-flow: row-reverse;
 }
 
 .designer-component .add-row-button-container .codicon.add-row-button {
