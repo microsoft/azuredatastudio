@@ -14,8 +14,9 @@ import { IDeploySettings } from '../models/IDeploySettings';
 import { DeploymentOptions } from '../../../mssql/src/mssql';
 import { IconPathHelper } from '../common/iconHelper';
 import { cssStyles } from '../common/uiConstants';
-import { getConnectionName } from './utils';
+import { getConnectionName, getDockerBaseImages } from './utils';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
+import { IDeployProfile } from '../models/deploy/deployProfile';
 import { Deferred } from '../common/promise';
 
 interface DataSourceDropdownValue extends azdataType.CategoryValue {
@@ -30,14 +31,24 @@ export class PublishDatabaseDialog {
 	private dataSourcesFormComponent: azdataType.FormComponent | undefined;
 	private dataSourcesDropDown: azdataType.DropDownComponent | undefined;
 	private targetDatabaseDropDown: azdataType.DropDownComponent | undefined;
+	private targetDatabaseTextBox: azdataType.TextComponent | undefined;
 	private connectionsRadioButton: azdataType.RadioButtonComponent | undefined;
+	private existingServerRadioButton: azdataType.RadioButtonComponent | undefined;
+	private dockerServerRadioButton: azdataType.RadioButtonComponent | undefined;
 	private dataSourcesRadioButton: azdataType.RadioButtonComponent | undefined;
 	private sqlCmdVariablesTable: azdataType.DeclarativeTableComponent | undefined;
 	private sqlCmdVariablesFormComponentGroup: azdataType.FormComponentGroup | undefined;
 	private loadSqlCmdVarsButton: azdataType.ButtonComponent | undefined;
 	private loadProfileTextBox: azdataType.InputBoxComponent | undefined;
 	private formBuilder: azdataType.FormBuilder | undefined;
-
+	private connectionRow: azdataType.FlexContainer | undefined;
+	private databaseRow: azdataType.FlexContainer | undefined;
+	private localDbSection: azdataType.FlexContainer | undefined;
+	private baseDockerImageDropDown: azdataType.DropDownComponent | undefined;
+	private serverAdminPasswordTextBox: azdataType.InputBoxComponent | undefined;
+	private serverConfigAdminPasswordTextBox: azdataType.InputBoxComponent | undefined;
+	private serverPortTextBox: azdataType.InputBoxComponent | undefined;
+	private existingServerSelected: boolean = true;
 	private connectionId: string | undefined;
 	private connectionIsDataSource: boolean | undefined;
 	private sqlCmdVars: Record<string, string> | undefined;
@@ -50,6 +61,7 @@ export class PublishDatabaseDialog {
 	private toDispose: vscode.Disposable[] = [];
 
 	public publish: ((proj: Project, profile: IDeploySettings) => any) | undefined;
+	public publishToContainer: ((proj: Project, profile: IDeployProfile) => any) | undefined;
 	public generateScript: ((proj: Project, profile: IDeploySettings) => any) | undefined;
 	public readPublishProfile: ((profileUri: vscode.Uri) => any) | undefined;
 
@@ -77,6 +89,11 @@ export class PublishDatabaseDialog {
 		utils.getAzdataApi()!.window.openDialog(this.dialog);
 	}
 
+	public set publishToExistingServer(v: boolean) {
+		this.existingServerSelected = v;
+	}
+
+
 	public waitForClose(): Promise<void> {
 		return this.completionPromise.promise;
 	}
@@ -92,8 +109,10 @@ export class PublishDatabaseDialog {
 
 	private initializePublishTab(): void {
 		this.publishTab.registerContent(async view => {
+			const flexRadioButtonsModel = this.createPublishTypeRadioButtons(view);
 			// TODO : enable using this when data source creation is enabled
 			this.createRadioButtons(view);
+			this.createLocalDbInfoRow(view);
 
 			this.dataSourcesFormComponent = this.createDataSourcesFormComponent(view);
 
@@ -115,11 +134,11 @@ export class PublishDatabaseDialog {
 			};
 
 			const profileRow = this.createProfileRow(view);
-			const connectionRow = this.createConnectionRow(view);
-			const databaseRow = this.createDatabaseRow(view);
+			this.connectionRow = this.createConnectionRow(view);
+			this.databaseRow = this.createDatabaseRow(view);
 
 			const horizontalFormSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
-			horizontalFormSection.addItems([profileRow, connectionRow, databaseRow]);
+			horizontalFormSection.addItems([profileRow, this.databaseRow]);
 
 
 			this.formBuilder = <azdataType.FormBuilder>view.modelBuilder.formContainer()
@@ -127,6 +146,14 @@ export class PublishDatabaseDialog {
 					{
 						title: '',
 						components: [
+							{
+								component: flexRadioButtonsModel,
+								title: ''
+							},
+							{
+								component: this.connectionRow,
+								title: ''
+							},
 							{
 								component: horizontalFormSection,
 								title: ''
@@ -190,17 +217,41 @@ export class PublishDatabaseDialog {
 	}
 
 	public async publishClick(): Promise<void> {
-		const settings: IDeploySettings = {
-			databaseName: this.getTargetDatabaseName(),
-			serverName: this.getServerName(),
-			connectionUri: await this.getConnectionUri(),
-			sqlCmdVariables: this.getSqlCmdVariablesForPublish(),
-			deploymentOptions: await this.getDeploymentOptions(),
-			profileUsed: this.profileUsed
-		};
+		if (this.existingServerSelected) {
+			const settings: IDeploySettings = {
+				databaseName: this.targetDatabaseName,
+				serverName: this.getServerName(),
+				connectionUri: await this.getConnectionUri(),
+				sqlCmdVariables: this.getSqlCmdVariablesForPublish(),
+				deploymentOptions: await this.getDeploymentOptions(),
+				profileUsed: this.profileUsed
+			};
 
-		utils.getAzdataApi()!.window.closeDialog(this.dialog);
-		await this.publish!(this.project, settings);
+			utils.getAzdataApi()!.window.closeDialog(this.dialog);
+			await this.publish!(this.project, settings);
+		} else {
+			const settings: IDeployProfile = {
+				localDbSetting: {
+					dbName: this.targetDatabaseName,
+					dockerBaseImage: this.getBaseDockerImageName(),
+					password: this.serverAdminPasswordTextBox?.value || '',
+					port: +(this.serverPortTextBox?.value || constants.defaultPortNumber),
+					serverName: constants.defaultLocalServerName,
+					userName: constants.defaultLocalServerAdminName
+				},
+				deploySettings: {
+					databaseName: this.targetDatabaseName,
+					serverName: constants.defaultLocalServerName,
+					connectionUri: '',
+					sqlCmdVariables: this.getSqlCmdVariablesForPublish(),
+					deploymentOptions: await this.getDeploymentOptions(),
+					profileUsed: this.profileUsed
+				}
+			};
+
+			utils.getAzdataApi()!.window.closeDialog(this.dialog);
+			await this.publishToContainer!(this.project, settings);
+		}
 
 		this.dispose();
 	}
@@ -210,7 +261,7 @@ export class PublishDatabaseDialog {
 
 		const sqlCmdVars = this.getSqlCmdVariablesForPublish();
 		const settings: IDeploySettings = {
-			databaseName: this.getTargetDatabaseName(),
+			databaseName: this.targetDatabaseName,
 			serverName: this.getServerName(),
 			connectionUri: await this.getConnectionUri(),
 			sqlCmdVariables: sqlCmdVars,
@@ -242,8 +293,24 @@ export class PublishDatabaseDialog {
 		return sqlCmdVariables;
 	}
 
-	public getTargetDatabaseName(): string {
-		return <string>this.targetDatabaseDropDown?.value ?? '';
+	public get targetDatabaseName(): string {
+		if (this.existingServerSelected) {
+			return <string>this.targetDatabaseDropDown?.value ?? '';
+		} else {
+			return <string>this.targetDatabaseTextBox?.value || '';
+		}
+	}
+
+	public set targetDatabaseName(value: string) {
+		(<azdataType.DropDownComponent>this.targetDatabaseDropDown).values = [];
+		this.targetDatabaseDropDown!.values?.push(<any>value);
+		this.targetDatabaseDropDown!.value = value;
+
+		this.targetDatabaseTextBox!.value = value;
+	}
+
+	public getBaseDockerImageName(): string {
+		return <string>this.baseDockerImageDropDown?.value ?? '';
 	}
 
 	public getDefaultDatabaseName(): string {
@@ -292,6 +359,73 @@ export class PublishDatabaseDialog {
 			.component();
 
 		return flexRadioButtonsModel;
+	}
+
+	private createPublishTypeRadioButtons(view: azdataType.ModelView): azdataType.Component {
+		const publishToLabel = view.modelBuilder.text().withProps({
+			value: constants.publishTo
+		}).component();
+		this.existingServerRadioButton = view.modelBuilder.radioButton()
+			.withProps({
+				name: 'publishType',
+				label: constants.publishToExistingServer
+			}).component();
+
+		this.existingServerRadioButton.checked = true;
+		this.existingServerRadioButton.onDidChangeCheckedState((checked) => {
+			this.onPublishTypeChange(checked, view);
+		});
+
+		this.dockerServerRadioButton = view.modelBuilder.radioButton()
+			.withProps({
+				name: 'publishType',
+				label: constants.publishToDockerContainer
+			}).component();
+
+		this.dockerServerRadioButton.onDidChangeCheckedState((checked) => {
+			this.onPublishTypeChange(!checked, view);
+		});
+
+		let flexRadioButtonsModel: azdataType.FlexContainer = view.modelBuilder.flexContainer()
+			.withLayout({ flexFlow: 'column' })
+			.withItems([publishToLabel, this.existingServerRadioButton, this.dockerServerRadioButton])
+			.withProps({ ariaRole: 'radiogroup' })
+			.component();
+
+		return flexRadioButtonsModel;
+	}
+
+	private onPublishTypeChange(existingServer: boolean, view: azdataType.ModelView) {
+		this.existingServerSelected = existingServer;
+		this.createDatabaseRow(view);
+		this.tryEnableGenerateScriptAndOkButtons();
+		if (existingServer) {
+			if (this.connectionRow) {
+				this.formBuilder!.insertFormItem({
+					title: '',
+					component: this.connectionRow
+				}, 2);
+			}
+			if (this.localDbSection) {
+				this.formBuilder!.removeFormItem({
+					title: '',
+					component: this.localDbSection
+				});
+			}
+		} else {
+			if (this.connectionRow) {
+				this.formBuilder!.removeFormItem({
+					title: '',
+					component: this.connectionRow
+				});
+			}
+			if (this.localDbSection) {
+				this.formBuilder!.insertFormItem({
+					title: '',
+					component: this.localDbSection
+				}, 2);
+			}
+		}
 	}
 
 	private createTargetConnectionComponent(view: azdataType.ModelView): azdataType.InputBoxComponent {
@@ -393,30 +527,124 @@ export class PublishDatabaseDialog {
 		return connectionRow;
 	}
 
-	private createDatabaseRow(view: azdataType.ModelView): azdataType.FlexContainer {
-		this.targetDatabaseDropDown = view.modelBuilder.dropDown().withProps({
-			values: [this.getDefaultDatabaseName()],
-			value: this.getDefaultDatabaseName(),
-			ariaLabel: constants.databaseNameLabel,
-			required: true,
+	private createLocalDbInfoRow(view: azdataType.ModelView): azdataType.FlexContainer {
+		this.serverPortTextBox = view.modelBuilder.inputBox().withProps({
+			value: constants.defaultPortNumber,
+			ariaLabel: constants.serverPortNumber,
+			placeHolder: constants.serverPortNumber,
 			width: cssStyles.publishDialogTextboxWidth,
-			editable: true,
-			fireOnTextChange: true
-		}).component();
+			enabled: true,
+			inputType: 'number',
+			validationErrorMessage: constants.portMustBeNumber
+		}).withValidation(component => utils.validateSqlServerPortNumber(component.value)).component();
 
-		this.targetDatabaseDropDown.onValueChanged(() => {
+		this.serverPortTextBox.onTextChanged(() => {
 			this.tryEnableGenerateScriptAndOkButtons();
 		});
+		const serverPortRow = this.createFormRow(view, constants.serverPortNumber, this.serverPortTextBox);
+		this.serverAdminPasswordTextBox = view.modelBuilder.inputBox().withProps({
+			value: '',
+			ariaLabel: constants.serverPassword,
+			placeHolder: constants.serverPassword,
+			width: cssStyles.publishDialogTextboxWidth,
+			enabled: true,
+			inputType: 'password',
+			validationErrorMessage: constants.invalidSQLPasswordMessage
+		}).withValidation(component => !utils.isEmptyString(component.value) && utils.isValidSQLPassword(component.value || '')).component();
+
+		const serverPasswordRow = this.createFormRow(view, constants.serverPassword, this.serverAdminPasswordTextBox);
+		this.serverConfigAdminPasswordTextBox = view.modelBuilder.inputBox().withProps({
+			value: '',
+			ariaLabel: constants.confirmServerPassword,
+			placeHolder: constants.confirmServerPassword,
+			width: cssStyles.publishDialogTextboxWidth,
+			enabled: true,
+			inputType: 'password',
+			validationErrorMessage: constants.passwordNotMatch
+		}).withValidation(component => component.value === this.serverAdminPasswordTextBox?.value).component();
+		this.serverAdminPasswordTextBox.onTextChanged(() => {
+			this.tryEnableGenerateScriptAndOkButtons();
+			if (this.serverConfigAdminPasswordTextBox) {
+				this.serverConfigAdminPasswordTextBox.value = '';
+			}
+		});
+		this.serverConfigAdminPasswordTextBox.onTextChanged(() => {
+			this.tryEnableGenerateScriptAndOkButtons();
+
+		});
+		const serverConfirmPasswordRow = this.createFormRow(view, constants.confirmServerPassword, this.serverConfigAdminPasswordTextBox);
+
+		this.baseDockerImageDropDown = view.modelBuilder.dropDown().withProps({
+			values: getDockerBaseImages(),
+			ariaLabel: constants.baseDockerImage,
+			width: cssStyles.publishDialogTextboxWidth,
+			enabled: true
+		}).component();
+
+		const dropDownRow = this.createFormRow(view, constants.baseDockerImage, this.baseDockerImageDropDown);
+
+		this.localDbSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
+		this.localDbSection.addItems([serverPortRow, serverPasswordRow, serverConfirmPasswordRow, dropDownRow]);
+		return this.localDbSection;
+	}
+
+	private createFormRow(view: azdataType.ModelView, label: string, component: azdataType.Component): azdataType.FlexContainer {
+
+		const labelComponent = view.modelBuilder.text().withProps({
+			value: label,
+			requiredIndicator: true,
+			width: cssStyles.publishDialogLabelWidth
+		}).component();
+
+		return view.modelBuilder.flexContainer().withItems([labelComponent, component], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+	}
+
+	private createDatabaseRow(view: azdataType.ModelView): azdataType.FlexContainer {
+		let databaseComponent: azdataType.Component | undefined;
+
+		if (!this.existingServerSelected) {
+			if (this.targetDatabaseTextBox === undefined) {
+				this.targetDatabaseTextBox = view.modelBuilder.inputBox().withProps({
+					ariaLabel: constants.databaseNameLabel,
+					required: true,
+					width: cssStyles.publishDialogTextboxWidth,
+					value: this.getDefaultDatabaseName()
+				}).component();
+			}
+			databaseComponent = this.targetDatabaseTextBox;
+		} else {
+			if (this.targetDatabaseDropDown === undefined) {
+				this.targetDatabaseDropDown = view.modelBuilder.dropDown().withProps({
+					values: [this.getDefaultDatabaseName()],
+					value: this.getDefaultDatabaseName(),
+					ariaLabel: constants.databaseNameLabel,
+					required: true,
+					width: cssStyles.publishDialogTextboxWidth,
+					editable: true,
+					fireOnTextChange: true
+				}).component();
+
+				this.targetDatabaseDropDown.onValueChanged(() => {
+					this.tryEnableGenerateScriptAndOkButtons();
+				});
+			}
+
+			databaseComponent = this.targetDatabaseDropDown;
+		}
 
 		const databaseLabel = view.modelBuilder.text().withProps({
 			value: constants.databaseNameLabel,
 			requiredIndicator: true,
 			width: cssStyles.publishDialogLabelWidth
 		}).component();
-
-		const databaseRow = view.modelBuilder.flexContainer().withItems([databaseLabel, <azdataType.DropDownComponent>this.targetDatabaseDropDown], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
-
-		return databaseRow;
+		const itemLayout = { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } };
+		if (this.databaseRow === undefined) {
+			this.databaseRow = view.modelBuilder.flexContainer().withItems([databaseLabel, <azdataType.Component>databaseComponent], itemLayout).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+		} else {
+			this.databaseRow.clearItems();
+			this.databaseRow.addItems([databaseLabel, <azdataType.Component>databaseComponent], itemLayout);
+		}
+		return this.databaseRow;
 	}
 
 	private createSqlCmdTable(view: azdataType.ModelView): azdataType.DeclarativeTableComponent {
@@ -543,15 +771,14 @@ export class PublishDatabaseDialog {
 			if (this.readPublishProfile) {
 				const result = await this.readPublishProfile(fileUris[0]);
 				// clear out old database dropdown values. They'll get populated later if there was a connection specified in the profile
-				(<azdataType.DropDownComponent>this.targetDatabaseDropDown).values = [];
+				this.targetDatabaseName = '';
 
 				this.connectionId = result.connectionId;
 				this.serverName = result.serverName;
 				await this.updateConnectionComponents(result.connection, <string>this.connectionId);
 
 				if (result.databaseName) {
-					this.targetDatabaseDropDown!.values?.push(result.databaseName);
-					this.targetDatabaseDropDown!.value = result.databaseName;
+					this.targetDatabaseName = result.databaseName;
 				}
 
 				if (Object.keys(result.sqlCmdVariables).length) {
@@ -595,15 +822,25 @@ export class PublishDatabaseDialog {
 
 	// only enable Generate Script and Ok buttons if all fields are filled
 	private tryEnableGenerateScriptAndOkButtons(): void {
-		if ((this.targetConnectionTextBox!.value && this.targetDatabaseDropDown!.value
-			|| this.connectionIsDataSource && this.targetDatabaseDropDown!.value)
-			&& this.allSqlCmdVariablesFilled()) {
-			this.dialog.okButton.enabled = true;
-			this.dialog.customButtons[0].enabled = true;
-		} else {
-			this.dialog.okButton.enabled = false;
-			this.dialog.customButtons[0].enabled = false;
+		let publishEnabled: boolean = false;
+		let generateScriptEnabled: boolean = false;
+
+		if (this.existingServerRadioButton?.checked) {
+			if ((this.targetConnectionTextBox!.value && this.targetDatabaseDropDown!.value
+				|| this.connectionIsDataSource && this.targetDatabaseDropDown!.value)
+				&& this.allSqlCmdVariablesFilled()) {
+				publishEnabled = true;
+				generateScriptEnabled = true;
+			}
+		} else if (utils.validateSqlServerPortNumber(this.serverPortTextBox?.value) &&
+			!utils.isEmptyString(this.serverAdminPasswordTextBox?.value) &&
+			utils.isValidSQLPassword(this.serverAdminPasswordTextBox?.value || '', constants.defaultLocalServerAdminName) &&
+			this.serverAdminPasswordTextBox?.value === this.serverConfigAdminPasswordTextBox?.value) {
+			publishEnabled = true; // only publish is supported for container
 		}
+
+		this.dialog.okButton.enabled = publishEnabled;
+		this.dialog.customButtons[0].enabled = generateScriptEnabled;
 	}
 
 	private allSqlCmdVariablesFilled(): boolean {
