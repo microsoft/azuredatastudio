@@ -18,6 +18,7 @@ import { ProjectsController } from '../../controllers/projectController';
 import { IDeploySettings } from '../../models/IDeploySettings';
 import { emptySqlDatabaseProjectTypeId } from '../../common/constants';
 import { createContext, mockDacFxOptionsResult, TestContext } from '../testContext';
+import { IDeployProfile } from '../../models/deploy/deployProfile';
 
 let testContext: TestContext;
 describe('Publish Database Dialog', () => {
@@ -66,10 +67,11 @@ describe('Publish Database Dialog', () => {
 		const proj = await testUtils.createTestProject(baselines.openProjectFileBaseline);
 		const dialog = TypeMoq.Mock.ofType(PublishDatabaseDialog, undefined, undefined, proj);
 		dialog.setup(x => x.getConnectionUri()).returns(() => { return Promise.resolve('Mock|Connection|Uri'); });
-		dialog.setup(x => x.getTargetDatabaseName()).returns(() => 'MockDatabaseName');
+		dialog.setup(x => x.targetDatabaseName).returns(() => 'MockDatabaseName');
 		dialog.setup(x => x.getSqlCmdVariablesForPublish()).returns(() => proj.sqlCmdVariables);
 		dialog.setup(x => x.getDeploymentOptions()).returns(() => { return Promise.resolve(mockDacFxOptionsResult.deploymentOptions); });
 		dialog.setup(x => x.getServerName()).returns(() => 'MockServer');
+		dialog.object.publishToExistingServer = true;
 		dialog.callBase = true;
 
 		let profile: IDeploySettings | undefined;
@@ -107,5 +109,34 @@ describe('Publish Database Dialog', () => {
 		await dialog.object.generateScriptClick();
 
 		should(profile).deepEqual(expectedGenScript);
+
+		const expectedContainerPublishProfile: IDeployProfile = {
+			localDbSetting: {
+				dbName: 'MockDatabaseName',
+				dockerBaseImage: '',
+				password: '',
+				port: 1433,
+				serverName: 'localhost',
+				userName: 'sa'
+
+			},
+			deploySettings: {
+				databaseName: 'MockDatabaseName',
+				serverName: 'localhost',
+				connectionUri: '',
+				sqlCmdVariables: {
+					'ProdDatabaseName': 'MyProdDatabase',
+					'BackupDatabaseName': 'MyBackupDatabase'
+				},
+				deploymentOptions: mockDacFxOptionsResult.deploymentOptions,
+				profileUsed: false
+			}
+		};
+		dialog.object.publishToExistingServer = false;
+		let deployProfile: IDeployProfile | undefined;
+		dialog.object.publishToContainer = (_, prof) => { deployProfile = prof; };
+		await dialog.object.publishClick();
+
+		should(deployProfile).deepEqual(expectedContainerPublishProfile);
 	});
 });
