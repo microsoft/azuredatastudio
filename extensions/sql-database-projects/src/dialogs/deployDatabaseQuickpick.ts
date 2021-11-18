@@ -6,6 +6,7 @@
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
+import * as uiUtils from './utils';
 import { AppSettingType, IDeployAppIntegrationProfile, IDeployProfile, ILocalDbSetting } from '../models/deploy/deployProfile';
 import { Project } from '../models/project';
 import { getPublishDatabaseSettings } from './publishDatabaseQuickpick';
@@ -120,11 +121,7 @@ export async function launchPublishToDockerContainerQuickpick(project: Project):
 	}
 
 	const baseImage = await vscode.window.showQuickPick(
-		[
-			`${constants.sqlServerDockerRegistry}/${constants.sqlServerDockerRepository}:2017-latest`,
-			`${constants.sqlServerDockerRegistry}/${constants.sqlServerDockerRepository}:2019-latest`,
-			`${constants.sqlServerDockerRegistry}/${constants.azureSqlEdgeDockerRepository}:latest`
-		],
+		uiUtils.getDockerBaseImages(),
 		{ title: constants.selectBaseImage, ignoreFocusOut: true });
 
 	// Return when user hits escape
@@ -133,8 +130,8 @@ export async function launchPublishToDockerContainerQuickpick(project: Project):
 	}
 
 	localDbSetting = {
-		serverName: 'localhost',
-		userName: 'sa',
+		serverName: constants.defaultLocalServerName,
+		userName: constants.defaultLocalServerAdminName,
 		dbName: project.projectFileName,
 		password: password,
 		port: +portNumber,
