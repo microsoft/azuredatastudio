@@ -1143,65 +1143,50 @@ declare module 'azdata' {
 			 */
 			additionalTableProperties?: DesignerDataPropertyInfo[];
 			/**
-			 * Whether to show columns tab. The default value is false.
-			 */
-			showColumnsTab?: boolean;
-			/**
-			 * Additional table column properties. Common table columns properties are handled by Azure Data Studio. see {@link TableColumnProperty}
-			 */
-			additionalTableColumnProperties?: DesignerDataPropertyInfo[];
-			/**
-			 * The properties to be displayed in the columns table. Default values are: Name, Type, Length, Precision, Scale, IsPrimaryKey, AllowNulls, DefaultValue.
-			 */
-			columnsTableProperties?: string[];
-			/**
-			 * Whether user can add columns. The default value is false.
-			 */
-			canAddColumns?: boolean;
-			/**
-			 * Whether user can remove columns. The default value is false.
-			 */
-			canRemoveColumns?: boolean;
-			/**
-			 * Whether to show foreign keys tab. The default value is false.
-			 */
-			showForeignKeysTab?: boolean;
-			/**
-			 * Additional foreign key properties. Common foreign key properties are handled by Azure Data Studio. see {@link TableForeignKeyProperty}
-			 */
-			additionalForeignKeyProperties?: DesignerDataPropertyInfo[];
-			/**
-			 * The properties to be displayed in the foreign keys table. Default values are: Name, PrimaryKeyTable.
-			 */
-			foreignKeysTableProperties?: string[];
-			/**
-			 * Whether user can add foreign keys. The default value is false.
-			 */
-			canAddForeignKeys?: boolean;
-			/**
-			 * Whether user can remove foreign keys. The default value is false.
-			 */
-			canRemoveForeignKeys?: boolean;
-			/**
-			 * Whether to show check constraints tab. The default value is false.
-			 */
-			showCheckConstraintsTab?: boolean;
-			/**
-			 * Additional check constraint properties. Common check constraint properties are handled by Azure Data Studio. see {@link TableCheckConstraintProperty}
-			 */
-			additionalCheckConstraintProperties?: DesignerDataPropertyInfo[];
-			/**
-			 * Whether user can add check constraints keys. The default value is false.
-			 */
-			canAddCheckConstraints?: boolean;
-			/**
-			 * Whether user can remove check constraints. The default value is false.
-			 */
-			canRemoveCheckConstraints?: boolean;
-			/**
 			 * Additional tabs.
 			 */
 			additionalTabs?: DesignerTab[];
+			/**
+			 * Columns table options.
+			 * Common table columns properties are handled by Azure Data Studio. see {@link TableColumnProperty}.
+			 * Default columns to display values are: Name, Type, Length, Precision, Scale, IsPrimaryKey, AllowNulls, DefaultValue.
+			 */
+			columnTableOptions?: TableDesignerBuiltInTableViewOptions;
+			/**
+			 * Foreign keys table options.
+			 * Common foreign key properties are handled by Azure Data Studio. see {@link TableForeignKeyProperty}.
+			 * Default columns to display values are: Name, PrimaryKeyTable.
+			 */
+			foreignKeyTableOptions?: TableDesignerBuiltInTableViewOptions;
+			/**
+			 * Check constraints table options.
+			 * Common check constraint properties are handled by Azure Data Studio. see {@link TableCheckConstraintProperty}
+			 * Default columns to display values are: Name, Expression.
+			 */
+			checkConstraintTableOptions?: TableDesignerBuiltInTableViewOptions;
+		}
+
+		export interface TableDesignerBuiltInTableViewOptions {
+			/**
+			 * Whether to show the table. Default value is false.
+			 */
+			showTable?: boolean;
+			/**
+			 * Properties to be displayed in the table, other properties can be accessed in the properties view.
+			 */
+			propertiesToDisplay?: string[];
+			/**
+			 * Whether adding new rows is supported.
+			 */
+			canAddRows?: boolean;
+			/**
+			 * Whether removing rows is supported.
+			 */
+			canRemoveRows?: boolean;
+			/**
+			 * Additional properties for the entity.
+			 */
+			additionalProperties?: DesignerDataPropertyInfo[];
 		}
 
 		/**
