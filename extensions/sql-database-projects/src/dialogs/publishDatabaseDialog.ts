@@ -109,8 +109,8 @@ export class PublishDatabaseDialog {
 
 	private initializePublishTab(): void {
 		this.publishTab.registerContent(async view => {
-			// TODO : enable using this when data source creation is enabled
 			const flexRadioButtonsModel = this.createPublishTypeRadioButtons(view);
+			// TODO : enable using this when data source creation is enabled
 			this.createRadioButtons(view);
 			this.createLocalDbInfoRow(view);
 

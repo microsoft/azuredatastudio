@@ -338,7 +338,7 @@ export class ProjectsController {
 
 		if (publishTarget === constants.publishToDockerContainer) {
 			const deployProfile = await launchPublishToDockerContainerQuickpick(project);
-			if (deployProfile && deployProfile.deploySettings) {
+			if (deployProfile?.deploySettings) {
 				await this.publishToDockerContainer(project, deployProfile);
 			}
 		} else {
