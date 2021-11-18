@@ -56,6 +56,8 @@ export type SetComponentValueFunc = (definition: DesignerDataPropertyInfo, compo
 const TableRowHeight = 23;
 const TableHeaderRowHeight = 28;
 
+type DesignerUIArea = 'PropertiesView' | 'ScriptView' | 'ContentView';
+
 export class Designer extends Disposable implements IThemable {
 	private _loadingSpinner: LoadingSpinner;
 	private _horizontalSplitViewContainer: HTMLElement;
@@ -160,7 +162,7 @@ export class Designer extends Disposable implements IThemable {
 		}, Sizing.Distribute);
 
 		this._propertiesPane = new DesignerPropertiesPane(this._propertiesPaneContainer, (container, components, parentPath) => {
-			return this.createComponents(container, components, this._propertiesPane.componentMap, this._propertiesPane.groupHeaders, parentPath, false, false);
+			return this.createComponents(container, components, this._propertiesPane.componentMap, this._propertiesPane.groupHeaders, parentPath, false, 'PropertiesView');
 		}, (definition, component, viewModel) => {
 			this.setComponentValue(definition, component, viewModel);
 		});
@@ -217,6 +219,8 @@ export class Designer extends Disposable implements IThemable {
 		this._propertiesPane.groupHeaders.forEach((header) => {
 			this.styleGroupHeader(header);
 		});
+
+		this._propertiesPane.descriptionElement.style.borderColor = styles.paneSeparator.toString();
 	}
 
 	public layout(dimension: DOM.Dimension) {
@@ -275,7 +279,7 @@ export class Designer extends Disposable implements IThemable {
 	private initializeDesigner(): void {
 		const view = this._input.view;
 		if (view.components) {
-			this.createComponents(this._topContentContainer, view.components, this._componentMap, this._groupHeaders, DesignerRootObjectPath, true, true);
+			this.createComponents(this._topContentContainer, view.components, this._componentMap, this._groupHeaders, DesignerRootObjectPath, true, 'ContentView');
 		}
 		view.tabs.forEach(tab => {
 			this._tabbedPanel.pushTab(this.createTabView(tab));
@@ -422,7 +426,7 @@ export class Designer extends Disposable implements IThemable {
 
 	private createTabView(tab: DesignerTab): IPanelTab {
 		const view = new DesignerTabPanelView(tab, (container, components, identifierGetter) => {
-			return this.createComponents(container, components, this._componentMap, this._groupHeaders, identifierGetter, true, true);
+			return this.createComponents(container, components, this._componentMap, this._groupHeaders, identifierGetter, true, 'ContentView');
 		});
 		return {
 			identifier: tab.title,
@@ -498,10 +502,10 @@ export class Designer extends Disposable implements IThemable {
 		componentMap: Map<string, { defintion: DesignerDataPropertyInfo, component: DesignerUIComponent }>,
 		groupHeaders: HTMLElement[],
 		parentPath: DesignerEditPath,
-		setWidth: boolean, isMainView: boolean): DesignerUIComponent[] {
+		setWidth: boolean, area: DesignerUIArea): DesignerUIComponent[] {
 		const uiComponents = [];
 		const groupNames = [];
-		const componentsToCreate = !isMainView ? components.filter(component => component.showInPropertiesView !== false) : components;
+		const componentsToCreate = area === 'PropertiesView' ? components.filter(component => component.showInPropertiesView !== false) : components;
 		componentsToCreate.forEach(component => {
 			// Set the default group name if not set (undefined or null).
 			component.group = component.group || localize('designer.generalGroupName', "General");
@@ -513,7 +517,7 @@ export class Designer extends Disposable implements IThemable {
 		// only show groups when there are multiple of them.
 		if (groupNames.length < 2) {
 			componentsToCreate.forEach(component => {
-				uiComponents.push(this.createComponent(container, component, parentPath, componentMap, setWidth, isMainView));
+				uiComponents.push(this.createComponent(container, component, parentPath, componentMap, setWidth, area));
 			});
 		} else {
 			groupNames.forEach(group => {
@@ -523,7 +527,7 @@ export class Designer extends Disposable implements IThemable {
 				groupHeader.innerText = group;
 				componentsToCreate.forEach(component => {
 					if (component.group === group) {
-						uiComponents.push(this.createComponent(container, component, parentPath, componentMap, setWidth, isMainView));
+						uiComponents.push(this.createComponent(container, component, parentPath, componentMap, setWidth, area));
 					}
 				});
 			});
@@ -536,7 +540,7 @@ export class Designer extends Disposable implements IThemable {
 		parentPath: DesignerEditPath,
 		componentMap: Map<string, { defintion: DesignerDataPropertyInfo, component: DesignerUIComponent }>,
 		setWidth: boolean,
-		isMainView: boolean): DesignerUIComponent {
+		view: DesignerUIArea): DesignerUIComponent {
 		const propertyPath = [...parentPath, componentDefinition.propertyName];
 		let component: DesignerUIComponent;
 		switch (componentDefinition.componentType) {
@@ -554,8 +558,10 @@ export class Designer extends Disposable implements IThemable {
 					}
 				});
 				input.onInputFocus(() => {
-					if (!isMainView) {
+					if (view === 'PropertiesView') {
 						this._propertiesPane.updateDescription(componentDefinition);
+					} else if (view === 'ContentView') {
+						this.updatePropertiesPane(DesignerRootObjectPath);
 					}
 				});
 				if (setWidth && inputProperties.width !== undefined) {
@@ -574,8 +580,10 @@ export class Designer extends Disposable implements IThemable {
 					this.handleEdit({ type: DesignerEditType.Update, path: propertyPath, value: e.selected });
 				});
 				dropdown.onDidFocus(() => {
-					if (!isMainView) {
+					if (view === 'PropertiesView') {
 						this._propertiesPane.updateDescription(componentDefinition);
+					} else if (view === 'ContentView') {
+						this.updatePropertiesPane(DesignerRootObjectPath);
 					}
 				});
 				component = dropdown;
@@ -589,14 +597,16 @@ export class Designer extends Disposable implements IThemable {
 					this.handleEdit({ type: DesignerEditType.Update, path: propertyPath, value: newValue });
 				});
 				checkbox.onFocus(() => {
-					if (!isMainView) {
+					if (view === 'PropertiesView') {
 						this._propertiesPane.updateDescription(componentDefinition);
+					} else if (view === 'ContentView') {
+						this.updatePropertiesPane(DesignerRootObjectPath);
 					}
 				});
 				component = checkbox;
 				break;
 			case 'table':
-				if (!isMainView) {
+				if (view === 'PropertiesView') {
 					container.appendChild(DOM.$('.full-row')).appendChild(DOM.$('span.component-label')).innerText = componentDefinition.componentProperties?.title ?? '';
 				}
 				const tableProperties = componentDefinition.componentProperties as DesignerTableProperties;
@@ -695,15 +705,21 @@ export class Designer extends Disposable implements IThemable {
 				table.grid.onBeforeEditCell.subscribe((e, data): boolean => {
 					return data.item[data.column.field].enabled !== false;
 				});
-				if (isMainView === true) {
-					table.grid.onActiveCellChanged.subscribe((e, data) => {
+
+				table.grid.onActiveCellChanged.subscribe((e, data) => {
+					if (view === 'ContentView') {
 						if (data.row !== undefined) {
 							this.updatePropertiesPane([...propertyPath, data.row]);
 						} else {
 							this.updatePropertiesPane(DesignerRootObjectPath);
 						}
-					});
-				}
+					} else if (view === 'PropertiesView') {
+						if (data.row !== undefined) {
+							this._propertiesPane.updateDescription(componentDefinition);
+						}
+					}
+				});
+
 				component = table;
 				break;
 			default:
