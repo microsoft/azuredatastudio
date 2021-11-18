@@ -10,7 +10,6 @@ import { localize } from 'vs/nls';
 import { designers } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { Emitter, Event } from 'vs/base/common/event';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
-import { ColumnPropertyDescriptions, TablePropertyDescriptions } from 'sql/workbench/services/tableDesigner/browser/tableDesignerStrings';
 import { deepClone, equals } from 'vs/base/common/objects';
 
 export class TableDesignerComponentInput implements DesignerComponentInput {
@@ -170,7 +169,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			components: [{
 				componentType: 'input',
 				propertyName: designers.TableColumnProperty.Name,
-				description: TablePropertyDescriptions.NAME,
+				description: localize('designer.table.description.name', "The name of the table object."),
 				componentProperties: {
 					title: localize('tableDesigner.nameTitle', "Table name"),
 					width: 200
@@ -185,7 +184,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			{
 				componentType: 'dropdown',
 				propertyName: designers.TableProperty.Schema,
-				description: TablePropertyDescriptions.SCHEMA,
+				description: localize('designer.table.description.schema', "The schema that contains the table."),
 				componentProperties: <DropDownProperties>{
 					title: localize('tableDesigner.schemaTitle', "Schema"),
 					values: designerInfo.schemas
@@ -193,7 +192,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			}, {
 				componentType: 'input',
 				propertyName: designers.TableProperty.Description,
-				description: TablePropertyDescriptions.DESCRIPTION,
+				description: localize('designer.table.description.description', "Description for the table."),
 				componentProperties: {
 					title: localize('tableDesigner.descriptionTitle', "Description")
 				}
@@ -216,7 +215,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			{
 				componentType: 'input',
 				propertyName: designers.TableColumnProperty.Name,
-				description: ColumnPropertyDescriptions.NAME,
+				description: localize('designer.column.description.name', "The name of the column object."),
 				componentProperties: {
 					title: localize('tableDesigner.columnNameTitle', "Name"),
 					width: 150
@@ -224,7 +223,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			}, {
 				componentType: 'dropdown',
 				propertyName: designers.TableColumnProperty.Type,
-				description: ColumnPropertyDescriptions.DATA_TYPE,
+				description: localize('designer.column.description.dataType', "Displays the data type name for the column"),
 				componentProperties: {
 					title: localize('tableDesigner.columnTypeTitle', "Type"),
 					width: 100,
@@ -233,7 +232,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			}, {
 				componentType: 'input',
 				propertyName: designers.TableColumnProperty.Length,
-				description: ColumnPropertyDescriptions.LENGTH,
+				description: localize('designer.column.description.length', "The maximum length (in characters) that can be stored in this database object."),
 				componentProperties: {
 					title: localize('tableDesigner.columnLengthTitle', "Length"),
 					width: 60
@@ -241,7 +240,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			}, {
 				componentType: 'input',
 				propertyName: designers.TableColumnProperty.DefaultValue,
-				description: ColumnPropertyDescriptions.DEFAULT_VALUE_OR_BINDING,
+				description: localize('designer.column.description.defaultValueBinding', "A predefined global default value for the column or binding."),
 				componentProperties: {
 					title: localize('tableDesigner.columnDefaultValueTitle', "Default Value"),
 					width: 150
@@ -249,21 +248,21 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			}, {
 				componentType: 'checkbox',
 				propertyName: designers.TableColumnProperty.AllowNulls,
-				description: ColumnPropertyDescriptions.ALLOW_NULLS,
+				description: localize('designer.column.description.allowNulls', "Specifies whether the column may have a NULL value."),
 				componentProperties: {
 					title: localize('tableDesigner.columnAllowNullTitle', "Allow Nulls"),
 				}
 			}, {
 				componentType: 'checkbox',
 				propertyName: designers.TableColumnProperty.IsPrimaryKey,
-				description: ColumnPropertyDescriptions.PRIMARY_KEY,
+				description: localize('designer.column.description.primaryKey', "Specifies whether the column is included in the primary key for the table."),
 				componentProperties: {
 					title: localize('tableDesigner.columnIsPrimaryKeyTitle', "Primary Key"),
 				}
 			}, {
 				componentType: 'input',
 				propertyName: designers.TableColumnProperty.Precision,
-				description: ColumnPropertyDescriptions.PRECISION,
+				description: localize('designer.column.description.precision', "For numeric data, the maximum number of decimal digits that can be stored in this database object."),
 				componentProperties: {
 					title: localize('tableDesigner.columnPrecisionTitle', "Precision"),
 					width: 60
@@ -271,7 +270,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			}, {
 				componentType: 'input',
 				propertyName: designers.TableColumnProperty.Scale,
-				description: ColumnPropertyDescriptions.NAME,
+				description: localize('designer.column.description.scale', "For numeric data, the maximum number of decimal digits that can be stored in this database object to the right of decimal point."),
 				componentProperties: {
 					title: localize('tableDesigner.columnScaleTitle', "Scale"),
 					width: 60
@@ -339,6 +338,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			{
 				componentType: 'input',
 				propertyName: designers.TableForeignKeyProperty.Name,
+				description: localize('designer.foreignkey.description.name', "The name of the foreign key."),
 				componentProperties: {
 					title: localize('tableDesigner.foreignKeyNameTitle', "Name"),
 					width: 300
@@ -347,6 +347,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			{
 				componentType: 'dropdown',
 				propertyName: designers.TableForeignKeyProperty.PrimaryKeyTable,
+				description: localize('designer.foreignkey.description.primaryKeyTable', "The table which contains the primary or unique key column."),
 				componentProperties: {
 					title: localize('tableDesigner.PrimaryKeyTableName', "Primary Key Table"),
 					width: 200
@@ -355,6 +356,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			{
 				componentType: 'dropdown',
 				propertyName: designers.TableForeignKeyProperty.OnUpdateAction,
+				description: localize('designer.foreignkey.description.onUpdateAction', "The behavior when a user tries to update a row with data that is involved in a foreign key relationship."),
 				componentProperties: {
 					title: localize('tableDesigner.foreignKeyOnUpdateAction', "On Update Action"),
 					width: 100
@@ -363,6 +365,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			{
 				componentType: 'dropdown',
 				propertyName: designers.TableForeignKeyProperty.OnDeleteAction,
+				description: localize('designer.foreignkey.description.onDeleteAction', "The behavior when a user tries to delete a row with data that is involved in a foreign key relationship."),
 				componentProperties: {
 					title: localize('tableDesigner.foreignKeyOnDeleteAction', "On Delete Action"),
 					width: 100
@@ -403,7 +406,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 						ariaLabel: localize('tableDesigner.foreignKeysTabTitle', "Foreign Keys"),
 						columns: foreignKeysTableProperties,
 						itemProperties: foreignKeyProperties,
-						objectTypeDisplayName: localize('tableDesigner.columnTypeName', "Column"),
+						objectTypeDisplayName: localize('tableDesigner.ForeignKeyTypeName', "Foreign Key"),
 						canAddRows: designerInfo.view.canAddForeignKeys,
 						canRemoveRows: designerInfo.view.canRemoveForeignKeys
 					}
@@ -417,7 +420,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			{
 				componentType: 'input',
 				propertyName: designers.TableCheckConstraintProperty.Name,
-				description: localize('tableDesigner.checkConstraintNameDescription', "Name of the check constraint."),
+				description: localize('designer.checkConstraint.description.name', "The name of the check constraint."),
 				componentProperties: {
 					title: localize('tableDesigner.checkConstraintNameTitle', "Name"),
 					width: 200
@@ -425,7 +428,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			}, {
 				componentType: 'input',
 				propertyName: designers.TableCheckConstraintProperty.Expression,
-				description: localize('tableDesigner.checkConstraintExpressionDescription', "The expression defining the check constraint."),
+				description: localize('designer.checkConstraint.description.expression', "The expression defining the check constraint."),
 				componentProperties: {
 					title: localize('tableDesigner.checkConstraintExpressionTitle', "Expression"),
 					width: 300

@@ -49,12 +49,11 @@ export class DesignerPropertiesPane {
 	}
 
 	public updateDescription(definition: DesignerDataPropertyInfo) {
-		const title: string = definition.componentProperties.title;
-		const description: string = definition.description;
-		if (title && description) {
-			this._descriptionTitleContainer.innerText = title;
-			this._descriptionTextContainer.innerText = description;
-		}
+		this._descriptionContainer.style.display = 'block';
+		const title: string = definition.componentProperties.title ?? '';
+		const description: string = definition.description ?? '';
+		this._descriptionTitleContainer.innerText = title;
+		this._descriptionTextContainer.innerText = description;
 	}
 
 	public clear(): void {
@@ -89,5 +88,6 @@ export class DesignerPropertiesPane {
 		this._componentMap.forEach((value) => {
 			this._setComponentValue(value.defintion, value.component, item.viewModel);
 		});
+		this._descriptionContainer.style.display = 'none';
 	}
 }
