@@ -374,6 +374,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			{
 				componentType: 'table',
 				propertyName: designers.TableForeignKeyProperty.Columns,
+				description: localize('designer.foreignkey.description.columnMapping', "The mapping between foreign key columns and primary key columns."),
 				group: localize('tableDesigner.foreignKeyColumns', "Column Mapping"),
 				componentProperties: <DesignerTableProperties>{
 					ariaLabel: localize('tableDesigner.foreignKeyColumns', "Column Mapping"),
