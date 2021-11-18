@@ -5755,6 +5755,78 @@ Error: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="designer.checkConstraint.description.expression">
+      <source xml:lang="en">The expression defining the check constraint.</source>
+    </trans-unit>
+    <trans-unit id="designer.checkConstraint.description.name">
+      <source xml:lang="en">The name of the check constraint.</source>
+    </trans-unit>
+    <trans-unit id="designer.column.description.allowNulls">
+      <source xml:lang="en">Specifies whether the column may have a NULL value.</source>
+    </trans-unit>
+    <trans-unit id="designer.column.description.dataType">
+      <source xml:lang="en">Displays the data type name for the column</source>
+    </trans-unit>
+    <trans-unit id="designer.column.description.defaultValueBinding">
+      <source xml:lang="en">A predefined global default value for the column or binding.</source>
+    </trans-unit>
+    <trans-unit id="designer.column.description.length">
+      <source xml:lang="en">The maximum length (in characters) that can be stored in this database object.</source>
+    </trans-unit>
+    <trans-unit id="designer.column.description.name">
+      <source xml:lang="en">The name of the column object.</source>
+    </trans-unit>
+    <trans-unit id="designer.column.description.precision">
+      <source xml:lang="en">For numeric data, the maximum number of decimal digits that can be stored in this database object.</source>
+    </trans-unit>
+    <trans-unit id="designer.column.description.primaryKey">
+      <source xml:lang="en">Specifies whether the column is included in the primary key for the table.</source>
+    </trans-unit>
+    <trans-unit id="designer.column.description.scale">
+      <source xml:lang="en">For numeric data, the maximum number of decimal digits that can be stored in this database object to the right of decimal point.</source>
+    </trans-unit>
+    <trans-unit id="designer.foreignkey.description.columnMapping">
+      <source xml:lang="en">The mapping between foreign key columns and primary key columns.</source>
+    </trans-unit>
+    <trans-unit id="designer.foreignkey.description.name">
+      <source xml:lang="en">The name of the foreign key.</source>
+    </trans-unit>
+    <trans-unit id="designer.foreignkey.description.onDeleteAction">
+      <source xml:lang="en">The behavior when a user tries to delete a row with data that is involved in a foreign key relationship.</source>
+    </trans-unit>
+    <trans-unit id="designer.foreignkey.description.onUpdateAction">
+      <source xml:lang="en">The behavior when a user tries to update a row with data that is involved in a foreign key relationship.</source>
+    </trans-unit>
+    <trans-unit id="designer.foreignkey.description.primaryKeyTable">
+      <source xml:lang="en">The table which contains the primary or unique key column.</source>
+    </trans-unit>
+    <trans-unit id="designer.table.description.description">
+      <source xml:lang="en">Description for the table.</source>
+    </trans-unit>
+    <trans-unit id="designer.table.description.name">
+      <source xml:lang="en">The name of the table object.</source>
+    </trans-unit>
+    <trans-unit id="designer.table.description.schema">
+      <source xml:lang="en">The schema that contains the table.</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.ForeignKeyTypeName">
+      <source xml:lang="en">Foreign Key</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.PrimaryKeyTableName">
+      <source xml:lang="en">Primary Key Table</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.checkConstraintExpressionTitle">
+      <source xml:lang="en">Expression</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.checkConstraintNameTitle">
+      <source xml:lang="en">Name</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.checkConstraintTypeName">
+      <source xml:lang="en">Check Constraint</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.checkConstraintsTabTitle">
+      <source xml:lang="en">Check Constraints</source>
+    </trans-unit>
     <trans-unit id="tableDesigner.columnAllowNullTitle">
       <source xml:lang="en">Allow Nulls</source>
     </trans-unit>
@@ -5794,11 +5866,32 @@ Error: {1}</source>
     <trans-unit id="tableDesigner.errorProcessingEdit">
       <source xml:lang="en">An error occured while processing the change: {0}</source>
     </trans-unit>
+    <trans-unit id="tableDesigner.foreignKeyColumn">
+      <source xml:lang="en">Foreign Key Column</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.foreignKeyColumns">
+      <source xml:lang="en">Column Mapping</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.foreignKeyNameTitle">
+      <source xml:lang="en">Name</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.foreignKeyOnDeleteAction">
+      <source xml:lang="en">On Delete Action</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.foreignKeyOnUpdateAction">
+      <source xml:lang="en">On Update Action</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.foreignKeysTabTitle">
+      <source xml:lang="en">Foreign Keys</source>
+    </trans-unit>
     <trans-unit id="tableDesigner.generalTab">
       <source xml:lang="en">General</source>
     </trans-unit>
     <trans-unit id="tableDesigner.nameTitle">
       <source xml:lang="en">Table name</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.primaryKeyColumn">
+      <source xml:lang="en">Primary Key Column</source>
     </trans-unit>
     <trans-unit id="tableDesigner.saveChangeError">
       <source xml:lang="en">An error occured while saving changes: {0}</source>
@@ -5814,41 +5907,6 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="tableDesigner.tableObjectType">
       <source xml:lang="en">Table</source>
-    </trans-unit>
-</body></file>
-  <file original="src/sql/workbench/services/tableDesigner/browser/tableDesignerStrings" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="designer.column.description.allowNulls">
-      <source xml:lang="en">Specifies whether the column may have a NULL value.</source>
-    </trans-unit>
-    <trans-unit id="designer.column.description.dataType">
-      <source xml:lang="en">Displays the data type name for the column</source>
-    </trans-unit>
-    <trans-unit id="designer.column.description.defaultValueBinding">
-      <source xml:lang="en">A predefined global default value for the column or binding.</source>
-    </trans-unit>
-    <trans-unit id="designer.column.description.description">
-      <source xml:lang="en">Description for the column.</source>
-    </trans-unit>
-    <trans-unit id="designer.column.description.length">
-      <source xml:lang="en">The maximum length (in characters) that can be stored in this database object.</source>
-    </trans-unit>
-    <trans-unit id="designer.column.description.name">
-      <source xml:lang="en">The name of the column object.</source>
-    </trans-unit>
-    <trans-unit id="designer.column.description.precision">
-      <source xml:lang="en">For numeric data, the maximum number of decimal digits that can be stored in this database object.</source>
-    </trans-unit>
-    <trans-unit id="designer.column.description.primaryKey">
-      <source xml:lang="en">Specifies whether the column is included in the primary key for the table.</source>
-    </trans-unit>
-    <trans-unit id="designer.table.description.description">
-      <source xml:lang="en">Description for the table.</source>
-    </trans-unit>
-    <trans-unit id="designer.table.description.name">
-      <source xml:lang="en">The name of the table object.</source>
-    </trans-unit>
-    <trans-unit id="designer.table.description.schema">
-      <source xml:lang="en">The schema that contains the table.</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/tasks/common/tasksService" source-language="en" datatype="plaintext"><body>
