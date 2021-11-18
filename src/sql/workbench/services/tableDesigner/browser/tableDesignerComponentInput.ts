@@ -10,6 +10,7 @@ import { localize } from 'vs/nls';
 import { designers } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { Emitter, Event } from 'vs/base/common/event';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
+import { ColumnPropertyDescriptions, TablePropertyDescriptions } from 'sql/workbench/services/tableDesigner/browser/tableDesignerStrings';
 import { deepClone, equals } from 'vs/base/common/objects';
 
 export class TableDesignerComponentInput implements DesignerComponentInput {
@@ -169,6 +170,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			components: [{
 				componentType: 'input',
 				propertyName: designers.TableColumnProperty.Name,
+				description: TablePropertyDescriptions.NAME,
 				componentProperties: {
 					title: localize('tableDesigner.nameTitle', "Table name"),
 					width: 200
@@ -183,6 +185,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			{
 				componentType: 'dropdown',
 				propertyName: designers.TableProperty.Schema,
+				description: TablePropertyDescriptions.SCHEMA,
 				componentProperties: <DropDownProperties>{
 					title: localize('tableDesigner.schemaTitle', "Schema"),
 					values: designerInfo.schemas
@@ -190,6 +193,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			}, {
 				componentType: 'input',
 				propertyName: designers.TableProperty.Description,
+				description: TablePropertyDescriptions.DESCRIPTION,
 				componentProperties: {
 					title: localize('tableDesigner.descriptionTitle', "Description")
 				}
@@ -212,6 +216,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			{
 				componentType: 'input',
 				propertyName: designers.TableColumnProperty.Name,
+				description: ColumnPropertyDescriptions.NAME,
 				componentProperties: {
 					title: localize('tableDesigner.columnNameTitle', "Name"),
 					width: 150
@@ -219,6 +224,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			}, {
 				componentType: 'dropdown',
 				propertyName: designers.TableColumnProperty.Type,
+				description: ColumnPropertyDescriptions.DATA_TYPE,
 				componentProperties: {
 					title: localize('tableDesigner.columnTypeTitle', "Type"),
 					width: 100,
@@ -227,6 +233,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			}, {
 				componentType: 'input',
 				propertyName: designers.TableColumnProperty.Length,
+				description: ColumnPropertyDescriptions.LENGTH,
 				componentProperties: {
 					title: localize('tableDesigner.columnLengthTitle', "Length"),
 					width: 60
@@ -234,6 +241,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			}, {
 				componentType: 'input',
 				propertyName: designers.TableColumnProperty.DefaultValue,
+				description: ColumnPropertyDescriptions.DEFAULT_VALUE_OR_BINDING,
 				componentProperties: {
 					title: localize('tableDesigner.columnDefaultValueTitle', "Default Value"),
 					width: 150
@@ -241,18 +249,21 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			}, {
 				componentType: 'checkbox',
 				propertyName: designers.TableColumnProperty.AllowNulls,
+				description: ColumnPropertyDescriptions.ALLOW_NULLS,
 				componentProperties: {
 					title: localize('tableDesigner.columnAllowNullTitle', "Allow Nulls"),
 				}
 			}, {
 				componentType: 'checkbox',
 				propertyName: designers.TableColumnProperty.IsPrimaryKey,
+				description: ColumnPropertyDescriptions.PRIMARY_KEY,
 				componentProperties: {
 					title: localize('tableDesigner.columnIsPrimaryKeyTitle', "Primary Key"),
 				}
 			}, {
 				componentType: 'input',
 				propertyName: designers.TableColumnProperty.Precision,
+				description: ColumnPropertyDescriptions.PRECISION,
 				componentProperties: {
 					title: localize('tableDesigner.columnPrecisionTitle', "Precision"),
 					width: 60
@@ -260,6 +271,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			}, {
 				componentType: 'input',
 				propertyName: designers.TableColumnProperty.Scale,
+				description: ColumnPropertyDescriptions.NAME,
 				componentProperties: {
 					title: localize('tableDesigner.columnScaleTitle', "Scale"),
 					width: 60

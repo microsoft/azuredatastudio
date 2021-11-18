@@ -553,6 +553,11 @@ export class Designer extends Disposable implements IThemable {
 						this.handleEdit({ type: DesignerEditType.Update, path: propertyPath, value: args.value });
 					}
 				});
+				input.onInputFocus(() => {
+					if (!isMainView) {
+						this._propertiesPane.updateDescription(componentDefinition);
+					}
+				});
 				if (setWidth && inputProperties.width !== undefined) {
 					input.width = inputProperties.width as number;
 				}
@@ -568,6 +573,11 @@ export class Designer extends Disposable implements IThemable {
 				dropdown.onDidSelect((e) => {
 					this.handleEdit({ type: DesignerEditType.Update, path: propertyPath, value: e.selected });
 				});
+				dropdown.onDidFocus(() => {
+					if (!isMainView) {
+						this._propertiesPane.updateDescription(componentDefinition);
+					}
+				});
 				component = dropdown;
 				break;
 			case 'checkbox':
@@ -577,6 +587,11 @@ export class Designer extends Disposable implements IThemable {
 				const checkbox = new Checkbox(checkboxContainer, { label: '', ariaLabel: checkboxProperties.title });
 				checkbox.onChange((newValue) => {
 					this.handleEdit({ type: DesignerEditType.Update, path: propertyPath, value: newValue });
+				});
+				checkbox.onFocus(() => {
+					if (!isMainView) {
+						this._propertiesPane.updateDescription(componentDefinition);
+					}
 				});
 				component = checkbox;
 				break;

@@ -11,9 +11,11 @@ import { ShellCommandOptions } from './shellExecutionHelper';
 
 export class PackageHelper {
 	private netCoreTool: NetCoreTool;
+	private _outputChannel: vscode.OutputChannel;
 
 	constructor(outputChannel: vscode.OutputChannel) {
 		this.netCoreTool = new NetCoreTool(outputChannel);
+		this._outputChannel = outputChannel;
 	}
 
 	/**
@@ -72,7 +74,10 @@ export class PackageHelper {
 				});
 			}
 		} catch (e) {
-			void vscode.window.showErrorMessage(e.message);
+			const result = await vscode.window.showErrorMessage(constants.addSqlBindingPackageError, constants.checkoutOutputMessage);
+			if (result === constants.checkoutOutputMessage) {
+				this._outputChannel.show();
+			}
 		}
 	}
 }
