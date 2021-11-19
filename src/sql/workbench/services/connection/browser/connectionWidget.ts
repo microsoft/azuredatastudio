@@ -454,12 +454,15 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		let currentAuthType = this.getMatchingAuthType(selectedAuthType);
 		this._userNameInputBox.hideMessage();
 		this._passwordInputBox.hideMessage();
-		this._rememberPasswordCheckBox.checked = false;
 		this._azureAccountDropdown.hideMessage();
 		this._azureTenantDropdown.hideMessage();
 		this._tableContainer.classList.add('hide-username');
 		this._tableContainer.classList.add('hide-password');
 		this._tableContainer.classList.add('hide-azure-accounts');
+
+		if (currentAuthType !== AuthenticationType.SqlLogin) {
+			this._rememberPasswordCheckBox.checked = false;
+		}
 
 		if (currentAuthType === AuthenticationType.AzureMFA) {
 			this.fillInAzureAccountOptions().then(async () => {
