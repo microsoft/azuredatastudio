@@ -34,8 +34,7 @@ export class UpdateProjectFromDatabaseDialog {
 	private project: Project | undefined;
 	private action: UpdateAction | undefined;
 	private toDispose: vscode.Disposable[] = [];
-	private initDialogComplete!: Deferred<void>;
-	private initDialogPromise: Promise<void> = new Promise<void>((resolve, reject) => this.initDialogComplete = { resolve, reject });
+	private initDialogPromise: Deferred = new Deferred();
 
 	public updateProjectFromDatabaseCallback: ((model: UpdateDataModel) => any) | undefined;
 
@@ -56,6 +55,8 @@ export class UpdateProjectFromDatabaseDialog {
 		this.dialog.registerCloseValidator(async () => {
 			return this.validate();
 		});
+
+		this.toDispose.push(this.dialog.onClosed(_ => this.initDialogPromise.resolve()));
 	}
 
 	public async openDialog(): Promise<void> {
@@ -142,7 +143,7 @@ export class UpdateProjectFromDatabaseDialog {
 			let formModel = this.formBuilder.component();
 			await view.initializeModel(formModel);
 			this.connectionButton?.focus();
-			this.initDialogComplete?.resolve();
+			this.initDialogPromise.resolve();
 		});
 	}
 
