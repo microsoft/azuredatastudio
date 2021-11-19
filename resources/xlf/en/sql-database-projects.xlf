@@ -52,6 +52,9 @@
     <trans-unit id="addPackageReferenceMessage">
       <source xml:lang="en">To use SQL bindings, ensure your Azure Functions project has a reference to {0}</source>
     </trans-unit>
+    <trans-unit id="addSqlBindingPackageError">
+      <source xml:lang="en">Error adding Sql Binding extension package to project</source>
+    </trans-unit>
     <trans-unit id="appSettingPrompt">
       <source xml:lang="en">Would you like to update Azure Function local.settings.json with the new connection string?</source>
     </trans-unit>
@@ -60,6 +63,9 @@
     </trans-unit>
     <trans-unit id="autorestProjectName">
       <source xml:lang="en">New SQL project name</source>
+    </trans-unit>
+    <trans-unit id="baseDockerImage">
+      <source xml:lang="en">Base SQL Server Docker image</source>
     </trans-unit>
     <trans-unit id="browseButtonText">
       <source xml:lang="en">Browse folder</source>
@@ -108,6 +114,9 @@
     </trans-unit>
     <trans-unit id="confirmPassword">
       <source xml:lang="en">Confirm SQL server admin password</source>
+    </trans-unit>
+    <trans-unit id="confirmServerPassword">
+      <source xml:lang="en">Confirm SQL Server admin password</source>
     </trans-unit>
     <trans-unit id="connectingToSqlServerOnDockerMessage">
       <source xml:lang="en">Connecting to SQL Server on Docker</source>
@@ -595,6 +604,9 @@
     <trans-unit id="publishSettingsFiles">
       <source xml:lang="en">Publish Settings File</source>
     </trans-unit>
+    <trans-unit id="publishTo">
+      <source xml:lang="en">Publish Target</source>
+    </trans-unit>
     <trans-unit id="publishToContainerFailed">
       <source xml:lang="en">Failed to publish to container. {0}</source>
     </trans-unit>
@@ -720,6 +732,12 @@
     </trans-unit>
     <trans-unit id="serverName">
       <source xml:lang="en">Server name</source>
+    </trans-unit>
+    <trans-unit id="serverPassword">
+      <source xml:lang="en">SQL Server admin password</source>
+    </trans-unit>
+    <trans-unit id="serverPortNumber">
+      <source xml:lang="en">SQL server port number</source>
     </trans-unit>
     <trans-unit id="serverVariable">
       <source xml:lang="en">Server variable</source>
@@ -914,7 +932,7 @@
       <source xml:lang="en">Whether to prompt the user to install .NET Core when not detected.</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.netCoreDowngradeDoNotShow">
-      <source xml:lang="en">Whether to prompt the user to set .NET SDK version when a newer unsupported version is detected.</source>
+      <source xml:lang="en">Whether to prompt the user to install .NET SDK version and add global.json to project when a newer unsupported version is detected.</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.netCoreInstallLocation">
       <source xml:lang="en">Full path to .NET Core SDK on the machine.</source>
