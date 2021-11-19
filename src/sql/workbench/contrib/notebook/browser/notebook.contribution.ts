@@ -712,7 +712,7 @@ export class NotebookEditorOverrideContribution extends Disposable implements IW
 			if (id !== JUPYTER_PROVIDER_ID && id !== SQL_NOTEBOOK_PROVIDER && registration?.fileExtensions?.length > 0) {
 				let extensions = registration.fileExtensions
 					.filter(ext => ext?.length > 0 && ext.toUpperCase() !== DEFAULT_NOTEBOOK_FILETYPE)
-					.map(ext => ext.startsWith('.') ? ext : `.${ext}`);
+					.map(ext => `.${ext}`);
 				this._newFileExtensions = this._newFileExtensions.concat(extensions);
 				this.registerEditorOverrides();
 			}
