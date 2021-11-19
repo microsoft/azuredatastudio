@@ -15990,6 +15990,9 @@
       <Item ItemId=";src/sql/workbench/services/tableDesigner/browser/tableDesignerStrings.designer.column.description.dataType" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Displays the data type name for the column]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Affiche le nom du type de données pour la colonne.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -16014,6 +16017,9 @@
       <Item ItemId=";src/sql/workbench/services/tableDesigner/browser/tableDesignerStrings.designer.column.description.name" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The name of the column object.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Le nom de l’objet de colonne]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -16047,6 +16053,9 @@
       <Item ItemId=";src/sql/workbench/services/tableDesigner/browser/tableDesignerStrings.designer.table.description.name" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The name of the table object.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Nom de l’objet de la table]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
