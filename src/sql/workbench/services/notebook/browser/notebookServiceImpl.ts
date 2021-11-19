@@ -401,9 +401,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		if (!providers) {
 			providers = [];
 		}
-		if (!providers.includes(provider)) {
-			providers.push(provider);
-		}
+		providers.push(provider);
 		this._fileToProviderDescriptions.set(fileType.toLowerCase(), providers);
 	}
 
@@ -418,9 +416,7 @@ export class NotebookService extends Disposable implements INotebookService {
 			standardKernels = [];
 		}
 		provider.standardKernels.forEach(kernel => {
-			if (!standardKernels.includes(kernel)) {
-				standardKernels.push(kernel);
-			}
+			standardKernels.push(kernel);
 		});
 
 		// Filter out unusable kernels when running on a SAW
