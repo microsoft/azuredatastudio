@@ -839,7 +839,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Failed to run the docker container]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Error al ejecutar el contenedor de Docker]]></Val>
+            <Val><![CDATA[Error al ejecutar el contenedor Docker]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -848,7 +848,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Docker container is not running]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[El contenedor de Docker no se está ejecutando]]></Val>
+            <Val><![CDATA[El contenedor Docker no se está ejecutando]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2006,7 +2006,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Building and running the docker container ...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Compilando y ejecutando el contenedor de Docker...]]></Val>
+            <Val><![CDATA[Compilando y ejecutando el contenedor Docker...]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
