@@ -952,7 +952,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this._providers.get(connection.providerName).onReady.then((provider) => {
 			provider.connect(uri, connectionInfo);
 			this._onConnectRequestSent.fire();
-			const editor = this._editorService.findEditors(URI.parse(uri))[0].editor;
+			// Connections are made per URI so while there may possibly be multiple editors with
+			// that URI they all share the same state
+			const editor = this._editorService.findEditors(URI.parse(uri))[0]?.editor;
 			// TODO make this generic enough to handle non-SQL languages too
 			const language = editor instanceof QueryEditorInput && editor.state.isSqlCmdMode ? 'sqlcmd' : 'sql';
 			this.doChangeLanguageFlavor(uri, language, connection.providerName);
