@@ -454,7 +454,6 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		let currentAuthType = this.getMatchingAuthType(selectedAuthType);
 		this._userNameInputBox.hideMessage();
 		this._passwordInputBox.hideMessage();
-		this._rememberPasswordCheckBox.checked = false;
 		this._azureAccountDropdown.hideMessage();
 		this._azureTenantDropdown.hideMessage();
 		this._tableContainer.classList.add('hide-username');
@@ -686,12 +685,12 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			}
 
 			if (this.authType === AuthenticationType.AzureMFA || this.authType === AuthenticationType.AzureMFAAndUser) {
+				let tenantId = connectionInfo.azureTenantId;
 				this.fillInAzureAccountOptions().then(async () => {
 					let accountName = (this.authType === AuthenticationType.AzureMFA)
 						? connectionInfo.azureAccount : connectionInfo.userName;
 					this._azureAccountDropdown.selectWithOptionName(this.getModelValue(accountName));
 					await this.onAzureAccountSelected();
-					let tenantId = connectionInfo.azureTenantId;
 					let account = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value);
 					if (account && account.properties.tenants.length > 1) {
 						let tenant = account.properties.tenants.find(tenant => tenant.id === tenantId);

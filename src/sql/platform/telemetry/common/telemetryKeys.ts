@@ -42,7 +42,8 @@ export const enum TelemetryView {
 	Notebook = 'Notebook',
 	ResultsPanel = 'ResultsPanel',
 	Shell = 'Shell',
-	SqlAssessment = 'SqlAssessment'
+	SqlAssessment = 'SqlAssessment',
+	TableDesigner = 'TableDesigner'
 }
 
 export const enum TelemetryError {

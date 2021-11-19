@@ -189,17 +189,17 @@
   dependencies:
     vscode-extension-telemetry "^0.1.6"
 
-"@microsoft/ads-service-downloader@0.2.2":
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/@microsoft/ads-service-downloader/-/ads-service-downloader-0.2.2.tgz#1a32c62eadb77fdab23eed257aaa5b590ccf2ce4"
-  integrity sha512-sEvp1dCQu8ZnUyrjX9qUo/S9IIvXkPCkCSuJ4IhuGEmGm2/++evixOtUgRKWYSRRvL1QskIUjZ0I59m6bKJ5yQ==
+"@microsoft/ads-service-downloader@0.2.3":
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/@microsoft/ads-service-downloader/-/ads-service-downloader-0.2.3.tgz#5987c1fc291d2019915e434263ccfe2223d27d5c"
+  integrity sha512-c8vvBeV0pdLUzATjoj0PlGTH3UwN3tsnT3gA6Uo+H3ZaOfkULhDrv1hG+2jJ8kA7oq+HfTHWEIR6tSnaFk2G/w==
   dependencies:
     async-retry "^1.2.3"
     eventemitter2 "^5.0.1"
     http-proxy-agent "^2.1.0"
     https-proxy-agent "^2.2.3"
     mkdirp "^0.5.1"
-    tar "^6.1.6"
+    tar "^6.1.11"
     tmp "^0.0.33"
     yauzl "^2.10.0"
 
@@ -950,7 +950,7 @@ supports-color@^7.1.0:
   dependencies:
     has-flag "^4.0.0"
 
-tar@^6.1.6:
+tar@^6.1.11:
   version "6.1.11"
   resolved "https://registry.yarnpkg.com/tar/-/tar-6.1.11.tgz#6760a38f003afa1b2ffd0ffe9e9abbd0eab3d621"
   integrity sha512-an/KZQzQUkZCkuoAA64hM92X0Urb6VpRhAFllDzz44U2mcD5scmT3zBc4VgVpkugF580+DQn8eAFSyoQt0tznA==

@@ -38,43 +38,20 @@ export async function getLocations(account: azdata.Account, subscription: Subscr
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
 	}
-	sortResourceArrayByName(response.locations);
 
-	const filteredLocations = response.locations.filter(loc => {
-		return sqlMigrationResourceLocations.includes(loc.displayName);
-	});
+	const filteredLocations = response.locations
+		.filter(loc => sqlMigrationResourceLocations.includes(loc.displayName));
 
-	// Only including the regions that have migration service deployed for public preview.
-	const publicPreviewLocations = [
-		'eastus',
-		'canadaeast',
-		'canadacentral',
-		'centralus',
-		'westus2',
-		'westus',
-		'southcentralus',
-		'westeurope',
-		'uksouth',
-		'australiaeast',
-		'southeastasia',
-		'japaneast',
-		'centralindia',
-		'eastus2',
-		'eastus2euap',
-		'francecentral',
-		'southindia',
-		'australiasoutheast',
-		'northcentralus'
-	];
+	sortResourceArrayByName(filteredLocations);
 
-	return filteredLocations.filter(v => publicPreviewLocations.includes(v.name));
+	return filteredLocations;
 }
 
 export type AzureProduct = azureResource.AzureGraphResource;
 
 export async function getResourceGroups(account: azdata.Account, subscription: Subscription): Promise<azureResource.AzureResourceResourceGroup[]> {
 	const api = await getAzureCoreAPI();
-	const result = await api.getResourceGroups(account, subscription, false);
+	const result = await api.getResourceGroups(account, subscription, true);
 	sortResourceArrayByName(result.resourceGroups);
 	return result.resourceGroups;
 }
@@ -312,7 +289,7 @@ export async function getMigrationStatus(account: azdata.Account, subscription: 
 	if (migration.properties) {
 		migrationUpdate.properties.sourceDatabaseName = migration.properties.sourceDatabaseName;
 		migrationUpdate.properties.backupConfiguration = migration.properties.backupConfiguration;
-		migrationUpdate.properties.autoCutoverConfiguration = migration.properties.autoCutoverConfiguration;
+		migrationUpdate.properties.offlineConfiguration = migration.properties.offlineConfiguration;
 	}
 
 	return migrationUpdate;
@@ -381,6 +358,19 @@ export function getResourceGroupFromId(id: string): string {
 	return id.replace(RegExp('^(.*?)/resourceGroups/'), '').replace(RegExp('/providers/.*'), '').toLowerCase();
 }
 
+export function getFullResourceGroupFromId(id: string): string {
+	return id.replace(RegExp('/providers/.*'), '').toLowerCase();
+}
+
+export function getResourceName(id: string): string {
+	const splitResourceId = id.split('/');
+	return splitResourceId[splitResourceId.length - 1];
+}
+
+export function getBlobContainerId(resourceGroupId: string, storageAccountName: string, blobContainerName: string): string {
+	return `${resourceGroupId}/providers/Microsoft.Storage/storageAccounts/${storageAccountName}/blobServices/default/containers/${blobContainerName}`;
+}
+
 export interface SqlMigrationServiceProperties {
 	name: string;
 	subscriptionId: string;
@@ -446,7 +436,7 @@ export interface StartDatabaseMigrationRequest {
 			password: string
 		},
 		scope: string,
-		autoCutoverConfiguration: AutoCutoverConfiguration,
+		offlineConfiguration: OfflineConfiguration,
 	}
 }
 
@@ -476,7 +466,7 @@ export interface DatabaseMigrationProperties {
 	migrationService: string;
 	migrationOperationId: string;
 	backupConfiguration: BackupConfiguration;
-	autoCutoverConfiguration: AutoCutoverConfiguration;
+	offlineConfiguration: OfflineConfiguration;
 	migrationFailureError: ErrorInfo;
 }
 export interface MigrationStatusDetails {
@@ -510,8 +500,8 @@ export interface BackupConfiguration {
 	targetLocation?: TargetLocation;
 }
 
-export interface AutoCutoverConfiguration {
-	autoCutover: boolean;
+export interface OfflineConfiguration {
+	offline: boolean;
 	lastBackupName?: string;
 }
 
@@ -547,7 +537,7 @@ export interface TargetLocation {
 
 export interface BackupFileInfo {
 	fileName: string;
-	status: 'Arrived' | 'Uploading' | 'Uploaded' | 'Restoring' | 'Restored' | 'Cancelled' | 'Ignored';
+	status: 'Arrived' | 'Uploading' | 'Uploaded' | 'Restoring' | 'Restored' | 'Canceled' | 'Ignored';
 	totalSize: number;
 	dataRead: number;
 	dataWritten: number;

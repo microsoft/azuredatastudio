@@ -21,7 +21,7 @@ import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProje
 import { ProjectsController } from '../controllers/projectController';
 import { promises as fs } from 'fs';
 import { createContext, TestContext, mockDacFxResult, mockConnectionProfile } from './testContext';
-import { Project, reservedProjectFolders, SystemDatabase, FileProjectEntry, SystemDatabaseReferenceProjectEntry } from '../models/project';
+import { Project, reservedProjectFolders } from '../models/project';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
@@ -31,6 +31,7 @@ import { IDacpacReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { CreateProjectFromDatabaseDialog } from '../dialogs/createProjectFromDatabaseDialog';
 import { ImportDataModel } from '../models/api/import';
 import { SqlTargetPlatform } from 'sqldbproj';
+import { SystemDatabaseReferenceProjectEntry, SystemDatabase, EntryType, FileProjectEntry } from '../models/projectEntry';
 
 let testContext: TestContext;
 
@@ -364,7 +365,7 @@ describe('ProjectsController', function (): void {
 				projController.callBase = true;
 				projController.setup(x => x.getPublishDialog(TypeMoq.It.isAny())).returns(() => publishDialog.object);
 
-				projController.object.publishProject(new Project('FakePath'));
+				void projController.object.publishProject(new Project('FakePath'));
 				should(opened).equal(true);
 			});
 
@@ -394,14 +395,14 @@ describe('ProjectsController', function (): void {
 					holler = generateHoller;
 					return Promise.resolve(undefined);
 				});
-
-				let dialog = projController.object.publishProject(proj);
-				await dialog.publishClick();
+				publishDialog.object.publishToExistingServer = true;
+				void projController.object.publishProject(proj);
+				await publishDialog.object.publishClick();
 
 				should(holler).equal(publishHoller, 'executionCallback() is supposed to have been setup and called for Publish scenario');
 
-				dialog = projController.object.publishProject(proj);
-				await dialog.generateScriptClick();
+				void projController.object.publishProject(proj);
+				await publishDialog.object.generateScriptClick();
 
 				should(holler).equal(generateHoller, 'executionCallback() is supposed to have been setup and called for GenerateScript scenario');
 			});
@@ -429,7 +430,7 @@ describe('ProjectsController', function (): void {
 
 				const proj = await testUtils.createTestProject(baselines.openProjectFileBaseline);
 
-				await projController.object.publishOrScriptProject(proj, { connectionUri: '', databaseName: '' , serverName: ''}, false);
+				await projController.object.publishOrScriptProject(proj, { connectionUri: '', databaseName: '', serverName: '' }, false);
 
 				should(builtDacpacPath).not.equal('', 'built dacpac path should be set');
 				should(publishedDacpacPath).not.equal('', 'published dacpac path should be set');
@@ -665,7 +666,7 @@ describe('ProjectsController', function (): void {
 			// add dacpac reference to something in the a folder outside of the project
 			await projController.addDatabaseReferenceCallback(project1, {
 				databaseName: <string>this.databaseNameTextbox?.value,
-				dacpacFileLocation: vscode.Uri.file(path.join(path.dirname(projFilePath), '..','someFolder', 'outsideFolderTest.dacpac')),
+				dacpacFileLocation: vscode.Uri.file(path.join(path.dirname(projFilePath), '..', 'someFolder', 'outsideFolderTest.dacpac')),
 				suppressMissingDependenciesErrors: false
 			},
 				{ treeDataProvider: new SqlDatabaseProjectTreeViewProvider(), element: undefined });
@@ -676,6 +677,55 @@ describe('ProjectsController', function (): void {
 			// make sure reference to outsideFolderTest.dacpac was added to project file
 			projFileText = (await fs.readFile(projFilePath)).toString();
 			should(projFileText).containEql('..\\someFolder\\outsideFolderTest.dacpac');
+		});
+	});
+
+	describe('AutoRest generation', function (): void {
+		it('Should create project from autorest-generated files', async function (): Promise<void> {
+			const parentFolder = await testUtils.generateTestFolderPath();
+			await testUtils.createDummyFileStructure();
+			const specName = 'DummySpec.yaml';
+			const renamedProjectName = 'RenamedProject';
+			const newProjFolder = path.join(parentFolder, renamedProjectName);
+			let fileList: vscode.Uri[] = [];
+
+			const projController = TypeMoq.Mock.ofType(ProjectsController);
+			projController.callBase = true;
+
+			projController.setup(x => x.selectAutorestSpecFile()).returns(async () => specName);
+			projController.setup(x => x.selectAutorestProjectLocation(TypeMoq.It.isAny())).returns(async () => {
+				await fs.mkdir(newProjFolder);
+
+				return {
+					newProjectFolder: newProjFolder,
+					outputFolder: parentFolder,
+					projectName: renamedProjectName
+				};
+			});
+
+			projController.setup(x => x.generateAutorestFiles(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(async () => {
+				await testUtils.createDummyFileStructure(true, fileList, newProjFolder);
+				await testUtils.createTestFile('SELECT \'This is a post-deployment script\'', constants.autorestPostDeploymentScriptName, newProjFolder);
+				return 'some dummy console output';
+			});
+
+			projController.setup(x => x.promptForAutorestProjectName(TypeMoq.It.isAny())).returns(async () => renamedProjectName);
+			projController.setup(x => x.openProjectInWorkspace(TypeMoq.It.isAny())).returns(async () => { });
+
+			const project = (await projController.object.generateProjectFromOpenApiSpec())!;
+
+			should(project.projectFileName).equal(renamedProjectName);
+			should(project.projectFolderPath.endsWith(renamedProjectName)).is.true(`Expected: '${project.projectFolderPath}' to include '${renamedProjectName}'`);
+
+			should(project.postDeployScripts.length).equal(1, `Expected 1 post-deployment script, got ${project?.postDeployScripts.length}`);
+			const actual = path.basename(project.postDeployScripts[0].fsUri.fsPath);
+			should(actual).equal(constants.autorestPostDeploymentScriptName, `Unexpected post-deployment script name: ${actual}, expected ${constants.autorestPostDeploymentScriptName}`);
+
+			const expectedScripts = fileList.filter(f => path.extname(f.fsPath) === '.sql');
+			should(project.files.filter(f => f.type === EntryType.File).length).equal(expectedScripts.length, 'Unexpected number of scripts in project');
+
+			const expectedFolders = fileList.filter(f => path.extname(f.fsPath) === '' && f.fsPath.toUpperCase() !== newProjFolder.toUpperCase());
+			should(project.files.filter(f => f.type === EntryType.Folder).length).equal(expectedFolders.length, 'Unexpected number of folders in project');
 		});
 	});
 });

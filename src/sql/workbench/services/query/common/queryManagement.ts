@@ -212,7 +212,9 @@ export class QueryManagementService implements IQueryManagementService {
 		}
 		let handler = this._requestHandlers.get(providerId);
 		if (handler) {
-			return action(handler);
+			return this._connectionService.refreshAzureAccountTokenIfNecessary(uri).then(() => {
+				return action(handler);
+			});
 		} else {
 			return Promise.reject(new Error('No Handler Registered'));
 		}

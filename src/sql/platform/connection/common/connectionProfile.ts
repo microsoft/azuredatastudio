@@ -7,7 +7,6 @@ import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectio
 import * as azdata from 'azdata';
 import { ProviderConnectionInfo } from 'sql/platform/connection/common/providerConnectionInfo';
 import * as interfaces from 'sql/platform/connection/common/interfaces';
-import { equalsIgnoreCase } from 'vs/base/common/strings';
 import { generateUuid } from 'vs/base/common/uuid';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { isString } from 'vs/base/common/types';
@@ -71,6 +70,9 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 					this.options.expiresOn = model.options.expiresOn;
 				}
 			}
+			if (model.options?.originalDatabase) {
+				this.originalDatabase = model.options.originalDatabase;
+			}
 		} else {
 			//Default for a new connection
 			this.savePassword = false;
@@ -83,29 +85,13 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 		this.options['databaseDisplayName'] = this.databaseName;
 	}
 
-	public static matchesProfile(a: interfaces.IConnectionProfile, b: interfaces.IConnectionProfile): boolean {
-		return a && b
-			&& a.providerName === b.providerName
-			&& ConnectionProfile.nullCheckEqualsIgnoreCase(a.serverName, b.serverName)
-			&& ConnectionProfile.nullCheckEqualsIgnoreCase(a.databaseName, b.databaseName)
-			&& ConnectionProfile.nullCheckEqualsIgnoreCase(a.userName, b.userName)
-			&& ConnectionProfile.nullCheckEqualsIgnoreCase(a.options['databaseDisplayName'], b.options['databaseDisplayName'])
-			&& a.authenticationType === b.authenticationType
-			&& a.groupId === b.groupId;
+	public static matchesProfile(a: interfaces.IConnectionProfile | undefined, b: interfaces.IConnectionProfile | undefined): boolean {
+		return a && b && a.getOptionsKey() === b.getOptionsKey();
 	}
 
 	public matches(other: interfaces.IConnectionProfile): boolean {
 		return ConnectionProfile.matchesProfile(this, other);
 
-	}
-
-	private static nullCheckEqualsIgnoreCase(a?: string, b?: string) {
-		if (a && !b || b && !a) {
-			return false;
-		} else {
-			let bothNull: boolean = !a && !b;
-			return bothNull ? bothNull : equalsIgnoreCase(a!, b!);
-		}
 	}
 
 	public generateNewId() {
@@ -157,6 +143,19 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 
 	public set azureResourceId(value: string | undefined) {
 		this.options['azureResourceId'] = value;
+	}
+
+	/**
+	 * Database of server specified before connection.
+	 * Some providers will modify the database field of the connection once a connection is made
+	 * so that it reflects the actual database that was connected to.
+	 */
+	public get originalDatabase() {
+		return this.options['originalDatabase'];
+	}
+
+	public set originalDatabase(value: string | undefined) {
+		this.options['originalDatabase'] = value;
 	}
 
 	public get registeredServerDescription(): string {

@@ -104,7 +104,11 @@ export class SchemaCompareMainWindow {
 				ownerUri: ownerUri,
 				packageFilePath: '',
 				connectionDetails: undefined,
-				connectionName: profile.connectionName
+				connectionName: profile.connectionName,
+				projectFilePath: '',
+				folderStructure: '',
+				targetScripts: [],
+				dataSchemaProvider: ''
 			};
 		} else if (sourceDacpac) {
 			this.sourceEndpointInfo = {
@@ -114,7 +118,11 @@ export class SchemaCompareMainWindow {
 				databaseName: '',
 				ownerUri: '',
 				packageFilePath: sourceDacpac,
-				connectionDetails: undefined
+				connectionDetails: undefined,
+				projectFilePath: '',
+				folderStructure: '',
+				targetScripts: [],
+				dataSchemaProvider: ''
 			};
 		}
 
@@ -291,6 +299,10 @@ export class SchemaCompareMainWindow {
 					operationId: this.comparisonResult.operationId
 				}).send();
 			vscode.window.showErrorMessage(loc.compareErrorMessage(this.comparisonResult?.errorMessage));
+
+			// reset state so a new comparison can be made
+			this.resetWindow();
+
 			return;
 		}
 		TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaComparisonFinished')
@@ -337,19 +349,19 @@ export class SchemaCompareMainWindow {
 			width: '98%'
 		});
 
-		this.splitView.addItem(this.differencesTable);
-		this.splitView.addItem(this.diffEditor);
-		this.splitView.setLayout({
-			orientation: 'vertical',
-			splitViewHeight: 800
-		});
-
 		this.flexModel.removeItem(this.loader);
 		this.flexModel.removeItem(this.waitText);
 		this.resetButtons(ResetButtonState.afterCompareComplete);
 
 		if (this.comparisonResult.differences.length > 0) {
 			this.flexModel.addItem(this.splitView);
+
+			this.splitView.addItem(this.differencesTable);
+			this.splitView.addItem(this.diffEditor);
+			this.splitView.setLayout({
+				orientation: 'vertical',
+				splitViewHeight: 800
+			});
 
 			// create a map of the differences to row numbers
 			for (let i = 0; i < data.length; ++i) {
@@ -647,7 +659,18 @@ export class SchemaCompareMainWindow {
 		});
 	}
 
-	public async cancelCompare() {
+	/**
+	 * Resets state of buttons and text to initial state before a comparison is started/completed
+	 */
+	public resetWindow(): void {
+		// clean the pane
+		this.flexModel.removeItem(this.loader);
+		this.flexModel.removeItem(this.waitText);
+		this.flexModel.addItem(this.startText, { CSSStyles: { 'margin': 'auto' } });
+		this.resetButtons(ResetButtonState.beforeCompareStart);
+	}
+
+	public async cancelCompare(): Promise<void> {
 
 		TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareCancelStarted')
 			.withAdditionalProperties({
@@ -655,11 +678,7 @@ export class SchemaCompareMainWindow {
 				'operationId': this.operationId
 			}).send();
 
-		// clean the pane
-		this.flexModel.removeItem(this.loader);
-		this.flexModel.removeItem(this.waitText);
-		this.flexModel.addItem(this.startText, { CSSStyles: { 'margin': 'auto' } });
-		this.resetButtons(ResetButtonState.beforeCompareStart);
+		this.resetWindow();
 
 		// cancel compare
 		if (this.operationId) {
@@ -765,7 +784,7 @@ export class SchemaCompareMainWindow {
 				// disable apply and generate script buttons because the results are no longer valid after applying the changes
 				this.setButtonsForRecompare();
 
-				const service = await this.getService();
+				const service: mssql.ISchemaCompareService = await this.getService();
 				const result = await service.schemaComparePublishChanges(this.comparisonResult.operationId, this.targetEndpointInfo.serverName, this.targetEndpointInfo.databaseName, azdata.TaskExecutionMode.execute);
 				if (!result || !result.success) {
 					TelemetryReporter.createErrorEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareApplyFailed', undefined, getTelemetryErrorType(result.errorMessage))

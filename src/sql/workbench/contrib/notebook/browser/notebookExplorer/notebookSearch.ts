@@ -532,7 +532,7 @@ class ToggleCollapseAndExpandAction extends Action {
 				if (!viewer.isCollapsed(node)) {
 					return true;
 				}
-			} while (node = navigator.next());
+			} while (node = navigator.next()); // eslint-disable-line no-cond-assign
 		}
 		return false;
 	}
@@ -629,7 +629,7 @@ class CollapseDeepestExpandedLevelAction extends Action {
 			let node = navigator.first();
 			let collapseFileMatchLevel = false;
 			if (node instanceof FolderMatch) {
-				while (node = navigator.next()) {
+				while (node = navigator.next()) { // eslint-disable-line no-cond-assign
 					if (node instanceof Match) {
 						collapseFileMatchLevel = true;
 						break;
@@ -643,7 +643,7 @@ class CollapseDeepestExpandedLevelAction extends Action {
 					if (node instanceof FileMatch) {
 						viewer.collapse(node);
 					}
-				} while (node = navigator.next());
+				} while (node = navigator.next()); // eslint-disable-line no-cond-assign
 			} else {
 				viewer.collapseAll();
 			}

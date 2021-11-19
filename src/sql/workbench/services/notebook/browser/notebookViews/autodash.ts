@@ -69,13 +69,13 @@ class CellDisplayGroup extends DisplayGroup<ICellModel> {
 		//For graphs
 		if (this.hasGraph(cell)) {
 			visInfo.width = 6;
-			visInfo.height = 4;
+			visInfo.height = 12;
 		}
 		//For tables
 		else if (this.hasTable(cell)) {
-			visInfo.height = Math.min(meta?.height, 3);
+			visInfo.height = Math.min(meta?.height, 6);
 		} else {
-			visInfo.height = Math.min(meta?.height, 3);
+			visInfo.height = Math.min(meta?.height, 6);
 		}
 
 		visInfo.display = true;

@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import 'vs/css!./media/dropdown';
 import {
 	Component, Input, Inject, ChangeDetectorRef, forwardRef,
 	ViewChild, ElementRef, OnDestroy, AfterViewInit
@@ -23,6 +24,8 @@ import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } fro
 import { localize } from 'vs/nls';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
+import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
+import { errorForeground, inputValidationErrorBorder } from 'vs/platform/theme/common/colorRegistry';
 
 @Component({
 	selector: 'modelview-dropdown',
@@ -35,6 +38,16 @@ import { ILogService } from 'vs/platform/log/common/log';
 		</div>
 		<div [style.display]="getEditableDisplay()" #editableDropDown style="width: 100%;"></div>
 		<div [style.display]="getNotEditableDisplay()" #dropDown style="width: 100%;"></div>
+		<label #errorMessage tabindex="-1"
+		aria-live="polite" [attr.id]="errorId" aria-atomic="true"
+		*ngIf="!_valid && validationErrorMessages && validationErrorMessages.length!==0 && !isInitState">
+			<ng-container *ngFor="let error of validationErrorMessages">
+				<div  class="dropdown-error-container">
+					<div class="sql codicon error dropdown-error-icon"></div>
+					<span class="dropdown-error-text">{{error}}</span>
+				</div>
+			</ng-container>
+		</label>
 	</div>
 	`
 })
@@ -45,6 +58,10 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 	private _selectBox: SelectBox;
 	private _isInAccessibilityMode: boolean;
 	private _loadingBox: SelectBox;
+	/**
+	 * This flag is used to hide the error message in the initial state of the dropdown. We do not want to show the error message before user has interacted with it.
+	 */
+	public isInitState: boolean = true;
 
 	@ViewChild('editableDropDown', { read: ElementRef }) private _editableDropDownContainer: ElementRef;
 	@ViewChild('dropDown', { read: ElementRef }) private _dropDownContainer: ElementRef;
@@ -69,7 +86,7 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 			let dropdownOptions: IDropdownOptions = {
 				values: [],
 				strictSelection: false,
-				placeholder: '',
+				placeholder: this.placeholder,
 				maxHeight: 125,
 				ariaLabel: ''
 			};
@@ -87,6 +104,7 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 						args: e
 					});
 				}
+				this.isInitState = false;
 			}));
 			this._validations.push(() => !this.required || !this.editable || !!this._editableDropdown.value);
 		}
@@ -110,6 +128,7 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 						args: e
 					});
 				}
+				this.isInitState = false;
 			}));
 			this._validations.push(() => !this.required || this.editable || !!this._selectBox.value);
 		}
@@ -119,6 +138,27 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 
 	override ngOnDestroy(): void {
 		this.baseDestroy();
+	}
+
+	public override async validate(): Promise<boolean> {
+		const validationResult = await super.validate();
+		this._changeRef.detectChanges();
+
+		const element = this.editable ? this._editableDropdown.input.inputElement : this._selectBox.selectElem;
+		const styleElement = this.editable ? this._editableDropdown.input.element : element; 		// In case of editable dropdown the border and focus styling comes from the parent element 2 levels up
+		if (!validationResult) {
+			element.setAttribute('aria-describedby', this.errorId);
+			element.setAttribute('aria-errormessage', this.errorId);
+			element.setAttribute('aria-invalid', 'true');
+			styleElement.classList.add('error-dropdown');
+		} else {
+			element.removeAttribute('aria-describedby');
+			element.removeAttribute('aria-errormessage');
+			element.removeAttribute('aria-invalid');
+			styleElement.classList.remove('error-dropdown');
+		}
+
+		return validationResult;
 	}
 
 	/// IComponent implementation
@@ -145,6 +185,10 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 			}
 			this._editableDropdown.enabled = this.enabled;
 			this._editableDropdown.fireOnTextChange = this.fireOnTextChange;
+
+			if (this.placeholder) {
+				this._editableDropdown.input.setPlaceHolder(this.placeholder);
+			}
 
 			// Add tooltip when editable dropdown is disabled to show overflow text
 			this._editableDropdown.input.setTooltip(!this.enabled ? this._editableDropdown.input.value : '');
@@ -300,4 +344,41 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 			'width': this.getWidth()
 		});
 	}
+
+	public get placeholder(): string | undefined {
+		return this.getPropertyOrDefault<string>((props) => props.placeholder, undefined);
+	}
+
+	public get validationErrorMessages(): string[] | undefined {
+		let validationErrorMessages = this.getPropertyOrDefault<string[]>((props) => props.validationErrorMessages, undefined);
+		// Showing the default error message only when user has set a validation error message for the dropdown.
+		if (this.required && this.editable && validationErrorMessages && (!this._editableDropdown.input.value || this._editableDropdown.input.value === '')) {
+			return [localize('defaultDropdownErrorMessage', "Please fill out this field.")]; // Adding a default error message for required editable dropdowns having an empty value.
+		}
+		return validationErrorMessages;
+	}
+
+	public get errorId(): string {
+		return this.descriptor.id + '-err';
+	}
 }
+
+registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
+	const errorForegroundColor = theme.getColor(errorForeground);
+	if (errorForegroundColor) {
+		collector.addRule(`
+		modelview-dropdown .dropdown-error-text {
+			color: ${errorForegroundColor};
+		}
+		`);
+	}
+	const inputValidationErrorBorderColor = theme.getColor(inputValidationErrorBorder);
+	if (inputValidationErrorBorderColor) {
+		collector.addRule(`
+		modelview-dropdown .error-dropdown {
+			border-color: ${inputValidationErrorBorderColor} !important;
+			outline-offset: 2px !important
+		}
+		`);
+	}
+});

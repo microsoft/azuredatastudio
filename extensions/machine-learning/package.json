@@ -2,12 +2,12 @@
   "name": "machine-learning",
   "displayName": "%displayName%",
   "description": "%description%",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "publisher": "Microsoft",
   "preview": true,
   "engines": {
     "vscode": "^1.25.0",
-    "azdata": ">=1.31.0"
+    "azdata": ">=1.33.0"
   },
   "activationEvents": [
     "onCommand:ml.command.managePackages",
@@ -22,6 +22,12 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/Microsoft/azuredatastudio.git"
+  },
+  "capabilities": {
+    "virtualWorkspaces": false,
+    "untrustedWorkspaces": {
+      "supported": true
+    }
   },
   "extensionDependencies": [
     "Microsoft.mssql",
@@ -149,6 +155,9 @@
     "should": "^13.2.1",
     "typemoq": "^2.1.0",
     "vscodetestcover": "^1.1.0"
+  },
+  "resolutions": {
+    "json-schema": "0.4.0"
   },
   "__metadata": {
     "id": "65",

@@ -9,10 +9,10 @@
 	"version": "1.0.0",
 	"contents": {
 		"dist/constants": {
-			"XEventsFailed": "XEvents operation failed.",
-			"XEventsNotSupported": "XEvents sessions not supported.",
-			"XEventsStarted": "XEvents sessions started for PageContention and ObjectContention.",
-			"XEventsStopped": "XEvents sessions PageContention and ObjectContention removed."
+			"XEventsFailed": "XEvents 操作失败。",
+			"XEventsNotSupported": "不支持 XEvents 会话。",
+			"XEventsStarted": "PageContention 和 ObjectContention 已启动 XEvents 会话。",
+			"XEventsStopped": "已删除 PageContention 和 ObjectContention 的 XEvents 会话。"
 		}
 	}
 }

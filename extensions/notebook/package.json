@@ -13,6 +13,12 @@
   "activationEvents": [
     "*"
   ],
+  "capabilities": {
+    "virtualWorkspaces": false,
+    "untrustedWorkspaces": {
+      "supported": true
+    }
+  },
   "contributes": {
     "configuration": {
       "type": "object",
@@ -252,6 +258,10 @@
         "title": "%title.addMarkdown%"
       },
       {
+        "command": "notebook.command.addSection",
+        "title": "%title.addSection%"
+      },
+      {
         "command": "notebook.command.closeNotebook",
         "title": "%title.closeNotebook%"
       },
@@ -287,6 +297,26 @@
           "dark": "resources/dark/unpin_inverse.svg",
           "light": "resources/light/unpin.svg"
         }
+      },
+      {
+        "command": "notebook.command.boldText",
+        "title": "%notebook.command.boldText%"
+      },
+      {
+        "command": "notebook.command.italicizeText",
+        "title": "%notebook.command.italicizeText%"
+      },
+      {
+        "command": "notebook.command.underlineText",
+        "title": "%notebook.command.underlineText%"
+      },
+      {
+        "command": "notebook.command.codeBlock",
+        "title": "%notebook.command.codeBlock%"
+      },
+      {
+        "command": "notebook.command.highlightText",
+        "title": "%notebook.command.highlightText%"
       }
     ],
     "languages": [
@@ -421,6 +451,26 @@
         {
           "command": "notebook.command.unpinNotebook",
           "when": "false"
+        },
+        {
+          "command": "notebook.command.boldText",
+          "when": "activeEditor == workbench.editor.notebookEditor && editorLangId == markdown"
+        },
+        {
+          "command": "notebook.command.italicizeText",
+          "when": "activeEditor == workbench.editor.notebookEditor && editorLangId == markdown"
+        },
+        {
+          "command": "notebook.command.underlineText",
+          "when": "activeEditor == workbench.editor.notebookEditor && editorLangId == markdown"
+        },
+        {
+          "command": "notebook.command.codeBlock",
+          "when": "activeEditor == workbench.editor.notebookEditor && editorLangId == markdown"
+        },
+        {
+          "command": "notebook.command.highlightText",
+          "when": "activeEditor == workbench.editor.notebookEditor && editorLangId == markdown"
         }
       ],
       "touchBar": [
@@ -487,6 +537,11 @@
         },
         {
           "command": "notebook.command.addMarkdown",
+          "when": "view == bookTreeView && viewItem == section && listMultiSelection == false || view == bookTreeView && viewItem == savedBook && listMultiSelection == false",
+          "group": "newFile@1"
+        },
+        {
+          "command": "notebook.command.addSection",
           "when": "view == bookTreeView && viewItem == section && listMultiSelection == false || view == bookTreeView && viewItem == savedBook && listMultiSelection == false",
           "group": "newFile@1"
         },
@@ -578,6 +633,31 @@
         "command": "notebook.command.addtext",
         "key": "Ctrl+Shift+T",
         "when": "activeEditor == workbench.editor.notebookEditor"
+      },
+      {
+        "command": "notebook.command.boldText",
+        "key": "Ctrl+B",
+        "when": "activeEditor == workbench.editor.notebookEditor && editorLangId == markdown"
+      },
+      {
+        "command": "notebook.command.italicizeText",
+        "key": "Ctrl+I",
+        "when": "activeEditor == workbench.editor.notebookEditor && editorLangId == markdown"
+      },
+      {
+        "command": "notebook.command.underlineText",
+        "key": "Ctrl+U",
+        "when": "activeEditor == workbench.editor.notebookEditor && editorLangId == markdown"
+      },
+      {
+        "command": "notebook.command.codeBlock",
+        "key": "Ctrl+Shift+K",
+        "when": "activeEditor == workbench.editor.notebookEditor && editorLangId == markdown"
+      },
+      {
+        "command": "notebook.command.highlightText",
+        "key": "Ctrl+Shift+H",
+        "when": "activeEditor == workbench.editor.notebookEditor && editorLangId == markdown"
       }
     ],
     "notebook.languagemagics": [
@@ -606,48 +686,50 @@
         ]
       }
     ],
-    "notebook.providers": {
-      "provider": "jupyter",
-      "fileExtensions": [
-        "IPYNB"
-      ],
-      "standardKernels": [
-        {
-          "name": "pysparkkernel",
-          "displayName": "PySpark",
-          "connectionProviderIds": [
-            "MSSQL"
-          ],
-          "blockedOnSAW": true
-        },
-        {
-          "name": "sparkkernel",
-          "displayName": "Spark | Scala",
-          "connectionProviderIds": [
-            "MSSQL"
-          ],
-          "blockedOnSAW": true
-        },
-        {
-          "name": "sparkrkernel",
-          "displayName": "Spark | R",
-          "connectionProviderIds": [
-            "MSSQL"
-          ],
-          "blockedOnSAW": true
-        },
-        {
-          "name": "python3",
-          "displayName": "Python 3",
-          "connectionProviderIds": []
-        },
-        {
-          "name": "powershell",
-          "displayName": "PowerShell",
-          "connectionProviderIds": []
-        }
-      ]
-    }
+    "notebook.providers": [
+      {
+        "provider": "jupyter",
+        "fileExtensions": [
+          ".ipynb"
+        ],
+        "standardKernels": [
+          {
+            "name": "pysparkkernel",
+            "displayName": "PySpark",
+            "connectionProviderIds": [
+              "MSSQL"
+            ],
+            "blockedOnSAW": true
+          },
+          {
+            "name": "sparkkernel",
+            "displayName": "Spark | Scala",
+            "connectionProviderIds": [
+              "MSSQL"
+            ],
+            "blockedOnSAW": true
+          },
+          {
+            "name": "sparkrkernel",
+            "displayName": "Spark | R",
+            "connectionProviderIds": [
+              "MSSQL"
+            ],
+            "blockedOnSAW": true
+          },
+          {
+            "name": "python3",
+            "displayName": "Python 3",
+            "connectionProviderIds": []
+          },
+          {
+            "name": "powershell",
+            "displayName": "PowerShell",
+            "connectionProviderIds": []
+          }
+        ]
+      }
+    ]
   },
   "dependencies": {
     "@jupyterlab/services": "^3.2.1",
@@ -688,7 +770,8 @@
     "vscodetestcover": "^1.1.0"
   },
   "resolutions": {
-    "url-parse": "^1.5.1"
+    "url-parse": "^1.5.1",
+    "json-schema": "0.4.0"
   },
   "enableProposedApi": true
 }

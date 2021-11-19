@@ -430,6 +430,17 @@ declare module 'azdata' {
 		enabled?: boolean;
 	}
 
+	export interface DropDownProperties {
+		/**
+		 * Adds a short hint that describes the expected value for the editable dropdown
+		 */
+		placeholder?: string;
+		/**
+		 * Define error messages to show when custom validation fails. Note: For empty required dropdowns we use a default error message.
+		 */
+		validationErrorMessages?: string[];
+	}
+
 	/**
 	 * Panel component with tabs
 	 */
@@ -479,31 +490,6 @@ declare module 'azdata' {
 		 * Whether to show the tab navigation pane even when there is only one tab. Default false.
 		 */
 		alwaysShowTabs?: boolean;
-	}
-
-	/**
-	 * Represents the tab of TabbedPanelComponent
-	 */
-	export interface Tab {
-		/**
-		 * Title of the tab
-		 */
-		title: string;
-
-		/**
-		 * Content component of the tab
-		 */
-		content: Component;
-
-		/**
-		 * Id of the tab
-		 */
-		id: string;
-
-		/**
-		 * Icon of the tab
-		 */
-		icon?: IconPath;
 	}
 
 	/**
@@ -574,7 +560,9 @@ declare module 'azdata' {
 	 */
 	export enum TextType {
 		Normal = 'Normal',
-		Error = 'Error'
+		Error = 'Error',
+		UnorderedList = 'UnorderedList',
+		OrderedList = 'OrderedList'
 	}
 
 	export interface TextComponentProperties {
@@ -584,12 +572,17 @@ declare module 'azdata' {
 		 */
 		headingLevel?: HeadingLevel;
 		/**
-		 * The type to display the text as - used to determine the color of the text. Default is Normal.
+		 * Sets the type of text box to be displayed
 		 */
 		textType?: TextType;
 	}
 
 	export namespace window {
+
+		/**
+		 * The reason that the dialog was closed
+		 */
+		export type CloseReason = 'close' | 'cancel' | 'ok';
 
 		export interface Dialog {
 			/**
@@ -622,6 +615,11 @@ declare module 'azdata' {
 			 * Default is undefined.
 			 */
 			dialogProperties?: IDialogProperties;
+
+			/**
+			 * Fired when the dialog is closed for any reason. The value indicates the reason it was closed (such as 'ok' or 'cancel')
+			 */
+			onClosed: vscode.Event<CloseReason>;
 		}
 
 		export interface Wizard {
@@ -961,6 +959,403 @@ declare module 'azdata' {
 			 * Access token expiry timestamp
 			 */
 			expiresOn?: number
+		}
+	}
+
+	export interface ConnectionInfoSummary {
+		/**
+		 * Indicates whether the server version is supported by ADS. The default value is true. If the value is false, ADS will show a warning message.
+		 */
+		isSupportedVersion?: boolean;
+
+		/**
+		 * The messages that will be appended to the Azure Data Studio's warning message about unsupported versions.
+		 */
+		unsupportedVersionMessage?: string;
+	}
+
+	export enum DataProviderType {
+		TableDesignerProvider = 'TableDesignerProvider'
+	}
+
+	export namespace dataprotocol {
+		export function registerTableDesignerProvider(provider: designers.TableDesignerProvider): vscode.Disposable;
+	}
+
+	export namespace designers {
+		/**
+		 * Open a table designer window.
+		 * @param providerId The table designer provider Id.
+		 * @param tableInfo The table information. The object will be passed back to the table designer provider as the unique identifier for the table.
+		 */
+		export function openTableDesigner(providerId: string, tableInfo: TableInfo): Thenable<void>;
+
+		/**
+		 * Definition for the table designer provider.
+		 */
+		export interface TableDesignerProvider extends DataProvider {
+			/**
+			 * Gets the table designer information for the specified table.
+			 * @param table the table information.
+			 */
+			getTableDesignerInfo(table: TableInfo): Thenable<TableDesignerInfo>;
+			/**
+			 * Process the table change.
+			 * @param table the table information
+			 * @param viewModel the object contains the state of the table designer
+			 * @param tableChangeInfo the information about the change user made through the UI.
+			 */
+			processTableEdit(table: TableInfo, viewModel: DesignerViewModel, tableChangeInfo: DesignerEdit): Thenable<DesignerEditResult>;
+
+			/**
+			 * Save the table
+			 * @param table the table information
+			 * @param viewModel the object contains the state of the table designer
+			 */
+			saveTable(table: TableInfo, viewModel: DesignerViewModel): Thenable<void>;
+
+			/**
+			 * Notify the provider that the table designer has been closed.
+			 * @param table the table information
+			 */
+			disposeTableDesigner(table: TableInfo): Thenable<void>;
+		}
+
+		/**
+		 * The information of the table.
+		 */
+		export interface TableInfo {
+			/**
+			 * The server name.
+			 */
+			server: string;
+			/**
+			 * The database name
+			 */
+			database: string;
+			/**
+			 * The schema name, only required for existing table.
+			 */
+			schema?: string;
+			/**
+			 * The table name, only required for existing table.
+			 */
+			name?: string;
+			/**
+			 * A boolean value indicates whether a new table is being designed.
+			 */
+			isNewTable: boolean;
+			/**
+			 * Unique identifier of the table. Will be used to decide whether a designer is already opened for the table.
+			 */
+			id: string;
+			/**
+			 * Extension can store additional information that the provider needs to uniquely identify a table.
+			 */
+			[key: string]: any;
+		}
+
+		/**
+		 * The information to populate the table designer UI.
+		 */
+		export interface TableDesignerInfo {
+			/**
+			 * The view definition.
+			 */
+			view: TableDesignerView;
+			/**
+			 * The initial state of the designer.
+			 */
+			viewModel: DesignerViewModel;
+			/**
+			 * The supported column types
+			 */
+			columnTypes: string[];
+			/**
+			 * The list of schemas in the database.
+			 */
+			schemas: string[];
+		}
+
+		/**
+		 * Name of the common table properties.
+		 * Extensions can use the names to access the designer view model.
+		 */
+		export enum TableProperty {
+			Columns = 'columns',
+			Description = 'description',
+			Name = 'name',
+			Schema = 'schema',
+			Script = 'script',
+			ForeignKeys = 'foreignKeys',
+			CheckConstraints = 'checkConstraints',
+		}
+		/**
+		 * Name of the common table column properties.
+		 * Extensions can use the names to access the designer view model.
+		 */
+		export enum TableColumnProperty {
+			AllowNulls = 'allowNulls',
+			DefaultValue = 'defaultValue',
+			Length = 'length',
+			Name = 'name',
+			Type = 'type',
+			IsPrimaryKey = 'isPrimaryKey',
+			Precision = 'precision',
+			Scale = 'scale'
+		}
+
+		/**
+		 * Name of the common foreign key constraint properties.
+		 * Extensions can use the names to access the designer view model.
+		 */
+		export enum TableForeignKeyProperty {
+			Name = 'name',
+			PrimaryKeyTable = 'primaryKeyTable',
+			OnDeleteAction = 'onDeleteAction',
+			OnUpdateAction = 'onUpdateAction',
+			Columns = 'columns'
+		}
+
+		/**
+		 * Name of the columns mapping properties for foreign key.
+		 */
+		export enum ForeignKeyColumnMappingProperty {
+			PrimaryKeyColumn = 'primaryKeyColumn',
+			ForeignKeyColumn = 'foreignKeyColumn'
+		}
+
+		/**
+		 * Name of the common check constraint properties.
+		 * Extensions can use the name to access the designer view model.
+		 */
+		export enum TableCheckConstraintProperty {
+			Name = 'name',
+			Expression = 'expression'
+		}
+
+		/**
+		 * The table designer view definition.
+		 */
+		export interface TableDesignerView {
+			/**
+			 * Additional table properties. Common table properties are handled by Azure Data Studio. see {@link TableProperty}
+			 */
+			additionalTableProperties?: DesignerDataPropertyInfo[];
+			/**
+			 * Additional tabs.
+			 */
+			additionalTabs?: DesignerTab[];
+			/**
+			 * Columns table options.
+			 * Common table columns properties are handled by Azure Data Studio. see {@link TableColumnProperty}.
+			 * Default columns to display values are: Name, Type, Length, Precision, Scale, IsPrimaryKey, AllowNulls, DefaultValue.
+			 */
+			columnTableOptions?: TableDesignerBuiltInTableViewOptions;
+			/**
+			 * Foreign keys table options.
+			 * Common foreign key properties are handled by Azure Data Studio. see {@link TableForeignKeyProperty}.
+			 * Default columns to display values are: Name, PrimaryKeyTable.
+			 */
+			foreignKeyTableOptions?: TableDesignerBuiltInTableViewOptions;
+			/**
+			 * Check constraints table options.
+			 * Common check constraint properties are handled by Azure Data Studio. see {@link TableCheckConstraintProperty}
+			 * Default columns to display values are: Name, Expression.
+			 */
+			checkConstraintTableOptions?: TableDesignerBuiltInTableViewOptions;
+		}
+
+		export interface TableDesignerBuiltInTableViewOptions {
+			/**
+			 * Whether to show the table. Default value is false.
+			 */
+			showTable?: boolean;
+			/**
+			 * Properties to be displayed in the table, other properties can be accessed in the properties view.
+			 */
+			propertiesToDisplay?: string[];
+			/**
+			 * Whether adding new rows is supported.
+			 */
+			canAddRows?: boolean;
+			/**
+			 * Whether removing rows is supported.
+			 */
+			canRemoveRows?: boolean;
+			/**
+			 * Additional properties for the entity.
+			 */
+			additionalProperties?: DesignerDataPropertyInfo[];
+		}
+
+		/**
+		 * The view model of the designer.
+		 */
+		export interface DesignerViewModel {
+			[key: string]: InputBoxProperties | CheckBoxProperties | DropDownProperties | DesignerTableProperties;
+		}
+
+		/**
+		 * The definition of a designer tab.
+		 */
+		export interface DesignerTab {
+			/**
+			 * The title of the tab.
+			 */
+			title: string;
+			/**
+			 * the components to be displayed in this tab.
+			 */
+			components: DesignerDataPropertyInfo[];
+		}
+
+		/**
+		 * The definition of the property in the designer.
+		 */
+		export interface DesignerDataPropertyInfo {
+			/**
+			 * The property name.
+			 */
+			propertyName: string;
+			/**
+			 * The description of the property.
+			 */
+			description?: string;
+			/**
+			 * The component type.
+			 */
+			componentType: DesignerComponentTypeName;
+			/**
+			 * The group name, properties with the same group name will be displayed under the same group on the UI.
+			 */
+			group?: string;
+			/**
+			 * Whether the property should be displayed in the properties view. The default value is true.
+			 */
+			showInPropertiesView?: boolean;
+			/**
+			 * The properties of the component.
+			 */
+			componentProperties: InputBoxProperties | CheckBoxProperties | DropDownProperties | DesignerTableProperties;
+		}
+
+		/**
+		 * The child component types supported by designer.
+		 */
+		export type DesignerComponentTypeName = 'input' | 'checkbox' | 'dropdown' | 'table';
+
+		/**
+		 * The properties for the table component in the designer.
+		 */
+		export interface DesignerTableProperties extends ComponentProperties {
+			/**
+			 * the name of the properties to be displayed, properties not in this list will be accessible in properties pane.
+			 */
+			columns?: string[];
+
+			/**
+			 * The display name of the object type.
+			 */
+			objectTypeDisplayName: string;
+
+			/**
+			 * the properties of the table data item.
+			 */
+			itemProperties?: DesignerDataPropertyInfo[];
+
+			/**
+			 * The data to be displayed.
+			 */
+			data?: DesignerTableComponentDataItem[];
+
+			/**
+			 * Whether user can add new rows to the table. The default value is true.
+			 */
+			canAddRows?: boolean;
+
+			/**
+			 * Whether user can remove rows from the table. The default value is true.
+			 */
+			canRemoveRows?: boolean;
+		}
+
+		/**
+		 * The data item of the designer's table component.
+		 */
+		export interface DesignerTableComponentDataItem {
+			[key: string]: InputBoxProperties | CheckBoxProperties | DropDownProperties | DesignerTableProperties;
+		}
+
+		/**
+		 * Type of the edit originated from the designer UI.
+		 */
+		export enum DesignerEditType {
+			/**
+			 * Add a row to a table.
+			 */
+			Add = 0,
+			/**
+			 * Remove a row from a table.
+			 */
+			Remove = 1,
+			/**
+			 * Update a property.
+			 */
+			Update = 2
+		}
+
+		/**
+		 * Information of the edit originated from the designer UI.
+		 */
+		export interface DesignerEdit {
+			/**
+			 * The edit type.
+			 */
+			type: DesignerEditType;
+			/**
+			 * the path of the edit target.
+			 */
+			path: DesignerEditPath;
+			/**
+			 * the new value.
+			 */
+			value?: any;
+		}
+
+		/**
+		 * The path of the edit target.
+		 * Below are the 3 scenarios and their expected path.
+		 * Note: 'index-{x}' in the description below are numbers represent the index of the object in the list.
+		 * 1. 'Add' scenario
+		 *     a. ['propertyName1']. Example: add a column to the columns property: ['columns'].
+		 *     b. ['propertyName1',index-1,'propertyName2']. Example: add a column mapping to the first foreign key: ['foreignKeys',0,'mappings'].
+		 * 2. 'Update' scenario
+		 *     a. ['propertyName1']. Example: update the name of the table: ['name'].
+		 *     b. ['propertyName1',index-1,'propertyName2']. Example: update the name of a column: ['columns',0,'name'].
+		 *     c. ['propertyName1',index-1,'propertyName2',index-2,'propertyName3']. Example: update the source column of an entry in a foreign key's column mapping table: ['foreignKeys',0,'mappings',0,'source'].
+		 * 3. 'Remove' scenario
+		 *     a. ['propertyName1',index-1]. Example: remove a column from the columns property: ['columns',0'].
+		 *     b. ['propertyName1',index-1,'propertyName2',index-2]. Example: remove a column mapping from a foreign key's column mapping table: ['foreignKeys',0,'mappings',0].
+		 */
+		export type DesignerEditPath = (string | number)[];
+
+		/**
+		 * The result returned by the table designer provider after handling an edit request.
+		 */
+		export interface DesignerEditResult {
+			/**
+			 * The view model object.
+			 */
+			viewModel: DesignerViewModel;
+			/**
+			 * Whether the current state is valid.
+			 */
+			isValid: boolean;
+			/**
+			 * Error messages of current state, and the property the caused the error.
+			 */
+			errors?: { message: string, property?: DesignerEditPath }[];
 		}
 	}
 }

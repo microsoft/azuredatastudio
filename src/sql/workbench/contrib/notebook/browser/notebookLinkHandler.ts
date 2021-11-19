@@ -9,7 +9,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { replaceInvalidLinkPath } from 'sql/workbench/contrib/notebook/common/utils';
 import { isWindows } from 'vs/base/common/platform';
 
-const keepAbsolutePathConfigName = 'notebook.keepAbsolutePath';
+const useAbsolutePathConfigName = 'notebook.useAbsoluteFilePaths';
 
 export class NotebookLinkHandler {
 	private _notebookUriLink: URI;
@@ -18,12 +18,26 @@ export class NotebookLinkHandler {
 	private _isAnchorLink: boolean;
 	private _isFile: boolean;
 	public readonly isAbsolutePath: boolean;
+	public readonly isMarkdown: boolean;
+	public readonly isEncoded: boolean;
 
 	constructor(
 		private _notebookURI: URI,
 		private _link: string | HTMLAnchorElement,
 		@IConfigurationService private _configurationService: IConfigurationService,
 	) {
+		/**
+		 * If link is string
+		 * 	- string link is passed in via onInsertButtonClick (markdownToolbar.component.ts)
+		 *  - string in form of 'https://','http://', or 'file://'
+		 * If link is HTMLAnchorElement
+		 * 	- the node element is passed in via getCurrentLinkUrl() in markdownToolbar.component.ts
+		 * 	- the node element is passed in via anchor rule in htmlMarkdownConverter.ts
+		 * The link / href we receive is not escaped initially so we need to encode the special characters
+		 * such as space and %20 to return the proper path.
+		 * The link that we return should be the encoded, as that will allow the linkHandler to then decode the
+		 * link via uri.parse to open the correct file or web link.
+		 */
 		if (typeof this._link === 'string') {
 			this._notebookUriLink = URI.parse(this._link);
 			this._isFile = this._notebookUriLink.scheme === 'file';
@@ -33,15 +47,18 @@ export class NotebookLinkHandler {
 			// HTMLAnchorElement
 			// windows files need to use the link.href instead as it contains the file:// prefix
 			// which enables us to get the proper relative path
+			this.isAbsolutePath = this._link.attributes['is-absolute']?.nodeValue === 'true' ? true : false;
+			this.isMarkdown = this._link.attributes['is-markdown']?.nodeValue === 'true' ? true : false;
+			this.isEncoded = this._link.attributes['is-encoded']?.nodeValue === 'true' ? true : false;
+			this._isFile = this._link.protocol === 'file:';
+			// Given an anchor element for windows href link will need to use nodeValue instead as that does not encode the url
 			if (isWindows) {
-				this._href = this._link.href;
+				this._href = this.isMarkdown || this.isEncoded ? this._link.href?.replace(/%5C/g, '\\') : this._link.attributes['href']?.nodeValue;
 			} else {
 				this._href = this._link.attributes['href']?.nodeValue;
 			}
-			this._notebookUriLink = this._href ? URI.parse(this._href) : undefined;
-			this._isFile = this._link.protocol === 'file:';
+			this._notebookUriLink = this._href ? URI.parse(encodeURI(this._href)) : undefined;
 			this._isAnchorLink = this._notebookUriLink?.fragment ? true : false;
-			this.isAbsolutePath = this._link.attributes['is-absolute']?.nodeValue === 'true' ? true : false;
 		}
 		this._notebookDirectory = this._notebookURI ? path.dirname(this._notebookURI.fsPath) : '';
 	}
@@ -58,7 +75,7 @@ export class NotebookLinkHandler {
 		// cases where we only have the href link
 		if (typeof this._link === 'string') {
 			// Does not convert absolute path to relative path
-			if (this._isFile && this.isAbsolutePath && this._configurationService.getValue(keepAbsolutePathConfigName) === true) {
+			if (this._isFile && this.isAbsolutePath && this._configurationService.getValue(useAbsolutePathConfigName) === true) {
 				return this._link;
 			}
 			// sets the string to absolute path to be used to resolve
@@ -77,8 +94,8 @@ export class NotebookLinkHandler {
 			if (this._notebookUriLink && this._isFile) {
 				let targetUri: URI;
 				// Does not convert absolute path to relative path if keep Absolute Path setting is enabled
-				if (this.isAbsolutePath && this._configurationService.getValue(keepAbsolutePathConfigName) === true) {
-					return escape(this._href);
+				if (this.isAbsolutePath && this._configurationService.getValue(useAbsolutePathConfigName) === true) {
+					return this._href;
 				} else {
 					if (this._isAnchorLink) {
 						targetUri = this.getUriAnchorLink(this._link, this._notebookURI);
@@ -89,7 +106,7 @@ export class NotebookLinkHandler {
 					}
 					// returns relative path of target notebook to the current notebook directory
 					if (this._notebookUriLink.fsPath !== this._notebookURI.fsPath && !targetUri?.fragment) {
-						return findPathRelativeToContent(this._notebookDirectory, targetUri);
+						return findPathRelativeToContent(this._notebookDirectory, targetUri, this.isMarkdown, this.isEncoded);
 					} else {
 						// if the anchor link is to a section in the same notebook then just add the fragment
 						return targetUri.fragment;
@@ -125,15 +142,20 @@ export class NotebookLinkHandler {
  * Finds the Relative Path from current notebook folder to target (linked) notebook
  * @param notebookFolder is the current notebook directory
  * @param contentPath is the URI path to the notebook we are linking to
+ */
+/**
+ * Finds the Relative Path from current notebook folder to target (linked) notebook
+ * @param notebookFolder is the current notebook directory
+ * @param contentPath is the URI path to the notebook we are linking to
+ * @param isMarkdown is checked to see if the link is already in markdown format
+ * @param isEncoded is checked to know if the link is already encoded
  * @returns relative path from the current notebook to the target notebook
  */
-export function findPathRelativeToContent(notebookFolder: string, contentPath: URI | undefined): string {
+export function findPathRelativeToContent(notebookFolder: string, contentPath: URI | undefined, isMarkdown?: boolean, isEncoded?: boolean): string {
 	if (contentPath?.scheme === 'file') {
 		let relativePath = contentPath.fragment ? path.relative(notebookFolder, contentPath.fsPath).concat('#', contentPath.fragment) : path.relative(notebookFolder, contentPath.fsPath);
-		//if path contains whitespaces then it's not identified as a link
-		relativePath = relativePath.replace(/\s/g, '%20');
 		// if relativePath contains improper directory format due to marked js parsing returning an invalid path (ex. ....\) then we need to replace it to ensure the directories are formatted properly (ex. ..\..\)
-		relativePath = replaceInvalidLinkPath(relativePath);
+		relativePath = isMarkdown || isEncoded ? replaceInvalidLinkPath(relativePath) : encodeURI(replaceInvalidLinkPath(relativePath)).replace(/%5C/g, '\\');
 		if (relativePath.startsWith(path.join('..', path.sep)) || relativePath.startsWith(path.join('.', path.sep))) {
 			return relativePath;
 		} else {

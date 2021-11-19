@@ -1,5 +1,35 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="src/sql/base/browser/ui/designer/designer" source-language="en" datatype="plaintext" target-language="pt-BR">
+    <body>
+      <trans-unit id="designer.newRowText">
+        <source xml:lang="en">Add New</source>
+        <target state="translated">Adicionar Novo</target>
+      </trans-unit>
+      <trans-unit id="designer.removeRowText">
+        <source xml:lang="en">Remove</source>
+        <target state="translated">Remover</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.unknownComponentType">
+        <source xml:lang="en">The component type: {0} is not supported</source>
+        <target state="translated">O tipo de componente: {0} não tem suporte</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/base/browser/ui/designer/designerPropertiesPane" source-language="en" datatype="plaintext" target-language="pt-BR">
+    <body>
+      <trans-unit id="tableDesigner.propertiesPaneTitle">
+        <source xml:lang="en">Properties</source>
+        <target state="translated">Propriedades</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.propertiesPaneTitleWithContext">
+        <source xml:lang="en">Properties - {0} {1}</source>
+        <note>{0} is the place holder for object type
+{1} is the place holder for object name</note>
+        <target state="translated">Propriedades - {0} {1}</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/base/browser/ui/loadingSpinner/loadingSpinner.component" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="loadingCompletedMessage">
@@ -373,6 +403,18 @@
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/platform/connection/common/connectionStatusManager" source-language="en" datatype="plaintext" target-language="pt-BR">
+    <body>
+      <trans-unit id="connectionStatusManager.noConnectionForUri">
+        <source xml:lang="en">Could not find connection with uri: {0}</source>
+        <target state="translated">Não foi possível localizar a conexão com o uri: {0}</target>
+      </trans-unit>
+      <trans-unit id="connectionStatusManager.uriAlreadyInConnectionsList">
+        <source xml:lang="en">There is already a connection with uri: {0}</source>
+        <target state="translated">Já existe uma conexão com o uri: {0}</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/platform/dashboard/browser/insightRegistry" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="schema.dashboardWidgets.InsightsRegistry">
@@ -739,13 +781,25 @@
   </file>
   <file original="src/sql/workbench/api/common/extHostNotebook" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
-      <trans-unit id="errNoManager">
-        <source xml:lang="en">No Manager found</source>
-        <target state="translated">Nenhum Gerenciador encontrado</target>
+      <trans-unit id="errNoExecuteManager">
+        <source xml:lang="en">No execute manager found</source>
+        <target state="translated">Não foi encontrado nenhum gerente de execução</target>
       </trans-unit>
-      <trans-unit id="errNoProvider">
-        <source xml:lang="en">no notebook provider found</source>
-        <target state="translated">nenhum provedor de notebook encontrado</target>
+      <trans-unit id="errNoExecuteProvider">
+        <source xml:lang="en">No notebook execute provider found</source>
+        <target state="translated">Nenhum provedor de execução de bloco de anotações encontrado</target>
+      </trans-unit>
+      <trans-unit id="errNoSerializationManager">
+        <source xml:lang="en">No serialization manager found</source>
+        <target state="translated">Não foi encontrado nenhum gerente de serialização</target>
+      </trans-unit>
+      <trans-unit id="errNoSerializationProvider">
+        <source xml:lang="en">No notebook serialization provider found</source>
+        <target state="translated">Nenhum provedor de serialização do bloco de anotações encontrado</target>
+      </trans-unit>
+      <trans-unit id="executeProviderRequired">
+        <source xml:lang="en">A NotebookExecuteProvider with valid providerId must be passed to this method</source>
+        <target state="translated">Um NotebookExecuteProvider com fornecedor válidoDeve ser passado para este método</target>
       </trans-unit>
       <trans-unit id="noContentManager">
         <source xml:lang="en">Notebook Manager for notebook {0} does not have a content manager. Cannot perform operations on it</source>
@@ -759,17 +813,17 @@
         <source xml:lang="en">Notebook Manager for notebook {0} does not have a session manager. Cannot perform operations on it</source>
         <target state="translated">O Notebook Manager do notebook {0} não tem um gerenciador de sessão. Não é possível executar operações nele</target>
       </trans-unit>
-      <trans-unit id="providerRequired">
-        <source xml:lang="en">A NotebookProvider with valid providerId must be passed to this method</source>
-        <target state="translated">Um NotebookProvider com providerId válido precisa ser passado para este método</target>
+      <trans-unit id="serializationProviderRequired">
+        <source xml:lang="en">A NotebookSerializationProvider with valid providerId must be passed to this method</source>
+        <target state="translated">Um provedor de serialização de blocos de anotações com um provedor válidoDeve ser passado para este método</target>
       </trans-unit>
     </body>
   </file>
   <file original="src/sql/workbench/api/common/extHostNotebookDocumentsAndEditors" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
-      <trans-unit id="providerRequired">
-        <source xml:lang="en">A NotebookProvider with valid providerId must be passed to this method</source>
-        <target state="translated">Um NotebookProvider com providerId válido precisa ser passado para este método</target>
+      <trans-unit id="navigationProviderRequired">
+        <source xml:lang="en">A NavigationProvider with valid providerId must be passed to this method</source>
+        <target state="translated">Um provedor de navegação com provedor válidoDeve ser passado para este método</target>
       </trans-unit>
     </body>
   </file>
@@ -861,6 +915,14 @@
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/browser/editor/tableDesigner/tableDesignerInput" source-language="en" datatype="plaintext" target-language="pt-BR">
+    <body>
+      <trans-unit id="tableDesigner.newTable">
+        <source xml:lang="en">New Table</source>
+        <target state="translated">Nova Tabela</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/browser/modal/modal" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="closeMessage">
@@ -911,6 +973,10 @@
   </file>
   <file original="src/sql/workbench/browser/modal/optionsDialogHelper" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
+      <trans-unit id="optionsDialog.defaultGroupName">
+        <source xml:lang="en">General</source>
+        <target state="translated">Geral</target>
+      </trans-unit>
       <trans-unit id="optionsDialog.invalidInput">
         <source xml:lang="en">Invalid input.  Numeric value expected.</source>
         <target state="translated">Entrada inválida. Valor numérico esperado.</target>
@@ -947,6 +1013,10 @@
   </file>
   <file original="src/sql/workbench/browser/modelComponents/dropdown.component" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
+      <trans-unit id="defaultDropdownErrorMessage">
+        <source xml:lang="en">Please fill out this field.</source>
+        <target state="translated">Preencha este campo.</target>
+      </trans-unit>
       <trans-unit id="loadingCompletedMessage">
         <source xml:lang="en">Loading completed</source>
         <target state="translated">Carregamento concluído</target>
@@ -1835,6 +1905,30 @@
         <source xml:lang="en">Attempt to parse the contents of the clipboard when the connection dialog is opened or a paste is performed.</source>
         <target state="translated">Tentativa de analisar o conteúdo da área de transferência quando a caixa de diálogo conexão é aberta ou a cópia é executada.</target>
       </trans-unit>
+      <trans-unit id="connection.showUnsupportedServerVersionWarning">
+        <source xml:lang="en">Whether to show the warning message when user connects to a server version that is not supported by Azure Data Studio.</source>
+        <target state="translated">Se a mensagem de aviso deve ser exibida quando o usuário se conecta a uma versão do servidor que não tem suporte do Azure Data Studio.</target>
+      </trans-unit>
+      <trans-unit id="sql.defaultAuthenticationType.AzureMFA">
+        <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
+        <target state="translated">Azure Active Directory – Universal com suporte para MFA</target>
+      </trans-unit>
+      <trans-unit id="sql.defaultAuthenticationType.AzureMFAAndUser">
+        <source xml:lang="en">Azure Active Directory - Password</source>
+        <target state="translated">Azure Active Directory – senha</target>
+      </trans-unit>
+      <trans-unit id="sql.defaultAuthenticationType.Integrated">
+        <source xml:lang="en">Windows Authentication</source>
+        <target state="translated">Autenticação do Windows</target>
+      </trans-unit>
+      <trans-unit id="sql.defaultAuthenticationType.SqlLogin">
+        <source xml:lang="en">Sql Login</source>
+        <target state="translated">Login Sql</target>
+      </trans-unit>
+      <trans-unit id="sql.defaultAuthenticationTypeDescription">
+        <source xml:lang="en">Default authentication type to use when connecting to Azure resources. </source>
+        <target state="translated">Tipo de autenticação padrão a ser usado ao se conectar aos recursos do Azure.</target>
+      </trans-unit>
       <trans-unit id="sql.defaultEngineDescription">
         <source xml:lang="en">Default SQL Engine to use. This drives default language provider in .sql files and the default to use when creating a new connection.</source>
         <target state="translated">Mecanismo SQL padrão a ser usado. Isso direciona o provedor de idioma padrão em arquivos .sql e o padrão a ser usado ao criar uma conexão.</target>
@@ -1866,6 +1960,10 @@
       <trans-unit id="schema.iconPath">
         <source xml:lang="en">Icon path for the server type</source>
         <target state="translated">Caminho do ícone do tipo de servidor</target>
+      </trans-unit>
+      <trans-unit id="schema.isQueryProvider">
+        <source xml:lang="en">Whether the provider is also a query provider. The default value is true.</source>
+        <target state="new">Whether the provider is also a query provider. The default value is true.</target>
       </trans-unit>
       <trans-unit id="schema.notebookKernelAlias">
         <source xml:lang="en">Notebook Kernel Alias for the provider</source>
@@ -3685,6 +3783,10 @@ Erro: {1}</target>
         <source xml:lang="en">Text cell</source>
         <target state="translated">Célula de texto</target>
       </trans-unit>
+      <trans-unit id="splitCell">
+        <source xml:lang="en">Split cell</source>
+        <target state="translated">Dividir célula</target>
+      </trans-unit>
       <trans-unit id="textPreview">
         <source xml:lang="en">Text cell</source>
         <target state="translated">Célula de texto</target>
@@ -5265,6 +5367,10 @@ Erro: {1}</target>
         <source xml:lang="en">Messages</source>
         <target state="translated">Mensagens</target>
       </trans-unit>
+      <trans-unit id="queryResults.queryEditorCrashError">
+        <source xml:lang="en">The query editor ran into an issue and has stopped working. Please save and reopen it.</source>
+        <target state="translated">O editor de consultas teve um problema e parou de funcionar. Salve ele e abra novamente.</target>
+      </trans-unit>
       <trans-unit id="resultsTabTitle">
         <source xml:lang="en">Results</source>
         <target state="translated">Resultados</target>
@@ -5690,6 +5796,14 @@ Erro: {1}</target>
       <trans-unit id="refreshError">
         <source xml:lang="en">An error occurred refreshing node '{0}': {1}</source>
         <target state="translated">Ocorreu um erro ao atualizar o nó '{0}': {1}</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/tableDesigner/browser/actions" source-language="en" datatype="plaintext" target-language="pt-BR">
+    <body>
+      <trans-unit id="tableDesigner.saveTableChanges">
+        <source xml:lang="en">Save Changes</source>
+        <target state="translated">Salvar Alterações</target>
       </trans-unit>
     </body>
   </file>
@@ -6645,9 +6759,29 @@ Erro: {1}</target>
         <source xml:lang="en">Are you sure you want to cancel this connection?</source>
         <target state="translated">Tem certeza de que deseja cancelar esta conexão?</target>
       </trans-unit>
+      <trans-unit id="connection.invalidConnectionResult">
+        <source xml:lang="en">Connection result is invalid</source>
+        <target state="translated">O resultado da conexão é inválido</target>
+      </trans-unit>
+      <trans-unit id="connection.neverShowUnsupportedVersionWarning">
+        <source xml:lang="en">Don't show again</source>
+        <target state="translated">Não mostrar novamente</target>
+      </trans-unit>
       <trans-unit id="connection.noAzureAccount">
         <source xml:lang="en">Failed to get Azure account token for connection</source>
         <target state="translated">Falha ao obter o token de conta do Azure para a conexão</target>
+      </trans-unit>
+      <trans-unit id="connection.refreshAzureTokenFailure">
+        <source xml:lang="en">Failed to refresh Azure account token for connection</source>
+        <target state="translated">Falha ao obter o token de conta do Azure para a conexão</target>
+      </trans-unit>
+      <trans-unit id="connection.unsupportedServerVersionWarning">
+        <source xml:lang="en">The server version is not supported by Azure Data Studio, you may still connect to it but some features in Azure Data Studio might not work as expected.</source>
+        <target state="translated">A versão do servidor não é compatível com Azure Data Studio, você ainda pode se conectar a ela, mas alguns recursos no Azure Data Studio podem não funcionar conforme o esperado.</target>
+      </trans-unit>
+      <trans-unit id="connectionManagementService.noProviderForUri">
+        <source xml:lang="en">Could not find provider for uri: {0}</source>
+        <target state="translated">Não foi possível encontrar o provedor para o uri: {0}</target>
       </trans-unit>
       <trans-unit id="connectionNotAcceptedError">
         <source xml:lang="en">Connection Not Accepted</source>
@@ -7273,9 +7407,9 @@ Erro: {1}</target>
         <source xml:lang="en">Contributes notebook language.</source>
         <target state="translated">Contribui com a linguagem do notebook.</target>
       </trans-unit>
-      <trans-unit id="vscode.extension.contributes.notebook.providers">
-        <source xml:lang="en">Contributes notebook providers.</source>
-        <target state="translated">Contribui com provedores de notebooks.</target>
+      <trans-unit id="vscode.extension.contributes.notebook.providersDescriptions">
+        <source xml:lang="en">Contributes notebook provider descriptions.</source>
+        <target state="translated">Contribui com as descrições dos fornecedores de bloco de anotações.</target>
       </trans-unit>
     </body>
   </file>
@@ -7483,6 +7617,18 @@ Erro: {1}</target>
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/services/query/common/queryManagement" source-language="en" datatype="plaintext" target-language="pt-BR">
+    <body>
+      <trans-unit id="queryManagement.noQueryRunnerForUri">
+        <source xml:lang="en">Could not find Query Runner for uri: {0}</source>
+        <target state="translated">Não foi possível localizar o Executor de Consulta para o uri: {0}</target>
+      </trans-unit>
+      <trans-unit id="queryManagement.uriAlreadyHasQueryRunner">
+        <source xml:lang="en">Uri: {0} unexpectedly already has a query runner.</source>
+        <target state="translated">Uri: {0} inesperadamente já tem um executor de consulta.</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/services/query/common/queryModelService" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="commitEditFailed">
@@ -7492,6 +7638,14 @@ Erro: {1}</target>
       <trans-unit id="msgCancelQueryFailed">
         <source xml:lang="en">Canceling the query failed: {0}</source>
         <target state="translated">O cancelamento da consulta falhou: {0}</target>
+      </trans-unit>
+      <trans-unit id="queryModelService.noQueryFoundForUri">
+        <source xml:lang="en">No Query found for {0}</source>
+        <target state="translated">Nenhuma Consulta encontrada para {0}</target>
+      </trans-unit>
+      <trans-unit id="queryModelService.uriAlreadyHasQuery">
+        <source xml:lang="en">{0} already has an existing query</source>
+        <target state="translated">{0} já tem uma consulta existente</target>
       </trans-unit>
       <trans-unit id="runQueryBatchStartLine">
         <source xml:lang="en">Line {0}</source>
@@ -7816,6 +7970,74 @@ Erro: {1}</target>
       <trans-unit id="serverGroup.editServerGroup">
         <source xml:lang="en">Edit server group</source>
         <target state="translated">Editar grupo de servidores</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput" source-language="en" datatype="plaintext" target-language="pt-BR">
+    <body>
+      <trans-unit id="tableDesigner.advancedTab">
+        <source xml:lang="en">Advanced</source>
+        <target state="translated">Avançado</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.columnAllowNullTitle">
+        <source xml:lang="en">Allow Nulls</source>
+        <target state="translated">Permitir Valores Nulos</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.columnDefaultValueTitle">
+        <source xml:lang="en">Default Value</source>
+        <target state="translated">Valor Padrão</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.columnIsPrimaryKeyTitle">
+        <source xml:lang="en">Primary Key</source>
+        <target state="translated">Chave Primária</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.columnLengthTitle">
+        <source xml:lang="en">Length</source>
+        <target state="translated">Comprimento</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.columnNameTitle">
+        <source xml:lang="en">Name</source>
+        <target state="translated">Nome</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.columnTypeName">
+        <source xml:lang="en">Column</source>
+        <target state="translated">Coluna</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.columnTypeTitle">
+        <source xml:lang="en">Type</source>
+        <target state="translated">Tipo</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.columnsTabTitle">
+        <source xml:lang="en">Columns</source>
+        <target state="translated">Colunas</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.descriptionTitle">
+        <source xml:lang="en">Description</source>
+        <target state="translated">Descrição</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.nameTitle">
+        <source xml:lang="en">Table name</source>
+        <target state="translated">Nome da tabela</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.saveChangeError">
+        <source xml:lang="en">An error occured while saving changes: {0}</source>
+        <target state="translated">Ocorreu um erro ao salvar as alterações: {0}</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.savedChangeSuccess">
+        <source xml:lang="en">The changes have been successfully saved.</source>
+        <target state="translated">As alterações foram salvas com sucesso.</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.savingChanges">
+        <source xml:lang="en">Saving table designer changes...</source>
+        <target state="translated">Alterações no designer da mesa de salvamento...</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.schemaTitle">
+        <source xml:lang="en">Schema</source>
+        <target state="translated">Esquema</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.tableObjectType">
+        <source xml:lang="en">Table</source>
+        <target state="translated">Tabela</target>
       </trans-unit>
     </body>
   </file>

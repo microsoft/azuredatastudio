@@ -11,41 +11,41 @@ const localize = nls.loadMessageBundle();
 
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
-import { JupyterNotebookManager } from './jupyterNotebookManager';
+import { JupyterExecuteManager } from './jupyterExecuteManager';
 import { LocalJupyterServerManager } from './jupyterServerManager';
 import { JupyterSessionManager } from './jupyterSessionManager';
 
 export type ServerManagerFactory = (documentUri: vscode.Uri) => LocalJupyterServerManager;
 
-export class JupyterNotebookProvider implements nb.NotebookProvider {
+export class JupyterExecuteProvider implements nb.NotebookExecuteProvider {
 	readonly providerId: string = constants.jupyterNotebookProviderId;
-	private managerTracker = new Map<string, JupyterNotebookManager>();
+	private executeManagerTracker = new Map<string, JupyterExecuteManager>();
 
 	constructor(private createServerManager: ServerManagerFactory) {
 	}
 
-	public getNotebookManager(notebookUri: vscode.Uri): Thenable<nb.NotebookManager> {
+	public getExecuteManager(notebookUri: vscode.Uri): Thenable<nb.ExecuteManager> {
 		if (!notebookUri) {
 			return Promise.reject(localize('errNotebookUriMissing', "A notebook path is required"));
 		}
-		return Promise.resolve(this.doGetNotebookManager(notebookUri));
+		return Promise.resolve(this.doGetExecuteManager(notebookUri));
 	}
 
-	public get notebookManagerCount(): number {
-		return this.managerTracker.size;
+	public get executeManagerCount(): number {
+		return this.executeManagerTracker.size;
 	}
 
-	private doGetNotebookManager(notebookUri: vscode.Uri): nb.NotebookManager {
+	private doGetExecuteManager(notebookUri: vscode.Uri): nb.ExecuteManager {
 		let baseFolder = this.transformToBaseFolder(notebookUri?.fsPath?.toString());
-		let manager = this.managerTracker.get(baseFolder);
+		let manager = this.executeManagerTracker.get(baseFolder);
 		if (!manager) {
 			let baseFolderUri = vscode.Uri.file(baseFolder);
 			if (!baseFolderUri) {
 				baseFolderUri = notebookUri;
 			}
 			let serverManager = this.createServerManager(baseFolderUri);
-			manager = new JupyterNotebookManager(serverManager);
-			this.managerTracker.set(baseFolder, manager);
+			manager = new JupyterExecuteManager(serverManager);
+			this.executeManagerTracker.set(baseFolder, manager);
 		}
 		return manager;
 	}
@@ -56,7 +56,7 @@ export class JupyterNotebookProvider implements nb.NotebookProvider {
 			return;
 		}
 		let baseFolder = this.transformToBaseFolder(notebookUri.fsPath.toString());
-		let manager = this.managerTracker.get(baseFolder);
+		let manager = this.executeManagerTracker.get(baseFolder);
 		if (manager) {
 			let sessionManager = (manager.sessionManager as JupyterSessionManager);
 			let session = sessionManager.listRunning().find(e => e.path === notebookUri.fsPath);
@@ -70,17 +70,13 @@ export class JupyterNotebookProvider implements nb.NotebookProvider {
 					const timeoutInMs = timeoutInMinutes * 60 * 1000;
 					setTimeout(() => {
 						if (sessionManager.listRunning().length === 0) {
-							this.managerTracker.delete(baseFolder);
+							this.executeManagerTracker.delete(baseFolder);
 							manager.dispose();
 						}
 					}, timeoutInMs);
 				}
 			}
 		}
-	}
-
-	public get standardKernels(): nb.IStandardKernel[] {
-		return [];
 	}
 
 	private transformToBaseFolder(notebookPath: string): string {

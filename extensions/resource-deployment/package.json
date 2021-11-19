@@ -21,6 +21,12 @@
     "type": "git",
     "url": "https://github.com/Microsoft/azuredatastudio.git"
   },
+	"capabilities": {
+    "virtualWorkspaces": false,
+    "untrustedWorkspaces": {
+      "supported": true
+    }
+	},
   "extensionDependencies": [
     "microsoft.mssql",
     "microsoft.notebook"
@@ -453,7 +459,7 @@
   },
   "dependencies": {
     "@microsoft/ads-extension-telemetry": "^1.1.3",
-    "axios": "^0.21.1",
+    "axios": "^0.21.4",
     "linux-release-info": "^2.0.0",
     "promisify-child-process": "^3.1.1",
     "semver": "^7.3.2",
