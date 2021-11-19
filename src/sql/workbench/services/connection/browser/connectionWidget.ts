@@ -460,10 +460,6 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		this._tableContainer.classList.add('hide-password');
 		this._tableContainer.classList.add('hide-azure-accounts');
 
-		if (currentAuthType !== AuthenticationType.SqlLogin) {
-			this._rememberPasswordCheckBox.checked = false;
-		}
-
 		if (currentAuthType === AuthenticationType.AzureMFA) {
 			this.fillInAzureAccountOptions().then(async () => {
 				// Don't enable the control until we've populated it
