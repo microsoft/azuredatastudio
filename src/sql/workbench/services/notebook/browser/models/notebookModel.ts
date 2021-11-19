@@ -170,13 +170,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return manager;
 	}
 
-	public getExecuteManager(providerId: string): IExecuteManager | undefined {
-		if (providerId) {
-			return this.executeManagers.find(manager => manager.providerId === providerId);
-		}
-		return undefined;
-	}
-
 	public get notebookOptions(): INotebookModelOptions {
 		return this._notebookOptions;
 	}
@@ -1345,7 +1338,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				this._onProviderIdChanged.fire(this._providerId);
 
 				await this.shutdownActiveSession();
-				let manager = this.getExecuteManager(providerId);
+				let manager = this.executeManager;
 				if (manager) {
 					await this.startSession(manager, displayName, false, kernelAlias);
 				} else {

@@ -298,9 +298,9 @@ suite('notebook model', function (): void {
 
 		// Check that the getters return  the correct values
 		assert.strictEqual(model.executeManagers.length, 2, 'There should be 2 notebook managers');
-		assert(!isUndefinedOrNull(model.getExecuteManager('SQL')), 'SQL notebook manager is not defined');
-		assert(!isUndefinedOrNull(model.getExecuteManager('jupyter')), 'Jupyter notebook manager is not defined');
-		assert(isUndefinedOrNull(model.getExecuteManager('foo')), 'foo notebook manager is incorrectly defined');
+		assert(model.executeManagers.some(m => m.providerId === 'SQL'), 'SQL notebook manager should be defined');
+		assert(model.executeManagers.some(m => m.providerId === 'jupyter'), 'Jupyter notebook manager should be defined');
+		assert(model.executeManagers.every(m => m.providerId !== 'foo'), 'foo notebook manager should not be defined');
 
 		// Check other properties to ensure that they're returning as expected
 		// No server manager was passed into the notebook manager stub, so expect hasServerManager to return false
