@@ -24,6 +24,8 @@ suite('ExtHostNotebook Tests', () => {
 	let executeProviderMock: TypeMoq.Mock<ExecuteProviderStub>;
 	setup(() => {
 		mockProxy = TypeMoq.Mock.ofInstance(<MainThreadNotebookShape>{
+			$registerSerializationProvider: (providerId, handle) => undefined,
+			$registerExecuteProvider: (providerId, handle) => undefined,
 			$unregisterSerializationProvider: (handle) => undefined,
 			$unregisterExecuteProvider: (handle) => undefined,
 			dispose: () => undefined
