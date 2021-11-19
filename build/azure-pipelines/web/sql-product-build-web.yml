@@ -43,6 +43,7 @@ steps:
     path: .build/node_modules_cache
     cacheHitVar: NODE_MODULES_RESTORED
   displayName: Restore Cache - Node Modules
+  continueOnError: true
 
 - script: |
     set -e
