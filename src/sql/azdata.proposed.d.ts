@@ -1079,18 +1079,20 @@ declare module 'azdata' {
 
 		/**
 		 * Name of the common table properties.
-		 * Extensions can use the names to access the designer data.
+		 * Extensions can use the names to access the designer view model.
 		 */
 		export enum TableProperty {
 			Columns = 'columns',
 			Description = 'description',
 			Name = 'name',
 			Schema = 'schema',
-			Script = 'script'
+			Script = 'script',
+			ForeignKeys = 'foreignKeys',
+			CheckConstraints = 'checkConstraints',
 		}
 		/**
 		 * Name of the common table column properties.
-		 * Extensions can use the names to access the designer data.
+		 * Extensions can use the names to access the designer view model.
 		 */
 		export enum TableColumnProperty {
 			AllowNulls = 'allowNulls',
@@ -1104,6 +1106,35 @@ declare module 'azdata' {
 		}
 
 		/**
+		 * Name of the common foreign key constraint properties.
+		 * Extensions can use the names to access the designer view model.
+		 */
+		export enum TableForeignKeyProperty {
+			Name = 'name',
+			PrimaryKeyTable = 'primaryKeyTable',
+			OnDeleteAction = 'onDeleteAction',
+			OnUpdateAction = 'onUpdateAction',
+			Columns = 'columns'
+		}
+
+		/**
+		 * Name of the columns mapping properties for foreign key.
+		 */
+		export enum ForeignKeyColumnMappingProperty {
+			PrimaryKeyColumn = 'primaryKeyColumn',
+			ForeignKeyColumn = 'foreignKeyColumn'
+		}
+
+		/**
+		 * Name of the common check constraint properties.
+		 * Extensions can use the name to access the designer view model.
+		 */
+		export enum TableCheckConstraintProperty {
+			Name = 'name',
+			Expression = 'expression'
+		}
+
+		/**
 		 * The table designer view definition.
 		 */
 		export interface TableDesignerView {
@@ -1112,25 +1143,50 @@ declare module 'azdata' {
 			 */
 			additionalTableProperties?: DesignerDataPropertyInfo[];
 			/**
-			 * Additional table column properties.Common table properties are handled by Azure Data Studio. see {@link TableColumnProperty}
-			 */
-			additionalTableColumnProperties?: DesignerDataPropertyInfo[];
-			/**
 			 * Additional tabs.
 			 */
 			additionalTabs?: DesignerTab[];
 			/**
-			 * The properties to be displayed in the columns table. Default values are: Name, Type, Length, Precision, Scale, IsPrimaryKey, AllowNulls, DefaultValue.
+			 * Columns table options.
+			 * Common table columns properties are handled by Azure Data Studio. see {@link TableColumnProperty}.
+			 * Default columns to display values are: Name, Type, Length, Precision, Scale, IsPrimaryKey, AllowNulls, DefaultValue.
 			 */
-			columnsTableProperties?: string[];
+			columnTableOptions?: TableDesignerBuiltInTableViewOptions;
 			/**
-			 * Whether user can add columns. The default value is true.
+			 * Foreign keys table options.
+			 * Common foreign key properties are handled by Azure Data Studio. see {@link TableForeignKeyProperty}.
+			 * Default columns to display values are: Name, PrimaryKeyTable.
 			 */
-			canAddColumns?: boolean;
+			foreignKeyTableOptions?: TableDesignerBuiltInTableViewOptions;
 			/**
-			 * Whether user can remove columns. The default value is true.
+			 * Check constraints table options.
+			 * Common check constraint properties are handled by Azure Data Studio. see {@link TableCheckConstraintProperty}
+			 * Default columns to display values are: Name, Expression.
 			 */
-			canRemoveColumns?: boolean;
+			checkConstraintTableOptions?: TableDesignerBuiltInTableViewOptions;
+		}
+
+		export interface TableDesignerBuiltInTableViewOptions {
+			/**
+			 * Whether to show the table. Default value is false.
+			 */
+			showTable?: boolean;
+			/**
+			 * Properties to be displayed in the table, other properties can be accessed in the properties view.
+			 */
+			propertiesToDisplay?: string[];
+			/**
+			 * Whether adding new rows is supported.
+			 */
+			canAddRows?: boolean;
+			/**
+			 * Whether removing rows is supported.
+			 */
+			canRemoveRows?: boolean;
+			/**
+			 * Additional properties for the entity.
+			 */
+			additionalProperties?: DesignerDataPropertyInfo[];
 		}
 
 		/**
