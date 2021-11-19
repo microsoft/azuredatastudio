@@ -204,7 +204,7 @@ export class Project implements ISqlProject {
 					}
 
 					// <Build Remove....>
-					// remove files specified in the sqlproj to remove if this is an msbuild sdk style project
+					// remove files specified in the sqlproj to remove if this is an sdk style project
 					if (this._isSdkStyleProject) {
 						const removeRelativePath = buildElements[b].getAttribute(constants.Remove)!;
 
