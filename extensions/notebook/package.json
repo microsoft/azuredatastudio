@@ -690,7 +690,7 @@
       {
         "provider": "jupyter",
         "fileExtensions": [
-          "IPYNB"
+          ".IPYNB"
         ],
         "standardKernels": [
           {
