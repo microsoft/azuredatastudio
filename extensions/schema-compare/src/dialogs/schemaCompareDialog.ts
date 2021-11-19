@@ -203,8 +203,8 @@ export class SchemaCompareDialog {
 
 		TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareDialog, 'SchemaCompareStart')
 			.withAdditionalProperties({
-				sourceEndpointType: this.getEndpointName(this.sourceEndpointType),
-				targetEndpointType: this.getEndpointName(this.targetEndpointType)
+				sourceEndpointType: this.getSchemaCompareEndpointString(this.sourceEndpointType),
+				targetEndpointType: this.getSchemaCompareEndpointString(this.targetEndpointType)
 			}).send();
 
 		// update source and target values that are displayed
@@ -233,7 +233,7 @@ export class SchemaCompareDialog {
 		}
 	}
 
-	private getEndpointName(endpointType: mssql.SchemaCompareEndpointType): string {
+	private getSchemaCompareEndpointString(endpointType: mssql.SchemaCompareEndpointType): string {
 		switch (endpointType) {
 			case mssql.SchemaCompareEndpointType.Database:
 				return 'Database';
@@ -550,9 +550,15 @@ export class SchemaCompareDialog {
 			this.sourceEndpointType = mssql.SchemaCompareEndpointType.Project;
 		}
 
+		let radioButtons = [this.sourceDatabaseRadioButton, this.sourceDacpacRadioButton];
+
+		if (vscode.extensions.getExtension(loc.sqlDatabaseProjectExtensionId)) {
+			radioButtons.push(this.sourceProjectRadioButton);
+		}
+
 		let flexRadioButtonsModel = this.view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
-			.withItems([this.sourceDacpacRadioButton, this.sourceProjectRadioButton, this.sourceDatabaseRadioButton])
+			.withItems(radioButtons)
 			.withProps({ ariaRole: 'radiogroup' })
 			.component();
 
@@ -629,10 +635,15 @@ export class SchemaCompareDialog {
 			this.targetEndpointType = mssql.SchemaCompareEndpointType.Project;
 		}
 
+		let radioButtons = [databaseRadioButton, dacpacRadioButton];
+
+		if (vscode.extensions.getExtension(loc.sqlDatabaseProjectExtensionId)) {
+			radioButtons.push(projectRadioButton);
+		}
+
 		let flexRadioButtonsModel = this.view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
-			.withItems([dacpacRadioButton, projectRadioButton, databaseRadioButton]
-			)
+			.withItems(radioButtons)
 			.withProps({ ariaRole: 'radiogroup' })
 			.component();
 
