@@ -11,7 +11,7 @@ import * as mssql from '../../mssql';
 import * as loc from './localizedConstants';
 import { SchemaCompareOptionsDialog } from './dialogs/schemaCompareOptionsDialog';
 import { TelemetryReporter, TelemetryViews } from './telemetry';
-import { getTelemetryErrorType, getEndpointName, verifyConnectionAndGetOwnerUri, getRootPath } from './utils';
+import { getTelemetryErrorType, getEndpointName, verifyConnectionAndGetOwnerUri, getRootPath, getSchemaCompareEndpointString } from './utils';
 import { SchemaCompareDialog } from './dialogs/schemaCompareDialog';
 import { isNullOrUndefined } from 'util';
 
@@ -838,14 +838,25 @@ export class SchemaCompareMainWindow {
 				this.setButtonsForRecompare();
 
 				const service: mssql.ISchemaCompareService = await this.getService();
-				const result = await service.schemaComparePublishChanges(this.comparisonResult.operationId, this.targetEndpointInfo.serverName, this.targetEndpointInfo.databaseName, azdata.TaskExecutionMode.execute);
+				let result: azdata.ResultStatus | undefined = undefined;
+
+				switch (this.targetEndpointInfo.endpointType) {
+					case mssql.SchemaCompareEndpointType.Database:
+						result = await service.schemaComparePublishDatabaseChanges(this.comparisonResult.operationId, this.targetEndpointInfo.serverName, this.targetEndpointInfo.databaseName, azdata.TaskExecutionMode.execute);
+						break;
+					case mssql.SchemaCompareEndpointType.Project: // Project apply needs sql-database-projects updates in (circular dependency; coming next) // TODO: re-add this and show project logic below
+					case mssql.SchemaCompareEndpointType.Dacpac: // Dacpac is an invalid publish target
+					default:
+						throw new Error(`Unsupported SchemaCompareEndpointType: ${getSchemaCompareEndpointString(this.targetEndpointInfo.endpointType)}`);
+				}
 
 				if (!result || !result.success) {
-					TelemetryReporter.createErrorEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareApplyFailed', undefined, getTelemetryErrorType(result.errorMessage))
+
+					TelemetryReporter.createErrorEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareApplyFailed', undefined, getTelemetryErrorType(result?.errorMessage))
 						.withAdditionalProperties({
 							'operationId': this.comparisonResult.operationId
 						}).send();
-					vscode.window.showErrorMessage(loc.applyErrorMessage(result.errorMessage));
+					vscode.window.showErrorMessage(loc.applyErrorMessage(result?.errorMessage));
 
 					// reenable generate script and apply buttons if apply failed
 					this.generateScriptButton.enabled = true;
@@ -859,11 +870,6 @@ export class SchemaCompareMainWindow {
 						'endTime': Date.now().toString(),
 						'operationId': this.comparisonResult.operationId
 					}).send();
-
-				if (this.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Project) {
-					vscode.commands.executeCommand(loc.sqlDatabaseProjectsShowProjectsView);
-					await vscode.window.showInformationMessage(loc.applySuccess);
-				}
 			}
 		});
 	}

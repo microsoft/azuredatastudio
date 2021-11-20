@@ -40,6 +40,19 @@ export function getTelemetryErrorType(msg: string): string {
 	}
 }
 
+export function getSchemaCompareEndpointString(endpointType: mssql.SchemaCompareEndpointType): string {
+	switch (endpointType) {
+		case mssql.SchemaCompareEndpointType.Database:
+			return 'Database';
+		case mssql.SchemaCompareEndpointType.Dacpac:
+			return 'Dacpac';
+		case mssql.SchemaCompareEndpointType.Project:
+			return 'Project';
+		default:
+			return `Unknown: ${endpointType}`;
+	}
+}
+
 /**
  * Return the appropriate endpoint name depending on if the endpoint is a dacpac or a database
  * @param endpoint endpoint to get the name of

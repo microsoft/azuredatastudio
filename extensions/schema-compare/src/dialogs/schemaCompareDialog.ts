@@ -9,7 +9,7 @@ import * as loc from '../localizedConstants';
 import * as path from 'path';
 import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
 import { TelemetryReporter, TelemetryViews } from '../telemetry';
-import { getEndpointName, getRootPath, exists, getAzdataApi } from '../utils';
+import { getEndpointName, getRootPath, exists, getAzdataApi, getSchemaCompareEndpointString } from '../utils';
 import * as mssql from '../../../mssql';
 
 const titleFontSize: number = 13;
@@ -203,8 +203,8 @@ export class SchemaCompareDialog {
 
 		TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareDialog, 'SchemaCompareStart')
 			.withAdditionalProperties({
-				sourceEndpointType: this.getSchemaCompareEndpointString(this.sourceEndpointType),
-				targetEndpointType: this.getSchemaCompareEndpointString(this.targetEndpointType)
+				sourceEndpointType: getSchemaCompareEndpointString(this.sourceEndpointType),
+				targetEndpointType: getSchemaCompareEndpointString(this.targetEndpointType)
 			}).send();
 
 		// update source and target values that are displayed
@@ -230,19 +230,6 @@ export class SchemaCompareDialog {
 					this.schemaCompareMainWindow.startCompare();
 				}
 			});
-		}
-	}
-
-	private getSchemaCompareEndpointString(endpointType: mssql.SchemaCompareEndpointType): string {
-		switch (endpointType) {
-			case mssql.SchemaCompareEndpointType.Database:
-				return 'Database';
-			case mssql.SchemaCompareEndpointType.Dacpac:
-				return 'Dacpac';
-			case mssql.SchemaCompareEndpointType.Project:
-				return 'Project';
-			default:
-				return `Unknown: ${endpointType}`;
 		}
 	}
 

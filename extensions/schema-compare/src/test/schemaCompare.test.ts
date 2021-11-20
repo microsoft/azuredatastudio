@@ -121,7 +121,7 @@ describe('SchemaCompareMainWindow.results @DacFx@', function (): void {
 		await schemaCompareResult.start(undefined);
 
 		schemaCompareResult.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
-		schemaCompareResult.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
+		schemaCompareResult.targetEndpointInfo = setDatabaseEndpointInfo();
 		await schemaCompareResult.execute();
 		await schemaCompareResult.publishChanges();
 
@@ -140,7 +140,7 @@ describe('SchemaCompareMainWindow.results @DacFx@', function (): void {
 		await schemaCompareResult.start(undefined);
 
 		schemaCompareResult.sourceEndpointInfo = setDacpacEndpointInfo(mocksource);
-		schemaCompareResult.targetEndpointInfo = setDacpacEndpointInfo(mocktarget);
+		schemaCompareResult.targetEndpointInfo = setDatabaseEndpointInfo();
 		await schemaCompareResult.execute();
 		await schemaCompareResult.publishChanges();
 		should(showErrorMessageSpy.notCalled).be.true();
