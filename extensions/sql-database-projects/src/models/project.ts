@@ -172,8 +172,8 @@ export class Project implements ISqlProject {
 		for (let ig = 0; ig < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup).length; ig++) {
 			const itemGroup = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup)[ig];
 
-			// find all files to include that are specified to be included and removed in the project file
-			// the build elements are evaluated in the order they are in the sqlproj
+			// find all files to include that are specified to be included and removed (for sdk style projects) in the project file
+			// the build elements are evaluated in the order they are in the sqlproj (same way sdk style csproj handles this)
 			try {
 				const buildElements = itemGroup.getElementsByTagName(constants.Build);
 
