@@ -25,7 +25,7 @@ export const winPlatform: string = 'win32';
 export const macPlatform: string = 'darwin';
 export const linuxPlatform: string = 'linux';
 export const minSupportedNetCoreVersion: string = '3.1.0';
-export const maxSupportedNetCoreVersionCutoff: string = '6.0.0';	// un-set this to allow latest
+export const maxSupportedNetCoreVersionCutoff: string = '';	// un-set this to allow latest
 
 export const enum netCoreInstallState {
 	netCoreNotPresent,
