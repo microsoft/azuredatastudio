@@ -311,7 +311,7 @@ export class NotebookService extends Disposable implements INotebookService {
 			if (!this._serializationProviders.has(p.id)) {
 				// Only add a new provider descriptor if the provider
 				// supports file extensions beyond the default ipynb
-				let addNewProvider = extensions.some(ext => ext?.length > 0 && ext.toUpperCase() !== DEFAULT_NOTEBOOK_FILETYPE);
+				let addNewProvider = extensions.some(ext => ext?.length > 0 && ext.toLowerCase() !== DEFAULT_NOTEBOOK_FILETYPE);
 				if (addNewProvider) {
 					this._serializationProviders.set(p.id, new SerializationProviderDescriptor(p.id));
 				}
@@ -378,12 +378,12 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	private addFileProvider(fileType: string, provider: ProviderDescriptionRegistration) {
-		let providers = this._fileToProviderDescriptions.get(fileType.toUpperCase());
+		let providers = this._fileToProviderDescriptions.get(fileType.toLowerCase());
 		if (!providers) {
 			providers = [];
 		}
 		providers.push(provider);
-		this._fileToProviderDescriptions.set(fileType.toUpperCase(), providers);
+		this._fileToProviderDescriptions.set(fileType.toLowerCase(), providers);
 	}
 
 	// Standard kernels are contributed where a list of kernels are defined that can be shown
@@ -411,7 +411,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	getProvidersForFileType(fileType: string): string[] | undefined {
-		let providers = this._fileToProviderDescriptions.get(fileType.toUpperCase());
+		let providers = this._fileToProviderDescriptions.get(fileType.toLowerCase());
 		return providers?.map(provider => provider.provider);
 	}
 

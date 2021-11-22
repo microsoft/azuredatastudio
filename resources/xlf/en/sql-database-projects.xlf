@@ -64,6 +64,9 @@
     <trans-unit id="autorestProjectName">
       <source xml:lang="en">New SQL project name</source>
     </trans-unit>
+    <trans-unit id="baseDockerImage">
+      <source xml:lang="en">Base SQL Server Docker image</source>
+    </trans-unit>
     <trans-unit id="browseButtonText">
       <source xml:lang="en">Browse folder</source>
     </trans-unit>
@@ -111,6 +114,9 @@
     </trans-unit>
     <trans-unit id="confirmPassword">
       <source xml:lang="en">Confirm SQL server admin password</source>
+    </trans-unit>
+    <trans-unit id="confirmServerPassword">
+      <source xml:lang="en">Confirm SQL Server admin password</source>
     </trans-unit>
     <trans-unit id="connectingToSqlServerOnDockerMessage">
       <source xml:lang="en">Connecting to SQL Server on Docker</source>
@@ -598,6 +604,9 @@
     <trans-unit id="publishSettingsFiles">
       <source xml:lang="en">Publish Settings File</source>
     </trans-unit>
+    <trans-unit id="publishTo">
+      <source xml:lang="en">Publish Target</source>
+    </trans-unit>
     <trans-unit id="publishToContainerFailed">
       <source xml:lang="en">Failed to publish to container. {0}</source>
     </trans-unit>
@@ -723,6 +732,12 @@
     </trans-unit>
     <trans-unit id="serverName">
       <source xml:lang="en">Server name</source>
+    </trans-unit>
+    <trans-unit id="serverPassword">
+      <source xml:lang="en">SQL Server admin password</source>
+    </trans-unit>
+    <trans-unit id="serverPortNumber">
+      <source xml:lang="en">SQL server port number</source>
     </trans-unit>
     <trans-unit id="serverVariable">
       <source xml:lang="en">Server variable</source>
