@@ -1156,7 +1156,7 @@ export class SchemaCompareMainWindow {
 	}
 
 	private setButtonStatesForNoChanges(enableButtons: boolean): void {
-		// generate script and apply can only be enabled if the target is a database
+		// generate script and apply can only be enabled if the target is a database or project
 		if (this.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Database ||
 			this.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Project) {
 			this.applyButton.enabled = enableButtons;
