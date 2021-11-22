@@ -329,6 +329,9 @@ export class QueryManagementService implements IQueryManagementService {
 	public onResultSetUpdated(resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void {
 		this._notify(resultSetInfo.ownerUri, (runner: QueryRunner) => {
 			runner.handleResultSetUpdated(resultSetInfo.resultSetSummary);
+			if (resultSetInfo.executionPlans) {
+				runner.handleQueryPlan2Available(resultSetInfo.executionPlans);
+			}
 		});
 	}
 

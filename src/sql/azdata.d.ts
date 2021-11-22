@@ -942,6 +942,7 @@ declare module 'azdata' {
 		rowCount: number;
 		columnInfo: IDbColumn[];
 		complete: boolean;
+		showplangraph?: any;
 	}
 
 	export interface BatchSummary {
@@ -1012,6 +1013,7 @@ declare module 'azdata' {
 	export interface QueryExecuteResultSetNotificationParams {
 		resultSetSummary: ResultSetSummary;
 		ownerUri: string;
+		executionPlans: QueryPlanGraph[];
 	}
 
 	export interface QueryExecuteMessageParams {

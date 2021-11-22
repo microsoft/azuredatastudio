@@ -1248,4 +1248,100 @@ declare module 'azdata' {
 			errors?: { message: string, property?: DesignerEditIdentifier }[];
 		}
 	}
+
+	export interface QueryPlanGraph {
+		/**
+		 * Root of the query plan tree
+		 */
+		root: QueryPlanGraphNode;
+		/**
+		 * Underlying query for the query plan graph.
+		 */
+		query: string;
+	}
+
+	export interface QueryPlanGraphNode {
+		/**
+		 * Type of the node. This property determines the icon that is displayed for it
+		 */
+		type: string;
+		/**
+		 * Cost associated with the node
+		 */
+		cost: number;
+		/**
+		 * Cost of the node subtree
+		 */
+		subtreeCost: number;
+		/**
+		 * Relative cost of the node compared to its siblings.
+		 */
+		relativeCost: number;
+		/**
+		 * Time take by the node operation in milliseconds
+		 */
+		elapsedTimeInMs: number;
+		/**
+		 * Node properties to be shown in the tooltip
+		 */
+		properties: QueryPlanGraphElementProperty[];
+		/**
+		 * Display name for the node
+		 */
+		name: string;
+		/**
+		 * Description associated with the node.
+		 */
+		description: string;
+		/**
+		 * Subtext displayed under the node name
+		 */
+		subtext: string[];
+		/**
+		 * Direct children of the nodes.
+		 */
+		children: QueryPlanGraphNode[];
+		/**
+		 * Edges corresponding to the children.
+		 */
+		edges: QueryGraphEdge[];
+	}
+
+	export interface QueryGraphEdge {
+		/**
+		 * Count of the rows returned by the subtree of the edge.
+		 */
+		rowCount: number;
+		/**
+		 * Size of the rows returned by the subtree of the edge.
+		 */
+		rowSize: number;
+		/**
+		 * Edge properties to be shown in the tooltip.
+		 */
+		properties: QueryPlanGraphElementProperty[]
+	}
+
+	export interface QueryPlanGraphElementProperty {
+		/**
+		 * Name of the property
+		 */
+		name: string;
+		/**
+		 * Formatted value for the property
+		 */
+		formattedValue: string;
+		/**
+		 * Flag to show/hide props in tooltip
+		 */
+		showInToolTip: boolean;
+		/**
+		 * Display order of property
+		 */
+		displayOrder: number;
+		/**
+		 *  Flag to indicate if the property has a longer value so that it will be shown at the bottom of the tooltip
+		 */
+		isLongString: boolean;
+	}
 }
