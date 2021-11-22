@@ -857,7 +857,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Failed to run the docker container]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[无法运行 docker 容器]]></Val>
+            <Val><![CDATA[无法运行 Docker 容器]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2033,7 +2033,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Building and running the docker container ...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[正在生成并运行 docker 容器...]]></Val>
+            <Val><![CDATA[正在生成并运行 Docker 容器...]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
