@@ -53,6 +53,8 @@ export class BookTocManager implements IBookTocManager {
 		this._sourceBook?.unwatchTOC();
 		this.sourceBookContentPath = this._sourceBook?.bookItems[0].rootContentPath;
 		this.targetBookContentPath = this._targetBook?.bookItems[0].rootContentPath;
+		this._initialToc.set(this._sourceBook?.tableOfContentsPath, this._sourceBook?.tableOfContents);
+		this._initialToc.set(this._targetBook?.tableOfContentsPath, this._targetBook?.tableOfContents);
 	}
 
 	/**
@@ -195,12 +197,7 @@ export class BookTocManager implements IBookTocManager {
 	 * @param addSection The section that'll be added to the target section. If it's undefined then the target section (findSection) is removed from the table of contents.
 	*/
 	async updateTOC(version: BookVersion, tocPath: string, findSection?: JupyterBookSection, addSection?: JupyterBookSection): Promise<void> {
-		const tocFile = await fs.readFile(tocPath, 'utf8');
-		this.tableofContents = yaml.safeLoad(tocFile);
-		const toc = yaml.safeLoad(tocFile);
-		if (!this._initialToc.has(tocPath)) {
-			this._initialToc.set(tocPath, toc);
-		}
+		this.tableofContents = JSON.parse(JSON.stringify(this._initialToc.get(tocPath)));
 		let isModified = false;
 		if (findSection) {
 			isModified = this.modifyToc(version, this.tableofContents, findSection, addSection);
@@ -276,18 +273,20 @@ export class BookTocManager implements IBookTocManager {
 		await vscode.commands.executeCommand('notebook.command.openNotebookFolder', bookContentPath, undefined, true);
 	}
 
-	async move(src: string, dest: string): Promise<string> {
+	async moveFile(src: string, dest: string): Promise<string> {
 		let fileName = undefined;
 		try {
+			if (src !== dest) {
+				await fs.move(src, dest, { overwrite: false });
+			}
 			this.movedFiles.set(src, dest);
-			await fs.move(src, dest, { overwrite: false });
 		} catch (error) {
 			if (error.code === 'EEXIST') {
 				fileName = await this.renameFile(src, dest);
 			}
-			else if (error.code !== 'ENOENT') {
-				throw (error);
-			}
+			// else if (error.code !== 'ENOENT') {
+			// 	throw (error);
+			// }
 		}
 		return fileName;
 	}
@@ -351,7 +350,7 @@ export class BookTocManager implements IBookTocManager {
 	async moveSectionFiles(section: BookTreeItem, bookItem: BookTreeItem): Promise<void> {
 		const uri = path.posix.join(path.posix.sep, path.relative(section.rootContentPath, section.book.contentPath));
 		let moveFile = path.join(path.parse(uri).dir, path.parse(uri).name);
-		let fileName = await this.move(section.book.contentPath, path.join(this.targetBookContentPath, moveFile).concat(path.parse(uri).ext));
+		let fileName = await this.moveFile(section.book.contentPath, path.join(this.targetBookContentPath, moveFile).concat(path.parse(uri).ext));
 		fileName = fileName === undefined ? path.parse(uri).name : path.parse(fileName).name;
 
 		if (this._sourceBook) {
@@ -382,7 +381,7 @@ export class BookTocManager implements IBookTocManager {
 	 * @param element Notebook, Markdown File, or book's notebook that will be added to the book.
 	 * @param targetBook Book that will be modified.
 	*/
-	async moveFile(file: BookTreeItem, book: BookTreeItem): Promise<void> {
+	async moveFileEntry(file: BookTreeItem, book: BookTreeItem): Promise<void> {
 		const rootPath = book.rootContentPath;
 		const filePath = path.parse(file.book.contentPath);
 		let fileName = undefined;
@@ -442,7 +441,7 @@ export class BookTocManager implements IBookTocManager {
 				else {
 					// the notebook is part of a book so we need to modify its toc as well
 					const findSection = { file: element.book.page.file, title: element.book.page.title };
-					await this.moveFile(element, target);
+					await this.moveFileEntry(element, target);
 					if (element.contextValue === BookTreeItemType.savedBookNotebook || element.contextValue === BookTreeItemType.Markdown) {
 						// remove notebook entry from book toc
 						await this.updateTOC(element.book.version, element.tableOfContentsPath, findSection, undefined);
@@ -464,9 +463,9 @@ export class BookTocManager implements IBookTocManager {
 						await this._sourceBook.reinitializeContents();
 					}
 				}
+				this.tocFiles.push(this.tocStates);
 			}
-			this.tocFiles.push(this._initialToc);
-			this.tocFiles.push(this.tocStates);
+			// this.tocFiles.push(this._initialToc);
 		}
 	}
 

@@ -233,6 +233,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				this.bookTocManager = new BookTocManager(bookModel, targetBookModel);
 				await this.bookTocManager.updateBook(items, targetBookItem, targetSection);
 				if (this.undoTocFiles.length < this._maxUndoSize && this.undoMovedFiles.length < this._maxUndoSize) {
+					this.undoTocFiles.push(new Map([[bookModel.tableOfContentsPath, bookModel.tableOfContents]]));
+					this.undoTocFiles.push(new Map([[targetBookModel.tableOfContentsPath, targetBookModel.tableOfContents]]));
 					this.undoMovedFiles.push(this.bookTocManager.movedFiles);
 					this.undoTocFiles.push(...this.bookTocManager.tocFiles);
 				}
@@ -770,6 +772,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					this.bookTocManager.enableDnd = true;
 					await this.bookTocManager.updateBook(items, target);
 					if (this.undoTocFiles.length < this._maxUndoSize && this.undoMovedFiles.length < this._maxUndoSize) {
+						this.undoTocFiles.push(new Map([[book.tableOfContentsPath, book.tableOfContents]]));
 						this.undoMovedFiles.push(this.bookTocManager.movedFiles);
 						this.undoTocFiles.push(...this.bookTocManager.tocFiles);
 					}

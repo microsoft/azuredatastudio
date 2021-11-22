@@ -32,6 +32,7 @@ export class BookModel {
 	 * The root tree item for this model
 	 */
 	private _rootNode: BookTreeItem;
+	public tableOfContents: JupyterBookSection[];
 
 	constructor(
 		public readonly bookPath: string,
@@ -185,14 +186,16 @@ export class BookModel {
 				let fileContents = await fsPromises.readFile(this._configPath, 'utf-8');
 				const config = yaml.safeLoad(fileContents.toString());
 				fileContents = await fsPromises.readFile(this._tableOfContentsPath, 'utf-8');
-				let tableOfContents: any = yaml.safeLoad(fileContents.toString());
-				const parsedTOC: IJupyterBookToc = { sections: this.parseJupyterSections(this._bookVersion, tableOfContents) };
+				let tableOfContents: JupyterBookSection[] = yaml.safeLoad(fileContents.toString());
+				this.tableOfContents = tableOfContents;
+				const parsedTOC = this.parseJupyterSections(this._bookVersion, tableOfContents);
+				const jupyterBookTOC: IJupyterBookToc = { sections: parsedTOC };
 				let book: BookTreeItem = new BookTreeItem({
 					version: this._bookVersion,
 					title: config.title,
 					contentPath: this._tableOfContentsPath,
 					root: this.bookPath,
-					tableOfContents: parsedTOC,
+					tableOfContents: jupyterBookTOC,
 					page: tableOfContents,
 					type: BookTreeItemType.Book,
 					treeItemCollapsibleState: collapsibleState,
@@ -347,7 +350,7 @@ export class BookModel {
 	 * Recursively parses out a section of a Jupyter Book.
 	 * @param section The input data to parse
 	 */
-	public parseJupyterSections(version: string, section: any[]): JupyterBookSection[] {
+	public parseJupyterSections(version: string, section: JupyterBookSection[]): JupyterBookSection[] {
 		try {
 			return section.reduce((acc, val) => Array.isArray(val.sections) ?
 				acc.concat(convertFrom(version, val)).concat(this.parseJupyterSections(version, val.sections)) : acc.concat(convertFrom(version, val)), []);
