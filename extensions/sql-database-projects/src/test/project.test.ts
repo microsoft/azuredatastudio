@@ -929,20 +929,39 @@ describe('Project: sdk style project content operations', function (): void {
 
 		const project: Project = await Project.openProject(projFilePath);
 
-		should(project.files.filter(f => f.type === EntryType.File).length).equal(6);
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(7);
 
-		// make sure all the correct files from the globbing patterns were included and excluded
+		// make sure all the correct files from the globbing patterns were included and removed are evaluated in order
+
 		// <Build Include="..\other\folder1\file*.sql" />
 		// <Build Remove="..\other\folder1\file1.sql" />
+		// expected: ..\other\folder1\file1.sql is not included
 		should(project.files.filter(f => f.relativePath === '..\\other\\folder1\\file1.sql').length).equal(0);
 		should(project.files.filter(f => f.relativePath === '..\\other\\folder1\\file2.sql').length).equal(1);
 
+		// <Build Include="..\other\folder2\file2.sql" />
+		// <Build Remove="..\other\folder2\**" />
+		// expected: ..\other\folder2\file2.sql is not included
+		should(project.files.filter(f => f.relativePath === '..\\other\\folder2\\file1.sql').length).equal(0);
+		should(project.files.filter(f => f.relativePath === '..\\other\\folder2\\file2.sql').length).equal(0);
+
 		// <Build Remove="folder1\*.sql" />
+		// <Build Include="folder1\file2.sql" />
+		// expected: folder1\file2.sql is included
 		should(project.files.filter(f => f.relativePath === 'folder1\\file1.sql').length).equal(0);
-		should(project.files.filter(f => f.relativePath === 'folder1\\file2.sql').length).equal(0);
+		should(project.files.filter(f => f.relativePath === 'folder1\\file2.sql').length).equal(1);
 		should(project.files.filter(f => f.relativePath === 'folder1\\file3.sql').length).equal(0);
 		should(project.files.filter(f => f.relativePath === 'folder1\\file4.sql').length).equal(0);
 		should(project.files.filter(f => f.relativePath === 'folder1\\file5.sql').length).equal(0);
+
+		// <Build Remove="folder2\file3.sql" />
+		// <Build Include="folder2\*.sql" />
+		// expected: folder2\file3.sql is included
+		should(project.files.filter(f => f.relativePath === 'folder2\\file1.sql').length).equal(1);
+		should(project.files.filter(f => f.relativePath === 'folder2\\file2.sql').length).equal(1);
+		should(project.files.filter(f => f.relativePath === 'folder2\\file3.sql').length).equal(1);
+		should(project.files.filter(f => f.relativePath === 'folder2\\file4.sql').length).equal(1);
+		should(project.files.filter(f => f.relativePath === 'folder2\\file5.sql').length).equal(1);
 
 		// <Build Remove="file1.sql" />
 		should(project.files.filter(f => f.relativePath === 'file1.sql').length).equal(0);
