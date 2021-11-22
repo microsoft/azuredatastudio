@@ -30,8 +30,6 @@
 	"arc.data.controller.details.title": "Data controller details",
 	"arc.data.controller.details.description": "For indirect mode, provide a namespace, name and storage class for your Azure Arc data controller. This name will be used to identify your Arc instance for remote management and monitoring. For direct mode you do not need to provide a namespace, but please provide the custom location name.",
 	"arc.data.controller.connectivity.mode": "Connectivity mode",
-	"arc.data.controller.indirect": "Indirect",
-	"arc.data.controller.direct": "Direct",
 	"arc.data.controller.namespace": "Data controller namespace",
 	"arc.data.controller.namespace.description": "Indirect mode only.",
 	"arc.data.controller.namespace.validation.description": "Namespace must consist of lower case alphanumeric characters or '-', start/end with an alphanumeric character, and be 63 characters or fewer in length.",

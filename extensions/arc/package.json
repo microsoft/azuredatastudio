@@ -268,10 +268,10 @@
                           "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
                           "options": {
                             "values": [
-                              "%arc.data.controller.indirect%",
-                              "%arc.data.controller.direct%"
+                              "Indirect",
+                              "Direct"
                             ],
-                            "defaultValue": "%arc.data.controller.indirect%",
+                            "defaultValue": "Indirect",
                             "optionsType": "radio"
                           }
                         },
@@ -290,7 +290,7 @@
                           "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAMESPACE",
                           "enabled": {
                             "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
-                            "value": "%arc.data.controller.indirect%"
+                            "value": "Indirect"
                           }
                         },
                         {
@@ -337,7 +337,7 @@
                           "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CUSTOM_LOCATION",
                           "enabled": {
                             "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
-                            "value": "%arc.data.controller.direct%"
+                            "value": "Direct"
                           }
                         },
                         {
@@ -348,7 +348,7 @@
                           "defaultValue": false,
                           "enabled": {
                             "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
-                            "value": "%arc.data.controller.direct%"
+                            "value": "Direct"
                           }
                         },
                         {
@@ -359,7 +359,7 @@
                           "defaultValue": false,
                           "enabled": {
                             "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
-                            "value": "%arc.data.controller.direct%"
+                            "value": "Direct"
                           }
                         }
                       ]
