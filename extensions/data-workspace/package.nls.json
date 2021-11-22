@@ -1,6 +1,6 @@
 {
-	"data-workspace-view-container-name": "Projects",
-	"main-view-name": "Projects",
+	"data-workspace-view-container-name": "Database Projects",
+	"main-view-name": "Database Projects",
 	"new-command": "New",
 	"refresh-workspace-command": "Refresh",
 	"close-workspace-command": "Close Workspace",

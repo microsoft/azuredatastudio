@@ -41,6 +41,9 @@ export class InputBox extends vsInputBox {
 	private _onLoseFocus = this._register(new Emitter<OnLoseFocusParams>());
 	public onLoseFocus: Event<OnLoseFocusParams> = this._onLoseFocus.event;
 
+	private _onInputFocus = this._register(new Emitter<void>());
+	public onInputFocus: Event<void> = this._onInputFocus.event;
+
 	private _isTextAreaInput = false;
 	private _hideErrors = false;
 
@@ -56,6 +59,10 @@ export class InputBox extends vsInputBox {
 		this.onblur(this.inputElement, () => {
 			self._onLoseFocus.fire({ value: self.value, hasChanged: self._lastLoseFocusValue !== self.value });
 			self._lastLoseFocusValue = self.value;
+		});
+
+		this.onfocus(this.inputElement, () => {
+			self._onInputFocus.fire();
 		});
 
 		if (_sqlOptions && _sqlOptions.type === 'textarea') {

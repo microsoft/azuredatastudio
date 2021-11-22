@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { PanelTabIdentifier } from 'sql/base/browser/ui/panel/panel';
+import { Dimension } from 'vs/base/browser/dom';
 import { Event } from 'vs/base/common/event';
 
 export interface DesignerComponentInput {
@@ -110,7 +111,9 @@ export interface DesignerViewModel {
 
 export interface DesignerDataPropertyInfo {
 	propertyName: string;
+	description?: string;
 	componentType: DesignerComponentTypeName;
+	showInPropertiesView?: boolean;
 	group?: string;
 	componentProperties?: InputBoxProperties | CheckBoxProperties | DropDownProperties | DesignerTableProperties;
 }
@@ -153,16 +156,29 @@ export interface DesignerTableProperties extends ComponentProperties {
 	columns?: string[];
 
 	/**
-	 * The display name of the object type
+	 * The display name of the object type.
 	 */
 	objectTypeDisplayName: string;
 
 	/**
-	 * the properties of the table data item
+	 * The properties of the table data item.
 	 */
 	itemProperties?: DesignerDataPropertyInfo[];
 
+	/**
+	 * The data to be displayed.
+	 */
 	data?: DesignerTableComponentRowData[];
+
+	/**
+	 * Whether user can add new rows to the table. The default value is true.
+	 */
+	canAddRows?: boolean;
+
+	/**
+	 * Whether user can remove rows from the table. The default value is true.
+	 */
+	canRemoveRows?: boolean;
 }
 
 export interface DesignerTableComponentRowData {
@@ -178,13 +194,30 @@ export enum DesignerEditType {
 
 export interface DesignerEdit {
 	type: DesignerEditType;
-	property: DesignerEditIdentifier;
+	path: DesignerEditPath;
 	value?: any;
 }
 
-export type DesignerEditIdentifier = string | { parentProperty: string, index: number, property: string };
+export type DesignerEditPath = (string | number)[];
+export const DesignerRootObjectPath: DesignerEditPath = [];
 
 export interface DesignerEditResult {
 	isValid: boolean;
-	errors?: { message: string, property?: DesignerEditIdentifier }[];
+	errors?: { message: string, property?: DesignerEditPath }[];
+}
+
+export interface DesignerTextEditor {
+	/**
+	 * Gets or sets the content of the text editor
+	 */
+	content: string;
+	/**
+	 * Event fired when the content is changed by user
+	 */
+	readonly onDidContentChange: Event<string>;
+
+	/**
+	 * Update the size of the editor
+	 */
+	layout(dimensions: Dimension): void;
 }

@@ -19,6 +19,12 @@
 		"onCommand:sqlmigration.sendfeedback",
 		"onCommand:sqlmigration.openNotebooks"
 	],
+	"capabilities": {
+		"virtualWorkspaces": false,
+		"untrustedWorkspaces": {
+		  "supported": true
+		}
+	},
 	"main": "./out/main",
 	"repository": {
 		"type": "git",

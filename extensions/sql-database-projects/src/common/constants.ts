@@ -21,7 +21,7 @@ export const msdb = 'msdb';
 export const msdbDacpac = 'msdb.dacpac';
 export const MicrosoftDatatoolsSchemaSqlSql = 'Microsoft.Data.Tools.Schema.Sql.Sql';
 export const databaseSchemaProvider = 'DatabaseSchemaProvider';
-export const sqlMsbuildSdk = 'Microsoft.Build.Sql';
+export const sqlProjectSdk = 'Microsoft.Build.Sql';
 
 // Project Provider
 export const emptySqlDatabaseProjectTypeId = 'EmptySqlDbProj';
@@ -105,7 +105,7 @@ export const dataSourceDropdownTitle = localize('dataSourceDropdownTitle', "Data
 export const noDataSourcesText = localize('noDataSourcesText', "No data sources in this project");
 export const loadProfilePlaceholderText = localize('loadProfilePlaceholderText', "Load profile...");
 export const profileReadError = (err: any) => localize('profileReadError', "Error loading the publish profile. {0}", utils.getErrorMessage(err));
-export const sqlCmdTableLabel = localize('sqlCmdTableLabel', "SQLCMD Variables");
+export const sqlCmdVariables = localize('sqlCmdTableLabel', "SQLCMD Variables");
 export const sqlCmdVariableColumn = localize('sqlCmdVariableColumn', "Name");
 export const sqlCmdValueColumn = localize('sqlCmdValueColumn', "Value");
 export const loadSqlCmdVarsButtonTitle = localize('reloadValuesFromProjectButtonTitle', "Reload values from project");
@@ -133,6 +133,11 @@ export const selectPublishOption = localize('selectPublishOption', "Select where
 export const publishToExistingServer = localize('publishToExistingServer', "Publish to existing server");
 export const publishToDockerContainer = localize('publishToDockerContainer', "Publish to new server in a container");
 export const enterPortNumber = localize('enterPortNumber', "Enter SQL server port number or press enter to use the default value");
+export const serverPortNumber = localize('serverPortNumber', "SQL server port number");
+export const serverPassword = localize('serverPassword', "SQL Server admin password");
+export const confirmServerPassword = localize('confirmServerPassword', "Confirm SQL Server admin password");
+export const baseDockerImage = localize('baseDockerImage', "Base SQL Server Docker image");
+export const publishTo = localize('publishTo', "Publish Target");
 export const enterConnectionStringEnvName = localize('enterConnectionStringEnvName', "Enter connection string environment variable name");
 export const enterConnectionStringTemplate = localize('enterConnectionStringTemplate', "Enter connection string template");
 export const enterPassword = localize('enterPassword', "Enter SQL Server admin password");
@@ -153,6 +158,8 @@ export const mssqlFolderName = '.mssql';
 export const dockerFileName = 'Dockerfile';
 export const startCommandName = 'start.sh';
 export const defaultPortNumber = '1433';
+export const defaultLocalServerName = 'localhost';
+export const defaultLocalServerAdminName = 'sa';
 export const defaultConnectionStringEnvVarName = 'SQLConnectionString';
 export const defaultConnectionStringTemplate = 'Data Source=@@SERVER@@,@@PORT@@;Initial Catalog=@@DATABASE@@;User id=@@USER@@;Password=@@SA_PASSWORD@@;';
 export const azureFunctionLocalSettingsFileName = 'local.settings.json';
@@ -286,7 +293,7 @@ export function unableToFindSqlCmdVariable(variableName: string) { return locali
 export function unableToFindDatabaseReference(reference: string) { return localize('unableToFindReference', "Unable to find database reference {0}", reference); }
 export function invalidGuid(guid: string) { return localize('invalidGuid', "Specified GUID is invalid: {0}", guid); }
 export function invalidTargetPlatform(targetPlatform: string, supportedTargetPlatforms: string[]) { return localize('invalidTargetPlatform', "Invalid target platform: {0}. Supported target platforms: {1}", targetPlatform, supportedTargetPlatforms.toString()); }
-
+export function errorReadingProject(section: string, path: string) { return localize('errorReadingProjectGuid', "Error trying to read {0} of project '{1}'", section, path); }
 
 // Action types
 export const deleteAction = localize('deleteAction', 'Delete');
@@ -328,6 +335,7 @@ export const ItemGroup = 'ItemGroup';
 export const Build = 'Build';
 export const Folder = 'Folder';
 export const Include = 'Include';
+export const Remove = 'Remove';
 export const Import = 'Import';
 export const Project = 'Project';
 export const Condition = 'Condition';
@@ -362,6 +370,16 @@ export const ProjectGuid = 'ProjectGuid';
 export const Type = 'Type';
 export const ExternalStreamingJob: string = 'ExternalStreamingJob';
 export const Sdk: string = 'Sdk';
+
+export const BuildElements = localize('buildElements', "Build Elements");
+export const FolderElements = localize('folderElements', "Folder Elements");
+export const PreDeployElements = localize('preDeployElements', "PreDeploy Elements");
+export const PostDeployElements = localize('postDeployElements', "PostDeploy Elements");
+export const NoneElements = localize('noneElements', "None Elements");
+export const ImportElements = localize('importElements', "Import Elements");
+export const ProjectReferenceNameElement = localize('projectReferenceNameElement', "Project reference name element");
+export const ProjectReferenceElement = localize('projectReferenceElement', "Project reference");
+export const DacpacReferenceElement = localize('dacpacReferenceElement', "Dacpac reference");
 
 /** Name of the property item in the project file that defines default database collation. */
 export const DefaultCollationProperty = 'DefaultCollation';
@@ -497,6 +515,7 @@ export const noAzureFunctionsProjectsInWorkspace = localize('noAzureFunctionsPro
 export const addPackage = localize('addPackage', "Add Package");
 export const createNewLocalAppSetting = localize('createNewLocalAppSetting', 'Create new local app setting');
 export const createNewLocalAppSettingWithIcon = `$(add) ${createNewLocalAppSetting}`;
+export const sqlConnectionStringSetting = 'SqlConnectionString';
 export const valueMustNotBeEmpty = localize('valueMustNotBeEmpty', "Value must not be empty");
 export const enterConnectionStringSettingName = localize('enterConnectionStringSettingName', "Enter connection string setting name");
 export const enterConnectionString = localize('enterConnectionString', "Enter connection string");
@@ -507,3 +526,4 @@ export function failedToParse(errorMessage: string) { return localize('failedToP
 export function jsonParseError(error: string, line: number, column: number) { return localize('jsonParseError', '{0} near line "{1}", column "{2}"', error, line, column); }
 export const moreInformation = localize('moreInformation', "More Information");
 export const addPackageReferenceMessage = localize('addPackageReferenceMessage', 'To use SQL bindings, ensure your Azure Functions project has a reference to {0}', sqlExtensionPackageName);
+export const addSqlBindingPackageError = localize('addSqlBindingPackageError', 'Error adding Sql Binding extension package to project');

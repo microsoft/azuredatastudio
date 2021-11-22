@@ -231,6 +231,18 @@
 			"group": "build",
 			"label": "npm: tsec-compile-check",
 			"detail": "node_modules/tsec/bin/tsec -p src/tsconfig.json --noEmit"
+		},
+		{
+			"type": "npm",
+			"script": "watch",
+			"label": "Watch sample-resource-deployment",
+			"path": "./samples/sample-resource-deployment/package.json",
+			"problemMatcher": "$tsc-watch",
+			"isBackground": true,
+			"presentation": {
+				"reveal": "never"
+			},
+			"group": "build"
 		}
 	]
 }

@@ -53,6 +53,7 @@ export class SelectBox extends vsSelectBox {
 	private contextViewProvider: IContextViewProvider;
 	private message?: IMessage;
 	private _onDidSelect: Emitter<ISelectData>;
+	private _onDidFocus: Emitter<void>;
 
 	private inputValidationInfoBorder?: Color;
 	private inputValidationInfoBackground?: Color;
@@ -71,6 +72,7 @@ export class SelectBox extends vsSelectBox {
 		super(optionItems, 0, contextViewProvider, undefined, selectBoxOptions);
 
 		this._onDidSelect = new Emitter<ISelectData>();
+		this._onDidFocus = new Emitter<void>();
 		this._optionsDictionary = new Map<string, number>();
 		this.populateOptionsDictionary(optionItems);
 		this._dialogOptions = optionItems;
@@ -100,7 +102,10 @@ export class SelectBox extends vsSelectBox {
 		let focusTracker = dom.trackFocus(this.selectElement);
 		this._register(focusTracker);
 		this._register(focusTracker.onDidBlur(() => this._hideMessage()));
-		this._register(focusTracker.onDidFocus(() => this._showMessage()));
+		this._register(focusTracker.onDidFocus(() => {
+			this._showMessage();
+			this._onDidFocus.fire();
+		}));
 		// Stop propagation - we've handled the event already and letting it bubble up causes issues with parent
 		// controls handling it (such as dialog pages)
 		this.onkeydown(this.selectElement, (e: IKeyboardEvent) => {
@@ -131,6 +136,10 @@ export class SelectBox extends vsSelectBox {
 		// So we expose our own event that's fired either when the base onDidSelect is called or when we
 		// manually select an item
 		return this._onDidSelect.event;
+	}
+
+	public get onDidFocus(): Event<void> {
+		return this._onDidFocus.event;
 	}
 
 	public onSelect(newInput: ISelectData) {

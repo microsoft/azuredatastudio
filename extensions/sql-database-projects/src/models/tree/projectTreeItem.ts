@@ -8,11 +8,12 @@ import * as path from 'path';
 import { DataSourcesTreeItem } from './dataSourceTreeItem';
 import { BaseProjectTreeItem } from './baseTreeItem';
 import * as fileTree from './fileFolderTreeItem';
-import { Project, EntryType, FileProjectEntry } from '../project';
+import { Project } from '../project';
 import * as utils from '../../common/utils';
 import { DatabaseReferencesTreeItem } from './databaseReferencesTreeItem';
 import { DatabaseProjectItemType, RelativeOuterPath, ExternalStreamingJob, sqlprojExtension } from '../../common/constants';
 import { IconPathHelper } from '../../common/iconHelper';
+import { EntryType, FileProjectEntry } from '../projectEntry';
 
 /**
  * TreeNode root that represents an entire project

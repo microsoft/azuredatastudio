@@ -118,6 +118,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 		}
 
 		existingSettings.unshift({ label: constants.createNewLocalAppSettingWithIcon, isCreateNew: true });
+		let sqlConnectionStringSettingExists = existingSettings.find(s => s.label === constants.sqlConnectionStringSetting);
 
 		while (!connectionStringSettingName) {
 			const selectedSetting = await vscode.window.showQuickPick(existingSettings, {
@@ -135,6 +136,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 					{
 						title: constants.enterConnectionStringSettingName,
 						ignoreFocusOut: true,
+						value: sqlConnectionStringSettingExists ? '' : constants.sqlConnectionStringSetting,
 						validateInput: input => input ? undefined : constants.nameMustNotBeEmpty
 					}
 				) ?? '';
@@ -148,6 +150,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 					{
 						title: constants.enterConnectionString,
 						ignoreFocusOut: true,
+						value: 'Server=localhost;Initial Catalog={db_name};User ID=sa;Password={your_password};Persist Security Info=False',
 						validateInput: input => input ? undefined : constants.valueMustNotBeEmpty
 					}
 				) ?? '';
@@ -209,4 +212,3 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 	// 6. Add sql extension package reference to project. If the reference is already there, it doesn't get added again
 	await packageHelper.addPackageToAFProjectContainingFile(uri, constants.sqlExtensionPackageName);
 }
-

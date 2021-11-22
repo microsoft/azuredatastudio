@@ -12,6 +12,10 @@ import { CustomDialogService } from 'sql/workbench/services/dialog/browser/custo
 import { Dialog, DialogTab, Wizard } from 'sql/workbench/services/dialog/common/dialogTypes';
 import { ExtHostModelViewDialogShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { Emitter } from 'vs/base/common/event';
+import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
+import { TestDialogModal } from 'sql/workbench/services/dialog/test/browser/testDialogModal';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
 
 
 suite('MainThreadModelViewDialog Tests', () => {
@@ -70,10 +74,15 @@ suite('MainThreadModelViewDialog Tests', () => {
 
 		// Set up the mock dialog service
 		mockDialogService = Mock.ofType(CustomDialogService, undefined);
+		const testInstantiationService = new TestInstantiationService();
+		testInstantiationService.set(IContextKeyService, new MockContextKeyService());
+		const testDialogModal = testInstantiationService.createInstance(TestDialogModal);
 		openedDialog = undefined;
 		mockDialogService.setup(x => x.showDialog(It.isAny(), undefined, It.isAny())).callback((dialog) => {
 			openedDialog = dialog;
-		});
+			return {};
+		}).returns(() => testDialogModal);
+
 		mockDialogService.setup(x => x.showWizard(It.isAny(), It.isAny(), It.isAny())).callback(wizard => {
 			openedWizard = wizard;
 			// The actual service will set the page to 0 when it opens the wizard
