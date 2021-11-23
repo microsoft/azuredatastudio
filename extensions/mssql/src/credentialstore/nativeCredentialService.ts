@@ -29,6 +29,8 @@ export class NativeCredentialService extends SqlOpsFeature<any> {
 			constructor(client: SqlOpsDataClient) {
 				super(context, client);
 				this._secretStorage = context.extensionContext.secrets;
+				// eslint-disable-next-line @typescript-eslint/no-floating-promises
+				context.extensionContext.globalState.update(Utils.configPasswordsMigrated, false);
 				this._passwordsMigrated = context.extensionContext.globalState.get(Utils.configPasswordsMigrated);
 				this._useNativeCredentialService = Utils.useNativeCredentialsEnabled();
 			}
@@ -44,6 +46,7 @@ export class NativeCredentialService extends SqlOpsFeature<any> {
 				});
 				if (this._useNativeCredentialService && !this._passwordsMigrated) {
 					const success = await this.migratePasswords();
+					this._passwordsMigrated = success;
 					await context.extensionContext.globalState.update(Utils.configPasswordsMigrated, success);
 				}
 			}
@@ -92,7 +95,7 @@ export class NativeCredentialService extends SqlOpsFeature<any> {
 
 			protected override registerProvider(options: any): Disposable {
 				let readCredential = async (credentialId: string): Promise<azdata.Credential> => {
-					if (this._useNativeCredentialService) {
+					if (this._useNativeCredentialService && this._passwordsMigrated) {
 						const password = await this._secretStorage.get(credentialId);
 						const credential: azdata.Credential = {
 							credentialId: credentialId,
@@ -106,7 +109,7 @@ export class NativeCredentialService extends SqlOpsFeature<any> {
 				};
 
 				let saveCredential = async (credentialId: string, password: string): Promise<boolean> => {
-					if (this._useNativeCredentialService) {
+					if (this._useNativeCredentialService && this._passwordsMigrated) {
 						await this._secretStorage.store(credentialId, password);
 						return password === await this._secretStorage.get(credentialId);
 					} else {
@@ -115,7 +118,7 @@ export class NativeCredentialService extends SqlOpsFeature<any> {
 				};
 
 				let deleteCredential = async (credentialId: string): Promise<boolean> => {
-					if (this._useNativeCredentialService) {
+					if (this._useNativeCredentialService && this._passwordsMigrated) {
 						await this._secretStorage.delete(credentialId);
 					}
 					return this._client.sendRequest(Contracts.DeleteCredentialRequest.type, { credentialId, password: undefined });
