@@ -16,7 +16,6 @@ import { QueryModelViewTab } from 'sql/workbench/contrib/query/browser/modelView
 import { GridPanelState } from 'sql/workbench/common/editor/query/gridTableState';
 
 import * as nls from 'vs/nls';
-import * as azdata from 'azdata';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as DOM from 'vs/base/browser/dom';
 import { dispose, Disposable, DisposableStore } from 'vs/base/common/lifecycle';
@@ -252,6 +251,9 @@ export class QueryResultsView extends Disposable {
 
 		this.runnerDisposables.add(runner.onQueryPlan2Available(e => {
 			if (this.qp2Tab) {
+				if (!this.input.state.visibleTabs.has(this.qp2Tab.identifier)) {
+					this.showPlan2();
+				}
 				this.qp2Tab.view.addGraphs(e.planGraphs);
 			}
 		}));
@@ -307,7 +309,6 @@ export class QueryResultsView extends Disposable {
 			if (runner.isQueryPlan) {
 				runner.planXml.then(e => {
 					this.showPlan(e);
-					this.showPlan2([]);
 				});
 			}
 		}));
@@ -421,8 +422,7 @@ export class QueryResultsView extends Disposable {
 		this.topOperationsTab.view.showPlan(xml);
 	}
 
-	public showPlan2(graphs: azdata.QueryPlanGraph[]) {
-
+	public showPlan2() {
 		if (!this._panelView.contains(this.qp2Tab)) {
 			this.input?.state.visibleTabs.add(this.qp2Tab.identifier);
 			if (!this._panelView.contains(this.qp2Tab)) {
@@ -431,7 +431,6 @@ export class QueryResultsView extends Disposable {
 			this._panelView.showTab(this.qp2Tab.identifier);
 
 		}
-		this.qp2Tab.view.addGraphs(graphs);
 	}
 
 	public hidePlan() {
