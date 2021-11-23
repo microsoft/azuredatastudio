@@ -844,7 +844,12 @@ export class SchemaCompareMainWindow {
 					case mssql.SchemaCompareEndpointType.Database:
 						result = await service.schemaComparePublishDatabaseChanges(this.comparisonResult.operationId, this.targetEndpointInfo.serverName, this.targetEndpointInfo.databaseName, azdata.TaskExecutionMode.execute);
 						break;
-					case mssql.SchemaCompareEndpointType.Project: // Project apply needs sql-database-projects updates in (circular dependency; coming next) // TODO: re-add this and show project logic below
+					case mssql.SchemaCompareEndpointType.Project: // Project apply needs sql-database-projects updates in (circular dependency; coming next)
+						result = await vscode.commands.executeCommand(loc.sqlDatabaseProjectsPublishChanges, this.comparisonResult.operationId, this.targetEndpointInfo.projectFilePath, this.targetEndpointInfo.folderStructure);
+						if (!result.success) {
+							await vscode.window.showErrorMessage(loc.applyError);
+						}
+						break;
 					case mssql.SchemaCompareEndpointType.Dacpac: // Dacpac is an invalid publish target
 					default:
 						throw new Error(`Unsupported SchemaCompareEndpointType: ${getSchemaCompareEndpointString(this.targetEndpointInfo.endpointType)}`);
@@ -870,6 +875,11 @@ export class SchemaCompareMainWindow {
 						'endTime': Date.now().toString(),
 						'operationId': this.comparisonResult.operationId
 					}).send();
+
+				if (this.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Project) {
+					vscode.commands.executeCommand(loc.sqlDatabaseProjectsShowProjectsView);
+					await vscode.window.showInformationMessage(loc.applySuccess);
+				}
 			}
 		});
 	}
