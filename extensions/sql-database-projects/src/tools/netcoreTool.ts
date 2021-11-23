@@ -45,10 +45,12 @@ export class NetCoreTool extends ShellExecutionHelper {
 	 * @returns True if .NET version was found and is supported
 	 * 			False if .NET version isn't present or present but not supported
 	 */
-	public async findOrInstallNetCore(): Promise<boolean> {
-		if ((!this.isNetCoreInstallationPresent || !await this.isNetCoreVersionSupported())) {
-			if (vscode.workspace.getConfiguration(DBProjectConfigurationKey)[NetCoreDoNotAskAgainKey] !== true) {
-				void this.showInstallDialog();		// Removing await so that Build and extension load process doesn't wait on user input
+	public async findOrInstallNetCore(skipVersionSupportedCheck = false): Promise<boolean> {
+		if (!this.isNetCoreInstallationPresent || (this.isNetCoreInstallationPresent && !skipVersionSupportedCheck)) {
+			if ((!this.isNetCoreInstallationPresent || !await this.isNetCoreVersionSupported())) {
+				if (vscode.workspace.getConfiguration(DBProjectConfigurationKey)[NetCoreDoNotAskAgainKey] !== true) {
+					void this.showInstallDialog();		// Removing await so that Build and extension load process doesn't wait on user input
+				}
 			}
 		}
 
