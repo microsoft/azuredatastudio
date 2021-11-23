@@ -91,7 +91,7 @@ export class SqlToolsServer {
 		const resourceProvider = new AzureResourceProvider(context.extensionContext.logPath, this.config);
 		this.disposables.push(credsStore);
 		this.disposables.push(resourceProvider);
-		return Promise.all([resourceProvider.start()]).then();
+		return Promise.all([credsStore.start(), resourceProvider.start()]).then();
 	}
 
 	async dispose(): Promise<void> {

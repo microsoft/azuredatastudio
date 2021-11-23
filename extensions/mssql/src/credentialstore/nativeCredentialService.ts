@@ -51,7 +51,7 @@ export class NativeCredentialService extends SqlOpsFeature<any> {
 
 			/**
 			 * Removes a credential for a given connection profile from sqltoolsservice
-			 * and adds it to keytar
+			 * and adds it to secret storage
 			 */
 			private async cleanCredential(conn: azdata.connection.ConnectionProfile): Promise<boolean> {
 				const credentialId = Utils.formatCredentialId(conn);
@@ -78,7 +78,7 @@ export class NativeCredentialService extends SqlOpsFeature<any> {
 
 			/**
 			 *
-			 * @returns Migrates all saved credentials to the new credential system
+			 * @returns Migrates all saved credentials to the native credential system
 			 */
 			private async migratePasswords(): Promise<boolean> {
 				const connections = await azdata.connection.getConnections(false);
