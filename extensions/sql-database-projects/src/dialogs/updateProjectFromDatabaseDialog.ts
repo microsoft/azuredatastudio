@@ -10,13 +10,15 @@ import * as mssql from '../../../mssql';
 import * as azdata from 'azdata';
 import * as constants from '../common/constants';
 import * as newProjectTool from '../tools/newProjectTool';
+import type * as mssqlVscode from 'vscode-mssql';
+
 import { Deferred } from '../common/promise';
 import { Project } from '../models/project';
 import { cssStyles } from '../common/uiConstants';
 import { IconPathHelper } from '../common/iconHelper';
 import { UpdateDataModel, UpdateAction } from '../models/api/update';
 import { exists, getAzdataApi, getDataWorkspaceExtensionApi } from '../common/utils';
-import path = require('path');
+import * as path from 'path';
 
 export class UpdateProjectFromDatabaseDialog {
 	public dialog: azdata.window.Dialog;
@@ -31,20 +33,15 @@ export class UpdateProjectFromDatabaseDialog {
 	private formBuilder: azdata.FormBuilder | undefined;
 	private connectionId: string | undefined;
 	private profile: azdata.IConnectionProfile | undefined;
-	private project: Project | undefined;
 	private action: UpdateAction | undefined;
 	private toDispose: vscode.Disposable[] = [];
 	private initDialogPromise: Deferred = new Deferred();
 
 	public updateProjectFromDatabaseCallback: ((model: UpdateDataModel) => any) | undefined;
 
-	constructor(dialogParam: azdata.IConnectionProfile | Project) {
-		if (dialogParam.hasOwnProperty('connectionName')) {
-			this.profile = dialogParam as azdata.IConnectionProfile;
-			this.project = undefined;
-		} else {
-			this.profile = undefined;
-			this.project = dialogParam as Project;
+	constructor(connection: azdata.IConnectionProfile | mssqlVscode.IConnectionInfo | undefined, private project: Project | undefined) {
+		if (connection && 'connectionName' in connection) {
+			this.profile = connection;
 		}
 
 		// need to set profile when database is updated as well as here

@@ -61,7 +61,7 @@ export default class MainController implements vscode.Disposable {
 		vscode.commands.registerCommand('sqlDatabaseProjects.schemaCompareGetDsp', async (projectFilePath: string): Promise<string> => { return await this.projectsController.schemaCompareGetDsp(projectFilePath); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.schemaComparePublishProjectChanges', async (operationId: string, projectFilePath: string, folderStructure: string): Promise<mssql.SchemaComparePublishProjectResult> => { return await this.projectsController.schemaComparePublishProjectChanges(operationId, projectFilePath, folderStructure); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.schemaCompareShowProjectsView', async () => { await this.projectsController.schemaCompareShowProjectsView(); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.updateProjectFromDatabase', async (node: azdataType.IConnectionProfile | WorkspaceTreeItem) => { await this.projectsController.updateProjectFromDatabase(node); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.updateProjectFromDatabase', async (node: azdataType.IConnectionProfile | vscodeMssql.ITreeNodeInfo | WorkspaceTreeItem) => { await this.projectsController.updateProjectFromDatabase(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.createProjectFromDatabase', async (context: azdataType.IConnectionProfile | vscodeMssql.ITreeNodeInfo | undefined) => { return this.projectsController.createProjectFromDatabase(context); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.generateProjectFromOpenApiSpec', async () => { return this.projectsController.generateProjectFromOpenApiSpec(); });
 

@@ -1324,9 +1324,23 @@ export class ProjectsController {
 		// TODO: Check for success; throw error
 	}
 
-	public async updateProjectFromDatabase(context: azdataType.IConnectionProfile | dataworkspace.WorkspaceTreeItem): Promise<UpdateProjectFromDatabaseDialog> {
-		const dialogParam = context.hasOwnProperty('connectionProfile') ? this.getConnectionProfileFromContext(context as azdataType.IConnectionProfile) : this.getProjectFromContext(context as dataworkspace.WorkspaceTreeItem);
-		let updateProjectFromDatabaseDialog = this.getUpdateProjectFromDatabaseDialog(dialogParam as azdataType.IConnectionProfile | Project);
+	public async updateProjectFromDatabase(context: azdataType.IConnectionProfile | mssqlVscode.ITreeNodeInfo | dataworkspace.WorkspaceTreeItem): Promise<UpdateProjectFromDatabaseDialog> {
+		let connection: azdataType.IConnectionProfile | mssqlVscode.IConnectionInfo | undefined;
+		let project: Project | undefined;
+
+		try {
+			if ('connectionProfile' in context) {
+				connection = this.getConnectionProfileFromContext(context as azdataType.IConnectionProfile | mssqlVscode.ITreeNodeInfo);
+			}
+		} catch { }
+
+		try {
+			if ('treeDataProvider' in context) {
+				project = this.getProjectFromContext(context as dataworkspace.WorkspaceTreeItem);
+			}
+		} catch { }
+
+		let updateProjectFromDatabaseDialog = this.getUpdateProjectFromDatabaseDialog(connection, project);
 
 		updateProjectFromDatabaseDialog.updateProjectFromDatabaseCallback = async (model) => await this.updateProjectFromDatabaseCallback(model);
 
@@ -1335,8 +1349,8 @@ export class ProjectsController {
 		return updateProjectFromDatabaseDialog;
 	}
 
-	public getUpdateProjectFromDatabaseDialog(dialogParam: azdataType.IConnectionProfile | Project): UpdateProjectFromDatabaseDialog {
-		return new UpdateProjectFromDatabaseDialog(dialogParam);
+	public getUpdateProjectFromDatabaseDialog(connection: azdataType.IConnectionProfile | mssqlVscode.IConnectionInfo | undefined, project: Project | undefined): UpdateProjectFromDatabaseDialog {
+		return new UpdateProjectFromDatabaseDialog(connection, project);
 	}
 
 	public async updateProjectFromDatabaseCallback(model: UpdateDataModel) {
