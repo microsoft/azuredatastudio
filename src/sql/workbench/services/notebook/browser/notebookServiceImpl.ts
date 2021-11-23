@@ -473,8 +473,8 @@ export class NotebookService extends Disposable implements INotebookService {
 	public async getStandardKernelsForProvider(provider: string): Promise<nb.IStandardKernel[] | undefined> {
 		let descriptor = this._providerToStandardKernels.get(provider.toUpperCase());
 		if (descriptor) {
-			// Wait up to 10 seconds for kernels to be registered
-			const timeout = 10000;
+			// Wait up to 30 seconds for kernels to be registered
+			const timeout = 30000;
 			let promises: Promise<nb.IStandardKernel[]>[] = [
 				descriptor.instanceReady,
 				new Promise<nb.IStandardKernel[]>((resolve) => setTimeout(() => resolve(undefined), timeout))
