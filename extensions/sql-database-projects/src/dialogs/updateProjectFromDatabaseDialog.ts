@@ -22,20 +22,21 @@ import * as path from 'path';
 
 export class UpdateProjectFromDatabaseDialog {
 	public dialog: azdata.window.Dialog;
+	public serverDropdown: azdata.DropDownComponent | undefined;
+	public databaseDropdown: azdata.DropDownComponent | undefined;
+	public projectFileTextBox: azdata.InputBoxComponent | undefined;
+	public compareActionRadioButton: azdata.RadioButtonComponent | undefined;
 	private updateProjectFromDatabaseTab: azdata.window.DialogTab;
-	private serverDropdown: azdata.DropDownComponent | undefined;
 	private connectionButton: azdata.ButtonComponent | undefined;
-	private databaseDropdown: azdata.DropDownComponent | undefined;
-	private projectFileTextBox: azdata.InputBoxComponent | undefined;
 	private folderStructureDropDown: azdata.DropDownComponent | undefined;
-	private compareActionRadioButton: azdata.RadioButtonComponent | undefined;
 	private updateActionRadioButton: azdata.RadioButtonComponent | undefined;
 	private formBuilder: azdata.FormBuilder | undefined;
 	private connectionId: string | undefined;
 	private profile: azdata.IConnectionProfile | undefined;
-	private action: UpdateAction | undefined;
+	public action: UpdateAction | undefined;
 	private toDispose: vscode.Disposable[] = [];
 	private initDialogPromise: Deferred = new Deferred();
+	public populatedInputsPromise: Deferred = new Deferred();
 
 	public updateProjectFromDatabaseCallback: ((model: UpdateDataModel) => any) | undefined;
 
@@ -90,6 +91,8 @@ export class UpdateProjectFromDatabaseDialog {
 
 			const connectionRow = this.createServerRow(view);
 			const databaseRow = this.createDatabaseRow(view);
+			this.populateServerDropdown();
+
 			const sourceDatabaseFormSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 			sourceDatabaseFormSection.addItems([connectionRow, databaseRow]);
 
@@ -185,8 +188,6 @@ export class UpdateProjectFromDatabaseDialog {
 		this.serverDropdown.onValueChanged(() => {
 			this.tryEnableUpdateButton();
 		});
-
-		this.populateServerDropdown();
 	}
 
 	private createDatabaseComponent(view: azdata.ModelView) {
@@ -197,7 +198,6 @@ export class UpdateProjectFromDatabaseDialog {
 		}).component();
 
 		this.databaseDropdown.onValueChanged(() => {
-
 			this.tryEnableUpdateButton();
 		});
 	}
@@ -218,6 +218,9 @@ export class UpdateProjectFromDatabaseDialog {
 		if (this.serverDropdown!.value) {
 			await this.populateDatabaseDropdown();
 		}
+
+		this.tryEnableUpdateButton();
+		this.populatedInputsPromise.resolve();
 	}
 
 	protected async populateDatabaseDropdown() {
@@ -359,7 +362,7 @@ export class UpdateProjectFromDatabaseDialog {
 	private createProjectLocationRow(view: azdata.ModelView): azdata.FlexContainer {
 		const browseFolderButton: azdata.Component = this.createBrowseFileButton(view);
 
-		const value = this.project ? this.project.projectFilePath : ' ';
+		const value = this.project ? this.project.projectFilePath : '';
 
 		this.projectFileTextBox = view.modelBuilder.inputBox().withProps({
 			value: value,
@@ -443,13 +446,17 @@ export class UpdateProjectFromDatabaseDialog {
 	private createActionRow(view: azdata.ModelView): azdata.FlexContainer {
 		this.compareActionRadioButton = view.modelBuilder.radioButton().withProps({
 			name: 'action',
-			label: constants.compareActionRadioButtonLabel
+			label: constants.compareActionRadioButtonLabel,
+			checked: true
 		}).component();
 
 		this.updateActionRadioButton = view.modelBuilder.radioButton().withProps({
 			name: 'action',
 			label: constants.updateActionRadioButtonLabel
 		}).component();
+
+		this.compareActionRadioButton.updateProperties({ checked: true });
+		this.action = UpdateAction.Compare;
 
 		this.compareActionRadioButton.onDidClick(async () => {
 			this.action = UpdateAction.Compare;
