@@ -51,6 +51,7 @@ export class NetCoreTool extends ShellExecutionHelper {
 				if (vscode.workspace.getConfiguration(DBProjectConfigurationKey)[NetCoreDoNotAskAgainKey] !== true) {
 					void this.showInstallDialog();		// Removing await so that Build and extension load process doesn't wait on user input
 				}
+				return false;
 			}
 		}
 
