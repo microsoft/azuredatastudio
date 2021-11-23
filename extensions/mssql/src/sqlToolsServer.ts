@@ -25,6 +25,7 @@ import { LanguageExtensionService } from './languageExtension/languageExtensionS
 import { SqlAssessmentService } from './sqlAssessment/sqlAssessmentService';
 import { NotebookConvertService } from './notebookConvert/notebookConvertService';
 import { SqlMigrationService } from './sqlMigration/sqlMigrationService';
+import { NativeCredentialService } from './credentialstore/nativeCredentialService';
 
 const localize = nls.loadMessageBundle();
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
@@ -86,11 +87,11 @@ export class SqlToolsServer {
 	}
 
 	private activateFeatures(context: AppContext): Promise<void> {
-		const credsStore = new CredentialStore(context.extensionContext.logPath, this.config);
+		const credsStore = new CredentialStore(context, this.config);
 		const resourceProvider = new AzureResourceProvider(context.extensionContext.logPath, this.config);
 		this.disposables.push(credsStore);
 		this.disposables.push(resourceProvider);
-		return Promise.all([credsStore.start(), resourceProvider.start()]).then();
+		return Promise.all([resourceProvider.start()]).then();
 	}
 
 	async dispose(): Promise<void> {
@@ -163,6 +164,7 @@ function getClientOptions(context: AppContext): ClientOptions {
 			NotebookConvertService.asFeature(context),
 			ProfilerFeature,
 			SqlMigrationService.asFeature(context),
+			NativeCredentialService.asFeature(context),
 			TableDesignerFeature
 		],
 		outputChannel: new CustomOutputChannel()

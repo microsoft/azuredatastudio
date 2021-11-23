@@ -619,3 +619,11 @@ export interface AssessmentResult {
 export interface ISqlMigrationService {
 	getAssessments(ownerUri: string, databases: string[]): Promise<AssessmentResult | undefined>;
 }
+
+// Credential Service Interface
+
+export interface INativeCredentialService {
+	saveCredential(credentialId: string, credential: string): Thenable<boolean>;
+	deleteCredential(credentialId: string): Thenable<boolean>;
+	readCredential(credentialId: string): Thenable<azdata.Credential>;
+}

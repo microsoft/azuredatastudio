@@ -20,6 +20,17 @@ const configLogRetentionMinutes = 'logRetentionMinutes';
 const configLogFilesRemovalLimit = 'logFilesRemovalLimit';
 const extensionConfigSectionName = 'mssql';
 const configLogDebugInfo = 'logDebugInfo';
+export const configUseNativeCredentials = 'useNativeCredentials';
+export const configPasswordsMigrated = 'passwordsMigrated';
+
+// Credentials Constants
+const CRED_PREFIX = 'Microsoft.SqlTools';
+const CRED_SEPARATOR = '|';
+const CRED_ID_PREFIX = 'id:';
+const CRED_ITEMTYPE_PREFIX = 'itemtype:';
+const CRED_NAME_VALUE_SEPARATOR = ':';
+const CRED_PROVIDER_NAME = 'providerName';
+export const CRED_PROFILE_USER = 'Profile';
 
 // The function is a duplicate of \src\paths.js. IT would be better to import path.js but it doesn't
 // work for now because the extension is running in different process.
@@ -64,8 +75,7 @@ export function getConfigLogFilesRemovalLimit(): number {
 	let config = getConfiguration();
 	if (config) {
 		return Number((config[configLogFilesRemovalLimit]).toFixed(0));
-	}
-	else {
+	} else {
 		return undefined;
 	}
 }
@@ -74,8 +84,7 @@ export function getConfigLogRetentionSeconds(): number {
 	let config = getConfiguration();
 	if (config) {
 		return Number((config[configLogRetentionMinutes] * 60).toFixed(0));
-	}
-	else {
+	} else {
 		return undefined;
 	}
 }
@@ -84,8 +93,7 @@ export function getConfigTracingLevel(): string {
 	let config = getConfiguration();
 	if (config) {
 		return config[configTracingLevel];
-	}
-	else {
+	} else {
 		return undefined;
 	}
 }
@@ -347,4 +355,74 @@ export async function getOrDownloadServer(config: IConfig, handleServerEvent?: (
 	}
 
 	return serverdownloader.getOrDownloadServer();
+}
+
+/**
+ * Returns the credential folder path on the user's system
+ */
+export async function removeCredentialFile(): Promise<void> {
+	const home = os.homedir();
+	const credentialPath = path.join(home, '.sqlsecrets');
+	await fs.rmdir(credentialPath, { recursive: true });
+}
+
+/**
+ *
+ * @returns Whether the current OS is linux or not
+ */
+export function isLinux(): boolean {
+	return os.platform() === 'linux';
+}
+
+function getConfigUseNativeCredentials(): boolean {
+	let config = getConfiguration();
+	if (config) {
+		return Boolean(config[configUseNativeCredentials]);
+	} else {
+		return undefined;
+	}
+}
+
+/**
+ * This function returns whether the native credential management system
+ * should be used instead of tools service
+ */
+export function useNativeCredentialsEnabled(): boolean {
+	const linux: boolean = isLinux();
+	const useNativeCredentials: boolean = getConfigUseNativeCredentials();
+	return linux && useNativeCredentials;
+}
+
+/**
+ * Gets the prefix for a formatted credential ID
+ */
+
+function getConnectionInfoId(connectionProfile: azdata.connection.ConnectionProfile): string {
+	let idNames = ['authenticationType', 'database', 'server', 'user', 'applicationName'];
+
+	//Sort to make sure using names in the same order every time otherwise the ids would be different
+	idNames.sort();
+
+	let idValues: string[] = [];
+	for (let index = 0; index < idNames.length; index++) {
+		let value = connectionProfile.options[idNames[index]!];
+		value = value ? value : '';
+		idValues.push(`${idNames[index]}${CRED_NAME_VALUE_SEPARATOR}${value}`);
+	}
+	return CRED_PROVIDER_NAME + CRED_NAME_VALUE_SEPARATOR + connectionProfile.providerId +
+		CRED_SEPARATOR + idValues.join(CRED_SEPARATOR);
+}
+
+/**
+ * Creates a formatted credential usable for uniquely identifying a SQL Connection.
+ * This string can be decoded but is not optimized for this.
+ * @param connectionProfile connection profile - require
+ * @param itemType type of the item (MRU or Profile) - optional
+ * @returns formatted string with server, DB and username
+ */
+export function formatCredentialId(connectionProfile: azdata.connection.ConnectionProfile): string {
+	const cred: string[] = [CRED_PREFIX];
+	cred.push(CRED_ITEMTYPE_PREFIX.concat(CRED_PROFILE_USER));
+	cred.push(CRED_ID_PREFIX.concat(getConnectionInfoId(connectionProfile)));
+	return cred.join(CRED_SEPARATOR);
 }
