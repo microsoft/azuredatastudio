@@ -23,7 +23,7 @@ export const NetCoreNonWindowsDefaultPath = '/usr/local/share';
 export const winPlatform: string = 'win32';
 export const macPlatform: string = 'darwin';
 export const linuxPlatform: string = 'linux';
-export const minSupportedNetCoreVersion: string = '3.1.0';
+export const minSupportedNetCoreVersionForBuild: string = '3.1.0';
 
 export const enum netCoreInstallState {
 	netCoreNotPresent,
@@ -47,7 +47,7 @@ export class NetCoreTool extends ShellExecutionHelper {
 	 */
 	public async findOrInstallNetCore(skipVersionSupportedCheck = false): Promise<boolean> {
 		if (!this.isNetCoreInstallationPresent || (this.isNetCoreInstallationPresent && !skipVersionSupportedCheck)) {
-			if ((!this.isNetCoreInstallationPresent || !await this.isNetCoreVersionSupported())) {
+			if ((!this.isNetCoreInstallationPresent || !await this.isNetCoreVersionSupportedForBuild())) {
 				if (vscode.workspace.getConfiguration(DBProjectConfigurationKey)[NetCoreDoNotAskAgainKey] !== true) {
 					void this.showInstallDialog();		// Removing await so that Build and extension load process doesn't wait on user input
 				}
@@ -126,16 +126,16 @@ export class NetCoreTool extends ShellExecutionHelper {
 	}
 
 	/**
-	 * This function checks if the installed dotnet version is atleast minSupportedNetCoreVersion.
-	 * Versions lower than minSupportedNetCoreVersion aren't supported for building projects.
+	 * This function checks if the installed dotnet version is at least minSupportedNetCoreVersionForBuild.
+	 * Versions lower than minSupportedNetCoreVersionForBuild aren't supported for building projects.
 	 * Returns: True if installed dotnet version is supported, false otherwise.
 	 * 			Undefined if dotnet isn't installed.
 	 */
-	private async isNetCoreVersionSupported(): Promise<boolean | undefined> {
+	private async isNetCoreVersionSupportedForBuild(): Promise<boolean | undefined> {
 		try {
 			const spawn = child_process.spawn;
 			let child: child_process.ChildProcessWithoutNullStreams;
-			let isSupported: boolean | undefined = undefined;
+			let isSupported: boolean = false;
 			const stdoutBuffers: Buffer[] = [];
 
 			child = spawn('dotnet --version', [], {
@@ -149,7 +149,7 @@ export class NetCoreTool extends ShellExecutionHelper {
 					this.netCoreSdkInstalledVersion = Buffer.concat(stdoutBuffers).toString('utf8').trim();
 
 					try {
-						if (semver.gte(this.netCoreSdkInstalledVersion, minSupportedNetCoreVersion)) {		// Net core version greater than or equal to minSupportedNetCoreVersion are supported for Build
+						if (semver.gte(this.netCoreSdkInstalledVersion, minSupportedNetCoreVersionForBuild)) {		// Net core version greater than or equal to minSupportedNetCoreVersion are supported for Build
 							isSupported = true;
 						} else {
 							isSupported = false;
