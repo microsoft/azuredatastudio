@@ -35,6 +35,7 @@ import { isUUID } from 'vs/base/common/uuid';
 import { TextModel } from 'vs/editor/common/model/textModel';
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
 import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
+import { CellOperation, INotebookCellState, NotebookHistory } from 'sql/workbench/services/notebook/browser/models/notebookHistory';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -114,6 +115,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public requestConnectionHandler: (() => Promise<boolean>) | undefined;
 	private _isLoading: boolean = false;
+	public notebookHistory = new NotebookHistory();
 
 	constructor(
 		private _notebookOptions: INotebookModelOptions,
@@ -676,6 +678,12 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._cells.push(cell);
 			index = undefined;
 		}
+		const cellIndex = index ? index : this._cells.length - 1;
+		const action = {
+			undoAction: { op: CellOperation.DELETE, cell: cell },
+			redoAction: { op: CellOperation.CREATE, cell: cell, index: cellIndex }
+		};
+		this.notebookHistory.addCellToUndo(action);
 		// Set newly created cell as active cell
 		this.updateActiveCell(cell);
 		cell.isEditMode = true;
@@ -724,7 +732,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			// Nothing to do
 			return;
 		}
-
+		const moveUp = { op: CellOperation.MOVE, cell: cell, direction: MoveDirection.Up };
+		const moveDown = { op: CellOperation.MOVE, cell: cell, direction: MoveDirection.Down };
 		if (direction === MoveDirection.Down) {
 			this._cells.splice(index, 1);
 			if (index + 1 < this._cells.length) {
@@ -732,9 +741,19 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			} else {
 				this._cells.push(cell);
 			}
+			const action: INotebookCellState = {
+				undoAction: moveUp,
+				redoAction: moveDown
+			};
+			this.notebookHistory.addCellToUndo(action);
 		} else {
+			const action: INotebookCellState = {
+				undoAction: moveDown,
+				redoAction: moveUp
+			};
 			this._cells.splice(index, 1);
 			this._cells.splice(index - 1, 0, cell);
+			this.notebookHistory.addCellToUndo(action);
 		}
 
 		index = this.findCellIndex(cell);
@@ -792,6 +811,15 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 		let index = this._cells.findIndex(cell => cell.equals(cellModel));
 		if (index > -1) {
+			const action: INotebookCellState = {
+				undoAction: {
+					op: CellOperation.CREATE, index: index, cell: cellModel
+				},
+				redoAction: {
+					op: CellOperation.DELETE, cell: cellModel
+				}
+			};
+			this.notebookHistory.addCellToUndo(action);
 			this._cells.splice(index, 1);
 			if (this._activeCell === cellModel) {
 				this.updateActiveCell();
@@ -1491,5 +1519,31 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		};
 
 		this._contentChangedEmitter.fire(changeInfo);
+	}
+
+	public undo(): void {
+		const cell = this.notebookHistory.undo().undoAction;
+		if (cell) {
+			if (cell.op === CellOperation.DELETE) {
+				this.deleteCell(cell.cell);
+			} else if (cell.op === CellOperation.CREATE) {
+				this.insertCell(cell.cell, cell.index);
+			} else if (cell.op === CellOperation.MOVE) {
+				this.moveCell(cell.cell, cell.direction);
+			}
+		}
+	}
+
+	public redo(): void {
+		const cell = this.notebookHistory.redo().redoAction;
+		if (cell) {
+			if (cell.op === CellOperation.DELETE) {
+				this.deleteCell(cell.cell);
+			} else if (cell.op === CellOperation.CREATE) {
+				this.insertCell(cell.cell, cell.index);
+			} else if (cell.op === CellOperation.MOVE) {
+				this.moveCell(cell.cell, cell.direction);
+			}
+		}
 	}
 }

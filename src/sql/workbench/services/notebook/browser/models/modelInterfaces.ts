@@ -439,6 +439,8 @@ export interface INotebookModel {
 
 	requestConnection(): Promise<boolean>;
 
+	undo(): void;
+
 }
 
 export interface NotebookContentChange {
@@ -622,3 +624,5 @@ export enum CellEditModes {
 	'SPLIT',
 	'WYSIWYG'
 }
+
+
