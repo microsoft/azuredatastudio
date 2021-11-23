@@ -8,7 +8,7 @@ import { SqlOpsDataClient, ISqlOpsFeature, SqlOpsFeature } from 'dataprotocol-cl
 import * as Utils from '../utils';
 import { ClientCapabilities, RPCMessageType, ServerCapabilities } from 'vscode-languageclient';
 import * as Contracts from './contracts';
-import { Disposable, SecretStorage, workspace } from 'vscode';
+import { Disposable, SecretStorage } from 'vscode';
 import * as azdata from 'azdata';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 
@@ -30,7 +30,7 @@ export class NativeCredentialService extends SqlOpsFeature<any> {
 				super(context, client);
 				this._secretStorage = context.extensionContext.secrets;
 				this._passwordsMigrated = context.extensionContext.globalState.get(Utils.configPasswordsMigrated);
-				this._useNativeCredentialService = workspace.getConfiguration('workbench').get(Utils.configUseNativeCredentials);
+				this._useNativeCredentialService = Utils.useNativeCredentialsEnabled();
 			}
 
 			override fillClientCapabilities(capabilities: ClientCapabilities): void {

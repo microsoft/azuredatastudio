@@ -383,6 +383,11 @@
           "type": "boolean",
           "description": "%mssql.ignorePlatformWarning%",
           "default": false
+        },
+        "mssql.useNativeCredentials": {
+          "type": "boolean",
+          "description": "%mssql.useNativeCredentials%",
+          "default": true
         }
       }
     },
