@@ -29,8 +29,6 @@ export class NativeCredentialService extends SqlOpsFeature<any> {
 			constructor(client: SqlOpsDataClient) {
 				super(context, client);
 				this._secretStorage = context.extensionContext.secrets;
-				// eslint-disable-next-line @typescript-eslint/no-floating-promises
-				context.extensionContext.globalState.update(Utils.configPasswordsMigrated, false);
 				this._passwordsMigrated = context.extensionContext.globalState.get(Utils.configPasswordsMigrated);
 				this._useNativeCredentialService = Utils.useNativeCredentialsEnabled();
 			}
@@ -61,7 +59,7 @@ export class NativeCredentialService extends SqlOpsFeature<any> {
 				const credential = await this._client.sendRequest(Contracts.ReadCredentialRequest.type, { credentialId, password: undefined });
 				if (credential.password) {
 					const password = credential.password;
-					// save it in keychain
+					// save it in secret store
 					await this._secretStorage.store(credentialId, password);
 					// check if it's saved
 					const savedPassword = await this._secretStorage.get(credentialId);
