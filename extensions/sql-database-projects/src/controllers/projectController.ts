@@ -1377,7 +1377,7 @@ export class ProjectsController {
 		);
 
 		if (!comparisonResult || !comparisonResult.success) {
-			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, 'SchemaComparisonFailed', undefined, utils.getTelemetryErrorType(comparisonResult?.errorMessage))
+			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, 'SchemaComparisonFailed')
 				.withAdditionalProperties({
 					operationId: comparisonResult.operationId
 				}).send();
