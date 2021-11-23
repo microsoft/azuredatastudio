@@ -510,7 +510,7 @@ export class ProjectsController {
 		return files;
 	}
 
-	public async schemaCompareGetDsp(projectFilePath: string): Promise<string> {
+	public async getProjectDatabaseSchemaProvider(projectFilePath: string): Promise<string> {
 		const project = await Project.openProject(projectFilePath);
 		return project.getProjectTargetVersion();
 	}
@@ -521,7 +521,8 @@ export class ProjectsController {
 
 		const projectPath = path.dirname(projectFilePath);
 
-		let fs: mssql.ExtractTarget = mssql.ExtractTarget.flat;
+		let fs: mssql.ExtractTarget;
+
 		switch (folderStructure) {
 			case constants.file:
 				fs = mssql.ExtractTarget.file;
@@ -536,6 +537,7 @@ export class ProjectsController {
 				fs = mssql.ExtractTarget.schema;
 				break;
 			case constants.schemaObjectType:
+			default:
 				fs = mssql.ExtractTarget.schemaObjectType;
 				break;
 		}
@@ -559,11 +561,6 @@ export class ProjectsController {
 		await this.buildProject(project);
 
 		return result;
-	}
-
-	public async schemaCompareShowProjectsView() {
-		const workspaceApi = utils.getDataWorkspaceExtensionApi();
-		workspaceApi.showProjectsView();
 	}
 
 	public async addFolderPrompt(treeNode: dataworkspace.WorkspaceTreeItem): Promise<void> {
@@ -1368,7 +1365,7 @@ export class ProjectsController {
 		const operationId = UUID.generateUuid();
 
 		model.targetEndpointInfo.targetScripts = await this.schemaCompareGetTargetScripts(model.targetEndpointInfo.projectFilePath);
-		model.targetEndpointInfo.dataSchemaProvider = await this.schemaCompareGetDsp(model.targetEndpointInfo.projectFilePath);
+		model.targetEndpointInfo.dataSchemaProvider = await this.getProjectDatabaseSchemaProvider(model.targetEndpointInfo.projectFilePath);
 
 		TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, 'SchemaComparisonStarted');
 
@@ -1407,7 +1404,8 @@ export class ProjectsController {
 				await vscode.window.showErrorMessage(constants.applyError);
 			}
 
-			await this.schemaCompareShowProjectsView();
+			const workspaceApi = utils.getDataWorkspaceExtensionApi();
+			workspaceApi.showProjectsView();
 
 		} else if (model.action === UpdateAction.Compare) {
 			await vscode.commands.executeCommand(constants.schemaCompareStartCommand,

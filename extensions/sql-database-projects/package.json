@@ -162,8 +162,8 @@
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
-        "command": "sqlDatabaseProjects.schemaCompareGetDsp",
-        "title": "%sqlDatabaseProjects.schemaCompareGetDsp%",
+        "command": "sqlDatabaseProjects.getProjectDatabaseSchemaProvider",
+        "title": "%sqlDatabaseProjects.getProjectDatabaseSchemaProvider%",
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {

@@ -340,6 +340,5 @@ export const sqlDatabaseProjectExtensionId: string = 'microsoft.sql-database-pro
 
 // Commands
 export const sqlDatabaseProjectsGetTargetScripts: string = 'sqlDatabaseProjects.schemaCompareGetTargetScripts';
-export const sqlDatabaseProjectsGetDsp: string = 'sqlDatabaseProjects.schemaCompareGetDsp';
+export const sqlDatabaseProjectsGetDsp: string = 'sqlDatabaseProjects.getProjectDatabaseSchemaProvider';
 export const sqlDatabaseProjectsPublishChanges: string = 'sqlDatabaseProjects.schemaComparePublishProjectChanges';
-export const sqlDatabaseProjectsShowProjectsView: string = 'sqlDatabaseProjects.schemaCompareShowProjectsView';

@@ -11,7 +11,7 @@ import * as mssql from '../../mssql';
 import * as loc from './localizedConstants';
 import { SchemaCompareOptionsDialog } from './dialogs/schemaCompareOptionsDialog';
 import { TelemetryReporter, TelemetryViews } from './telemetry';
-import { getTelemetryErrorType, getEndpointName, verifyConnectionAndGetOwnerUri, getRootPath, getSchemaCompareEndpointString } from './utils';
+import { getTelemetryErrorType, getEndpointName, verifyConnectionAndGetOwnerUri, getRootPath, getSchemaCompareEndpointString, getDataWorkspaceExtensionApi } from './utils';
 import { SchemaCompareDialog } from './dialogs/schemaCompareDialog';
 import { isNullOrUndefined } from 'util';
 
@@ -877,7 +877,9 @@ export class SchemaCompareMainWindow {
 					}).send();
 
 				if (this.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Project) {
-					vscode.commands.executeCommand(loc.sqlDatabaseProjectsShowProjectsView);
+					const workspaceApi = getDataWorkspaceExtensionApi();
+					workspaceApi.showProjectsView();
+
 					void vscode.window.showInformationMessage(loc.applySuccess);
 				}
 			}
