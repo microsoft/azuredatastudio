@@ -80,7 +80,7 @@ export class QueryPlan2 {
 			 * Create a show plan graph here.
 			 */
 			this.container.appendChild(document.createElement('hr'));
-			this.container.appendChild(document.createTextNode(localize("qp2.grpah", 'Query {0}: Query Cost (Relative to the batch): {1}%', this.graphIndex, this.graph.root.relativeCost)));
+			this.container.appendChild(document.createTextNode(localize("qp2.grpah", 'Query {0}: Query Cost (Relative to the batch): {1}%', this.graphIndex, converDecimalToPercentage(this.graph.root.subTreeCost))));
 			this.container.appendChild(document.createElement('br'));
 			this.container.appendChild(document.createTextNode(graph.query));
 			this.container.appendChild(document.createElement('br'));
@@ -93,6 +93,11 @@ export class QueryPlan2 {
 	public get graph(): azdata.QueryPlanGraph | undefined {
 		return this._graph;
 	}
+
+}
+
+function converDecimalToPercentage(cost: number): number {
+	return +(cost * 100).toFixed(2);
 }
 
 /**

@@ -1382,7 +1382,7 @@ declare module 'azdata' {
 		/**
 		 * Cost of the node subtree
 		 */
-		subtreeCost: number;
+		subTreeCost: number;
 		/**
 		 * Relative cost of the node compared to its siblings.
 		 */
