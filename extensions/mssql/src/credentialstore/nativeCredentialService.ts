@@ -37,11 +37,15 @@ export class NativeCredentialService extends SqlOpsFeature<any> {
 				Utils.ensure(Utils.ensure(capabilities, 'credentials')!, 'credentials')!.dynamicRegistration = true;
 			}
 
-			override initialize(capabilities: ServerCapabilities): void {
+			override async initialize(capabilities: ServerCapabilities): Promise<void> {
 				this.register(this.messages, {
 					id: UUID.generateUuid(),
 					registerOptions: undefined
 				});
+				if (this._useNativeCredentialService && !this._passwordsMigrated) {
+					const success = await this.migratePasswords();
+					await context.extensionContext.globalState.update(Utils.configPasswordsMigrated, success);
+				}
 			}
 
 			/**
@@ -86,8 +90,7 @@ export class NativeCredentialService extends SqlOpsFeature<any> {
 				return true;
 			}
 
-			private registerNativeCredentialProvider(): Disposable {
-
+			protected override registerProvider(options: any): Disposable {
 				let readCredential = async (credentialId: string): Promise<azdata.Credential> => {
 					if (this._useNativeCredentialService) {
 						const password = await this._secretStorage.get(credentialId);
@@ -124,19 +127,6 @@ export class NativeCredentialService extends SqlOpsFeature<any> {
 					saveCredential,
 					handle: 0
 				});
-			}
-
-			protected override registerProvider(options: any): Disposable {
-				if (this._useNativeCredentialService && !this._passwordsMigrated) {
-					this.migratePasswords().then(async (success) => {
-						if (success) {
-							await context.extensionContext.globalState.update(Utils.configPasswordsMigrated, true);
-						}
-					}).catch((e) => { throw e; });
-					return this.registerNativeCredentialProvider();
-				} else {
-					return this.registerNativeCredentialProvider();
-				}
 			}
 		};
 	}
