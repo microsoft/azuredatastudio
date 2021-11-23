@@ -96,7 +96,7 @@ export class QueryEditor extends EditorPane {
 	private _listDatabasesActionItem: actions.ListDatabasesActionItem;
 	private _toggleSqlcmdMode: actions.ToggleSqlCmdModeAction;
 	private _exportAsNotebookAction: actions.ExportAsNotebookAction;
-	private _resultsToTextAction: actions.ResultsToTextAction;
+	// private _resultsToTextAction: actions.ResultsToTextAction;
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -198,7 +198,7 @@ export class QueryEditor extends EditorPane {
 		this._actualQueryPlanAction = this.instantiationService.createInstance(actions.ActualQueryPlanAction, this);
 		this._toggleSqlcmdMode = this.instantiationService.createInstance(actions.ToggleSqlCmdModeAction, this, false);
 		this._exportAsNotebookAction = this.instantiationService.createInstance(actions.ExportAsNotebookAction, this);
-		this._resultsToTextAction = this.instantiationService.createInstance(actions.ResultsToTextAction, this);
+		//this._resultsToTextAction = this.instantiationService.createInstance(actions.ResultsToTextAction, this);
 		this.setTaskbarContent();
 		this._register(this.configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration('workbench.enablePreviewFeatures')) {
