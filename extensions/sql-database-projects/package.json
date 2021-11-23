@@ -162,6 +162,11 @@
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
+        "command": "sqlDatabaseProjects.schemaCompareGetDsp",
+        "title": "%sqlDatabaseProjects.schemaCompareGetDsp%",
+        "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
         "command": "sqlDatabaseProjects.validateExternalStreamingJob",
         "title": "%sqlDatabaseProjects.validateExternalStreamingJob%",
         "category": "%sqlDatabaseProjects.displayName%"
@@ -264,6 +269,10 @@
         },
         {
           "command": "sqlDatabaseProjects.createProjectFromDatabase"
+        },
+        {
+          "command": "sqlDatabaseProjects.updateProjectFromDatabase",
+          "when": "false"
         },
         {
           "command": "sqlDatabaseProjects.updateProjectFromDatabase",
