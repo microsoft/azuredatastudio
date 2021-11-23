@@ -60,7 +60,7 @@ export class QueryPlan2View implements IPanelView {
 
 	public addGraphs(newGraphs: azdata.QueryPlanGraph[]) {
 		newGraphs.forEach(g => {
-			const qp2 = new QueryPlan2(this.container);
+			const qp2 = new QueryPlan2(this.container, this.qps.length + 1);
 			qp2.graph = g;
 			this.qps.push(qp2);
 			this.graphs.push(g);
@@ -70,7 +70,7 @@ export class QueryPlan2View implements IPanelView {
 
 export class QueryPlan2 {
 	private _graph?: azdata.QueryPlanGraph;
-	constructor(private container: HTMLElement) {
+	constructor(private container: HTMLElement, private graphIndex: number) {
 	}
 
 	public set graph(graph: azdata.QueryPlanGraph | undefined) {
@@ -79,20 +79,24 @@ export class QueryPlan2 {
 			/**
 			 * Create a show plan graph here.
 			 */
+			this.container.appendChild(document.createElement('hr'));
+			this.container.appendChild(document.createTextNode(localize("qp2.grpah", 'Query {0}: Query Cost (Relative to the batch): {1}%', this.graphIndex, this.graph.root.relativeCost)));
+			this.container.appendChild(document.createElement('br'));
 			this.container.appendChild(document.createTextNode(graph.query));
 			this.container.appendChild(document.createElement('br'));
+			this.container.appendChild(document.createElement('hr'));
 			this.container.appendChild(document.createTextNode('Need to add graph control here'));
 			this.container.appendChild(document.createElement('br'));
 		}
 	}
 
 	public get graph(): azdata.QueryPlanGraph | undefined {
-		return this.graph;
+		return this._graph;
 	}
 }
 
 /**
- * Registering a feature flag for query plan. This should be removed after the public preview.
+ * Registering a feature flag for query plan. This should be removed before taking the feature to public preview.
  */
 const QUERYPLAN2_CONFIG_ID = 'queryPlan2';
 
