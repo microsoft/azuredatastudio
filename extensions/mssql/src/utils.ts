@@ -390,7 +390,7 @@ function getConfigUseNativeCredentials(): boolean {
 export function useNativeCredentialsEnabled(): boolean {
 	const linux: boolean = isLinux();
 	const useNativeCredentials: boolean = getConfigUseNativeCredentials();
-	return useNativeCredentials; // linux &&
+	return linux && useNativeCredentials;
 }
 
 /**

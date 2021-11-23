@@ -387,7 +387,7 @@
         "mssql.useNativeCredentials": {
           "type": "boolean",
           "description": "%mssql.useNativeCredentials%",
-          "default": true
+          "default": false
         }
       }
     },
