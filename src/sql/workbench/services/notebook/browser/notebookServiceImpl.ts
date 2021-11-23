@@ -134,6 +134,31 @@ export class ExecuteProviderDescriptor {
 	}
 }
 
+export class StandardKernelsDescriptor {
+	private _instanceReady = new Deferred<nb.IStandardKernel[]>();
+	constructor(private readonly _providerId: string, private _instance?: nb.IStandardKernel[]) {
+		if (_instance) {
+			this._instanceReady.resolve(_instance);
+		}
+	}
+
+	public get providerId(): string {
+		return this._providerId;
+	}
+
+	public get instanceReady(): Promise<nb.IStandardKernel[]> {
+		return this._instanceReady.promise;
+	}
+
+	public get instance(): nb.IStandardKernel[] | undefined {
+		return this._instance;
+	}
+	public set instance(value: nb.IStandardKernel[]) {
+		this._instance = value;
+		this._instanceReady.resolve(value);
+	}
+}
+
 export const NotebookUriNotDefined = localize('notebookUriNotDefined', "No URI was passed when creating a notebook manager");
 export const NotebookServiceNoProviderRegistered = localize('notebookServiceNoProvider', "Notebook provider does not exist");
 export const FailToSaveTrustState = 'Failed to save trust state to cache';
@@ -154,7 +179,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	private _onNotebookEditorRename = new Emitter<INotebookEditor>();
 	private _editors = new Map<string, INotebookEditor>();
 	private _fileToProviderDescriptions = new Map<string, ProviderDescriptionRegistration[]>();
-	private _providerToStandardKernels = new Map<string, nb.IStandardKernel[]>();
+	private _providerToStandardKernels = new Map<string, StandardKernelsDescriptor>();
 	private _registrationComplete = new Deferred<void>();
 	private _isRegistrationComplete = false;
 	private _trustedCacheQueue: URI[] = [];
@@ -310,13 +335,14 @@ export class NotebookService extends Disposable implements INotebookService {
 		let sqlNotebookKernels = this._providerToStandardKernels.get(notebookConstants.SQL);
 		if (sqlNotebookKernels) {
 			let sqlConnectionTypes = this._queryManagementService.getRegisteredProviders();
-			let kernel = sqlNotebookKernels.find(p => p.name === notebookConstants.SQL);
+			let kernel = sqlNotebookKernels.instance.find(p => p.name === notebookConstants.SQL);
 			if (kernel) {
-				this._providerToStandardKernels.set(notebookConstants.SQL, [{
+				let descriptor = new StandardKernelsDescriptor(notebookConstants.SQL, [{
 					name: notebookConstants.SQL,
 					displayName: notebookConstants.SQL,
 					connectionProviderIds: sqlConnectionTypes
 				}]);
+				this._providerToStandardKernels.set(notebookConstants.SQL, descriptor);
 			}
 		}
 		this._isRegistrationComplete = true;
@@ -344,6 +370,10 @@ export class NotebookService extends Disposable implements INotebookService {
 				this._executeProviders.set(p.id, new ExecuteProviderDescriptor(p.id));
 			}
 			this.addStandardKernels(registration);
+		} else {
+			// Standard kernels might get registered later for VSCode notebooks, so add a descriptor to wait on
+			let descriptor = new StandardKernelsDescriptor(p.id);
+			this._providerToStandardKernels.set(p.id.toUpperCase(), descriptor);
 		}
 	}
 
@@ -411,7 +441,11 @@ export class NotebookService extends Disposable implements INotebookService {
 	// kernels to the dropdown
 	private addStandardKernels(provider: ProviderDescriptionRegistration) {
 		let providerUpperCase = provider.provider.toUpperCase();
-		let standardKernels = this._providerToStandardKernels.get(providerUpperCase);
+		let descriptor = this._providerToStandardKernels.get(providerUpperCase);
+		if (!descriptor) {
+			descriptor = new StandardKernelsDescriptor(provider.provider);
+		}
+		let standardKernels = descriptor.instance;
 		if (!standardKernels) {
 			standardKernels = [];
 		}
@@ -423,7 +457,8 @@ export class NotebookService extends Disposable implements INotebookService {
 		if (this.productService.quality === 'saw') {
 			standardKernels = standardKernels.filter(kernel => !kernel.blockedOnSAW);
 		}
-		this._providerToStandardKernels.set(providerUpperCase, standardKernels);
+		descriptor.instance = standardKernels;
+		this._providerToStandardKernels.set(providerUpperCase, descriptor);
 	}
 
 	getSupportedFileExtensions(): string[] {
@@ -435,8 +470,18 @@ export class NotebookService extends Disposable implements INotebookService {
 		return providers?.map(provider => provider.provider);
 	}
 
-	getStandardKernelsForProvider(provider: string): nb.IStandardKernel[] | undefined {
-		return this._providerToStandardKernels.get(provider.toUpperCase());
+	public async getStandardKernelsForProvider(provider: string): Promise<nb.IStandardKernel[] | undefined> {
+		let descriptor = this._providerToStandardKernels.get(provider.toUpperCase());
+		if (descriptor) {
+			// Wait up to 10 seconds for kernels to be registered
+			const timeout = 10000;
+			let promises: Promise<nb.IStandardKernel[]>[] = [
+				descriptor.instanceReady,
+				new Promise<nb.IStandardKernel[]>((resolve) => setTimeout(() => resolve(undefined), timeout))
+			];
+			return Promise.race(promises);
+		}
+		return undefined;
 	}
 
 	private shutdown(): void {

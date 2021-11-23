@@ -41,13 +41,13 @@ suite('notebookUtils', function (): void {
 
 		// getStandardKernelsForProvider
 		let returnHandler = (provider) => {
+			let result = undefined;
 			if (provider === testProvider) {
-				return [testKernel];
+				result = [testKernel];
 			} else if (provider === SQL_NOTEBOOK_PROVIDER) {
-				return [sqlStandardKernel];
-			} else {
-				return undefined;
+				result = [sqlStandardKernel];
 			}
+			return Promise.resolve(result);
 		};
 		mockNotebookService.setup(n => n.getStandardKernelsForProvider(TypeMoq.It.isAnyString())).returns(returnHandler);
 		mockNotebookService.setup(n => n.getStandardKernelsForProvider(TypeMoq.It.isAnyString())).returns(returnHandler);
