@@ -275,7 +275,7 @@
           "when": "false"
         },
         {
-          "command": "sqlDatabaseProjects.updateProjectFromDatabase",
+          "command": "sqlDatabaseProjects.schemaCompareGetDsp",
           "when": "false"
         },
         {

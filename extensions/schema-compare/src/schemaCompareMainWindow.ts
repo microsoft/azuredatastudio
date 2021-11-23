@@ -847,7 +847,7 @@ export class SchemaCompareMainWindow {
 					case mssql.SchemaCompareEndpointType.Project: // Project apply needs sql-database-projects updates in (circular dependency; coming next)
 						result = await vscode.commands.executeCommand(loc.sqlDatabaseProjectsPublishChanges, this.comparisonResult.operationId, this.targetEndpointInfo.projectFilePath, this.targetEndpointInfo.folderStructure);
 						if (!result.success) {
-							await vscode.window.showErrorMessage(loc.applyError);
+							void vscode.window.showErrorMessage(loc.applyError);
 						}
 						break;
 					case mssql.SchemaCompareEndpointType.Dacpac: // Dacpac is an invalid publish target
@@ -878,7 +878,7 @@ export class SchemaCompareMainWindow {
 
 				if (this.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Project) {
 					vscode.commands.executeCommand(loc.sqlDatabaseProjectsShowProjectsView);
-					await vscode.window.showInformationMessage(loc.applySuccess);
+					void vscode.window.showInformationMessage(loc.applySuccess);
 				}
 			}
 		});

@@ -52,7 +52,7 @@ describe('Update Project From Database Dialog', () => {
 		should.equal(dialog.dialog.okButton.enabled, false, 'Okay button should be disabled.');
 	});
 
-	it.only('Should populate endpoints correctly when context is complete', async function (): Promise<void> {
+	it('Should populate endpoints correctly when context is complete', async function (): Promise<void> {
 		const project = await testUtils.createTestProject(baselines.openProjectFileBaseline);
 		sinon.stub(azdata.connection, 'getConnections').resolves([<azdata.connection.ConnectionProfile><unknown>mockConnectionProfile]);
 		sinon.stub(azdata.connection, 'listDatabases').resolves([mockConnectionProfile.databaseName!]);
