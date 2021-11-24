@@ -550,6 +550,54 @@ suite('notebook model', function (): void {
 		assert(isUndefinedOrNull(notebookContentChange), 'There still should be no content change after an error is recorded');
 	});
 
+	test('Should undo/redo changes after deleting cell', async function (): Promise<void> {
+		// Given a notebook with 2 cells
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
+		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
+		defaultModelOptions.contentLoader = mockContentManager.object;
+
+		// When I initalize the model
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
+		await model.loadContents();
+
+		// Then I expect all cells to be in the model
+		assert.strictEqual(model.cells.length, 2, 'Cell count in model is incorrect');
+		model.addToUndoStack = true;
+		// Delete the first cell
+		model.deleteCell(model.cells[0]);
+		assert.strictEqual(model.cells.length, 1, 'Cell model length should be 1 after cell deletion');
+		model.undo();
+		assert.strictEqual(model.cells.length, 2, 'Cell model length should be 2 after undo');
+		assert.deepStrictEqual(model.cells[0].source, expectedNotebookContent.cells[0].source, 'Expected cell source is incorrect');
+		model.redo();
+		assert.strictEqual(model.cells.length, 1, 'Cell model length should be 1 after redo');
+		assert.strictEqual(model.findCellIndex(model.cells[0]), 0, 'findCellIndex returned wrong cell info for only remaining cell');
+	});
+
+	test('Should undo/redo changes after moving cell', async function (): Promise<void> {
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
+		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
+		defaultModelOptions.contentLoader = mockContentManager.object;
+
+		// When I initialize the model
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService);
+		await model.loadContents();
+
+		let firstCell = model.cells[0];
+		let secondCell = model.cells[1];
+		model.addToUndoStack = true;
+		// Move Second Cell up
+		model.moveCell(secondCell, 0);
+		assert.strictEqual(model.cells.indexOf(firstCell), 1, 'First Cell did not move down correctly');
+		assert.strictEqual(model.cells.indexOf(secondCell), 0, 'Second Cell did not move up correctly');
+		model.undo();
+		assert.strictEqual(model.cells.indexOf(firstCell), 0, 'Failed to undo first cell to its original position');
+		assert.strictEqual(model.cells.indexOf(secondCell), 1, 'Failed to undo second Cell to its orignal position');
+		model.redo();
+		assert.strictEqual(model.cells.indexOf(firstCell), 1, 'Failed to redo');
+		assert.strictEqual(model.cells.indexOf(secondCell), 0, 'Failed to redo');
+	});
+
 	test('Should notify cell on metadata change', async function (): Promise<void> {
 		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
