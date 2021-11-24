@@ -439,8 +439,6 @@ export interface INotebookModel {
 
 	requestConnection(): Promise<boolean>;
 
-	undo(): void;
-
 }
 
 export interface NotebookContentChange {

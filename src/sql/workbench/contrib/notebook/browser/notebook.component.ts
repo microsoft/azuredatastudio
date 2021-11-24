@@ -123,7 +123,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	@HostListener('document:keydown', ['$event'])
 	onkeydown(e: KeyboardEvent) {
 		// Check that there are no active elements to prevent the execution of undo/redo commands in other elements.
-		// We need to make sure that there are no active cells and checkto prevent triggering undo/redo within code cells and check text cells are not in edit mode.
+		// We need to make sure that there are no active cells to prevent triggering undo/redo within code cells and check that text cells are not in edit mode.
 		if (!this.areElementsActive() && (this.activeCellId === '' || !this.cellToolbar.first.getEditCellAction().editMode)) {
 			if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'z') {
 				e.stopImmediatePropagation();
