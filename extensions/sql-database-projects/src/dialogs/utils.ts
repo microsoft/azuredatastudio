@@ -24,3 +24,12 @@ export function getConnectionName(connection: any): string {
 
 	return connectionName;
 }
+
+
+export function getDockerBaseImages(): string[] {
+	return [
+		`${constants.sqlServerDockerRegistry}/${constants.sqlServerDockerRepository}:2017-latest`,
+		`${constants.sqlServerDockerRegistry}/${constants.sqlServerDockerRepository}:2019-latest`,
+		`${constants.sqlServerDockerRegistry}/${constants.azureSqlEdgeDockerRepository}:latest`
+	];
+}

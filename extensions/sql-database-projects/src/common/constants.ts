@@ -133,6 +133,11 @@ export const selectPublishOption = localize('selectPublishOption', "Select where
 export const publishToExistingServer = localize('publishToExistingServer', "Publish to existing server");
 export const publishToDockerContainer = localize('publishToDockerContainer', "Publish to new server in a container");
 export const enterPortNumber = localize('enterPortNumber', "Enter SQL server port number or press enter to use the default value");
+export const serverPortNumber = localize('serverPortNumber', "SQL server port number");
+export const serverPassword = localize('serverPassword', "SQL Server admin password");
+export const confirmServerPassword = localize('confirmServerPassword', "Confirm SQL Server admin password");
+export const baseDockerImage = localize('baseDockerImage', "Base SQL Server Docker image");
+export const publishTo = localize('publishTo', "Publish Target");
 export const enterConnectionStringEnvName = localize('enterConnectionStringEnvName', "Enter connection string environment variable name");
 export const enterConnectionStringTemplate = localize('enterConnectionStringTemplate', "Enter connection string template");
 export const enterPassword = localize('enterPassword', "Enter SQL Server admin password");
@@ -153,6 +158,8 @@ export const mssqlFolderName = '.mssql';
 export const dockerFileName = 'Dockerfile';
 export const startCommandName = 'start.sh';
 export const defaultPortNumber = '1433';
+export const defaultLocalServerName = 'localhost';
+export const defaultLocalServerAdminName = 'sa';
 export const defaultConnectionStringEnvVarName = 'SQLConnectionString';
 export const defaultConnectionStringTemplate = 'Data Source=@@SERVER@@,@@PORT@@;Initial Catalog=@@DATABASE@@;User id=@@USER@@;Password=@@SA_PASSWORD@@;';
 export const azureFunctionLocalSettingsFileName = 'local.settings.json';
@@ -314,14 +321,12 @@ export const postDeployScriptFriendlyName = localize('postDeployScriptFriendlyNa
 
 export const NetCoreInstallationConfirmation: string = localize('sqlDatabaseProjects.NetCoreInstallationConfirmation', "The .NET Core SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK location in settings if already installed.");
 export function NetCoreSupportedVersionInstallationConfirmation(installedVersion: string) { return localize('sqlDatabaseProjects.NetCoreSupportedVersionInstallationConfirmation', "Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK supported version location in settings if already installed.", installedVersion); }
-export function NetCoreVersionDowngradeConfirmation(installedVersion: string) { return localize('sqlDatabaseProjects.NetCoreVersionDowngradeConfirmation', "Installed .NET SDK version {0} is newer than the currently supported versions. Project build will not work. Please install .NET Core SDK version 3.1 and include a global.json in the project folder specifying the SDK version to use. [More Information](https://docs.microsoft.com/dotnet/core/versions/selection)", installedVersion); }
 export const UpdateNetCoreLocation: string = localize('sqlDatabaseProjects.UpdateNetCoreLocation', "Update Location");
 export const projectsOutputChannel = localize('sqlDatabaseProjects.outputChannel', "Database Projects");
 
 // Prompt buttons
 export const Install: string = localize('sqlDatabaseProjects.Install', "Install");
 export const DoNotAskAgain: string = localize('sqlDatabaseProjects.doNotAskAgain', "Don't Ask Again");
-export const DoNotShowAgain: string = localize('sqlDatabaseProjects.doNotShowAgain', "Don't Show Again");
 
 // SqlProj file XML names
 export const ItemGroup = 'ItemGroup';
