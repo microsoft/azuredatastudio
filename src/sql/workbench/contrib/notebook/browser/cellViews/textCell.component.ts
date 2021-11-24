@@ -104,16 +104,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				highlightSelectedText();
 			}
 		}
-		else if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
-			e.stopImmediatePropagation();
-			e.preventDefault();
-			this._model.undo();
-		}
-		else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'z') {
-			e.stopImmediatePropagation();
-			e.preventDefault();
-			this._model.redo();
-		}
 	}
 
 	private _content: string | string[];

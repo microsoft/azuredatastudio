@@ -10,24 +10,24 @@ export class NotebookHistory implements INotebookHistory {
 	private _undoCells: INotebookCellState[] = [];
 	private _redoCells: INotebookCellState[] = [];
 
-	public undo(): INotebookCellState | undefined {
+	public undo(): INotebookChange | undefined {
 		if (this._undoCells.length > 0) {
 			const cell = this._undoCells.pop();
 			if (cell) {
 				this._redoCells.push(cell);
 			}
-			return cell;
+			return cell.action;
 		}
 		return undefined;
 	}
 
-	public redo(): INotebookCellState | undefined {
+	public redo(): INotebookChange | undefined {
 		if (this._redoCells.length > 0) {
 			const cell = this._redoCells.pop();
 			if (cell) {
 				this._undoCells.push(cell);
 			}
-			return cell;
+			return cell.revert;
 		}
 		return undefined;
 	}
@@ -48,8 +48,8 @@ export class NotebookHistory implements INotebookHistory {
 }
 
 export interface INotebookCellState {
-	undoAction: INotebookChange,
-	redoAction: INotebookChange
+	action: INotebookChange,
+	revert: INotebookChange
 }
 
 export interface INotebookChange {
@@ -66,6 +66,6 @@ export enum CellOperation {
 }
 
 interface INotebookHistory {
-	undo(): INotebookCellState | undefined;
-	redo(): INotebookCellState | undefined;
+	undo(): void;
+	redo(): void;
 }

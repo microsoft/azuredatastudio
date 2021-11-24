@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { nb } from 'azdata';
-import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnDestroy, ViewChildren, QueryList, Input } from '@angular/core';
+import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnDestroy, ViewChildren, QueryList, Input, HostListener } from '@angular/core';
 
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
@@ -120,6 +120,23 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		}));
 	}
 
+	@HostListener('document:keydown', ['$event'])
+	onkeydown(e: KeyboardEvent) {
+		// Check that there are no active elements to prevent the execution of undo/redo commands in other elements.
+		// We need to make sure that there are no active cells and checkto prevent triggering undo/redo within code cells and check text cells are not in edit mode.
+		if (!this.areElementsActive() && (this.activeCellId === '' || !this.cellToolbar.first.getEditCellAction().editMode)) {
+			if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'z') {
+				e.stopImmediatePropagation();
+				e.preventDefault();
+				this._model.redo();
+			} else if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+				e.stopImmediatePropagation();
+				e.preventDefault();
+				this._model.undo();
+			}
+		}
+	}
+
 	ngOnInit() {
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
@@ -212,6 +229,12 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private updateTheme(theme: IColorTheme): void {
 		let toolbarEl = <HTMLElement>this.toolbar.nativeElement;
 		toolbarEl.style.borderBottomColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
+	}
+
+	private areElementsActive(): boolean {
+		let activeElement = DOM.getActiveElement();
+		return activeElement !== null &&
+			activeElement !== document.body;
 	}
 
 	public selectCell(cell: ICellModel, event?: Event) {

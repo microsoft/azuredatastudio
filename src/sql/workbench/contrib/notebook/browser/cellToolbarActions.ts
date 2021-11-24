@@ -104,6 +104,7 @@ export class MoveCellAction extends CellActionBase {
 	doRun(context: CellContext): Promise<void> {
 		let moveDirection = this._cssClass.includes('move-down') ? MoveDirection.Down : MoveDirection.Up;
 		try {
+			context.model.addToUndoStack = true;
 			context.model.moveCell(context.cell, moveDirection);
 		} catch (error) {
 			let message = getErrorMessage(error);
@@ -132,6 +133,7 @@ export class DeleteCellAction extends CellActionBase {
 
 	doRun(context: CellContext): Promise<void> {
 		try {
+			context.model.addToUndoStack = true;
 			context.model.deleteCell(context.cell);
 		} catch (error) {
 			let message = getErrorMessage(error);
