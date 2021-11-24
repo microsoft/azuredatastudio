@@ -622,5 +622,3 @@ export enum CellEditModes {
 	'SPLIT',
 	'WYSIWYG'
 }
-
-
