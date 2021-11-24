@@ -26,8 +26,6 @@ export class CosmosDbMongoTreeDataProvider extends ResourceTreeDataProviderBase<
 	}
 
 	protected getTreeItemForResource(databaseServer: azureResource.AzureResourceDatabaseServer, account: azdata.Account): azdata.TreeItem {
-		console.log(`getTreeItemForResource ${databaseServer.name}`);
-
 		return {
 			id: `Cosmosdb_${databaseServer.id ? databaseServer.id : databaseServer.name}`,
 			label: `${databaseServer.name} (CosmosDB Mongo API)`,
@@ -61,7 +59,6 @@ export class CosmosDbMongoTreeDataProvider extends ResourceTreeDataProviderBase<
 	}
 
 	protected createContainerNode(): azureResource.IAzureResourceNode {
-		console.log(`createContainerNode`);
 		return {
 			account: undefined,
 			subscription: undefined,
