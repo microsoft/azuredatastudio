@@ -13,6 +13,7 @@ import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import { getLocationDisplayName, getSqlMigrationService, getSqlMigrationServiceAuthKeys, getSqlMigrationServiceMonitoringData, SqlManagedInstance } from '../api/azure';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { findDropDownItemIndex } from '../api/utils';
+import { logError, TelemetryViews } from '../telemtery';
 
 export class IntergrationRuntimePage extends MigrationWizardPage {
 
@@ -460,7 +461,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		try {
 			await this.loadStatus();
 		} catch (error) {
-			console.log(error);
+			logError(TelemetryViews.MigrationWizardIntegrationRuntimePage, error);
 		} finally {
 			this._statusLoadingComponent.loading = false;
 		}

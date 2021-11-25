@@ -18,7 +18,9 @@ export enum TelemetryViews {
 	MigrationStatusDialog = 'MigrationStatusDialog',
 	MigrationWizardAccountSelectionPage = 'MigrationWizardAccountSelectionPage',
 	MigrationWizardTargetSelectionPage = 'MigrationWizardTargetSelectionPage',
+	MigrationWizardIntegrationRuntimePage = 'MigrationWizardIntegrationRuntimePage',
 	MigrationWizardSummaryPage = 'MigrationWizardSummaryPage',
+	MigrationWizardController = 'MigrationWizardController',
 	StartMigrationService = 'StartMigrationSerivce',
 	SqlMigrationWizard = 'SqlMigrationWizard',
 	MigrationLocalStorage = 'MigrationLocalStorage'
