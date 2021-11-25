@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
 import { azureResource } from 'azureResource';
+import { logError, TelemetryViews } from '../telemtery';
 import { DatabaseMigration, SqlMigrationService, SqlManagedInstance, getMigrationStatus, AzureAsyncOperationResource, getMigrationAsyncOperationDetails, SqlVMServer, getSubscriptions } from '../api/azure';
 import * as azdata from 'azdata';
 
@@ -51,7 +52,7 @@ export class MigrationLocalStorage {
 							case 'NullMigrationId':
 								continue;
 							default:
-								console.log(e);
+								logError(TelemetryViews.MigrationLocalStorage, e);
 						}
 					}
 				}

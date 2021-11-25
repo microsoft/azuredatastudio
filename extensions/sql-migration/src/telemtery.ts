@@ -20,7 +20,8 @@ export enum TelemetryViews {
 	MigrationWizardTargetSelectionPage = 'MigrationWizardTargetSelectionPage',
 	MigrationWizardSummaryPage = 'MigrationWizardSummaryPage',
 	StartMigrationService = 'StartMigrationSerivce',
-	SqlMigrationWizard = 'SqlMigrationWizard'
+	SqlMigrationWizard = 'SqlMigrationWizard',
+	MigrationLocalStorage = 'MigrationLocalStorage'
 }
 
 export enum TelemetryAction {
@@ -39,6 +40,10 @@ export enum TelemetryAction {
 	Next = 'next',
 	Done = 'done',
 	Cancel = 'cancel',
+}
+
+export function logError(telemetryView: TelemetryViews, err: any): void {
+	TelemetryReporter.sendErrorEvent(telemetryView, err);
 }
 
 export function sendSqlMigrationActionEvent(telemetryView: TelemetryViews, telemetryAction: TelemetryAction, additionalProps: TelemetryEventProperties, additionalMeasurements: TelemetryEventMeasures): void {

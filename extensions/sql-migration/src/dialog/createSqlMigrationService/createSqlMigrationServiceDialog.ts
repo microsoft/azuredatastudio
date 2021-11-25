@@ -7,6 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { createSqlMigrationService, getSqlMigrationService, getSqlMigrationServiceAuthKeys, getSqlMigrationServiceMonitoringData, SqlMigrationService } from '../../api/azure';
 import { MigrationStateModel, NetworkContainerType } from '../../models/stateMachine';
+import { logError, TelemetryViews } from '../../telemtery';
 import * as constants from '../../constants/strings';
 import * as os from 'os';
 import { azureResource } from 'azureResource';
@@ -116,7 +117,7 @@ export class CreateSqlMigrationServiceDialog {
 						this._statusLoadingComponent.loading = false;
 					}
 				} catch (e) {
-					console.log(e);
+					logError(TelemetryViews.CreateDataMigrationServiceDialog, e);
 					this.setDialogMessage(e.message);
 					this._statusLoadingComponent.loading = false;
 					this.setFormEnabledState(true);
