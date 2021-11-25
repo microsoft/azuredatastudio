@@ -102,7 +102,7 @@ export class MigrationLocalStorage {
 			});
 			await this.context.globalState.update(this.mementoToken, migrationMementos);
 		} catch (e) {
-			console.log(e);
+			logError(TelemetryViews.MigrationLocalStorage, e);
 		}
 	}
 

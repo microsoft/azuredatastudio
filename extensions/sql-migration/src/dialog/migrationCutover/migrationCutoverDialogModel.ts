@@ -5,7 +5,7 @@
 
 import { getMigrationStatus, DatabaseMigration, startMigrationCutover, stopMigration, getMigrationAsyncOperationDetails, AzureAsyncOperationResource, BackupFileInfo, getResourceGroupFromId } from '../../api/azure';
 import { BackupFileInfoStatus, MigrationContext } from '../../models/migrationLocalStorage';
-import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../../telemtery';
+import { logError, sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../../telemtery';
 import * as constants from '../../constants/strings';
 import { EOL } from 'os';
 import { getMigrationTargetType, getMigrationMode } from '../../constants/helper';
@@ -71,7 +71,7 @@ export class MigrationCutoverDialogModel {
 			}
 		} catch (error) {
 			this.CutoverError = error;
-			console.log(error);
+			logError(TelemetryViews.MigrationCutoverDialog, error);
 		}
 		return undefined!;
 	}
