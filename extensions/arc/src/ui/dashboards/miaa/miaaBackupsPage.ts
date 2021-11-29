@@ -169,7 +169,7 @@ export class MiaaBackupsPage extends DashboardPage {
 				this._connectToServerButton!.enabled = false;
 				this._databasesTableLoading!.loading = true;
 				try {
-					await this._miaaModel.callGetDatabases();
+					await this._miaaModel.callGetDatabases(true);
 				} catch {
 					this._connectToServerButton!.enabled = true;
 				}

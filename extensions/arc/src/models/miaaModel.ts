@@ -137,9 +137,9 @@ export class MiaaModel extends ResourceModel {
 		}
 	}
 
-	public async callGetDatabases(): Promise<void> {
+	public async callGetDatabases(isBackupPage: boolean = false): Promise<void> {
 		try {
-			await this.getDatabases();
+			await this.getDatabases(isBackupPage);
 		} catch (error) {
 			if (error instanceof UserCancelledError) {
 				vscode.window.showWarningMessage(loc.miaaConnectionRequired);
@@ -155,7 +155,7 @@ export class MiaaModel extends ResourceModel {
 	 * information, this could be used as an upper and lower time limit for restoring
 	 * backup.
 	 */
-	public async getDatabases(promptForConnection: boolean = true): Promise<void> {
+	public async getDatabases(promptForConnection: boolean = true, isBackupPage: boolean = false): Promise<void> {
 		if (!this._connectionProfile) {
 			await this.getConnectionProfile(promptForConnection);
 		}
@@ -176,19 +176,26 @@ export class MiaaModel extends ResourceModel {
 			throw new Error('Could not fetch databases');
 		}
 		else {
-			if (databases.length > 0 && typeof (databases[0]) === 'object') {
-				for (let i in databases) {
-					const di: azdata.DatabaseInfo = <azdata.DatabaseInfo>databases[i];
-					const name = di.options['name'];
-					await this.executeDryRun(di.options['name']);
-					const dm: DatabaseModel = {
-						name: name, status: di.options['state'], earliestBackup: this._databaseTimeWindow.get(name)?.[0] ?? '',
-						lastBackup: this._databaseTimeWindow.get(name)?.[1] ?? ''
-					};
-					this._databases[i] = dm;
+			if (isBackupPage) {
+				if (databases.length > 0 && typeof (databases[0]) === 'object') {
+					if (isBackupPage) {
+						for (let i in databases) {
+							const di: azdata.DatabaseInfo = <azdata.DatabaseInfo>databases[i];
+							const name = di.options['name'];
+							await this.executeDryRun(di.options['name']);
+							const dm: DatabaseModel = {
+								name: name, status: di.options['state'], earliestBackup: this._databaseTimeWindow.get(name)?.[0] ?? '',
+								lastBackup: this._databaseTimeWindow.get(name)?.[1] ?? ''
+							};
+							this._databases[i] = dm;
+						}
+					}
+					else {
+						this._databases = (<azdata.DatabaseInfo[]>databases).map(db => { return { name: db.options['name'], status: db.options['state'], earliestBackup: '', lastBackup: '' }; });
+					}
+				} else {
+					this._databases = (<string[]>databases).map(db => { return { name: db, status: '-', earliestBackup: '', lastBackup: '' }; });
 				}
-			} else {
-				this._databases = (<string[]>databases).map(db => { return { name: db, status: '-', earliestBackup: '', lastBackup: '' }; });
 			}
 		}
 		this.databasesLastUpdated = new Date();
