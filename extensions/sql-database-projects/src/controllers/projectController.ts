@@ -473,7 +473,6 @@ export class ProjectsController {
 				} catch (e) {
 					throw new Error(constants.buildFailedCannotStartSchemaCompare);
 				}
-
 			} else {
 				throw new Error(constants.schemaCompareNotInstalled);
 			}
@@ -502,7 +501,7 @@ export class ProjectsController {
 
 		fileEntries.forEach(f => {
 
-			if (f.fsUri.fsPath.endsWith('.sql')) {
+			if (f.fsUri.fsPath.endsWith(constants.sqlFileExtension)) {
 				files.push(f.fsUri.fsPath);
 			}
 		});
@@ -1321,6 +1320,9 @@ export class ProjectsController {
 		// TODO: Check for success; throw error
 	}
 
+	/**
+	 * Display dialog for user to configure existing SQL Project with the changes/differences from a database
+	 */
 	public async updateProjectFromDatabase(context: azdataType.IConnectionProfile | mssqlVscode.ITreeNodeInfo | dataworkspace.WorkspaceTreeItem): Promise<UpdateProjectFromDatabaseDialog> {
 		let connection: azdataType.IConnectionProfile | mssqlVscode.IConnectionInfo | undefined;
 		let project: Project | undefined;
@@ -1354,10 +1356,13 @@ export class ProjectsController {
 		try {
 			await this.updateProjectFromDatabaseApiCall(model);
 		} catch (err) {
-			await vscode.window.showErrorMessage(utils.getErrorMessage(err));
+			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
 		}
 	}
 
+	/**
+	 * Uses the DacFx service to update an existing SQL Project with the changes/differences from a database
+	 */
 	public async updateProjectFromDatabaseApiCall(model: UpdateDataModel): Promise<void> {
 		let ext = vscode.extensions.getExtension(mssql.extension.name)!;
 		const service = (await ext.activate() as mssql.IExtension).schemaCompare;
@@ -1389,7 +1394,7 @@ export class ProjectsController {
 			}).send();
 
 		if (comparisonResult.areEqual) {
-			await vscode.window.showInformationMessage(constants.equalComparison);
+			void vscode.window.showInformationMessage(constants.equalComparison);
 			return;
 		}
 
@@ -1399,9 +1404,9 @@ export class ProjectsController {
 			);
 
 			if (publishResult.success) {
-				await vscode.window.showInformationMessage(constants.applySuccess);
+				void vscode.window.showInformationMessage(constants.applySuccess);
 			} else {
-				await vscode.window.showErrorMessage(constants.applyError);
+				void vscode.window.showErrorMessage(constants.applyError(publishResult.errorMessage));
 			}
 
 			const workspaceApi = utils.getDataWorkspaceExtensionApi();

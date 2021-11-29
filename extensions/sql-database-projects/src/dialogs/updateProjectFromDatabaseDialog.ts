@@ -65,7 +65,7 @@ export class UpdateProjectFromDatabaseDialog {
 
 		this.initializeDialog();
 
-		this.dialog.okButton.label = constants.updateProjectDialogOkButtonText;
+		this.dialog.okButton.label = constants.updateText;
 		this.dialog.okButton.enabled = false;
 		this.toDispose.push(this.dialog.okButton.onClick(async () => await this.handleUpdateButtonClick()));
 

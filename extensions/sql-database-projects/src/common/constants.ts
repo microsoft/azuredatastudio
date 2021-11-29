@@ -244,7 +244,7 @@ export const ProjectDirectoryAlreadyExistError = (projectName: string, location:
 // Update Project From Database dialog strings
 
 export const updateProjectFromDatabaseDialogName = localize('updateProjectFromDatabaseDialogName', "Update project from database");
-export const updateProjectDialogOkButtonText = localize('updateProjectDialogOkButtonText', "Update");
+export const updateText = localize('updateText', "Update");
 export const noSqlProjFile = localize('noSqlProjFile', "The selected project file does not exist");
 export const noSchemaCompareExtension = localize('noSchemaCompareExtension', "The Schema Compare extension needs to be downloaded to a update a project from a database");
 export const projectToUpdatePlaceholderText = localize('projectToUpdatePlaceholderText', "Select project file");
@@ -257,7 +257,7 @@ export const actionLabel = localize('actionLabel', "Action");
 
 export const applySuccess = localize('applySuccess', "Project was successfully updated");
 export const equalComparison = localize('equalComparison', "The project is already up to date with the database");
-export const applyError = localize('applyError', "There was an error updating the project");
+export function applyError(errorMessage: string): string { return localize('applyError', "There was an error updating the project: {0}", errorMessage); }
 
 // Error messages
 

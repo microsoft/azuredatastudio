@@ -65,7 +65,6 @@ describe('Update Project From Database Dialog', () => {
 		should.equal((<any>dialog.serverDropdown!.value).displayName, profile.options['connectionName'], `Server dropdown should be "${profile.options['connectionName']}", but instead was "${(<any>dialog.serverDropdown!.value).displayName}".`);
 		should.equal(dialog.databaseDropdown!.value, profile.databaseName, `Database dropdown should as "${profile.databaseName}", but instead was "${dialog.databaseDropdown!.value}".`);
 		should.equal(dialog.projectFileTextBox!.value, project.projectFilePath, `Project file textbox should be the sqlproj path (${project.projectFilePath}), but instead was "${dialog.projectFileTextBox!.value}".`);
-
 		should.equal(dialog.dialog.okButton.enabled, true, 'Okay button should be enabled when dialog is complete.');
 	});
 });
