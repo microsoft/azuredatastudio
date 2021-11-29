@@ -130,6 +130,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 			linkButtonContainer = DOM.$('li.action-item');
 			linkButtonContainer.setAttribute('role', 'presentation');
 			let linkButton = new Button(linkButtonContainer);
+			linkButton.title = this.buttonLink;
 			linkButton.element.setAttribute('class', 'action-label codicon insert-link masked-icon');
 			let buttonStyle: IButtonStyles = {
 				buttonBackground: null
@@ -143,6 +144,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 			imageButtonContainer = DOM.$('li.action-item');
 			imageButtonContainer.setAttribute('role', 'presentation');
 			let imageButton = new Button(imageButtonContainer);
+			imageButton.title = this.buttonImage;
 			imageButton.element.setAttribute('class', 'action-label codicon insert-image masked-icon');
 
 			imageButton.style(buttonStyle);
