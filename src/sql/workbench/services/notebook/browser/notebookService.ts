@@ -188,6 +188,7 @@ export interface INotebookSection {
 
 export interface ICellEditorProvider {
 	hasEditor(): boolean;
+	isCellOutput: boolean;
 	cellGuid(): string;
 	getEditor(): BaseTextEditor;
 	deltaDecorations(newDecorationsRange: NotebookRange | NotebookRange[], oldDecorationsRange: NotebookRange | NotebookRange[]): void;

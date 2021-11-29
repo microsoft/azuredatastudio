@@ -167,15 +167,23 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	public deltaDecorations(newDecorationsRange: NotebookRange | NotebookRange[], oldDecorationsRange: NotebookRange | NotebookRange[]): void {
 		if (oldDecorationsRange) {
 			if (Array.isArray(oldDecorationsRange)) {
+				// markdown cells
 				let cells = [...new Set(oldDecorationsRange.map(item => item.cell))].filter(c => c.cellType === 'markdown');
 				cells.forEach(cell => {
 					let cellOldDecorations = oldDecorationsRange.filter(r => r.cell === cell);
 					let cellEditor = this.cellEditors.find(c => c.cellGuid() === cell.cellGuid);
 					cellEditor.deltaDecorations(undefined, cellOldDecorations);
 				});
+				// code cell output
+				let codeCells = [...new Set(oldDecorationsRange.map(item => item.cell))].filter(c => c.cellType === 'code');
+				codeCells.forEach(cell => {
+					let cellOldDecorations = oldDecorationsRange.filter(r => r.isCodeOutput === true && r.isCodeOutput === true && cell.cellGuid === r.cell.cellGuid);
+					let cellEditor = this.cellEditors.find(c => c.cellGuid() === cell.cellGuid && c.isCellOutput);
+					cellEditor.deltaDecorations(undefined, cellOldDecorations);
+				});
 			} else {
-				if (oldDecorationsRange.cell.cellType === 'markdown') {
-					let cell = this.cellEditors.find(c => c.cellGuid() === oldDecorationsRange.cell.cellGuid);
+				if (oldDecorationsRange.cell.cellType === 'markdown' || oldDecorationsRange.isCodeOutput) {
+					let cell = oldDecorationsRange.isCodeOutput ? this.cellEditors.find(c => c.cellGuid() === oldDecorationsRange.cell.cellGuid && c.isCellOutput) : this.cellEditors.find(c => c.cellGuid() === oldDecorationsRange.cell.cellGuid);
 					cell.deltaDecorations(undefined, oldDecorationsRange);
 				}
 			}
@@ -188,9 +196,16 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 					let cellEditor = this.cellEditors.find(c => c.cellGuid() === cell.cellGuid);
 					cellEditor.deltaDecorations(cellNewDecorations, undefined);
 				});
+				// code cell output
+				let codeCells = [...new Set(newDecorationsRange.map(item => item.cell))].filter(c => c.cellType === 'code');
+				codeCells.forEach(cell => {
+					let cellNewDecorations = newDecorationsRange.filter(r => r.isCodeOutput === true && cell.cellGuid === r.cell.cellGuid);
+					let cellEditor = this.cellEditors.find(c => c.cellGuid() === cell.cellGuid && c.isCellOutput);
+					cellEditor.deltaDecorations(cellNewDecorations, undefined);
+				});
 			} else {
-				if (newDecorationsRange.cell.cellType === 'markdown') {
-					let cell = this.cellEditors.find(c => c.cellGuid() === newDecorationsRange.cell.cellGuid);
+				if (newDecorationsRange.cell.cellType === 'markdown' || newDecorationsRange.isCodeOutput) {
+					let cell = newDecorationsRange.isCodeOutput ? this.cellEditors.find(c => c.cellGuid() === newDecorationsRange.cell.cellGuid && c.isCellOutput) : this.cellEditors.find(c => c.cellGuid() === newDecorationsRange.cell.cellGuid);
 					cell.deltaDecorations(newDecorationsRange, undefined);
 				}
 			}

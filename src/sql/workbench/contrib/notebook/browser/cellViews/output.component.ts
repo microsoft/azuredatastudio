@@ -32,7 +32,7 @@ const componentRegistry = <IMimeComponentRegistry>Registry.as(Extensions.MimeCom
 	templateUrl: decodeURI(require.toUrl('./output.component.html'))
 })
 export class OutputComponent extends CellView implements OnInit, AfterViewInit {
-	@ViewChild('output', { read: ElementRef }) private outputElement: ElementRef;
+	@ViewChild('output', { read: ElementRef }) override output: ElementRef;
 	@ViewChild(ComponentHostDirective) componentHost: ComponentHostDirective;
 	@Input() cellOutput: nb.ICellOutput;
 	@Input() cellModel: ICellModel;
@@ -86,7 +86,7 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 	}
 
 	private get nativeOutputElement() {
-		return this.outputElement ? this.outputElement.nativeElement : undefined;
+		return this.output ? this.output.nativeElement : undefined;
 	}
 
 	public layout(): void {
@@ -188,5 +188,11 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 
 	public cellGuid(): string {
 		return this.cellModel.cellGuid;
+	}
+
+	override isCellOutput = true;
+
+	override getCellModel(): ICellModel {
+		return this.cellModel;
 	}
 }

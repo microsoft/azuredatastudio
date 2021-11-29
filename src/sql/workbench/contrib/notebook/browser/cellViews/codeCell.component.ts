@@ -11,7 +11,7 @@ import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/no
 import { Deferred } from 'sql/base/common/promise';
 import { ICellEditorProvider } from 'sql/workbench/services/notebook/browser/notebookService';
 import { CodeComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/code.component';
-import { OutputComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/output.component';
+import { OutputAreaComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/outputArea.component';
 
 
 export const CODE_SELECTOR: string = 'code-cell-component';
@@ -23,7 +23,7 @@ export const CODE_SELECTOR: string = 'code-cell-component';
 
 export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 	@ViewChildren(CodeComponent) private codeCells: QueryList<ICellEditorProvider>;
-	@ViewChildren(OutputComponent) private outputCells: QueryList<ICellEditorProvider>;
+	@ViewChildren(OutputAreaComponent) private outputCells: QueryList<ICellEditorProvider>;
 	@Input() cellModel: ICellModel;
 	@Input() set model(value: NotebookModel) {
 		this._model = value;
@@ -82,7 +82,10 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 			editors.push(...this.codeCells.toArray());
 		}
 		if (this.outputCells) {
-			editors.push(...this.outputCells.toArray());
+			let outputAreaCell = this.outputCells.first as OutputAreaComponent;
+			if (outputAreaCell) {
+				editors.push(...outputAreaCell.cellEditors);
+			}
 		}
 		return editors;
 	}

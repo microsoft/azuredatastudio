@@ -574,13 +574,22 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 		if (cell.cellType === 'code' && cell.outputs.length > 0) {
 			cell.outputs.forEach(output => {
 				let findStartResults: number[] = [];
+				let outputDisplayResults = output as nb.IDisplayResult;
+				if (outputDisplayResults.data) {
+					findStartResults = this.search(outputDisplayResults.data.toString(), exp, matchCase, wholeWord, maxMatches - findResults.length);
+					findStartResults?.forEach(start => {
+						// lineNumber: j+1 since notebook editors aren't zero indexed.
+						let range = new NotebookRange(cell, 1, start, 1, start + exp.length, false, true);
+						findResults.push(range);
+					});
+				}
 				switch (output.output_type) {
 					case 'stream':
 						let cellValFormatted = output as nb.IStreamResult;
-						findStartResults = this.search(cellValFormatted.text.toString(), exp, matchCase, wholeWord, maxMatches - findResults.length);
+						findStartResults = this.search(cellValFormatted.text.toString().replace('\\n', ''), exp, matchCase, wholeWord, maxMatches - findResults.length);
 						findStartResults?.forEach(start => {
 							// lineNumber: j+1 since notebook editors aren't zero indexed.
-							let range = new NotebookRange(cell, 0, start, 0, start + exp.length, false, true);
+							let range = new NotebookRange(cell, 1, start, 1, start + exp.length, false, true);
 							findResults.push(range);
 						});
 						break;
@@ -589,7 +598,7 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 						findStartResults = this.search(errorValue.traceback.toString(), exp, matchCase, wholeWord, maxMatches - findResults.length);
 						findStartResults.forEach(start => {
 							// lineNumber: j+1 since notebook editors aren't zero indexed.
-							let range = new NotebookRange(cell, 0, start, 0, start + exp.length, false, true);
+							let range = new NotebookRange(cell, 1, start, 1, start + exp.length, false, true);
 							findResults.push(range);
 						});
 						break;
@@ -598,7 +607,7 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 						findStartResults = this.search(executeResult.data, exp, matchCase, wholeWord, maxMatches - findResults.length);
 						findStartResults?.forEach(start => {
 							// lineNumber: j+1 since notebook editors aren't zero indexed.
-							let range = new NotebookRange(cell, 0, start, 0, start + exp.length, false, true);
+							let range = new NotebookRange(cell, 1, start, 1, start + exp.length, false, true);
 							findResults.push(range);
 						});
 						break;

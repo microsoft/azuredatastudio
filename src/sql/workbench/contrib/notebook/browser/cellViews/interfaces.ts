@@ -13,6 +13,7 @@ import { nb } from 'azdata';
 import * as Mark from 'mark.js';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
+import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 
 const findHighlightClass = 'rangeHighlight';
 const findRangeSpecificClass = 'rangeSpecificHighlight';
@@ -23,6 +24,7 @@ export abstract class CellView extends AngularDisposable implements OnDestroy, I
 	protected output: ElementRef;
 	protected _notebookService: INotebookService;
 	protected _model: NotebookModel;
+	isCellOutput: boolean = false;
 
 	constructor() {
 		super();
@@ -36,6 +38,10 @@ export abstract class CellView extends AngularDisposable implements OnDestroy, I
 
 	public hasEditor(): boolean {
 		return false;
+	}
+
+	public getCellModel(): ICellModel | undefined {
+		return undefined;
 	}
 
 	public abstract cellGuid(): string;
@@ -68,9 +74,13 @@ export abstract class CellView extends AngularDisposable implements OnDestroy, I
 			if (range) {
 				let elements = this.getHtmlElements();
 				if (elements?.length >= range.startLineNumber) {
+					// if the decoration range belongs to code cell output, output is in <pre>
+					// in the first child's children.
+					if (range.isCodeOutput) {
+						elements = elements[0].children;
+					}
 					let elementContainingText = elements[range.startLineNumber - 1];
 					let markCurrent = new Mark(elementContainingText); // to highlight the current item of them all.
-
 					markCurrent.markRanges([{
 						start: range.startColumn - 1, //subtracting 1 since markdown html is 0 indexed.
 						length: range.endColumn - range.startColumn
@@ -89,7 +99,10 @@ export abstract class CellView extends AngularDisposable implements OnDestroy, I
 	private highlightAllMatches(): void {
 		if (this.output && this.output.nativeElement) {
 			let markAllOccurances = new Mark(this.output.nativeElement); // to highlight all occurances in the element.
-			let editor = this._notebookService.findNotebookEditor(this._model.notebookUri);
+			if (!this._model) {
+				this._model = this.getCellModel().notebookModel;
+			}
+			let editor = this._notebookService.findNotebookEditor(this._model?.notebookUri);
 			if (editor) {
 				let findModel = (editor.notebookParams.input as NotebookInput).notebookFindModel;
 				if (findModel?.findMatches?.length > 0) {
@@ -106,6 +119,9 @@ export abstract class CellView extends AngularDisposable implements OnDestroy, I
 		if (this.output && this.output.nativeElement) {
 			if (range) {
 				let elements = this.getHtmlElements();
+				if (range.isCodeOutput) {
+					elements = elements[0].children;
+				}
 				let elementContainingText = elements[range.startLineNumber - 1];
 				let markCurrent = new Mark(elementContainingText);
 				markCurrent.unmark({ acrossElements: true, className: findRangeSpecificClass });
