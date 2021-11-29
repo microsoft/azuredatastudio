@@ -84,7 +84,7 @@ async function launchEulaQuickPick(baseImage: string): Promise<string | undefine
 			constants.noString
 		];
 		let options: vscode.QuickPickOptions = {
-			placeHolder: `${uiUtils.getAgreementDisplayText(imageInfo?.agreementInfo)}(${link.url.replace('https://', '')})`,
+			placeHolder: `${uiUtils.getAgreementDisplayText(imageInfo?.agreementInfo)} (${link.url})`,
 		};
 		options.onDidSelectItem = (async (item: vscode.QuickPickItem | string) => {
 			if (item && imageInfo?.agreementInfo?.link) {
