@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
+import { URI } from 'vs/base/common/uri';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
-import { URI } from 'vs/workbench/workbench.web.api';
 import { TableDesignerComponentInput } from 'sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput';
 import { TableDesignerProvider } from 'sql/workbench/services/tableDesigner/common/interface';
 import * as azdata from 'azdata';
@@ -13,12 +13,14 @@ import { GroupIdentifier, IEditorInput, IRevertOptions, ISaveOptions } from 'vs/
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { Schemas } from 'sql/base/common/schemas';
 
 const NewTable: string = localize('tableDesigner.newTable', "New Table");
 
 export class TableDesignerInput extends EditorInput {
 	public static ID: string = 'workbench.editorinputs.tableDesignerInput';
 	private _designerComponentInput: TableDesignerComponentInput;
+	private _title: string;
 	private _name: string;
 
 	constructor(
@@ -33,26 +35,29 @@ export class TableDesignerInput extends EditorInput {
 				this._onDidChangeDirty.fire();
 			}
 		}));
-		const existingNames = editorService.editors.map(editor => editor.getName());
-
 		if (this._tableInfo.isNewTable) {
+			const existingNames = editorService.editors.map(editor => editor.getName());
 			// Find the next available unique name for the new table designer
 			let idx = 1;
 			do {
-				this._name = `${this._tableInfo.server}.${this._tableInfo.database} - ${NewTable} ${idx}`;
+				this._name = `${NewTable} ${idx}`;
 				idx++;
 			} while (existingNames.indexOf(this._name) !== -1);
 		} else {
-			this._name = `${this._tableInfo.server}.${this._tableInfo.database} - ${this._tableInfo.schema}.${this._tableInfo.name}`;
+			this._name = `${this._tableInfo.schema}.${this._tableInfo.name}`;
 		}
+		this._title = `${this._tableInfo.server}.${this._tableInfo.database} - ${this._name}`;
 	}
 
 	get typeId(): string {
 		return TableDesignerInput.ID;
 	}
 
-	get resource(): URI {
-		return undefined;
+	public get resource(): URI {
+		return URI.from({
+			scheme: Schemas.tableDesigner,
+			path: 'table-designer'
+		});
 	}
 
 	public getComponentInput(): TableDesignerComponentInput {
@@ -61,6 +66,10 @@ export class TableDesignerInput extends EditorInput {
 
 	override getName(): string {
 		return this._name;
+	}
+
+	override getTitle(): string {
+		return this._title;
 	}
 
 	override isDirty(): boolean {

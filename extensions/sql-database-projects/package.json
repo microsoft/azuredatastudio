@@ -29,6 +29,12 @@
     "Microsoft.mssql",
     "Microsoft.schema-compare"
   ],
+	"capabilities": {
+    "virtualWorkspaces": false,
+    "untrustedWorkspaces": {
+      "supported": true
+    }
+	},
   "contributes": {
     "projects": [
       "sqlproj"
@@ -44,10 +50,6 @@
           "sqlDatabaseProjects.netCoreDoNotAsk": {
             "type": "boolean",
             "description": "%sqlDatabaseProjects.netCoreDoNotAsk%"
-          },
-          "sqlDatabaseProjects.netCoreDowngradeDoNotShow": {
-            "type": "boolean",
-            "description": "%sqlDatabaseProjects.netCoreDowngradeDoNotShow%"
           },
           "sqlDatabaseProjects.nodejsDoNotAsk": {
             "type": "boolean",

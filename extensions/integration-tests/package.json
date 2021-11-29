@@ -9,7 +9,7 @@
     "azdata": "*"
   },
   "activationEvents": [
-		"onFileSystem:memfs",
+    "onFileSystem:memfs",
     "onDebug",
     "onCommand:integration-tests.onboarding.showDevelopers"
   ],
@@ -26,7 +26,7 @@
     "vscode:prepublish": "node ../../node_modules/gulp/bin/gulp.js --gulpfile ../../build/gulpfile.extensions.js compile-extension:vscode-colorize-tests ./tsconfig.json"
   },
   "contributes": {
-    "commands":[
+    "commands": [
       {
         "command": "integration-tests.onboarding.showDevelopers",
         "title": "Show Developers"
@@ -44,5 +44,8 @@
     "mocha-multi-reporters": "^1.1.7",
     "ms-rest-azure": "^2.6.0",
     "vscodetestcover": "^1.1.0"
+  },
+  "resolutions": {
+    "json-schema": "0.4.0"
   }
 }
