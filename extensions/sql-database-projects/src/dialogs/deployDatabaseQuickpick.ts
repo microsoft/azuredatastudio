@@ -70,6 +70,33 @@ export async function launchDeployAppIntegrationQuickpick(project: Project): Pro
 	};
 }
 
+async function launchEulaQuickPick(baseImage: string): Promise<string | undefined> {
+	const baseImages = uiUtils.getDockerBaseImages();
+	const imageInfo = baseImages.find(x => x.name === baseImage);
+	let result: string | undefined = undefined;
+	if (imageInfo?.agreementInfo?.link) {
+		const link = imageInfo?.agreementInfo?.link;
+
+		// Ask user to update app settings or not
+		//
+		let choices = [
+			constants.yesString,
+			constants.noString
+		];
+		let options: vscode.QuickPickOptions = {
+			placeHolder: `${uiUtils.getAgreementDisplayText(imageInfo?.agreementInfo)}(${link.url.replace('https://', '')})`,
+		};
+		options.onDidSelectItem = (async (item: vscode.QuickPickItem | string) => {
+			if (item && imageInfo?.agreementInfo?.link) {
+				//	await vscode.env.openExternal(vscode.Uri.parse(imageInfo.agreementInfo.links[0].url));
+			}
+		});
+
+		result = await vscode.window.showQuickPick(choices, options);
+	}
+	return result;
+}
+
 /**
  * Create flow for publishing a database to docker container using only VS Code-native APIs such as QuickPick
  */
@@ -120,8 +147,9 @@ export async function launchPublishToDockerContainerQuickpick(project: Project):
 		return undefined;
 	}
 
+	const baseImages = uiUtils.getDockerBaseImages();
 	const baseImage = await vscode.window.showQuickPick(
-		uiUtils.getDockerBaseImages(),
+		baseImages.map(x => x.name),
 		{ title: constants.selectBaseImage, ignoreFocusOut: true });
 
 	// Return when user hits escape
@@ -129,13 +157,21 @@ export async function launchPublishToDockerContainerQuickpick(project: Project):
 		return undefined;
 	}
 
+	const eulaAccepted = await launchEulaQuickPick(baseImage);
+	if (eulaAccepted !== constants.yesString) {
+		return undefined;
+	}
+
+	const imageInfo = baseImages.find(x => x.name === baseImage);
+
 	localDbSetting = {
 		serverName: constants.defaultLocalServerName,
 		userName: constants.defaultLocalServerAdminName,
 		dbName: project.projectFileName,
 		password: password,
 		port: +portNumber,
-		dockerBaseImage: baseImage
+		dockerBaseImage: baseImage,
+		dockerBaseImageEula: imageInfo?.agreementInfo?.link?.url || ''
 	};
 
 	let deploySettings = await getPublishDatabaseSettings(project, false);

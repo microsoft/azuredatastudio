@@ -149,6 +149,11 @@ export const portMustBeNumber = localize('portMustNotBeNumber', "Port must a be 
 export const valueCannotBeEmpty = localize('valueCannotBeEmpty', "Value cannot be empty");
 export const dockerImageLabelPrefix = 'source=sqldbproject';
 export const dockerImageNamePrefix = 'sqldbproject';
+export const eulaAgreementTemplate = 'I accept {0}.';
+export const eulaAgreementTitle = 'Microsoft SQL Server License Agreement';
+export const edgeEulaAgreementTitle = 'Microsoft Azure SQL Edge License Agreement';
+export const sqlServerEulaLink = 'https://go.microsoft.com/fwlink/?LinkId=746388';
+export const sqlServerEdgeEulaLink = 'https://go.microsoft.com/fwlink/?linkid=2128283';
 export const connectionNamePrefix = 'SQLDbProject';
 export const sqlServerDockerRegistry = 'mcr.microsoft.com';
 export const sqlServerDockerRepository = 'mssql/server';
@@ -170,6 +175,8 @@ export const deployDbTaskName = localize('deployDbTaskName', "Deploying SQL Db P
 export const publishProjectSucceed = localize('publishProjectSucceed', "Database project published successfully");
 export const publishingProjectMessage = localize('publishingProjectMessage', "Publishing project in a container...");
 export const cleaningDockerImagesMessage = localize('cleaningDockerImagesMessage', "Cleaning existing deployments...");
+export const dockerImageMessage = localize('dockerImageMessage', "Docker Image:");
+export const dockerImageEulaMessage = localize('dockerImageEulaMessage', "License Agreement:");
 export const creatingDeploymentSettingsMessage = localize('creatingDeploymentSettingsMessage', "Creating deployment settings ...");
 export const runningDockerMessage = localize('runningDockerMessage', "Building and running the docker container ...");
 export function dockerNotRunningError(error: string) { return localize('dockerNotRunningError', "Failed to verify docker. Please make sure docker is installed and running. Error: '{0}'", error || ''); }
