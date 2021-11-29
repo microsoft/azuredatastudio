@@ -11,13 +11,13 @@ import * as semver from 'semver';
 import { isNullOrUndefined } from 'util';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { DoNotAskAgain, Install, NetCoreInstallationConfirmation, NetCoreSupportedVersionInstallationConfirmation, UpdateNetCoreLocation } from '../common/constants';
+import { DoNotAskAgain, Install, DotnetInstallationConfirmation, NetCoreSupportedVersionInstallationConfirmation, UpdateDotnetLocation } from '../common/constants';
 import * as utils from '../common/utils';
 import { ShellCommandOptions, ShellExecutionHelper } from './shellExecutionHelper';
 const localize = nls.loadMessageBundle();
 
 export const DBProjectConfigurationKey: string = 'sqlDatabaseProjects';
-export const NetCoreInstallLocationKey: string = 'netCoreSDKLocation';
+export const DotnetInstallLocationKey: string = 'dotnetSDK Location';
 export const NetCoreDoNotAskAgainKey: string = 'netCoreDoNotAsk';
 export const NetCoreNonWindowsDefaultPath = '/usr/local/share';
 export const winPlatform: string = 'win32';
@@ -66,12 +66,12 @@ export class NetCoreTool extends ShellExecutionHelper {
 	public async showInstallDialog(): Promise<void> {
 		let result;
 		if (this.netCoreInstallState === netCoreInstallState.netCoreNotPresent) {
-			result = await vscode.window.showErrorMessage(NetCoreInstallationConfirmation, UpdateNetCoreLocation, Install, DoNotAskAgain);
+			result = await vscode.window.showErrorMessage(DotnetInstallationConfirmation, UpdateDotnetLocation, Install, DoNotAskAgain);
 		} else {
-			result = await vscode.window.showErrorMessage(NetCoreSupportedVersionInstallationConfirmation(this.netCoreSdkInstalledVersion!), UpdateNetCoreLocation, Install, DoNotAskAgain);
+			result = await vscode.window.showErrorMessage(NetCoreSupportedVersionInstallationConfirmation(this.netCoreSdkInstalledVersion!), UpdateDotnetLocation, Install, DoNotAskAgain);
 		}
 
-		if (result === UpdateNetCoreLocation) {
+		if (result === UpdateDotnetLocation) {
 			//open settings
 			await vscode.commands.executeCommand('workbench.action.openGlobalSettings');
 		} else if (result === Install) {
@@ -93,7 +93,7 @@ export class NetCoreTool extends ShellExecutionHelper {
 	}
 
 	public get netcoreInstallLocation(): string {
-		return vscode.workspace.getConfiguration(DBProjectConfigurationKey)[NetCoreInstallLocationKey] ||
+		return vscode.workspace.getConfiguration(DBProjectConfigurationKey)[DotnetInstallLocationKey] ||
 			this.defaultLocalInstallLocationByDistribution;
 	}
 
@@ -194,7 +194,7 @@ export class NetCoreTool extends ShellExecutionHelper {
 
 		if (!(await this.findOrInstallNetCore(skipVersionSupportedCheck))) {
 			if (this.netCoreInstallState === netCoreInstallState.netCoreNotPresent) {
-				throw new DotNetError(NetCoreInstallationConfirmation);
+				throw new DotNetError(DotnetInstallationConfirmation);
 			} else {
 				throw new DotNetError(NetCoreSupportedVersionInstallationConfirmation(this.netCoreSdkInstalledVersion!));
 			}
