@@ -16,6 +16,11 @@ import { URI } from 'vs/base/common/uri';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { PagedModel } from 'vs/base/common/paging';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+import { IActivityBarService } from 'vs/workbench/services/activityBar/browser/activityBarService';
+//import { IPanelService } from 'vs/workbench/services/panel/common/panelService';
+//import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
+
+
 //import { CompositeBar } from 'vs/workbench/browser/parts/compositeBar';
 //import { ICompositeBar } from 'vs/workbench/browser/parts/compositeBarActions';
 
@@ -134,16 +139,20 @@ export class HideExtensionMenu extends Action {
 
 	constructor(
 		id: string = HideExtensionMenu.ID,
-		label: string = HideExtensionMenu.LABEL//,
+		label: string = HideExtensionMenu.LABEL,
 		//private compositeBar: ICompositeBar
 		//@ICommandService private readonly commandService: ICommandService,
-		//@IContextViewService private readonly contextViewService: IContextViewService,
-		//@ICompositeBar private readonly compositeBar: ICompositeBar
+		@IActivityBarService private readonly activityBarService: IActivityBarService,
+		@IWorkbenchLayoutService private readonly layoutService: IWorkbenchLayoutService
+		//@IContextViewService private readonly contextViewService: IContextViewService
 	) {
 		super(id, label, 'panel');
 	}
 
 	override async run(): Promise<void> {
+		//this.panelService.getPinnedViewContainerIds();
+		this.activityBarService.getVisibleViewContainerIds();
+		this.layoutService.setSideBarHidden(true);
 		let array = ['Search', 'Explorer', 'Source Control', 'Extensions'];
 		let uiElement = document.querySelector('[aria-label="Active View Switcher"]');
 		let childRemoveIndices = [];

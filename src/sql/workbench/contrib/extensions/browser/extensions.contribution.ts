@@ -12,6 +12,9 @@ import { ExtensionsLabel, IExtensionGalleryService, IGalleryExtension } from 'vs
 import { OpenExtensionAuthoringDocsAction, HideExtensionMenu, HideSettings, HidePanel } from 'sql/workbench/contrib/extensions/browser/extensionsActions';
 import { localize } from 'vs/nls';
 import { deepClone } from 'vs/base/common/objects';
+import { IWorkbenchContribution, Extensions as WorkbenchExtensions, IWorkbenchContributionsRegistry } from 'vs/workbench/common/contributions';
+import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
+import product from 'vs/platform/product/common/product';
 
 // Global Actions
 const actionRegistry = Registry.as<IWorkbenchActionRegistry>(WorkbenchActionExtensions.WorkbenchActions);
@@ -77,27 +80,21 @@ CommandsRegistry.registerCommand({
 		}
 	}
 });
+export class ADSWebLite implements IWorkbenchContribution {
+	constructor(
+		@ICommandService private commandService: ICommandService,
+	) {
+		this.registerEditorOverride();
+	}
 
-/*CommandsRegistry.registerCommand({
-	id: 'workbench.extensions.hideExtensionsMenu',
-	description: {
-		description: localize('workbench.extensions.hideExtensionsMenu.description', "Hide extension menu"),
-		args: [
-			{
-				name: localize('workbench.extensions.hideExtensionsMenu.arg.name', "Extension id"),
-				schema: {
-					'type': ['string']
-				}
-			}
-		]
-	},
-	handler: async (accessor, arg: string): Promise<IGalleryExtension> => {
-		const extensionGalleryService = accessor.get(IExtensionGalleryService);
-		const extension = await extensionGalleryService.getCompatibleExtension({ id: arg });
-		if (extension) {
-			return deepClone(extension);
-		} else {
-			throw new Error(localize('notFound', "Extension '{0}' not found.", arg));
+	private async registerEditorOverride(): Promise<void> {
+		if (product.quality === 'tsgops-image') {
+			await this.commandService.executeCommand('workbench.extensions.action.hideSettings');
+			await this.commandService.executeCommand('workbench.extensions.action.hidePanel');
+			await this.commandService.executeCommand('workbench.extensions.action.hideExtensionsMenu');
 		}
 	}
-});*/
+}
+
+Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
+	.registerWorkbenchContribution(ADSWebLite, LifecyclePhase.Restored);
