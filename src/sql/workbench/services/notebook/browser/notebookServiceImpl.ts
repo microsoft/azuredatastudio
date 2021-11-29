@@ -293,7 +293,6 @@ export class NotebookService extends Disposable implements INotebookService {
 		if (inputCreator) {
 			fileInput = await inputCreator.convertInput(fileInput);
 			if (isINotebookInput(fileInput)) {
-				fileInput.defaultKernel = options.defaultKernel;
 				fileInput.connectionProfile = options.connectionProfile;
 
 				if (isUntitled) {
@@ -470,16 +469,34 @@ export class NotebookService extends Disposable implements INotebookService {
 		return providers?.map(provider => provider.provider);
 	}
 
+	public async getDefaultKernelSpecForProvider(providerId: string, notebookUri: URI): Promise<nb.IKernelSpec | undefined> {
+		// Wait for standard kernels to load before trying to get the default
+		let standardKernels = await this.getStandardKernelsForProvider(providerId);
+		if (standardKernels) {
+			let providerDescriptor = this._executeProviders.get(providerId);
+			if (providerDescriptor) {
+				let executeProvider = await this.waitOnExecuteProviderAvailability(providerDescriptor);
+				if (executeProvider) {
+					// TODO: Retrieve actual default kernel info
+					// let manager = await executeProvider.getExecuteManager(notebookUri);
+					// await manager.sessionManager.ready;
+					// let defaultKernelName = manager.sessionManager.specs.defaultKernel;
+					// return manager.sessionManager.specs.kernels.find(k => k.name === defaultKernelName);
+					return {
+						name: 'python',
+						language: 'python',
+						display_name: 'python'
+					};
+				}
+			}
+		}
+		return undefined;
+	}
+
 	public async getStandardKernelsForProvider(provider: string): Promise<nb.IStandardKernel[] | undefined> {
 		let descriptor = this._providerToStandardKernels.get(provider.toUpperCase());
 		if (descriptor) {
-			// Wait up to 30 seconds for kernels to be registered
-			const timeout = 30000;
-			let promises: Promise<nb.IStandardKernel[]>[] = [
-				descriptor.instanceReady,
-				new Promise<nb.IStandardKernel[]>((resolve) => setTimeout(() => resolve(undefined), timeout))
-			];
-			return Promise.race(promises);
+			return this.waitOnStandardKernelsAvailability(descriptor);
 		}
 		return undefined;
 	}
@@ -681,6 +698,16 @@ export class NotebookService extends Disposable implements INotebookService {
 			throw new Error(NotebookServiceNoProviderRegistered);
 		}
 		return instance;
+	}
+
+	private waitOnStandardKernelsAvailability(providerDescriptor: StandardKernelsDescriptor, timeout?: number): Promise<nb.IStandardKernel[] | undefined> {
+		// Wait up to 30 seconds for the provider to be registered
+		timeout = timeout ?? 30000;
+		let promises: Promise<nb.IStandardKernel[]>[] = [
+			providerDescriptor.instanceReady,
+			new Promise<nb.IStandardKernel[]>((resolve, reject) => setTimeout(() => resolve(undefined), timeout))
+		];
+		return Promise.race(promises);
 	}
 
 	private waitOnSerializationProviderAvailability(providerDescriptor: SerializationProviderDescriptor, timeout?: number): Promise<ISerializationProvider | undefined> {

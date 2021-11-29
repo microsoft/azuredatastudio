@@ -230,6 +230,9 @@ export class ServerManagerStub implements nb.ServerManager {
 }
 
 export class NotebookServiceStub implements INotebookService {
+	getDefaultKernelSpecForProvider(provider: string, notebookUri: URI): Promise<nb.IKernelSpec> {
+		throw new Error('Method not implemented.');
+	}
 	canResolveProvider(providerId: string): Promise<boolean> {
 		throw new Error('Method not implemented.');
 	}

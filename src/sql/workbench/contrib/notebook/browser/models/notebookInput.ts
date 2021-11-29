@@ -354,10 +354,6 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 		return this._defaultKernel;
 	}
 
-	public set defaultKernel(kernel: azdata.nb.IKernelSpec) {
-		this._defaultKernel = kernel;
-	}
-
 	get layoutChanged(): Event<void> {
 		return this._layoutChanged.event;
 	}
@@ -448,6 +444,7 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 				let standardKernels = await getStandardKernelsForProvider(provider, this.notebookService);
 				this._standardKernels.push(...standardKernels);
 			}
+			this._defaultKernel = await this.notebookService.getDefaultKernelSpecForProvider(this._providerId, this._resource);
 			let serializationProvider = await this.notebookService.getOrCreateSerializationManager(this._providerId, this._resource);
 			this._contentLoader = this.instantiationService.createInstance(NotebookEditorContentLoader, this, serializationProvider.contentManager);
 		}

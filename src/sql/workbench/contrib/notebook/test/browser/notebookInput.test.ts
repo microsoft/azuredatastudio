@@ -5,7 +5,6 @@
 
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
-import { nb } from 'azdata';
 import { workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { Schemas } from 'vs/base/common/network';
 import { URI } from 'vs/base/common/uri';
@@ -106,15 +105,6 @@ suite('Notebook Input', function (): void {
 		let testProfile = <IConnectionProfile>{};
 		untitledNotebookInput.connectionProfile = testProfile;
 		assert.strictEqual(untitledNotebookInput.connectionProfile, testProfile);
-
-		// Default Kernel
-		let testDefaultKernel: nb.IKernelSpec = {
-			name: 'TestName',
-			language: 'TestLanguage',
-			display_name: 'TestDisplayName'
-		};
-		untitledNotebookInput.defaultKernel = testDefaultKernel;
-		assert.strictEqual(untitledNotebookInput.defaultKernel, testDefaultKernel);
 
 		// Untitled Editor Model
 		let testModel = <UntitledTextEditorModel>{};
