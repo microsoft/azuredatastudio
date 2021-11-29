@@ -5,34 +5,30 @@
 
 import { ICellModel, MoveDirection } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 
-export class NotebookHistory implements INotebookHistory {
+export class NotebookHistory {
 	private _undoMaxSize = 10;
-	private _undoCells: INotebookCellState[] = [];
-	private _redoCells: INotebookCellState[] = [];
+	private _undoCells: INotebookUndoRedoElement[] = [];
+	private _redoCells: INotebookUndoRedoElement[] = [];
 
-	public undo(): INotebookChange | undefined {
+	public popUndo(): INotebookChange | undefined {
 		if (this._undoCells.length > 0) {
 			const cell = this._undoCells.pop();
-			if (cell) {
-				this._redoCells.push(cell);
-			}
-			return cell.action;
+			this._redoCells.push(cell);
+			return cell.undo;
 		}
 		return undefined;
 	}
 
-	public redo(): INotebookChange | undefined {
+	public popRedo(): INotebookChange | undefined {
 		if (this._redoCells.length > 0) {
 			const cell = this._redoCells.pop();
-			if (cell) {
-				this._undoCells.push(cell);
-			}
-			return cell.revert;
+			this._undoCells.push(cell);
+			return cell.redo;
 		}
 		return undefined;
 	}
 
-	public addCellToUndo(change: INotebookCellState): void {
+	public addCellToUndo(change: INotebookUndoRedoElement): void {
 		if (this._undoCells.length < this._undoMaxSize) {
 			this._undoCells.push(change);
 			this._redoCells = [];
@@ -47,9 +43,9 @@ export class NotebookHistory implements INotebookHistory {
 	}
 }
 
-export interface INotebookCellState {
-	action: INotebookChange,
-	revert: INotebookChange
+export interface INotebookUndoRedoElement {
+	undo: INotebookChange,
+	redo: INotebookChange
 }
 
 export interface INotebookChange {
@@ -63,9 +59,4 @@ export enum CellOperation {
 	'DELETE',
 	'CREATE',
 	'MOVE'
-}
-
-interface INotebookHistory {
-	undo(): void;
-	redo(): void;
 }

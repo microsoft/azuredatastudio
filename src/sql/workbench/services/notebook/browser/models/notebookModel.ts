@@ -35,7 +35,7 @@ import { isUUID } from 'vs/base/common/uuid';
 import { TextModel } from 'vs/editor/common/model/textModel';
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
 import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
-import { CellOperation, INotebookCellState, INotebookChange, NotebookHistory } from 'sql/workbench/services/notebook/browser/models/notebookHistory';
+import { CellOperation, INotebookUndoRedoElement, INotebookChange, NotebookHistory } from 'sql/workbench/services/notebook/browser/models/notebookHistory';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -115,8 +115,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public requestConnectionHandler: (() => Promise<boolean>) | undefined;
 	private _isLoading: boolean = false;
-	public notebookHistory = new NotebookHistory();
-	public addToUndoStack: boolean;
+	public notebookHistory: NotebookHistory = new NotebookHistory();
 
 	constructor(
 		private _notebookOptions: INotebookModelOptions,
@@ -126,7 +125,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		@IAdsTelemetryService private readonly adstelemetryService: IAdsTelemetryService,
 		@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
 		@IConfigurationService private configurationService: IConfigurationService,
-		@ICapabilitiesService private _capabilitiesService?: ICapabilitiesService
+		@ICapabilitiesService private _capabilitiesService?: ICapabilitiesService,
 	) {
 		super();
 		if (!_notebookOptions || !_notebookOptions.notebookUri || !_notebookOptions.executeManagers) {
@@ -543,7 +542,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		if (this.inErrorState) {
 			return undefined;
 		}
-		this.addToUndoStack = true;
 		let cell = this.createCell(cellType);
 		return this.insertCell(cell, index);
 	}
@@ -669,7 +667,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return undefined;
 	}
 
-	public insertCell(cell: ICellModel, index?: number): ICellModel | undefined {
+	public insertCell(cell: ICellModel, index?: number, addToUndoStack: boolean = true): ICellModel | undefined {
 		if (this.inErrorState) {
 			return undefined;
 		}
@@ -679,17 +677,18 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._cells.push(cell);
 			index = undefined;
 		}
-		if (this.addToUndoStack) {
+		if (addToUndoStack) {
 			const cellIndex = index ? index : this._cells.length - 1;
 			const action = {
-				action: { op: CellOperation.DELETE, cell: cell },
-				revert: { op: CellOperation.CREATE, cell: cell, index: cellIndex }
+				undo: { op: CellOperation.DELETE, cell: cell },
+				redo: { op: CellOperation.CREATE, cell: cell, index: cellIndex }
 			};
 			this.notebookHistory.addCellToUndo(action);
+			cell.isEditMode = true;
+			// Set newly created cell as active cell
+			this.updateActiveCell(cell);
 		}
-		// Set newly created cell as active cell
-		this.updateActiveCell(cell);
-		cell.isEditMode = true;
+
 		this._contentChangedEmitter.fire({
 			changeType: NotebookChangeType.CellsModified,
 			cells: [cell],
@@ -725,7 +724,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	moveCell(cell: ICellModel, direction: MoveDirection): void {
+	moveCell(cell: ICellModel, direction: MoveDirection, addToUndoStack: boolean = true): void {
 		if (this.inErrorState) {
 			return;
 		}
@@ -748,10 +747,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._cells.splice(index - 1, 0, cell);
 		}
 
-		if (this.addToUndoStack) {
+		if (addToUndoStack) {
 			const moveUp = { op: CellOperation.MOVE, cell: cell, direction: MoveDirection.Up };
 			const moveDown = { op: CellOperation.MOVE, cell: cell, direction: MoveDirection.Down };
-			let action: INotebookCellState = direction === MoveDirection.Down ? { action: moveUp, revert: moveDown } : { action: moveDown, revert: moveUp };
+			let action: INotebookUndoRedoElement = direction === MoveDirection.Down ? { undo: moveUp, redo: moveDown } : { undo: moveDown, redo: moveUp };
 			this.notebookHistory.addCellToUndo(action);
 		}
 		index = this.findCellIndex(cell);
@@ -803,18 +802,18 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._notebookOptions.factory.createCell(singleCell, { notebook: this, isTrusted: true });
 	}
 
-	deleteCell(cellModel: ICellModel): void {
+	deleteCell(cellModel: ICellModel, addToUndoStack: boolean = true): void {
 		if (this.inErrorState || !this._cells) {
 			return;
 		}
 		let index = this._cells.findIndex(cell => cell.equals(cellModel));
 		if (index > -1) {
-			if (this.addToUndoStack) {
-				const action: INotebookCellState = {
-					action: {
+			if (addToUndoStack) {
+				const action: INotebookUndoRedoElement = {
+					undo: {
 						op: CellOperation.CREATE, index: index, cell: cellModel
 					},
-					revert: {
+					redo: {
 						op: CellOperation.DELETE, cell: cellModel
 					}
 				};
@@ -1523,24 +1522,23 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public undo(): void {
-		let change = this.notebookHistory.undo();
+		let change = this.notebookHistory.popUndo();
 		this.applyChange(change);
 	}
 
 	public redo(): void {
-		let change = this.notebookHistory.redo();
+		let change = this.notebookHistory.popRedo();
 		this.applyChange(change);
 	}
 
 	private applyChange(change: INotebookChange | undefined): void {
 		if (change) {
-			this.addToUndoStack = false;
 			if (change.op === CellOperation.DELETE) {
-				this.deleteCell(change.cell);
+				this.deleteCell(change.cell, false);
 			} else if (change.op === CellOperation.CREATE) {
-				this.insertCell(change.cell, change.index);
+				this.insertCell(change.cell, change.index, false);
 			} else if (change.op === CellOperation.MOVE) {
-				this.moveCell(change.cell, change.direction);
+				this.moveCell(change.cell, change.direction, false);
 			}
 		}
 	}

@@ -562,7 +562,6 @@ suite('notebook model', function (): void {
 
 		// Then I expect all cells to be in the model
 		assert.strictEqual(model.cells.length, 2, 'Cell count in model is incorrect');
-		model.addToUndoStack = true;
 		// Delete the first cell
 		model.deleteCell(model.cells[0]);
 		assert.strictEqual(model.cells.length, 1, 'Cell model length should be 1 after cell deletion');
@@ -585,7 +584,6 @@ suite('notebook model', function (): void {
 
 		let firstCell = model.cells[0];
 		let secondCell = model.cells[1];
-		model.addToUndoStack = true;
 		// Move Second Cell up
 		model.moveCell(secondCell, 0);
 		assert.strictEqual(model.cells.indexOf(firstCell), 1, 'First Cell did not move down correctly');
