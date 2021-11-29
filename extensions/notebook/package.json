@@ -293,12 +293,12 @@
         }
       },
       {
-        "command": "notebook.command.undoNotebookView",
-        "title": "%title.undoNotebookView%"
+        "command": "notebook.command.undoNotebookTreeView",
+        "title": "%title.undoNotebookTreeView%"
       },
       {
-        "command": "notebook.command.redoNotebookView",
-        "title": "%title.redoNotebookView%"
+        "command": "notebook.command.redoNotebookTreeView",
+        "title": "%title.redoNotebookTreeView%"
       },
       {
         "command": "notebook.command.boldText",
