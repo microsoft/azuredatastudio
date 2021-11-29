@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { nb } from 'azdata';
-import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnDestroy, ViewChildren, QueryList, Input, HostListener } from '@angular/core';
+import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnDestroy, ViewChildren, QueryList, Input } from '@angular/core';
 
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
@@ -55,6 +55,8 @@ import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/
 import { MaskedLabeledMenuItemActionItem } from 'sql/platform/actions/browser/menuEntryActionViewItem';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Emitter } from 'vs/base/common/event';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -118,23 +120,25 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
 			this.doubleClickEditEnabled = this._configurationService.getValue('notebook.enableDoubleClickEdit');
 		}));
-	}
-
-	@HostListener('document:keydown', ['$event'])
-	onkeydown(e: KeyboardEvent) {
-		// Check that there are no active elements to prevent the execution of undo/redo commands in other elements.
-		// We need to make sure that there are no active cells to prevent triggering undo/redo within code cells and check that text cells are not in edit mode.
-		if (!this.areElementsActive() && (this.activeCellId === '' || !this.cellToolbar.first.getEditCellAction().editMode)) {
-			if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'z') {
-				e.stopImmediatePropagation();
-				e.preventDefault();
-				this._model.redo();
-			} else if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
-				e.stopImmediatePropagation();
-				e.preventDefault();
-				this._model.undo();
+		this._register(DOM.addDisposableListener(window, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
+			// Check that there are no active elements to prevent the execution of undo/redo commands in other elements.
+			// We need to make sure that there are no active cells to prevent triggering undo/redo within code cells and check that text cells are not in edit mode.
+			if (!this.areElementsActive() && (this.activeCellId === '' || !this.cellToolbar.first.getEditCellAction().editMode)) {
+				let event = new StandardKeyboardEvent(e);
+				let eventHandled = true;
+				if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.keyCode === KeyCode.KEY_Z) {
+					this._model.redo();
+				} else if ((event.ctrlKey || event.metaKey) && event.keyCode === KeyCode.KEY_Z) {
+					this._model.undo();
+				} else {
+					eventHandled = false;
+				}
+				if (eventHandled) {
+					event.preventDefault();
+					event.stopPropagation();
+				}
 			}
-		}
+		}));
 	}
 
 	ngOnInit() {
