@@ -70,6 +70,7 @@ export class QueryPlan2View implements IPanelView {
 
 export class QueryPlan2 {
 	private _graph?: azdata.QueryPlanGraph;
+
 	constructor(private container: HTMLElement, private graphIndex: number) {
 	}
 
@@ -80,7 +81,7 @@ export class QueryPlan2 {
 			 * Create a show plan graph here.
 			 */
 			this.container.appendChild(document.createElement('hr'));
-			this.container.appendChild(document.createTextNode(localize("qp2.grpah", 'Query {0}: Query Cost (Relative to the batch): {1}%', this.graphIndex, converDecimalToPercentage(this.graph.root.subTreeCost))));
+
 			this.container.appendChild(document.createElement('br'));
 			this.container.appendChild(document.createTextNode(graph.query));
 			this.container.appendChild(document.createElement('br'));
@@ -96,12 +97,9 @@ export class QueryPlan2 {
 
 }
 
-function converDecimalToPercentage(cost: number): number {
-	return +(cost * 100).toFixed(2);
-}
-
 /**
- * Registering a feature flag for query plan. This should be removed before taking the feature to public preview.
+ * Registering a feature flag for query plan.
+ * TODO: This should be removed before taking the feature to public preview.
  */
 const QUERYPLAN2_CONFIG_ID = 'queryPlan2';
 
