@@ -83,11 +83,11 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 		return dialog.createDialog();
 	}));
 
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.undoNotebookView', async () => {
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.undoNotebookTreeView', async () => {
 		await bookTreeViewProvider.undo();
 	}));
 
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.redoNotebookView', async () => {
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.redoNotebookTreeView', async () => {
 		await bookTreeViewProvider.redo();
 	}));
 

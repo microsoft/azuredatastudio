@@ -455,11 +455,11 @@
           "when": "false"
         },
         {
-          "command": "notebook.command.undoNotebookView",
+          "command": "notebook.command.undoNotebookTreeView",
           "when": "false"
         },
         {
-          "command": "notebook.command.redoNotebookView",
+          "command": "notebook.command.redoNotebookTreeView",
           "when": "false"
         },
         {
@@ -645,13 +645,13 @@
         "when": "activeEditor == workbench.editor.notebookEditor"
       },
       {
-        "command": "notebook.command.undoNotebookView",
+        "command": "notebook.command.undoNotebookTreeView",
         "key": "ctrl+z",
         "mac": "cmd+z",
         "when": "focusedView == bookTreeView"
       },
       {
-        "command": "notebook.command.redoNotebookView",
+        "command": "notebook.command.redoNotebookTreeView",
         "key": "ctrl+y",
         "mac": "cmd+shift+z",
         "when": "focusedView == bookTreeView"
