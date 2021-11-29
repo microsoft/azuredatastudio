@@ -58,6 +58,8 @@ export class EditCellAction extends ToggleableAction {
 }
 
 export class SplitCellAction extends CellActionBase {
+	public cellType: CellType;
+
 	constructor(
 		id: string,
 		label: string,
@@ -87,7 +89,6 @@ export class SplitCellAction extends CellActionBase {
 }
 
 export class MoveCellAction extends CellActionBase {
-	public cellType: CellType;
 	constructor(
 		id: string,
 		cssClass: string,
