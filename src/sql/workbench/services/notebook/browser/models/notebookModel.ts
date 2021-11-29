@@ -35,8 +35,8 @@ import { isUUID } from 'vs/base/common/uuid';
 import { TextModel } from 'vs/editor/common/model/textModel';
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
 import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
-import { CellOperation, INotebookUndoRedoElement, INotebookChange, NotebookHistory } from 'sql/workbench/services/notebook/browser/models/notebookHistory';
-
+import { AddCellEdit, DeleteCellEdit, MoveCellEdit } from 'sql/workbench/services/notebook/browser/models/cellEdit';
+import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
 * warning, or informational message. Default is error.
@@ -115,7 +115,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public requestConnectionHandler: (() => Promise<boolean>) | undefined;
 	private _isLoading: boolean = false;
-	public notebookHistory: NotebookHistory = new NotebookHistory();
 
 	constructor(
 		private _notebookOptions: INotebookModelOptions,
@@ -125,6 +124,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		@IAdsTelemetryService private readonly adstelemetryService: IAdsTelemetryService,
 		@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
 		@IConfigurationService private configurationService: IConfigurationService,
+		@IUndoRedoService private undoService: IUndoRedoService,
 		@ICapabilitiesService private _capabilitiesService?: ICapabilitiesService,
 	) {
 		super();
@@ -678,12 +678,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			index = undefined;
 		}
 		if (addToUndoStack) {
-			const cellIndex = index ? index : this._cells.length - 1;
-			const action = {
-				undo: { op: CellOperation.DELETE, cell: cell },
-				redo: { op: CellOperation.CREATE, cell: cell, index: cellIndex }
-			};
-			this.notebookHistory.addCellToUndo(action);
+			this.undoService.pushElement(new AddCellEdit(this, cell, index));
+
 			cell.isEditMode = true;
 			// Set newly created cell as active cell
 			this.updateActiveCell(cell);
@@ -748,10 +744,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 
 		if (addToUndoStack) {
-			const moveUp = { op: CellOperation.MOVE, cell: cell, direction: MoveDirection.Up };
-			const moveDown = { op: CellOperation.MOVE, cell: cell, direction: MoveDirection.Down };
-			let action: INotebookUndoRedoElement = direction === MoveDirection.Down ? { undo: moveUp, redo: moveDown } : { undo: moveDown, redo: moveUp };
-			this.notebookHistory.addCellToUndo(action);
+			this.undoService.pushElement(new MoveCellEdit(this, cell, direction));
 		}
 		index = this.findCellIndex(cell);
 
@@ -809,15 +802,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		let index = this._cells.findIndex(cell => cell.equals(cellModel));
 		if (index > -1) {
 			if (addToUndoStack) {
-				const action: INotebookUndoRedoElement = {
-					undo: {
-						op: CellOperation.CREATE, index: index, cell: cellModel
-					},
-					redo: {
-						op: CellOperation.DELETE, cell: cellModel
-					}
-				};
-				this.notebookHistory.addCellToUndo(action);
+				this.undoService.pushElement(new DeleteCellEdit(this, cellModel, index));
 			}
 
 			this._cells.splice(index, 1);
@@ -1522,24 +1507,14 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public undo(): void {
-		let change = this.notebookHistory.popUndo();
-		this.applyChange(change);
+		if (this.undoService.canUndo(this.notebookUri)) {
+			this.undoService.undo(this.notebookUri);
+		}
 	}
 
 	public redo(): void {
-		let change = this.notebookHistory.popRedo();
-		this.applyChange(change);
-	}
-
-	private applyChange(change: INotebookChange | undefined): void {
-		if (change) {
-			if (change.op === CellOperation.DELETE) {
-				this.deleteCell(change.cell, false);
-			} else if (change.op === CellOperation.CREATE) {
-				this.insertCell(change.cell, change.index, false);
-			} else if (change.op === CellOperation.MOVE) {
-				this.moveCell(change.cell, change.direction, false);
-			}
+		if (this.undoService.canRedo(this.notebookUri)) {
+			this.undoService.redo(this.notebookUri);
 		}
 	}
 }
