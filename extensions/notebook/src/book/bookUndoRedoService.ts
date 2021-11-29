@@ -57,31 +57,35 @@ export class BookUndoRedoService {
 
 	public async undo(): Promise<void> {
 		const bookChange = this.popUndo();
-		let files = bookChange.files;
-		let tocFiles = bookChange.tocFiles;
+		if (bookChange) {
+			let files = bookChange.files;
+			let tocFiles = bookChange.tocFiles;
 
-		// restore toc files
-		for (const [tocPath, contents] of tocFiles.entries()) {
-			await this.applyTocChanges(tocPath, contents.undo, bookChange);
-		}
-		// return files to previous file path
-		for (const [src, dest] of files.entries()) {
-			await fs.move(dest, src);
+			// restore toc files
+			for (const [tocPath, contents] of tocFiles.entries()) {
+				await this.applyTocChanges(tocPath, contents.undo, bookChange);
+			}
+			// return files to previous file path
+			for (const [src, dest] of files.entries()) {
+				await fs.move(dest, src);
+			}
 		}
 	}
 
 	public async redo(): Promise<void> {
 		const bookChange = this.popRedo();
-		let files = bookChange.files;
-		let tocFiles = bookChange.tocFiles;
+		if (bookChange) {
+			let files = bookChange.files;
+			let tocFiles = bookChange.tocFiles;
 
-		// restore toc files
-		for (const [tocPath, contents] of tocFiles.entries()) {
-			await this.applyTocChanges(tocPath, contents.redo, bookChange);
-		}
-		// return files to previous file path
-		for (const [src, dest] of files.entries()) {
-			await fs.move(src, dest);
+			// restore toc files
+			for (const [tocPath, contents] of tocFiles.entries()) {
+				await this.applyTocChanges(tocPath, contents.redo, bookChange);
+			}
+			// return files to previous file path
+			for (const [src, dest] of files.entries()) {
+				await fs.move(src, dest);
+			}
 		}
 	}
 
