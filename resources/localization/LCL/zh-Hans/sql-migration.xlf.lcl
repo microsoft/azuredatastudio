@@ -12,24 +12,24 @@
       <Disp Icon="Str" Disp="true" LocTbl="false" />
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.azure.accounts.accountAccessError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[An error occurred while accessing the selected account '{0}'. Select 'Link account' and refresh the account, or select a different account. Error '{1}']]></Val>
+          <Val><![CDATA[An error occurred while accessing the selected account '{0}' and tenant '{1}'. Select 'Link account' and refresh the account, or select a different account. Error '{2}']]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[访问所选帐户“{0}”时出错。请选择“链接帐户”并刷新帐户，或选择其他帐户。错误“{1}”]]></Val>
+            <Val><![CDATA[访问所选帐户“{0}”和租户“{1}“时出错。请选择“链接帐户”并刷新帐户，或选择其他帐户。错误“{2}”]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[An error occurred while accessing the selected account '{0}'. Select 'Link Account' and refresh the account, or select a different account. Error '{1}']]></Val>
+            <Val><![CDATA[An error occurred while accessing the selected account '{0}'. Select 'Link account' and refresh the account, or select a different account. Error '{1}']]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.azure.accounts.accountStaleError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[The access token for selected account '{0}' is no longer valid. Select 'Link account' and refresh the account, or select a different account.]]></Val>
+          <Val><![CDATA[The access token for selected account '{0}' and tenant '{1}' is no longer valid. Select 'Link account' and refresh the account, or select a different account.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[所选帐户“{0}”的访问令牌不再有效。请单击“链接账户”，并刷新帐户或选择其他帐户。]]></Val>
+            <Val><![CDATA[所选帐户“{0}”和租户“{1}”的访问令牌不再有效。请单击“链接账户”，并刷新帐户或选择其他帐户。]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[The access token for selected account '{0}' is no longer valid. Select 'Link Account' and refresh the account, or select a different account.]]></Val>
+            <Val><![CDATA[The access token for selected account '{0}' is no longer valid. Select 'Link account' and refresh the account, or select a different account.]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />

@@ -1079,18 +1079,20 @@ declare module 'azdata' {
 
 		/**
 		 * Name of the common table properties.
-		 * Extensions can use the names to access the designer data.
+		 * Extensions can use the names to access the designer view model.
 		 */
 		export enum TableProperty {
 			Columns = 'columns',
 			Description = 'description',
 			Name = 'name',
 			Schema = 'schema',
-			Script = 'script'
+			Script = 'script',
+			ForeignKeys = 'foreignKeys',
+			CheckConstraints = 'checkConstraints',
 		}
 		/**
 		 * Name of the common table column properties.
-		 * Extensions can use the names to access the designer data.
+		 * Extensions can use the names to access the designer view model.
 		 */
 		export enum TableColumnProperty {
 			AllowNulls = 'allowNulls',
@@ -1104,7 +1106,36 @@ declare module 'azdata' {
 		}
 
 		/**
-		 * The table designer view definition
+		 * Name of the common foreign key constraint properties.
+		 * Extensions can use the names to access the designer view model.
+		 */
+		export enum TableForeignKeyProperty {
+			Name = 'name',
+			PrimaryKeyTable = 'primaryKeyTable',
+			OnDeleteAction = 'onDeleteAction',
+			OnUpdateAction = 'onUpdateAction',
+			Columns = 'columns'
+		}
+
+		/**
+		 * Name of the columns mapping properties for foreign key.
+		 */
+		export enum ForeignKeyColumnMappingProperty {
+			PrimaryKeyColumn = 'primaryKeyColumn',
+			ForeignKeyColumn = 'foreignKeyColumn'
+		}
+
+		/**
+		 * Name of the common check constraint properties.
+		 * Extensions can use the name to access the designer view model.
+		 */
+		export enum TableCheckConstraintProperty {
+			Name = 'name',
+			Expression = 'expression'
+		}
+
+		/**
+		 * The table designer view definition.
 		 */
 		export interface TableDesignerView {
 			/**
@@ -1112,17 +1143,50 @@ declare module 'azdata' {
 			 */
 			additionalTableProperties?: DesignerDataPropertyInfo[];
 			/**
-			 * Additional table column properties.Common table properties are handled by Azure Data Studio. see {@link TableColumnProperty}
-			 */
-			additionalTableColumnProperties?: DesignerDataPropertyInfo[];
-			/**
 			 * Additional tabs.
 			 */
 			additionalTabs?: DesignerTab[];
 			/**
-			 * The properties to be displayed in the columns table. Default values are: Name, Type, Length, Precision, Scale, IsPrimaryKey, AllowNulls, DefaultValue.
+			 * Columns table options.
+			 * Common table columns properties are handled by Azure Data Studio. see {@link TableColumnProperty}.
+			 * Default columns to display values are: Name, Type, Length, Precision, Scale, IsPrimaryKey, AllowNulls, DefaultValue.
 			 */
-			columnsTableProperties?: string[];
+			columnTableOptions?: TableDesignerBuiltInTableViewOptions;
+			/**
+			 * Foreign keys table options.
+			 * Common foreign key properties are handled by Azure Data Studio. see {@link TableForeignKeyProperty}.
+			 * Default columns to display values are: Name, PrimaryKeyTable.
+			 */
+			foreignKeyTableOptions?: TableDesignerBuiltInTableViewOptions;
+			/**
+			 * Check constraints table options.
+			 * Common check constraint properties are handled by Azure Data Studio. see {@link TableCheckConstraintProperty}
+			 * Default columns to display values are: Name, Expression.
+			 */
+			checkConstraintTableOptions?: TableDesignerBuiltInTableViewOptions;
+		}
+
+		export interface TableDesignerBuiltInTableViewOptions {
+			/**
+			 * Whether to show the table. Default value is false.
+			 */
+			showTable?: boolean;
+			/**
+			 * Properties to be displayed in the table, other properties can be accessed in the properties view.
+			 */
+			propertiesToDisplay?: string[];
+			/**
+			 * Whether adding new rows is supported.
+			 */
+			canAddRows?: boolean;
+			/**
+			 * Whether removing rows is supported.
+			 */
+			canRemoveRows?: boolean;
+			/**
+			 * Additional properties for the entity.
+			 */
+			additionalProperties?: DesignerDataPropertyInfo[];
 		}
 
 		/**
@@ -1133,11 +1197,11 @@ declare module 'azdata' {
 		}
 
 		/**
-		 * The definition of a designer tab
+		 * The definition of a designer tab.
 		 */
 		export interface DesignerTab {
 			/**
-			 * The title of the tab
+			 * The title of the tab.
 			 */
 			title: string;
 			/**
@@ -1151,22 +1215,25 @@ declare module 'azdata' {
 		 */
 		export interface DesignerDataPropertyInfo {
 			/**
-			 * The property name
+			 * The property name.
 			 */
 			propertyName: string;
-
 			/**
-			 * The description of the property
+			 * The description of the property.
 			 */
 			description?: string;
 			/**
-			 * The component type
+			 * The component type.
 			 */
 			componentType: DesignerComponentTypeName;
 			/**
 			 * The group name, properties with the same group name will be displayed under the same group on the UI.
 			 */
 			group?: string;
+			/**
+			 * Whether the property should be displayed in the properties view. The default value is true.
+			 */
+			showInPropertiesView?: boolean;
 			/**
 			 * The properties of the component.
 			 */
@@ -1188,12 +1255,12 @@ declare module 'azdata' {
 			columns?: string[];
 
 			/**
-			 * The display name of the object type
+			 * The display name of the object type.
 			 */
 			objectTypeDisplayName: string;
 
 			/**
-			 * the properties of the table data item
+			 * the properties of the table data item.
 			 */
 			itemProperties?: DesignerDataPropertyInfo[];
 
@@ -1201,6 +1268,16 @@ declare module 'azdata' {
 			 * The data to be displayed.
 			 */
 			data?: DesignerTableComponentDataItem[];
+
+			/**
+			 * Whether user can add new rows to the table. The default value is true.
+			 */
+			canAddRows?: boolean;
+
+			/**
+			 * Whether user can remove rows from the table. The default value is true.
+			 */
+			canRemoveRows?: boolean;
 		}
 
 		/**
@@ -1215,15 +1292,15 @@ declare module 'azdata' {
 		 */
 		export enum DesignerEditType {
 			/**
-			 * Add a row to a table
+			 * Add a row to a table.
 			 */
 			Add = 0,
 			/**
-			 * Remove a row from a table
+			 * Remove a row from a table.
 			 */
 			Remove = 1,
 			/**
-			 * Update a property
+			 * Update a property.
 			 */
 			Update = 2
 		}
@@ -1233,23 +1310,35 @@ declare module 'azdata' {
 		 */
 		export interface DesignerEdit {
 			/**
-			 * The edit type
+			 * The edit type.
 			 */
 			type: DesignerEditType;
 			/**
-			 * the property that was edited
+			 * the path of the edit target.
 			 */
-			property: DesignerEditIdentifier;
+			path: DesignerEditPath;
 			/**
-			 * the new value
+			 * the new value.
 			 */
 			value?: any;
 		}
 
 		/**
-		 * The identifier of a property. The value is string typed if the property belongs to the root object, otherwise the type of the value is an object.
+		 * The path of the edit target.
+		 * Below are the 3 scenarios and their expected path.
+		 * Note: 'index-{x}' in the description below are numbers represent the index of the object in the list.
+		 * 1. 'Add' scenario
+		 *     a. ['propertyName1']. Example: add a column to the columns property: ['columns'].
+		 *     b. ['propertyName1',index-1,'propertyName2']. Example: add a column mapping to the first foreign key: ['foreignKeys',0,'mappings'].
+		 * 2. 'Update' scenario
+		 *     a. ['propertyName1']. Example: update the name of the table: ['name'].
+		 *     b. ['propertyName1',index-1,'propertyName2']. Example: update the name of a column: ['columns',0,'name'].
+		 *     c. ['propertyName1',index-1,'propertyName2',index-2,'propertyName3']. Example: update the source column of an entry in a foreign key's column mapping table: ['foreignKeys',0,'mappings',0,'source'].
+		 * 3. 'Remove' scenario
+		 *     a. ['propertyName1',index-1]. Example: remove a column from the columns property: ['columns',0'].
+		 *     b. ['propertyName1',index-1,'propertyName2',index-2]. Example: remove a column mapping from a foreign key's column mapping table: ['foreignKeys',0,'mappings',0].
 		 */
-		export type DesignerEditIdentifier = string | { parentProperty: string, index: number, property: string };
+		export type DesignerEditPath = (string | number)[];
 
 		/**
 		 * The result returned by the table designer provider after handling an edit request.
@@ -1266,7 +1355,7 @@ declare module 'azdata' {
 			/**
 			 * Error messages of current state, and the property the caused the error.
 			 */
-			errors?: { message: string, property?: DesignerEditIdentifier }[];
+			errors?: { message: string, property?: DesignerEditPath }[];
 		}
 	}
 }
