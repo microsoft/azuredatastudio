@@ -187,7 +187,7 @@ export class BookModel {
 				const config = yaml.safeLoad(fileContents.toString());
 				fileContents = await fsPromises.readFile(this._tableOfContentsPath, 'utf-8');
 				let tableOfContents: JupyterBookSection[] = yaml.safeLoad(fileContents.toString());
-				this.tableOfContents = tableOfContents;
+				this.tableOfContents = JSON.parse(JSON.stringify(tableOfContents));
 				const parsedTOC = this.parseJupyterSections(this._bookVersion, tableOfContents);
 				const jupyterBookTOC: IJupyterBookToc = { sections: parsedTOC };
 				let book: BookTreeItem = new BookTreeItem({

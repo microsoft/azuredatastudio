@@ -50,8 +50,7 @@ export function duplicateFileError(title: string, path: string, newPath: string)
 export function editBookError(path: string, error: string): string { return localize('editBookError', "Error while editing Jupyter Book {0}: {1}", path, error); }
 export function selectBookError(error: string): string { return localize('selectBookError', "Error while selecting a Jupyter Book or a section to edit: {0}", error); }
 export function sectionNotFound(section: string, tocPath: string): string { return localize('sectionNotFound', "Failed to find section {0} in {1}.", section, tocPath); }
-export function undoError(error: string): string { return localize('undoError', "Failed to undo changes. {0}", error); }
-export function redoError(error: string): string { return localize('redoError', "Failed to redo changes. {0}", error); }
+export function undoRedoError(error: string): string { return localize('undoError', "Failed to undo/redo changes. {0}", error); }
 
 // Remote Book dialog constants
 export const url = localize('url', "URL");

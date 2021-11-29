@@ -7,7 +7,6 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import * as yaml from 'js-yaml';
 import * as constants from '../common/constants';
 import { IPrompter } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
@@ -22,9 +21,9 @@ import { IBookPinManager, BookPinManager } from './bookPinManager';
 import { BookTocManager, IBookTocManager, quickPickResults } from './bookTocManager';
 import { CreateBookDialog } from '../dialog/createBookDialog';
 import { AddTocEntryDialog } from '../dialog/addTocEntryDialog';
-import { getContentPath, getBookPathFromTocPath } from './bookVersionHandler';
+import { getContentPath } from './bookVersionHandler';
 import { TelemetryReporter, BookTelemetryView, NbTelemetryActions } from '../telemetry';
-import { JupyterBookSection } from '../contracts/content';
+import { BookUndoRedoService, IBookUndoRedoElement } from './bookUndoRedoService';
 
 interface BookSearchResults {
 	notebookPaths: string[];
@@ -48,11 +47,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	public currentBook: BookModel;
 	supportedTypes = ['text/treeitems'];
 
-	public undoTocFiles: Map<string, JupyterBookSection[]>[] = [];
-	public undoMovedFiles: Map<string, string>[] = [];
-	public redoTocFiles: Map<string, JupyterBookSection[]>[] = [];
-	public redoMovedFiles: Map<string, string>[] = [];
-	private readonly _maxUndoSize = 10;
+	public bookUndoRedoService: BookUndoRedoService = new BookUndoRedoService();
 
 	constructor(workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext, openAsUntitled: boolean, view: string, public providerId: string) {
 		this._openAsUntitled = openAsUntitled;
@@ -232,12 +227,13 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			for (let [bookModel, items] of sourcesByBook) {
 				this.bookTocManager = new BookTocManager(bookModel, targetBookModel);
 				await this.bookTocManager.updateBook(items, targetBookItem, targetSection);
-				if (this.undoTocFiles.length < this._maxUndoSize && this.undoMovedFiles.length < this._maxUndoSize) {
-					this.undoTocFiles.push(new Map([[bookModel.tableOfContentsPath, bookModel.tableOfContents]]));
-					this.undoTocFiles.push(new Map([[targetBookModel.tableOfContentsPath, targetBookModel.tableOfContents]]));
-					this.undoMovedFiles.push(this.bookTocManager.movedFiles);
-					this.undoTocFiles.push(...this.bookTocManager.tocFiles);
-				}
+				let change: IBookUndoRedoElement = {
+					sourceBook: bookModel,
+					targetBook: targetBookModel,
+					files: this.bookTocManager.movedFiles,
+					tocFiles: this.bookTocManager.tocFiles
+				};
+				this.bookUndoRedoService.addToUndoStack(change);
 			}
 		}
 	}
@@ -771,11 +767,13 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					this.bookTocManager = new BookTocManager(book, targetBook);
 					this.bookTocManager.enableDnd = true;
 					await this.bookTocManager.updateBook(items, target);
-					if (this.undoTocFiles.length < this._maxUndoSize && this.undoMovedFiles.length < this._maxUndoSize) {
-						this.undoTocFiles.push(new Map([[book.tableOfContentsPath, book.tableOfContents]]));
-						this.undoMovedFiles.push(this.bookTocManager.movedFiles);
-						this.undoTocFiles.push(...this.bookTocManager.tocFiles);
-					}
+					let change: IBookUndoRedoElement = {
+						sourceBook: book,
+						targetBook: targetBook,
+						files: this.bookTocManager.movedFiles,
+						tocFiles: this.bookTocManager.tocFiles
+					};
+					this.bookUndoRedoService.addToUndoStack(change);
 				}
 			}
 		}
@@ -805,50 +803,11 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	public async undo(): Promise<void> {
-		if (this.undoTocFiles?.length > 0 && this.undoMovedFiles?.length > 0) {
-			let files = this.undoMovedFiles.pop();
-			this.redoMovedFiles.push(files);
-			this.redoTocFiles.push(this.undoTocFiles.pop());
-			let tocFiles: Map<string, JupyterBookSection[]> = this.undoTocFiles.pop();
-			// restore toc files
-			for (const [tocPath, contents] of tocFiles.entries()) {
-				await this.applyTocChanges(tocPath, contents);
-			}
-			// return files to previous file path
-			for (const [src, dest] of files.entries()) {
-				await fs.move(dest, src);
-			}
-		}
+		return this.bookUndoRedoService.undo();
 	}
 
 	public async redo(): Promise<void> {
-		if (this.redoTocFiles?.length > 0 && this.redoMovedFiles?.length > 0) {
-			let tocFiles: Map<string, JupyterBookSection[]> = this.redoTocFiles.pop();
-			let files = this.redoMovedFiles.pop();
-			this.undoMovedFiles.push(files);
-			this.undoTocFiles.push(tocFiles);
-			// restore toc files
-			for (const [tocPath, contents] of tocFiles.entries()) {
-				await this.applyTocChanges(tocPath, contents);
-			}
-			// return files to previous file path
-			for (const [src, dest] of files.entries()) {
-				await fs.move(src, dest);
-			}
-		}
-	}
-
-	public async applyTocChanges(tocPath: string, toc: JupyterBookSection[]) {
-		try {
-			// restore toc files
-			let bookPath = getBookPathFromTocPath(tocPath);
-			let book = this.books.find(b => b.bookPath === bookPath);
-			await fs.writeFile(tocPath, yaml.safeDump(toc, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
-			await book.reinitializeContents();
-		}
-		catch (e) {
-			void vscode.window.showErrorMessage(loc.undoError(e instanceof Error ? e.message : e));
-		}
+		return this.bookUndoRedoService.redo();
 	}
 
 	dispose(): void { }

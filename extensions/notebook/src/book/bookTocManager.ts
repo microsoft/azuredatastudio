@@ -13,6 +13,7 @@ import * as loc from '../common/localizedConstants';
 import { BookModel } from './bookModel';
 import { TocEntryPathHandler } from './tocEntryPathHandler';
 import { FileExtension, BookTreeItemType } from '../common/utils';
+import { undoRedoToc } from './bookUndoRedoService';
 
 export interface IBookTocManager {
 	updateBook(sources: BookTreeItem[], target: BookTreeItem, targetSection?: JupyterBookSection): Promise<void>;
@@ -21,7 +22,7 @@ export interface IBookTocManager {
 	addNewTocEntry(pathDetails: TocEntryPathHandler, bookItem: BookTreeItem, isSection?: boolean): Promise<void>;
 	recovery(): Promise<void>;
 	movedFiles: Map<string, string>;
-	tocFiles: Map<string, JupyterBookSection[]>[];
+	tocFiles: Map<string, undoRedoToc>;
 	enableDnd: boolean;
 }
 
@@ -40,9 +41,8 @@ export class BookTocManager implements IBookTocManager {
 	public tableofContents: JupyterBookSection[] = [];
 	public newSection: JupyterBookSection = {};
 	public movedFiles: Map<string, string> = new Map<string, string>();
-	public tocStates: Map<string, JupyterBookSection[]> = new Map<string, JupyterBookSection[]>();
 	private _initialToc: Map<string, JupyterBookSection[]> = new Map<string, JupyterBookSection[]>();
-	public tocFiles: Map<string, JupyterBookSection[]>[] = [];
+	public tocFiles: Map<string, undoRedoToc> = new Map<string, undoRedoToc>();
 	private _modifiedDirectory: Set<string> = new Set<string>();
 	private sourceBookContentPath: string;
 	private targetBookContentPath: string;
@@ -207,7 +207,11 @@ export class BookTocManager implements IBookTocManager {
 		}
 		if (isModified) {
 			await fs.writeFile(tocPath, yaml.safeDump(this.tableofContents, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
-			this.tocStates.set(tocPath, this.tableofContents);
+			let toc: undoRedoToc = {
+				undo: this._initialToc.get(tocPath),
+				redo: this.tableofContents
+			};
+			this.tocFiles.set(tocPath, toc);
 		} else {
 			throw (new Error(loc.sectionNotFound(findSection.title, tocPath)));
 		}
@@ -463,9 +467,7 @@ export class BookTocManager implements IBookTocManager {
 						await this._sourceBook.reinitializeContents();
 					}
 				}
-				this.tocFiles.push(this.tocStates);
 			}
-			// this.tocFiles.push(this._initialToc);
 		}
 	}
 
