@@ -172,16 +172,17 @@ export class Project implements ISqlProject {
 		for (let ig = 0; ig < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup).length; ig++) {
 			const itemGroup = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup)[ig];
 
-			// find all files to include that are specified in the project file
+			// find all files to include that are specified to be included and removed (for sdk style projects) in the project file
+			// the build elements are evaluated in the order they are in the sqlproj (same way sdk style csproj handles this)
 			try {
 				const buildElements = itemGroup.getElementsByTagName(constants.Build);
 
-				// <Build Include....>
 				for (let b = 0; b < buildElements.length; b++) {
-					const relativePath = buildElements[b].getAttribute(constants.Include)!;
+					// <Build Include....>
+					const includeRelativePath = buildElements[b].getAttribute(constants.Include)!;
 
-					if (relativePath) {
-						const fullPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(relativePath));
+					if (includeRelativePath) {
+						const fullPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(includeRelativePath));
 
 						// sdk style projects can handle other globbing patterns like <Build Include="folder1\*.sql" /> and <Build Include="Production*.sql" />
 						if (this._isSdkStyleProject && !(await utils.exists(fullPath))) {
@@ -192,25 +193,23 @@ export class Project implements ISqlProject {
 								filesSet.add(newFileRelativePath);
 							});
 						} else {
-							filesSet.add(relativePath);
+							filesSet.add(includeRelativePath);
 
 							// Right now only used for external streaming jobs
 							const typeAttribute = buildElements[b].getAttribute(constants.Type)!;
 							if (typeAttribute) {
-								entriesWithType.push({ relativePath, typeAttribute });
+								entriesWithType.push({ relativePath: includeRelativePath, typeAttribute: typeAttribute });
 							}
 						}
 					}
-				}
 
-				// <Build Remove....>
-				// after all the files have been included, remove the ones specified in the sqlproj to remove
-				if (this._isSdkStyleProject) {
-					for (let b = 0; b < buildElements.length; b++) {
-						const relativePath = buildElements[b].getAttribute(constants.Remove)!;
+					// <Build Remove....>
+					// remove files specified in the sqlproj to remove if this is an sdk style project
+					if (this._isSdkStyleProject) {
+						const removeRelativePath = buildElements[b].getAttribute(constants.Remove)!;
 
-						if (relativePath) {
-							const fullPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(relativePath));
+						if (removeRelativePath) {
+							const fullPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(removeRelativePath));
 
 							const globRemoveFiles = await utils.globWithPattern(fullPath);
 							globRemoveFiles.forEach(gf => {
@@ -900,7 +899,7 @@ export class Project implements ISqlProject {
 		itemGroup.appendChild(newFileNode);
 	}
 
-	private removeFileFromProjFile(path: string): void {
+	private async removeFileFromProjFile(path: string): Promise<void> {
 		const fileNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Build);
 		const preDeployNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.PreDeploy);
 		const postDeployNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.PostDeploy);
@@ -908,12 +907,38 @@ export class Project implements ISqlProject {
 		const nodes = [fileNodes, preDeployNodes, postDeployNodes, noneNodes];
 
 		let deleted = false;
+
+		// remove the <Build Include="..."> entry if there is one
 		for (let i = 0; i < nodes.length; i++) {
 			deleted = this.removeNode(path, nodes[i]);
 
 			if (deleted) {
-				return;
+				// still might need to add a <Build Remove="..."> node if this is an sdk style project
+				if (this.isSdkStyleProject) {
+					break;
+				} else {
+					return;
+				}
 			}
+		}
+
+		// if it's an sdk style project, we'll need to add a <Build Remove="..."> entry to remove this file if it's
+		// still included by a glob
+		if (this.isSdkStyleProject) {
+			// write any changes from removing an include node and get the current files included in the project
+			if (deleted) {
+				await this.serializeToProjFile(this.projFileXmlDoc);
+			}
+			const currentFiles = await this.readFilesInProject();
+
+			// only add a node to exclude the file if it's still included by a glob
+			if (currentFiles.find(f => f.relativePath === utils.convertSlashesForSqlProj(path))) {
+				const removeFileNode = this.projFileXmlDoc!.createElement(constants.Build);
+				removeFileNode.setAttribute(constants.Remove, utils.convertSlashesForSqlProj(path));
+				this.findOrCreateItemGroup(constants.Build).appendChild(removeFileNode);
+			}
+
+			return;
 		}
 
 		throw new Error(constants.unableToFindObject(path, constants.fileObject));
@@ -1234,7 +1259,7 @@ export class Project implements ISqlProject {
 		for (const entry of entries) {
 			switch (entry.type) {
 				case EntryType.File:
-					this.removeFileFromProjFile((<FileProjectEntry>entry).relativePath);
+					await this.removeFileFromProjFile((<FileProjectEntry>entry).relativePath);
 					break;
 				case EntryType.Folder:
 					this.removeFolderFromProjFile((<FileProjectEntry>entry).relativePath);
@@ -1261,6 +1286,9 @@ export class Project implements ISqlProject {
 		}); // TODO: replace <any>
 
 		await fs.writeFile(this._projectFilePath, xml);
+
+		// update projFileXmlDoc since the file was updated
+		this.projFileXmlDoc = new xmldom.DOMParser().parseFromString(xml);
 	}
 
 	/**
