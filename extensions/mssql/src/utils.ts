@@ -374,7 +374,7 @@ export function isLinux(): boolean {
 	return os.platform() === 'linux';
 }
 
-function getConfigUseNativeCredentials(): boolean {
+function getConfigUseNativeCredentials(): boolean | undefined {
 	let config = getConfiguration();
 	if (config) {
 		return Boolean(config[configUseNativeCredentials]);
@@ -388,9 +388,7 @@ function getConfigUseNativeCredentials(): boolean {
  * should be used instead of tools service
  */
 export function useNativeCredentialsEnabled(): boolean {
-	const linux: boolean = isLinux();
-	const useNativeCredentials: boolean = getConfigUseNativeCredentials();
-	return linux && useNativeCredentials;
+	return isLinux() && getConfigUseNativeCredentials();
 }
 
 /**

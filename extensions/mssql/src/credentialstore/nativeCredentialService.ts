@@ -43,9 +43,9 @@ export class NativeCredentialService extends SqlOpsFeature<any> {
 					registerOptions: undefined
 				});
 				if (this._useNativeCredentialService && !this._passwordsMigrated) {
-					const success = await this.migratePasswords();
-					this._passwordsMigrated = success;
-					await context.extensionContext.globalState.update(Utils.configPasswordsMigrated, success);
+					await this.migratePasswords();
+					this._passwordsMigrated = true;
+					await context.extensionContext.globalState.update(Utils.configPasswordsMigrated, this._passwordsMigrated);
 				}
 			}
 
@@ -80,7 +80,7 @@ export class NativeCredentialService extends SqlOpsFeature<any> {
 			 *
 			 * @returns Migrates all saved credentials to the native credential system
 			 */
-			private async migratePasswords(): Promise<boolean> {
+			private async migratePasswords(): Promise<void> {
 				const connections = await azdata.connection.getConnections(false);
 				const savedPasswordConnections = connections.filter(conn => conn.savePassword === true);
 				for (let i = 0; i < savedPasswordConnections.length; i++) {
@@ -88,7 +88,6 @@ export class NativeCredentialService extends SqlOpsFeature<any> {
 					await this.cleanCredential(conn);
 				}
 				await Utils.removeCredentialFile();
-				return true;
 			}
 
 			protected override registerProvider(options: any): Disposable {
