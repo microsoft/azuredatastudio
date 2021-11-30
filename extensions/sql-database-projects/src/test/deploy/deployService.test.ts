@@ -76,7 +76,8 @@ describe('deploy service', function (): void {
 				serverName: 'localhost',
 				userName: 'sa',
 				dockerBaseImage: 'image',
-				connectionRetryTimeout: 1
+				connectionRetryTimeout: 1,
+				dockerBaseImageEula: ''
 			}
 		};
 		const projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
@@ -105,7 +106,8 @@ describe('deploy service', function (): void {
 				serverName: 'localhost',
 				userName: 'sa',
 				dockerBaseImage: 'image',
-				connectionRetryTimeout: 1
+				connectionRetryTimeout: 1,
+				dockerBaseImageEula: ''
 			}
 		};
 		const projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
@@ -128,7 +130,8 @@ describe('deploy service', function (): void {
 			serverName: 'localhost',
 			userName: 'sa',
 			dockerBaseImage: 'image',
-			connectionRetryTimeout: 1
+			connectionRetryTimeout: 1,
+			dockerBaseImageEula: ''
 		};
 
 		const shellExecutionHelper = TypeMoq.Mock.ofType(ShellExecutionHelper);
@@ -177,7 +180,8 @@ describe('deploy service', function (): void {
 				port: 1433,
 				serverName: 'localhost',
 				userName: 'sa',
-				dockerBaseImage: 'image'
+				dockerBaseImage: 'image',
+				dockerBaseImageEula: ''
 			}
 		};
 
