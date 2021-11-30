@@ -70,6 +70,7 @@ export const dataSourcesNodeName = localize('dataSourcesNodeName', "Data Sources
 export const databaseReferencesNodeName = localize('databaseReferencesNodeName', "Database References");
 export const sqlConnectionStringFriendly = localize('sqlConnectionStringFriendly', "SQL connection string");
 export const yesString = localize('yesString', "Yes");
+export const openEulaString = localize('openEulaString', "Open License Agreement");
 export const noString = localize('noString', "No");
 export const noStringDefault = localize('noStringDefault', "No (default)");
 export const okString = localize('okString', "Ok");
@@ -149,7 +150,7 @@ export const portMustBeNumber = localize('portMustNotBeNumber', "Port must a be 
 export const valueCannotBeEmpty = localize('valueCannotBeEmpty', "Value cannot be empty");
 export const dockerImageLabelPrefix = 'source=sqldbproject';
 export const dockerImageNamePrefix = 'sqldbproject';
-export const eulaAgreementTemplate = 'I accept {0}.';
+export const eulaAgreementTemplate = localize('eulaAgreementTemplate', "I accept {0}.");
 export const eulaAgreementTitle = 'Microsoft SQL Server License Agreement';
 export const edgeEulaAgreementTitle = 'Microsoft Azure SQL Edge License Agreement';
 export const sqlServerEulaLink = 'https://go.microsoft.com/fwlink/?LinkId=746388';

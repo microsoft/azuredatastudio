@@ -70,10 +70,10 @@ export async function launchDeployAppIntegrationQuickpick(project: Project): Pro
 	};
 }
 
-async function launchEulaQuickPick(baseImage: string): Promise<string | undefined> {
+async function launchEulaQuickPick(baseImage: string): Promise<boolean> {
 	const baseImages = uiUtils.getDockerBaseImages();
 	const imageInfo = baseImages.find(x => x.name === baseImage);
-	let result: string | undefined = undefined;
+	let result: string | undefined = constants.openEulaString;
 	if (imageInfo?.agreementInfo?.link) {
 		const link = imageInfo?.agreementInfo?.link;
 
@@ -81,20 +81,22 @@ async function launchEulaQuickPick(baseImage: string): Promise<string | undefine
 		//
 		let choices = [
 			constants.yesString,
-			constants.noString
+			constants.noString,
+			constants.openEulaString
 		];
 		let options: vscode.QuickPickOptions = {
-			placeHolder: `${uiUtils.getAgreementDisplayText(imageInfo?.agreementInfo)} (${link.url})`,
+			placeHolder: `${uiUtils.getAgreementDisplayText(imageInfo?.agreementInfo)}`,
+			ignoreFocusOut: true
 		};
-		options.onDidSelectItem = (async (item: vscode.QuickPickItem | string) => {
-			if (item && imageInfo?.agreementInfo?.link) {
-				//	await vscode.env.openExternal(vscode.Uri.parse(imageInfo.agreementInfo.links[0].url));
-			}
-		});
 
-		result = await vscode.window.showQuickPick(choices, options);
+		while (result === constants.openEulaString) {
+			result = await vscode.window.showQuickPick(choices, options);
+			if (result === constants.openEulaString) {
+				await vscode.env.openExternal(vscode.Uri.parse(link.url));
+			}
+		}
 	}
-	return result;
+	return result === constants.yesString;
 }
 
 /**
@@ -158,7 +160,7 @@ export async function launchPublishToDockerContainerQuickpick(project: Project):
 	}
 
 	const eulaAccepted = await launchEulaQuickPick(baseImage);
-	if (eulaAccepted !== constants.yesString) {
+	if (!eulaAccepted) {
 		return undefined;
 	}
 
