@@ -77,15 +77,13 @@ async function launchEulaQuickPick(baseImage: string): Promise<boolean> {
 	if (imageInfo?.agreementInfo?.link) {
 		const link = imageInfo?.agreementInfo?.link;
 
-		// Ask user to update app settings or not
-		//
 		let choices = [
 			constants.yesString,
 			constants.noString,
 			constants.openEulaString
 		];
 		let options: vscode.QuickPickOptions = {
-			placeHolder: `${uiUtils.getAgreementDisplayText(imageInfo?.agreementInfo)}`,
+			placeHolder: uiUtils.getAgreementDisplayText(imageInfo?.agreementInfo),
 			ignoreFocusOut: true
 		};
 

@@ -607,7 +607,7 @@ export class PublishDatabaseDialog {
 			const baseImage = getDockerBaseImages().find(x => x.name === this.baseDockerImageDropDown?.value);
 			if (baseImage?.agreementInfo.link) {
 				const text = view.modelBuilder.text().withProps({
-					value: baseImage.agreementInfo.template,
+					value: constants.eulaAgreementTemplate,
 					links: [baseImage.agreementInfo.link],
 					requiredIndicator: true
 				}).component();

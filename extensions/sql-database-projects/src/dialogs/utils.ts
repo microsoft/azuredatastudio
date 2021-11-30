@@ -27,11 +27,7 @@ export function getConnectionName(connection: any): string {
 }
 
 export function getAgreementDisplayText(agreementInfo: AgreementInfo): string {
-	// the agreement template will have {index} as placeholder for hyperlinks
-	// this method will get the display text after replacing the placeholders
-	let text = agreementInfo.template;
-	text = text.replace(`{0}`, agreementInfo.link!.text);
-	return text;
+	return constants.eulaAgreementText(agreementInfo.link!.text);
 }
 
 export function getDockerBaseImages(): DockerImageInfo[] {
@@ -39,7 +35,6 @@ export function getDockerBaseImages(): DockerImageInfo[] {
 		{
 			name: `${constants.sqlServerDockerRegistry}/${constants.sqlServerDockerRepository}:2017-latest`,
 			agreementInfo: {
-				template: constants.eulaAgreementTemplate,
 				link: {
 					text: constants.eulaAgreementTitle,
 					url: constants.sqlServerEulaLink,
@@ -49,7 +44,6 @@ export function getDockerBaseImages(): DockerImageInfo[] {
 		{
 			name: `${constants.sqlServerDockerRegistry}/${constants.sqlServerDockerRepository}:2019-latest`,
 			agreementInfo: {
-				template: constants.eulaAgreementTemplate,
 				link: {
 					text: constants.eulaAgreementTitle,
 					url: constants.sqlServerEulaLink,
@@ -59,7 +53,6 @@ export function getDockerBaseImages(): DockerImageInfo[] {
 		{
 			name: `${constants.sqlServerDockerRegistry}/${constants.azureSqlEdgeDockerRepository}:latest`,
 			agreementInfo: {
-				template: constants.eulaAgreementTemplate,
 				link: {
 					text: constants.edgeEulaAgreementTitle,
 					url: constants.sqlServerEdgeEulaLink,

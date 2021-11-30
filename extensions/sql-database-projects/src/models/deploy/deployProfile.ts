@@ -38,6 +38,5 @@ export interface DockerImageInfo {
 	agreementInfo: AgreementInfo
 }
 export interface AgreementInfo {
-	template: string;
 	link?: azdataType.LinkArea;
 }
