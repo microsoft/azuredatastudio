@@ -2,12 +2,9 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
 import { localize } from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
-//import { ICommandService } from 'vs/platform/commands/common/commands';
-//import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-//import { ICompositeBar } from 'vs/workbench/browser/parts/compositeBarActions';
+
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { IExtensionsWorkbenchService, VIEWLET_ID, IExtensionsViewPaneContainer } from 'vs/workbench/contrib/extensions/common/extensions';
 import { IExtensionRecommendation } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
@@ -17,12 +14,6 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 import { PagedModel } from 'vs/base/common/paging';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { IActivityBarService } from 'vs/workbench/services/activityBar/browser/activityBarService';
-//import { IPanelService } from 'vs/workbench/services/panel/common/panelService';
-//import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-
-
-//import { CompositeBar } from 'vs/workbench/browser/parts/compositeBar';
-//import { ICompositeBar } from 'vs/workbench/browser/parts/compositeBarActions';
 
 function getScenarioID(scenarioType: string) {
 	return 'workbench.extensions.action.show' + scenarioType;
@@ -102,11 +93,11 @@ export class HidePanel extends Action {
 	static readonly LABEL = localize('hidePanel', "Hide the panel...");
 
 	constructor(
-		id: string = HideExtensionMenu.ID,
-		label: string = HideExtensionMenu.LABEL,
+		id: string = HidePanel.ID,
+		label: string = HidePanel.LABEL,
 		@IWorkbenchLayoutService private readonly layoutService: IWorkbenchLayoutService
 	) {
-		super(id, label, 'panel');
+		super(id, label);
 	}
 
 	override async run(): Promise<void> {
@@ -119,8 +110,8 @@ export class HideSettings extends Action {
 	static readonly LABEL = localize('hideSettings', "Hide the settings icon...");
 
 	constructor(
-		id: string = HideExtensionMenu.ID,
-		label: string = HideExtensionMenu.LABEL,
+		id: string = HideSettings.ID,
+		label: string = HideSettings.LABEL,
 	) {
 		super(id, label);
 	}
@@ -132,47 +123,22 @@ export class HideSettings extends Action {
 	}
 }
 
-
-export class HideExtensionMenu extends Action {
-	static readonly ID = 'workbench.extensions.action.hideExtensionsMenu';
-	static readonly LABEL = localize('hideExtensionsMenu', "Hide the extension viewlet...");
+export class HideActivityBarViewContainers extends Action {
+	static readonly ID = 'workbench.extensions.action.hideActivityBarViewContainers';
+	static readonly LABEL = localize('hideActivityBarViewContainers', "Hide the extension viewlet...");
 
 	constructor(
-		id: string = HideExtensionMenu.ID,
-		label: string = HideExtensionMenu.LABEL,
-		//private compositeBar: ICompositeBar
-		//@ICommandService private readonly commandService: ICommandService,
+		id: string = HideActivityBarViewContainers.ID,
+		label: string = HideActivityBarViewContainers.LABEL,
 		@IActivityBarService private readonly activityBarService: IActivityBarService,
-		@IWorkbenchLayoutService private readonly layoutService: IWorkbenchLayoutService
-		//@IContextViewService private readonly contextViewService: IContextViewService
 	) {
-		super(id, label, 'panel');
+		super(id, label);
 	}
 
 	override async run(): Promise<void> {
-		//this.panelService.getPinnedViewContainerIds();
-		this.activityBarService.getVisibleViewContainerIds();
-		this.layoutService.setSideBarHidden(true);
-		let array = ['Search', 'Explorer', 'Source Control', 'Extensions'];
-		let uiElement = document.querySelector('[aria-label="Active View Switcher"]');
-		let childRemoveIndices = [];
-		for (let i = 0; i < uiElement.children.length; i++) {
-			let aria = uiElement.children[i].getAttribute('aria-label');
-			for (let j = 0; j < array.length; j++) {
-				if (aria.includes(array[j])) {
-					childRemoveIndices.push(i);
-				}
-			}
+		let array = ['workbench.view.search', 'workbench.view.explorer', 'workbench.view.scm', 'workbench.view.extensions'];
+		for (let j = 0; j < array.length; j++) {
+			this.activityBarService.hideViewContainer(array[j]);
 		}
-
-		for (let i = childRemoveIndices.length - 1; i >= 0; i--) {
-			uiElement.removeChild(uiElement.children[childRemoveIndices[i]]);
-		}
-
-		//await this.commandService.executeCommand('workbench.view.extensions');
-		//this.compositeBar.unpin('workbench.view.extensions');
-
-		//let bottomPanel = document.getElementById('workbench.parts.panel');
-		//bottomPanel.parentNode.removeChild(bottomPanel);
 	}
 }

@@ -9,7 +9,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { IWorkbenchActionRegistry, Extensions as WorkbenchActionExtensions } from 'vs/workbench/common/actions';
 import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
 import { ExtensionsLabel, IExtensionGalleryService, IGalleryExtension } from 'vs/platform/extensionManagement/common/extensionManagement';
-import { OpenExtensionAuthoringDocsAction, HideExtensionMenu, HideSettings, HidePanel } from 'sql/workbench/contrib/extensions/browser/extensionsActions';
+import { OpenExtensionAuthoringDocsAction, HideActivityBarViewContainers, HideSettings, HidePanel } from 'sql/workbench/contrib/extensions/browser/extensionsActions';
 import { localize } from 'vs/nls';
 import { deepClone } from 'vs/base/common/objects';
 import { IWorkbenchContribution, Extensions as WorkbenchExtensions, IWorkbenchContributionsRegistry } from 'vs/workbench/common/contributions';
@@ -22,12 +22,12 @@ actionRegistry.registerWorkbenchAction(SyncActionDescriptor.from(OpenExtensionAu
 
 actionRegistry.registerWorkbenchAction(
 	SyncActionDescriptor.create(
-		HideExtensionMenu,
-		HideExtensionMenu.ID,
-		HideExtensionMenu.LABEL,
+		HideActivityBarViewContainers,
+		HideActivityBarViewContainers.ID,
+		HideActivityBarViewContainers.LABEL,
 		{ primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyMod.CtrlCmd | KeyCode.KEY_V) }
 	),
-	HideExtensionMenu.LABEL
+	HideActivityBarViewContainers.LABEL
 );
 actionRegistry.registerWorkbenchAction(
 	SyncActionDescriptor.create(
@@ -47,6 +47,7 @@ actionRegistry.registerWorkbenchAction(
 	),
 	HidePanel.LABEL
 );
+
 // Register Commands
 CommandsRegistry.registerCommand('azdata.extension.open', (accessor: ServicesAccessor, extension: { id: string }) => {
 	if (extension && extension.id) {
@@ -91,7 +92,10 @@ export class ADSWebLite implements IWorkbenchContribution {
 		if (product.quality === 'tsgops-image') {
 			await this.commandService.executeCommand('workbench.extensions.action.hideSettings');
 			await this.commandService.executeCommand('workbench.extensions.action.hidePanel');
-			await this.commandService.executeCommand('workbench.extensions.action.hideExtensionsMenu');
+			let array = ['workbench.view.search', 'workbench.view.explorer', 'workbench.view.scm', 'workbench.view.extensions'];
+			for (let j = 0; j < array.length; j++) {
+				await this.commandService.executeCommand('workbench.extensions.action.hideActivityBarViewContainers', array[j]);
+			}
 		}
 	}
 }
