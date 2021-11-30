@@ -830,6 +830,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				let contents: nb.ICellContents = edit.cell as nb.ICellContents;
 				newCells.push(this._notebookOptions.factory.createCell(contents, { notebook: this, isTrusted: this._trustedMode }));
 			}
+			this.undoService.pushElement(new AddCellEdit(this, newCells[0], edit.range.start));
 			this._cells.splice(edit.range.start, edit.range.end - edit.range.start, ...newCells);
 			if (newCells.length > 0) {
 				this.updateActiveCell(newCells[0]);
