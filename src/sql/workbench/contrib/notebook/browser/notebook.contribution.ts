@@ -223,14 +223,16 @@ CommandsRegistry.registerCommand({
 
 		for (let editor of editors) {
 			if (editor instanceof NotebookInput) {
-				let model: INotebookModel = editor.notebookModel;
-				if (model?.providerId === JUPYTER_PROVIDER_ID) {
-					let jupyterNotebookManager: IExecuteManager = model.executeManagers.find(x => x.providerId === JUPYTER_PROVIDER_ID);
-					await jupyterNotebookManager.sessionManager.shutdownAll();
-					jupyterNotebookManager.sessionManager.dispose();
-					await jupyterNotebookManager.serverManager.stopServer();
-					return;
-				}
+				editor.modelResolved.then(async () => {
+					let model: INotebookModel = (<NotebookInput>editor).notebookModel;
+					if (model?.providerId === JUPYTER_PROVIDER_ID) {
+						let jupyterNotebookManager: IExecuteManager = model.executeManagers.find(x => x.providerId === JUPYTER_PROVIDER_ID);
+						await jupyterNotebookManager.sessionManager.shutdownAll();
+						jupyterNotebookManager.sessionManager.dispose();
+						await jupyterNotebookManager.serverManager.stopServer();
+						return;
+					}
+				});
 			}
 		}
 	}

@@ -265,7 +265,7 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 	}
 
 	public get notebookModel(): INotebookModel | undefined {
-		return this._model?.getNotebookModel();
+		return this._model.getNotebookModel();
 	}
 
 	public get notebookFindModel(): NotebookFindModel {
@@ -415,6 +415,10 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 			this._modelResolved.resolve();
 			return this._model;
 		}
+	}
+
+	get modelResolved(): Promise<void> {
+		return this._modelResolved.promise;
 	}
 
 	private hookDirtyListener(dirtyEvent: Event<void>, listener: (e: any) => void): void {
