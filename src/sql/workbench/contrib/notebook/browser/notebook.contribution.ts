@@ -223,6 +223,8 @@ CommandsRegistry.registerCommand({
 
 		for (let editor of editors) {
 			if (editor instanceof NotebookInput) {
+				// Wait for NotebookInput.resolve() to be called to ensure the _model field in NotebookInput
+				// is not undefined when trying to get the notebookModel.
 				editor.modelResolved.then(async () => {
 					let model: INotebookModel = (<NotebookInput>editor).notebookModel;
 					if (model?.providerId === JUPYTER_PROVIDER_ID) {
