@@ -101,7 +101,7 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 	private menuBar: CustomMenubarControl | undefined;
 	private menuBarContainer: HTMLElement | undefined;
 
-	public compositeBar: CompositeBar;
+	private compositeBar: CompositeBar;
 	private compositeBarContainer: HTMLElement | undefined;
 
 	private globalActivityAction: ActivityAction | undefined;
