@@ -461,13 +461,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	public async getStandardKernelsForProvider(provider: string): Promise<nb.IStandardKernel[] | undefined> {
 		let descriptor = this._providerToStandardKernels.get(provider.toUpperCase());
 		if (descriptor) {
-			// Wait up to 30 seconds for kernels to be registered
-			const timeout = 30000;
-			let promises: Promise<nb.IStandardKernel[]>[] = [
-				descriptor.instanceReady,
-				new Promise<nb.IStandardKernel[]>((resolve) => setTimeout(() => resolve(undefined), timeout))
-			];
-			return Promise.race(promises);
+			return this.waitOnStandardKernelsAvailability(descriptor);
 		}
 		return undefined;
 	}
@@ -641,11 +635,12 @@ export class NotebookService extends Disposable implements INotebookService {
 
 	private async getExecuteProviderInstance(providerId: string, timeout?: number): Promise<IExecuteProvider> {
 		let providerDescriptor = this._executeProviders.get(providerId);
+		let kernelDescriptor = this._providerToStandardKernels.get(providerId.toUpperCase());
 		let instance: IExecuteProvider;
 
 		// Try get from actual provider, waiting on its registration
-		if (providerDescriptor) {
-			if (!providerDescriptor.instance) {
+		if (providerDescriptor && kernelDescriptor) {
+			if (!providerDescriptor.instance || !kernelDescriptor.instance) {
 				// Await extension registration before awaiting provider registration
 				try {
 					await this._extensionService.whenInstalledExtensionsRegistered();
@@ -653,6 +648,12 @@ export class NotebookService extends Disposable implements INotebookService {
 					this._logService.error(error);
 				}
 				instance = await this.waitOnExecuteProviderAvailability(providerDescriptor, timeout);
+				if (instance) {
+					let kernels = await this.waitOnStandardKernelsAvailability(kernelDescriptor, timeout);
+					if (!kernels) {
+						instance = undefined;
+					}
+				}
 			} else {
 				instance = providerDescriptor.instance;
 			}
@@ -687,6 +688,16 @@ export class NotebookService extends Disposable implements INotebookService {
 		let promises: Promise<IExecuteProvider>[] = [
 			providerDescriptor.instanceReady,
 			new Promise<IExecuteProvider>((resolve, reject) => setTimeout(() => resolve(undefined), timeout))
+		];
+		return Promise.race(promises);
+	}
+
+	private waitOnStandardKernelsAvailability(kernelsDescriptor: StandardKernelsDescriptor, timeout?: number): Promise<nb.IStandardKernel[] | undefined> {
+		// Wait up to 30 seconds for the provider to be registered
+		timeout = timeout ?? 30000;
+		let promises: Promise<nb.IStandardKernel[]>[] = [
+			kernelsDescriptor.instanceReady,
+			new Promise<nb.IStandardKernel[]>((resolve, reject) => setTimeout(() => resolve(undefined), timeout))
 		];
 		return Promise.race(promises);
 	}
