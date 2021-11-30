@@ -387,7 +387,7 @@ export class PublishDatabaseDialog {
 			this.onPublishTypeChange(!checked, view);
 		});
 
-		const columnCheckbox = view.modelBuilder.flexContainer()
+		const radioButtonContainer = view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
 			.withItems([this.existingServerRadioButton, this.dockerServerRadioButton])
 			.withProps({ ariaRole: 'radiogroup' })
@@ -395,7 +395,7 @@ export class PublishDatabaseDialog {
 
 		let flexRadioButtonsModel: azdataType.FlexContainer = view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'row', alignItems: 'baseline' })
-			.withItems([publishToLabel, columnCheckbox], { CSSStyles: { flex: '0 0 auto', 'margin-right': '10px' } })
+			.withItems([publishToLabel, radioButtonContainer], { CSSStyles: { flex: '0 0 auto', 'margin-right': '10px' } })
 			.component();
 
 		return flexRadioButtonsModel;
