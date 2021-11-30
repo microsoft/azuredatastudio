@@ -12,7 +12,6 @@ import { Project } from '../models/project';
 import { getPublishDatabaseSettings } from './publishDatabaseQuickpick';
 import * as path from 'path';
 import * as fse from 'fs-extra';
-import { IconPathHelper } from '../common/iconHelper';
 
 /**
  * Create flow for Deploying a database using only VS Code-native APIs such as QuickPick
@@ -78,10 +77,7 @@ async function launchEulaQuickPick(baseImage: string): Promise<boolean> {
 	const agreementInfo = imageInfo?.agreementInfo;
 	if (agreementInfo) {
 		const openEulaButton: vscode.QuickInputButton = {
-			iconPath: {
-				dark: vscode.Uri.parse(IconPathHelper.folder.dark),
-				light: vscode.Uri.parse(IconPathHelper.folder.light)
-			},
+			iconPath: new vscode.ThemeIcon('link-external'),
 			tooltip: constants.openEulaString
 		};
 		const quickPick = vscode.window.createQuickPick();
