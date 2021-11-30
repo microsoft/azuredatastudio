@@ -33,15 +33,15 @@ export function defaultSort<T extends Slick.SlickData>(args: Slick.OnSortEventAr
 	const comparer: (a: T, b: T) => number = (a: T, b: T) => {
 		const value1 = cellValueGetter(a[field]);
 		const value2 = cellValueGetter(b[field]);
-		const isValue1Number = !isNaN(Number(value1));
-		const isValue2Number = !isNaN(Number(value2));
+		const num1 = Number(value1);
+		const num2 = Number(value2);
+		const isValue1Number = !isNaN(num1);
+		const isValue2Number = !isNaN(num2);
 		// Order: undefined -> number -> string
 		if (value1 === undefined || value2 === undefined) {
 			return value1 === value2 ? 0 : (value1 === undefined ? -1 : 1);
 		} else if (isValue1Number || isValue2Number) {
 			if (isValue1Number && isValue2Number) {
-				const num1 = Number(value1);
-				const num2 = Number(value2);
 				return num1 === num2 ? 0 : num1 > num2 ? 1 : -1;
 			} else {
 				return isValue1Number ? -1 : 1;
