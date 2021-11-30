@@ -155,8 +155,8 @@ export const eulaAgreementTemplate = localize('eulaAgreementTemplate', "I accept
 export function eulaAgreementText(name: string) { return localize('eulaAgreementText', "I accept the {0}.", name); }
 export const eulaAgreementTitle = localize('eulaAgreementTitle', "Microsoft SQL Server License Agreement");
 export const edgeEulaAgreementTitle = localize('edgeEulaAgreementTitle', "Microsoft Azure SQL Edge License Agreement");
-export const sqlServerEulaLink = 'https://go.microsoft.com/fwlink/?LinkId=746388';
-export const sqlServerEdgeEulaLink = 'https://go.microsoft.com/fwlink/?linkid=2128283';
+export const sqlServerEulaLink = 'https://go.microsoft.com/fwlink/?linkid=857698';
+export const sqlServerEdgeEulaLink = 'https://go.microsoft.com/fwlink/?linkid=2139274';
 export const connectionNamePrefix = 'SQLDbProject';
 export const sqlServerDockerRegistry = 'mcr.microsoft.com';
 export const sqlServerDockerRepository = 'mssql/server';

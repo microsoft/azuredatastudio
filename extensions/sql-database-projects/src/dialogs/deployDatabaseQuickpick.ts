@@ -12,6 +12,7 @@ import { Project } from '../models/project';
 import { getPublishDatabaseSettings } from './publishDatabaseQuickpick';
 import * as path from 'path';
 import * as fse from 'fs-extra';
+import { IconPathHelper } from '../common/iconHelper';
 
 /**
  * Create flow for Deploying a database using only VS Code-native APIs such as QuickPick
@@ -71,30 +72,50 @@ export async function launchDeployAppIntegrationQuickpick(project: Project): Pro
 }
 
 async function launchEulaQuickPick(baseImage: string): Promise<boolean> {
+	let eulaAccepted: boolean = false;
 	const baseImages = uiUtils.getDockerBaseImages();
 	const imageInfo = baseImages.find(x => x.name === baseImage);
-	let result: string | undefined = constants.openEulaString;
-	if (imageInfo?.agreementInfo?.link) {
-		const link = imageInfo?.agreementInfo?.link;
-
-		let choices = [
-			constants.yesString,
-			constants.noString,
-			constants.openEulaString
-		];
-		let options: vscode.QuickPickOptions = {
-			placeHolder: uiUtils.getAgreementDisplayText(imageInfo?.agreementInfo),
-			ignoreFocusOut: true
+	const agreementInfo = imageInfo?.agreementInfo;
+	if (agreementInfo) {
+		const openEulaButton: vscode.QuickInputButton = {
+			iconPath: {
+				dark: vscode.Uri.parse(IconPathHelper.folder.dark),
+				light: vscode.Uri.parse(IconPathHelper.folder.light)
+			},
+			tooltip: constants.openEulaString
 		};
+		const quickPick = vscode.window.createQuickPick();
+		quickPick.items = [{ label: constants.yesString },
+		{ label: constants.noString }];
+		quickPick.placeholder = uiUtils.getAgreementDisplayText(agreementInfo);
+		quickPick.ignoreFocusOut = true;
+		quickPick.buttons = [openEulaButton];
+		const disposables: vscode.Disposable[] = [];
+		try {
+			const eulaAcceptedPromise = new Promise<boolean>((resolve) => {
+				disposables.push(
+					quickPick.onDidHide(() => {
+						resolve(false);
+					}),
+					quickPick.onDidTriggerButton(async () => {
+						await vscode.env.openExternal(vscode.Uri.parse(agreementInfo.link.url));
+					}),
+					quickPick.onDidChangeSelection((item) => {
+						resolve(item[0].label === constants.yesString);
+					}));
+			});
 
-		while (result === constants.openEulaString) {
-			result = await vscode.window.showQuickPick(choices, options);
-			if (result === constants.openEulaString) {
-				await vscode.env.openExternal(vscode.Uri.parse(link.url));
-			}
+			quickPick.show();
+			eulaAccepted = await eulaAcceptedPromise;
+			quickPick.hide();
 		}
+		finally {
+			disposables.forEach(d => d.dispose());
+		}
+
+		return eulaAccepted;
 	}
-	return result === constants.yesString;
+	return false;
 }
 
 /**
