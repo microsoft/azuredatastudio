@@ -265,7 +265,7 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 	}
 
 	public get notebookModel(): INotebookModel | undefined {
-		return this._model.getNotebookModel();
+		return this._model?.getNotebookModel();
 	}
 
 	public get notebookFindModel(): NotebookFindModel {
