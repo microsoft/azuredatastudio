@@ -35,7 +35,7 @@ export class TestAccountManagementService implements IAccountManagementService {
 		return undefined;
 	}
 
-	copyUserCodeAndOpenBrowser(userCode: string, uri: string): void {
+	copyUserCodeAndOpenBrowser(userCode: string, uri: string): Promise<void> {
 		return undefined;
 	}
 

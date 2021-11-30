@@ -362,12 +362,10 @@ export class AccountManagementService implements IAccountManagementService {
 	/**
 	 * Copy the user code to the clipboard and open a browser to the verification URI
 	 */
-	public copyUserCodeAndOpenBrowser(userCode: string, uri: string): void {
-		this._clipboardService.writeText(userCode).then(() => {
-			this._openerService.open(URI.parse(uri));
-		}).catch(err => {
-			onUnexpectedError(err);
-		});
+	public async copyUserCodeAndOpenBrowser(userCode: string, uri: string): Promise<void> {
+		await this._clipboardService.writeText(userCode).catch(err => onUnexpectedError(err));
+		await this._openerService.open(URI.parse(uri)).catch(err => onUnexpectedError(err));
+
 	}
 
 	private async _registerProvider(providerMetadata: azdata.AccountProviderMetadata, provider: azdata.AccountProvider): Promise<void> {
