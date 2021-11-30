@@ -151,8 +151,9 @@ export const valueCannotBeEmpty = localize('valueCannotBeEmpty', "Value cannot b
 export const dockerImageLabelPrefix = 'source=sqldbproject';
 export const dockerImageNamePrefix = 'sqldbproject';
 
-export const eulaAgreementTemplate = localize('eulaAgreementTemplate', "I accept the {0}.");
-export function eulaAgreementText(name: string) { return localize('eulaAgreementText', "I accept the {0}.", name); }
+//
+export const eulaAgreementTemplate = localize({ key: 'eulaAgreementTemplate', comment: ['The placeholders are contents of the line and should not be translated.'] }, "I accept the {0}.");
+export function eulaAgreementText(name: string) { return localize({ key: 'eulaAgreementText', comment: ['The placeholders are contents of the line and should not be translated.'] }, "I accept the {0}.", name); }
 export const eulaAgreementTitle = localize('eulaAgreementTitle', "Microsoft SQL Server License Agreement");
 export const edgeEulaAgreementTitle = localize('edgeEulaAgreementTitle', "Microsoft Azure SQL Edge License Agreement");
 export const sqlServerEulaLink = 'https://go.microsoft.com/fwlink/?linkid=857698';

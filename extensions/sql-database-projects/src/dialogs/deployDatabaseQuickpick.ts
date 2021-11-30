@@ -83,7 +83,7 @@ async function launchEulaQuickPick(baseImage: string): Promise<boolean> {
 		const quickPick = vscode.window.createQuickPick();
 		quickPick.items = [{ label: constants.yesString },
 		{ label: constants.noString }];
-		quickPick.placeholder = uiUtils.getAgreementDisplayText(agreementInfo);
+		quickPick.title = uiUtils.getAgreementDisplayText(agreementInfo);
 		quickPick.ignoreFocusOut = true;
 		quickPick.buttons = [openEulaButton];
 		const disposables: vscode.Disposable[] = [];
