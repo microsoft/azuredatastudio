@@ -382,11 +382,7 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 		this._untitledEditorModel = value;
 	}
 
-	override async resolve(): Promise<NotebookEditorModel | undefined> {
-		await this._providersLoaded;
-		if (!await this.notebookService.canResolveProvider(this._providerId)) {
-			return undefined;
-		}
+	override async resolve(): Promise<NotebookEditorModel> {
 		if (!this._modelResolveInProgress) {
 			this._modelResolveInProgress = true;
 		} else {

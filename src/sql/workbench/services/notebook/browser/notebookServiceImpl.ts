@@ -50,7 +50,7 @@ import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editor
 import { IEditorInput, IEditorPane } from 'vs/workbench/common/editor';
 import { isINotebookInput } from 'sql/workbench/services/notebook/browser/interface';
 import { INotebookShowOptions } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { NotebookLanguage } from 'sql/workbench/common/constants';
+import { JUPYTER_PROVIDER_ID, NotebookLanguage } from 'sql/workbench/common/constants';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { SqlSerializationProvider } from 'sql/workbench/services/notebook/browser/sql/sqlSerializationProvider';
 
@@ -248,25 +248,6 @@ export class NotebookService extends Disposable implements INotebookService {
 		lifecycleService.onWillShutdown(() => this.shutdown());
 	}
 
-	public async canResolveProvider(providerId: string): Promise<boolean> {
-		if (!providerId) {
-			return false;
-		}
-		await this._extensionService.activateByEvent(`onNotebook:*`);
-
-		let upperCaseProvider = providerId.toUpperCase();
-		if (!this._providerToStandardKernels.has(upperCaseProvider)) {
-			await this._extensionService.whenInstalledExtensionsRegistered();
-			await this._extensionService.activateByEvent(`onNotebook:${providerId}`);
-			if (this._providerToStandardKernels.has(upperCaseProvider)) {
-				return true;
-			} else {
-				await this._extensionService.activateByEvent(`*`);
-			}
-		}
-		return this._providerToStandardKernels.has(upperCaseProvider);
-	}
-
 	public async openNotebook(resource: UriComponents, options: INotebookShowOptions): Promise<IEditorPane | undefined> {
 		const uri = URI.revive(resource);
 
@@ -374,6 +355,13 @@ export class NotebookService extends Disposable implements INotebookService {
 			// Standard kernels might get registered later for VSCode notebooks, so add a descriptor to wait on
 			let descriptor = new StandardKernelsDescriptor(p.id);
 			this._providerToStandardKernels.set(p.id.toUpperCase(), descriptor);
+		}
+
+		// Emit activation event if the provider is not one of the default options
+		if (p.id !== SQL_NOTEBOOK_PROVIDER && p.id !== JUPYTER_PROVIDER_ID) {
+			this._extensionService.whenInstalledExtensionsRegistered().then(() => {
+				this._extensionService.activateByEvent(`onNotebook:${p.id}`).catch(err => onUnexpectedError(err));
+			}).catch(err => onUnexpectedError(err));
 		}
 	}
 

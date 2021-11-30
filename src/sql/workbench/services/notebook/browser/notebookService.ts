@@ -140,8 +140,6 @@ export interface INotebookService {
 	openNotebook(resource: UriComponents, options: INotebookShowOptions): Promise<IEditorPane | undefined>;
 
 	getUntitledUriPath(originalTitle: string): string;
-
-	canResolveProvider(providerId: string): Promise<boolean>;
 }
 
 export interface IExecuteProvider {
