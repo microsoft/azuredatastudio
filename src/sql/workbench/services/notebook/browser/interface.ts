@@ -9,7 +9,7 @@ import { IContentLoader } from 'sql/workbench/services/notebook/browser/models/m
 import { IStandardKernelWithProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 
 export interface INotebookInput {
-	readonly defaultKernel: azdata.nb.IKernelSpec,
+	defaultKernel?: azdata.nb.IKernelSpec,
 	connectionProfile?: azdata.IConnectionProfile,
 	isDirty(): boolean;
 	setDirty(boolean);

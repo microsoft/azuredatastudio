@@ -131,11 +131,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 		this._trustedMode = false;
 		this._providerId = _notebookOptions.providerId;
-		this._defaultKernel = _notebookOptions.defaultKernel;
 		this._onProviderIdChanged.fire(this._providerId);
 		if (this._notebookOptions.layoutChanged) {
 			this._notebookOptions.layoutChanged(() => this._layoutChanged.fire());
 		}
+		this._defaultKernel = _notebookOptions.defaultKernel;
 	}
 
 	private get serializationManagers(): ISerializationManager[] {

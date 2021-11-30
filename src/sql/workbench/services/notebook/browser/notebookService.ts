@@ -74,8 +74,6 @@ export interface INotebookService {
 
 	getProvidersForFileType(fileType: string): string[] | undefined;
 
-	getDefaultKernelSpecForProvider(provider: string, notebookUri: URI): Promise<azdata.nb.IKernelSpec | undefined>;
-
 	getStandardKernelsForProvider(provider: string): Promise<azdata.nb.IStandardKernel[] | undefined>;
 
 	getOrCreateSerializationManager(providerId: string, uri: URI): Promise<ISerializationManager>;
