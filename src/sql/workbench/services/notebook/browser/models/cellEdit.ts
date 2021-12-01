@@ -39,7 +39,7 @@ export class SplitCellEdit implements IResourceUndoRedoElement {
 	}
 
 	redo(): void {
-		// no op
+		// no-op currently will add support on next release
 	}
 }
 

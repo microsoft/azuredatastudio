@@ -696,10 +696,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._cells.push(cell);
 			index = undefined;
 		}
+		cell.isEditMode = true;
 		if (addToUndoStack) {
 			this.undoService.pushElement(new AddCellEdit(this, cell, index));
-
-			cell.isEditMode = true;
 			// Set newly created cell as active cell
 			this.updateActiveCell(cell);
 		}
