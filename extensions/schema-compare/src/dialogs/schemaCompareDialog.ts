@@ -529,10 +529,9 @@ export class SchemaCompareDialog {
 
 		let radioButtons = [this.sourceDatabaseRadioButton, this.sourceDacpacRadioButton];
 
-		// TODO: re-add once database projects changes are checked in; chicken-and-egg problem (https://github.com/microsoft/azuredatastudio/pull/17738)
-		// if (vscode.extensions.getExtension(loc.sqlDatabaseProjectExtensionId)) {
-		// 	radioButtons.push(this.sourceProjectRadioButton);
-		// }
+		if (vscode.extensions.getExtension(loc.sqlDatabaseProjectExtensionId)) {
+			radioButtons.push(this.sourceProjectRadioButton);
+		}
 
 		let flexRadioButtonsModel = this.view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
@@ -618,10 +617,9 @@ export class SchemaCompareDialog {
 
 		let radioButtons = [targetDatabaseRadioButton, targetDacpacRadioButton];
 
-		// TODO: re-add once database projects changes are checked in; chicken-and-egg problem (https://github.com/microsoft/azuredatastudio/pull/17738)
-		// if (vscode.extensions.getExtension(loc.sqlDatabaseProjectExtensionId)) {
-		// 	radioButtons.push(targetProjectRadioButton);
-		// }
+		if (vscode.extensions.getExtension(loc.sqlDatabaseProjectExtensionId)) {
+			radioButtons.push(targetProjectRadioButton);
+		}
 
 		let flexRadioButtonsModel = this.view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
