@@ -35,7 +35,7 @@ import { isUUID } from 'vs/base/common/uuid';
 import { TextModel } from 'vs/editor/common/model/textModel';
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
 import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
-import { AddCellEdit, DeleteCellEdit, MoveCellEdit } from 'sql/workbench/services/notebook/browser/models/cellEdit';
+import { AddCellEdit, DeleteCellEdit, MoveCellEdit, SplitCellEdit } from 'sql/workbench/services/notebook/browser/models/cellEdit';
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -544,7 +544,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this.insertCell(cell, index);
 	}
 
-	public splitCell(cellType: CellType, notebookService: INotebookService, index?: number): ICellModel | undefined {
+	public splitCell(cellType: CellType, notebookService: INotebookService, index?: number, addToUndoStack: boolean = true): ICellModel | undefined {
 		if (this.inErrorState) {
 			return undefined;
 		}
@@ -620,7 +620,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						newCell = this.createCell(cellType);
 						newCell.source = newSource;
 						newCellIndex++;
-						this.insertCell(newCell, newCellIndex);
+						this.insertCell(newCell, newCellIndex, false);
 					}
 					else { //update the existing cell
 						this.cells[index].source = newSource;
@@ -641,15 +641,20 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					}
 					tailCell.source = tailSource;
 					tailCellIndex = newCellIndex + 1;
-					this.insertCell(tailCell, tailCellIndex);
+					this.insertCell(tailCell, tailCellIndex, false);
 				}
 
 				let activeCell = newCell ? newCell : (headContent.length ? tailCell : this.cells[index]);
 				let activeCellIndex = newCell ? newCellIndex : (headContent.length ? tailCellIndex : index);
 
+				if (addToUndoStack) {
+					let headCell = newCell ? newCell : this.cells[index];
+					this.undoService.pushElement(new SplitCellEdit(this, headCell, tailCell));
+				}
 				//make new cell Active
 				this.updateActiveCell(activeCell);
 				activeCell.isEditMode = true;
+
 				this._contentChangedEmitter.fire({
 					changeType: NotebookChangeType.CellsModified,
 					cells: [activeCell],
@@ -663,6 +668,22 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			}
 		}
 		return undefined;
+	}
+
+	public mergeCells(cell: ICellModel, secondCell: ICellModel): void {
+		let index = this._cells.findIndex(cell => cell.equals(cell));
+		if (index > -1) {
+			cell.source = cell.source.concat(...secondCell.source);
+			this._contentChangedEmitter.fire({
+				changeType: NotebookChangeType.CellsModified,
+				cells: [cell],
+				cellIndex: index
+			});
+			cell.isEditMode = true;
+			// Set newly created cell as active cell
+			this.updateActiveCell(cell);
+			this.deleteCell(secondCell, false);
+		}
 	}
 
 	public insertCell(cell: ICellModel, index?: number, addToUndoStack: boolean = true): ICellModel | undefined {
@@ -830,6 +851,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				let contents: nb.ICellContents = edit.cell as nb.ICellContents;
 				newCells.push(this._notebookOptions.factory.createCell(contents, { notebook: this, isTrusted: this._trustedMode }));
 			}
+			this.undoService.pushElement(new AddCellEdit(this, newCells[0], edit.range.start));
 			this._cells.splice(edit.range.start, edit.range.end - edit.range.start, ...newCells);
 			if (newCells.length > 0) {
 				this.updateActiveCell(newCells[0]);

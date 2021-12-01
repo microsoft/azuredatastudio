@@ -25,6 +25,22 @@ export class MoveCellEdit implements IResourceUndoRedoElement {
 	}
 }
 
+export class SplitCellEdit implements IResourceUndoRedoElement {
+	type: UndoRedoElementType.Resource = UndoRedoElementType.Resource;
+	label: string = 'Split Cell';
+	resource = this.model.notebookUri;
+
+	constructor(private model: NotebookModel, private firstCell: ICellModel, private secondCell: ICellModel) {
+	}
+
+	undo(): void {
+		this.model.mergeCells(this.firstCell, this.secondCell);
+	}
+
+	redo(): void {
+	}
+}
+
 export class DeleteCellEdit implements IResourceUndoRedoElement {
 	type: UndoRedoElementType.Resource = UndoRedoElementType.Resource;
 	label: string = 'Delete Cell';
