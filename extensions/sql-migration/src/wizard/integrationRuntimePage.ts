@@ -13,7 +13,6 @@ import * as constants from '../constants/strings';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import { getFullResourceGroupFromId, getLocationDisplayName, getSqlMigrationService, getSqlMigrationServiceAuthKeys, getSqlMigrationServiceMonitoringData, SqlManagedInstance, SqlVMServer } from '../api/azure';
 import { IconPathHelper } from '../constants/iconPathHelper';
-import { findDropDownItemIndex } from '../api/utils';
 import { logError, TelemetryViews } from '../telemtery';
 import { findDropDownItemIndex, selectDropDownIndex } from '../api/utils';
 import * as styles from '../constants/styles';
