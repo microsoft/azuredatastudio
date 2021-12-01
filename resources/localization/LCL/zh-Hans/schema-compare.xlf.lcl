@@ -2136,8 +2136,8 @@
       <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.applyButtonDisabledTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Apply is enabled when the target is a database or database project]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[当目标为数据库时启用应用]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[当目标为数据库或数据库项目时启用应用]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Apply is enabled when the target is a database]]></Val>
@@ -2157,6 +2157,9 @@
       <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.applyError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[There was an error updating the project]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[更新项目时出错]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2172,6 +2175,9 @@
       <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.applySuccess" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Project was successfully updated]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[已成功更新项目]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2691,12 +2697,18 @@
       <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompareDialog.dspErrorSource" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The source .sqlproj file does not specify a database schema component]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[源 .sqlproj 文件未指定数据库架构组件]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompareDialog.dspErrorTarget" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The target .sqlproj file does not specify a database schema component]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[目标 .sqlproj 文件未指定数据库架构组件]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2712,12 +2724,18 @@
       <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompareDialog.noProjectExtension" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The sql-database-projects extension is required to perform schema comparison with database projects]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[需要 sql-database-projects 扩展才能执行与数据库项目的架构比较]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompareDialog.noProjectExtensionApply" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The sql-database-projects extension is required to apply changes to a project]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[需要 sql-database-projects 扩展才能将更改应用于项目]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2769,6 +2787,9 @@
       <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompareDialog.structureDropdownLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Folder Structure]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[文件夹结构]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2820,6 +2841,9 @@
       <Item ItemId=";extensions/schema-compare/dist/localizedConstants.targetStructure" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Target Folder Structure]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[目标文件夹结构]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
