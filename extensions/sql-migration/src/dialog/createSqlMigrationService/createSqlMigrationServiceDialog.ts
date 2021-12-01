@@ -536,7 +536,7 @@ export class CreateSqlMigrationServiceDialog {
 					description: e.message,
 					level: azdata.window.MessageLevel.Error
 				};
-				logError(TelemetryViews.CreateDataMigrationServiceDialog, e);
+				logError(TelemetryViews.CreateDataMigrationServiceDialog, 'FetchSqlMigrationServiceFailed');
 			}
 			await new Promise(r => setTimeout(r, 5000));
 		}

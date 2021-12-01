@@ -13,6 +13,7 @@ import * as constants from '../constants/strings';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import { findDropDownItemIndex, selectDropDownIndex } from '../api/utils';
+import { logError, TelemetryViews } from '../telemtery';
 
 const WIZARD_TABLE_COLUMN_WIDTH = '200px';
 const WIZARD_TABLE_COLUMN_WIDTH_SMALL = '170px';
@@ -1143,7 +1144,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			this._networkShareStorageAccountResourceGroupDropdown.values = await this.migrationStateModel.getAzureResourceGroupDropdownValues(this.migrationStateModel._databaseBackup.subscription);
 			selectDropDownIndex(this._networkShareStorageAccountResourceGroupDropdown, 0);
 		} catch (error) {
-			console.log(error);
+			logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingNetworkStorageResourceGroup');
 		} finally {
 			this._networkShareStorageAccountResourceGroupDropdown.loading = false;
 			await this.loadNetworkShareStorageDropdown();
@@ -1156,7 +1157,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			this._networkShareContainerStorageAccountDropdown.values = await this.migrationStateModel.getStorageAccountValues(this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.networkShare.resourceGroup);
 			selectDropDownIndex(this._networkShareContainerStorageAccountDropdown, 0);
 		} catch (error) {
-			console.log(error);
+			logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingNetworkShareStorageDropdown');
 		} finally {
 			this._networkShareContainerStorageAccountDropdown.loading = false;
 		}
@@ -1171,7 +1172,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				selectDropDownIndex(dropDown, 0);
 			});
 		} catch (error) {
-			console.log(error);
+			logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingBlobResourceGroup');
 		} finally {
 			this._blobContainerResourceGroupDropdowns.forEach(v => v.loading = false);
 		}
@@ -1183,7 +1184,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			this._blobContainerStorageAccountDropdowns[index].values = await this.migrationStateModel.getStorageAccountValues(this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.blobs[index].resourceGroup);
 			selectDropDownIndex(this._blobContainerStorageAccountDropdowns[index], 0);
 		} catch (error) {
-			console.log(error);
+			logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingBlobStorageDropdown');
 		} finally {
 			this._blobContainerStorageAccountDropdowns[index].loading = false;
 		}
@@ -1196,7 +1197,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			this._blobContainerDropdowns[index].values = blobContainerValues;
 			selectDropDownIndex(this._blobContainerDropdowns[index], 0);
 		} catch (error) {
-			console.log(error);
+			logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingBlobContainers');
 		} finally {
 			this._blobContainerDropdowns[index].loading = false;
 		}
@@ -1209,7 +1210,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			this._blobContainerLastBackupFileDropdowns[index].values = blobLastBackupFileValues;
 			selectDropDownIndex(this._blobContainerLastBackupFileDropdowns[index], 0);
 		} catch (error) {
-			console.log(error);
+			logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingBlobLastBackupFiles');
 		} finally {
 			this._blobContainerLastBackupFileDropdowns[index].loading = false;
 		}

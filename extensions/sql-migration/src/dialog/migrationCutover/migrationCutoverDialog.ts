@@ -12,6 +12,7 @@ import * as loc from '../../constants/strings';
 import { convertByteSizeToReadableUnit, convertIsoTimeToLocalTime, getSqlServerName, getMigrationStatusImage, SupportedAutoRefreshIntervals, clearDialogMessage, displayDialogErrorMessage } from '../../api/utils';
 import { EOL } from 'os';
 import { ConfirmCutoverDialog } from './confirmCutoverDialog';
+import { logError, TelemetryViews } from '../../telemtery';
 
 const refreshFrequency: SupportedAutoRefreshIntervals = 30000;
 const statusImageSize: number = 14;
@@ -224,7 +225,7 @@ export class MigrationCutoverDialog {
 					await this.refreshStatus();
 				});
 			} catch (e) {
-				console.log(e);
+				logError(TelemetryViews.MigrationCutoverDialog, 'IntializingFailed');
 			}
 		});
 		this._dialogObject.content = [tab];

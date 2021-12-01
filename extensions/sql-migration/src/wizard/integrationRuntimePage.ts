@@ -461,7 +461,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		try {
 			await this.loadStatus();
 		} catch (error) {
-			logError(TelemetryViews.MigrationWizardIntegrationRuntimePage, error);
+			logError(TelemetryViews.MigrationWizardIntegrationRuntimePage, 'ErrorLoadingMigrationServiceStatus');
 		} finally {
 			this._statusLoadingComponent.loading = false;
 		}
@@ -540,7 +540,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				this._authKeyTable.dataValues = data;
 			}
 		} catch (e) {
-			console.log(e);
+			logError(TelemetryViews.IntegrationRuntimePage, 'ErrorLoadingStatus');
 		}
 	}
 }
