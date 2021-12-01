@@ -6,6 +6,7 @@
 import type * as vscode from 'vscode';
 import type * as azdata from 'azdata';
 import { ADSNotebookController } from 'sql/workbench/api/common/adsNotebookController';
+import * as nls from 'vs/nls';
 
 class VSCodeFuture implements azdata.nb.IFuture {
 	private _inProgress = true;
@@ -240,7 +241,12 @@ class VSCodeSessionManager implements azdata.nb.SessionManager {
 		};
 	}
 
-	public startNew(options: azdata.nb.ISessionOptions): Thenable<azdata.nb.ISession> {
+	public async startNew(options: azdata.nb.ISessionOptions): Promise<azdata.nb.ISession> {
+		if (!this.isReady) {
+			// no-op
+			return Promise.reject(new Error(nls.localize('errorStartBeforeReady', "Cannot start a session, the manager is not yet initialized")));
+		}
+
 		let session: azdata.nb.ISession = new VSCodeSession(this._controller, options, this.specs.defaultKernel);
 		let index = this._sessions.findIndex(session => session.path === options.path);
 		if (index > -1) {
