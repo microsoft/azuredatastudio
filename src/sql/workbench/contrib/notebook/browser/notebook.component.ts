@@ -126,8 +126,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			if (this.isActive() && !this.areElementsActive() && (this.activeCellId === '' || !this.cellToolbar.first.getEditCellAction().editMode)) {
 				let event = new StandardKeyboardEvent(e);
 				if ((event.metaKey && event.shiftKey && event.keyCode === KeyCode.KEY_Z) || event.ctrlKey && event.keyCode === KeyCode.KEY_Y) {
+					event.stopPropagation();
 					this._model.redo();
 				} else if ((event.ctrlKey || event.metaKey) && event.keyCode === KeyCode.KEY_Z) {
+					event.stopPropagation();
 					this._model.undo();
 				}
 			}
