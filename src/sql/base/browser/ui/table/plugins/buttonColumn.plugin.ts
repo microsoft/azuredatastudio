@@ -17,7 +17,7 @@ export interface ButtonColumnOptions extends IconColumnOptions {
 	/**
 	 * Whether to show the text.
 	 */
-	showText?: boolean
+	showText?: boolean;
 }
 
 export class ButtonColumn<T extends Slick.SlickData> extends BaseClickableColumn<T> {
@@ -33,7 +33,10 @@ export class ButtonColumn<T extends Slick.SlickData> extends BaseClickableColumn
 			formatter: (row: number, cell: number, value: any, columnDef: Slick.Column<T>, dataContext: T): string => {
 				const iconValue = getIconCellValue(this.options, dataContext);
 				const escapedTitle = escape(iconValue.title ?? '');
-				const iconCssClasses = iconValue.iconCssClass ? `codicon icon slick-plugin-icon ${iconValue.iconCssClass}` : '';
+				let iconCssClasses = '';
+				if (iconValue.iconCssClass) {
+					iconCssClasses = this.options.isFontIcon ? iconValue.iconCssClass : `codicon icon slick-plugin-icon ${iconValue.iconCssClass}`;
+				}
 				const buttonTypeCssClass = this.options.showText ? 'slick-plugin-button slick-plugin-text-button' : 'slick-plugin-button slick-plugin-image-only-button';
 				const buttonText = this.options.showText ? escapedTitle : '';
 				return `<button tabindex=-1 class="${iconCssClasses} ${buttonTypeCssClass}" title="${escapedTitle}" aria-label="${escapedTitle}">${buttonText}</button>`;

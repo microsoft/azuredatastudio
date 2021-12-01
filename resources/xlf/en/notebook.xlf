@@ -664,6 +664,9 @@
     <trans-unit id="notebook.command.codeBlock">
       <source xml:lang="en">Add Code Block</source>
     </trans-unit>
+    <trans-unit id="notebook.command.highlightText">
+      <source xml:lang="en">Highlight Markdown Text</source>
+    </trans-unit>
     <trans-unit id="notebook.command.italicizeText">
       <source xml:lang="en">Italicize Markdown Text</source>
     </trans-unit>

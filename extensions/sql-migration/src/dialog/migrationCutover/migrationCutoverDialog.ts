@@ -13,14 +13,19 @@ import { convertByteSizeToReadableUnit, convertIsoTimeToLocalTime, getSqlServerN
 import { EOL } from 'os';
 import { ConfirmCutoverDialog } from './confirmCutoverDialog';
 import { logError, TelemetryViews } from '../../telemtery';
+import { RetryMigrationDialog } from '../retryMigration/retryMigrationDialog';
+import * as styles from '../../constants/styles';
+import { canRetryMigration } from '../../constants/helper';
 
 const refreshFrequency: SupportedAutoRefreshIntervals = 30000;
 const statusImageSize: number = 14;
 
 export class MigrationCutoverDialog {
+	private _context: vscode.ExtensionContext;
 	private _dialogObject!: azdata.window.Dialog;
 	private _view!: azdata.ModelView;
 	private _model: MigrationCutoverDialogModel;
+	private _migration: MigrationContext;
 
 	private _databaseTitleName!: azdata.TextComponent;
 	private _cutoverButton!: azdata.ButtonComponent;
@@ -29,6 +34,7 @@ export class MigrationCutoverDialog {
 	private _refreshLoader!: azdata.LoadingComponent;
 	private _copyDatabaseMigrationDetails!: azdata.ButtonComponent;
 	private _newSupportRequest!: azdata.ButtonComponent;
+	private _retryButton!: azdata.ButtonComponent;
 
 	private _sourceDatabaseInfoField!: InfoFieldSchema;
 	private _sourceDetailsInfoField!: InfoFieldSchema;
@@ -53,7 +59,9 @@ export class MigrationCutoverDialog {
 
 	readonly _infoFieldWidth: string = '250px';
 
-	constructor(migration: MigrationContext) {
+	constructor(context: vscode.ExtensionContext, migration: MigrationContext) {
+		this._context = context;
+		this._migration = migration;
 		this._model = new MigrationCutoverDialogModel(migration);
 		this._dialogObject = azdata.window.createModelViewDialog('', 'MigrationCutoverDialog', 'wide');
 	}
@@ -67,8 +75,7 @@ export class MigrationCutoverDialog {
 				this._fileCount = view.modelBuilder.text().withProps({
 					width: '500px',
 					CSSStyles: {
-						'font-size': '14px',
-						'font-weight': 'bold'
+						...styles.BODY_CSS
 					}
 				}).component();
 
@@ -161,6 +168,7 @@ export class MigrationCutoverDialog {
 					width: '1100px',
 					height: '300px',
 					CSSStyles: {
+						...styles.BODY_CSS,
 						'display': 'none',
 						'padding-left': '0px'
 					}
@@ -180,9 +188,9 @@ export class MigrationCutoverDialog {
 				const _emptyTableText = view.modelBuilder.text().withProps({
 					value: loc.EMPTY_TABLE_TEXT,
 					CSSStyles: {
+						...styles.NOTE_CSS,
+						'margin-top': '8px',
 						'text-align': 'center',
-						'font-size': 'large',
-						'font-weight': 'bold',
 						'width': '300px'
 					}
 				}).component();
@@ -250,9 +258,7 @@ export class MigrationCutoverDialog {
 
 		this._databaseTitleName = this._view.modelBuilder.text().withProps({
 			CSSStyles: {
-				'font-size': '16px',
-				'font-weight': 'bold',
-				'margin': '0px'
+				...styles.PAGE_TITLE_CSS
 			},
 			width: 950,
 			value: this._model._migration.migrationContext.properties.sourceDatabaseName
@@ -260,8 +266,7 @@ export class MigrationCutoverDialog {
 
 		const databaseSubTitle = this._view.modelBuilder.text().withProps({
 			CSSStyles: {
-				'font-size': '10px',
-				'margin': '5px 0px'
+				...styles.NOTE_CSS
 			},
 			width: 950,
 			value: loc.DATABASE
@@ -304,11 +309,11 @@ export class MigrationCutoverDialog {
 			iconWidth: '16px',
 			label: loc.COMPLETE_CUTOVER,
 			height: '20px',
-			width: '150px',
+			width: '140px',
 			enabled: false,
 			CSSStyles: {
-				'font-size': '13px',
-				'display': this._isOnlineMigration() ? 'inline' : 'none'
+				...styles.BODY_CSS,
+				'display': this._isOnlineMigration() ? 'block' : 'none'
 			}
 		}).component();
 
@@ -333,10 +338,10 @@ export class MigrationCutoverDialog {
 			iconWidth: '16px',
 			label: loc.CANCEL_MIGRATION,
 			height: '20px',
-			width: '150px',
+			width: '140px',
 			enabled: false,
 			CSSStyles: {
-				'font-size': '13px'
+				...styles.BODY_CSS,
 			}
 		}).component();
 
@@ -356,6 +361,28 @@ export class MigrationCutoverDialog {
 			flex: '0'
 		});
 
+		this._retryButton = this._view.modelBuilder.button().withProps({
+			label: loc.RETRY_MIGRATION,
+			iconPath: IconPathHelper.retry,
+			enabled: false,
+			iconHeight: '16px',
+			iconWidth: '16px',
+			height: '20px',
+			width: '120px',
+			CSSStyles: {
+				...styles.BODY_CSS,
+			}
+		}).component();
+		this._disposables.push(this._retryButton.onDidClick(
+			async (e) => {
+				await this.refreshStatus();
+				let retryMigrationDialog = new RetryMigrationDialog(this._context, this._migration);
+				await retryMigrationDialog.openDialog();
+			}
+		));
+		headerActions.addItem(this._retryButton, {
+			flex: '0',
+		});
 
 		this._refreshButton = this._view.modelBuilder.button().withProps({
 			iconPath: IconPathHelper.refresh,
@@ -363,9 +390,9 @@ export class MigrationCutoverDialog {
 			iconWidth: '16px',
 			label: 'Refresh',
 			height: '20px',
-			width: '100px',
+			width: '80px',
 			CSSStyles: {
-				'font-size': '13px'
+				...styles.BODY_CSS,
 			}
 		}).component();
 
@@ -382,9 +409,9 @@ export class MigrationCutoverDialog {
 			iconWidth: '16px',
 			label: loc.COPY_MIGRATION_DETAILS,
 			height: '20px',
-			width: '200px',
+			width: '160px',
 			CSSStyles: {
-				'font-size': '13px'
+				...styles.BODY_CSS,
 			}
 		}).component();
 
@@ -409,7 +436,10 @@ export class MigrationCutoverDialog {
 			iconHeight: '16px',
 			iconWidth: '16px',
 			height: '20px',
-			width: '140px',
+			width: '160px',
+			CSSStyles: {
+				...styles.BODY_CSS,
+			}
 		}).component();
 
 		this._newSupportRequest.onDidClick(async (e) => {
@@ -567,7 +597,7 @@ export class MigrationCutoverDialog {
 
 			if (this._isOnlineMigration()) {
 				await this._cutoverButton.updateCssStyles({
-					'display': 'inline'
+					'display': 'block'
 				});
 			}
 
@@ -669,6 +699,7 @@ export class MigrationCutoverDialog {
 
 			if (this._shouldDisplayBackupFileTable()) {
 				await this._fileCount.updateCssStyles({
+					...styles.SECTION_HEADER_CSS,
 					display: 'inline'
 				});
 				await this._fileTable.updateCssStyles({
@@ -719,6 +750,9 @@ export class MigrationCutoverDialog {
 			this._cancelButton.enabled =
 				migrationStatusTextValue === MigrationStatus.Creating ||
 				migrationStatusTextValue === MigrationStatus.InProgress;
+
+			this._retryButton.enabled = canRetryMigration(migrationStatusTextValue);
+
 		} catch (e) {
 			displayDialogErrorMessage(this._dialogObject, loc.MIGRATION_STATUS_REFRESH_ERROR, e);
 			console.log(e);
@@ -746,9 +780,8 @@ export class MigrationCutoverDialog {
 		const labelComponent = this._view.modelBuilder.text().withProps({
 			value: label,
 			CSSStyles: {
-				'font-weight': 'bold',
+				...styles.LIGHT_LABEL_CSS,
 				'margin-bottom': '0',
-				'font-size': '12px'
 			}
 		}).component();
 		flexContainer.addItem(labelComponent);
@@ -756,12 +789,11 @@ export class MigrationCutoverDialog {
 		const textComponent = this._view.modelBuilder.text().withProps({
 			value: value,
 			CSSStyles: {
-				'margin-top': '5px',
-				'margin-bottom': '0',
+				...styles.BODY_CSS,
+				'margin': '4px 0 12px',
 				'width': '100%',
 				'overflow': 'hidden',
-				'text-overflow': 'ellipses',
-				'font-size': '12px'
+				'text-overflow': 'ellipses'
 			}
 		}).component();
 
@@ -803,7 +835,7 @@ export class MigrationCutoverDialog {
 	}
 
 	private _isOnlineMigration(): boolean {
-		return this._model._migration.migrationContext.properties.autoCutoverConfiguration?.autoCutover?.valueOf() ? false : true;
+		return this._model._migration.migrationContext.properties.offlineConfiguration?.offline?.valueOf() ? false : true;
 	}
 
 	private _shouldDisplayBackupFileTable(): boolean {

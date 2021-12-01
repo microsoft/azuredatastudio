@@ -529,6 +529,7 @@ Includes non-masked style declarations. */
 }
 
 .codicon.masked-icon.icon-split-cell:before {
+	background-image: none;
 	-webkit-mask-image: url("split_cell.svg");
 	mask-image: url("split_cell.svg");
 }

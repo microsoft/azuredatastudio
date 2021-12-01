@@ -68,7 +68,7 @@
       </trans-unit>
       <trans-unit id="addPackageReferenceMessage">
         <source xml:lang="en">To use SQL bindings, ensure your Azure Functions project has a reference to {0}</source>
-        <target state="new">To use SQL bindings, ensure your Azure Functions project has a reference to {0}</target>
+        <target state="translated">Para usar as associações SQL, certifique-se de que seu projeto do Azure Functions tem uma referência a {0}</target>
       </trans-unit>
       <trans-unit id="appSettingPrompt">
         <source xml:lang="en">Would you like to update Azure Function local.settings.json with the new connection string?</source>
@@ -114,6 +114,10 @@
         <source xml:lang="en">Change Target Platform</source>
         <target state="translated">Alterar plataforma de destino</target>
       </trans-unit>
+      <trans-unit id="checkoutOutputMessage">
+        <source xml:lang="en">Check output pane for more details</source>
+        <target state="translated">Verifique o painel de saída para mais detalhes</target>
+      </trans-unit>
       <trans-unit id="chooseAction">
         <source xml:lang="en">Choose action</source>
         <target state="translated">Escolher ação</target>
@@ -153,6 +157,10 @@
       <trans-unit id="connectionStringSettingPlaceholder">
         <source xml:lang="en">Connection string setting specified in "local.settings.json"</source>
         <target state="translated">Configuração da cadeia de conexão especificada em "local.settings.json"</target>
+      </trans-unit>
+      <trans-unit id="containerAlreadyExistForProject">
+        <source xml:lang="en">Other servers on container already exist for the project. Do you want to delete them?</source>
+        <target state="translated">Outros servidores em contêineres já existem para o projeto. Você deseja excluí-los?</target>
       </trans-unit>
       <trans-unit id="createNew">
         <source xml:lang="en">Create New</source>
@@ -309,10 +317,6 @@
       <trans-unit id="deployProjectFailedMessage">
         <source xml:lang="en">Failed to open a connection to the deployed database'</source>
         <target state="translated">Falha ao abrir uma conexão com o banco de dados implantado'</target>
-      </trans-unit>
-      <trans-unit id="deployProjectSucceed">
-        <source xml:lang="en">Database project deployed successfully</source>
-        <target state="translated">Projeto de banco de dados implantado com êxito</target>
       </trans-unit>
       <trans-unit id="deployScriptExists">
         <source xml:lang="en">A {0} script already exists. The new script will not be included in build.</source>
@@ -564,7 +568,7 @@
       </trans-unit>
       <trans-unit id="moreInformation">
         <source xml:lang="en">More Information</source>
-        <target state="new">More Information</target>
+        <target state="translated">Mais Informações</target>
       </trans-unit>
       <trans-unit id="msec">
         <source xml:lang="en">msec</source>
@@ -722,13 +726,17 @@
         <source xml:lang="en">Publish project</source>
         <target state="translated">Publicar projeto</target>
       </trans-unit>
+      <trans-unit id="publishProjectSucceed">
+        <source xml:lang="en">Database project published successfully</source>
+        <target state="translated">Projeto de banco de dados publicado com êxito</target>
+      </trans-unit>
       <trans-unit id="publishSettingsFiles">
         <source xml:lang="en">Publish Settings File</source>
         <target state="translated">Publicar arquivo de configurações</target>
       </trans-unit>
       <trans-unit id="publishToContainerFailed">
-        <source xml:lang="en">Failed to publish to container. Check output pane for more details. {0}</source>
-        <target state="translated">Falha ao publicar no contêiner. Verifique o painel de saída para obter mais detalhes. {0}</target>
+        <source xml:lang="en">Failed to publish to container. {0}</source>
+        <target state="translated">Falha ao publicar no contêiner. {0}</target>
       </trans-unit>
       <trans-unit id="publishToDockerContainer">
         <source xml:lang="en">Publish to new server in a container</source>
@@ -737,6 +745,10 @@
       <trans-unit id="publishToExistingServer">
         <source xml:lang="en">Publish to existing server</source>
         <target state="translated">Publicar no servidor existente</target>
+      </trans-unit>
+      <trans-unit id="publishingProjectMessage">
+        <source xml:lang="en">Publishing project in a container...</source>
+        <target state="translated">Publicando projeto em um contêiner...</target>
       </trans-unit>
       <trans-unit id="referenceRadioButtonsGroupTitle">
         <source xml:lang="en">Type</source>

@@ -18,7 +18,7 @@ export class CustomDialogService {
 
 	constructor(@IInstantiationService private _instantiationService: IInstantiationService) { }
 
-	public showDialog(dialog: Dialog, dialogName?: string, options?: IModalOptions): void {
+	public showDialog(dialog: Dialog, dialogName?: string, options?: IModalOptions): DialogModal {
 		let name = dialogName ? dialogName : 'CustomDialog';
 
 		if (options && (options.dialogStyle === 'callout')) {
@@ -30,6 +30,7 @@ export class CustomDialogService {
 		this._dialogModals.set(dialog, dialogModal);
 		dialogModal.render();
 		dialogModal.open();
+		return dialogModal;
 	}
 
 	public showWizard(wizard: Wizard, options?: IModalOptions, source?: string): void {

@@ -381,7 +381,8 @@ export enum DataProviderType {
 	SerializationProvider = 'SerializationProvider',
 	IconProvider = 'IconProvider',
 	SqlAssessmentServicesProvider = 'SqlAssessmentServicesProvider',
-	DataGridProvider = 'DataGridProvider'
+	DataGridProvider = 'DataGridProvider',
+	TableDesignerProvider = 'TableDesignerProvider'
 }
 
 export enum DeclarativeDataType {
@@ -904,4 +905,51 @@ export enum TextType {
 	Error = 'Error',
 	UnorderedList = 'UnorderedList',
 	OrderedList = 'OrderedList'
+}
+
+export namespace designers {
+	export enum TableProperty {
+		Schema = 'schema',
+		Name = 'name',
+		Description = 'description',
+		Columns = 'columns',
+		Script = 'script',
+		ForeignKeys = 'foreignKeys',
+		CheckConstraints = 'checkConstraints',
+	}
+
+	export enum TableColumnProperty {
+		Name = 'name',
+		Type = 'type',
+		AllowNulls = 'allowNulls',
+		DefaultValue = 'defaultValue',
+		Length = 'length',
+		IsPrimaryKey = 'isPrimaryKey',
+		Precision = 'precision',
+		Scale = 'scale'
+	}
+
+	export enum TableForeignKeyProperty {
+		Name = 'name',
+		PrimaryKeyTable = 'primaryKeyTable',
+		OnDeleteAction = 'onDeleteAction',
+		OnUpdateAction = 'onUpdateAction',
+		Columns = 'columns'
+	}
+
+	export enum ForeignKeyColumnMappingProperty {
+		PrimaryKeyColumn = 'primaryKeyColumn',
+		ForeignKeyColumn = 'foreignKeyColumn'
+	}
+
+	export enum TableCheckConstraintProperty {
+		Name = 'name',
+		Expression = 'expression'
+	}
+
+	export enum DesignerEditType {
+		Add = 0,
+		Remove = 1,
+		Update = 2
+	}
 }

@@ -5,7 +5,7 @@
 import 'vs/css!./markdownToolbar';
 import * as DOM from 'vs/base/browser/dom';
 import { Button, IButtonStyles } from 'sql/base/browser/ui/button/button';
-import { Component, Input, Inject, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, Inject, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { localize } from 'vs/nls';
 import { CellEditModes, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { ITaskbarContent, Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
@@ -36,25 +36,51 @@ const linksRegex = /\[(?<text>.+)\]\((?<url>[^ ]+)(?: "(?<title>.+)")?\)/;
 export class MarkdownToolbarComponent extends AngularDisposable {
 	@ViewChild('mdtoolbar', { read: ElementRef }) private mdtoolbar: ElementRef;
 
+	@HostListener('document:keydown', ['$event'])
+	async onkeydown(e: KeyboardEvent) {
+		if (this.cellModel?.currentMode === CellEditModes.SPLIT || this.cellModel?.currentMode === CellEditModes.MARKDOWN) {
+			let markdownTextTransformer = new MarkdownTextTransformer(this._notebookService, this.cellModel);
+			if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+				// Bold Text
+				DOM.EventHelper.stop(e, true);
+				await markdownTextTransformer.transformText(MarkdownButtonType.BOLD);
+			} else if ((e.ctrlKey || e.metaKey) && e.key === 'i') {
+				// Italicize text
+				DOM.EventHelper.stop(e, true);
+				await markdownTextTransformer.transformText(MarkdownButtonType.ITALIC);
+			} else if ((e.ctrlKey || e.metaKey) && e.key === 'u') {
+				// Underline text
+				DOM.EventHelper.stop(e, true);
+				await markdownTextTransformer.transformText(MarkdownButtonType.UNDERLINE);
+			} else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'k') {
+				// Code Block
+				DOM.EventHelper.stop(e, true);
+				await markdownTextTransformer.transformText(MarkdownButtonType.CODE);
+			} else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'h') {
+				// Highlight Text
+				DOM.EventHelper.stop(e, true);
+				await markdownTextTransformer.transformText(MarkdownButtonType.HIGHLIGHT);
+			}
+		}
+	}
+
 	public previewFeaturesEnabled: boolean = false;
 
-	public buttonBold = localize('buttonBold', "Bold");
-	public buttonItalic = localize('buttonItalic', "Italic");
-	public buttonUnderline = localize('buttonUnderline', "Underline");
-	public buttonHighlight = localize('buttonHighlight', "Highlight");
-	public buttonCode = localize('buttonCode', "Code");
-	public buttonLink = localize('buttonLink', "Link");
-	public buttonList = localize('buttonList', "List");
-	public buttonOrderedList = localize('buttonOrderedList', "Ordered list");
-	public buttonImage = localize('buttonImage', "Image");
+	public bold = localize('bold', "Bold");
+	public italic = localize('italic', "Italic");
+	public underline = localize('underline', "Underline");
+	public highlight = localize('highlight', "Highlight");
+	public insertCode = localize('insertCode', "Insert code");
+	public insertLink = localize('insertLink', "Insert link");
+	public insertList = localize('insertList', "Insert list");
+	public insertOrderedList = localize('insertOrderedList', "Insert ordered list");
+	public insertImage = localize('insertImage', "Insert image");
 	public buttonPreview = localize('buttonPreview', "Markdown preview toggle - off");
 	public dropdownHeading = localize('dropdownHeading', "Heading");
 	public optionHeading1 = localize('optionHeading1', "Heading 1");
 	public optionHeading2 = localize('optionHeading2', "Heading 2");
 	public optionHeading3 = localize('optionHeading3', "Heading 3");
 	public optionParagraph = localize('optionParagraph', "Paragraph");
-	public insertLinkHeading = localize('callout.insertLinkHeading', "Insert link");
-	public insertImageHeading = localize('callout.insertImageHeading', "Insert image");
 
 	public richTextViewButton = localize('richTextViewButton', "Rich Text View");
 	public splitViewButton = localize('splitViewButton', "Split View");
@@ -102,6 +128,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 			linkButtonContainer = DOM.$('li.action-item');
 			linkButtonContainer.setAttribute('role', 'presentation');
 			let linkButton = new Button(linkButtonContainer);
+			linkButton.title = this.insertLink;
 			linkButton.element.setAttribute('class', 'action-label codicon insert-link masked-icon');
 			let buttonStyle: IButtonStyles = {
 				buttonBackground: null
@@ -115,6 +142,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 			imageButtonContainer = DOM.$('li.action-item');
 			imageButtonContainer.setAttribute('role', 'presentation');
 			let imageButton = new Button(imageButtonContainer);
+			imageButton.title = this.insertImage;
 			imageButton.element.setAttribute('class', 'action-label codicon insert-image masked-icon');
 
 			imageButton.style(buttonStyle);
@@ -123,17 +151,17 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 				await this.onInsertButtonClick(e, MarkdownButtonType.IMAGE_PREVIEW);
 			}));
 		} else {
-			linkButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.linkText', '', 'insert-link masked-icon', this.buttonLink, this.cellModel, MarkdownButtonType.LINK);
-			imageButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.imageText', '', 'insert-image masked-icon', this.buttonImage, this.cellModel, MarkdownButtonType.IMAGE);
+			linkButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.linkText', '', 'insert-link masked-icon', this.insertLink, this.cellModel, MarkdownButtonType.LINK);
+			imageButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.imageText', '', 'insert-image masked-icon', this.insertImage, this.cellModel, MarkdownButtonType.IMAGE);
 		}
 
-		let boldButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.boldText', '', 'bold masked-icon', this.buttonBold, this.cellModel, MarkdownButtonType.BOLD);
-		let italicButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.italicText', '', 'italic masked-icon', this.buttonItalic, this.cellModel, MarkdownButtonType.ITALIC);
-		let underlineButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.underlineText', '', 'underline masked-icon', this.buttonUnderline, this.cellModel, MarkdownButtonType.UNDERLINE);
-		let highlightButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.highlightText', '', 'highlight masked-icon', this.buttonHighlight, this.cellModel, MarkdownButtonType.HIGHLIGHT);
-		let codeButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.codeText', '', 'code masked-icon', this.buttonCode, this.cellModel, MarkdownButtonType.CODE);
-		let listButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.listText', '', 'list masked-icon', this.buttonList, this.cellModel, MarkdownButtonType.UNORDERED_LIST);
-		let orderedListButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.orderedText', '', 'ordered-list masked-icon', this.buttonOrderedList, this.cellModel, MarkdownButtonType.ORDERED_LIST);
+		let boldButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.boldText', '', 'bold masked-icon', this.bold, this.cellModel, MarkdownButtonType.BOLD);
+		let italicButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.italicText', '', 'italic masked-icon', this.italic, this.cellModel, MarkdownButtonType.ITALIC);
+		let underlineButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.underlineText', '', 'underline masked-icon', this.underline, this.cellModel, MarkdownButtonType.UNDERLINE);
+		let highlightButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.highlightText', '', 'highlight masked-icon', this.highlight, this.cellModel, MarkdownButtonType.HIGHLIGHT);
+		let codeButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.codeText', '', 'code masked-icon', this.insertCode, this.cellModel, MarkdownButtonType.CODE);
+		let listButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.listText', '', 'list masked-icon', this.insertList, this.cellModel, MarkdownButtonType.UNORDERED_LIST);
+		let orderedListButton = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.orderedText', '', 'ordered-list masked-icon', this.insertOrderedList, this.cellModel, MarkdownButtonType.ORDERED_LIST);
 		let headingDropdown = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.heading', '', 'heading', this.dropdownHeading, this.cellModel, null);
 		let heading1 = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.heading1', this.optionHeading1, 'heading 1', this.optionHeading1, this.cellModel, MarkdownButtonType.HEADING1);
 		let heading2 = this._instantiationService.createInstance(TransformMarkdownAction, 'notebook.heading2', this.optionHeading2, 'heading 2', this.optionHeading2, this.cellModel, MarkdownButtonType.HEADING2);
@@ -221,6 +249,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 			}
 		}
 		this._notebookEditor = this._notebookService.findNotebookEditor(this.cellModel?.notebookModel?.notebookUri);
+		this.updateActiveViewAction();
 	}
 
 	public async onInsertButtonClick(event: MouseEvent, type: MarkdownButtonType): Promise<void> {
@@ -244,7 +273,9 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 				let linkUrl = notebookLink.getLinkUrl();
 				// Otherwise, re-focus on the output element, and insert the link directly.
 				this.output?.nativeElement?.focus();
-				document.execCommand('insertHTML', false, `<a href="${escape(linkUrl)}" title="${escape(linkUrl)}" is-absolute=${notebookLink.isAbsolutePath}>${escape(linkCalloutResult?.insertUnescapedLinkLabel)}</a>`);
+				// Need to encode URI here in order for user to click the proper encoded link in WYSIWYG
+				let encodedLinkURL = encodeURI(linkUrl);
+				document.execCommand('insertHTML', false, `<a href="${encodedLinkURL}" title="${encodedLinkURL}" is-encoded="true" is-absolute=${notebookLink.isAbsolutePath}>${escape(linkCalloutResult?.insertUnescapedLinkLabel)}</a>`);
 				return;
 			}
 		} else if (type === MarkdownButtonType.IMAGE_PREVIEW) {
@@ -289,12 +320,22 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		}
 	}
 
-	public removeActiveClassFromModeActions() {
+	private removeActiveClassFromModeActions() {
 		const activeClass = ' active';
 		for (let action of [this._toggleTextViewAction, this._toggleSplitViewAction, this._toggleMarkdownViewAction]) {
 			if (action.class.includes(activeClass)) {
 				action.class = action.class.replace(activeClass, '');
 			}
+		}
+	}
+
+	public updateActiveViewAction() {
+		this.removeActiveClassFromModeActions();
+		const activeClass = ' active';
+		switch (this.cellModel.currentMode) {
+			case CellEditModes.MARKDOWN: this._toggleMarkdownViewAction.class += activeClass; break;
+			case CellEditModes.SPLIT: this._toggleSplitViewAction.class += activeClass; break;
+			case CellEditModes.WYSIWYG: this._toggleTextViewAction.class += activeClass; break;
 		}
 	}
 
@@ -315,11 +356,11 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		if (type === MarkdownButtonType.LINK_PREVIEW) {
 			const defaultLabel = this.getCurrentLinkLabel();
 			const defaultLinkUrl = this.getCurrentLinkUrl();
-			this._linkCallout = this._instantiationService.createInstance(LinkCalloutDialog, this.insertLinkHeading, dialogPosition, dialogProperties, defaultLabel, defaultLinkUrl);
+			this._linkCallout = this._instantiationService.createInstance(LinkCalloutDialog, this.insertLink, dialogPosition, dialogProperties, defaultLabel, defaultLinkUrl);
 			this._linkCallout.render();
 			calloutOptions = await this._linkCallout.open();
 		} else if (type === MarkdownButtonType.IMAGE_PREVIEW) {
-			const imageCallout = this._instantiationService.createInstance(ImageCalloutDialog, this.insertImageHeading, dialogPosition, dialogProperties);
+			const imageCallout = this._instantiationService.createInstance(ImageCalloutDialog, this.insertImage, dialogPosition, dialogProperties);
 			imageCallout.render();
 			calloutOptions = await imageCallout.open();
 		}

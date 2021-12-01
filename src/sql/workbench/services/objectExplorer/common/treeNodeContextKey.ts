@@ -5,6 +5,7 @@
 
 import { RawContextKey, IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 
 export class TreeNodeContextKey implements IContextKey<TreeNode> {
 
@@ -13,21 +14,28 @@ export class TreeNodeContextKey implements IContextKey<TreeNode> {
 	static Status = new RawContextKey<string>('nodeStatus', undefined);
 	static TreeNode = new RawContextKey<TreeNode>('treeNode', undefined);
 	static NodeLabel = new RawContextKey<string>('nodeLabel', undefined);
+	static NodePath = new RawContextKey<string>('nodePath', undefined);
+	static IsQueryProvider = new RawContextKey<boolean>('isQueryProvider', false);
 
 	private _nodeTypeKey: IContextKey<string>;
 	private _subTypeKey: IContextKey<string>;
 	private _statusKey: IContextKey<string>;
 	private _treeNodeKey: IContextKey<TreeNode>;
 	private _nodeLabelKey: IContextKey<string>;
+	private _nodePathKey: IContextKey<string>;
+	private _isQueryProvider: IContextKey<boolean>;
 
 	constructor(
-		@IContextKeyService contextKeyService: IContextKeyService
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService
 	) {
 		this._nodeTypeKey = TreeNodeContextKey.NodeType.bindTo(contextKeyService);
 		this._subTypeKey = TreeNodeContextKey.SubType.bindTo(contextKeyService);
 		this._statusKey = TreeNodeContextKey.Status.bindTo(contextKeyService);
 		this._treeNodeKey = TreeNodeContextKey.TreeNode.bindTo(contextKeyService);
 		this._nodeLabelKey = TreeNodeContextKey.NodeLabel.bindTo(contextKeyService);
+		this._nodePathKey = TreeNodeContextKey.NodePath.bindTo(contextKeyService);
+		this._isQueryProvider = TreeNodeContextKey.IsQueryProvider.bindTo(contextKeyService);
 	}
 
 	set(value: TreeNode) {
@@ -38,6 +46,10 @@ export class TreeNodeContextKey implements IContextKey<TreeNode> {
 			this._statusKey.set(value && value.nodeStatus);
 		}
 		this._nodeLabelKey.set(value && value.label);
+		this._nodePathKey.set(value && value.nodePath);
+		const connectionProfile = value.getConnectionProfile();
+		const capabilities = connectionProfile ? this._capabilitiesService.getCapabilities(connectionProfile.providerName) : undefined;
+		this._isQueryProvider.set(capabilities?.connection.isQueryProvider);
 	}
 
 	reset(): void {
@@ -46,6 +58,8 @@ export class TreeNodeContextKey implements IContextKey<TreeNode> {
 		this._statusKey.reset();
 		this._treeNodeKey.reset();
 		this._nodeLabelKey.reset();
+		this._nodePathKey.reset();
+		this._isQueryProvider.reset();
 	}
 
 	public get(): TreeNode | undefined {

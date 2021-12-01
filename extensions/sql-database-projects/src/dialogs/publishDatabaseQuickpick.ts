@@ -10,7 +10,6 @@ import { PublishProfile, readPublishProfile } from '../models/publishProfile/pub
 import { promptForPublishProfile } from './publishDatabaseDialog';
 import { getDefaultPublishDeploymentOptions, getVscodeMssqlApi } from '../common/utils';
 import { IConnectionInfo } from 'vscode-mssql';
-import { ProjectsController } from '../controllers/projectController';
 import { IDeploySettings } from '../models/IDeploySettings';
 
 /**
@@ -31,7 +30,7 @@ export async function getPublishDatabaseSettings(project: Project, promptForConn
 			reject();
 		});
 		quickPick.onDidChangeSelection(async items => {
-			if (items[0].label === constants.browseForProfile) {
+			if (items[0].label === constants.browseForProfileWithIcon) {
 				const locations = await promptForPublishProfile(project.projectFolderPath);
 				if (!locations) {
 					// Clear items so that this event will trigger again if they select the same item
@@ -203,36 +202,7 @@ export async function getPublishDatabaseSettings(project: Project, promptForConn
 	return settings;
 }
 
-/**
-* Create flow for Publishing a database using only VS Code-native APIs such as QuickPick
-*/
-export async function launchPublishDatabaseQuickpick(project: Project, projectController: ProjectsController): Promise<void> {
-	const publishTarget = await launchPublishTargetOption();
-
-	// Return when user hits escape
-	if (!publishTarget) {
-		return undefined;
-	}
-
-	if (publishTarget === constants.publishToDockerContainer) {
-		await projectController.publishToDockerContainer(project);
-	} else {
-		let settings: IDeploySettings | undefined = await getPublishDatabaseSettings(project);
-
-		if (settings) {
-			// 5. Select action to take
-			const action = await vscode.window.showQuickPick(
-				[constants.generateScriptButtonText, constants.publish],
-				{ title: constants.chooseAction, ignoreFocusOut: true });
-			if (!action) {
-				return;
-			}
-			await projectController.publishOrScriptProject(project, settings, action === constants.publish);
-		}
-	}
-}
-
-async function launchPublishTargetOption(): Promise<string | undefined> {
+export async function launchPublishTargetOption(): Promise<string | undefined> {
 	// Show options to user for deploy to existing server or docker
 
 	const publishOption = await vscode.window.showQuickPick(

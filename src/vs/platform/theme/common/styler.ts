@@ -229,6 +229,21 @@ export interface IButtonStyleOverrides extends IStyleOverrides {
 	buttonDisabledBorder?: ColorIdentifier;
 }
 
+// {{SQL CARBON EDIT}}
+export const defaultButtonStyles: IButtonStyleOverrides = {
+	buttonForeground: buttonForeground,
+	buttonBackground: buttonBackground,
+	buttonHoverBackground: buttonHoverBackground,
+	buttonSecondaryForeground: buttonSecondaryForeground,
+	buttonSecondaryBackground: buttonSecondaryBackground,
+	buttonSecondaryHoverBackground: buttonSecondaryHoverBackground,
+	buttonBorder: buttonBorder,
+	buttonSecondaryBorder: buttonSecondaryBorder,
+	buttonDisabledBorder: buttonDisabledBorder,
+	buttonDisabledBackground: buttonDisabledBackground,
+	buttonDisabledForeground: buttonDisabledForeground
+};
+
 export function attachButtonStyler(widget: IThemable, themeService: IThemeService, style?: IButtonStyleOverrides): IDisposable {
 	return attachStyler(themeService, {
 		buttonForeground: style?.buttonForeground || buttonForeground,

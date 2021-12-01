@@ -49,6 +49,8 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
+import { URI } from 'vs/base/common/uri';
+import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
@@ -472,6 +474,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		if (!tokenFillSuccess) {
 			throw new Error(nls.localize('connection.noAzureAccount', "Failed to get Azure account token for connection"));
 		}
+		if (options.saveTheConnection) {
+			connection.options.originalDatabase = connection.databaseName;
+		}
 		return this.createNewConnection(uri, connection).then(async connectionResult => {
 			if (connectionResult && connectionResult.connected) {
 				// The connected succeeded so add it to our active connections now, optionally adding it to the MRU based on
@@ -629,27 +634,20 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	private focusDashboard(profile: interfaces.IConnectionProfile): boolean {
-		let found: boolean = false;
+		const matchingEditor = this._editorService.editors.find(editor => {
+			return editor instanceof DashboardInput && DashboardInput.profileMatches(profile, editor.connectionProfile);
+		}) as DashboardInput;
 
-		this._editorService.editors.map(editor => {
-			if (editor instanceof DashboardInput) {
-				if (DashboardInput.profileMatches(profile, editor.connectionProfile)) {
-					editor.connectionProfile.connectionName = profile.connectionName;
-					editor.connectionProfile.databaseName = profile.databaseName;
-					this._editorService.openEditor(editor)
-						.then(() => {
-							if (!profile.databaseName || Utils.isMaster(profile)) {
-								this._angularEventing.sendAngularEvent(editor.uri, AngularEventType.NAV_SERVER);
-							} else {
-								this._angularEventing.sendAngularEvent(editor.uri, AngularEventType.NAV_DATABASE);
-							}
-							found = true;
-						}, errors.onUnexpectedError);
-				}
-			}
-		});
+		if (matchingEditor) {
+			matchingEditor.connectionProfile.connectionName = profile.connectionName;
+			matchingEditor.connectionProfile.databaseName = profile.databaseName;
+			this._editorService.openEditor(matchingEditor).then(() => {
+				const target = !profile.databaseName || Utils.isServerConnection(profile) ? AngularEventType.NAV_SERVER : AngularEventType.NAV_DATABASE;
+				this._angularEventing.sendAngularEvent(matchingEditor.uri, target);
+			}, errors.onUnexpectedError);
+		}
 
-		return found;
+		return !!matchingEditor;
 	}
 
 	public closeDashboard(uri: string): void {
@@ -954,9 +952,12 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this._providers.get(connection.providerName).onReady.then((provider) => {
 			provider.connect(uri, connectionInfo);
 			this._onConnectRequestSent.fire();
-
+			// Connections are made per URI so while there may possibly be multiple editors with
+			// that URI they all share the same state
+			const editor = this._editorService.findEditors(URI.parse(uri))[0]?.editor;
 			// TODO make this generic enough to handle non-SQL languages too
-			this.doChangeLanguageFlavor(uri, 'sql', connection.providerName);
+			const language = editor instanceof QueryEditorInput && editor.state.isSqlCmdMode ? 'sqlcmd' : 'sql';
+			this.doChangeLanguageFlavor(uri, language, connection.providerName);
 			return true;
 		});
 	}

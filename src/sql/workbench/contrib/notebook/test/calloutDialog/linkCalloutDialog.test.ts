@@ -105,6 +105,9 @@ suite('Link Callout Dialog', function (): void {
 		assert.strictEqual(escapeUrl('Test()URL'), 'Test%28%29URL', 'URL test square brackets failed');
 		assert.strictEqual(escapeUrl('<>&()'), '&lt;&gt;&amp;%28%29', 'URL test known escaped characters failed');
 		assert.strictEqual(escapeUrl('<>&()[]'), '&lt;&gt;&amp;%28%29[]', 'URL test all escaped characters failed');
+		assert.strictEqual(escapeUrl('TEST URL'), 'TEST%20URL', 'URL with spaces failed');
+		assert.strictEqual(escapeUrl('TEST%20URL'), 'TEST%2520URL', 'URL with %20 failed');
+		assert.strictEqual(escapeUrl('TEST %20 URL'), 'TEST%20%2520%20URL', 'URL with %20 and spaces failed');
 	});
 
 	test('Unquote text', function (): void {
@@ -121,7 +124,7 @@ suite('Link Callout Dialog', function (): void {
 		assert.strictEqual(unquoteText(undefined), undefined);
 	});
 
-	test('Should return file link properly', async function (): Promise<void> {
+	test('Should return absolute file link properly', async function (): Promise<void> {
 		const defaultLabel = 'defaultLabel';
 		const sampleUrl = 'C:/Test/Test.ipynb';
 		let linkCalloutDialog = new LinkCalloutDialog('Title', 'below', defaultDialogProperties, defaultLabel, sampleUrl,
@@ -143,4 +146,48 @@ suite('Link Callout Dialog', function (): void {
 		assert.strictEqual(result.insertEscapedMarkdown, `[${defaultLabel}](${sampleUrl})`, 'Markdown not returned correctly');
 	});
 
+	test('Should return relative file link properly', async function (): Promise<void> {
+		const defaultLabel = 'defaultLabel';
+		const sampleUrl = '../../Test.ipynb';
+		let linkCalloutDialog = new LinkCalloutDialog('Title', 'below', defaultDialogProperties, defaultLabel, sampleUrl,
+			undefined, themeService, layoutService, telemetryService, contextKeyService, undefined, undefined, undefined);
+		linkCalloutDialog.render();
+
+		let deferred = new Deferred<ILinkCalloutDialogOptions>();
+		// When I first open the callout dialog
+		linkCalloutDialog.open().then(value => {
+			deferred.resolve(value);
+		});
+		linkCalloutDialog.url = sampleUrl;
+
+		// And insert the dialog
+		linkCalloutDialog.insert();
+		let result = await deferred.promise;
+		assert.strictEqual(result.insertUnescapedLinkLabel, defaultLabel, 'Label not returned correctly');
+		assert.strictEqual(result.insertUnescapedLinkUrl, sampleUrl, 'URL not returned correctly');
+		assert.strictEqual(result.insertEscapedMarkdown, `[${defaultLabel}](${sampleUrl})`, 'Markdown not returned correctly');
+	});
+
+	test('Should handle quoted URLs properly', async function (): Promise<void> {
+		const defaultLabel = 'defaultLabel';
+		const unquotedUrl = 'C:/Test/Test.ipynb';
+		const quotedUrl = `"${unquotedUrl}"`;
+		let linkCalloutDialog = new LinkCalloutDialog('Title', 'below', defaultDialogProperties, defaultLabel, '',
+			undefined, themeService, layoutService, telemetryService, contextKeyService, undefined, undefined, undefined);
+		linkCalloutDialog.render();
+
+		let deferred = new Deferred<ILinkCalloutDialogOptions>();
+		// When I first open the callout dialog
+		linkCalloutDialog.open().then(value => {
+			deferred.resolve(value);
+		});
+		linkCalloutDialog.url = quotedUrl;
+
+		// And insert the dialog
+		linkCalloutDialog.insert();
+		let result = await deferred.promise;
+		assert.strictEqual(result.insertUnescapedLinkLabel, defaultLabel, 'Label not returned correctly');
+		assert.strictEqual(result.insertUnescapedLinkUrl, unquotedUrl, 'URL not unquoted correctly');
+		assert.strictEqual(result.insertEscapedMarkdown, `[${defaultLabel}](${unquotedUrl})`, 'Markdown not unquoted correctly');
+	});
 });

@@ -108,6 +108,10 @@ export class TabbedPanel extends Disposable {
 		return this.parent;
 	}
 
+	public get activeTabId(): string | undefined {
+		return this._shownTabId;
+	}
+
 	public override dispose() {
 		this.header.remove();
 		this.tabList.remove();
@@ -246,6 +250,12 @@ export class TabbedPanel extends Disposable {
 			const tabHeight = this._currentDimensions.height - (this._headerVisible ? this.headersize : 0);
 			this._layoutCurrentTab(new DOM.Dimension(this._currentDimensions.width, tabHeight));
 		}
+	}
+
+	public clearTabs(): void {
+		this._tabMap.forEach((value, key, map) => {
+			this.removeTab(key);
+		});
 	}
 
 	public removeTab(tab: PanelTabIdentifier) {

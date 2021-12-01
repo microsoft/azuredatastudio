@@ -10271,6 +10271,7 @@
 			"schema.connectionOptions": "Параметры подключения",
 			"schema.displayName": "Отображаемое имя поставщика",
 			"schema.iconPath": "Путь к значку для типа сервера",
+			"schema.isQueryProvider": "Whether the provider is also a query provider. The default value is true.",
 			"schema.notebookKernelAlias": "Псевдоним ядра записной книжки для поставщика",
 			"schema.providerId": "Общий идентификатор поставщика"
 		},
@@ -10787,6 +10788,7 @@
 			"codePreview": "Ячейка кода",
 			"optionCodeCell": "Ячейка кода",
 			"optionTextCell": "Текстовая ячейка",
+			"splitCell": "Разбить ячейку",
 			"textPreview": "Текстовая ячейка"
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/code.component": {
@@ -11225,7 +11227,7 @@
 		},
 		"sql/workbench/contrib/query/browser/queryResultsView": {
 			"messagesTabTitle": "Сообщения",
-			"queryResults.queryEditorCrashError": "The query editor ran into an issue and has stopped working. Please save and reopen it.",
+			"queryResults.queryEditorCrashError": "В редакторе запросов возникла проблема, он перестал работать. Сохраните данные и снова откройте редактор запросов.",
 			"resultsTabTitle": "Результаты"
 		},
 		"sql/workbench/contrib/query/browser/statusBarItems": {
@@ -11981,6 +11983,39 @@
 		"sql/workbench/services/query/common/queryManagement": {
 			"queryManagement.noQueryRunnerForUri": "Не найдено средство выполнения запросов для URI: {0}",
 			"queryManagement.uriAlreadyHasQueryRunner": "URI: у {0} неожиданно оказалось выполнения запросов."
+		},
+		"sql/base/browser/ui/designer/designer": {
+			"designer.newRowText": "Добавить новый",
+			"designer.removeRowText": "Удалить",
+			"tableDesigner.unknownComponentType": "Тип компонента {0} не поддерживается"
+		},
+		"sql/base/browser/ui/designer/designerPropertiesPane": {
+			"tableDesigner.propertiesPaneTitle": "Свойства",
+			"tableDesigner.propertiesPaneTitleWithContext": "Свойства — {0} {1}"
+		},
+		"sql/workbench/browser/editor/tableDesigner/tableDesignerInput": {
+			"tableDesigner.newTable": "Создать таблицу"
+		},
+		"sql/workbench/contrib/tableDesigner/browser/actions": {
+			"tableDesigner.saveTableChanges": "Сохранить изменения"
+		},
+		"sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput": {
+			"tableDesigner.advancedTab": "Дополнительно",
+			"tableDesigner.columnAllowNullTitle": "Разрешить значения NULL",
+			"tableDesigner.columnDefaultValueTitle": "Значение по умолчанию",
+			"tableDesigner.columnIsPrimaryKeyTitle": "Первичный ключ",
+			"tableDesigner.columnLengthTitle": "Длина",
+			"tableDesigner.columnNameTitle": "Имя",
+			"tableDesigner.columnTypeName": "Столбец",
+			"tableDesigner.columnTypeTitle": "Тип",
+			"tableDesigner.columnsTabTitle": "Столбцы",
+			"tableDesigner.descriptionTitle": "Описание",
+			"tableDesigner.nameTitle": "Имя таблицы",
+			"tableDesigner.saveChangeError": "Произошла ошибка при сохранении изменений: {0}",
+			"tableDesigner.savedChangeSuccess": "Изменения успешно сохранены.",
+			"tableDesigner.savingChanges": "Сохранение изменений конструктора таблиц...",
+			"tableDesigner.schemaTitle": "Схема",
+			"tableDesigner.tableObjectType": "Таблицы"
 		}
 	}
 }

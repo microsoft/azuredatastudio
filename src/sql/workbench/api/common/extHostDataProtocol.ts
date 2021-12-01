@@ -194,6 +194,12 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return rt;
 	}
 
+	$registerTableDesignerProvider(provider: azdata.designers.TableDesignerProvider): vscode.Disposable {
+		let rt = this.registerProvider(provider, DataProviderType.TableDesignerProvider);
+		this._proxy.$registerTableDesignerProvider(provider.providerId, provider.handle);
+		return rt;
+	}
+
 	// Capabilities Discovery handlers
 	override $getServerCapabilities(handle: number, client: azdata.DataProtocolClientCapabilities): Thenable<azdata.DataProtocolServerCapabilities> {
 		return this._resolveProvider<azdata.CapabilitiesProvider>(handle).getServerCapabilities(client);
@@ -883,5 +889,27 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	public override $getDataGridColumns(handle: number): Thenable<azdata.DataGridColumn[]> {
 		return this._resolveProvider<azdata.DataGridProvider>(handle).getDataGridColumns();
+	}
+
+	// Table Designer
+	public override $getTableDesignerInfo(handle: number, table: azdata.designers.TableInfo): Thenable<azdata.designers.TableDesignerInfo> {
+		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).getTableDesignerInfo(table);
+	}
+
+	public override $processTableDesignerEdit(handle: number, table: azdata.designers.TableInfo, viewModel: azdata.designers.DesignerViewModel, edit: azdata.designers.DesignerEdit): Thenable<azdata.designers.DesignerEditResult> {
+		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).processTableEdit(table, viewModel, edit);
+	}
+
+	public override $saveTable(handle: number, table: azdata.designers.TableInfo, viewModel: azdata.designers.DesignerViewModel): Thenable<void> {
+		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).saveTable(table, viewModel);
+	}
+
+	public override $disposeTableDesigner(handle: number, table: azdata.designers.TableInfo): Thenable<void> {
+		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).disposeTableDesigner(table);
+	}
+
+	public override $openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo): Promise<void> {
+		this._proxy.$openTableDesigner(providerId, tableInfo);
+		return Promise.resolve();
 	}
 }

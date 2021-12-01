@@ -30,6 +30,7 @@ import { CodeComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/
 import { NotebookRange, ICellEditorProvider, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { HTMLMarkdownConverter } from 'sql/workbench/contrib/notebook/browser/htmlMarkdownConverter';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
+import { highlightSelectedText } from 'sql/workbench/contrib/notebook/browser/utils';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
@@ -73,30 +74,34 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			// Select all text
 			if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
 				preventDefaultAndExecCommand(e, 'selectAll');
-				// Redo text
 			} else if ((e.metaKey && e.shiftKey && e.key === 'z') || (e.ctrlKey && e.key === 'y') && !this.markdownMode) {
+				// Redo text
 				this.redoRichTextChange();
-				// Undo text
 			} else if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+				// Undo text
 				this.undoRichTextChange();
-				// Outdent text
 			} else if (e.shiftKey && e.key === 'Tab') {
+				// Outdent text
 				preventDefaultAndExecCommand(e, 'outdent');
-				// Indent text
 			} else if (e.key === 'Tab') {
+				// Indent text
 				preventDefaultAndExecCommand(e, 'indent');
-				// Bold text
 			} else if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+				// Bold text
 				preventDefaultAndExecCommand(e, 'bold');
-				// Italicize text
 			} else if ((e.ctrlKey || e.metaKey) && e.key === 'i') {
+				// Italicize text
 				preventDefaultAndExecCommand(e, 'italic');
-				// Underline text
 			} else if ((e.ctrlKey || e.metaKey) && e.key === 'u') {
+				// Underline text
 				preventDefaultAndExecCommand(e, 'underline');
-				// Code Block
 			} else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'k') {
+				// Code Block
 				preventDefaultAndExecCommand(e, 'formatBlock', false, 'pre');
+			} else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'h') {
+				// Highlight Text
+				DOM.EventHelper.stop(e, true);
+				highlightSelectedText();
 			}
 		}
 	}
@@ -210,7 +215,15 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			}
 			this._changeRef.detectChanges();
 		}));
-		this._register(this.cellModel.onCellPreviewModeChanged(preview => {
+		this._register(this.cellModel.onCurrentEditModeChanged(editMode => {
+			let markdown: boolean = editMode !== CellEditModes.WYSIWYG;
+			if (!markdown) {
+				let editorControl = this.cellEditors.length > 0 ? this.cellEditors[0].getEditor().getControl() : undefined;
+				if (editorControl) {
+					let selection = editorControl.getSelection();
+					this.cellModel.markdownCursorPosition = selection?.getPosition();
+				}
+			}
 			// On preview mode change, get the cursor position (get the position only when the selection node is a text node)
 			if (window.getSelection() && window.getSelection().focusNode?.nodeName === '#text' && window.getSelection().getRangeAt(0)) {
 				let selection = window.getSelection().getRangeAt(0);
@@ -242,17 +255,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 					this.cellModel.richTextCursorPosition = cursorPosition;
 				}
 			}
-			this.previewMode = preview;
-			this.focusIfPreviewMode();
-		}));
-		this._register(this.cellModel.onCellMarkdownModeChanged(markdown => {
-			if (!markdown) {
-				let editorControl = this.cellEditors.length > 0 ? this.cellEditors[0].getEditor().getControl() : undefined;
-				if (editorControl) {
-					let selection = editorControl.getSelection();
-					this.cellModel.markdownCursorPosition = selection?.getPosition();
-				}
-			}
+			this.previewMode = editMode !== CellEditModes.MARKDOWN;
 			this.markdownMode = markdown;
 			this.focusIfPreviewMode();
 		}));
@@ -504,7 +507,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			// Move cursor to the richTextCursorPosition
 			// We iterate through the output element childnodes to get to the element of cursor location
 			// If the elements exist, we set the selection, else the cursor defaults to beginning.
-			if (!this.markdownMode && this.cellModel.richTextCursorPosition) {
+			// Only do this if the cell is active so we don't steal the window selection from another cell
+			// since this function is called whenever any cell in the Notebook changes, not just ourself
+			if (this.isActive() && !this.markdownMode && this.cellModel.richTextCursorPosition) {
 				let selection = window.getSelection();
 				let htmlNodes = this.cellModel.richTextCursorPosition.startElementNodes;
 				let depthToNode = htmlNodes.length;

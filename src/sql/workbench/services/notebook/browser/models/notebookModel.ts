@@ -149,7 +149,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	public get serializationManager(): ISerializationManager | undefined {
 		let manager = this.serializationManagers.find(manager => manager.providerId === this._providerId);
 		if (!manager) {
-			manager = this.serializationManagers.find(manager => manager.providerId === DEFAULT_NOTEBOOK_PROVIDER);
+			manager = this.serializationManagers.find(manager => manager.providerId === SQL_NOTEBOOK_PROVIDER);
 		}
 		return manager;
 	}
@@ -165,9 +165,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	public get executeManager(): IExecuteManager | undefined {
 		let manager = this.executeManagers.find(manager => manager.providerId === this._providerId);
 		if (!manager) {
-			// Note: this seems like a less than ideal scenario. We should ideally pass in the "correct" provider ID and allow there to be a default,
-			// instead of assuming in the NotebookModel constructor that the option is either SQL or Jupyter
-			manager = this.executeManagers.find(manager => manager.providerId === DEFAULT_NOTEBOOK_PROVIDER);
+			manager = this.executeManagers.find(manager => manager.providerId === SQL_NOTEBOOK_PROVIDER);
 		}
 		return manager;
 	}
@@ -573,6 +571,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 				//Get selection value from current cell
 				let newCellContent = model.getValueInRange(selection);
+				let startPosition = selection.getStartPosition();
+				//If the cursor is at the beginning of the cell with no selection, return
+				if (newCellContent.length === 0 && startPosition.lineNumber === 1 && startPosition.column === 1) {
+					return undefined;
+				}
 
 				//Get content after selection
 				let tailRange = range.setStartPosition(selection.endLineNumber, selection.endColumn);
@@ -630,6 +633,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					if (selection.endColumn > 1) {
 						partialSource = source.slice(tailRange.startLineNumber - 1, tailRange.startLineNumber)[0].slice(tailRange.startColumn - 1);
 						tailSource.splice(0, 1, partialSource);
+					}
+					//Remove the trailing empty line after the cursor
+					if (tailSource[0] === '\r\n' || tailSource[0] === '\n') {
+						tailSource.splice(0, 1);
 					}
 					tailCell.source = tailSource;
 					tailCellIndex = newCellIndex + 1;

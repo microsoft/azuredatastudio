@@ -13,8 +13,10 @@ import * as os from 'os';
 import { azureResource } from 'azureResource';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 import { CreateResourceGroupDialog } from '../createResourceGroup/createResourceGroupDialog';
+import { createAuthenticationKeyTable } from '../../wizard/integrationRuntimePage';
 import * as EventEmitter from 'events';
 import { clearDialogMessage } from '../../api/utils';
+import * as styles from '../../constants/styles';
 
 export class CreateSqlMigrationServiceDialog {
 
@@ -209,7 +211,7 @@ export class CreateSqlMigrationServiceDialog {
 		const dialogDescription = this._view.modelBuilder.text().withProps({
 			value: constants.MIGRATION_SERVICE_DIALOG_DESCRIPTION,
 			CSSStyles: {
-				'font-size': '13px'
+				...styles.BODY_CSS
 			}
 		}).component();
 
@@ -217,16 +219,14 @@ export class CreateSqlMigrationServiceDialog {
 			value: constants.SUBSCRIPTION,
 			description: constants.MIGRATION_SERVICE_SUBSCRIPTION_INFO,
 			CSSStyles: {
-				'font-size': '13px',
-				'font-weight': 'bold'
+				...styles.LABEL_CSS
 			}
 		}).component();
 
 		this.migrationServiceSubscription = this._view.modelBuilder.text().withProps({
 			enabled: false,
 			CSSStyles: {
-				'font-size': '13px',
-				'margin': '0px'
+				'margin': '-1em 0 0'
 			}
 		}).component();
 
@@ -235,8 +235,7 @@ export class CreateSqlMigrationServiceDialog {
 			description: constants.MIGRATION_SERVICE_RESOURCE_GROUP_INFO,
 			requiredIndicator: true,
 			CSSStyles: {
-				'font-size': '13px',
-				'font-weight': 'bold'
+				...styles.LABEL_CSS
 			}
 		}).component();
 
@@ -245,6 +244,9 @@ export class CreateSqlMigrationServiceDialog {
 			required: true,
 			editable: true,
 			fireOnTextChange: true,
+			CSSStyles: {
+				'margin-top': '-1em'
+			}
 		}).component();
 
 		const migrationServiceNameLabel = this._view.modelBuilder.text().withProps({
@@ -252,14 +254,16 @@ export class CreateSqlMigrationServiceDialog {
 			description: constants.MIGRATION_SERVICE_NAME_INFO,
 			requiredIndicator: true,
 			CSSStyles: {
-				'font-size': '13px',
-				'font-weight': 'bold'
+				...styles.LABEL_CSS
 			}
 		}).component();
 
 		this._createResourceGroupLink = this._view.modelBuilder.hyperlink().withProps({
 			label: constants.CREATE_NEW,
-			url: ''
+			url: '',
+			CSSStyles: {
+				...styles.BODY_CSS
+			}
 		}).component();
 
 		this._disposables.push(this._createResourceGroupLink.onDidClick(async e => {
@@ -280,31 +284,33 @@ export class CreateSqlMigrationServiceDialog {
 			}
 		}));
 
-		this.migrationServiceNameText = this._view.modelBuilder.inputBox().component();
+		this.migrationServiceNameText = this._view.modelBuilder.inputBox().withProps({
+			CSSStyles: {
+				'margin-top': '-1em'
+			}
+		}).component();
 
 		const locationDropdownLabel = this._view.modelBuilder.text().withProps({
 			value: constants.LOCATION,
 			description: constants.MIGRATION_SERVICE_LOCATION_INFO,
 			CSSStyles: {
-				'font-size': '13px',
-				'font-weight': 'bold'
+				...styles.LABEL_CSS
 			}
 		}).component();
 
 		this.migrationServiceLocation = this._view.modelBuilder.text().withProps({
+			enabled: false,
 			value: await this._model.getLocationDisplayName(this._model._targetServerInstance.location),
 			CSSStyles: {
-				'font-size': '13px',
-				'margin': '0px'
+				'margin': '-1em 0 0'
 			}
 		}).component();
 
-		const targetlabel = this._view.modelBuilder.text().withProps({
+		const targetLabel = this._view.modelBuilder.text().withProps({
 			value: constants.TARGET,
 			description: constants.MIGRATION_SERVICE_TARGET_INFO,
 			CSSStyles: {
-				'font-size': '13px',
-				'font-weight': 'bold'
+				...styles.LABEL_CSS
 			}
 		}).component();
 
@@ -312,8 +318,9 @@ export class CreateSqlMigrationServiceDialog {
 			enabled: false,
 			value: constants.AZURE_SQL,
 			CSSStyles: {
-				'font-size': '13px',
-				'margin': '0px'
+				'margin-top': '-1em',
+				// 'font-size': '13px',
+				// 'margin': '0px'
 			}
 		}).component();
 
@@ -328,7 +335,7 @@ export class CreateSqlMigrationServiceDialog {
 			this._createResourceGroupLink,
 			migrationServiceNameLabel,
 			this.migrationServiceNameText,
-			targetlabel,
+			targetLabel,
 			targetText
 		]).withLayout({
 			flexFlow: 'column'
@@ -380,29 +387,28 @@ export class CreateSqlMigrationServiceDialog {
 		const setupIRHeadingText = this._view.modelBuilder.text().withProps({
 			value: constants.SERVICE_CONTAINER_HEADING,
 			CSSStyles: {
-				'font-weight': 'bold',
-				'font-size': '13px'
+				...styles.LABEL_CSS
 			}
 		}).component();
 
 		const setupIRdescription1 = this._view.modelBuilder.text().withProps({
 			value: constants.SERVICE_CONTAINER_DESCRIPTION1,
 			CSSStyles: {
-				'font-size': '13px'
+				...styles.BODY_CSS
 			}
 		}).component();
 
 		const setupIRdescription2 = this._view.modelBuilder.text().withProps({
 			value: constants.SERVICE_CONTAINER_DESCRIPTION2,
 			CSSStyles: {
-				'font-size': '13px'
+				...styles.BODY_CSS
 			}
 		}).component();
 
 		const irSetupStep1Text = this._view.modelBuilder.text().withProps({
 			value: constants.SERVICE_STEP1,
 			CSSStyles: {
-				'font-size': '13px'
+				...styles.BODY_CSS
 			},
 			links: [
 				{
@@ -415,7 +421,7 @@ export class CreateSqlMigrationServiceDialog {
 		const irSetupStep2Text = this._view.modelBuilder.text().withProps({
 			value: constants.SERVICE_STEP2,
 			CSSStyles: {
-				'font-size': '13px'
+				...styles.BODY_CSS
 			}
 		}).component();
 
@@ -424,7 +430,7 @@ export class CreateSqlMigrationServiceDialog {
 			CSSStyles: {
 				'margin-top': '10px',
 				'margin-bottom': '10px',
-				'font-size': '13px'
+				...styles.BODY_CSS
 			}
 		}).component();
 
@@ -432,7 +438,7 @@ export class CreateSqlMigrationServiceDialog {
 			text: '',
 			style: 'error',
 			CSSStyles: {
-				'font-size': '13px'
+				...styles.BODY_CSS
 			}
 		}).component();
 
@@ -443,55 +449,11 @@ export class CreateSqlMigrationServiceDialog {
 		this._refreshLoadingComponent = this._view.modelBuilder.loadingComponent().withProps({
 			loading: false,
 			CSSStyles: {
-				'font-size': '13px'
+				...styles.BODY_CSS
 			}
 		}).component();
 
-
-		this.migrationServiceAuthKeyTable = this._view.modelBuilder.declarativeTable().withProps({
-			ariaLabel: constants.DATABASE_MIGRATION_SERVICE_AUTHENTICATION_KEYS,
-			columns: [
-				{
-					displayName: constants.NAME,
-					valueType: azdata.DeclarativeDataType.string,
-					width: '50px',
-					isReadOnly: true,
-					rowCssStyles: {
-						'font-size': '13px'
-					},
-					headerCssStyles: {
-						'font-size': '13px'
-					}
-				},
-				{
-					displayName: constants.AUTH_KEY_COLUMN_HEADER,
-					valueType: azdata.DeclarativeDataType.string,
-					width: '500px',
-					isReadOnly: true,
-					rowCssStyles: {
-						'font-size': '13px'
-					},
-					headerCssStyles: {
-						'font-size': '13px'
-					}
-				},
-				{
-					displayName: '',
-					valueType: azdata.DeclarativeDataType.component,
-					width: '30px',
-					isReadOnly: true,
-					rowCssStyles: {
-						'font-size': '13px'
-					},
-					headerCssStyles: {
-						'font-size': '13px'
-					}
-				}
-			],
-			CSSStyles: {
-				'margin-top': '5px'
-			}
-		}).component();
+		this.migrationServiceAuthKeyTable = createAuthenticationKeyTable(this._view);
 
 		this._setupContainer = this._view.modelBuilder.flexContainer().withItems(
 			[
@@ -552,7 +514,7 @@ export class CreateSqlMigrationServiceDialog {
 					text: constants.SERVICE_READY(this._createdMigrationService!.name, this.irNodes.join(', ')),
 					style: 'success',
 					CSSStyles: {
-						'font-size': '13px'
+						...styles.BODY_CSS
 					}
 				});
 				this._dialogObject.okButton.enabled = true;
@@ -562,7 +524,7 @@ export class CreateSqlMigrationServiceDialog {
 					text: constants.SERVICE_NOT_READY(this._createdMigrationService!.name),
 					style: 'warning',
 					CSSStyles: {
-						'font-size': '13px'
+						...styles.BODY_CSS
 					}
 				});
 				this._dialogObject.okButton.enabled = false;

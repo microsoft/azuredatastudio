@@ -950,10 +950,13 @@
       </Item>
       <Item ItemId=";extensions/notebook/dist/dialog/configurePython/configurePathPage.configurePython.descriptionWithKernel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[The {0} kernel requires a Python runtime to be configured and dependencies to be installed.]]></Val>
+          <Val><![CDATA[The '{0}' kernel requires a Python runtime to be configured and dependencies to be installed.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Le noyau {0} nécessite la configuration d'un runtime Python et l'installation de dépendances.]]></Val>
+            <Val><![CDATA[Le noyau ’{0}’ nécessite la configuration d'un runtime Python et l'installation de dépendances.]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[The {0} kernel requires a Python runtime to be configured and dependencies to be installed.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1173,11 +1176,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/notebook/dist/dialog/configurePython/pickPackagesPage.msgUnsupportedKernel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/notebook/dist/dialog/configurePython/pickPackagesPage.msgNoRequirementsForKernel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Could not retrieve packages for kernel {0}]]></Val>
+          <Val><![CDATA[No packages are required by default for the kernel '{0}']]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Impossible de récupérer les packages du noyau {0}]]></Val>
+            <Val><![CDATA[Aucun package n’est requis par défaut pour le noyau « {0} ».]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1976,6 +1979,15 @@
           <Val><![CDATA[Add Code Block]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Ajouter un bloc de code]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/notebook/package.notebook.command.highlightText" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Highlight Markdown Text]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Mettre en surbrillance le texte Markdown]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

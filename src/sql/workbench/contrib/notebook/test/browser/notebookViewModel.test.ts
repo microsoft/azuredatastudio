@@ -208,7 +208,7 @@ suite('NotebookViewModel', function (): void {
 		viewModel.initialize();
 
 		let cell = viewModel.cells[0];
-		let cellMeta = notebookViews.getCellMetadata(cell);
+		let cellMeta = notebookViews.getExtensionCellMetadata(cell);
 
 		assert(!isUndefinedOrNull(cellMeta.views.find(v => v.guid === viewModel.guid)));
 		assert.deepStrictEqual(viewModel.getCellMetadata(cell), cellMeta.views.find(v => v.guid === viewModel.guid));

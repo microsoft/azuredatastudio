@@ -5,7 +5,7 @@
 
 import * as path from 'vs/base/common/path';
 import { nb, ServerInfo } from 'azdata';
-import { DEFAULT_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_FILETYPE, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
+import { DEFAULT_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_FILETYPE, INotebookService, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
 import { URI } from 'vs/base/common/uri';
 
 export const clusterEndpointsProperty = 'clusterEndpoints';
@@ -21,8 +21,7 @@ export function getProvidersForFileName(fileName: string, notebookService: INote
 	let fileExt = path.extname(fileName);
 	let providers: string[];
 	// First try to get provider for actual file type
-	if (fileExt && fileExt.startsWith('.')) {
-		fileExt = fileExt.slice(1, fileExt.length);
+	if (fileExt) {
 		providers = notebookService.getProvidersForFileType(fileExt);
 	}
 	// Fallback to provider for default file type (assume this is a global handler)
@@ -41,6 +40,10 @@ export function getStandardKernelsForProvider(providerId: string, notebookServic
 		return [];
 	}
 	let standardKernels = notebookService.getStandardKernelsForProvider(providerId);
+	if (!standardKernels || standardKernels.length === 0) {
+		// Fall back to using SQL provider instead
+		standardKernels = notebookService.getStandardKernelsForProvider(SQL_NOTEBOOK_PROVIDER) ?? [];
+	}
 	standardKernels.forEach(kernel => {
 		Object.assign(<IStandardKernelWithProvider>kernel, {
 			name: kernel.name,

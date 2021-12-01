@@ -52,11 +52,20 @@
     <trans-unit id="addPackageReferenceMessage">
       <source xml:lang="en">To use SQL bindings, ensure your Azure Functions project has a reference to {0}</source>
     </trans-unit>
+    <trans-unit id="addSqlBindingPackageError">
+      <source xml:lang="en">Error adding Sql Binding extension package to project</source>
+    </trans-unit>
     <trans-unit id="appSettingPrompt">
       <source xml:lang="en">Would you like to update Azure Function local.settings.json with the new connection string?</source>
     </trans-unit>
     <trans-unit id="at">
       <source xml:lang="en">at</source>
+    </trans-unit>
+    <trans-unit id="autorestProjectName">
+      <source xml:lang="en">New SQL project name</source>
+    </trans-unit>
+    <trans-unit id="baseDockerImage">
+      <source xml:lang="en">Base SQL Server Docker image</source>
     </trans-unit>
     <trans-unit id="browseButtonText">
       <source xml:lang="en">Browse folder</source>
@@ -69,6 +78,9 @@
     </trans-unit>
     <trans-unit id="buildAction">
       <source xml:lang="en">Build</source>
+    </trans-unit>
+    <trans-unit id="buildElements">
+      <source xml:lang="en">Build Elements</source>
     </trans-unit>
     <trans-unit id="buildFailedCannotStartSchemaCompare">
       <source xml:lang="en">Schema compare could not start because build failed</source>
@@ -85,6 +97,9 @@
     <trans-unit id="changeTargetPlatformAction">
       <source xml:lang="en">Change Target Platform</source>
     </trans-unit>
+    <trans-unit id="checkoutOutputMessage">
+      <source xml:lang="en">Check output pane for more details</source>
+    </trans-unit>
     <trans-unit id="chooseAction">
       <source xml:lang="en">Choose action</source>
     </trans-unit>
@@ -100,6 +115,9 @@
     <trans-unit id="confirmPassword">
       <source xml:lang="en">Confirm SQL server admin password</source>
     </trans-unit>
+    <trans-unit id="confirmServerPassword">
+      <source xml:lang="en">Confirm SQL Server admin password</source>
+    </trans-unit>
     <trans-unit id="connectingToSqlServerOnDockerMessage">
       <source xml:lang="en">Connecting to SQL Server on Docker</source>
     </trans-unit>
@@ -114,6 +132,9 @@
     </trans-unit>
     <trans-unit id="connectionStringSettingPlaceholder">
       <source xml:lang="en">Connection string setting specified in "local.settings.json"</source>
+    </trans-unit>
+    <trans-unit id="containerAlreadyExistForProject">
+      <source xml:lang="en">Other servers on container already exist for the project. Do you want to delete them?</source>
     </trans-unit>
     <trans-unit id="createNew">
       <source xml:lang="en">Create New</source>
@@ -144,6 +165,9 @@
     </trans-unit>
     <trans-unit id="dacpacNotOnSameDrive">
       <source xml:lang="en">Dacpac references need to be located on the same drive as the project file. The project file is located at {0}</source>
+    </trans-unit>
+    <trans-unit id="dacpacReferenceElement">
+      <source xml:lang="en">Dacpac reference</source>
     </trans-unit>
     <trans-unit id="dacpacText">
       <source xml:lang="en">Data-tier application (.dacpac)</source>
@@ -232,9 +256,6 @@
     <trans-unit id="deployProjectFailedMessage">
       <source xml:lang="en">Failed to open a connection to the deployed database'</source>
     </trans-unit>
-    <trans-unit id="deployProjectSucceed">
-      <source xml:lang="en">Database project deployed successfully</source>
-    </trans-unit>
     <trans-unit id="deployScriptExists">
       <source xml:lang="en">A {0} script already exists. The new script will not be included in build.</source>
     </trans-unit>
@@ -313,6 +334,9 @@
     <trans-unit id="errorFindingBuildFilesLocation">
       <source xml:lang="en">Error finding build files location: {0}</source>
     </trans-unit>
+    <trans-unit id="errorReadingProjectGuid">
+      <source xml:lang="en">Error trying to read {0} of project '{1}'</source>
+    </trans-unit>
     <trans-unit id="exampleUsage">
       <source xml:lang="en">Example Usage</source>
     </trans-unit>
@@ -358,6 +382,9 @@
     <trans-unit id="folderAlreadyExistsChooseNewLocation">
       <source xml:lang="en">A folder with the name '{0}' already exists on disk at this location. Please choose another location.</source>
     </trans-unit>
+    <trans-unit id="folderElements">
+      <source xml:lang="en">Folder Elements</source>
+    </trans-unit>
     <trans-unit id="folderFriendlyName">
       <source xml:lang="en">Folder</source>
     </trans-unit>
@@ -371,13 +398,22 @@
       <source xml:lang="en">Generate Script</source>
     </trans-unit>
     <trans-unit id="generatingProjectFailed">
-      <source xml:lang="en">Generating project via AutoRest failed: {0}</source>
+      <source xml:lang="en">Generating project via AutoRest failed.  Check output pane for more details. Error: {0}</source>
+    </trans-unit>
+    <trans-unit id="generatingProjectFromAutorest">
+      <source xml:lang="en">Generating new SQL project from {0}...  Check output window for details.</source>
     </trans-unit>
     <trans-unit id="hr">
       <source xml:lang="en">hr</source>
     </trans-unit>
+    <trans-unit id="importElements">
+      <source xml:lang="en">Import Elements</source>
+    </trans-unit>
     <trans-unit id="input">
       <source xml:lang="en">Input</source>
+    </trans-unit>
+    <trans-unit id="installGlobally">
+      <source xml:lang="en">Install globally</source>
     </trans-unit>
     <trans-unit id="invalidDataSchemaProvider">
       <source xml:lang="en">Invalid DSP in .sqlproj file</source>
@@ -457,6 +493,9 @@
     <trans-unit id="noFileExist">
       <source xml:lang="en">File {0} doesn't exist</source>
     </trans-unit>
+    <trans-unit id="noSqlFilesGenerated">
+      <source xml:lang="en">No .sql files were generated by Autorest. Please confirm that your spec contains model definitions, or check the output log for details.</source>
+    </trans-unit>
     <trans-unit id="noSqlProjFilesSelected">
       <source xml:lang="en">No .sqlproj file selected; please select one.</source>
     </trans-unit>
@@ -467,10 +506,16 @@
       <source xml:lang="en">No (default)</source>
     </trans-unit>
     <trans-unit id="nodeButNotAutorestFound">
-      <source xml:lang="en">Autorest tool not found in system path, but found Node.js.  Running via npx.  Please execute 'npm install autorest -g' to install permanently.</source>
+      <source xml:lang="en">Autorest tool not found in system path, but found Node.js.  Prompting user for how to proceed.  Execute 'npm install autorest -g' to install permanently and avoid this message.</source>
+    </trans-unit>
+    <trans-unit id="nodeButNotAutorestFoundPrompt">
+      <source xml:lang="en">Autorest is not installed. To proceed, choose whether to run Autorest from a temporary location via 'npx' or install Autorest globally then run.</source>
     </trans-unit>
     <trans-unit id="nodeNotFound">
-      <source xml:lang="en">Neither autorest nor Node.js (npx) found in system path.  Please install Node.js for autorest generation to work.</source>
+      <source xml:lang="en">Neither Autorest nor Node.js (npx) found in system path.  Please install Node.js for Autorest generation to work.</source>
+    </trans-unit>
+    <trans-unit id="noneElements">
+      <source xml:lang="en">None Elements</source>
     </trans-unit>
     <trans-unit id="notValidVariableName">
       <source xml:lang="en">The variable name '{0}' is not valid.</source>
@@ -496,8 +541,14 @@
     <trans-unit id="portMustNotBeNumber">
       <source xml:lang="en">Port must a be number</source>
     </trans-unit>
+    <trans-unit id="postDeployElements">
+      <source xml:lang="en">PostDeploy Elements</source>
+    </trans-unit>
     <trans-unit id="postDeployScriptFriendlyName">
       <source xml:lang="en">Script.PostDeployment</source>
+    </trans-unit>
+    <trans-unit id="preDeployElements">
+      <source xml:lang="en">PreDeploy Elements</source>
     </trans-unit>
     <trans-unit id="preDeployScriptFriendlyName">
       <source xml:lang="en">Script.PreDeployment</source>
@@ -532,6 +583,12 @@
     <trans-unit id="projectNamePlaceholderText">
       <source xml:lang="en">Enter project name</source>
     </trans-unit>
+    <trans-unit id="projectReferenceElement">
+      <source xml:lang="en">Project reference</source>
+    </trans-unit>
+    <trans-unit id="projectReferenceNameElement">
+      <source xml:lang="en">Project reference name element</source>
+    </trans-unit>
     <trans-unit id="publish">
       <source xml:lang="en">Publish</source>
     </trans-unit>
@@ -541,17 +598,26 @@
     <trans-unit id="publishDialogName">
       <source xml:lang="en">Publish project</source>
     </trans-unit>
+    <trans-unit id="publishProjectSucceed">
+      <source xml:lang="en">Database project published successfully</source>
+    </trans-unit>
     <trans-unit id="publishSettingsFiles">
       <source xml:lang="en">Publish Settings File</source>
     </trans-unit>
+    <trans-unit id="publishTo">
+      <source xml:lang="en">Publish Target</source>
+    </trans-unit>
     <trans-unit id="publishToContainerFailed">
-      <source xml:lang="en">Failed to publish to container. Check output pane for more details. {0}</source>
+      <source xml:lang="en">Failed to publish to container. {0}</source>
     </trans-unit>
     <trans-unit id="publishToDockerContainer">
       <source xml:lang="en">Publish to new server in a container</source>
     </trans-unit>
     <trans-unit id="publishToExistingServer">
       <source xml:lang="en">Publish to existing server</source>
+    </trans-unit>
+    <trans-unit id="publishingProjectMessage">
+      <source xml:lang="en">Publishing project in a container...</source>
     </trans-unit>
     <trans-unit id="referenceRadioButtonsGroupTitle">
       <source xml:lang="en">Type</source>
@@ -582,6 +648,9 @@
     </trans-unit>
     <trans-unit id="retryWaitMessage">
       <source xml:lang="en">Waiting for {0} seconds before another attempt for operation '{1}'</source>
+    </trans-unit>
+    <trans-unit id="runViaNpx">
+      <source xml:lang="en">Run via npx</source>
     </trans-unit>
     <trans-unit id="runningDockerMessage">
       <source xml:lang="en">Building and running the docker container ...</source>
@@ -663,6 +732,12 @@
     </trans-unit>
     <trans-unit id="serverName">
       <source xml:lang="en">Server name</source>
+    </trans-unit>
+    <trans-unit id="serverPassword">
+      <source xml:lang="en">SQL Server admin password</source>
+    </trans-unit>
+    <trans-unit id="serverPortNumber">
+      <source xml:lang="en">SQL server port number</source>
     </trans-unit>
     <trans-unit id="serverVariable">
       <source xml:lang="en">Server variable</source>
@@ -758,10 +833,19 @@
       <source xml:lang="en">Unrecognized version: </source>
     </trans-unit>
     <trans-unit id="updateProjectDatabaseReferencesForRoundTrip">
-      <source xml:lang="en">The system database references need to be updated to build this project. If the project is created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
+      <source xml:lang="en">The system database references need to be updated to build the project '{0}'. If the project was created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
     </trans-unit>
     <trans-unit id="updateProjectForRoundTrip">
-      <source xml:lang="en">The targets, references, and system database references need to be updated to build this project. If the project is created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
+      <source xml:lang="en">The targets, references, and system database references need to be updated to build the project '{0}'. If the project was created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
+    </trans-unit>
+    <trans-unit id="userSelectionCancelled">
+      <source xml:lang="en">User has cancelled selection for how to run autorest.</source>
+    </trans-unit>
+    <trans-unit id="userSelectionInstallGlobally">
+      <source xml:lang="en">User selected to install autorest gloablly.  Installing now...</source>
+    </trans-unit>
+    <trans-unit id="userSelectionRunNpx">
+      <source xml:lang="en">User selected to run via npx.</source>
     </trans-unit>
     <trans-unit id="valueCannotBeEmpty">
       <source xml:lang="en">Value cannot be empty</source>

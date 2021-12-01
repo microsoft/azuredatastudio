@@ -26,7 +26,7 @@ export const SERVICE_ID = 'sqlNotebookService';
 export const INotebookService = createDecorator<INotebookService>(SERVICE_ID);
 
 export const DEFAULT_NOTEBOOK_PROVIDER = 'builtin';
-export const DEFAULT_NOTEBOOK_FILETYPE = 'IPYNB';
+export const DEFAULT_NOTEBOOK_FILETYPE = '.ipynb';
 export const SQL_NOTEBOOK_PROVIDER = 'sql';
 export const OVERRIDE_EDITOR_THEMING_SETTING = 'notebook.overrideEditorTheming';
 
@@ -72,9 +72,9 @@ export interface INotebookService {
 
 	getSupportedFileExtensions(): string[];
 
-	getProvidersForFileType(fileType: string): string[];
+	getProvidersForFileType(fileType: string): string[] | undefined;
 
-	getStandardKernelsForProvider(provider: string): azdata.nb.IStandardKernel[];
+	getStandardKernelsForProvider(provider: string): azdata.nb.IStandardKernel[] | undefined;
 
 	getOrCreateSerializationManager(providerId: string, uri: URI): Promise<ISerializationManager>;
 
