@@ -31,6 +31,9 @@ import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { TestDialogService } from 'vs/platform/dialogs/test/common/testDialogService';
+import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { UndoRedoService } from 'vs/platform/undoRedo/common/undoRedoService';
 
 let initialNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -59,6 +62,8 @@ let notificationService: TypeMoq.Mock<INotificationService>;
 let capabilitiesService: TypeMoq.Mock<ICapabilitiesService>;
 let instantiationService: IInstantiationService;
 let configurationService: IConfigurationService;
+const dialogService = TypeMoq.Mock.ofType<IDialogService>(TestDialogService, TypeMoq.MockBehavior.Loose);
+const undoRedoService = new UndoRedoService(dialogService.object, notificationService.object);
 
 suite('NotebookViews', function (): void {
 	let defaultViewName = 'Default New View';
@@ -176,7 +181,7 @@ suite('NotebookViews', function (): void {
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(initialNotebookContent));
 		defaultModelOptions.contentLoader = mockContentManager.object;
 
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService, undefined);
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService, undoRedoService, undefined);
 		await model.loadContents();
 		await model.requestModelLoad();
 
