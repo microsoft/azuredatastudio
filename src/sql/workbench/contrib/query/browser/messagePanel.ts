@@ -92,7 +92,7 @@ export class MessagePanel extends Disposable {
 	private container = $('.message-tree');
 	private styleElement = createStyleSheet(this.container);
 
-	private queryRunnerDisposables = this._register(new DisposableStore());
+	protected queryRunnerDisposables = this._register(new DisposableStore());
 	private _treeStates = new Map<string, IDataTreeViewState>();
 	private currenturi: string;
 
@@ -104,7 +104,7 @@ export class MessagePanel extends Disposable {
 		@IContextMenuService private readonly contextMenuService: IContextMenuService,
 		@IClipboardService private readonly clipboardService: IClipboardService,
 		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService,
-		@IConfigurationService private configurationService: IConfigurationService
+		@IConfigurationService protected configurationService: IConfigurationService
 	) {
 		super();
 		const wordWrap = this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').messages.wordwrap;
@@ -199,7 +199,7 @@ export class MessagePanel extends Disposable {
 		this.onMessage(runner.messages, true);
 	}
 
-	private onMessage(message: IQueryMessage | IQueryMessage[], setInput: boolean = false) {
+	protected onMessage(message: IQueryMessage | IQueryMessage[], setInput: boolean = false) {
 		if (isArray(message)) {
 			this.model.messages.push(...message);
 		} else {

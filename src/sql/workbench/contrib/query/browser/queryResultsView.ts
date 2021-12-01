@@ -25,6 +25,7 @@ import { URI } from 'vs/base/common/uri';
 import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { ILogService } from 'vs/platform/log/common/log';
+import { ResultsAndMessagesPanel } from 'sql/workbench/contrib/query/browser/ResultsAndMessagesPanel';
 
 class MessagesView extends Disposable implements IPanelView {
 	private messagePanel: MessagePanel;
@@ -32,7 +33,7 @@ class MessagesView extends Disposable implements IPanelView {
 
 	constructor(private instantiationService: IInstantiationService) {
 		super();
-		this.messagePanel = this._register(this.instantiationService.createInstance(MessagePanel));
+		this.messagePanel = this._register(this.instantiationService.createInstance(ResultsAndMessagesPanel));
 		this.messagePanel.render(this.container);
 	}
 

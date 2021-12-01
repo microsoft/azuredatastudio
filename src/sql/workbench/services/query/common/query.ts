@@ -9,6 +9,7 @@ export interface IColumn {
 	columnName: string;
 	isXml?: boolean;
 	isJson?: boolean;
+	columnSize?: number;
 }
 
 export type VisualizationType = 'bar' | 'count' | 'doughnut' | 'horizontalBar' | 'image' | 'line' | 'pie' | 'scatter' | 'table' | 'timeSeries';
