@@ -1412,7 +1412,8 @@ export class Project implements ISqlProject {
 
 		} else if (propertyValue.length === valueToRemove.length
 			&& propertyValue === valueToRemove) {
-			await this.removeProjectPropertyTag(propertyName);
+			this.removeProjectPropertyTag(propertyName);
+			await this.serializeToProjFile(this.projFileXmlDoc);
 		}
 	}
 
@@ -1468,11 +1469,11 @@ export class Project implements ISqlProject {
 	 * @param propertyValue Value of property
 	 */
 	private async setProjectPropertyValue(propertyName: string, propertyValue: string) {
-		const propertyElements = this.projFileXmlDoc!.getElementsByTagName(propertyName);
+		const propertyElements = this.projFileXmlDoc!.documentElement.getElementsByTagName(propertyName);
 
 		let propertyElement: Element | undefined;
 		if (propertyElements.length === 0) {
-			propertyElement = await this.addProjectPropertyTag(propertyName);
+			propertyElement = this.addProjectPropertyTag(propertyName);
 		} else {
 			propertyElement = propertyElements[0];
 			if (propertyElement.childNodes.length > 0) {
@@ -1489,16 +1490,15 @@ export class Project implements ISqlProject {
 	 * @param propertyTag Tag to add
 	 * @returns Added HTMLElement tag
 	 */
-	private async addProjectPropertyTag(propertyTag: string): Promise<HTMLElement | undefined> {
+	private addProjectPropertyTag(propertyTag: string): HTMLElement | undefined {
 		let propertyGroup = this.projFileXmlDoc!.getElementsByTagName(constants.PropertyGroup).item(0);
 		if (propertyGroup === null) {
 			propertyGroup = this.projFileXmlDoc!.createElement(constants.PropertyGroup);
-			this.projFileXmlDoc!.getRootNode()?.appendChild(propertyGroup);
+			this.projFileXmlDoc!.documentElement?.appendChild(propertyGroup);
 		}
 
 		const propertyElement = this.projFileXmlDoc!.createElement(propertyTag);
 		propertyGroup.appendChild(propertyElement);
-		await this.serializeToProjFile(this.projFileXmlDoc);
 		return propertyElement;
 	}
 
@@ -1506,10 +1506,9 @@ export class Project implements ISqlProject {
 	 * Remove project property
 	 * @param propertyTag Tag to remove
 	 */
-	private async removeProjectPropertyTag(propertyTag: string) {
+	private removeProjectPropertyTag(propertyTag: string) {
 		const propertiesWithTagName = this.projFileXmlDoc!.getElementsByTagName(propertyTag);
 		propertiesWithTagName.item(0)?.parentNode?.removeChild(propertiesWithTagName[0]);
-		await this.serializeToProjFile(this.projFileXmlDoc);
 	}
 
 	/**
