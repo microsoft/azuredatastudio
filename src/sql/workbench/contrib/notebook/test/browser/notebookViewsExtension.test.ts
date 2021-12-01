@@ -34,6 +34,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { TestDialogService } from 'vs/platform/dialogs/test/common/testDialogService';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { UndoRedoService } from 'vs/platform/undoRedo/common/undoRedoService';
+import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
 
 let initialNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -60,10 +61,10 @@ let initialNotebookContent: nb.INotebookContents = {
 let defaultUri = URI.file('/some/path.ipynb');
 let notificationService: TypeMoq.Mock<INotificationService>;
 let capabilitiesService: TypeMoq.Mock<ICapabilitiesService>;
+let dialogService: TypeMoq.Mock<IDialogService>;
 let instantiationService: IInstantiationService;
 let configurationService: IConfigurationService;
-const dialogService = TypeMoq.Mock.ofType<IDialogService>(TestDialogService, TypeMoq.MockBehavior.Loose);
-const undoRedoService = new UndoRedoService(dialogService.object, notificationService.object);
+let undoRedoService: IUndoRedoService;
 
 suite('NotebookViews', function (): void {
 	let defaultViewName = 'Default New View';
@@ -153,6 +154,8 @@ suite('NotebookViews', function (): void {
 		executeManagers[0].sessionManager = mockSessionManager.object;
 		notificationService = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService, TypeMoq.MockBehavior.Loose);
 		capabilitiesService = TypeMoq.Mock.ofType<ICapabilitiesService>(TestCapabilitiesService);
+		dialogService = TypeMoq.Mock.ofType<IDialogService>(TestDialogService, TypeMoq.MockBehavior.Loose);
+		undoRedoService = new UndoRedoService(dialogService.object, notificationService.object);
 		memento = TypeMoq.Mock.ofType(Memento, TypeMoq.MockBehavior.Loose, '');
 		memento.setup(x => x.getMemento(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => void 0);
 		queryConnectionService = TypeMoq.Mock.ofType(TestConnectionManagementService, TypeMoq.MockBehavior.Loose, memento.object, undefined, new TestStorageService());
