@@ -6,10 +6,11 @@
 import { IResourceUndoRedoElement, UndoRedoElementType } from 'vs/platform/undoRedo/common/undoRedo';
 import { ICellModel, MoveDirection } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
+import { localize } from 'vs/nls';
 
 export class MoveCellEdit implements IResourceUndoRedoElement {
 	type: UndoRedoElementType.Resource = UndoRedoElementType.Resource;
-	label: string = 'Move Cell';
+	label: string = localize('moveCellEdit', "Move Cell");
 	resource = this.model.notebookUri;
 
 	constructor(private model: NotebookModel, private cell: ICellModel, private moveDirection: MoveDirection) {
@@ -27,7 +28,7 @@ export class MoveCellEdit implements IResourceUndoRedoElement {
 
 export class SplitCellEdit implements IResourceUndoRedoElement {
 	type: UndoRedoElementType.Resource = UndoRedoElementType.Resource;
-	label: string = 'Split Cell';
+	label: string = localize('splitCellEdit', "Split Cell");
 	resource = this.model.notebookUri;
 
 	constructor(private model: NotebookModel, private firstCell: ICellModel, private secondCell: ICellModel) {
@@ -44,7 +45,7 @@ export class SplitCellEdit implements IResourceUndoRedoElement {
 
 export class DeleteCellEdit implements IResourceUndoRedoElement {
 	type: UndoRedoElementType.Resource = UndoRedoElementType.Resource;
-	label: string = 'Delete Cell';
+	label: string = localize('deleteCellEdit', "Delete Cell");
 	resource = this.model.notebookUri;
 
 	constructor(private model: NotebookModel, private cell: ICellModel, private index: number) {
@@ -61,7 +62,7 @@ export class DeleteCellEdit implements IResourceUndoRedoElement {
 
 export class AddCellEdit implements IResourceUndoRedoElement {
 	type: UndoRedoElementType.Resource = UndoRedoElementType.Resource;
-	label: string = 'Add Cell';
+	label: string = localize('addCellEdit', "Add Cell");
 	resource = this.model.notebookUri;
 
 	constructor(private model: NotebookModel, private cell: ICellModel, private index: number) {
