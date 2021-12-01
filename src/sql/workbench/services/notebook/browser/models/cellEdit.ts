@@ -38,6 +38,7 @@ export class SplitCellEdit implements IResourceUndoRedoElement {
 	}
 
 	redo(): void {
+		// no op
 	}
 }
 
