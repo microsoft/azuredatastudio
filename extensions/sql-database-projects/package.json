@@ -162,11 +162,6 @@
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
-        "command": "sqlDatabaseProjects.getProjectDatabaseSchemaProvider",
-        "title": "%sqlDatabaseProjects.getProjectDatabaseSchemaProvider%",
-        "category": "%sqlDatabaseProjects.displayName%"
-      },
-      {
         "command": "sqlDatabaseProjects.validateExternalStreamingJob",
         "title": "%sqlDatabaseProjects.validateExternalStreamingJob%",
         "category": "%sqlDatabaseProjects.displayName%"

@@ -493,20 +493,12 @@ export class ProjectsController {
 		}
 	}
 
-	public async schemaCompareGetTargetScripts(projectFilePath: string): Promise<string[]> {
+	public async getProjectScriptFiles(projectFilePath: string): Promise<string[]> {
 		const project = await Project.openProject(projectFilePath);
-		let files: string[] = [];
 
-		const fileEntries: FileProjectEntry[] = project.files;
-
-		fileEntries.forEach(f => {
-
-			if (f.fsUri.fsPath.endsWith(constants.sqlFileExtension)) {
-				files.push(f.fsUri.fsPath);
-			}
-		});
-
-		return files;
+		return project.files
+			.filter(f => f.fsUri.fsPath.endsWith(constants.sqlFileExtension))
+			.map(f => f.fsUri.fsPath);
 	}
 
 	public async getProjectDatabaseSchemaProvider(projectFilePath: string): Promise<string> {
@@ -1369,7 +1361,7 @@ export class ProjectsController {
 		const deploymentOptions = await service.schemaCompareGetDefaultOptions();
 		const operationId = UUID.generateUuid();
 
-		model.targetEndpointInfo.targetScripts = await this.schemaCompareGetTargetScripts(model.targetEndpointInfo.projectFilePath);
+		model.targetEndpointInfo.targetScripts = await this.getProjectScriptFiles(model.targetEndpointInfo.projectFilePath);
 		model.targetEndpointInfo.dataSchemaProvider = await this.getProjectDatabaseSchemaProvider(model.targetEndpointInfo.projectFilePath);
 
 		TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, 'SchemaComparisonStarted');

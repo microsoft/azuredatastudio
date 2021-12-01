@@ -339,6 +339,4 @@ export const applySuccess: string = localize('schemaCompare.applySuccess', "Proj
 export const sqlDatabaseProjectExtensionId: string = 'microsoft.sql-database-projects';
 
 // Commands
-export const sqlDatabaseProjectsGetTargetScripts: string = 'sqlDatabaseProjects.schemaCompareGetTargetScripts';
-export const sqlDatabaseProjectsGetDsp: string = 'sqlDatabaseProjects.getProjectDatabaseSchemaProvider';
 export const sqlDatabaseProjectsPublishChanges: string = 'sqlDatabaseProjects.schemaComparePublishProjectChanges';

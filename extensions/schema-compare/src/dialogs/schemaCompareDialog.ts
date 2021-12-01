@@ -5,12 +5,13 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import * as loc from '../localizedConstants';
 import * as path from 'path';
+import * as sqldbproj from 'sqldbproj';
+import * as mssql from '../../../mssql';
+import * as loc from '../localizedConstants';
 import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
 import { TelemetryReporter, TelemetryViews } from '../telemetry';
 import { getEndpointName, getRootPath, exists, getAzdataApi, getSchemaCompareEndpointString } from '../utils';
-import * as mssql from '../../../mssql';
 
 const titleFontSize: number = 13;
 
@@ -141,8 +142,8 @@ export class SchemaCompareDialog {
 			this.schemaCompareMainWindow.sourceEndpointInfo = {
 				endpointType: mssql.SchemaCompareEndpointType.Project,
 				projectFilePath: this.sourceTextBox.value,
-				targetScripts: await this.getTargetScripts(true),
-				dataSchemaProvider: await this.getDsp(this.sourceTextBox.value),
+				targetScripts: await this.getProjectScriptFiles(this.sourceTextBox.value),
+				dataSchemaProvider: await this.getDatabaseSchemaProvider(this.sourceTextBox.value),
 				folderStructure: '',
 				serverDisplayName: '',
 				serverName: '',
@@ -190,8 +191,8 @@ export class SchemaCompareDialog {
 				endpointType: mssql.SchemaCompareEndpointType.Project,
 				projectFilePath: this.targetTextBox.value,
 				folderStructure: this.targetStructureDropdown!.value as string,
-				targetScripts: await this.getTargetScripts(false),
-				dataSchemaProvider: await this.getDsp(this.targetTextBox.value),
+				targetScripts: await this.getProjectScriptFiles(this.targetTextBox.value),
+				dataSchemaProvider: await this.getDatabaseSchemaProvider(this.targetTextBox.value),
 				serverDisplayName: '',
 				serverName: '',
 				databaseName: '',
@@ -676,7 +677,7 @@ export class SchemaCompareDialog {
 			// check Database Schema Providers are set and valid
 			if (this.sourceEndpointType === mssql.SchemaCompareEndpointType.Project) {
 				try {
-					await this.getDsp(this.sourceTextBox.value);
+					await this.getDatabaseSchemaProvider(this.sourceTextBox.value);
 				} catch (err) {
 					this.showErrorMessage(loc.dspErrorSource);
 				}
@@ -684,7 +685,7 @@ export class SchemaCompareDialog {
 
 			if (this.targetEndpointType === mssql.SchemaCompareEndpointType.Project) {
 				try {
-					await this.getDsp(this.targetTextBox.value);
+					await this.getDatabaseSchemaProvider(this.targetTextBox.value);
 				} catch (err) {
 					this.showErrorMessage(loc.dspErrorTarget);
 				}
@@ -709,13 +710,20 @@ export class SchemaCompareDialog {
 		return !isNullOrUndefined(filename) && await exists(filename) && (filename.toLocaleLowerCase().endsWith('.sqlproj'));
 	}
 
-	private async getTargetScripts(source: boolean): Promise<string[]> {
-		const projectFilePath = source ? this.sourceTextBox.value : this.targetTextBox.value;
-		return await vscode.commands.executeCommand(loc.sqlDatabaseProjectsGetTargetScripts, projectFilePath);
+	private async getProjectScriptFiles(projectFilePath: string): Promise<string[]> {
+		const databaseProjectsExtension = vscode.extensions.getExtension(loc.sqlDatabaseProjectExtensionId);
+
+		if (databaseProjectsExtension) {
+			return await (await databaseProjectsExtension.activate() as sqldbproj.IExtension).getProjectScriptFiles(projectFilePath);
+		}
 	}
 
-	private async getDsp(projectFilePath: string): Promise<string> {
-		return await vscode.commands.executeCommand(loc.sqlDatabaseProjectsGetDsp, projectFilePath);
+	private async getDatabaseSchemaProvider(projectFilePath: string): Promise<string> {
+		const databaseProjectsExtension = vscode.extensions.getExtension(loc.sqlDatabaseProjectExtensionId);
+
+		if (databaseProjectsExtension) {
+			return await (await databaseProjectsExtension.activate() as sqldbproj.IExtension).getProjectDatabaseSchemaProvider(projectFilePath);
+		}
 	}
 
 	protected createSourceServerDropdown(): azdata.FormComponent {
