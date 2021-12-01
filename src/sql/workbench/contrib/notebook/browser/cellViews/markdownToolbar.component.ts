@@ -274,13 +274,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 				let linkUrl = notebookLink.getLinkUrl();
 				// Otherwise, re-focus on the output element, and insert the link directly.
 				this.output?.nativeElement?.focus();
-				// Need to encode URI here in order for user to click the proper encoded link in WYSIWYG
-				// skip encoding it if it's already encoded
-				let encodedLinkURL = escapeUrl(linkUrl);
-				if (encodedLinkURL !== decodeURI(encodedLinkURL)) {
-					encodedLinkURL = encodeURI(linkUrl);
-				}
-				document.execCommand('insertHTML', false, `<a href="${encodedLinkURL}" title="${encodedLinkURL}" is-encoded="true" is-absolute=${notebookLink.isAbsolutePath}>${escape(linkCalloutResult?.insertUnescapedLinkLabel)}</a>`);
+				document.execCommand('insertHTML', false, `<a href="${linkUrl}" title="${linkUrl}" is-encoded="true" is-absolute=${notebookLink.isAbsolutePath}>${escape(linkCalloutResult?.insertUnescapedLinkLabel)}</a>`);
 				return;
 			}
 		} else if (type === MarkdownButtonType.IMAGE_PREVIEW) {

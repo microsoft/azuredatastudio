@@ -8,6 +8,7 @@ import * as path from 'vs/base/common/path';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { replaceInvalidLinkPath } from 'sql/workbench/contrib/notebook/common/utils';
 import { isWindows } from 'vs/base/common/platform';
+import { escapeUrl } from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/utils';
 
 const useAbsolutePathConfigName = 'notebook.useAbsoluteFilePaths';
 
@@ -88,6 +89,13 @@ export class NotebookLinkHandler {
 			 * We return the absolute path for the link so that it will get used in the as the href for the anchor HTML element
 			 * (in linkCalloutDialog document.execCommand('insertHTML') and therefore will call getLinkURL() with HTMLAnchorElement to then get the relative path
 			*/
+			// Need to encode URI here in order for user to click the proper encoded link in WYSIWYG
+			// skip encoding it if it's already encoded
+			let encodedLinkURL = this._isFile ? escapeUrl(this._link) : this._link;
+			if (encodedLinkURL !== decodeURI(encodedLinkURL)) {
+				encodedLinkURL = encodeURI(this._link);
+				return encodedLinkURL;
+			}
 			return this._link;
 		} else {
 			// cases where we pass the HTMLAnchorElement
