@@ -578,3 +578,12 @@ export async function getFoldersInFolder(folderPath: string, ignoreBinObj?: bool
 		return await glob(folderFilter, { onlyDirectories: true });
 	}
 }
+
+/**
+ * Determines if provided value is well-known by the extension and therefore is allowed to be sent in telemetry
+ * @param value Value to check if it's well-known
+ * @returns True if value is a well-known value, false otherwise
+ */
+export function IsWellKnownValue(value: string): boolean {
+	return constants.WellKnownValues.includes(value);
+}

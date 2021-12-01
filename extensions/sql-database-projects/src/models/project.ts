@@ -823,6 +823,36 @@ export class Project implements ISqlProject {
 		await this.addToProjFile(sqlCmdVariableEntry);
 	}
 
+	/**
+	 * Adds DatabaseSource property to the project
+	 * @param databaseSource Source of the database to add
+	 */
+	public async addDatabaseSourceToProjFile(databaseSource: string): Promise<void> {
+		await this.addValueToProjectProperty(constants.DatabaseSource, databaseSource);
+	}
+
+	/**
+	* Removes DatabaseSource property from the project
+	* @param databaseSource Source of the database to remove
+	*/
+	public async removeDatabaseSourceFromProjFile(databaseSource: string): Promise<void> {
+		await this.removeValueFromProjectProperty(constants.DatabaseSource, databaseSource);
+	}
+
+	/**
+	 * Get array of all database source values, regardless of if value is 'well-know'
+	 * @returns Array of all database source values, regardless of if value is 'well-know'
+	 */
+	public getRawDatabaseSourceValues(): string[] {
+		const databaseSource = this.evaluateProjectPropertyValue(constants.DatabaseSource);
+
+		if (databaseSource !== undefined) {
+			return databaseSource.split(';');
+		} else {
+			return [];
+		}
+	}
+
 	public createFileProjectEntry(relativePath: string, entryType: EntryType, sqlObjectType?: string): FileProjectEntry {
 		let platformSafeRelativePath = utils.getPlatformSafeFileEntryPath(relativePath);
 		return new FileProjectEntry(
@@ -1322,6 +1352,71 @@ export class Project implements ISqlProject {
 	}
 
 	/**
+	 * Adds a value to project property, separated by semicolon if
+	 * one or more values are already present in project property
+	 * @param propertyName Name of property
+	 * @param valueToAdd Value to be added to project property
+	 */
+	private async addValueToProjectProperty(propertyName: string, valueToAdd: string) {
+		let propertyValue = this.evaluateProjectPropertyValue(propertyName);
+
+		if (propertyValue === undefined) {
+			propertyValue = valueToAdd;
+		} else {
+			if (propertyValue.length > valueToAdd.length
+				&& (propertyValue.startsWith(`${valueToAdd};`)
+					|| propertyValue.endsWith(`;${valueToAdd}`)
+					|| propertyValue.indexOf(`;${valueToAdd};`) > 0)) {
+				return;
+			} else if (propertyValue.length === valueToAdd.length
+				&& propertyValue === valueToAdd) {
+				return;
+			}
+
+			propertyValue = `${propertyValue};${valueToAdd}`;
+		}
+
+		await this.setProjectPropertyValue(propertyName, propertyValue);
+	}
+
+	/**
+	 * Removes value from project property where values are semicolon separated
+	 * @param propertyName Name of property
+	 * @param valueToRemove Value to remove from the project property
+	 */
+	private async removeValueFromProjectProperty(propertyName: string, valueToRemove: string) {
+		const propertyValue = this.evaluateProjectPropertyValue(propertyName);
+
+		if (propertyValue === undefined || propertyValue.length < valueToRemove.length) {
+			return;
+		}
+
+		if (propertyValue.length > valueToRemove.length) {
+			let propertyValueToSet = propertyValue;
+			let valueToRemovePosition: number;
+
+			if (propertyValue.startsWith(`${valueToRemove};`)) {
+				propertyValueToSet = propertyValue.substring(valueToRemove.length + 1);
+			} else if (propertyValue.endsWith(`;${valueToRemove}`)) {
+				propertyValueToSet = propertyValue.substring(0, propertyValue.length - valueToRemove.length - 1);
+			} else if ((valueToRemovePosition = propertyValue.indexOf(`;${valueToRemove};`)) > 0) {
+				propertyValueToSet = propertyValue.substring(0, valueToRemovePosition + 1)
+					+ propertyValue.substring(valueToRemovePosition + valueToRemove.length + 2);
+			} else {
+				return;
+			}
+
+			await this.setProjectPropertyValue(
+				propertyName,
+				propertyValueToSet);
+
+		} else if (propertyValue.length === valueToRemove.length
+			&& propertyValue === valueToRemove) {
+			await this.removeProjectPropertyTag(propertyName);
+		}
+	}
+
+	/**
 	 * Evaluates the value of the property item in the loaded project.
 	 *
 	 * @param propertyName Name of the property item to evaluate.
@@ -1365,6 +1460,56 @@ export class Project implements ISqlProject {
 		}
 
 		return firstPropertyElement.childNodes[0].nodeValue!;
+	}
+
+	/**
+	 * Sets the value of project property, overrides value if already present in project file.
+	 * @param propertyName Name of property
+	 * @param propertyValue Value of property
+	 */
+	private async setProjectPropertyValue(propertyName: string, propertyValue: string) {
+		const propertyElements = this.projFileXmlDoc!.getElementsByTagName(propertyName);
+
+		let propertyElement: Element | undefined;
+		if (propertyElements.length === 0) {
+			propertyElement = await this.addProjectPropertyTag(propertyName);
+		} else {
+			propertyElement = propertyElements[0];
+			if (propertyElement.childNodes.length > 0) {
+				propertyElement.removeChild(propertyElement.childNodes[0]);
+			}
+		}
+
+		propertyElement?.appendChild(this.projFileXmlDoc!.createTextNode(propertyValue));
+		await this.serializeToProjFile(this.projFileXmlDoc);
+	}
+
+	/**
+	 * Adds empty project property tag
+	 * @param propertyTag Tag to add
+	 * @returns Added HTMLElement tag
+	 */
+	private async addProjectPropertyTag(propertyTag: string): Promise<HTMLElement | undefined> {
+		let propertyGroup = this.projFileXmlDoc!.getElementsByTagName(constants.PropertyGroup).item(0);
+		if (propertyGroup === null) {
+			propertyGroup = this.projFileXmlDoc!.createElement(constants.PropertyGroup);
+			this.projFileXmlDoc!.getRootNode()?.appendChild(propertyGroup);
+		}
+
+		const propertyElement = this.projFileXmlDoc!.createElement(propertyTag);
+		propertyGroup.appendChild(propertyElement);
+		await this.serializeToProjFile(this.projFileXmlDoc);
+		return propertyElement;
+	}
+
+	/**
+	 * Remove project property
+	 * @param propertyTag Tag to remove
+	 */
+	private async removeProjectPropertyTag(propertyTag: string) {
+		const propertiesWithTagName = this.projFileXmlDoc!.getElementsByTagName(propertyTag);
+		propertiesWithTagName.item(0)?.parentNode?.removeChild(propertiesWithTagName[0]);
+		await this.serializeToProjFile(this.projFileXmlDoc);
 	}
 
 	/**

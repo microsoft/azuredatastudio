@@ -208,6 +208,25 @@ export class ProjectsController {
 	public async buildProject(context: Project | dataworkspace.WorkspaceTreeItem): Promise<string> {
 		const project: Project = this.getProjectFromContext(context);
 
+		const telemetryProps: Record<string, string> = {};
+
+		let databaseSource: string | undefined;
+		let databaseSourceValues = project.getRawDatabaseSourceValues();
+
+		for (let databaseSourceIndex = 0; databaseSourceIndex < databaseSourceValues.length; databaseSourceIndex++) {
+			if (utils.IsWellKnownValue(databaseSourceValues[databaseSourceIndex])) {
+				if (!databaseSource) {
+					databaseSource = databaseSourceValues[databaseSourceIndex];
+				} else {
+					databaseSource += `;${databaseSourceValues[databaseSourceIndex]}`;
+				}
+			}
+		}
+
+		if (databaseSource) {
+			telemetryProps.databaseSource = databaseSource;
+		}
+
 		const startTime = new Date();
 		const currentBuildTimeInfo = `${startTime.toLocaleDateString()} ${constants.at} ${startTime.toLocaleTimeString()}`;
 
@@ -237,6 +256,7 @@ export class ProjectsController {
 
 			TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.build)
 				.withAdditionalMeasurements({ duration: timeToBuild })
+				.withAdditionalProperties(telemetryProps)
 				.send();
 
 			return project.dacpacOutputPath;
@@ -249,6 +269,7 @@ export class ProjectsController {
 
 			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.build)
 				.withAdditionalMeasurements({ duration: timeToFailureBuild })
+				.withAdditionalProperties(telemetryProps)
 				.send();
 
 			const message = utils.getErrorMessage(err);
@@ -373,6 +394,23 @@ export class ProjectsController {
 		const buildEndTime = new Date().getTime();
 		telemetryMeasures.buildDuration = buildEndTime - buildStartTime;
 		telemetryProps.buildSucceeded = (dacpacPath !== '').toString();
+
+		let databaseSource: string | undefined;
+		let databaseSourceValues = project.getRawDatabaseSourceValues();
+
+		for (let databaseSourceIndex = 0; databaseSourceIndex < databaseSourceValues.length; databaseSourceIndex++) {
+			if (utils.IsWellKnownValue(databaseSourceValues[databaseSourceIndex])) {
+				if (!databaseSource) {
+					databaseSource = databaseSourceValues[databaseSourceIndex];
+				} else {
+					databaseSource += `;${databaseSourceValues[databaseSourceIndex]}`;
+				}
+			}
+		}
+
+		if (databaseSource) {
+			telemetryProps.databaseSource = databaseSource;
+		}
 
 		if (!dacpacPath) {
 			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.publishProject)

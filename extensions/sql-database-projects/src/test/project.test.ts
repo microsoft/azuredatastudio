@@ -1122,6 +1122,59 @@ describe('Project: properties', function (): void {
 		should(() => project.getDatabaseDefaultCollation())
 			.throw('Invalid value specified for the property \'DefaultCollation\' in .sqlproj file');
 	});
+
+	it('Should add database source to project property', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjectInvalidCollationBaseline);
+		const project = await Project.openProject(projFilePath);
+
+		// Should single add database source
+		await project.addDatabaseSourceToProjFile('test1');
+		let databaseSourceItems: string[] = project.getRawDatabaseSourceValues();
+		should(databaseSourceItems.length).equal(1);
+		should(databaseSourceItems[0]).equal('test1');
+
+		// Add multiple database sources
+		await project.addDatabaseSourceToProjFile('test2');
+		await project.addDatabaseSourceToProjFile('test3');
+		databaseSourceItems = project.getRawDatabaseSourceValues();
+		should(databaseSourceItems.length).equal(3);
+		should(databaseSourceItems[0]).equal('test1');
+		should(databaseSourceItems[1]).equal('test2');
+		should(databaseSourceItems[2]).equal('test3');
+
+		// Should not add duplicate database sources
+		await project.addDatabaseSourceToProjFile('test1');
+		await project.addDatabaseSourceToProjFile('test2');
+		await project.addDatabaseSourceToProjFile('test3');
+		should(databaseSourceItems.length).equal(3);
+		should(databaseSourceItems[0]).equal('test1');
+		should(databaseSourceItems[1]).equal('test2');
+		should(databaseSourceItems[2]).equal('test3');
+	});
+
+	it('Should remove database source from project property', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjectInvalidCollationBaseline);
+		const project = await Project.openProject(projFilePath);
+
+		await project.addDatabaseSourceToProjFile('test1');
+		await project.addDatabaseSourceToProjFile('test2');
+		await project.addDatabaseSourceToProjFile('test3');
+		await project.addDatabaseSourceToProjFile('test4');
+
+		// Should remove database sources
+		await project.removeDatabaseSourceFromProjFile('test2');
+		await project.removeDatabaseSourceFromProjFile('test1');
+		await project.removeDatabaseSourceFromProjFile('test4');
+
+		let databaseSourceItems: string[] = project.getRawDatabaseSourceValues();
+		should(databaseSourceItems.length).equal(1);
+
+		// Should remove database source tag when last database source is removed
+		await project.removeDatabaseSourceFromProjFile('test3');
+		databaseSourceItems = project.getRawDatabaseSourceValues();
+
+		should(databaseSourceItems.length).equal(0);
+	});
 });
 
 describe('Project: round trip updates', function (): void {
