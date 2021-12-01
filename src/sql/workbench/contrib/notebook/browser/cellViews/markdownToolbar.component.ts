@@ -25,6 +25,7 @@ import { escape } from 'vs/base/common/strings';
 import { IImageCalloutDialogOptions, ImageCalloutDialog } from 'sql/workbench/contrib/notebook/browser/calloutDialog/imageCalloutDialog';
 import { TextCellEditModes } from 'sql/workbench/services/notebook/common/contracts';
 import { NotebookLinkHandler } from 'sql/workbench/contrib/notebook/browser/notebookLinkHandler';
+import { escapeUrl } from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/utils';
 
 export const MARKDOWN_TOOLBAR_SELECTOR: string = 'markdown-toolbar-component';
 const linksRegex = /\[(?<text>.+)\]\((?<url>[^ ]+)(?: "(?<title>.+)")?\)/;
@@ -274,7 +275,11 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 				// Otherwise, re-focus on the output element, and insert the link directly.
 				this.output?.nativeElement?.focus();
 				// Need to encode URI here in order for user to click the proper encoded link in WYSIWYG
-				let encodedLinkURL = encodeURI(linkUrl);
+				// skip encoding it if it's already encoded
+				let encodedLinkURL = escapeUrl(linkUrl);
+				if (encodedLinkURL !== decodeURI(encodedLinkURL)) {
+					encodedLinkURL = encodeURI(linkUrl);
+				}
 				document.execCommand('insertHTML', false, `<a href="${encodedLinkURL}" title="${encodedLinkURL}" is-encoded="true" is-absolute=${notebookLink.isAbsolutePath}>${escape(linkCalloutResult?.insertUnescapedLinkLabel)}</a>`);
 				return;
 			}
