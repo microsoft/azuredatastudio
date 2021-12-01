@@ -12,7 +12,7 @@ import { Disposable, SecretStorage } from 'vscode';
 import * as azdata from 'azdata';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 
-export class NativeCredentialService extends SqlOpsFeature<any> {
+export class SqlCredentialService extends SqlOpsFeature<any> {
 
 	private static readonly messagesTypes: RPCMessageType[] = [
 		Contracts.DeleteCredentialRequest.type,
@@ -21,7 +21,7 @@ export class NativeCredentialService extends SqlOpsFeature<any> {
 	];
 
 	public static asFeature(context: AppContext): ISqlOpsFeature {
-		return class extends NativeCredentialService {
+		return class extends SqlCredentialService {
 			private _secretStorage: SecretStorage;
 			private _useNativeCredentialService: boolean;
 			private _passwordsMigrated: boolean;
@@ -53,7 +53,7 @@ export class NativeCredentialService extends SqlOpsFeature<any> {
 			 * Removes a credential for a given connection profile from sqltoolsservice
 			 * and adds it to secret storage
 			 */
-			private async cleanCredential(conn: azdata.connection.ConnectionProfile): Promise<boolean> {
+			private async migrateCredential(conn: azdata.connection.ConnectionProfile): Promise<boolean> {
 				const credentialId = Utils.formatCredentialId(conn);
 				// read password from every saved password connection
 				const credential = await this._client.sendRequest(Contracts.ReadCredentialRequest.type, { credentialId, password: undefined });
@@ -85,7 +85,7 @@ export class NativeCredentialService extends SqlOpsFeature<any> {
 				const savedPasswordConnections = connections.filter(conn => conn.savePassword === true);
 				for (let i = 0; i < savedPasswordConnections.length; i++) {
 					let conn = savedPasswordConnections[i];
-					await this.cleanCredential(conn);
+					await this.migrateCredential(conn);
 				}
 				await Utils.removeCredentialFile();
 			}
@@ -138,7 +138,7 @@ export class NativeCredentialService extends SqlOpsFeature<any> {
 	protected registerProvider(options: any): Disposable { return undefined; }
 
 	private constructor(context: AppContext, protected readonly client: SqlOpsDataClient) {
-		super(client, NativeCredentialService.messagesTypes);
+		super(client, SqlCredentialService.messagesTypes);
 	}
 
 }
