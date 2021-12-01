@@ -25,7 +25,6 @@ import { escape } from 'vs/base/common/strings';
 import { IImageCalloutDialogOptions, ImageCalloutDialog } from 'sql/workbench/contrib/notebook/browser/calloutDialog/imageCalloutDialog';
 import { TextCellEditModes } from 'sql/workbench/services/notebook/common/contracts';
 import { NotebookLinkHandler } from 'sql/workbench/contrib/notebook/browser/notebookLinkHandler';
-import { escapeUrl } from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/utils';
 
 export const MARKDOWN_TOOLBAR_SELECTOR: string = 'markdown-toolbar-component';
 const linksRegex = /\[(?<text>.+)\]\((?<url>[^ ]+)(?: "(?<title>.+)")?\)/;
