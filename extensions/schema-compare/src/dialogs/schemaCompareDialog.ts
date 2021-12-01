@@ -512,21 +512,18 @@ export class SchemaCompareDialog {
 			this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
 		});
 
-		if (this.schemaCompareMainWindow.sourceEndpointInfo) {
-			if (this.schemaCompareMainWindow.sourceEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Database) {
-				this.sourceDatabaseRadioButton.checked = true;
-				this.sourceEndpointType = mssql.SchemaCompareEndpointType.Database;
-			} else if (this.schemaCompareMainWindow.sourceEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Dacpac) {
+		this.sourceEndpointType = this.schemaCompareMainWindow.sourceEndpointInfo?.endpointType ?? mssql.SchemaCompareEndpointType.Database; // default to database if no specific source is passed
+
+		switch (this.sourceEndpointType) {
+			case mssql.SchemaCompareEndpointType.Dacpac:
 				this.sourceDacpacRadioButton.checked = true;
-				this.sourceEndpointType = mssql.SchemaCompareEndpointType.Dacpac;
-			} else {
+				break;
+			case mssql.SchemaCompareEndpointType.Project:
 				this.sourceProjectRadioButton.checked = true;
-				this.sourceEndpointType = mssql.SchemaCompareEndpointType.Project;
-			}
-		} else {
-			// default to database if no specific target is passed
-			this.sourceDatabaseRadioButton.checked = true;
-			this.sourceEndpointType = mssql.SchemaCompareEndpointType.Database;
+				break;
+			case mssql.SchemaCompareEndpointType.Database:
+				this.sourceDatabaseRadioButton.checked = true;
+				break;
 		}
 
 		let radioButtons = [this.sourceDatabaseRadioButton, this.sourceDacpacRadioButton];
@@ -602,21 +599,19 @@ export class SchemaCompareDialog {
 			this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
 		});
 
-		if (this.schemaCompareMainWindow.targetEndpointInfo) {
-			if (this.schemaCompareMainWindow.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Database) {
-				targetDatabaseRadioButton.checked = true;
-				this.targetEndpointType = mssql.SchemaCompareEndpointType.Database;
-			} else if (this.schemaCompareMainWindow.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Dacpac) {
+
+		this.targetEndpointType = this.schemaCompareMainWindow.targetEndpointInfo?.endpointType ?? mssql.SchemaCompareEndpointType.Database; // default to database if no specific target is passed
+
+		switch (this.targetEndpointType) {
+			case mssql.SchemaCompareEndpointType.Dacpac:
 				targetDacpacRadioButton.checked = true;
-				this.targetEndpointType = mssql.SchemaCompareEndpointType.Dacpac;
-			} else {
+				break;
+			case mssql.SchemaCompareEndpointType.Project:
 				targetProjectRadioButton.checked = true;
-				this.targetEndpointType = mssql.SchemaCompareEndpointType.Project;
-			}
-		} else {
-			// default to database if no specific target passed
-			targetDatabaseRadioButton.checked = true;
-			this.targetEndpointType = mssql.SchemaCompareEndpointType.Database;
+				break;
+			case mssql.SchemaCompareEndpointType.Database:
+				targetDatabaseRadioButton.checked = true;
+				break;
 		}
 
 		let radioButtons = [targetDatabaseRadioButton, targetDacpacRadioButton];
