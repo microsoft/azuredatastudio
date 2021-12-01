@@ -2136,8 +2136,8 @@
       <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.applyButtonDisabledTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Apply is enabled when the target is a database or database project]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Aplicar está habilitado cuando el objetivo es una base de datos]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Aplicar está habilitada cuando el destino es una base de datos o un proyecto de base de datos.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Apply is enabled when the target is a database]]></Val>
@@ -2157,6 +2157,9 @@
       <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.applyError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[There was an error updating the project]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Error al actualizar el proyecto]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2172,6 +2175,9 @@
       <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompare.applySuccess" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Project was successfully updated]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[El contacto se actualizó correctamente]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2691,12 +2697,18 @@
       <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompareDialog.dspErrorSource" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The source .sqlproj file does not specify a database schema component]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[El archivo .sqlproj de origen no especifica un componente de esquema de base de datos]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompareDialog.dspErrorTarget" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The target .sqlproj file does not specify a database schema component]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[El archivo .sqlproj de destino no especifica un componente de esquema de base de datos]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2712,12 +2724,18 @@
       <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompareDialog.noProjectExtension" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The sql-database-projects extension is required to perform schema comparison with database projects]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[La extensión sql-database-projects es necesaria para realizar la comparación de esquemas con los proyectos de base de datos.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompareDialog.noProjectExtensionApply" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The sql-database-projects extension is required to apply changes to a project]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[La extensión sql-database-projects es necesaria para aplicar cambios a un proyecto]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2769,6 +2787,9 @@
       <Item ItemId=";extensions/schema-compare/dist/localizedConstants.schemaCompareDialog.structureDropdownLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Folder Structure]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Estructura de carpetas]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2812,7 +2833,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Schema/Object Type]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Tipo de esquema u objeto]]></Val>
+            <Val><![CDATA[Tipo de objeto/esquema]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2820,6 +2841,9 @@
       <Item ItemId=";extensions/schema-compare/dist/localizedConstants.targetStructure" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Target Folder Structure]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Estructura de carpetas de destino]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
