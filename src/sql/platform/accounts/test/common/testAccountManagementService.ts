@@ -35,8 +35,8 @@ export class TestAccountManagementService implements IAccountManagementService {
 		return undefined;
 	}
 
-	copyUserCodeAndOpenBrowser(userCode: string, uri: string): void {
-		return undefined;
+	async copyUserCodeAndOpenBrowser(userCode: string, uri: string): Promise<void> {
+		return;
 	}
 
 	getAccountProviderMetadata(): Promise<azdata.AccountProviderMetadata[]> {

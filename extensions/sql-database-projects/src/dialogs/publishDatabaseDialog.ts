@@ -14,7 +14,7 @@ import { IDeploySettings } from '../models/IDeploySettings';
 import { DeploymentOptions } from '../../../mssql/src/mssql';
 import { IconPathHelper } from '../common/iconHelper';
 import { cssStyles } from '../common/uiConstants';
-import { getConnectionName, getDockerBaseImages } from './utils';
+import { getAgreementDisplayText, getConnectionName, getDockerBaseImages } from './utils';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { IDeployProfile } from '../models/deploy/deployProfile';
 import { Deferred } from '../common/promise';
@@ -35,6 +35,7 @@ export class PublishDatabaseDialog {
 	private connectionsRadioButton: azdataType.RadioButtonComponent | undefined;
 	private existingServerRadioButton: azdataType.RadioButtonComponent | undefined;
 	private dockerServerRadioButton: azdataType.RadioButtonComponent | undefined;
+	private eulaCheckBox: azdataType.CheckBoxComponent | undefined;
 	private dataSourcesRadioButton: azdataType.RadioButtonComponent | undefined;
 	private sqlCmdVariablesTable: azdataType.DeclarativeTableComponent | undefined;
 	private sqlCmdVariablesFormComponentGroup: azdataType.FormComponentGroup | undefined;
@@ -230,10 +231,14 @@ export class PublishDatabaseDialog {
 			utils.getAzdataApi()!.window.closeDialog(this.dialog);
 			await this.publish!(this.project, settings);
 		} else {
+			const dockerBaseImage = this.getBaseDockerImageName();
+			const baseImages = getDockerBaseImages();
+			const imageInfo = baseImages.find(x => x.name === dockerBaseImage);
 			const settings: IDeployProfile = {
 				localDbSetting: {
 					dbName: this.targetDatabaseName,
-					dockerBaseImage: this.getBaseDockerImageName(),
+					dockerBaseImage: dockerBaseImage,
+					dockerBaseImageEula: imageInfo?.agreementInfo?.link?.url || '',
 					password: this.serverAdminPasswordTextBox?.value || '',
 					port: +(this.serverPortTextBox?.value || constants.defaultPortNumber),
 					serverName: constants.defaultLocalServerName,
@@ -570,21 +575,49 @@ export class PublishDatabaseDialog {
 		});
 		this.serverConfigAdminPasswordTextBox.onTextChanged(() => {
 			this.tryEnableGenerateScriptAndOkButtons();
-
 		});
 		const serverConfirmPasswordRow = this.createFormRow(view, constants.confirmServerPassword, this.serverConfigAdminPasswordTextBox);
 
+		const baseImages = getDockerBaseImages();
 		this.baseDockerImageDropDown = view.modelBuilder.dropDown().withProps({
-			values: getDockerBaseImages(),
+			values: baseImages.map(x => x.name),
 			ariaLabel: constants.baseDockerImage,
 			width: cssStyles.publishDialogTextboxWidth,
 			enabled: true
 		}).component();
 
+		const agreementInfo = baseImages[0].agreementInfo;
 		const dropDownRow = this.createFormRow(view, constants.baseDockerImage, this.baseDockerImageDropDown);
+		this.eulaCheckBox = view.modelBuilder.checkBox().withProps({
+			ariaLabel: getAgreementDisplayText(agreementInfo),
+			required: true
+		}).component();
+		this.eulaCheckBox.onChanged(() => {
+			this.tryEnableGenerateScriptAndOkButtons();
+		});
+
+		const eulaRow = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		this.localDbSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
-		this.localDbSection.addItems([serverPortRow, serverPasswordRow, serverConfirmPasswordRow, dropDownRow]);
+		this.localDbSection.addItems([serverPortRow, serverPasswordRow, serverConfirmPasswordRow, dropDownRow, eulaRow]);
+		this.baseDockerImageDropDown.onValueChanged(() => {
+			if (this.eulaCheckBox) {
+				this.eulaCheckBox.checked = false;
+			}
+			const baseImage = getDockerBaseImages().find(x => x.name === this.baseDockerImageDropDown?.value);
+			if (baseImage?.agreementInfo.link) {
+				const text = view.modelBuilder.text().withProps({
+					value: constants.eulaAgreementTemplate,
+					links: [baseImage.agreementInfo.link],
+					requiredIndicator: true
+				}).component();
+
+				if (eulaRow && this.eulaCheckBox) {
+					eulaRow?.clearItems();
+					eulaRow?.addItems([this.eulaCheckBox, text], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } });
+				}
+			}
+		});
 		return this.localDbSection;
 	}
 
@@ -835,7 +868,8 @@ export class PublishDatabaseDialog {
 		} else if (utils.validateSqlServerPortNumber(this.serverPortTextBox?.value) &&
 			!utils.isEmptyString(this.serverAdminPasswordTextBox?.value) &&
 			utils.isValidSQLPassword(this.serverAdminPasswordTextBox?.value || '', constants.defaultLocalServerAdminName) &&
-			this.serverAdminPasswordTextBox?.value === this.serverConfigAdminPasswordTextBox?.value) {
+			this.serverAdminPasswordTextBox?.value === this.serverConfigAdminPasswordTextBox?.value
+			&& this.eulaCheckBox?.checked) {
 			publishEnabled = true; // only publish is supported for container
 		}
 

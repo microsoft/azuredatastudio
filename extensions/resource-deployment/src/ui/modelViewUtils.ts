@@ -776,7 +776,10 @@ function processDropdownOptionsTypeField(context: FieldContext): azdata.DropDown
 	// Note we don't currently check that the value actually exists in the list - if it doesn't then it'll
 	// just default to the first one anyways
 	const initialValue = context.fieldInfo.variableName && context.initialVariableValues?.[context.fieldInfo.variableName]?.toString();
-	const defaultValue = initialValue || options.defaultValue;
+	const optionValues = options.values;
+	// If we have an array of CategoryValues then find the option that matches the defaultValue specified - otherwise just use the defaultValue provided
+	const defaultValueOption = (optionValues && optionValues.length > 0 && typeof optionValues[0] === 'object') ? (optionValues as azdata.CategoryValue[]).find(v => v.name === options.defaultValue) : options.defaultValue;
+	const defaultValue = initialValue || defaultValueOption;
 	const dropdown = createDropdownInputInfo(context.view, {
 		values: options.values,
 		defaultValue: defaultValue,

@@ -151,6 +151,10 @@
               {
                 "name": "value-provider",
                 "displayName": "%option-value-provider%"
+              },
+              {
+                "name": "options",
+                "displayName": "%option-options%"
               }
             ]
           }
@@ -527,6 +531,74 @@
             },
             "requiredTools": [ ],
             "when": "sample-type=value-provider"
+          },
+          {
+            "name": "sample-options",
+            "notebookWizard": {
+              "notebook": "./notebooks/empty-notebook.ipynb",
+              "codeCellInsertionPosition": 1,
+              "actionText": "%deploy.wizard.action%",
+              "title": "%sample.options.title%",
+              "name": "sample.options",
+              "labelPosition": "left",
+              "generateSummaryPage": false,
+              "pages": [
+                {
+                  "title": "%sample.options.title%",
+                  "sections": [
+                    {
+                      "title": "%sample.options.stringarray.title%",
+                      "collapsible": false,
+                      "fields": [
+                        {
+                          "label": "%sample.options.stringarray.label%",
+                          "description": "%sample.options.stringarray.description%",
+                          "type": "options",
+                          "variableName": "AZDATA_NB_VAR_SAMPLE_OPTIONS_STRINGARRAY",
+                          "defaultValue": "String option 2",
+                          "required": true,
+                          "options": [
+                            "String option 1",
+                            "String option 2",
+                            "%sample.options.value3.displayname%"
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "title": "%sample.options.categoryvalue.title%",
+                      "collapsible": false,
+                      "fields": [
+                        {
+                          "label": "%sample.options.categoryvalue.label%",
+                          "description": "%sample.options.categoryvalue.description%",
+                          "type": "options",
+                          "variableName": "AZDATA_NB_VAR_SAMPLE_OPTIONS_CATEGORYVALUE",
+                          "defaultValue": "value2",
+                          "required": true,
+                          "options": [
+                            {
+                              "name": "value1",
+                              "displayName": "%sample.options.value1.displayname%"
+                            },
+                            {
+                              "name": "value2",
+                              "displayName": "%sample.options.value2.displayname%"
+                            },
+                            {
+                              "name": "value3",
+                              "displayName": "%sample.options.value3.displayname%"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            "requiredTools": [ ],
+            "when": "sample-type=options"
           }
         ],
         "agreements": [
