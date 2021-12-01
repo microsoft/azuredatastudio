@@ -8,7 +8,7 @@ import { IConfig } from '@microsoft/ads-service-downloader';
 import { ServerOptions, TransportKind } from 'vscode-languageclient';
 import * as Constants from './constants';
 import * as Utils from '../utils';
-import { NativeCredentialService } from './nativeCredentialService';
+import { SqlCredentialService } from './sqlCredentialService';
 import { AppContext } from '../appContext';
 
 /**
@@ -36,7 +36,7 @@ export class CredentialStore {
 	public async start(): Promise<void> {
 		let clientOptions: ClientOptions = {
 			providerId: Constants.providerId,
-			features: [NativeCredentialService.asFeature(this.context)]
+			features: [SqlCredentialService.asFeature(this.context)]
 		};
 		const serverPath = await Utils.getOrDownloadServer(this._config);
 		const serverOptions = this.generateServerOptions(serverPath);
