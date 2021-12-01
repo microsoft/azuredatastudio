@@ -548,26 +548,26 @@ export class SchemaCompareDialog {
 	}
 
 	private createTargetRadioButtons(): azdata.FormComponent {
-		let dacpacRadioButton = this.view.modelBuilder.radioButton()
+		let targetDacpacRadioButton = this.view.modelBuilder.radioButton()
 			.withProps({
 				name: 'target',
 				label: loc.DacpacRadioButtonLabel
 			}).component();
 
-		let databaseRadioButton = this.view.modelBuilder.radioButton()
+		let targetDatabaseRadioButton = this.view.modelBuilder.radioButton()
 			.withProps({
 				name: 'target',
 				label: loc.DatabaseRadioButtonLabel
 			}).component();
 
-		let projectRadioButton = this.view.modelBuilder.radioButton()
+		let targetProjectRadioButton = this.view.modelBuilder.radioButton()
 			.withProps({
 				name: 'target',
 				label: loc.ProjectRadioButtonLabel
 			}).component();
 
 		// show dacpac file browser
-		dacpacRadioButton.onDidClick(async () => {
+		targetDacpacRadioButton.onDidClick(async () => {
 			this.targetEndpointType = mssql.SchemaCompareEndpointType.Dacpac;
 			this.targetTextBox.value = this.targetDacpacPath;
 			this.formBuilder.removeFormItem(this.targetServerComponent);
@@ -579,7 +579,7 @@ export class SchemaCompareDialog {
 		});
 
 		// show server and db dropdowns
-		databaseRadioButton.onDidClick(async () => {
+		targetDatabaseRadioButton.onDidClick(async () => {
 			this.targetEndpointType = mssql.SchemaCompareEndpointType.Database;
 			this.formBuilder.removeFormItem(this.targetDacpacComponent);
 			this.formBuilder.removeFormItem(this.targetProjectFilePathComponent);
@@ -591,7 +591,7 @@ export class SchemaCompareDialog {
 		});
 
 		// show project directory browser
-		projectRadioButton.onDidClick(async () => {
+		targetProjectRadioButton.onDidClick(async () => {
 			this.targetEndpointType = mssql.SchemaCompareEndpointType.Project;
 			this.targetTextBox.value = this.targetProjectFilePath;
 			this.formBuilder.removeFormItem(this.targetServerComponent);
@@ -604,25 +604,25 @@ export class SchemaCompareDialog {
 
 		if (this.schemaCompareMainWindow.targetEndpointInfo) {
 			if (this.schemaCompareMainWindow.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Database) {
-				databaseRadioButton.checked = true;
+				targetDatabaseRadioButton.checked = true;
 				this.targetEndpointType = mssql.SchemaCompareEndpointType.Database;
 			} else if (this.schemaCompareMainWindow.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Dacpac) {
-				dacpacRadioButton.checked = true;
+				targetDacpacRadioButton.checked = true;
 				this.targetEndpointType = mssql.SchemaCompareEndpointType.Dacpac;
 			} else {
-				projectRadioButton.checked = true;
+				targetProjectRadioButton.checked = true;
 				this.targetEndpointType = mssql.SchemaCompareEndpointType.Project;
 			}
 		} else {
 			// default to database if no specific target passed
-			databaseRadioButton.checked = true;
+			targetDatabaseRadioButton.checked = true;
 			this.targetEndpointType = mssql.SchemaCompareEndpointType.Database;
 		}
 
-		let radioButtons = [databaseRadioButton, dacpacRadioButton];
+		let radioButtons = [targetDatabaseRadioButton, targetDacpacRadioButton];
 
 		if (vscode.extensions.getExtension(loc.sqlDatabaseProjectExtensionId)) {
-			radioButtons.push(projectRadioButton);
+			radioButtons.push(targetProjectRadioButton);
 		}
 
 		let flexRadioButtonsModel = this.view.modelBuilder.flexContainer()
