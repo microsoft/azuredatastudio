@@ -148,7 +148,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 			this._usingExistingPython = true;
 		} else {
 			if (this._tsgops) {
-				this._pythonInstallationPath = `${vscode.env.appRoot}\/usr`;
+				this._pythonInstallationPath = `/usr`;
 				this._usingExistingPython = true;
 			}
 			else {
