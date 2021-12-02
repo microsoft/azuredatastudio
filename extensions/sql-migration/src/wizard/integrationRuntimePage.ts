@@ -429,7 +429,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		try {
 			await this.loadStatus();
 		} catch (error) {
-			logError(TelemetryViews.MigrationWizardIntegrationRuntimePage, 'ErrorLoadingMigrationServiceStatus');
+			logError(TelemetryViews.MigrationWizardIntegrationRuntimePage, 'ErrorLoadingMigrationServiceStatus', error);
 		} finally {
 			this._statusLoadingComponent.loading = false;
 		}
@@ -508,7 +508,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				this._authKeyTable.dataValues = data;
 			}
 		} catch (e) {
-			logError(TelemetryViews.IntegrationRuntimePage, 'ErrorLoadingStatus');
+			logError(TelemetryViews.IntegrationRuntimePage, 'ErrorLoadingStatus', e);
 		}
 	}
 }

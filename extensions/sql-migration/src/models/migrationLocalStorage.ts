@@ -52,7 +52,7 @@ export class MigrationLocalStorage {
 							case 'NullMigrationId':
 								continue;
 							default:
-								logError(TelemetryViews.MigrationLocalStorage, e);
+								logError(TelemetryViews.MigrationLocalStorage, 'MigrationBySourceConnectionError', e);
 						}
 					}
 				}
@@ -102,7 +102,7 @@ export class MigrationLocalStorage {
 			});
 			await this.context.globalState.update(this.mementoToken, migrationMementos);
 		} catch (e) {
-			logError(TelemetryViews.MigrationLocalStorage, 'CantSaveMigration');
+			logError(TelemetryViews.MigrationLocalStorage, 'CantSaveMigration', e);
 		}
 	}
 

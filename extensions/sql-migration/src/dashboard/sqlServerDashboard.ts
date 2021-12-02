@@ -299,7 +299,7 @@ export class DashboardWidget {
 			}
 
 		} catch (error) {
-			logError(TelemetryViews.SqlServerDashboard, 'RefreshgMigrationFailed');
+			logError(TelemetryViews.SqlServerDashboard, 'RefreshgMigrationFailed', error);
 
 		} finally {
 			this.isRefreshing = false;

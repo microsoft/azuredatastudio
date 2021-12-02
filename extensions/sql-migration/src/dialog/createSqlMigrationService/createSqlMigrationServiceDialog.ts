@@ -119,7 +119,7 @@ export class CreateSqlMigrationServiceDialog {
 						this._statusLoadingComponent.loading = false;
 					}
 				} catch (e) {
-					logError(TelemetryViews.CreateDataMigrationServiceDialog, e);
+					console.log(e);
 					this.setDialogMessage(e.message);
 					this._statusLoadingComponent.loading = false;
 					this.setFormEnabledState(true);
@@ -498,7 +498,7 @@ export class CreateSqlMigrationServiceDialog {
 					description: e.message,
 					level: azdata.window.MessageLevel.Error
 				};
-				logError(TelemetryViews.CreateDataMigrationServiceDialog, 'FetchSqlMigrationServiceFailed');
+				logError(TelemetryViews.CreateDataMigrationServiceDialog, 'FetchSqlMigrationServiceFailed', e);
 			}
 			await new Promise(r => setTimeout(r, 5000));
 		}

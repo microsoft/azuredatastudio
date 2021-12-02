@@ -80,7 +80,7 @@ export class WizardController {
 		this._model.extensionContext.subscriptions.push(this._wizardObject.onPageChanged(async (pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
 			const newPage = pageChangeInfo.newPage;
 			const lastPage = pageChangeInfo.lastPage;
-			this.sendPageButtonClickEvent(pageChangeInfo).catch(e => logError(TelemetryViews.MigrationWizardController, e));
+			this.sendPageButtonClickEvent(pageChangeInfo).catch(e => logError(TelemetryViews.MigrationWizardController, 'ErrorSendingPageButtonClick', e));
 			await pages[lastPage]?.onPageLeave(pageChangeInfo);
 			await pages[newPage]?.onPageEnter(pageChangeInfo);
 		}));

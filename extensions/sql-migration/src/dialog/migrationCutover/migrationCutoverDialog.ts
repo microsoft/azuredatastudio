@@ -233,7 +233,7 @@ export class MigrationCutoverDialog {
 					await this.refreshStatus();
 				});
 			} catch (e) {
-				logError(TelemetryViews.MigrationCutoverDialog, 'IntializingFailed');
+				logError(TelemetryViews.MigrationCutoverDialog, 'IntializingFailed', e);
 			}
 		});
 		this._dialogObject.content = [tab];

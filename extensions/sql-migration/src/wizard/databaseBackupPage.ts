@@ -1218,7 +1218,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				selectDropDownIndex(this._networkShareStorageAccountResourceGroupDropdown, 0);
 			}
 		} catch (error) {
-			logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingNetworkStorageResourceGroup');
+			logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingNetworkStorageResourceGroup', error);
 		} finally {
 			this._networkShareStorageAccountResourceGroupDropdown.loading = false;
 			await this.loadNetworkShareStorageDropdown();
@@ -1231,7 +1231,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			this._networkShareContainerStorageAccountDropdown.values = await this.migrationStateModel.getStorageAccountValues(this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.networkShare.resourceGroup);
 			selectDropDownIndex(this._networkShareContainerStorageAccountDropdown, 0);
 		} catch (error) {
-			logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingNetworkShareStorageDropdown');
+			logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingNetworkShareStorageDropdown', error);
 		} finally {
 			this._networkShareContainerStorageAccountDropdown.loading = false;
 		}
@@ -1254,7 +1254,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				}
 			});
 		} catch (error) {
-			logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingBlobResourceGroup');
+			logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingBlobResourceGroup', error);
 		} finally {
 			this._blobContainerResourceGroupDropdowns.forEach(v => v.loading = false);
 		}
@@ -1274,7 +1274,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				selectDropDownIndex(this._blobContainerStorageAccountDropdowns[index], 0);
 			}
 		} catch (error) {
-			logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingBlobStorageDropdown');
+			logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingBlobStorageDropdown', error);
 		} finally {
 			this._blobContainerStorageAccountDropdowns[index].loading = false;
 		}
@@ -1295,7 +1295,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				selectDropDownIndex(this._blobContainerDropdowns[index], 0);
 			}
 		} catch (error) {
-			logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingBlobContainers');
+			logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingBlobContainers', error);
 		} finally {
 			this._blobContainerDropdowns[index].loading = false;
 		}
@@ -1316,7 +1316,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				selectDropDownIndex(this._blobContainerLastBackupFileDropdowns[index], 0);
 			}
 		} catch (error) {
-			logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingBlobLastBackupFiles');
+			logError(TelemetryViews.DatabaseBackupPage, 'ErrorLoadingBlobLastBackupFiles', error);
 		} finally {
 			this._blobContainerLastBackupFileDropdowns[index].loading = false;
 		}

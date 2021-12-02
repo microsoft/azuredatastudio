@@ -71,7 +71,7 @@ export class MigrationCutoverDialogModel {
 			}
 		} catch (error) {
 			this.CutoverError = error;
-			logError(TelemetryViews.MigrationCutoverDialog, 'StartCutoverError');
+			logError(TelemetryViews.MigrationCutoverDialog, 'StartCutoverError', error);
 		}
 		return undefined!;
 	}
@@ -112,7 +112,7 @@ export class MigrationCutoverDialogModel {
 		} catch (error) {
 			this.CancelMigrationError = error;
 			console.log(error);
-			logError(TelemetryViews.MigrationCutoverDialog, 'CancelMigrationError');
+			logError(TelemetryViews.MigrationCutoverDialog, 'CancelMigrationError', error);
 		}
 		return undefined!;
 	}

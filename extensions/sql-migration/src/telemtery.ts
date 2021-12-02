@@ -46,7 +46,8 @@ export enum TelemetryAction {
 	Cancel = 'cancel',
 }
 
-export function logError(telemetryView: TelemetryViews, err: any): void {
+export function logError(telemetryView: TelemetryViews, err: string, error: any): void {
+	console.log(error);
 	TelemetryReporter.sendErrorEvent(telemetryView, err);
 }
 
