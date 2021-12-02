@@ -765,11 +765,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 		if (addToUndoStack) {
 			this.undoService.pushElement(new MoveCellEdit(this, cell, direction));
+			// If we update the active cell when undoing/redoing, the user would have to deselect the cell first and to undo multiple times.
+			this.updateActiveCell(cell);
 		}
 		index = this.findCellIndex(cell);
 
-		// Set newly created cell as active cell
-		this.updateActiveCell(cell);
 		this._contentChangedEmitter.fire({
 			changeType: NotebookChangeType.CellsModified,
 			cells: [cell],
