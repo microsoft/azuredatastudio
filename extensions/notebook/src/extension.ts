@@ -243,8 +243,6 @@ class SampleController {
 		execution.executionOrder = ++this._executionOrder;
 		execution.start(Date.now()); // Keep track of elapsed time to execute cell.
 
-		/* Do some execution here; not implemented */
-
 		await execution.replaceOutput([
 			new vscode.NotebookCellOutput([
 				vscode.NotebookCellOutputItem.text('Submitted cell text: ' + cell.document.getText())
@@ -276,4 +274,3 @@ class SampleSerializer implements vscode.NotebookSerializer {
 		return presetNotebookBytes;
 	}
 }
-
