@@ -2,7 +2,7 @@
   "name": "azcli",
   "displayName": "%azcli.arc.displayName%",
   "description": "%azcli.arc.description%",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
@@ -17,6 +17,12 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/Microsoft/azuredatastudio.git"
+  },
+  "capabilities": {
+    "virtualWorkspaces": false,
+    "untrustedWorkspaces": {
+      "supported": true
+    }
   },
   "extensionDependencies": [
     "microsoft.resource-deployment"
@@ -104,6 +110,9 @@
     "sinon": "^9.0.2",
     "typemoq": "^2.1.0",
     "vscodetestcover": "^1.1.0"
+  },
+  "resolutions": {
+    "json-schema": "0.4.0"
   },
   "__metadata": {
     "id": "84",

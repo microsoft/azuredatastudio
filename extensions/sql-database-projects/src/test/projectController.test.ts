@@ -21,7 +21,7 @@ import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProje
 import { ProjectsController } from '../controllers/projectController';
 import { promises as fs } from 'fs';
 import { createContext, TestContext, mockDacFxResult, mockConnectionProfile } from './testContext';
-import { Project, reservedProjectFolders, SystemDatabase, FileProjectEntry, SystemDatabaseReferenceProjectEntry, EntryType } from '../models/project';
+import { Project, reservedProjectFolders } from '../models/project';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
@@ -31,6 +31,7 @@ import { IDacpacReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { CreateProjectFromDatabaseDialog } from '../dialogs/createProjectFromDatabaseDialog';
 import { ImportDataModel } from '../models/api/import';
 import { SqlTargetPlatform } from 'sqldbproj';
+import { SystemDatabaseReferenceProjectEntry, SystemDatabase, EntryType, FileProjectEntry } from '../models/projectEntry';
 
 let testContext: TestContext;
 
@@ -394,7 +395,7 @@ describe('ProjectsController', function (): void {
 					holler = generateHoller;
 					return Promise.resolve(undefined);
 				});
-
+				publishDialog.object.publishToExistingServer = true;
 				void projController.object.publishProject(proj);
 				await publishDialog.object.publishClick();
 

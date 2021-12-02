@@ -94,7 +94,11 @@ export const mockDacpacEndpoint: mssql.SchemaCompareEndpointInfo = {
 	databaseName: '',
 	ownerUri: '',
 	packageFilePath: mockFilePath,
-	connectionDetails: undefined
+	connectionDetails: undefined,
+	projectFilePath: '',
+	folderStructure: '',
+	targetScripts: [],
+	dataSchemaProvider: '',
 };
 
 export const mockDatabaseEndpoint: mssql.SchemaCompareEndpointInfo = {
@@ -104,7 +108,11 @@ export const mockDatabaseEndpoint: mssql.SchemaCompareEndpointInfo = {
 	databaseName: '',
 	ownerUri: '',
 	packageFilePath: '',
-	connectionDetails: undefined
+	connectionDetails: undefined,
+	projectFilePath: '',
+	folderStructure: '',
+	targetScripts: [],
+	dataSchemaProvider: '',
 };
 
 export async function shouldThrowSpecificError(block: Function, expectedMessage: string, details?: string) {

@@ -57,6 +57,7 @@ steps:
       key: 'nodeModules | $(Agent.OS) | .build/yarnlockhash'
       path: .build/node_modules_cache
       cacheHitVar: NODE_MODULES_RESTORED
+    continueOnError: true
 
   - script: |
       set -e
@@ -187,7 +188,7 @@ steps:
     displayName: 'Install .NET Core sdk for signing'
     inputs:
       packageType: sdk
-      version: 2.1.x
+      version: 5.0.x
       installationPath: $(Agent.ToolsDirectory)/dotnet
 
   - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
