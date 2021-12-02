@@ -565,7 +565,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				let newCell = undefined, tailCell = undefined, partialSource = undefined;
 				let newCellIndex = index;
 				let tailCellIndex = index;
-				let splitSources: string[] = [];
 				let newLinesRemoved: string[] = [];
 
 				// Save UI state
@@ -601,7 +600,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						headsource = headsource.concat(partialSource.toString());
 					}
 					this.cells[index].source = headsource;
-					splitSources.push(...headsource);
 				}
 
 				if (newCellContent.length) {
@@ -624,7 +622,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						newCell.source = newSource;
 						newCellIndex++;
 						this.insertCell(newCell, newCellIndex, false);
-						splitSources.push(...newSource);
 					}
 					else { //update the existing cell
 						this.cells[index].source = newSource;
