@@ -565,6 +565,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				let newCell = undefined, tailCell = undefined, partialSource = undefined;
 				let newCellIndex = index;
 				let tailCellIndex = index;
+				let splitSources: string[] = [];
+				let newLinesRemoved: string[] = [];
 
 				// Save UI state
 				let showMarkdown = this.cells[index].showMarkdown;
@@ -599,6 +601,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						headsource = headsource.concat(partialSource.toString());
 					}
 					this.cells[index].source = headsource;
+					splitSources.push(...headsource);
 				}
 
 				if (newCellContent.length) {
@@ -621,6 +624,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						newCell.source = newSource;
 						newCellIndex++;
 						this.insertCell(newCell, newCellIndex, false);
+						splitSources.push(...newSource);
 					}
 					else { //update the existing cell
 						this.cells[index].source = newSource;
@@ -637,7 +641,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					}
 					//Remove the trailing empty line after the cursor
 					if (tailSource[0] === '\r\n' || tailSource[0] === '\n') {
-						tailSource.splice(0, 1);
+						newLinesRemoved = tailSource.splice(0, 1);
 					}
 					tailCell.source = tailSource;
 					tailCellIndex = newCellIndex + 1;
@@ -649,7 +653,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 				if (addToUndoStack) {
 					let headCell = newCell ? newCell : this.cells[index];
-					this.undoService.pushElement(new SplitCellEdit(this, headCell, tailCell));
+					this.undoService.pushElement(new SplitCellEdit(this, headCell, tailCell, newLinesRemoved));
 				}
 				//make new cell Active
 				this.updateActiveCell(activeCell);
@@ -670,18 +674,18 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return undefined;
 	}
 
-	public mergeCells(cell: ICellModel, secondCell: ICellModel): void {
+	public mergeCells(cell: ICellModel, secondCell: ICellModel, newLinesRemoved: string[] | undefined): void {
 		let index = this._cells.findIndex(cell => cell.equals(cell));
 		if (index > -1) {
-			cell.source = cell.source.concat(...secondCell.source);
+			cell.source = newLinesRemoved.length > 0 ? [...cell.source, ...newLinesRemoved, ...secondCell.source] : [...cell.source, ...secondCell.source];
+			cell.isEditMode = true;
+			// Set newly created cell as active cell
+			this.updateActiveCell(cell);
 			this._contentChangedEmitter.fire({
 				changeType: NotebookChangeType.CellsModified,
 				cells: [cell],
 				cellIndex: index
 			});
-			cell.isEditMode = true;
-			// Set newly created cell as active cell
-			this.updateActiveCell(cell);
 			this.deleteCell(secondCell, false);
 		}
 	}
@@ -698,9 +702,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 		cell.isEditMode = true;
 		if (addToUndoStack) {
-			this.undoService.pushElement(new AddCellEdit(this, cell, index));
-			// Set newly created cell as active cell
+			// Only make cell active when inserting the cell. If we update the active cell when undoing/redoing, the user would have to deselect the cell first
+			// and to undo multiple times.
 			this.updateActiveCell(cell);
+			this.undoService.pushElement(new AddCellEdit(this, cell, index));
 		}
 
 		this._contentChangedEmitter.fire({

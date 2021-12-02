@@ -31,15 +31,15 @@ export class SplitCellEdit implements IResourceUndoRedoElement {
 	label: string = localize('splitCellEdit', "Split Cell");
 	resource = this.model.notebookUri;
 
-	constructor(private model: NotebookModel, private firstCell: ICellModel, private secondCell: ICellModel) {
+	constructor(private model: NotebookModel, private firstCell: ICellModel, private secondCell: ICellModel, private newLinesRemoved: string[]) {
 	}
 
 	undo(): void {
-		this.model.mergeCells(this.firstCell, this.secondCell);
+		this.model.mergeCells(this.firstCell, this.secondCell, this.newLinesRemoved);
 	}
 
 	redo(): void {
-		// no-op currently will add support on next release
+		// no-op currently, will add support on next release
 	}
 }
 

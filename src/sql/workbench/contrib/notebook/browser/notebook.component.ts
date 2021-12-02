@@ -121,15 +121,14 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			this.doubleClickEditEnabled = this._configurationService.getValue('notebook.enableDoubleClickEdit');
 		}));
 		this._register(DOM.addDisposableListener(window, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
-			// Check that there are no active elements to prevent the execution of undo/redo commands in other elements.
-			// We need to make sure that there are no active cells to prevent triggering undo/redo within code cells and check that text cells are not in edit mode.
-			if (this.isActive() && !this.areElementsActive() && (this.activeCellId === '' || !this.cellToolbar.first.getEditCellAction().editMode)) {
+			// Prevent the undo/redo from happening in other notebooks and to prevent the execution of undo/redo in the cell.
+			if (this.isActive() && this.activeCellId === '') {
 				let event = new StandardKeyboardEvent(e);
 				if ((event.metaKey && event.shiftKey && event.keyCode === KeyCode.KEY_Z) || event.ctrlKey && event.keyCode === KeyCode.KEY_Y) {
-					event.stopPropagation();
+					DOM.EventHelper.stop(event, true);
 					this._model.redo();
 				} else if ((event.ctrlKey || event.metaKey) && event.keyCode === KeyCode.KEY_Z) {
-					event.stopPropagation();
+					DOM.EventHelper.stop(event, true);
 					this._model.undo();
 				}
 			}
@@ -224,12 +223,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private updateTheme(theme: IColorTheme): void {
 		let toolbarEl = <HTMLElement>this.toolbar.nativeElement;
 		toolbarEl.style.borderBottomColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
-	}
-
-	private areElementsActive(): boolean {
-		let activeElement = DOM.getActiveElement();
-		return activeElement !== null &&
-			activeElement !== document.body;
 	}
 
 	public selectCell(cell: ICellModel, event?: Event) {
