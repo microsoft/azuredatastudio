@@ -91,7 +91,7 @@ export class NotebookLinkHandler {
 			*/
 			// Need to encode URI here in order for user to click the proper encoded link in WYSIWYG
 			// skip encoding it if it's already encoded
-			let encodedLinkURL = this._isFile ? escapeUrl(this._link) : this._link;
+			let encodedLinkURL = this._isFile ? escapeUrl(this._link) : this._link.replace(/\s/g, '%20'); //replace spaces since we're skipping escape for http links
 			if (encodedLinkURL !== decodeURI(encodedLinkURL)) {
 				encodedLinkURL = encodeURI(this._link);
 				return encodedLinkURL;
