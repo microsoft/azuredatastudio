@@ -125,8 +125,6 @@ export class MigrationLocalStorage {
 		}
 	}
 
-
-
 	public static async clearMigrations(): Promise<void> {
 		await this.context.globalState.update(this.mementoToken, ([] as MigrationContext[]));
 	}
