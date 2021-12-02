@@ -1,6 +1,10 @@
 #Download base image ubuntu 18.04
 FROM ubuntu:18.04
 
+#Adding apt repos for g++-4.9
+RUN echo "deb http://dk.archive.ubuntu.com/ubuntu/ xenial main" >> /etc/apt/sources.list
+RUN echo "deb http://dk.archive.ubuntu.com/ubuntu/ xenial universe" >> /etc/apt/sources.list
+
 # Update Software repository
 RUN apt-get update && apt-get upgrade -y
 
