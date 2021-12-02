@@ -516,10 +516,10 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		let isPythonInstalled = JupyterServerInstallation.isPythonInstalled();
 
 		// If the latest version of ADS-Python is not installed, then prompt the user to upgrade
-		/*if (!this._upgradePrompted && isPythonInstalled && !this._usingExistingPython && utils.compareVersions(await this.getInstalledPythonVersion(this._pythonExecutable), constants.pythonVersion) < 0) {
+		if (!this._upgradePrompted && isPythonInstalled && !this._usingExistingPython && utils.compareVersions(await this.getInstalledPythonVersion(this._pythonExecutable), constants.pythonVersion) < 0) {
 			this._upgradePrompted = true;
 			await this.promptUserForPythonUpgrade();
-		}*/
+		}
 
 		let areRequiredPackagesInstalled = await this.areRequiredPackagesInstalled(kernelDisplayName);
 		if (!isPythonInstalled || !areRequiredPackagesInstalled) {
