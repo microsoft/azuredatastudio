@@ -1024,8 +1024,9 @@ export namespace GetSqlMigrationAssessmentItemsRequest {
 }
 
 export interface SqlMigrationSkuRecommendationsParams {
+	dataFolder: string;
 	perfQueryIntervalInSec: number;
-	targetPlatform: string;
+	targetPlatforms: string[];
 	targetSqlInstance: string;
 	targetPercentile: number;
 	scalingFactor: number;
@@ -1036,7 +1037,7 @@ export interface SqlMigrationSkuRecommendationsParams {
 }
 
 export namespace GetSqlMigrationSkuRecommendationsRequest {
-	export const type = new RequestType<SqlMigrationSkuRecommendationsParams, mssql.SkuRecommendationsResult, void, void>('migration/getskurecommendations');
+	export const type = new RequestType<SqlMigrationSkuRecommendationsParams, mssql.SkuRecommendationResult, void, void>('migration/getskurecommendations');
 }
 
 // ------------------------------- <Sql Migration> -----------------------------

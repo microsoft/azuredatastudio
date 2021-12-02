@@ -179,12 +179,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	private _skuRecommendations: SKURecommendations | undefined;
 	public _assessmentResults!: ServerAssessment;
-	public _sqlDbSkuRecommendationResults!: SkuRecommendation[];
-	public _sqlMiSkuRecommendationResults!: SkuRecommendation[];
-	public _sqlVmSkuRecommendationResults!: SkuRecommendation[];
+	public _skuRecommendationResults!: SkuRecommendation;
 	public _runAssessments: boolean = true;
 	private _assessmentApiResponse!: mssql.AssessmentResult;
-	private _skuRecommendationApiResponse!:mssql.SkuRecommendationsResult
+	private _skuRecommendationApiResponse!:mssql.SkuRecommendationResult
 	public mementoString: string;
 
 	public _vmDbs: string[] = [];
@@ -296,21 +294,23 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return this._assessmentResults;
 	}
 
-	public async getSkuRecommendations(perfQueryIntervalInSec: number,
-		targetPlatform: string,
+	public async getSkuRecommendations(
+		dataFolder: string,
+		perfQueryIntervalInSec: number,
+		targetPlatforms: MigrationTargetType[],
 		targetSqlInstance: string,
 		targetPercentile: number,
 		scalingFactor: number,
 		startTime: string,
 		endTime: string,
 		elasticStrategy: boolean,
-		databaseAllowList: string[]) : Promise<SkuRecommendation[]> {
+		databaseAllowList: string[]) : Promise<SkuRecommendation> {
 		try {
-			console.log("instance name:");
-			console.log((await this.getSourceConnectionProfile()).serverName);
 			console.log("starting sku rec");
-			const response = (await this.migrationService.getSkuRecommendations(perfQueryIntervalInSec,
-				targetPlatform,
+			const response = (await this.migrationService.getSkuRecommendations(
+				dataFolder,
+				perfQueryIntervalInSec,
+				targetPlatforms.map(p => p.toString()),
 				targetSqlInstance,
 				targetPercentile,
 				scalingFactor,
@@ -322,45 +322,51 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			console.log("raw API response:");
 			console.log(this._skuRecommendationApiResponse);
 
-			if (response?.sqlDbRecommendationResults && response?.sqlMiRecommendationResults && response?.sqlVmRecommendationResults) {
-				console.log("sqldb, sqlmi, and sqlvm all returned results")
-				this._sqlDbSkuRecommendationResults = response?.sqlDbRecommendationResults.map(r => {
-					return {
-						resultText: r.databaseName + ": " + r.targetSku.computeSize + " core " + ((r.targetSku.category.sqlServiceTier) == 0 ? "GeneralPurpose" : "BusinessCritical") + (r.targetSku.storageMaxSizeInMb / 1024) + " GB"		//
-					};
-				}) ?? []
-				this._sqlMiSkuRecommendationResults = response?.sqlMiRecommendationResults.map(r => {
-					return {
-						resultText: r.sqlInstanceName + ": " + r.targetSku.computeSize + " core " + ((r.targetSku.category.sqlServiceTier) == 0 ? "GeneralPurpose" : "BusinessCritical") + (r.targetSku.storageMaxSizeInMb / 1024) + " GB"		//
-					};
-				}) ?? []
-				this._sqlVmSkuRecommendationResults = response?.sqlVmRecommendationResults.map(r => {
-					return {
-						resultText: r.sqlInstanceName + ": " + r.targetSku.virtualMachineSize.vCPUsAvailable + " core " + r.targetSku.virtualMachineSize.azureSkuName		//
-					};
-				}) ?? []
-
-
-				console.log("this._sqlDbSkuRecommendationResults: ");
-				console.log(this._sqlDbSkuRecommendationResults);
-				console.log("this._sqlMiSkuRecommendationResults: ");
-				console.log(this._sqlMiSkuRecommendationResults);
-				console.log("this._sqlVmSkuRecommendationResults: ");
-				console.log(this._sqlVmSkuRecommendationResults);
+			if (response?.sqlDbRecommendationResults || response?.sqlMiRecommendationResults || response?.sqlVmRecommendationResults) {
+				this._skuRecommendationResults = {
+					recommendations: {
+						sqlDbRecommendationResults: response?.sqlDbRecommendationResults ?? [],
+						sqlMiRecommendationResults: response?.sqlMiRecommendationResults ?? [],
+						sqlVmRecommendationResults: response?.sqlVmRecommendationResults ?? []
+					},
+					// recommendationError:
+				}
 			} else {
-				console.log("no results returned")
-				this._sqlDbSkuRecommendationResults = []
-				this._sqlMiSkuRecommendationResults = []
-				this._sqlVmSkuRecommendationResults = []
+				this._skuRecommendationResults = {
+					recommendations: {
+						sqlDbRecommendationResults: [],
+						sqlMiRecommendationResults: [],
+						sqlVmRecommendationResults: []
+					},
+					// recommendationError:
+				}
 			}
 
 		} catch (error) {
 			console.log("error:");
 			console.log(error);
+
+			this._skuRecommendationResults = {
+				recommendations: {
+					sqlDbRecommendationResults: this._skuRecommendationApiResponse?.sqlDbRecommendationResults ?? [],
+					sqlMiRecommendationResults: this._skuRecommendationApiResponse?.sqlMiRecommendationResults ?? [],
+					sqlVmRecommendationResults: this._skuRecommendationApiResponse?.sqlVmRecommendationResults ?? []
+				},
+				recommendationError: error
+			}
 		}
 
+		console.log("_skuRecommendationResults.recommendations.sqlDbRecommendationResults: ");
+		console.log(this._skuRecommendationResults.recommendations.sqlDbRecommendationResults);
+		console.log("_skuRecommendationResults.recommendations.sqlMiRecommendationResults: ");
+		console.log(this._skuRecommendationResults.recommendations.sqlMiRecommendationResults);
+		console.log("_skuRecommendationResults.recommendations.sqlVmRecommendationResults: ");
+		console.log(this._skuRecommendationResults.recommendations.sqlVmRecommendationResults);
+		console.log("_skuRecommendationResults.recommendationError: ");
+		console.log(this._skuRecommendationResults.recommendationError);
+
 		// this.generateAssessmentTelemetry().catch(e => console.error(e));
-		return this._sqlDbSkuRecommendationResults.concat(this._sqlMiSkuRecommendationResults, this._sqlVmSkuRecommendationResults);
+		return this._skuRecommendationResults;
 	}
 
 	private async generateAssessmentTelemetry(): Promise<void> {
@@ -1189,5 +1195,6 @@ export interface ServerAssessment {
 }
 
 export interface SkuRecommendation {
-	resultText: string;
+	recommendations: mssql.SkuRecommendationResult;
+	recommendationError?: Error;
 }

@@ -657,7 +657,7 @@ export interface AzureSqlSkuMonthlyCost
 	totalCost: number;
 }
 
-export interface SkuRecommendationResult
+export interface SkuRecommendationResultItem
 {
 	sqlInstanceName: string;
 	databaseName: string;
@@ -668,14 +668,14 @@ export interface SkuRecommendationResult
 	negativeJustifications: string[];
 }
 
-export interface SkuRecommendationsResult {
-	sqlDbRecommendationResults: SkuRecommendationResult[];
-	sqlMiRecommendationResults: SkuRecommendationResult[];
-	sqlVmRecommendationResults: SkuRecommendationResult[];
+export interface SkuRecommendationResult {
+	sqlDbRecommendationResults: SkuRecommendationResultItem[];
+	sqlMiRecommendationResults: SkuRecommendationResultItem[];
+	sqlVmRecommendationResults: SkuRecommendationResultItem[];
 
 }
 
 export interface ISqlMigrationService {
 	getAssessments(ownerUri: string, databases: string[]): Promise<AssessmentResult | undefined>;
-	getSkuRecommendations(perfQueryIntervalInSec: number, targetPlatform: string, targetSqlInstance: string, targetPercentile: number, scalingFactor: number, startTime: string, endTime: string, elasticStrategy: boolean, databaseAllowList: string[]): Promise<SkuRecommendationsResult | undefined>;
+	getSkuRecommendations(dataFolder: string, perfQueryIntervalInSec: number, targetPlatforms: string[], targetSqlInstance: string, targetPercentile: number, scalingFactor: number, startTime: string, endTime: string, elasticStrategy: boolean, databaseAllowList: string[]): Promise<SkuRecommendationResult | undefined>;
 }
