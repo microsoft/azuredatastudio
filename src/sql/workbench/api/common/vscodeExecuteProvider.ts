@@ -235,7 +235,9 @@ class VSCodeSessionManager implements azdata.nb.SessionManager {
 			defaultKernel: languages[0],
 			kernels: languages.map<azdata.nb.IKernelSpec>(language => {
 				return {
-					name: language
+					name: language,
+					language: language,
+					display_name: language // TODO: append extension name to language (similar to what Interactive does)
 				};
 			})
 		};
