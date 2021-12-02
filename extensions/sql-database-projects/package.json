@@ -172,7 +172,8 @@
       {
         "command": "sqlDatabaseProjects.addSqlBinding",
         "title": "%sqlDatabaseProjects.addSqlBinding%",
-        "category": "MS SQL"},
+        "category": "MS SQL"
+      },
       {
         "command": "sqlDatabaseProjects.changeTargetPlatform",
         "title": "%sqlDatabaseProjects.changeTargetPlatform%",
@@ -275,7 +276,7 @@
         },
         {
           "command": "sqlDatabaseProjects.addSqlBinding",
-          "when": "editorLangId == csharp && !azdataAvailable && resourceExtname"
+          "when": "editorLangId == csharp && !azdataAvailable && resourceScheme != untitled"
         },
         {
           "command": "sqlDatabaseProjects.exclude",
