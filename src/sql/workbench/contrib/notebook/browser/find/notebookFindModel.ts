@@ -578,7 +578,6 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 				if (outputDisplayResults.data) {
 					findStartResults = this.search(outputDisplayResults.data.toString(), exp, matchCase, wholeWord, maxMatches - findResults.length);
 					findStartResults?.forEach(start => {
-						// lineNumber: j+1 since notebook editors aren't zero indexed.
 						let range = new NotebookRange(cell, 1, start, 1, start + exp.length, false, true);
 						findResults.push(range);
 					});
@@ -588,7 +587,6 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 						let cellValFormatted = output as nb.IStreamResult;
 						findStartResults = this.search(cellValFormatted.text.toString().replace('\\n', ''), exp, matchCase, wholeWord, maxMatches - findResults.length);
 						findStartResults?.forEach(start => {
-							// lineNumber: j+1 since notebook editors aren't zero indexed.
 							let range = new NotebookRange(cell, 1, start, 1, start + exp.length, false, true);
 							findResults.push(range);
 						});
@@ -597,7 +595,6 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 						let errorValue = output as nb.IErrorResult;
 						findStartResults = this.search(errorValue.traceback.toString(), exp, matchCase, wholeWord, maxMatches - findResults.length);
 						findStartResults.forEach(start => {
-							// lineNumber: j+1 since notebook editors aren't zero indexed.
 							let range = new NotebookRange(cell, 1, start, 1, start + exp.length, false, true);
 							findResults.push(range);
 						});
@@ -606,7 +603,6 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 						let executeResult = output as nb.IExecuteResult;
 						findStartResults = this.search(executeResult.data, exp, matchCase, wholeWord, maxMatches - findResults.length);
 						findStartResults?.forEach(start => {
-							// lineNumber: j+1 since notebook editors aren't zero indexed.
 							let range = new NotebookRange(cell, 1, start, 1, start + exp.length, false, true);
 							findResults.push(range);
 						});
