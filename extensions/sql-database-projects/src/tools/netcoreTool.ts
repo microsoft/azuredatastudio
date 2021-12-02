@@ -24,7 +24,7 @@ export const NetCoreNonWindowsDefaultPath = '/usr/local/share';
 export const winPlatform: string = 'win32';
 export const macPlatform: string = 'darwin';
 export const linuxPlatform: string = 'linux';
-export const minSupportedNetCoreVersionForBuild: string = '3.1.0';
+export const minSupportedNetCoreVersionForBuild: string = '3.1.0'; // TODO: watch out for EOL support in Dec 2022
 
 export const enum netCoreInstallState {
 	netCoreNotPresent,
