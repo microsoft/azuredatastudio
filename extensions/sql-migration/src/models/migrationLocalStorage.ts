@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
 import { azureResource } from 'azureResource';
-import { logError, TelemetryViews } from '../telemtery';
+import { logError, sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../telemtery';
 import { DatabaseMigration, SqlMigrationService, SqlManagedInstance, getMigrationStatus, AzureAsyncOperationResource, getMigrationAsyncOperationDetails, SqlVMServer, getSubscriptions } from '../api/azure';
 import * as azdata from 'azdata';
 
@@ -20,7 +20,7 @@ export class MigrationLocalStorage {
 		const undefinedSessionId = '{undefined}';
 		const result: MigrationContext[] = [];
 		const validMigrations: MigrationContext[] = [];
-
+		const startTime = new Date().toString();
 		const migrationMementos: MigrationContext[] = this.context.globalState.get(this.mementoToken) || [];
 		for (let i = 0; i < migrationMementos.length; i++) {
 			const migration = migrationMementos[i];
@@ -61,6 +61,17 @@ export class MigrationLocalStorage {
 			validMigrations.push(migration);
 		}
 		await this.context.globalState.update(this.mementoToken, validMigrations);
+		sendSqlMigrationActionEvent(
+			TelemetryViews.MigrationLocalStorage,
+			TelemetryAction.Done,
+			{
+				'startTime': startTime,
+				'endTime': new Date().toString()
+			},
+			{
+				'migrationCount': migrationMementos.length
+			}
+		);
 		return result;
 	}
 

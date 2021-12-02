@@ -111,7 +111,6 @@ export class MigrationCutoverDialogModel {
 			}
 		} catch (error) {
 			this.CancelMigrationError = error;
-			console.log(error);
 			logError(TelemetryViews.MigrationCutoverDialog, 'CancelMigrationError', error);
 		}
 		return undefined!;
