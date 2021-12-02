@@ -89,7 +89,7 @@ export class ADSWebLite implements IWorkbenchContribution {
 	}
 
 	private async registerEditorOverride(): Promise<void> {
-		if (product.quality === 'tsgops') {
+		if (product.quality === 'tsgops-image') {
 			await this.commandService.executeCommand('workbench.extensions.action.hideSettings');
 			await this.commandService.executeCommand('workbench.extensions.action.hidePanel');
 			let array = ['workbench.view.search', 'workbench.view.explorer', 'workbench.view.scm', 'workbench.view.extensions'];
