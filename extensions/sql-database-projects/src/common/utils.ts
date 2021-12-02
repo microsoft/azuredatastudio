@@ -584,6 +584,6 @@ export async function getFoldersInFolder(folderPath: string, ignoreBinObj?: bool
  * @param value Value to check if it's well-known
  * @returns True if value is a well-known value, false otherwise
  */
-export function IsWellKnownValue(value: string): boolean {
+export function isWellKnownValue(value: string): boolean {
 	return constants.WellKnownValues.includes(value);
 }

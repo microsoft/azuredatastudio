@@ -1150,6 +1150,10 @@ describe('Project: properties', function (): void {
 		should(databaseSourceItems[0]).equal('test1');
 		should(databaseSourceItems[1]).equal('test2');
 		should(databaseSourceItems[2]).equal('test3');
+		should(project.getWellKnownDatabaseSourceString()).equal('');
+
+		await project.addDatabaseSourceToProjFile(constants.WellKnownValues[0]);
+		should(project.getWellKnownDatabaseSourceString()).equal(constants.WellKnownValues[0]);
 	});
 
 	it('Should remove database source from project property', async function (): Promise<void> {

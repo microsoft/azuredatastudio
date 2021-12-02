@@ -853,6 +853,25 @@ export class Project implements ISqlProject {
 		}
 	}
 
+	/**
+	 * Get string containing all well-known database sources, separated by semicolon
+	 * @returns Well-known database sources, separated by semicolon
+	 */
+	public getWellKnownDatabaseSourceString(): string {
+		let databaseSourceString: string = '';
+		for (let databaseSourceValue of new Set(this.getRawDatabaseSourceValues())) {
+			if (utils.isWellKnownValue(databaseSourceValue)) {
+				if (!databaseSourceString) {
+					databaseSourceString = databaseSourceValue;
+				} else {
+					databaseSourceString += `;${databaseSourceValue}`;
+				}
+			}
+		}
+
+		return databaseSourceString;
+	}
+
 	public createFileProjectEntry(relativePath: string, entryType: EntryType, sqlObjectType?: string): FileProjectEntry {
 		let platformSafeRelativePath = utils.getPlatformSafeFileEntryPath(relativePath);
 		return new FileProjectEntry(
