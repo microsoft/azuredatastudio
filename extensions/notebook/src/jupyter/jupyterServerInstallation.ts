@@ -133,20 +133,28 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	private readonly _requiredPackagesSet: Set<string>;
 
 	private readonly _runningOnSAW: boolean;
+	private readonly _tsgops: boolean;
 
 	constructor(extensionPath: string, outputChannel: vscode.OutputChannel) {
 		this.extensionPath = extensionPath;
 		this.outputChannel = outputChannel;
 
 		this._runningOnSAW = vscode.env.appName.toLowerCase().indexOf('saw') > 0;
+		this._tsgops = vscode.env.appName.toLowerCase().indexOf('tsgops') > 0;
 		void vscode.commands.executeCommand(constants.BuiltInCommands.SetContext, 'notebook:runningOnSAW', this._runningOnSAW);
 
 		if (this._runningOnSAW) {
 			this._pythonInstallationPath = `${vscode.env.appRoot}\\ads-python`;
 			this._usingExistingPython = true;
 		} else {
-			this._pythonInstallationPath = JupyterServerInstallation.getPythonInstallPath();
-			this._usingExistingPython = JupyterServerInstallation.getExistingPythonSetting();
+			if (this._tsgops) {
+				this._pythonInstallationPath = `${vscode.env.appRoot}\\usr`;
+				this._usingExistingPython = true;
+			}
+			else {
+				this._pythonInstallationPath = JupyterServerInstallation.getPythonInstallPath();
+				this._usingExistingPython = JupyterServerInstallation.getExistingPythonSetting();
+			}
 		}
 		this._usingConda = false;
 		this._installInProgress = false;

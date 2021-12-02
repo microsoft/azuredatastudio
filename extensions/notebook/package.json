@@ -41,7 +41,7 @@
         },
         "notebook.useExistingPython": {
           "type": "boolean",
-          "default": true,
+          "default": false,
           "description": "%notebook.useExistingPython.description%"
         },
         "notebook.dontPromptPythonUpdate": {
