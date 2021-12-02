@@ -18,7 +18,7 @@ export class VSCodeContentManager implements azdata.nb.ContentManager {
 		let buffer = VSBuffer.fromString(contents);
 		let notebookData = await this._serializer.deserializeNotebook(buffer.buffer, new CancellationTokenSource().token);
 		let result = {
-			cells: notebookData.cells.map<azdata.nb.ICellContents>(cell => {
+			cells: notebookData.cells?.map<azdata.nb.ICellContents>(cell => {
 				return {
 					cell_type: cell.kind === NotebookCellKind.Code ? 'code' : 'markdown',
 					source: cell.value,
@@ -82,12 +82,12 @@ export class VSCodeContentManager implements azdata.nb.ContentManager {
 
 	public async serializeNotebook(notebook: azdata.nb.INotebookContents): Promise<string> {
 		let notebookData: vscode.NotebookData = {
-			cells: notebook.cells.map<vscode.NotebookCellData>(cell => {
+			cells: notebook.cells?.map<vscode.NotebookCellData>(cell => {
 				return {
 					kind: cell.cell_type === 'code' ? NotebookCellKind.Code : NotebookCellKind.Markup,
 					value: Array.isArray(cell.source) ? cell.source.join('\n') : cell.source,
 					languageId: cell.metadata?.language,
-					outputs: cell.outputs.map<vscode.NotebookCellOutput>(output => {
+					outputs: cell.outputs?.map<vscode.NotebookCellOutput>(output => {
 						return {
 							items: VSCodeContentManager.convertToVscodeCellOutput(output),
 							metadata: output.metadata,
