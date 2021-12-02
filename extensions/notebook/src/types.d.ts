@@ -11,10 +11,10 @@ import { AppContext } from './common/appContext';
  * @export
  */
 export interface IExtensionApi {
-	getJupyterController(): IJupyterController;
-	registerPackageManager(providerId: string, packageManagerProvider: IPackageManageProvider): void;
-	getPackageManagers(): Map<string, IPackageManageProvider>;
-	getAppContext(): AppContext;
+	// getJupyterController(): IJupyterController;
+	// registerPackageManager(providerId: string, packageManagerProvider: IPackageManageProvider): void;
+	// getPackageManagers(): Map<string, IPackageManageProvider>;
+	// getAppContext(): AppContext;
 }
 
 /**
