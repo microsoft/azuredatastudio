@@ -824,52 +824,38 @@ export class Project implements ISqlProject {
 	}
 
 	/**
-	 * Adds DatabaseSource property to the project
+	 * Creates DatabaseSource tag if one doesn't exist and adds database source
+	 * to the collection of existing sources
 	 * @param databaseSource Source of the database to add
 	 */
 	public async addDatabaseSourceToProjFile(databaseSource: string): Promise<void> {
-		await this.addValueToProjectProperty(constants.DatabaseSource, databaseSource);
+		await this.addValueToCollectionProjectProperty(constants.DatabaseSource, databaseSource);
 	}
 
 	/**
-	* Removes DatabaseSource property from the project
-	* @param databaseSource Source of the database to remove
-	*/
+	 * Removes database source from the collection of existing sources and removes
+	 * DatabaseSource tag from the project if no sources remain
+	 * @param databaseSource Source of the database to remove
+	 */
 	public async removeDatabaseSourceFromProjFile(databaseSource: string): Promise<void> {
-		await this.removeValueFromProjectProperty(constants.DatabaseSource, databaseSource);
+		await this.removeValueFromCollectionProjectProperty(constants.DatabaseSource, databaseSource);
 	}
 
 	/**
-	 * Get array of all database source values, regardless of if value is 'well-know'
+	 * Get array of all database source values, regardless of if value is 'well-know'.
 	 * @returns Array of all database source values, regardless of if value is 'well-know'
 	 */
-	public getRawDatabaseSourceValues(): string[] {
+	public getDatabaseSourceValues(): string[] {
+		// TODO: Support should be added for values that contain ';'
+
 		const databaseSource = this.evaluateProjectPropertyValue(constants.DatabaseSource);
 
 		if (databaseSource !== undefined) {
-			return databaseSource.split(';');
-		} else {
-			return [];
-		}
-	}
-
-	/**
-	 * Get string containing all well-known database sources, separated by semicolon
-	 * @returns Well-known database sources, separated by semicolon
-	 */
-	public getWellKnownDatabaseSourceString(): string {
-		let databaseSourceString: string = '';
-		for (let databaseSourceValue of new Set(this.getRawDatabaseSourceValues())) {
-			if (utils.isWellKnownValue(databaseSourceValue)) {
-				if (!databaseSourceString) {
-					databaseSourceString = databaseSourceValue;
-				} else {
-					databaseSourceString += `;${databaseSourceValue}`;
-				}
-			}
+			return databaseSource.split(';')
+				.filter(value => value.length > 0);
 		}
 
-		return databaseSourceString;
+		return [];
 	}
 
 	public createFileProjectEntry(relativePath: string, entryType: EntryType, sqlObjectType?: string): FileProjectEntry {
@@ -1376,19 +1362,21 @@ export class Project implements ISqlProject {
 	 * @param propertyName Name of property
 	 * @param valueToAdd Value to be added to project property
 	 */
-	private async addValueToProjectProperty(propertyName: string, valueToAdd: string) {
-		let propertyValue = this.evaluateProjectPropertyValue(propertyName);
+	private async addValueToCollectionProjectProperty(propertyName: string, valueToAdd: string) {
+		if (valueToAdd.includes(';')) {
+			return;
+		}
 
+		let propertyValue = this.evaluateProjectPropertyValue(propertyName);
 		if (propertyValue === undefined) {
 			propertyValue = valueToAdd;
 		} else {
-			if (propertyValue.length > valueToAdd.length
+			if ((propertyValue.length > valueToAdd.length
 				&& (propertyValue.startsWith(`${valueToAdd};`)
 					|| propertyValue.endsWith(`;${valueToAdd}`)
-					|| propertyValue.indexOf(`;${valueToAdd};`) > 0)) {
-				return;
-			} else if (propertyValue.length === valueToAdd.length
-				&& propertyValue === valueToAdd) {
+					|| propertyValue.indexOf(`;${valueToAdd};`) > 0))
+				|| (propertyValue.length === valueToAdd.length
+					&& propertyValue === valueToAdd)) {
 				return;
 			}
 
@@ -1403,10 +1391,11 @@ export class Project implements ISqlProject {
 	 * @param propertyName Name of property
 	 * @param valueToRemove Value to remove from the project property
 	 */
-	private async removeValueFromProjectProperty(propertyName: string, valueToRemove: string) {
+	private async removeValueFromCollectionProjectProperty(propertyName: string, valueToRemove: string) {
 		const propertyValue = this.evaluateProjectPropertyValue(propertyName);
-
-		if (propertyValue === undefined || propertyValue.length < valueToRemove.length) {
+		if (propertyValue === undefined
+			|| propertyValue.length < valueToRemove.length
+			|| valueToRemove.includes(';')) {
 			return;
 		}
 
@@ -1428,7 +1417,6 @@ export class Project implements ISqlProject {
 			await this.setProjectPropertyValue(
 				propertyName,
 				propertyValueToSet);
-
 		} else if (propertyValue.length === valueToRemove.length
 			&& propertyValue === valueToRemove) {
 			this.removeProjectPropertyTag(propertyName);
@@ -1510,24 +1498,35 @@ export class Project implements ISqlProject {
 	 * @returns Added HTMLElement tag
 	 */
 	private addProjectPropertyTag(propertyTag: string): HTMLElement | undefined {
-		let propertyGroup = this.projFileXmlDoc!.getElementsByTagName(constants.PropertyGroup).item(0);
+		if (this.projFileXmlDoc === undefined) {
+			return;
+		}
+
+		let propertyGroup = this.projFileXmlDoc.getElementsByTagName(constants.PropertyGroup).item(0);
 		if (propertyGroup === null) {
-			propertyGroup = this.projFileXmlDoc!.createElement(constants.PropertyGroup);
+			propertyGroup = this.projFileXmlDoc.createElement(constants.PropertyGroup);
 			this.projFileXmlDoc!.documentElement?.appendChild(propertyGroup);
 		}
 
-		const propertyElement = this.projFileXmlDoc!.createElement(propertyTag);
+		const propertyElement = this.projFileXmlDoc.createElement(propertyTag);
 		propertyGroup.appendChild(propertyElement);
 		return propertyElement;
 	}
 
 	/**
-	 * Remove project property
+	 * Remove first occurrence of project property
 	 * @param propertyTag Tag to remove
 	 */
 	private removeProjectPropertyTag(propertyTag: string) {
-		const propertiesWithTagName = this.projFileXmlDoc!.getElementsByTagName(propertyTag);
-		propertiesWithTagName.item(0)?.parentNode?.removeChild(propertiesWithTagName[0]);
+		const propertyGroups = this.projFileXmlDoc!.getElementsByTagName(constants.PropertyGroup);
+
+		for (let propertyGroupIndex in propertyGroups) {
+			let propertiesWithTagName = propertyGroups[propertyGroupIndex].getElementsByTagName(propertyTag);
+			if (propertiesWithTagName?.length > 0) {
+				propertiesWithTagName[0].parentNode?.removeChild(propertiesWithTagName[0]);
+				return;
+			}
+		}
 	}
 
 	/**

@@ -580,10 +580,36 @@ export async function getFoldersInFolder(folderPath: string, ignoreBinObj?: bool
 }
 
 /**
- * Determines if provided value is well-known by the extension and therefore is allowed to be sent in telemetry
- * @param value Value to check if it's well-known
- * @returns True if value is a well-known value, false otherwise
+ * Determines if provided value is a well-known database source and therefore is allowed to be sent in telemetry
+ * @param value Value to check if it's a well-known database source
+ * @returns Database source value if well-known, otherwise returns undefined
  */
-export function isWellKnownValue(value: string): boolean {
-	return constants.WellKnownValues.includes(value);
+export function getWellKnownDatabaseSourceValue(value: string): string | undefined {
+	return constants.WellKnownDatabaseSources
+		.find(wellKnownSource => { return wellKnownSource.toUpperCase() === value.toUpperCase(); });
+}
+
+/**
+ * Get string containing all well-known database sources, separated by semicolon
+ * @returns Well-known database sources, separated by semicolon
+ */
+export function getWellKnownDatabaseSourceString(project: Project): string {
+	let databaseSourceString: string = '';
+	const alreadyAppendedValues = new Set();
+
+	for (let databaseSourceValue of project.getDatabaseSourceValues()) {
+		let wellKnownDatabaseSourceValue = getWellKnownDatabaseSourceValue(databaseSourceValue);
+		if (wellKnownDatabaseSourceValue
+			&& !alreadyAppendedValues.has(wellKnownDatabaseSourceValue)) {
+			if (!databaseSourceString) {
+				databaseSourceString = wellKnownDatabaseSourceValue;
+			} else {
+				databaseSourceString += `;${wellKnownDatabaseSourceValue}`;
+			}
+
+			alreadyAppendedValues.add(wellKnownDatabaseSourceValue);
+		}
+	}
+
+	return databaseSourceString;
 }

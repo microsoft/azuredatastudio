@@ -387,8 +387,8 @@ export const DefaultCollationProperty = 'DefaultCollation';
 /** Default database collation to use when none is specified in the project */
 export const DefaultCollation = 'SQL_Latin1_General_CP1_CI_AS';
 
-/** Well-known values that are allowed to be sent in telemetry */
-export const WellKnownValues = ['dsct-oracle-to-ms-sql'];
+/** Well-known database source values that are allowed to be sent in telemetry */
+export const WellKnownDatabaseSources = ['dsct-oracle-to-ms-sql'];
 
 // SqlProj File targets
 export const NetCoreTargets = '$(NETCoreTargetsPath)\\Microsoft.Data.Tools.Schema.SqlTasks.targets';

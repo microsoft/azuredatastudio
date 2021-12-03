@@ -13,7 +13,7 @@ import * as constants from '../common/constants';
 
 import { promises as fs } from 'fs';
 import { Project } from '../models/project';
-import { exists, convertSlashesForSqlProj } from '../common/utils';
+import { exists, convertSlashesForSqlProj, getWellKnownDatabaseSourceString } from '../common/utils';
 import { Uri, window } from 'vscode';
 import { IDacpacReferenceSettings, IProjectReferenceSettings, ISystemDatabaseReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { SqlTargetPlatform } from 'sqldbproj';
@@ -1129,14 +1129,19 @@ describe('Project: properties', function (): void {
 
 		// Should single add database source
 		await project.addDatabaseSourceToProjFile('test1');
-		let databaseSourceItems: string[] = project.getRawDatabaseSourceValues();
+		let databaseSourceItems: string[] = project.getDatabaseSourceValues();
 		should(databaseSourceItems.length).equal(1);
 		should(databaseSourceItems[0]).equal('test1');
+
+		// Should not add database source values with semicolon
+		await project.addDatabaseSourceToProjFile(';test2;');
+		databaseSourceItems = project.getDatabaseSourceValues();
+		should(databaseSourceItems.length).equal(1);
 
 		// Add multiple database sources
 		await project.addDatabaseSourceToProjFile('test2');
 		await project.addDatabaseSourceToProjFile('test3');
-		databaseSourceItems = project.getRawDatabaseSourceValues();
+		databaseSourceItems = project.getDatabaseSourceValues();
 		should(databaseSourceItems.length).equal(3);
 		should(databaseSourceItems[0]).equal('test1');
 		should(databaseSourceItems[1]).equal('test2');
@@ -1150,10 +1155,10 @@ describe('Project: properties', function (): void {
 		should(databaseSourceItems[0]).equal('test1');
 		should(databaseSourceItems[1]).equal('test2');
 		should(databaseSourceItems[2]).equal('test3');
-		should(project.getWellKnownDatabaseSourceString()).equal('');
+		should(getWellKnownDatabaseSourceString(project)).equal('');
 
-		await project.addDatabaseSourceToProjFile(constants.WellKnownValues[0]);
-		should(project.getWellKnownDatabaseSourceString()).equal(constants.WellKnownValues[0]);
+		await project.addDatabaseSourceToProjFile(constants.WellKnownDatabaseSources[0]);
+		should(getWellKnownDatabaseSourceString(project)).equal(constants.WellKnownDatabaseSources[0]);
 	});
 
 	it('Should remove database source from project property', async function (): Promise<void> {
@@ -1165,17 +1170,22 @@ describe('Project: properties', function (): void {
 		await project.addDatabaseSourceToProjFile('test3');
 		await project.addDatabaseSourceToProjFile('test4');
 
+		// Should not remove database source values with semicolon
+		await project.removeDatabaseSourceFromProjFile(';test2;');
+		let databaseSourceItems: string[] = project.getDatabaseSourceValues();
+		should(databaseSourceItems.length).equal(4);
+
 		// Should remove database sources
 		await project.removeDatabaseSourceFromProjFile('test2');
 		await project.removeDatabaseSourceFromProjFile('test1');
 		await project.removeDatabaseSourceFromProjFile('test4');
 
-		let databaseSourceItems: string[] = project.getRawDatabaseSourceValues();
+		databaseSourceItems = project.getDatabaseSourceValues();
 		should(databaseSourceItems.length).equal(1);
 
 		// Should remove database source tag when last database source is removed
 		await project.removeDatabaseSourceFromProjFile('test3');
-		databaseSourceItems = project.getRawDatabaseSourceValues();
+		databaseSourceItems = project.getDatabaseSourceValues();
 
 		should(databaseSourceItems.length).equal(0);
 	});
