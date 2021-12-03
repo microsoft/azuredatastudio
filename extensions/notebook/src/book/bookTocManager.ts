@@ -14,7 +14,7 @@ import { BookModel } from './bookModel';
 import { TocEntryPathHandler } from './tocEntryPathHandler';
 import { FileExtension, BookTreeItemType, deepClone } from '../common/utils';
 import { UndoRedoService } from './undoRedoService';
-import { MoveBookTreeItem, undoRedoToc } from './bookEdit';
+import { MoveBookTreeItem, UndoRedoState } from './bookEdit';
 
 export interface IBookTocManager {
 	updateBook(sources: BookTreeItem[], target: BookTreeItem, targetSection?: JupyterBookSection): Promise<void>;
@@ -42,7 +42,7 @@ export class BookTocManager implements IBookTocManager {
 	public newSection: JupyterBookSection = {};
 	public movedFiles: Map<string, string> = new Map<string, string>();
 	private _initialToc: Map<string, JupyterBookSection[]> = new Map<string, JupyterBookSection[]>();
-	public tocFiles: Map<string, undoRedoToc> = new Map<string, undoRedoToc>();
+	public tocFiles: Map<string, UndoRedoState> = new Map<string, UndoRedoState>();
 	private _modifiedDirectory: Set<string> = new Set<string>();
 	private sourceBookContentPath: string;
 	private targetBookContentPath: string;
@@ -208,9 +208,9 @@ export class BookTocManager implements IBookTocManager {
 		}
 		if (isModified) {
 			await fs.writeFile(tocPath, yaml.safeDump(this.tableofContents, { lineWidth: Infinity, noRefs: true, skipInvalid: true }));
-			let toc: undoRedoToc = {
-				undo: this._initialToc.get(tocPath),
-				redo: this.tableofContents
+			let toc: UndoRedoState = {
+				previous: this._initialToc.get(tocPath),
+				current: this.tableofContents
 			};
 			this.tocFiles.set(tocPath, toc);
 		} else {

@@ -11,21 +11,21 @@ import * as loc from '../common/localizedConstants';
 import { BookTocManager } from './bookTocManager';
 import { IUndoRedoElement } from './undoRedoService';
 
-export interface undoRedoToc {
-	undo: JupyterBookSection[],
-	redo: JupyterBookSection[]
+export interface UndoRedoState {
+	previous: JupyterBookSection[],
+	current: JupyterBookSection[]
 }
 
 export class MoveBookTreeItem implements IUndoRedoElement {
 	label: string = loc.MoveBookTreeItem;
 
-	constructor(private bookTocManager: BookTocManager, private movedFiles: Map<string, string>, private tocFiles: Map<string, undoRedoToc>) {
+	constructor(private bookTocManager: BookTocManager, private movedFiles: Map<string, string>, private tocFiles: Map<string, UndoRedoState>) {
 	}
 
 	async undo(): Promise<void> {
 		// restore toc files
 		for (const [tocPath, contents] of this.tocFiles.entries()) {
-			await this.applyTocChanges(tocPath, contents.undo);
+			await this.applyTocChanges(tocPath, contents.previous);
 		}
 		// return files to previous file path
 		for (const [src, dest] of this.movedFiles.entries()) {
@@ -36,7 +36,7 @@ export class MoveBookTreeItem implements IUndoRedoElement {
 	async redo(): Promise<void> {
 		// restore toc files
 		for (const [tocPath, contents] of this.tocFiles.entries()) {
-			await this.applyTocChanges(tocPath, contents.redo);
+			await this.applyTocChanges(tocPath, contents.current);
 		}
 		// return files to previous file path
 		for (const [src, dest] of this.movedFiles.entries()) {
