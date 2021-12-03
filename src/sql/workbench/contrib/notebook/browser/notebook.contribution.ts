@@ -226,7 +226,7 @@ CommandsRegistry.registerCommand({
 				// Wait for NotebookInput.resolve() to be called to ensure the _model field in NotebookInput
 				// is not undefined when trying to get the notebookModel.
 				await editor.modelResolved;
-				let model: INotebookModel = (<NotebookInput>editor).notebookModel;
+				let model: INotebookModel = editor.notebookModel;
 				if (model?.providerId === JUPYTER_PROVIDER_ID) {
 					let jupyterNotebookManager: IExecuteManager = model.executeManagers.find(x => x.providerId === JUPYTER_PROVIDER_ID);
 					await jupyterNotebookManager.sessionManager.shutdownAll();
