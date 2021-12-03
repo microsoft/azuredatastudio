@@ -821,7 +821,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				this.migrationStateModel._targetDatabaseNames = [];
 				this.migrationStateModel._databaseBackup.blobs = [];
 				this.migrationStateModel._migrationDbs.forEach((db, index) => {
-					this.migrationStateModel._targetDatabaseNames.push('');
+					this.migrationStateModel._targetDatabaseNames.push(db);
 					this.migrationStateModel._databaseBackup.blobs.push(<Blob>{});
 					const targetDatabaseInput = this._view.modelBuilder.inputBox().withProps({
 						required: true,
@@ -973,7 +973,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					});
 					data.push(targetRow);
 				});
-				this._networkShareTargetDatabaseNamesTable.dataValues = data;
+				await this._networkShareTargetDatabaseNamesTable.setDataValues(data);
 
 				data = [];
 				this.migrationStateModel._migrationDbs.forEach((db, index) => {
