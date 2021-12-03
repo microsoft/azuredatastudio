@@ -9,14 +9,14 @@ import * as yaml from 'js-yaml';
 import * as vscode from 'vscode';
 import * as loc from '../common/localizedConstants';
 import { BookTocManager } from './bookTocManager';
-import { IBookUndoRedoElement } from './bookUndoRedoService';
+import { IUndoRedoElement } from './undoRedoService';
 
 export interface undoRedoToc {
 	undo: JupyterBookSection[],
 	redo: JupyterBookSection[]
 }
 
-export class MoveBookTreeItem implements IBookUndoRedoElement {
+export class MoveBookTreeItem implements IUndoRedoElement {
 	label: string = loc.MoveBookTreeItem;
 
 	constructor(private bookTocManager: BookTocManager, private movedFiles: Map<string, string>, private tocFiles: Map<string, undoRedoToc>) {

@@ -13,7 +13,7 @@ import * as loc from '../common/localizedConstants';
 import { BookModel } from './bookModel';
 import { TocEntryPathHandler } from './tocEntryPathHandler';
 import { FileExtension, BookTreeItemType, deepClone } from '../common/utils';
-import { BookUndoRedoService } from './bookUndoRedoService';
+import { UndoRedoService } from './undoRedoService';
 import { MoveBookTreeItem, undoRedoToc } from './bookEdit';
 
 export interface IBookTocManager {
@@ -22,7 +22,7 @@ export interface IBookTocManager {
 	createBook(bookContentPath: string, contentFolder: string): Promise<void>;
 	addNewTocEntry(pathDetails: TocEntryPathHandler, bookItem: BookTreeItem, isSection?: boolean): Promise<void>;
 	recovery(): Promise<void>;
-	bookUndoRedoService: BookUndoRedoService;
+	undoRedoService: UndoRedoService;
 	enableDnd: boolean;
 }
 
@@ -47,7 +47,7 @@ export class BookTocManager implements IBookTocManager {
 	private sourceBookContentPath: string;
 	private targetBookContentPath: string;
 	private _enableDnd: boolean = false;
-	public bookUndoRedoService = new BookUndoRedoService();
+	public undoRedoService = new UndoRedoService();
 
 	constructor(private _sourceBook?: BookModel, private _targetBook?: BookModel) {
 		this._targetBook?.unwatchTOC();
@@ -456,7 +456,7 @@ export class BookTocManager implements IBookTocManager {
 					}
 					await this.updateTOC(target.book.version, target.tableOfContentsPath, targetSection, this.newSection);
 				}
-				this.bookUndoRedoService.pushElement(new MoveBookTreeItem(this, this.movedFiles, this.tocFiles));
+				this.undoRedoService.pushElement(new MoveBookTreeItem(this, this.movedFiles, this.tocFiles));
 			} catch (e) {
 				await this.recovery();
 				void vscode.window.showErrorMessage(loc.editBookError(element.book.contentPath, e instanceof Error ? e.message : e));

@@ -786,11 +786,11 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	public async undo(): Promise<void> {
-		return this.bookTocManager.bookUndoRedoService.undo();
+		return this.bookTocManager.undoRedoService.undo();
 	}
 
 	public async redo(): Promise<void> {
-		return this.bookTocManager.bookUndoRedoService.redo();
+		return this.bookTocManager.undoRedoService.redo();
 	}
 
 	dispose(): void { }

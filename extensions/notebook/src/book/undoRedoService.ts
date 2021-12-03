@@ -3,15 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-export interface IBookUndoRedoElement {
+export interface IUndoRedoElement {
 	readonly label: string;
 	undo(): Promise<void> | void;
 	redo(): Promise<void> | void;
 }
 
-export class BookUndoRedoService {
-	private _undoStack: IBookUndoRedoElement[] = [];
-	private _redoStack: IBookUndoRedoElement[] = [];
+export class UndoRedoService {
+	private _undoStack: IUndoRedoElement[] = [];
+	private _redoStack: IUndoRedoElement[] = [];
 	private _undoMaxSize = 10;
 
 	constructor() {
@@ -35,7 +35,7 @@ export class BookUndoRedoService {
 		return undefined;
 	}
 
-	public pushElement(change: IBookUndoRedoElement): void {
+	public pushElement(change: IUndoRedoElement): void {
 		if (this._undoStack.length >= this._undoMaxSize) {
 			this._undoStack.shift();
 		}
