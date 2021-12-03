@@ -238,10 +238,16 @@ export class Project implements ISqlProject {
 	private async readFolders(): Promise<FileProjectEntry[]> {
 		const folderEntries: FileProjectEntry[] = [];
 		// glob style getting folders for sdk style projects
+		let folders = new Set<string>();
 		if (this._isSdkStyleProject) {
-			const folders = await utils.getFoldersInFolder(this.projectFolderPath, true);
-			folders.forEach(f => {
-				folderEntries.push(this.createFileProjectEntry(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(f)), EntryType.Folder));
+			//await utils.getFoldersInFolder(this.projectFolderPath, true);
+
+			this.files.forEach(file => {
+				// if file is in the project's folder, add its folder
+				if (!file.relativePath.startsWith('..') && path.dirname(file.fsUri.fsPath) !== this.projectFolderPath) {
+					const foldersToFile = utils.getFoldersToFile(this.projectFolderPath, file.fsUri.fsPath);
+					foldersToFile.forEach(f => folders.add(utils.convertSlashesForSqlProj(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(f)))));
+				}
 			});
 		}
 
@@ -251,10 +257,13 @@ export class Project implements ISqlProject {
 			try {
 				const folderElements = itemGroup.getElementsByTagName(constants.Folder);
 				for (let f = 0; f < folderElements.length; f++) {
-					const relativePath = folderElements[f].getAttribute(constants.Include)!;
+					let relativePath = folderElements[f].getAttribute(constants.Include)!;
+
 					// don't add Properties folder since it isn't supported for now and don't add if the folder was already added
-					if (relativePath !== constants.Properties && !folderEntries.find(f => f.relativePath === utils.trimChars(relativePath, '\\'))) {
-						folderEntries.push(this.createFileProjectEntry(relativePath, EntryType.Folder));
+					if (utils.trimChars(relativePath, '\\') !== constants.Properties) {
+						// make sure folder relative path ends with \\
+						relativePath = relativePath.endsWith(constants.SqlProjPathSeparator) ? relativePath : relativePath + constants.SqlProjPathSeparator;
+						folders.add(relativePath);
 					}
 				}
 			} catch (e) {
@@ -262,6 +271,10 @@ export class Project implements ISqlProject {
 				console.error(utils.getErrorMessage(e));
 			}
 		}
+
+		folders.forEach(f => {
+			folderEntries.push(this.createFileProjectEntry(f, EntryType.Folder));
+		});
 
 		return folderEntries;
 	}
@@ -966,19 +979,43 @@ export class Project implements ISqlProject {
 		return false;
 	}
 
-	private addFolderToProjFile(path: string): void {
+	private async addFolderToProjFile(path: string): Promise<void> {
 		const newFolderNode = this.projFileXmlDoc!.createElement(constants.Folder);
 		newFolderNode.setAttribute(constants.Include, utils.convertSlashesForSqlProj(path));
 
 		this.findOrCreateItemGroup(constants.Folder).appendChild(newFolderNode);
 	}
 
-	private removeFolderFromProjFile(path: string): void {
+	private async removeFolderFromProjFile(folderPath: string): Promise<void> {
 		const folderNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Folder);
-		const deleted = this.removeNode(path, folderNodes);
+		let deleted = this.removeNode(folderPath, folderNodes);
+
+		// if it wasn't deleted, try if deleting the folder path without trailing backslash
+		// since sometimes SSDT adds folders without a trailing \
+		if (!deleted) {
+			deleted = this.removeNode(utils.trimChars(folderPath, '\\'), folderNodes);
+		}
+
+		if (this.isSdkStyleProject) {
+			// update sqlproj if a node was deleted
+			if (deleted) {
+				await this.serializeToProjFile(this.projFileXmlDoc);
+			}
+			// get latest folders to see if it still exists
+			const currentFolders = await this.readFolders();
+
+			// add exclude entry if it's still in the current folders
+			if (currentFolders.find(f => f.relativePath === utils.convertSlashesForSqlProj(folderPath))) {
+				const removeFileNode = this.projFileXmlDoc!.createElement(constants.Build);
+				removeFileNode.setAttribute(constants.Remove, utils.convertSlashesForSqlProj(folderPath + '**'));
+				this.findOrCreateItemGroup(constants.Build).appendChild(removeFileNode);
+			}
+
+			deleted = true;
+		}
 
 		if (!deleted) {
-			throw new Error(constants.unableToFindObject(path, constants.folderObject));
+			throw new Error(constants.unableToFindObject(folderPath, constants.folderObject));
 		}
 	}
 
@@ -1238,7 +1275,7 @@ export class Project implements ISqlProject {
 				await this.addFileToProjFile((<FileProjectEntry>entry).relativePath, xmlTag ? xmlTag : constants.Build, attributes);
 				break;
 			case EntryType.Folder:
-				this.addFolderToProjFile((<FileProjectEntry>entry).relativePath);
+				await this.addFolderToProjFile((<FileProjectEntry>entry).relativePath);
 				break;
 			case EntryType.DatabaseReference:
 				await this.addDatabaseReferenceToProjFile(<IDatabaseReferenceProjectEntry>entry);
@@ -1262,7 +1299,7 @@ export class Project implements ISqlProject {
 					await this.removeFileFromProjFile((<FileProjectEntry>entry).relativePath);
 					break;
 				case EntryType.Folder:
-					this.removeFolderFromProjFile((<FileProjectEntry>entry).relativePath);
+					await this.removeFolderFromProjFile((<FileProjectEntry>entry).relativePath);
 					break;
 				case EntryType.DatabaseReference:
 					this.removeDatabaseReferenceFromProjFile(<IDatabaseReferenceProjectEntry>entry);
