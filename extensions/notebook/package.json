@@ -462,11 +462,11 @@
         },
         {
           "command": "notebook.command.undoNotebookTreeView",
-          "when": "false"
+          "when": "focusedView == bookTreeView"
         },
         {
           "command": "notebook.command.redoNotebookTreeView",
-          "when": "false"
+          "when": "focusedView == bookTreeView"
         },
         {
           "command": "notebook.command.boldText",
