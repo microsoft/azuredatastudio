@@ -37,6 +37,8 @@ import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryText
 import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
 import { AddCellEdit, DeleteCellEdit, MoveCellEdit, SplitCellEdit } from 'sql/workbench/services/notebook/browser/models/cellEdit';
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
+import { deepClone } from 'vs/base/common/objects';
+
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
 * warning, or informational message. Default is error.
@@ -477,7 +479,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public sendNotebookTelemetryEvent(action: TelemetryKeys.TelemetryAction | TelemetryKeys.NbTelemetryAction, additionalProperties: ITelemetryEventProperties = {}): void {
-		let properties: ITelemetryEventProperties = additionalProperties;
+		let properties: ITelemetryEventProperties = deepClone(additionalProperties);
 		properties['azdata_notebook_guid'] = this.getMetaValue('azdata_notebook_guid');
 		this.adstelemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, action)
 			.withAdditionalProperties(properties)

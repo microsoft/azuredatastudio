@@ -129,7 +129,7 @@ suite('Notebook Actions', function (): void {
 		let actualCellType: CellType;
 
 
-		let action = new AddCellAction('TestId', 'TestLabel', 'TestClass', mockNotebookService.object, new NullAdsTelemetryService());
+		let action = new AddCellAction('TestId', 'TestLabel', 'TestClass', mockNotebookService.object);
 		action.cellType = testCellType;
 
 		// Normal use case
@@ -196,7 +196,7 @@ suite('Notebook Actions', function (): void {
 		let mockNotification = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService);
 		mockNotification.setup(n => n.notify(TypeMoq.It.isAny()));
 
-		let action = new RunAllCellsAction('TestId', 'TestLabel', 'TestClass', mockNotification.object, mockNotebookService.object, new NullAdsTelemetryService());
+		let action = new RunAllCellsAction('TestId', 'TestLabel', 'TestClass', mockNotification.object, mockNotebookService.object);
 
 		// Normal use case
 		mockNotebookEditor.setup(c => c.runAllCells()).returns(() => Promise.resolve(true));
