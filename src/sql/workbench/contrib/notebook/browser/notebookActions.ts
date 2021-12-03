@@ -82,7 +82,9 @@ export class AddCellAction extends Action {
 			const editor = this._notebookService.findNotebookEditor(context);
 			const index = editor.cells?.findIndex(cell => cell.active) ?? 0;
 			editor.addCell(this.cellType, index);
-			editor.model.sendNotebookTelemetryEvent(TelemetryKeys.NbTelemetryAction.AddCell, { cell_type: this.cellType });
+			if (editor.model) {
+				editor.model.sendNotebookTelemetryEvent(TelemetryKeys.NbTelemetryAction.AddCell, { cell_type: this.cellType });
+			}
 		}
 	}
 }
