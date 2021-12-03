@@ -160,8 +160,7 @@ export class NotebookModelStub implements INotebookModel {
 	requestConnection(): Promise<boolean> {
 		throw new Error('Method not implemented.');
 	}
-	sendNotebookTelemetryEvent(action: TelemetryKeys.TelemetryAction | TelemetryKeys.NbTelemetryAction, additionalProperties?: ITelemetryEventProperties): void {
-		throw new Error('Method not implemented.');
+	sendNotebookTelemetryActionEvent(action: TelemetryKeys.TelemetryAction | TelemetryKeys.NbTelemetryAction, additionalProperties?: ITelemetryEventProperties): void {
 	}
 }
 

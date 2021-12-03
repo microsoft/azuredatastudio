@@ -478,7 +478,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	public sendNotebookTelemetryEvent(action: TelemetryKeys.TelemetryAction | TelemetryKeys.NbTelemetryAction, additionalProperties: ITelemetryEventProperties = {}): void {
+	public sendNotebookTelemetryActionEvent(action: TelemetryKeys.TelemetryAction | TelemetryKeys.NbTelemetryAction, additionalProperties: ITelemetryEventProperties = {}): void {
 		let properties: ITelemetryEventProperties = deepClone(additionalProperties);
 		properties['azdata_notebook_guid'] = this.getMetaValue('azdata_notebook_guid');
 		this.adstelemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, action)
@@ -501,7 +501,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		if (metadata.azdata_notebook_guid && metadata.azdata_notebook_guid.length === 36) {
 			//Verify if it is actual GUID and then send it to the telemetry
 			if (isUUID(metadata.azdata_notebook_guid)) {
-				this.sendNotebookTelemetryEvent(TelemetryKeys.TelemetryAction.Open);
+				this.sendNotebookTelemetryActionEvent(TelemetryKeys.TelemetryAction.Open);
 			}
 		}
 		Object.keys(metadata).forEach(key => {
@@ -1170,7 +1170,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		} else if (kernel.info) {
 			this.updateLanguageInfo(kernel.info.language_info);
 		}
-		this.sendNotebookTelemetryEvent(TelemetryKeys.NbTelemetryAction.KernelChanged, {
+		this.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.KernelChanged, {
 			name: kernel.name,
 			alias: kernelAlias || ''
 		});

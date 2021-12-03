@@ -447,7 +447,7 @@ export interface INotebookModel {
 	 * @param action Telemetry action
 	 * @param additionalProperties Additional properties to send.
 	*/
-	sendNotebookTelemetryEvent(action: TelemetryKeys.TelemetryAction | TelemetryKeys.NbTelemetryAction, additionalProperties?: ITelemetryEventProperties): void;
+	sendNotebookTelemetryActionEvent(action: TelemetryKeys.TelemetryAction | TelemetryKeys.NbTelemetryAction, additionalProperties?: ITelemetryEventProperties): void;
 }
 
 export interface NotebookContentChange {

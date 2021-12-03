@@ -75,7 +75,7 @@ export class AddCellAction extends Action {
 			}
 			if (context?.model) {
 				context.model.addCell(this.cellType, index);
-				context.model.sendNotebookTelemetryEvent(TelemetryKeys.NbTelemetryAction.AddCell, { cell_type: this.cellType });
+				context.model.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.AddCell, { cell_type: this.cellType });
 			}
 		} else {
 			//Add Cell after current selected cell.
@@ -83,7 +83,7 @@ export class AddCellAction extends Action {
 			const index = editor.cells?.findIndex(cell => cell.active) ?? 0;
 			editor.addCell(this.cellType, index);
 			if (editor.model) {
-				editor.model.sendNotebookTelemetryEvent(TelemetryKeys.NbTelemetryAction.AddCell, { cell_type: this.cellType });
+				editor.model.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.AddCell, { cell_type: this.cellType });
 			}
 		}
 	}
@@ -375,7 +375,7 @@ export class RunAllCellsAction extends Action {
 	public override async run(context: URI): Promise<void> {
 		try {
 			const editor = this._notebookService.findNotebookEditor(context);
-			editor.model.sendNotebookTelemetryEvent(TelemetryKeys.NbTelemetryAction.RunAll);
+			editor.model.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.RunAll);
 			await editor.runAllCells();
 		} catch (e) {
 			this.notificationService.error(getErrorMessage(e));
