@@ -21,12 +21,12 @@ export class MoveCellEdit implements IResourceUndoRedoElement {
 	undo(): void {
 		const direction = this.moveDirection === MoveDirection.Down ? MoveDirection.Up : MoveDirection.Down;
 		this.model.moveCell(this.cell, direction, false);
-		this.model.sendNotebookTelemetryEvent(TelemetryKeys.NbTelemetryAction.UndoCell, this.cellOperation);
+		this.model.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.UndoCell, this.cellOperation);
 	}
 
 	redo(): void {
 		this.model.moveCell(this.cell, this.moveDirection, false);
-		this.model.sendNotebookTelemetryEvent(TelemetryKeys.NbTelemetryAction.RedoCell, this.cellOperation);
+		this.model.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.RedoCell, this.cellOperation);
 	}
 }
 
@@ -41,7 +41,7 @@ export class SplitCellEdit implements IResourceUndoRedoElement {
 
 	undo(): void {
 		this.model.mergeCells(this.firstCell, this.secondCell, this.newLinesRemoved);
-		this.model.sendNotebookTelemetryEvent(TelemetryKeys.NbTelemetryAction.UndoCell, this.cellOperation);
+		this.model.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.UndoCell, this.cellOperation);
 	}
 
 	redo(): void {
@@ -60,12 +60,12 @@ export class DeleteCellEdit implements IResourceUndoRedoElement {
 
 	undo(): void {
 		this.model.insertCell(this.cell, this.index, false);
-		this.model.sendNotebookTelemetryEvent(TelemetryKeys.NbTelemetryAction.UndoCell, this.cellOperation);
+		this.model.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.UndoCell, this.cellOperation);
 	}
 
 	redo(): void {
 		this.model.deleteCell(this.cell, false);
-		this.model.sendNotebookTelemetryEvent(TelemetryKeys.NbTelemetryAction.RedoCell, this.cellOperation);
+		this.model.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.RedoCell, this.cellOperation);
 	}
 }
 
@@ -80,11 +80,11 @@ export class AddCellEdit implements IResourceUndoRedoElement {
 
 	undo(): void {
 		this.model.deleteCell(this.cell, false);
-		this.model.sendNotebookTelemetryEvent(TelemetryKeys.NbTelemetryAction.UndoCell, this.cellOperation);
+		this.model.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.UndoCell, this.cellOperation);
 	}
 
 	redo(): void {
 		this.model.insertCell(this.cell, this.index, false);
-		this.model.sendNotebookTelemetryEvent(TelemetryKeys.NbTelemetryAction.RedoCell, this.cellOperation);
+		this.model.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.RedoCell, this.cellOperation);
 	}
 }
