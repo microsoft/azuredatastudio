@@ -300,43 +300,52 @@ export class QueryResultsView extends Disposable {
 		}
 	}
 
+	private showQueryEditorError(): void {
+		this.notificationService.error(nls.localize('queryResults.queryEditorCrashError', "The query editor ran into an issue and has stopped working. Please save and reopen it."));
+	}
+
 	public set input(input: QueryResultsInput | undefined) {
-		this._input = input;
-		this.runnerDisposables.clear();
+		try {
+			this._input = input;
+			this.runnerDisposables.clear();
 
-		[this.resultsTab, this.messagesTab, this.qpTab, this.topOperationsTab, this.chartTab].forEach(t => t.clear());
-		this.dynamicModelViewTabs.forEach(t => t.clear());
+			[this.resultsTab, this.messagesTab, this.qpTab, this.topOperationsTab, this.chartTab].forEach(t => t.clear());
+			this.dynamicModelViewTabs.forEach(t => t.clear());
 
-		if (input) {
-			this.resultsTab.view.state = input.state.gridPanelState;
-			this.qpTab.view.setState(input.state.queryPlanState);
-			this.topOperationsTab.view.setState(input.state.topOperationsState);
-			this.chartTab.view.state = input.state.chartState;
-			this.dynamicModelViewTabs.forEach((dynamicTab: QueryModelViewTab) => {
-				dynamicTab.captureState(input.state.dynamicModelViewTabsState);
-			});
-			let info = this.queryModelService._getQueryInfo(input.uri) || this.queryModelService._getQueryInfo(URI.parse(input.uri).toString(true));
-
-			if (info?.queryRunner?.isDisposed) {
-				this.logService.error(`The query runner for '${input.uri}' has been disposed.`);
-				this.notificationService.error(nls.localize('queryResults.queryEditorCrashError', "The query editor ran into an issue and has stopped working. Please save and reopen it."));
-				return;
-			}
-
-			if (info?.queryRunner) {
-				this.setQueryRunner(info.queryRunner);
-			} else {
-				let disposable = this.queryModelService.onRunQueryStart(c => {
-					if (URI.parse(c).toString() === URI.parse(input.uri).toString()) {
-						let info = this.queryModelService._getQueryInfo(c);
-						if (info?.queryRunner) {
-							this.setQueryRunner(info.queryRunner);
-						}
-						disposable.dispose();
-					}
+			if (input) {
+				this.resultsTab.view.state = input.state.gridPanelState;
+				this.qpTab.view.setState(input.state.queryPlanState);
+				this.topOperationsTab.view.setState(input.state.topOperationsState);
+				this.chartTab.view.state = input.state.chartState;
+				this.dynamicModelViewTabs.forEach((dynamicTab: QueryModelViewTab) => {
+					dynamicTab.captureState(input.state.dynamicModelViewTabsState);
 				});
-				this.runnerDisposables.add(disposable);
+				let info = this.queryModelService._getQueryInfo(input.uri) || this.queryModelService._getQueryInfo(URI.parse(input.uri).toString(true));
+
+				if (info?.queryRunner?.isDisposed) {
+					this.logService.error(`The query runner for '${input.uri}' has been disposed.`);
+					this.showQueryEditorError();
+					return;
+				}
+
+				if (info?.queryRunner) {
+					this.setQueryRunner(info.queryRunner);
+				} else {
+					let disposable = this.queryModelService.onRunQueryStart(c => {
+						if (URI.parse(c).toString() === URI.parse(input.uri).toString()) {
+							let info = this.queryModelService._getQueryInfo(c);
+							if (info?.queryRunner) {
+								this.setQueryRunner(info.queryRunner);
+							}
+							disposable.dispose();
+						}
+					});
+					this.runnerDisposables.add(disposable);
+				}
 			}
+		} catch (err) {
+			this.logService.error(err);
+			this.showQueryEditorError();
 		}
 	}
 

@@ -2775,44 +2775,35 @@ Error: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="buttonBold">
+    <trans-unit id="bold">
       <source xml:lang="en">Bold</source>
-    </trans-unit>
-    <trans-unit id="buttonCode">
-      <source xml:lang="en">Code</source>
-    </trans-unit>
-    <trans-unit id="buttonHighlight">
-      <source xml:lang="en">Highlight</source>
-    </trans-unit>
-    <trans-unit id="buttonImage">
-      <source xml:lang="en">Image</source>
-    </trans-unit>
-    <trans-unit id="buttonItalic">
-      <source xml:lang="en">Italic</source>
-    </trans-unit>
-    <trans-unit id="buttonLink">
-      <source xml:lang="en">Link</source>
-    </trans-unit>
-    <trans-unit id="buttonList">
-      <source xml:lang="en">List</source>
-    </trans-unit>
-    <trans-unit id="buttonOrderedList">
-      <source xml:lang="en">Ordered list</source>
     </trans-unit>
     <trans-unit id="buttonPreview">
       <source xml:lang="en">Markdown preview toggle - off</source>
     </trans-unit>
-    <trans-unit id="buttonUnderline">
-      <source xml:lang="en">Underline</source>
-    </trans-unit>
-    <trans-unit id="callout.insertImageHeading">
-      <source xml:lang="en">Insert image</source>
-    </trans-unit>
-    <trans-unit id="callout.insertLinkHeading">
-      <source xml:lang="en">Insert link</source>
-    </trans-unit>
     <trans-unit id="dropdownHeading">
       <source xml:lang="en">Heading</source>
+    </trans-unit>
+    <trans-unit id="highlight">
+      <source xml:lang="en">Highlight</source>
+    </trans-unit>
+    <trans-unit id="insertCode">
+      <source xml:lang="en">Insert code</source>
+    </trans-unit>
+    <trans-unit id="insertImage">
+      <source xml:lang="en">Insert image</source>
+    </trans-unit>
+    <trans-unit id="insertLink">
+      <source xml:lang="en">Insert link</source>
+    </trans-unit>
+    <trans-unit id="insertList">
+      <source xml:lang="en">Insert list</source>
+    </trans-unit>
+    <trans-unit id="insertOrderedList">
+      <source xml:lang="en">Insert ordered list</source>
+    </trans-unit>
+    <trans-unit id="italic">
+      <source xml:lang="en">Italic</source>
     </trans-unit>
     <trans-unit id="markdownViewButton">
       <source xml:lang="en">Markdown View</source>
@@ -2834,6 +2825,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="splitViewButton">
       <source xml:lang="en">Split View</source>
+    </trans-unit>
+    <trans-unit id="underline">
+      <source xml:lang="en">Underline</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/notebook/browser/cellViews/output.component" source-language="en" datatype="plaintext"><body>

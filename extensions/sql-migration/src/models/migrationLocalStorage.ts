@@ -21,12 +21,14 @@ export class MigrationLocalStorage {
 		const result: MigrationContext[] = [];
 		const validMigrations: MigrationContext[] = [];
 		const startTime = new Date().toString();
+		// fetch saved migrations
 		const migrationMementos: MigrationContext[] = this.context.globalState.get(this.mementoToken) || [];
 		for (let i = 0; i < migrationMementos.length; i++) {
 			const migration = migrationMementos[i];
 			migration.migrationContext = this.removeMigrationSecrets(migration.migrationContext);
 			migration.sessionId = migration.sessionId ?? undefinedSessionId;
 			if (migration.sourceConnectionProfile.serverName === connectionProfile.serverName) {
+				// refresh migration status
 				if (refreshStatus) {
 					try {
 						await this.refreshMigrationAzureAccount(migration);
@@ -60,6 +62,7 @@ export class MigrationLocalStorage {
 			}
 			validMigrations.push(migration);
 		}
+    
 		await this.context.globalState.update(this.mementoToken, validMigrations);
 		sendSqlMigrationActionEvent(
 			TelemetryViews.MigrationLocalStorage,
@@ -72,6 +75,24 @@ export class MigrationLocalStorage {
 				'migrationCount': migrationMementos.length
 			}
 		);
+
+		// only save updated migration context
+		if (refreshStatus) {
+			const migrations: MigrationContext[] = this.context.globalState.get(this.mementoToken) || [];
+			validMigrations.forEach(migration => {
+				const idx = migrations.findIndex(m => m.migrationContext.id === migration.migrationContext.id);
+				if (idx > -1) {
+					migrations[idx] = migration;
+				}
+			});
+
+			// check global state for migrations count mismatch, avoid saving
+			// state if the count has changed when a migration may have been added
+			const current: MigrationContext[] = this.context.globalState.get(this.mementoToken) || [];
+			if (current.length === migrations.length) {
+				await this.context.globalState.update(this.mementoToken, migrations);
+			}
+		}
 		return result;
 	}
 
