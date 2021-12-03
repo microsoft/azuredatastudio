@@ -29,7 +29,7 @@
       <source xml:lang="en">{0} backups</source>
     </trans-unit>
     <trans-unit id="arc.businessCriticalLabel">
-      <source xml:lang="en">[PREVIEW] Business Critical (Unlimited vCores and RAM, advanced high availability)</source>
+      <source xml:lang="en">BusinessCritical</source>
     </trans-unit>
     <trans-unit id="arc.cancel">
       <source xml:lang="en">Cancel</source>
@@ -221,10 +221,10 @@
       <source xml:lang="en">Failed to create database {0}. {1}</source>
     </trans-unit>
     <trans-unit id="arc.databaseDetails">
-      <source xml:lang="en">Database Details</source>
+      <source xml:lang="en">Destination Details</source>
     </trans-unit>
     <trans-unit id="arc.databaseDetailsText">
-      <source xml:lang="en">Enter the required settings for this database, including a name and a target managed instance. By default, the source instance is selected.</source>
+      <source xml:lang="en">Enter the required settings for target database name and SQL managed instance. By default, the source managed instance is selected.</source>
     </trans-unit>
     <trans-unit id="arc.databaseName">
       <source xml:lang="en">Database name</source>
@@ -263,7 +263,7 @@
       <source xml:lang="en">Currently dropping another extension, try again once that is completed.</source>
     </trans-unit>
     <trans-unit id="arc.earliestPitrRestorePoint">
-      <source xml:lang="en">Earliest PITR restore point</source>
+      <source xml:lang="en">Earliest point in time</source>
     </trans-unit>
     <trans-unit id="arc.emergency">
       <source xml:lang="en">Emergency</source>
@@ -356,7 +356,7 @@
       <source xml:lang="en">Fully qualified domain</source>
     </trans-unit>
     <trans-unit id="arc.generalPurposeLabel">
-      <source xml:lang="en">General Purpose (Up to 24 vCores and 128 Gi of RAM, standard high availability)</source>
+      <source xml:lang="en">GeneralPurpose</source>
     </trans-unit>
     <trans-unit id="arc.grafanaDashboard">
       <source xml:lang="en">Grafana Dashboard</source>
@@ -407,7 +407,7 @@
       <source xml:lang="en">Last transition</source>
     </trans-unit>
     <trans-unit id="arc.latestpitrRestorePoint">
-      <source xml:lang="en">Latest PITR restore point</source>
+      <source xml:lang="en">Latest point in time</source>
     </trans-unit>
     <trans-unit id="arc.learnAboutNodeParameters">
       <source xml:lang="en">Learn more about database engine settings for Azure Arc-enabled PostgreSQL Hyperscale</source>
@@ -584,7 +584,7 @@
       <source xml:lang="en">PostgreSQL Hyperscale - Azure Arc</source>
     </trans-unit>
     <trans-unit id="arc.pitr">
-      <source xml:lang="en">Point-in-time restore (PITR)</source>
+      <source xml:lang="en">Point in time restore</source>
     </trans-unit>
     <trans-unit id="arc.pitrInfo">
       <source xml:lang="en">Specify how long you want to keep your point-in-time backups. Customize this for backup availability.</source>
@@ -683,13 +683,13 @@
       <source xml:lang="en">Remember Password</source>
     </trans-unit>
     <trans-unit id="arc.replicaOne">
-      <source xml:lang="en">1 replica</source>
+      <source xml:lang="en">1</source>
     </trans-unit>
     <trans-unit id="arc.replicaThree">
-      <source xml:lang="en">3 replicas</source>
+      <source xml:lang="en">3</source>
     </trans-unit>
     <trans-unit id="arc.replicaTwo">
-      <source xml:lang="en">2 replicas</source>
+      <source xml:lang="en">2</source>
     </trans-unit>
     <trans-unit id="arc.resetAllToDefault">
       <source xml:lang="en">Reset all to default</source>
@@ -719,10 +719,22 @@
       <source xml:lang="en">Restore Database</source>
     </trans-unit>
     <trans-unit id="arc.restoreInfo">
-      <source xml:lang="en">Restore a database to an Azure Arc enabled SQL Managed Instance of your choice.</source>
+      <source xml:lang="en">Restore a database to an Azure Arc enabled SQL Managed Instance.</source>
     </trans-unit>
     <trans-unit id="arc.restorePoint">
-      <source xml:lang="en">Restore point (UTC)</source>
+      <source xml:lang="en">Restore point (UTC), in a time format: 'YYYY-MM-DDTHH:MM:SSZ</source>
+    </trans-unit>
+    <trans-unit id="arc.restorePointDetails">
+      <source xml:lang="en">Restore Point Details</source>
+    </trans-unit>
+    <trans-unit id="arc.restorePointErrorrMessage">
+      <source xml:lang="en">Provide time in correct format and within range: {0} to {1}</source>
+    </trans-unit>
+    <trans-unit id="arc.restorePointText">
+      <source xml:lang="en">Enter a restore point in the specified time format within given range of earliest and latest restore time.</source>
+    </trans-unit>
+    <trans-unit id="arc.restoreTimeWindowUpdateFailed">
+      <source xml:lang="en">Point in time restore time window update failed. {0}</source>
     </trans-unit>
     <trans-unit id="arc.restoring">
       <source xml:lang="en">Restoring</source>
@@ -773,7 +785,7 @@
       <source xml:lang="en">Source Details</source>
     </trans-unit>
     <trans-unit id="arc.sourceDetailsText">
-      <source xml:lang="en">Select a backup source and provide details. Additional settings will be defaulted where possible based on the selected backup.</source>
+      <source xml:lang="en">Select a backup source and provide details. Additional settings will be defaulted where possible based on the selected database.</source>
     </trans-unit>
     <trans-unit id="arc.state">
       <source xml:lang="en">State</source>
@@ -983,6 +995,18 @@
     <trans-unit id="arc.data.controller.agreement">
       <source xml:lang="en">I accept {0} and {1}.</source>
     </trans-unit>
+    <trans-unit id="arc.data.controller.auto.upload.logs">
+      <source xml:lang="en">Auto-upload Logs</source>
+    </trans-unit>
+    <trans-unit id="arc.data.controller.auto.upload.logs.description">
+      <source xml:lang="en">Enable the automatic upload of logs. Direct mode only.</source>
+    </trans-unit>
+    <trans-unit id="arc.data.controller.auto.upload.metrics">
+      <source xml:lang="en">Auto-upload Metrics</source>
+    </trans-unit>
+    <trans-unit id="arc.data.controller.auto.upload.metrics.description">
+      <source xml:lang="en">Enable the automatic upload of metrics. Direct mode only.</source>
+    </trans-unit>
     <trans-unit id="arc.data.controller.cluster.config.profile">
       <source xml:lang="en">Config profile</source>
     </trans-unit>
@@ -998,6 +1022,9 @@
     <trans-unit id="arc.data.controller.cluster.environment.title">
       <source xml:lang="en">What is your target existing Kubernetes cluster environment?</source>
     </trans-unit>
+    <trans-unit id="arc.data.controller.connectivity.mode">
+      <source xml:lang="en">Connectivity mode</source>
+    </trans-unit>
     <trans-unit id="arc.data.controller.create.azureconfig.title">
       <source xml:lang="en">Azure Configuration</source>
     </trans-unit>
@@ -1007,8 +1034,14 @@
     <trans-unit id="arc.data.controller.create.summary.title">
       <source xml:lang="en">Review your configuration</source>
     </trans-unit>
+    <trans-unit id="arc.data.controller.custom.location">
+      <source xml:lang="en">Custom Location</source>
+    </trans-unit>
+    <trans-unit id="arc.data.controller.custom.location.description">
+      <source xml:lang="en">The name of the custom location. Direct mode only.</source>
+    </trans-unit>
     <trans-unit id="arc.data.controller.details.description">
-      <source xml:lang="en">Provide a namespace, name and storage class for your Azure Arc data controller. This name will be used to identify your Arc instance for remote management and monitoring.</source>
+      <source xml:lang="en">For indirect mode, provide a namespace, name and storage class for your Azure Arc data controller. This name will be used to identify your Arc instance for remote management and monitoring. For direct mode you do not need to provide a namespace, but please provide the custom location name.</source>
     </trans-unit>
     <trans-unit id="arc.data.controller.details.title">
       <source xml:lang="en">Data controller details</source>
@@ -1030,6 +1063,9 @@
     </trans-unit>
     <trans-unit id="arc.data.controller.namespace">
       <source xml:lang="en">Data controller namespace</source>
+    </trans-unit>
+    <trans-unit id="arc.data.controller.namespace.description">
+      <source xml:lang="en">Indirect mode only.</source>
     </trans-unit>
     <trans-unit id="arc.data.controller.namespace.validation.description">
       <source xml:lang="en">Namespace must consist of lower case alphanumeric characters or '-', start/end with an alphanumeric character, and be 63 characters or fewer in length.</source>
@@ -1338,10 +1374,7 @@
       <source xml:lang="en">For development use only</source>
     </trans-unit>
     <trans-unit id="arc.sql.high.availability.description">
-      <source xml:lang="en">Enable additional replicas for high availabilty. The compute and storage configuration selected below will be applied to all replicas.</source>
-    </trans-unit>
-    <trans-unit id="arc.sql.high.availability.label">
-      <source xml:lang="en">High Availability</source>
+      <source xml:lang="en">Enable additional replicas for high availabilty. The compute and storage configuration selected below will be applied to all replicas. Choose from: General Purpose (Up to 24 vCores and 128 Gi of RAM, standard high availability) or [PREVIEW] Business Critical (Unlimited vCores and RAM, advanced high availability).</source>
     </trans-unit>
     <trans-unit id="arc.sql.instance.name">
       <source xml:lang="en">Instance name</source>
@@ -1371,7 +1404,7 @@
       <source xml:lang="en">The request for the capacity of the managed instance as an integer amount of memory in GBs.</source>
     </trans-unit>
     <trans-unit id="arc.sql.one.replica">
-      <source xml:lang="en">1 replica</source>
+      <source xml:lang="en">1</source>
     </trans-unit>
     <trans-unit id="arc.sql.pitr.description">
       <source xml:lang="en">Point in time restore</source>
@@ -1379,20 +1412,23 @@
     <trans-unit id="arc.sql.pitr.retention.description">
       <source xml:lang="en">Configure retention for point-in-time backups. {0}</source>
     </trans-unit>
+    <trans-unit id="arc.sql.replicas">
+      <source xml:lang="en">Replicas</source>
+    </trans-unit>
     <trans-unit id="arc.sql.retention.days.description">
       <source xml:lang="en">Specify how long you want to keep your point-in-time backups.</source>
     </trans-unit>
     <trans-unit id="arc.sql.retention.days.label">
-      <source xml:lang="en">PITR retention (days)</source>
+      <source xml:lang="en">Point in time retention (days)</source>
     </trans-unit>
     <trans-unit id="arc.sql.service.tier.business.critical">
-      <source xml:lang="en">[PREVIEW] Business Critical (Unlimited vCores and RAM, advanced high availability)</source>
+      <source xml:lang="en">BusinessCritical</source>
     </trans-unit>
     <trans-unit id="arc.sql.service.tier.description">
       <source xml:lang="en">Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical. {0}</source>
     </trans-unit>
     <trans-unit id="arc.sql.service.tier.general.purpose">
-      <source xml:lang="en">General Purpose (Up to 24 vCores and 128 Gi of RAM, standard high availability)</source>
+      <source xml:lang="en">GeneralPurpose</source>
     </trans-unit>
     <trans-unit id="arc.sql.service.tier.label">
       <source xml:lang="en">Service Tier</source>
@@ -1416,10 +1452,10 @@
       <source xml:lang="en">by Microsoft</source>
     </trans-unit>
     <trans-unit id="arc.sql.three.replicas">
-      <source xml:lang="en">3 replicas</source>
+      <source xml:lang="en">3</source>
     </trans-unit>
     <trans-unit id="arc.sql.two.replicas">
-      <source xml:lang="en">2 replicas</source>
+      <source xml:lang="en">2</source>
     </trans-unit>
     <trans-unit id="arc.sql.username">
       <source xml:lang="en">Username</source>

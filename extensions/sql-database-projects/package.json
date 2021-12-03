@@ -1,8 +1,8 @@
 {
   "name": "sql-database-projects",
   "displayName": "SQL Database Projects",
-  "description": "The SQL Database Projects extension for Azure Data Studio and VS Code allows users to develop and publish database schemas.",
-  "version": "0.13.0",
+  "description": "Enables users to develop and publish database schemas for MSSQL Databases",
+  "version": "0.14.0",
   "publisher": "Microsoft",
   "preview": true,
   "engines": {
@@ -17,6 +17,7 @@
     "onCommand:sqlDatabaseProjects.open",
     "onCommand:sqlDatabaseProjects.createProjectFromDatabase",
     "onCommand:sqlDatabaseProjects.generateProjectFromOpenApiSpec",
+    "onCommand:sqlDatabaseProjects.addSqlBinding",
     "workspaceContains:**/*.sqlproj",
     "onView:dataworkspace.views.main"
   ],
@@ -29,6 +30,12 @@
     "Microsoft.mssql",
     "Microsoft.schema-compare"
   ],
+	"capabilities": {
+    "virtualWorkspaces": false,
+    "untrustedWorkspaces": {
+      "supported": true
+    }
+	},
   "contributes": {
     "projects": [
       "sqlproj"
@@ -37,17 +44,13 @@
       {
         "title": "%sqlDatabaseProjects.Settings%",
         "properties": {
-          "sqlDatabaseProjects.netCoreSDKLocation": {
+          "sqlDatabaseProjects.dotnetSDK Location": {
             "type": "string",
-            "description": "%sqlDatabaseProjects.netCoreInstallLocation%"
+            "description": "%sqlDatabaseProjects.dotnetInstallLocation%"
           },
           "sqlDatabaseProjects.netCoreDoNotAsk": {
             "type": "boolean",
             "description": "%sqlDatabaseProjects.netCoreDoNotAsk%"
-          },
-          "sqlDatabaseProjects.netCoreDowngradeDoNotShow": {
-            "type": "boolean",
-            "description": "%sqlDatabaseProjects.netCoreDowngradeDoNotShow%"
           },
           "sqlDatabaseProjects.nodejsDoNotAsk": {
             "type": "boolean",
@@ -163,6 +166,11 @@
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
+        "command": "sqlDatabaseProjects.addSqlBinding",
+        "title": "%sqlDatabaseProjects.addSqlBinding%",
+        "category": "MS SQL"
+      },
+      {
         "command": "sqlDatabaseProjects.changeTargetPlatform",
         "title": "%sqlDatabaseProjects.changeTargetPlatform%",
         "category": "%sqlDatabaseProjects.displayName%"
@@ -261,6 +269,10 @@
         {
           "command": "sqlDatabaseProjects.editProjectFile",
           "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.addSqlBinding",
+          "when": "editorLangId == csharp && !azdataAvailable && resourceScheme != untitled"
         },
         {
           "command": "sqlDatabaseProjects.exclude",

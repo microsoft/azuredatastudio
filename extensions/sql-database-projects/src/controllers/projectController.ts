@@ -17,7 +17,7 @@ import type * as mssqlVscode from 'vscode-mssql';
 
 import { promises as fs } from 'fs';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
-import { Project, reservedProjectFolders, FileProjectEntry, SqlProjectReferenceProjectEntry, IDatabaseReferenceProjectEntry } from '../models/project';
+import { Project, reservedProjectFolders } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
 import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
 import { IDeploySettings } from '../models/IDeploySettings';
@@ -35,13 +35,15 @@ import { CreateProjectFromDatabaseDialog } from '../dialogs/createProjectFromDat
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { IconPathHelper } from '../common/iconHelper';
 import { DashboardData, PublishData, Status } from '../models/dashboardData/dashboardData';
-import { launchPublishDatabaseQuickpick } from '../dialogs/publishDatabaseQuickpick';
+import { getPublishDatabaseSettings, launchPublishTargetOption } from '../dialogs/publishDatabaseQuickpick';
 import { launchPublishToDockerContainerQuickpick } from '../dialogs/deployDatabaseQuickpick';
 import { DeployService } from '../models/deploy/deployService';
 import { SqlTargetPlatform } from 'sqldbproj';
 import { AutorestHelper } from '../tools/autorestHelper';
 import { createNewProjectFromDatabaseWithQuickpick } from '../dialogs/createProjectFromDatabaseQuickpick';
 import { addDatabaseReferenceQuickpick } from '../dialogs/addDatabaseReferenceQuickpick';
+import { IDeployProfile } from '../models/deploy/deployProfile';
+import { FileProjectEntry, IDatabaseReferenceProjectEntry, SqlProjectReferenceProjectEntry } from '../models/projectEntry';
 
 const maxTableLength = 10;
 
@@ -222,7 +224,7 @@ export class ProjectsController {
 		const options: ShellCommandOptions = {
 			commandTitle: 'Build',
 			workingDirectory: project.projectFolderPath,
-			argument: this.buildHelper.constructBuildArguments(project.projectFilePath, this.buildHelper.extensionBuildDirPath)
+			argument: this.buildHelper.constructBuildArguments(project.projectFilePath, this.buildHelper.extensionBuildDirPath, project.isSdkStyleProject)
 		};
 
 		try {
@@ -251,7 +253,8 @@ export class ProjectsController {
 
 			const message = utils.getErrorMessage(err);
 			if (err instanceof DotNetError) {
-				void vscode.window.showErrorMessage(message);
+				// DotNetErrors already get shown by the netCoreTool so just show this one in the console
+				console.error(message);
 			} else {
 				void vscode.window.showErrorMessage(constants.projBuildFailed(message));
 			}
@@ -263,10 +266,9 @@ export class ProjectsController {
 	 * Publishes a project to docker container
 	 * @param treeNode a treeItem in a project's hierarchy, to be used to obtain a Project
 	 */
-	public async publishToDockerContainer(context: Project | dataworkspace.WorkspaceTreeItem): Promise<void> {
+	public async publishToDockerContainer(context: Project | dataworkspace.WorkspaceTreeItem, deployProfile: IDeployProfile): Promise<void> {
 		const project: Project = this.getProjectFromContext(context);
 		try {
-			let deployProfile = await launchPublishToDockerContainerQuickpick(project);
 			if (deployProfile && deployProfile.deploySettings) {
 				let connectionUri: string | undefined;
 				if (deployProfile.localDbSetting) {
@@ -300,27 +302,59 @@ export class ProjectsController {
 	 * Builds and publishes a project
 	 * @param treeNode a treeItem in a project's hierarchy, to be used to obtain a Project
 	 */
-	public publishProject(treeNode: dataworkspace.WorkspaceTreeItem): PublishDatabaseDialog;
+	public async publishProject(treeNode: dataworkspace.WorkspaceTreeItem): Promise<void>;
 	/**
 	 * Builds and publishes a project
 	 * @param project Project to be built and published
 	 */
-	public publishProject(project: Project): PublishDatabaseDialog;
-	public publishProject(context: Project | dataworkspace.WorkspaceTreeItem): PublishDatabaseDialog | undefined {
+	public async publishProject(project: Project): Promise<void>;
+	public async publishProject(context: Project | dataworkspace.WorkspaceTreeItem): Promise<void> {
 		const project: Project = this.getProjectFromContext(context);
 		if (utils.getAzdataApi()) {
 			let publishDatabaseDialog = this.getPublishDialog(project);
 
 			publishDatabaseDialog.publish = async (proj, prof) => this.publishOrScriptProject(proj, prof, true);
+			publishDatabaseDialog.publishToContainer = async (proj, prof) => this.publishToDockerContainer(proj, prof);
 			publishDatabaseDialog.generateScript = async (proj, prof) => this.publishOrScriptProject(proj, prof, false);
 			publishDatabaseDialog.readPublishProfile = async (profileUri) => readPublishProfile(profileUri);
 
 			publishDatabaseDialog.openDialog();
 
-			return publishDatabaseDialog;
+			return publishDatabaseDialog.waitForClose();
 		} else {
-			void launchPublishDatabaseQuickpick(project, this);
+			void this.publishDatabase(project);
+		}
+	}
+
+	/**
+	* Create flow for Publishing a database using only VS Code-native APIs such as QuickPick
+	*/
+	private async publishDatabase(project: Project): Promise<void> {
+		const publishTarget = await launchPublishTargetOption();
+
+		// Return when user hits escape
+		if (!publishTarget) {
 			return undefined;
+		}
+
+		if (publishTarget === constants.publishToDockerContainer) {
+			const deployProfile = await launchPublishToDockerContainerQuickpick(project);
+			if (deployProfile?.deploySettings) {
+				await this.publishToDockerContainer(project, deployProfile);
+			}
+		} else {
+			let settings: IDeploySettings | undefined = await getPublishDatabaseSettings(project);
+
+			if (settings) {
+				// 5. Select action to take
+				const action = await vscode.window.showQuickPick(
+					[constants.generateScriptButtonText, constants.publish],
+					{ title: constants.chooseAction, ignoreFocusOut: true });
+				if (!action) {
+					return;
+				}
+				await this.publishOrScriptProject(project, settings, action === constants.publish);
+			}
 		}
 	}
 
@@ -1055,25 +1089,6 @@ export class ProjectsController {
 
 	public getAddDatabaseReferenceDialog(project: Project): AddDatabaseReferenceDialog {
 		return new AddDatabaseReferenceDialog(project);
-	}
-
-	public async updateProjectForRoundTrip(project: Project) {
-		if (project.importedTargets.includes(constants.NetCoreTargets) && !project.containsSSDTOnlySystemDatabaseReferences()) {
-			return;
-		}
-
-		if (!project.importedTargets.includes(constants.NetCoreTargets)) {
-			const result = await vscode.window.showWarningMessage(constants.updateProjectForRoundTrip, constants.yesString, constants.noString);
-			if (result === constants.yesString) {
-				await project.updateProjectForRoundTrip();
-				await project.updateSystemDatabaseReferencesInProjFile();
-			}
-		} else if (project.containsSSDTOnlySystemDatabaseReferences()) {
-			const result = await vscode.window.showWarningMessage(constants.updateProjectDatabaseReferencesForRoundTrip, constants.yesString, constants.noString);
-			if (result === constants.yesString) {
-				await project.updateSystemDatabaseReferencesInProjFile();
-			}
-		}
 	}
 
 	private async addTemplateFiles(newProjFilePath: string, projectTypeId: string): Promise<void> {

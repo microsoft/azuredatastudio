@@ -792,6 +792,11 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 	}
 
 	private updateConnection(databaseName: string): void {
+		// Ignore if the database name is not provided, this happens when the query editor connection is changed to
+		// a provider that does not support database.
+		if (!databaseName) {
+			return;
+		}
 		this._isConnected = true;
 		this._currentDatabaseName = databaseName;
 		// Set the value immediately to the initial database so the user can see that, and then

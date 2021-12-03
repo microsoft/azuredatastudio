@@ -2,10 +2,10 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file original="extensions/sql-migration/dist/constants/strings" source-language="en" datatype="plaintext"><body>
     <trans-unit id="azure.accounts.accountAccessError">
-      <source xml:lang="en">An error occurred while accessing the selected account '{0}'. Select 'Link account' and refresh the account, or select a different account. Error '{1}'</source>
+      <source xml:lang="en">An error occurred while accessing the selected account '{0}' and tenant '{1}'. Select 'Link account' and refresh the account, or select a different account. Error '{2}'</source>
     </trans-unit>
     <trans-unit id="azure.accounts.accountStaleError">
-      <source xml:lang="en">The access token for selected account '{0}' is no longer valid. Select 'Link account' and refresh the account, or select a different account.</source>
+      <source xml:lang="en">The access token for selected account '{0}' and tenant '{1}' is no longer valid. Select 'Link account' and refresh the account, or select a different account.</source>
     </trans-unit>
     <trans-unit id="sql-migration.wizard.title">
       <source xml:lang="en">Migrate '{0}' to Azure SQL</source>

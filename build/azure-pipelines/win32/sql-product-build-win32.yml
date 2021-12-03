@@ -27,7 +27,7 @@ steps:
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1
       $ErrorActionPreference = "Stop"
-      exec { tar --force-local -xzf $(Pipeline.Workspace)/compilation.tar.gz }
+      exec { tar -xf $(Pipeline.Workspace)/compilation.tar.gz }
     displayName: Extract compilation output
 
   - powershell: |
@@ -57,6 +57,7 @@ steps:
       path: .build/node_modules_cache
       cacheHitVar: NODE_MODULES_RESTORED
     displayName: Restore Cache - Node Modules
+    continueOnError: true
 
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1

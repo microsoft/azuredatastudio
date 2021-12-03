@@ -21,7 +21,7 @@ import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProje
 import { ProjectsController } from '../controllers/projectController';
 import { promises as fs } from 'fs';
 import { createContext, TestContext, mockDacFxResult, mockConnectionProfile } from './testContext';
-import { Project, reservedProjectFolders, SystemDatabase, FileProjectEntry, SystemDatabaseReferenceProjectEntry, EntryType } from '../models/project';
+import { Project, reservedProjectFolders } from '../models/project';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
@@ -31,6 +31,7 @@ import { IDacpacReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { CreateProjectFromDatabaseDialog } from '../dialogs/createProjectFromDatabaseDialog';
 import { ImportDataModel } from '../models/api/import';
 import { SqlTargetPlatform } from 'sqldbproj';
+import { SystemDatabaseReferenceProjectEntry, SystemDatabase, EntryType, FileProjectEntry } from '../models/projectEntry';
 
 let testContext: TestContext;
 
@@ -364,7 +365,7 @@ describe('ProjectsController', function (): void {
 				projController.callBase = true;
 				projController.setup(x => x.getPublishDialog(TypeMoq.It.isAny())).returns(() => publishDialog.object);
 
-				projController.object.publishProject(new Project('FakePath'));
+				void projController.object.publishProject(new Project('FakePath'));
 				should(opened).equal(true);
 			});
 
@@ -394,14 +395,14 @@ describe('ProjectsController', function (): void {
 					holler = generateHoller;
 					return Promise.resolve(undefined);
 				});
-
-				let dialog = projController.object.publishProject(proj);
-				await dialog.publishClick();
+				publishDialog.object.publishToExistingServer = true;
+				void projController.object.publishProject(proj);
+				await publishDialog.object.publishClick();
 
 				should(holler).equal(publishHoller, 'executionCallback() is supposed to have been setup and called for Publish scenario');
 
-				dialog = projController.object.publishProject(proj);
-				await dialog.generateScriptClick();
+				void projController.object.publishProject(proj);
+				await publishDialog.object.generateScriptClick();
 
 				should(holler).equal(generateHoller, 'executionCallback() is supposed to have been setup and called for GenerateScript scenario');
 			});

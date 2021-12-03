@@ -35,7 +35,7 @@ export interface IAccountManagementService {
 	beginAutoOAuthDeviceCode(providerId: string, title: string, message: string, userCode: string, uri: string): Promise<void>;
 	endAutoOAuthDeviceCode(): void;
 	cancelAutoOAuthDeviceCode(providerId: string): void;
-	copyUserCodeAndOpenBrowser(userCode: string, uri: string): void;
+	copyUserCodeAndOpenBrowser(userCode: string, uri: string): Promise<void>;
 
 	// SERVICE MANAGEMENT METHODS /////////////////////////////////////////
 	registerProvider(providerMetadata: azdata.AccountProviderMetadata, provider: azdata.AccountProvider): void;

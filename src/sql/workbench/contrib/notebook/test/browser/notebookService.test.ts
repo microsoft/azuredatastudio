@@ -218,35 +218,35 @@ suite.skip('NotebookService:', function (): void {
 		assert.strictEqual(notebookService.languageMagics.length, 0, 'No language magics should exist after creation');
 		assert.strictEqual(notebookService.listNotebookEditors().length, 0, 'No notebook editors should be listed');
 		assert.strictEqual(notebookService.getMimeRegistry().mimeTypes.length, 15, 'MIME Types need to have appropriate tests when added or removed');
-		assert.deepStrictEqual(notebookService.getProvidersForFileType('ipynb'), ['sql'], 'sql provider should be registered for ipynb extension');
+		assert.deepStrictEqual(notebookService.getProvidersForFileType('.ipynb'), ['sql'], 'sql provider should be registered for ipynb extension');
 		assert.strictEqual(notebookService.getStandardKernelsForProvider('sql').length, 1, 'SQL kernel should be provided by default');
 		assert.strictEqual(notebookService.getStandardKernelsForProvider('otherProvider'), undefined, 'Other provider should not have kernels since it has not been added as a provider');
-		assert.deepStrictEqual(notebookService.getSupportedFileExtensions(), ['IPYNB'], 'IPYNB file extension should be supported by default');
+		assert.deepStrictEqual(notebookService.getSupportedFileExtensions(), ['.ipynb'], 'IPYNB file extension should be supported by default');
 		await notebookService.registrationComplete;
 		assert.ok(notebookService.isRegistrationComplete, `notebookService.isRegistrationComplete should be true once its registrationComplete promise is resolved`);
 	});
 
 	test('Validate another provider added successfully', async function (): Promise<void> {
 		await notebookService.registrationComplete;
-		assert.deepStrictEqual(notebookService.getProvidersForFileType('ipynb'), ['sql'], 'sql provider should be registered for ipynb extension');
+		assert.deepStrictEqual(notebookService.getProvidersForFileType('.ipynb'), ['sql'], 'sql provider should be registered for ipynb extension');
 
 		const otherProviderRegistration: ProviderDescriptionRegistration = {
-			fileExtensions: 'ipynb',
-			standardKernels: {
+			fileExtensions: ['ipynb'],
+			standardKernels: [{
 				name: 'kernel1',
 				connectionProviderIds: [],
 				displayName: 'Kernel 1'
-			},
+			}],
 			provider: 'otherProvider'
 		};
 
 		const notebookRegistry = Registry.as<INotebookProviderRegistry>(NotebookProviderRegistryId);
 		notebookRegistry.registerProviderDescription(otherProviderRegistration);
 
-		assert.deepStrictEqual(notebookService.getProvidersForFileType('ipynb'), ['sql', 'otherProvider'], 'otherProvider should also be registered for ipynb extension');
-		assert.deepStrictEqual(notebookService.getSupportedFileExtensions(), ['IPYNB'], 'Only IPYNB should be registered as supported file extension');
+		assert.deepStrictEqual(notebookService.getProvidersForFileType('.ipynb'), ['sql', 'otherProvider'], 'otherProvider should also be registered for ipynb extension');
+		assert.deepStrictEqual(notebookService.getSupportedFileExtensions(), ['.ipynb'], 'Only IPYNB should be registered as supported file extension');
 		assert.strictEqual(notebookService.getStandardKernelsForProvider('otherProvider').length, 1, 'otherProvider kernel info could not be found');
-		assert.deepStrictEqual(notebookService.getStandardKernelsForProvider('otherProvider')[0], otherProviderRegistration.standardKernels, 'otherProviderRegistration standard kernels does not match');
+		assert.deepStrictEqual(notebookService.getStandardKernelsForProvider('otherProvider')[0], otherProviderRegistration.standardKernels[0], 'otherProviderRegistration standard kernels does not match');
 	});
 
 	test('tests that dispose() method calls dispose on underlying disposable objects exactly once', async () => {

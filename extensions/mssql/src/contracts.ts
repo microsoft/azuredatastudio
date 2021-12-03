@@ -628,10 +628,17 @@ export interface SchemaCompareGenerateScriptParams {
 	taskExecutionMode: TaskExecutionMode;
 }
 
-export interface SchemaComparePublishChangesParams {
+export interface SchemaComparePublishDatabaseChangesParams {
 	operationId: string;
 	targetServerName: string;
 	targetDatabaseName: string;
+	taskExecutionMode: TaskExecutionMode;
+}
+
+export interface SchemaComparePublishProjectChangesParams {
+	operationId: string;
+	targetProjectPath: string;
+	targetFolderStructure: mssql.ExtractTarget;
 	taskExecutionMode: TaskExecutionMode;
 }
 
@@ -673,7 +680,15 @@ export namespace SchemaCompareGenerateScriptRequest {
 }
 
 export namespace SchemaComparePublishChangesRequest {
-	export const type = new RequestType<SchemaComparePublishChangesParams, azdata.ResultStatus, void, void>('schemaCompare/publish');
+	export const type = new RequestType<SchemaComparePublishDatabaseChangesParams, azdata.ResultStatus, void, void>('schemaCompare/publish');
+}
+
+export namespace SchemaComparePublishDatabaseChangesRequest {
+	export const type = new RequestType<SchemaComparePublishDatabaseChangesParams, azdata.ResultStatus, void, void>('schemaCompare/publishDatabase');
+}
+
+export namespace SchemaComparePublishProjectChangesRequest {
+	export const type = new RequestType<SchemaComparePublishProjectChangesParams, mssql.SchemaComparePublishProjectResult, void, void>('schemaCompare/publishProject');
 }
 
 export namespace SchemaCompareGetDefaultOptionsRequest {
