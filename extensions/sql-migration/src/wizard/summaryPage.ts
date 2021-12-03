@@ -161,9 +161,9 @@ export class SummaryPage extends MigrationWizardPage {
 						createInformationRow(this._view, constants.USER_ACCOUNT, this.migrationStateModel._databaseBackup.networkShares[0].windowsUser),
 						await createHeadingTextComponent(this._view, constants.AZURE_STORAGE_ACCOUNT_TO_UPLOAD_BACKUPS),
 						createInformationRow(this._view, constants.SUBSCRIPTION, this.migrationStateModel._databaseBackup.subscription.name),
-						createInformationRow(this._view, constants.LOCATION, this.migrationStateModel._databaseBackup.networkShares[0].storageAccount.location),
-						createInformationRow(this._view, constants.RESOURCE_GROUP, this.migrationStateModel._databaseBackup.networkShares[0].storageAccount.resourceGroup!),
-						createInformationRow(this._view, constants.STORAGE_ACCOUNT, this.migrationStateModel._databaseBackup.networkShares[0].storageAccount.name!),
+						createInformationRow(this._view, constants.LOCATION, this.migrationStateModel._databaseBackup.networkShares[0].storageAccount?.location),
+						createInformationRow(this._view, constants.RESOURCE_GROUP, this.migrationStateModel._databaseBackup.networkShares[0].storageAccount?.resourceGroup!),
+						createInformationRow(this._view, constants.STORAGE_ACCOUNT, this.migrationStateModel._databaseBackup.networkShares[0].storageAccount?.name!),
 					]
 				);
 				break;

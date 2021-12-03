@@ -1042,8 +1042,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					localize('sql.migration.starting.migration.error', "An error occurred while starting the migration: '{0}'", e.message));
 				console.log(e);
 			}
-
-			await vscode.commands.executeCommand('sqlmigration.refreshMigrationTiles');
 		}
 	}
 
