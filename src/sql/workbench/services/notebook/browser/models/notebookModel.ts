@@ -1530,12 +1530,20 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	public undo(): void {
 		if (this.undoService.canUndo(this.notebookUri)) {
 			this.undoService.undo(this.notebookUri);
+			const azdata_notebook_guid: string = this.getMetaValue('azdata_notebook_guid');
+			this.adstelemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.UndoCell)
+				.withAdditionalProperties({ azdata_notebook_guid: azdata_notebook_guid })
+				.send();
 		}
 	}
 
 	public redo(): void {
 		if (this.undoService.canRedo(this.notebookUri)) {
 			this.undoService.redo(this.notebookUri);
+			const azdata_notebook_guid: string = this.getMetaValue('azdata_notebook_guid');
+			this.adstelemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.RedoCell)
+				.withAdditionalProperties({ azdata_notebook_guid: azdata_notebook_guid })
+				.send();
 		}
 	}
 }
