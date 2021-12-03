@@ -830,7 +830,6 @@ export class NewNotebookAction extends Action {
 	}
 
 	override async run(context?: azdata.ObjectExplorerContext): Promise<void> {
-
 		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.NewNotebookFromConnections)
 			.withConnectionInfo(context?.connectionProfile)
 			.send();
