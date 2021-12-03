@@ -783,16 +783,16 @@
     <trans-unit id="sqlConnectionStringFriendly">
       <source xml:lang="en">SQL connection string</source>
     </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.DotnetInstallationConfirmation">
+      <source xml:lang="en">The .NET SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or higher or update the .NET SDK location in settings if already installed.</source>
+    </trans-unit>
     <trans-unit id="sqlDatabaseProjects.Install">
       <source xml:lang="en">Install</source>
     </trans-unit>
-    <trans-unit id="sqlDatabaseProjects.NetCoreInstallationConfirmation">
-      <source xml:lang="en">The .NET Core SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK location in settings if already installed.</source>
-    </trans-unit>
     <trans-unit id="sqlDatabaseProjects.NetCoreSupportedVersionInstallationConfirmation">
-      <source xml:lang="en">Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK supported version location in settings if already installed.</source>
+      <source xml:lang="en">Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or higher or update the .NET SDK supported version location in settings if already installed.</source>
     </trans-unit>
-    <trans-unit id="sqlDatabaseProjects.UpdateNetCoreLocation">
+    <trans-unit id="sqlDatabaseProjects.UpdateDotnetLocation">
       <source xml:lang="en">Update Location</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.doNotAskAgain">
@@ -910,7 +910,7 @@
       <source xml:lang="en">Add Database Reference</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.addSqlBinding">
-      <source xml:lang="en">Add SQL Binding</source>
+      <source xml:lang="en">Add SQL Binding (preview)</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.autorestSqlVersion">
       <source xml:lang="en">Which version of Autorest.Sql to use from NPM.  Latest will be used if not set.</source>
@@ -936,6 +936,9 @@
     <trans-unit id="sqlDatabaseProjects.displayName">
       <source xml:lang="en">Database Projects</source>
     </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.dotnetInstallLocation">
+      <source xml:lang="en">Full path to .NET SDK on the machine.</source>
+    </trans-unit>
     <trans-unit id="sqlDatabaseProjects.editProjectFile">
       <source xml:lang="en">Edit .sqlproj File</source>
     </trans-unit>
@@ -947,9 +950,6 @@
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.netCoreDoNotAsk">
       <source xml:lang="en">Whether to prompt the user to install .NET Core when not detected.</source>
-    </trans-unit>
-    <trans-unit id="sqlDatabaseProjects.netCoreInstallLocation">
-      <source xml:lang="en">Full path to .NET Core SDK on the machine.</source>
     </trans-unit>
     <trans-unit id="sqlDatabaseProjects.new">
       <source xml:lang="en">New Database Project</source>
