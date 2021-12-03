@@ -13,7 +13,7 @@ export class MoveCellEdit implements IResourceUndoRedoElement {
 	type: UndoRedoElementType.Resource = UndoRedoElementType.Resource;
 	label: string = localize('moveCellEdit', "Move Cell");
 	resource = this.model.notebookUri;
-	cellOperation = { cell_operation: this.label };
+	private readonly cellOperation = { cell_operation: 'move_cell' };
 
 	constructor(private model: NotebookModel, private cell: ICellModel, private moveDirection: MoveDirection) {
 	}
@@ -21,12 +21,12 @@ export class MoveCellEdit implements IResourceUndoRedoElement {
 	undo(): void {
 		const direction = this.moveDirection === MoveDirection.Down ? MoveDirection.Up : MoveDirection.Down;
 		this.model.moveCell(this.cell, direction, false);
-		this.model.createNotebookTelemetryEvent(TelemetryKeys.NbTelemetryAction.UndoCell, this.cellOperation);
+		this.model.sendNotebookTelemetryEvent(TelemetryKeys.NbTelemetryAction.UndoCell, this.cellOperation);
 	}
 
 	redo(): void {
 		this.model.moveCell(this.cell, this.moveDirection, false);
-		this.model.createNotebookTelemetryEvent(TelemetryKeys.NbTelemetryAction.RedoCell, this.cellOperation);
+		this.model.sendNotebookTelemetryEvent(TelemetryKeys.NbTelemetryAction.RedoCell, this.cellOperation);
 	}
 }
 
@@ -34,14 +34,14 @@ export class SplitCellEdit implements IResourceUndoRedoElement {
 	type: UndoRedoElementType.Resource = UndoRedoElementType.Resource;
 	label: string = localize('splitCellEdit', "Split Cell");
 	resource = this.model.notebookUri;
-	cellOperation = { cell_operation: this.label };
+	private readonly cellOperation = { cell_operation: 'split_cell' };
 
 	constructor(private model: NotebookModel, private firstCell: ICellModel, private secondCell: ICellModel, private newLinesRemoved: string[]) {
 	}
 
 	undo(): void {
 		this.model.mergeCells(this.firstCell, this.secondCell, this.newLinesRemoved);
-		this.model.createNotebookTelemetryEvent(TelemetryKeys.NbTelemetryAction.UndoCell, this.cellOperation);
+		this.model.sendNotebookTelemetryEvent(TelemetryKeys.NbTelemetryAction.UndoCell, this.cellOperation);
 	}
 
 	redo(): void {
@@ -53,19 +53,19 @@ export class DeleteCellEdit implements IResourceUndoRedoElement {
 	type: UndoRedoElementType.Resource = UndoRedoElementType.Resource;
 	label: string = localize('deleteCellEdit', "Delete Cell");
 	resource = this.model.notebookUri;
-	cellOperation = { cell_operation: this.label };
+	private readonly cellOperation = { cell_operation: 'delete_cell' };
 
 	constructor(private model: NotebookModel, private cell: ICellModel, private index: number) {
 	}
 
 	undo(): void {
 		this.model.insertCell(this.cell, this.index, false);
-		this.model.createNotebookTelemetryEvent(TelemetryKeys.NbTelemetryAction.UndoCell, this.cellOperation);
+		this.model.sendNotebookTelemetryEvent(TelemetryKeys.NbTelemetryAction.UndoCell, this.cellOperation);
 	}
 
 	redo(): void {
 		this.model.deleteCell(this.cell, false);
-		this.model.createNotebookTelemetryEvent(TelemetryKeys.NbTelemetryAction.RedoCell, this.cellOperation);
+		this.model.sendNotebookTelemetryEvent(TelemetryKeys.NbTelemetryAction.RedoCell, this.cellOperation);
 	}
 }
 
@@ -73,18 +73,18 @@ export class AddCellEdit implements IResourceUndoRedoElement {
 	type: UndoRedoElementType.Resource = UndoRedoElementType.Resource;
 	label: string = localize('addCellEdit', "Add Cell");
 	resource = this.model.notebookUri;
-	cellOperation = { cell_operation: this.label };
+	private readonly cellOperation = { cell_operation: 'add_cell' };
 
 	constructor(private model: NotebookModel, private cell: ICellModel, private index: number) {
 	}
 
 	undo(): void {
 		this.model.deleteCell(this.cell, false);
-		this.model.createNotebookTelemetryEvent(TelemetryKeys.NbTelemetryAction.UndoCell, this.cellOperation);
+		this.model.sendNotebookTelemetryEvent(TelemetryKeys.NbTelemetryAction.UndoCell, this.cellOperation);
 	}
 
 	redo(): void {
 		this.model.insertCell(this.cell, this.index, false);
-		this.model.createNotebookTelemetryEvent(TelemetryKeys.NbTelemetryAction.RedoCell, this.cellOperation);
+		this.model.sendNotebookTelemetryEvent(TelemetryKeys.NbTelemetryAction.RedoCell, this.cellOperation);
 	}
 }
