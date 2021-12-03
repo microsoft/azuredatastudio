@@ -504,7 +504,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 					]
 				];
 
-				this._authKeyTable.dataValues = data;
+				await this._authKeyTable.setDataValues(data);
 			}
 		} catch (e) {
 			console.log(e);
