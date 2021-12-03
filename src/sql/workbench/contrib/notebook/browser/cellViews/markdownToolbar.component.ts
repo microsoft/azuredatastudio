@@ -270,7 +270,6 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 				needsTransform = false;
 			} else {
 				let notebookLink = new NotebookLinkHandler(this.cellModel?.notebookModel?.notebookUri, linkCalloutResult.insertUnescapedLinkUrl, this._configurationService);
-				let linkUrl = notebookLink.getLinkUrl();
 				// Otherwise, re-focus on the output element, and insert the link directly.
 				this.output?.nativeElement?.focus();
 				let encodedLinkUrl = notebookLink.getEncodedLinkUrl();

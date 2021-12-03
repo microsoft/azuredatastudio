@@ -121,8 +121,8 @@ export class NotebookLinkHandler {
 	public getEncodedLinkUrl(): string {
 		// Need to encode URI here in order for user to click the proper encoded link in WYSIWYG
 		// skip encoding it if it's already encoded
-		if (this._link === unescape(this._link.toString())) {
-			return encodeURI(this._link);
+		if (this._isFile || this._link === unescape(this._link.toString())) {
+			return encodeURI(this._link.toString());
 		}
 		return this._link.toString();
 	}
