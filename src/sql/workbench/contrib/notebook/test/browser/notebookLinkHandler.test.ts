@@ -130,12 +130,12 @@ suite('Noteboook Link Handler', function (): void {
 
 	test('Should return correctly encoded url/filePath', () => {
 		let result = new NotebookLinkHandler(notebookUri, 'https://github.com/search/advanced?q=test&r=microsoft%2Fazuredatastudio&type=Code', configurationService);
-		assert.strictEqual(result.getLinkUrl(), `https://github.com/search/advanced?q=test&r=microsoft%2Fazuredatastudio&type=Code`, 'HTTPS link encoding failed');
+		assert.strictEqual(result.getEncodedLinkUrl(), `https://github.com/search/advanced?q=test&r=microsoft%2Fazuredatastudio&type=Code`, 'HTTPS link encoding failed');
 
 		result = new NotebookLinkHandler(notebookUri, 'https://github.com/search/advanced?q=test&r=(microsoft%2Fazuredatastudio)&type=Code', configurationService);
-		assert.strictEqual(result.getLinkUrl(), `https://github.com/search/advanced?q=test&r=(microsoft%2Fazuredatastudio)&type=Code`, '() in HTTP link failed to resolve');
+		assert.strictEqual(result.getEncodedLinkUrl(), `https://github.com/search/advanced?q=test&r=(microsoft%2Fazuredatastudio)&type=Code`, '() in HTTP link failed to resolve');
 
 		result = new NotebookLinkHandler(notebookUri, 'https://github.com/search/advanced?q=test&r=(microsoft/azuredata studio)&type=Code', configurationService);
-		assert.strictEqual(result.getLinkUrl(), `https://github.com/search/advanced?q=test&r=(microsoft/azuredata%20studio)&type=Code`, 'space failed to be encoded failed');
+		assert.strictEqual(result.getEncodedLinkUrl(), `https://github.com/search/advanced?q=test&r=(microsoft/azuredata%20studio)&type=Code`, 'space failed to be encoded failed');
 	});
 });

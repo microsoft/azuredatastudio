@@ -88,13 +88,6 @@ export class NotebookLinkHandler {
 			 * We return the absolute path for the link so that it will get used in the as the href for the anchor HTML element
 			 * (in linkCalloutDialog document.execCommand('insertHTML') and therefore will call getLinkURL() with HTMLAnchorElement to then get the relative path
 			*/
-			// Need to encode URI here in order for user to click the proper encoded link in WYSIWYG
-			// skip encoding it if it's already encoded
-			let encodedLinkURL = this._link;
-			if (this._isFile || encodedLinkURL === unescape(encodedLinkURL)) {
-				encodedLinkURL = encodeURI(this._link);
-				return encodedLinkURL;
-			}
 			return this._link;
 		} else {
 			// cases where we pass the HTMLAnchorElement
@@ -123,6 +116,15 @@ export class NotebookLinkHandler {
 			// Web links
 			return this._href || '';
 		}
+	}
+
+	public getEncodedLinkUrl(): string {
+		// Need to encode URI here in order for user to click the proper encoded link in WYSIWYG
+		// skip encoding it if it's already encoded
+		if (this._link === unescape(this._link.toString())) {
+			return encodeURI(this._link);
+		}
+		return this._link.toString();
 	}
 
 	/**
