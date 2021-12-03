@@ -65,7 +65,7 @@ export class DeleteCellEdit implements IResourceUndoRedoElement {
 
 	redo(): void {
 		this.model.deleteCell(this.cell, false);
-		this.model.createNotebookTelemetryEvent(TelemetryKeys.NbTelemetryAction.UndoCell, this.cellOperation);
+		this.model.createNotebookTelemetryEvent(TelemetryKeys.NbTelemetryAction.RedoCell, this.cellOperation);
 	}
 }
 
@@ -85,6 +85,6 @@ export class AddCellEdit implements IResourceUndoRedoElement {
 
 	redo(): void {
 		this.model.insertCell(this.cell, this.index, false);
-		this.model.createNotebookTelemetryEvent(TelemetryKeys.NbTelemetryAction.UndoCell, this.cellOperation);
+		this.model.createNotebookTelemetryEvent(TelemetryKeys.NbTelemetryAction.RedoCell, this.cellOperation);
 	}
 }
