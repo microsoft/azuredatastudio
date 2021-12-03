@@ -1038,8 +1038,8 @@ describe('Project: sdk style project content operations', function (): void {
 		should(newProject.files.find(f => f.type === EntryType.File && f.relativePath === convertSlashesForSqlProj(scriptPathTagged))?.sqlObjectType).equal(constants.ExternalStreamingJob);
 		should(newProject.files.find(f => f.type === EntryType.File && f.relativePath === convertSlashesForSqlProj(outsideFolderScriptPath))).not.equal(undefined);
 
-		// TODO: fix - commenting out while changing how folders work
-		// should(newProject.files.find(f => f.type === EntryType.Folder && f.relativePath === convertSlashesForSqlProj(otherFolderPath + '\\'))).not.equal(undefined);
+		// TODO: uncomment after add empty folder is updated
+		// should(newProject.files.find(f => f.type === EntryType.Folder && f.relativePath === convertSlashesForSqlProj(otherFolderPath))).not.equal(undefined);
 
 		// only the external streaming job and file outside of the project folder should have been added to the sqlproj
 		const projFileText = (await fs.readFile(projFilePath)).toString();
