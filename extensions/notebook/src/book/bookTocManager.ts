@@ -12,7 +12,7 @@ import * as vscode from 'vscode';
 import * as loc from '../common/localizedConstants';
 import { BookModel } from './bookModel';
 import { TocEntryPathHandler } from './tocEntryPathHandler';
-import { FileExtension, BookTreeItemType } from '../common/utils';
+import { FileExtension, BookTreeItemType, deepClone } from '../common/utils';
 import { BookUndoRedoService } from './bookUndoRedoService';
 import { MoveBookTreeItem, undoRedoToc } from './bookEdit';
 
@@ -198,7 +198,7 @@ export class BookTocManager implements IBookTocManager {
 	 * @param addSection The section that'll be added to the target section. If it's undefined then the target section (findSection) is removed from the table of contents.
 	*/
 	async updateTOC(version: BookVersion, tocPath: string, findSection?: JupyterBookSection, addSection?: JupyterBookSection): Promise<void> {
-		this.tableofContents = JSON.parse(JSON.stringify(this._initialToc.get(tocPath)));
+		this.tableofContents = deepClone(this._initialToc.get(tocPath));
 		let isModified = false;
 		if (findSection) {
 			isModified = this.modifyToc(version, this.tableofContents, findSection, addSection);

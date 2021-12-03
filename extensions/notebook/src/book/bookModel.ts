@@ -13,7 +13,7 @@ import * as fs from 'fs-extra';
 import * as loc from '../common/localizedConstants';
 import { IJupyterBookToc, JupyterBookSection } from '../contracts/content';
 import { convertFrom, getContentPath, BookVersion } from './bookVersionHandler';
-import { debounce, IPinnedNotebook, BookTreeItemType } from '../common/utils';
+import { debounce, IPinnedNotebook, BookTreeItemType, deepClone } from '../common/utils';
 import { Deferred } from '../common/promise';
 const fsPromises = fileServices.promises;
 const content = 'content';
@@ -187,7 +187,7 @@ export class BookModel {
 				const config = yaml.safeLoad(fileContents.toString());
 				fileContents = await fsPromises.readFile(this._tableOfContentsPath, 'utf-8');
 				let tableOfContents: JupyterBookSection[] = yaml.safeLoad(fileContents.toString());
-				this.tableOfContents = JSON.parse(JSON.stringify(tableOfContents));
+				this.tableOfContents = deepClone(tableOfContents);
 				const parsedTOC = this.parseJupyterSections(this._bookVersion, tableOfContents);
 				const jupyterBookTOC: IJupyterBookToc = { sections: parsedTOC };
 				let book: BookTreeItem = new BookTreeItem({
