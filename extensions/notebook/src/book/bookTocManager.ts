@@ -13,7 +13,8 @@ import * as loc from '../common/localizedConstants';
 import { BookModel } from './bookModel';
 import { TocEntryPathHandler } from './tocEntryPathHandler';
 import { FileExtension, BookTreeItemType } from '../common/utils';
-import { undoRedoToc } from './bookUndoRedoService';
+import { BookUndoRedoService } from './bookUndoRedoService';
+import { MoveBookTreeItem, undoRedoToc } from './bookEdit';
 
 export interface IBookTocManager {
 	updateBook(sources: BookTreeItem[], target: BookTreeItem, targetSection?: JupyterBookSection): Promise<void>;
@@ -21,8 +22,7 @@ export interface IBookTocManager {
 	createBook(bookContentPath: string, contentFolder: string): Promise<void>;
 	addNewTocEntry(pathDetails: TocEntryPathHandler, bookItem: BookTreeItem, isSection?: boolean): Promise<void>;
 	recovery(): Promise<void>;
-	movedFiles: Map<string, string>;
-	tocFiles: Map<string, undoRedoToc>;
+	bookUndoRedoService: BookUndoRedoService;
 	enableDnd: boolean;
 }
 
@@ -47,6 +47,7 @@ export class BookTocManager implements IBookTocManager {
 	private sourceBookContentPath: string;
 	private targetBookContentPath: string;
 	private _enableDnd: boolean = false;
+	public bookUndoRedoService = new BookUndoRedoService();
 
 	constructor(private _sourceBook?: BookModel, private _targetBook?: BookModel) {
 		this._targetBook?.unwatchTOC();
@@ -288,9 +289,9 @@ export class BookTocManager implements IBookTocManager {
 			if (error.code === 'EEXIST') {
 				fileName = await this.renameFile(src, dest);
 			}
-			// else if (error.code !== 'ENOENT') {
-			// 	throw (error);
-			// }
+			else {
+				throw (error);
+			}
 		}
 		return fileName;
 	}
@@ -455,6 +456,7 @@ export class BookTocManager implements IBookTocManager {
 					}
 					await this.updateTOC(target.book.version, target.tableOfContentsPath, targetSection, this.newSection);
 				}
+				this.bookUndoRedoService.pushElement(new MoveBookTreeItem(this, this.movedFiles, this.tocFiles));
 			} catch (e) {
 				await this.recovery();
 				void vscode.window.showErrorMessage(loc.editBookError(element.book.contentPath, e instanceof Error ? e.message : e));
@@ -546,5 +548,13 @@ export class BookTocManager implements IBookTocManager {
 
 	public set modifiedDir(files: Set<string>) {
 		this._modifiedDirectory = files;
+	}
+
+	public get sourceBook(): BookModel | undefined {
+		return this._sourceBook;
+	}
+
+	public get targetBook(): BookModel | undefined {
+		return this._targetBook;
 	}
 }

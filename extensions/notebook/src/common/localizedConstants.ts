@@ -34,6 +34,9 @@ export const noBooksSelectedError = localize('noBooksSelected', "No Jupyter Book
 export const labelBookSection = localize('labelBookSection', "Select Jupyter Book Section");
 export const labelAddToLevel = localize('labelAddToLevel', "Add to this level");
 
+//  BookEdit constants
+export const MoveBookTreeItem = localize('MoveBookTreeItem', "Move Book Tree Item");
+
 export function missingFileError(title: string, path: string): string { return localize('missingFileError', "Missing file : {0} from {1}", title, path); }
 export function invalidTocFileError(): string { return localize('InvalidError.tocFile', "Invalid toc file"); }
 export function invalidTocError(title: string): string { return localize('Invalid toc.yml', "Error: {0} has an incorrect toc.yml file", title); }

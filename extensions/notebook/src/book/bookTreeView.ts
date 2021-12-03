@@ -23,7 +23,6 @@ import { CreateBookDialog } from '../dialog/createBookDialog';
 import { AddTocEntryDialog } from '../dialog/addTocEntryDialog';
 import { getContentPath } from './bookVersionHandler';
 import { TelemetryReporter, BookTelemetryView, NbTelemetryActions } from '../telemetry';
-import { BookUndoRedoService, IBookUndoRedoElement } from './bookUndoRedoService';
 
 interface BookSearchResults {
 	notebookPaths: string[];
@@ -46,8 +45,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	public books: BookModel[] = [];
 	public currentBook: BookModel;
 	supportedTypes = ['text/treeitems'];
-
-	public bookUndoRedoService: BookUndoRedoService = new BookUndoRedoService();
 
 	constructor(workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext, openAsUntitled: boolean, view: string, public providerId: string) {
 		this._openAsUntitled = openAsUntitled;
@@ -227,13 +224,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			for (let [bookModel, items] of sourcesByBook) {
 				this.bookTocManager = new BookTocManager(bookModel, targetBookModel);
 				await this.bookTocManager.updateBook(items, targetBookItem, targetSection);
-				let change: IBookUndoRedoElement = {
-					sourceBook: bookModel,
-					targetBook: targetBookModel,
-					files: this.bookTocManager.movedFiles,
-					tocFiles: this.bookTocManager.tocFiles
-				};
-				this.bookUndoRedoService.addToUndoStack(change);
 			}
 		}
 	}
@@ -767,13 +757,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					this.bookTocManager = new BookTocManager(book, targetBook);
 					this.bookTocManager.enableDnd = true;
 					await this.bookTocManager.updateBook(items, target);
-					let change: IBookUndoRedoElement = {
-						sourceBook: book,
-						targetBook: targetBook,
-						files: this.bookTocManager.movedFiles,
-						tocFiles: this.bookTocManager.tocFiles
-					};
-					this.bookUndoRedoService.addToUndoStack(change);
 				}
 			}
 		}
@@ -803,11 +786,11 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	public async undo(): Promise<void> {
-		return this.bookUndoRedoService.undo();
+		return this.bookTocManager.bookUndoRedoService.undo();
 	}
 
 	public async redo(): Promise<void> {
-		return this.bookUndoRedoService.redo();
+		return this.bookTocManager.bookUndoRedoService.redo();
 	}
 
 	dispose(): void { }
