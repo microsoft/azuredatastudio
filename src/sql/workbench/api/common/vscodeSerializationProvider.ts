@@ -14,6 +14,7 @@ export class VSCodeContentManager implements azdata.nb.ContentManager {
 	constructor(private readonly _serializer: vscode.NotebookSerializer) {
 	}
 
+	// TODO: need to find a way to define metadata.kernelSpec here
 	public async deserializeNotebook(contents: string): Promise<azdata.nb.INotebookContents> {
 		let buffer = VSBuffer.fromString(contents);
 		let notebookData = await this._serializer.deserializeNotebook(buffer.buffer, new CancellationTokenSource().token);
