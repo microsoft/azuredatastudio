@@ -240,8 +240,6 @@ export class Project implements ISqlProject {
 		// glob style getting folders for sdk style projects
 		let folders = new Set<string>();
 		if (this._isSdkStyleProject) {
-			//await utils.getFoldersInFolder(this.projectFolderPath, true);
-
 			this.files.forEach(file => {
 				// if file is in the project's folder, add its folder
 				if (!file.relativePath.startsWith('..') && path.dirname(file.fsUri.fsPath) !== this.projectFolderPath) {
@@ -261,7 +259,7 @@ export class Project implements ISqlProject {
 
 					// don't add Properties folder since it isn't supported for now and don't add if the folder was already added
 					if (utils.trimChars(relativePath, '\\') !== constants.Properties) {
-						// make sure folder relative path ends with \\
+						// make sure folder relative path ends with \\ because sometimes SSDT adds folders without trailing \\
 						relativePath = relativePath.endsWith(constants.SqlProjPathSeparator) ? relativePath : relativePath + constants.SqlProjPathSeparator;
 						folders.add(relativePath);
 					}
@@ -1009,6 +1007,7 @@ export class Project implements ISqlProject {
 				const removeFileNode = this.projFileXmlDoc!.createElement(constants.Build);
 				removeFileNode.setAttribute(constants.Remove, utils.convertSlashesForSqlProj(folderPath + '**'));
 				this.findOrCreateItemGroup(constants.Build).appendChild(removeFileNode);
+				await this.serializeToProjFile(this.projFileXmlDoc);
 			}
 
 			deleted = true;
@@ -1293,13 +1292,19 @@ export class Project implements ISqlProject {
 			entries = [entries];
 		}
 
+		// remove any folders from first so that duplicate Build remove entries don't get added for
+		// sdk style projects to exclude both the folder and the files in the folder
+		const folderEntries = entries.filter(e => e.type === EntryType.Folder);
+		for (const folder of folderEntries) {
+			await this.removeFolderFromProjFile((<FileProjectEntry>folder).relativePath);
+		}
+
+		entries = entries.filter(e => e.type !== EntryType.Folder);
+
 		for (const entry of entries) {
 			switch (entry.type) {
 				case EntryType.File:
 					await this.removeFileFromProjFile((<FileProjectEntry>entry).relativePath);
-					break;
-				case EntryType.Folder:
-					await this.removeFolderFromProjFile((<FileProjectEntry>entry).relativePath);
 					break;
 				case EntryType.DatabaseReference:
 					this.removeDatabaseReferenceFromProjFile(<IDatabaseReferenceProjectEntry>entry);

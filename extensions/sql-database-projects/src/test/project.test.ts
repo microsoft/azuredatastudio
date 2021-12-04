@@ -1070,7 +1070,7 @@ describe('Project: sdk style project content operations', function (): void {
 
 		// verify sqlproj has glob excludes
 		const projFileText = (await fs.readFile(projFilePath)).toString();
-		should(projFileText.includes('<File Remove="folder1\\**" />')).equal(false, projFileText);
+		should(projFileText.includes('<Build Remove="folder1\\**" />')).equal(true, projFileText);
 	});
 
 	it('Should handle excluding explicitly included folders', async function (): Promise<void> {
@@ -1101,10 +1101,13 @@ describe('Project: sdk style project content operations', function (): void {
 		should(project.files.filter(f => f.type === EntryType.File).length).equal(1);
 		should(project.files.find(f => f.relativePath === 'folder2\\')).equal(undefined);
 
-		// make sure both folders are removed from sqlproj
+		// make sure both folders are removed from sqlproj and remove entry is added
 		const projFileText = (await fs.readFile(projFilePath)).toString();
 		should(projFileText.includes('<Folder Include="folder1" />')).equal(false, projFileText);
 		should(projFileText.includes('<Folder Include="folder2\" />')).equal(false, projFileText);
+
+		should(projFileText.includes('<Build Remove="folder1\\**" />')).equal(true, projFileText);
+		should(projFileText.includes('<Build Remove="folder2\\**" />')).equal(true, projFileText);
 	});
 });
 
