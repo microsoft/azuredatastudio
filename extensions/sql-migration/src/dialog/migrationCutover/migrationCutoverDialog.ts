@@ -47,6 +47,7 @@ export class MigrationCutoverDialog {
 	private _lastLSNInfoField!: InfoFieldSchema;
 	private _lastAppliedBackupInfoField!: InfoFieldSchema;
 	private _lastAppliedBackupTakenOnInfoField!: InfoFieldSchema;
+	private _currentRestoringFileInfoField!: InfoFieldSchema;
 
 	private _fileCount!: azdata.TextComponent;
 	private _fileTable!: azdata.DeclarativeTableComponent;
@@ -534,9 +535,11 @@ export class MigrationCutoverDialog {
 		this._lastLSNInfoField = await this.createInfoField(loc.LAST_APPLIED_LSN, '', isBlobMigration);
 		this._lastAppliedBackupInfoField = await this.createInfoField(loc.LAST_APPLIED_BACKUP_FILES, '');
 		this._lastAppliedBackupTakenOnInfoField = await this.createInfoField(loc.LAST_APPLIED_BACKUP_FILES_TAKEN_ON, '', isBlobMigration);
+		this._currentRestoringFileInfoField = await this.createInfoField(loc.CURRENTLY_RESTORING_FILE, '', !isBlobMigration);
 		addInfoFieldToContainer(this._lastLSNInfoField, flexFile);
 		addInfoFieldToContainer(this._lastAppliedBackupInfoField, flexFile);
 		addInfoFieldToContainer(this._lastAppliedBackupTakenOnInfoField, flexFile);
+		addInfoFieldToContainer(this._currentRestoringFileInfoField, flexFile);
 
 		const flexInfoProps = {
 			flex: '0',
@@ -696,6 +699,16 @@ export class MigrationCutoverDialog {
 			this._lastAppliedBackupInfoField.text.value = this._model.migrationStatus.properties.migrationStatusDetails?.lastRestoredFilename ?? '-';
 			this._lastAppliedBackupTakenOnInfoField.text.value = lastAppliedBackupFileTakenOn! ? convertIsoTimeToLocalTime(lastAppliedBackupFileTakenOn).toLocaleString() : '-';
 
+			if (isBlobMigration) {
+				if (!this._model.migrationStatus.properties.migrationStatusDetails?.currentRestoringFilename) {
+					this._currentRestoringFileInfoField.text.value = '-';
+				} else if (this._model.migrationStatus.properties.migrationStatusDetails?.lastRestoredFilename === this._model.migrationStatus.properties.migrationStatusDetails?.currentRestoringFilename) {
+					this._currentRestoringFileInfoField.text.value = loc.ALL_BACKUPS_RESTORED;
+				} else {
+					this._currentRestoringFileInfoField.text.value = this._model.migrationStatus.properties.migrationStatusDetails?.currentRestoringFilename;
+				}
+			}
+
 			if (this._shouldDisplayBackupFileTable()) {
 				await this._fileCount.updateCssStyles({
 					...styles.SECTION_HEADER_CSS,
@@ -738,11 +751,16 @@ export class MigrationCutoverDialog {
 
 			this._cutoverButton.enabled = false;
 			if (migrationStatusTextValue === MigrationStatus.InProgress) {
-				const restoredCount = this._model.migrationStatus.properties.migrationStatusDetails?.activeBackupSets?.filter(
-					(a) => a.listOfBackupFiles[0].status === BackupFileInfoStatus.Restored)?.length ?? 0;
-
-				if (restoredCount > 0 || isBlobMigration) {
-					this._cutoverButton.enabled = true;
+				if (isBlobMigration) {
+					if (this._model.migrationStatus.properties.migrationStatusDetails?.lastRestoredFilename) {
+						this._cutoverButton.enabled = true;
+					}
+				} else {
+					const restoredCount = this._model.migrationStatus.properties.migrationStatusDetails?.activeBackupSets?.filter(
+						(a) => a.listOfBackupFiles[0].status === BackupFileInfoStatus.Restored)?.length ?? 0;
+					if (restoredCount > 0) {
+						this._cutoverButton.enabled = true;
+					}
 				}
 			}
 
@@ -766,9 +784,13 @@ export class MigrationCutoverDialog {
 		text: azdata.TextComponent,
 		icon?: azdata.ImageComponent
 	}> {
-		const flexContainer = this._view.modelBuilder.flexContainer().withLayout({
-			flexFlow: 'column'
-		}).component();
+		const flexContainer = this._view.modelBuilder.flexContainer()
+			.withProps({
+				CSSStyles: {
+					'flex-direction': 'column',
+					'padding-right': '12px'
+				}
+			}).component();
 
 		if (defaultHidden) {
 			await flexContainer.updateCssStyles({
