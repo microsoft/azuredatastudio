@@ -999,6 +999,10 @@ export class Project implements ISqlProject {
 			// update sqlproj if a node was deleted
 			if (deleted) {
 				await this.serializeToProjFile(this.projFileXmlDoc);
+				const projFileText = await fs.readFile(this._projectFilePath);
+				this.projFileXmlDoc = new xmldom.DOMParser().parseFromString(projFileText.toString());
+				this._files = await this.readFilesInProject();
+				this.files.push(...(await this.readFolders()));
 			}
 			// get latest folders to see if it still exists
 			const currentFolders = await this.readFolders();
@@ -1008,7 +1012,12 @@ export class Project implements ISqlProject {
 				const removeFileNode = this.projFileXmlDoc!.createElement(constants.Build);
 				removeFileNode.setAttribute(constants.Remove, utils.convertSlashesForSqlProj(folderPath + '**'));
 				this.findOrCreateItemGroup(constants.Build).appendChild(removeFileNode);
+
 				await this.serializeToProjFile(this.projFileXmlDoc);
+				const projFileText = await fs.readFile(this._projectFilePath);
+				this.projFileXmlDoc = new xmldom.DOMParser().parseFromString(projFileText.toString());
+				this._files = await this.readFilesInProject();
+				this.files.push(...(await this.readFolders()));
 			}
 
 			deleted = true;

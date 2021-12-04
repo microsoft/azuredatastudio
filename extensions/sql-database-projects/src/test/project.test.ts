@@ -843,8 +843,8 @@ describe('Project: sdk style project content operations', function (): void {
 		const project: Project = await Project.openProject(projFilePath);
 
 		// Files and folders
-		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(2);
-		should(project.files.filter(f => f.type === EntryType.File).length).equal(15);
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(3);
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(17);
 
 		// SqlCmdVariables
 		should(Object.keys(project.sqlCmdVariables).length).equal(2);
@@ -1053,24 +1053,51 @@ describe('Project: sdk style project content operations', function (): void {
 	it('Should handle excluding glob included folders', async function (): Promise<void> {
 		const testFolderPath = await testUtils.generateTestFolderPath();
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectBaseline, testFolderPath);
-		await testUtils.createDummyFileStructure(false, undefined, path.dirname(projFilePath));
+		await testUtils.createDummyFileStructureWithPrePostDeployScripts(false, undefined, path.dirname(projFilePath));
 
 		const project: Project = await Project.openProject(projFilePath);
 
-		should(project.files.filter(f => f.type === EntryType.File).length).equal(11);
-		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(2);
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(17);
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(3);
 
 		// try to exclude a glob included folder
 		await project.exclude(project.files.find(f => f.relativePath === 'folder1\\')!);
 
 		// verify folder and contents are excluded
 		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(1);
-		should(project.files.filter(f => f.type === EntryType.File).length).equal(6);
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(9);
 		should(project.files.find(f => f.relativePath === 'folder1\\')).equal(undefined);
 
-		// verify sqlproj has glob excludes
+		// verify sqlproj has glob exclude for folder, but not for files and inner folder
 		const projFileText = (await fs.readFile(projFilePath)).toString();
 		should(projFileText.includes('<Build Remove="folder1\\**" />')).equal(true, projFileText);
+		should(projFileText.includes('<Build Remove="folder1\\file1.sql" />')).equal(false, projFileText);
+		should(projFileText.includes('<Build Remove="folder1\\nestedFolder\\**" />')).equal(false, projFileText);
+	});
+
+
+	it('Should handle excluding nested glob included folders', async function (): Promise<void> {
+		const testFolderPath = await testUtils.generateTestFolderPath();
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectBaseline, testFolderPath);
+		await testUtils.createDummyFileStructureWithPrePostDeployScripts(false, undefined, path.dirname(projFilePath));
+
+		const project: Project = await Project.openProject(projFilePath);
+
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(17);
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(3);
+
+		// try to exclude a glob included folder
+		await project.exclude(project.files.find(f => f.relativePath === 'folder1\\nestedFolder\\')!);
+
+		// verify folder and contents are excluded
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(2);
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(15);
+		should(project.files.find(f => f.relativePath === 'folder1\\nestedFolder\\')).equal(undefined);
+
+		// verify sqlproj has glob exclude for folder, but not for files
+		const projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText.includes('<Build Remove="folder1\\nestedFolder\\**" />')).equal(true, projFileText);
+		should(projFileText.includes('<Build Remove="folder1\\nestedFolder\\otherFile1.sql" />')).equal(false, projFileText);
 	});
 
 	it('Should handle excluding explicitly included folders', async function (): Promise<void> {
