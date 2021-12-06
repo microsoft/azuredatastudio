@@ -15,8 +15,8 @@
         <Item ItemId=";(...) firmation" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or higher or update the .NET SDK supported version location in settings if already installed.]]></Val>
-            <Tgt Cat="Text" Stat="Update" Orig="New">
-              <Val><![CDATA[현재 설치된 .NET Core SDK 버전은 지원되지 않는 {0}입니다. 프로젝트 빌드가 작동하지 않습니다. .NET Core SDK 버전 3.1을 설치하거나 이미 설치된 경우 설정에서 .NET Core SDK 지원 버전 위치를 업데이트하세요.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[현재 설치된 .NET Core SDK 버전은 지원되지 않는 {0}입니다. 프로젝트 빌드가 작동하지 않습니다. .NET Core SDK 버전 3.1 이상을 설치하거나 이미 설치된 경우 설정에서 .NET SDK 지원 버전 위치를 업데이트하세요.]]></Val>
             </Tgt>
             <Prev Cat="Text">
               <Val><![CDATA[Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK supported version location in settings if already installed.]]></Val>
@@ -2425,6 +2425,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.sqlDatabaseProjects.DotnetInstallationConfirmation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The .NET SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or higher or update the .NET SDK location in settings if already installed.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[.NET SDK를 찾을 수 없습니다. 프로젝트 빌드가 작동하지 않습니다. .NET Core SDK 버전 3.1 이상을 설치하거나 이미 설치된 경우 설정에서 .NET SDK 위치를 업데이트하세요.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2761,8 +2764,8 @@
       <Item ItemId=";extensions/sql-database-projects/package.sqlDatabaseProjects.addSqlBinding" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Add SQL Binding (preview)]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[SQL 바인딩 추가]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[SQL 바인딩 추가(미리 보기)]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Add SQL Binding]]></Val>
@@ -2845,6 +2848,9 @@
       <Item ItemId=";extensions/sql-database-projects/package.sqlDatabaseProjects.dotnetInstallLocation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Full path to .NET SDK on the machine.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[컴퓨터의 .NET SDK에 대한 전체 경로입니다.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

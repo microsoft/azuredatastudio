@@ -14544,6 +14544,9 @@
       <Item ItemId=";src/sql/workbench/services/notebook/browser/models/cellEdit.moveCellEdit" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Move Cell]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[셀 이동]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
