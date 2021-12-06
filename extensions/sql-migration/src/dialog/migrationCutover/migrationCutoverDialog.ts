@@ -12,6 +12,7 @@ import * as loc from '../../constants/strings';
 import { convertByteSizeToReadableUnit, convertIsoTimeToLocalTime, getSqlServerName, getMigrationStatusImage, SupportedAutoRefreshIntervals, clearDialogMessage, displayDialogErrorMessage } from '../../api/utils';
 import { EOL } from 'os';
 import { ConfirmCutoverDialog } from './confirmCutoverDialog';
+import { logError, TelemetryViews } from '../../telemtery';
 import { RetryMigrationDialog } from '../retryMigration/retryMigrationDialog';
 import * as styles from '../../constants/styles';
 import { canRetryMigration } from '../../constants/helper';
@@ -233,7 +234,7 @@ export class MigrationCutoverDialog {
 					await this.refreshStatus();
 				});
 			} catch (e) {
-				console.log(e);
+				logError(TelemetryViews.MigrationCutoverDialog, 'IntializingFailed', e);
 			}
 		});
 		this._dialogObject.content = [tab];
