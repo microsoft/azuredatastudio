@@ -2427,12 +2427,12 @@
           <Val><![CDATA[The .NET SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or higher or update the .NET SDK location in settings if already installed.]]></Val>
         </Str>
         <Disp Icon="Str" />
-      </Item>
+      </Item
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.sqlDatabaseProjects.Install" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Install]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[安裝]]></Val>
+            <Val><![CDATA[安裝]]></Va
           </Tgt>
         </Str>
         <Disp Icon="Str" />
