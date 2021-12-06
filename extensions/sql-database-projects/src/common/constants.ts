@@ -70,6 +70,7 @@ export const dataSourcesNodeName = localize('dataSourcesNodeName', "Data Sources
 export const databaseReferencesNodeName = localize('databaseReferencesNodeName', "Database References");
 export const sqlConnectionStringFriendly = localize('sqlConnectionStringFriendly', "SQL connection string");
 export const yesString = localize('yesString', "Yes");
+export const openEulaString = localize('openEulaString', "Open License Agreement");
 export const noString = localize('noString', "No");
 export const noStringDefault = localize('noStringDefault', "No (default)");
 export const okString = localize('okString', "Ok");
@@ -149,6 +150,14 @@ export const portMustBeNumber = localize('portMustNotBeNumber', "Port must a be 
 export const valueCannotBeEmpty = localize('valueCannotBeEmpty', "Value cannot be empty");
 export const dockerImageLabelPrefix = 'source=sqldbproject';
 export const dockerImageNamePrefix = 'sqldbproject';
+
+//
+export const eulaAgreementTemplate = localize({ key: 'eulaAgreementTemplate', comment: ['The placeholders are contents of the line and should not be translated.'] }, "I accept the {0}.");
+export function eulaAgreementText(name: string) { return localize({ key: 'eulaAgreementText', comment: ['The placeholders are contents of the line and should not be translated.'] }, "I accept the {0}.", name); }
+export const eulaAgreementTitle = localize('eulaAgreementTitle', "Microsoft SQL Server License Agreement");
+export const edgeEulaAgreementTitle = localize('edgeEulaAgreementTitle', "Microsoft Azure SQL Edge License Agreement");
+export const sqlServerEulaLink = 'https://go.microsoft.com/fwlink/?linkid=857698';
+export const sqlServerEdgeEulaLink = 'https://go.microsoft.com/fwlink/?linkid=2139274';
 export const connectionNamePrefix = 'SQLDbProject';
 export const sqlServerDockerRegistry = 'mcr.microsoft.com';
 export const sqlServerDockerRepository = 'mssql/server';
@@ -170,6 +179,8 @@ export const deployDbTaskName = localize('deployDbTaskName', "Deploying SQL Db P
 export const publishProjectSucceed = localize('publishProjectSucceed', "Database project published successfully");
 export const publishingProjectMessage = localize('publishingProjectMessage', "Publishing project in a container...");
 export const cleaningDockerImagesMessage = localize('cleaningDockerImagesMessage', "Cleaning existing deployments...");
+export const dockerImageMessage = localize('dockerImageMessage', "Docker Image:");
+export const dockerImageEulaMessage = localize('dockerImageEulaMessage', "License Agreement:");
 export const creatingDeploymentSettingsMessage = localize('creatingDeploymentSettingsMessage', "Creating deployment settings ...");
 export const runningDockerMessage = localize('runningDockerMessage', "Building and running the docker container ...");
 export function dockerNotRunningError(error: string) { return localize('dockerNotRunningError', "Failed to verify docker. Please make sure docker is installed and running. Error: '{0}'", error || ''); }
@@ -319,16 +330,14 @@ export const postDeployScriptFriendlyName = localize('postDeployScriptFriendlyNa
 
 // Build
 
-export const NetCoreInstallationConfirmation: string = localize('sqlDatabaseProjects.NetCoreInstallationConfirmation', "The .NET Core SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK location in settings if already installed.");
-export function NetCoreSupportedVersionInstallationConfirmation(installedVersion: string) { return localize('sqlDatabaseProjects.NetCoreSupportedVersionInstallationConfirmation', "Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK supported version location in settings if already installed.", installedVersion); }
-export function NetCoreVersionDowngradeConfirmation(installedVersion: string) { return localize('sqlDatabaseProjects.NetCoreVersionDowngradeConfirmation', "Installed .NET SDK version {0} is newer than the currently supported versions. Project build will not work. Please install .NET Core SDK version 3.1 and include a global.json in the project folder specifying the SDK version to use. [More Information](https://docs.microsoft.com/dotnet/core/versions/selection)", installedVersion); }
-export const UpdateNetCoreLocation: string = localize('sqlDatabaseProjects.UpdateNetCoreLocation', "Update Location");
+export const DotnetInstallationConfirmation: string = localize('sqlDatabaseProjects.DotnetInstallationConfirmation', "The .NET SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or higher or update the .NET SDK location in settings if already installed.");
+export function NetCoreSupportedVersionInstallationConfirmation(installedVersion: string) { return localize('sqlDatabaseProjects.NetCoreSupportedVersionInstallationConfirmation', "Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or higher or update the .NET SDK supported version location in settings if already installed.", installedVersion); }
+export const UpdateDotnetLocation: string = localize('sqlDatabaseProjects.UpdateDotnetLocation', "Update Location");
 export const projectsOutputChannel = localize('sqlDatabaseProjects.outputChannel', "Database Projects");
 
 // Prompt buttons
 export const Install: string = localize('sqlDatabaseProjects.Install', "Install");
 export const DoNotAskAgain: string = localize('sqlDatabaseProjects.doNotAskAgain', "Don't Ask Again");
-export const DoNotShowAgain: string = localize('sqlDatabaseProjects.doNotShowAgain', "Don't Show Again");
 
 // SqlProj file XML names
 export const ItemGroup = 'ItemGroup';

@@ -13,6 +13,7 @@ import * as constants from '../constants/strings';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import { getFullResourceGroupFromId, getLocationDisplayName, getSqlMigrationService, getSqlMigrationServiceAuthKeys, getSqlMigrationServiceMonitoringData, SqlManagedInstance, SqlVMServer } from '../api/azure';
 import { IconPathHelper } from '../constants/iconPathHelper';
+import { logError, TelemetryViews } from '../telemtery';
 import { findDropDownItemIndex, selectDropDownIndex } from '../api/utils';
 import * as styles from '../constants/styles';
 
@@ -428,7 +429,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		try {
 			await this.loadStatus();
 		} catch (error) {
-			console.log(error);
+			logError(TelemetryViews.MigrationWizardIntegrationRuntimePage, 'ErrorLoadingMigrationServiceStatus', error);
 		} finally {
 			this._statusLoadingComponent.loading = false;
 		}
@@ -504,10 +505,10 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 					]
 				];
 
-				this._authKeyTable.dataValues = data;
+				await this._authKeyTable.setDataValues(data);
 			}
 		} catch (e) {
-			console.log(e);
+			logError(TelemetryViews.IntegrationRuntimePage, 'ErrorLoadingStatus', e);
 		}
 	}
 }
