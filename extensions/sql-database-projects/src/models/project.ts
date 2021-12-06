@@ -996,13 +996,9 @@ export class Project implements ISqlProject {
 		}
 
 		if (this.isSdkStyleProject) {
-			// update sqlproj if a node was deleted
+			// update sqlproj if a node was deleted and load files and folders again
 			if (deleted) {
-				await this.serializeToProjFile(this.projFileXmlDoc);
-				const projFileText = await fs.readFile(this._projectFilePath);
-				this.projFileXmlDoc = new xmldom.DOMParser().parseFromString(projFileText.toString());
-				this._files = await this.readFilesInProject();
-				this.files.push(...(await this.readFolders()));
+				await this.writeToSqlProjAndUpdateFilesFolders();
 			}
 			// get latest folders to see if it still exists
 			const currentFolders = await this.readFolders();
@@ -1013,11 +1009,8 @@ export class Project implements ISqlProject {
 				removeFileNode.setAttribute(constants.Remove, utils.convertSlashesForSqlProj(folderPath + '**'));
 				this.findOrCreateItemGroup(constants.Build).appendChild(removeFileNode);
 
-				await this.serializeToProjFile(this.projFileXmlDoc);
-				const projFileText = await fs.readFile(this._projectFilePath);
-				this.projFileXmlDoc = new xmldom.DOMParser().parseFromString(projFileText.toString());
-				this._files = await this.readFilesInProject();
-				this.files.push(...(await this.readFolders()));
+				// write changes and update files so everything is up to date for the next removal
+				await this.writeToSqlProjAndUpdateFilesFolders();
 			}
 
 			deleted = true;
@@ -1026,6 +1019,14 @@ export class Project implements ISqlProject {
 		if (!deleted) {
 			throw new Error(constants.unableToFindObject(folderPath, constants.folderObject));
 		}
+	}
+
+	private async writeToSqlProjAndUpdateFilesFolders(): Promise<void> {
+		await this.serializeToProjFile(this.projFileXmlDoc);
+		const projFileText = await fs.readFile(this._projectFilePath);
+		this.projFileXmlDoc = new xmldom.DOMParser().parseFromString(projFileText.toString());
+		this._files = await this.readFilesInProject();
+		this.files.push(...(await this.readFolders()));
 	}
 
 	private removeSqlCmdVariableFromProjFile(variableName: string): void {
@@ -1284,7 +1285,7 @@ export class Project implements ISqlProject {
 				await this.addFileToProjFile((<FileProjectEntry>entry).relativePath, xmlTag ? xmlTag : constants.Build, attributes);
 				break;
 			case EntryType.Folder:
-				await this.addFolderToProjFile((<FileProjectEntry>entry).relativePath);
+				this.addFolderToProjFile((<FileProjectEntry>entry).relativePath);
 				break;
 			case EntryType.DatabaseReference:
 				await this.addDatabaseReferenceToProjFile(<IDatabaseReferenceProjectEntry>entry);

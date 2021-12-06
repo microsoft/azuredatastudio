@@ -583,7 +583,7 @@ export async function getFoldersInFolder(folderPath: string, ignoreBinObj?: bool
  * Gets the folders between the startFolder to the file
  * @param startFolder
  * @param endFile
- * @returns
+ * @returns array of folders between startFolder and endFile
  */
 export function getFoldersToFile(startFolder: string, endFile: string): string[] {
 	let folders: string[] = [];

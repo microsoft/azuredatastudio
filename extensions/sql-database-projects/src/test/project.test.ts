@@ -13,7 +13,7 @@ import * as constants from '../common/constants';
 
 import { promises as fs } from 'fs';
 import { Project } from '../models/project';
-import { exists, convertSlashesForSqlProj, trimChars } from '../common/utils';
+import { exists, convertSlashesForSqlProj } from '../common/utils';
 import { Uri, window } from 'vscode';
 import { IDacpacReferenceSettings, IProjectReferenceSettings, ISystemDatabaseReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { SqlTargetPlatform } from 'sqldbproj';
