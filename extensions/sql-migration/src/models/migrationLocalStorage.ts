@@ -62,8 +62,9 @@ export class MigrationLocalStorage {
 			}
 			validMigrations.push(migration);
 		}
-    
+
 		await this.context.globalState.update(this.mementoToken, validMigrations);
+
 		sendSqlMigrationActionEvent(
 			TelemetryViews.MigrationLocalStorage,
 			TelemetryAction.Done,
