@@ -15,8 +15,8 @@
         <Item ItemId=";(...) firmation" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or higher or update the .NET SDK supported version location in settings if already installed.]]></Val>
-            <Tgt Cat="Text" Stat="Update" Orig="New">
-              <Val><![CDATA[A versão SDK do .NET Core instalada atualmente é {0}, que não tem suporte. A compilação do projeto não funcionará. Instale a versão 3.1 do SDK do .NET Core ou atualize o local da versão com suporte do SDK do .NET Core nas configurações, se já estiver instalado.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[A versão SDK do .NET Core é {0}, que não tem suporte. O build do projeto não funcionará. Instale o SDK do .NET Core versão 3.1 ou superior ou atualize o local da versão com suporte do SDK do .NET nas configurações, se já estiver instalado.]]></Val>
             </Tgt>
             <Prev Cat="Text">
               <Val><![CDATA[Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK supported version location in settings if already installed.]]></Val>
@@ -2425,6 +2425,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.sqlDatabaseProjects.DotnetInstallationConfirmation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The .NET SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or higher or update the .NET SDK location in settings if already installed.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[O SDK do .NET não pode ser localizado. O build do projeto não funcionará. Instale o SDK do .NET Core versão 3.1 ou superior ou atualize o local do SDK do .NET nas configurações, se já estiver instalado.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2761,8 +2764,8 @@
       <Item ItemId=";extensions/sql-database-projects/package.sqlDatabaseProjects.addSqlBinding" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Add SQL Binding (preview)]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Adicionar Associação SQL]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Adicionar Associação SQL (versão prévia)]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Add SQL Binding]]></Val>
@@ -2845,6 +2848,9 @@
       <Item ItemId=";extensions/sql-database-projects/package.sqlDatabaseProjects.dotnetInstallLocation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Full path to .NET SDK on the machine.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Caminho completo para o SDK do .NET no computador.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
