@@ -5208,6 +5208,20 @@ Error: {1}</source>
       <source xml:lang="en">The session for this notebook will start momentarily</source>
     </trans-unit>
 </body></file>
+  <file original="src/sql/workbench/services/notebook/browser/models/cellEdit" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="addCellEdit">
+      <source xml:lang="en">Add Cell</source>
+    </trans-unit>
+    <trans-unit id="deleteCellEdit">
+      <source xml:lang="en">Delete Cell</source>
+    </trans-unit>
+    <trans-unit id="moveCellEdit">
+      <source xml:lang="en">Move Cell</source>
+    </trans-unit>
+    <trans-unit id="splitCellEdit">
+      <source xml:lang="en">Split Cell</source>
+    </trans-unit>
+</body></file>
   <file original="src/sql/workbench/services/notebook/browser/models/clientSession" source-language="en" datatype="plaintext"><body>
     <trans-unit id="ServerNotStarted">
       <source xml:lang="en">Server did not start for unknown reason</source>

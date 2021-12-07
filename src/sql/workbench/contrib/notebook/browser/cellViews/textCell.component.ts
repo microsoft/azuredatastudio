@@ -277,7 +277,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		}
 	}
 
-	getNodeIndex(n) {
+	getNodeIndex(n: Node): number {
 		let i = 0;
 		// walk up the node to the top and get it's index
 		n = n.previousSibling;

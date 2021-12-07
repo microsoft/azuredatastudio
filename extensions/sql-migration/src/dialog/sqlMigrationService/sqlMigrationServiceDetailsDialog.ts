@@ -216,10 +216,10 @@ export class SqlMigrationServiceDetailsDialog {
 	}
 
 	private async _updateTableCell(table: azdata.DeclarativeTableComponent, row: number, col: number, value: string, keyName: string): Promise<void> {
-		const dataValues = table.dataValues;
+		const dataValues = table.dataValues!;
 		dataValues![row][col].value = value;
-		table.dataValues = [];
-		table.dataValues = dataValues;
+		await table.setDataValues([]);
+		await table.setDataValues(dataValues);
 		await vscode.window.showInformationMessage(constants.AUTH_KEY_REFRESHED(keyName));
 	}
 
