@@ -35,7 +35,7 @@ import { isUUID } from 'vs/base/common/uuid';
 import { TextModel } from 'vs/editor/common/model/textModel';
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
 import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
-import { AddCellEdit, DeleteCellEdit, MoveCellEdit, SplitCellEdit } from 'sql/workbench/services/notebook/browser/models/cellEdit';
+import { AddCellEdit, ConvertCellTypeEdit, DeleteCellEdit, MoveCellEdit, SplitCellEdit } from 'sql/workbench/services/notebook/browser/models/cellEdit';
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
 import { deepClone } from 'vs/base/common/objects';
 
@@ -796,10 +796,13 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._onActiveCellChanged.fire(cell);
 	}
 
-	public convertCellType(cell: ICellModel): void {
+	public convertCellType(cell: ICellModel, addToUndoStack: boolean = true): void {
 		if (cell) {
 			let index = this.findCellIndex(cell);
 			if (index > -1) {
+				if (addToUndoStack) {
+					this.undoService.pushElement(new ConvertCellTypeEdit(this, cell));
+				}
 				// Ensure override language is reset
 				cell.setOverrideLanguage('');
 				cell.cellType = cell.cellType === CellTypes.Markdown ? CellTypes.Code : CellTypes.Markdown;
