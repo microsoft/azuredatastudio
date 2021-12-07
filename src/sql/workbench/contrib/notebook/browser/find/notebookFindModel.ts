@@ -572,16 +572,10 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 			}
 		}
 		if (cell.cellType === 'code' && cell.outputs.length > 0) {
+			// i = row number in result data set.
+			let i: number = 0;
 			cell.outputs.forEach(output => {
 				let findStartResults: number[] = [];
-				let outputDisplayResults = output as nb.IDisplayResult;
-				if (outputDisplayResults.data) {
-					findStartResults = this.search(outputDisplayResults.data.toString(), exp, matchCase, wholeWord, maxMatches - findResults.length);
-					findStartResults?.forEach(start => {
-						let range = new NotebookRange(cell, 1, start, 1, start + exp.length, false, true);
-						findResults.push(range);
-					});
-				}
 				switch (output.output_type) {
 					case 'stream':
 						let cellValFormatted = output as nb.IStreamResult;
@@ -599,13 +593,34 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 							findResults.push(range);
 						});
 						break;
-					case 'execute_result':
-						let executeResult = output as nb.IExecuteResult;
-						findStartResults = this.search(executeResult.data, exp, matchCase, wholeWord, maxMatches - findResults.length);
-						findStartResults?.forEach(start => {
+					case 'display_data':
+						let displayValue = output as nb.IDisplayData;
+						findStartResults = this.search(JSON.parse(JSON.stringify(displayValue.data))['text/html'], exp, matchCase, wholeWord, maxMatches - findResults.length);
+						findStartResults.forEach(start => {
 							let range = new NotebookRange(cell, 1, start, 1, start + exp.length, false, true);
 							findResults.push(range);
 						});
+						break;
+					case 'execute_result':
+						// When result is a table
+						let executeResult = output as nb.IExecuteResult;
+						const result = JSON.parse(JSON.stringify(executeResult.data));
+						const data = result['application/vnd.dataresource+json'].data;
+						if (data.length > 0) {
+							for (let row = 0; row < data.length; row++) {
+								let rowData = data[row];
+								let j: number = 0;
+								for (const key in rowData) {
+									let findStartResults = this.search(rowData[key].toString(), exp, matchCase, wholeWord, maxMatches - findResults.length);
+									if (findStartResults.length) {
+										let range = new NotebookRange(cell, i + 1, j + 1, i + 1, j + 1, false, true);
+										findResults.push(range);
+									}
+									j++;
+								}
+								i++;
+							}
+						}
 						break;
 					default:
 						break;

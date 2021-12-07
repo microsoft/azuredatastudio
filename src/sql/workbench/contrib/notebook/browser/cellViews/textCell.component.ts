@@ -129,7 +129,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IConfigurationService) private _configurationService: IConfigurationService,
-		@Inject(INotebookService) override _notebookService: INotebookService
+		@Inject(INotebookService) override notebookService: INotebookService
 	) {
 		super();
 		this.markdownRenderer = this._instantiationService.createInstance(NotebookMarkdownRenderer);
@@ -333,7 +333,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				outputElement.style.lineHeight = this.markdownPreviewLineHeight.toString();
 				this.cellModel.renderedOutputTextContent = this.getRenderedTextOutput();
 				outputElement.focus();
-				if (this._isFindActive) {
+				if (this.isFindActive) {
 					this.addDecoration();
 				}
 			}

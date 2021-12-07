@@ -4,27 +4,28 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { OnDestroy, ElementRef } from '@angular/core';
+import * as Mark from 'mark.js';
+
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { ICellEditorProvider, INotebookService, NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
 import { MarkdownRenderOptions } from 'vs/base/browser/markdownRenderer';
 import { IMarkdownString } from 'vs/base/common/htmlContent';
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 import { nb } from 'azdata';
-import * as Mark from 'mark.js';
-import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
-import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 
-const findHighlightClass = 'rangeHighlight';
-const findRangeSpecificClass = 'rangeSpecificHighlight';
+export const findHighlightClass = 'rangeHighlight';
+export const findRangeSpecificClass = 'rangeSpecificHighlight';
 export abstract class CellView extends AngularDisposable implements OnDestroy, ICellEditorProvider {
 
-	protected _isFindActive: boolean = false;
-	protected _highlightRange: NotebookRange;
+	protected isFindActive: boolean = false;
+	protected highlightRange: NotebookRange;
 	protected output: ElementRef;
-	protected _notebookService: INotebookService;
+	protected notebookService: INotebookService;
 	protected _model: NotebookModel;
 	isCellOutput: boolean = false;
+	protected searchTerm: string;
 
 	constructor() {
 		super();
@@ -40,47 +41,39 @@ export abstract class CellView extends AngularDisposable implements OnDestroy, I
 		return false;
 	}
 
-	public getCellModel(): ICellModel | undefined {
-		return undefined;
-	}
-
 	public abstract cellGuid(): string;
 
 	public deltaDecorations(newDecorationsRange: NotebookRange | NotebookRange[], oldDecorationsRange: NotebookRange | NotebookRange[]): void {
 		if (newDecorationsRange) {
-			this._isFindActive = true;
+			this.isFindActive = true;
 			if (Array.isArray(newDecorationsRange)) {
 				this.highlightAllMatches();
 			} else {
-				this._highlightRange = newDecorationsRange;
+				this.highlightRange = newDecorationsRange;
 				this.addDecoration(newDecorationsRange);
 			}
 		}
 		if (oldDecorationsRange) {
 			if (Array.isArray(oldDecorationsRange)) {
 				this.removeDecoration();
-				this._isFindActive = false;
+				this.isFindActive = false;
 			} else {
-				this._highlightRange = oldDecorationsRange === this._highlightRange ? undefined : this._highlightRange;
+				this.highlightRange = oldDecorationsRange === this.highlightRange ? undefined : this.highlightRange;
 				this.removeDecoration(oldDecorationsRange);
 			}
 		}
 	}
 
 	protected addDecoration(range?: NotebookRange): void {
-		range = range ?? this._highlightRange;
+		range = range ?? this.highlightRange;
 		if (this.output && this.output.nativeElement) {
 			this.highlightAllMatches();
 			if (range) {
 				let elements = this.getHtmlElements();
 				if (elements?.length >= range.startLineNumber) {
-					// if the decoration range belongs to code cell output, output is in <pre>
-					// in the first child's children.
-					if (range.isCodeOutput) {
-						elements = elements[0].children;
-					}
 					let elementContainingText = elements[range.startLineNumber - 1];
 					let markCurrent = new Mark(elementContainingText); // to highlight the current item of them all.
+
 					markCurrent.markRanges([{
 						start: range.startColumn - 1, //subtracting 1 since markdown html is 0 indexed.
 						length: range.endColumn - range.startColumn
@@ -96,13 +89,10 @@ export abstract class CellView extends AngularDisposable implements OnDestroy, I
 		}
 	}
 
-	private highlightAllMatches(): void {
+	protected highlightAllMatches(): void {
 		if (this.output && this.output.nativeElement) {
 			let markAllOccurances = new Mark(this.output.nativeElement); // to highlight all occurances in the element.
-			if (!this._model) {
-				this._model = this.getCellModel().notebookModel;
-			}
-			let editor = this._notebookService.findNotebookEditor(this._model?.notebookUri);
+			let editor = this.notebookService.findNotebookEditor(this._model.notebookUri);
 			if (editor) {
 				let findModel = (editor.notebookParams.input as NotebookInput).notebookFindModel;
 				if (findModel?.findMatches?.length > 0) {
@@ -119,9 +109,6 @@ export abstract class CellView extends AngularDisposable implements OnDestroy, I
 		if (this.output && this.output.nativeElement) {
 			if (range) {
 				let elements = this.getHtmlElements();
-				if (range.isCodeOutput) {
-					elements = elements[0].children;
-				}
 				let elementContainingText = elements[range.startLineNumber - 1];
 				let markCurrent = new Mark(elementContainingText);
 				markCurrent.unmark({ acrossElements: true, className: findRangeSpecificClass });
@@ -129,10 +116,11 @@ export abstract class CellView extends AngularDisposable implements OnDestroy, I
 				let markAllOccurances = new Mark(this.output.nativeElement);
 				markAllOccurances.unmark({ acrossElements: true, className: findHighlightClass });
 				markAllOccurances.unmark({ acrossElements: true, className: findRangeSpecificClass });
-				this._highlightRange = undefined;
+				this.highlightRange = undefined;
 			}
 		}
 	}
+
 
 	protected getHtmlElements(): any[] {
 		let hostElem = this.output?.nativeElement;
@@ -159,7 +147,8 @@ export abstract class CellView extends AngularDisposable implements OnDestroy, I
 		return children;
 	}
 
-	private getChildren(parent: any): any[] {
+
+	protected getChildren(parent: any): any[] {
 		let children: any = [];
 		if (parent.children.length > 1 && parent.nodeName.toLowerCase() !== 'li' && parent.nodeName.toLowerCase() !== 'p') {
 			for (let child of parent.children) {

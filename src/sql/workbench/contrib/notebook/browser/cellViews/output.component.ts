@@ -6,6 +6,8 @@ import 'vs/css!./code';
 import 'vs/css!./media/output';
 
 import { OnInit, Component, Input, Inject, ElementRef, ViewChild, SimpleChange, AfterViewInit, forwardRef, ChangeDetectorRef, ComponentRef, ComponentFactoryResolver } from '@angular/core';
+import * as Mark from 'mark.js';
+
 import { Event } from 'vs/base/common/event';
 import { nb } from 'azdata';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
@@ -19,8 +21,9 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { localize } from 'vs/nls';
 import * as types from 'vs/base/common/types';
 import { getErrorMessage } from 'vs/base/common/errors';
-import { CellView } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
-import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
+import { CellView, findHighlightClass, findRangeSpecificClass } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
+import { INotebookService, NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
+import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 
 export const OUTPUT_SELECTOR: string = 'output-component';
 const USER_SELECT_CLASS = 'actionselect';
@@ -48,7 +51,7 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeref: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _ref: ElementRef,
 		@Inject(forwardRef(() => ComponentFactoryResolver)) private _componentFactoryResolver: ComponentFactoryResolver,
-		@Inject(INotebookService) override _notebookService: INotebookService
+		@Inject(INotebookService) override notebookService: INotebookService
 	) {
 		super();
 	}
@@ -192,7 +195,136 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 
 	override isCellOutput = true;
 
-	override getCellModel(): ICellModel {
+	getCellModel(): ICellModel {
 		return this.cellModel;
 	}
+
+	protected override addDecoration(range?: NotebookRange): void {
+		range = range ?? this.highlightRange;
+		if (this.output && this.output.nativeElement) {
+			this.highlightAllMatches();
+			if (range) {
+				let elements = this.getHtmlElements();
+				if (elements?.length >= range.startLineNumber) {
+					let elementContainingText = elements[range.startLineNumber - 1];
+					let markCurrent = new Mark(elementContainingText); // to highlight the current item of them all.
+					if (elementContainingText.nodeName !== 'PRE' && elementContainingText.children.length > 0) {
+						markCurrent = new Mark(elementContainingText.children[range.startColumn]);
+						markCurrent?.mark(this.searchTerm, {
+							className: findRangeSpecificClass,
+							each: function (node, range) {
+								// node is the marked DOM element
+								node.scrollIntoView({ behavior: 'smooth', block: 'center' });
+							}
+						});
+					} else {
+						markCurrent.markRanges([{
+							start: range.startColumn - 1, //subtracting 1 since markdown html is 0 indexed.
+							length: range.endColumn - range.startColumn
+						}], {
+							className: findRangeSpecificClass,
+							each: function (node, range) {
+								// node is the marked DOM element
+								node.scrollIntoView({ behavior: 'smooth', block: 'center' });
+							}
+						});
+					}
+				}
+			}
+		}
+	}
+
+	protected override highlightAllMatches(): void {
+		if (this.output && this.output.nativeElement) {
+			let markAllOccurances = new Mark(this.output.nativeElement); // to highlight all occurances in the element.
+			if (!this._model) {
+				this._model = this.getCellModel().notebookModel;
+			}
+			let editor = this.notebookService.findNotebookEditor(this._model?.notebookUri);
+			if (editor) {
+				let findModel = (editor.notebookParams.input as NotebookInput).notebookFindModel;
+				if (findModel?.findMatches?.length > 0) {
+					this.searchTerm = findModel.findExpression;
+					markAllOccurances.mark(this.searchTerm, {
+						className: findHighlightClass
+					});
+					// if there is a grid
+					let grids = document.querySelectorAll('[class="grid-canvas"]');
+					grids?.forEach(g => {
+						markAllOccurances = new Mark(g);
+						markAllOccurances.mark(this.searchTerm, {
+							className: findHighlightClass
+						});
+					});
+
+				}
+			}
+		}
+	}
+
+	protected override removeDecoration(range?: NotebookRange): void {
+		if (this.output && this.output.nativeElement) {
+			if (range) {
+				let elements = this.getHtmlElements();
+				let elementContainingText = elements[range.startLineNumber - 1];
+				let markCurrent = new Mark(elementContainingText);
+				markCurrent.unmark({ acrossElements: true, className: findRangeSpecificClass });
+			} else {
+				let markAllOccurances = new Mark(this.output.nativeElement);
+				markAllOccurances.unmark({ acrossElements: true, className: findHighlightClass });
+				markAllOccurances.unmark({ acrossElements: true, className: findRangeSpecificClass });
+				this.highlightRange = undefined;
+				// if there is a grid
+				let grids = document.querySelectorAll('[class="grid-canvas"]');
+				grids?.forEach(g => {
+					markAllOccurances = new Mark(g);
+					markAllOccurances.unmark({ acrossElements: true, className: findHighlightClass });
+					markAllOccurances.unmark({ acrossElements: true, className: findRangeSpecificClass });
+				});
+			}
+		}
+	}
+
+	protected override getHtmlElements(): any[] {
+		let hostElem = this.output?.nativeElement;
+		let children = [];
+		if (hostElem) {
+			if (this.isCellOutput) {
+				let slickGrid = document.querySelectorAll('[class="grid-canvas"]');
+				if (slickGrid.length > 0) {
+					slickGrid.forEach(grid => {
+						children.push(...grid.children);
+					});
+				} else {
+					// if the decoration range belongs to code cell output, output is a stream of data
+					// it's in <pre> tag of the first child's children.
+					let results = hostElem.children[0]?.children;
+					if (results) {
+						children.push(...results);
+					}
+				}
+
+			} else {
+				for (let element of hostElem.children) {
+					if (element.nodeName.toLowerCase() === 'table') {
+						// add table header and table rows.
+						if (element.children.length > 0) {
+							children.push(element.children[0]);
+							if (element.children.length > 1) {
+								for (let trow of element.children[1].children) {
+									children.push(trow);
+								}
+							}
+						}
+					} else if (element.children.length > 1) {
+						children = children.concat(this.getChildren(element));
+					} else {
+						children.push(element);
+					}
+				}
+			}
+		}
+		return children;
+	}
+
 }
