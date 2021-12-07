@@ -30,6 +30,9 @@ import { nb } from 'azdata';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { ExecuteManagerStub, SerializationManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
+import { TestDialogService } from 'vs/platform/dialogs/test/common/testDialogService';
+import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { UndoRedoService } from 'vs/platform/undoRedo/common/undoRedoService';
 
 suite('CellToolbarActions', function (): void {
 	suite('removeDuplicatedAndStartingSeparators', function (): void {
@@ -203,6 +206,10 @@ export async function createandLoadNotebookModel(codeContent?: nb.INotebookConte
 	let serviceCollection = new ServiceCollection();
 	let instantiationService = new InstantiationService(serviceCollection, true);
 	let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
+	let dialogService = TypeMoq.Mock.ofType<IDialogService>(TestDialogService, TypeMoq.MockBehavior.Loose);
+	let notificationService = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService, TypeMoq.MockBehavior.Loose);
+	let undoRedoService = new UndoRedoService(dialogService.object, notificationService.object);
+
 	mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(codeContent ? codeContent : defaultCodeContent));
 	let defaultModelOptions: INotebookModelOptions = {
 		notebookUri: URI.file('/some/path.ipynb'),
@@ -218,5 +225,5 @@ export async function createandLoadNotebookModel(codeContent?: nb.INotebookConte
 		layoutChanged: undefined,
 		capabilitiesService: undefined
 	};
-	return new NotebookModel(defaultModelOptions, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+	return new NotebookModel(defaultModelOptions, undefined, undefined, undefined, undefined, undefined, undefined, undoRedoService);
 }
