@@ -164,11 +164,6 @@ export class Notebook {
 		await this.code.waitForElement(jupyterErrorOutput);
 	}
 
-	async waitForJupyterOutput(): Promise<void> {
-		const jupyterOutput = `.notebook-cell.active .notebook-output mime-output[data-mime-type="application/vnd.jupyter.stdout"]`;
-		await this.code.waitForElement(jupyterOutput);
-	}
-
 	async waitForActiveCellResults(): Promise<void> {
 		const outputComponent = '.notebook-cell.active .notebook-output';
 		await this.code.waitForElement(outputComponent);

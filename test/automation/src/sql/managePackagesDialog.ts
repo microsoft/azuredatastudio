@@ -23,23 +23,33 @@ export class ManagePackagesDialog extends Dialog {
 		const addNewTab = `${ManagePackagesDialog.dialogPage} div[class="tab-header"][aria-controls="dialogPane.Manage Packages.1"]`;
 		await this.code.waitAndClick(addNewTab);
 
-		const searchInputBox = `${ManagePackagesDialog.dialogPage} input[class="input"]`;
-		await this.code.waitAndClick(searchInputBox);
-		await this.code.waitForTypeInEditor(searchInputBox, packageName);
+		const loadingSpinner = `${ManagePackagesDialog.dialogPage} div.modelview-loadingComponent-spinner`;
 
-		const searchButton = `${ManagePackagesDialog.dialogPage} a[class="monaco-button monaco-text-button"][aria-label="Search"]`;
+		await this.code.waitForElement(loadingSpinner);
+		await this.code.waitForElementGone(loadingSpinner);
+
+		const searchInputBox = `${ManagePackagesDialog.dialogPage} .monaco-inputbox`;
+		await this.code.waitAndClick(searchInputBox);
+
+		const searchInputBoxEditor = `${searchInputBox} input.input`;
+		await this.code.waitForTypeInEditor(searchInputBoxEditor, packageName);
+
+		await this.code.dispatchKeybinding('enter');
+
+		const searchButton = `${ManagePackagesDialog.dialogPage} a[class="monaco-button monaco-text-button"][aria-label="Search"][aria-disabled="false"]`;
 		await this.code.waitAndClick(searchButton);
 
-		const installButton = `${ManagePackagesDialog.dialogPage} a[class="monaco-button monaco-text-button"][aria-label="Install"]`;
+		const installButton = `${ManagePackagesDialog.dialogPage} a[class="monaco-button monaco-text-button"][aria-label="Install"][aria-disabled="false"]`;
 		await this.code.waitAndClick(installButton);
 
-		const installedTab = `${ManagePackagesDialog.dialogPage} div[class="tab-header"][aria-controls="dialogPane.Manage Packages.0]`;
+		const installedTab = `${ManagePackagesDialog.dialogPage} div[class="tab-header"][aria-controls="dialogPane.Manage Packages.0"]`;
 		await this.code.waitAndClick(installedTab);
 
-		const packageGridCell = `${ManagePackagesDialog.dialogPage} div[role="gridcell"][aria-label=${packageName}]`;
-		await this.code.waitForElement(packageGridCell);
+		// The installed packages tab will reload once the package has been installed
+		await this.code.waitForElement(loadingSpinner);
+		await this.code.waitForElementGone(loadingSpinner);
 
-		const closeButton = `${ManagePackagesDialog.dialogPage} .modal-footer .right-footer a[aria-label="Close"]`;
+		const closeButton = '.modal .modal-footer a[class="monaco-button monaco-text-button"][aria-label="Close"][aria-disabled="false"]';
 		await this.code.waitAndClick(closeButton);
 	}
 }

@@ -92,8 +92,8 @@ export function setup() {
 			await app.workbench.managePackagesDialog.waitForManagePackagesDialog();
 			await app.workbench.managePackagesDialog.addNewPackage('pyarrow');
 
+			// There should be no error output when running the cell after pyarrow has been installed
 			await app.workbench.sqlNotebook.runActiveCell();
-			await app.workbench.sqlNotebook.waitForJupyterOutput();
 		});
 
 		it('can open ipynb file, run all, and save notebook with outputs', async function () {
