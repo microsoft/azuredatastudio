@@ -88,3 +88,23 @@ export class AddCellEdit implements IResourceUndoRedoElement {
 		this.model.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.RedoCell, this.cellOperation);
 	}
 }
+
+export class ConvertCellTypeEdit implements IResourceUndoRedoElement {
+	type: UndoRedoElementType.Resource = UndoRedoElementType.Resource;
+	label: string = localize('convertCellTypeEdit', "Convert Cell Type");
+	resource = this.model.notebookUri;
+	private readonly cellOperation = { cell_operation: 'convert_cell_type' };
+
+	constructor(private model: NotebookModel, private cell: ICellModel) {
+	}
+
+	undo(): void {
+		this.model.convertCellType(this.cell, false);
+		this.model.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.UndoCell, this.cellOperation);
+	}
+
+	redo(): void {
+		this.model.convertCellType(this.cell, false);
+		this.model.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.RedoCell, this.cellOperation);
+	}
+}
