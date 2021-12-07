@@ -338,6 +338,7 @@ export class CellModel extends Disposable implements ICellModel {
 	private cleanUnusedAttachments(source: string): void {
 		const originalAttachments = this._attachments;
 		this._attachments = {};
+		// Find existing attachments in the form ![...](attachment:...) so that we can make sure we keep those attachments
 		const attachmentRegex = /!\[[^\]]*\]\(attachment:([^\)]*)\)/g;
 		let match;
 		while (match = attachmentRegex.exec(source)) {
