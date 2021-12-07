@@ -573,6 +573,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				let newCell = undefined, tailCell = undefined, partialSource = undefined;
 				let newCellIndex = index;
 				let tailCellIndex = index;
+				let splitCells: ICellModel[] = [];
 				let newLinesRemoved: string[] = [];
 
 				// Save UI state
@@ -608,6 +609,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						headsource = headsource.concat(partialSource.toString());
 					}
 					this.cells[index].source = headsource;
+					splitCells.push(this.cells[index]);
 				}
 
 				if (newCellContent.length) {
@@ -630,6 +632,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						newCell.source = newSource;
 						newCellIndex++;
 						this.insertCell(newCell, newCellIndex, false);
+						splitCells.push(this.cells[newCellIndex]);
 					}
 					else { //update the existing cell
 						this.cells[index].source = newSource;
@@ -651,14 +654,14 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					tailCell.source = tailSource;
 					tailCellIndex = newCellIndex + 1;
 					this.insertCell(tailCell, tailCellIndex, false);
+					splitCells.push(this.cells[tailCellIndex]);
 				}
 
 				let activeCell = newCell ? newCell : (headContent.length ? tailCell : this.cells[index]);
 				let activeCellIndex = newCell ? newCellIndex : (headContent.length ? tailCellIndex : index);
 
 				if (addToUndoStack) {
-					let headCell = newCell ? newCell : this.cells[index];
-					this.undoService.pushElement(new SplitCellEdit(this, headCell, tailCell, newLinesRemoved));
+					this.undoService.pushElement(new SplitCellEdit(this, splitCells, newLinesRemoved));
 				}
 				//make new cell Active
 				this.updateActiveCell(activeCell);
@@ -679,19 +682,24 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return undefined;
 	}
 
-	public mergeCells(cell: ICellModel, secondCell: ICellModel, newLinesRemoved: string[] | undefined): void {
+	public mergeCells(cells: ICellModel[], newLinesRemoved: string[] | undefined): void {
 		let index = this._cells.findIndex(cell => cell.equals(cell));
 		if (index > -1) {
-			cell.source = newLinesRemoved.length > 0 ? [...cell.source, ...newLinesRemoved, ...secondCell.source] : [...cell.source, ...secondCell.source];
-			cell.isEditMode = true;
+			// Append the other cell sources to the first cell
+			for (let i = 1; i < cells.length; i++) {
+				cells[0].source = newLinesRemoved.length > 0 ? [...cells[0].source, ...newLinesRemoved, ...cells[i].source] : [...cells[0].source, ...cells[i].source];
+			}
+			cells[0].isEditMode = true;
 			// Set newly created cell as active cell
-			this.updateActiveCell(cell);
+			this.updateActiveCell(cells[0]);
 			this._contentChangedEmitter.fire({
 				changeType: NotebookChangeType.CellsModified,
-				cells: [cell],
+				cells: [cells[0]],
 				cellIndex: index
 			});
-			this.deleteCell(secondCell, false);
+			for (let i = 1; i < cells.length; i++) {
+				this.deleteCell(cells[i], false);
+			}
 		}
 	}
 
