@@ -1234,6 +1234,28 @@ suite('Cell Model', function (): void {
 		assert.deepStrictEqual(cellModel.attachments, attachments, 'addAttachment should not add duplicate images');
 	});
 
+	test('deleting attachment from cell source should remove it from attachments should add a valid attachment to cell', async function () {
+		let imageFilebase64Value = 'data:application/octet-stream;base64,iVBORw0KGgoAAAANSU';
+		let index = imageFilebase64Value.indexOf('base64,');
+		const testImageAttachment: nb.ICellAttachment = { ['image/png']: imageFilebase64Value.substring(index + 7) };
+		let attachments: nb.ICellAttachments = { 'test.png': testImageAttachment };
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let contents: nb.ICellContents = {
+			cell_type: CellTypes.Markdown,
+			source: '',
+			metadata: {}
+		};
+		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+		model.addAttachment('image/png', imageFilebase64Value, 'test.png');
+		assert.deepStrictEqual(model.attachments, attachments, 'attachment was not added initially');
+		model.source = '';
+		assert.deepStrictEqual(model.attachments, {}, 'attachments should be empty after clearing attachment from cell');
+	});
+
 	test('cell should fire onCurrentEditModeChanged on edit', async function () {
 
 		let notebookModel = new NotebookModelStub({
