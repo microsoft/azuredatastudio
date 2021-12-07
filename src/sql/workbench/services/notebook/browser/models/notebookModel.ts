@@ -683,23 +683,21 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public mergeCells(cells: ICellModel[], newLinesRemoved: string[] | undefined): void {
-		let index = this._cells.findIndex(cell => cell.equals(cell));
-		if (index > -1) {
-			// Append the other cell sources to the first cell
-			for (let i = 1; i < cells.length; i++) {
-				cells[0].source = newLinesRemoved.length > 0 ? [...cells[0].source, ...newLinesRemoved, ...cells[i].source] : [...cells[0].source, ...cells[i].source];
-			}
-			cells[0].isEditMode = true;
-			// Set newly created cell as active cell
-			this.updateActiveCell(cells[0]);
-			this._contentChangedEmitter.fire({
-				changeType: NotebookChangeType.CellsModified,
-				cells: [cells[0]],
-				cellIndex: index
-			});
-			for (let i = 1; i < cells.length; i++) {
-				this.deleteCell(cells[i], false);
-			}
+		let firstCell = cells[0];
+		// Append the other cell sources to the first cell
+		for (let i = 1; i < cells.length; i++) {
+			firstCell.source = newLinesRemoved.length > 0 ? [...firstCell.source, ...newLinesRemoved, ...cells[i].source] : [...firstCell.source, ...cells[i].source];
+		}
+		firstCell.isEditMode = true;
+		// Set newly created cell as active cell
+		this.updateActiveCell(firstCell);
+		this._contentChangedEmitter.fire({
+			changeType: NotebookChangeType.CellsModified,
+			cells: [firstCell],
+			cellIndex: 0
+		});
+		for (let i = 1; i < cells.length; i++) {
+			this.deleteCell(cells[i], false);
 		}
 	}
 
