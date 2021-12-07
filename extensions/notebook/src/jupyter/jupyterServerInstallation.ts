@@ -505,7 +505,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	 * Opens a dialog for configuring the installation path for the Notebook Python dependencies.
 	 */
 	public async promptForPythonInstall(kernelDisplayName: string): Promise<void> {
-		if (this._runningOnSAW) {
+		if (this._runningOnSAW || this._tsgops) {
 			return Promise.resolve();
 		}
 		if (this._installInProgress) {
