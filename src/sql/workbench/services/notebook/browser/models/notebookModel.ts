@@ -58,6 +58,11 @@ interface INotebookMetadataInternal extends nb.INotebookMetadata {
 	azdata_notebook_guid?: string;
 }
 
+export type SplitCell = {
+	cell: ICellModel;
+	prefix: string | undefined;
+};
+
 type NotebookMetadataKeys = Required<nb.INotebookMetadata>;
 const expectedMetadataKeys: NotebookMetadataKeys = {
 	kernelspec: undefined,
@@ -573,8 +578,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				let newCell = undefined, tailCell = undefined, partialSource = undefined;
 				let newCellIndex = index;
 				let tailCellIndex = index;
-				let splitCells: ICellModel[] = [];
-				let newlinesBeforeTailCellContent: string = '';
+				let splitCells: SplitCell[] = [];
+				let newlinesBeforeTailCellContent: string;
 
 				// Save UI state
 				let showMarkdown = this.cells[index].showMarkdown;
@@ -609,7 +614,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						headsource = headsource.concat(partialSource.toString());
 					}
 					this.cells[index].source = headsource;
-					splitCells.push(this.cells[index]);
+					splitCells.push({ cell: this.cells[index], prefix: undefined });
 				}
 
 				if (newCellContent.length) {
@@ -632,7 +637,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						newCell.source = newSource;
 						newCellIndex++;
 						this.insertCell(newCell, newCellIndex, false);
-						splitCells.push(this.cells[newCellIndex]);
+						splitCells.push({ cell: this.cells[newCellIndex], prefix: undefined });
 					}
 					else { //update the existing cell
 						this.cells[index].source = newSource;
@@ -654,14 +659,14 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					tailCell.source = tailSource;
 					tailCellIndex = newCellIndex + 1;
 					this.insertCell(tailCell, tailCellIndex, false);
-					splitCells.push(this.cells[tailCellIndex]);
+					splitCells.push({ cell: this.cells[tailCellIndex], prefix: newlinesBeforeTailCellContent });
 				}
 
 				let activeCell = newCell ? newCell : (headContent.length ? tailCell : this.cells[index]);
 				let activeCellIndex = newCell ? newCellIndex : (headContent.length ? tailCellIndex : index);
 
 				if (addToUndoStack) {
-					this.undoService.pushElement(new SplitCellEdit(this, splitCells, newlinesBeforeTailCellContent));
+					this.undoService.pushElement(new SplitCellEdit(this, splitCells));
 				}
 				//make new cell Active
 				this.updateActiveCell(activeCell);
@@ -682,11 +687,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return undefined;
 	}
 
-	public mergeCells(cells: ICellModel[], newlinesBeforeTailCellContent: string): void {
-		let firstCell = cells[0];
+	public mergeCells(cells: SplitCell[]): void {
+		let firstCell = cells[0].cell;
 		// Append the other cell sources to the first cell
 		for (let i = 1; i < cells.length; i++) {
-			firstCell.source = newlinesBeforeTailCellContent.length > 0 ? [...firstCell.source, ...newlinesBeforeTailCellContent, ...cells[i].source] : [...firstCell.source, ...cells[i].source];
+			firstCell.source = cells[i].prefix ? [...firstCell.source, ...cells[i].prefix, ...cells[i].cell.source] : [...firstCell.source, ...cells[i].cell.source];
 		}
 		firstCell.isEditMode = true;
 		// Set newly created cell as active cell
@@ -697,7 +702,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			cellIndex: 0
 		});
 		for (let i = 1; i < cells.length; i++) {
-			this.deleteCell(cells[i], false);
+			this.deleteCell(cells[i].cell, false);
 		}
 	}
 
