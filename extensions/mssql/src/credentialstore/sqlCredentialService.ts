@@ -53,7 +53,7 @@ export class SqlCredentialService extends SqlOpsFeature<any> {
 			 * Removes a credential for a given connection profile from sqltoolsservice
 			 * and adds it to secret storage
 			 */
-			private async migrateCredential(conn: azdata.connection.ConnectionProfile): Promise<boolean> {
+			private async migrateCredential(conn: azdata.connection.ConnectionProfile): Promise<void> {
 				const credentialId = Utils.formatCredentialId(conn);
 				// read password from every saved password connection
 				const credential = await this._client.sendRequest(Contracts.ReadCredentialRequest.type, { credentialId, password: undefined });
@@ -65,14 +65,9 @@ export class SqlCredentialService extends SqlOpsFeature<any> {
 					const savedPassword = await this._secretStorage.get(credentialId);
 					if (savedPassword === password) {
 						// delete from tools service
-						const result = await this._client.sendRequest(Contracts.DeleteCredentialRequest.type,
+						await this._client.sendRequest(Contracts.DeleteCredentialRequest.type,
 							{ credentialId, password: undefined });
-						return result;
-					} else {
-						return false;
 					}
-				} else {
-					return false;
 				}
 			}
 
@@ -85,7 +80,12 @@ export class SqlCredentialService extends SqlOpsFeature<any> {
 				const savedPasswordConnections = connections.filter(conn => conn.savePassword === true);
 				for (let i = 0; i < savedPasswordConnections.length; i++) {
 					let conn = savedPasswordConnections[i];
-					await this.migrateCredential(conn);
+					try {
+						await this.migrateCredential(conn);
+					} catch (e) {
+						console.log(`Migrate credential failed for connection ${conn.connectionName}`);
+					}
+
 				}
 				await Utils.removeCredentialFile();
 			}
