@@ -633,7 +633,15 @@ export class CellRange {
 	}
 }
 
+export const enum NotebookEditOperationType {
+	InsertCell = 0,
+	DeleteCell = 1,
+	ReplaceCells = 2,
+	UpdateCell = 3
+}
+
 export interface ISingleNotebookEditOperation {
+	type: NotebookEditOperationType;
 	range: ICellRange;
 	cell: Partial<nb.ICellContents>;
 	forceMoveMarkers: boolean;

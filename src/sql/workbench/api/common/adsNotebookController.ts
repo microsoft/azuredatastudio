@@ -9,6 +9,10 @@ import { INotebookKernelDto2 } from 'vs/workbench/api/common/extHost.protocol';
 import { Emitter, Event } from 'vs/base/common/event';
 import * as extHostTypeConverters from 'vs/workbench/api/common/extHostTypeConverters';
 import { Deferred } from 'sql/base/common/promise';
+import { IOutputDto } from 'vs/workbench/contrib/notebook/common/notebookCommon';
+import { NotebookCellOutput } from 'vs/workbench/api/common/extHostTypes';
+import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/common/extHostNotebookDocumentsAndEditors';
+import { URI } from 'vs/base/common/uri';
 
 type SelectionChangedEvent = { selected: boolean, notebook: vscode.NotebookDocument; };
 type MessageReceivedEvent = { editor: vscode.NotebookEditor, message: any; };
@@ -31,6 +35,7 @@ export class ADSNotebookController implements vscode.NotebookController {
 		private _viewType: string,
 		private _label: string,
 		private _addLanguagesHandler: (providerId, languages) => void,
+		private _extHostNotebookDocumentsAndEditors: ExtHostNotebookDocumentsAndEditors,
 		private _handler?: ExecutionHandler,
 		preloads?: vscode.NotebookRendererScript[]
 	) {
@@ -132,7 +137,7 @@ export class ADSNotebookController implements vscode.NotebookController {
 	}
 
 	public createNotebookCellExecution(cell: vscode.NotebookCell): vscode.NotebookCellExecution {
-		return new ADSNotebookCellExecution(cell);
+		return new ADSNotebookCellExecution(cell, this._extHostNotebookDocumentsAndEditors);
 	}
 
 	public dispose(): void {
@@ -154,7 +159,7 @@ export class ADSNotebookController implements vscode.NotebookController {
 
 class ADSNotebookCellExecution implements vscode.NotebookCellExecution {
 	private _executionOrder: number;
-	constructor(private readonly _cell: vscode.NotebookCell) {
+	constructor(private readonly _cell: vscode.NotebookCell, private readonly _extHostNotebookDocumentsAndEditors: ExtHostNotebookDocumentsAndEditors) {
 		this._executionOrder = this._cell.executionSummary?.executionOrder ?? -1;
 	}
 
@@ -187,7 +192,8 @@ class ADSNotebookCellExecution implements vscode.NotebookCellExecution {
 	}
 
 	public async replaceOutput(out: vscode.NotebookCellOutput | vscode.NotebookCellOutput[], cell?: vscode.NotebookCell): Promise<void> {
-		// No-op
+		// TODO that.verifyStateForOutput();
+		return this.updateOutputs(out, cell, false);
 	}
 
 	public async appendOutput(out: vscode.NotebookCellOutput | vscode.NotebookCellOutput[], cell?: vscode.NotebookCell): Promise<void> {
@@ -200,5 +206,31 @@ class ADSNotebookCellExecution implements vscode.NotebookCellExecution {
 
 	public async appendOutputItems(items: vscode.NotebookCellOutputItem | vscode.NotebookCellOutputItem[], output: vscode.NotebookCellOutput): Promise<void> {
 		// No-op
+	}
+
+	private async updateOutputs(outputs: vscode.NotebookCellOutput | vscode.NotebookCellOutput[], cell: vscode.NotebookCell | number | undefined, append: boolean): Promise<void> {
+		//const handle = this.cellIndexToHandle(cell);
+		// const outputDtos = this.validateAndConvertOutputs(asArray(outputs));
+		// const edit: IImmediateCellEditOperation = { editType: CellEditType.Output, handle: 0, append, outputs: outputDtos };
+		const editor = this._extHostNotebookDocumentsAndEditors.getEditor(URI.from(this._cell.notebook.uri).toString());
+		await editor.edit(builder => {
+			// builder.insertCell({ cell_type: 'code', source: 'Hello world!'});
+			// EDITS TO CELL GO HERE
+		});
+		// return this._proxy.$applyEdits(this._cell.notebook.uri, [edit], false);
+	}
+
+	private validateAndConvertOutputs(items: vscode.NotebookCellOutput[]): IOutputDto[] {
+		return items.map(output => {
+			const newOutput = NotebookCellOutput.ensureUniqueMimeTypes(output.items, true);
+			if (newOutput === output.items) {
+				return extHostTypeConverters.NotebookCellOutput.from(output);
+			}
+			return extHostTypeConverters.NotebookCellOutput.from({
+				items: newOutput,
+				id: output.id,
+				metadata: output.metadata
+			});
+		});
 	}
 }
