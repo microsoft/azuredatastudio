@@ -236,7 +236,9 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 			return sessionManager.dispose();
 		});
 	}
+	//#endregion
 
+	//#region APIs called by extensions
 	registerExecuteProvider(provider: azdata.nb.NotebookExecuteProvider): vscode.Disposable {
 		if (!provider || !provider.providerId) {
 			throw new Error(localize('executeProviderRequired', "A NotebookExecuteProvider with valid providerId must be passed to this method"));
@@ -261,21 +263,15 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 	}
 
 	createNotebookController(extension: IExtensionDescription, id: string, viewType: string, label: string, handler?: (cells: vscode.NotebookCell[], notebook: vscode.NotebookDocument, controller: vscode.NotebookController) => void | Thenable<void>, rendererScripts?: vscode.NotebookRendererScript[]): vscode.NotebookController {
-		let addLanguagesHandler = (id, languages) => this.updateProviderDescriptionLanguages(id, languages);
+		let addLanguagesHandler = (id, languages) => this._proxy.$updateProviderDescriptionLanguages(id, languages);
 		let controller = new ADSNotebookController(extension, id, viewType, label, addLanguagesHandler, handler, extension.enableProposedApi ? rendererScripts : undefined);
 		let executeProvider = new VSCodeExecuteProvider(controller);
 		this.registerExecuteProvider(executeProvider);
 		return controller;
 	}
-
-	updateProviderDescriptionLanguages(providerId: string, languages: string[]): void {
-		this._proxy.$updateProviderDescriptionLanguages(providerId, languages);
-	}
 	//#endregion
 
-
 	//#region private methods
-
 	private getAdapters<A>(ctor: { new(...args: any[]): A }): A[] {
 		let matchingAdapters = [];
 		this._adapters.forEach(a => {
