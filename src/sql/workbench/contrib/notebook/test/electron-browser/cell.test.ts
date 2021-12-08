@@ -1267,4 +1267,47 @@ suite('Cell Model', function (): void {
 		assert(editMode);
 		assert.strictEqual(editMode, CellEditModes.WYSIWYG, 'Default edit mode should be WYSIWYG.');
 	});
+
+	test('cell should have lastEditMode set to whatever the user edited out of last', async function () {
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let contents: nb.ICellContents = {
+			cell_type: CellTypes.Markdown,
+			source: '',
+			metadata: {}
+		};
+		let cellModel = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+
+		// Non-Editing Preview mode -> showPreview should be true and showMarkdown should be false.
+		assert(cellModel.showPreview, 'showPreview should default to true when not in editMode');
+		assert(!cellModel.showMarkdown, 'showMarkdown should be false when not in editMode');
+
+		// Initially lastEditMode should be undefined
+		assert.strictEqual(cellModel.lastEditMode, undefined, 'Last edit mode should be undefined');
+
+		// enter edit mode for the first time -> no lastEditMode set
+		cellModel.isEditMode = true;
+
+		// update mode to markdown only mode -> lastEditMode is Markdown
+		cellModel.showPreview = false;
+		cellModel.showMarkdown = true;
+
+		assert.strictEqual(cellModel.lastEditMode, 'Markdown', 'LastEditMode should be Markdown');
+
+		// switch the edit mode to split view -> lastEditMode should be updated to SplitView
+		cellModel.showPreview = true;
+		cellModel.showMarkdown = true;
+
+		assert.strictEqual(cellModel.lastEditMode, 'Split View', 'LastEditMode should be SplitView');
+
+		// switch the edit mode to split view -> lastEditMode should be updated to SplitView
+		cellModel.showPreview = true;
+		cellModel.showMarkdown = false;
+
+		assert.strictEqual(cellModel.lastEditMode, 'Rich Text', 'LastEditMode should be RichText');
+	});
+
 });

@@ -85,7 +85,7 @@ export class CellModel extends Disposable implements ICellModel {
 	private _outputCounter = 0; // When re-executing the same cell, ensure that we apply chart options in the same order
 	private _attachments: nb.ICellAttachments | undefined;
 	private _preventNextChartCache: boolean = false;
-	private _lastEditMode: string | undefined;
+	public lastEditMode: string | undefined;
 	public richTextCursorPosition: ICaretPosition | undefined;
 	public markdownCursorPosition: IPosition | undefined;
 
@@ -229,7 +229,7 @@ export class CellModel extends Disposable implements ICellModel {
 	public set isEditMode(isEditMode: boolean) {
 		this._isEditMode = isEditMode;
 		if (this._isEditMode) {
-			const newEditMode = this._lastEditMode ?? this._defaultTextEditMode;
+			const newEditMode = this.lastEditMode ?? this._defaultTextEditMode;
 			this.showPreview = newEditMode !== TextCellEditModes.Markdown;
 			this.showMarkdown = newEditMode !== TextCellEditModes.RichText;
 		}
@@ -434,7 +434,7 @@ export class CellModel extends Disposable implements ICellModel {
 
 	private doModeUpdates() {
 		if (this._isEditMode) {
-			this._lastEditMode = this._showPreview && this._showMarkdown ? TextCellEditModes.SplitView : (this._showMarkdown ? TextCellEditModes.Markdown : TextCellEditModes.RichText);
+			this.lastEditMode = this._showPreview && this._showMarkdown ? TextCellEditModes.SplitView : (this._showMarkdown ? TextCellEditModes.Markdown : TextCellEditModes.RichText);
 		}
 		this._onCurrentEditModeChanged.fire(this.currentMode);
 	}
