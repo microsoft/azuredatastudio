@@ -128,8 +128,10 @@ export const newText = localize('new', "New");
 export const selectDatabase = localize('selectDatabase', "Select database");
 export const done = localize('done', "Done");
 export const nameMustNotBeEmpty = localize('nameMustNotBeEmpty', "Name must not be empty");
-export const diagnosticFile = localize('diagnosticFile', "Diagnostic File");
-export const diagnosticFilePath = localize('diagnosticFilePath', "Diagnostic File path");
+export const diagnosticsFile = localize('diagnosticsFile', "Diagnostics File");
+export const diagnosticsFilePath = localize('diagnosticsFilePath', "Diagnostics File path");
+export const fileLocation = localize('fileLocation', "File Location");
+export const selectFile = localize('selectFile', "Select File");
 
 // Deploy
 export const selectPublishOption = localize('selectPublishOption', "Select where to publish the project to");
@@ -282,6 +284,14 @@ export const parentTreeItemUnknown = localize('parentTreeItemUnknown', "Cannot a
 export const prePostDeployCount = localize('prePostDeployCount', "To successfully build, update the project to have one pre-deployment script and/or one post-deployment script");
 export const invalidProjectReload = localize('invalidProjectReload', "Cannot access provided database project. Only valid, open database projects can be reloaded.");
 export const externalStreamingJobValidationPassed = localize('externalStreamingJobValidationPassed', "Validation of external streaming job passed.");
+export const undefinedFilenameErrorMessage = localize('fileNameValidation.undefinedFilenameErrorMessage', "Undefined name");
+export const filenameEndingIsPeriodErrorMessage = localize('fileNameValidation.filenameEndingInPeriodErrorMessage', "File name cannot end with a period");
+export const whitespaceFilenameErrorMessage = localize('fileNameValidation.whitespaceFilenameErrorMessage', "File name cannot be whitespace");
+export const invalidFileCharsErrorMessage = localize('fileNameValidation.invalidFileCharsErrorMessage', "Invalid file characters");
+export const reservedWindowsFilenameErrorMessage = localize('fileNameValidation.reservedWindowsFilenameErrorMessage', "This file name is reserved for use by Windows. Choose another name and try again");
+export const reservedValueErrorMessage = localize('fileNameValidation.reservedValueErrorMessage', "Reserved file name. Choose another name and try again");
+export const trailingWhitespaceErrorMessage = localize('fileNameValidation.trailingWhitespaceErrorMessage', "File name cannot end with a whitespace");
+export const tooLongFilenameErrorMessage = localize('fileNameValidation.tooLongFilenameErrorMessage', "File name is over 255 characters");
 export function projectAlreadyOpened(path: string) { return localize('projectAlreadyOpened', "Project '{0}' is already opened.", path); }
 export function projectAlreadyExists(name: string, path: string) { return localize('projectAlreadyExists', "A project named {0} already exists in {1}.", name, path); }
 export function noFileExist(fileName: string) { return localize('noFileExist', "File {0} doesn't exist", fileName); }
