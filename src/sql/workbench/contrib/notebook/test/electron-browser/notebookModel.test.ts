@@ -15,7 +15,7 @@ import { TestDialogService } from 'vs/platform/dialogs/test/common/testDialogSer
 import { URI } from 'vs/base/common/uri';
 
 import { ExecuteManagerStub, SerializationManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
-import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
+import { NotebookModel, SplitCell } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
 import { IClientSession, INotebookModelOptions, NotebookContentChange, IClientSessionOptions, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { ClientSession } from 'sql/workbench/services/notebook/browser/models/clientSession';
@@ -603,6 +603,49 @@ suite('notebook model', function (): void {
 		model.redo();
 		assert.strictEqual(model.cells.indexOf(firstCell), 1, 'Failed to redo');
 		assert.strictEqual(model.cells.indexOf(secondCell), 0, 'Failed to redo');
+	});
+
+	test('Should merge when undoing split cells', async function (): Promise<void> {
+		let expectedNotebookContentSplitCells: nb.INotebookContents = {
+			cells: [{
+				cell_type: CellTypes.Code,
+				source: ['foobar '],
+				execution_count: 1
+			}, {
+				cell_type: CellTypes.Code,
+				source: ['    hello'],
+				execution_count: 1
+			}],
+			metadata: {
+				kernelspec: {
+					name: 'mssql',
+					language: 'sql',
+					display_name: 'SQL'
+				},
+				language_info: {
+					name: 'sql'
+				}
+			},
+			nbformat: 4,
+			nbformat_minor: 5
+		};
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
+		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContentSplitCells));
+		defaultModelOptions.contentLoader = mockContentManager.object;
+
+		// When I initialize the model
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService, undoRedoService);
+		await model.loadContents();
+
+		let splitCells: SplitCell[] = [
+			{ cell: model.cells[0], prefix: undefined },
+			{ cell: model.cells[1], prefix: '\n' }
+		];
+
+		// Merge cells
+		model.mergeCells(splitCells);
+		assert.strictEqual(model.cells.length, 1, 'Cells not deleted after merging');
+		assert.notStrictEqual(model.cells[0].source, ['foobar ', '\n', '    hello'], 'Cell source is not copied correctly');
 	});
 
 	test('Should notify cell on metadata change', async function (): Promise<void> {
