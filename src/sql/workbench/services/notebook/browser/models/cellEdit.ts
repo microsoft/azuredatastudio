@@ -5,7 +5,7 @@
 
 import { IResourceUndoRedoElement, UndoRedoElementType } from 'vs/platform/undoRedo/common/undoRedo';
 import { ICellModel, MoveDirection } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
-import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
+import { NotebookModel, SplitCell } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { localize } from 'vs/nls';
 
@@ -36,11 +36,11 @@ export class SplitCellEdit implements IResourceUndoRedoElement {
 	resource = this.model.notebookUri;
 	private readonly cellOperation = { cell_operation: 'split_cell' };
 
-	constructor(private model: NotebookModel, private firstCell: ICellModel, private secondCell: ICellModel, private newLinesRemoved: string[]) {
+	constructor(private model: NotebookModel, private cells: SplitCell[]) {
 	}
 
 	undo(): void {
-		this.model.mergeCells(this.firstCell, this.secondCell, this.newLinesRemoved);
+		this.model.mergeCells(this.cells);
 		this.model.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.UndoCell, this.cellOperation);
 	}
 
