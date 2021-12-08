@@ -245,7 +245,6 @@ class VSCodeSessionManager implements azdata.nb.SessionManager {
 
 	public async startNew(options: azdata.nb.ISessionOptions): Promise<azdata.nb.ISession> {
 		if (!this.isReady) {
-			// no-op
 			return Promise.reject(new Error(nls.localize('errorStartBeforeReady', "Cannot start a session, the manager is not yet initialized")));
 		}
 
