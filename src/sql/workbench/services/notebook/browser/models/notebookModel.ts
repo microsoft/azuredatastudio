@@ -574,7 +574,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				let newCellIndex = index;
 				let tailCellIndex = index;
 				let splitCells: ICellModel[] = [];
-				let newLinesRemoved: string[] = [];
+				let newlinesBeforeTailCellContent: string = '';
 
 				// Save UI state
 				let showMarkdown = this.cells[index].showMarkdown;
@@ -649,7 +649,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					}
 					//Remove the trailing empty line after the cursor
 					if (tailSource[0] === '\r\n' || tailSource[0] === '\n') {
-						newLinesRemoved = tailSource.splice(0, 1);
+						newlinesBeforeTailCellContent = tailSource.splice(0, 1)[0];
 					}
 					tailCell.source = tailSource;
 					tailCellIndex = newCellIndex + 1;
@@ -661,7 +661,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				let activeCellIndex = newCell ? newCellIndex : (headContent.length ? tailCellIndex : index);
 
 				if (addToUndoStack) {
-					this.undoService.pushElement(new SplitCellEdit(this, splitCells, newLinesRemoved));
+					this.undoService.pushElement(new SplitCellEdit(this, splitCells, newlinesBeforeTailCellContent));
 				}
 				//make new cell Active
 				this.updateActiveCell(activeCell);
@@ -682,11 +682,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return undefined;
 	}
 
-	public mergeCells(cells: ICellModel[], newLinesRemoved: string[] | undefined): void {
+	public mergeCells(cells: ICellModel[], newlinesBeforeTailCellContent: string): void {
 		let firstCell = cells[0];
 		// Append the other cell sources to the first cell
 		for (let i = 1; i < cells.length; i++) {
-			firstCell.source = newLinesRemoved.length > 0 ? [...firstCell.source, ...newLinesRemoved, ...cells[i].source] : [...firstCell.source, ...cells[i].source];
+			firstCell.source = newlinesBeforeTailCellContent.length > 0 ? [...firstCell.source, ...newlinesBeforeTailCellContent, ...cells[i].source] : [...firstCell.source, ...cells[i].source];
 		}
 		firstCell.isEditMode = true;
 		// Set newly created cell as active cell

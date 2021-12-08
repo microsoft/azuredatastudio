@@ -36,11 +36,11 @@ export class SplitCellEdit implements IResourceUndoRedoElement {
 	resource = this.model.notebookUri;
 	private readonly cellOperation = { cell_operation: 'split_cell' };
 
-	constructor(private model: NotebookModel, private cells: ICellModel[], private newLinesRemoved: string[]) {
+	constructor(private model: NotebookModel, private cells: ICellModel[], private newlinesBeforeTailCellContent: string) {
 	}
 
 	undo(): void {
-		this.model.mergeCells(this.cells, this.newLinesRemoved);
+		this.model.mergeCells(this.cells, this.newlinesBeforeTailCellContent);
 		this.model.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.UndoCell, this.cellOperation);
 	}
 
