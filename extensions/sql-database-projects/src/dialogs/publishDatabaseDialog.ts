@@ -56,6 +56,9 @@ export class PublishDatabaseDialog {
 	private deploymentOptions: DeploymentOptions | undefined;
 	private profileUsed: boolean = false;
 	private serverName: string | undefined;
+	private diagfileCheckBox: azdataType.FlexContainer | undefined;
+	private loadDiagFileCheckBox: azdataType.CheckBoxComponent | undefined;
+	private diagFileTextBoxcomponent!: azdataType.Component;
 
 	private completionPromise: Deferred = new Deferred();
 
@@ -137,9 +140,10 @@ export class PublishDatabaseDialog {
 			const profileRow = this.createProfileRow(view);
 			this.connectionRow = this.createConnectionRow(view);
 			this.databaseRow = this.createDatabaseRow(view);
+			this.diagfileCheckBox = this.createDiagFileRow(view);
 
 			const horizontalFormSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
-			horizontalFormSection.addItems([profileRow, this.databaseRow]);
+			horizontalFormSection.addItems([profileRow, this.databaseRow, this.diagfileCheckBox]);
 
 
 			this.formBuilder = <azdataType.FormBuilder>view.modelBuilder.formContainer()
@@ -501,6 +505,51 @@ export class PublishDatabaseDialog {
 		if ((<DataSourceDropdownValue>this.dataSourcesDropDown!.value)?.database) {
 			this.targetDatabaseDropDown!.value = (<DataSourceDropdownValue>this.dataSourcesDropDown!.value).database;
 		}
+	}
+
+	private createDiagFileRow(view: azdataType.ModelView): azdataType.FlexContainer {
+		const diagFileLabel = view.modelBuilder.text().withProps({
+			value: constants.diagnosticFile,
+			width: cssStyles.publishDialogLabelWidth
+		}).component();
+
+		this.loadDiagFileCheckBox = view.modelBuilder.checkBox().withProps({
+			ariaLabel: constants.profile,
+			required: false
+		}).component();
+
+		const diagfileRow = view.modelBuilder.flexContainer().withItems([diagFileLabel, this.loadDiagFileCheckBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+
+		// Generate the diagnostic file path text box
+		this.diagFileTextBoxcomponent = this.createDiagFileTextBox(view);
+		this.loadDiagFileCheckBox.onChanged(() => {
+			if (this.loadDiagFileCheckBox?.checked) {
+				view.modelBuilder.flexContainer().withItems([diagFileLabel, this.diagFileTextBoxcomponent], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+				this.formBuilder!.insertFormItem({ component: this.diagFileTextBoxcomponent }, 4, { horizontal: true, titleFontSize: 13 });
+			} else {
+				this.formBuilder!.removeFormItem({ component: this.diagFileTextBoxcomponent });
+			}
+
+		});
+		return diagfileRow;
+	}
+
+	private createDiagFileTextBox(view: azdataType.ModelView): azdataType.Component {
+		const diagFilePathLabel = view.modelBuilder.text().withProps({
+			value: constants.diagnosticFilePath,
+			width: cssStyles.publishDialogLabelWidth
+		}).component();
+
+		const diagFileTextBox = view.modelBuilder.inputBox().withProps({
+			ariaLabel: 'sourceDatabase',
+			value: 'Select diagnostic file save location...',
+			width: 280,
+			CSSStyles: { 'margin-right': '10px' },
+		}).component();
+
+		const diagFileTextBoxcomponent = view.modelBuilder.flexContainer().withItems([diagFilePathLabel, diagFileTextBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+
+		return diagFileTextBoxcomponent;
 	}
 
 	private createProfileRow(view: azdataType.ModelView): azdataType.FlexContainer {

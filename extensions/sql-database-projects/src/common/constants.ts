@@ -128,6 +128,8 @@ export const newText = localize('new', "New");
 export const selectDatabase = localize('selectDatabase', "Select database");
 export const done = localize('done', "Done");
 export const nameMustNotBeEmpty = localize('nameMustNotBeEmpty', "Name must not be empty");
+export const diagnosticFile = localize('diagnosticFile', "Diagnostic File");
+export const diagnosticFilePath = localize('diagnosticFilePath', "Diagnostic File path");
 
 // Deploy
 export const selectPublishOption = localize('selectPublishOption', "Select where to publish the project to");
