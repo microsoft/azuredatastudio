@@ -507,7 +507,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public async requestModelLoad(): Promise<void> {
 		try {
-			this.setDefaultKernelAndProviderId();
+			await this.setDefaultKernelAndProviderId();
 			this.trySetLanguageFromLangInfo();
 		} catch (error) {
 			this._inErrorState = true;
@@ -939,7 +939,15 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._activeClientSession = clientSession;
 	}
 
-	public setDefaultKernelAndProviderId() {
+	public async setDefaultKernelAndProviderId(): Promise<void> {
+		if (!this._defaultKernel) {
+			await this.executeManager.sessionManager.ready;
+			if (this.executeManager.sessionManager.specs) {
+				let defaultKernelName = this.executeManager.sessionManager.specs.defaultKernel;
+				this._defaultKernel = this.executeManager.sessionManager.specs.kernels.find(kernel => kernel.name === defaultKernelName);
+			}
+		}
+
 		if (this._capabilitiesService?.providers) {
 			let providers = this._capabilitiesService.providers;
 			for (const server in providers) {
@@ -951,39 +959,34 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				}
 			}
 		}
-		// if (this._savedKernelInfo) {
-		// 	this.sanitizeSavedKernelInfo();
-		// 	let provider = this._kernelDisplayNameToNotebookProviderIds.get(this._savedKernelInfo.display_name);
-		// 	if (provider && provider !== this._providerId) {
-		// 		this._providerId = provider;
-		// 	} else if (!provider) {
-		// 		this.notebookOptions.executeManagers.forEach(m => {
-		// 			if (m.providerId !== SQL_NOTEBOOK_PROVIDER) {
-		// 				// We don't know which provider it is before that provider is chosen to query its specs. Choosing the "last" one registered.
-		// 				this._providerId = m.providerId;
-		// 			}
-		// 		});
-		// 	}
-		// 	this._defaultKernel = this._savedKernelInfo;
-		// } else if (this._defaultKernel) {
-		// 	let providerId = this._kernelDisplayNameToNotebookProviderIds.get(this._defaultKernel.display_name);
-		// 	if (providerId) {
-		// 		if (this._providerId !== providerId) {
-		// 			this._providerId = providerId;
-		// 		}
-		// 	} else {
-		// 		this._defaultKernel = notebookConstants.sqlKernelSpec;
-		// 		this._providerId = SQL_NOTEBOOK_PROVIDER;
-		// 	}
-		// } else {
-		// 	this._defaultKernel = notebookConstants.sqlKernelSpec;
-		// 	this._providerId = SQL_NOTEBOOK_PROVIDER;
-		// }
-		this._defaultKernel = {
-			name: 'python',
-			display_name: 'python',
-			language: 'python'
-		};
+		if (this._savedKernelInfo) {
+			this.sanitizeSavedKernelInfo();
+			let provider = this._kernelDisplayNameToNotebookProviderIds.get(this._savedKernelInfo.display_name);
+			if (provider && provider !== this._providerId) {
+				this._providerId = provider;
+			} else if (!provider) {
+				this.notebookOptions.executeManagers.forEach(m => {
+					if (m.providerId !== SQL_NOTEBOOK_PROVIDER) {
+						// We don't know which provider it is before that provider is chosen to query its specs. Choosing the "last" one registered.
+						this._providerId = m.providerId;
+					}
+				});
+			}
+			this._defaultKernel = this._savedKernelInfo;
+		} else if (this._defaultKernel) {
+			let providerId = this._kernelDisplayNameToNotebookProviderIds.get(this._defaultKernel.display_name);
+			if (providerId) {
+				if (this._providerId !== providerId) {
+					this._providerId = providerId;
+				}
+			} else {
+				this._defaultKernel = notebookConstants.sqlKernelSpec;
+				this._providerId = SQL_NOTEBOOK_PROVIDER;
+			}
+		} else {
+			this._defaultKernel = notebookConstants.sqlKernelSpec;
+			this._providerId = SQL_NOTEBOOK_PROVIDER;
+		}
 		if (!this._defaultLanguageInfo?.name) {
 			// update default language
 			this._defaultLanguageInfo = {
@@ -1266,20 +1269,20 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return kernel;
 	}
 
-	// private sanitizeSavedKernelInfo(): void {
-	// 	if (this._savedKernelInfo) {
-	// 		let displayName = this._savedKernelInfo.display_name;
+	private sanitizeSavedKernelInfo(): void {
+		if (this._savedKernelInfo) {
+			let displayName = this._savedKernelInfo.display_name;
 
-	// 		if (this._savedKernelInfo.display_name !== displayName) {
-	// 			this._savedKernelInfo.display_name = displayName;
-	// 		}
-	// 		let standardKernel = this._standardKernels.find(kernel => kernel.displayName === displayName || displayName.startsWith(kernel.displayName));
-	// 		if (standardKernel && this._savedKernelInfo.name && this._savedKernelInfo.name !== standardKernel.name) {
-	// 			this._savedKernelInfo.name = standardKernel.name;
-	// 			this._savedKernelInfo.display_name = standardKernel.displayName;
-	// 		}
-	// 	}
-	// }
+			if (this._savedKernelInfo.display_name !== displayName) {
+				this._savedKernelInfo.display_name = displayName;
+			}
+			let standardKernel = this._standardKernels.find(kernel => kernel.displayName === displayName || displayName.startsWith(kernel.displayName));
+			if (standardKernel && this._savedKernelInfo.name && this._savedKernelInfo.name !== standardKernel.name) {
+				this._savedKernelInfo.name = standardKernel.name;
+				this._savedKernelInfo.display_name = standardKernel.displayName;
+			}
+		}
+	}
 
 	public getDisplayNameFromSpecName(kernel: nb.IKernel): string | undefined {
 		let specs = this.executeManager?.sessionManager.specs;
