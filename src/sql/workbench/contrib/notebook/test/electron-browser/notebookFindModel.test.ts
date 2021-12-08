@@ -27,11 +27,12 @@ import { InstantiationService } from 'vs/platform/instantiation/common/instantia
 import { ClientSession } from 'sql/workbench/services/notebook/browser/models/clientSession';
 import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
 import { NotebookEditorContentLoader } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
-import { NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
+import { NotebookRange, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookMarkdownRenderer } from 'sql/workbench/contrib/notebook/browser/outputs/notebookMarkdown';
 import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
+import { SessionManager } from 'sql/workbench/contrib/notebook/test/emptySessionClasses';
 
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -78,6 +79,9 @@ suite('Notebook Find Model', function (): void {
 	let configurationService: IConfigurationService;
 
 	setup(async () => {
+		let mockSessionManager = TypeMoq.Mock.ofType(SessionManager);
+		executeManagers[0].providerId = SQL_NOTEBOOK_PROVIDER;
+		executeManagers[0].sessionManager = mockSessionManager.object;
 		sessionReady = new Deferred<void>();
 		notificationService = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService, TypeMoq.MockBehavior.Loose);
 		capabilitiesService = TypeMoq.Mock.ofType<ICapabilitiesService>(TestCapabilitiesService);
