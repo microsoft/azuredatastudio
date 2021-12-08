@@ -25,16 +25,11 @@ export class ManagePackagesDialog extends Dialog {
 
 		const loadingSpinner = `${ManagePackagesDialog.dialogPage} div.modelview-loadingComponent-spinner`;
 
-		await this.code.waitForElement(loadingSpinner);
-		await this.code.waitForElementGone(loadingSpinner);
-
 		const searchInputBox = `${ManagePackagesDialog.dialogPage} .monaco-inputbox`;
 		await this.code.waitAndClick(searchInputBox);
 
 		const searchInputBoxEditor = `${searchInputBox} input.input`;
 		await this.code.waitForTypeInEditor(searchInputBoxEditor, packageName);
-
-		await this.code.dispatchKeybinding('enter');
 
 		const searchButton = `${ManagePackagesDialog.dialogPage} a[class="monaco-button monaco-text-button"][aria-label="Search"][aria-disabled="false"]`;
 		await this.code.waitAndClick(searchButton);
