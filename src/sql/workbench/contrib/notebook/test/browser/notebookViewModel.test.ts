@@ -33,6 +33,7 @@ import { TestConfigurationService } from 'sql/platform/connection/test/common/te
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { NotebookViewModel } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewModel';
 import { isUndefinedOrNull } from 'vs/base/common/types';
+import { SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
 
 let initialNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -240,6 +241,7 @@ suite('NotebookViewModel', function (): void {
 
 	function setupServices() {
 		mockSessionManager = TypeMoq.Mock.ofType(SessionManager);
+		executeManagers[0].providerId = SQL_NOTEBOOK_PROVIDER;
 		executeManagers[0].sessionManager = mockSessionManager.object;
 		notificationService = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService, TypeMoq.MockBehavior.Loose);
 		capabilitiesService = TypeMoq.Mock.ofType<ICapabilitiesService>(TestCapabilitiesService);
