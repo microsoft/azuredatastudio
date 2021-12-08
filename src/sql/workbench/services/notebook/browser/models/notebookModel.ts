@@ -579,7 +579,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				let newCellIndex = index;
 				let tailCellIndex = index;
 				let splitCells: SplitCell[] = [];
-				let newlinesBeforeTailCellContent: string;
 
 				// Save UI state
 				let showMarkdown = this.cells[index].showMarkdown;
@@ -652,6 +651,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						partialSource = source.slice(tailRange.startLineNumber - 1, tailRange.startLineNumber)[0].slice(tailRange.startColumn - 1);
 						tailSource.splice(0, 1, partialSource);
 					}
+					let newlinesBeforeTailCellContent: string;
 					//Remove the trailing empty line after the cursor
 					if (tailSource[0] === '\r\n' || tailSource[0] === '\n') {
 						newlinesBeforeTailCellContent = tailSource.splice(0, 1)[0];
