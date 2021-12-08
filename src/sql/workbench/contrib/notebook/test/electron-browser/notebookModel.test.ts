@@ -42,6 +42,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { UndoRedoService } from 'vs/platform/undoRedo/common/undoRedoService';
+import { SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
 
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -154,6 +155,7 @@ suite('notebook model', function (): void {
 	const logService = new NullLogService();
 	setup(() => {
 		mockSessionManager = TypeMoq.Mock.ofType(SessionManager);
+		executeManagers[0].providerId = SQL_NOTEBOOK_PROVIDER;
 		executeManagers[0].sessionManager = mockSessionManager.object;
 		sessionReady = new Deferred<void>();
 		notificationService = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService, TypeMoq.MockBehavior.Loose);
