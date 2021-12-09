@@ -39,7 +39,11 @@ declare module 'arc' {
 		kubeClusterContext: string,
 		namespace: string,
 		name: string,
-		resources: ResourceInfo[]
+		resources: ResourceInfo[],
+		resourceGroup: string,
+		connectionMode: string,
+		location: string,
+		customLocation: string
 	};
 
 	export interface DataController {
