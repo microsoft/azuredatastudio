@@ -11,7 +11,7 @@ import * as Contracts from './contracts';
 import { Disposable, SecretStorage } from 'vscode';
 import * as azdata from 'azdata';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
-import { Deferred } from '../typings/promise';
+import { Deferred } from '../types';
 
 export class SqlCredentialService extends SqlOpsFeature<any> {
 
