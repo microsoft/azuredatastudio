@@ -217,7 +217,7 @@ suite('Notebook Serializer', () => {
 			},
 			execution_count: 1
 		};
-		let expectedVSCodeOutput: vscode.NotebookCellOutputItem[] = [{
+		let expectedVSCodeOutputItems: vscode.NotebookCellOutputItem[] = [{
 			mime: 'text/plain',
 			data: VSBuffer.fromString('abc').buffer
 		}, {
@@ -225,7 +225,7 @@ suite('Notebook Serializer', () => {
 			data: VSBuffer.fromString('<i>abc</i>').buffer
 		}];
 		let actualOutput = VSCodeContentManager.convertToVscodeCellOutput(cellOutput);
-		assert.deepStrictEqual(actualOutput, expectedVSCodeOutput);
+		assert.deepStrictEqual(actualOutput.items, expectedVSCodeOutputItems);
 	});
 
 	test('Convert ADS notebook stream result to VSCode notebook output', async () => {
@@ -236,12 +236,12 @@ suite('Notebook Serializer', () => {
 				'abc'
 			]
 		};
-		let expectedVSCodeOutput: vscode.NotebookCellOutputItem[] = [{
+		let expectedVSCodeOutputItems: vscode.NotebookCellOutputItem[] = [{
 			mime: 'text/html',
 			data: VSBuffer.fromString('abc').buffer
 		}];
 		let actualOutput = VSCodeContentManager.convertToVscodeCellOutput(cellOutput);
-		assert.deepStrictEqual(actualOutput, expectedVSCodeOutput);
+		assert.deepStrictEqual(actualOutput.items, expectedVSCodeOutputItems);
 	});
 
 	test('Convert ADS notebook error with trace to VSCode notebook output', async () => {
@@ -251,12 +251,12 @@ suite('Notebook Serializer', () => {
 			evalue: 'Expected test error',
 			traceback: ['Trace line 1', 'Trace line 2']
 		};
-		let expectedVSCodeOutput: vscode.NotebookCellOutputItem[] = [{
+		let expectedVSCodeOutputItems: vscode.NotebookCellOutputItem[] = [{
 			mime: 'text/html',
 			data: VSBuffer.fromString('TestException: Expected test error\nTrace line 1\nTrace line 2').buffer
 		}];
 		let actualOutput = VSCodeContentManager.convertToVscodeCellOutput(cellOutput);
-		assert.deepStrictEqual(actualOutput, expectedVSCodeOutput);
+		assert.deepStrictEqual(actualOutput.items, expectedVSCodeOutputItems);
 	});
 
 	test('Convert ADS notebook error without trace to VSCode notebook output', async () => {
@@ -265,12 +265,12 @@ suite('Notebook Serializer', () => {
 			ename: 'TestException',
 			evalue: 'Expected test error'
 		};
-		let expectedVSCodeOutput: vscode.NotebookCellOutputItem[] = [{
+		let expectedVSCodeOutputItems: vscode.NotebookCellOutputItem[] = [{
 			mime: 'text/html',
 			data: VSBuffer.fromString('TestException: Expected test error').buffer
 		}];
 		let actualOutput = VSCodeContentManager.convertToVscodeCellOutput(cellOutput);
-		assert.deepStrictEqual(actualOutput, expectedVSCodeOutput);
+		assert.deepStrictEqual(actualOutput.items, expectedVSCodeOutputItems);
 	});
 
 	test('Deserialize VSCode notebook into ADS notebook data', async () => {
