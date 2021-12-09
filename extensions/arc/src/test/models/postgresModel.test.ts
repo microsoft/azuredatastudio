@@ -32,9 +32,6 @@
 // 		apiVersion: 'version',
 // 		kind: 'postgresql',
 // 		metadata: {
-//			annotations: {
-//				'management.azure.com/customLocation': ''
-//			}
 // 			creationTimestamp: '',
 // 			generation: 1,
 // 			name: 'pgt',
