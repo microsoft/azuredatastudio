@@ -55,7 +55,7 @@
 	"cms.connectionOptions.serverDescription.description": "Описание экземпляра SQL Server",
 	"cms.connectionOptions.authType.displayName": "Тип проверки подлинности",
 	"cms.connectionOptions.authType.description": "Указывает способ проверки подлинности в SQL Server",
-	"cms.connectionOptions.authType.categoryValues.sqlLogin": "Имя входе SQL",
+	"cms.connectionOptions.authType.categoryValues.sqlLogin": "Имя входа SQL",
 	"cms.connectionOptions.authType.categoryValues.integrated": "Проверка подлинности Windows.",
 	"cms.connectionOptions.authType.categoryValues.azureMFA": "Azure Active Directory — универсальный с поддержкой MFA",
 	"cms.connectionOptions.userName.displayName": "Имя пользователя",

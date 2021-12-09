@@ -279,7 +279,7 @@
 			"mssql.connectionOptions.attachedDBFileName.displayName": "Имя вложенного файла базы данных",
 			"mssql.connectionOptions.authType.categoryValues.azureMFA": "Azure Active Directory — универсальный с поддержкой MFA",
 			"mssql.connectionOptions.authType.categoryValues.integrated": "Проверка подлинности Windows.",
-			"mssql.connectionOptions.authType.categoryValues.sqlLogin": "Имя входе SQL",
+			"mssql.connectionOptions.authType.categoryValues.sqlLogin": "Имя входа SQL",
 			"mssql.connectionOptions.authType.description": "Указывает способ проверки подлинности в SQL Server",
 			"mssql.connectionOptions.authType.displayName": "Тип проверки подлинности",
 			"mssql.connectionOptions.columnEncryptionSetting.description": "Включает или отключает Always Encrypted для подключения",

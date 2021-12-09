@@ -71,7 +71,7 @@
 	"mssql.connectionOptions.databaseName.description": "Имя исходного каталога или базы данных в источнике данных",
 	"mssql.connectionOptions.authType.displayName": "Тип проверки подлинности",
 	"mssql.connectionOptions.authType.description": "Указывает способ проверки подлинности в SQL Server",
-	"mssql.connectionOptions.authType.categoryValues.sqlLogin": "Имя входе SQL",
+	"mssql.connectionOptions.authType.categoryValues.sqlLogin": "Имя входа SQL",
 	"mssql.connectionOptions.authType.categoryValues.integrated": "Проверка подлинности Windows.",
 	"mssql.connectionOptions.authType.categoryValues.azureMFA": "Azure Active Directory — универсальный с поддержкой MFA",
 	"mssql.connectionOptions.userName.displayName": "Имя пользователя",
