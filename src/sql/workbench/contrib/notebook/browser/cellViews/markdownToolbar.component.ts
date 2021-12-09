@@ -55,11 +55,11 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 				// Underline text
 				DOM.EventHelper.stop(e, true);
 				await markdownTextTransformer.transformText(MarkdownButtonType.UNDERLINE);
-			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && e.shiftKey && keyEvent.keyCode === KeyCode.KEY_K) {
+			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.shiftKey && keyEvent.keyCode === KeyCode.KEY_K) {
 				// Code Block
 				DOM.EventHelper.stop(e, true);
 				await markdownTextTransformer.transformText(MarkdownButtonType.CODE);
-			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && e.shiftKey && keyEvent.keyCode === KeyCode.KEY_H) {
+			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.shiftKey && keyEvent.keyCode === KeyCode.KEY_H) {
 				// Highlight Text
 				DOM.EventHelper.stop(e, true);
 				await markdownTextTransformer.transformText(MarkdownButtonType.HIGHLIGHT);
