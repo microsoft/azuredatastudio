@@ -203,9 +203,11 @@ export class ConnectToControllerDialog extends ControllerDialogBase {
 			controllerModel.info.connectionMode = <string>controllerModel.controllerConfig?.spec.settings.azure.connectionMode;
 			controllerModel.info.location = <string>controllerModel.controllerConfig?.spec.settings.azure.location;
 
-			const rawCustomLocation = <string>controllerModel.controllerConfig?.metadata.annotations['management.azure.com/customLocation'];
-			const exp = /\/\bsubscriptions\b\/[\S]*\/\bresourceGroups\/[\S]*\/providers\/[\S]*\/customLocations\/([\S]*)/;
-			controllerModel.info.customLocation = <string>exp.exec(rawCustomLocation)?.pop();
+			if (controllerModel.info.connectionMode === 'direct') {
+				const rawCustomLocation = <string>controllerModel.controllerConfig?.metadata.annotations['management.azure.com/customLocation'];
+				const exp = /\/\bsubscriptions\b\/[\S]*\/\bresourceGroups\/[\S]*\/providers\/[\S]*\/customLocations\/([\S]*)/;
+				controllerModel.info.customLocation = <string>exp.exec(rawCustomLocation)?.pop();
+			}
 		} catch (err) {
 			this.dialog.message = {
 				text: loc.connectToControllerFailed(this.namespaceInputBox.value, err),
