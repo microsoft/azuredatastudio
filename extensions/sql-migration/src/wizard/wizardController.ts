@@ -15,7 +15,7 @@ import { IntergrationRuntimePage } from './integrationRuntimePage';
 import { SummaryPage } from './summaryPage';
 import { MigrationModePage } from './migrationModePage';
 import { DatabaseSelectorPage } from './databaseSelectorPage';
-import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../telemtery';
+import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews, logError } from '../telemtery';
 import * as styles from '../constants/styles';
 
 export const WIZARD_INPUT_COMPONENT_WIDTH = '600px';
@@ -80,7 +80,7 @@ export class WizardController {
 		this._model.extensionContext.subscriptions.push(this._wizardObject.onPageChanged(async (pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
 			const newPage = pageChangeInfo.newPage;
 			const lastPage = pageChangeInfo.lastPage;
-			this.sendPageButtonClickEvent(pageChangeInfo).catch(e => console.log(e));
+			this.sendPageButtonClickEvent(pageChangeInfo).catch(e => logError(TelemetryViews.MigrationWizardController, 'ErrorSendingPageButtonClick', e));
 			await pages[lastPage]?.onPageLeave(pageChangeInfo);
 			await pages[newPage]?.onPageEnter(pageChangeInfo);
 		}));

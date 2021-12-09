@@ -44,9 +44,9 @@
       {
         "title": "%sqlDatabaseProjects.Settings%",
         "properties": {
-          "sqlDatabaseProjects.netCoreSDKLocation": {
+          "sqlDatabaseProjects.dotnetSDK Location": {
             "type": "string",
-            "description": "%sqlDatabaseProjects.netCoreInstallLocation%"
+            "description": "%sqlDatabaseProjects.dotnetInstallLocation%"
           },
           "sqlDatabaseProjects.netCoreDoNotAsk": {
             "type": "boolean",
