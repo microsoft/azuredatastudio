@@ -11,6 +11,7 @@ import * as Contracts from './contracts';
 import { Disposable, SecretStorage } from 'vscode';
 import * as azdata from 'azdata';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
+import { Deferred } from '../typings/promise';
 
 export class SqlCredentialService extends SqlOpsFeature<any> {
 
@@ -25,12 +26,14 @@ export class SqlCredentialService extends SqlOpsFeature<any> {
 			private _secretStorage: SecretStorage;
 			private _useNativeCredentialService: boolean;
 			private _passwordsMigrated: boolean;
+			private _passwordsMigratedPromise: Deferred<void>;
 
 			constructor(client: SqlOpsDataClient) {
 				super(context, client);
 				this._secretStorage = context.extensionContext.secrets;
 				this._passwordsMigrated = context.extensionContext.globalState.get(Utils.configPasswordsMigrated);
 				this._useNativeCredentialService = Utils.useNativeCredentialsEnabled();
+				this._passwordsMigratedPromise = new Deferred();
 			}
 
 			override fillClientCapabilities(capabilities: ClientCapabilities): void {
@@ -46,6 +49,7 @@ export class SqlCredentialService extends SqlOpsFeature<any> {
 					await this.migratePasswords();
 					this._passwordsMigrated = true;
 					await context.extensionContext.globalState.update(Utils.configPasswordsMigrated, this._passwordsMigrated);
+					this._passwordsMigratedPromise.resolve();
 				}
 			}
 
@@ -93,6 +97,7 @@ export class SqlCredentialService extends SqlOpsFeature<any> {
 			protected override registerProvider(options: any): Disposable {
 				let readCredential = async (credentialId: string): Promise<azdata.Credential> => {
 					if (this._useNativeCredentialService && this._passwordsMigrated) {
+						await this._passwordsMigratedPromise;
 						const password = await this._secretStorage.get(credentialId);
 						const credential: azdata.Credential = {
 							credentialId: credentialId,
@@ -107,6 +112,7 @@ export class SqlCredentialService extends SqlOpsFeature<any> {
 
 				let saveCredential = async (credentialId: string, password: string): Promise<boolean> => {
 					if (this._useNativeCredentialService && this._passwordsMigrated) {
+						await this._passwordsMigratedPromise;
 						await this._secretStorage.store(credentialId, password);
 						return password === await this._secretStorage.get(credentialId);
 					} else {
@@ -116,6 +122,7 @@ export class SqlCredentialService extends SqlOpsFeature<any> {
 
 				let deleteCredential = async (credentialId: string): Promise<boolean> => {
 					if (this._useNativeCredentialService && this._passwordsMigrated) {
+						await this._passwordsMigratedPromise;
 						await this._secretStorage.delete(credentialId);
 					}
 					return this._client.sendRequest(Contracts.DeleteCredentialRequest.type, { credentialId, password: undefined });
