@@ -14,32 +14,34 @@ export class VSCodeContentManager implements azdata.nb.ContentManager {
 	constructor(private readonly _serializer: vscode.NotebookSerializer) {
 	}
 
-	// TODO: need to find a way to define metadata.kernelSpec here
+	public static convertToADSCellOutput(output: vscode.NotebookCellOutput, executionOrder?: number): azdata.nb.IExecuteResult {
+		let outputData = {};
+		for (let item of output.items) {
+			outputData[item.mime] = VSBuffer.wrap(item.data).toString();
+		}
+		return {
+			output_type: 'execute_result',
+			data: outputData,
+			execution_count: executionOrder,
+			metadata: output.metadata,
+			id: output.id
+		};
+	}
+
 	public async deserializeNotebook(contents: string): Promise<azdata.nb.INotebookContents> {
 		let buffer = VSBuffer.fromString(contents);
 		let notebookData = await this._serializer.deserializeNotebook(buffer.buffer, new CancellationTokenSource().token);
 		let result = {
 			cells: notebookData.cells?.map<azdata.nb.ICellContents>(cell => {
+				let executionOrder = cell.executionSummary?.executionOrder;
 				return {
 					cell_type: cell.kind === NotebookCellKind.Code ? 'code' : 'markdown',
 					source: cell.value,
 					metadata: {
 						language: cell.languageId
 					},
-					execution_count: cell.executionSummary?.executionOrder,
-					outputs: cell.outputs?.map<azdata.nb.IExecuteResult>(output => {
-						let outputData = {};
-						for (let item of output.items) {
-							outputData[item.mime] = VSBuffer.wrap(item.data).toString();
-						}
-						return {
-							output_type: 'execute_result',
-							data: outputData,
-							execution_count: cell.executionSummary?.executionOrder,
-							metadata: output.metadata,
-							id: output.id
-						};
-					})
+					execution_count: executionOrder,
+					outputs: cell.outputs?.map<azdata.nb.IExecuteResult>(output => VSCodeContentManager.convertToADSCellOutput(output, executionOrder))
 				};
 			}),
 			metadata: notebookData.metadata ?? {},
@@ -53,32 +55,41 @@ export class VSCodeContentManager implements azdata.nb.ContentManager {
 		return result;
 	}
 
-	public static convertToVscodeCellOutput(output: azdata.nb.ICellOutput): vscode.NotebookCellOutputItem[] {
+	public static convertToVSCodeCellOutput(output: azdata.nb.ICellOutput): vscode.NotebookCellOutput {
+		let convertedOutputItems: vscode.NotebookCellOutputItem[];
 		switch (output.output_type) {
 			case OutputTypes.ExecuteResult:
 			case OutputTypes.DisplayData:
 			case OutputTypes.UpdateDisplayData:
 				let displayOutput = output as azdata.nb.IDisplayResult;
-				return Object.keys(displayOutput.data).map<vscode.NotebookCellOutputItem>(key => {
+				convertedOutputItems = Object.keys(displayOutput.data).map<vscode.NotebookCellOutputItem>(key => {
 					return {
 						mime: key,
 						data: VSBuffer.fromString(displayOutput.data[key]).buffer
 					};
 				});
+				break;
 			case OutputTypes.Stream:
 				let streamOutput = output as azdata.nb.IStreamResult;
-				return [{
+				convertedOutputItems = [{
 					mime: 'text/html',
 					data: VSBuffer.fromString(Array.isArray(streamOutput.text) ? streamOutput.text.join('') : streamOutput.text).buffer
 				}];
+				break;
 			case OutputTypes.Error:
 				let errorOutput = output as azdata.nb.IErrorResult;
 				let errorString = errorOutput.ename + ': ' + errorOutput.evalue + (errorOutput.traceback ? '\n' + errorOutput.traceback?.join('\n') : '');
-				return [{
+				convertedOutputItems = [{
 					mime: 'text/html',
 					data: VSBuffer.fromString(errorString).buffer
 				}];
+				break;
 		}
+		return {
+			items: convertedOutputItems,
+			metadata: output.metadata,
+			id: output.id
+		};
 	}
 
 	public async serializeNotebook(notebook: azdata.nb.INotebookContents): Promise<string> {
@@ -88,13 +99,7 @@ export class VSCodeContentManager implements azdata.nb.ContentManager {
 					kind: cell.cell_type === 'code' ? NotebookCellKind.Code : NotebookCellKind.Markup,
 					value: Array.isArray(cell.source) ? cell.source.join('\n') : cell.source,
 					languageId: cell.metadata?.language,
-					outputs: cell.outputs?.map<vscode.NotebookCellOutput>(output => {
-						return {
-							items: VSCodeContentManager.convertToVscodeCellOutput(output),
-							metadata: output.metadata,
-							id: output.id
-						};
-					}),
+					outputs: cell.outputs?.map<vscode.NotebookCellOutput>(output => VSCodeContentManager.convertToVSCodeCellOutput(output)),
 					executionSummary: {
 						executionOrder: cell.execution_count
 					}

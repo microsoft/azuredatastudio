@@ -91,19 +91,19 @@ suite('notebookUtils', function (): void {
 	test('getStandardKernelsForProvider Test', async function (): Promise<void> {
 		setupMockNotebookService();
 
-		let result = getStandardKernelsForProvider(undefined, undefined);
+		let result = await getStandardKernelsForProvider(undefined, undefined);
 		assert.deepStrictEqual(result, []);
 
-		result = getStandardKernelsForProvider(undefined, mockNotebookService.object);
+		result = await getStandardKernelsForProvider(undefined, mockNotebookService.object);
 		assert.deepStrictEqual(result, []);
 
-		result = getStandardKernelsForProvider('testProvider', undefined);
+		result = await getStandardKernelsForProvider('testProvider', undefined);
 		assert.deepStrictEqual(result, []);
 
-		result = getStandardKernelsForProvider('NotARealProvider', mockNotebookService.object);
+		result = await getStandardKernelsForProvider('NotARealProvider', mockNotebookService.object);
 		assert.deepStrictEqual(result, [Object.assign({ notebookProvider: 'NotARealProvider' }, sqlStandardKernel)]);
 
-		result = getStandardKernelsForProvider('testProvider', mockNotebookService.object);
+		result = await getStandardKernelsForProvider('testProvider', mockNotebookService.object);
 		assert.deepStrictEqual(result, [<IStandardKernelWithProvider>{
 			name: 'testName',
 			displayName: 'testDisplayName',

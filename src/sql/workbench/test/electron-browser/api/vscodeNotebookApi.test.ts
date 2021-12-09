@@ -208,8 +208,37 @@ suite('Notebook Serializer', () => {
 		sandbox.restore();
 	});
 
+
+	test('Convert VSCode notebook output to ADS notebook output', async () => {
+		let cellOutput: vscode.NotebookCellOutput = {
+			items: [{
+				mime: 'text/plain',
+				data: VSBuffer.fromString('2').buffer
+			}, {
+				mime: 'text/html',
+				data: VSBuffer.fromString('<i>2</i>').buffer
+			}],
+			metadata: {},
+			id: '1'
+		};
+		let expectedADSOutput: azdata.nb.IExecuteResult = {
+			id: '1',
+			output_type: 'execute_result',
+			data: {
+				'text/plain': '2',
+				'text/html': '<i>2</i>'
+			},
+			metadata: {},
+			execution_count: 1
+		};
+
+		let actualOutput = VSCodeContentManager.convertToADSCellOutput(cellOutput, 1);
+		assert.deepStrictEqual(actualOutput, expectedADSOutput);
+	});
+
 	test('Convert ADS notebook execute result to VSCode notebook output', async () => {
 		let cellOutput: azdata.nb.IExecuteResult = {
+			id: 'testId',
 			output_type: OutputTypes.ExecuteResult,
 			data: {
 				'text/plain': 'abc',
@@ -217,59 +246,78 @@ suite('Notebook Serializer', () => {
 			},
 			execution_count: 1
 		};
-		let expectedVSCodeOutput: vscode.NotebookCellOutputItem[] = [{
-			mime: 'text/plain',
-			data: VSBuffer.fromString('abc').buffer
-		}, {
-			mime: 'text/html',
-			data: VSBuffer.fromString('<i>abc</i>').buffer
-		}];
-		let actualOutput = VSCodeContentManager.convertToVscodeCellOutput(cellOutput);
+		let expectedVSCodeOutput: vscode.NotebookCellOutput = {
+			items: [{
+				mime: 'text/plain',
+				data: VSBuffer.fromString('abc').buffer
+			}, {
+				mime: 'text/html',
+				data: VSBuffer.fromString('<i>abc</i>').buffer
+			}],
+			id: 'testId',
+			metadata: undefined
+		};
+		let actualOutput = VSCodeContentManager.convertToVSCodeCellOutput(cellOutput);
 		assert.deepStrictEqual(actualOutput, expectedVSCodeOutput);
 	});
 
 	test('Convert ADS notebook stream result to VSCode notebook output', async () => {
 		let cellOutput: azdata.nb.IStreamResult = {
+			id: 'testId',
 			output_type: 'stream',
 			name: 'stdout',
 			text: [
 				'abc'
 			]
 		};
-		let expectedVSCodeOutput: vscode.NotebookCellOutputItem[] = [{
-			mime: 'text/html',
-			data: VSBuffer.fromString('abc').buffer
-		}];
-		let actualOutput = VSCodeContentManager.convertToVscodeCellOutput(cellOutput);
+		let expectedVSCodeOutput: vscode.NotebookCellOutput = {
+			items: [{
+				mime: 'text/html',
+				data: VSBuffer.fromString('abc').buffer
+			}],
+			id: 'testId',
+			metadata: undefined
+		};
+		let actualOutput = VSCodeContentManager.convertToVSCodeCellOutput(cellOutput);
 		assert.deepStrictEqual(actualOutput, expectedVSCodeOutput);
 	});
 
 	test('Convert ADS notebook error with trace to VSCode notebook output', async () => {
 		let cellOutput: azdata.nb.IErrorResult = {
+			id: 'testId',
 			output_type: 'error',
 			ename: 'TestException',
 			evalue: 'Expected test error',
 			traceback: ['Trace line 1', 'Trace line 2']
 		};
-		let expectedVSCodeOutput: vscode.NotebookCellOutputItem[] = [{
-			mime: 'text/html',
-			data: VSBuffer.fromString('TestException: Expected test error\nTrace line 1\nTrace line 2').buffer
-		}];
-		let actualOutput = VSCodeContentManager.convertToVscodeCellOutput(cellOutput);
+		let expectedVSCodeOutput: vscode.NotebookCellOutput = {
+			items: [{
+				mime: 'text/html',
+				data: VSBuffer.fromString('TestException: Expected test error\nTrace line 1\nTrace line 2').buffer
+			}],
+			id: 'testId',
+			metadata: undefined
+		};
+		let actualOutput = VSCodeContentManager.convertToVSCodeCellOutput(cellOutput);
 		assert.deepStrictEqual(actualOutput, expectedVSCodeOutput);
 	});
 
 	test('Convert ADS notebook error without trace to VSCode notebook output', async () => {
 		let cellOutput: azdata.nb.IErrorResult = {
+			id: 'testId',
 			output_type: 'error',
 			ename: 'TestException',
 			evalue: 'Expected test error'
 		};
-		let expectedVSCodeOutput: vscode.NotebookCellOutputItem[] = [{
-			mime: 'text/html',
-			data: VSBuffer.fromString('TestException: Expected test error').buffer
-		}];
-		let actualOutput = VSCodeContentManager.convertToVscodeCellOutput(cellOutput);
+		let expectedVSCodeOutput: vscode.NotebookCellOutput = {
+			items: [{
+				mime: 'text/html',
+				data: VSBuffer.fromString('TestException: Expected test error').buffer
+			}],
+			id: 'testId',
+			metadata: undefined
+		};
+		let actualOutput = VSCodeContentManager.convertToVSCodeCellOutput(cellOutput);
 		assert.deepStrictEqual(actualOutput, expectedVSCodeOutput);
 	});
 

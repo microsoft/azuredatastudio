@@ -927,7 +927,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 				// return extHostNotebook.onDidCloseNotebookDocument;
 			},
 			registerNotebookSerializer(viewType: string, serializer: vscode.NotebookSerializer, options?: vscode.NotebookDocumentContentOptions, registration?: vscode.NotebookRegistrationData) {
-				return extHostNotebook.registerNotebookSerializer(viewType, serializer, options, registration);
+				return extHostNotebook.registerNotebookSerializer(viewType, serializer, options, extension.enableProposedApi ? registration : undefined);
 			},
 			registerNotebookContentProvider: (viewType: string, provider: vscode.NotebookContentProvider, options?: vscode.NotebookDocumentContentOptions, registration?: vscode.NotebookRegistrationData) => {
 				// {{SQL CARBON EDIT}}
@@ -1146,7 +1146,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 		// namespace: notebook
 		const notebooks: typeof vscode.notebooks = {
 			createNotebookController(id: string, notebookType: string, label: string, handler?, rendererScripts?: vscode.NotebookRendererScript[]) {
-				return extHostNotebook.createNotebookController(extension, id, notebookType, label, handler, rendererScripts);
+				return extHostNotebook.createNotebookController(extension, id, notebookType, label, handler, extension.enableProposedApi ? rendererScripts : undefined);
 			},
 			registerNotebookCellStatusBarItemProvider: (notebookType: string, provider: vscode.NotebookCellStatusBarItemProvider) => {
 				// {{SQL CARBON EDIT}}
