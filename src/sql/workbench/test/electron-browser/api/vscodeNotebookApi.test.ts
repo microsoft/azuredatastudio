@@ -229,7 +229,7 @@ suite('Notebook Serializer', () => {
 			id: 'testId',
 			metadata: undefined
 		};
-		let actualOutput = VSCodeContentManager.convertToVscodeCellOutput(cellOutput);
+		let actualOutput = VSCodeContentManager.convertToVSCodeCellOutput(cellOutput);
 		assert.deepStrictEqual(actualOutput, expectedVSCodeOutput);
 	});
 
@@ -250,7 +250,7 @@ suite('Notebook Serializer', () => {
 			id: 'testId',
 			metadata: undefined
 		};
-		let actualOutput = VSCodeContentManager.convertToVscodeCellOutput(cellOutput);
+		let actualOutput = VSCodeContentManager.convertToVSCodeCellOutput(cellOutput);
 		assert.deepStrictEqual(actualOutput, expectedVSCodeOutput);
 	});
 
@@ -270,7 +270,7 @@ suite('Notebook Serializer', () => {
 			id: 'testId',
 			metadata: undefined
 		};
-		let actualOutput = VSCodeContentManager.convertToVscodeCellOutput(cellOutput);
+		let actualOutput = VSCodeContentManager.convertToVSCodeCellOutput(cellOutput);
 		assert.deepStrictEqual(actualOutput, expectedVSCodeOutput);
 	});
 
@@ -289,7 +289,7 @@ suite('Notebook Serializer', () => {
 			id: 'testId',
 			metadata: undefined
 		};
-		let actualOutput = VSCodeContentManager.convertToVscodeCellOutput(cellOutput);
+		let actualOutput = VSCodeContentManager.convertToVSCodeCellOutput(cellOutput);
 		assert.deepStrictEqual(actualOutput, expectedVSCodeOutput);
 	});
 

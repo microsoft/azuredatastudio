@@ -14,7 +14,7 @@ export class VSCodeContentManager implements azdata.nb.ContentManager {
 	constructor(private readonly _serializer: vscode.NotebookSerializer) {
 	}
 
-	public static convertToAdsCellOutput(output: vscode.NotebookCellOutput, executionOrder?: number): azdata.nb.IExecuteResult {
+	public static convertToADSCellOutput(output: vscode.NotebookCellOutput, executionOrder?: number): azdata.nb.IExecuteResult {
 		let outputData = {};
 		for (let item of output.items) {
 			outputData[item.mime] = VSBuffer.wrap(item.data).toString();
@@ -41,7 +41,7 @@ export class VSCodeContentManager implements azdata.nb.ContentManager {
 						language: cell.languageId
 					},
 					execution_count: executionOrder,
-					outputs: cell.outputs?.map<azdata.nb.IExecuteResult>(output => VSCodeContentManager.convertToAdsCellOutput(output, executionOrder))
+					outputs: cell.outputs?.map<azdata.nb.IExecuteResult>(output => VSCodeContentManager.convertToADSCellOutput(output, executionOrder))
 				};
 			}),
 			metadata: notebookData.metadata ?? {},
@@ -55,7 +55,7 @@ export class VSCodeContentManager implements azdata.nb.ContentManager {
 		return result;
 	}
 
-	public static convertToVscodeCellOutput(output: azdata.nb.ICellOutput): vscode.NotebookCellOutput {
+	public static convertToVSCodeCellOutput(output: azdata.nb.ICellOutput): vscode.NotebookCellOutput {
 		let convertedOutputItems: vscode.NotebookCellOutputItem[];
 		switch (output.output_type) {
 			case OutputTypes.ExecuteResult:
@@ -99,7 +99,7 @@ export class VSCodeContentManager implements azdata.nb.ContentManager {
 					kind: cell.cell_type === 'code' ? NotebookCellKind.Code : NotebookCellKind.Markup,
 					value: Array.isArray(cell.source) ? cell.source.join('\n') : cell.source,
 					languageId: cell.metadata?.language,
-					outputs: cell.outputs?.map<vscode.NotebookCellOutput>(output => VSCodeContentManager.convertToVscodeCellOutput(output)),
+					outputs: cell.outputs?.map<vscode.NotebookCellOutput>(output => VSCodeContentManager.convertToVSCodeCellOutput(output)),
 					executionSummary: {
 						executionOrder: cell.execution_count
 					}
