@@ -234,9 +234,6 @@ export class ServerManagerStub implements nb.ServerManager {
 }
 
 export class NotebookServiceStub implements INotebookService {
-	canResolveProvider(providerId: string): Promise<boolean> {
-		throw new Error('Method not implemented.');
-	}
 	_serviceBrand: undefined;
 	get onNotebookEditorAdd(): vsEvent.Event<INotebookEditor> {
 		throw new Error('Method not implemented.');
