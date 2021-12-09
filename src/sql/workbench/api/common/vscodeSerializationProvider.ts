@@ -14,7 +14,20 @@ export class VSCodeContentManager implements azdata.nb.ContentManager {
 	constructor(private readonly _serializer: vscode.NotebookSerializer) {
 	}
 
-	// TODO: need to find a way to define metadata.kernelSpec here
+	public static convertToAdsCellOutput(output: vscode.NotebookCellOutput, executionOrder?: number): azdata.nb.IExecuteResult {
+		let outputData = {};
+		for (let item of output.items) {
+			outputData[item.mime] = VSBuffer.wrap(item.data).toString();
+		}
+		return {
+			output_type: 'execute_result',
+			data: outputData,
+			execution_count: executionOrder,
+			metadata: output.metadata,
+			id: output.id
+		};
+	}
+
 	public async deserializeNotebook(contents: string): Promise<azdata.nb.INotebookContents> {
 		let buffer = VSBuffer.fromString(contents);
 		let notebookData = await this._serializer.deserializeNotebook(buffer.buffer, new CancellationTokenSource().token);
@@ -40,20 +53,6 @@ export class VSCodeContentManager implements azdata.nb.ContentManager {
 		delete result.metadata.custom;
 
 		return result;
-	}
-
-	public static convertToAdsCellOutput(output: vscode.NotebookCellOutput, executionOrder?: number): azdata.nb.IExecuteResult {
-		let outputData = {};
-		for (let item of output.items) {
-			outputData[item.mime] = VSBuffer.wrap(item.data).toString();
-		}
-		return {
-			output_type: 'execute_result',
-			data: outputData,
-			execution_count: executionOrder,
-			metadata: output.metadata,
-			id: output.id
-		};
 	}
 
 	public static convertToVscodeCellOutput(output: azdata.nb.ICellOutput): vscode.NotebookCellOutput {
