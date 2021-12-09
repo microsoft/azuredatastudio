@@ -82,7 +82,6 @@
 	"mssql.query.ansiNulls": "Enable SET ANSI_NULLS",
 	"mssql.query.alwaysEncryptedParameterization": "Enable Parameterization for Always Encrypted",
 	"mssql.ignorePlatformWarning": "[Optional] Do not show unsupported platform warnings",
-	"mssql.useNativeCredentials": "Use platform native credential storage for storing passwords",
 
 	"onprem.databaseProperties.recoveryModel": "Recovery Model",
 	"onprem.databaseProperties.lastBackupDate": "Last Database Backup",
