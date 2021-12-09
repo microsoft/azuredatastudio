@@ -1127,20 +1127,20 @@ describe('Project: properties', function (): void {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjectInvalidCollationBaseline);
 		const project = await Project.openProject(projFilePath);
 
-		// Should single add database source
-		await project.addDatabaseSourceToProjFile('test1');
+		// Should add a single database source
+		await project.addDatabaseSource('test1');
 		let databaseSourceItems: string[] = project.getDatabaseSourceValues();
 		should(databaseSourceItems.length).equal(1);
 		should(databaseSourceItems[0]).equal('test1');
 
 		// Should not add database source values with semicolon
-		await project.addDatabaseSourceToProjFile(';test2;');
+		await project.addDatabaseSource(';test2;');
 		databaseSourceItems = project.getDatabaseSourceValues();
 		should(databaseSourceItems.length).equal(1);
 
-		// Add multiple database sources
-		await project.addDatabaseSourceToProjFile('test2');
-		await project.addDatabaseSourceToProjFile('test3');
+		// Should add multiple database sources
+		await project.addDatabaseSource('test2');
+		await project.addDatabaseSource('test3');
 		databaseSourceItems = project.getDatabaseSourceValues();
 		should(databaseSourceItems.length).equal(3);
 		should(databaseSourceItems[0]).equal('test1');
@@ -1148,16 +1148,16 @@ describe('Project: properties', function (): void {
 		should(databaseSourceItems[2]).equal('test3');
 
 		// Should not add duplicate database sources
-		await project.addDatabaseSourceToProjFile('test1');
-		await project.addDatabaseSourceToProjFile('test2');
-		await project.addDatabaseSourceToProjFile('test3');
+		await project.addDatabaseSource('test1');
+		await project.addDatabaseSource('test2');
+		await project.addDatabaseSource('test3');
 		should(databaseSourceItems.length).equal(3);
 		should(databaseSourceItems[0]).equal('test1');
 		should(databaseSourceItems[1]).equal('test2');
 		should(databaseSourceItems[2]).equal('test3');
 		should(getWellKnownDatabaseSourceString(project)).equal('');
 
-		await project.addDatabaseSourceToProjFile(constants.WellKnownDatabaseSources[0]);
+		await project.addDatabaseSource(constants.WellKnownDatabaseSources[0]);
 		should(getWellKnownDatabaseSourceString(project)).equal(constants.WellKnownDatabaseSources[0]);
 	});
 
@@ -1165,26 +1165,26 @@ describe('Project: properties', function (): void {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjectInvalidCollationBaseline);
 		const project = await Project.openProject(projFilePath);
 
-		await project.addDatabaseSourceToProjFile('test1');
-		await project.addDatabaseSourceToProjFile('test2');
-		await project.addDatabaseSourceToProjFile('test3');
-		await project.addDatabaseSourceToProjFile('test4');
+		await project.addDatabaseSource('test1');
+		await project.addDatabaseSource('test2');
+		await project.addDatabaseSource('test3');
+		await project.addDatabaseSource('test4');
 
 		// Should not remove database source values with semicolon
-		await project.removeDatabaseSourceFromProjFile(';test2;');
+		await project.removeDatabaseSource(';test2;');
 		let databaseSourceItems: string[] = project.getDatabaseSourceValues();
 		should(databaseSourceItems.length).equal(4);
 
 		// Should remove database sources
-		await project.removeDatabaseSourceFromProjFile('test2');
-		await project.removeDatabaseSourceFromProjFile('test1');
-		await project.removeDatabaseSourceFromProjFile('test4');
+		await project.removeDatabaseSource('test2');
+		await project.removeDatabaseSource('test1');
+		await project.removeDatabaseSource('test4');
 
 		databaseSourceItems = project.getDatabaseSourceValues();
 		should(databaseSourceItems.length).equal(1);
 
 		// Should remove database source tag when last database source is removed
-		await project.removeDatabaseSourceFromProjFile('test3');
+		await project.removeDatabaseSource('test3');
 		databaseSourceItems = project.getDatabaseSourceValues();
 
 		should(databaseSourceItems.length).equal(0);

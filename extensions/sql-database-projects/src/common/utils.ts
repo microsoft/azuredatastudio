@@ -594,22 +594,14 @@ export function getWellKnownDatabaseSourceValue(value: string): string | undefin
  * @returns Well-known database sources, separated by semicolon
  */
 export function getWellKnownDatabaseSourceString(project: Project): string {
-	let databaseSourceString: string = '';
-	const alreadyAppendedValues = new Set();
+	const databaseSourceSet = new Set();
 
 	for (let databaseSourceValue of project.getDatabaseSourceValues()) {
 		let wellKnownDatabaseSourceValue = getWellKnownDatabaseSourceValue(databaseSourceValue);
-		if (wellKnownDatabaseSourceValue
-			&& !alreadyAppendedValues.has(wellKnownDatabaseSourceValue)) {
-			if (!databaseSourceString) {
-				databaseSourceString = wellKnownDatabaseSourceValue;
-			} else {
-				databaseSourceString += `;${wellKnownDatabaseSourceValue}`;
-			}
-
-			alreadyAppendedValues.add(wellKnownDatabaseSourceValue);
+		if (wellKnownDatabaseSourceValue) {
+			databaseSourceSet.add(wellKnownDatabaseSourceValue);
 		}
 	}
 
-	return databaseSourceString;
+	return Array.from(databaseSourceSet).join(';');
 }

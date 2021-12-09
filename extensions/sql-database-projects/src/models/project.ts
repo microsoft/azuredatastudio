@@ -828,7 +828,7 @@ export class Project implements ISqlProject {
 	 * to the collection of existing sources
 	 * @param databaseSource Source of the database to add
 	 */
-	public async addDatabaseSourceToProjFile(databaseSource: string): Promise<void> {
+	public async addDatabaseSource(databaseSource: string): Promise<void> {
 		await this.addValueToCollectionProjectProperty(constants.DatabaseSource, databaseSource);
 	}
 
@@ -837,7 +837,7 @@ export class Project implements ISqlProject {
 	 * DatabaseSource tag from the project if no sources remain
 	 * @param databaseSource Source of the database to remove
 	 */
-	public async removeDatabaseSourceFromProjFile(databaseSource: string): Promise<void> {
+	public async removeDatabaseSource(databaseSource: string): Promise<void> {
 		await this.removeValueFromCollectionProjectProperty(constants.DatabaseSource, databaseSource);
 	}
 
@@ -1360,7 +1360,7 @@ export class Project implements ISqlProject {
 	 * Adds a value to project property, separated by semicolon if
 	 * one or more values are already present in project property
 	 * @param propertyName Name of property
-	 * @param valueToAdd Value to be added to project property
+	 * @param valueToAdd Value to be added to project property, values containing semicolon are not supported
 	 */
 	private async addValueToCollectionProjectProperty(propertyName: string, valueToAdd: string) {
 		if (valueToAdd.includes(';')) {
