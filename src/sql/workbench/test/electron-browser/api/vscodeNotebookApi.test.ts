@@ -11,6 +11,7 @@ import { NotebookCellKind } from 'vs/workbench/api/common/extHostTypes';
 import { VSBuffer } from 'vs/base/common/buffer';
 import * as assert from 'assert';
 import { OutputTypes } from 'sql/workbench/services/notebook/common/contracts';
+import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
 
 class MockNotebookSerializer implements vscode.NotebookSerializer {
 	deserializeNotebook(content: Uint8Array, token: vscode.CancellationToken): vscode.NotebookData | Thenable<vscode.NotebookData> {
@@ -74,8 +75,8 @@ suite('Notebook Serializer', () => {
 				}
 			},
 			custom: {
-				nbformat: 4,
-				nbformat_minor: 2
+				nbformat: NBFORMAT,
+				nbformat_minor: NBFORMAT_MINOR
 			}
 		},
 	};
@@ -97,8 +98,8 @@ suite('Notebook Serializer', () => {
 				}
 			}
 		},
-		nbformat: 4,
-		nbformat_minor: 2,
+		nbformat: NBFORMAT,
+		nbformat_minor: NBFORMAT_MINOR,
 		cells: [
 			{
 				cell_type: 'code',
@@ -189,8 +190,8 @@ suite('Notebook Serializer', () => {
 				}
 			},
 			custom: {
-				nbformat: 4,
-				nbformat_minor: 2
+				nbformat: NBFORMAT,
+				nbformat_minor: NBFORMAT_MINOR
 			}
 		}
 	};

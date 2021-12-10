@@ -31,6 +31,7 @@ import { Separator } from 'vs/base/common/actions';
 import { INotebookView, INotebookViews } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
+import { NBFORMAT } from 'sql/workbench/common/constants';
 
 class TestClientSession extends ClientSessionStub {
 	private _errorState: boolean = false;
@@ -280,7 +281,7 @@ suite('Notebook Actions', function (): void {
 					display_name: 'Python 3'
 				}
 			},
-			nbformat: 4,
+			nbformat: NBFORMAT,
 			nbformat_minor: 5
 		};
 
@@ -324,7 +325,7 @@ suite('Notebook Actions', function (): void {
 					display_name: 'Python 3'
 				}
 			},
-			nbformat: 4,
+			nbformat: NBFORMAT,
 			nbformat_minor: 5
 		};
 		let expectedMsg: string = noParameterCell;
@@ -365,7 +366,7 @@ suite('Notebook Actions', function (): void {
 					display_name: 'Python 3'
 				}
 			},
-			nbformat: 4,
+			nbformat: NBFORMAT,
 			nbformat_minor: 5
 		};
 		let expectedMsg: string = noParametersInCell;
@@ -410,7 +411,7 @@ suite('Notebook Actions', function (): void {
 					display_name: 'Python 3'
 				}
 			},
-			nbformat: 4,
+			nbformat: NBFORMAT,
 			nbformat_minor: 5
 		};
 		let expectedMsg: string = noParametersInCell;
@@ -456,7 +457,7 @@ suite('Notebook Actions', function (): void {
 					display_name: 'Python 3'
 				}
 			},
-			nbformat: 4,
+			nbformat: NBFORMAT,
 			nbformat_minor: 5
 		};
 		let expectedMsg: string = noParametersInCell;
@@ -505,7 +506,7 @@ suite('Notebook Actions', function (): void {
 					display_name: 'SQL'
 				}
 			},
-			nbformat: 4,
+			nbformat: NBFORMAT,
 			nbformat_minor: 5
 		};
 		let expectedMsg: string = kernelNotSupported;

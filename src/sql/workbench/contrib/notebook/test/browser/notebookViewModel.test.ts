@@ -34,6 +34,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { NotebookViewModel } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewModel';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
+import { NBFORMAT } from 'sql/workbench/common/constants';
 
 let initialNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -53,7 +54,7 @@ let initialNotebookContent: nb.INotebookContents = {
 			language: 'sql'
 		},
 	},
-	nbformat: 4,
+	nbformat: NBFORMAT,
 	nbformat_minor: 5
 };
 
@@ -68,7 +69,7 @@ let notebookContentWithoutMeta: nb.INotebookContents = {
 		execution_count: 1
 	}],
 	metadata: {},
-	nbformat: 4,
+	nbformat: NBFORMAT,
 	nbformat_minor: 5
 };
 
