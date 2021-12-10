@@ -10,7 +10,7 @@ import { URI } from 'vs/base/common/uri';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { MainThreadNotebookDocuments } from 'vs/workbench/api/browser/mainThreadNotebookDocuments';
 import { MainThreadNotebookEditors } from 'vs/workbench/api/browser/mainThreadNotebookEditors';
-// import { extHostCustomer } from 'vs/workbench/api/common/extHostCustomers'; {{SQL CARBON EDIT}}
+// import { extHostCustomer } from 'vs/workbench/api/common/extHostCustomers'; {{SQL CARBON EDIT}} Disable VS Code notebooks
 import { editorGroupToViewColumn } from 'vs/workbench/common/editor';
 import { getNotebookEditorFromEditorPane, IActiveNotebookEditor, INotebookEditor } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
 import { INotebookEditorService } from 'vs/workbench/contrib/notebook/browser/notebookEditorService';
@@ -68,7 +68,7 @@ class NotebookAndEditorState {
 	}
 }
 
-// @extHostCustomer {{SQL CARBON EDIT}}
+// @extHostCustomer {{SQL CARBON EDIT}} Disable VS Code notebooks
 export class MainThreadNotebooksAndEditors {
 
 	private readonly _onDidAddNotebooks = new Emitter<NotebookTextModel[]>();
