@@ -19,7 +19,7 @@ import { NotebookContexts } from 'sql/workbench/services/notebook/browser/models
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { INotification, Severity, INotificationService } from 'vs/platform/notification/common/notification';
 import { URI } from 'vs/base/common/uri';
-import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { FutureMessageType, ISingleNotebookEditOperation, NotebookEditOperationType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { uriPrefixes } from 'sql/platform/connection/common/utils';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -38,6 +38,7 @@ import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
 import { AddCellEdit, ConvertCellTypeEdit, DeleteCellEdit, MoveCellEdit, SplitCellEdit } from 'sql/workbench/services/notebook/browser/models/cellEdit';
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
 import { deepClone } from 'vs/base/common/objects';
+import { FutureWrapper } from 'sql/workbench/api/browser/mainThreadNotebook';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -860,22 +861,35 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			return;
 		}
 
-		for (let edit of edits) {
-			let newCells: ICellModel[] = [];
-			if (edit.cell) {
-				// TODO: should we validate and complete required missing parameters?
-				let contents: nb.ICellContents = edit.cell as nb.ICellContents;
-				newCells.push(this._notebookOptions.factory.createCell(contents, { notebook: this, isTrusted: this._trustedMode }));
-				this.undoService.pushElement(new AddCellEdit(this, newCells[0], edit.range.start));
+		for (const edit of edits) {
+			switch (edit.type) {
+				case NotebookEditOperationType.UpdateCell:
+					edit.cell.outputs?.forEach(output => {
+						const executeResult = output as nb.IExecuteResult;
+						(this.cells[edit.range.start].future as FutureWrapper).onMessage(FutureMessageType.IOPub, { type: 'iopub', header: { msg_type: executeResult.output_type }, content: executeResult });
+					});
+
+					break;
+				case NotebookEditOperationType.InsertCell:
+				case NotebookEditOperationType.ReplaceCells:
+				case NotebookEditOperationType.DeleteCell:
+					let newCells: ICellModel[] = [];
+					if (edit.cell) {
+						// TODO: should we validate and complete required missing parameters?
+						let contents: nb.ICellContents = edit.cell as nb.ICellContents;
+						newCells.push(this._notebookOptions.factory.createCell(contents, { notebook: this, isTrusted: this._trustedMode }));
+						this.undoService.pushElement(new AddCellEdit(this, newCells[0], edit.range.start));
+					}
+					this._cells.splice(edit.range.start, edit.range.end - edit.range.start, ...newCells);
+					if (newCells.length > 0) {
+						this.updateActiveCell(newCells[0]);
+					}
+					this._contentChangedEmitter.fire({
+						changeType: NotebookChangeType.CellsModified,
+						isDirty: true
+					});
+					break;
 			}
-			this._cells.splice(edit.range.start, edit.range.end - edit.range.start, ...newCells);
-			if (newCells.length > 0) {
-				this.updateActiveCell(newCells[0]);
-			}
-			this._contentChangedEmitter.fire({
-				changeType: NotebookChangeType.CellsModified,
-				isDirty: true
-			});
 		}
 	}
 

@@ -611,6 +611,7 @@ export class CellModel extends Disposable implements ICellModel {
 					if (tryMatchCellMagic(this.source[0]) !== ads_execute_command || !this._isCommandExecutionSettingEnabled) {
 						const future = kernel.requestExecute({
 							code: content,
+							cellIndex: this.notebookModel.findCellIndex(this),
 							stop_on_error: true,
 							notebookUri: this.notebookModel.notebookUri
 						}, false);
@@ -817,8 +818,11 @@ export class CellModel extends Disposable implements ICellModel {
 						}
 						output.metadata.azdata_chartOptions = this._previousChartState[this._outputCounter];
 					}
-					this._outputsIdMap.set(output, { batchId: (<QueryResultId>msg.metadata).batchId, id: (<QueryResultId>msg.metadata).id });
-					this._outputCounter++;
+					// TODO@chgagnon - Look at this, why are we hardcoding SQL stuff in here?
+					if ((<QueryResultId>msg.metadata)?.batchId !== undefined) {
+						this._outputsIdMap.set(output, { batchId: (<QueryResultId>msg.metadata).batchId, id: (<QueryResultId>msg.metadata).id });
+						this._outputCounter++;
+					}
 				}
 				break;
 			case 'execute_result_update':

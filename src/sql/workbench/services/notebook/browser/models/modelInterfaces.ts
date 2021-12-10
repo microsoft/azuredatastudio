@@ -26,6 +26,7 @@ import { QueryResultId } from 'sql/workbench/services/notebook/browser/models/ce
 import { IPosition } from 'vs/editor/common/core/position';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
+import { NotebookEditOperationType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 
 export enum ViewMode {
@@ -39,6 +40,7 @@ export interface ICellRange {
 }
 
 export interface ISingleNotebookEditOperation {
+	type: NotebookEditOperationType;
 	range: ICellRange;
 	cell: Partial<nb.ICellContents>;
 	forceMoveMarkers: boolean;

@@ -118,7 +118,11 @@ export class NotebookEditorEdit {
 		this._pushEdit(NotebookEditOperationType.DeleteCell, range, null, true);
 	}
 
-	private _pushEdit(type: NotebookEditOperationType, range: azdata.nb.CellRange, cell: Partial<azdata.nb.ICellContents>, forceMoveMarkers: boolean): void {
+	updateCell(index: number, updatedContent: Partial<azdata.nb.ICellContents>): void {
+		this._pushEdit(NotebookEditOperationType.UpdateCell, new CellRange(index, index + 1), updatedContent, false);
+	}
+
+	private _pushEdit(type: NotebookEditOperationType, range: azdata.nb.CellRange, cell: Partial<azdata.nb.ICellContents> /* | IEditCellContents>*/, forceMoveMarkers: boolean): void {
 		let validRange = this._document.validateCellRange(range);
 		this._collectedEdits.push({
 			type: type,
@@ -190,7 +194,7 @@ export class ExtHostNotebookEditor implements azdata.nb.NotebookEditor, IDisposa
 		return this._proxy.$changeKernel(this._id, kernel);
 	}
 
-	public edit(callback: (editBuilder: azdata.nb.NotebookEditorEdit) => void, options?: { undoStopBefore: boolean; undoStopAfter: boolean; }): Thenable<boolean> {
+	public edit(callback: (editBuilder: NotebookEditorEdit) => void, options?: { undoStopBefore: boolean; undoStopAfter: boolean; }): Thenable<boolean> {
 		if (this._disposed) {
 			return Promise.reject(new Error('NotebookEditor#edit not possible on closed editors'));
 		}

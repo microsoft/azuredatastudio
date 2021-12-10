@@ -74,6 +74,13 @@ declare module 'azdata' {
 			 */
 			dispose(): void;
 		}
+
+		export interface IExecuteRequest extends IExecuteOptions {
+			/**
+			 * The index of the cell from which the code being executed is from.
+			 */
+			cellIndex: number;
+		}
 	}
 
 	export type SqlDbType = 'BigInt' | 'Binary' | 'Bit' | 'Char' | 'DateTime' | 'Decimal'

@@ -9,10 +9,9 @@ import { INotebookKernelDto2 } from 'vs/workbench/api/common/extHost.protocol';
 import { Emitter, Event } from 'vs/base/common/event';
 import * as extHostTypeConverters from 'vs/workbench/api/common/extHostTypeConverters';
 import { Deferred } from 'sql/base/common/promise';
-import { IOutputDto } from 'vs/workbench/contrib/notebook/common/notebookCommon';
-import { NotebookCellOutput } from 'vs/workbench/api/common/extHostTypes';
 import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/common/extHostNotebookDocumentsAndEditors';
 import { URI } from 'vs/base/common/uri';
+import { VSCodeContentManager } from 'sql/workbench/api/common/vscodeSerializationProvider';
 
 type SelectionChangedEvent = { selected: boolean, notebook: vscode.NotebookDocument; };
 type MessageReceivedEvent = { editor: vscode.NotebookEditor, message: any; };
@@ -209,28 +208,11 @@ class ADSNotebookCellExecution implements vscode.NotebookCellExecution {
 	}
 
 	private async updateOutputs(outputs: vscode.NotebookCellOutput | vscode.NotebookCellOutput[], cell: vscode.NotebookCell | number | undefined, append: boolean): Promise<void> {
-		//const handle = this.cellIndexToHandle(cell);
-		// const outputDtos = this.validateAndConvertOutputs(asArray(outputs));
-		// const edit: IImmediateCellEditOperation = { editType: CellEditType.Output, handle: 0, append, outputs: outputDtos };
-		const editor = this._extHostNotebookDocumentsAndEditors.getEditor(URI.from(this._cell.notebook.uri).toString());
+		const targetCell = typeof cell === 'number' ? this._cell.notebook.cellAt(cell) : (cell ?? this._cell);
+		const editor = this._extHostNotebookDocumentsAndEditors.getEditor(URI.from(targetCell.notebook.uri).toString());
 		await editor.edit(builder => {
-			// builder.insertCell({ cell_type: 'code', source: 'Hello world!'});
-			// EDITS TO CELL GO HERE
-		});
-		// return this._proxy.$applyEdits(this._cell.notebook.uri, [edit], false);
-	}
-
-	private validateAndConvertOutputs(items: vscode.NotebookCellOutput[]): IOutputDto[] {
-		return items.map(output => {
-			const newOutput = NotebookCellOutput.ensureUniqueMimeTypes(output.items, true);
-			if (newOutput === output.items) {
-				return extHostTypeConverters.NotebookCellOutput.from(output);
-			}
-			return extHostTypeConverters.NotebookCellOutput.from({
-				items: newOutput,
-				id: output.id,
-				metadata: output.metadata
-			});
+			const adsOutputs = VSCodeContentManager.convertToADSCellOutput(outputs);
+			builder.updateCell(targetCell.index, { outputs: adsOutputs });
 		});
 	}
 }
