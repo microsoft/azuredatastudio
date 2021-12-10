@@ -242,7 +242,8 @@ export class Project implements ISqlProject {
 		const foldersSet = new Set<string>();
 		if (this._isSdkStyleProject) {
 			this.files.forEach(file => {
-				// if file is in the project's folder, add its folder. Empty folders won't be shown unless specified in the sqlproj (same as how it's handled for csproj in VS)
+				// if file is in the project's folder, add the folders from the project file to this file to the list of folders. This is so that only non-empty folders in the project folder will be added by default.
+				// Empty folders won't be shown unless specified in the sqlproj (same as how it's handled for csproj in VS)
 				if (!file.relativePath.startsWith('..') && path.dirname(file.fsUri.fsPath) !== this.projectFolderPath) {
 					const foldersToFile = utils.getFoldersToFile(this.projectFolderPath, file.fsUri.fsPath);
 					foldersToFile.forEach(f => foldersSet.add(utils.convertSlashesForSqlProj(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(f)))));
@@ -995,6 +996,9 @@ export class Project implements ISqlProject {
 			deleted = this.removeNode(utils.trimChars(folderPath, '\\'), folderNodes);
 		}
 
+		// TODO: consider removing this check when working on migration scenario. If a user converts to an SDK-style project and adding this
+		// exclude XML doesn't hurt for non-SDK-style projects, then it might be better to just it anyway so that they don't have to exclude the folder
+		// again when they convert to an SDK-style project
 		if (this.isSdkStyleProject) {
 			// update sqlproj if a node was deleted and load files and folders again
 			if (deleted) {

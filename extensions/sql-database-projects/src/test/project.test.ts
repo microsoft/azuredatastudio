@@ -37,7 +37,7 @@ describe('Project: sqlproj content operations', function (): void {
 		should(project.files.filter(f => f.type === EntryType.File).length).equal(6);
 		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(4);
 
-		should(project.files.find(f => f.type === EntryType.Folder && f.relativePath=== 'Views\\User\\')).not.equal(undefined); // mixed ItemGroup folder
+		should(project.files.find(f => f.type === EntryType.Folder && f.relativePath === 'Views\\User\\')).not.equal(undefined); // mixed ItemGroup folder
 		should(project.files.find(f => f.type === EntryType.File && f.relativePath === 'Views\\User\\Profile.sql')).not.equal(undefined); // mixed ItemGroup file
 		should(project.files.find(f => f.type === EntryType.File && f.relativePath === '..\\Test\\Test.sql')).not.equal(undefined); // mixed ItemGroup file
 		should(project.files.find(f => f.type === EntryType.File && f.relativePath === 'MyExternalStreamingJob.sql')).not.equal(undefined); // entry with custom attribute
