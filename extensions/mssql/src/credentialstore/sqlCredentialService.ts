@@ -47,14 +47,18 @@ export class SqlCredentialService extends SqlOpsFeature<any> {
 				};
 
 				let saveCredential = async (credentialId: string, password: string): Promise<boolean> => {
-					if (Utils.isLinux()) {
+					if (Utils.isLinux) {
+						/**
+						 * This is only done for linux because this is going to be
+						 * the default credential system for linux in the next release
+						 */
 						await this._secretStorage.store(credentialId, password);
 					}
 					return this._client.sendRequest(Contracts.SaveCredentialRequest.type, { credentialId, password });
 				};
 
 				let deleteCredential = async (credentialId: string): Promise<boolean> => {
-					if (Utils.isLinux()) {
+					if (Utils.isLinux) {
 						try {
 							await this._secretStorage.delete(credentialId);
 						} catch (e) {

@@ -23,6 +23,12 @@ const configLogDebugInfo = 'logDebugInfo';
 
 export const CRED_PROFILE_USER = 'Profile';
 
+/**
+ *
+ * @returns Whether the current OS is linux or not
+ */
+export const isLinux = os.platform() === 'linux';
+
 // The function is a duplicate of \src\paths.js. IT would be better to import path.js but it doesn't
 // work for now because the extension is running in different process.
 export function getAppDataPath() {
@@ -346,12 +352,4 @@ export async function getOrDownloadServer(config: IConfig, handleServerEvent?: (
 	}
 
 	return serverdownloader.getOrDownloadServer();
-}
-
-/**
- *
- * @returns Whether the current OS is linux or not
- */
-export function isLinux(): boolean {
-	return os.platform() === 'linux';
 }
