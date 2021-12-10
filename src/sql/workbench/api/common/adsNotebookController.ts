@@ -12,6 +12,7 @@ import { Deferred } from 'sql/base/common/promise';
 import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/common/extHostNotebookDocumentsAndEditors';
 import { URI } from 'vs/base/common/uri';
 import { VSCodeContentManager } from 'sql/workbench/api/common/vscodeSerializationProvider';
+import { NotebookCellExecutionTaskState } from 'vs/workbench/api/common/extHostNotebookKernels';
 
 type SelectionChangedEvent = { selected: boolean, notebook: vscode.NotebookDocument; };
 type MessageReceivedEvent = { editor: vscode.NotebookEditor, message: any; };
@@ -158,6 +159,7 @@ export class ADSNotebookController implements vscode.NotebookController {
 
 class ADSNotebookCellExecution implements vscode.NotebookCellExecution {
 	private _executionOrder: number;
+	private _state = NotebookCellExecutionTaskState.Init;
 	constructor(private readonly _cell: vscode.NotebookCell, private readonly _extHostNotebookDocumentsAndEditors: ExtHostNotebookDocumentsAndEditors) {
 		this._executionOrder = this._cell.executionSummary?.executionOrder ?? -1;
 	}
@@ -179,40 +181,63 @@ class ADSNotebookCellExecution implements vscode.NotebookCellExecution {
 	}
 
 	public start(startTime?: number): void {
-		// No-op
+		this._state = NotebookCellExecutionTaskState.Started;
 	}
 
 	public end(success: boolean, endTime?: number): void {
-		// No-op
+		this._state = NotebookCellExecutionTaskState.Resolved;
 	}
 
 	public async clearOutput(cell?: vscode.NotebookCell): Promise<void> {
-		// No-op
+		this.verifyStateForOutput();
+		const targetCell = typeof cell === 'number' ? this._cell.notebook.cellAt(cell) : (cell ?? this._cell);
+		const editor = this._extHostNotebookDocumentsAndEditors.getEditor(URI.from(targetCell.notebook.uri).toString());
+		await editor.clearOutput(editor.document.cells[targetCell.index]);
 	}
 
 	public async replaceOutput(out: vscode.NotebookCellOutput | vscode.NotebookCellOutput[], cell?: vscode.NotebookCell): Promise<void> {
-		// TODO that.verifyStateForOutput();
+		this.verifyStateForOutput();
 		return this.updateOutputs(out, cell, false);
 	}
 
 	public async appendOutput(out: vscode.NotebookCellOutput | vscode.NotebookCellOutput[], cell?: vscode.NotebookCell): Promise<void> {
-		// No-op
+		this.verifyStateForOutput();
+		this.updateOutputs(out, cell, true);
 	}
 
 	public async replaceOutputItems(items: vscode.NotebookCellOutputItem | vscode.NotebookCellOutputItem[], output: vscode.NotebookCellOutput): Promise<void> {
+		this.verifyStateForOutput();
 		// No-op
 	}
 
 	public async appendOutputItems(items: vscode.NotebookCellOutputItem | vscode.NotebookCellOutputItem[], output: vscode.NotebookCellOutput): Promise<void> {
+		this.verifyStateForOutput();
 		// No-op
 	}
 
 	private async updateOutputs(outputs: vscode.NotebookCellOutput | vscode.NotebookCellOutput[], cell: vscode.NotebookCell | number | undefined, append: boolean): Promise<void> {
+		this.verifyStateForOutput();
 		const targetCell = typeof cell === 'number' ? this._cell.notebook.cellAt(cell) : (cell ?? this._cell);
 		const editor = this._extHostNotebookDocumentsAndEditors.getEditor(URI.from(targetCell.notebook.uri).toString());
+		if (!append) {
+			await editor.clearOutput(editor.document.cells[targetCell.index]);
+		}
 		await editor.edit(builder => {
 			const adsOutputs = VSCodeContentManager.convertToADSCellOutput(outputs);
 			builder.updateCell(targetCell.index, { outputs: adsOutputs });
 		});
+	}
+
+	/**
+	 * Verify that the execution is in a state where it's valid to modify the output (currently executing).
+	 */
+	private verifyStateForOutput() {
+		if (this._state === NotebookCellExecutionTaskState.Init) {
+			throw new Error('Must call start before modifying cell output');
+		}
+
+		if (this._state === NotebookCellExecutionTaskState.Resolved) {
+			throw new Error('Cannot modify cell output after calling end');
+		}
 	}
 }
