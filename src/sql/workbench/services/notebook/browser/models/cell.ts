@@ -801,8 +801,9 @@ export class CellModel extends Disposable implements ICellModel {
 				// Check if the table already exists
 				for (let i = 0; i < this._outputs.length; i++) {
 					if (this._outputs[i].output_type === 'execute_result') {
-						let currentOutputId: QueryResultId = this._outputsIdMap.get(this._outputs[i]);
-						if (currentOutputId.batchId === (<QueryResultId>msg.metadata).batchId
+						let currentOutputId: QueryResultId | undefined = this._outputsIdMap.get(this._outputs[i]);
+						// TODO@chgagnon - Look at this, why are we hardcoding SQL stuff in here?
+						if ((<QueryResultId>msg.metadata)?.batchId && currentOutputId.batchId === (<QueryResultId>msg.metadata).batchId
 							&& currentOutputId.id === (<QueryResultId>msg.metadata).id) {
 							// If it does, update output with data resource and html table
 							(<nb.IExecuteResult>this._outputs[i]).data = (<nb.IExecuteResult>output).data;
