@@ -132,14 +132,11 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 				this._notificationService.status(localize('connectingLabel', "Connecting: {0}", profile.serverName), { hideAfter: 2500 });
 			}
 			try {
-				await this._connectionManagementService.connectIfNotConnected(profile, 'connection', true);
+				await this._connectionManagementService.connectIfNotConnected(profile, args.showDashboard ? 'dashboard' : 'connection', true);
 				// Before sending to extensions, we should a) serialize to IConnectionProfile or things will fail,
 				// and b) use the latest version of the profile from the service so most fields are filled in.
 				let updatedProfile = this._connectionManagementService.getConnectionProfileById(profile.id);
 				connectedContext = { connectionProfile: new ConnectionProfile(this._capabilitiesService, updatedProfile).toIConnectionProfile() };
-				if (args.showDashboard) {
-					this._connectionManagementService.showDashboard(updatedProfile);
-				}
 			} catch (err) {
 				this.logService.warn('Failed to connect due to error' + getErrorMessage(err));
 			}
