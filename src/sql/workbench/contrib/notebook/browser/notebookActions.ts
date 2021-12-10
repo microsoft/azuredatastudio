@@ -61,7 +61,6 @@ export class AddCellAction extends Action {
 	constructor(
 		id: string, label: string, cssClass: string,
 		@INotebookService private _notebookService: INotebookService,
-		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
 	) {
 		super(id, label, cssClass);
 	}
@@ -76,16 +75,15 @@ export class AddCellAction extends Action {
 			}
 			if (context?.model) {
 				context.model.addCell(this.cellType, index);
+				context.model.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.AddCell, { cell_type: this.cellType });
 			}
 		} else {
 			//Add Cell after current selected cell.
 			const editor = this._notebookService.findNotebookEditor(context);
 			const index = editor.cells?.findIndex(cell => cell.active) ?? 0;
 			editor.addCell(this.cellType, index);
+			editor.model.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.AddCell, { cell_type: this.cellType });
 		}
-		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.AddCell)
-			.withAdditionalProperties({ cell_type: this.cellType })
-			.send();
 	}
 }
 
@@ -369,19 +367,13 @@ export class RunAllCellsAction extends Action {
 		id: string, label: string, cssClass: string,
 		@INotificationService private notificationService: INotificationService,
 		@INotebookService private _notebookService: INotebookService,
-		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
 	) {
 		super(id, label, cssClass);
 	}
 	public override async run(context: URI): Promise<void> {
 		try {
 			const editor = this._notebookService.findNotebookEditor(context);
-
-			const azdata_notebook_guid: string = editor.model.getMetaValue('azdata_notebook_guid');
-			this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.RunAll)
-				.withAdditionalProperties({ azdata_notebook_guid })
-				.send();
-
+			editor.model.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.RunAll);
 			await editor.runAllCells();
 		} catch (e) {
 			this.notificationService.error(getErrorMessage(e));

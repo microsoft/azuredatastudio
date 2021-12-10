@@ -29,6 +29,8 @@ import { MockQuickInputService } from 'sql/workbench/contrib/notebook/test/commo
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { Separator } from 'vs/base/common/actions';
 import { INotebookView, INotebookViews } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 
 class TestClientSession extends ClientSessionStub {
 	private _errorState: boolean = false;
@@ -106,6 +108,9 @@ class TestNotebookModel extends NotebookModelStub {
 	public override getStandardKernelFromName(name: string): IStandardKernelWithProvider {
 		return this._standardKernelsMap.get(name);
 	}
+
+	public override sendNotebookTelemetryActionEvent(action: TelemetryKeys.TelemetryAction | TelemetryKeys.NbTelemetryAction, additionalProperties?: ITelemetryEventProperties): void {
+	}
 }
 
 suite('Notebook Actions', function (): void {
@@ -113,9 +118,11 @@ suite('Notebook Actions', function (): void {
 	let mockNotebookEditor: TypeMoq.Mock<INotebookEditor>;
 	let mockNotebookService: TypeMoq.Mock<INotebookService>;
 	const testUri = URI.parse('untitled');
+	let testNotebookModel = new TestNotebookModel();
 
 	suiteSetup(function (): void {
 		mockNotebookEditor = TypeMoq.Mock.ofType<INotebookEditor>(NotebookEditorStub);
+		mockNotebookEditor.setup(x => x.model).returns(() => testNotebookModel);
 		mockNotebookService = TypeMoq.Mock.ofType<INotebookService>(NotebookServiceStub);
 		mockNotebookService.setup(x => x.findNotebookEditor(TypeMoq.It.isAny())).returns(uri => mockNotebookEditor.object);
 	});
@@ -129,7 +136,7 @@ suite('Notebook Actions', function (): void {
 		let actualCellType: CellType;
 
 
-		let action = new AddCellAction('TestId', 'TestLabel', 'TestClass', mockNotebookService.object, new NullAdsTelemetryService());
+		let action = new AddCellAction('TestId', 'TestLabel', 'TestClass', mockNotebookService.object);
 		action.cellType = testCellType;
 
 		// Normal use case
@@ -196,7 +203,7 @@ suite('Notebook Actions', function (): void {
 		let mockNotification = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService);
 		mockNotification.setup(n => n.notify(TypeMoq.It.isAny()));
 
-		let action = new RunAllCellsAction('TestId', 'TestLabel', 'TestClass', mockNotification.object, mockNotebookService.object, new NullAdsTelemetryService());
+		let action = new RunAllCellsAction('TestId', 'TestLabel', 'TestClass', mockNotification.object, mockNotebookService.object);
 
 		// Normal use case
 		mockNotebookEditor.setup(c => c.runAllCells()).returns(() => Promise.resolve(true));

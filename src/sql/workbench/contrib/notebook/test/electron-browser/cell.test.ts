@@ -1234,6 +1234,97 @@ suite('Cell Model', function (): void {
 		assert.deepStrictEqual(cellModel.attachments, attachments, 'addAttachment should not add duplicate images');
 	});
 
+	test('deleting attachment from cell source should remove it from attachments should add a valid attachment to cell', async function () {
+		let imageFilebase64Value = 'data:application/octet-stream;base64,iVBORw0KGgoAAAANSU';
+		let index = imageFilebase64Value.indexOf('base64,');
+		const testImageAttachment: nb.ICellAttachment = { ['image/png']: imageFilebase64Value.substring(index + 7) };
+		let attachments: nb.ICellAttachments = { 'test.png': testImageAttachment };
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let contents: nb.ICellContents = {
+			cell_type: CellTypes.Markdown,
+			source: '',
+			metadata: {}
+		};
+		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+		model.addAttachment('image/png', imageFilebase64Value, 'test.png');
+		assert.deepStrictEqual(model.attachments, attachments, 'attachment was not added initially');
+		model.source = '';
+		assert.deepStrictEqual(model.attachments, {}, 'attachments should be empty after clearing attachment from cell');
+	});
+
+	test('modifying cell source with existing attachment keeps attachment', async function () {
+		let imageFilebase64Value = 'data:application/octet-stream;base64,iVBORw0KGgoAAAANSU';
+		let index = imageFilebase64Value.indexOf('base64,');
+		const testImageAttachment: nb.ICellAttachment = { ['image/png']: imageFilebase64Value.substring(index + 7) };
+		let attachments: nb.ICellAttachments = { 'test.png': testImageAttachment };
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let contents: nb.ICellContents = {
+			cell_type: CellTypes.Markdown,
+			source: '![image](attachment:test.png)',
+			metadata: {}
+		};
+		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+		model.addAttachment('image/png', imageFilebase64Value, 'test.png');
+		assert.deepStrictEqual(model.attachments, attachments, 'attachment was not added initially');
+		model.source = 'Some new text ' + model.source;
+		assert.deepStrictEqual(model.attachments, attachments, 'attachment should still exist after modifying cell source');
+	});
+
+	test('modifying cell source with multiple attachments keeps all attachments', async function () {
+		let imageFilebase64Value = 'data:application/octet-stream;base64,iVBORw0KGgoAAAANSU';
+		let index = imageFilebase64Value.indexOf('base64,');
+		const testImageAttachment: nb.ICellAttachment = { ['image/png']: imageFilebase64Value.substring(index + 7) };
+		let attachments: nb.ICellAttachments = { 'test.png': testImageAttachment, 'test2.png': testImageAttachment };
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let contents: nb.ICellContents = {
+			cell_type: CellTypes.Markdown,
+			source: '![image](attachment:test.png)\n![image2](attachment:test2.png)',
+			metadata: {}
+		};
+		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+		model.addAttachment('image/png', imageFilebase64Value, 'test.png');
+		model.addAttachment('image/png', imageFilebase64Value, 'test2.png');
+		assert.deepStrictEqual(model.attachments, attachments, 'attachments were not added initially');
+		model.source = 'Some new text ' + model.source;
+		assert.deepStrictEqual(model.attachments, attachments, 'attachments should still exist after modifying cell source');
+	});
+
+	test('removing attachment keeps any others present in cell', async function () {
+		let imageFilebase64Value = 'data:application/octet-stream;base64,iVBORw0KGgoAAAANSU';
+		let index = imageFilebase64Value.indexOf('base64,');
+		const testImageAttachment: nb.ICellAttachment = { ['image/png']: imageFilebase64Value.substring(index + 7) };
+		let attachments: nb.ICellAttachments = { 'test.png': testImageAttachment, 'test2.png': testImageAttachment };
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let contents: nb.ICellContents = {
+			cell_type: CellTypes.Markdown,
+			source: '![image](attachment:test.png)\n![image2](attachment:test2.png)',
+			metadata: {}
+		};
+		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+		model.addAttachment('image/png', imageFilebase64Value, 'test.png');
+		model.addAttachment('image/png', imageFilebase64Value, 'test2.png');
+		assert.deepStrictEqual(model.attachments, attachments, 'attachments were not added initially');
+		model.source = '![image2](attachment:test2.png)';
+		delete attachments['test.png'];
+		assert.deepStrictEqual(model.attachments, attachments, 'we should still have one attachment after removing the other');
+	});
+
 	test('cell should fire onCurrentEditModeChanged on edit', async function () {
 
 		let notebookModel = new NotebookModelStub({
