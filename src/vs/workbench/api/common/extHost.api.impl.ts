@@ -90,11 +90,8 @@ import { Schemas } from 'vs/base/common/network';
 import { matchesScheme } from 'vs/platform/opener/common/opener';
 // import { ExtHostNotebookEditors } from 'vs/workbench/api/common/extHostNotebookEditors'; {{SQL CARBON EDIT}}
 // import { ExtHostNotebookDocuments } from 'vs/workbench/api/common/extHostNotebookDocuments'; {{SQL CARBON EDIT}}
-import * as nls from 'vs/nls';
 import { ExtHostNotebook } from 'sql/workbench/api/common/extHostNotebook';
-
-// {{SQL CARBON EDIT}}
-const functionalityNotSupportedError = nls.localize('vscodeFunctionalityNotSupportedError', "This VSCode functionality is not supported in Azure Data Studio.");
+import { functionalityNotSupportedError } from 'sql/base/common/locConstants';
 
 export interface IExtensionApiFactory {
 	(extension: IExtensionDescription, registry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): typeof vscode;
