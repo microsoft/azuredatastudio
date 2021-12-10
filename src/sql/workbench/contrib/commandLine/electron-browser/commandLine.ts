@@ -40,6 +40,7 @@ export interface SqlArgs {
 	provider?: string;
 	aad?: boolean; // deprecated - used by SSMS - authenticationType should be used instead
 	integrated?: boolean; // deprecated - used by SSMS - authenticationType should be used instead.
+	showDashboard?: boolean;
 }
 
 //#region decorators
@@ -136,6 +137,9 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 				// and b) use the latest version of the profile from the service so most fields are filled in.
 				let updatedProfile = this._connectionManagementService.getConnectionProfileById(profile.id);
 				connectedContext = { connectionProfile: new ConnectionProfile(this._capabilitiesService, updatedProfile).toIConnectionProfile() };
+				if (args.showDashboard) {
+					this._connectionManagementService.showDashboard(updatedProfile);
+				}
 			} catch (err) {
 				this.logService.warn('Failed to connect due to error' + getErrorMessage(err));
 			}
@@ -145,14 +149,14 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 				this._notificationService.status(localize('runningCommandLabel', "Running command: {0}", commandName), { hideAfter: 2500 });
 			}
 			await this._commandService.executeCommand(commandName, connectedContext);
-		} else if (profile) {
+		} else if (connectedContext) {
 			// If we were given a file and it was opened with the sql editor,
 			// we want to connect the given profile to to it.
 			// If more than one file was passed, only show the connection dialog error on one of them.
 			if (args._ && args._.length > 0) {
 				await Promise.all(args._.map((f, i) => this.processFile(URI.file(f).toString(), profile, i === 0)));
 			}
-			else {
+			else if (this._capabilitiesService.getCapabilities(profile.providerName)?.connection?.isQueryProvider) {
 				// Default to showing new query
 				if (this._notificationService) {
 					this._notificationService.status(localize('openingNewQueryLabel', "Opening new query: {0}", profile.serverName), { hideAfter: 2500 });
