@@ -48,7 +48,7 @@ export interface IExtensionApiFactory {
 
 export interface IAdsExtensionApiFactory {
 	azdata: IAzdataExtensionApiFactory;
-	extHostNotebook: ExtHostNotebook; // Needed for VSCode Notebook API redirection
+	extHostNotebook: ExtHostNotebook;
 }
 
 /**

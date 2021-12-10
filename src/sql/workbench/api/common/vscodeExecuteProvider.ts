@@ -155,7 +155,7 @@ class VSCodeKernel implements azdata.nb.IKernel {
 	}
 
 	public async interrupt(): Promise<void> {
-		// TODO: implement
+		return;
 	}
 }
 
@@ -237,7 +237,7 @@ class VSCodeSessionManager implements azdata.nb.SessionManager {
 				return {
 					name: language,
 					language: language,
-					display_name: language // TODO: append extension name to language (similar to what Interactive does)
+					display_name: language
 				};
 			})
 		};
