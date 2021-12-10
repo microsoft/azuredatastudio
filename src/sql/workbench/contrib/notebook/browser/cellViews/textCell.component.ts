@@ -31,6 +31,8 @@ import { NotebookRange, ICellEditorProvider, INotebookService } from 'sql/workbe
 import { HTMLMarkdownConverter } from 'sql/workbench/contrib/notebook/browser/htmlMarkdownConverter';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { highlightSelectedText } from 'sql/workbench/contrib/notebook/browser/utils';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
@@ -72,33 +74,34 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	onkeydown(e: KeyboardEvent) {
 		if (DOM.getActiveElement() === this.output?.nativeElement && this.isActive() && this.cellModel?.currentMode === CellEditModes.WYSIWYG) {
 			// Select all text
-			if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
+			const keyEvent = new StandardKeyboardEvent(e);
+			if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KEY_A) {
 				preventDefaultAndExecCommand(e, 'selectAll');
-			} else if ((e.metaKey && e.shiftKey && e.key === 'z') || (e.ctrlKey && e.key === 'y') && !this.markdownMode) {
+			} else if ((keyEvent.metaKey && keyEvent.shiftKey && keyEvent.keyCode === KeyCode.KEY_Z) || (keyEvent.ctrlKey && keyEvent.keyCode === KeyCode.KEY_Y) && !this.markdownMode) {
 				// Redo text
 				this.redoRichTextChange();
-			} else if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KEY_Z) {
 				// Undo text
 				this.undoRichTextChange();
-			} else if (e.shiftKey && e.key === 'Tab') {
+			} else if (keyEvent.shiftKey && keyEvent.keyCode === KeyCode.Tab) {
 				// Outdent text
 				preventDefaultAndExecCommand(e, 'outdent');
-			} else if (e.key === 'Tab') {
+			} else if (keyEvent.keyCode === KeyCode.Tab) {
 				// Indent text
 				preventDefaultAndExecCommand(e, 'indent');
-			} else if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KEY_B) {
 				// Bold text
 				preventDefaultAndExecCommand(e, 'bold');
-			} else if ((e.ctrlKey || e.metaKey) && e.key === 'i') {
+			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KEY_I) {
 				// Italicize text
 				preventDefaultAndExecCommand(e, 'italic');
-			} else if ((e.ctrlKey || e.metaKey) && e.key === 'u') {
+			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KEY_U) {
 				// Underline text
 				preventDefaultAndExecCommand(e, 'underline');
-			} else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'k') {
+			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.shiftKey && keyEvent.keyCode === KeyCode.KEY_K) {
 				// Code Block
 				preventDefaultAndExecCommand(e, 'formatBlock', false, 'pre');
-			} else if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'h') {
+			} else if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.shiftKey && keyEvent.keyCode === KeyCode.KEY_H) {
 				// Highlight Text
 				DOM.EventHelper.stop(e, true);
 				highlightSelectedText();

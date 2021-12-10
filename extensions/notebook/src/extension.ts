@@ -181,11 +181,6 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 		}
 	});
 
-	extensionContext.subscriptions.push(
-		vscode.workspace.registerNotebookSerializer('my-notebook', new SampleSerializer())
-	);
-	extensionContext.subscriptions.push(new SampleController());
-
 	return {
 		getJupyterController() {
 			return controller;
@@ -200,76 +195,4 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 			return appContext;
 		}
 	};
-}
-
-class SampleController {
-	readonly controllerId = 'my-notebook-controller-id';
-	readonly notebookType = 'my-notebook';
-	readonly label = 'My Notebook';
-	readonly supportedLanguages = ['python'];
-
-	private readonly _controller: vscode.NotebookController;
-	private _executionOrder = 0;
-
-	constructor() {
-		this._controller = vscode.notebooks.createNotebookController(
-			this.controllerId,
-			this.notebookType,
-			this.label
-		);
-
-		this._controller.supportedLanguages = this.supportedLanguages;
-		this._controller.supportsExecutionOrder = true;
-		this._controller.executeHandler = this._execute.bind(this);
-	}
-
-	dispose() {
-
-	}
-
-	private async _execute(
-		cells: vscode.NotebookCell[],
-		_notebook: vscode.NotebookDocument,
-		_controller: vscode.NotebookController
-	): Promise<void> {
-		for (let cell of cells) {
-			await this._doExecution(cell);
-		}
-	}
-
-	private async _doExecution(cell: vscode.NotebookCell): Promise<void> {
-		const execution = this._controller.createNotebookCellExecution(cell);
-		execution.executionOrder = ++this._executionOrder;
-		execution.start(Date.now()); // Keep track of elapsed time to execute cell.
-
-		await execution.replaceOutput([
-			new vscode.NotebookCellOutput([
-				vscode.NotebookCellOutputItem.text('Submitted cell text: ' + cell.document.getText())
-			])
-		]);
-		execution.end(true, Date.now());
-	}
-}
-
-const presetNotebookData: vscode.NotebookData = {
-	cells: [{
-		kind: vscode.NotebookCellKind.Markup,
-		value: 'Test markup cell',
-		languageId: 'Markup'
-	}, {
-		kind: vscode.NotebookCellKind.Code,
-		value: '1+1',
-		languageId: 'Python'
-	}]
-};
-
-const presetNotebookBytes = new TextEncoder().encode(JSON.stringify(presetNotebookData));
-
-class SampleSerializer implements vscode.NotebookSerializer {
-	deserializeNotebook(content: Uint8Array, token: vscode.CancellationToken): vscode.NotebookData | Thenable<vscode.NotebookData> {
-		return presetNotebookData;
-	}
-	serializeNotebook(data: vscode.NotebookData, token: vscode.CancellationToken): Uint8Array | Thenable<Uint8Array> {
-		return presetNotebookBytes;
-	}
 }
