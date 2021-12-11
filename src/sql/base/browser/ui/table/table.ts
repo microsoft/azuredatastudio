@@ -81,17 +81,21 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this._container.className = 'monaco-table';
 		this._register(DOM.addDisposableListener(this._container, DOM.EventType.FOCUS, (e: FocusEvent) => {
 			// the focus redirection should only happen when the event target is the container (using keyboard navigation)
-			if (e.target && this._container === e.target && !this.grid.getActiveCell() && this._data.getLength() > 0) {
-				// When the table receives focus and there are currently no active cell, the focus should go to the first focusable cell.
+			if (e.target && this._container === e.target && this._data.getLength() > 0) {
 				let cellToFocus = undefined;
-				for (let col = 0; col < this.columns.length; col++) {
-					// some cells are not keyboard focusable (e.g. row number column), we need to find the first focusable cell.
-					if (this.grid.canCellBeActive(0, col)) {
-						cellToFocus = {
-							row: 0,
-							cell: col
-						};
-						break;
+				if (this.grid.getActiveCell()) {
+					cellToFocus = this.grid.getActiveCell();
+				} else {
+					// When the table receives focus and there are currently no active cell, the focus should go to the first focusable cell.
+					for (let col = 0; col < this.columns.length; col++) {
+						// some cells are not keyboard focusable (e.g. row number column), we need to find the first focusable cell.
+						if (this.grid.canCellBeActive(0, col)) {
+							cellToFocus = {
+								row: 0,
+								cell: col
+							};
+							break;
+						}
 					}
 				}
 				if (cellToFocus) {
@@ -140,9 +144,9 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this.mapMouseEvent(this._grid.onDblClick, this._onDoubleClick);
 		this._grid.onColumnsResized.subscribe(() => this._onColumnResize.fire());
 		this._grid.onRendered.subscribe(() => {
-			if (!this._grid.getActiveCell()) {
-				this._container.tabIndex = this._data.getLength() > 0 ? 0 : -1;
-			}
+			// When the grid is rerendered (e.g. view switching), the active cell information is kept but the tabindex attribute will be set to -1 on the active cell.
+			// we need to set the container's tabindex to 0 so that the focus redirection can happen, otherwise the table won't be reachable by keyboard navigation.
+			this._container.tabIndex = this._container.querySelector('[tabindex = "0"]') || this._data.getLength() === 0 ? -1 : 0;
 		});
 		this._grid.onActiveCellChanged.subscribe((e, data) => {
 			this._container.tabIndex = -1;
