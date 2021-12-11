@@ -13,6 +13,7 @@ import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/common/ext
 import { URI } from 'vs/base/common/uri';
 import { VSCodeContentManager } from 'sql/workbench/api/common/vscodeSerializationProvider';
 import { NotebookCellExecutionTaskState } from 'vs/workbench/api/common/extHostNotebookKernels';
+import { asArray } from 'vs/base/common/arrays';
 
 type SelectionChangedEvent = { selected: boolean, notebook: vscode.NotebookDocument; };
 type MessageReceivedEvent = { editor: vscode.NotebookEditor, message: any; };
@@ -207,12 +208,12 @@ class ADSNotebookCellExecution implements vscode.NotebookCellExecution {
 
 	public async replaceOutputItems(items: vscode.NotebookCellOutputItem | vscode.NotebookCellOutputItem[], output: vscode.NotebookCellOutput): Promise<void> {
 		this.verifyStateForOutput();
-		// No-op
+		this.updateOutputItems(items, output, false);
 	}
 
 	public async appendOutputItems(items: vscode.NotebookCellOutputItem | vscode.NotebookCellOutputItem[], output: vscode.NotebookCellOutput): Promise<void> {
 		this.verifyStateForOutput();
-		// No-op
+		this.updateOutputItems(items, output, true);
 	}
 
 	private async updateOutputs(outputs: vscode.NotebookCellOutput | vscode.NotebookCellOutput[], cell: vscode.NotebookCell | number | undefined, append: boolean): Promise<void> {
@@ -225,6 +226,16 @@ class ADSNotebookCellExecution implements vscode.NotebookCellExecution {
 		await editor.edit(builder => {
 			const adsOutputs = VSCodeContentManager.convertToADSCellOutput(outputs);
 			builder.updateCell(targetCell.index, { outputs: adsOutputs });
+		});
+	}
+
+	private async updateOutputItems(items: vscode.NotebookCellOutputItem | vscode.NotebookCellOutputItem[], output: vscode.NotebookCellOutput, append: boolean): Promise<void> {
+		this.verifyStateForOutput();
+		const editor = this._extHostNotebookDocumentsAndEditors.getEditor(URI.from(this._cell.notebook.uri).toString());
+		const outputItems = append ? output.items.concat(...asArray(items)) : asArray(items);
+		await editor.edit(builder => {
+			const adsOutput = VSCodeContentManager.convertToADSCellOutput({ id: output.id, items: outputItems }, undefined, 'execute_result_update');
+			builder.updateCellOutputItems(this._cell.index, { outputs: adsOutput });
 		});
 	}
 

@@ -828,11 +828,25 @@ export class CellModel extends Disposable implements ICellModel {
 				break;
 			case 'execute_result_update':
 				let update = msg.content as nb.IExecuteResultUpdate;
-				// Send update to gridOutput component
-				this._onTableUpdated.fire({
-					resultSet: update.resultSet,
-					rows: update.data
-				});
+				if (update.resultSet) {
+					// Send update to gridOutput component
+					this._onTableUpdated.fire({
+						resultSet: update.resultSet,
+						rows: update.data
+					});
+				} else {
+					// TODO: Fix typings
+					const outputUpdate = msg.content as nb.IExecuteResult;
+					const output = this._outputs.find(o => outputUpdate.id === o.id) as nb.IExecuteResult;
+					if (output) {
+						output.data = outputUpdate.data;
+						this.fireOutputsChanged(false);
+					} else {
+						// TODO ERROR
+					}
+
+				}
+
 				break;
 			case 'display_data':
 				output = msg.content as nb.ICellOutput;

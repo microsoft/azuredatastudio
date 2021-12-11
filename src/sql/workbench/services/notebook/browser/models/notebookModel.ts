@@ -864,11 +864,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		for (const edit of edits) {
 			switch (edit.type) {
 				case NotebookEditOperationType.UpdateCell:
+				case NotebookEditOperationType.UpdateCellOutputItem:
 					edit.cell.outputs?.forEach(output => {
 						const executeResult = output as nb.IExecuteResult;
 						(this.cells[edit.range.start].future as FutureWrapper).onMessage(FutureMessageType.IOPub, { type: 'iopub', header: { msg_type: executeResult.output_type }, content: executeResult });
 					});
-
 					break;
 				case NotebookEditOperationType.InsertCell:
 				case NotebookEditOperationType.ReplaceCells:

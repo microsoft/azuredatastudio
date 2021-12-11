@@ -122,7 +122,11 @@ export class NotebookEditorEdit {
 		this._pushEdit(NotebookEditOperationType.UpdateCell, new CellRange(index, index + 1), updatedContent, false);
 	}
 
-	private _pushEdit(type: NotebookEditOperationType, range: azdata.nb.CellRange, cell: Partial<azdata.nb.ICellContents> /* | IEditCellContents>*/, forceMoveMarkers: boolean): void {
+	updateCellOutputItems(cellIndex: number, updatedContent: Partial<azdata.nb.ICellContents>): void {
+		this._pushEdit(NotebookEditOperationType.UpdateCellOutputItem, new CellRange(cellIndex, cellIndex + 1), updatedContent, false);
+	}
+
+	private _pushEdit(type: NotebookEditOperationType, range: azdata.nb.CellRange, cell: Partial<azdata.nb.ICellContents>, forceMoveMarkers: boolean): void {
 		let validRange = this._document.validateCellRange(range);
 		this._collectedEdits.push({
 			type: type,
