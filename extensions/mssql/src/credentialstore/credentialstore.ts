@@ -3,13 +3,17 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
+import * as azdata from 'azdata';
+import { SqlOpsDataClient, ClientOptions, SqlOpsFeature } from 'dataprotocol-client';
 import { IConfig } from '@microsoft/ads-service-downloader';
-import { ServerOptions, TransportKind } from 'vscode-languageclient';
+import { ClientCapabilities, RPCMessageType, ServerCapabilities, ServerOptions, TransportKind } from 'vscode-languageclient';
 import * as Constants from './constants';
 import * as Utils from '../utils';
-import { SqlCredentialService } from './sqlCredentialService';
+import * as UUID from 'vscode-languageclient/lib/utils/uuid';
+//import { SqlCredentialService } from './sqlCredentialService';
 import { AppContext } from '../appContext';
+import { DeleteCredentialRequest, ReadCredentialRequest, SaveCredentialRequest } from './contracts';
+import { Disposable } from 'vscode';
 
 /**
  * Implements a credential storage for Windows, Mac (darwin), or Linux.
@@ -36,7 +40,7 @@ export class CredentialStore {
 	public async start(): Promise<void> {
 		let clientOptions: ClientOptions = {
 			providerId: Constants.providerId,
-			features: [SqlCredentialService.asFeature(this.context)]
+			features: [CredentialsFeature]
 		};
 		const serverPath = await Utils.getOrDownloadServer(this._config);
 		const serverOptions = this.generateServerOptions(serverPath);
@@ -53,5 +57,52 @@ export class CredentialStore {
 	private generateServerOptions(executablePath: string): ServerOptions {
 		let launchArgs = Utils.getCommonLaunchArgsAndCleanupOldLogFiles(this._logPath, 'credentialstore.log', executablePath);
 		return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
+	}
+}
+
+class CredentialsFeature extends SqlOpsFeature<any> {
+
+	private static readonly messagesTypes: RPCMessageType[] = [
+		DeleteCredentialRequest.type,
+		SaveCredentialRequest.type,
+		ReadCredentialRequest.type
+	];
+
+	constructor(client: SqlOpsDataClient) {
+		super(client, CredentialsFeature.messagesTypes);
+	}
+
+	fillClientCapabilities(capabilities: ClientCapabilities): void {
+		Utils.ensure(Utils.ensure(capabilities, 'credentials')!, 'credentials')!.dynamicRegistration = true;
+	}
+
+	initialize(capabilities: ServerCapabilities): void {
+		this.register(this.messages, {
+			id: UUID.generateUuid(),
+			registerOptions: undefined
+		});
+	}
+
+	protected registerProvider(options: any): Disposable {
+		const client = this._client;
+
+		let readCredential = (credentialId: string): Thenable<azdata.Credential> => {
+			return client.sendRequest(ReadCredentialRequest.type, { credentialId, password: undefined });
+		};
+
+		let saveCredential = (credentialId: string, password: string): Thenable<boolean> => {
+			return client.sendRequest(SaveCredentialRequest.type, { credentialId, password });
+		};
+
+		let deleteCredential = (credentialId: string): Thenable<boolean> => {
+			return client.sendRequest(DeleteCredentialRequest.type, { credentialId, password: undefined });
+		};
+
+		return azdata.credentials.registerProvider({
+			deleteCredential,
+			readCredential,
+			saveCredential,
+			handle: 0
+		});
 	}
 }
