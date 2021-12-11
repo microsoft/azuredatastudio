@@ -35,5 +35,6 @@ export enum TelemetryActions {
 	changePlatformType = 'changePlatformType',
 	updateSystemDatabaseReferencesInProjFile = 'updateSystemDatabaseReferencesInProjFile',
 	startAddSqlBinding = 'startAddSqlBinding',
-	finishAddSqlBinding = 'finishAddSqlBinding'
+	finishAddSqlBinding = 'finishAddSqlBinding',
+	enableDiagnosticsLoggingChecked = 'enableDiagnosticsLoggingChecked'
 }

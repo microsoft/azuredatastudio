@@ -128,8 +128,9 @@ export const newText = localize('new', "New");
 export const selectDatabase = localize('selectDatabase', "Select database");
 export const done = localize('done', "Done");
 export const nameMustNotBeEmpty = localize('nameMustNotBeEmpty', "Name must not be empty");
-export const diagnosticsFile = localize('diagnosticsFile', "Diagnostics File");
-export const diagnosticsFilePath = localize('diagnosticsFilePath', "Diagnostics File path");
+export const enableDiagnosticsLogging = localize('enableDiagnosticsLogging', "Enable Diagnostics Logging");
+export const enableDiagnosticsLoggingCheckbox = localize('enableDiagnosticsLoggingCheckbox', "Enable Diagnostics Logging Checkbox");
+export const diagnosticslogFilePath = localize('diagnosticslogFilePath', "Diagnostics Log path");
 export const fileLocation = localize('fileLocation', "File Location");
 export const selectFile = localize('selectFile', "Select File");
 

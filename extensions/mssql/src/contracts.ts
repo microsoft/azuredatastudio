@@ -455,6 +455,7 @@ export interface DeployParams {
 	deploymentOptions?: mssql.DeploymentOptions;
 	ownerUri: string;
 	taskExecutionMode: TaskExecutionMode;
+	diagnosticsLogFilePath: string;
 }
 
 export interface GenerateDeployScriptParams {
@@ -464,6 +465,7 @@ export interface GenerateDeployScriptParams {
 	deploymentOptions?: mssql.DeploymentOptions
 	ownerUri: string;
 	taskExecutionMode: TaskExecutionMode;
+	diagnosticsLogFilePath: string;
 }
 
 export interface GenerateDeployPlanParams {

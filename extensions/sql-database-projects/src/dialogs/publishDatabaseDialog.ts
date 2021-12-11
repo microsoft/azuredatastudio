@@ -230,7 +230,7 @@ export class PublishDatabaseDialog {
 				sqlCmdVariables: this.getSqlCmdVariablesForPublish(),
 				deploymentOptions: await this.getDeploymentOptions(),
 				profileUsed: this.profileUsed,
-				diagnosticsFilePath: this.diagFileTextBox.value
+				diagnosticsLogFilePath: this.diagFileTextBox.value
 			};
 
 			utils.getAzdataApi()!.window.closeDialog(this.dialog);
@@ -256,7 +256,7 @@ export class PublishDatabaseDialog {
 					sqlCmdVariables: this.getSqlCmdVariablesForPublish(),
 					deploymentOptions: await this.getDeploymentOptions(),
 					profileUsed: this.profileUsed,
-					diagnosticsFilePath: this.diagFileTextBox.value
+					diagnosticsLogFilePath: this.diagFileTextBox.value
 				}
 			};
 
@@ -277,7 +277,8 @@ export class PublishDatabaseDialog {
 			connectionUri: await this.getConnectionUri(),
 			sqlCmdVariables: sqlCmdVars,
 			deploymentOptions: await this.getDeploymentOptions(),
-			profileUsed: this.profileUsed
+			profileUsed: this.profileUsed,
+			diagnosticsLogFilePath: this.diagFileTextBox.value
 		};
 
 		utils.getAzdataApi()!.window.closeDialog(this.dialog);
@@ -903,12 +904,12 @@ export class PublishDatabaseDialog {
 	// Creates diagnostics file related container with checkbox
 	private createDiagFileRow(view: azdataType.ModelView): azdataType.FlexContainer {
 		const diagFileLabel = view.modelBuilder.text().withProps({
-			value: constants.diagnosticsFile,
+			value: constants.enableDiagnosticsLogging,
 			width: cssStyles.publishDialogLabelWidth
 		}).component();
 
 		const loadDiagFileCheckBox = view.modelBuilder.checkBox().withProps({
-			ariaLabel: constants.profile,
+			ariaLabel: constants.enableDiagnosticsLoggingCheckbox,
 			required: false
 		}).component();
 
@@ -920,6 +921,9 @@ export class PublishDatabaseDialog {
 		loadDiagFileCheckBox.onChanged(() => {
 			if (loadDiagFileCheckBox?.checked) {
 				this.formBuilder!.insertFormItem({ component: diagFileTextBoxcomponent }, 4);
+
+				// Telemetry record for diagnostics log check box selection
+				TelemetryReporter.sendActionEvent(TelemetryViews.SqlProjectPublishDialog, TelemetryActions.enableDiagnosticsLoggingChecked);
 			} else {
 				this.formBuilder!.removeFormItem({ component: diagFileTextBoxcomponent });
 			}
@@ -931,7 +935,7 @@ export class PublishDatabaseDialog {
 	private createDiagFileTextBoxComponent(view: azdataType.ModelView): azdataType.Component {
 		const fileBrowserComponent = this.createFileBrowser(view);
 		const diagFilePathLabel = view.modelBuilder.text().withProps({
-			value: constants.diagnosticsFilePath,
+			value: constants.diagnosticslogFilePath,
 			width: cssStyles.publishDialogLabelWidth
 		}).component();
 
@@ -1001,7 +1005,7 @@ export class PublishDatabaseDialog {
 		let now = new Date();
 		const dateTime = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate() + '-' + now.getHours() + '-' + now.getMinutes();
 
-		return path.join(this.getDiagnosticsFileRootPath(), 'diagnosticLogFile' + '-' + dateTime + '.log');
+		return path.join(this.getDiagnosticsFileRootPath(), 'DiagnosticsLogFile' + '-' + dateTime + '.log');
 	}
 
 	// Gets the filepath
