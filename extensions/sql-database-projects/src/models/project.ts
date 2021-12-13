@@ -252,6 +252,23 @@ export class Project implements ISqlProject {
 		}
 
 		// get any folders listed in the project file
+		const sqlprojFolders = await this.foldersListedInSqlproj();
+		sqlprojFolders.forEach(f => foldersSet.add(f));
+
+		foldersSet.forEach(f => {
+			folderEntries.push(this.createFileProjectEntry(f, EntryType.Folder));
+		});
+
+		return folderEntries;
+	}
+
+	/**
+	 * @returns Array of folders specified in the sqlproj
+	 */
+	private async foldersListedInSqlproj(): Promise<string[]> {
+		const folders: string[] = [];
+
+		// get any folders listed in the project file
 		for (let ig = 0; ig < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup).length; ig++) {
 			const itemGroup = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup)[ig];
 			try {
@@ -263,7 +280,7 @@ export class Project implements ISqlProject {
 					if (utils.trimChars(relativePath, '\\') !== constants.Properties) {
 						// make sure folder relative path ends with \\ because sometimes SSDT adds folders without trailing \\
 						relativePath = relativePath.endsWith(constants.SqlProjPathSeparator) ? relativePath : relativePath + constants.SqlProjPathSeparator;
-						foldersSet.add(relativePath);
+						folders.push(relativePath);
 					}
 				}
 			} catch (e) {
@@ -272,11 +289,7 @@ export class Project implements ISqlProject {
 			}
 		}
 
-		foldersSet.forEach(f => {
-			folderEntries.push(this.createFileProjectEntry(f, EntryType.Folder));
-		});
-
-		return folderEntries;
+		return folders;
 	}
 
 	private readPreDeployScripts(): FileProjectEntry[] {
@@ -875,7 +888,7 @@ export class Project implements ISqlProject {
 		return outputItemGroup;
 	}
 
-	private async addFileToProjFile(path: string, xmlTag: string, attributes?: Map<string, string>): Promise<void> {
+	private async addFileToProjFile(filePath: string, xmlTag: string, attributes?: Map<string, string>): Promise<void> {
 		let itemGroup;
 
 		if (xmlTag === constants.PreDeploy || xmlTag === constants.PostDeploy) {
@@ -888,11 +901,23 @@ export class Project implements ISqlProject {
 			}
 		}
 		else {
+			// if there's a folder entry for the folder containing this file, remove it from the sqlproj because the folder will now be
+			// included by the glob that includes this file (same as how csproj does it)
+			const folders = await this.foldersListedInSqlproj();
+			folders.forEach(folder => {
+				const trimmedUri = utils.trimUri(Uri.file(utils.getPlatformSafeFileEntryPath(folder)), Uri.file(utils.getPlatformSafeFileEntryPath(filePath)));
+				const basename = path.basename(utils.getPlatformSafeFileEntryPath(filePath));
+				if (trimmedUri === basename) {
+					// remove folder entry from sqlproj
+					this.removeFolderNode(folder);
+				}
+			});
+
 			const currentFiles = await this.readFilesInProject();
 
 			// don't need to add an entry if it's already included by a glob pattern
 			// unless it has an attribute that needs to be added, like external streaming job which needs it so it can be determined if validation can run on it
-			if (attributes?.size === 0 && currentFiles.find(f => f.relativePath === utils.convertSlashesForSqlProj(path))) {
+			if (attributes?.size === 0 && currentFiles.find(f => f.relativePath === utils.convertSlashesForSqlProj(filePath))) {
 				return;
 			}
 
@@ -901,7 +926,7 @@ export class Project implements ISqlProject {
 
 		const newFileNode = this.projFileXmlDoc!.createElement(xmlTag);
 
-		newFileNode.setAttribute(constants.Include, utils.convertSlashesForSqlProj(path));
+		newFileNode.setAttribute(constants.Include, utils.convertSlashesForSqlProj(filePath));
 
 		if (attributes) {
 			for (const key of attributes.keys()) {
@@ -987,14 +1012,7 @@ export class Project implements ISqlProject {
 	}
 
 	private async removeFolderFromProjFile(folderPath: string): Promise<void> {
-		const folderNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Folder);
-		let deleted = this.removeNode(folderPath, folderNodes);
-
-		// if it wasn't deleted, try deleting the folder path without trailing backslash
-		// since sometimes SSDT adds folders without a trailing \
-		if (!deleted) {
-			deleted = this.removeNode(utils.trimChars(folderPath, '\\'), folderNodes);
-		}
+		let deleted = this.removeFolderNode(folderPath);
 
 		// TODO: consider removing this check when working on migration scenario. If a user converts to an SDK-style project and adding this
 		// exclude XML doesn't hurt for non-SDK-style projects, then it might be better to just it anyway so that they don't have to exclude the folder
@@ -1023,6 +1041,19 @@ export class Project implements ISqlProject {
 		if (!deleted) {
 			throw new Error(constants.unableToFindObject(folderPath, constants.folderObject));
 		}
+	}
+
+	private removeFolderNode(folderPath: string): boolean {
+		const folderNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Folder);
+		let deleted = this.removeNode(folderPath, folderNodes);
+
+		// if it wasn't deleted, try deleting the folder path without trailing backslash
+		// since sometimes SSDT adds folders without a trailing \
+		if (!deleted) {
+			deleted = this.removeNode(utils.trimChars(folderPath, '\\'), folderNodes);
+		}
+
+		return deleted;
 	}
 
 	private async writeToSqlProjAndUpdateFilesFolders(): Promise<void> {
@@ -1443,11 +1474,6 @@ export class Project implements ISqlProject {
 
 		// If folder doesn't exist, create it
 		await fs.mkdir(absoluteFolderPath, { recursive: true });
-
-		// don't need to add the folder to the sqlproj if this is an sdk style project because globbing will get the folders
-		if (this.isSdkStyleProject) {
-			return this.createFileProjectEntry(relativeFolderPath, EntryType.Folder);
-		}
 
 		// Add project file entries for all folders in the path.
 		// SSDT expects all folders to be explicitly listed in the project file, so we construct
