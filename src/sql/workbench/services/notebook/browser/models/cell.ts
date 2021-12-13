@@ -29,7 +29,6 @@ import { tryMatchCellMagic, extractCellMagicCommandPlusArgs } from 'sql/workbenc
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { Disposable } from 'vs/base/common/lifecycle';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { IInsightOptions } from 'sql/workbench/common/editor/query/chartState';
 import { IPosition } from 'vs/editor/common/core/position';
 
@@ -94,7 +93,6 @@ export class CellModel extends Disposable implements ICellModel {
 		@optional(INotebookService) private _notebookService?: INotebookService,
 		@optional(ICommandService) private _commandService?: ICommandService,
 		@optional(IConfigurationService) private _configurationService?: IConfigurationService,
-		@optional(IAdsTelemetryService) private _telemetryService?: IAdsTelemetryService,
 	) {
 		super();
 		this.id = `${modelId++}`;
@@ -309,6 +307,7 @@ export class CellModel extends Disposable implements ICellModel {
 	}
 
 	public set source(newSource: string | string[]) {
+		this.cleanUnusedAttachments(Array.isArray(newSource) ? newSource.join() : newSource);
 		newSource = this.attachImageFromSource(newSource);
 		newSource = this.getMultilineSource(newSource);
 		if (this._source !== newSource) {
@@ -331,6 +330,22 @@ export class CellModel extends Disposable implements ICellModel {
 		}
 		return newSource;
 	}
+
+	/**
+	 * Cleans up the attachments, removing any ones that aren't being currently used in the specified source string.
+	 * @param source The new source string to check for attachments being used
+	 */
+	private cleanUnusedAttachments(source: string): void {
+		const originalAttachments = this._attachments;
+		this._attachments = {};
+		// Find existing attachments in the form ![...](attachment:...) so that we can make sure we keep those attachments
+		const attachmentRegex = /!\[.*?\]\(attachment:(.*?)\)/g;
+		let match;
+		while (match = attachmentRegex.exec(source)) { // eslint-disable-line no-cond-assign
+			this._attachments[match[1]] = originalAttachments[match[1]];
+		}
+	}
+
 	/**
 	 * Gets unique attachment name to add to cell metadata
 	 * @param imgName a string defining name of the image.
@@ -568,10 +583,7 @@ export class CellModel extends Disposable implements ICellModel {
 			this._outputCounter = 0;
 			// Hide IntelliSense suggestions list when running cell to match SSMS behavior
 			this._commandService.executeCommand('hideSuggestWidget');
-			const azdata_notebook_guid: string = this.notebookModel.getMetaValue('azdata_notebook_guid');
-			this._telemetryService?.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.RunCell)
-				.withAdditionalProperties({ cell_language: kernel.name, azdata_cell_guid: this._cellGuid, azdata_notebook_guid })
-				.send();
+			this.notebookModel.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.RunCell, { cell_language: kernel.name, azdata_cell_guid: this._cellGuid });
 			// If cell is currently running and user clicks the stop/cancel button, call kernel.interrupt()
 			// This matches the same behavior as JupyterLab
 			if (this.future && this.future.inProgress) {

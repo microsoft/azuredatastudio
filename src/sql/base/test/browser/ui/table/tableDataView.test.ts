@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
+import { defaultSort, TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 
 suite('TableDataView', () => {
 	test('Data can be filtered and filter can be cleared', () => {
@@ -172,6 +172,55 @@ suite('TableDataView', () => {
 		// find will loop around once it reaches the end
 		findValue = await dataView.findNext();
 		assert.deepStrictEqual(findValue, { row: 2, col: 0 });
+	});
+
+	test('Default Sorter test', async () => {
+		const originalData: Slick.SlickData[] = [
+			{ fieldName: '10b' },
+			{ fieldName: undefined },
+			{ fieldName: '100.01' },
+			{ fieldName: undefined },
+			{ fieldName: '10.1' },
+			{ fieldName: 'abc' }
+		];
+
+		const sortAscArg: Slick.OnSortEventArgs<Slick.SlickData> = {
+			sortAsc: true,
+			sortCol: {
+				field: 'fieldName'
+			},
+			multiColumnSort: false,
+			grid: undefined
+		};
+
+		const sortDescArg: Slick.OnSortEventArgs<Slick.SlickData> = {
+			sortAsc: false,
+			sortCol: {
+				field: 'fieldName'
+			},
+			multiColumnSort: false,
+			grid: undefined
+		};
+		const expectedAsc: Slick.SlickData[] = [
+			{ fieldName: undefined },
+			{ fieldName: undefined },
+			{ fieldName: '10.1' },
+			{ fieldName: '100.01' },
+			{ fieldName: '10b' },
+			{ fieldName: 'abc' }
+		];
+		const sortedAsc = defaultSort(sortAscArg, originalData);
+		assert.deepStrictEqual(sortedAsc, expectedAsc, 'ascending sorting is not working as expected');
+		const expectedDesc: Slick.SlickData[] = [
+			{ fieldName: 'abc' },
+			{ fieldName: '10b' },
+			{ fieldName: '100.01' },
+			{ fieldName: '10.1' },
+			{ fieldName: undefined },
+			{ fieldName: undefined },
+		];
+		const sortedDesc = defaultSort(sortDescArg, originalData);
+		assert.deepStrictEqual(sortedDesc, expectedDesc, 'descending sorting is not working as expected');
 	});
 });
 
