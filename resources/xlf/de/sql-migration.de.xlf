@@ -3,12 +3,12 @@
   <file original="extensions/sql-migration/dist/constants/strings" source-language="en" datatype="plaintext" target-language="de">
     <body>
       <trans-unit id="azure.accounts.accountAccessError">
-        <source xml:lang="en">An error occurred while accessing the selected account '{0}'. Select 'Link account' and refresh the account, or select a different account. Error '{1}'</source>
-        <target state="translated">Fehler beim Zugriff auf das ausgewählte Konto "{0}". Wählen Sie "Konto verknüpfen" aus, und aktualisieren Sie das Konto, oder wählen Sie ein anderes Konto aus. Fehler "{1}"</target>
+        <source xml:lang="en">An error occurred while accessing the selected account '{0}' and tenant '{1}'. Select 'Link account' and refresh the account, or select a different account. Error '{2}'</source>
+        <target state="translated">Fehler beim Zugriff auf das ausgewählte Konto „{0}“ und den Mandanten „{1}“. Wählen Sie „Konto verknüpfen“ aus, und aktualisieren Sie das Konto, oder wählen Sie ein anderes Konto aus. Fehler „{2}“</target>
       </trans-unit>
       <trans-unit id="azure.accounts.accountStaleError">
-        <source xml:lang="en">The access token for selected account '{0}' is no longer valid. Select 'Link account' and refresh the account, or select a different account.</source>
-        <target state="translated">Das Zugriffstoken für das ausgewählte Konto "{0}" ist nicht mehr gültig. Wählen Sie "Konto verknüpfen" aus, und aktualisieren Sie das Konto, oder wählen Sie ein anderes Konto aus.</target>
+        <source xml:lang="en">The access token for selected account '{0}' and tenant '{1}' is no longer valid. Select 'Link account' and refresh the account, or select a different account.</source>
+        <target state="translated">Das Zugriffstoken für das ausgewählte Konto „{0}“ und den Mandanten „{1}“ ist nicht mehr gültig. Wählen Sie „Konto verknüpfen“ aus, und aktualisieren Sie das Konto, oder wählen Sie ein anderes Konto aus.</target>
       </trans-unit>
       <trans-unit id="sql-migration.wizard.title">
         <source xml:lang="en">Migrate '{0}' to Azure SQL</source>
@@ -34,6 +34,10 @@
         <source xml:lang="en">Active backup files ({0} items)</source>
         <target state="translated">Aktive Sicherungsdateien ({0} Elemente)</target>
       </trans-unit>
+      <trans-unit id="sql.migration.all.backups.restored">
+        <source xml:lang="en">All backups restored</source>
+        <target state="translated">Alle Sicherungen wiederhergestellt</target>
+      </trans-unit>
       <trans-unit id="sql.migration.all.fields.required">
         <source xml:lang="en">All fields are required.</source>
         <target state="translated">Alle Felder müssen ausgefüllt werden.</target>
@@ -41,6 +45,10 @@
       <trans-unit id="sql.migration.apply">
         <source xml:lang="en">Apply</source>
         <target state="translated">Anwenden</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.asessment.failed">
+        <source xml:lang="en">The assessment of your SQL Server instance '{0}' failed.</source>
+        <target state="translated">Bei der Bewertung Ihrer SQL Server-Instanz „{0}“ ist ein Fehler aufgetreten.</target>
       </trans-unit>
       <trans-unit id="sql.migration.assessment">
         <source xml:lang="en">Assessment results for '{0}'</source>
@@ -194,6 +202,10 @@ Dies kann einige Zeit dauern.</target>
         <source xml:lang="en">Migration is not in progress and cannot be cutover.</source>
         <target state="translated">Die Migration ist nicht in Bearbeitung und kann nicht überlappen.</target>
       </trans-unit>
+      <trans-unit id="sql.migration.cannot.retry">
+        <source xml:lang="en">Migration cannot be retried.</source>
+        <target state="translated">Die Migration kann nicht wiederholt werden.</target>
+      </trans-unit>
       <trans-unit id="sql.migration.cannot.start.cutover.error">
         <source xml:lang="en">The cutover process cannot start until all the migrations are done. To return the latest file status, refresh your browser window.</source>
         <target state="translated">Der Übernahmevorgang kann erst gestartet werden, wenn alle Migrationen abgeschlossen sind. Aktualisieren Sie das Browserfenster, um den aktuellen Dateistatus zurückzugeben.</target>
@@ -257,6 +269,10 @@ Dies kann einige Zeit dauern.</target>
       <trans-unit id="sql.migration.creating.rg.loading">
         <source xml:lang="en">Creating resource group</source>
         <target state="translated">Ressourcengruppe wird erstellt</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.currently.restoring.file">
+        <source xml:lang="en">Currently restoring file</source>
+        <target state="translated">Datei wird derzeit wiederhergestellt</target>
       </trans-unit>
       <trans-unit id="sql.migration.cutover">
         <source xml:lang="en">Migration cutover</source>
@@ -357,6 +373,10 @@ Dies kann einige Zeit dauern.</target>
       <trans-unit id="sql.migration.database.already.exists">
         <source xml:lang="en">Database '{0}' already exists on the target managed instance '{1}'.</source>
         <target state="translated">Die Datenbank "{0}" ist bereits auf der verwalteten Zielinstanz "{1}" vorhanden.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.database.backup.load.error">
+        <source xml:lang="en">An error occurred while accessing database details.</source>
+        <target state="translated">Fehler beim Zugriff auf Datenbankdetails.</target>
       </trans-unit>
       <trans-unit id="sql.migration.database.migration">
         <source xml:lang="en">Databases for migration</source>
@@ -570,6 +590,10 @@ Dies kann einige Zeit dauern.</target>
         <source xml:lang="en">Invalid network share location format. Example: {0}</source>
         <target state="translated">Ungültiges Speicherortformat für die Netzwerkfreigabe. Beispiel: {0}</target>
       </trans-unit>
+      <trans-unit id="sql.migration.invalid.owner.uri.error">
+        <source xml:lang="en">Cannot connect to the database due to invalid OwnerUri (Parameter 'OwnerUri')</source>
+        <target state="translated">Aufgrund eines ungültigen OwnerUri-Werts kann keine Verbindung mit der Datenbank hergestellt werden (Parameter "OwnerUri").</target>
+      </trans-unit>
       <trans-unit id="sql.migration.invalid.resourceGroup.error">
         <source xml:lang="en"> To continue, select a valid resource group.</source>
         <target state="translated">Wählen Sie eine gültige Ressourcengruppe aus, um fortzufahren.</target>
@@ -674,7 +698,7 @@ Dies kann einige Zeit dauern.</target>
         <source xml:lang="en">Learn more</source>
         <target state="translated">Weitere Informationen</target>
       </trans-unit>
-      <trans-unit id="sql.migration.learn.more.pre.reqs">
+      <trans-unit id="sql.migration.learn.more.prerequisites">
         <source xml:lang="en">Learn more about things you need before starting a migration.</source>
         <target state="translated">Erfahren Sie mehr über die erforderlichen Schritte, bevor Sie eine Migration starten.</target>
       </trans-unit>
@@ -779,12 +803,16 @@ Dies kann einige Zeit dauern.</target>
         <target state="translated">Geben Sie das Kennwort ein.</target>
       </trans-unit>
       <trans-unit id="sql.migration.network.share.path">
+        <source xml:lang="en">Network share path</source>
+        <target state="translated">Pfad der Netzwerkfreigabe</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.network.share.path.format">
         <source xml:lang="en">\\Servername.domainname.com\Backupfolder</source>
         <target state="translated">\\Servername.Domaenenname.com\Sicherungsordner</target>
       </trans-unit>
       <trans-unit id="sql.migration.network.share.storage.table.help">
-        <source xml:lang="en">Enter target database name for the selected source databases.</source>
-        <target state="translated">Geben Sie den Namen der Zieldatenbank für die ausgewählten Quelldatenbanken ein.</target>
+        <source xml:lang="en">Enter target database name and network share path information for the selected source databases.</source>
+        <target state="translated">Geben Sie den Zieldatenbanknamen und die Pfadinformationen der Netzwerkfreigabe für die ausgewählten Quelldatenbanken ein.</target>
       </trans-unit>
       <trans-unit id="sql.migration.network.share.windows.user.info">
         <source xml:lang="en">Windows user account with read access to the network share location.</source>
@@ -837,6 +865,10 @@ Dies kann einige Zeit dauern.</target>
       <trans-unit id="sql.migration.no.pending.backups">
         <source xml:lang="en">No pending backups. Click refresh to check current status.</source>
         <target state="translated">Keine ausstehenden Sicherungen. Klicken Sie auf "Aktualisieren", um den aktuellen Status zu prüfen.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.no.results">
+        <source xml:lang="en">Assessment results are unavailable.</source>
+        <target state="translated">Bewertungsergebnisse sind nicht verfügbar.</target>
       </trans-unit>
       <trans-unit id="sql.migration.no.storageAccount.found">
         <source xml:lang="en">No storage account found.</source>
@@ -938,7 +970,7 @@ Dies kann einige Zeit dauern.</target>
         <source xml:lang="en">Resource group</source>
         <target state="translated">Ressourcengruppe</target>
       </trans-unit>
-      <trans-unit id="sql.migration.resume.contine">
+      <trans-unit id="sql.migration.resume.continue">
         <source xml:lang="en">Continue last migration attempt...</source>
         <target state="translated">Letzten Migrationsversuch fortsetzen...</target>
       </trans-unit>
@@ -949,6 +981,14 @@ Dies kann einige Zeit dauern.</target>
       <trans-unit id="sql.migration.resume.title">
         <source xml:lang="en">Run migration workflow again</source>
         <target state="translated">Migrationsworkflow erneut ausführen</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.retry.migration">
+        <source xml:lang="en">Retry migration</source>
+        <target state="translated">Migration wiederholen</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.retry.migration.error">
+        <source xml:lang="en">An error occurred while retrying the migration.</source>
+        <target state="translated">Fehler beim Wiederholen der Migration.</target>
       </trans-unit>
       <trans-unit id="sql.migration.rg.created">
         <source xml:lang="en">Resource group created</source>
@@ -1015,8 +1055,8 @@ Dies kann einige Zeit dauern.</target>
         <target state="translated">Stellen Sie sicher, dass das Dienstkonto, in dem die SQL Server-Quellinstanz ausgeführt wird, in der Netzwerkfreigabe über Schreibberechtigungen verfügt.</target>
       </trans-unit>
       <trans-unit id="sql.migration.service.container.container.description1">
-        <source xml:lang="en">Azure Database Migration Service leverages Azure Data Factory's self-hosted integration runtime to upload backups from on-premises network fie share to Azure.</source>
-        <target state="translated">Azure Database Migration Service nutzt die selbstgehostete Integration Runtime von Azure Data Factory, um Sicherungen von der lokalen Netzwerk-FIE-Freigabe in Azure hochzuladen.</target>
+        <source xml:lang="en">Azure Database Migration Service leverages Azure Data Factory's self-hosted integration runtime to upload backups from on-premises network file share to Azure.</source>
+        <target state="translated">Der Azure Database Migration Service nutzt die selbstgehostete Integration Runtime von Azure Data Factory, um Backups von der lokalen Netzwerk-Dateifreigabe in Azure hochzuladen.</target>
       </trans-unit>
       <trans-unit id="sql.migration.service.container.container.description2">
         <source xml:lang="en">Follow the instructions below to setup self-hosted integration runtime.</source>
@@ -1090,7 +1130,7 @@ Dies kann einige Zeit dauern.</target>
         <source xml:lang="en">Azure Database Migration Service name.</source>
         <target state="translated">Name des Azure Database Migration Service.</target>
       </trans-unit>
-      <trans-unit id="sql.migration.services.resourcegroup">
+      <trans-unit id="sql.migration.services.resource.group">
         <source xml:lang="en">Resource group for your Azure Database Migration Service.</source>
         <target state="translated">Ressourcengruppe für Ihren Azure Database Migration Service.</target>
       </trans-unit>
@@ -1426,9 +1466,25 @@ Dies kann einige Zeit dauern.</target>
         <source xml:lang="en">An error occurred while assessing the server '{0}'.</source>
         <target state="translated">Fehler beim Bewerten des Servers "{0}".</target>
       </trans-unit>
+      <trans-unit id="sql.migration.wizard.sku.assessment.error.bypass">
+        <source xml:lang="en">Check this option to skip assessment and continue the migration.</source>
+        <target state="translated">Aktivieren Sie diese Option, um die Bewertung zu überspringen und die Migration fortzusetzen.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.sku.assessment.error.detail">
+        <source xml:lang="en">[There are no assessment results to validate readiness of your database migration. By checking this box, you acknowledge you want to proceed migrating your database to the desired Azure SQL target.]</source>
+        <target state="translated">[Es sind keine Bewertungsergebnisse vorhanden, um die Bereitschaft Ihrer Datenbankmigration zu überprüfen. Durch Aktivieren dieses Kontrollkästchens bestätigen Sie, dass Sie mit der Migration Ihrer Datenbank zum gewünschten Azure SQL-Ziel fortfahren möchten.]</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.sku.assessment.unexpected.error">
+        <source xml:lang="en">An unexpected error occurred while assessing the server '{0}'.{3}Message: {1}{3}stack: {2}</source>
+        <target state="translated">Beim Bewerten des Servers „{0}“ ist ein unerwarteter Fehler aufgetreten.{3}Nachricht: {1}{3}Stack: {2}</target>
+      </trans-unit>
       <trans-unit id="sql.migration.wizard.sku.choose_a_target">
         <source xml:lang="en">Choose your Azure SQL target</source>
         <target state="translated">Azure SQL-Ziel auswählen</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.wizard.sku.error">
+        <source xml:lang="en">An error occurred while assessing your databases.</source>
+        <target state="translated">Beim Bewerten Ihrer Datenbanken ist ein Fehler aufgetreten.</target>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.sku.title">
         <source xml:lang="en">Azure SQL target</source>
@@ -1505,6 +1561,10 @@ Dies kann einige Zeit dauern.</target>
       <trans-unit id="new-support-request-command">
         <source xml:lang="en">New support request</source>
         <target state="translated">Neue Supportanfrage</target>
+      </trans-unit>
+      <trans-unit id="retry-migration-menu">
+        <source xml:lang="en">Retry migration</source>
+        <target state="translated">Migration wiederholen</target>
       </trans-unit>
       <trans-unit id="send-feedback-command">
         <source xml:lang="en">Feedback</source>
