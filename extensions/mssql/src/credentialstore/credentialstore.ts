@@ -3,18 +3,16 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
-import { SqlOpsDataClient, ClientOptions, SqlOpsFeature } from 'dataprotocol-client';
+import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
 import { IConfig } from '@microsoft/ads-service-downloader';
-import { ClientCapabilities, RPCMessageType, ServerCapabilities, ServerOptions, TransportKind } from 'vscode-languageclient';
+import { ServerOptions, TransportKind } from 'vscode-languageclient';
 import * as Constants from './constants';
 import * as Utils from '../utils';
-import * as UUID from 'vscode-languageclient/lib/utils/uuid';
-//import { SqlCredentialService } from './sqlCredentialService';
-import { AppContext } from '../appContext';
-import { DeleteCredentialRequest, ReadCredentialRequest, SaveCredentialRequest } from './contracts';
-import { Disposable } from 'vscode';
+// import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import { SqlCredentialService } from './sqlCredentialService';
+import { AppContext } from '../appContext';
+// import { DeleteCredentialRequest, ReadCredentialRequest, SaveCredentialRequest } from './contracts';
+// import { Disposable } from 'vscode';
 
 /**
  * Implements a credential storage for Windows, Mac (darwin), or Linux.
