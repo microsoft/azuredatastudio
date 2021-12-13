@@ -142,12 +142,14 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this.mapMouseEvent(this._grid.onDblClick, this._onDoubleClick);
 		this._grid.onColumnsResized.subscribe(() => this._onColumnResize.fire());
 		this._grid.onRendered.subscribe(() => {
-			// When the grid is rerendered (e.g. view switching), the active cell information is kept but the cell will become not keyboard focusable (tabindex changed from 0 to -1).
-			// we need to set the container's tabindex to 0 to go through the focus redirection logic.
+			// When there are data present and no cells are keyboard focusable, the container should be set to keyboard focusable to
+			// leverage the focus redirection logic.
 			this._container.tabIndex = this._container.querySelector('[tabindex = "0"]') || this._data.getLength() === 0 ? -1 : 0;
 		});
 		this._grid.onActiveCellChanged.subscribe((e, data) => {
 			// When the active cell is changed, a cell will become focusable and we can make the container not focusable by user.
+			// later when the grid is rerendered (e.g. view switching), the active cell information is kept but the cell will become not keyboard focusable (tabindex changed from 0 to -1).
+			// we need to check and reset the tabIndex of the container in the onRendered handler.
 			this._container.tabIndex = -1;
 		});
 	}
