@@ -125,6 +125,16 @@ export class NotebookFindDecorations implements IDisposable {
 					break;
 				}
 			}
+			if (matchPosition === 0) {
+				for (let i = 0, len = this._findScopeDecorationIds.length; i < len; i++) {
+					let range = this._editor.notebookFindModel.getDecorationRange(this._findScopeDecorationIds[i]);
+					if (nextMatch.equalsRange(range)) {
+						newCurrentDecorationId = this._decorations[i];
+						matchPosition = (i + 1);
+						break;
+					}
+				}
+			}
 		}
 
 		if (this._highlightedDecorationId !== null || newCurrentDecorationId !== null) {

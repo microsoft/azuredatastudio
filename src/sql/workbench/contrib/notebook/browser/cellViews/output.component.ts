@@ -27,7 +27,7 @@ import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/not
 
 export const OUTPUT_SELECTOR: string = 'output-component';
 const USER_SELECT_CLASS = 'actionselect';
-
+const GRID_CLASS = '[class="grid-canvas"]';
 const componentRegistry = <IMimeComponentRegistry>Registry.as(Extensions.MimeComponentContribution);
 
 @Component({
@@ -208,7 +208,7 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 				if (elements?.length >= range.startLineNumber) {
 					let elementContainingText = elements[range.startLineNumber - 1];
 					let markCurrent = new Mark(elementContainingText); // to highlight the current item of them all.
-					if (elementContainingText.nodeName !== 'PRE' && elementContainingText.children.length > 0) {
+					if (elementContainingText.nodeName !== 'MIME-OUTPUT' && elementContainingText.children.length > 0) {
 						markCurrent = new Mark(elementContainingText.children[range.startColumn]);
 						markCurrent?.mark(this.searchTerm, {
 							className: findRangeSpecificClass,
@@ -246,17 +246,17 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 				if (findModel?.findMatches?.length > 0) {
 					this.searchTerm = findModel.findExpression;
 					markAllOccurances.mark(this.searchTerm, {
-						className: findHighlightClass
+						className: findHighlightClass,
+						separateWordSearch: true,
 					});
 					// if there is a grid
-					let grids = document.querySelectorAll('[class="grid-canvas"]');
+					let grids = document.querySelectorAll(GRID_CLASS);
 					grids?.forEach(g => {
 						markAllOccurances = new Mark(g);
 						markAllOccurances.mark(this.searchTerm, {
 							className: findHighlightClass
 						});
 					});
-
 				}
 			}
 		}
@@ -275,7 +275,7 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 				markAllOccurances.unmark({ acrossElements: true, className: findRangeSpecificClass });
 				this.highlightRange = undefined;
 				// if there is a grid
-				let grids = document.querySelectorAll('[class="grid-canvas"]');
+				let grids = document.querySelectorAll(GRID_CLASS);
 				grids?.forEach(g => {
 					markAllOccurances = new Mark(g);
 					markAllOccurances.unmark({ acrossElements: true, className: findHighlightClass });
@@ -289,39 +289,16 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 		let hostElem = this.output?.nativeElement;
 		let children = [];
 		if (hostElem) {
-			if (this.isCellOutput) {
-				let slickGrid = document.querySelectorAll('[class="grid-canvas"]');
-				if (slickGrid.length > 0) {
-					slickGrid.forEach(grid => {
-						children.push(...grid.children);
-					});
-				} else {
-					// if the decoration range belongs to code cell output, output is a stream of data
-					// it's in <pre> tag of the first child's children.
-					let results = hostElem.children[0]?.children;
-					if (results) {
-						children.push(...results);
-					}
-				}
-
+			let slickGrid = document.querySelectorAll(GRID_CLASS);
+			if (slickGrid.length > 0) {
+				slickGrid.forEach(grid => {
+					children.push(...grid.children);
+				});
 			} else {
-				for (let element of hostElem.children) {
-					if (element.nodeName.toLowerCase() === 'table') {
-						// add table header and table rows.
-						if (element.children.length > 0) {
-							children.push(element.children[0]);
-							if (element.children.length > 1) {
-								for (let trow of element.children[1].children) {
-									children.push(trow);
-								}
-							}
-						}
-					} else if (element.children.length > 1) {
-						children = children.concat(this.getChildren(element));
-					} else {
-						children.push(element);
-					}
-				}
+				// if the decoration range belongs to code cell output, output is a stream of data
+				// it's in <mime-output> tag of the first child's children.
+				let outputMessages = hostElem.querySelectorAll('mime-output');
+				children.push(...outputMessages);
 			}
 		}
 		return children;

@@ -572,8 +572,9 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 			}
 		}
 		if (cell.cellType === 'code' && cell.outputs.length > 0) {
-			// i = row number in result data set.
+			// i = output element index.
 			let i: number = 0;
+			let gridRow: number = 0;
 			cell.outputs.forEach(output => {
 				let findStartResults: number[] = [];
 				switch (output.output_type) {
@@ -581,25 +582,29 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 						let cellValFormatted = output as nb.IStreamResult;
 						findStartResults = this.search(cellValFormatted.text.toString().replace('\\n', ''), exp, matchCase, wholeWord, maxMatches - findResults.length);
 						findStartResults?.forEach(start => {
-							let range = new NotebookRange(cell, 1, start, 1, start + exp.length, false, true);
+							let range = new NotebookRange(cell, i + 1, start, i + 1, start + exp.length, false, true);
 							findResults.push(range);
 						});
+						i++;
 						break;
 					case 'error':
-						let errorValue = output as nb.IErrorResult;
-						findStartResults = this.search(errorValue.traceback.toString(), exp, matchCase, wholeWord, maxMatches - findResults.length);
+						let error = output as nb.IErrorResult;
+						let errorValue = error.traceback?.length > 0 ? error.traceback.toString() : error.evalue;
+						findStartResults = this.search(errorValue, exp, matchCase, wholeWord, maxMatches - findResults.length);
 						findStartResults.forEach(start => {
-							let range = new NotebookRange(cell, 1, start, 1, start + exp.length, false, true);
+							let range = new NotebookRange(cell, i + 1, start, i + 1, start + exp.length, false, true);
 							findResults.push(range);
 						});
+						i++;
 						break;
 					case 'display_data':
 						let displayValue = output as nb.IDisplayData;
 						findStartResults = this.search(JSON.parse(JSON.stringify(displayValue.data))['text/html'], exp, matchCase, wholeWord, maxMatches - findResults.length);
 						findStartResults.forEach(start => {
-							let range = new NotebookRange(cell, 1, start, 1, start + exp.length, false, true);
+							let range = new NotebookRange(cell, i + 1, start, i + 1, start + exp.length, false, true);
 							findResults.push(range);
 						});
+						i++;
 						break;
 					case 'execute_result':
 						// When result is a table
@@ -613,16 +618,16 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 								for (const key in rowData) {
 									let findStartResults = this.search(rowData[key].toString(), exp, matchCase, wholeWord, maxMatches - findResults.length);
 									if (findStartResults.length) {
-										let range = new NotebookRange(cell, i + 1, j + 1, i + 1, j + 1, false, true);
+										let range = new NotebookRange(cell, gridRow + 1, j + 1, gridRow + 1, j + 1, false, true);
 										findResults.push(range);
 									}
 									j++;
 								}
-								i++;
+								gridRow++;
 							}
 						}
 						break;
-					default:
+					default: i++;
 						break;
 				}
 			});
