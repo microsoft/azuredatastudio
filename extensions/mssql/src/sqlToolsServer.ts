@@ -164,7 +164,7 @@ function getClientOptions(context: AppContext): ClientOptions {
 			NotebookConvertService.asFeature(context),
 			ProfilerFeature,
 			SqlMigrationService.asFeature(context),
-			SqlCredentialService.asFeature(context),
+			// SqlCredentialService.asFeature(context),
 			TableDesignerFeature
 		],
 		outputChannel: new CustomOutputChannel()
