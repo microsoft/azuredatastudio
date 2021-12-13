@@ -37,6 +37,10 @@ export const RESOURCE_VIEWER_TYPEID = 'workbench.editorInput.resourceViewerInput
 
 export const JUPYTER_PROVIDER_ID = 'jupyter';
 
+// The version of the notebook file format that we support
+export const NBFORMAT = 4;
+export const NBFORMAT_MINOR = 2;
+
 export const enum NotebookLanguage {
 	Notebook = 'Notebook',
 	Ipynb = 'ipynb'

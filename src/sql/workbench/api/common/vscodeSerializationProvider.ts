@@ -10,6 +10,7 @@ import { NotebookCellKind } from 'vs/workbench/api/common/extHostTypes';
 import { CancellationTokenSource } from 'vs/base/common/cancellation';
 import { OutputTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { asArray } from 'vs/base/common/arrays';
+import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
 
 export class VSCodeContentManager implements azdata.nb.ContentManager {
 	constructor(private readonly _serializer: vscode.NotebookSerializer) {
@@ -48,8 +49,8 @@ export class VSCodeContentManager implements azdata.nb.ContentManager {
 				};
 			}),
 			metadata: notebookData.metadata ?? {},
-			nbformat: notebookData.metadata?.custom?.nbformat ?? 4,
-			nbformat_minor: notebookData.metadata?.custom?.nbformat_minor ?? 2
+			nbformat: notebookData.metadata?.custom?.nbformat ?? NBFORMAT,
+			nbformat_minor: notebookData.metadata?.custom?.nbformat_minor ?? NBFORMAT_MINOR
 		};
 
 		// Clear out extra lingering vscode custom metadata

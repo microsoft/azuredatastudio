@@ -15,7 +15,7 @@ import { URI } from 'vs/base/common/uri';
 import { ICodeEditorService } from 'vs/editor/browser/services/codeEditorService';
 import { IEditorOptions } from 'vs/editor/common/config/editorOptions';
 import { BareFontInfo } from 'vs/editor/common/config/fontInfo';
-// import { localize } from 'vs/nls'; {{SQL CARBON EDIT}}
+// import { localize } from 'vs/nls'; {{SQL CARBON EDIT}} Notebook registration handled in SQL code
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IResourceEditorInput } from 'vs/platform/editor/common/editor';
@@ -40,7 +40,7 @@ import { NotebookEditorDescriptor, NotebookProviderInfo } from 'vs/workbench/con
 import { ComplexNotebookProviderInfo, INotebookContentProvider, INotebookSerializer, INotebookService, SimpleNotebookProviderInfo } from 'vs/workbench/contrib/notebook/common/notebookService';
 import { ContributedEditorPriority, DiffEditorInputFactoryFunction, EditorInputFactoryFunction, IEditorOverrideService, IEditorType } from 'vs/workbench/services/editor/common/editorOverrideService';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
-// import { IExtensionPointUser } from 'vs/workbench/services/extensions/common/extensionsRegistry'; {{SQL CARBON EDIT}}
+// import { IExtensionPointUser } from 'vs/workbench/services/extensions/common/extensionsRegistry'; {{SQL CARBON EDIT}} Notebook registration handled in SQL code
 
 export class NotebookProviderInfoStore extends Disposable {
 
@@ -80,7 +80,7 @@ export class NotebookProviderInfoStore extends Disposable {
 			}
 		}));
 
-		// notebooksExtensionPoint.setHandler(extensions => this._setupHandler(extensions)); {{SQL CARBON EDIT}} Registration handled elsewhere
+		// notebooksExtensionPoint.setHandler(extensions => this._setupHandler(extensions)); {{SQL CARBON EDIT}} Notebook registration handled in SQL code
 	}
 
 	override dispose(): void {
@@ -88,7 +88,7 @@ export class NotebookProviderInfoStore extends Disposable {
 		super.dispose();
 	}
 
-	// {{SQL CARBON EDIT}}
+	// {{SQL CARBON EDIT}} Notebook registration handled in SQL code
 	// private _setupHandler(extensions: readonly IExtensionPointUser<INotebookEditorContribution[]>[]) {
 	// 	this._handled = true;
 	// 	this._clear();

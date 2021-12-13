@@ -38,6 +38,10 @@ declare module 'azdata' {
 			nbKernelAlias?: string
 		}
 
+		export interface ICellOutput {
+			id?: string;
+		}
+
 		export interface IExecuteResult {
 			data: any;
 		}
@@ -46,6 +50,10 @@ declare module 'azdata' {
 			output_type: string;
 			resultSet: ResultSetSummary;
 			data: any;
+		}
+
+		export interface IExecuteRequest {
+			notebookUri?: vscode.Uri;
 		}
 
 		export interface INotebookMetadata {

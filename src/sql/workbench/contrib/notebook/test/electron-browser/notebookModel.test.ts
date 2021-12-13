@@ -43,6 +43,7 @@ import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { UndoRedoService } from 'vs/platform/undoRedo/common/undoRedoService';
 import { SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
+import { NBFORMAT } from 'sql/workbench/common/constants';
 
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -65,7 +66,7 @@ let expectedNotebookContent: nb.INotebookContents = {
 			name: 'sql'
 		}
 	},
-	nbformat: 4,
+	nbformat: NBFORMAT,
 	nbformat_minor: 5
 };
 
@@ -83,7 +84,7 @@ let expectedNotebookContentOneCell: nb.INotebookContents = {
 			display_name: 'SQL'
 		}
 	},
-	nbformat: 4,
+	nbformat: NBFORMAT,
 	nbformat_minor: 5
 };
 
@@ -104,7 +105,7 @@ let expectedKernelAliasNotebookContentOneCell: nb.INotebookContents = {
 			version: ''
 		}
 	},
-	nbformat: 4,
+	nbformat: NBFORMAT,
 	nbformat_minor: 5
 };
 
@@ -127,7 +128,7 @@ let expectedParameterizedNotebookContent: nb.INotebookContents = {
 			display_name: 'Python 3'
 		}
 	},
-	nbformat: 4,
+	nbformat: NBFORMAT,
 	nbformat_minor: 5
 };
 
@@ -209,7 +210,7 @@ suite('notebook model', function (): void {
 					display_name: 'SQL'
 				}
 			},
-			nbformat: 4,
+			nbformat: NBFORMAT,
 			nbformat_minor: 5
 		};
 
@@ -628,7 +629,7 @@ suite('notebook model', function (): void {
 					name: 'sql'
 				}
 			},
-			nbformat: 4,
+			nbformat: NBFORMAT,
 			nbformat_minor: 5
 		};
 		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
@@ -907,7 +908,7 @@ suite('notebook model', function (): void {
 			metadata: {
 				connection_name: connectionName
 			},
-			nbformat: 4,
+			nbformat: NBFORMAT,
 			nbformat_minor: 5
 		};
 		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
@@ -957,7 +958,7 @@ suite('notebook model', function (): void {
 			metadata: {
 				multi_connection_mode: true
 			},
-			nbformat: 4,
+			nbformat: NBFORMAT,
 			nbformat_minor: 5
 		};
 		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);

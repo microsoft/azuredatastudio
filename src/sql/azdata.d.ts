@@ -5102,7 +5102,6 @@ declare module 'azdata' {
 		export interface ICellOutput {
 			output_type: OutputTypeName;
 			metadata?: ICellOutputMetadata | undefined;
-			id?: string; // Used for VSCode cell conversions
 		}
 
 		export interface ICellOutputMetadata {
@@ -5377,7 +5376,6 @@ declare module 'azdata' {
 		 */
 		export interface IExecuteRequest extends IExecuteOptions {
 			code: string | string[];
-			notebookUri?: vscode.Uri; // Used for VSCode notebook cell execution
 		}
 
 		/**

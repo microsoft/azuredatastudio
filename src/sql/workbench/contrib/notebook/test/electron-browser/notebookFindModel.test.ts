@@ -33,6 +33,7 @@ import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTeleme
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 import { SessionManager } from 'sql/workbench/contrib/notebook/test/emptySessionClasses';
+import { NBFORMAT } from 'sql/workbench/common/constants';
 
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -53,7 +54,7 @@ let expectedNotebookContent: nb.INotebookContents = {
 			display_name: 'SQL'
 		}
 	},
-	nbformat: 4,
+	nbformat: NBFORMAT,
 	nbformat_minor: 5
 };
 
@@ -199,7 +200,7 @@ suite('Notebook Find Model', function (): void {
 					display_name: 'SQL'
 				}
 			},
-			nbformat: 4,
+			nbformat: NBFORMAT,
 			nbformat_minor: 5
 		};
 		await initNotebookModel(markdownContent);
@@ -232,7 +233,7 @@ suite('Notebook Find Model', function (): void {
 					display_name: 'Python'
 				}
 			},
-			nbformat: 4,
+			nbformat: NBFORMAT,
 			nbformat_minor: 5
 		};
 		await initNotebookModel(codeContent);
@@ -258,7 +259,7 @@ suite('Notebook Find Model', function (): void {
 					display_name: 'Python'
 				}
 			},
-			nbformat: 4,
+			nbformat: NBFORMAT,
 			nbformat_minor: 5
 		};
 		await initNotebookModel(codeContent);
@@ -319,7 +320,7 @@ suite('Notebook Find Model', function (): void {
 					display_name: 'Python'
 				}
 			},
-			nbformat: 4,
+			nbformat: NBFORMAT,
 			nbformat_minor: 5
 		};
 		await initNotebookModel(codeContent);
@@ -352,7 +353,7 @@ suite('Notebook Find Model', function (): void {
 					display_name: 'Python'
 				}
 			},
-			nbformat: 4,
+			nbformat: NBFORMAT,
 			nbformat_minor: 5
 		};
 		await initNotebookModel(codeContent);
@@ -384,7 +385,7 @@ suite('Notebook Find Model', function (): void {
 					display_name: 'SQL'
 				}
 			},
-			nbformat: 4,
+			nbformat: NBFORMAT,
 			nbformat_minor: 5
 		};
 		await initNotebookModel(markdownContent);

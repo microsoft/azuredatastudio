@@ -885,7 +885,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 					name: 'python3'
 				}
 			},
-			nbformat: 4,
+			nbformat: constants.NBFORMAT,
 			nbformat_minor: 5
 		};
 

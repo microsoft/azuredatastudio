@@ -9,7 +9,7 @@ import { combinedDisposable, DisposableStore, IDisposable } from 'vs/base/common
 import { URI, UriComponents } from 'vs/base/common/uri';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { ExtensionIdentifier } from 'vs/platform/extensions/common/extensions';
-// import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers'; {{SQL CARBON EDIT}}
+// import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers'; {{SQL CARBON EDIT}} Disable VS Code notebooks
 import { INotebookEditor } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
 import { INotebookEditorService } from 'vs/workbench/contrib/notebook/browser/notebookEditorService';
 import { INotebookKernel, INotebookKernelChangeEvent } from 'vs/workbench/contrib/notebook/common/notebookCommon';
@@ -88,7 +88,7 @@ abstract class MainThreadKernel implements INotebookKernel {
 	abstract cancelNotebookCellExecution(uri: URI, cellHandles: number[]): Promise<void>;
 }
 
-// @extHostNamedCustomer(MainContext.MainThreadNotebookKernels) {{SQL CARBON EDIT}}
+// @extHostNamedCustomer(MainContext.MainThreadNotebookKernels) {{SQL CARBON EDIT}} Disable VS Code notebooks
 export class MainThreadNotebookKernels implements MainThreadNotebookKernelsShape {
 
 	private readonly _editors = new Map<INotebookEditor, IDisposable>();

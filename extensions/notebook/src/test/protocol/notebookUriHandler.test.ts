@@ -147,7 +147,7 @@ describe('Notebook URI Handler', function (): void {
 					display_name: 'Python 3'
 				}
 			},
-			nbformat: 4,
+			nbformat: constants.NBFORMAT,
 			nbformat_minor: 5
 		};
 

@@ -677,7 +677,10 @@ export class NotebookService extends Disposable implements INotebookService {
 		timeout = timeout ?? 30000;
 		let promises: Promise<ISerializationProvider>[] = [
 			providerDescriptor.instanceReady,
-			new Promise<ISerializationProvider>((resolve, reject) => setTimeout(() => resolve(undefined), timeout))
+			new Promise<ISerializationProvider>((resolve, reject) => setTimeout(() => {
+				onUnexpectedError(localize('serializationProviderTimeout', 'Waiting for Serialization Provider availability timed out for notebook provider \'{0}\'', providerDescriptor.providerId));
+				resolve(undefined);
+			}, timeout))
 		];
 		return Promise.race(promises);
 	}
@@ -687,17 +690,23 @@ export class NotebookService extends Disposable implements INotebookService {
 		timeout = timeout ?? 30000;
 		let promises: Promise<IExecuteProvider>[] = [
 			providerDescriptor.instanceReady,
-			new Promise<IExecuteProvider>((resolve, reject) => setTimeout(() => resolve(undefined), timeout))
+			new Promise<IExecuteProvider>((resolve, reject) => setTimeout(() => {
+				onUnexpectedError(localize('executeProviderTimeout', 'Waiting for Execute Provider availability timed out for notebook provider \'{0}\'', providerDescriptor.providerId));
+				resolve(undefined);
+			}, timeout))
 		];
 		return Promise.race(promises);
 	}
 
 	private waitOnStandardKernelsAvailability(kernelsDescriptor: StandardKernelsDescriptor, timeout?: number): Promise<nb.IStandardKernel[] | undefined> {
-		// Wait up to 30 seconds for the provider to be registered
+		// Wait up to 30 seconds for the kernels to be registered
 		timeout = timeout ?? 30000;
 		let promises: Promise<nb.IStandardKernel[]>[] = [
 			kernelsDescriptor.instanceReady,
-			new Promise<nb.IStandardKernel[]>((resolve, reject) => setTimeout(() => resolve(undefined), timeout))
+			new Promise<nb.IStandardKernel[]>((resolve, reject) => setTimeout(() => {
+				onUnexpectedError(localize('standardKernelsTimeout', 'Waiting for Standard Kernels availability timed out for notebook provider \'{0}\'', kernelsDescriptor.providerId));
+				resolve(undefined);
+			}, timeout))
 		];
 		return Promise.race(promises);
 	}
