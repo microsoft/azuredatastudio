@@ -11,7 +11,7 @@
 	"license": "SEE SOURCE EULA LICENSE IN LICENSE.txt",
 	"engines": {
 		"vscode": "*",
-		"azdata": "^1.33.0"
+		"azdata": "^1.34.0"
 	},
 	"icon": "languagepack.png",
 	"categories": [
