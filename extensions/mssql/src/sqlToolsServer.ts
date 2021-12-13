@@ -25,7 +25,7 @@ import { LanguageExtensionService } from './languageExtension/languageExtensionS
 import { SqlAssessmentService } from './sqlAssessment/sqlAssessmentService';
 import { NotebookConvertService } from './notebookConvert/notebookConvertService';
 import { SqlMigrationService } from './sqlMigration/sqlMigrationService';
-import { SqlCredentialService } from './credentialstore/sqlCredentialService';
+// import { SqlCredentialService } from './credentialstore/sqlCredentialService';
 
 const localize = nls.loadMessageBundle();
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
