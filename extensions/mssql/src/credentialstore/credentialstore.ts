@@ -61,49 +61,49 @@ export class CredentialStore {
 	}
 }
 
-class CredentialsFeature extends SqlOpsFeature<any> {
+// class CredentialsFeature extends SqlOpsFeature<any> {
 
-	private static readonly messagesTypes: RPCMessageType[] = [
-		DeleteCredentialRequest.type,
-		SaveCredentialRequest.type,
-		ReadCredentialRequest.type
-	];
+// 	private static readonly messagesTypes: RPCMessageType[] = [
+// 		DeleteCredentialRequest.type,
+// 		SaveCredentialRequest.type,
+// 		ReadCredentialRequest.type
+// 	];
 
-	constructor(client: SqlOpsDataClient) {
-		super(client, CredentialsFeature.messagesTypes);
-	}
+// 	constructor(client: SqlOpsDataClient) {
+// 		super(client, CredentialsFeature.messagesTypes);
+// 	}
 
-	fillClientCapabilities(capabilities: ClientCapabilities): void {
-		Utils.ensure(Utils.ensure(capabilities, 'credentials')!, 'credentials')!.dynamicRegistration = true;
-	}
+// 	fillClientCapabilities(capabilities: ClientCapabilities): void {
+// 		Utils.ensure(Utils.ensure(capabilities, 'credentials')!, 'credentials')!.dynamicRegistration = true;
+// 	}
 
-	initialize(capabilities: ServerCapabilities): void {
-		this.register(this.messages, {
-			id: UUID.generateUuid(),
-			registerOptions: undefined
-		});
-	}
+// 	initialize(capabilities: ServerCapabilities): void {
+// 		this.register(this.messages, {
+// 			id: UUID.generateUuid(),
+// 			registerOptions: undefined
+// 		});
+// 	}
 
-	protected registerProvider(options: any): Disposable {
-		const client = this._client;
+// 	protected registerProvider(options: any): Disposable {
+// 		const client = this._client;
 
-		let readCredential = (credentialId: string): Thenable<azdata.Credential> => {
-			return client.sendRequest(ReadCredentialRequest.type, { credentialId, password: undefined });
-		};
+// 		let readCredential = (credentialId: string): Thenable<azdata.Credential> => {
+// 			return client.sendRequest(ReadCredentialRequest.type, { credentialId, password: undefined });
+// 		};
 
-		let saveCredential = (credentialId: string, password: string): Thenable<boolean> => {
-			return client.sendRequest(SaveCredentialRequest.type, { credentialId, password });
-		};
+// 		let saveCredential = (credentialId: string, password: string): Thenable<boolean> => {
+// 			return client.sendRequest(SaveCredentialRequest.type, { credentialId, password });
+// 		};
 
-		let deleteCredential = (credentialId: string): Thenable<boolean> => {
-			return client.sendRequest(DeleteCredentialRequest.type, { credentialId, password: undefined });
-		};
+// 		let deleteCredential = (credentialId: string): Thenable<boolean> => {
+// 			return client.sendRequest(DeleteCredentialRequest.type, { credentialId, password: undefined });
+// 		};
 
-		return azdata.credentials.registerProvider({
-			deleteCredential,
-			readCredential,
-			saveCredential,
-			handle: 0
-		});
-	}
-}
+// 		return azdata.credentials.registerProvider({
+// 			deleteCredential,
+// 			readCredential,
+// 			saveCredential,
+// 			handle: 0
+// 		});
+// 	}
+// }
