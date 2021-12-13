@@ -54,6 +54,10 @@ declare module 'azdata' {
 
 		export interface IExecuteRequest {
 			notebookUri?: vscode.Uri;
+			/**
+			 * The index of the cell from which the code being executed is from.
+			 */
+			cellIndex: number;
 		}
 
 		export interface INotebookMetadata {
@@ -81,13 +85,6 @@ declare module 'azdata' {
 			 * Disposes the session manager.
 			 */
 			dispose(): void;
-		}
-
-		export interface IExecuteRequest extends IExecuteOptions {
-			/**
-			 * The index of the cell from which the code being executed is from.
-			 */
-			cellIndex: number;
 		}
 	}
 
