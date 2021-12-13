@@ -901,17 +901,19 @@ export class Project implements ISqlProject {
 			}
 		}
 		else {
-			// if there's a folder entry for the folder containing this file, remove it from the sqlproj because the folder will now be
-			// included by the glob that includes this file (same as how csproj does it)
-			const folders = await this.foldersListedInSqlproj();
-			folders.forEach(folder => {
-				const trimmedUri = utils.trimUri(Uri.file(utils.getPlatformSafeFileEntryPath(folder)), Uri.file(utils.getPlatformSafeFileEntryPath(filePath)));
-				const basename = path.basename(utils.getPlatformSafeFileEntryPath(filePath));
-				if (trimmedUri === basename) {
-					// remove folder entry from sqlproj
-					this.removeFolderNode(folder);
-				}
-			});
+			if (this.isSdkStyleProject) {
+				// if there's a folder entry for the folder containing this file, remove it from the sqlproj because the folder will now be
+				// included by the glob that includes this file (same as how csproj does it)
+				const folders = await this.foldersListedInSqlproj();
+				folders.forEach(folder => {
+					const trimmedUri = utils.trimUri(Uri.file(utils.getPlatformSafeFileEntryPath(folder)), Uri.file(utils.getPlatformSafeFileEntryPath(filePath)));
+					const basename = path.basename(utils.getPlatformSafeFileEntryPath(filePath));
+					if (trimmedUri === basename) {
+						// remove folder entry from sqlproj
+						this.removeFolderNode(folder);
+					}
+				});
+			}
 
 			const currentFiles = await this.readFilesInProject();
 
