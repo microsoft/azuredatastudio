@@ -82,11 +82,8 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this._register(DOM.addDisposableListener(this._container, DOM.EventType.FOCUS, (e: FocusEvent) => {
 			// Focus redirection should only happen when the event target is the container (using keyboard navigation)
 			if (e.target && this._container === e.target && this._data.getLength() > 0) {
-				let cellToFocus = undefined;
-				if (this.grid.getActiveCell()) {
-					// When the table receives focus with an active cell, we should set the focus to the active cell.
-					cellToFocus = this.grid.getActiveCell();
-				} else {
+				let cellToFocus = this.grid.getActiveCell();
+				if (!cellToFocus) {
 					// When the table receives focus and there are currently no active cell, the focus should go to the first focusable cell.
 					for (let col = 0; col < this.columns.length; col++) {
 						// some cells are not keyboard focusable (e.g. row number column), we need to find the first focusable cell.
