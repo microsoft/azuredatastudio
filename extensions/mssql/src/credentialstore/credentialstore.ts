@@ -14,6 +14,7 @@ import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import { AppContext } from '../appContext';
 import { DeleteCredentialRequest, ReadCredentialRequest, SaveCredentialRequest } from './contracts';
 import { Disposable } from 'vscode';
+import { SqlCredentialService } from './sqlCredentialService';
 
 /**
  * Implements a credential storage for Windows, Mac (darwin), or Linux.
@@ -40,7 +41,7 @@ export class CredentialStore {
 	public async start(): Promise<void> {
 		let clientOptions: ClientOptions = {
 			providerId: Constants.providerId,
-			features: [CredentialsFeature]
+			features: [SqlCredentialService.asFeature(this.context)]
 		};
 		const serverPath = await Utils.getOrDownloadServer(this._config);
 		const serverOptions = this.generateServerOptions(serverPath);
