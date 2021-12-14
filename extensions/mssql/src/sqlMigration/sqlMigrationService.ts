@@ -74,4 +74,28 @@ export class SqlMigrationService implements mssql.ISqlMigrationService {
 
 		return undefined;
 	}
+
+	async startPerfDataCollection(
+		ownerUri: string,
+		dataFolder: string,
+		perfQueryIntervalInSec: number,
+		staticQueryIntervalInSec: number,
+		numberOfIterations: number) : Promise<number | undefined> {
+		let params: contracts.SqlMigrationStartPerfDataCollectionParams = {
+			ownerUri,
+			dataFolder,
+			perfQueryIntervalInSec,
+			staticQueryIntervalInSec,
+			numberOfIterations
+		};
+
+		try {
+			return this.client.sendRequest(contracts.SqlMigrationStartPerfDataCollectionRequest.type, params);
+		}
+		catch (e) {
+			this.client.logFailedRequest(contracts.SqlMigrationStartPerfDataCollectionRequest.type, e);
+		}
+
+		return undefined;
+	}
 }

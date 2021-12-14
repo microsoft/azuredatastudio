@@ -545,8 +545,11 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage) {
 				this.migrationStateModel._assessmentResults = <ServerAssessment>this.migrationStateModel.savedInfo.serverAssessment;
 			} else {
+				console.log("starting assessment")
 				await this.migrationStateModel.getDatabaseAssessments(MigrationTargetType.SQLMI);
+				console.log("done assessment")
 
+				// placeholder get SKU recommendation entry point
 				// TO-DO: read these preferences from the UI
 				const dataFolder = "";	// specify, or leave blank to read from NuGet default %localappdata%\Microsoft\SqlAssessment location
 				const perfQueryIntervalInSec = 30;
@@ -557,7 +560,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				const endTime = "2200-01-01 00:00:00";
 				const elasticStrategy = false;
 
-				// placeholder get SKU recommendation entry point
 				await this.migrationStateModel.getSkuRecommendations(
 					dataFolder,
 					perfQueryIntervalInSec,

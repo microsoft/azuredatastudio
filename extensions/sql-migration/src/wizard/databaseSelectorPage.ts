@@ -86,7 +86,22 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			}
 			return true;
 		});
+
+		// placeholder start perf data collection entry point
+		// TO-DO: read these preferences from the UI
+		const dataFolder = "";	// specify, or leave blank to read from NuGet default %localappdata%\Microsoft\SqlAssessment location
+		const perfQueryIntervalInSec = 3;
+		const staticQueryIntervalInSec = 30;
+		const numberOfIterations = 5;
+
+		await this.migrationStateModel.startPerfDataCollection(
+			dataFolder,
+			perfQueryIntervalInSec,
+			staticQueryIntervalInSec,
+			numberOfIterations
+		);
 	}
+
 	public async onPageLeave(): Promise<void> {
 		const assessedDatabases = this.migrationStateModel._databaseAssessment ?? [];
 		const selectedDatabases = this.selectedDbs();

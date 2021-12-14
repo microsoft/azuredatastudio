@@ -307,11 +307,15 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		databaseAllowList: string[]) : Promise<SkuRecommendation> {
 		try {
 			console.log("starting sku rec");
+
+			const serverInfo = await azdata.connection.getServerInfo(this.sourceConnectionId);
+			const machineName = (<any>serverInfo)['machineName'];		// get actual machine name instead of whatever the user entered as the server name (e.g. DESKTOP-xxx instead of localhost)
+
 			const response = (await this.migrationService.getSkuRecommendations(
 				dataFolder,
 				perfQueryIntervalInSec,
 				targetPlatforms.map(p => p.toString()),
-				targetSqlInstance,
+				machineName,
 				targetPercentile,
 				scalingFactor,
 				startTime,
@@ -367,6 +371,28 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 		// this.generateAssessmentTelemetry().catch(e => console.error(e));
 		return this._skuRecommendationResults;
+	}
+
+	public async startPerfDataCollection(
+		dataFolder: string,
+		perfQueryIntervalInSec: number,
+		staticQueryIntervalInSec: number,
+		numberOfIterations: number) : Promise<boolean> {
+		try {
+			console.log("stateMachine.startPerfDataCollection starting");
+
+			const ownerUri = await azdata.connection.getUriForConnection(this.sourceConnectionId);
+			const response = await this.migrationService.startPerfDataCollection(ownerUri, dataFolder, perfQueryIntervalInSec, staticQueryIntervalInSec, numberOfIterations);
+			console.log("process ID: " + response);
+
+		}
+		catch (error) {
+			console.log("error:");
+			console.log(error);
+		}
+
+		console.log("stateMachine.startPerfDataCollection done");
+		return true;
 	}
 
 	private async generateAssessmentTelemetry(): Promise<void> {
