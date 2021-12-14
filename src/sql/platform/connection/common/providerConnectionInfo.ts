@@ -84,8 +84,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	}
 
 	public get serverCapabilities(): ConnectionProviderProperties | undefined {
-		let capabilities = this.capabilitiesService?.getCapabilities(this.providerName);
-		return capabilities?.connection;
+		return this.capabilitiesService?.getCapabilities(this.providerName)?.connection;
 	}
 
 	public get connectionName(): string {
