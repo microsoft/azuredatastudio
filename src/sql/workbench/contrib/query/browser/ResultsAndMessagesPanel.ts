@@ -24,7 +24,6 @@ import { formatDocumentWithSelectedProvider, FormattingMode } from 'vs/editor/co
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { Progress } from 'vs/platform/progress/common/progress';
 import { CancellationToken } from 'vs/base/common/cancellation';
-import { TaskHistoryController } from 'sql/workbench/contrib/tasks/browser/tasksController';
 
 
 
@@ -32,6 +31,8 @@ export class ResultsAndMessagesPanel extends MessagePanel {
 	private tables: Array<Table<any>> = [];
 	private runner: QueryRunner;
 	private messages: Array<IQueryMessage> = [];
+	private formattedQueryResults: Array<string> = [];
+	private resultSetCount: number = 0;
 
 	constructor(
 		@ILogService private readonly logService: ILogService,
@@ -61,11 +62,12 @@ export class ResultsAndMessagesPanel extends MessagePanel {
 		this.queryRunnerDisposables.add(this.runner.onResultSet(this.onResultSet, this));
 		this.queryRunnerDisposables.add(this.runner.onResultSetUpdate(this.updateResultSet, this));
 		this.queryRunnerDisposables.add(this.runner.onMessage(this.onMessage, this));
-		this.queryRunnerDisposables.add(this.runner.onBatchEnd(this.onBatchEnd, this));
 	}
 
 	private onQueryStart() {
 		this.messages = [];
+		this.formattedQueryResults = [];
+		this.resultSetCount = 0;
 	}
 
 	protected override onMessage(incomingMessage: IQueryMessage | IQueryMessage[]) {
@@ -87,14 +89,14 @@ export class ResultsAndMessagesPanel extends MessagePanel {
 		}
 	}
 
-	private async onBatchEnd() {
-		let content = this.messages.map(m => {
-			let message = m.message;
-			if (message.includes('rows affected') || message.includes('row affected')) {
-				return '\r\n' + message + '\r\n';
+	private async onQueryEnd() {
+		let combinedContents = this.mergeResultsWithMessages();
+		let content = combinedContents.map(m => {
+			if (m.includes('rows affected') || m.includes('row affected')) {
+				return '\r\n' + m + '\r\n';
 			}
 
-			return message;
+			return m;
 		}).join('\r\n');
 
 		const input = this.untitledEditorService.create({ initialValue: content });
@@ -105,11 +107,36 @@ export class ResultsAndMessagesPanel extends MessagePanel {
 		return this.editorService.openEditor(input);
 	}
 
-	public postResults(message: IQueryMessage) {
-		//this.onMessage(message);
+	private mergeResultsWithMessages() {
+		let content: Array<string> = [];
+		let extractedMessages = this.messages.map(m => m.message);
+
+		// Merges query result set before respective '# row(s) affected' message
+		while (extractedMessages.length > 0 && this.formattedQueryResults.length > 0) {
+			if (extractedMessages[0]?.includes('rows affected') || extractedMessages[0]?.includes('row affected')) {
+				content.push(this.formattedQueryResults.shift());
+				content.push(extractedMessages.shift());
+			}
+			else {
+				content.push(extractedMessages.shift());
+			}
+		}
+
+		// merges remaining messages or query results
+		return [...content, ...extractedMessages, ...this.formattedQueryResults];
+	}
+
+	public async postResults(results: string) {
+		this.resultSetCount--;
+		this.formattedQueryResults.push(results);
+
+		if (this.resultSetCount === 0) {
+			await this.onQueryEnd();
+		}
 	}
 
 	private onResultSet(resultSet: ResultSetSummary | ResultSetSummary[]) {
+		this.resultSetCount++;
 		let resultsToAdd: ResultSetSummary[];
 		if (!Array.isArray(resultSet)) {
 			resultsToAdd = [resultSet];
@@ -216,29 +243,28 @@ class Table<T> extends Disposable {
 		}
 	}
 
-	private getData(offset: number, count: number): Thenable<void> {
-		return this.gridDataProvider.getRowData(offset, count).then(response => {
-			if (!response) {
-				return;
+	private async getData(offset: number, count: number): Promise<void> {
+		let response = await this.gridDataProvider.getRowData(offset, count);
+		if (!response) {
+			return;
+		}
+
+		let rawData = response.rows.map(row => {
+			let dataWithSchema = {};
+
+			for (let col = 0; col < this.columns.length; col++) {
+				dataWithSchema[this.columns[col].field] = {
+					displayValue: row[col].displayValue,
+					ariaLabel: escape(row[col].displayValue),
+					isNull: row[col].isNull,
+					invariantCultureDisplayValue: row[col].invariantCultureDisplayValue
+				};
 			}
-
-			let rawData = response.rows.map(row => {
-				let dataWithSchema = {};
-
-				for (let col = 0; col < this.columns.length; col++) {
-					dataWithSchema[this.columns[col].field] = {
-						displayValue: row[col].displayValue,
-						ariaLabel: escape(row[col].displayValue),
-						isNull: row[col].isNull,
-						invariantCultureDisplayValue: row[col].invariantCultureDisplayValue
-					};
-				}
-				return dataWithSchema as T;
-			});
-
-			let formattedResults = this.formatQueryResults(rawData);
-			this.resultsAndMessagesPanel.postResults(formattedResults);
+			return dataWithSchema as T;
 		});
+
+		let formattedResults = this.formatQueryResults(rawData);
+		await this.resultsAndMessagesPanel.postResults(formattedResults);
 	}
 
 	private calculateColumnWidths(): number[] {
@@ -304,17 +330,12 @@ class Table<T> extends Disposable {
 		return formattedRows;
 	}
 
-	private formatQueryResults(dataRows: any[]) {
+	private formatQueryResults(dataRows: any[]): string {
 		let columnWidths = this.calculateColumnWidths();
 		let formattedTable = this.buildHeader(columnWidths);
 		formattedTable = formattedTable.concat(this.formatData(dataRows, columnWidths));
 
-		let queryMessage = {
-			message: formattedTable.join('\n'),
-			isError: false
-		} as IQueryMessage;
-
-		return queryMessage;
+		return formattedTable.join('\r\n');
 	}
 }
 
