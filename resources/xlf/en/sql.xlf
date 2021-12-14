@@ -213,6 +213,9 @@
     <trans-unit id="showReleaseNotes">
       <source xml:lang="en">Show Release Notes after an update. The Release Notes are opened in a new web browser window.</source>
     </trans-unit>
+[]    <trans-unit id="sql.watcherExclude">
+      <source xml:lang="en">Configure glob patterns of file paths to exclude from file watching. Patterns must match on absolute paths (i.e. prefix with ** or the full path to match properly). Changing this setting requires a restart. When you experience Azure Data Studio consuming lots of CPU time on startup, you can exclude large folders to reduce the initial load.</source>
+    </trans-unit>
     <trans-unit id="uninstallExtensionComplete">
       <source xml:lang="en">Please reload Azure Data Studio to complete the uninstallation of the extension {0}.</source>
     </trans-unit>
