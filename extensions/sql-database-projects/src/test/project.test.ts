@@ -1155,10 +1155,10 @@ describe('Project: properties', function (): void {
 		should(databaseSourceItems[0]).equal('test1');
 		should(databaseSourceItems[1]).equal('test2');
 		should(databaseSourceItems[2]).equal('test3');
-		should(getWellKnownDatabaseSourceString(project)).equal('');
+		should(getWellKnownDatabaseSourceString(project.getDatabaseSourceValues())).equal('');
 
 		await project.addDatabaseSource(constants.WellKnownDatabaseSources[0]);
-		should(getWellKnownDatabaseSourceString(project)).equal(constants.WellKnownDatabaseSources[0]);
+		should(getWellKnownDatabaseSourceString(project.getDatabaseSourceValues())).equal(constants.WellKnownDatabaseSources[0]);
 	});
 
 	it('Should remove database source from project property', async function (): Promise<void> {
@@ -1188,6 +1188,34 @@ describe('Project: properties', function (): void {
 		databaseSourceItems = project.getDatabaseSourceValues();
 
 		should(databaseSourceItems.length).equal(0);
+	});
+
+	it('Should add and remove values from project properties according to specified case sensitivity', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjectInvalidCollationBaseline);
+		const project = await Project.openProject(projFilePath);
+		const propertyName = 'TestProperty';
+
+		// Should add value to collection
+		await project['addValueToCollectionProjectProperty'](propertyName, 'test');
+		should(project['evaluateProjectPropertyValue'](propertyName)).equal('test');
+
+		// Should not allow duplicates of different cases when comparing case insitively
+		await project['addValueToCollectionProjectProperty'](propertyName, 'TEST');
+		should(project['evaluateProjectPropertyValue'](propertyName)).equal('test');
+
+		// Should allow duplicates of differnt cases when comparing case sensitively
+		await project['addValueToCollectionProjectProperty'](propertyName, 'TEST', true);
+		should(project['evaluateProjectPropertyValue'](propertyName)).equal('test;TEST');
+
+		// Should remove values case insesitively
+		await project['removeValueFromCollectionProjectProperty'](propertyName, 'Test');
+		should(project['evaluateProjectPropertyValue'](propertyName)).equal('TEST');
+
+		// Should remove values case sensitively
+		await project['removeValueFromCollectionProjectProperty'](propertyName, 'Test', true);
+		should(project['evaluateProjectPropertyValue'](propertyName)).equal('TEST');
+		await project['removeValueFromCollectionProjectProperty'](propertyName, 'TEST', true);
+		should(project['evaluateProjectPropertyValue'](propertyName)).equal(undefined);
 	});
 });
 

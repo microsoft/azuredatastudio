@@ -74,13 +74,15 @@ declare module 'sqldbproj' {
 		addSqlCmdVariable(name: string, defaultValue: string): Promise<void>;
 
 		/**
-		 * Adds DatabaseSource property to the project
+		 * Creates DatabaseSource tag if one doesn't exist and adds database source
+		 * to the collection of existing sources
 		 * @param databaseSource Source of the database to add
 		 */
 		addDatabaseSource(databaseSource: string): Promise<void>;
 
 		/**
-		 * Removes DatabaseSource property from the project
+		 * Removes database source from the collection of existing sources and removes
+		 * DatabaseSource tag from the project if no sources remain
 		 * @param databaseSource Source of the database to remove
 		 */
 		removeDatabaseSource(databaseSource: string): Promise<void>;

@@ -237,7 +237,7 @@ export class ProjectsController {
 
 			TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.build)
 				.withAdditionalMeasurements({ duration: timeToBuild })
-				.withAdditionalProperties({ databaseSource: utils.getWellKnownDatabaseSourceString(project) })
+				.withAdditionalProperties({ databaseSource: utils.getWellKnownDatabaseSourceString(project.getDatabaseSourceValues()) })
 				.send();
 
 			return project.dacpacOutputPath;
@@ -250,7 +250,7 @@ export class ProjectsController {
 
 			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.build)
 				.withAdditionalMeasurements({ duration: timeToFailureBuild })
-				.withAdditionalProperties({ databaseSource: utils.getWellKnownDatabaseSourceString(project) })
+				.withAdditionalProperties({ databaseSource: utils.getWellKnownDatabaseSourceString(project.getDatabaseSourceValues()) })
 				.send();
 
 			const message = utils.getErrorMessage(err);
@@ -375,7 +375,7 @@ export class ProjectsController {
 		const buildEndTime = new Date().getTime();
 		telemetryMeasures.buildDuration = buildEndTime - buildStartTime;
 		telemetryProps.buildSucceeded = (dacpacPath !== '').toString();
-		telemetryProps.databaseSource = utils.getWellKnownDatabaseSourceString(project);
+		telemetryProps.databaseSource = utils.getWellKnownDatabaseSourceString(project.getDatabaseSourceValues());
 
 		if (!dacpacPath) {
 			TelemetryReporter.createErrorEvent(TelemetryViews.ProjectController, TelemetryActions.publishProject)

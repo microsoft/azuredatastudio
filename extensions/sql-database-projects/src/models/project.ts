@@ -1361,55 +1361,62 @@ export class Project implements ISqlProject {
 	 * one or more values are already present in project property
 	 * @param propertyName Name of property
 	 * @param valueToAdd Value to be added to project property, values containing semicolon are not supported
+	 * @param caseSensitive Determines if value to add to collection should be compared against existing values case sensitively
 	 */
-	private async addValueToCollectionProjectProperty(propertyName: string, valueToAdd: string) {
+	private async addValueToCollectionProjectProperty(propertyName: string, valueToAdd: string, caseSensitive?: boolean): Promise<void> {
 		if (valueToAdd.includes(';')) {
 			return;
 		}
 
-		let propertyValue = this.evaluateProjectPropertyValue(propertyName);
-		if (propertyValue === undefined) {
-			propertyValue = valueToAdd;
+		let propertyValueToSet = this.evaluateProjectPropertyValue(propertyName);
+		if (propertyValueToSet === undefined) {
+			propertyValueToSet = valueToAdd;
 		} else {
+			const propertyValue = caseSensitive ? propertyValueToSet : propertyValueToSet.toLocaleLowerCase();
+			const originalValueToAdd = valueToAdd;
+			valueToAdd = caseSensitive ? valueToAdd : valueToAdd.toLocaleLowerCase();
 			if ((propertyValue.length > valueToAdd.length
 				&& (propertyValue.startsWith(`${valueToAdd};`)
 					|| propertyValue.endsWith(`;${valueToAdd}`)
-					|| propertyValue.indexOf(`;${valueToAdd};`) > 0))
+					|| propertyValue.indexOf(`;${valueToAdd};`) >= 0))
 				|| (propertyValue.length === valueToAdd.length
 					&& propertyValue === valueToAdd)) {
 				return;
 			}
 
-			propertyValue = `${propertyValue};${valueToAdd}`;
+			propertyValueToSet = `${propertyValueToSet};${originalValueToAdd}`;
 		}
 
-		await this.setProjectPropertyValue(propertyName, propertyValue);
+		await this.setProjectPropertyValue(propertyName, propertyValueToSet);
 	}
 
 	/**
 	 * Removes value from project property where values are semicolon separated
 	 * @param propertyName Name of property
 	 * @param valueToRemove Value to remove from the project property
+	 * @param caseSensitive Determines if value to remove from collection should be compared case sensitively
 	 */
-	private async removeValueFromCollectionProjectProperty(propertyName: string, valueToRemove: string) {
-		const propertyValue = this.evaluateProjectPropertyValue(propertyName);
-		if (propertyValue === undefined
-			|| propertyValue.length < valueToRemove.length
+	protected async removeValueFromCollectionProjectProperty(propertyName: string, valueToRemove: string, caseSensitive?: boolean): Promise<void> {
+		let propertyValueToSet = this.evaluateProjectPropertyValue(propertyName);
+		if (propertyValueToSet === undefined
+			|| propertyValueToSet.length < valueToRemove.length
 			|| valueToRemove.includes(';')) {
 			return;
 		}
 
+		const propertyValue = caseSensitive ? propertyValueToSet : propertyValueToSet.toLowerCase();
+		valueToRemove = caseSensitive ? valueToRemove : valueToRemove.toLowerCase();
+
 		if (propertyValue.length > valueToRemove.length) {
-			let propertyValueToSet = propertyValue;
 			let valueToRemovePosition: number;
 
 			if (propertyValue.startsWith(`${valueToRemove};`)) {
-				propertyValueToSet = propertyValue.substring(valueToRemove.length + 1);
+				propertyValueToSet = propertyValueToSet.substring(valueToRemove.length + 1);
 			} else if (propertyValue.endsWith(`;${valueToRemove}`)) {
-				propertyValueToSet = propertyValue.substring(0, propertyValue.length - valueToRemove.length - 1);
-			} else if ((valueToRemovePosition = propertyValue.indexOf(`;${valueToRemove};`)) > 0) {
-				propertyValueToSet = propertyValue.substring(0, valueToRemovePosition + 1)
-					+ propertyValue.substring(valueToRemovePosition + valueToRemove.length + 2);
+				propertyValueToSet = propertyValueToSet.substring(0, propertyValue.length - valueToRemove.length - 1);
+			} else if ((valueToRemovePosition = propertyValue.indexOf(`;${valueToRemove};`)) >= 0) {
+				propertyValueToSet = propertyValueToSet.substring(0, valueToRemovePosition + 1)
+					+ propertyValueToSet.substring(valueToRemovePosition + valueToRemove.length + 2);
 			} else {
 				return;
 			}
@@ -1475,9 +1482,19 @@ export class Project implements ISqlProject {
 	 * @param propertyName Name of property
 	 * @param propertyValue Value of property
 	 */
-	private async setProjectPropertyValue(propertyName: string, propertyValue: string) {
-		const propertyElements = this.projFileXmlDoc!.documentElement.getElementsByTagName(propertyName);
+	private async setProjectPropertyValue(propertyName: string, propertyValue: string): Promise<void> {
+		if (this.projFileXmlDoc === undefined) {
+			return;
+		}
 
+		const propertyGroups = this.projFileXmlDoc.getElementsByTagName(constants.PropertyGroup);
+		let propertyGroup = propertyGroups.length > 0 ? propertyGroups[0] : null;
+		if (propertyGroup === null) {
+			propertyGroup = this.projFileXmlDoc.createElement(constants.PropertyGroup);
+			this.projFileXmlDoc.documentElement?.appendChild(propertyGroup);
+		}
+
+		const propertyElements = propertyGroup.getElementsByTagName(propertyName);
 		let propertyElement: Element | undefined;
 		if (propertyElements.length === 0) {
 			propertyElement = this.addProjectPropertyTag(propertyName);
@@ -1488,7 +1505,7 @@ export class Project implements ISqlProject {
 			}
 		}
 
-		propertyElement?.appendChild(this.projFileXmlDoc!.createTextNode(propertyValue));
+		propertyElement?.appendChild(this.projFileXmlDoc.createTextNode(propertyValue));
 		await this.serializeToProjFile(this.projFileXmlDoc);
 	}
 
@@ -1502,10 +1519,11 @@ export class Project implements ISqlProject {
 			return;
 		}
 
-		let propertyGroup = this.projFileXmlDoc.getElementsByTagName(constants.PropertyGroup).item(0);
+		const propertyGroups = this.projFileXmlDoc.getElementsByTagName(constants.PropertyGroup);
+		let propertyGroup = propertyGroups.length > 0 ? propertyGroups[0] : null;
 		if (propertyGroup === null) {
 			propertyGroup = this.projFileXmlDoc.createElement(constants.PropertyGroup);
-			this.projFileXmlDoc!.documentElement?.appendChild(propertyGroup);
+			this.projFileXmlDoc.documentElement?.appendChild(propertyGroup);
 		}
 
 		const propertyElement = this.projFileXmlDoc.createElement(propertyTag);

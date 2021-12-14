@@ -585,18 +585,20 @@ export async function getFoldersInFolder(folderPath: string, ignoreBinObj?: bool
  * @returns Database source value if well-known, otherwise returns undefined
  */
 export function getWellKnownDatabaseSourceValue(value: string): string | undefined {
+	const upperCaseValue = value.toUpperCase();
 	return constants.WellKnownDatabaseSources
-		.find(wellKnownSource => { return wellKnownSource.toUpperCase() === value.toUpperCase(); });
+		.find(wellKnownSource => wellKnownSource.toUpperCase() === upperCaseValue);
 }
 
 /**
  * Get string containing all well-known database sources, separated by semicolon
+ * @param databaseSourceValues Array of database source values
  * @returns Well-known database sources, separated by semicolon
  */
-export function getWellKnownDatabaseSourceString(project: Project): string {
+export function getWellKnownDatabaseSourceString(databaseSourceValues: string[]): string {
 	const databaseSourceSet = new Set();
 
-	for (let databaseSourceValue of project.getDatabaseSourceValues()) {
+	for (let databaseSourceValue of databaseSourceValues) {
 		let wellKnownDatabaseSourceValue = getWellKnownDatabaseSourceValue(databaseSourceValue);
 		if (wellKnownDatabaseSourceValue) {
 			databaseSourceSet.add(wellKnownDatabaseSourceValue);
