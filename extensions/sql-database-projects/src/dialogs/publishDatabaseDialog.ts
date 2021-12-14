@@ -230,7 +230,7 @@ export class PublishDatabaseDialog {
 				sqlCmdVariables: this.getSqlCmdVariablesForPublish(),
 				deploymentOptions: await this.getDeploymentOptions(),
 				profileUsed: this.profileUsed,
-				diagnosticsLogFilePath: this.diagFileTextBox.value
+				diagnosticsLogFilePath: this.getDiagnosticsLogPath()
 			};
 
 			utils.getAzdataApi()!.window.closeDialog(this.dialog);
@@ -256,7 +256,7 @@ export class PublishDatabaseDialog {
 					sqlCmdVariables: this.getSqlCmdVariablesForPublish(),
 					deploymentOptions: await this.getDeploymentOptions(),
 					profileUsed: this.profileUsed,
-					diagnosticsLogFilePath: this.diagFileTextBox.value
+					diagnosticsLogFilePath: this.getDiagnosticsLogPath()
 				}
 			};
 
@@ -278,7 +278,7 @@ export class PublishDatabaseDialog {
 			sqlCmdVariables: sqlCmdVars,
 			deploymentOptions: await this.getDeploymentOptions(),
 			profileUsed: this.profileUsed,
-			diagnosticsLogFilePath: this.diagFileTextBox.value
+			diagnosticsLogFilePath: this.getDiagnosticsLogPath()
 		};
 
 		utils.getAzdataApi()!.window.closeDialog(this.dialog);
@@ -1016,6 +1016,11 @@ export class PublishDatabaseDialog {
 		} else { // otherwise use the default sql project root directory
 			return utils.getRootPath();
 		}
+	}
+
+	// Gets the diagnostic file log path value
+	public getDiagnosticsLogPath(): string {
+		return this.diagFileTextBox?.value!;
 	}
 	//#endregion
 }
