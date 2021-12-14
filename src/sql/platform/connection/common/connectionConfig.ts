@@ -99,8 +99,10 @@ export class ConnectionConfig {
 
 				// Remove the profile if already set
 				let sameProfileInList = profiles.find(value => {
-					let providerConnectionProfile = ConnectionProfile.createFromStoredProfile(value, this._capabilitiesService);
-					return matcher(providerConnectionProfile, connectionProfile);
+					const providerConnectionProfile = ConnectionProfile.createFromStoredProfile(value, this._capabilitiesService);
+					const match = matcher(providerConnectionProfile, connectionProfile);
+					providerConnectionProfile.dispose();
+					return match;
 				});
 				if (sameProfileInList) {
 					let profileIndex = profiles.findIndex(value => value === sameProfileInList);
@@ -111,7 +113,14 @@ export class ConnectionConfig {
 					profiles.push(newProfile);
 				}
 
-				return this.configurationService.updateValue(CONNECTIONS_CONFIG_KEY, profiles, ConfigurationTarget.USER).then(() => connectionProfile);
+				return this.configurationService.updateValue(CONNECTIONS_CONFIG_KEY, profiles, ConfigurationTarget.USER).then(() => {
+					profiles.forEach(p => {
+						if (p instanceof ConnectionProfile) {
+							p.dispose();
+						}
+					});
+					return connectionProfile;
+				});
 			});
 		} else {
 			return Promise.resolve(profile);

@@ -112,6 +112,9 @@ export class ConnectionStore {
 		// Add the profile to the saved list, taking care to clear out the password field if necessary
 		const savedProfile = forceWritePlaintextPassword ? profile : this.getProfileWithoutPassword(profile);
 		const savedConnectionProfile = await this.saveProfileToConfig(savedProfile, matcher);
+		if (savedProfile instanceof ConnectionProfile) {
+			savedProfile.dispose();
+		}
 		profile.groupId = savedConnectionProfile.groupId;
 		profile.id = savedConnectionProfile.id;
 		// Only save if we successfully added the profile
@@ -177,9 +180,9 @@ export class ConnectionStore {
 
 	public getProfileWithoutPassword(conn: IConnectionProfile): ConnectionProfile {
 		let savedConn = ConnectionProfile.fromIConnectionProfile(this.capabilitiesService, conn);
-		savedConn = savedConn.withoutPassword();
-
-		return savedConn;
+		let newSavedConn = savedConn.withoutPassword();
+		savedConn.dispose();
+		return newSavedConn;
 	}
 
 	/**
@@ -225,7 +228,9 @@ export class ConnectionStore {
 
 		list.unshift(savedProfile);
 
-		return list.filter(n => n !== undefined).map(c => c.toIConnectionProfile());
+		const profiles = list.filter(n => n !== undefined).map(c => c.toIConnectionProfile());
+		list.forEach(c => c.dispose());
+		return profiles;
 	}
 
 	private removeFromConnectionList(conn: IConnectionProfile, list: ConnectionProfile[]): IConnectionProfile[] {
