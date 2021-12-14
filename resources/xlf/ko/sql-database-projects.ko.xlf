@@ -70,6 +70,10 @@
         <source xml:lang="en">To use SQL bindings, ensure your Azure Functions project has a reference to {0}</source>
         <target state="translated">SQL 바인딩을 사용하려면 Azure Functions 프로젝트에 {0} 대한 참조가 있어야 합니다.</target>
       </trans-unit>
+      <trans-unit id="addSqlBindingPackageError">
+        <source xml:lang="en">Error adding Sql Binding extension package to project</source>
+        <target state="translated">프로젝트에 SQL 바인딩 확장 패키지를 추가하는 동안 오류가 발생했습니다.</target>
+      </trans-unit>
       <trans-unit id="appSettingPrompt">
         <source xml:lang="en">Would you like to update Azure Function local.settings.json with the new connection string?</source>
         <target state="translated">Azure Function local.settings.json을 새 연결 문자열로 업데이트하시겠습니까?</target>
@@ -77,6 +81,14 @@
       <trans-unit id="at">
         <source xml:lang="en">at</source>
         <target state="translated">위치</target>
+      </trans-unit>
+      <trans-unit id="autorestProjectName">
+        <source xml:lang="en">New SQL project name</source>
+        <target state="translated">새 SQL 프로젝트 이름</target>
+      </trans-unit>
+      <trans-unit id="baseDockerImage">
+        <source xml:lang="en">Base SQL Server Docker image</source>
+        <target state="translated">기본 SQL Server Docker 이미지</target>
       </trans-unit>
       <trans-unit id="browseButtonText">
         <source xml:lang="en">Browse folder</source>
@@ -93,6 +105,10 @@
       <trans-unit id="buildAction">
         <source xml:lang="en">Build</source>
         <target state="translated">빌드</target>
+      </trans-unit>
+      <trans-unit id="buildElements">
+        <source xml:lang="en">Build Elements</source>
+        <target state="translated">빌드 요소</target>
       </trans-unit>
       <trans-unit id="buildFailedCannotStartSchemaCompare">
         <source xml:lang="en">Schema compare could not start because build failed</source>
@@ -137,6 +153,10 @@
       <trans-unit id="confirmPassword">
         <source xml:lang="en">Confirm SQL server admin password</source>
         <target state="translated">SQL 서버 관리자 암호 확인</target>
+      </trans-unit>
+      <trans-unit id="confirmServerPassword">
+        <source xml:lang="en">Confirm SQL Server admin password</source>
+        <target state="translated">SQL Server 관리자 암호 확인</target>
       </trans-unit>
       <trans-unit id="connectingToSqlServerOnDockerMessage">
         <source xml:lang="en">Connecting to SQL Server on Docker</source>
@@ -201,6 +221,10 @@
       <trans-unit id="dacpacNotOnSameDrive">
         <source xml:lang="en">Dacpac references need to be located on the same drive as the project file. The project file is located at {0}</source>
         <target state="translated">Dacpac 참조는 프로젝트 파일과 동일한 드라이브에 있어야 합니다. 프로젝트 파일이 {0}에 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="dacpacReferenceElement">
+        <source xml:lang="en">Dacpac reference</source>
+        <target state="translated">Dacpac 참조</target>
       </trans-unit>
       <trans-unit id="dacpacText">
         <source xml:lang="en">Data-tier application (.dacpac)</source>
@@ -342,6 +366,14 @@
         <source xml:lang="en">Docker container is not running</source>
         <target state="translated">Docker 컨테이너가 실행되고 있지 않음</target>
       </trans-unit>
+      <trans-unit id="dockerImageEulaMessage">
+        <source xml:lang="en">License Agreement:</source>
+        <target state="translated">라이선스 계약</target>
+      </trans-unit>
+      <trans-unit id="dockerImageMessage">
+        <source xml:lang="en">Docker Image:</source>
+        <target state="translated">Docker 이미지</target>
+      </trans-unit>
       <trans-unit id="dockerLogMessage">
         <source xml:lang="en">Docker logs: '{0}'</source>
         <target state="translated">Docker 로그: '{0}'</target>
@@ -357,6 +389,10 @@
       <trans-unit id="dontUseProfile">
         <source xml:lang="en">Don't use profile</source>
         <target state="translated">프로필 사용 안 함</target>
+      </trans-unit>
+      <trans-unit id="edgeEulaAgreementTitle">
+        <source xml:lang="en">Microsoft Azure SQL Edge License Agreement</source>
+        <target state="translated">Microsoft Azure SQL Edge 사용권 계약</target>
       </trans-unit>
       <trans-unit id="edgeProjectTypeDescription">
         <source xml:lang="en">Start with the core pieces to develop and publish schemas for SQL Edge</source>
@@ -422,6 +458,24 @@
         <source xml:lang="en">Error finding build files location: {0}</source>
         <target state="translated">빌드 파일 위치를 찾는 동안 오류 발생: {0}</target>
       </trans-unit>
+      <trans-unit id="errorReadingProjectGuid">
+        <source xml:lang="en">Error trying to read {0} of project '{1}'</source>
+        <target state="translated">'{1}' 프로젝트의 {0}을(를) 읽는 동안 오류가 발생했습니다.</target>
+      </trans-unit>
+      <trans-unit id="eulaAgreementTemplate">
+        <source xml:lang="en">I accept the {0}.</source>
+        <note>The placeholders are contents of the line and should not be translated.</note>
+        <target state="translated">{0}을(를) 수락합니다.</target>
+      </trans-unit>
+      <trans-unit id="eulaAgreementText">
+        <source xml:lang="en">I accept the {0}.</source>
+        <note>The placeholders are contents of the line and should not be translated.</note>
+        <target state="translated">{0}을(를) 수락합니다.</target>
+      </trans-unit>
+      <trans-unit id="eulaAgreementTitle">
+        <source xml:lang="en">Microsoft SQL Server License Agreement</source>
+        <target state="translated">Microsoft SQL Server 라이선스 계약</target>
+      </trans-unit>
       <trans-unit id="exampleUsage">
         <source xml:lang="en">Example Usage</source>
         <target state="translated">사용 예제</target>
@@ -482,6 +536,10 @@
         <source xml:lang="en">A folder with the name '{0}' already exists on disk at this location. Please choose another location.</source>
         <target state="translated">이름이 '{0}'인 폴더가 이 위치의 디스크에 이미 있습니다. 다른 위치를 선택하세요.</target>
       </trans-unit>
+      <trans-unit id="folderElements">
+        <source xml:lang="en">Folder Elements</source>
+        <target state="translated">폴더 요소</target>
+      </trans-unit>
       <trans-unit id="folderFriendlyName">
         <source xml:lang="en">Folder</source>
         <target state="translated">폴더</target>
@@ -499,16 +557,28 @@
         <target state="translated">스크립트 생성</target>
       </trans-unit>
       <trans-unit id="generatingProjectFailed">
-        <source xml:lang="en">Generating project via AutoRest failed: {0}</source>
-        <target state="translated">AutoRest를 통한 프로젝트 생성 실패: {0}</target>
+        <source xml:lang="en">Generating project via AutoRest failed.  Check output pane for more details. Error: {0}</source>
+        <target state="translated">AutoRest를 통해 프로젝트를 생성하지 못했습니다.  자세한 내용은 출력 창을 확인하세요. 오류: {0}</target>
+      </trans-unit>
+      <trans-unit id="generatingProjectFromAutorest">
+        <source xml:lang="en">Generating new SQL project from {0}...  Check output window for details.</source>
+        <target state="translated">{0}에서 새 SQL 프로젝트를 생성하는 중...  자세한 내용은 출력 창을 확인하세요.</target>
       </trans-unit>
       <trans-unit id="hr">
         <source xml:lang="en">hr</source>
         <target state="translated">시간</target>
       </trans-unit>
+      <trans-unit id="importElements">
+        <source xml:lang="en">Import Elements</source>
+        <target state="translated">요소 가져오기</target>
+      </trans-unit>
       <trans-unit id="input">
         <source xml:lang="en">Input</source>
         <target state="translated">입력</target>
+      </trans-unit>
+      <trans-unit id="installGlobally">
+        <source xml:lang="en">Install globally</source>
+        <target state="translated">전역으로 설치</target>
       </trans-unit>
       <trans-unit id="invalidDataSchemaProvider">
         <source xml:lang="en">Invalid DSP in .sqlproj file</source>
@@ -614,6 +684,10 @@
         <source xml:lang="en">File {0} doesn't exist</source>
         <target state="translated">파일 {0}이(가) 존재하지 않습니다.</target>
       </trans-unit>
+      <trans-unit id="noSqlFilesGenerated">
+        <source xml:lang="en">No .sql files were generated by Autorest. Please confirm that your spec contains model definitions, or check the output log for details.</source>
+        <target state="translated">Autorest에서 .sql 파일을 생성하지 않았습니다. 사양에 모델 정의가 포함되어 있는지 확인하거나 출력 로그에서 자세한 내용을 확인하세요.</target>
+      </trans-unit>
       <trans-unit id="noSqlProjFilesSelected">
         <source xml:lang="en">No .sqlproj file selected; please select one.</source>
         <target state="translated">Sqlproj 파일을 선택하지 않았습니다. 하나를 선택하세요.</target>
@@ -627,12 +701,20 @@
         <target state="translated">(기본값) 없음</target>
       </trans-unit>
       <trans-unit id="nodeButNotAutorestFound">
-        <source xml:lang="en">Autorest tool not found in system path, but found Node.js.  Running via npx.  Please execute 'npm install autorest -g' to install permanently.</source>
-        <target state="translated">Autorest 도구는 시스템 경로에 없지만 Node.js는 찾았습니다.  npx를 통해 실행. 영구적으로 설치하려면 'npm install autorest -g'를 실행하세요.</target>
+        <source xml:lang="en">Autorest tool not found in system path, but found Node.js.  Prompting user for how to proceed.  Execute 'npm install autorest -g' to install permanently and avoid this message.</source>
+        <target state="translated">Autorest 도구는 시스템 경로에 없지만 Node.js는 찾았습니다. 사용자에게 진행 방법을 묻는 메시지를 표시합니다. 영구적으로 설치하고 이 메시지를 피하려면 'npm install autorest -g'를 실행하세요.</target>
+      </trans-unit>
+      <trans-unit id="nodeButNotAutorestFoundPrompt">
+        <source xml:lang="en">Autorest is not installed. To proceed, choose whether to run Autorest from a temporary location via 'npx' or install Autorest globally then run.</source>
+        <target state="translated">자동 테스트가 설치되어 있지 않습니다. 계속하려면 'npx'를 통해 임시 위치에서 Autorest를 실행할지 아니면 전역으로 Autorest를 설치할지 선택한 다음 실행합니다.</target>
       </trans-unit>
       <trans-unit id="nodeNotFound">
-        <source xml:lang="en">Neither autorest nor Node.js (npx) found in system path.  Please install Node.js for autorest generation to work.</source>
-        <target state="translated">시스템 경로에 autorest나 Node.js(npx)가 없습니다. autorest 생성이 작동하려면 Node.js를 설치하세요.</target>
+        <source xml:lang="en">Neither Autorest nor Node.js (npx) found in system path.  Please install Node.js for Autorest generation to work.</source>
+        <target state="translated">시스템 경로에 Autorest나 Node.js(npx)가 없습니다. Autorest 생성이 작동하려면 Node.js를 설치하세요.</target>
+      </trans-unit>
+      <trans-unit id="noneElements">
+        <source xml:lang="en">None Elements</source>
+        <target state="translated">요소 없음</target>
       </trans-unit>
       <trans-unit id="notValidVariableName">
         <source xml:lang="en">The variable name '{0}' is not valid.</source>
@@ -645,6 +727,10 @@
       <trans-unit id="okString">
         <source xml:lang="en">Ok</source>
         <target state="translated">확인</target>
+      </trans-unit>
+      <trans-unit id="openEulaString">
+        <source xml:lang="en">Open License Agreement</source>
+        <target state="translated">라이선스 계약 열기</target>
       </trans-unit>
       <trans-unit id="output">
         <source xml:lang="en">Output</source>
@@ -666,9 +752,17 @@
         <source xml:lang="en">Port must a be number</source>
         <target state="translated">포트는 숫자여야 함</target>
       </trans-unit>
+      <trans-unit id="postDeployElements">
+        <source xml:lang="en">PostDeploy Elements</source>
+        <target state="translated">요소 사후 배포</target>
+      </trans-unit>
       <trans-unit id="postDeployScriptFriendlyName">
         <source xml:lang="en">Script.PostDeployment</source>
         <target state="translated">Script.PostDeployment</target>
+      </trans-unit>
+      <trans-unit id="preDeployElements">
+        <source xml:lang="en">PreDeploy Elements</source>
+        <target state="translated">요소 사전 배포</target>
       </trans-unit>
       <trans-unit id="preDeployScriptFriendlyName">
         <source xml:lang="en">Script.PreDeployment</source>
@@ -714,6 +808,14 @@
         <source xml:lang="en">Enter project name</source>
         <target state="translated">프로젝트 이름 입력</target>
       </trans-unit>
+      <trans-unit id="projectReferenceElement">
+        <source xml:lang="en">Project reference</source>
+        <target state="translated">프로젝트 참조</target>
+      </trans-unit>
+      <trans-unit id="projectReferenceNameElement">
+        <source xml:lang="en">Project reference name element</source>
+        <target state="translated">프로젝트 참조 이름 요소</target>
+      </trans-unit>
       <trans-unit id="publish">
         <source xml:lang="en">Publish</source>
         <target state="translated">게시</target>
@@ -733,6 +835,10 @@
       <trans-unit id="publishSettingsFiles">
         <source xml:lang="en">Publish Settings File</source>
         <target state="translated">설정 파일 게시</target>
+      </trans-unit>
+      <trans-unit id="publishTo">
+        <source xml:lang="en">Publish Target</source>
+        <target state="translated">대상 게시</target>
       </trans-unit>
       <trans-unit id="publishToContainerFailed">
         <source xml:lang="en">Failed to publish to container. {0}</source>
@@ -789,6 +895,10 @@
       <trans-unit id="retryWaitMessage">
         <source xml:lang="en">Waiting for {0} seconds before another attempt for operation '{1}'</source>
         <target state="translated">작업 '{0}'에 대한 다른 시도 전에 {1}초 동안 대기</target>
+      </trans-unit>
+      <trans-unit id="runViaNpx">
+        <source xml:lang="en">Run via npx</source>
+        <target state="translated">npx를 통해 실행</target>
       </trans-unit>
       <trans-unit id="runningDockerMessage">
         <source xml:lang="en">Building and running the docker container ...</source>
@@ -898,6 +1008,14 @@
         <source xml:lang="en">Server name</source>
         <target state="translated">서버 이름</target>
       </trans-unit>
+      <trans-unit id="serverPassword">
+        <source xml:lang="en">SQL Server admin password</source>
+        <target state="translated">SQL Server 관리자 암호</target>
+      </trans-unit>
+      <trans-unit id="serverPortNumber">
+        <source xml:lang="en">SQL server port number</source>
+        <target state="translated">SQL Server 포트 번호</target>
+      </trans-unit>
       <trans-unit id="serverVariable">
         <source xml:lang="en">Server variable</source>
         <target state="translated">서버 변수</target>
@@ -926,19 +1044,19 @@
         <source xml:lang="en">SQL connection string</source>
         <target state="translated">SQL 연결 문자열</target>
       </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.DotnetInstallationConfirmation">
+        <source xml:lang="en">The .NET SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or higher or update the .NET SDK location in settings if already installed.</source>
+        <target state="translated">.NET SDK를 찾을 수 없습니다. 프로젝트 빌드가 작동하지 않습니다. .NET Core SDK 버전 3.1 이상을 설치하거나 이미 설치된 경우 설정에서 .NET SDK 위치를 업데이트하세요.</target>
+      </trans-unit>
       <trans-unit id="sqlDatabaseProjects.Install">
         <source xml:lang="en">Install</source>
         <target state="translated">설치</target>
       </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.NetCoreInstallationConfirmation">
-        <source xml:lang="en">The .NET Core SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK location in settings if already installed.</source>
-        <target state="translated">.NET Core SDK를 찾을 수 없습니다. 프로젝트 빌드가 작동하지 않습니다. .NET Core SDK 버전 3.1을 설치하거나 이미 설치된 경우 설정에서 .NET Core SDK 위치를 업데이트하세요.</target>
-      </trans-unit>
       <trans-unit id="sqlDatabaseProjects.NetCoreSupportedVersionInstallationConfirmation">
-        <source xml:lang="en">Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK supported version location in settings if already installed.</source>
-        <target state="translated">현재 설치된 .NET Core SDK 버전은 지원되지 않는 {0}입니다. 프로젝트 빌드가 작동하지 않습니다. .NET Core SDK 버전 3.1을 설치하거나 이미 설치된 경우 설정에서 .NET Core SDK 지원 버전 위치를 업데이트하세요.</target>
+        <source xml:lang="en">Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or higher or update the .NET SDK supported version location in settings if already installed.</source>
+        <target state="translated">현재 설치된 .NET Core SDK 버전은 지원되지 않는 {0}입니다. 프로젝트 빌드가 작동하지 않습니다. .NET Core SDK 버전 3.1 이상을 설치하거나 이미 설치된 경우 설정에서 .NET SDK 지원 버전 위치를 업데이트하세요.</target>
       </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.UpdateNetCoreLocation">
+      <trans-unit id="sqlDatabaseProjects.UpdateDotnetLocation">
         <source xml:lang="en">Update Location</source>
         <target state="translated">업데이트 위치</target>
       </trans-unit>
@@ -1023,12 +1141,24 @@
         <target state="translated">인식할 수 없는 버전: </target>
       </trans-unit>
       <trans-unit id="updateProjectDatabaseReferencesForRoundTrip">
-        <source xml:lang="en">The system database references need to be updated to build this project. If the project is created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
-        <target state="translated">이 프로젝트를 빌드하려면 시스템 데이터베이스 참조를 업데이트해야 합니다. 프로젝트가 SSDT에서 만들어지면 두 도구에서 계속 작동합니다. 프로젝트를 업데이트하시겠습니까?</target>
+        <source xml:lang="en">The system database references need to be updated to build the project '{0}'. If the project was created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
+        <target state="translated">'{0}' 프로젝트를 빌드하려면 시스템 데이터베이스 참조를 업데이트해야 합니다. 프로젝트가 SSDT에서 생성된 경우 두 도구 모두에서 계속 작동합니다. 프로젝트를 업데이트하시겠습니까?</target>
       </trans-unit>
       <trans-unit id="updateProjectForRoundTrip">
-        <source xml:lang="en">The targets, references, and system database references need to be updated to build this project. If the project is created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
-        <target state="translated">이 프로젝트를 빌드하려면 대상, 참조 및 시스템 데이터베이스 참조를 업데이트해야 합니다. 프로젝트가 SSDT에서 만들어지면 두 도구에서 계속 작동합니다. 프로젝트를 업데이트하시겠습니까?</target>
+        <source xml:lang="en">The targets, references, and system database references need to be updated to build the project '{0}'. If the project was created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
+        <target state="translated">'{0}' 프로젝트를 빌드하려면 대상, 참조 및 시스템 데이터베이스 참조를 업데이트해야 합니다. 프로젝트가 SSDT에서 생성된 경우 두 도구 모두에서 계속 작동합니다. 프로젝트를 업데이트하시겠습니까?</target>
+      </trans-unit>
+      <trans-unit id="userSelectionCancelled">
+        <source xml:lang="en">User has cancelled selection for how to run autorest.</source>
+        <target state="translated">사용자가 autorest 실행 방법에 대한 선택을 취소했습니다.</target>
+      </trans-unit>
+      <trans-unit id="userSelectionInstallGlobally">
+        <source xml:lang="en">User selected to install autorest gloablly.  Installing now...</source>
+        <target state="translated">autorest를 전역적으로 설치하도록 선택한 사용자입니다. 지금 설치 중입니다...</target>
+      </trans-unit>
+      <trans-unit id="userSelectionRunNpx">
+        <source xml:lang="en">User selected to run via npx.</source>
+        <target state="translated">사용자가 npx를 통해 실행하도록 선택했습니다.</target>
       </trans-unit>
       <trans-unit id="valueCannotBeEmpty">
         <source xml:lang="en">Value cannot be empty</source>
@@ -1087,8 +1217,8 @@
         <target state="translated">데이터베이스 참조 추가</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.addSqlBinding">
-        <source xml:lang="en">Add SQL Binding</source>
-        <target state="translated">SQL 바인딩 추가</target>
+        <source xml:lang="en">Add SQL Binding (preview)</source>
+        <target state="translated">SQL 바인딩 추가(미리 보기)</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.autorestSqlVersion">
         <source xml:lang="en">Which version of Autorest.Sql to use from NPM.  Latest will be used if not set.</source>
@@ -1122,6 +1252,10 @@
         <source xml:lang="en">Database Projects</source>
         <target state="translated">데이터베이스 프로젝트</target>
       </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.dotnetInstallLocation">
+        <source xml:lang="en">Full path to .NET SDK on the machine.</source>
+        <target state="translated">컴퓨터의 .NET SDK에 대한 전체 경로입니다.</target>
+      </trans-unit>
       <trans-unit id="sqlDatabaseProjects.editProjectFile">
         <source xml:lang="en">Edit .sqlproj File</source>
         <target state="translated">.sqlproj 파일 편집</target>
@@ -1137,10 +1271,6 @@
       <trans-unit id="sqlDatabaseProjects.netCoreDoNotAsk">
         <source xml:lang="en">Whether to prompt the user to install .NET Core when not detected.</source>
         <target state="translated">검색되지 않는 경우 사용자에게 .NET Core를 설치할지 사용자에게 묻는 메시지를 표시할지 여부입니다.</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.netCoreInstallLocation">
-        <source xml:lang="en">Full path to .NET Core SDK on the machine.</source>
-        <target state="translated">컴퓨터에서 .NET Core SDK에 대한 전체 경로입니다.</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.new">
         <source xml:lang="en">New Database Project</source>
