@@ -11,6 +11,7 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { IConnectionProfile, ProfileMatcher } from 'sql/platform/connection/common/interfaces';
 import { ICredentialsService } from 'sql/platform/credentials/common/credentialsService';
+import { isDisposable } from 'vs/base/common/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 
@@ -112,7 +113,7 @@ export class ConnectionStore {
 		// Add the profile to the saved list, taking care to clear out the password field if necessary
 		const savedProfile = forceWritePlaintextPassword ? profile : this.getProfileWithoutPassword(profile);
 		const savedConnectionProfile = await this.saveProfileToConfig(savedProfile, matcher);
-		if (savedProfile instanceof ConnectionProfile) {
+		if (isDisposable(savedProfile)) {
 			savedProfile.dispose();
 		}
 		profile.groupId = savedConnectionProfile.groupId;

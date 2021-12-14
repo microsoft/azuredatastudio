@@ -13,6 +13,7 @@ import { generateUuid } from 'vs/base/common/uuid';
 import * as nls from 'vs/nls';
 import { ConfigurationTarget, IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { deepClone } from 'vs/base/common/objects';
+import { isDisposable } from 'vs/base/common/lifecycle';
 
 export const GROUPS_CONFIG_KEY = 'datasource.connectionGroups';
 export const CONNECTIONS_CONFIG_KEY = 'datasource.connections';
@@ -115,7 +116,7 @@ export class ConnectionConfig {
 
 				return this.configurationService.updateValue(CONNECTIONS_CONFIG_KEY, profiles, ConfigurationTarget.USER).then(() => {
 					profiles.forEach(p => {
-						if (p instanceof ConnectionProfile) {
+						if (isDisposable(p)) {
 							p.dispose();
 						}
 					});
