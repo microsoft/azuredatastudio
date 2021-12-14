@@ -1176,6 +1176,60 @@ describe('Project: sdk style project content operations', function (): void {
 		should(projFileText.includes('<Folder Include="folder3\\" />')).equal(false, projFileText);
 		should(projFileText.includes('<Folder Include="folder4\\" />')).equal(true, projFileText);
 	});
+
+	it('Should handle adding nested empty folders', async function (): Promise<void> {
+		const testFolderPath = await testUtils.generateTestFolderPath();
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectWithFilesSpecifiedBaseline, testFolderPath);
+		await testUtils.createDummyFileStructure(false, undefined, path.dirname(projFilePath));
+
+		let project: Project = await Project.openProject(projFilePath);
+
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(11);
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(2);
+		should(project.files.find(f => f.relativePath === 'folder1\\')!).not.equal(undefined);
+		should(project.files.find(f => f.relativePath === 'folder2\\')!).not.equal(undefined);
+
+		// try to add a new folder
+		await project.addFolderItem('folder3\\');
+
+		// try to add a nested folder
+		await project.addFolderItem('folder3\\innerFolder\\');
+
+		// verify folders were added
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(4);
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(11);
+		should(project.files.find(f => f.relativePath === 'folder3\\')).not.equal(undefined);
+		should(project.files.find(f => f.relativePath === 'folder3\\innerFolder\\')).not.equal(undefined);
+
+		// verify there's only one folder entry for the two folders that were added
+		let projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText.includes('<Folder Include="folder3\\" />')).equal(false, projFileText);
+		should(projFileText.includes('<Folder Include="folder3\\innerFolder\\" />')).equal(true, projFileText);
+
+		// load the project again and make sure both new folders get loaded
+		project = await Project.openProject(projFilePath);
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(11);
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(4);
+		should(project.files.find(f => f.relativePath === 'folder3\\')!).not.equal(undefined, 'folder3\\ should be loaded');
+		should(project.files.find(f => f.relativePath === 'folder3\\innerFolder\\')!).not.equal(undefined, 'folder3\\innerFolder\\ should be loaded');
+
+		// add file to folder3
+		await project.addScriptItem(path.join('folder3', 'test.sql'), 'fake contents');
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(4);
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(12);
+		should(project.files.find(f => f.relativePath === 'folder3\\test.sql')).not.equal(undefined, 'folder3\\test.sql should be in the project files');
+
+		// verify folder entry for innerFolder entry is still there
+		projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText.includes('<Folder Include="folder3\\innerFolder\\" />')).equal(true, projFileText);
+
+		// load the project again and make sure the folders still get loaded
+		project = await Project.openProject(projFilePath);
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(12);
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(4);
+		should(project.files.find(f => f.relativePath === 'folder3\\')!).not.equal(undefined, 'folder3\\ should be loaded');
+		should(project.files.find(f => f.relativePath === 'folder3\\innerFolder\\')!).not.equal(undefined, 'folder3\\innerFolder\\ should be loaded');
+	});
 });
 
 describe('Project: add SQLCMD Variables', function (): void {
