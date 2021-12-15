@@ -561,6 +561,21 @@ export interface ICellModel {
 	addAttachment(mimeType: string, base64Encoding: string, name: string): string;
 	richTextCursorPosition: ICaretPosition;
 	markdownCursorPosition: IPosition;
+	/**
+	 * Processes a list of edits for the cell
+	 * @param edits List of edits to apply to the cell
+	 */
+	processEdits(edits: ICellEdit[]): void;
+}
+
+export const enum CellEditType {
+	ReplaceOutput,
+	AppendOutput,
+	ReplaceOutputData
+}
+
+export interface ICellEdit {
+	readonly type: CellEditType
 }
 
 export interface ICaretPosition {

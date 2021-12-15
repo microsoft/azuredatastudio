@@ -483,7 +483,7 @@ class KernelWrapper implements azdata.nb.IKernel {
 }
 
 
-export class FutureWrapper implements FutureInternal {
+class FutureWrapper implements FutureInternal {
 	private _futureId: number;
 	private _done = new Deferred<azdata.nb.IShellMessage>();
 	private _messageHandlers = new Map<FutureMessageType, azdata.nb.MessageHandler<azdata.nb.IMessage>>();

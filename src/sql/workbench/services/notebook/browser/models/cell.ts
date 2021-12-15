@@ -12,7 +12,7 @@ import { localize } from 'vs/nls';
 import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import { CellTypes, CellType, NotebookChangeType, TextCellEditModes } from 'sql/workbench/services/notebook/common/contracts';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
-import { ICellModel, IOutputChangedEvent, CellExecutionState, ICellModelOptions, ITableUpdatedEvent, CellEditModes, ICaretPosition } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { ICellModel, IOutputChangedEvent, CellExecutionState, ICellModelOptions, ITableUpdatedEvent, CellEditModes, ICaretPosition, ICellEdit, CellEditType } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
@@ -31,6 +31,7 @@ import { Disposable } from 'vs/base/common/lifecycle';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IInsightOptions } from 'sql/workbench/common/editor/query/chartState';
 import { IPosition } from 'vs/editor/common/core/position';
+import { AppendOutputEdit, ReplaceOutputDataEdit, ReplaceOutputEdit } from 'sql/workbench/services/notebook/browser/models/cellEdit';
 
 let modelId = 0;
 const ads_execute_command = 'ads_execute_command';
@@ -802,8 +803,7 @@ export class CellModel extends Disposable implements ICellModel {
 				for (let i = 0; i < this._outputs.length; i++) {
 					if (this._outputs[i].output_type === 'execute_result') {
 						let currentOutputId: QueryResultId | undefined = this._outputsIdMap.get(this._outputs[i]);
-						// TODO@chgagnon - Look at this, why are we hardcoding SQL stuff in here?
-						if ((<QueryResultId>msg.metadata)?.batchId && currentOutputId.batchId === (<QueryResultId>msg.metadata).batchId
+						if (currentOutputId.batchId === (<QueryResultId>msg.metadata).batchId
 							&& currentOutputId.id === (<QueryResultId>msg.metadata).id) {
 							// If it does, update output with data resource and html table
 							(<nb.IExecuteResult>this._outputs[i]).data = (<nb.IExecuteResult>output).data;
@@ -819,34 +819,17 @@ export class CellModel extends Disposable implements ICellModel {
 						}
 						output.metadata.azdata_chartOptions = this._previousChartState[this._outputCounter];
 					}
-					// TODO@chgagnon - Look at this, why are we hardcoding SQL stuff in here?
-					if ((<QueryResultId>msg.metadata)?.batchId !== undefined) {
-						this._outputsIdMap.set(output, { batchId: (<QueryResultId>msg.metadata).batchId, id: (<QueryResultId>msg.metadata).id });
-						this._outputCounter++;
-					}
+					this._outputsIdMap.set(output, { batchId: (<QueryResultId>msg.metadata).batchId, id: (<QueryResultId>msg.metadata).id });
+					this._outputCounter++;
 				}
 				break;
 			case 'execute_result_update':
 				let update = msg.content as nb.IExecuteResultUpdate;
-				if (update.resultSet) {
-					// Send update to gridOutput component
-					this._onTableUpdated.fire({
-						resultSet: update.resultSet,
-						rows: update.data
-					});
-				} else {
-					// TODO: Fix typings
-					const outputUpdate = msg.content as nb.IExecuteResult;
-					const output = this._outputs.find(o => outputUpdate.id === o.id) as nb.IExecuteResult;
-					if (output) {
-						output.data = outputUpdate.data;
-						this.fireOutputsChanged(false);
-					} else {
-						// TODO ERROR
-					}
-
-				}
-
+				// Send update to gridOutput component
+				this._onTableUpdated.fire({
+					resultSet: update.resultSet,
+					rows: update.data
+				});
 				break;
 			case 'display_data':
 				output = msg.content as nb.ICellOutput;
@@ -1031,6 +1014,32 @@ export class CellModel extends Disposable implements ICellModel {
 		}
 		// defaulting to WYSIWYG
 		return CellEditModes.WYSIWYG;
+	}
+
+	public processEdits(edits: ICellEdit[]): void {
+		for (const edit of edits) {
+			switch (edit.type) {
+				case CellEditType.AppendOutput:
+					this._outputs.push(...(edit as AppendOutputEdit).outputs);
+					break;
+				case CellEditType.ReplaceOutput:
+					this._outputs = (edit as ReplaceOutputEdit).outputs;
+					break;
+				case CellEditType.ReplaceOutputData:
+					const replaceOutputDataEdit = edit as ReplaceOutputDataEdit;
+					const outputIndex = this._outputs.findIndex(o => replaceOutputDataEdit.output.id === o.id);
+					if (outputIndex > -1) {
+						const output = this._outputs[outputIndex] as nb.IExecuteResult;
+						output.data = replaceOutputDataEdit.data;
+						// We create a new object so that angular detects that the content has changed
+						this._outputs[outputIndex] = Object.assign({}, output);
+					} else {
+						// TODO ERROR
+					}
+					break;
+			}
+		}
+		this.fireOutputsChanged(false);
 	}
 
 	private setLanguageFromContents(cell: nb.ICellContents): void {

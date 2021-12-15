@@ -3,8 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import type * as azdata from 'azdata';
 import { IResourceUndoRedoElement, UndoRedoElementType } from 'vs/platform/undoRedo/common/undoRedo';
-import { ICellModel, MoveDirection } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { CellEditType, ICellEdit, ICellModel, MoveDirection } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel, SplitCell } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { localize } from 'vs/nls';
@@ -107,4 +108,19 @@ export class ConvertCellTypeEdit implements IResourceUndoRedoElement {
 		this.model.convertCellType(this.cell, false);
 		this.model.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.RedoCell, this.cellOperation);
 	}
+}
+
+export class AppendOutputEdit implements ICellEdit {
+	type = CellEditType.AppendOutput;
+	public constructor(public readonly outputs: azdata.nb.ICellOutput[]) { }
+}
+
+export class ReplaceOutputEdit implements ICellEdit {
+	type = CellEditType.ReplaceOutput;
+	public constructor(public readonly outputs: azdata.nb.ICellOutput[]) { }
+}
+
+export class ReplaceOutputDataEdit implements ICellEdit {
+	type = CellEditType.ReplaceOutputData;
+	public constructor(public readonly output: azdata.nb.ICellOutput, public readonly data: azdata.nb.DisplayResultData) { }
 }

@@ -9,7 +9,7 @@ import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
 
-import { IClientSession, INotebookModel, INotebookModelOptions, ICellModel, NotebookContentChange, MoveDirection, ViewMode } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { IClientSession, INotebookModel, INotebookModelOptions, ICellModel, NotebookContentChange, MoveDirection, ViewMode, ICellEdit } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType, CellType, CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { KernelsLanguage, nbversion } from 'sql/workbench/services/notebook/common/notebookConstants';
 import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/notebookUtils';
@@ -19,7 +19,7 @@ import { NotebookContexts } from 'sql/workbench/services/notebook/browser/models
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { INotification, Severity, INotificationService } from 'vs/platform/notification/common/notification';
 import { URI } from 'vs/base/common/uri';
-import { FutureMessageType, ISingleNotebookEditOperation, NotebookEditOperationType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { ISingleNotebookEditOperation, NotebookEditOperationType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { uriPrefixes } from 'sql/platform/connection/common/utils';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -35,10 +35,9 @@ import { isUUID } from 'vs/base/common/uuid';
 import { TextModel } from 'vs/editor/common/model/textModel';
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
 import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
-import { AddCellEdit, ConvertCellTypeEdit, DeleteCellEdit, MoveCellEdit, SplitCellEdit } from 'sql/workbench/services/notebook/browser/models/cellEdit';
+import { AddCellEdit, AppendOutputEdit, ConvertCellTypeEdit, DeleteCellEdit, MoveCellEdit, ReplaceOutputDataEdit, SplitCellEdit } from 'sql/workbench/services/notebook/browser/models/cellEdit';
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
 import { deepClone } from 'vs/base/common/objects';
-import { FutureWrapper } from 'sql/workbench/api/browser/mainThreadNotebook';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -862,13 +861,20 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 
 		for (const edit of edits) {
+			const targetCell = this.cells[edit.range.start];
 			switch (edit.type) {
 				case NotebookEditOperationType.UpdateCell:
+					targetCell?.processEdits([
+						new AppendOutputEdit(edit.cell.outputs)
+					]);
+					break;
 				case NotebookEditOperationType.UpdateCellOutputItem:
-					edit.cell.outputs?.forEach(output => {
-						const executeResult = output as nb.IExecuteResult;
-						(this.cells[edit.range.start].future as FutureWrapper).onMessage(FutureMessageType.IOPub, { type: 'iopub', header: { msg_type: executeResult.output_type }, content: executeResult });
+					const cellEdits: ICellEdit[] = [];
+					edit.cell.outputs?.forEach(o => {
+						const targetOutput = targetCell?.outputs.find(o2 => o.id === o2.id);
+						cellEdits.push(new ReplaceOutputDataEdit(targetOutput, (o as nb.IDisplayData).data));
 					});
+					targetCell?.processEdits(cellEdits);
 					break;
 				case NotebookEditOperationType.InsertCell:
 				case NotebookEditOperationType.ReplaceCells:
