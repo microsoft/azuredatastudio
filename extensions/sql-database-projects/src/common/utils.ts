@@ -610,7 +610,7 @@ export function getFoldersToFile(startFolder: string, endFile: string): string[]
  * @param endFolder
  * @returns array of folders between startFolder and endFolder
  */
-export function getFoldersToFolder(startFolder: string, endFolder: string): string[] {
+export function getFoldersAlongPath(startFolder: string, endFolder: string): string[] {
 	let folders: string[] = [];
 
 	const relativePath = convertSlashesForSqlProj(endFolder.substring(startFolder.length));

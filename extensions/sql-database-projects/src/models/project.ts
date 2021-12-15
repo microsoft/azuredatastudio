@@ -259,7 +259,7 @@ export class Project implements ISqlProject {
 			// If there are nested empty folders, there will only be a Folder entry for the inner most folder, so we need to add entries for the intermediate folders
 			sqlprojFolders.forEach(folder => {
 				const fullPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(folder));
-				const intermediateFolders = utils.getFoldersToFolder(this.projectFolderPath, utils.getPlatformSafeFileEntryPath(fullPath));
+				const intermediateFolders = utils.getFoldersAlongPath(this.projectFolderPath, utils.getPlatformSafeFileEntryPath(fullPath));
 				intermediateFolders.forEach(f => foldersSet.add(utils.convertSlashesForSqlProj(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(f)))));
 			});
 		}
