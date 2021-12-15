@@ -25,7 +25,7 @@ import { uriPrefixes } from 'sql/platform/connection/common/utils';
 import { ILogService } from 'vs/platform/log/common/log';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
-import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { IAdsTelemetryService, ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 import { Deferred } from 'sql/base/common/promise';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -35,6 +35,9 @@ import { isUUID } from 'vs/base/common/uuid';
 import { TextModel } from 'vs/editor/common/model/textModel';
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
 import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
+import { AddCellEdit, DeleteCellEdit, MoveCellEdit, SplitCellEdit } from 'sql/workbench/services/notebook/browser/models/cellEdit';
+import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
+import { deepClone } from 'vs/base/common/objects';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -123,7 +126,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		@IAdsTelemetryService private readonly adstelemetryService: IAdsTelemetryService,
 		@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
 		@IConfigurationService private configurationService: IConfigurationService,
-		@ICapabilitiesService private _capabilitiesService?: ICapabilitiesService
+		@IUndoRedoService private undoService: IUndoRedoService,
+		@ICapabilitiesService private _capabilitiesService?: ICapabilitiesService,
 	) {
 		super();
 		if (!_notebookOptions || !_notebookOptions.notebookUri || !_notebookOptions.executeManagers) {
@@ -474,6 +478,14 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
+	public sendNotebookTelemetryActionEvent(action: TelemetryKeys.TelemetryAction | TelemetryKeys.NbTelemetryAction, additionalProperties: ITelemetryEventProperties = {}): void {
+		let properties: ITelemetryEventProperties = deepClone(additionalProperties);
+		properties['azdata_notebook_guid'] = this.getMetaValue('azdata_notebook_guid');
+		this.adstelemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, action)
+			.withAdditionalProperties(properties)
+			.send();
+	}
+
 	private loadContentMetadata(metadata: INotebookMetadataInternal): void {
 		this._savedKernelInfo = metadata.kernelspec;
 		this._defaultLanguageInfo = metadata.language_info;
@@ -489,9 +501,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		if (metadata.azdata_notebook_guid && metadata.azdata_notebook_guid.length === 36) {
 			//Verify if it is actual GUID and then send it to the telemetry
 			if (isUUID(metadata.azdata_notebook_guid)) {
-				this.adstelemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.TelemetryAction.Open)
-					.withAdditionalProperties({ azdata_notebook_guid: metadata.azdata_notebook_guid })
-					.send();
+				this.sendNotebookTelemetryActionEvent(TelemetryKeys.TelemetryAction.Open);
 			}
 		}
 		Object.keys(metadata).forEach(key => {
@@ -538,12 +548,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		if (this.inErrorState) {
 			return undefined;
 		}
-
 		let cell = this.createCell(cellType);
 		return this.insertCell(cell, index);
 	}
 
-	public splitCell(cellType: CellType, notebookService: INotebookService, index?: number): ICellModel | undefined {
+	public splitCell(cellType: CellType, notebookService: INotebookService, index?: number, addToUndoStack: boolean = true): ICellModel | undefined {
 		if (this.inErrorState) {
 			return undefined;
 		}
@@ -564,6 +573,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				let newCell = undefined, tailCell = undefined, partialSource = undefined;
 				let newCellIndex = index;
 				let tailCellIndex = index;
+				let newLinesRemoved: string[] = [];
 
 				// Save UI state
 				let showMarkdown = this.cells[index].showMarkdown;
@@ -619,7 +629,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						newCell = this.createCell(cellType);
 						newCell.source = newSource;
 						newCellIndex++;
-						this.insertCell(newCell, newCellIndex);
+						this.insertCell(newCell, newCellIndex, false);
 					}
 					else { //update the existing cell
 						this.cells[index].source = newSource;
@@ -636,19 +646,24 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					}
 					//Remove the trailing empty line after the cursor
 					if (tailSource[0] === '\r\n' || tailSource[0] === '\n') {
-						tailSource.splice(0, 1);
+						newLinesRemoved = tailSource.splice(0, 1);
 					}
 					tailCell.source = tailSource;
 					tailCellIndex = newCellIndex + 1;
-					this.insertCell(tailCell, tailCellIndex);
+					this.insertCell(tailCell, tailCellIndex, false);
 				}
 
 				let activeCell = newCell ? newCell : (headContent.length ? tailCell : this.cells[index]);
 				let activeCellIndex = newCell ? newCellIndex : (headContent.length ? tailCellIndex : index);
 
+				if (addToUndoStack) {
+					let headCell = newCell ? newCell : this.cells[index];
+					this.undoService.pushElement(new SplitCellEdit(this, headCell, tailCell, newLinesRemoved));
+				}
 				//make new cell Active
 				this.updateActiveCell(activeCell);
 				activeCell.isEditMode = true;
+
 				this._contentChangedEmitter.fire({
 					changeType: NotebookChangeType.CellsModified,
 					cells: [activeCell],
@@ -664,7 +679,23 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return undefined;
 	}
 
-	public insertCell(cell: ICellModel, index?: number): ICellModel | undefined {
+	public mergeCells(cell: ICellModel, secondCell: ICellModel, newLinesRemoved: string[] | undefined): void {
+		let index = this._cells.findIndex(cell => cell.equals(cell));
+		if (index > -1) {
+			cell.source = newLinesRemoved.length > 0 ? [...cell.source, ...newLinesRemoved, ...secondCell.source] : [...cell.source, ...secondCell.source];
+			cell.isEditMode = true;
+			// Set newly created cell as active cell
+			this.updateActiveCell(cell);
+			this._contentChangedEmitter.fire({
+				changeType: NotebookChangeType.CellsModified,
+				cells: [cell],
+				cellIndex: index
+			});
+			this.deleteCell(secondCell, false);
+		}
+	}
+
+	public insertCell(cell: ICellModel, index?: number, addToUndoStack: boolean = true): ICellModel | undefined {
 		if (this.inErrorState) {
 			return undefined;
 		}
@@ -674,9 +705,14 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._cells.push(cell);
 			index = undefined;
 		}
-		// Set newly created cell as active cell
-		this.updateActiveCell(cell);
 		cell.isEditMode = true;
+		if (addToUndoStack) {
+			// Only make cell active when inserting the cell. If we update the active cell when undoing/redoing, the user would have to deselect the cell first
+			// and to undo multiple times.
+			this.updateActiveCell(cell);
+			this.undoService.pushElement(new AddCellEdit(this, cell, index));
+		}
+
 		this._contentChangedEmitter.fire({
 			changeType: NotebookChangeType.CellsModified,
 			cells: [cell],
@@ -712,7 +748,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	moveCell(cell: ICellModel, direction: MoveDirection): void {
+	moveCell(cell: ICellModel, direction: MoveDirection, addToUndoStack: boolean = true): void {
 		if (this.inErrorState) {
 			return;
 		}
@@ -735,10 +771,13 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._cells.splice(index - 1, 0, cell);
 		}
 
+		if (addToUndoStack) {
+			this.undoService.pushElement(new MoveCellEdit(this, cell, direction));
+			// If we update the active cell when undoing/redoing, the user would have to deselect the cell first and to undo multiple times.
+			this.updateActiveCell(cell);
+		}
 		index = this.findCellIndex(cell);
 
-		// Set newly created cell as active cell
-		this.updateActiveCell(cell);
 		this._contentChangedEmitter.fire({
 			changeType: NotebookChangeType.CellsModified,
 			cells: [cell],
@@ -784,12 +823,16 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._notebookOptions.factory.createCell(singleCell, { notebook: this, isTrusted: true });
 	}
 
-	deleteCell(cellModel: ICellModel): void {
+	deleteCell(cellModel: ICellModel, addToUndoStack: boolean = true): void {
 		if (this.inErrorState || !this._cells) {
 			return;
 		}
 		let index = this._cells.findIndex(cell => cell.equals(cellModel));
 		if (index > -1) {
+			if (addToUndoStack) {
+				this.undoService.pushElement(new DeleteCellEdit(this, cellModel, index));
+			}
+
 			this._cells.splice(index, 1);
 			if (this._activeCell === cellModel) {
 				this.updateActiveCell();
@@ -816,6 +859,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				// TODO: should we validate and complete required missing parameters?
 				let contents: nb.ICellContents = edit.cell as nb.ICellContents;
 				newCells.push(this._notebookOptions.factory.createCell(contents, { notebook: this, isTrusted: this._trustedMode }));
+				this.undoService.pushElement(new AddCellEdit(this, newCells[0], edit.range.start));
 			}
 			this._cells.splice(edit.range.start, edit.range.end - edit.range.start, ...newCells);
 			if (newCells.length > 0) {
@@ -1126,12 +1170,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		} else if (kernel.info) {
 			this.updateLanguageInfo(kernel.info.language_info);
 		}
-		this.adstelemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.KernelChanged)
-			.withAdditionalProperties({
-				name: kernel.name,
-				alias: kernelAlias || ''
-			})
-			.send();
+		this.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.KernelChanged, {
+			name: kernel.name,
+			alias: kernelAlias || ''
+		});
 		this._kernelChangedEmitter.fire({
 			newValue: kernel,
 			oldValue: undefined,
@@ -1489,5 +1531,17 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		};
 
 		this._contentChangedEmitter.fire(changeInfo);
+	}
+
+	public undo(): void {
+		if (this.undoService.canUndo(this.notebookUri)) {
+			this.undoService.undo(this.notebookUri);
+		}
+	}
+
+	public redo(): void {
+		if (this.undoService.canRedo(this.notebookUri)) {
+			this.undoService.redo(this.notebookUri);
+		}
 	}
 }
