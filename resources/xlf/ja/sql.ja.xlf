@@ -1,32 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="src/sql/base/browser/ui/designer/designer" source-language="en" datatype="plaintext" target-language="ja">
+  <file original="src/sql/base/browser/ui/loadingSpinner/loadingSpinner" source-language="en" datatype="plaintext" target-language="ja">
     <body>
-      <trans-unit id="designer.newRowText">
-        <source xml:lang="en">Add New</source>
-        <target state="translated">新規追加</target>
+      <trans-unit id="loadingCompletedMessage">
+        <source xml:lang="en">Loading completed</source>
+        <target state="translated">読み込みが完了しました</target>
       </trans-unit>
-      <trans-unit id="designer.removeRowText">
-        <source xml:lang="en">Remove</source>
-        <target state="translated">削除</target>
-      </trans-unit>
-      <trans-unit id="tableDesigner.unknownComponentType">
-        <source xml:lang="en">The component type: {0} is not supported</source>
-        <target state="translated">コンポーネントの種類: {0} はサポートされていません</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="src/sql/base/browser/ui/designer/designerPropertiesPane" source-language="en" datatype="plaintext" target-language="ja">
-    <body>
-      <trans-unit id="tableDesigner.propertiesPaneTitle">
-        <source xml:lang="en">Properties</source>
-        <target state="translated">プロパティ</target>
-      </trans-unit>
-      <trans-unit id="tableDesigner.propertiesPaneTitleWithContext">
-        <source xml:lang="en">Properties - {0} {1}</source>
-        <note>{0} is the place holder for object type
-{1} is the place holder for object name</note>
-        <target state="translated">プロパティ - {0} {1}</target>
+      <trans-unit id="loadingMessage">
+        <source xml:lang="en">Loading</source>
+        <target state="translated">読み込んでいます</target>
       </trans-unit>
     </body>
   </file>
@@ -333,6 +315,14 @@
         <source xml:lang="en">New SQL File</source>
         <target state="translated">新しい SQL ファイル</target>
       </trans-unit>
+      <trans-unit id="workspace.trust.description">
+        <source xml:lang="en">Controls whether or not workspace trust is enabled within Azure Data Studio.</source>
+        <target state="translated">Azure Data Studio 内でワークスペースの信頼を有効にするかどうかを制御します。</target>
+      </trans-unit>
+      <trans-unit id="workspace.trust.emptyWindow.description">
+        <source xml:lang="en">Controls whether or not the empty window is trusted by default within Azure Data Studio. When used with `#{0}#`, you can enable the full functionality of Azure Data Studio without prompting in an empty window.</source>
+        <target state="translated">空のウィンドウを Azure Data Studio 内で既定で信頼するかどうかを制御します。'#{0}#' と共に使用すると、空のウィンドウでプロンプトを表示せずに、Azure Data Studio のすべての機能を有効にすることができます。</target>
+      </trans-unit>
     </body>
   </file>
   <file original="src/sql/base/parts/editableDropdown/browser/dropdown" source-language="en" datatype="plaintext" target-language="ja">
@@ -489,6 +479,10 @@
         <source xml:lang="en">Callout dialog box shadow color.</source>
         <target state="translated">吹き出しダイアログ ボックスの影の色。</target>
       </trans-unit>
+      <trans-unit id="designer.paneSeparator">
+        <source xml:lang="en">The pane separator color.</source>
+        <target state="translated">ウィンドウ区切り記号の色。</target>
+      </trans-unit>
       <trans-unit id="extensionPackGradientColorOne">
         <source xml:lang="en">The top color for the extension pack gradient</source>
         <target state="translated">拡張機能パックのグラデーションの上部の色</target>
@@ -512,6 +506,10 @@
       <trans-unit id="gradientTwo">
         <source xml:lang="en">The bottom color for the banner image gradient</source>
         <target state="translated">バナー画像のグラデーションの下部の色</target>
+      </trans-unit>
+      <trans-unit id="groupHeaderBackground">
+        <source xml:lang="en">Background color of the group header.</source>
+        <target state="translated">グループ ヘッダーの背景色。</target>
       </trans-unit>
       <trans-unit id="infoBox.errorBackground">
         <source xml:lang="en">InfoBox: The background color when the notification type is error.</source>
@@ -868,6 +866,71 @@
       <trans-unit id="showConnectDialogOnStartup">
         <source xml:lang="en">Show connect dialog on startup</source>
         <target state="translated">起動時に接続ダイアログを表示</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/browser/designer/designer" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="designer.generalGroupName">
+        <source xml:lang="en">General</source>
+        <target state="translated">全般</target>
+      </trans-unit>
+      <trans-unit id="designer.loadingDesigner">
+        <source xml:lang="en">Loading designer...</source>
+        <target state="translated">デザイナーの読み込み中...</target>
+      </trans-unit>
+      <trans-unit id="designer.loadingDesignerCompleted">
+        <source xml:lang="en">Designer is loaded</source>
+        <target state="translated">デザイナーが読み込まれます</target>
+      </trans-unit>
+      <trans-unit id="designer.newRowText">
+        <source xml:lang="en">Add New</source>
+        <target state="translated">新規追加</target>
+      </trans-unit>
+      <trans-unit id="designer.processingChanges">
+        <source xml:lang="en">Processing changes...</source>
+        <target state="translated">変更の処理中...</target>
+      </trans-unit>
+      <trans-unit id="designer.processingChangesCompleted">
+        <source xml:lang="en">Changes have been processed</source>
+        <target state="translated">変更が処理されました</target>
+      </trans-unit>
+      <trans-unit id="designer.removeRowText">
+        <source xml:lang="en">Remove</source>
+        <target state="translated">削除</target>
+      </trans-unit>
+      <trans-unit id="designer.savingChanges">
+        <source xml:lang="en">Saving changes...</source>
+        <target state="translated">変更を保存しています...</target>
+      </trans-unit>
+      <trans-unit id="designer.savingChangesCompleted">
+        <source xml:lang="en">Changes have been saved</source>
+        <target state="translated">変更が保存されました。</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.unknownComponentType">
+        <source xml:lang="en">The component type: {0} is not supported</source>
+        <target state="translated">コンポーネントの種類: {0} はサポートされていません</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/browser/designer/designerPropertiesPane" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="tableDesigner.propertiesPaneTitle">
+        <source xml:lang="en">Properties</source>
+        <target state="translated">プロパティ</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.propertiesPaneTitleWithContext">
+        <source xml:lang="en">{0} Properties</source>
+        <note>{0} is the place holder for object type</note>
+        <target state="translated">{0} のプロパティ</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/browser/designer/designerScriptEditor" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="designer.textEditorAriaLabel">
+        <source xml:lang="en">Designer text editor.</source>
+        <target state="translated">デザイナー テキスト エディター。</target>
       </trans-unit>
     </body>
   </file>
@@ -3835,57 +3898,45 @@ Error: {1}</source>
   </file>
   <file original="src/sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component" source-language="en" datatype="plaintext" target-language="ja">
     <body>
-      <trans-unit id="buttonBold">
+      <trans-unit id="bold">
         <source xml:lang="en">Bold</source>
         <target state="translated">太字</target>
-      </trans-unit>
-      <trans-unit id="buttonCode">
-        <source xml:lang="en">Code</source>
-        <target state="translated">コード</target>
-      </trans-unit>
-      <trans-unit id="buttonHighlight">
-        <source xml:lang="en">Highlight</source>
-        <target state="translated">強調表示</target>
-      </trans-unit>
-      <trans-unit id="buttonImage">
-        <source xml:lang="en">Image</source>
-        <target state="translated">イメージ</target>
-      </trans-unit>
-      <trans-unit id="buttonItalic">
-        <source xml:lang="en">Italic</source>
-        <target state="translated">斜体</target>
-      </trans-unit>
-      <trans-unit id="buttonLink">
-        <source xml:lang="en">Link</source>
-        <target state="translated">リンク</target>
-      </trans-unit>
-      <trans-unit id="buttonList">
-        <source xml:lang="en">List</source>
-        <target state="translated">リスト</target>
-      </trans-unit>
-      <trans-unit id="buttonOrderedList">
-        <source xml:lang="en">Ordered list</source>
-        <target state="translated">順序指定済みリスト</target>
       </trans-unit>
       <trans-unit id="buttonPreview">
         <source xml:lang="en">Markdown preview toggle - off</source>
         <target state="translated">マークダウン プレビューの切り替え - オフ</target>
       </trans-unit>
-      <trans-unit id="buttonUnderline">
-        <source xml:lang="en">Underline</source>
-        <target state="translated">下線を付ける</target>
-      </trans-unit>
-      <trans-unit id="callout.insertImageHeading">
-        <source xml:lang="en">Insert image</source>
-        <target state="translated">画像の挿入</target>
-      </trans-unit>
-      <trans-unit id="callout.insertLinkHeading">
-        <source xml:lang="en">Insert link</source>
-        <target state="translated">リンクの挿入</target>
-      </trans-unit>
       <trans-unit id="dropdownHeading">
         <source xml:lang="en">Heading</source>
         <target state="translated">見出し</target>
+      </trans-unit>
+      <trans-unit id="highlight">
+        <source xml:lang="en">Highlight</source>
+        <target state="translated">強調表示</target>
+      </trans-unit>
+      <trans-unit id="insertCode">
+        <source xml:lang="en">Insert code</source>
+        <target state="translated">コードの挿入</target>
+      </trans-unit>
+      <trans-unit id="insertImage">
+        <source xml:lang="en">Insert image</source>
+        <target state="translated">画像の挿入</target>
+      </trans-unit>
+      <trans-unit id="insertLink">
+        <source xml:lang="en">Insert link</source>
+        <target state="translated">リンクの挿入</target>
+      </trans-unit>
+      <trans-unit id="insertList">
+        <source xml:lang="en">Insert list</source>
+        <target state="translated">リストの挿入</target>
+      </trans-unit>
+      <trans-unit id="insertOrderedList">
+        <source xml:lang="en">Insert ordered list</source>
+        <target state="translated">順序指定されたリストの挿入</target>
+      </trans-unit>
+      <trans-unit id="italic">
+        <source xml:lang="en">Italic</source>
+        <target state="translated">斜体</target>
       </trans-unit>
       <trans-unit id="markdownViewButton">
         <source xml:lang="en">Markdown View</source>
@@ -3914,6 +3965,10 @@ Error: {1}</source>
       <trans-unit id="splitViewButton">
         <source xml:lang="en">Split View</source>
         <target state="translated">分割ビュー</target>
+      </trans-unit>
+      <trans-unit id="underline">
+        <source xml:lang="en">Underline</source>
+        <target state="translated">下線を付ける</target>
       </trans-unit>
     </body>
   </file>
@@ -4810,6 +4865,10 @@ Error: {1}</source>
       <trans-unit id="queryEditor">
         <source xml:lang="en">Query Editor</source>
         <target state="translated">クエリ エディター</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner">
+        <source xml:lang="en">Table Designer</source>
+        <target state="translated">テーブル デザイナー</target>
       </trans-unit>
     </body>
   </file>
@@ -5804,6 +5863,18 @@ Error: {1}</source>
       <trans-unit id="tableDesigner.saveTableChanges">
         <source xml:lang="en">Save Changes</source>
         <target state="translated">変更内容を保存</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/tableDesigner/browser/tableDesigner.contribution" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="tableDesigner.configTitle">
+        <source xml:lang="en">Table Designer</source>
+        <target state="translated">テーブル デザイナー</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.featureEnabledDescription">
+        <source xml:lang="en">Controls whether the table designer feature is enabled. Default value is false.</source>
+        <target state="translated">テーブル デザイナー機能を有効にするかどうかを制御します。既定値は false です。</target>
       </trans-unit>
     </body>
   </file>
@@ -7216,6 +7287,30 @@ Error: {1}</source>
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/services/notebook/browser/models/cellEdit" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="addCellEdit">
+        <source xml:lang="en">Add Cell</source>
+        <target state="translated">セルの追加</target>
+      </trans-unit>
+      <trans-unit id="convertCellTypeEdit">
+        <source xml:lang="en">Convert Cell Type</source>
+        <target state="translated">セルの種類の変換</target>
+      </trans-unit>
+      <trans-unit id="deleteCellEdit">
+        <source xml:lang="en">Delete Cell</source>
+        <target state="translated">セルの削除</target>
+      </trans-unit>
+      <trans-unit id="moveCellEdit">
+        <source xml:lang="en">Move Cell</source>
+        <target state="translated">セルの移動</target>
+      </trans-unit>
+      <trans-unit id="splitCellEdit">
+        <source xml:lang="en">Split Cell</source>
+        <target state="translated">セルの分割</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/services/notebook/browser/models/clientSession" source-language="en" datatype="plaintext" target-language="ja">
     <body>
       <trans-unit id="ServerNotStarted">
@@ -7976,9 +8071,101 @@ Error: {1}</source>
   </file>
   <file original="src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput" source-language="en" datatype="plaintext" target-language="ja">
     <body>
-      <trans-unit id="tableDesigner.advancedTab">
-        <source xml:lang="en">Advanced</source>
-        <target state="translated">詳細設定</target>
+      <trans-unit id="designer.checkConstraint.description.expression">
+        <source xml:lang="en">The expression defining the check constraint.</source>
+        <target state="translated">CHECK 制約を定義する式です。</target>
+      </trans-unit>
+      <trans-unit id="designer.checkConstraint.description.name">
+        <source xml:lang="en">The name of the check constraint.</source>
+        <target state="translated">CHECK 制約の名前。</target>
+      </trans-unit>
+      <trans-unit id="designer.column.description.allowNulls">
+        <source xml:lang="en">Specifies whether the column may have a NULL value.</source>
+        <target state="translated">列が NULL 値を持つことができるかどうかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="designer.column.description.dataType">
+        <source xml:lang="en">Displays the data type name for the column</source>
+        <target state="translated">列のデータ型名を表示します</target>
+      </trans-unit>
+      <trans-unit id="designer.column.description.defaultValueBinding">
+        <source xml:lang="en">A predefined global default value for the column or binding.</source>
+        <target state="translated">列またはバインドの定義済みのグローバルな既定値です。</target>
+      </trans-unit>
+      <trans-unit id="designer.column.description.length">
+        <source xml:lang="en">The maximum length (in characters) that can be stored in this database object.</source>
+        <target state="translated">このデータベース オブジェクトに格納できる最大長 (文字数) です。</target>
+      </trans-unit>
+      <trans-unit id="designer.column.description.name">
+        <source xml:lang="en">The name of the column object.</source>
+        <target state="translated">列オブジェクトの名前です。</target>
+      </trans-unit>
+      <trans-unit id="designer.column.description.precision">
+        <source xml:lang="en">For numeric data, the maximum number of decimal digits that can be stored in this database object.</source>
+        <target state="translated">数値データの場合、このデータベース オブジェクトに格納できる 10 進数の最大桁数です。</target>
+      </trans-unit>
+      <trans-unit id="designer.column.description.primaryKey">
+        <source xml:lang="en">Specifies whether the column is included in the primary key for the table.</source>
+        <target state="translated">列がテーブルの主キーに含まれるかどうかを指定します。</target>
+      </trans-unit>
+      <trans-unit id="designer.column.description.scale">
+        <source xml:lang="en">For numeric data, the maximum number of decimal digits that can be stored in this database object to the right of decimal point.</source>
+        <target state="translated">数値データの場合、この小数点の右側にあるデータベース オブジェクトに格納できる小数点以下の最大桁数です。</target>
+      </trans-unit>
+      <trans-unit id="designer.foreignkey.description.columnMapping">
+        <source xml:lang="en">The mapping between foreign key columns and primary key columns.</source>
+        <target state="translated">外部キー列と主キー列の間のマッピング。</target>
+      </trans-unit>
+      <trans-unit id="designer.foreignkey.description.name">
+        <source xml:lang="en">The name of the foreign key.</source>
+        <target state="translated">外部キーの名前です。</target>
+      </trans-unit>
+      <trans-unit id="designer.foreignkey.description.onDeleteAction">
+        <source xml:lang="en">The behavior when a user tries to delete a row with data that is involved in a foreign key relationship.</source>
+        <target state="translated">外部キー リレーションシップに含まれるデータのある行をユーザーが削除しようとしたときの動作です。</target>
+      </trans-unit>
+      <trans-unit id="designer.foreignkey.description.onUpdateAction">
+        <source xml:lang="en">The behavior when a user tries to update a row with data that is involved in a foreign key relationship.</source>
+        <target state="translated">外部キー リレーションシップに含まれるデータのある行をユーザーが更新しようとしたときの動作です。</target>
+      </trans-unit>
+      <trans-unit id="designer.foreignkey.description.primaryKeyTable">
+        <source xml:lang="en">The table which contains the primary or unique key column.</source>
+        <target state="translated">主キー列または一意キー列を含むテーブルです。</target>
+      </trans-unit>
+      <trans-unit id="designer.table.description.description">
+        <source xml:lang="en">Description for the table.</source>
+        <target state="translated">テーブルの説明です。</target>
+      </trans-unit>
+      <trans-unit id="designer.table.description.name">
+        <source xml:lang="en">The name of the table object.</source>
+        <target state="translated">テーブル オブジェクトの名前です。</target>
+      </trans-unit>
+      <trans-unit id="designer.table.description.schema">
+        <source xml:lang="en">The schema that contains the table.</source>
+        <target state="translated">テーブルを含むスキーマです。</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.ForeignKeyTypeName">
+        <source xml:lang="en">Foreign Key</source>
+        <target state="translated">外部キー</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.PrimaryKeyTableName">
+        <source xml:lang="en">Primary Key Table</source>
+        <target state="translated">主キー テーブル</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.checkConstraintExpressionTitle">
+        <source xml:lang="en">Expression</source>
+        <target state="translated">式</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.checkConstraintNameTitle">
+        <source xml:lang="en">Name</source>
+        <target state="translated">名前</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.checkConstraintTypeName">
+        <source xml:lang="en">Check Constraint</source>
+        <target state="translated">制約のチェック</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.checkConstraintsTabTitle">
+        <source xml:lang="en">Check Constraints</source>
+        <target state="translated">チェック制約</target>
       </trans-unit>
       <trans-unit id="tableDesigner.columnAllowNullTitle">
         <source xml:lang="en">Allow Nulls</source>
@@ -8000,6 +8187,14 @@ Error: {1}</source>
         <source xml:lang="en">Name</source>
         <target state="translated">名前</target>
       </trans-unit>
+      <trans-unit id="tableDesigner.columnPrecisionTitle">
+        <source xml:lang="en">Precision</source>
+        <target state="translated">有効桁数</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.columnScaleTitle">
+        <source xml:lang="en">Scale</source>
+        <target state="translated">倍率</target>
+      </trans-unit>
       <trans-unit id="tableDesigner.columnTypeName">
         <source xml:lang="en">Column</source>
         <target state="translated">列</target>
@@ -8016,9 +8211,49 @@ Error: {1}</source>
         <source xml:lang="en">Description</source>
         <target state="translated">説明</target>
       </trans-unit>
+      <trans-unit id="tableDesigner.errorInitializingTableDesigner">
+        <source xml:lang="en">An error occured while initializing the table designer: {0}</source>
+        <target state="translated">テーブル デザイナーの初期化中にエラーが発生しました: {0}</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.errorProcessingEdit">
+        <source xml:lang="en">An error occured while processing the change: {0}</source>
+        <target state="translated">変更の処理中にエラーが発生しました: {0}</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.foreignKeyColumn">
+        <source xml:lang="en">Foreign Key Column</source>
+        <target state="translated">外部キー列</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.foreignKeyColumns">
+        <source xml:lang="en">Column Mapping</source>
+        <target state="translated">列マッピング</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.foreignKeyNameTitle">
+        <source xml:lang="en">Name</source>
+        <target state="translated">名前</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.foreignKeyOnDeleteAction">
+        <source xml:lang="en">On Delete Action</source>
+        <target state="translated">削除アクション時に</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.foreignKeyOnUpdateAction">
+        <source xml:lang="en">On Update Action</source>
+        <target state="translated">更新アクション時に</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.foreignKeysTabTitle">
+        <source xml:lang="en">Foreign Keys</source>
+        <target state="translated">外部キー</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.generalTab">
+        <source xml:lang="en">General</source>
+        <target state="translated">全般</target>
+      </trans-unit>
       <trans-unit id="tableDesigner.nameTitle">
         <source xml:lang="en">Table name</source>
         <target state="translated">テーブル名</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.primaryKeyColumn">
+        <source xml:lang="en">Primary Key Column</source>
+        <target state="translated">主キー列</target>
       </trans-unit>
       <trans-unit id="tableDesigner.saveChangeError">
         <source xml:lang="en">An error occured while saving changes: {0}</source>

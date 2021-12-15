@@ -125,6 +125,9 @@ export async function createDummyFileStructure(createList?: boolean, list?: Uri[
  * 			-file4.sql
  * 			-file5.sql
  * 			-Script.PostDeployment2.sql
+ * 			- nestedFolder
+ * 				-otherFile1.sql
+ * 				-otherFile2.sql
  *	 	- folder2
  * 			-file1.sql
  * 			-file2.sql
@@ -158,6 +161,14 @@ export async function createDummyFileStructureWithPrePostDeployScripts(createLis
 	await fs.writeFile(postdeployscript1, '');
 	const postdeployscript2 = path.join(testFolderPath, 'folder1', 'Script.PostDeployment2.sql');
 	await fs.writeFile(postdeployscript2, '');
+
+
+	// add nested files
+	await fs.mkdir(path.join(testFolderPath, 'folder1', 'nestedFolder'));
+	const otherfile1 = path.join(testFolderPath, 'folder1', 'nestedFolder', 'otherFile1.sql');
+	await fs.writeFile(otherfile1, '');
+	const otherfile2 = path.join(testFolderPath, 'folder1', 'nestedFolder', 'otherFile2.sql');
+	await fs.writeFile(otherfile2, '');
 
 	if (createList) {
 		list?.push(Uri.file(postdeployscript1));
