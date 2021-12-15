@@ -861,20 +861,24 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 
 		for (const edit of edits) {
-			const targetCell = this.cells[edit.range.start];
+			const startCell = this.cells[edit.range.start];
+			if (!startCell) {
+				this.logService.warn(`Did not receieve a valid starting cell when processing edit type ${edit.type}`);
+				continue;
+			}
 			switch (edit.type) {
 				case NotebookEditOperationType.UpdateCell:
-					targetCell?.processEdits([
-						new AppendOutputEdit(edit.cell.outputs)
+					startCell.processEdits([
+						new AppendOutputEdit(edit.cell.outputs ?? [])
 					]);
 					break;
-				case NotebookEditOperationType.UpdateCellOutputItem:
+				case NotebookEditOperationType.UpdateCellOutput:
 					const cellEdits: ICellEdit[] = [];
 					edit.cell.outputs?.forEach(o => {
-						const targetOutput = targetCell?.outputs.find(o2 => o.id === o2.id);
-						cellEdits.push(new ReplaceOutputDataEdit(targetOutput, (o as nb.IDisplayData).data));
+						const targetOutput = startCell.outputs.find(o2 => o.id === o2.id);
+						cellEdits.push(new ReplaceOutputDataEdit(targetOutput.id, (o as nb.IDisplayData).data));
 					});
-					targetCell?.processEdits(cellEdits);
+					startCell.processEdits(cellEdits);
 					break;
 				case NotebookEditOperationType.InsertCell:
 				case NotebookEditOperationType.ReplaceCells:

@@ -638,7 +638,7 @@ export const enum NotebookEditOperationType {
 	DeleteCell = 1,
 	ReplaceCells = 2,
 	UpdateCell = 3,
-	UpdateCellOutputItem = 4
+	UpdateCellOutput = 4
 }
 
 export interface ISingleNotebookEditOperation {

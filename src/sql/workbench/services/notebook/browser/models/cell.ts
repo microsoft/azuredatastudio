@@ -32,6 +32,7 @@ import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IInsightOptions } from 'sql/workbench/common/editor/query/chartState';
 import { IPosition } from 'vs/editor/common/core/position';
 import { AppendOutputEdit, ReplaceOutputDataEdit, ReplaceOutputEdit } from 'sql/workbench/services/notebook/browser/models/cellEdit';
+import { ILogService } from 'vs/platform/log/common/log';
 
 let modelId = 0;
 const ads_execute_command = 'ads_execute_command';
@@ -94,6 +95,7 @@ export class CellModel extends Disposable implements ICellModel {
 		@optional(INotebookService) private _notebookService?: INotebookService,
 		@optional(ICommandService) private _commandService?: ICommandService,
 		@optional(IConfigurationService) private _configurationService?: IConfigurationService,
+		@optional(ILogService) private _logService?: ILogService
 	) {
 		super();
 		this.id = `${modelId++}`;
@@ -802,7 +804,7 @@ export class CellModel extends Disposable implements ICellModel {
 				// Check if the table already exists
 				for (let i = 0; i < this._outputs.length; i++) {
 					if (this._outputs[i].output_type === 'execute_result') {
-						let currentOutputId: QueryResultId | undefined = this._outputsIdMap.get(this._outputs[i]);
+						let currentOutputId: QueryResultId = this._outputsIdMap.get(this._outputs[i]);
 						if (currentOutputId.batchId === (<QueryResultId>msg.metadata).batchId
 							&& currentOutputId.id === (<QueryResultId>msg.metadata).id) {
 							// If it does, update output with data resource and html table
@@ -1027,14 +1029,14 @@ export class CellModel extends Disposable implements ICellModel {
 					break;
 				case CellEditType.ReplaceOutputData:
 					const replaceOutputDataEdit = edit as ReplaceOutputDataEdit;
-					const outputIndex = this._outputs.findIndex(o => replaceOutputDataEdit.output.id === o.id);
+					const outputIndex = this._outputs.findIndex(o => replaceOutputDataEdit.outputId.id === o.id);
 					if (outputIndex > -1) {
 						const output = this._outputs[outputIndex] as nb.IExecuteResult;
 						output.data = replaceOutputDataEdit.data;
 						// We create a new object so that angular detects that the content has changed
 						this._outputs[outputIndex] = Object.assign({}, output);
 					} else {
-						// TODO ERROR
+						this._logService.warn(`Unable to find output with ID ${replaceOutputDataEdit.outputId.id} when processing ReplaceOutputData`);
 					}
 					break;
 			}
