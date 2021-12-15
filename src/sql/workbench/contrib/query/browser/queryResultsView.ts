@@ -408,18 +408,18 @@ export class QueryResultsView extends Disposable {
 	}
 
 	public showPlan(xml: string) {
-		this.input?.state.visibleTabs.add(this.qpTab.identifier);
-		if (!this._panelView.contains(this.qpTab)) {
-			this._panelView.pushTab(this.qpTab);
-		}
-		this.input?.state.visibleTabs.add(this.topOperationsTab.identifier);
-		if (!this._panelView.contains(this.topOperationsTab)) {
-			this._panelView.pushTab(this.topOperationsTab);
-		}
+		// this.input?.state.visibleTabs.add(this.qpTab.identifier);
+		// if (!this._panelView.contains(this.qpTab)) {
+		// 	this._panelView.pushTab(this.qpTab);
+		// }
+		// this.input?.state.visibleTabs.add(this.topOperationsTab.identifier);
+		// if (!this._panelView.contains(this.topOperationsTab)) {
+		// 	this._panelView.pushTab(this.topOperationsTab);
+		// }
 
-		this._panelView.showTab(this.qpTab.identifier);
-		this.qpTab.view.showPlan(xml);
-		this.topOperationsTab.view.showPlan(xml);
+		// this._panelView.showTab(this.qpTab.identifier);
+		// this.qpTab.view.showPlan(xml);
+		// this.topOperationsTab.view.showPlan(xml);
 	}
 
 	public showPlan2() {
