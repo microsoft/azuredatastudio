@@ -12,15 +12,8 @@ import { readonly } from 'vs/base/common/errors';
 
 import { MainThreadNotebookDocumentsAndEditorsShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { ExtHostNotebookDocumentData } from 'sql/workbench/api/common/extHostNotebookDocumentData';
-import { CellRange, ISingleNotebookEditOperation, ICellRange, NotebookEditOperationType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { CellRange, INotebookEditOperation, ICellRange, NotebookEditOperationType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { HideInputTag } from 'sql/platform/notebooks/common/outputRegistry';
-
-export interface INotebookEditOperation {
-	type: NotebookEditOperationType;
-	range: azdata.nb.CellRange;
-	cell: Partial<azdata.nb.ICellContents>;
-	forceMoveMarkers: boolean;
-}
 
 export interface INotebookEditData {
 	documentVersionId: number;
@@ -118,21 +111,22 @@ export class NotebookEditorEdit {
 		this._pushEdit(NotebookEditOperationType.DeleteCell, range, null, true);
 	}
 
-	updateCell(index: number, updatedContent: Partial<azdata.nb.ICellContents>): void {
-		this._pushEdit(NotebookEditOperationType.UpdateCell, new CellRange(index, index + 1), updatedContent, false);
+	updateCell(index: number, updatedContent: Partial<azdata.nb.ICellContents>, append: boolean): void {
+		this._pushEdit(NotebookEditOperationType.UpdateCell, new CellRange(index, index + 1), updatedContent, false, append);
 	}
 
-	updateCellOutputItems(cellIndex: number, updatedContent: Partial<azdata.nb.ICellContents>): void {
-		this._pushEdit(NotebookEditOperationType.UpdateCellOutput, new CellRange(cellIndex, cellIndex + 1), updatedContent, false);
+	updateCellOutput(cellIndex: number, updatedContent: Partial<azdata.nb.ICellContents>, append: boolean): void {
+		this._pushEdit(NotebookEditOperationType.UpdateCellOutput, new CellRange(cellIndex, cellIndex + 1), updatedContent, false, append);
 	}
 
-	private _pushEdit(type: NotebookEditOperationType, range: azdata.nb.CellRange, cell: Partial<azdata.nb.ICellContents>, forceMoveMarkers: boolean): void {
+	private _pushEdit(type: NotebookEditOperationType, range: azdata.nb.CellRange, cell: Partial<azdata.nb.ICellContents>, forceMoveMarkers: boolean, append?: boolean): void {
 		let validRange = this._document.validateCellRange(range);
 		this._collectedEdits.push({
 			type: type,
 			range: validRange,
 			cell: cell,
-			forceMoveMarkers: forceMoveMarkers
+			forceMoveMarkers: forceMoveMarkers,
+			append: append
 		});
 	}
 }
@@ -216,7 +210,7 @@ export class ExtHostNotebookEditor implements azdata.nb.NotebookEditor, IDisposa
 		}
 
 		// check that the edits are not overlapping (i.e. illegal)
-		let editRanges = editData.edits.map(edit => edit.range);
+		let editRanges = editData.edits.filter(edit => edit.range).map(edit => edit.range);
 
 		// sort ascending (by end and then by start)
 		editRanges.sort((a, b) => {
@@ -238,7 +232,7 @@ export class ExtHostNotebookEditor implements azdata.nb.NotebookEditor, IDisposa
 		}
 
 		// prepare data for serialization
-		let edits: ISingleNotebookEditOperation[] = editData.edits.map((edit) => {
+		let edits: INotebookEditOperation[] = editData.edits.map((edit) => {
 			return {
 				type: edit.type,
 				range: toICellRange(edit.range),

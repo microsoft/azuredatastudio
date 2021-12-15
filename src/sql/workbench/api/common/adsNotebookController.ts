@@ -220,22 +220,18 @@ class ADSNotebookCellExecution implements vscode.NotebookCellExecution {
 		this.verifyStateForOutput();
 		const targetCell = typeof cell === 'number' ? this._cell.notebook.cellAt(cell) : (cell ?? this._cell);
 		const editor = this._extHostNotebookDocumentsAndEditors.getEditor(URI.from(targetCell.notebook.uri).toString());
-		if (!append) {
-			await editor.clearOutput(editor.document.cells[targetCell.index]);
-		}
 		await editor.edit(builder => {
 			const adsOutputs = VSCodeContentManager.convertToADSCellOutput(outputs);
-			builder.updateCell(targetCell.index, { outputs: adsOutputs });
+			builder.updateCell(targetCell.index, { outputs: adsOutputs }, append);
 		});
 	}
 
 	private async updateOutputItems(items: vscode.NotebookCellOutputItem | vscode.NotebookCellOutputItem[], output: vscode.NotebookCellOutput, append: boolean): Promise<void> {
 		this.verifyStateForOutput();
 		const editor = this._extHostNotebookDocumentsAndEditors.getEditor(URI.from(this._cell.notebook.uri).toString());
-		const outputItems = append ? output.items.concat(...asArray(items)) : asArray(items);
 		await editor.edit(builder => {
-			const adsOutput = VSCodeContentManager.convertToADSCellOutput({ id: output.id, items: outputItems }, undefined);
-			builder.updateCellOutputItems(this._cell.index, { outputs: adsOutput });
+			const adsOutput = VSCodeContentManager.convertToADSCellOutput({ id: output.id, items: asArray(items) }, undefined);
+			builder.updateCellOutput(this._cell.index, { outputs: adsOutput }, append);
 		});
 	}
 

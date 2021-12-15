@@ -111,25 +111,17 @@ export class ConvertCellTypeEdit implements IResourceUndoRedoElement {
 }
 
 /**
- * Edit for appending new outputs to the existing outputs for a cell.
+ * Edit for modifying the outputs of a cell.
  */
-export class AppendOutputEdit implements ICellEdit {
-	type = CellEditType.AppendOutput;
-	public constructor(public readonly outputs: azdata.nb.ICellOutput[]) { }
+export class CellOutputEdit implements ICellEdit {
+	type = CellEditType.Output;
+	public constructor(public readonly outputs: azdata.nb.ICellOutput[], public readonly append: boolean) { }
 }
 
 /**
- * Edit for replacing the current output with the specified outputs for a cell.
+ * Edit for modifying the data of a specific output of a cell.
  */
-export class ReplaceOutputEdit implements ICellEdit {
-	type = CellEditType.ReplaceOutput;
-	public constructor(public readonly outputs: azdata.nb.ICellOutput[]) { }
-}
-
-/**
- * Edit for replacing the data of the specified output with the given output
- */
-export class ReplaceOutputDataEdit implements ICellEdit {
-	type = CellEditType.ReplaceOutputData;
-	public constructor(public readonly outputId: string, public readonly data: azdata.nb.DisplayResultData) { }
+export class CellOutputDataEdit implements ICellEdit {
+	type = CellEditType.OutputData;
+	public constructor(public readonly outputId: string, public readonly data: azdata.nb.DisplayResultData, public readonly append: boolean) { }
 }

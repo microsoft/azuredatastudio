@@ -19,7 +19,7 @@ import { NotebookContexts } from 'sql/workbench/services/notebook/browser/models
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { INotification, Severity, INotificationService } from 'vs/platform/notification/common/notification';
 import { URI } from 'vs/base/common/uri';
-import { ISingleNotebookEditOperation, NotebookEditOperationType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { INotebookEditOperation, NotebookEditOperationType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { uriPrefixes } from 'sql/platform/connection/common/utils';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -35,7 +35,7 @@ import { isUUID } from 'vs/base/common/uuid';
 import { TextModel } from 'vs/editor/common/model/textModel';
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
 import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
-import { AddCellEdit, AppendOutputEdit, ConvertCellTypeEdit, DeleteCellEdit, MoveCellEdit, ReplaceOutputDataEdit, SplitCellEdit } from 'sql/workbench/services/notebook/browser/models/cellEdit';
+import { AddCellEdit, CellOutputEdit, ConvertCellTypeEdit, DeleteCellEdit, MoveCellEdit, CellOutputDataEdit, SplitCellEdit } from 'sql/workbench/services/notebook/browser/models/cellEdit';
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
 import { deepClone } from 'vs/base/common/objects';
 
@@ -855,7 +855,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	pushEditOperations(edits: ISingleNotebookEditOperation[]): void {
+	pushEditOperations(edits: INotebookEditOperation[]): void {
 		if (this.inErrorState || !this._cells) {
 			return;
 		}
@@ -863,20 +863,24 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		for (const edit of edits) {
 			const startCell = this.cells[edit.range.start];
 			if (!startCell) {
-				this.logService.warn(`Did not receieve a valid starting cell when processing edit type ${edit.type}`);
+				this.logService.warn(`Did not receive a valid starting cell when processing edit type ${edit.type}`);
 				continue;
 			}
 			switch (edit.type) {
 				case NotebookEditOperationType.UpdateCell:
 					startCell.processEdits([
-						new AppendOutputEdit(edit.cell.outputs ?? [])
+						new CellOutputEdit(edit.cell.outputs ?? [], !!edit.append)
 					]);
 					break;
 				case NotebookEditOperationType.UpdateCellOutput:
 					const cellEdits: ICellEdit[] = [];
 					edit.cell.outputs?.forEach(o => {
 						const targetOutput = startCell.outputs.find(o2 => o.id === o2.id);
-						cellEdits.push(new ReplaceOutputDataEdit(targetOutput.id, (o as nb.IDisplayData).data));
+						if (!targetOutput) {
+							this.logService.warn(`Could not find target output with ID ${o.id} when updating cell output`);
+							return;
+						}
+						cellEdits.push(new CellOutputDataEdit(targetOutput.id, (o as nb.IDisplayData).data, !!edit.append));
 					});
 					startCell.processEdits(cellEdits);
 					break;

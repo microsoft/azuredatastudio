@@ -19,7 +19,7 @@ import { ITaskHandlerDescription } from 'sql/workbench/services/tasks/common/tas
 import {
 	IItemConfig, IComponentShape, IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails,
 	IModelViewWizardDetails, IModelViewWizardPageDetails, IExecuteManagerDetails, INotebookSessionDetails,
-	INotebookKernelDetails, INotebookFutureDetails, FutureMessageType, INotebookFutureDone, ISingleNotebookEditOperation,
+	INotebookKernelDetails, INotebookFutureDetails, FutureMessageType, INotebookFutureDone, INotebookEditOperation,
 	NotebookChangeKind,
 	ISerializationManagerDetails
 } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -990,7 +990,7 @@ export interface MainThreadNotebookDocumentsAndEditorsShape extends IDisposable 
 	$trySetTrusted(_uri: UriComponents, isTrusted: boolean): Thenable<boolean>;
 	$trySaveDocument(uri: UriComponents): Thenable<boolean>;
 	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): Promise<string>;
-	$tryApplyEdits(id: string, modelVersionId: number, edits: ISingleNotebookEditOperation[], opts: IUndoStopOptions): Promise<boolean>;
+	$tryApplyEdits(id: string, modelVersionId: number, edits: INotebookEditOperation[], opts: IUndoStopOptions): Promise<boolean>;
 	$runCell(id: string, cellUri: UriComponents): Promise<boolean>;
 	$runAllCells(id: string, startCellUri?: UriComponents, endCellUri?: UriComponents): Promise<boolean>;
 	$clearOutput(id: string, cellUri: UriComponents): Promise<boolean>;

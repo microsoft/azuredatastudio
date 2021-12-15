@@ -31,7 +31,7 @@ import { Disposable } from 'vs/base/common/lifecycle';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IInsightOptions } from 'sql/workbench/common/editor/query/chartState';
 import { IPosition } from 'vs/editor/common/core/position';
-import { AppendOutputEdit, ReplaceOutputDataEdit, ReplaceOutputEdit } from 'sql/workbench/services/notebook/browser/models/cellEdit';
+import { CellOutputEdit, CellOutputDataEdit } from 'sql/workbench/services/notebook/browser/models/cellEdit';
 import { ILogService } from 'vs/platform/log/common/log';
 
 let modelId = 0;
@@ -1021,22 +1021,29 @@ export class CellModel extends Disposable implements ICellModel {
 	public processEdits(edits: ICellEdit[]): void {
 		for (const edit of edits) {
 			switch (edit.type) {
-				case CellEditType.AppendOutput:
-					this._outputs.push(...(edit as AppendOutputEdit).outputs);
+				case CellEditType.Output:
+					const outputEdit = edit as CellOutputEdit;
+					if (outputEdit.append) {
+						this._outputs.push(...outputEdit.outputs);
+					} else {
+						this._outputs = outputEdit.outputs;
+					}
+
 					break;
-				case CellEditType.ReplaceOutput:
-					this._outputs = (edit as ReplaceOutputEdit).outputs;
-					break;
-				case CellEditType.ReplaceOutputData:
-					const replaceOutputDataEdit = edit as ReplaceOutputDataEdit;
-					const outputIndex = this._outputs.findIndex(o => replaceOutputDataEdit.outputId === o.id);
+				case CellEditType.OutputData:
+					const outputDataEdit = edit as CellOutputDataEdit;
+					const outputIndex = this._outputs.findIndex(o => outputDataEdit.outputId === o.id);
 					if (outputIndex > -1) {
 						const output = this._outputs[outputIndex] as nb.IExecuteResult;
-						output.data = replaceOutputDataEdit.data;
+						// TODO: Append overwrites existing mime types currently
+						const newData = (edit as CellOutputDataEdit).append ?
+							Object.assign(output.data, outputDataEdit.data) :
+							outputDataEdit.data;
+						output.data = newData;
 						// We create a new object so that angular detects that the content has changed
 						this._outputs[outputIndex] = Object.assign({}, output);
 					} else {
-						this._logService.warn(`Unable to find output with ID ${replaceOutputDataEdit.outputId} when processing ReplaceOutputData`);
+						this._logService.warn(`Unable to find output with ID ${outputDataEdit.outputId} when processing ReplaceOutputData`);
 					}
 					break;
 			}

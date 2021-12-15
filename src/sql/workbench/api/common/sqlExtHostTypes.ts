@@ -641,11 +641,13 @@ export const enum NotebookEditOperationType {
 	UpdateCellOutput = 4
 }
 
-export interface ISingleNotebookEditOperation {
+// TODO This should be split up into separate edit operation types
+export interface INotebookEditOperation {
 	type: NotebookEditOperationType;
 	range: ICellRange;
 	cell: Partial<nb.ICellContents>;
 	forceMoveMarkers: boolean;
+	append?: boolean;
 }
 
 export class ConnectionProfile {

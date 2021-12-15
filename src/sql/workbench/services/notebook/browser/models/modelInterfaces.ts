@@ -26,7 +26,7 @@ import { QueryResultId } from 'sql/workbench/services/notebook/browser/models/ce
 import { IPosition } from 'vs/editor/common/core/position';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
-import { NotebookEditOperationType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { INotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 
 export enum ViewMode {
@@ -37,13 +37,6 @@ export enum ViewMode {
 export interface ICellRange {
 	readonly start: number;
 	readonly end: number;
-}
-
-export interface ISingleNotebookEditOperation {
-	type: NotebookEditOperationType;
-	range: ICellRange;
-	cell: Partial<nb.ICellContents>;
-	forceMoveMarkers: boolean;
 }
 
 export interface IClientSessionOptions {
@@ -423,7 +416,7 @@ export interface INotebookModel {
 	 * editing the model. Long-term, this will ensure edit operations can be added to the undo stack
 	 * @param edits The edit operations to perform
 	 */
-	pushEditOperations(edits: ISingleNotebookEditOperation[]): void;
+	pushEditOperations(edits: INotebookEditOperation[]): void;
 
 	getApplicableConnectionProviderIds(kernelName: string): string[];
 
@@ -569,9 +562,8 @@ export interface ICellModel {
 }
 
 export const enum CellEditType {
-	ReplaceOutput,
-	AppendOutput,
-	ReplaceOutputData
+	Output,
+	OutputData
 }
 
 export interface ICellEdit {
