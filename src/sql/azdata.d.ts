@@ -5131,13 +5131,13 @@ declare module 'azdata' {
 		}
 
 		/**
-		 * Mapping object expected to contain mime type -> contents mappings.
+		 * Mime type -> contents mappings
 		 */
 		export type DisplayResultData = { [key: string]: any };
 
 		export interface IDisplayResult extends ICellOutput {
 			/**
-			 * The output data to display. 
+			 * The output data to display as a mapping object of mime type to contents
 			 */
 			data: DisplayResultData;
 		}
