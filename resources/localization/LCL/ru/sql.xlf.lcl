@@ -5026,7 +5026,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Sql Login]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Вход SQL]]></Val>
+            <Val><![CDATA[Имя входа SQL]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
