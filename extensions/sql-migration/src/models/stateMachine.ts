@@ -36,7 +36,7 @@ export enum State {
 	EXIT,
 }
 
-export enum MigrationTargetType {			//
+export enum MigrationTargetType {
 	SQLVM = 'AzureSqlVirtualMachine',
 	SQLMI = 'AzureSqlManagedInstance',
 	SQLDB = 'AzureSqlDatabase'
@@ -182,7 +182,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _skuRecommendationResults!: SkuRecommendation;
 	public _runAssessments: boolean = true;
 	private _assessmentApiResponse!: mssql.AssessmentResult;
-	private _skuRecommendationApiResponse!:mssql.SkuRecommendationResult
+	private _skuRecommendationApiResponse!: mssql.SkuRecommendationResult;
 	public mementoString: string;
 
 	public _vmDbs: string[] = [];
@@ -304,9 +304,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		startTime: string,
 		endTime: string,
 		elasticStrategy: boolean,
-		databaseAllowList: string[]) : Promise<SkuRecommendation> {
+		databaseAllowList: string[]): Promise<SkuRecommendation> {
 		try {
-			console.log("starting sku rec");
+			console.log('starting sku rec');
 
 			const serverInfo = await azdata.connection.getServerInfo(this.sourceConnectionId);
 			const machineName = (<any>serverInfo)['machineName'];		// get actual machine name instead of whatever the user entered as the server name (e.g. DESKTOP-xxx instead of localhost)
@@ -323,7 +323,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				elasticStrategy,
 				databaseAllowList))!;
 			this._skuRecommendationApiResponse = response;
-			console.log("raw API response:");
+
+			console.log('_skuRecommendationApiResponse:');
 			console.log(this._skuRecommendationApiResponse);
 
 			if (response?.sqlDbRecommendationResults || response?.sqlMiRecommendationResults || response?.sqlVmRecommendationResults) {
@@ -334,7 +335,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						sqlVmRecommendationResults: response?.sqlVmRecommendationResults ?? []
 					},
 					// recommendationError:
-				}
+				};
 			} else {
 				this._skuRecommendationResults = {
 					recommendations: {
@@ -343,11 +344,11 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						sqlVmRecommendationResults: []
 					},
 					// recommendationError:
-				}
+				};
 			}
 
 		} catch (error) {
-			console.log("error:");
+			console.log('error:');
 			console.log(error);
 
 			this._skuRecommendationResults = {
@@ -357,16 +358,16 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					sqlVmRecommendationResults: this._skuRecommendationApiResponse?.sqlVmRecommendationResults ?? []
 				},
 				recommendationError: error
-			}
+			};
 		}
 
-		console.log("_skuRecommendationResults.recommendations.sqlDbRecommendationResults: ");
+		console.log('_skuRecommendationResults.recommendations.sqlDbRecommendationResults: ');
 		console.log(this._skuRecommendationResults.recommendations.sqlDbRecommendationResults);
-		console.log("_skuRecommendationResults.recommendations.sqlMiRecommendationResults: ");
+		console.log('_skuRecommendationResults.recommendations.sqlMiRecommendationResults: ');
 		console.log(this._skuRecommendationResults.recommendations.sqlMiRecommendationResults);
-		console.log("_skuRecommendationResults.recommendations.sqlVmRecommendationResults: ");
+		console.log('_skuRecommendationResults.recommendations.sqlVmRecommendationResults: ');
 		console.log(this._skuRecommendationResults.recommendations.sqlVmRecommendationResults);
-		console.log("_skuRecommendationResults.recommendationError: ");
+		console.log('_skuRecommendationResults.recommendationError: ');
 		console.log(this._skuRecommendationResults.recommendationError);
 
 		// this.generateAssessmentTelemetry().catch(e => console.error(e));
@@ -377,21 +378,20 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		dataFolder: string,
 		perfQueryIntervalInSec: number,
 		staticQueryIntervalInSec: number,
-		numberOfIterations: number) : Promise<boolean> {
+		numberOfIterations: number): Promise<boolean> {
 		try {
-			console.log("stateMachine.startPerfDataCollection starting");
+			console.log('stateMachine.startPerfDataCollection starting');
 
 			const ownerUri = await azdata.connection.getUriForConnection(this.sourceConnectionId);
 			const response = await this.migrationService.startPerfDataCollection(ownerUri, dataFolder, perfQueryIntervalInSec, staticQueryIntervalInSec, numberOfIterations);
-			console.log("process ID: " + response);
+			console.log('process ID: ' + response);
 
 		}
 		catch (error) {
-			console.log("error:");
+			console.log('error:');
 			console.log(error);
 		}
 
-		console.log("stateMachine.startPerfDataCollection done");
 		return true;
 	}
 

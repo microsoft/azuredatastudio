@@ -602,12 +602,11 @@ export interface AssessmentResult {
 	errors: ErrorModel[];
 }
 
-//
-
+// TO-DO: these are supposd to be enums
 export interface AzureSqlSkuCategory
 {
-	sqlTargetPlatform: number;		//
-	computeTier: number;			//
+	sqlTargetPlatform: number;
+	computeTier: number;
 	sqlPurchasingModel: number;
 	sqlServiceTier: number;
 	hardwareType: number;
@@ -635,19 +634,18 @@ export interface AzureSqlSku
 	category: AzureSqlSkuCategory;
 	computeSize: number;
 
-	// class AzureSqlPaaSSku : AzureSqlSku
+	// AzureSqlPaaSSku (a PaaS-specific AzureSqlSku)
 	predictedDataSizeInMb: number;
 	predictedLogSizeInMb: number;
 	storageMaxSizeInMb: number;
 
-	// class AzureSqlIaaSSku : AzureSqlSku
+	// AzureSqlIaaSSku (an IaaS-specific AzureSqlSku)
 	virtualMachineSize: AzureVirtualMachineSku;
     dataDiskSizes: AzureManagedDiskSku[];
     logDiskSizes: AzureManagedDiskSku[];
     tempDbDiskSizes: AzureManagedDiskSku[];
 	// predictedDataSizeInMb: number;
 	// predictedLogSizeInMb: number;
-
 }
 
 export interface AzureSqlSkuMonthlyCost
@@ -672,7 +670,6 @@ export interface SkuRecommendationResult {
 	sqlDbRecommendationResults: SkuRecommendationResultItem[];
 	sqlMiRecommendationResults: SkuRecommendationResultItem[];
 	sqlVmRecommendationResults: SkuRecommendationResultItem[];
-
 }
 
 export interface ISqlMigrationService {
