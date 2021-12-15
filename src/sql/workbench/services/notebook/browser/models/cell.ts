@@ -1029,14 +1029,14 @@ export class CellModel extends Disposable implements ICellModel {
 					break;
 				case CellEditType.ReplaceOutputData:
 					const replaceOutputDataEdit = edit as ReplaceOutputDataEdit;
-					const outputIndex = this._outputs.findIndex(o => replaceOutputDataEdit.outputId.id === o.id);
+					const outputIndex = this._outputs.findIndex(o => replaceOutputDataEdit.outputId === o.id);
 					if (outputIndex > -1) {
 						const output = this._outputs[outputIndex] as nb.IExecuteResult;
 						output.data = replaceOutputDataEdit.data;
 						// We create a new object so that angular detects that the content has changed
 						this._outputs[outputIndex] = Object.assign({}, output);
 					} else {
-						this._logService.warn(`Unable to find output with ID ${replaceOutputDataEdit.outputId.id} when processing ReplaceOutputData`);
+						this._logService.warn(`Unable to find output with ID ${replaceOutputDataEdit.outputId} when processing ReplaceOutputData`);
 					}
 					break;
 			}
