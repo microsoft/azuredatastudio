@@ -21,8 +21,6 @@ const configLogFilesRemovalLimit = 'logFilesRemovalLimit';
 const extensionConfigSectionName = 'mssql';
 const configLogDebugInfo = 'logDebugInfo';
 
-export const CRED_PROFILE_USER = 'Profile';
-
 /**
  *
  * @returns Whether the current OS is linux or not

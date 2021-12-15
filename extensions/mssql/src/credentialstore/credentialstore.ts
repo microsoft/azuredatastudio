@@ -8,11 +8,8 @@ import { IConfig } from '@microsoft/ads-service-downloader';
 import { ServerOptions, TransportKind } from 'vscode-languageclient';
 import * as Constants from './constants';
 import * as Utils from '../utils';
-// import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import { SqlCredentialService } from './sqlCredentialService';
 import { AppContext } from '../appContext';
-// import { DeleteCredentialRequest, ReadCredentialRequest, SaveCredentialRequest } from './contracts';
-// import { Disposable } from 'vscode';
 
 /**
  * Implements a credential storage for Windows, Mac (darwin), or Linux.
