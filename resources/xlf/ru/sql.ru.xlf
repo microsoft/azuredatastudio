@@ -1,32 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="src/sql/base/browser/ui/designer/designer" source-language="en" datatype="plaintext" target-language="ru">
+  <file original="src/sql/base/browser/ui/loadingSpinner/loadingSpinner" source-language="en" datatype="plaintext" target-language="ru">
     <body>
-      <trans-unit id="designer.newRowText">
-        <source xml:lang="en">Add New</source>
-        <target state="translated">Добавить новый</target>
+      <trans-unit id="loadingCompletedMessage">
+        <source xml:lang="en">Loading completed</source>
+        <target state="translated">Загрузка завершена</target>
       </trans-unit>
-      <trans-unit id="designer.removeRowText">
-        <source xml:lang="en">Remove</source>
-        <target state="translated">Удалить</target>
-      </trans-unit>
-      <trans-unit id="tableDesigner.unknownComponentType">
-        <source xml:lang="en">The component type: {0} is not supported</source>
-        <target state="translated">Тип компонента {0} не поддерживается</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="src/sql/base/browser/ui/designer/designerPropertiesPane" source-language="en" datatype="plaintext" target-language="ru">
-    <body>
-      <trans-unit id="tableDesigner.propertiesPaneTitle">
-        <source xml:lang="en">Properties</source>
-        <target state="translated">Свойства</target>
-      </trans-unit>
-      <trans-unit id="tableDesigner.propertiesPaneTitleWithContext">
-        <source xml:lang="en">Properties - {0} {1}</source>
-        <note>{0} is the place holder for object type
-{1} is the place holder for object name</note>
-        <target state="translated">Свойства — {0} {1}</target>
+      <trans-unit id="loadingMessage">
+        <source xml:lang="en">Loading</source>
+        <target state="translated">Загрузка</target>
       </trans-unit>
     </body>
   </file>
@@ -333,6 +315,14 @@
         <source xml:lang="en">New SQL File</source>
         <target state="translated">Новый файл SQL</target>
       </trans-unit>
+      <trans-unit id="workspace.trust.description">
+        <source xml:lang="en">Controls whether or not workspace trust is enabled within Azure Data Studio.</source>
+        <target state="translated">Определяет, включено ли доверие рабочей области в Azure Data Studio.</target>
+      </trans-unit>
+      <trans-unit id="workspace.trust.emptyWindow.description">
+        <source xml:lang="en">Controls whether or not the empty window is trusted by default within Azure Data Studio. When used with `#{0}#`, you can enable the full functionality of Azure Data Studio without prompting in an empty window.</source>
+        <target state="translated">Определяет, является ли пустое окно доверенным по умолчанию в Azure Data Studio. При использовании с "#{0}#" можно включить все функции Azure Data Studio без запросов в пустом окне.</target>
+      </trans-unit>
     </body>
   </file>
   <file original="src/sql/base/parts/editableDropdown/browser/dropdown" source-language="en" datatype="plaintext" target-language="ru">
@@ -489,6 +479,10 @@
         <source xml:lang="en">Callout dialog box shadow color.</source>
         <target state="translated">Цвет тени диалогового окна выноски.</target>
       </trans-unit>
+      <trans-unit id="designer.paneSeparator">
+        <source xml:lang="en">The pane separator color.</source>
+        <target state="translated">Цвет разделителя панелей.</target>
+      </trans-unit>
       <trans-unit id="extensionPackGradientColorOne">
         <source xml:lang="en">The top color for the extension pack gradient</source>
         <target state="translated">Верхний цвет для градиента пакета расширения</target>
@@ -512,6 +506,10 @@
       <trans-unit id="gradientTwo">
         <source xml:lang="en">The bottom color for the banner image gradient</source>
         <target state="translated">Нижний цвет для градиента изображения баннера</target>
+      </trans-unit>
+      <trans-unit id="groupHeaderBackground">
+        <source xml:lang="en">Background color of the group header.</source>
+        <target state="translated">Цвет фона заголовка группы.</target>
       </trans-unit>
       <trans-unit id="infoBox.errorBackground">
         <source xml:lang="en">InfoBox: The background color when the notification type is error.</source>
@@ -868,6 +866,71 @@
       <trans-unit id="showConnectDialogOnStartup">
         <source xml:lang="en">Show connect dialog on startup</source>
         <target state="translated">Показывать диалоговое окно подключения при запуске</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/browser/designer/designer" source-language="en" datatype="plaintext" target-language="ru">
+    <body>
+      <trans-unit id="designer.generalGroupName">
+        <source xml:lang="en">General</source>
+        <target state="translated">Общие</target>
+      </trans-unit>
+      <trans-unit id="designer.loadingDesigner">
+        <source xml:lang="en">Loading designer...</source>
+        <target state="translated">Идет загрузка конструктора...</target>
+      </trans-unit>
+      <trans-unit id="designer.loadingDesignerCompleted">
+        <source xml:lang="en">Designer is loaded</source>
+        <target state="translated">Конструктор загружен</target>
+      </trans-unit>
+      <trans-unit id="designer.newRowText">
+        <source xml:lang="en">Add New</source>
+        <target state="translated">Добавить новый</target>
+      </trans-unit>
+      <trans-unit id="designer.processingChanges">
+        <source xml:lang="en">Processing changes...</source>
+        <target state="translated">Обработка изменений...</target>
+      </trans-unit>
+      <trans-unit id="designer.processingChangesCompleted">
+        <source xml:lang="en">Changes have been processed</source>
+        <target state="translated">Изменения обработаны</target>
+      </trans-unit>
+      <trans-unit id="designer.removeRowText">
+        <source xml:lang="en">Remove</source>
+        <target state="translated">Удалить</target>
+      </trans-unit>
+      <trans-unit id="designer.savingChanges">
+        <source xml:lang="en">Saving changes...</source>
+        <target state="translated">Сохранение изменений...</target>
+      </trans-unit>
+      <trans-unit id="designer.savingChangesCompleted">
+        <source xml:lang="en">Changes have been saved</source>
+        <target state="translated">Изменения сохранены</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.unknownComponentType">
+        <source xml:lang="en">The component type: {0} is not supported</source>
+        <target state="translated">Тип компонента {0} не поддерживается</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/browser/designer/designerPropertiesPane" source-language="en" datatype="plaintext" target-language="ru">
+    <body>
+      <trans-unit id="tableDesigner.propertiesPaneTitle">
+        <source xml:lang="en">Properties</source>
+        <target state="translated">Свойства</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.propertiesPaneTitleWithContext">
+        <source xml:lang="en">{0} Properties</source>
+        <note>{0} is the place holder for object type</note>
+        <target state="translated">Свойства {0}</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/browser/designer/designerScriptEditor" source-language="en" datatype="plaintext" target-language="ru">
+    <body>
+      <trans-unit id="designer.textEditorAriaLabel">
+        <source xml:lang="en">Designer text editor.</source>
+        <target state="translated">Текстовый редактор конструктора.</target>
       </trans-unit>
     </body>
   </file>
@@ -1963,7 +2026,7 @@
       </trans-unit>
       <trans-unit id="schema.isQueryProvider">
         <source xml:lang="en">Whether the provider is also a query provider. The default value is true.</source>
-        <target state="new">Whether the provider is also a query provider. The default value is true.</target>
+        <target state="translated">Является ли поставщик также поставщиком запросов. Значение по умолчанию — true (истина).</target>
       </trans-unit>
       <trans-unit id="schema.notebookKernelAlias">
         <source xml:lang="en">Notebook Kernel Alias for the provider</source>
@@ -3835,57 +3898,45 @@ Error: {1}</source>
   </file>
   <file original="src/sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component" source-language="en" datatype="plaintext" target-language="ru">
     <body>
-      <trans-unit id="buttonBold">
+      <trans-unit id="bold">
         <source xml:lang="en">Bold</source>
         <target state="translated">Полужирный</target>
-      </trans-unit>
-      <trans-unit id="buttonCode">
-        <source xml:lang="en">Code</source>
-        <target state="translated">Код</target>
-      </trans-unit>
-      <trans-unit id="buttonHighlight">
-        <source xml:lang="en">Highlight</source>
-        <target state="translated">Выделить цветом</target>
-      </trans-unit>
-      <trans-unit id="buttonImage">
-        <source xml:lang="en">Image</source>
-        <target state="translated">Изображение</target>
-      </trans-unit>
-      <trans-unit id="buttonItalic">
-        <source xml:lang="en">Italic</source>
-        <target state="translated">Курсив</target>
-      </trans-unit>
-      <trans-unit id="buttonLink">
-        <source xml:lang="en">Link</source>
-        <target state="translated">Ссылка</target>
-      </trans-unit>
-      <trans-unit id="buttonList">
-        <source xml:lang="en">List</source>
-        <target state="translated">Список</target>
-      </trans-unit>
-      <trans-unit id="buttonOrderedList">
-        <source xml:lang="en">Ordered list</source>
-        <target state="translated">Упорядоченный список</target>
       </trans-unit>
       <trans-unit id="buttonPreview">
         <source xml:lang="en">Markdown preview toggle - off</source>
         <target state="translated">Переключить предварительный просмотр Markdown — отключено</target>
       </trans-unit>
-      <trans-unit id="buttonUnderline">
-        <source xml:lang="en">Underline</source>
-        <target state="translated">Подчеркнутый</target>
-      </trans-unit>
-      <trans-unit id="callout.insertImageHeading">
-        <source xml:lang="en">Insert image</source>
-        <target state="translated">Вставка изображения</target>
-      </trans-unit>
-      <trans-unit id="callout.insertLinkHeading">
-        <source xml:lang="en">Insert link</source>
-        <target state="translated">Вставка ссылки</target>
-      </trans-unit>
       <trans-unit id="dropdownHeading">
         <source xml:lang="en">Heading</source>
         <target state="translated">Заголовок</target>
+      </trans-unit>
+      <trans-unit id="highlight">
+        <source xml:lang="en">Highlight</source>
+        <target state="translated">Выделить цветом</target>
+      </trans-unit>
+      <trans-unit id="insertCode">
+        <source xml:lang="en">Insert code</source>
+        <target state="translated">Вставить код</target>
+      </trans-unit>
+      <trans-unit id="insertImage">
+        <source xml:lang="en">Insert image</source>
+        <target state="translated">Вставка изображения</target>
+      </trans-unit>
+      <trans-unit id="insertLink">
+        <source xml:lang="en">Insert link</source>
+        <target state="translated">Вставка ссылки</target>
+      </trans-unit>
+      <trans-unit id="insertList">
+        <source xml:lang="en">Insert list</source>
+        <target state="translated">Вставить список</target>
+      </trans-unit>
+      <trans-unit id="insertOrderedList">
+        <source xml:lang="en">Insert ordered list</source>
+        <target state="translated">Вставить упорядоченный список</target>
+      </trans-unit>
+      <trans-unit id="italic">
+        <source xml:lang="en">Italic</source>
+        <target state="translated">Курсив</target>
       </trans-unit>
       <trans-unit id="markdownViewButton">
         <source xml:lang="en">Markdown View</source>
@@ -3914,6 +3965,10 @@ Error: {1}</source>
       <trans-unit id="splitViewButton">
         <source xml:lang="en">Split View</source>
         <target state="translated">Разделенное представление</target>
+      </trans-unit>
+      <trans-unit id="underline">
+        <source xml:lang="en">Underline</source>
+        <target state="translated">Подчеркнутый</target>
       </trans-unit>
     </body>
   </file>
@@ -4810,6 +4865,10 @@ Error: {1}</source>
       <trans-unit id="queryEditor">
         <source xml:lang="en">Query Editor</source>
         <target state="translated">Редактор запросов</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner">
+        <source xml:lang="en">Table Designer</source>
+        <target state="translated">Конструктор таблиц</target>
       </trans-unit>
     </body>
   </file>
@@ -5804,6 +5863,18 @@ Error: {1}</source>
       <trans-unit id="tableDesigner.saveTableChanges">
         <source xml:lang="en">Save Changes</source>
         <target state="translated">Сохранить изменения</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/tableDesigner/browser/tableDesigner.contribution" source-language="en" datatype="plaintext" target-language="ru">
+    <body>
+      <trans-unit id="tableDesigner.configTitle">
+        <source xml:lang="en">Table Designer</source>
+        <target state="translated">Конструктор таблиц</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.featureEnabledDescription">
+        <source xml:lang="en">Controls whether the table designer feature is enabled. Default value is false.</source>
+        <target state="translated">Определяет, включена ли функция конструктора таблиц. Значение по умолчанию — false.</target>
       </trans-unit>
     </body>
   </file>
@@ -7216,6 +7287,30 @@ Error: {1}</source>
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/services/notebook/browser/models/cellEdit" source-language="en" datatype="plaintext" target-language="ru">
+    <body>
+      <trans-unit id="addCellEdit">
+        <source xml:lang="en">Add Cell</source>
+        <target state="translated">Добавить ячейку</target>
+      </trans-unit>
+      <trans-unit id="convertCellTypeEdit">
+        <source xml:lang="en">Convert Cell Type</source>
+        <target state="translated">Преобразование типа ячейки</target>
+      </trans-unit>
+      <trans-unit id="deleteCellEdit">
+        <source xml:lang="en">Delete Cell</source>
+        <target state="translated">Удалить ячейку</target>
+      </trans-unit>
+      <trans-unit id="moveCellEdit">
+        <source xml:lang="en">Move Cell</source>
+        <target state="translated">Переместить ячейку</target>
+      </trans-unit>
+      <trans-unit id="splitCellEdit">
+        <source xml:lang="en">Split Cell</source>
+        <target state="translated">Разбить ячейку</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/services/notebook/browser/models/clientSession" source-language="en" datatype="plaintext" target-language="ru">
     <body>
       <trans-unit id="ServerNotStarted">
@@ -7976,9 +8071,101 @@ Error: {1}</source>
   </file>
   <file original="src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput" source-language="en" datatype="plaintext" target-language="ru">
     <body>
-      <trans-unit id="tableDesigner.advancedTab">
-        <source xml:lang="en">Advanced</source>
-        <target state="translated">Дополнительно</target>
+      <trans-unit id="designer.checkConstraint.description.expression">
+        <source xml:lang="en">The expression defining the check constraint.</source>
+        <target state="translated">Выражение, определяющее проверочное ограничение.</target>
+      </trans-unit>
+      <trans-unit id="designer.checkConstraint.description.name">
+        <source xml:lang="en">The name of the check constraint.</source>
+        <target state="translated">Имя проверочного ограничения.</target>
+      </trans-unit>
+      <trans-unit id="designer.column.description.allowNulls">
+        <source xml:lang="en">Specifies whether the column may have a NULL value.</source>
+        <target state="translated">Указывает, может ли столбец иметь значение NULL.</target>
+      </trans-unit>
+      <trans-unit id="designer.column.description.dataType">
+        <source xml:lang="en">Displays the data type name for the column</source>
+        <target state="translated">Отображает имя типа данных столбца.</target>
+      </trans-unit>
+      <trans-unit id="designer.column.description.defaultValueBinding">
+        <source xml:lang="en">A predefined global default value for the column or binding.</source>
+        <target state="translated">Предопределенное глобальное значение по умолчанию для столбца или привязки.</target>
+      </trans-unit>
+      <trans-unit id="designer.column.description.length">
+        <source xml:lang="en">The maximum length (in characters) that can be stored in this database object.</source>
+        <target state="translated">Максимальная длина (в символах), которая может быть сохранена в этом объекте базы данных.</target>
+      </trans-unit>
+      <trans-unit id="designer.column.description.name">
+        <source xml:lang="en">The name of the column object.</source>
+        <target state="translated">Имя объекта столбца.</target>
+      </trans-unit>
+      <trans-unit id="designer.column.description.precision">
+        <source xml:lang="en">For numeric data, the maximum number of decimal digits that can be stored in this database object.</source>
+        <target state="translated">Для числовых данных максимальное количество десятичных знаков, которые могут быть сохранены в этом объекте базы данных.</target>
+      </trans-unit>
+      <trans-unit id="designer.column.description.primaryKey">
+        <source xml:lang="en">Specifies whether the column is included in the primary key for the table.</source>
+        <target state="translated">Указывает, включен ли столбец в первичный ключ таблицы.</target>
+      </trans-unit>
+      <trans-unit id="designer.column.description.scale">
+        <source xml:lang="en">For numeric data, the maximum number of decimal digits that can be stored in this database object to the right of decimal point.</source>
+        <target state="translated">Для числовых данных максимальное количество десятичных знаков, которые могут быть сохранены в этом объекте базы данных справа от десятичного разделителя.</target>
+      </trans-unit>
+      <trans-unit id="designer.foreignkey.description.columnMapping">
+        <source xml:lang="en">The mapping between foreign key columns and primary key columns.</source>
+        <target state="translated">Сопоставление столбцов внешних ключей и столбцов первичных ключей.</target>
+      </trans-unit>
+      <trans-unit id="designer.foreignkey.description.name">
+        <source xml:lang="en">The name of the foreign key.</source>
+        <target state="translated">Имя внешнего ключа.</target>
+      </trans-unit>
+      <trans-unit id="designer.foreignkey.description.onDeleteAction">
+        <source xml:lang="en">The behavior when a user tries to delete a row with data that is involved in a foreign key relationship.</source>
+        <target state="translated">Поведение, которое реализуется при попытке пользователя удалить строку с данными, участвующую в связи по внешнему ключу.</target>
+      </trans-unit>
+      <trans-unit id="designer.foreignkey.description.onUpdateAction">
+        <source xml:lang="en">The behavior when a user tries to update a row with data that is involved in a foreign key relationship.</source>
+        <target state="translated">Поведение, которое реализуется при попытке пользователя обновить строку с данными, участвующую в связи по внешнему ключу.</target>
+      </trans-unit>
+      <trans-unit id="designer.foreignkey.description.primaryKeyTable">
+        <source xml:lang="en">The table which contains the primary or unique key column.</source>
+        <target state="translated">Таблица, которая содержит первичный или уникальный ключевой столбец.</target>
+      </trans-unit>
+      <trans-unit id="designer.table.description.description">
+        <source xml:lang="en">Description for the table.</source>
+        <target state="translated">Описание таблицы.</target>
+      </trans-unit>
+      <trans-unit id="designer.table.description.name">
+        <source xml:lang="en">The name of the table object.</source>
+        <target state="translated">Имя объекта таблицы.</target>
+      </trans-unit>
+      <trans-unit id="designer.table.description.schema">
+        <source xml:lang="en">The schema that contains the table.</source>
+        <target state="translated">Схема, содержащая таблицу.</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.ForeignKeyTypeName">
+        <source xml:lang="en">Foreign Key</source>
+        <target state="translated">Внешний ключ</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.PrimaryKeyTableName">
+        <source xml:lang="en">Primary Key Table</source>
+        <target state="translated">Таблица первичных ключей</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.checkConstraintExpressionTitle">
+        <source xml:lang="en">Expression</source>
+        <target state="translated">Выражение</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.checkConstraintNameTitle">
+        <source xml:lang="en">Name</source>
+        <target state="translated">Имя</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.checkConstraintTypeName">
+        <source xml:lang="en">Check Constraint</source>
+        <target state="translated">Проверочное ограничение</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.checkConstraintsTabTitle">
+        <source xml:lang="en">Check Constraints</source>
+        <target state="translated">Проверочные ограничения</target>
       </trans-unit>
       <trans-unit id="tableDesigner.columnAllowNullTitle">
         <source xml:lang="en">Allow Nulls</source>
@@ -8000,6 +8187,14 @@ Error: {1}</source>
         <source xml:lang="en">Name</source>
         <target state="translated">Имя</target>
       </trans-unit>
+      <trans-unit id="tableDesigner.columnPrecisionTitle">
+        <source xml:lang="en">Precision</source>
+        <target state="translated">Точность</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.columnScaleTitle">
+        <source xml:lang="en">Scale</source>
+        <target state="translated">Масштаб</target>
+      </trans-unit>
       <trans-unit id="tableDesigner.columnTypeName">
         <source xml:lang="en">Column</source>
         <target state="translated">Столбец</target>
@@ -8016,9 +8211,49 @@ Error: {1}</source>
         <source xml:lang="en">Description</source>
         <target state="translated">Описание</target>
       </trans-unit>
+      <trans-unit id="tableDesigner.errorInitializingTableDesigner">
+        <source xml:lang="en">An error occured while initializing the table designer: {0}</source>
+        <target state="translated">Произошла ошибка при инициализации конструктора таблиц: {0}</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.errorProcessingEdit">
+        <source xml:lang="en">An error occured while processing the change: {0}</source>
+        <target state="translated">Произошла ошибка при обработке изменения: {0}</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.foreignKeyColumn">
+        <source xml:lang="en">Foreign Key Column</source>
+        <target state="translated">Столбец внешних ключей</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.foreignKeyColumns">
+        <source xml:lang="en">Column Mapping</source>
+        <target state="translated">Сопоставление столбцов</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.foreignKeyNameTitle">
+        <source xml:lang="en">Name</source>
+        <target state="translated">Имя</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.foreignKeyOnDeleteAction">
+        <source xml:lang="en">On Delete Action</source>
+        <target state="translated">При действии удаления</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.foreignKeyOnUpdateAction">
+        <source xml:lang="en">On Update Action</source>
+        <target state="translated">При действии обновления</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.foreignKeysTabTitle">
+        <source xml:lang="en">Foreign Keys</source>
+        <target state="translated">Внешние ключи</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.generalTab">
+        <source xml:lang="en">General</source>
+        <target state="translated">Общие</target>
+      </trans-unit>
       <trans-unit id="tableDesigner.nameTitle">
         <source xml:lang="en">Table name</source>
         <target state="translated">Имя таблицы</target>
+      </trans-unit>
+      <trans-unit id="tableDesigner.primaryKeyColumn">
+        <source xml:lang="en">Primary Key Column</source>
+        <target state="translated">Столбец первичного ключа</target>
       </trans-unit>
       <trans-unit id="tableDesigner.saveChangeError">
         <source xml:lang="en">An error occured while saving changes: {0}</source>

@@ -255,6 +255,7 @@
 			"notebook.command.boldText": "Mettre en gras le texte Markdown",
 			"notebook.command.clearactivecellresult": "Effacer le résultat de la cellule",
 			"notebook.command.codeBlock": "Ajouter un bloc de code",
+			"notebook.command.highlightText": "Mettre en surbrillance le texte Markdown",
 			"notebook.command.italicizeText": "Mettre en italique le texte de la démarque",
 			"notebook.command.new": "Nouveau notebook",
 			"notebook.command.open": "Ouvrir le notebook",
