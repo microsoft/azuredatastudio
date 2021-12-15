@@ -281,6 +281,7 @@ export class JupyterSession implements nb.ISession {
 
 	public async configureConnection(connectionProfile: IConnectionProfile): Promise<void> {
 		if (connectionProfile && connectionProfile.providerName && utils.isSparkKernel(this.sessionImpl.kernel.name)) {
+			console.log('Started...');
 			Logger.log(`Configuring Spark connection`);
 			// %_do_not_call_change_endpoint is a SparkMagic command that lets users change endpoint options,
 			// such as user/profile/host name/auth type
@@ -291,10 +292,12 @@ export class JupyterSession implements nb.ISession {
 			//Update server info with bigdata endpoint - Unified Connection
 			if (connectionProfile.providerName === SQL_PROVIDER) {
 				const serverInfo: ServerInfo = await connection.getServerInfo(connectionProfile.id);
+				console.log('Initialized serverInfo');
 				if (!serverInfo?.options['isBigDataCluster']) {
 					throw new Error(noBDCConnectionError);
 				}
 				const endpoints = utils.getClusterEndpoints(serverInfo);
+				console.log('Initialized endpoints');
 				const controllerEndpoint = endpoints.find(ep => ep.name.toLowerCase() === CONTROLLER_ENDPOINT);
 
 				Logger.log(`Found controller endpoint ${controllerEndpoint.endpoint}`);
@@ -306,23 +309,31 @@ export class JupyterSession implements nb.ISession {
 					// See if the controller creds have been saved already, otherwise fall back to using
 					// SQL creds as a default
 					const credentialProvider = await credentials.getProvider('notebook.bdc.password');
+					console.log('Initialized credential provider');
 					const usernameKey = `notebook.bdc.username::${connectionProfile.id}`;
 					const savedUsername = ExtensionContextHelper.extensionContext.globalState.get<string>(usernameKey) || connectionProfile.userName;
 					const connectionCreds = await connection.getCredentials(connectionProfile.id);
+					console.log('Initialized credentials');
 					const savedPassword = (await credentialProvider.readCredential(connectionProfile.id)).password || connectionCreds.password;
+					console.log('Initialized saved password');
 					clusterController = await getClusterController(controllerEndpoint.endpoint, 'basic', savedUsername, savedPassword);
+					console.log('Initialized cluster controller');
 					// Now that we know that the username/password are valid store them for use later on with the same connection
 					await credentialProvider.saveCredential(connectionProfile.id, clusterController.password);
+					console.log('saved credential');
 					await ExtensionContextHelper.extensionContext.globalState.update(usernameKey, clusterController.username);
+					console.log('global state updated');
 					knoxPassword = clusterController.password;
 					try {
 						knoxUsername = await clusterController.getKnoxUsername(clusterController.username);
+						console.log('got knox username');
 					} catch (err) {
 						knoxUsername = clusterController.username;
 						console.log(`Unexpected error getting Knox username for Spark kernel: ${err}`);
 					}
 				} else {
 					clusterController = await getClusterController(controllerEndpoint.endpoint, 'integrated');
+
 				}
 
 				let gatewayEndpoint: bdc.IEndpointModel = endpoints?.find(ep => ep.name.toLowerCase() === KNOX_ENDPOINT_GATEWAY);
@@ -337,9 +348,12 @@ export class JupyterSession implements nb.ISession {
 				}
 				Logger.log(`Got Knox gateway ${gatewayEndpoint.endpoint}`);
 				let gatewayHostAndPort = utils.getHostAndPortFromEndpoint(gatewayEndpoint.endpoint);
+				console.log('Initialized getHostAndPortFromEndpoint');
 				Logger.log(`Parsed knox host and port ${JSON.stringify(gatewayHostAndPort)}`);
 				connectionProfile.options[KNOX_ENDPOINT_SERVER] = gatewayHostAndPort.host;
 				connectionProfile.options[KNOX_ENDPOINT_PORT] = gatewayHostAndPort.port;
+				console.log('knox server and port set');
+
 			}
 			else {
 				throw new Error(providerNotValidError);
@@ -348,6 +362,7 @@ export class JupyterSession implements nb.ISession {
 			utils.setHostAndPort(',', connectionProfile);
 
 			let server = vscode.Uri.parse(utils.getLivyUrl(connectionProfile.options[KNOX_ENDPOINT_SERVER], connectionProfile.options[KNOX_ENDPOINT_PORT])).toString();
+			console.log('Initialized getLivyUrl');
 			let doNotCallChangeEndpointParams: string;
 			let doNotCallChangeEndpointLogMessage: string;
 			if (utils.isIntegratedAuth(connectionProfile)) {
@@ -362,6 +377,7 @@ export class JupyterSession implements nb.ISession {
 			let future = this.sessionImpl.kernel.requestExecute({
 				code: doNotCallChangeEndpointParams
 			}, true);
+			console.log('Initialized requestExecute');
 			await future.done;
 		}
 	}
