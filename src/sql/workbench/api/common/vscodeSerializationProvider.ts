@@ -16,14 +16,14 @@ export class VSCodeContentManager implements azdata.nb.ContentManager {
 	constructor(private readonly _serializer: vscode.NotebookSerializer) {
 	}
 
-	public static convertToADSCellOutput(outputs: vscode.NotebookCellOutput | vscode.NotebookCellOutput[], executionOrder?: number, outputType: azdata.nb.OutputTypeName = 'execute_result'): azdata.nb.IDisplayResult[] {
+	public static convertToADSCellOutput(outputs: vscode.NotebookCellOutput | vscode.NotebookCellOutput[], executionOrder?: number): azdata.nb.IDisplayResult[] {
 		return asArray(outputs).map(output => {
 			let outputData = {};
 			for (let item of output.items) {
 				outputData[item.mime] = VSBuffer.wrap(item.data).toString();
 			}
 			return {
-				output_type: outputType,
+				output_type: 'execute_result',
 				data: outputData,
 				execution_count: executionOrder,
 				metadata: output.metadata,

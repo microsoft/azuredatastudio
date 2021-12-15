@@ -234,7 +234,7 @@ class ADSNotebookCellExecution implements vscode.NotebookCellExecution {
 		const editor = this._extHostNotebookDocumentsAndEditors.getEditor(URI.from(this._cell.notebook.uri).toString());
 		const outputItems = append ? output.items.concat(...asArray(items)) : asArray(items);
 		await editor.edit(builder => {
-			const adsOutput = VSCodeContentManager.convertToADSCellOutput({ id: output.id, items: outputItems }, undefined, 'execute_result_update');
+			const adsOutput = VSCodeContentManager.convertToADSCellOutput({ id: output.id, items: outputItems }, undefined);
 			builder.updateCellOutputItems(this._cell.index, { outputs: adsOutput });
 		});
 	}

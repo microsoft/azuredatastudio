@@ -5181,8 +5181,7 @@ declare module 'azdata' {
 			| 'display_data'
 			| 'stream'
 			| 'error'
-			| 'update_display_data'
-			| 'execute_result_update';
+			| 'update_display_data';
 
 		export type Output = IDisplayData | IUpdateDisplayData | IExecuteResult | IErrorResult | IStreamResult;
 
