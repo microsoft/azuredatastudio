@@ -844,7 +844,7 @@ describe('Project: sdk style project content operations', function (): void {
 
 		// Files and folders
 		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(3);
-		should(project.files.filter(f => f.type === EntryType.File).length).equal(17);
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(13);
 
 		// SqlCmdVariables
 		should(Object.keys(project.sqlCmdVariables).length).equal(2);
@@ -1056,7 +1056,7 @@ describe('Project: sdk style project content operations', function (): void {
 
 		const project: Project = await Project.openProject(projFilePath);
 
-		should(project.files.filter(f => f.type === EntryType.File).length).equal(17);
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(13);
 		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(3);
 
 		// try to exclude a glob included folder
@@ -1064,7 +1064,7 @@ describe('Project: sdk style project content operations', function (): void {
 
 		// verify folder and contents are excluded
 		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(1);
-		should(project.files.filter(f => f.type === EntryType.File).length).equal(9);
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(6);
 		should(project.files.find(f => f.relativePath === 'folder1\\')).equal(undefined);
 
 		// verify sqlproj has glob exclude for folder, but not for files and inner folder
@@ -1082,7 +1082,7 @@ describe('Project: sdk style project content operations', function (): void {
 
 		const project: Project = await Project.openProject(projFilePath);
 
-		should(project.files.filter(f => f.type === EntryType.File).length).equal(17);
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(13);
 		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(3);
 
 		// try to exclude a glob included folder
@@ -1090,7 +1090,7 @@ describe('Project: sdk style project content operations', function (): void {
 
 		// verify folder and contents are excluded
 		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(2);
-		should(project.files.filter(f => f.type === EntryType.File).length).equal(15);
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(11);
 		should(project.files.find(f => f.relativePath === 'folder1\\nestedFolder\\')).equal(undefined);
 
 		// verify sqlproj has glob exclude for folder, but not for files
@@ -1229,6 +1229,96 @@ describe('Project: sdk style project content operations', function (): void {
 		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(4);
 		should(project.files.find(f => f.relativePath === 'folder3\\')!).not.equal(undefined, 'folder3\\ should be loaded');
 		should(project.files.find(f => f.relativePath === 'folder3\\innerFolder\\')!).not.equal(undefined, 'folder3\\innerFolder\\ should be loaded');
+	});
+
+	it('Should handle deleting empty folders', async function (): Promise<void> {
+		const testFolderPath = await testUtils.generateTestFolderPath();
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newSdkStyleProjectSdkNodeBaseline, testFolderPath);
+
+		const project: Project = await Project.openProject(projFilePath);
+
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(0);
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(0);
+
+		// try to delete an explicitly included folder  in sqlproj
+		await project.addFolderItem('folder1');
+
+		// verify folder and contents are excluded
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(1);
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(0);
+		should(project.files.find(f => f.relativePath === 'folder1\\')).not.equal(undefined, 'folder1 should have been added');
+
+		// verify entry was added for this empty folder in the sqlproj
+		let projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText.includes('<Folder Include="folder1\\" />')).equal(true, projFileText);
+
+		// delete the empty folder
+		await project.deleteFileFolder(project.files.find(f => f.relativePath === 'folder1\\')!);
+
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(0);
+
+		// verify the folder entry was removed from the sqlproj and a Build Remove was not added
+		projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText.includes('<Folder Include="folder1\\" />')).equal(false, projFileText);
+		should(projFileText.includes('<Build Remove="folder1\\**" />')).equal(false, projFileText);
+	});
+
+	it('Should handle deleting not empty folders', async function (): Promise<void> {
+		const testFolderPath = await testUtils.generateTestFolderPath();
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectBaseline, testFolderPath);
+		await testUtils.createDummyFileStructureWithPrePostDeployScripts(false, undefined, path.dirname(projFilePath));
+
+		const project: Project = await Project.openProject(projFilePath);
+
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(13);
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(3);
+
+		// delete a folder with contents
+		await project.deleteFileFolder(project.files.find(f => f.relativePath === 'folder2\\')!);
+
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(8);
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(2);
+
+		// verify the folder entry was removed from the sqlproj and a Build Remove was not added
+		const projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText.includes('<Build Remove="folder2\\**" />')).equal(false, projFileText);
+	});
+
+	it('Should handle deleting explicitly included folders', async function (): Promise<void> {
+		const testFolderPath = await testUtils.generateTestFolderPath();
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectWithFilesSpecifiedBaseline, testFolderPath);
+		await testUtils.createDummyFileStructureWithPrePostDeployScripts(false, undefined, path.dirname(projFilePath));
+
+		const project: Project = await Project.openProject(projFilePath);
+
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(13);
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(3);
+		should(project.files.find(f => f.relativePath === 'folder1\\')!).not.equal(undefined);
+		should(project.files.find(f => f.relativePath === 'folder2\\')!).not.equal(undefined);
+
+		// try to delete an explicitly included folder in sqlproj
+		await project.deleteFileFolder(project.files.find(f => f.relativePath === 'folder2\\')!);
+
+		// verify folder and contents are excluded
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(2);
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(8);
+		should(project.files.find(f => f.relativePath === 'folder2\\')).equal(undefined);
+
+		// try to delete an explicitly included folder with trailing \ in sqlproj
+		await project.deleteFileFolder(project.files.find(f => f.relativePath === 'folder1\\')!);
+
+		// // verify folder and contents are excluded
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(0);
+		// should(project.files.filter(f => f.type === EntryType.File).length).equal(1);
+		should(project.files.find(f => f.relativePath === 'folder1\\')).equal(undefined);
+
+		// make sure both folders are removed from sqlproj and remove entry is added
+		const projFileText = (await fs.readFile(projFilePath)).toString();
+		// should(projFileText.includes('<Folder Include="folder1" />')).equal(false, projFileText);
+		should(projFileText.includes('<Folder Include="folder2\\" />')).equal(false, projFileText);
+
+		should(projFileText.includes('<Build Remove="folder1\\**" />')).equal(false, projFileText);
+		should(projFileText.includes('<Build Remove="folder2\\**" />')).equal(false, projFileText);
 	});
 });
 
