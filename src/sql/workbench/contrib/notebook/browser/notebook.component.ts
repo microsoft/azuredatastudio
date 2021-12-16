@@ -57,6 +57,7 @@ import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Emitter } from 'vs/base/common/event';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
+import { RedoCommand, UndoCommand } from 'vs/editor/browser/editorExtensions';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -132,6 +133,18 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 					this._model.undo();
 				}
 			}
+		}));
+		this._register(RedoCommand.addImplementation(105, 'notebook-cells-undo-redo', () => {
+			if (this._model) {
+				this._model.redo();
+			}
+			return false;
+		}));
+		this._register(UndoCommand.addImplementation(105, 'notebook-cells-undo-redo', () => {
+			if (this._model) {
+				this._model.undo();
+			}
+			return false;
 		}));
 	}
 
