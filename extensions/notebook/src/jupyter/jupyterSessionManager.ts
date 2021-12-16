@@ -306,17 +306,25 @@ export class JupyterSession implements nb.ISession {
 					// See if the controller creds have been saved already, otherwise fall back to using
 					// SQL creds as a default
 					const credentialProvider = await credentials.getProvider('notebook.bdc.password');
+					console.log('got mock provider');
 					const usernameKey = `notebook.bdc.username::${connectionProfile.id}`;
 					const savedUsername = ExtensionContextHelper.extensionContext.globalState.get<string>(usernameKey) || connectionProfile.userName;
 					const connectionCreds = await connection.getCredentials(connectionProfile.id);
+					console.log('got connection creds');
+					console.log(connectionCreds);
 					const savedPassword = (await credentialProvider.readCredential(connectionProfile.id)).password || connectionCreds.password;
+					console.log('got saved password');
+					console.log(savedPassword);
 					clusterController = await getClusterController(controllerEndpoint.endpoint, 'basic', savedUsername, savedPassword);
+					console.log('got controller');
 					// Now that we know that the username/password are valid store them for use later on with the same connection
 					await credentialProvider.saveCredential(connectionProfile.id, clusterController.password);
+					console.log('saved credential');
 					await ExtensionContextHelper.extensionContext.globalState.update(usernameKey, clusterController.username);
 					knoxPassword = clusterController.password;
 					try {
 						knoxUsername = await clusterController.getKnoxUsername(clusterController.username);
+						console.log('git knox username');
 					} catch (err) {
 						knoxUsername = clusterController.username;
 						console.log(`Unexpected error getting Knox username for Spark kernel: ${err}`);
@@ -341,6 +349,7 @@ export class JupyterSession implements nb.ISession {
 				Logger.log(`Parsed knox host and port ${JSON.stringify(gatewayHostAndPort)}`);
 				connectionProfile.options[KNOX_ENDPOINT_SERVER] = gatewayHostAndPort.host;
 				connectionProfile.options[KNOX_ENDPOINT_PORT] = gatewayHostAndPort.port;
+				console.log('host and port set');
 
 			}
 			else {

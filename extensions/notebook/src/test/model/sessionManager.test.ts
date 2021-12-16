@@ -12,7 +12,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as bdc from 'bdc';
 import * as vscode from 'vscode';
-import { nb, IConnectionProfile, connection, ConnectionOptionSpecialType, ServerInfo } from 'azdata';
+import { nb, IConnectionProfile, connection, ConnectionOptionSpecialType, ServerInfo, credentials, CredentialProvider } from 'azdata';
 import { SessionManager, Session, Kernel } from '@jupyterlab/services';
 import 'mocha';
 import { JupyterSessionManager, JupyterSession } from '../../jupyter/jupyterSessionManager';
@@ -23,7 +23,7 @@ import { ExtensionContextHelper } from '../../common/extensionContextHelper';
 import { AppContext } from '../../common/appContext';
 import uuid = require('uuid');
 
-export class TestClusterController implements bdc.IClusterController {
+class TestClusterController implements bdc.IClusterController {
 	getClusterConfig(): Promise<any> {
 		return Promise.resolve({});
 	}
@@ -274,8 +274,8 @@ describe('Jupyter Session', function (): void {
 		kernelMock.setup(k => k.name).returns(() => 'spark');
 		kernelMock.setup(m => m.requestExecute(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => futureMock.object);
 		mockJupyterSession.setup(s => s.kernel).returns(() => kernelMock.object);
-		let credentials = { [ConnectionOptionSpecialType.password]: 'password' };
-		sinon.stub(connection, 'getCredentials').returns(Promise.resolve(credentials));
+		let creds = { [ConnectionOptionSpecialType.password]: 'password' };
+		sinon.stub(connection, 'getCredentials').returns(Promise.resolve(creds));
 
 		// Set up connection info to big data cluster
 		const mockServerInfo: ServerInfo = {
@@ -324,7 +324,10 @@ describe('Jupyter Session', function (): void {
 		sinon.stub(connection, 'getServerInfo').returns(Promise.resolve(mockServerInfo));
 		sinon.stub(utils, 'getClusterEndpoints').returns([mockGatewayEndpoint, mockControllerEndpoint]);
 		sinon.stub(utils, 'getHostAndPortFromEndpoint').returns(mockHostAndIp);
-
+		let mockProvider: TypeMoq.IMock<CredentialProvider> = TypeMoq.Mock.ofType<CredentialProvider>();
+		mockProvider.setup(p => p.saveCredential(TypeMoq.It.isAnyString(), TypeMoq.It.isAnyString())).returns(() => Promise.resolve(true))
+		mockProvider.setup(p => p.readCredential(TypeMoq.It.isAnyString())).returns(() => Promise.resolve({credentialId: 'test', password: 'password'}));
+		sinon.stub(credentials, 'getProvider').returns(Promise.resolve(mockProvider.object));
 		await session.configureConnection(connectionProfile);
 		should(connectionProfile.options['host']).equal(mockHostAndIp.host);
 		should(connectionProfile.options['knoxport']).equal(mockHostAndIp.port);
