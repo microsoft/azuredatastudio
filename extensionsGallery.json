@@ -1352,14 +1352,14 @@
 					},
 					"versions": [
 						{
-							"version": "2021.8.2",
-							"lastUpdated": "8/25/2021",
+							"version": "2021.10.2",
+							"lastUpdated": "12/15/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/powershell/ms-vscode.PowerShell-2021.8.2.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/powershell/ms-vscode.PowerShell-2021.10.2.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -1385,7 +1385,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": "*"
+									"value": ">=1.56.0"
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
@@ -3967,14 +3967,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.3.0",
-							"lastUpdated": "01/01/2021",
+							"version": "0.4.1",
+							"lastUpdated": "12/13/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://github.com/pacoweb/extraSqlScriptAs/releases/tag/0.3.0"
+									"source": "https://github.com/pacoweb/extraSqlScriptAs/releases/tag/0.4.1"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
