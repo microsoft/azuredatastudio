@@ -47,6 +47,7 @@ import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/file
 import { IEditorOverrideService, ContributedEditorPriority } from 'vs/workbench/services/editor/common/editorOverrideService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ILogService } from 'vs/platform/log/common/log';
+import { QueryResultsToFileAction, QueryResultsToGridAction } from 'sql/workbench/contrib/query/browser/queryResultsDisplayStatus';
 
 export const QueryEditorVisibleCondition = ContextKeyExpr.has(queryContext.queryEditorVisibleId);
 export const ResultsGridFocusCondition = ContextKeyExpr.and(ContextKeyExpr.has(queryContext.resultsVisibleId), ContextKeyExpr.has(queryContext.resultsGridFocussedId));
@@ -225,6 +226,25 @@ actionRegistry.registerWorkbenchAction(
 		ChangeFlavorAction.LABEL
 	),
 	'Change Language Flavor'
+);
+
+// Register Send Results To File Action
+actionRegistry.registerWorkbenchAction(
+	SyncActionDescriptor.create(
+		QueryResultsToFileAction,
+		QueryResultsToFileAction.ID,
+		QueryResultsToFileAction.LABEL
+	),
+	'Query Results to File'
+);
+
+actionRegistry.registerWorkbenchAction(
+	SyncActionDescriptor.create(
+		QueryResultsToGridAction,
+		QueryResultsToGridAction.ID,
+		QueryResultsToGridAction.LABEL
+	),
+	'Query Results to Grid'
 );
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
