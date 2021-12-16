@@ -603,3 +603,26 @@ export function getFoldersToFile(startFolder: string, endFile: string): string[]
 
 	return folders;
 }
+
+/**
+ * Gets the folders between the startFolder and endFolder
+ * @param startFolder
+ * @param endFolder
+ * @returns array of folders between startFolder and endFolder
+ */
+export function getFoldersAlongPath(startFolder: string, endFolder: string): string[] {
+	let folders: string[] = [];
+
+	const relativePath = convertSlashesForSqlProj(endFolder.substring(startFolder.length));
+	const pathSegments = trimChars(relativePath, ' \\').split(constants.SqlProjPathSeparator);
+	let folderPath = convertSlashesForSqlProj(startFolder) + constants.SqlProjPathSeparator;
+
+	for (let segment of pathSegments) {
+		if (segment) {
+			folderPath += segment + constants.SqlProjPathSeparator;
+			folders.push(getPlatformSafeFileEntryPath(folderPath));
+		}
+	}
+
+	return folders;
+}
