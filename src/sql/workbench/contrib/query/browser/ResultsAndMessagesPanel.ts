@@ -25,8 +25,6 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { Progress } from 'vs/platform/progress/common/progress';
 import { CancellationToken } from 'vs/base/common/cancellation';
 
-
-
 export class ResultsAndMessagesPanel extends MessagePanel {
 	private tables: Array<Table<any>> = [];
 	private runner: QueryRunner;
@@ -95,6 +93,9 @@ export class ResultsAndMessagesPanel extends MessagePanel {
 			if (m.includes('rows affected') || m.includes('row affected')) {
 				return '\r\n' + m + '\r\n';
 			}
+			else if (m.includes('Total execution time:')) {
+				return '\r\n' + m;
+			}
 
 			return m;
 		}).join('\r\n');
@@ -114,7 +115,7 @@ export class ResultsAndMessagesPanel extends MessagePanel {
 		// Merges query result set before respective '# row(s) affected' message
 		while (extractedMessages.length > 0 && this.formattedQueryResults.length > 0) {
 			if (extractedMessages[0]?.includes('rows affected') || extractedMessages[0]?.includes('row affected')) {
-				content.push(this.formattedQueryResults.shift());
+				content.push('\r\n' + this.formattedQueryResults.shift());
 				content.push(extractedMessages.shift());
 			}
 			else {
