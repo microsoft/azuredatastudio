@@ -60,7 +60,7 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 import { RedoCommand, UndoCommand } from 'vs/editor/browser/editorExtensions';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
-
+const PRIORITY = 105;
 @Component({
 	selector: NOTEBOOK_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('./notebook.component.html'))
@@ -134,13 +134,13 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				}
 			}
 		}));
-		this._register(RedoCommand.addImplementation(105, 'notebook-cells-undo-redo', () => {
+		this._register(RedoCommand.addImplementation(PRIORITY, 'notebook-cells-undo-redo', () => {
 			if (this._model) {
 				this._model.redo();
 			}
 			return false;
 		}));
-		this._register(UndoCommand.addImplementation(105, 'notebook-cells-undo-redo', () => {
+		this._register(UndoCommand.addImplementation(PRIORITY, 'notebook-cells-undo-redo', () => {
 			if (this._model) {
 				this._model.undo();
 			}
