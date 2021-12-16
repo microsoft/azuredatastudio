@@ -58,7 +58,7 @@ export class NotebookEditorEdit {
 
 	replace(location: number | CellRange, value: Partial<azdata.nb.ICellContents>): void {
 		let range: CellRange = this.getAsRange(location);
-		this._pushEdit(NotebookEditOperationType.ReplaceCells, range, value, false);
+		this._pushEdit(NotebookEditOperationType.ReplaceCells, range, value);
 	}
 
 	private getAsRange(location: number | CellRange): CellRange {
@@ -93,7 +93,7 @@ export class NotebookEditorEdit {
 				value.metadata.tags.push(HideInputTag);
 			}
 		}
-		this._pushEdit(NotebookEditOperationType.InsertCell, new CellRange(index, index), value, true);
+		this._pushEdit(NotebookEditOperationType.InsertCell, new CellRange(index, index), value);
 	}
 
 	deleteCell(index: number): void {
@@ -108,24 +108,23 @@ export class NotebookEditorEdit {
 			throw new Error('Unrecognized index');
 		}
 
-		this._pushEdit(NotebookEditOperationType.DeleteCell, range, null, true);
+		this._pushEdit(NotebookEditOperationType.DeleteCell, range, null);
 	}
 
 	updateCell(index: number, updatedContent: Partial<azdata.nb.ICellContents>, append: boolean): void {
-		this._pushEdit(NotebookEditOperationType.UpdateCell, new CellRange(index, index + 1), updatedContent, false, append);
+		this._pushEdit(NotebookEditOperationType.UpdateCell, new CellRange(index, index + 1), updatedContent, append);
 	}
 
 	updateCellOutput(cellIndex: number, updatedContent: Partial<azdata.nb.ICellContents>, append: boolean): void {
-		this._pushEdit(NotebookEditOperationType.UpdateCellOutput, new CellRange(cellIndex, cellIndex + 1), updatedContent, false, append);
+		this._pushEdit(NotebookEditOperationType.UpdateCellOutput, new CellRange(cellIndex, cellIndex + 1), updatedContent, append);
 	}
 
-	private _pushEdit(type: NotebookEditOperationType, range: azdata.nb.CellRange, cell: Partial<azdata.nb.ICellContents>, forceMoveMarkers: boolean, append?: boolean): void {
+	private _pushEdit(type: NotebookEditOperationType, range: azdata.nb.CellRange, cell: Partial<azdata.nb.ICellContents>, append?: boolean): void {
 		let validRange = this._document.validateCellRange(range);
 		this._collectedEdits.push({
 			type: type,
 			range: validRange,
 			cell: cell,
-			forceMoveMarkers: forceMoveMarkers,
 			append: append
 		});
 	}
@@ -210,7 +209,7 @@ export class ExtHostNotebookEditor implements azdata.nb.NotebookEditor, IDisposa
 		}
 
 		// check that the edits are not overlapping (i.e. illegal)
-		let editRanges = editData.edits.filter(edit => edit.range).map(edit => edit.range);
+		let editRanges = editData.edits.map(edit => edit.range);
 
 		// sort ascending (by end and then by start)
 		editRanges.sort((a, b) => {
@@ -237,7 +236,7 @@ export class ExtHostNotebookEditor implements azdata.nb.NotebookEditor, IDisposa
 				type: edit.type,
 				range: toICellRange(edit.range),
 				cell: edit.cell,
-				forceMoveMarkers: edit.forceMoveMarkers
+				append: edit.append
 			};
 		});
 
