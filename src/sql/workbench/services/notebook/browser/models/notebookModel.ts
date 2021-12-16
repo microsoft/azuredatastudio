@@ -709,7 +709,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	public splitCells(cells: SplitCell[], firstCellOriginalSource: string | string[]): void {
 		cells[0].cell.source = firstCellOriginalSource;
 		cells[0].cell.isEditMode = true;
-		// Set newly created cell as active cell
 		this.updateActiveCell(cells[0].cell);
 		this._contentChangedEmitter.fire({
 			changeType: NotebookChangeType.CellsModified,
