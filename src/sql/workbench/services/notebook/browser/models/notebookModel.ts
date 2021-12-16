@@ -706,6 +706,22 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
+	public splitCells(cells: SplitCell[], firstCellOriginalSource: string | string[]): void {
+		cells[0].cell.source = firstCellOriginalSource;
+		cells[0].cell.isEditMode = true;
+		// Set newly created cell as active cell
+		this.updateActiveCell(cells[0].cell);
+		this._contentChangedEmitter.fire({
+			changeType: NotebookChangeType.CellsModified,
+			cells: [cells[0].cell],
+			cellIndex: 0
+		});
+
+		for (let i = 1; i < cells.length; i++) {
+			this.insertCell(cells[i].cell, undefined, false);
+		}
+	}
+
 	public insertCell(cell: ICellModel, index?: number, addToUndoStack: boolean = true): ICellModel | undefined {
 		if (this.inErrorState) {
 			return undefined;
