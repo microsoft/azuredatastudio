@@ -64,7 +64,6 @@ class MessagesView extends Disposable implements IPanelView {
 	}
 
 	private onDisplayStatusChanged() {
-		this.messagePanel.remove(this.container);
 		this.messagePanel.dispose();
 
 		if (ResultsDisplayStatus.mode === QueryResultsDisplayMode.ResultsToFile) {
