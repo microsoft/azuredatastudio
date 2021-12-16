@@ -60,6 +60,7 @@ export class QueryPlan2View implements IPanelView {
 	public clear() {
 		this.qps = [];
 		this.graphs = [];
+		DOM.clearNode(this.container);
 	}
 
 	public addGraphs(newGraphs: azdata.QueryPlanGraph[]) {
@@ -214,9 +215,7 @@ export class QueryPlan2 {
 			new PropertiesAction()
 		];
 		this.actionBar.push(actions, { icon: true, label: false });
-		
-		
-		
+
                 // new Operation("ClusteredUpdate",        SR.Keys.ClusteredUpdate,        SR.Keys.ClusteredUpdateDescription,         "Clustered_update_32x.ico"),
                 // new Operation("Collapse",               SR.Keys.Collapse,               SR.Keys.CollapseDescription,                "Collapse_32x.ico"),
                 // new Operation("ComputeScalar",          SR.Keys.ComputeScalar,          SR.Keys.ComputeScalarDescription,           "Compute_scalar_32x.ico"),
@@ -619,54 +618,50 @@ export class QueryPlan2 {
 		// };
 
 	}
+
 	private populate(node: azdata.QueryPlanGraphNode, diagramNode: any): any {
-		diagramNode.label = node.name;
-
-		let icon = this._iconMap[node.type];
-		if (icon) {
-			diagramNode.icon = icon;
-		}
-			e.stopImmediatePropagation();
-
-		});
-
-		this.dataView.setFilter((item) => {
-						return false;
-			}
-
-					parent = this.data[parent.parent];
-		}
-		return diagramNode;
-	}
-			return true;
-		});
-
-	private createPlanDiagram(container: HTMLDivElement): void {
-		let diagramRoot: any = new Object();
-		let graphRoot: azdata.QueryPlanGraphNode = this._graph.root;
-		this.populate(graphRoot, diagramRoot);
-
-		this.dataView.onRowCountChanged.subscribe((e, args) => {
+		// remove recursion in future iteration
+		// let diagram_stack = [new Object() ];
+		// let node_stack = [ this._graph.root ];
+		// while (node_stack.length > 0) {
 		// 	let node = node_stack.pop();
 		// 	let diagramNode: any = diagram_stack.pop();
 		// 	if (node) {
 		// 		diagramNode.label = node.name;
 		// 		if (node.edges) {
 		// 			for (let i = 0; i < node.edges.length; ++i) {
+		// 			}
 		// 		}
-			this._table.invalidateRows(args.rows);
-			this._table.render();
+		// 	}
+		// }
 
-		// 	label: 'abc',
-		// 	metrics: [
-		// 		{ name: 'CPU', value: '10 MS' },
-		// 		{ name: 'Memory', value: '5 MB' },
-		// 		{ name: 'Rows', value: '6' },
-		// 	],
-		// 	children: [ n1 ]
-		// };
-		];
+		diagramNode.label = node.name;
+		if (node.properties && node.properties.length > 0) {
+			diagramNode.metrics = node.properties.map(e => { return  { name: e.name, value: e.formattedValue.substring(0, 75) };  });
+		}
+
+		let icon = this._iconMap[node.type];
+		if (icon) {
+			diagramNode.icon = icon;
+		}
+
+		if (node.children) {
+			diagramNode.children = [];
+			for (let i = 0; i < node.children.length; ++i) {
+				diagramNode.children.push(this.populate(node.children[i], new Object()));
+			}
+		}
+		return diagramNode;
 	}
+
+	private createPlanDiagram(container: HTMLDivElement): void {
+		let diagramRoot: any = new Object();
+		let graphRoot: azdata.QueryPlanGraphNode = this._graph.root;
+		this.populate(graphRoot, diagramRoot);
+
+		new azdataGraph.azdataQueryPlan(container, diagramRoot);
+	}
+
 
 	public set graph(graph: azdata.QueryPlanGraph | undefined) {
 		this._graph = graph;
