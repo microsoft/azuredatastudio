@@ -883,7 +883,7 @@ describe('Project: sdk style project content operations', function (): void {
 		should(project.files.filter(f => f.relativePath === 'folder1\\').length).equal(1);
 	});
 
-	it('Should handle pre/post deploy scripts outside of project folder', async function (): Promise<void> {
+	it('Should handle pre/post/none deploy scripts outside of project folder', async function (): Promise<void> {
 		const testFolderPath = await testUtils.generateTestFolderPath();
 		const mainProjectPath =  path.join(testFolderPath, 'project');
 		const otherFolderPath = path.join(testFolderPath, 'other');
@@ -896,7 +896,7 @@ describe('Project: sdk style project content operations', function (): void {
 
 		const project: Project = await Project.openProject(projFilePath);
 
-		// Files and folders
+		// verify files, folders, pre/post/none deploy scripts were loaded correctly
 		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(2);
 		should(project.files.filter(f => f.type === EntryType.File).length).equal(18);
 		should(project.preDeployScripts.length).equal(1);

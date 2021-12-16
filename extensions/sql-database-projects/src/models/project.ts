@@ -228,7 +228,7 @@ export class Project implements ISqlProject {
 		}
 
 		if (this.isSdkStyleProject) {
-			// remove any pre/post deploy scripts that were specified in the sqlproj so they aren't counted twice
+			// remove any pre/post/none deploy scripts that were specified in the sqlproj so they aren't counted twice
 			this.preDeployScripts.forEach(f => filesSet.delete(f.relativePath));
 			this.postDeployScripts.forEach(f => filesSet.delete(f.relativePath));
 			this.noneDeployScripts.forEach(f => filesSet.delete(f.relativePath));
