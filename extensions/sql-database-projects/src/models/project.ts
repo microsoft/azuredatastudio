@@ -122,6 +122,7 @@ export class Project implements ISqlProject {
 		// check if this is an sdk style project https://docs.microsoft.com/en-us/dotnet/core/project-sdk/overview
 		this._isSdkStyleProject = this.CheckForSdkStyleProject();
 
+		// get pre and post deploy scripts specified in the sqlproj
 		this._preDeployScripts = this.readPreDeployScripts();
 		this._postDeployScripts = this.readPostDeployScripts();
 		this._noneDeployScripts = this.readNoneDeployScripts();
@@ -165,11 +166,6 @@ export class Project implements ISqlProject {
 				globFiles.forEach(f => {
 					filesSet.add(utils.convertSlashesForSqlProj(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(f))));
 				});
-
-				// remove any pre/post deploy scripts that were specified in the sqlproj so they aren't counted twice
-				this.preDeployScripts.forEach(f => filesSet.delete(f.relativePath));
-				this.postDeployScripts.forEach(f => filesSet.delete(f.relativePath));
-				this.noneDeployScripts.forEach(f => filesSet.delete(f.relativePath));
 			} catch (e) {
 				console.error(utils.getErrorMessage(e));
 			}
@@ -229,6 +225,13 @@ export class Project implements ISqlProject {
 				void window.showErrorMessage(constants.errorReadingProject(constants.BuildElements, this.projectFilePath));
 				console.error(utils.getErrorMessage(e));
 			}
+		}
+
+		if (this.isSdkStyleProject) {
+			// remove any pre/post/none deploy scripts that were specified in the sqlproj so they aren't counted twice
+			this.preDeployScripts.forEach(f => filesSet.delete(f.relativePath));
+			this.postDeployScripts.forEach(f => filesSet.delete(f.relativePath));
+			this.noneDeployScripts.forEach(f => filesSet.delete(f.relativePath));
 		}
 
 		// create a FileProjectEntry for each file

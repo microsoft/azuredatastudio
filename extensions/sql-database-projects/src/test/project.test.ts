@@ -883,6 +883,27 @@ describe('Project: sdk style project content operations', function (): void {
 		should(project.files.filter(f => f.relativePath === 'folder1\\').length).equal(1);
 	});
 
+	it('Should handle pre/post/none deploy scripts outside of project folder', async function (): Promise<void> {
+		const testFolderPath = await testUtils.generateTestFolderPath();
+		const mainProjectPath =  path.join(testFolderPath, 'project');
+		const otherFolderPath = path.join(testFolderPath, 'other');
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectWithGlobsSpecifiedBaseline, mainProjectPath);
+		await testUtils.createDummyFileStructure(false, undefined, path.dirname(projFilePath));
+
+		// create files outside of project folder that are included in the project file
+		await fs.mkdir(otherFolderPath);
+		await testUtils.createOtherDummyFiles(otherFolderPath);
+
+		const project: Project = await Project.openProject(projFilePath);
+
+		// verify files, folders, pre/post/none deploy scripts were loaded correctly
+		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(2);
+		should(project.files.filter(f => f.type === EntryType.File).length).equal(18);
+		should(project.preDeployScripts.length).equal(1);
+		should(project.postDeployScripts.length).equal(1);
+		should(project.noneDeployScripts.length).equal(1);
+	});
+
 	it('Should handle globbing patterns listed in sqlproj', async function (): Promise<void> {
 		const testFolderPath = await testUtils.generateTestFolderPath();
 		const mainProjectPath =  path.join(testFolderPath, 'project');
@@ -1058,6 +1079,7 @@ describe('Project: sdk style project content operations', function (): void {
 
 		should(project.files.filter(f => f.type === EntryType.File).length).equal(13);
 		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(3);
+		should(project.noneDeployScripts.length).equal(2);
 
 		// try to exclude a glob included folder
 		await project.exclude(project.files.find(f => f.relativePath === 'folder1\\')!);
@@ -1065,6 +1087,7 @@ describe('Project: sdk style project content operations', function (): void {
 		// verify folder and contents are excluded
 		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(1);
 		should(project.files.filter(f => f.type === EntryType.File).length).equal(6);
+		should(project.noneDeployScripts.length).equal(1, 'Script.PostDeployment2.sql should have been excluded');
 		should(project.files.find(f => f.relativePath === 'folder1\\')).equal(undefined);
 
 		// verify sqlproj has glob exclude for folder, but not for files and inner folder
