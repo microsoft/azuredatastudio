@@ -13,7 +13,7 @@ import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { WorkbenchDataTree } from 'vs/platform/list/browser/listService';
-import { isArray, isString } from 'vs/base/common/types';
+import { isString } from 'vs/base/common/types';
 import { Disposable, DisposableStore, dispose } from 'vs/base/common/lifecycle';
 import { $, Dimension, createStyleSheet, addStandardDisposableGenericMouseDownListner } from 'vs/base/browser/dom';
 import { resultsErrorColor } from 'sql/platform/theme/common/colors';
@@ -34,6 +34,9 @@ import { IDataTreeViewState } from 'vs/base/browser/ui/tree/dataTree';
 import { IRange } from 'vs/editor/common/core/range';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
+import ResultsDisplayStatus, { QueryResultsDisplayMode } from 'sql/workbench/contrib/query/common/queryResultsDeliveryStatus';
+import { MessagesPanelQueryRunnerCallbackHandler } from 'sql/workbench/contrib/query/browser/messagesPanelQueryRunnerCallbackHandler';
+import { IQueryRunnerCallbackHandler } from 'sql/workbench/contrib/query/browser/IQueryRunnerCallbackHandler';
 
 export interface IResultMessageIntern {
 	id?: string;
@@ -97,6 +100,7 @@ export class MessagePanel extends Disposable {
 	private currenturi: string;
 
 	private tree: WorkbenchDataTree<Model, IResultMessageIntern, FuzzyScore>;
+	private queryRunnerCallbackHandler: IQueryRunnerCallbackHandler;
 
 	constructor(
 		@IInstantiationService instantiationService: IInstantiationService,
@@ -135,6 +139,19 @@ export class MessagePanel extends Disposable {
 		this._register(attachListStyler(this.tree, this.themeService));
 		this._register(this.themeService.onDidColorThemeChange(this.applyStyles, this));
 		this.applyStyles(this.themeService.getColorTheme());
+
+		this.queryRunnerDisposables.add(ResultsDisplayStatus.onStatusChanged(this.onDisplayStatusChanged, this));
+
+		this.queryRunnerCallbackHandler = new MessagesPanelQueryRunnerCallbackHandler(this.model, this.tree, this._treeStates, this.currenturi);
+	}
+
+	private onDisplayStatusChanged() {
+		switch (ResultsDisplayStatus.mode) {
+			case QueryResultsDisplayMode.ResultsToGrid:
+				this.queryRunnerCallbackHandler = new MessagesPanelQueryRunnerCallbackHandler(this.model, this.tree, this._treeStates, this.currenturi);
+			default:
+				this.queryRunnerCallbackHandler = new MessagesPanelQueryRunnerCallbackHandler(this.model, this.tree, this._treeStates, this.currenturi);
+		}
 	}
 
 	private onContextMenu(event: ITreeContextMenuEvent<IResultMessageIntern>): void {
@@ -194,22 +211,17 @@ export class MessagePanel extends Disposable {
 		this.queryRunnerDisposables.clear();
 		this.reset();
 		this.currenturi = runner.uri;
-		this.queryRunnerDisposables.add(runner.onQueryStart(() => this.reset()));
+		this.queryRunnerDisposables.add(runner.onQueryStart(() => this.onQueryStart()));
 		this.queryRunnerDisposables.add(runner.onMessage(e => this.onMessage(e)));
 		this.onMessage(runner.messages, true);
 	}
 
+	private onQueryStart() {
+		this.queryRunnerCallbackHandler.onQueryStart();
+	}
+
 	protected onMessage(message: IQueryMessage | IQueryMessage[], setInput: boolean = false) {
-		if (isArray(message)) {
-			this.model.messages.push(...message);
-		} else {
-			this.model.messages.push(message);
-		}
-		if (setInput) {
-			this.tree.setInput(this.model, this._treeStates.get(this.currenturi));
-		} else {
-			this.tree.updateChildren();
-		}
+		this.queryRunnerCallbackHandler.onMessage(message, setInput);
 	}
 
 	private applyStyles(theme: IColorTheme): void {
@@ -226,9 +238,7 @@ export class MessagePanel extends Disposable {
 	}
 
 	private reset() {
-		this.model.messages = [];
-		this.model.totalExecuteMessage = undefined;
-		this.tree.updateChildren();
+		this.queryRunnerCallbackHandler.reset();
 	}
 
 	public clear() {

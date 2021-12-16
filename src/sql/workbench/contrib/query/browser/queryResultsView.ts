@@ -25,20 +25,16 @@ import { URI } from 'vs/base/common/uri';
 import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { ILogService } from 'vs/platform/log/common/log';
-import { ResultsAndMessagesPanel } from 'sql/workbench/contrib/query/browser/ResultsAndMessagesPanel';
 import ResultsDisplayStatus, { QueryResultsDisplayMode } from 'sql/workbench/contrib/query/common/queryResultsDeliveryStatus';
 
 class MessagesView extends Disposable implements IPanelView {
 	private messagePanel: MessagePanel;
 	private container = document.createElement('div');
-	private disposableStore = this._register(new DisposableStore());
 
 	constructor(private instantiationService: IInstantiationService) {
 		super();
 		this.messagePanel = this._register(this.instantiationService.createInstance(MessagePanel));
 		this.messagePanel.render(this.container);
-
-		this.disposableStore.add(ResultsDisplayStatus.onStatusChanged(this.onDisplayStatusChanged, this));
 	}
 
 	render(container: HTMLElement): void {
@@ -61,19 +57,6 @@ class MessagesView extends Disposable implements IPanelView {
 
 	public set queryRunner(runner: QueryRunner) {
 		this.messagePanel.queryRunner = runner;
-	}
-
-	private onDisplayStatusChanged() {
-		this.messagePanel.dispose();
-
-		if (ResultsDisplayStatus.mode === QueryResultsDisplayMode.ResultsToFile) {
-			this.messagePanel = this._register(this.instantiationService.createInstance(ResultsAndMessagesPanel));
-		}
-		else {
-			this.messagePanel = this._register(this.instantiationService.createInstance(MessagePanel));
-		}
-
-		this.messagePanel.render(this.container);
 	}
 }
 
