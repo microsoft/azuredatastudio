@@ -12,7 +12,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as bdc from 'bdc';
 import * as vscode from 'vscode';
-import { nb, IConnectionProfile, connection, ConnectionOptionSpecialType, ServerInfo, credentials, CredentialProvider } from 'azdata';
+import { nb, IConnectionProfile, connection, ConnectionOptionSpecialType, ServerInfo } from 'azdata';
 import { SessionManager, Session, Kernel } from '@jupyterlab/services';
 import 'mocha';
 import { JupyterSessionManager, JupyterSession } from '../../jupyter/jupyterSessionManager';
@@ -254,83 +254,82 @@ describe('Jupyter Session', function (): void {
 	});
 
 	it('should configure connection correctly for MSSQL and SqlLogin auth type', async function (): Promise<void> {
-		let connectionProfile: IConnectionProfile = {
-			authenticationType: '',
-			connectionName: '',
-			databaseName: '',
-			id: 'id',
-			providerName: 'MSSQL',
-			options: {
-				authenticationType: 'SqlLogin',
-			},
-			password: '',
-			savePassword: false,
-			saveProfile: false,
-			serverName: '',
-			userName: ''
-		};
-		let futureMock = TypeMoq.Mock.ofType(FutureStub);
-		let kernelMock = TypeMoq.Mock.ofType(KernelStub);
-		kernelMock.setup(k => k.name).returns(() => 'spark');
-		kernelMock.setup(m => m.requestExecute(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => futureMock.object);
-		mockJupyterSession.setup(s => s.kernel).returns(() => kernelMock.object);
-		let creds = { [ConnectionOptionSpecialType.password]: 'password' };
-		sinon.stub(connection, 'getCredentials').returns(Promise.resolve(creds));
+		const isLinux = os.platform() === 'linux';
+		if (!isLinux) {
+			let connectionProfile: IConnectionProfile = {
+				authenticationType: '',
+				connectionName: '',
+				databaseName: '',
+				id: 'id',
+				providerName: 'MSSQL',
+				options: {
+					authenticationType: 'SqlLogin',
+				},
+				password: '',
+				savePassword: false,
+				saveProfile: false,
+				serverName: '',
+				userName: ''
+			};
+			let futureMock = TypeMoq.Mock.ofType(FutureStub);
+			let kernelMock = TypeMoq.Mock.ofType(KernelStub);
+			kernelMock.setup(k => k.name).returns(() => 'spark');
+			kernelMock.setup(m => m.requestExecute(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => futureMock.object);
+			mockJupyterSession.setup(s => s.kernel).returns(() => kernelMock.object);
+			let creds = { [ConnectionOptionSpecialType.password]: 'password' };
+			sinon.stub(connection, 'getCredentials').returns(Promise.resolve(creds));
 
-		// Set up connection info to big data cluster
-		const mockServerInfo: ServerInfo = {
-			serverMajorVersion: 0,
-			serverMinorVersion: 0,
-			serverReleaseVersion: 0,
-			engineEditionId: 0,
-			serverVersion: '',
-			serverLevel: '',
-			serverEdition: '',
-			isCloud: false,
-			azureVersion: 0,
-			osVersion: '',
-			cpuCount: 0,
-			physicalMemoryInMb: -1,
-			options: {
-				isBigDataCluster: true
-			}
-		};
-		const mockGatewayEndpoint: bdc.IEndpointModel = {
-			name: 'gateway',
-			description: '',
-			endpoint: '',
-			protocol: '',
-		};
-		const mockControllerEndpoint: bdc.IEndpointModel = {
-			name: 'controller',
-			description: '',
-			endpoint: '',
-			protocol: '',
-		};
-		const mockHostAndIp: utils.HostAndIp = {
-			host: '127.0.0.1',
-			port: '1337'
-		};
-		const mockClustercontroller = new TestClusterController();
-		mockClustercontroller.username = 'admin';
-		mockClustercontroller.password = uuid.v4();
-		let mockBdcExtension: TypeMoq.IMock<bdc.IExtension> = TypeMoq.Mock.ofType<bdc.IExtension>();
-		let mockExtension: TypeMoq.IMock<vscode.Extension<any>> = TypeMoq.Mock.ofType<vscode.Extension<any>>();
-		mockBdcExtension.setup(m => m.getClusterController(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => mockClustercontroller);
-		mockBdcExtension.setup((m: any) => m.then).returns(() => mockBdcExtension);
-		mockExtension.setup(m => m.activate()).returns(() => Promise.resolve(mockBdcExtension.object));
-		mockExtension.setup((m: any) => m.then).returns(() => mockExtension);
-		sinon.stub(vscode.extensions, 'getExtension').returns(mockExtension.object);
-		sinon.stub(connection, 'getServerInfo').returns(Promise.resolve(mockServerInfo));
-		sinon.stub(utils, 'getClusterEndpoints').returns([mockGatewayEndpoint, mockControllerEndpoint]);
-		sinon.stub(utils, 'getHostAndPortFromEndpoint').returns(mockHostAndIp);
-		let mockProvider: TypeMoq.IMock<CredentialProvider> = TypeMoq.Mock.ofType<CredentialProvider>();
-		mockProvider.setup(p => p.saveCredential(TypeMoq.It.isAnyString(), TypeMoq.It.isAnyString())).returns(() => Promise.resolve(true))
-		mockProvider.setup(p => p.readCredential(TypeMoq.It.isAnyString())).returns(() => Promise.resolve({credentialId: 'test', password: 'password'}));
-		sinon.stub(credentials, 'getProvider').returns(Promise.resolve(mockProvider.object));
-		await session.configureConnection(connectionProfile);
-		should(connectionProfile.options['host']).equal(mockHostAndIp.host);
-		should(connectionProfile.options['knoxport']).equal(mockHostAndIp.port);
+			// Set up connection info to big data cluster
+			const mockServerInfo: ServerInfo = {
+				serverMajorVersion: 0,
+				serverMinorVersion: 0,
+				serverReleaseVersion: 0,
+				engineEditionId: 0,
+				serverVersion: '',
+				serverLevel: '',
+				serverEdition: '',
+				isCloud: false,
+				azureVersion: 0,
+				osVersion: '',
+				cpuCount: 0,
+				physicalMemoryInMb: -1,
+				options: {
+					isBigDataCluster: true
+				}
+			};
+			const mockGatewayEndpoint: bdc.IEndpointModel = {
+				name: 'gateway',
+				description: '',
+				endpoint: '',
+				protocol: '',
+			};
+			const mockControllerEndpoint: bdc.IEndpointModel = {
+				name: 'controller',
+				description: '',
+				endpoint: '',
+				protocol: '',
+			};
+			const mockHostAndIp: utils.HostAndIp = {
+				host: '127.0.0.1',
+				port: '1337'
+			};
+			const mockClustercontroller = new TestClusterController();
+			mockClustercontroller.username = 'admin';
+			mockClustercontroller.password = uuid.v4();
+			let mockBdcExtension: TypeMoq.IMock<bdc.IExtension> = TypeMoq.Mock.ofType<bdc.IExtension>();
+			let mockExtension: TypeMoq.IMock<vscode.Extension<any>> = TypeMoq.Mock.ofType<vscode.Extension<any>>();
+			mockBdcExtension.setup(m => m.getClusterController(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => mockClustercontroller);
+			mockBdcExtension.setup((m: any) => m.then).returns(() => mockBdcExtension);
+			mockExtension.setup(m => m.activate()).returns(() => Promise.resolve(mockBdcExtension.object));
+			mockExtension.setup((m: any) => m.then).returns(() => mockExtension);
+			sinon.stub(vscode.extensions, 'getExtension').returns(mockExtension.object);
+			sinon.stub(connection, 'getServerInfo').returns(Promise.resolve(mockServerInfo));
+			sinon.stub(utils, 'getClusterEndpoints').returns([mockGatewayEndpoint, mockControllerEndpoint]);
+			sinon.stub(utils, 'getHostAndPortFromEndpoint').returns(mockHostAndIp);
+			await session.configureConnection(connectionProfile);
+			should(connectionProfile.options['host']).equal(mockHostAndIp.host);
+			should(connectionProfile.options['knoxport']).equal(mockHostAndIp.port);
+		}
 	});
 
 	it('configure connection should throw error if there is no connection to big data cluster', async function (): Promise<void> {
