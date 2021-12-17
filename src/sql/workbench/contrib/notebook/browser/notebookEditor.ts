@@ -84,7 +84,7 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 	}
 
 	private get _findDecorations(): NotebookFindDecorations {
-		return this.notebookInput.notebookFindModel.findDecorations;
+		return this.notebookInput?.notebookFindModel?.findDecorations;
 	}
 
 	public getPosition(): NotebookRange {
@@ -178,6 +178,10 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 	 */
 	public override focus(): void {
 		//no-op
+		// clear decorations if the active find is closed in a different editor.
+		if (this._findState && !this._findState.isRevealed) {
+			this._findDecorations?.clearDecorations();
+		}
 	}
 
 	/**
@@ -301,7 +305,7 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 			}
 		}
 
-		if (e.searchString || e.matchCase || e.wholeWord) {
+		if (e.searchString || e.matchCase || e.wholeWord || this._findState.searchString !== this.notebookFindModel.findExpression) {
 			this._findDecorations.clearDecorations();
 			// if the search scope changes remove the prev
 			if (this._notebookModel && this._findState.searchString) {

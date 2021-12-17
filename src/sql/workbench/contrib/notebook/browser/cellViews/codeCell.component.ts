@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { nb } from 'azdata';
-import { OnInit, Component, Input, Inject, forwardRef, ChangeDetectorRef, SimpleChange, OnChanges, HostListener, ViewChildren, QueryList } from '@angular/core';
+import { OnInit, Component, Input, Inject, forwardRef, ChangeDetectorRef, SimpleChange, OnChanges, HostListener, ViewChildren, QueryList, ViewChild } from '@angular/core';
 import { CellView } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
@@ -23,7 +23,7 @@ export const CODE_SELECTOR: string = 'code-cell-component';
 
 export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 	@ViewChildren(CodeComponent) private codeCells: QueryList<ICellEditorProvider>;
-	@ViewChildren(OutputAreaComponent) private outputCells: QueryList<ICellEditorProvider>;
+	@ViewChild(OutputAreaComponent) private outputAreaCell: OutputAreaComponent;
 	@Input() cellModel: ICellModel;
 	@Input() set model(value: NotebookModel) {
 		this._model = value;
@@ -81,10 +81,9 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 		if (this.codeCells) {
 			editors.push(...this.codeCells.toArray());
 		}
-		if (this.outputCells) {
-			let outputAreaCell = this.outputCells.first as OutputAreaComponent;
-			if (outputAreaCell) {
-				editors.push(...outputAreaCell.cellEditors);
+		if (this.outputAreaCell) {
+			if (this.outputAreaCell) {
+				editors.push(...this.outputAreaCell.cellEditors);
 			}
 		}
 		return editors;

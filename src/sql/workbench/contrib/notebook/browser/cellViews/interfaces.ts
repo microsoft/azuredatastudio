@@ -155,7 +155,7 @@ export abstract class CellView extends AngularDisposable implements OnDestroy, I
 				children = children.concat(this.getChildren(child));
 			}
 		} else {
-			return parent;
+			return [parent];
 		}
 		return children;
 	}

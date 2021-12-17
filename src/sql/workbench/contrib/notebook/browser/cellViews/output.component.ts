@@ -249,7 +249,7 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 						className: findHighlightClass,
 						separateWordSearch: true,
 					});
-					// if there is a grid
+					// if there are grids
 					let grids = document.querySelectorAll(GRID_CLASS);
 					grids?.forEach(g => {
 						markAllOccurances = new Mark(g);
@@ -286,20 +286,17 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 	}
 
 	protected override getHtmlElements(): any[] {
-		let hostElem = this.output?.nativeElement;
 		let children = [];
-		if (hostElem) {
-			let slickGrid = document.querySelectorAll(GRID_CLASS);
-			if (slickGrid.length > 0) {
-				slickGrid.forEach(grid => {
-					children.push(...grid.children);
-				});
-			} else {
-				// if the decoration range belongs to code cell output, output is a stream of data
-				// it's in <mime-output> tag of the first child's children.
-				let outputMessages = hostElem.querySelectorAll('mime-output');
-				children.push(...outputMessages);
-			}
+		let slickGrids = this.output.nativeElement.querySelectorAll(GRID_CLASS);
+		if (slickGrids.length > 0) {
+			slickGrids.forEach(grid => {
+				children.push(...grid.children);
+			});
+		} else {
+			// if the decoration range belongs to code cell output and output is a stream of data
+			// it's in <mime-output> tag of the output.
+			let outputMessages = this.output.nativeElement.querySelectorAll('mime-output');
+			children.push(...outputMessages);
 		}
 		return children;
 	}
