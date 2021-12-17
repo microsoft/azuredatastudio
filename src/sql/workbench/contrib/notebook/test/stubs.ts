@@ -5,7 +5,7 @@
 
 import { nb, IConnectionProfile } from 'azdata';
 import * as vsEvent from 'vs/base/common/event';
-import { INotebookModel, ICellModel, IClientSession, NotebookContentChange, ISingleNotebookEditOperation, MoveDirection, ViewMode } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { INotebookModel, ICellModel, IClientSession, NotebookContentChange, MoveDirection, ViewMode } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { INotebookFindModel } from 'sql/workbench/contrib/notebook/browser/models/notebookFindModel';
 import { NotebookChangeType, CellType } from 'sql/workbench/services/notebook/common/contracts';
 import { IExecuteManager, INotebookService, INotebookEditor, ILanguageMagic, IExecuteProvider, INavigationProvider, INotebookParams, INotebookSection, ICellEditorProvider, NotebookRange, ISerializationProvider, ISerializationManager } from 'sql/workbench/services/notebook/browser/notebookService';
@@ -23,6 +23,7 @@ import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/
 import { INotebookView, INotebookViewCell, INotebookViewMetadata, INotebookViews } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
+import { INotebookEditOperation } from 'sql/workbench/api/common/extHostNotebookEditor';
 
 export class NotebookModelStub implements INotebookModel {
 	constructor(private _languageInfo?: nb.ILanguageInfo, private _cells?: ICellModel[], private _testContents?: nb.INotebookContents) {
@@ -130,7 +131,7 @@ export class NotebookModelStub implements INotebookModel {
 	deleteCell(cellModel: ICellModel): void {
 		throw new Error('Method not implemented.');
 	}
-	pushEditOperations(edits: ISingleNotebookEditOperation[]): void {
+	pushEditOperations(edits: INotebookEditOperation[]): void {
 		throw new Error('Method not implemented.');
 	}
 	getApplicableConnectionProviderIds(kernelName: string): string[] {
@@ -524,7 +525,7 @@ export class NotebookComponentStub implements INotebookEditor {
 	isVisible(): boolean {
 		throw new Error('Method not implemented.');
 	}
-	executeEdits(edits: ISingleNotebookEditOperation[]): boolean {
+	executeEdits(edits: INotebookEditOperation[]): boolean {
 		throw new Error('Method not implemented.');
 	}
 	runCell(cell: ICellModel): Promise<boolean> {
@@ -720,7 +721,7 @@ export class NotebookEditorStub implements INotebookEditor {
 	isVisible(): boolean {
 		throw new Error('Method not implemented.');
 	}
-	executeEdits(edits: ISingleNotebookEditOperation[]): boolean {
+	executeEdits(edits: INotebookEditOperation[]): boolean {
 		throw new Error('Method not implemented.');
 	}
 	runCell(cell: ICellModel): Promise<boolean> {
