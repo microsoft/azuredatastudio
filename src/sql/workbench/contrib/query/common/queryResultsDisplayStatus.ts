@@ -11,13 +11,23 @@ export enum QueryResultsDisplayMode {
 	ResultsToFile,
 }
 
-class QueryResultsDisplayStatus extends Disposable {
+export class QueryResultsDisplayStatus extends Disposable {
+	public static instance: QueryResultsDisplayStatus = undefined;
+
 	private displayMode: QueryResultsDisplayMode;
 
 	private readonly _onStatusChanged = this._register(new Emitter<void>());
 	public readonly onStatusChanged: Event<void> = this._onStatusChanged.event;
 
-	constructor(resultsRenderMode: QueryResultsDisplayMode = QueryResultsDisplayMode.ResultsToGrid) {
+	public static getInstance() {
+		if (this.instance === undefined) {
+			this.instance = new QueryResultsDisplayStatus();
+		}
+
+		return this.instance;
+	}
+
+	private constructor(resultsRenderMode: QueryResultsDisplayMode = QueryResultsDisplayMode.ResultsToGrid) {
 		super();
 		this.displayMode = resultsRenderMode;
 	}
@@ -31,6 +41,3 @@ class QueryResultsDisplayStatus extends Disposable {
 		return this.displayMode;
 	}
 }
-
-const ResultsDisplayStatus = new QueryResultsDisplayStatus();
-export default ResultsDisplayStatus;

@@ -33,18 +33,18 @@ export class MessagesPanelQueryRunnerCallbackHandler implements IQueryRunnerCall
 	}
 
 	public onResultSet() {
-		// no-op
+		// intentionally made no-op
 	}
 
 	public updateResultSet() {
-		// no-op
+		// intentionally made no-op
 	}
 
-	public onMessage(message: IQueryMessage | IQueryMessage[], setInput: boolean = false) {
-		if (isArray(message)) {
-			this.model.messages.push(...message);
+	public onMessage(incomingMessage: IQueryMessage | IQueryMessage[], setInput: boolean = false) {
+		if (isArray(incomingMessage)) {
+			this.model.messages.push(...incomingMessage);
 		} else {
-			this.model.messages.push(message);
+			this.model.messages.push(incomingMessage);
 		}
 		if (setInput) {
 			this.tree.setInput(this.model, this.treeStates.get(this.currenturi));

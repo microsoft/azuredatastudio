@@ -25,16 +25,21 @@ import { URI } from 'vs/base/common/uri';
 import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { ILogService } from 'vs/platform/log/common/log';
-import ResultsDisplayStatus, { QueryResultsDisplayMode } from 'sql/workbench/contrib/query/common/queryResultsDeliveryStatus';
+import { QueryResultsDisplayStatus, QueryResultsDisplayMode } from 'sql/workbench/contrib/query/common/queryResultsDisplayStatus';
 
 class MessagesView extends Disposable implements IPanelView {
 	private messagePanel: MessagePanel;
 	private container = document.createElement('div');
+	private disposableStore = this._register(new DisposableStore);
+	private queryResultsDisplayStatus: QueryResultsDisplayStatus;
 
 	constructor(private instantiationService: IInstantiationService) {
 		super();
 		this.messagePanel = this._register(this.instantiationService.createInstance(MessagePanel));
 		this.messagePanel.render(this.container);
+
+		this.queryResultsDisplayStatus = QueryResultsDisplayStatus.getInstance();
+		this.disposableStore.add(this.queryResultsDisplayStatus.onStatusChanged(this.onDisplayStatusChanged, this));
 	}
 
 	render(container: HTMLElement): void {
@@ -57,6 +62,10 @@ class MessagesView extends Disposable implements IPanelView {
 
 	public set queryRunner(runner: QueryRunner) {
 		this.messagePanel.queryRunner = runner;
+	}
+
+	private onDisplayStatusChanged() {
+		this.messagePanel.changeQueryRunnerCallbackHandler(this.queryResultsDisplayStatus.mode);
 	}
 }
 
@@ -166,6 +175,7 @@ export class QueryResultsView extends Disposable {
 	private qpTab: QueryPlanTab;
 	private topOperationsTab: TopOperationsTab;
 	private dynamicModelViewTabs: QueryModelViewTab[] = [];
+	private queryResultsDisplayStatus: QueryResultsDisplayStatus;
 
 	private runnerDisposables = new DisposableStore();
 
@@ -193,6 +203,8 @@ export class QueryResultsView extends Disposable {
 				this.input.state.activeTab = e;
 			}
 		}));
+
+		this.queryResultsDisplayStatus = QueryResultsDisplayStatus.getInstance();
 	}
 
 	private hasResults(runner: QueryRunner): boolean {
@@ -384,7 +396,7 @@ export class QueryResultsView extends Disposable {
 
 	public showResults() {
 		// Don't show the results tab when results are being sent to a file
-		if (ResultsDisplayStatus.mode === QueryResultsDisplayMode.ResultsToFile) {
+		if (this.queryResultsDisplayStatus.mode === QueryResultsDisplayMode.ResultsToFile) {
 			return;
 		}
 

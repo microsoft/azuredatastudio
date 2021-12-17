@@ -3,12 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IQueryMessage } from 'sql/workbench/services/query/common/query';
+import { IQueryMessage, ResultSetSummary } from 'sql/workbench/services/query/common/query';
 
 export interface IQueryRunnerCallbackHandler {
 	onQueryStart();
-	onResultSet();
-	updateResultSet();
-	onMessage(message: IQueryMessage | IQueryMessage[], setInput: boolean);
+	onResultSet(resultSet: ResultSetSummary | ResultSetSummary[]);
+	updateResultSet(resultSet: ResultSetSummary | ResultSetSummary[]);
+	onMessage(incomingMessage: IQueryMessage | IQueryMessage[], setInput?: boolean);
 	reset();
 }
