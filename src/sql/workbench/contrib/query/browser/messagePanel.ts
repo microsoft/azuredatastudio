@@ -224,6 +224,10 @@ export class MessagePanel extends Disposable {
 
 	private onQueryStart() {
 		this.runnerCallbackHandler.onQueryStart();
+
+		this.model.messages = [];
+		this.model.totalExecuteMessage = undefined;
+		this.tree.updateChildren();
 	}
 
 	private onMessage(message: IQueryMessage | IQueryMessage[], setInput: boolean = false) {
