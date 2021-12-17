@@ -395,8 +395,8 @@ export class QueryResultsView extends Disposable {
 	}
 
 	public showResults() {
-		// Don't need to show the results tab when the user has chosen to send results to a file.
-		if (this.queryResultsDisplayStatus.mode === QueryResultsDisplayMode.ResultsToFile) {
+		// Don't need to show the results tab when the user has chosen to not send results to the grid.
+		if (this.queryResultsDisplayStatus.mode !== QueryResultsDisplayMode.ResultsToGrid) {
 			return;
 		}
 
