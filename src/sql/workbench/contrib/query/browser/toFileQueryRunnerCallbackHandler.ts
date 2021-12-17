@@ -5,7 +5,7 @@
 
 import { hyperLinkFormatter, textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
-import { IQueryRunnerCallbackHandler } from 'sql/workbench/contrib/query/browser/IQueryRunnerCallbackHandler';
+import { IQueryRunnerCallbackHandlerStrategy } from 'sql/workbench/contrib/query/browser/IQueryRunnerCallbackHandlerStrategy';
 import { IGridDataProvider } from 'sql/workbench/services/query/common/gridDataProvider';
 import { IQueryMessage, ResultSetSummary } from 'sql/workbench/services/query/common/query';
 import QueryRunner, { QueryGridDataProvider } from 'sql/workbench/services/query/common/queryRunner';
@@ -21,7 +21,7 @@ import { Progress } from 'vs/platform/progress/common/progress';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 
-export class ToFileQueryRunnerCallbackHandler implements IQueryRunnerCallbackHandler {
+export class ToFileQueryRunnerCallbackHandler implements IQueryRunnerCallbackHandlerStrategy {
 	private messages: Array<IQueryMessage> = [];
 	private formattedQueryResults: Array<string> = [];
 	private tables: Array<Table<any>> = [];

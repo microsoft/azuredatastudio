@@ -4,14 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IResultMessageIntern, Model } from 'sql/workbench/contrib/query/browser/messagePanel';
-import { IQueryRunnerCallbackHandler } from 'sql/workbench/contrib/query/browser/IQueryRunnerCallbackHandler';
+import { IQueryRunnerCallbackHandlerStrategy } from 'sql/workbench/contrib/query/browser/IQueryRunnerCallbackHandlerStrategy';
 import { IQueryMessage } from 'sql/workbench/services/query/common/query';
 import { IDataTreeViewState } from 'vs/base/browser/ui/tree/dataTree';
 import { FuzzyScore } from 'vs/base/common/filters';
 import { isArray } from 'vs/base/common/types';
 import { WorkbenchDataTree } from 'vs/platform/list/browser/listService';
 
-export class MessagesPanelQueryRunnerCallbackHandler implements IQueryRunnerCallbackHandler {
+export class MessagesPanelQueryRunnerCallbackHandler implements IQueryRunnerCallbackHandlerStrategy {
 	private model: Model;
 	private tree: WorkbenchDataTree<Model, IResultMessageIntern, FuzzyScore>;
 	private treeStates: Map<string, IDataTreeViewState>;

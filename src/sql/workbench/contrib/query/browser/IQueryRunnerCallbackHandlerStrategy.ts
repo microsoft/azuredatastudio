@@ -5,7 +5,7 @@
 
 import { IQueryMessage, ResultSetSummary } from 'sql/workbench/services/query/common/query';
 
-export interface IQueryRunnerCallbackHandler {
+export interface IQueryRunnerCallbackHandlerStrategy {
 	onQueryStart();
 	onResultSet(resultSet: ResultSetSummary | ResultSetSummary[]);
 	updateResultSet(resultSet: ResultSetSummary | ResultSetSummary[]);

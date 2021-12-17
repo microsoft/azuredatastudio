@@ -35,7 +35,7 @@ import { IRange } from 'vs/editor/common/core/range';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 import { MessagesPanelQueryRunnerCallbackHandler } from 'sql/workbench/contrib/query/browser/messagesPanelQueryRunnerCallbackHandler';
-import { IQueryRunnerCallbackHandler } from 'sql/workbench/contrib/query/browser/IQueryRunnerCallbackHandler';
+import { IQueryRunnerCallbackHandlerStrategy } from 'sql/workbench/contrib/query/browser/IQueryRunnerCallbackHandlerStrategy';
 import { QueryResultsDisplayMode } from 'sql/workbench/contrib/query/common/queryResultsDisplayStatus';
 import { ToFileQueryRunnerCallbackHandler } from 'sql/workbench/contrib/query/browser/toFileQueryRunnerCallbackHandler';
 
@@ -102,7 +102,7 @@ export class MessagePanel extends Disposable {
 
 	private tree: WorkbenchDataTree<Model, IResultMessageIntern, FuzzyScore>;
 	private runner: QueryRunner;
-	private runnerCallbackHandler: IQueryRunnerCallbackHandler;
+	private runnerCallbackHandler: IQueryRunnerCallbackHandlerStrategy;
 
 	constructor(
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
