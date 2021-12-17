@@ -1259,6 +1259,7 @@ describe('Project: sdk style project content operations', function (): void {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newSdkStyleProjectSdkNodeBaseline, testFolderPath);
 
 		const project: Project = await Project.openProject(projFilePath);
+		const beforeProjFileText = (await fs.readFile(projFilePath)).toString();
 
 		should(project.files.filter(f => f.type === EntryType.File).length).equal(0);
 		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(0);
@@ -1282,6 +1283,7 @@ describe('Project: sdk style project content operations', function (): void {
 
 		// verify the folder entry was removed from the sqlproj and a Build Remove was not added
 		projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText.trimEnd() === beforeProjFileText.trimEnd()).equal(true, 'The sqlproj should not have changed after deleting folder1');
 		should(projFileText.includes('<Folder Include="folder1\\" />')).equal(false, projFileText);
 		should(projFileText.includes('<Build Remove="folder1\\**" />')).equal(false, projFileText);
 	});
@@ -1292,6 +1294,7 @@ describe('Project: sdk style project content operations', function (): void {
 		await testUtils.createDummyFileStructureWithPrePostDeployScripts(false, undefined, path.dirname(projFilePath));
 
 		const project: Project = await Project.openProject(projFilePath);
+		const beforeProjFileText = (await fs.readFile(projFilePath)).toString();
 
 		should(project.files.filter(f => f.type === EntryType.File).length).equal(13);
 		should(project.files.filter(f => f.type === EntryType.Folder).length).equal(3);
@@ -1304,6 +1307,7 @@ describe('Project: sdk style project content operations', function (): void {
 
 		// verify the folder entry was removed from the sqlproj and a Build Remove was not added
 		const projFileText = (await fs.readFile(projFilePath)).toString();
+		should(projFileText.trimEnd() === beforeProjFileText.trimEnd()).equal(true, 'The sqlproj should not have changed after deleting folder2');
 		should(projFileText.includes('<Build Remove="folder2\\**" />')).equal(false, projFileText);
 	});
 
