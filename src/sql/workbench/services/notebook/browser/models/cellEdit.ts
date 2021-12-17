@@ -7,6 +7,7 @@ import { IResourceUndoRedoElement, UndoRedoElementType } from 'vs/platform/undoR
 import { ICellModel, MoveDirection } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel, SplitCell } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { deepClone } from 'vs/base/common/objects';
 import { localize } from 'vs/nls';
 
 export class MoveCellEdit implements IResourceUndoRedoElement {
@@ -35,8 +36,10 @@ export class SplitCellEdit implements IResourceUndoRedoElement {
 	label: string = localize('splitCellEdit', "Split Cell");
 	resource = this.model.notebookUri;
 	private readonly cellOperation = { cell_operation: 'split_cell' };
+	private firstCellOriginalSource: string[] | string;
 
 	constructor(private model: NotebookModel, private cells: SplitCell[]) {
+		this.firstCellOriginalSource = deepClone(cells[0].cell.source);
 	}
 
 	undo(): void {
@@ -45,7 +48,8 @@ export class SplitCellEdit implements IResourceUndoRedoElement {
 	}
 
 	redo(): void {
-		// no-op currently, will add support on next release
+		this.model.splitCells(this.cells, this.firstCellOriginalSource);
+		this.model.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.RedoCell, this.cellOperation);
 	}
 }
 
