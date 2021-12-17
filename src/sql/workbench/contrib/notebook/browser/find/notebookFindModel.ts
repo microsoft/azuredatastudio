@@ -579,7 +579,7 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 				switch (output.output_type) {
 					case 'stream':
 						let cellValFormatted = output as nb.IStreamResult;
-						findStartResults = this.search(cellValFormatted.text.toString().replace('\\n', ''), exp, matchCase, wholeWord, maxMatches - findResults.length);
+						findStartResults = this.search(cellValFormatted.text.toString(), exp, matchCase, wholeWord, maxMatches - findResults.length);
 						findStartResults?.forEach(start => {
 							let range = new NotebookRange(cell, i + 1, start, i + 1, start + exp.length, false, i);
 							findResults.push(range);
