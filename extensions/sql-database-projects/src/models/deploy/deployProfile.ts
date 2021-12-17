@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IDeploySettings } from '../IDeploySettings';
+import type * as azdataType from 'azdata';
 
 export enum AppSettingType {
 	None,
@@ -27,6 +28,15 @@ export interface ILocalDbSetting {
 	password: string,
 	dbName: string,
 	dockerBaseImage: string,
+	dockerBaseImageEula: string,
 	connectionRetryTimeout?: number,
 	profileName?: string
+}
+
+export interface DockerImageInfo {
+	name: string,
+	agreementInfo: AgreementInfo
+}
+export interface AgreementInfo {
+	link: azdataType.LinkArea;
 }

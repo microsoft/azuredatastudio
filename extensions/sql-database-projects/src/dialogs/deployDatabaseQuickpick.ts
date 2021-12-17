@@ -70,6 +70,50 @@ export async function launchDeployAppIntegrationQuickpick(project: Project): Pro
 	};
 }
 
+async function launchEulaQuickPick(baseImage: string): Promise<boolean> {
+	let eulaAccepted: boolean = false;
+	const baseImages = uiUtils.getDockerBaseImages();
+	const imageInfo = baseImages.find(x => x.name === baseImage);
+	const agreementInfo = imageInfo?.agreementInfo;
+	if (agreementInfo) {
+		const openEulaButton: vscode.QuickInputButton = {
+			iconPath: new vscode.ThemeIcon('link-external'),
+			tooltip: constants.openEulaString
+		};
+		const quickPick = vscode.window.createQuickPick();
+		quickPick.items = [{ label: constants.yesString },
+		{ label: constants.noString }];
+		quickPick.title = uiUtils.getAgreementDisplayText(agreementInfo);
+		quickPick.ignoreFocusOut = true;
+		quickPick.buttons = [openEulaButton];
+		const disposables: vscode.Disposable[] = [];
+		try {
+			const eulaAcceptedPromise = new Promise<boolean>((resolve) => {
+				disposables.push(
+					quickPick.onDidHide(() => {
+						resolve(false);
+					}),
+					quickPick.onDidTriggerButton(async () => {
+						await vscode.env.openExternal(vscode.Uri.parse(agreementInfo.link.url));
+					}),
+					quickPick.onDidChangeSelection((item) => {
+						resolve(item[0].label === constants.yesString);
+					}));
+			});
+
+			quickPick.show();
+			eulaAccepted = await eulaAcceptedPromise;
+			quickPick.hide();
+		}
+		finally {
+			disposables.forEach(d => d.dispose());
+		}
+
+		return eulaAccepted;
+	}
+	return false;
+}
+
 /**
  * Create flow for publishing a database to docker container using only VS Code-native APIs such as QuickPick
  */
@@ -120,8 +164,9 @@ export async function launchPublishToDockerContainerQuickpick(project: Project):
 		return undefined;
 	}
 
+	const baseImages = uiUtils.getDockerBaseImages();
 	const baseImage = await vscode.window.showQuickPick(
-		uiUtils.getDockerBaseImages(),
+		baseImages.map(x => x.name),
 		{ title: constants.selectBaseImage, ignoreFocusOut: true });
 
 	// Return when user hits escape
@@ -129,13 +174,21 @@ export async function launchPublishToDockerContainerQuickpick(project: Project):
 		return undefined;
 	}
 
+	const eulaAccepted = await launchEulaQuickPick(baseImage);
+	if (!eulaAccepted) {
+		return undefined;
+	}
+
+	const imageInfo = baseImages.find(x => x.name === baseImage);
+
 	localDbSetting = {
 		serverName: constants.defaultLocalServerName,
 		userName: constants.defaultLocalServerAdminName,
 		dbName: project.projectFileName,
 		password: password,
 		port: +portNumber,
-		dockerBaseImage: baseImage
+		dockerBaseImage: baseImage,
+		dockerBaseImageEula: imageInfo?.agreementInfo?.link?.url || ''
 	};
 
 	let deploySettings = await getPublishDatabaseSettings(project, false);

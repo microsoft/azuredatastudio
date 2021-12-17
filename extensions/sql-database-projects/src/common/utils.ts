@@ -580,6 +580,54 @@ export async function getFoldersInFolder(folderPath: string, ignoreBinObj?: bool
 }
 
 /**
+ * Gets the folders between the startFolder to the file
+ * @param startFolder
+ * @param endFile
+ * @returns array of folders between startFolder and endFile
+ */
+export function getFoldersToFile(startFolder: string, endFile: string): string[] {
+	let folders: string[] = [];
+
+	const endFolderPath = path.dirname(endFile);
+
+	const relativePath = convertSlashesForSqlProj(endFolderPath.substring(startFolder.length));
+	const pathSegments = trimChars(relativePath, ' \\').split(constants.SqlProjPathSeparator);
+	let folderPath = convertSlashesForSqlProj(startFolder) + constants.SqlProjPathSeparator;
+
+	for (let segment of pathSegments) {
+		if (segment) {
+			folderPath += segment + constants.SqlProjPathSeparator;
+			folders.push(getPlatformSafeFileEntryPath(folderPath));
+		}
+	}
+
+	return folders;
+}
+
+/**
+ * Gets the folders between the startFolder and endFolder
+ * @param startFolder
+ * @param endFolder
+ * @returns array of folders between startFolder and endFolder
+ */
+export function getFoldersAlongPath(startFolder: string, endFolder: string): string[] {
+	let folders: string[] = [];
+
+	const relativePath = convertSlashesForSqlProj(endFolder.substring(startFolder.length));
+	const pathSegments = trimChars(relativePath, ' \\').split(constants.SqlProjPathSeparator);
+	let folderPath = convertSlashesForSqlProj(startFolder) + constants.SqlProjPathSeparator;
+
+	for (let segment of pathSegments) {
+		if (segment) {
+			folderPath += segment + constants.SqlProjPathSeparator;
+			folders.push(getPlatformSafeFileEntryPath(folderPath));
+		}
+	}
+
+	return folders;
+}
+
+/**
  * Determines if provided value is a well-known database source and therefore is allowed to be sent in telemetry
  * @param value Value to check if it's a well-known database source
  * @returns Database source value if well-known, otherwise returns undefined
