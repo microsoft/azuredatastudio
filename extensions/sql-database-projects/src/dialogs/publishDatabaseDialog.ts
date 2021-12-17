@@ -1014,7 +1014,8 @@ export class PublishDatabaseDialog {
 		if (this.diagFileTextBox.value && path.dirname(this.diagFileTextBox.value)) {
 			return path.dirname(this.diagFileTextBox.value);
 		} else { // otherwise use the default sql project root directory
-			return utils.getRootPath();
+			let rootPath = utils.getWorkspaceFoldersPath()?.find(x => x.name === this.targetDatabaseName)?.uri.fsPath;
+			return rootPath ?? '';
 		}
 	}
 

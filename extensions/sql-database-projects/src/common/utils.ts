@@ -44,6 +44,13 @@ export function getRootPath(): string {
 }
 
 /**
+ * gets all workspace folders path
+ */
+export function getWorkspaceFoldersPath() {
+	return vscode.workspace.workspaceFolders;
+}
+
+/**
  * removes any leading portion shared between the two URIs from outerUri.
  * e.g. [@param innerUri: 'this\is'; @param outerUri: '\this\is\my\path'] => 'my\path' OR
  * e.g. [@param innerUri: 'this\was'; @param outerUri: '\this\is\my\path'] => '..\is\my\path'
