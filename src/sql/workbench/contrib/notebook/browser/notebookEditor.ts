@@ -178,10 +178,6 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 	 */
 	public override focus(): void {
 		//no-op
-		// clear decorations if the active find is closed in a different editor.
-		if (this._findState && !this._findState.isRevealed) {
-			this._findDecorations?.clearDecorations();
-		}
 	}
 
 	/**
@@ -305,7 +301,7 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 			}
 		}
 
-		if (e.searchString || e.matchCase || e.wholeWord || this._findState.searchString !== this.notebookFindModel.findExpression) {
+		if (e.searchString || e.matchCase || e.wholeWord) {
 			this._findDecorations.clearDecorations();
 			// if the search scope changes remove the prev
 			if (this._notebookModel && this._findState.searchString) {
