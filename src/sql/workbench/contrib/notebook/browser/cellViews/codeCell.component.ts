@@ -82,9 +82,7 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 			editors.push(...this.codeCells.toArray());
 		}
 		if (this.outputAreaCell) {
-			if (this.outputAreaCell) {
-				editors.push(...this.outputAreaCell.cellEditors);
-			}
+			editors.push(...this.outputAreaCell.cellEditors);
 		}
 		return editors;
 	}

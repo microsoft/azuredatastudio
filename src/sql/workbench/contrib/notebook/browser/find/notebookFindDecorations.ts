@@ -217,9 +217,6 @@ export class NotebookFindDecorations implements IDisposable {
 					let findMatchesOptions = NotebookFindDecorations._FIND_MATCH_NO_OVERVIEW_DECORATION;
 					// filter code cell find matches
 					findMatches = findMatches.filter(m => m.range.cell.cellType === 'code' && m.range.outputComponentIndex === -1);
-					/* findMatches = findMatches.filter((c, i, matches) => {
-						return matches.indexOf(matches.find(t => t.range.cell.cellGuid === c.range.cell.cellGuid && t.range.cell.cellType === 'code' && !t.range.isCodeOutput)) === i;
-					}); */
 					let newFindMatchesDecorations: IModelDeltaDecoration[] = new Array<IModelDeltaDecoration>(findMatches.length);
 					for (let i = 0, len = findMatches.length; i < len; i++) {
 						newFindMatchesDecorations[i] = {

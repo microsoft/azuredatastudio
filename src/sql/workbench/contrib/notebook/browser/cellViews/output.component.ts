@@ -7,7 +7,6 @@ import 'vs/css!./media/output';
 
 import { OnInit, Component, Input, Inject, ElementRef, ViewChild, SimpleChange, AfterViewInit, forwardRef, ChangeDetectorRef, ComponentRef, ComponentFactoryResolver } from '@angular/core';
 import * as Mark from 'mark.js';
-
 import { Event } from 'vs/base/common/event';
 import { nb } from 'azdata';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
