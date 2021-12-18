@@ -26,6 +26,9 @@ export class ToFileQueryRunnerCallbackHandler implements IQueryRunnerCallbackHan
 	private formattedQueryResults: Array<string> = [];
 	private tables: Array<Table<any>> = [];
 	private resultSetCount: number = 0;
+	private queryContainsError: boolean = false;
+	private closingMessageIncluded: boolean = false;
+	private generatedFileWithErrors: boolean = false;
 	private runner: QueryRunner;
 
 	constructor(
@@ -94,9 +97,15 @@ export class ToFileQueryRunnerCallbackHandler implements IQueryRunnerCallbackHan
 					return;
 				}
 
-				if (this.messages.findIndex(queryMessage => queryMessage.message === m.message) < 0) {
-					this.messages.push(m);
+				if (m.isError) {
+					this.queryContainsError = true;
 				}
+
+				if (m.message.includes('Total execution time')) {
+					this.closingMessageIncluded = true;
+				}
+
+				this.messages.push(m);
 			});
 		}
 		else {
@@ -104,12 +113,20 @@ export class ToFileQueryRunnerCallbackHandler implements IQueryRunnerCallbackHan
 				this.messages.push(incomingMessage);
 			}
 		}
+
+		if (this.queryContainsError && this.closingMessageIncluded && !this.generatedFileWithErrors) {
+			this.generatedFileWithErrors = true;
+			this.createResultsFile();
+		}
 	}
 
 	public reset() {
 		this.messages = [];
 		this.formattedQueryResults = [];
 		this.resultSetCount = 0;
+		this.queryContainsError = false;
+		this.closingMessageIncluded = false;
+		this.generatedFileWithErrors = false;
 	}
 
 	private addResultSet(resultSet: ResultSetSummary[]) {
@@ -141,12 +158,20 @@ export class ToFileQueryRunnerCallbackHandler implements IQueryRunnerCallbackHan
 		this.formattedQueryResults.push(results);
 
 		if (this.resultSetCount === 0) {
-			await this.onQueryEnd();
+			this.createResultsFile();
 		}
 	}
 
-	private async onQueryEnd() {
-		let combinedContents = this.mergeResultsWithMessages();
+	public async createResultsFile() {
+		let combinedContents: string[];
+		if (!this.queryContainsError) {
+			combinedContents = this.mergeResultsWithMessages();
+		}
+		else {
+			combinedContents = this.messages.map(m => m.message);
+		}
+
+
 		let content = combinedContents.map(m => {
 			if (m.includes('rows affected') || m.includes('row affected')) {
 				return '\r\n' + m + '\r\n';

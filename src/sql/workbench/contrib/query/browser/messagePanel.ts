@@ -36,7 +36,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 import { MessagesPanelQueryRunnerCallbackHandler } from 'sql/workbench/contrib/query/browser/messagesPanelQueryRunnerCallbackHandler';
 import { IQueryRunnerCallbackHandlerStrategy } from 'sql/workbench/contrib/query/browser/IQueryRunnerCallbackHandlerStrategy';
-import { QueryResultsDisplayMode } from 'sql/workbench/contrib/query/common/queryResultsDisplayStatus';
+import { QueryResultsDisplayMode, QueryResultsDisplayStatus } from 'sql/workbench/contrib/query/common/queryResultsDisplayStatus';
 import { ToFileQueryRunnerCallbackHandler } from 'sql/workbench/contrib/query/browser/toFileQueryRunnerCallbackHandler';
 
 export interface IResultMessageIntern {
@@ -210,11 +210,13 @@ export class MessagePanel extends Disposable {
 		this.queryRunnerDisposables.add(runner.onResultSet(this.onResultSet, this));
 		this.queryRunnerDisposables.add(runner.onResultSetUpdate(this.updateResultSet, this));
 
-		this.onMessage(runner.messages, true);
+		if (QueryResultsDisplayStatus.getInstance().mode === QueryResultsDisplayMode.ResultsToGrid) {
+			this.onMessage(runner.messages, true);
+		}
 	}
 
-	public changeQueryRunnerCallbackHandler(displayMode: QueryResultsDisplayMode) {
-		if (displayMode === QueryResultsDisplayMode.ResultsToGrid) {
+	public changeQueryRunnerCallbackHandler(queryResultsDisplayMode: QueryResultsDisplayMode) {
+		if (queryResultsDisplayMode === QueryResultsDisplayMode.ResultsToGrid) {
 			this.runnerCallbackHandler = new MessagesPanelQueryRunnerCallbackHandler(this.model, this.tree, this._treeStates, this.currenturi);
 		}
 		else {

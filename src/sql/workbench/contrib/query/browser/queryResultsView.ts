@@ -122,6 +122,7 @@ class ResultsView extends Disposable implements IPanelView {
 		this.gridPanel.state = val;
 	}
 }
+
 class ResultsTab implements IPanelTab {
 	public readonly title = nls.localize('resultsTabTitle', "Results");
 	public readonly identifier = 'resultsTab';
