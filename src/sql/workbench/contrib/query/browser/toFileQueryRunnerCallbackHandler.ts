@@ -65,7 +65,7 @@ export class ToFileQueryRunnerCallbackHandler implements IQueryRunnerCallbackHan
 		}
 	}
 
-	public updateResultSet(resultSet: ResultSetSummary | ResultSetSummary[]) {
+	public async updateResultSet(resultSet: ResultSetSummary | ResultSetSummary[]) {
 		let resultsToUpdate: ResultSetSummary[];
 		if (!Array.isArray(resultSet)) {
 			resultsToUpdate = [resultSet];
@@ -77,7 +77,7 @@ export class ToFileQueryRunnerCallbackHandler implements IQueryRunnerCallbackHan
 			for (let set of resultsToUpdate) {
 				let table = this.tables.find(t => t.resultSet.batchId === set.batchId && t.resultSet.id === set.id);
 				if (table) {
-					table.updateResult(set);
+					await table.updateResult(set);
 				} else {
 					this.logService.warn('Got result set update request for non-existant table');
 				}
@@ -90,7 +90,7 @@ export class ToFileQueryRunnerCallbackHandler implements IQueryRunnerCallbackHan
 		}
 	}
 
-	public onMessage(incomingMessage: IQueryMessage | IQueryMessage[]) {
+	public async onMessage(incomingMessage: IQueryMessage | IQueryMessage[]) {
 		if (isArray(incomingMessage)) {
 			incomingMessage.forEach(m => {
 				if (m.message.includes('Started executing query')) {
@@ -116,7 +116,7 @@ export class ToFileQueryRunnerCallbackHandler implements IQueryRunnerCallbackHan
 
 		if (this.queryContainsError && this.closingMessageIncluded && !this.generatedFileWithErrors) {
 			this.generatedFileWithErrors = true;
-			this.createResultsFile();
+			await this.createResultsFile();
 		}
 	}
 
@@ -153,12 +153,12 @@ export class ToFileQueryRunnerCallbackHandler implements IQueryRunnerCallbackHan
 		}
 	}
 
-	public async sendResultsToFile(results: string): Promise<void> {
+	public async sendResultsToFile(results: string) {
 		this.resultSetCount--;
 		this.formattedQueryResults.push(results);
 
 		if (this.resultSetCount === 0) {
-			this.createResultsFile();
+			await this.createResultsFile();
 		}
 	}
 
@@ -241,12 +241,12 @@ export class Table<T> extends Disposable {
 		this.gridDataProvider = this.instantiationService.createInstance(QueryGridDataProvider, this.runner, resultSet.batchId, resultSet.id);
 	}
 
-	public updateResult(resultSet: ResultSetSummary) {
+	public async updateResult(resultSet: ResultSetSummary) {
 		this.resultSet = resultSet;
 
 		if (this.resultSet.complete) {
 			let offset = 0;
-			this.getData(offset, resultSet.rowCount);
+			await this.getData(offset, resultSet.rowCount);
 		}
 	}
 
@@ -259,7 +259,8 @@ export class Table<T> extends Disposable {
 		let rawData = response.rows.map(row => {
 			let dataWithSchema = {};
 
-			for (let col = 0; col < this.columns.length; col++) {
+			let numColumns = this.resultSet.columnInfo.length;
+			for (let col = 0; col < numColumns; col++) {
 				dataWithSchema[this.columns[col].field] = {
 					displayValue: row[col].displayValue,
 					ariaLabel: escape(row[col].displayValue),
