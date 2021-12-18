@@ -199,14 +199,12 @@ export class ToFileQueryRunnerCallbackHandler implements IQueryRunnerCallbackHan
 		while (extractedMessages.length > 0 && this.formattedQueryResults.length > 0) {
 			if (extractedMessages[0]?.includes('rows affected') || extractedMessages[0]?.includes('row affected')) {
 				content.push('\r\n' + this.formattedQueryResults.shift());
-				content.push(extractedMessages.shift());
 			}
-			else {
-				content.push(extractedMessages.shift());
-			}
+
+			content.push(extractedMessages.shift());
 		}
 
-		// merges remaining messages or query results
+		// append remaining messages or query results
 		return [...content, ...extractedMessages, ...this.formattedQueryResults];
 	}
 }
