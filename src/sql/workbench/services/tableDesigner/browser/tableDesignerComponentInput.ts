@@ -13,7 +13,7 @@ import { INotificationService, Severity } from 'vs/platform/notification/common/
 import { deepClone, equals } from 'vs/base/common/objects';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { TableDesignerConfirmDialog } from 'sql/workbench/services/tableDesigner/browser/tableDesignerConfirmDialog';
+import { TableDesignerPublishDialogResult, TableDesignerPublishDialog } from 'sql/workbench/services/tableDesigner/browser/tableDesignerPublishDialog';
 
 export class TableDesignerComponentInput implements DesignerComponentInput {
 
@@ -93,9 +93,9 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		try {
 			this.updateState(this.valid, this.dirty, 'generateScript');
 			const script = await this._provider.generateScript(this._tableInfo);
+			this._queryEditorService.newSqlEditor({ initalContent: script });
 			this.updateState(this.valid, this.dirty);
 			notificationHandle.updateMessage(localize('tableDesigner.generatingScriptCompleted', "Script generated."));
-			this._queryEditorService.newSqlEditor({ initalContent: script });
 		} catch (error) {
 			notificationHandle.updateSeverity(Severity.Error);
 			notificationHandle.updateMessage(localize('tableDesigner.generateScriptError', "An error occured while generating script: {0}", error?.message ?? error));
@@ -103,7 +103,26 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		}
 	}
 
-	async save(): Promise<void> {
+	async saveChanges(): Promise<void> {
+		const saveNotificationHandle = this._notificationService.notify({
+			severity: Severity.Info,
+			message: localize('tableDesigner.savingChanges', "Saving table designer changes..."),
+			sticky: true
+		});
+		try {
+			this.updateState(this.valid, this.dirty, 'save');
+			await this._provider.saveTable(this._tableInfo);
+			this._originalViewModel = this._viewModel;
+			this.updateState(true, false);
+			saveNotificationHandle.updateMessage(localize('tableDesigner.savedChangeSuccess', "The changes have been successfully saved."));
+		} catch (error) {
+			saveNotificationHandle.updateSeverity(Severity.Error);
+			saveNotificationHandle.updateMessage(localize('tableDesigner.saveChangeError', "An error occured while saving changes: {0}", error?.message ?? error));
+			this.updateState(this.valid, this.dirty);
+		}
+	}
+
+	async openReportDialog(): Promise<void> {
 		const reportNotificationHandle = this._notificationService.notify({
 			severity: Severity.Info,
 			message: localize('tableDesigner.generatingReport', "Generating report..."),
@@ -122,27 +141,12 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			this.updateState(this.valid, this.dirty);
 			return;
 		}
-		const dialog = this._instantiationService.createInstance(TableDesignerConfirmDialog);
-		const proceed = await dialog.open(report);
-		if (!proceed) {
-			return;
-		}
-
-		const saveNotificationHandle = this._notificationService.notify({
-			severity: Severity.Info,
-			message: localize('tableDesigner.savingChanges', "Saving table designer changes..."),
-			sticky: true
-		});
-		try {
-			this.updateState(this.valid, this.dirty, 'save');
-			await this._provider.saveTable(this._tableInfo);
-			this._originalViewModel = this._viewModel;
-			this.updateState(true, false);
-			saveNotificationHandle.updateMessage(localize('tableDesigner.savedChangeSuccess', "The changes have been successfully saved."));
-		} catch (error) {
-			saveNotificationHandle.updateSeverity(Severity.Error);
-			saveNotificationHandle.updateMessage(localize('tableDesigner.saveChangeError', "An error occured while saving changes: {0}", error?.message ?? error));
-			this.updateState(this.valid, this.dirty);
+		const dialog = this._instantiationService.createInstance(TableDesignerPublishDialog);
+		const result = await dialog.open(report);
+		if (result === TableDesignerPublishDialogResult.GenerateScript) {
+			this.generateScript();
+		} else if (result === TableDesignerPublishDialogResult.UpdateDatabase) {
+			this.saveChanges();
 		}
 	}
 

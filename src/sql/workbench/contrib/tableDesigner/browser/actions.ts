@@ -44,7 +44,7 @@ export class SaveTableChangesAction extends SaveTableChangesActionBase {
 	}
 
 	public override async run(): Promise<void> {
-		await this._input.save();
+		await this._input.openReportDialog();
 	}
 }
 

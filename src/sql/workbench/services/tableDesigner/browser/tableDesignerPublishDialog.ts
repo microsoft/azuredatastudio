@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!./media/tableDesignerConfirmDialog';
+import 'vs/css!./media/tableDesignerPublishDialog';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/workbench/browser/modal/modal';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
@@ -21,13 +21,21 @@ import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 
 const OkText: string = localize('tableDesigner.UpdateDatabase', "Update Database");
 const CancelText: string = localize('tableDesigner.cancel', "Cancel");
+const GenerateScriptText: string = localize('tableDesigner.generateScript', "Generate Script");
 
-export class TableDesignerConfirmDialog extends Modal {
+export enum TableDesignerPublishDialogResult {
+	UpdateDatabase,
+	GenerateScript,
+	Cancel
+}
+
+export class TableDesignerPublishDialog extends Modal {
 
 	private _report?: string;
 	private _okButton?: Button;
+	private _generateScriptButton?: Button;
 	private _cancelButton?: Button;
-	private _promiseResolver: (value: boolean) => void;
+	private _promiseResolver: (value: TableDesignerPublishDialogResult) => void;
 
 	constructor(
 		@IThemeService themeService: IThemeService,
@@ -38,21 +46,17 @@ export class TableDesignerConfirmDialog extends Modal {
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super('', TelemetryKeys.ModalDialogName.ProfilerFilter, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'normal', hasTitleIcon: false });
+		super('', TelemetryKeys.ModalDialogName.TableDesignerPublishDialog, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { dialogStyle: 'normal', hasTitleIcon: false });
 	}
 
-	public open(report: string): Promise<boolean> {
+	public open(report: string): Promise<TableDesignerPublishDialogResult> {
 		this._report = report;
 		this.render();
 		this.show();
-		const promise = new Promise<boolean>((resolve) => {
+		const promise = new Promise<TableDesignerPublishDialogResult>((resolve) => {
 			this._promiseResolver = resolve;
 		});
 		return promise;
-	}
-
-	public override dispose(): void {
-
 	}
 
 	public override render() {
@@ -60,8 +64,10 @@ export class TableDesignerConfirmDialog extends Modal {
 		this.title = localize('tableDesigner.previewDatabaseUpdates', "Preview Database Updates");
 		this._register(attachModalDialogStyler(this, this._themeService));
 		this._okButton = this.addFooterButton(OkText, () => this.handleOkButtonClick());
-		this._cancelButton = this.addFooterButton(CancelText, () => this.hide('cancel'), 'right', true);
+		this._generateScriptButton = this.addFooterButton(GenerateScriptText, () => this.handleGenerateScriptButtonClick(), 'right', true);
+		this._cancelButton = this.addFooterButton(CancelText, () => this.handleCancelButtonClick(), 'right', true);
 		this._register(attachButtonStyler(this._okButton, this._themeService));
+		this._register(attachButtonStyler(this._generateScriptButton, this._themeService));
 		this._register(attachButtonStyler(this._cancelButton, this._themeService));
 	}
 
@@ -86,11 +92,16 @@ export class TableDesignerConfirmDialog extends Modal {
 
 	private handleOkButtonClick(): void {
 		this.hide('ok');
-		this._promiseResolver(true);
+		this._promiseResolver(TableDesignerPublishDialogResult.UpdateDatabase);
+	}
+
+	private handleGenerateScriptButtonClick(): void {
+		this.hide('ok');
+		this._promiseResolver(TableDesignerPublishDialogResult.GenerateScript);
 	}
 
 	private handleCancelButtonClick(): void {
 		this.hide('cancel');
-		this._promiseResolver(false);
+		this._promiseResolver(TableDesignerPublishDialogResult.Cancel);
 	}
 }
