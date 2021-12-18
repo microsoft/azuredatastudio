@@ -51,6 +51,7 @@ import { IQueryModelService } from 'sql/workbench/services/query/common/queryMod
 import { FilterButtonWidth, HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { HybridDataProvider } from 'sql/base/browser/ui/table/hybridDataProvider';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { QueryResultsDisplayStatus, QueryResultsDisplayMode } from 'sql/workbench/contrib/query/common/queryResultsDisplayStatus';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -139,6 +140,11 @@ export class GridPanel extends Disposable {
 	}
 
 	private onResultSet(resultSet: ResultSetSummary | ResultSetSummary[]) {
+		// Can exit early if not displaying results in the grid.
+		if (QueryResultsDisplayStatus.getInstance().mode !== QueryResultsDisplayMode.ResultsToGrid) {
+			return;
+		}
+
 		let resultsToAdd: ResultSetSummary[];
 		if (!Array.isArray(resultSet)) {
 			resultsToAdd = [resultSet];
@@ -168,6 +174,11 @@ export class GridPanel extends Disposable {
 	}
 
 	private updateResultSet(resultSet: ResultSetSummary | ResultSetSummary[]) {
+		// Can exit early if not displaying results in the grid.
+		if (QueryResultsDisplayStatus.getInstance().mode !== QueryResultsDisplayMode.ResultsToGrid) {
+			return;
+		}
+
 		let resultsToUpdate: ResultSetSummary[];
 		if (!Array.isArray(resultSet)) {
 			resultsToUpdate = [resultSet];
