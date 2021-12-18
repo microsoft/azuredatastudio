@@ -344,7 +344,9 @@ export class Designer extends Disposable implements IThemable {
 				timeout = 500;
 				break;
 			default:
-				return;
+				message = showLoading ? localize('designer.processing', "Processing...") : localize('designer.processingCompleted', "Processing completed");
+				timeout = 0;
+				break;
 		}
 		if (showLoading) {
 			this.startLoading(message, useDelay ? timeout : 0);

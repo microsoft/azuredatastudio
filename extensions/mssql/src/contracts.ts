@@ -1044,17 +1044,11 @@ export namespace GetSqlMigrationAssessmentItemsRequest {
 
 export interface TableDesignerEditRequestParams {
 	tableInfo: azdata.designers.TableInfo,
-	tableChangeInfo: azdata.designers.DesignerEdit,
-	viewModel: azdata.designers.DesignerViewModel
+	tableChangeInfo: azdata.designers.DesignerEdit
 }
 
-export interface SaveTableDesignerChangesRequestParams {
-	tableInfo: azdata.designers.TableInfo,
-	viewModel: azdata.designers.DesignerViewModel
-}
-
-export namespace GetTableDesignerInfoRequest {
-	export const type = new RequestType<azdata.designers.TableInfo, azdata.designers.TableDesignerInfo, void, void>('tabledesigner/gettabledesignerinfo');
+export namespace InitializeTableDesignerRequest {
+	export const type = new RequestType<azdata.designers.TableInfo, azdata.designers.TableDesignerInfo, void, void>('tabledesigner/initialize');
 }
 
 export namespace ProcessTableDesignerEditRequest {
@@ -1062,9 +1056,16 @@ export namespace ProcessTableDesignerEditRequest {
 }
 
 export namespace SaveTableDesignerChangesRequest {
-	export const type = new RequestType<SaveTableDesignerChangesRequestParams, void, void, void>('tabledesigner/savechanges');
+	export const type = new RequestType<azdata.designers.TableInfo, void, void, void>('tabledesigner/save');
 }
 
+export namespace TableDesignerGenerateScriptRequest {
+	export const type = new RequestType<azdata.designers.TableInfo, string, void, void>('tabledesigner/script');
+}
+
+export namespace TableDesignerGenerateReportRequest {
+	export const type = new RequestType<azdata.designers.TableInfo, string, void, void>('tabledesigner/report');
+}
 export namespace DisposeTableDesignerRequest {
 	export const type = new RequestType<azdata.designers.TableInfo, void, void, void>('tabledesigner/dispose');
 }

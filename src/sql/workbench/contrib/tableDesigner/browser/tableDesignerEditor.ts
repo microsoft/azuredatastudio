@@ -16,7 +16,7 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
 import { IEditorOpenContext } from 'vs/workbench/common/editor';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { SaveTableChangesAction } from 'sql/workbench/contrib/tableDesigner/browser/actions';
+import { GenerateTableChangeScriptAction, SaveTableChangesAction } from 'sql/workbench/contrib/tableDesigner/browser/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { DesignerPaneSeparator } from 'sql/platform/theme/common/colorRegistry';
@@ -26,6 +26,7 @@ export class TableDesignerEditor extends EditorPane {
 
 	private _designer: Designer;
 	private _saveChangesAction: SaveTableChangesAction;
+	private _generateScriptAction: GenerateTableChangeScriptAction;
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -45,6 +46,7 @@ export class TableDesignerEditor extends EditorPane {
 		const designerInput = input.getComponentInput();
 		this._designer.setInput(designerInput);
 		this._saveChangesAction.setContext(designerInput);
+		this._generateScriptAction.setContext(designerInput);
 	}
 
 	protected createEditor(parent: HTMLElement): void {
@@ -56,7 +58,9 @@ export class TableDesignerEditor extends EditorPane {
 		this._register(actionbar);
 		this._saveChangesAction = this._instantiationService.createInstance(SaveTableChangesAction);
 		this._saveChangesAction.enabled = false;
-		actionbar.push(this._saveChangesAction, { icon: true, label: false });
+		this._generateScriptAction = this._instantiationService.createInstance(GenerateTableChangeScriptAction);
+		this._generateScriptAction.enabled = false;
+		actionbar.push([this._saveChangesAction, this._generateScriptAction], { icon: true, label: false });
 
 		this._designer = this._instantiationService.createInstance(Designer, designerContainer);
 		this._register(attachDesignerStyler(this._designer, this.themeService));

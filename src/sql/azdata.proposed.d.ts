@@ -995,24 +995,35 @@ declare module 'azdata' {
 		 */
 		export interface TableDesignerProvider extends DataProvider {
 			/**
-			 * Gets the table designer information for the specified table.
+			 * Initialize the table designer for the specified table.
 			 * @param table the table information.
 			 */
-			getTableDesignerInfo(table: TableInfo): Thenable<TableDesignerInfo>;
+			initializeTableDesigner(table: TableInfo): Thenable<TableDesignerInfo>;
+
 			/**
 			 * Process the table change.
 			 * @param table the table information
-			 * @param viewModel the object contains the state of the table designer
 			 * @param tableChangeInfo the information about the change user made through the UI.
 			 */
-			processTableEdit(table: TableInfo, viewModel: DesignerViewModel, tableChangeInfo: DesignerEdit): Thenable<DesignerEditResult>;
+			processTableEdit(table: TableInfo, tableChangeInfo: DesignerEdit): Thenable<DesignerEditResult>;
 
 			/**
 			 * Save the table
 			 * @param table the table information
-			 * @param viewModel the object contains the state of the table designer
 			 */
-			saveTable(table: TableInfo, viewModel: DesignerViewModel): Thenable<void>;
+			saveTable(table: TableInfo): Thenable<void>;
+
+			/**
+			 * Generate script for the changes.
+			 * @param table the table information
+			 */
+			generateScript(table: TableInfo): Thenable<string>;
+
+			/**
+			 * Generate report for the changes.
+			 * @param table the table information
+			 */
+			generateReport(table: TableInfo): Thenable<string>;
 
 			/**
 			 * Notify the provider that the table designer has been closed.

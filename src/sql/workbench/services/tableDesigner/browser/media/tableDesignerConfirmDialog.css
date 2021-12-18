@@ -1,0 +1,10 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.table-designer-confirmation-dialog {
+	height: 300px;
+	padding: 10px;
+	overflow: scroll;
+}

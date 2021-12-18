@@ -892,16 +892,24 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	}
 
 	// Table Designer
-	public override $getTableDesignerInfo(handle: number, table: azdata.designers.TableInfo): Thenable<azdata.designers.TableDesignerInfo> {
-		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).getTableDesignerInfo(table);
+	public override $initializeTableDesigner(handle: number, table: azdata.designers.TableInfo): Thenable<azdata.designers.TableDesignerInfo> {
+		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).initializeTableDesigner(table);
 	}
 
-	public override $processTableDesignerEdit(handle: number, table: azdata.designers.TableInfo, viewModel: azdata.designers.DesignerViewModel, edit: azdata.designers.DesignerEdit): Thenable<azdata.designers.DesignerEditResult> {
-		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).processTableEdit(table, viewModel, edit);
+	public override $processTableDesignerEdit(handle: number, table: azdata.designers.TableInfo, edit: azdata.designers.DesignerEdit): Thenable<azdata.designers.DesignerEditResult> {
+		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).processTableEdit(table, edit);
 	}
 
-	public override $saveTable(handle: number, table: azdata.designers.TableInfo, viewModel: azdata.designers.DesignerViewModel): Thenable<void> {
-		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).saveTable(table, viewModel);
+	public override $saveTable(handle: number, table: azdata.designers.TableInfo): Thenable<void> {
+		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).saveTable(table);
+	}
+
+	public override $generateScriptForTableDesigner(handle: number, table: azdata.designers.TableInfo): Thenable<string> {
+		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).generateScript(table);
+	}
+
+	public override $generateReportForTableDesigner(handle: number, table: azdata.designers.TableInfo): Thenable<string> {
+		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).generateReport(table);
 	}
 
 	public override $disposeTableDesigner(handle: number, table: azdata.designers.TableInfo): Thenable<void> {

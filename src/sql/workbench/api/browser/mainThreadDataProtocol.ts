@@ -513,14 +513,20 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 		const self = this;
 		this._tableDesignerService.registerProvider(providerId, <azdata.designers.TableDesignerProvider>{
 			providerId: providerId,
-			getTableDesignerInfo(tableInfo: azdata.designers.TableInfo): Thenable<azdata.designers.TableDesignerInfo> {
-				return self._proxy.$getTableDesignerInfo(handle, tableInfo);
+			initializeTableDesigner(tableInfo: azdata.designers.TableInfo): Thenable<azdata.designers.TableDesignerInfo> {
+				return self._proxy.$initializeTableDesigner(handle, tableInfo);
 			},
-			processTableEdit(table, data, edit): Thenable<azdata.designers.DesignerEditResult> {
-				return self._proxy.$processTableDesignerEdit(handle, table, data, edit);
+			processTableEdit(table, edit): Thenable<azdata.designers.DesignerEditResult> {
+				return self._proxy.$processTableDesignerEdit(handle, table, edit);
 			},
-			saveTable(tableInfo: azdata.designers.TableInfo, data: azdata.designers.DesignerViewModel): Thenable<void> {
-				return self._proxy.$saveTable(handle, tableInfo, data);
+			saveTable(tableInfo: azdata.designers.TableInfo): Thenable<void> {
+				return self._proxy.$saveTable(handle, tableInfo);
+			},
+			generateScript(tableInfo: azdata.designers.TableInfo): Thenable<string> {
+				return self._proxy.$generateScriptForTableDesigner(handle, tableInfo);
+			},
+			generateReport(tableInfo: azdata.designers.TableInfo): Thenable<string> {
+				return self._proxy.$generateReportForTableDesigner(handle, tableInfo);
 			},
 			disposeTableDesigner(tableInfo: azdata.designers.TableInfo): Thenable<void> {
 				return self._proxy.$disposeTableDesigner(handle, tableInfo);
