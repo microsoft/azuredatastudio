@@ -5,10 +5,11 @@
 
 import { QueryResultsDisplayStatus, QueryResultsDisplayMode } from 'sql/workbench/contrib/query/common/queryResultsDisplayStatus';
 import { Action } from 'vs/base/common/actions';
+import * as nls from 'vs/nls';
 
 export class QueryResultsToFileAction extends Action {
 	public static ID = 'sql.action.query.queryResultsToFile';
-	public static LABEL = 'Query Results to File'; // TODO lewissanchez: Localize this label with NLS call
+	public static LABEL = nls.localize('queryResults.resultsToFile', 'Query Results to File');
 
 	private queryResultsDisplayStatus: QueryResultsDisplayStatus;
 
@@ -27,7 +28,7 @@ export class QueryResultsToFileAction extends Action {
 
 export class QueryResultsToGridAction extends Action {
 	public static ID = 'sql.action.query.queryResultsToGrid';
-	public static LABEL = 'Query Results to Grid'; // TODO lewissanchez: Localize this label with NLS call
+	public static LABEL = nls.localize('queryResults.resultsToGrid', 'Query Results to Grid');
 
 	private queryResultsDisplayStatus: QueryResultsDisplayStatus;
 
