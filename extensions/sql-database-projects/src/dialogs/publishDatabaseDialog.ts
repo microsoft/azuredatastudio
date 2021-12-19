@@ -18,6 +18,7 @@ import { getAgreementDisplayText, getConnectionName, getDockerBaseImages } from 
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { IDeployProfile } from '../models/deploy/deployProfile';
 import { Deferred } from '../common/promise';
+import { publishOptionsDialog } from './publishOptionsDialog';
 
 interface DataSourceDropdownValue extends azdataType.CategoryValue {
 	dataSource: SqlConnectionDataSource;
@@ -53,9 +54,11 @@ export class PublishDatabaseDialog {
 	private connectionId: string | undefined;
 	private connectionIsDataSource: boolean | undefined;
 	private sqlCmdVars: Record<string, string> | undefined;
-	private deploymentOptions: DeploymentOptions | undefined;
+	private deploymentOptions!: DeploymentOptions;
 	private profileUsed: boolean = false;
 	private serverName: string | undefined;
+	protected optionsButton!: azdataType.ButtonComponent;
+	private publishOptionDialog!: publishOptionsDialog;
 
 	private completionPromise: Deferred = new Deferred();
 
@@ -137,9 +140,10 @@ export class PublishDatabaseDialog {
 			const profileRow = this.createProfileRow(view);
 			this.connectionRow = this.createConnectionRow(view);
 			this.databaseRow = this.createDatabaseRow(view);
+			const displayOptions = this.createOptionsButton(view);
 
 			const horizontalFormSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
-			horizontalFormSection.addItems([profileRow, this.databaseRow]);
+			horizontalFormSection.addItems([profileRow, this.databaseRow, displayOptions]);
 
 
 			this.formBuilder = <azdataType.FormBuilder>view.modelBuilder.formContainer()
@@ -892,6 +896,34 @@ export class PublishDatabaseDialog {
 
 		return true;
 	}
+
+	//#region Deploy Display Options
+	// Creates Display options container with hyperlink options
+	private createOptionsButton(view: azdataType.ModelView) {
+		const optionslabel = view.modelBuilder.text().withProps({
+			value: constants.publishOptionsLabel,
+			width: cssStyles.publishDialogLabelWidth
+		}).component();
+
+		this.optionsButton = view.modelBuilder.hyperlink().withProps({
+			label: constants.configureOptions,
+			title: constants.configureOptions,
+			url: ''
+		}).component();
+
+		const optionsRow = view.modelBuilder.flexContainer().withItems([optionslabel, this.optionsButton], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+
+		this.optionsButton.onDidClick(async () => {
+			TelemetryReporter.sendActionEvent(TelemetryViews.SqlProjectPublishDialog, 'PublishOptionsClicked');
+			// create fresh every time
+			this.publishOptionDialog = new publishOptionsDialog(this.deploymentOptions, this);
+			this.publishOptionDialog.openDialog();
+		});
+
+		return optionsRow;
+	}
+
+	//#endregion
 }
 
 export function promptForPublishProfile(defaultPath: string): Thenable<vscode.Uri[] | undefined> {

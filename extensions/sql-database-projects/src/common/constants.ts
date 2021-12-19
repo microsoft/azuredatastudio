@@ -129,6 +129,15 @@ export const selectDatabase = localize('selectDatabase', "Select database");
 export const done = localize('done', "Done");
 export const nameMustNotBeEmpty = localize('nameMustNotBeEmpty', "Name must not be empty");
 
+// Publish Dialog options
+export const publishOptionsLabel = localize('publishDisplayOptionsLabel', 'Publish Options');
+export const configureOptions = localize('configureOptions', 'Configure Options');
+export const GeneralOptionsLabel: string = localize('publishOperation.GeneralOptionsLabel', "General Options");
+export const OkButtonText: string = localize('publishOperation.OkButtonText', "Ok");
+export const CancelButtonText: string = localize('publishOperation.CancelButtonText', "Cancel");
+export const ResetButtonText: string = localize('publishOperation.ResetButtonText', "Reset");
+
+
 // Deploy
 export const selectPublishOption = localize('selectPublishOption', "Select where to publish the project to");
 export const publishToExistingServer = localize('publishToExistingServer', "Publish to existing server");
