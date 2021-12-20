@@ -63,6 +63,7 @@ export const at = localize('at', "at");
 export const revealFileInOsCommand = 'revealFileInOS';
 export const schemaCompareStartCommand = 'schemaCompare.start';
 export const vscodeOpenCommand = 'vscode.open';
+export const refreshDataWorkspaceCommand = 'dataworkspace.refresh';
 
 // UI Strings
 

@@ -1401,9 +1401,9 @@ export class ProjectsController {
 				void vscode.window.showErrorMessage(constants.applyError(publishResult.errorMessage));
 			}
 
+			void vscode.commands.executeCommand(constants.refreshDataWorkspaceCommand);
 			const workspaceApi = utils.getDataWorkspaceExtensionApi();
 			workspaceApi.showProjectsView();
-
 		} else if (model.action === UpdateAction.Compare) {
 			await vscode.commands.executeCommand(constants.schemaCompareStartCommand,
 				model.sourceEndpointInfo.connectionDetails,
