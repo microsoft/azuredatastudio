@@ -189,12 +189,12 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 					let cellEditor = this.cellEditors.find(c => c.cellGuid() === cell.cellGuid);
 					cellEditor.deltaDecorations(undefined, cellOldDecorations);
 				});
-				// code cell output
+				// code cell outputs
 				let codeCells = [...new Set(oldDecorationsRange.map(item => item.cell))].filter(c => c.cellType === 'code');
 				codeCells.forEach(cell => {
 					let cellOldDecorations = oldDecorationsRange.filter(r => r.outputComponentIndex >= 0 && cell.cellGuid === r.cell.cellGuid);
-					let cellEditor = this.cellEditors.find(c => c.cellGuid() === cell.cellGuid && c.isCellOutput);
-					cellEditor.deltaDecorations(undefined, cellOldDecorations);
+					let cellEditors = this.cellEditors.filter(c => c.cellGuid() === cell.cellGuid && c.isCellOutput);
+					cellEditors.forEach(cellEditor => cellEditor.deltaDecorations(undefined, cellOldDecorations));
 				});
 			} else {
 				if (oldDecorationsRange.cell.cellType === 'markdown' || oldDecorationsRange.outputComponentIndex >= 0) {
@@ -211,12 +211,12 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 					let cellEditor = this.cellEditors.find(c => c.cellGuid() === cell.cellGuid);
 					cellEditor.deltaDecorations(cellNewDecorations, undefined);
 				});
-				// code cell output
+				// code cell outputs
 				let codeCells = [...new Set(newDecorationsRange.map(item => item.cell))].filter(c => c.cellType === 'code');
 				codeCells.forEach(cell => {
 					let cellNewDecorations = newDecorationsRange.filter(r => r.outputComponentIndex >= 0 && cell.cellGuid === r.cell.cellGuid);
-					let cellEditor = this.cellEditors.find(c => c.cellGuid() === cell.cellGuid && c.isCellOutput);
-					cellEditor.deltaDecorations(cellNewDecorations, undefined);
+					let cellEditors = this.cellEditors.filter(c => c.cellGuid() === cell.cellGuid && c.isCellOutput);
+					cellEditors.forEach(cellEditor => cellEditor.deltaDecorations(cellNewDecorations, undefined));
 				});
 			} else {
 				if (newDecorationsRange.cell.cellType === 'markdown' || newDecorationsRange.outputComponentIndex >= 0) {

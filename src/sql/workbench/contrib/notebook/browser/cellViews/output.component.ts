@@ -204,23 +204,24 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 			this.highlightAllMatches();
 			if (range) {
 				let elements = this.getHtmlElements();
-				if (elements?.length >= range.startLineNumber) {
+				if (elements.length === 1 && elements[0].nodeName === 'MIME-OUTPUT') {
+					let markCurrent = new Mark(elements[0]);
+					markCurrent.markRanges([{
+						start: range.startColumn - 1, //subtracting 1 since markdown html is 0 indexed.
+						length: range.endColumn - range.startColumn
+					}], {
+						className: findRangeSpecificClass,
+						each: function (node, range) {
+							// node is the marked DOM element
+							node.scrollIntoView({ behavior: 'smooth', block: 'center' });
+						}
+					});
+				} else if (elements?.length >= range.startLineNumber) {
 					let elementContainingText = elements[range.startLineNumber - 1];
 					let markCurrent = new Mark(elementContainingText); // to highlight the current item of them all.
-					if (elementContainingText.nodeName !== 'MIME-OUTPUT' && elementContainingText.children.length > 0) {
+					if (elementContainingText.children.length > 0) {
 						markCurrent = new Mark(elementContainingText.children[range.startColumn]);
 						markCurrent?.mark(this.searchTerm, {
-							className: findRangeSpecificClass,
-							each: function (node, range) {
-								// node is the marked DOM element
-								node.scrollIntoView({ behavior: 'smooth', block: 'center' });
-							}
-						});
-					} else {
-						markCurrent.markRanges([{
-							start: range.startColumn - 1, //subtracting 1 since markdown html is 0 indexed.
-							length: range.endColumn - range.startColumn
-						}], {
 							className: findRangeSpecificClass,
 							each: function (node, range) {
 								// node is the marked DOM element
@@ -266,6 +267,9 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 			if (range) {
 				let elements = this.getHtmlElements();
 				let elementContainingText = elements[range.startLineNumber - 1];
+				if (elements.length === 1 && elements[0].nodeName === 'MIME-OUTPUT') {
+					elementContainingText = elements[0];
+				}
 				let markCurrent = new Mark(elementContainingText);
 				markCurrent.unmark({ acrossElements: true, className: findRangeSpecificClass });
 			} else {
