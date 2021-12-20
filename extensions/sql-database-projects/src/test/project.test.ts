@@ -1284,8 +1284,6 @@ describe('Project: sdk style project content operations', function (): void {
 		// verify the folder entry was removed from the sqlproj and a Build Remove was not added
 		projFileText = (await fs.readFile(projFilePath)).toString();
 		should(projFileText.trimEnd() === beforeProjFileText.trimEnd()).equal(true, 'The sqlproj should not have changed after deleting folder1');
-		should(projFileText.includes('<Folder Include="folder1\\" />')).equal(false, projFileText);
-		should(projFileText.includes('<Build Remove="folder1\\**" />')).equal(false, projFileText);
 	});
 
 	it('Should handle deleting not empty glob included folders', async function (): Promise<void> {
@@ -1308,7 +1306,6 @@ describe('Project: sdk style project content operations', function (): void {
 		// verify the folder entry was removed from the sqlproj and a Build Remove was not added
 		const projFileText = (await fs.readFile(projFilePath)).toString();
 		should(projFileText.trimEnd() === beforeProjFileText.trimEnd()).equal(true, 'The sqlproj should not have changed after deleting folder2');
-		should(projFileText.includes('<Build Remove="folder2\\**" />')).equal(false, projFileText);
 	});
 
 	it('Should handle deleting explicitly included folders', async function (): Promise<void> {
