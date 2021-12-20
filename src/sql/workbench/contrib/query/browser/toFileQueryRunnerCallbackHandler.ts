@@ -123,6 +123,7 @@ export class ToFileQueryRunnerCallbackHandler implements IQueryRunnerCallbackHan
 	public reset() {
 		this.messages = [];
 		this.formattedQueryResults = [];
+		this.tables = [];
 		this.resultSetCount = 0;
 		this.queryContainsError = false;
 		this.closingMessageIncluded = false;
