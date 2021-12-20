@@ -120,12 +120,14 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			this.doubleClickEditEnabled = this._configurationService.getValue('notebook.enableDoubleClickEdit');
 		}));
 		this._register(RedoCommand.addImplementation(PRIORITY, 'notebook-cells-undo-redo', () => {
+			// Prevent the undo/redo from happening in other notebooks and to prevent the execution of undo/redo in the cell.
 			if (this.isActive() && this.activeCellId === '' && this._model) {
 				this._model.redo();
 			}
 			return false;
 		}));
 		this._register(UndoCommand.addImplementation(PRIORITY, 'notebook-cells-undo-redo', () => {
+			// Prevent the undo/redo from happening in other notebooks and to prevent the execution of undo/redo in the cell.
 			if (this.isActive() && this.activeCellId === '' && this._model) {
 				this._model.undo();
 			}
