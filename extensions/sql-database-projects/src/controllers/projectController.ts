@@ -45,7 +45,7 @@ import { createNewProjectFromDatabaseWithQuickpick } from '../dialogs/createProj
 import { addDatabaseReferenceQuickpick } from '../dialogs/addDatabaseReferenceQuickpick';
 import { IDeployProfile } from '../models/deploy/deployProfile';
 import { EntryType, FileProjectEntry, IDatabaseReferenceProjectEntry, SqlProjectReferenceProjectEntry } from '../models/projectEntry';
-import { UpdateAction, UpdateDataModel } from '../models/api/update';
+import { UpdateProjectAction, UpdateProjectDataModel } from '../models/api/updateProject';
 
 const maxTableLength = 10;
 
@@ -1341,7 +1341,7 @@ export class ProjectsController {
 		return new UpdateProjectFromDatabaseDialog(connection, project);
 	}
 
-	public async updateProjectFromDatabaseCallback(model: UpdateDataModel) {
+	public async updateProjectFromDatabaseCallback(model: UpdateProjectDataModel) {
 		try {
 			await this.updateProjectFromDatabaseApiCall(model);
 		} catch (err) {
@@ -1352,7 +1352,7 @@ export class ProjectsController {
 	/**
 	 * Uses the DacFx service to update an existing SQL Project with the changes/differences from a database
 	 */
-	public async updateProjectFromDatabaseApiCall(model: UpdateDataModel): Promise<void> {
+	public async updateProjectFromDatabaseApiCall(model: UpdateProjectDataModel): Promise<void> {
 		let ext = vscode.extensions.getExtension(mssql.extension.name)!;
 		const service = (await ext.activate() as mssql.IExtension).schemaCompare;
 		const deploymentOptions = await service.schemaCompareGetDefaultOptions();
@@ -1387,7 +1387,7 @@ export class ProjectsController {
 			return;
 		}
 
-		if (model.action === UpdateAction.Update) {
+		if (model.action === UpdateProjectAction.Update) {
 			const publishResult = await this.schemaComparePublishProjectChanges(
 				operationId, model.targetEndpointInfo.projectFilePath, model.targetEndpointInfo.folderStructure
 			);
@@ -1401,7 +1401,7 @@ export class ProjectsController {
 			void vscode.commands.executeCommand(constants.refreshDataWorkspaceCommand);
 			const workspaceApi = utils.getDataWorkspaceExtensionApi();
 			workspaceApi.showProjectsView();
-		} else if (model.action === UpdateAction.Compare) {
+		} else if (model.action === UpdateProjectAction.Compare) {
 			await vscode.commands.executeCommand(constants.schemaCompareStartCommand,
 				model.sourceEndpointInfo.connectionDetails,
 				model.targetEndpointInfo,

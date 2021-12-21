@@ -16,7 +16,7 @@ import { Deferred } from '../common/promise';
 import { Project } from '../models/project';
 import { cssStyles } from '../common/uiConstants';
 import { IconPathHelper } from '../common/iconHelper';
-import { UpdateDataModel, UpdateAction } from '../models/api/update';
+import { UpdateProjectDataModel, UpdateProjectAction } from '../models/api/updateProject';
 import { exists, getAzdataApi, getDataWorkspaceExtensionApi } from '../common/utils';
 import * as path from 'path';
 
@@ -33,12 +33,12 @@ export class UpdateProjectFromDatabaseDialog {
 	private formBuilder: azdata.FormBuilder | undefined;
 	private connectionId: string | undefined;
 	private profile: azdata.IConnectionProfile | undefined;
-	public action: UpdateAction | undefined;
+	public action: UpdateProjectAction | undefined;
 	private toDispose: vscode.Disposable[] = [];
 	private initDialogPromise: Deferred = new Deferred();
 	public populatedInputsPromise: Deferred = new Deferred();
 
-	public updateProjectFromDatabaseCallback: ((model: UpdateDataModel) => any) | undefined;
+	public updateProjectFromDatabaseCallback: ((model: UpdateProjectDataModel) => any) | undefined;
 
 	constructor(connection: azdata.IConnectionProfile | mssqlVscode.IConnectionInfo | undefined, private project: Project | undefined) {
 		if (connection && 'connectionName' in connection) {
@@ -456,15 +456,15 @@ export class UpdateProjectFromDatabaseDialog {
 		}).component();
 
 		this.compareActionRadioButton.updateProperties({ checked: true });
-		this.action = UpdateAction.Compare;
+		this.action = UpdateProjectAction.Compare;
 
 		this.compareActionRadioButton.onDidClick(async () => {
-			this.action = UpdateAction.Compare;
+			this.action = UpdateProjectAction.Compare;
 			this.tryEnableUpdateButton();
 		});
 
 		this.updateActionRadioButton.onDidClick(async () => {
-			this.action = UpdateAction.Update;
+			this.action = UpdateProjectAction.Update;
 			this.tryEnableUpdateButton();
 		});
 
@@ -553,7 +553,7 @@ export class UpdateProjectFromDatabaseDialog {
 			packageFilePath: '',
 		};
 
-		const model: UpdateDataModel = {
+		const model: UpdateProjectAction = {
 			sourceEndpointInfo: sourceEndpointInfo,
 			targetEndpointInfo: targetEndpointInfo,
 			action: this.action!
