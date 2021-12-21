@@ -462,7 +462,7 @@ export class ProjectsController {
 				let sourceParam;
 
 				if (source as dataworkspace.WorkspaceTreeItem) {
-					sourceParam = this.getProjectFromContext(source as dataworkspace.WorkspaceTreeItem).projectFolderPath;
+					sourceParam = this.getProjectFromContext(source as dataworkspace.WorkspaceTreeItem).projectFilePath;
 				} else {
 					sourceParam = source as azdataType.IConnectionProfile;
 				}
@@ -843,9 +843,6 @@ export class ProjectsController {
 			}
 			return undefined;
 		}
-
-
-
 	}
 
 	/**
