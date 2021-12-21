@@ -7,6 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as os from 'os';
 import * as path from 'path';
+import * as sqldbproj from 'sqldbproj';
 import * as mssql from '../../mssql';
 import * as loc from './localizedConstants';
 import { SchemaCompareOptionsDialog } from './dialogs/schemaCompareOptionsDialog';
@@ -321,6 +322,18 @@ export class SchemaCompareMainWindow {
 		this.deploymentOptions = deploymentOptions;
 	}
 
+	private async populateProjectScripts(endpointInfo: mssql.SchemaCompareEndpointInfo): Promise<void> {
+		if (endpointInfo.endpointType !== mssql.SchemaCompareEndpointType.Project) {
+			return;
+		}
+
+		const databaseProjectsExtension = vscode.extensions.getExtension(loc.sqlDatabaseProjectExtensionId);
+
+		if (databaseProjectsExtension) {
+			endpointInfo.targetScripts = await (await databaseProjectsExtension.activate() as sqldbproj.IExtension).getProjectScriptFiles(endpointInfo.projectFilePath);
+		}
+	}
+
 	public async execute(comparisonResult: mssql.SchemaCompareCompletionResult = undefined) {
 		const service = await this.getService();
 
@@ -335,6 +348,9 @@ export class SchemaCompareMainWindow {
 				// create once per page
 				this.operationId = generateGuid();
 			}
+
+			this.populateProjectScripts(this.sourceEndpointInfo);
+			this.populateProjectScripts(this.targetEndpointInfo);
 
 			this.comparisonResult = await service.schemaCompare(this.operationId, this.sourceEndpointInfo, this.targetEndpointInfo, azdata.TaskExecutionMode.execute, this.deploymentOptions);
 
