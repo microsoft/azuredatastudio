@@ -1354,7 +1354,7 @@ export class ProjectsController {
 	 */
 	public async updateProjectFromDatabaseApiCall(model: UpdateProjectDataModel): Promise<void> {
 		if (model.action === UpdateProjectAction.Compare) {
-			await vscode.commands.executeCommand('schemaCompare.runComparison', model.sourceEndpointInfo, model.targetEndpointInfo, true, undefined);
+			await vscode.commands.executeCommand(constants.schemaCompareRunComparisonCommand, model.sourceEndpointInfo, model.targetEndpointInfo, true, undefined);
 		} else if (model.action === UpdateProjectAction.Update) {
 			await vscode.window.withProgress(
 				{
