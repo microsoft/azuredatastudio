@@ -892,13 +892,12 @@ export class Project implements ISqlProject {
 		// TODO: Support should be added for values that contain ';'
 
 		const databaseSource = this.evaluateProjectPropertyValue(constants.DatabaseSource);
-
-		if (databaseSource !== undefined) {
-			return databaseSource.split(';')
-				.filter(value => value.length > 0);
+		if (databaseSource === undefined) {
+			return [];
 		}
 
-		return [];
+		return databaseSource.split(';')
+			.filter(value => value.length > 0);
 	}
 
 	public createFileProjectEntry(relativePath: string, entryType: EntryType, sqlObjectType?: string): FileProjectEntry {
@@ -1484,18 +1483,18 @@ export class Project implements ISqlProject {
 	 * @param valueToAdd Value to be added to project property, values containing semicolon are not supported
 	 * @param caseSensitive Determines if value to add to collection should be compared against existing values case sensitively
 	 */
-	private async addValueToCollectionProjectProperty(propertyName: string, valueToAdd: string, caseSensitive?: boolean): Promise<void> {
+	private async addValueToCollectionProjectProperty(propertyName: string, valueToAdd: string, caseSensitive: boolean = false): Promise<void> {
 		if (valueToAdd.includes(';')) {
-			return;
+			throw new Error(constants.invalidProjectPropertyValueProvided(valueToAdd));
 		}
 
 		let propertyValueToSet = this.evaluateProjectPropertyValue(propertyName);
 		if (propertyValueToSet === undefined) {
 			propertyValueToSet = valueToAdd;
-		} else {
+		} else { // Property already exists, append to existing value
 			const propertyValue = caseSensitive ? propertyValueToSet : propertyValueToSet.toLocaleLowerCase();
-			const originalValueToAdd = valueToAdd;
 			valueToAdd = caseSensitive ? valueToAdd : valueToAdd.toLocaleLowerCase();
+			// If value is already present, exit function
 			if ((propertyValue.length > valueToAdd.length
 				&& (propertyValue.startsWith(`${valueToAdd};`)
 					|| propertyValue.endsWith(`;${valueToAdd}`)
@@ -1505,7 +1504,7 @@ export class Project implements ISqlProject {
 				return;
 			}
 
-			propertyValueToSet = `${propertyValueToSet};${originalValueToAdd}`;
+			propertyValueToSet = `${propertyValueToSet};${valueToAdd}`;
 		}
 
 		await this.setProjectPropertyValue(propertyName, propertyValueToSet);
@@ -1518,10 +1517,12 @@ export class Project implements ISqlProject {
 	 * @param caseSensitive Determines if value to remove from collection should be compared case sensitively
 	 */
 	protected async removeValueFromCollectionProjectProperty(propertyName: string, valueToRemove: string, caseSensitive?: boolean): Promise<void> {
+		if (valueToRemove.includes(';')) {
+			throw new Error(constants.invalidProjectPropertyValueProvided(valueToRemove));
+		}
+
 		let propertyValueToSet = this.evaluateProjectPropertyValue(propertyName);
-		if (propertyValueToSet === undefined
-			|| propertyValueToSet.length < valueToRemove.length
-			|| valueToRemove.includes(';')) {
+		if (propertyValueToSet === undefined || propertyValueToSet.length < valueToRemove.length) {
 			return;
 		}
 
@@ -1536,8 +1537,8 @@ export class Project implements ISqlProject {
 			} else if (propertyValue.endsWith(`;${valueToRemove}`)) {
 				propertyValueToSet = propertyValueToSet.substring(0, propertyValue.length - valueToRemove.length - 1);
 			} else if ((valueToRemovePosition = propertyValue.indexOf(`;${valueToRemove};`)) >= 0) {
-				propertyValueToSet = propertyValueToSet.substring(0, valueToRemovePosition + 1)
-					+ propertyValueToSet.substring(valueToRemovePosition + valueToRemove.length + 2);
+				propertyValueToSet = propertyValueToSet.substring(0, valueToRemovePosition + 1) +
+					propertyValueToSet.substring(valueToRemovePosition + valueToRemove.length + 2);
 			} else {
 				return;
 			}
@@ -1545,8 +1546,7 @@ export class Project implements ISqlProject {
 			await this.setProjectPropertyValue(
 				propertyName,
 				propertyValueToSet);
-		} else if (propertyValue.length === valueToRemove.length
-			&& propertyValue === valueToRemove) {
+		} else if (propertyValue === valueToRemove) {
 			this.removeProjectPropertyTag(propertyName);
 			await this.serializeToProjFile(this.projFileXmlDoc);
 		}
@@ -1592,7 +1592,7 @@ export class Project implements ISqlProject {
 		const firstPropertyElement = propertyElements[0];
 		if (firstPropertyElement.childNodes.length !== 1) {
 			// Property items are expected to have simple string content
-			throw new Error(constants.invalidProjectPropertyValue(propertyName));
+			throw new Error(constants.invalidProjectPropertyValueInSqlProj(propertyName));
 		}
 
 		return firstPropertyElement.childNodes[0].nodeValue!;
@@ -1619,14 +1619,14 @@ export class Project implements ISqlProject {
 		let propertyElement: Element | undefined;
 		if (propertyElements.length === 0) {
 			propertyElement = this.addProjectPropertyTag(propertyName);
+			propertyElement?.appendChild(this.projFileXmlDoc.createTextNode(propertyValue));
 		} else {
 			propertyElement = propertyElements[0];
 			if (propertyElement.childNodes.length > 0) {
-				propertyElement.removeChild(propertyElement.childNodes[0]);
+				propertyElement.replaceChild(this.projFileXmlDoc.createTextNode(propertyValue), propertyElement.childNodes[0]);
 			}
 		}
 
-		propertyElement?.appendChild(this.projFileXmlDoc.createTextNode(propertyValue));
 		await this.serializeToProjFile(this.projFileXmlDoc);
 	}
 

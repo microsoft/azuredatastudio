@@ -1338,11 +1338,6 @@ describe('Project: properties', function (): void {
 		should(databaseSourceItems.length).equal(1);
 		should(databaseSourceItems[0]).equal('test1');
 
-		// Should not add database source values with semicolon
-		await project.addDatabaseSource(';test2;');
-		databaseSourceItems = project.getDatabaseSourceValues();
-		should(databaseSourceItems.length).equal(1);
-
 		// Should add multiple database sources
 		await project.addDatabaseSource('test2');
 		await project.addDatabaseSource('test3');
@@ -1360,10 +1355,6 @@ describe('Project: properties', function (): void {
 		should(databaseSourceItems[0]).equal('test1');
 		should(databaseSourceItems[1]).equal('test2');
 		should(databaseSourceItems[2]).equal('test3');
-		should(getWellKnownDatabaseSourceString(project.getDatabaseSourceValues())).equal('');
-
-		await project.addDatabaseSource(constants.WellKnownDatabaseSources[0]);
-		should(getWellKnownDatabaseSourceString(project.getDatabaseSourceValues())).equal(constants.WellKnownDatabaseSources[0]);
 	});
 
 	it('Should remove database source from project property', async function (): Promise<void> {
@@ -1375,8 +1366,6 @@ describe('Project: properties', function (): void {
 		await project.addDatabaseSource('test3');
 		await project.addDatabaseSource('test4');
 
-		// Should not remove database source values with semicolon
-		await project.removeDatabaseSource(';test2;');
 		let databaseSourceItems: string[] = project.getDatabaseSourceValues();
 		should(databaseSourceItems.length).equal(4);
 
@@ -1387,6 +1376,7 @@ describe('Project: properties', function (): void {
 
 		databaseSourceItems = project.getDatabaseSourceValues();
 		should(databaseSourceItems.length).equal(1);
+		should(databaseSourceItems[0]).equal('test3');
 
 		// Should remove database source tag when last database source is removed
 		await project.removeDatabaseSource('test3');
@@ -1421,6 +1411,33 @@ describe('Project: properties', function (): void {
 		should(project['evaluateProjectPropertyValue'](propertyName)).equal('TEST');
 		await project['removeValueFromCollectionProjectProperty'](propertyName, 'TEST', true);
 		should(project['evaluateProjectPropertyValue'](propertyName)).equal(undefined);
+	});
+
+	it('Should only return well known database strings when getWellKnownDatabaseSourceString function is called', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjectInvalidCollationBaseline);
+		const project = await Project.openProject(projFilePath);
+
+		await project.addDatabaseSource('test1');
+		await project.addDatabaseSource('test2');
+		await project.addDatabaseSource('test3');
+		await project.addDatabaseSource(constants.WellKnownDatabaseSources[0]);
+
+		should(getWellKnownDatabaseSourceString(project.getDatabaseSourceValues()).length).equal(1);
+		should(getWellKnownDatabaseSourceString(project.getDatabaseSourceValues())[0]).equal(constants.WellKnownDatabaseSources[0]);
+	});
+
+	it('Should throw error when adding or removing database source that contains semicolon', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjectInvalidCollationBaseline);
+		const project = await Project.openProject(projFilePath);
+		const semicolon = ';';
+
+		await testUtils.shouldThrowSpecificError(
+			async () => await project.addDatabaseSource(semicolon),
+			constants.invalidProjectPropertyValueProvided(semicolon));
+
+		await testUtils.shouldThrowSpecificError(
+			async () => await project.removeDatabaseSource(semicolon),
+			constants.invalidProjectPropertyValueProvided(semicolon));
 	});
 });
 

@@ -643,15 +643,14 @@ export function getWellKnownDatabaseSourceValue(value: string): string | undefin
  * @param databaseSourceValues Array of database source values
  * @returns Well-known database sources, separated by semicolon
  */
-export function getWellKnownDatabaseSourceString(databaseSourceValues: string[]): string {
-	const databaseSourceSet = new Set();
-
+export function getWellKnownDatabaseSourceString(databaseSourceValues: string[]): string[] {
+	const databaseSourceSet = new Set<string>();
 	for (let databaseSourceValue of databaseSourceValues) {
-		let wellKnownDatabaseSourceValue = getWellKnownDatabaseSourceValue(databaseSourceValue);
+		const wellKnownDatabaseSourceValue = getWellKnownDatabaseSourceValue(databaseSourceValue);
 		if (wellKnownDatabaseSourceValue) {
 			databaseSourceSet.add(wellKnownDatabaseSourceValue);
 		}
 	}
 
-	return Array.from(databaseSourceSet).join(';');
+	return Array.from(databaseSourceSet);
 }
