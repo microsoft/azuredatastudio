@@ -635,10 +635,10 @@ export class SchemaCompareDialog {
 
 	private async shouldEnableOkayButton(): Promise<boolean> {
 		let sourcefilled = (this.sourceEndpointType === mssql.SchemaCompareEndpointType.Dacpac && await this.existsDacpac(this.sourceTextBox.value))
-			|| (this.sourceEndpointType === mssql.SchemaCompareEndpointType.Project && this.existsProjectFile(this.sourceTextBox.value))
+			|| (this.sourceEndpointType === mssql.SchemaCompareEndpointType.Project && await this.existsProjectFile(this.sourceTextBox.value))
 			|| (this.sourceEndpointType === mssql.SchemaCompareEndpointType.Database && !isNullOrUndefined(this.sourceDatabaseDropdown.value) && this.sourceDatabaseDropdown.values.findIndex(x => this.matchesValue(x, this.sourceDbEditable)) !== -1);
 		let targetfilled = (this.targetEndpointType === mssql.SchemaCompareEndpointType.Dacpac && await this.existsDacpac(this.targetTextBox.value))
-			|| (this.targetEndpointType === mssql.SchemaCompareEndpointType.Project && this.existsProjectFile(this.targetTextBox.value))
+			|| (this.targetEndpointType === mssql.SchemaCompareEndpointType.Project && await this.existsProjectFile(this.targetTextBox.value))
 			|| (this.targetEndpointType === mssql.SchemaCompareEndpointType.Database && !isNullOrUndefined(this.targetDatabaseDropdown.value) && this.targetDatabaseDropdown.values.findIndex(x => this.matchesValue(x, this.targetDbEditable)) !== -1);
 
 		return sourcefilled && targetfilled;
