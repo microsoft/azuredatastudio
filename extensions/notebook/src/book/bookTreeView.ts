@@ -461,6 +461,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		let depthOfNotebookInBook: number = path.relative(notebookPath, parentBook.bookPath).split(path.sep).length;
 		// Walk the tree, expanding parent nodes as needed to load the child nodes until
 		// we find the one for our Notebook
+		let expandedBookItems: BookTreeItem[] = [parentBook.rootNode];
 		while (depthOfNotebookInBook > -1) {
 			// check if the notebook is available in already expanded levels.
 			bookItem = parentBook.bookItems.find(b => b.tooltip === notebookPath);
@@ -478,7 +479,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				// since bookItems will not have them yet, check the sections->file property
 				bookItemToExpand = parentBook.bookItems.find(b => b.sections?.find(n => notebookFolders[notebookFolders.length - depthOfNotebookInBook - 1].indexOf(n.file.substring(n.file.lastIndexOf('/') + 1)) > -1));
 				// book isn't found even in the same level, break out and return.
-				if (!bookItemToExpand) {
+				if (!bookItemToExpand || expandedBookItems.includes(bookItemToExpand)) {
 					break;
 				}
 				// increment to reset the depth since parent is in the same level
@@ -492,6 +493,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			try {
 				// TO DO: Check why the reveal fails during initial load with 'TreeError [bookTreeView] Tree element not found'
 				await this._bookViewer.reveal(bookItemToExpand, { select: false, focus: shouldFocus, expand: true });
+				expandedBookItems.push(bookItemToExpand);
 			}
 			catch (e) {
 				console.error(e);
