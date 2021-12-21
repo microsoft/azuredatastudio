@@ -88,6 +88,9 @@ export class SchemaCompareMainWindow {
 	// 3. dacpac
 	// 4. project
 	public async start(sourceContext: any, targetContext: mssql.SchemaCompareEndpointInfo = undefined, comparisonResult: mssql.SchemaCompareResult = undefined): Promise<void> {
+		let source: mssql.SchemaCompareEndpointInfo;
+		let target: mssql.SchemaCompareEndpointInfo;
+
 		const targetIsSetAsProject: boolean = targetContext && targetContext.endpointType === mssql.SchemaCompareEndpointType.Project;
 
 		// if schema compare was launched from a db or a connection profile, set that as the source
@@ -95,7 +98,7 @@ export class SchemaCompareMainWindow {
 
 		if (targetIsSetAsProject) {
 			profile = sourceContext;
-			this.targetEndpointInfo = targetContext;
+			target = targetContext;
 		} else {
 			profile = sourceContext ? <azdata.IConnectionProfile>sourceContext.connectionProfile : undefined;
 		}
@@ -116,7 +119,7 @@ export class SchemaCompareMainWindow {
 				usr = loc.defaultText;
 			}
 
-			this.sourceEndpointInfo = {
+			source = {
 				endpointType: mssql.SchemaCompareEndpointType.Database,
 				serverDisplayName: `${profile.serverName} (${usr})`,
 				serverName: profile.serverName,
@@ -131,7 +134,7 @@ export class SchemaCompareMainWindow {
 				folderStructure: ''
 			};
 		} else if (sourceDacpac) {
-			this.sourceEndpointInfo = {
+			source = {
 				endpointType: mssql.SchemaCompareEndpointType.Dacpac,
 				serverDisplayName: '',
 				serverName: '',
@@ -145,7 +148,7 @@ export class SchemaCompareMainWindow {
 				folderStructure: ''
 			};
 		} else if (sourceProject) {
-			this.sourceEndpointInfo = {
+			source = {
 				endpointType: mssql.SchemaCompareEndpointType.Project,
 				packageFilePath: '',
 				serverDisplayName: '',
@@ -160,14 +163,29 @@ export class SchemaCompareMainWindow {
 			};
 		}
 
+		await this.launch(source, target, false, comparisonResult);
+	}
+
+	public async launch(source: mssql.SchemaCompareEndpointInfo | undefined, target: mssql.SchemaCompareEndpointInfo | undefined, runComparison: boolean = false, comparisonResult: mssql.SchemaCompareResult | undefined) {
+		if (runComparison && comparisonResult) {
+			throw new Error('Cannot both pass a comparison result and request a new comparison be run.');
+		}
+
+		this.sourceEndpointInfo = source;
+		this.targetEndpointInfo = target;
+
 		await this.GetDefaultDeploymentOptions();
 		await Promise.all([
 			this.registerContent(),
 			this.editor.openEditor()
 		]);
 
-		if (targetIsSetAsProject) {
+		this.resetWindow();
+
+		if (comparisonResult) {
 			await this.execute(comparisonResult);
+		} else if (runComparison) {
+			await this.startCompare();
 		}
 	}
 

@@ -1353,6 +1353,19 @@ export class ProjectsController {
 	 * Uses the DacFx service to update an existing SQL Project with the changes/differences from a database
 	 */
 	public async updateProjectFromDatabaseApiCall(model: UpdateProjectDataModel): Promise<void> {
+		if (model.action === UpdateProjectAction.Compare) {
+			await vscode.commands.executeCommand('schemaCompare.runComparison', model.sourceEndpointInfo, model.targetEndpointInfo, true, undefined);
+		} else if (model.action === UpdateProjectAction.Update) {
+			// Run schema comparison
+
+		} else {
+			throw new Error(`Unknown UpdateProjectAction: ${model.action}`);
+		}
+
+		return;
+
+		// ----
+
 		let ext = vscode.extensions.getExtension(mssql.extension.name)!;
 		const service = (await ext.activate() as mssql.IExtension).schemaCompare;
 		const deploymentOptions = await service.schemaCompareGetDefaultOptions();
