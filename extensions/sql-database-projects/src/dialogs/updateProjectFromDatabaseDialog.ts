@@ -553,7 +553,7 @@ export class UpdateProjectFromDatabaseDialog {
 			packageFilePath: '',
 		};
 
-		const model: UpdateProjectAction = {
+		const model: UpdateProjectDataModel = {
 			sourceEndpointInfo: sourceEndpointInfo,
 			targetEndpointInfo: targetEndpointInfo,
 			action: this.action!
