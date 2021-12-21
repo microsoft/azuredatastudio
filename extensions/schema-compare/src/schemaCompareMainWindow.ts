@@ -367,8 +367,7 @@ export class SchemaCompareMainWindow {
 				this.operationId = generateGuid();
 			}
 
-			this.populateProjectScripts(this.sourceEndpointInfo);
-			this.populateProjectScripts(this.targetEndpointInfo);
+			await Promise.all([this.populateProjectScripts(this.sourceEndpointInfo), this.populateProjectScripts(this.targetEndpointInfo)]);
 
 			this.comparisonResult = await service.schemaCompare(this.operationId, this.sourceEndpointInfo, this.targetEndpointInfo, azdata.TaskExecutionMode.execute, this.deploymentOptions);
 
