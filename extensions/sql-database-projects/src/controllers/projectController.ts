@@ -1356,28 +1356,39 @@ export class ProjectsController {
 		if (model.action === UpdateProjectAction.Compare) {
 			await vscode.commands.executeCommand('schemaCompare.runComparison', model.sourceEndpointInfo, model.targetEndpointInfo, true, undefined);
 		} else if (model.action === UpdateProjectAction.Update) {
-			// Run schema comparison
+			await vscode.window.withProgress(
+				{
+					location: vscode.ProgressLocation.Notification,
+					title: constants.updatingProjectFromDatabase(path.basename(model.targetEndpointInfo.projectFilePath), model.sourceEndpointInfo.databaseName),
+					cancellable: false
+				}, async (_progress, _token) => {
+					return this.schemaCompareAndUpdateProject(model.sourceEndpointInfo, model.targetEndpointInfo);
+				});
 
+			void vscode.commands.executeCommand(constants.refreshDataWorkspaceCommand);
+			utils.getDataWorkspaceExtensionApi().showProjectsView();
 		} else {
 			throw new Error(`Unknown UpdateProjectAction: ${model.action}`);
 		}
 
 		return;
+	}
 
-		// ----
-
-		let ext = vscode.extensions.getExtension(mssql.extension.name)!;
+	private async schemaCompareAndUpdateProject(source: mssql.SchemaCompareEndpointInfo, target: mssql.SchemaCompareEndpointInfo): Promise<void> {
+		// Run schema comparison
+		const ext = vscode.extensions.getExtension(mssql.extension.name)!;
 		const service = (await ext.activate() as mssql.IExtension).schemaCompare;
 		const deploymentOptions = await service.schemaCompareGetDefaultOptions();
 		const operationId = UUID.generateUuid();
 
-		model.targetEndpointInfo.targetScripts = await this.getProjectScriptFiles(model.targetEndpointInfo.projectFilePath);
-		model.targetEndpointInfo.dataSchemaProvider = await this.getProjectDatabaseSchemaProvider(model.targetEndpointInfo.projectFilePath);
+		target.targetScripts = await this.getProjectScriptFiles(target.projectFilePath);
+		target.dataSchemaProvider = await this.getProjectDatabaseSchemaProvider(target.projectFilePath);
 
 		TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, 'SchemaComparisonStarted');
 
+		// Perform schema comparison.  Results are cached in SqlToolsService under the operationId
 		const comparisonResult: mssql.SchemaCompareResult = await service.schemaCompare(
-			operationId, model.sourceEndpointInfo, model.targetEndpointInfo, utils.getAzdataApi()!.TaskExecutionMode.execute, deploymentOptions.defaultDeploymentOptions
+			operationId, source, target, utils.getAzdataApi()!.TaskExecutionMode.execute, deploymentOptions.defaultDeploymentOptions
 		);
 
 		if (!comparisonResult || !comparisonResult.success) {
@@ -1400,25 +1411,13 @@ export class ProjectsController {
 			return;
 		}
 
-		if (model.action === UpdateProjectAction.Update) {
-			const publishResult = await this.schemaComparePublishProjectChanges(
-				operationId, model.targetEndpointInfo.projectFilePath, model.targetEndpointInfo.folderStructure
-			);
+		// Publish the changes (retrieved from the cache by operationId)
+		const publishResult = await this.schemaComparePublishProjectChanges(operationId, target.projectFilePath, target.folderStructure);
 
-			if (publishResult.success) {
-				void vscode.window.showInformationMessage(constants.applySuccess);
-			} else {
-				void vscode.window.showErrorMessage(constants.applyError(publishResult.errorMessage));
-			}
-
-			void vscode.commands.executeCommand(constants.refreshDataWorkspaceCommand);
-			const workspaceApi = utils.getDataWorkspaceExtensionApi();
-			workspaceApi.showProjectsView();
-		} else if (model.action === UpdateProjectAction.Compare) {
-			await vscode.commands.executeCommand(constants.schemaCompareStartCommand,
-				model.sourceEndpointInfo.connectionDetails,
-				model.targetEndpointInfo,
-				comparisonResult);
+		if (publishResult.success) {
+			void vscode.window.showInformationMessage(constants.applySuccess);
+		} else {
+			void vscode.window.showErrorMessage(constants.applyError(publishResult.errorMessage));
 		}
 	}
 

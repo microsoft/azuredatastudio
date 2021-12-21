@@ -270,6 +270,7 @@ export const actionLabel = localize('actionLabel', "Action");
 export const applySuccess = localize('applySuccess', "Project was successfully updated");
 export const equalComparison = localize('equalComparison', "The project is already up to date with the database");
 export function applyError(errorMessage: string): string { return localize('applyError', "There was an error updating the project: {0}", errorMessage); }
+export function updatingProjectFromDatabase(projectName: string, databaseName: string): string { return localize('updatingProjectFromDatabase', "Updating {0} from {1}...", projectName, databaseName); }
 
 // Error messages
 
