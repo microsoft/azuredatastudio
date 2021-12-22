@@ -8,22 +8,22 @@ import * as constants from '../common/constants';
 import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
 import { PublishDatabaseDialog } from './publishDatabaseDialog';
+import { DeployOptionsModel } from '../models/options/deployOptionsModel';
 
 export class PublishOptionsDialog {
 
 	public dialog!: azdata.window.Dialog;
-	private optionsTab!: azdata.window.Dialog;
+	private optionsTab: azdata.window.Dialog | undefined;
 	private disposableListeners: vscode.Disposable[] = [];
 	private descriptionHeading!: azdata.TableComponent;
 	private descriptionText!: azdata.TextComponent;
 	private optionsTable!: azdata.TableComponent;
-	private optionsChanged: boolean = false;
-	// private optionsModel!: SchemaCompareOptionsModel;
+	private optionsModel!: DeployOptionsModel;
 	private optionsFlexBuilder!: azdata.FlexContainer;
 
 
 	constructor(defaultOptions: mssql.DeploymentOptions, private publish: PublishDatabaseDialog) {
-		//this.optionsModel = new SchemaCompareOptionsModel(defaultOptions);
+		this.optionsModel = new DeployOptionsModel(defaultOptions);
 	}
 
 	protected initializeDialog(): void {
@@ -33,8 +33,7 @@ export class PublishOptionsDialog {
 	}
 
 	public openDialog(): void {
-		let event = null;
-		this.dialog = azdata.window.createModelViewDialog(constants.GeneralOptionsLabel, event);
+		this.dialog = azdata.window.createModelViewDialog(constants.GeneralOptionsLabel);
 
 		this.initializeDialog();
 
@@ -72,7 +71,7 @@ export class PublishOptionsDialog {
 
 
 			this.optionsTable = view.modelBuilder.table().component();
-			// await this.updateOptionsTable();
+			await this.updateOptionsTable();
 
 			this.disposableListeners.push(this.optionsTable.onRowSelected(async () => {
 				let row = this.optionsTable.selectedRows[0];
@@ -102,6 +101,37 @@ export class PublishOptionsDialog {
 			await view.initializeModel(this.optionsFlexBuilder);
 			await this.optionsTable.focus();
 		});
+	}
+
+	private async updateOptionsTable(): Promise<void> {
+		let data = this.optionsModel.getOptionsData();
+		await this.optionsTable.updateProperties({
+			data: data,
+			columns: [
+				<azdata.CheckboxColumn>
+				{
+					value: 'Include',
+					type: azdata.ColumnType.checkBox,
+					action: azdata.ActionOnCellCheckboxCheck.customAction,
+					headerCssClass: 'display-none',
+					cssClass: 'no-borders align-with-header',
+					width: 50
+				},
+				{
+					value: 'Option Name',
+					headerCssClass: 'display-none',
+					cssClass: 'no-borders align-with-header',
+					width: 50
+				}
+			],
+			ariaRowCount: data.length
+		});
+	}
+
+	protected execute(): void {
+		this.optionsModel.setDeploymentOptions();
+		this.publish.setDeploymentOptions(this.optionsModel.deploymentOptions);
+		this.disposeListeners();
 	}
 
 	protected cancel(): void {

@@ -18,7 +18,7 @@ import { getAgreementDisplayText, getConnectionName, getDockerBaseImages } from 
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { IDeployProfile } from '../models/deploy/deployProfile';
 import { Deferred } from '../common/promise';
-import { publishOptionsDialog } from './publishOptionsDialog';
+import { PublishOptionsDialog } from './publishOptionsDialog';
 
 interface DataSourceDropdownValue extends azdataType.CategoryValue {
 	dataSource: SqlConnectionDataSource;
@@ -58,7 +58,7 @@ export class PublishDatabaseDialog {
 	private profileUsed: boolean = false;
 	private serverName: string | undefined;
 	protected optionsButton!: azdataType.ButtonComponent;
-	private publishOptionDialog!: publishOptionsDialog;
+	private publishOptionDialog!: PublishOptionsDialog;
 
 	private completionPromise: Deferred = new Deferred();
 
@@ -145,6 +145,7 @@ export class PublishDatabaseDialog {
 			const horizontalFormSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 			horizontalFormSection.addItems([profileRow, this.databaseRow, displayOptions]);
 
+			await this.GetDefaultDeploymentOptions();
 
 			this.formBuilder = <azdataType.FormBuilder>view.modelBuilder.formContainer()
 				.withFormItems([
@@ -898,6 +899,14 @@ export class PublishDatabaseDialog {
 	}
 
 	//#region Deploy Display Options
+
+	private async GetDefaultDeploymentOptions(): Promise<void> {
+		// Same as dacfx default options
+		// const service = await this.getService();
+		// let result = await service.schemaCompareGetDefaultOptions();
+		// this.setDeploymentOptions(DeploymentOptions);
+	}
+
 	// Creates Display options container with hyperlink options
 	private createOptionsButton(view: azdataType.ModelView) {
 		const optionslabel = view.modelBuilder.text().withProps({
@@ -916,11 +925,15 @@ export class PublishDatabaseDialog {
 		this.optionsButton.onDidClick(async () => {
 			TelemetryReporter.sendActionEvent(TelemetryViews.SqlProjectPublishDialog, 'PublishOptionsClicked');
 			// create fresh every time
-			this.publishOptionDialog = new publishOptionsDialog(this.deploymentOptions, this);
+			this.publishOptionDialog = new PublishOptionsDialog(this.deploymentOptions, this);
 			this.publishOptionDialog.openDialog();
 		});
 
 		return optionsRow;
+	}
+
+	public setDeploymentOptions(deploymentOptions: DeploymentOptions): void {
+		this.deploymentOptions = deploymentOptions;
 	}
 
 	//#endregion
