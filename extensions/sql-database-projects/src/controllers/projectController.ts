@@ -1328,7 +1328,7 @@ export class ProjectsController {
 			}
 		} catch { }
 
-		let updateProjectFromDatabaseDialog = this.getUpdateProjectFromDatabaseDialog(connection, project);
+		const updateProjectFromDatabaseDialog = this.getUpdateProjectFromDatabaseDialog(connection, project);
 
 		updateProjectFromDatabaseDialog.updateProjectFromDatabaseCallback = async (model) => await this.updateProjectFromDatabaseCallback(model);
 

@@ -166,6 +166,13 @@ export class SchemaCompareMainWindow {
 		await this.launch(source, target, false, comparisonResult);
 	}
 
+	/**
+	 * Primary functional entrypoint for opening the schema comparison window, and optionally running it.
+	 * @param source
+	 * @param target
+	 * @param runComparison whether to immediately run the schema comparison.  Requires both source and target to be specified.  Cannot be true when comparisonResult is set.
+	 * @param comparisonResult a pre-computed schema comparison result to display.  Cannot be set when runComparison is true.
+	 */
 	public async launch(source: mssql.SchemaCompareEndpointInfo | undefined, target: mssql.SchemaCompareEndpointInfo | undefined, runComparison: boolean = false, comparisonResult: mssql.SchemaCompareResult | undefined) {
 		if (runComparison && comparisonResult) {
 			throw new Error('Cannot both pass a comparison result and request a new comparison be run.');
@@ -183,6 +190,10 @@ export class SchemaCompareMainWindow {
 		if (comparisonResult) {
 			await this.execute(comparisonResult);
 		} else if (runComparison) {
+			if (!source || !target) {
+				throw new Error('source and target must both be set when runComparison is true.');
+			}
+
 			await this.startCompare();
 		}
 	}
@@ -875,7 +886,7 @@ export class SchemaCompareMainWindow {
 					case mssql.SchemaCompareEndpointType.Database:
 						result = await service.schemaComparePublishDatabaseChanges(this.comparisonResult.operationId, this.targetEndpointInfo.serverName, this.targetEndpointInfo.databaseName, azdata.TaskExecutionMode.execute);
 						break;
-					case mssql.SchemaCompareEndpointType.Project: // Project apply needs sql-database-projects updates in (circular dependency; coming next)
+					case mssql.SchemaCompareEndpointType.Project:
 						result = await vscode.commands.executeCommand(loc.sqlDatabaseProjectsPublishChanges, this.comparisonResult.operationId, this.targetEndpointInfo.projectFilePath, this.targetEndpointInfo.folderStructure);
 						if (!result.success) {
 							void vscode.window.showErrorMessage(loc.applyError);
