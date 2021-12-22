@@ -926,7 +926,6 @@ export class SchemaCompareMainWindow {
 				this.optionsButton.enabled = false;
 				this.switchButton.enabled = ((this.sourceName && this.sourceName !== ' ') || (this.targetName && this.targetName !== ' ')) ? true : false; // allows switching if the source or target name is set
 				this.openScmpButton.enabled = true;
-				this.saveScmpButton.enabled = false;
 				this.cancelCompareButton.enabled = false;
 				this.selectSourceButton.enabled = true;
 				this.selectTargetButton.enabled = true;
@@ -950,7 +949,6 @@ export class SchemaCompareMainWindow {
 				this.optionsButton.enabled = false;
 				this.switchButton.enabled = false;
 				this.openScmpButton.enabled = false;
-				this.saveScmpButton.enabled = false;
 				this.cancelCompareButton.enabled = true;
 				this.selectSourceButton.enabled = false;
 				this.selectTargetButton.enabled = false;
