@@ -180,8 +180,6 @@ export class SchemaCompareMainWindow {
 			this.editor.openEditor()
 		]);
 
-		this.resetWindow();
-
 		if (comparisonResult) {
 			await this.execute(comparisonResult);
 		} else if (runComparison) {
