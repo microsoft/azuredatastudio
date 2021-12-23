@@ -7,6 +7,7 @@ import type * as azdataType from 'azdata';
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
+import * as mssql from '../../../mssql';
 
 import { Project } from '../models/project';
 import { SqlConnectionDataSource } from '../models/dataSources/sqlConnectionStringSource';
@@ -137,6 +138,10 @@ export class PublishDatabaseDialog {
 				title: constants.sqlCmdVariables
 			};
 
+			// Get the default deployment option and set
+			const options = await this.getDefaultDeploymentOptions();
+			this.setDeploymentOptions(options);
+
 			const profileRow = this.createProfileRow(view);
 			this.connectionRow = this.createConnectionRow(view);
 			this.databaseRow = this.createDatabaseRow(view);
@@ -144,8 +149,6 @@ export class PublishDatabaseDialog {
 
 			const horizontalFormSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 			horizontalFormSection.addItems([profileRow, this.databaseRow, displayOptions]);
-
-			await this.GetDefaultDeploymentOptions();
 
 			this.formBuilder = <azdataType.FormBuilder>view.modelBuilder.formContainer()
 				.withFormItems([
@@ -285,8 +288,6 @@ export class PublishDatabaseDialog {
 	}
 
 	public async getDeploymentOptions(): Promise<DeploymentOptions> {
-		// eventually, database options will be configurable in this dialog
-		// but for now, just send the default DacFx deployment options if no options were loaded from a publish profile
 		if (!this.deploymentOptions) {
 			// We only use the dialog in ADS context currently so safe to cast to the mssql DeploymentOptions here
 			this.deploymentOptions = await utils.getDefaultPublishDeploymentOptions(this.project) as DeploymentOptions;
@@ -899,14 +900,6 @@ export class PublishDatabaseDialog {
 	}
 
 	//#region Deploy Display Options
-
-	private async GetDefaultDeploymentOptions(): Promise<void> {
-		// Same as dacfx default options
-		// const service = await this.getService();
-		// let result = await service.schemaCompareGetDefaultOptions();
-		// this.setDeploymentOptions(DeploymentOptions);
-	}
-
 	// Creates Display options container with hyperlink options
 	private createOptionsButton(view: azdataType.ModelView) {
 		const optionslabel = view.modelBuilder.text().withProps({
@@ -932,10 +925,13 @@ export class PublishDatabaseDialog {
 		return optionsRow;
 	}
 
+	public async getDefaultDeploymentOptions(): Promise<DeploymentOptions> {
+		return await utils.getDefaultPublishDeploymentOptions(this.project) as DeploymentOptions;
+	}
+
 	public setDeploymentOptions(deploymentOptions: DeploymentOptions): void {
 		this.deploymentOptions = deploymentOptions;
 	}
-
 	//#endregion
 }
 

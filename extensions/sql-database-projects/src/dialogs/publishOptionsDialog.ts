@@ -9,6 +9,8 @@ import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
 import { PublishDatabaseDialog } from './publishDatabaseDialog';
 import { DeployOptionsModel } from '../models/options/deployOptionsModel';
+import * as utils from '../common/utils';
+import { DeploymentOptions } from '../models/IDeploySettings';
 
 export class PublishOptionsDialog {
 
@@ -73,6 +75,7 @@ export class PublishOptionsDialog {
 			this.optionsTable = view.modelBuilder.table().component();
 			await this.updateOptionsTable();
 
+			// Get the description of the selected option
 			this.disposableListeners.push(this.optionsTable.onRowSelected(async () => {
 				let row = this.optionsTable.selectedRows[0];
 				let label = this.optionsModel.optionsLabels[row];
@@ -81,12 +84,12 @@ export class PublishOptionsDialog {
 				});
 			}));
 
+			// Update deploy options value on checkbox onchange
 			this.disposableListeners.push(this.optionsTable.onCellAction((rowState) => {
 				let checkboxState = <azdata.ICheckboxCellActionEventArgs>rowState;
 				if (checkboxState && checkboxState.row !== undefined) {
 					let label = this.optionsModel.optionsLabels[checkboxState.row];
 					this.optionsModel.optionsLookup[label] = checkboxState.checked;
-					this.optionsChanged = true;
 				}
 			}));
 
@@ -103,6 +106,7 @@ export class PublishOptionsDialog {
 		});
 	}
 
+	// Update the default options to the options table area
 	private async updateOptionsTable(): Promise<void> {
 		let data = this.optionsModel.getOptionsData();
 		await this.optionsTable.updateProperties({
@@ -128,29 +132,26 @@ export class PublishOptionsDialog {
 		});
 	}
 
+	// Ok button click, will update the deployment options with selections
 	protected execute(): void {
 		this.optionsModel.setDeploymentOptions();
 		this.publish.setDeploymentOptions(this.optionsModel.deploymentOptions);
 		this.disposeListeners();
 	}
 
+	// Cancels the deploy options table
 	protected cancel(): void {
 		this.disposeListeners();
 	}
 
+	// Reset button click, resets all the options selection
 	private async reset(): Promise<void> {
-		// let service = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.IExtension).schemaCompare;
-		// let result = await service.schemaCompareGetDefaultOptions();
-		// this.optionsModel.deploymentOptions = result.defaultDeploymentOptions;
-		// this.optionsChanged = true;
+		let result = this.publish.getDefaultDeploymentOptions();
+		this.optionsModel.deploymentOptions = result;
 
-		// await this.updateOptionsTable();
-		// this.optionsFlexBuilder.removeItem(this.optionsTable);
-		// this.optionsFlexBuilder.insertItem(this.optionsTable, 0, { CSSStyles: { 'overflow': 'scroll', 'height': '65vh' } });
-
-		// await this.updateObjectsTable();
-		// this.objectTypesFlexBuilder.removeItem(this.objectsTable);
-		// this.objectTypesFlexBuilder.addItem(this.objectsTable, { CSSStyles: { 'overflow': 'scroll', 'height': '80vh' } });
+		await this.updateOptionsTable();
+		this.optionsFlexBuilder.removeItem(this.optionsTable);
+		this.optionsFlexBuilder.insertItem(this.optionsTable, 0, { CSSStyles: { 'overflow': 'scroll', 'height': '65vh' } });
 	}
 
 	private disposeListeners(): void {

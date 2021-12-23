@@ -107,11 +107,11 @@ export class DeployOptionsModel {
 
 	public setDeploymentOptions() {
 		for (let option in this.optionsLookup) {
-			this.setSchemaCompareOptionUtil(option, this.optionsLookup[option]);
+			this.setDeployOptionUtil(option, this.optionsLookup[option]);
 		}
 	}
 
-	public setSchemaCompareOptionUtil(label: string, value: boolean) {
+	public setDeployOptionUtil(label: string, value: boolean) {
 		switch (label) {
 			case constants.IgnoreTableOptions:
 				this.deploymentOptions.ignoreTableOptions = value;
@@ -807,5 +807,6 @@ export class DeployOptionsModel {
 			case constants.IgnoreColumnOrder:
 				return constants.descriptionIgnoreColumnOrder;
 		}
+		return '';
 	}
 }
