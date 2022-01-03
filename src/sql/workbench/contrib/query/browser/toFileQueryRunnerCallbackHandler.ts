@@ -28,7 +28,7 @@ export class ToFileQueryRunnerCallbackHandler implements IQueryRunnerCallbackHan
 	private resultSetCount: number = 0;
 	private queryContainsError: boolean = false;
 	private closingMessageIncluded: boolean = false;
-	private generatedFileWithErrors: boolean = false;
+	private hasCreatedResultsFile: boolean = false;
 	private runner: QueryRunner;
 
 	constructor(
@@ -114,8 +114,7 @@ export class ToFileQueryRunnerCallbackHandler implements IQueryRunnerCallbackHan
 			}
 		}
 
-		if (this.queryContainsError && this.closingMessageIncluded && !this.generatedFileWithErrors) {
-			this.generatedFileWithErrors = true;
+		if (!this.hasCreatedResultsFile && this.closingMessageIncluded && (this.queryContainsError || this.resultSetCount === 0)) {
 			await this.createResultsFile();
 		}
 	}
@@ -127,7 +126,7 @@ export class ToFileQueryRunnerCallbackHandler implements IQueryRunnerCallbackHan
 		this.resultSetCount = 0;
 		this.queryContainsError = false;
 		this.closingMessageIncluded = false;
-		this.generatedFileWithErrors = false;
+		this.hasCreatedResultsFile = false;
 	}
 
 	private addResultSet(resultSet: ResultSetSummary[]) {
@@ -188,6 +187,7 @@ export class ToFileQueryRunnerCallbackHandler implements IQueryRunnerCallbackHan
 		await input.resolve();
 		input.setDirty(false);
 		await this.instantiationService.invokeFunction(formatDocumentWithSelectedProvider, input.textEditorModel, FormattingMode.Explicit, Progress.None, CancellationToken.None);
+		this.hasCreatedResultsFile = true;
 
 		return this.editorService.openEditor(input);
 	}
