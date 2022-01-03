@@ -122,13 +122,15 @@ export class Project implements ISqlProject {
 		// check if this is an sdk style project https://docs.microsoft.com/en-us/dotnet/core/project-sdk/overview
 		this._isSdkStyleProject = this.CheckForSdkStyleProject();
 
+		// get pre and post deploy scripts specified in the sqlproj
+		this._preDeployScripts = this.readPreDeployScripts();
+		this._postDeployScripts = this.readPostDeployScripts();
+		this._noneDeployScripts = this.readNoneDeployScripts();
+
 		// get files and folders
 		this._files = await this.readFilesInProject();
 		this.files.push(...await this.readFolders());
 
-		this._preDeployScripts = this.readPreDeployScripts();
-		this._postDeployScripts = this.readPostDeployScripts();
-		this._noneDeployScripts = this.readNoneDeployScripts();
 		this._databaseReferences = this.readDatabaseReferences();
 		this._importedTargets = this.readImportedTargets();
 
@@ -225,6 +227,13 @@ export class Project implements ISqlProject {
 			}
 		}
 
+		if (this.isSdkStyleProject) {
+			// remove any pre/post/none deploy scripts that were specified in the sqlproj so they aren't counted twice
+			this.preDeployScripts.forEach(f => filesSet.delete(f.relativePath));
+			this.postDeployScripts.forEach(f => filesSet.delete(f.relativePath));
+			this.noneDeployScripts.forEach(f => filesSet.delete(f.relativePath));
+		}
+
 		// create a FileProjectEntry for each file
 		const fileEntries: FileProjectEntry[] = [];
 		filesSet.forEach(f => {
@@ -238,8 +247,13 @@ export class Project implements ISqlProject {
 	private async readFolders(): Promise<FileProjectEntry[]> {
 		const folderEntries: FileProjectEntry[] = [];
 
-		// glob style getting folders for sdk style projects
 		const foldersSet = new Set<string>();
+
+		// get any folders listed in the project file
+		const sqlprojFolders = await this.foldersListedInSqlproj();
+		sqlprojFolders.forEach(f => foldersSet.add(f));
+
+		// glob style getting folders for sdk style projects
 		if (this._isSdkStyleProject) {
 			this.files.forEach(file => {
 				// if file is in the project's folder, add the folders from the project file to this file to the list of folders. This is so that only non-empty folders in the project folder will be added by default.
@@ -249,7 +263,28 @@ export class Project implements ISqlProject {
 					foldersToFile.forEach(f => foldersSet.add(utils.convertSlashesForSqlProj(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(f)))));
 				}
 			});
+
+			// add any intermediate folders of the folders that are listed in the sqlproj
+			// If there are nested empty folders, there will only be a Folder entry for the inner most folder, so we need to add entries for the intermediate folders
+			sqlprojFolders.forEach(folder => {
+				const fullPath = path.join(utils.getPlatformSafeFileEntryPath(this.projectFolderPath), utils.getPlatformSafeFileEntryPath(folder));
+				const intermediateFolders = utils.getFoldersAlongPath(this.projectFolderPath, utils.getPlatformSafeFileEntryPath(fullPath));
+				intermediateFolders.forEach(f => foldersSet.add(utils.convertSlashesForSqlProj(utils.trimUri(Uri.file(this.projectFilePath), Uri.file(f)))));
+			});
 		}
+
+		foldersSet.forEach(f => {
+			folderEntries.push(this.createFileProjectEntry(f, EntryType.Folder));
+		});
+
+		return folderEntries;
+	}
+
+	/**
+	 * @returns Array of folders specified in the sqlproj
+	 */
+	private async foldersListedInSqlproj(): Promise<string[]> {
+		const folders: string[] = [];
 
 		// get any folders listed in the project file
 		for (let ig = 0; ig < this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.ItemGroup).length; ig++) {
@@ -262,8 +297,7 @@ export class Project implements ISqlProject {
 					// don't add Properties folder since it isn't supported for now and don't add if the folder was already added
 					if (utils.trimChars(relativePath, '\\') !== constants.Properties) {
 						// make sure folder relative path ends with \\ because sometimes SSDT adds folders without trailing \\
-						relativePath = relativePath.endsWith(constants.SqlProjPathSeparator) ? relativePath : relativePath + constants.SqlProjPathSeparator;
-						foldersSet.add(relativePath);
+						folders.push(utils.ensureTrailingSlash(relativePath));
 					}
 				}
 			} catch (e) {
@@ -272,11 +306,7 @@ export class Project implements ISqlProject {
 			}
 		}
 
-		foldersSet.forEach(f => {
-			folderEntries.push(this.createFileProjectEntry(f, EntryType.Folder));
-		});
-
-		return folderEntries;
+		return folders;
 	}
 
 	private readPreDeployScripts(): FileProjectEntry[] {
@@ -875,7 +905,7 @@ export class Project implements ISqlProject {
 		return outputItemGroup;
 	}
 
-	private async addFileToProjFile(path: string, xmlTag: string, attributes?: Map<string, string>): Promise<void> {
+	private async addFileToProjFile(filePath: string, xmlTag: string, attributes?: Map<string, string>): Promise<void> {
 		let itemGroup;
 
 		if (xmlTag === constants.PreDeploy || xmlTag === constants.PostDeploy) {
@@ -888,11 +918,25 @@ export class Project implements ISqlProject {
 			}
 		}
 		else {
+			if (this.isSdkStyleProject) {
+				// if there's a folder entry for the folder containing this file, remove it from the sqlproj because the folder will now be
+				// included by the glob that includes this file (same as how csproj does it)
+				const folders = await this.foldersListedInSqlproj();
+				folders.forEach(folder => {
+					const trimmedUri = utils.trimUri(Uri.file(utils.getPlatformSafeFileEntryPath(folder)), Uri.file(utils.getPlatformSafeFileEntryPath(filePath)));
+					const basename = path.basename(utils.getPlatformSafeFileEntryPath(filePath));
+					if (trimmedUri === basename) {
+						// remove folder entry from sqlproj
+						this.removeFolderNode(folder);
+					}
+				});
+			}
+
 			const currentFiles = await this.readFilesInProject();
 
 			// don't need to add an entry if it's already included by a glob pattern
 			// unless it has an attribute that needs to be added, like external streaming job which needs it so it can be determined if validation can run on it
-			if (attributes?.size === 0 && currentFiles.find(f => f.relativePath === utils.convertSlashesForSqlProj(path))) {
+			if (attributes?.size === 0 && currentFiles.find(f => f.relativePath === utils.convertSlashesForSqlProj(filePath))) {
 				return;
 			}
 
@@ -901,7 +945,7 @@ export class Project implements ISqlProject {
 
 		const newFileNode = this.projFileXmlDoc!.createElement(xmlTag);
 
-		newFileNode.setAttribute(constants.Include, utils.convertSlashesForSqlProj(path));
+		newFileNode.setAttribute(constants.Include, utils.convertSlashesForSqlProj(filePath));
 
 		if (attributes) {
 			for (const key of attributes.keys()) {
@@ -979,31 +1023,37 @@ export class Project implements ISqlProject {
 		return false;
 	}
 
-	private addFolderToProjFile(path: string): void {
+	private async addFolderToProjFile(folderPath: string): Promise<void> {
+		if (this.isSdkStyleProject) {
+			// if there's a folder entry for the folder containing this folder, remove it from the sqlproj because the folder will now be
+			// included by the glob that includes this folder (same as how csproj does it)
+			const folders = await this.foldersListedInSqlproj();
+			folders.forEach(folder => {
+				const trimmedUri = utils.trimChars(utils.trimUri(Uri.file(utils.getPlatformSafeFileEntryPath(folder)), Uri.file(utils.getPlatformSafeFileEntryPath(folderPath))), '/');
+				const basename = path.basename(utils.getPlatformSafeFileEntryPath(folderPath));
+				if (trimmedUri === basename) {
+					// remove folder entry from sqlproj
+					this.removeFolderNode(folder);
+				}
+			});
+		}
+
 		const newFolderNode = this.projFileXmlDoc!.createElement(constants.Folder);
-		newFolderNode.setAttribute(constants.Include, utils.convertSlashesForSqlProj(path));
+		newFolderNode.setAttribute(constants.Include, utils.convertSlashesForSqlProj(folderPath));
 
 		this.findOrCreateItemGroup(constants.Folder).appendChild(newFolderNode);
 	}
 
 	private async removeFolderFromProjFile(folderPath: string): Promise<void> {
-		const folderNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Folder);
-		let deleted = this.removeNode(folderPath, folderNodes);
-
-		// if it wasn't deleted, try deleting the folder path without trailing backslash
-		// since sometimes SSDT adds folders without a trailing \
-		if (!deleted) {
-			deleted = this.removeNode(utils.trimChars(folderPath, '\\'), folderNodes);
-		}
+		let deleted = this.removeFolderNode(folderPath);
 
 		// TODO: consider removing this check when working on migration scenario. If a user converts to an SDK-style project and adding this
 		// exclude XML doesn't hurt for non-SDK-style projects, then it might be better to just it anyway so that they don't have to exclude the folder
 		// again when they convert to an SDK-style project
 		if (this.isSdkStyleProject) {
 			// update sqlproj if a node was deleted and load files and folders again
-			if (deleted) {
-				await this.writeToSqlProjAndUpdateFilesFolders();
-			}
+			await this.writeToSqlProjAndUpdateFilesFolders();
+
 			// get latest folders to see if it still exists
 			const currentFolders = await this.readFolders();
 
@@ -1023,6 +1073,19 @@ export class Project implements ISqlProject {
 		if (!deleted) {
 			throw new Error(constants.unableToFindObject(folderPath, constants.folderObject));
 		}
+	}
+
+	private removeFolderNode(folderPath: string): boolean {
+		const folderNodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(constants.Folder);
+		let deleted = this.removeNode(folderPath, folderNodes);
+
+		// if it wasn't deleted, try deleting the folder path without trailing backslash
+		// since sometimes SSDT adds folders without a trailing \
+		if (!deleted) {
+			deleted = this.removeNode(utils.trimChars(folderPath, '\\'), folderNodes);
+		}
+
+		return deleted;
 	}
 
 	private async writeToSqlProjAndUpdateFilesFolders(): Promise<void> {
@@ -1289,7 +1352,7 @@ export class Project implements ISqlProject {
 				await this.addFileToProjFile((<FileProjectEntry>entry).relativePath, xmlTag ? xmlTag : constants.Build, attributes);
 				break;
 			case EntryType.Folder:
-				this.addFolderToProjFile((<FileProjectEntry>entry).relativePath);
+				await this.addFolderToProjFile((<FileProjectEntry>entry).relativePath);
 				break;
 			case EntryType.DatabaseReference:
 				await this.addDatabaseReferenceToProjFile(<IDatabaseReferenceProjectEntry>entry);
@@ -1444,9 +1507,18 @@ export class Project implements ISqlProject {
 		// If folder doesn't exist, create it
 		await fs.mkdir(absoluteFolderPath, { recursive: true });
 
-		// don't need to add the folder to the sqlproj if this is an sdk style project because globbing will get the folders
+		// for SDK style projects, only add this folder to the sqlproj if needed
+		// intermediate folders don't need to be added in the sqlproj
 		if (this.isSdkStyleProject) {
-			return this.createFileProjectEntry(relativeFolderPath, EntryType.Folder);
+			let folderEntry = this.files.find(f => utils.ensureTrailingSlash(f.relativePath.toUpperCase()) === utils.ensureTrailingSlash((relativeFolderPath.toUpperCase())));
+
+			if (!folderEntry) {
+				folderEntry = this.createFileProjectEntry(utils.ensureTrailingSlash(relativeFolderPath), EntryType.Folder);
+				this.files.push(folderEntry);
+				await this.addToProjFile(folderEntry);
+			}
+
+			return folderEntry;
 		}
 
 		// Add project file entries for all folders in the path.

@@ -198,6 +198,9 @@ export async function createListOfFiles(filePath?: string): Promise<Uri[]> {
  *	 	- folder2
  * 			-file1.sql
  * 			-file2.sql
+ * 			- Script.PreDeployment1.sql
+ * 			- Script.PostDeployment1.sql
+ * 			- Script.PostDeployment2.sql
  *
  */
 export async function createOtherDummyFiles(testFolderPath: string): Promise<string> {
@@ -221,5 +224,13 @@ export async function createOtherDummyFiles(testFolderPath: string): Promise<str
 	const testLongerName = path.join(testFolderPath, 'folder1', 'testLongerName.sql');
 	await fs.writeFile(testLongerName, '');
 
+	const preDeploymentScript = path.join(testFolderPath, 'folder2', 'Script.PreDeployment1.sql');
+	await fs.writeFile(preDeploymentScript, '');
+
+	const postDeploymentScript1 = path.join(testFolderPath, 'folder2', 'Script.PostDeployment1.sql');
+	await fs.writeFile(postDeploymentScript1, '');
+
+	const postDeploymentScript2 = path.join(testFolderPath, 'folder2', 'Script.PostDeployment2.sql');
+	await fs.writeFile(postDeploymentScript2, '');
 	return testFolderPath;
 }

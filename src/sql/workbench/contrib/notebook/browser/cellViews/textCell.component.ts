@@ -8,7 +8,6 @@ import 'vs/css!./media/highlight';
 import * as DOM from 'vs/base/browser/dom';
 
 import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnChanges, SimpleChange, HostListener, ViewChildren, QueryList } from '@angular/core';
-import * as Mark from 'mark.js';
 
 import { localize } from 'vs/nls';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -27,23 +26,21 @@ import { ICaretPosition, CellEditModes, ICellModel } from 'sql/workbench/service
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { ISanitizer, defaultSanitizer } from 'sql/workbench/services/notebook/browser/outputs/sanitizer';
 import { CodeComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/code.component';
-import { NotebookRange, ICellEditorProvider, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
+import { ICellEditorProvider, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { HTMLMarkdownConverter } from 'sql/workbench/contrib/notebook/browser/htmlMarkdownConverter';
-import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { highlightSelectedText } from 'sql/workbench/contrib/notebook/browser/utils';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
-const findHighlightClass = 'rangeHighlight';
-const findRangeSpecificClass = 'rangeSpecificHighlight';
+
 @Component({
 	selector: TEXT_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('./textCell.component.html'))
 })
 export class TextCellComponent extends CellView implements OnInit, OnChanges {
-	@ViewChild('preview', { read: ElementRef }) private output: ElementRef;
+	@ViewChild('preview', { read: ElementRef }) override output: ElementRef;
 	@ViewChildren(CodeComponent) private markdowncodeCell: QueryList<CodeComponent>;
 
 	@Input() cellModel: ICellModel;
@@ -115,7 +112,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private _previewMode: boolean = true;
 	private _markdownMode: boolean;
 	private _sanitizer: ISanitizer;
-	private _model: NotebookModel;
 	private _activeCellId: string;
 	private readonly _onDidClickLink = this._register(new Emitter<URI>());
 	private markdownRenderer: NotebookMarkdownRenderer;
@@ -125,8 +121,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	public readonly onDidClickLink = this._onDidClickLink.event;
 	public previewFeaturesEnabled: boolean = false;
 	public doubleClickEditEnabled: boolean;
-	private _highlightRange: NotebookRange;
-	private _isFindActive: boolean = false;
 	private _editorHeight: number;
 	private readonly _markdownMaxHeight = 4000;
 
@@ -138,7 +132,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IConfigurationService) private _configurationService: IConfigurationService,
-		@Inject(INotebookService) private _notebookService: INotebookService
+		@Inject(INotebookService) override notebookService: INotebookService
 	) {
 		super();
 		this.markdownRenderer = this._instantiationService.createInstance(NotebookMarkdownRenderer);
@@ -342,7 +336,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				outputElement.style.lineHeight = this.markdownPreviewLineHeight.toString();
 				this.cellModel.renderedOutputTextContent = this.getRenderedTextOutput();
 				outputElement.focus();
-				if (this._isFindActive) {
+				if (this.isFindActive) {
 					this.addDecoration();
 				}
 			}
@@ -543,121 +537,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	protected isActive(): boolean {
 		return this.cellModel && this.cellModel.id === this.activeCellId;
-	}
-
-	public override deltaDecorations(newDecorationsRange: NotebookRange | NotebookRange[], oldDecorationsRange: NotebookRange | NotebookRange[]): void {
-		if (newDecorationsRange) {
-			this._isFindActive = true;
-			if (Array.isArray(newDecorationsRange)) {
-				this.highlightAllMatches();
-			} else {
-				this._highlightRange = newDecorationsRange;
-				this.addDecoration(newDecorationsRange);
-			}
-		}
-		if (oldDecorationsRange) {
-			if (Array.isArray(oldDecorationsRange)) {
-				this.removeDecoration();
-				this._isFindActive = false;
-			} else {
-				this._highlightRange = oldDecorationsRange === this._highlightRange ? undefined : this._highlightRange;
-				this.removeDecoration(oldDecorationsRange);
-			}
-		}
-	}
-
-	private addDecoration(range?: NotebookRange): void {
-		range = range ?? this._highlightRange;
-		if (this.output && this.output.nativeElement) {
-			this.highlightAllMatches();
-			if (range) {
-				let elements = this.getHtmlElements();
-				if (elements?.length >= range.startLineNumber) {
-					let elementContainingText = elements[range.startLineNumber - 1];
-					let markCurrent = new Mark(elementContainingText); // to highlight the current item of them all.
-
-					markCurrent.markRanges([{
-						start: range.startColumn - 1, //subtracting 1 since markdown html is 0 indexed.
-						length: range.endColumn - range.startColumn
-					}], {
-						className: findRangeSpecificClass,
-						each: function (node, range) {
-							// node is the marked DOM element
-							node.scrollIntoView({ behavior: 'smooth', block: 'center' });
-						}
-					});
-				}
-			}
-		}
-	}
-
-	private highlightAllMatches(): void {
-		if (this.output && this.output.nativeElement) {
-			let markAllOccurances = new Mark(this.output.nativeElement); // to highlight all occurances in the element.
-			let editor = this._notebookService.findNotebookEditor(this.model.notebookUri);
-			if (editor) {
-				let findModel = (editor.notebookParams.input as NotebookInput).notebookFindModel;
-				if (findModel?.findMatches?.length > 0) {
-					let searchString = findModel.findExpression;
-					markAllOccurances.mark(searchString, {
-						className: findHighlightClass
-					});
-				}
-			}
-		}
-	}
-
-	private removeDecoration(range?: NotebookRange): void {
-		if (this.output && this.output.nativeElement) {
-			if (range) {
-				let elements = this.getHtmlElements();
-				let elementContainingText = elements[range.startLineNumber - 1];
-				let markCurrent = new Mark(elementContainingText);
-				markCurrent.unmark({ acrossElements: true, className: findRangeSpecificClass });
-			} else {
-				let markAllOccurances = new Mark(this.output.nativeElement);
-				markAllOccurances.unmark({ acrossElements: true, className: findHighlightClass });
-				markAllOccurances.unmark({ acrossElements: true, className: findRangeSpecificClass });
-				this._highlightRange = undefined;
-			}
-		}
-	}
-
-	private getHtmlElements(): any[] {
-		let hostElem = this.output?.nativeElement;
-		let children = [];
-		if (hostElem) {
-			for (let element of hostElem.children) {
-				if (element.nodeName.toLowerCase() === 'table') {
-					// add table header and table rows.
-					if (element.children.length > 0) {
-						children.push(element.children[0]);
-						if (element.children.length > 1) {
-							for (let trow of element.children[1].children) {
-								children.push(trow);
-							}
-						}
-					}
-				} else if (element.children.length > 1) {
-					children = children.concat(this.getChildren(element));
-				} else {
-					children.push(element);
-				}
-			}
-		}
-		return children;
-	}
-
-	private getChildren(parent: any): any[] {
-		let children: any = [];
-		if (parent.children.length > 1 && parent.nodeName.toLowerCase() !== 'li' && parent.nodeName.toLowerCase() !== 'p') {
-			for (let child of parent.children) {
-				children = children.concat(this.getChildren(child));
-			}
-		} else {
-			return parent;
-		}
-		return children;
 	}
 
 	private getRenderedTextOutput(): string[] {

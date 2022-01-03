@@ -80,26 +80,6 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this._container = document.createElement('div');
 		this._container.className = 'monaco-table';
 		this._register(DOM.addDisposableListener(this._container, DOM.EventType.FOCUS, (e: FocusEvent) => {
-			// Focus redirection should only happen when the event target is the container (using keyboard navigation)
-			if (e.target && this._container === e.target && this._data.getLength() > 0) {
-				let cellToFocus = this.grid.getActiveCell();
-				if (!cellToFocus) {
-					// When the table receives focus and there are currently no active cell, the focus should go to the first focusable cell.
-					for (let col = 0; col < this.columns.length; col++) {
-						// some cells are not keyboard focusable (e.g. row number column), we need to find the first focusable cell.
-						if (this.grid.canCellBeActive(0, col)) {
-							cellToFocus = {
-								row: 0,
-								cell: col
-							};
-							break;
-						}
-					}
-				}
-				if (cellToFocus) {
-					this.grid.setActiveCell(cellToFocus.row, cellToFocus.cell);
-				}
-			}
 			clearTimeout(this._classChangeTimeout);
 			this._classChangeTimeout = setTimeout(() => {
 				this._container.classList.add('focused');
@@ -141,17 +121,6 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this.mapMouseEvent(this._grid.onHeaderClick, this._onHeaderClick);
 		this.mapMouseEvent(this._grid.onDblClick, this._onDoubleClick);
 		this._grid.onColumnsResized.subscribe(() => this._onColumnResize.fire());
-		this._grid.onRendered.subscribe(() => {
-			// When there are data present and no cells are keyboard focusable, the container should be set to keyboard focusable to
-			// leverage the focus redirection logic.
-			this._container.tabIndex = this._container.querySelector('[tabindex = "0"]') || this._data.getLength() === 0 ? -1 : 0;
-		});
-		this._grid.onActiveCellChanged.subscribe((e, data) => {
-			// When the active cell is changed, a cell will become focusable and we can make the container not focusable by user.
-			// later when the grid is rerendered (e.g. view switching), the active cell information is kept but the cell will become not keyboard focusable (tabindex changed from 0 to -1).
-			// we need to check and reset the tabIndex of the container in the onRendered handler.
-			this._container.tabIndex = -1;
-		});
 	}
 
 	public rerenderGrid() {

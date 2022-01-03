@@ -113,7 +113,7 @@ export class ConnectionStore {
 		// Add the profile to the saved list, taking care to clear out the password field if necessary
 		const savedProfile = forceWritePlaintextPassword ? profile : this.getProfileWithoutPassword(profile);
 		const savedConnectionProfile = await this.saveProfileToConfig(savedProfile, matcher);
-		if (isDisposable(savedProfile)) {
+		if (savedProfile && isDisposable(savedProfile)) {
 			savedProfile.dispose();
 		}
 		profile.groupId = savedConnectionProfile.groupId;
