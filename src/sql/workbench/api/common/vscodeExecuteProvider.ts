@@ -294,6 +294,9 @@ class VSCodeExecuteManager implements azdata.nb.ExecuteManager {
 	}
 }
 
+/**
+ * A Notebook Execute Provider that is used to convert VS Code notebook extension APIs into ADS equivalents.
+ */
 export class VSCodeExecuteProvider implements azdata.nb.NotebookExecuteProvider {
 	public readonly providerId: string;
 	private readonly _executeManager: azdata.nb.ExecuteManager;
