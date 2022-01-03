@@ -11,6 +11,9 @@ import { CancellationTokenSource } from 'vs/base/common/cancellation';
 import { OutputTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
 
+/**
+ * A Notebook Content Manager that is used as part of converting VS Code notebook extension APIs into ADS equivalents.
+ */
 export class VSCodeContentManager implements azdata.nb.ContentManager {
 	constructor(private readonly _serializer: vscode.NotebookSerializer) {
 	}
