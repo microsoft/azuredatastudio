@@ -675,9 +675,9 @@ export class NotebookService extends Disposable implements INotebookService {
 	private waitOnSerializationProviderAvailability(providerDescriptor: SerializationProviderDescriptor, timeout?: number): Promise<ISerializationProvider | undefined> {
 		// Wait up to 30 seconds for the provider to be registered
 		timeout = timeout ?? 30000;
-		let promises: Promise<ISerializationProvider>[] = [
+		let promises: Promise<ISerializationProvider | undefined>[] = [
 			providerDescriptor.instanceReady,
-			new Promise<ISerializationProvider>((resolve, reject) => setTimeout(() => {
+			new Promise<ISerializationProvider | undefined>((resolve, reject) => setTimeout(() => {
 				onUnexpectedError(localize('serializationProviderTimeout', 'Waiting for Serialization Provider availability timed out for notebook provider \'{0}\'', providerDescriptor.providerId));
 				resolve(undefined);
 			}, timeout))
@@ -688,9 +688,9 @@ export class NotebookService extends Disposable implements INotebookService {
 	private waitOnExecuteProviderAvailability(providerDescriptor: ExecuteProviderDescriptor, timeout?: number): Promise<IExecuteProvider | undefined> {
 		// Wait up to 30 seconds for the provider to be registered
 		timeout = timeout ?? 30000;
-		let promises: Promise<IExecuteProvider>[] = [
+		let promises: Promise<IExecuteProvider | undefined>[] = [
 			providerDescriptor.instanceReady,
-			new Promise<IExecuteProvider>((resolve, reject) => setTimeout(() => {
+			new Promise<IExecuteProvider | undefined>((resolve, reject) => setTimeout(() => {
 				onUnexpectedError(localize('executeProviderTimeout', 'Waiting for Execute Provider availability timed out for notebook provider \'{0}\'', providerDescriptor.providerId));
 				resolve(undefined);
 			}, timeout))
@@ -701,9 +701,9 @@ export class NotebookService extends Disposable implements INotebookService {
 	private waitOnStandardKernelsAvailability(kernelsDescriptor: StandardKernelsDescriptor, timeout?: number): Promise<nb.IStandardKernel[] | undefined> {
 		// Wait up to 30 seconds for the kernels to be registered
 		timeout = timeout ?? 30000;
-		let promises: Promise<nb.IStandardKernel[]>[] = [
+		let promises: Promise<nb.IStandardKernel[] | undefined>[] = [
 			kernelsDescriptor.instanceReady,
-			new Promise<nb.IStandardKernel[]>((resolve, reject) => setTimeout(() => {
+			new Promise<nb.IStandardKernel[] | undefined>((resolve, reject) => setTimeout(() => {
 				onUnexpectedError(localize('standardKernelsTimeout', 'Waiting for Standard Kernels availability timed out for notebook provider \'{0}\'', kernelsDescriptor.providerId));
 				resolve(undefined);
 			}, timeout))
