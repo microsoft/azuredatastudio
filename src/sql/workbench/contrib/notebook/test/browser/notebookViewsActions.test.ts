@@ -34,7 +34,7 @@ import sinon = require('sinon');
 import { InsertCellsModal } from 'sql/workbench/contrib/notebook/browser/notebookViews/insertCellsModal';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
 import { SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
-import { NBFORMAT } from 'sql/workbench/common/constants';
+import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
 
 let initialNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -55,7 +55,7 @@ let initialNotebookContent: nb.INotebookContents = {
 		},
 	},
 	nbformat: NBFORMAT,
-	nbformat_minor: 5
+	nbformat_minor: NBFORMAT_MINOR
 };
 
 suite('Notebook Views Actions', function (): void {

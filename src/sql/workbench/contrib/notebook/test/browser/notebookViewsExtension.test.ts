@@ -36,7 +36,7 @@ import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { UndoRedoService } from 'vs/platform/undoRedo/common/undoRedoService';
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
 import { SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
-import { NBFORMAT } from 'sql/workbench/common/constants';
+import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
 
 let initialNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -57,7 +57,7 @@ let initialNotebookContent: nb.INotebookContents = {
 		},
 	},
 	nbformat: NBFORMAT,
-	nbformat_minor: 5
+	nbformat_minor: NBFORMAT_MINOR
 };
 
 let defaultUri = URI.file('/some/path.ipynb');

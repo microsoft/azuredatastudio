@@ -33,7 +33,7 @@ import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTeleme
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 import { SessionManager } from 'sql/workbench/contrib/notebook/test/emptySessionClasses';
-import { NBFORMAT } from 'sql/workbench/common/constants';
+import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
 
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -55,7 +55,7 @@ let expectedNotebookContent: nb.INotebookContents = {
 		}
 	},
 	nbformat: NBFORMAT,
-	nbformat_minor: 5
+	nbformat_minor: NBFORMAT_MINOR
 };
 
 let defaultUri = URI.file('/some/path.ipynb');
@@ -201,7 +201,7 @@ suite('Notebook Find Model', function (): void {
 				}
 			},
 			nbformat: NBFORMAT,
-			nbformat_minor: 5
+			nbformat_minor: NBFORMAT_MINOR
 		};
 		await initNotebookModel(markdownContent);
 
@@ -234,7 +234,7 @@ suite('Notebook Find Model', function (): void {
 				}
 			},
 			nbformat: NBFORMAT,
-			nbformat_minor: 5
+			nbformat_minor: NBFORMAT_MINOR
 		};
 		await initNotebookModel(codeContent);
 		//initialize find
@@ -260,7 +260,7 @@ suite('Notebook Find Model', function (): void {
 				}
 			},
 			nbformat: NBFORMAT,
-			nbformat_minor: 5
+			nbformat_minor: NBFORMAT_MINOR
 		};
 		await initNotebookModel(codeContent);
 		//initialize find
@@ -321,7 +321,7 @@ suite('Notebook Find Model', function (): void {
 				}
 			},
 			nbformat: NBFORMAT,
-			nbformat_minor: 5
+			nbformat_minor: NBFORMAT_MINOR
 		};
 		await initNotebookModel(codeContent);
 		//initialize find
@@ -354,7 +354,7 @@ suite('Notebook Find Model', function (): void {
 				}
 			},
 			nbformat: NBFORMAT,
-			nbformat_minor: 5
+			nbformat_minor: NBFORMAT_MINOR
 		};
 		await initNotebookModel(codeContent);
 		//initialize find
@@ -386,7 +386,7 @@ suite('Notebook Find Model', function (): void {
 				}
 			},
 			nbformat: NBFORMAT,
-			nbformat_minor: 5
+			nbformat_minor: NBFORMAT_MINOR
 		};
 		await initNotebookModel(markdownContent);
 
@@ -440,7 +440,7 @@ suite('Notebook Find Model', function (): void {
 				}
 			},
 			nbformat: 4,
-			nbformat_minor: 5
+			nbformat_minor: NBFORMAT_MINOR
 		};
 		await initNotebookModel(cellContent);
 
@@ -551,7 +551,7 @@ suite('Notebook Find Model', function (): void {
 				}
 			},
 			nbformat: 4,
-			nbformat_minor: 5
+			nbformat_minor: NBFORMAT_MINOR
 		};
 		max_find_count = 4;
 		await initNotebookModel(cellContent);

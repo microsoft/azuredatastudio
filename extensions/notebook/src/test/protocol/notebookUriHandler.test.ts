@@ -148,7 +148,7 @@ describe('Notebook URI Handler', function (): void {
 				}
 			},
 			nbformat: constants.NBFORMAT,
-			nbformat_minor: 5
+			nbformat_minor: constants.NBFORMAT_MINOR
 		};
 
 		await fs.writeFile(notebookPath, JSON.stringify(notebookContent));
