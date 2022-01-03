@@ -6,6 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { MigrationContext, MigrationLocalStorage } from '../models/migrationLocalStorage';
+import { logError, TelemetryViews } from '../telemtery';
 import * as loc from '../constants/strings';
 import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 import { MigrationStatusDialog } from '../dialog/migrationStatus/migrationStatusDialog';
@@ -298,7 +299,8 @@ export class DashboardWidget {
 			}
 
 		} catch (error) {
-			console.log(error);
+			logError(TelemetryViews.SqlServerDashboard, 'RefreshgMigrationFailed', error);
+
 		} finally {
 			this.isRefreshing = false;
 			this._migrationStatusCardLoadingContainer.loading = false;

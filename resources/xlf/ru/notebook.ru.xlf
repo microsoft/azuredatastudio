@@ -912,6 +912,10 @@
         <source xml:lang="en">Add Code Block</source>
         <target state="translated">Добавить блок кода</target>
       </trans-unit>
+      <trans-unit id="notebook.command.highlightText">
+        <source xml:lang="en">Highlight Markdown Text</source>
+        <target state="translated">Выделить текст Markdown</target>
+      </trans-unit>
       <trans-unit id="notebook.command.italicizeText">
         <source xml:lang="en">Italicize Markdown Text</source>
         <target state="translated">Курсивный текст Markdown</target>

@@ -1,5 +1,28 @@
 # Change Log
 
+ ## Version 1.34.0
+* Release date: December 15, 2021
+* Release status: General Availability
+## What's new in this version
+* New Features:
+    *  Added “Currently restoring backup file” in the migration progress details page of Azure SQL Migration extension when backup files location is Azure Storage blob container
+    *  Enhancements to diagnostics in Azure SQL Migration extension
+    *  Support for project build with .NET 6 in SQL Database Projects extension
+    *  Publish to container in SQL Database Projects extension
+    *  Undo and redo support for notebook cell-level operations
+    
+* Extension Updates:
+    *  Azure SQL Migration 
+    *  Langpacks
+    *  SQL Database Projects
+
+* Bug Fixes:
+    *  Fix for multiple database migrations when using network share as backup files location in Azure SQL Migration extension
+    *  Fix for multiple database migrations when using blob storage containers as backup files location in Azure SQL Migration extension
+    *  Fix to pre-populate target database names in the migration wizard in Azure SQL Migration extension
+    *  Fix to column sorting in grids where the presence of null values could lead to unexpected results
+    *  Fix for Python upgrades when two or more notebooks were open
+ 
 ## Version 1.33.1
 * Release date: Nov 4, 2021
 * Release status: General Availability

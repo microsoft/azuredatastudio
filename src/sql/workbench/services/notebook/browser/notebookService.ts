@@ -188,6 +188,7 @@ export interface INotebookSection {
 
 export interface ICellEditorProvider {
 	hasEditor(): boolean;
+	isCellOutput: boolean;
 	cellGuid(): string;
 	getEditor(): BaseTextEditor;
 	deltaDecorations(newDecorationsRange: NotebookRange | NotebookRange[], oldDecorationsRange: NotebookRange | NotebookRange[]): void;
@@ -199,11 +200,13 @@ export class NotebookRange extends Range {
 	}
 	cell: ICellModel;
 	isMarkdownSourceCell: boolean;
+	outputComponentIndex: number;
 
-	constructor(cell: ICellModel, startLineNumber: number, startColumn: number, endLineNumber: number, endColumn: number, markdownEditMode?: boolean) {
+	constructor(cell: ICellModel, startLineNumber: number, startColumn: number, endLineNumber: number, endColumn: number, markdownEditMode?: boolean, outputIndex?: number) {
 		super(startLineNumber, startColumn, endLineNumber, endColumn);
 		this.updateActiveCell(cell);
 		this.isMarkdownSourceCell = markdownEditMode ? markdownEditMode : false;
+		this.outputComponentIndex = outputIndex >= 0 ? outputIndex : -1;
 	}
 }
 

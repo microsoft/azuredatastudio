@@ -70,6 +70,10 @@
         <source xml:lang="en">To use SQL bindings, ensure your Azure Functions project has a reference to {0}</source>
         <target state="translated">Para usar as associações SQL, certifique-se de que seu projeto do Azure Functions tem uma referência a {0}</target>
       </trans-unit>
+      <trans-unit id="addSqlBindingPackageError">
+        <source xml:lang="en">Error adding Sql Binding extension package to project</source>
+        <target state="translated">Erro ao adicionar o pacote de extensão da Associação Sql ao projeto</target>
+      </trans-unit>
       <trans-unit id="appSettingPrompt">
         <source xml:lang="en">Would you like to update Azure Function local.settings.json with the new connection string?</source>
         <target state="translated">Deseja atualizar o arquivo local.settings.json da Função do Azure com a nova cadeia de conexão?</target>
@@ -77,6 +81,14 @@
       <trans-unit id="at">
         <source xml:lang="en">at</source>
         <target state="translated">em</target>
+      </trans-unit>
+      <trans-unit id="autorestProjectName">
+        <source xml:lang="en">New SQL project name</source>
+        <target state="translated">Novo nome do projeto SQL</target>
+      </trans-unit>
+      <trans-unit id="baseDockerImage">
+        <source xml:lang="en">Base SQL Server Docker image</source>
+        <target state="translated">Imagem base do Docker do SQL Server</target>
       </trans-unit>
       <trans-unit id="browseButtonText">
         <source xml:lang="en">Browse folder</source>
@@ -93,6 +105,10 @@
       <trans-unit id="buildAction">
         <source xml:lang="en">Build</source>
         <target state="translated">Compilar</target>
+      </trans-unit>
+      <trans-unit id="buildElements">
+        <source xml:lang="en">Build Elements</source>
+        <target state="translated">Criar Elementos</target>
       </trans-unit>
       <trans-unit id="buildFailedCannotStartSchemaCompare">
         <source xml:lang="en">Schema compare could not start because build failed</source>
@@ -137,6 +153,10 @@
       <trans-unit id="confirmPassword">
         <source xml:lang="en">Confirm SQL server admin password</source>
         <target state="translated">Confirmar senha de administrador do SQL Server</target>
+      </trans-unit>
+      <trans-unit id="confirmServerPassword">
+        <source xml:lang="en">Confirm SQL Server admin password</source>
+        <target state="translated">Confirmar SQL Server senha de administrador</target>
       </trans-unit>
       <trans-unit id="connectingToSqlServerOnDockerMessage">
         <source xml:lang="en">Connecting to SQL Server on Docker</source>
@@ -201,6 +221,10 @@
       <trans-unit id="dacpacNotOnSameDrive">
         <source xml:lang="en">Dacpac references need to be located on the same drive as the project file. The project file is located at {0}</source>
         <target state="translated">As referências do Dacpac precisam estar localizadas na mesma unidade que o arquivo de projeto. O arquivo de projeto está localizado em {0}</target>
+      </trans-unit>
+      <trans-unit id="dacpacReferenceElement">
+        <source xml:lang="en">Dacpac reference</source>
+        <target state="translated">Referência Dacpac</target>
       </trans-unit>
       <trans-unit id="dacpacText">
         <source xml:lang="en">Data-tier application (.dacpac)</source>
@@ -342,6 +366,14 @@
         <source xml:lang="en">Docker container is not running</source>
         <target state="translated">O contêiner do Docker não está em execução</target>
       </trans-unit>
+      <trans-unit id="dockerImageEulaMessage">
+        <source xml:lang="en">License Agreement:</source>
+        <target state="translated">Contrato de Licença:</target>
+      </trans-unit>
+      <trans-unit id="dockerImageMessage">
+        <source xml:lang="en">Docker Image:</source>
+        <target state="translated">Imagem do Docker:</target>
+      </trans-unit>
       <trans-unit id="dockerLogMessage">
         <source xml:lang="en">Docker logs: '{0}'</source>
         <target state="translated">Logs do Docker: '{0}'</target>
@@ -357,6 +389,10 @@
       <trans-unit id="dontUseProfile">
         <source xml:lang="en">Don't use profile</source>
         <target state="translated">Não usar o perfil</target>
+      </trans-unit>
+      <trans-unit id="edgeEulaAgreementTitle">
+        <source xml:lang="en">Microsoft Azure SQL Edge License Agreement</source>
+        <target state="translated">Contrato de licença do SQL do Microsoft Azure no Edge</target>
       </trans-unit>
       <trans-unit id="edgeProjectTypeDescription">
         <source xml:lang="en">Start with the core pieces to develop and publish schemas for SQL Edge</source>
@@ -422,6 +458,24 @@
         <source xml:lang="en">Error finding build files location: {0}</source>
         <target state="translated">Erro ao localizar o local dos arquivos de build: {0}</target>
       </trans-unit>
+      <trans-unit id="errorReadingProjectGuid">
+        <source xml:lang="en">Error trying to read {0} of project '{1}'</source>
+        <target state="translated">Erro ao tentar ler {0} do projeto '{1}'</target>
+      </trans-unit>
+      <trans-unit id="eulaAgreementTemplate">
+        <source xml:lang="en">I accept the {0}.</source>
+        <note>The placeholders are contents of the line and should not be translated.</note>
+        <target state="translated">Eu aceito os {0}.</target>
+      </trans-unit>
+      <trans-unit id="eulaAgreementText">
+        <source xml:lang="en">I accept the {0}.</source>
+        <note>The placeholders are contents of the line and should not be translated.</note>
+        <target state="translated">Eu aceito os {0}.</target>
+      </trans-unit>
+      <trans-unit id="eulaAgreementTitle">
+        <source xml:lang="en">Microsoft SQL Server License Agreement</source>
+        <target state="translated">Contrato de Licença do Microsoft SQL Server</target>
+      </trans-unit>
       <trans-unit id="exampleUsage">
         <source xml:lang="en">Example Usage</source>
         <target state="translated">Exemplo de uso</target>
@@ -482,6 +536,10 @@
         <source xml:lang="en">A folder with the name '{0}' already exists on disk at this location. Please choose another location.</source>
         <target state="translated">Uma pasta com o nome '{0}' já existe em disco neste local. Escolha outro local.</target>
       </trans-unit>
+      <trans-unit id="folderElements">
+        <source xml:lang="en">Folder Elements</source>
+        <target state="translated">Elementos da Pasta</target>
+      </trans-unit>
       <trans-unit id="folderFriendlyName">
         <source xml:lang="en">Folder</source>
         <target state="translated">Pasta</target>
@@ -499,16 +557,28 @@
         <target state="translated">Gerar script</target>
       </trans-unit>
       <trans-unit id="generatingProjectFailed">
-        <source xml:lang="en">Generating project via AutoRest failed: {0}</source>
-        <target state="translated">Falha ao gerar o projeto por meio do AutoRest: {0}</target>
+        <source xml:lang="en">Generating project via AutoRest failed.  Check output pane for more details. Error: {0}</source>
+        <target state="translated">Falha na geração do projeto por meio do AutoRest. Verifique o painel de saída para obter mais detalhes. Erro: {0}</target>
+      </trans-unit>
+      <trans-unit id="generatingProjectFromAutorest">
+        <source xml:lang="en">Generating new SQL project from {0}...  Check output window for details.</source>
+        <target state="translated">Gerando novo projeto SQL a partir de {0}... Verifique a janela de saída para obter detalhes.</target>
       </trans-unit>
       <trans-unit id="hr">
         <source xml:lang="en">hr</source>
         <target state="translated">h</target>
       </trans-unit>
+      <trans-unit id="importElements">
+        <source xml:lang="en">Import Elements</source>
+        <target state="translated">Importar Elementos</target>
+      </trans-unit>
       <trans-unit id="input">
         <source xml:lang="en">Input</source>
         <target state="translated">Entrada</target>
+      </trans-unit>
+      <trans-unit id="installGlobally">
+        <source xml:lang="en">Install globally</source>
+        <target state="translated">Instale globalmente</target>
       </trans-unit>
       <trans-unit id="invalidDataSchemaProvider">
         <source xml:lang="en">Invalid DSP in .sqlproj file</source>
@@ -614,6 +684,10 @@
         <source xml:lang="en">File {0} doesn't exist</source>
         <target state="translated">O arquivo {0} não existe</target>
       </trans-unit>
+      <trans-unit id="noSqlFilesGenerated">
+        <source xml:lang="en">No .sql files were generated by Autorest. Please confirm that your spec contains model definitions, or check the output log for details.</source>
+        <target state="translated">Nenhum arquivo.sql foi gerado pelo Autorest. Confirme se sua especificação contém definições de modelo ou verifique o log de saída para obter detalhes.</target>
+      </trans-unit>
       <trans-unit id="noSqlProjFilesSelected">
         <source xml:lang="en">No .sqlproj file selected; please select one.</source>
         <target state="translated">Nenhum arquivo. sqlproj selecionado; selecione um.</target>
@@ -627,12 +701,20 @@
         <target state="translated">Não (padrão)</target>
       </trans-unit>
       <trans-unit id="nodeButNotAutorestFound">
-        <source xml:lang="en">Autorest tool not found in system path, but found Node.js.  Running via npx.  Please execute 'npm install autorest -g' to install permanently.</source>
-        <target state="translated">A ferramenta Autorest não foi encontrada no caminho do sistema, mas encontrou Node.js.  Em execução via npx.  Execute 'npm install autorest -g' para instalar permanentemente.</target>
+        <source xml:lang="en">Autorest tool not found in system path, but found Node.js.  Prompting user for how to proceed.  Execute 'npm install autorest -g' to install permanently and avoid this message.</source>
+        <target state="translated">A ferramenta Autorest não foi encontrada no caminho do sistema, mas encontrou o Node.js.  Solicitando ao usuário como proceder.  Execute 'npm install autorest -g' para instalar permanentemente e evitar esta mensagem.</target>
+      </trans-unit>
+      <trans-unit id="nodeButNotAutorestFoundPrompt">
+        <source xml:lang="en">Autorest is not installed. To proceed, choose whether to run Autorest from a temporary location via 'npx' or install Autorest globally then run.</source>
+        <target state="translated">O Autorest não está instalado. Para continuar, escolha se deseja executar o Autorest a partir de um local temporário por meio de 'npx' ou instale o Autorest globalmente e depois execute.</target>
       </trans-unit>
       <trans-unit id="nodeNotFound">
-        <source xml:lang="en">Neither autorest nor Node.js (npx) found in system path.  Please install Node.js for autorest generation to work.</source>
-        <target state="translated">Nem autorest nem Node.js (npx) encontrados no caminho do sistema.  Instale o Node.js para que a geração de autorest funcione.</target>
+        <source xml:lang="en">Neither Autorest nor Node.js (npx) found in system path.  Please install Node.js for Autorest generation to work.</source>
+        <target state="translated">Nem o Autorest nem o Node.js (npx) foram encontrados no caminho do sistema. Instale o Node.js para que a geração do Autorest funcione.</target>
+      </trans-unit>
+      <trans-unit id="noneElements">
+        <source xml:lang="en">None Elements</source>
+        <target state="translated">Nenhum Elemento</target>
       </trans-unit>
       <trans-unit id="notValidVariableName">
         <source xml:lang="en">The variable name '{0}' is not valid.</source>
@@ -645,6 +727,10 @@
       <trans-unit id="okString">
         <source xml:lang="en">Ok</source>
         <target state="translated">Ok</target>
+      </trans-unit>
+      <trans-unit id="openEulaString">
+        <source xml:lang="en">Open License Agreement</source>
+        <target state="translated">Abrir o Contrato de Licença</target>
       </trans-unit>
       <trans-unit id="output">
         <source xml:lang="en">Output</source>
@@ -666,9 +752,17 @@
         <source xml:lang="en">Port must a be number</source>
         <target state="translated">A porta deve ser um número</target>
       </trans-unit>
+      <trans-unit id="postDeployElements">
+        <source xml:lang="en">PostDeploy Elements</source>
+        <target state="translated">Elementos de PostDeploy</target>
+      </trans-unit>
       <trans-unit id="postDeployScriptFriendlyName">
         <source xml:lang="en">Script.PostDeployment</source>
         <target state="translated">Script.PostDeployment</target>
+      </trans-unit>
+      <trans-unit id="preDeployElements">
+        <source xml:lang="en">PreDeploy Elements</source>
+        <target state="translated">Elementos de PreDeploy</target>
       </trans-unit>
       <trans-unit id="preDeployScriptFriendlyName">
         <source xml:lang="en">Script.PreDeployment</source>
@@ -714,6 +808,14 @@
         <source xml:lang="en">Enter project name</source>
         <target state="translated">Inserir nome do projeto</target>
       </trans-unit>
+      <trans-unit id="projectReferenceElement">
+        <source xml:lang="en">Project reference</source>
+        <target state="translated">Referência do projeto</target>
+      </trans-unit>
+      <trans-unit id="projectReferenceNameElement">
+        <source xml:lang="en">Project reference name element</source>
+        <target state="translated">Elemento do nome da referência do projeto</target>
+      </trans-unit>
       <trans-unit id="publish">
         <source xml:lang="en">Publish</source>
         <target state="translated">Publicar</target>
@@ -733,6 +835,10 @@
       <trans-unit id="publishSettingsFiles">
         <source xml:lang="en">Publish Settings File</source>
         <target state="translated">Publicar arquivo de configurações</target>
+      </trans-unit>
+      <trans-unit id="publishTo">
+        <source xml:lang="en">Publish Target</source>
+        <target state="translated">Destino de Publicação</target>
       </trans-unit>
       <trans-unit id="publishToContainerFailed">
         <source xml:lang="en">Failed to publish to container. {0}</source>
@@ -789,6 +895,10 @@
       <trans-unit id="retryWaitMessage">
         <source xml:lang="en">Waiting for {0} seconds before another attempt for operation '{1}'</source>
         <target state="translated">Aguardando {0} segundos antes de outra tentativa de operação '{1}'</target>
+      </trans-unit>
+      <trans-unit id="runViaNpx">
+        <source xml:lang="en">Run via npx</source>
+        <target state="translated">Executar por meio de npx</target>
       </trans-unit>
       <trans-unit id="runningDockerMessage">
         <source xml:lang="en">Building and running the docker container ...</source>
@@ -898,6 +1008,14 @@
         <source xml:lang="en">Server name</source>
         <target state="translated">Nome do servidor</target>
       </trans-unit>
+      <trans-unit id="serverPassword">
+        <source xml:lang="en">SQL Server admin password</source>
+        <target state="translated">Senha de administrador do SQL Server</target>
+      </trans-unit>
+      <trans-unit id="serverPortNumber">
+        <source xml:lang="en">SQL server port number</source>
+        <target state="translated">Número da porta do SQL Server</target>
+      </trans-unit>
       <trans-unit id="serverVariable">
         <source xml:lang="en">Server variable</source>
         <target state="translated">Variável de servidor</target>
@@ -926,19 +1044,19 @@
         <source xml:lang="en">SQL connection string</source>
         <target state="translated">Cadeia de conexão SQL</target>
       </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.DotnetInstallationConfirmation">
+        <source xml:lang="en">The .NET SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or higher or update the .NET SDK location in settings if already installed.</source>
+        <target state="translated">O SDK do .NET não pode ser localizado. O build do projeto não funcionará. Instale o SDK do .NET Core versão 3.1 ou superior ou atualize o local do SDK do .NET nas configurações, se já estiver instalado.</target>
+      </trans-unit>
       <trans-unit id="sqlDatabaseProjects.Install">
         <source xml:lang="en">Install</source>
         <target state="translated">Instalar</target>
       </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.NetCoreInstallationConfirmation">
-        <source xml:lang="en">The .NET Core SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK location in settings if already installed.</source>
-        <target state="translated">Não é possível localizar o SDK do .NET Core. A compilação do projeto não funcionará. Instale a versão 3.1 do SDK do .NET Core ou atualize o local do SDK do .NET Core nas configurações, se já estiver instalado.</target>
-      </trans-unit>
       <trans-unit id="sqlDatabaseProjects.NetCoreSupportedVersionInstallationConfirmation">
-        <source xml:lang="en">Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK supported version location in settings if already installed.</source>
-        <target state="translated">A versão SDK do .NET Core instalada atualmente é {0}, que não tem suporte. A compilação do projeto não funcionará. Instale a versão 3.1 do SDK do .NET Core ou atualize o local da versão com suporte do SDK do .NET Core nas configurações, se já estiver instalado.</target>
+        <source xml:lang="en">Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or higher or update the .NET SDK supported version location in settings if already installed.</source>
+        <target state="translated">A versão SDK do .NET Core é {0}, que não tem suporte. O build do projeto não funcionará. Instale o SDK do .NET Core versão 3.1 ou superior ou atualize o local da versão com suporte do SDK do .NET nas configurações, se já estiver instalado.</target>
       </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.UpdateNetCoreLocation">
+      <trans-unit id="sqlDatabaseProjects.UpdateDotnetLocation">
         <source xml:lang="en">Update Location</source>
         <target state="translated">Atualizar Local</target>
       </trans-unit>
@@ -1023,12 +1141,24 @@
         <target state="translated">Versão não reconhecida: </target>
       </trans-unit>
       <trans-unit id="updateProjectDatabaseReferencesForRoundTrip">
-        <source xml:lang="en">The system database references need to be updated to build this project. If the project is created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
-        <target state="translated">As referências de banco de dados do sistema precisam ser atualizadas para compilar esse projeto. Se o projeto for criado no SSDT, ele continuará a funcionar em ambas as ferramentas. Deseja atualizar o projeto?</target>
+        <source xml:lang="en">The system database references need to be updated to build the project '{0}'. If the project was created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
+        <target state="translated">As referências do banco de dados do sistema precisam ser atualizadas para criar o projeto '{0}'. Se o projeto foi criado no SSDT, ele continuará funcionando em ambas as ferramentas. Deseja atualizar o projeto?</target>
       </trans-unit>
       <trans-unit id="updateProjectForRoundTrip">
-        <source xml:lang="en">The targets, references, and system database references need to be updated to build this project. If the project is created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
-        <target state="translated">Os destinos, referências e referências de banco de dados do sistema precisam ser atualizados para compilar esse projeto. Se o projeto for criado no SSDT, ele continuará a funcionar em ambas as ferramentas. Deseja atualizar o projeto?</target>
+        <source xml:lang="en">The targets, references, and system database references need to be updated to build the project '{0}'. If the project was created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
+        <target state="translated">Os destinos, as referências e as referências do banco de dados do sistema precisam ser atualizadas para construir o projeto '{0}'. Se o projeto foi criado no SSDT, ele continuará funcionando em ambas as ferramentas. Deseja atualizar o projeto?</target>
+      </trans-unit>
+      <trans-unit id="userSelectionCancelled">
+        <source xml:lang="en">User has cancelled selection for how to run autorest.</source>
+        <target state="translated">O usuário cancelou a seleção de como executar o autorest.</target>
+      </trans-unit>
+      <trans-unit id="userSelectionInstallGlobally">
+        <source xml:lang="en">User selected to install autorest gloablly.  Installing now...</source>
+        <target state="translated">Usuário selecionado para instalar o autorest globalmente.  Instalando agora...</target>
+      </trans-unit>
+      <trans-unit id="userSelectionRunNpx">
+        <source xml:lang="en">User selected to run via npx.</source>
+        <target state="translated">Usuário selecionado para ser executado por meio de npx.</target>
       </trans-unit>
       <trans-unit id="valueCannotBeEmpty">
         <source xml:lang="en">Value cannot be empty</source>
@@ -1087,8 +1217,8 @@
         <target state="translated">Adicionar a referência do banco de dados</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.addSqlBinding">
-        <source xml:lang="en">Add SQL Binding</source>
-        <target state="translated">Adicionar Associação SQL</target>
+        <source xml:lang="en">Add SQL Binding (preview)</source>
+        <target state="translated">Adicionar Associação SQL (versão prévia)</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.autorestSqlVersion">
         <source xml:lang="en">Which version of Autorest.Sql to use from NPM.  Latest will be used if not set.</source>
@@ -1122,6 +1252,10 @@
         <source xml:lang="en">Database Projects</source>
         <target state="translated">Projetos de Banco de Dados</target>
       </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.dotnetInstallLocation">
+        <source xml:lang="en">Full path to .NET SDK on the machine.</source>
+        <target state="translated">Caminho completo para o SDK do .NET no computador.</target>
+      </trans-unit>
       <trans-unit id="sqlDatabaseProjects.editProjectFile">
         <source xml:lang="en">Edit .sqlproj File</source>
         <target state="translated">Editar Arquivo .sqlproj</target>
@@ -1137,10 +1271,6 @@
       <trans-unit id="sqlDatabaseProjects.netCoreDoNotAsk">
         <source xml:lang="en">Whether to prompt the user to install .NET Core when not detected.</source>
         <target state="translated">Se deseja solicitar ao usuário que instale o .NET Core quando não detectado.</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.netCoreInstallLocation">
-        <source xml:lang="en">Full path to .NET Core SDK on the machine.</source>
-        <target state="translated">Caminho completo para SDK do .NET Core no computador.</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.new">
         <source xml:lang="en">New Database Project</source>

@@ -480,6 +480,9 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			this._connectionDialog.onFillinConnectionInputs((input) => this.handleFillInConnectionInputs(input as IConnectionProfile));
 			this._connectionDialog.onResetConnection(() => this.handleProviderOnResetConnection());
 			this._connectionDialog.render();
+			this._connectionDialog.onClosed(() => {
+				this._model?.dispose();
+			});
 		}
 		this._connectionDialog.newConnectionParams = params;
 		this._connectionDialog.updateProvider(this._providerNameToDisplayNameMap[this._currentProviderType]);

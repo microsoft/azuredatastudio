@@ -9808,7 +9808,9 @@
 			"uninstallExtensionComplete": "请重新加载 Azure Data Studio 以完成扩展 {0} 的卸载。",
 			"updateLocale": "是否要将 Azure Data Studio 的 UI 语言更改为 {0} 并重启?",
 			"watermark.newNotebook": "新建笔记本",
-			"watermark.newSqlFile": "新建 SQL 文件"
+			"watermark.newSqlFile": "新建 SQL 文件",
+			"workspace.trust.description": "控制是否在 Azure Data Studio 内启用工作区信任。",
+			"workspace.trust.emptyWindow.description": "控制空窗口在 zure Data Studio 中是否默认受信任。当与 `#{0}#` 一起使用时，可以启用 zure Data Studio 的完整功能，而无需在空窗口中进行提示。"
 		},
 		"sql/base/parts/editableDropdown/browser/dropdown": {
 			"editableDropdown.errorValidate": "必须是列表中的选项",
@@ -9853,12 +9855,14 @@
 			"calloutDialogHeaderFooterBackground": "标注对话框页眉和页脚背景。",
 			"calloutDialogInteriorBorder": "标注对话框内部边框，用于分隔元素。",
 			"calloutDialogShadowColor": "标注对话框阴影颜色。",
+			"designer.paneSeparator": "窗格分隔符颜色。",
 			"extensionPackGradientColorOne": "扩展包渐变的顶部颜色",
 			"extensionPackGradientColorTwo": "扩展包渐变的底部颜色",
 			"extensionPackHeaderShadow": "扩展包标头文本阴影颜色",
 			"gradientBackground": "横幅图像渐变的背景色",
 			"gradientOne": "横幅图像渐变的顶部颜色",
 			"gradientTwo": "横幅图像渐变的底部颜色",
+			"groupHeaderBackground": "组标题的背景色。",
 			"infoBox.errorBackground": "InfoBox: 通知类型为错误时的背景色。",
 			"infoBox.infomationBackground": "InfoBox: 通知类型为信息时的背景色。",
 			"infoBox.successBackground": "InfoBox: 通知类型为成功时的背景色。",
@@ -10271,7 +10275,7 @@
 			"schema.connectionOptions": "连接选项",
 			"schema.displayName": "提供程序的显示名称",
 			"schema.iconPath": "服务器类型的图标路径",
-			"schema.isQueryProvider": "Whether the provider is also a query provider. The default value is true.",
+			"schema.isQueryProvider": "提供程序是否也是查询提供程序。默认值为 true。",
 			"schema.notebookKernelAlias": "提供程序的笔记本内核别名",
 			"schema.providerId": "提供程序的公用 ID"
 		},
@@ -10805,26 +10809,24 @@
 			"expandCellContents": "展开代码单元格内容"
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component": {
-			"buttonBold": "加粗",
-			"buttonCode": "代码",
-			"buttonHighlight": "突出显示",
-			"buttonImage": "图像",
-			"buttonItalic": "倾斜",
-			"buttonLink": "链接",
-			"buttonList": "列表",
-			"buttonOrderedList": "已排序列表",
+			"bold": "加粗",
 			"buttonPreview": "Markdown 预览切换 - 关闭",
-			"buttonUnderline": "下划线",
-			"callout.insertImageHeading": "插入图像",
-			"callout.insertLinkHeading": "插入链接",
 			"dropdownHeading": "标题",
+			"highlight": "突出显示",
+			"insertCode": "插入代码",
+			"insertImage": "插入图像",
+			"insertLink": "插入链接",
+			"insertList": "插入列表",
+			"insertOrderedList": "插入已排序列表",
+			"italic": "倾斜",
 			"markdownViewButton": "Markdown 视图",
 			"optionHeading1": "标题 1",
 			"optionHeading2": "标题 2",
 			"optionHeading3": "标题 3",
 			"optionParagraph": "段落",
 			"richTextViewButton": "格式文本视图",
-			"splitViewButton": "拆分视图"
+			"splitViewButton": "拆分视图",
+			"underline": "下划线"
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/output.component": {
 			"componentRenderError": "渲染组件时出错: {0}",
@@ -11072,7 +11074,8 @@
 			"data": "数据",
 			"notebook": "笔记本",
 			"profiler": "探查器",
-			"queryEditor": "查询编辑器"
+			"queryEditor": "查询编辑器",
+			"tableDesigner": "表设计器"
 		},
 		"sql/workbench/contrib/profiler/browser/profiler.contribution": {
 			"profiler.settings.Filters": "探查器筛选器",
@@ -11984,15 +11987,6 @@
 			"queryManagement.noQueryRunnerForUri": "找不到此 URI 的查询运行程序: {0}",
 			"queryManagement.uriAlreadyHasQueryRunner": "URI: {0} 意外地已具有查询运行程序。"
 		},
-		"sql/base/browser/ui/designer/designer": {
-			"designer.newRowText": "新增",
-			"designer.removeRowText": "删除",
-			"tableDesigner.unknownComponentType": "组件类型: 不支持 {0}"
-		},
-		"sql/base/browser/ui/designer/designerPropertiesPane": {
-			"tableDesigner.propertiesPaneTitle": "属性",
-			"tableDesigner.propertiesPaneTitleWithContext": "属性–{0} {1}"
-		},
 		"sql/workbench/browser/editor/tableDesigner/tableDesignerInput": {
 			"tableDesigner.newTable": "新建表"
 		},
@@ -12000,22 +11994,91 @@
 			"tableDesigner.saveTableChanges": "保存更改"
 		},
 		"sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput": {
-			"tableDesigner.advancedTab": "高级",
+			"designer.checkConstraint.description.expression": "定义 CHECK 约束的表达式。",
+			"designer.checkConstraint.description.name": "CHECK 约束的名称。",
+			"designer.column.description.allowNulls": "指定列是否可以有 NULL 值。",
+			"designer.column.description.dataType": "显示列的数据类型名称",
+			"designer.column.description.defaultValueBinding": "列或绑定的预定义的全局默认值。",
+			"designer.column.description.length": "可以存储在此数据库对象中的最大长度(字符)。",
+			"designer.column.description.name": "列对象的名称。",
+			"designer.column.description.precision": "对于数值数据，可以存储在此数据库对象中的最大小数位数。",
+			"designer.column.description.primaryKey": "指定该列是否包含在表的主键中。",
+			"designer.column.description.scale": "对于数值数据，可以存储在此数据库对象中的小数点右侧的最大小数位数。",
+			"designer.foreignkey.description.columnMapping": "外键列和主键列之间的映射。",
+			"designer.foreignkey.description.name": "外键的名称。",
+			"designer.foreignkey.description.onDeleteAction": "用户尝试删除以下行时的行为: 该行包含外键关系中涉及的数据。",
+			"designer.foreignkey.description.onUpdateAction": "用户尝试更新以下行时的行为: 该行包含外键关系中涉及的数据。",
+			"designer.foreignkey.description.primaryKeyTable": "包含主键列或唯一键列的表。",
+			"designer.table.description.description": "表的说明。",
+			"designer.table.description.name": "表对象的名称。",
+			"designer.table.description.schema": "包含该表的架构。",
+			"tableDesigner.ForeignKeyTypeName": "外键",
+			"tableDesigner.PrimaryKeyTableName": "主键表",
+			"tableDesigner.checkConstraintExpressionTitle": "表达式",
+			"tableDesigner.checkConstraintNameTitle": "名称",
+			"tableDesigner.checkConstraintTypeName": "CHECK 约束",
+			"tableDesigner.checkConstraintsTabTitle": "检查约束",
 			"tableDesigner.columnAllowNullTitle": "允许 Null",
 			"tableDesigner.columnDefaultValueTitle": "默认值",
 			"tableDesigner.columnIsPrimaryKeyTitle": "主键",
 			"tableDesigner.columnLengthTitle": "长度",
 			"tableDesigner.columnNameTitle": "名称",
+			"tableDesigner.columnPrecisionTitle": "精度",
+			"tableDesigner.columnScaleTitle": "小数位数",
 			"tableDesigner.columnTypeName": "列",
 			"tableDesigner.columnTypeTitle": "类型",
 			"tableDesigner.columnsTabTitle": "列",
 			"tableDesigner.descriptionTitle": "说明",
+			"tableDesigner.errorInitializingTableDesigner": "初始化表设计器时出错: {0}",
+			"tableDesigner.errorProcessingEdit": "处理更改时出错: {0}",
+			"tableDesigner.foreignKeyColumn": "外键列",
+			"tableDesigner.foreignKeyColumns": "列映射",
+			"tableDesigner.foreignKeyNameTitle": "名称",
+			"tableDesigner.foreignKeyOnDeleteAction": "当删除操作发生时",
+			"tableDesigner.foreignKeyOnUpdateAction": "当更新操作发生时",
+			"tableDesigner.foreignKeysTabTitle": "外键",
+			"tableDesigner.generalTab": "常规",
 			"tableDesigner.nameTitle": "表名",
+			"tableDesigner.primaryKeyColumn": "主键列",
 			"tableDesigner.saveChangeError": "保存更改时出错: {0}",
 			"tableDesigner.savedChangeSuccess": "已成功保存更改。",
 			"tableDesigner.savingChanges": "正在保存表设计器更改...",
 			"tableDesigner.schemaTitle": "架构",
 			"tableDesigner.tableObjectType": "表"
+		},
+		"sql/base/browser/ui/loadingSpinner/loadingSpinner": {
+			"loadingCompletedMessage": "加载已完成",
+			"loadingMessage": "正在加载"
+		},
+		"sql/workbench/browser/designer/designer": {
+			"designer.generalGroupName": "常规",
+			"designer.loadingDesigner": "正在加载设计器...",
+			"designer.loadingDesignerCompleted": "已加载设计器",
+			"designer.newRowText": "新增",
+			"designer.processingChanges": "正在处理更改...",
+			"designer.processingChangesCompleted": "已处理更改",
+			"designer.removeRowText": "删除",
+			"designer.savingChanges": "正在保存更改...",
+			"designer.savingChangesCompleted": "更改已保存",
+			"tableDesigner.unknownComponentType": "组件类型: 不支持 {0}"
+		},
+		"sql/workbench/browser/designer/designerPropertiesPane": {
+			"tableDesigner.propertiesPaneTitle": "属性",
+			"tableDesigner.propertiesPaneTitleWithContext": "{0} 属性"
+		},
+		"sql/workbench/browser/designer/designerScriptEditor": {
+			"designer.textEditorAriaLabel": "设计器文本编辑器。"
+		},
+		"sql/workbench/contrib/tableDesigner/browser/tableDesigner.contribution": {
+			"tableDesigner.configTitle": "表设计器",
+			"tableDesigner.featureEnabledDescription": "控制是否启用表设计器功能。默认值为 false。"
+		},
+		"sql/workbench/services/notebook/browser/models/cellEdit": {
+			"addCellEdit": "添加单元格",
+			"convertCellTypeEdit": "转换单元格类型",
+			"deleteCellEdit": "删除单元格",
+			"moveCellEdit": "移动单元格",
+			"splitCellEdit": "拆分单元格"
 		}
 	}
 }

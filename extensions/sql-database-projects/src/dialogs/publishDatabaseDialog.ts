@@ -181,8 +181,6 @@ export class PublishDatabaseDialog {
 
 			let formModel = this.formBuilder.component();
 			await view.initializeModel(formModel);
-
-			await this.loadProfileTextBox!.focus();
 		});
 	}
 
@@ -311,7 +309,9 @@ export class PublishDatabaseDialog {
 		this.targetDatabaseDropDown!.values?.push(<any>value);
 		this.targetDatabaseDropDown!.value = value;
 
-		this.targetDatabaseTextBox!.value = value;
+		if (this.targetDatabaseTextBox) {
+			this.targetDatabaseTextBox!.value = value;
+		}
 	}
 
 	public getBaseDockerImageName(): string {

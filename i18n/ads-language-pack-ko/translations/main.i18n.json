@@ -9808,7 +9808,9 @@
 			"uninstallExtensionComplete": "Azure Data Studio를 다시 로드하여 이 확장 {0}의 제거를 완료하세요.",
 			"updateLocale": "Azure Data Studio의 UI 언어를 {0}(으)로 변경하고 다시 시작하시겠습니까?",
 			"watermark.newNotebook": "새 Notebook",
-			"watermark.newSqlFile": "새 SQL 파일"
+			"watermark.newSqlFile": "새 SQL 파일",
+			"workspace.trust.description": "Azure Data Studio 내에서 작업 영역 신뢰를 사용할지 여부를 제어합니다.",
+			"workspace.trust.emptyWindow.description": "빈 창이 기본적으로 Azure Data Studio 내에서 신뢰할 수 있는지 여부를 제어합니다. '#{0}#’와(과) 함께 사용하는 경우 빈 창에서 메시지를 표시하지 않고 Azure Data Studio 전체 기능을 사용하도록 설정할 수 있습니다."
 		},
 		"sql/base/parts/editableDropdown/browser/dropdown": {
 			"editableDropdown.errorValidate": "목록에 있는 옵션이어야 합니다.",
@@ -9853,12 +9855,14 @@
 			"calloutDialogHeaderFooterBackground": "설명선 대화 상자 머리글 및 바닥글 배경입니다.",
 			"calloutDialogInteriorBorder": "요소를 구분하는 데 사용되는 설명선 대화 상자 내부 테두리입니다.",
 			"calloutDialogShadowColor": "설명선 대화 상자 그림자 색입니다.",
+			"designer.paneSeparator": "창 구분 기호 색입니다.",
 			"extensionPackGradientColorOne": "확장 팩 그라데이션의 위쪽 색",
 			"extensionPackGradientColorTwo": "확장 팩 그라데이션의 아래쪽 색",
 			"extensionPackHeaderShadow": "확장 팩 헤더 텍스트 그림자 색",
 			"gradientBackground": "배너 이미지 그라데이션의 배경색",
 			"gradientOne": "배너 이미지 그라데이션의 위쪽 색",
 			"gradientTwo": "배너 이미지 그라데이션의 아래쪽 색",
+			"groupHeaderBackground": "그룹 헤더의 배경색입니다.",
 			"infoBox.errorBackground": "InfoBox: 알림 유형이 오류인 경우 배경색입니다.",
 			"infoBox.infomationBackground": "InfoBox: 알림 유형이 정보인 경우 배경색입니다.",
 			"infoBox.successBackground": "InfoBox: 알림 유형이 성공인 경우 배경색입니다.",
@@ -10271,7 +10275,7 @@
 			"schema.connectionOptions": "연결 옵션",
 			"schema.displayName": "공급자의 표시 이름",
 			"schema.iconPath": "서버 유형의 아이콘 경로",
-			"schema.isQueryProvider": "Whether the provider is also a query provider. The default value is true.",
+			"schema.isQueryProvider": "공급자가 쿼리 공급자에도 해당되는지 여부입니다. 기본값은 true입니다.",
 			"schema.notebookKernelAlias": "공급자의 Notebook 커널 별칭",
 			"schema.providerId": "공급자의 일반 ID"
 		},
@@ -10805,26 +10809,24 @@
 			"expandCellContents": "코드 셀 콘텐츠 확장"
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component": {
-			"buttonBold": "굵게",
-			"buttonCode": "코드",
-			"buttonHighlight": "강조 표시",
-			"buttonImage": "이미지",
-			"buttonItalic": "기울임꼴",
-			"buttonLink": "링크",
-			"buttonList": "목록",
-			"buttonOrderedList": "순서가 지정된 목록",
+			"bold": "굵게",
 			"buttonPreview": "Markdown 미리 보기 토글 - 끄기",
-			"buttonUnderline": "밑줄",
-			"callout.insertImageHeading": "이미지 삽입",
-			"callout.insertLinkHeading": "링크 삽입",
 			"dropdownHeading": "제목",
+			"highlight": "강조 표시",
+			"insertCode": "코드 삽입",
+			"insertImage": "이미지 삽입",
+			"insertLink": "링크 삽입",
+			"insertList": "목록 삽입",
+			"insertOrderedList": "순서가 지정된 목록 삽입",
+			"italic": "기울임꼴",
 			"markdownViewButton": "Markdown 보기",
 			"optionHeading1": "제목 1",
 			"optionHeading2": "제목 2",
 			"optionHeading3": "제목 3",
 			"optionParagraph": "단락",
 			"richTextViewButton": "서식 있는 텍스트 보기",
-			"splitViewButton": "분할 보기"
+			"splitViewButton": "분할 보기",
+			"underline": "밑줄"
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/output.component": {
 			"componentRenderError": "구성 요소 {0} 렌더링 중 오류 발생",
@@ -11072,7 +11074,8 @@
 			"data": "데이터",
 			"notebook": "Notebook",
 			"profiler": "Profiler",
-			"queryEditor": "쿼리 편집기"
+			"queryEditor": "쿼리 편집기",
+			"tableDesigner": "테이블 디자이너"
 		},
 		"sql/workbench/contrib/profiler/browser/profiler.contribution": {
 			"profiler.settings.Filters": "Profiler 필터",
@@ -11984,15 +11987,6 @@
 			"queryManagement.noQueryRunnerForUri": "{0} URI에 대한 쿼리 실행기를 찾을 수 없습니다.",
 			"queryManagement.uriAlreadyHasQueryRunner": "URI: {0} 예외에는 쿼리 실행기를 이미 가지고 있습니다."
 		},
-		"sql/base/browser/ui/designer/designer": {
-			"designer.newRowText": "새로 추가",
-			"designer.removeRowText": "제거",
-			"tableDesigner.unknownComponentType": "구성 요소 형식: {0}이(가) 지원되지 않음"
-		},
-		"sql/base/browser/ui/designer/designerPropertiesPane": {
-			"tableDesigner.propertiesPaneTitle": "속성",
-			"tableDesigner.propertiesPaneTitleWithContext": "속성 - {0} {1}"
-		},
 		"sql/workbench/browser/editor/tableDesigner/tableDesignerInput": {
 			"tableDesigner.newTable": "새 테이블"
 		},
@@ -12000,22 +11994,91 @@
 			"tableDesigner.saveTableChanges": "변경 내용 저장"
 		},
 		"sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput": {
-			"tableDesigner.advancedTab": "고급",
+			"designer.checkConstraint.description.expression": "CHECK 제약 조건을 정의하는 식입니다.",
+			"designer.checkConstraint.description.name": "CHECK 제약 조건의 이름입니다.",
+			"designer.column.description.allowNulls": "열에 NULL 값을 사용할 수 있는지 여부를 지정합니다.",
+			"designer.column.description.dataType": "열의 데이터 형식 이름을 표시합니다.",
+			"designer.column.description.defaultValueBinding": "열 또는 바인딩에 대해 미리 정의된 전역 기본값입니다.",
+			"designer.column.description.length": "이 데이터베이스 개체에 저장할 수 있는 최대 길이(문자 수)입니다.",
+			"designer.column.description.name": "열 개체의 이름입니다.",
+			"designer.column.description.precision": "숫자 데이터의 경우 이 데이터베이스 개체에 저장할 수 있는 최대 자릿수입니다.",
+			"designer.column.description.primaryKey": "열이 테이블의 기본 키에 포함되는지 여부를 지정합니다.",
+			"designer.column.description.scale": "숫자 데이터의 경우 소수점 오른쪽에 있는 이 데이터베이스 개체에 저장할 수 있는 최대 10진수 수입니다.",
+			"designer.foreignkey.description.columnMapping": "외래 키 열과 기본 키 열 간의 매핑입니다.",
+			"designer.foreignkey.description.name": "외래 키의 이름입니다.",
+			"designer.foreignkey.description.onDeleteAction": "사용자가 외래 키 관계에 포함된 데이터가 있는 행을 삭제하려고 할 때 수행할 동작입니다.",
+			"designer.foreignkey.description.onUpdateAction": "사용자가 외래 키 관계에 포함된 데이터가 있는 행을 업데이트하려고 할 때 수행할 동작입니다.",
+			"designer.foreignkey.description.primaryKeyTable": "기본 또는 고유 키 열을 포함하는 테이블입니다.",
+			"designer.table.description.description": "테이블에 대한 설명입니다.",
+			"designer.table.description.name": "테이블 개체의 이름입니다.",
+			"designer.table.description.schema": "테이블을 포함하는 스키마입니다.",
+			"tableDesigner.ForeignKeyTypeName": "외래 키",
+			"tableDesigner.PrimaryKeyTableName": "기본 키 테이블",
+			"tableDesigner.checkConstraintExpressionTitle": "식",
+			"tableDesigner.checkConstraintNameTitle": "이름",
+			"tableDesigner.checkConstraintTypeName": "CHECK 제약 조건",
+			"tableDesigner.checkConstraintsTabTitle": "CHECK 제약 조건",
 			"tableDesigner.columnAllowNullTitle": "Null 허용",
 			"tableDesigner.columnDefaultValueTitle": "기본값",
 			"tableDesigner.columnIsPrimaryKeyTitle": "기본 키",
 			"tableDesigner.columnLengthTitle": "길이",
 			"tableDesigner.columnNameTitle": "이름",
+			"tableDesigner.columnPrecisionTitle": "정밀도",
+			"tableDesigner.columnScaleTitle": "스케일링",
 			"tableDesigner.columnTypeName": "열",
 			"tableDesigner.columnTypeTitle": "형식",
 			"tableDesigner.columnsTabTitle": "열",
 			"tableDesigner.descriptionTitle": "설명",
+			"tableDesigner.errorInitializingTableDesigner": "테이블 디자이너를 초기화하는 동안 오류가 발생했습니다. {0}",
+			"tableDesigner.errorProcessingEdit": "변경을 처리하는 동안 오류가 발생했습니다: {0}",
+			"tableDesigner.foreignKeyColumn": "외래 키 열",
+			"tableDesigner.foreignKeyColumns": "열 매핑",
+			"tableDesigner.foreignKeyNameTitle": "이름",
+			"tableDesigner.foreignKeyOnDeleteAction": "삭제 시 작업",
+			"tableDesigner.foreignKeyOnUpdateAction": "업데이트 작업 시",
+			"tableDesigner.foreignKeysTabTitle": "외래 키",
+			"tableDesigner.generalTab": "일반",
 			"tableDesigner.nameTitle": "테이블 이름",
+			"tableDesigner.primaryKeyColumn": "기본 키 열",
 			"tableDesigner.saveChangeError": "변경 내용을 저장하는 동안 오류가 발생했습니다. {0}",
 			"tableDesigner.savedChangeSuccess": "변경 내용이 저장되었습니다.",
 			"tableDesigner.savingChanges": "테이블 디자이너 변경 내용을 저장하는 중...",
 			"tableDesigner.schemaTitle": "스키마",
 			"tableDesigner.tableObjectType": "테이블"
+		},
+		"sql/base/browser/ui/loadingSpinner/loadingSpinner": {
+			"loadingCompletedMessage": "로드 완료",
+			"loadingMessage": "로드 중"
+		},
+		"sql/workbench/browser/designer/designer": {
+			"designer.generalGroupName": "일반",
+			"designer.loadingDesigner": "디자이너를 로드하는 중...",
+			"designer.loadingDesignerCompleted": "디자이너가 로드되었습니다.",
+			"designer.newRowText": "새로 추가",
+			"designer.processingChanges": "변경 내용 처리 중...",
+			"designer.processingChangesCompleted": "변경 내용이 처리되었습니다.",
+			"designer.removeRowText": "제거",
+			"designer.savingChanges": "변경 내용 저장 중...",
+			"designer.savingChangesCompleted": "변경 내용이 저장되었습니다.",
+			"tableDesigner.unknownComponentType": "구성 요소 형식: {0}이(가) 지원되지 않음"
+		},
+		"sql/workbench/browser/designer/designerPropertiesPane": {
+			"tableDesigner.propertiesPaneTitle": "속성",
+			"tableDesigner.propertiesPaneTitleWithContext": "{0} 속성"
+		},
+		"sql/workbench/browser/designer/designerScriptEditor": {
+			"designer.textEditorAriaLabel": "디자이너 텍스트 편집기."
+		},
+		"sql/workbench/contrib/tableDesigner/browser/tableDesigner.contribution": {
+			"tableDesigner.configTitle": "테이블 디자이너",
+			"tableDesigner.featureEnabledDescription": "테이블 디자이너 기능의 사용 여부를 제어합니다. 기본값은 false입니다."
+		},
+		"sql/workbench/services/notebook/browser/models/cellEdit": {
+			"addCellEdit": "셀 추가",
+			"convertCellTypeEdit": "셀 유형 변환",
+			"deleteCellEdit": "셀 삭제",
+			"moveCellEdit": "셀 이동",
+			"splitCellEdit": "셀 분할"
 		}
 	}
 }
