@@ -195,7 +195,7 @@ Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration)
 		'properties': {
 			'workbench.tips.enabled': {
 				'type': 'boolean',
-				'default': true,
+				'default': false,
 				'description': nls.localize('tips.enabled', "When enabled, will show the watermark tips when no editor is open.")
 			},
 		}
