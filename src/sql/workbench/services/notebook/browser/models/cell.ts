@@ -611,7 +611,8 @@ export class CellModel extends Disposable implements ICellModel {
 					if (tryMatchCellMagic(this.source[0]) !== ads_execute_command || !this._isCommandExecutionSettingEnabled) {
 						const future = kernel.requestExecute({
 							code: content,
-							stop_on_error: true
+							stop_on_error: true,
+							notebookUri: this.notebookModel.notebookUri
 						}, false);
 						this.setFuture(future as FutureInternal);
 						this.fireExecutionStateChanged();

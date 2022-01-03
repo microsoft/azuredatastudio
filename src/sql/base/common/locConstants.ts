@@ -5,7 +5,7 @@
 
 import { localize } from 'vs/nls';
 
-// Contains vs strings that are nonnative to vscode that need to be translated.
+// Contains vs strings that are non-native to vscode that need to be translated.
 
 export const issueReporterMainAzuredatastudio = localize('azuredatastudio', "Azure Data Studio");
 export const updateConfigContributionDefault = localize('default', "Enable automatic update checks. Azure Data Studio will check for updates automatically and periodically.");
@@ -47,3 +47,4 @@ export const watermarkNewNotebook = localize('watermark.newNotebook', "New Noteb
 export const desktopContributionMiinstallVsix = localize({ key: 'miinstallVsix', comment: ['&& denotes a mnemonic'] }, "Install Extension from VSIX Package");
 export const workspaceTrustDescription = localize('workspace.trust.description', "Controls whether or not workspace trust is enabled within Azure Data Studio.");
 export function workspaceTrustEmptyWindowDescription(settingName: string): string { return localize('workspace.trust.emptyWindow.description', "Controls whether or not the empty window is trusted by default within Azure Data Studio. When used with `#{0}#`, you can enable the full functionality of Azure Data Studio without prompting in an empty window.", settingName); }
+export const functionalityNotSupportedError = localize('vscodeFunctionalityNotSupportedError', "This VS Code functionality is not supported in Azure Data Studio.");

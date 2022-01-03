@@ -179,13 +179,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return manager;
 	}
 
-	public getExecuteManager(providerId: string): IExecuteManager | undefined {
-		if (providerId) {
-			return this.executeManagers.find(manager => manager.providerId === providerId);
-		}
-		return undefined;
-	}
-
 	public get notebookOptions(): INotebookModelOptions {
 		return this._notebookOptions;
 	}
@@ -519,7 +512,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public async requestModelLoad(): Promise<void> {
 		try {
-			this.setDefaultKernelAndProviderId();
+			await this.setDefaultKernelAndProviderId();
 			this.trySetLanguageFromLangInfo();
 		} catch (error) {
 			this._inErrorState = true;
@@ -975,7 +968,15 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._activeClientSession = clientSession;
 	}
 
-	public setDefaultKernelAndProviderId() {
+	public async setDefaultKernelAndProviderId(): Promise<void> {
+		if (!this._defaultKernel) {
+			await this.executeManager.sessionManager.ready;
+			if (this.executeManager.sessionManager.specs) {
+				let defaultKernelName = this.executeManager.sessionManager.specs.defaultKernel;
+				this._defaultKernel = this.executeManager.sessionManager.specs.kernels.find(kernel => kernel.name === defaultKernelName);
+			}
+		}
+
 		if (this._capabilitiesService?.providers) {
 			let providers = this._capabilitiesService.providers;
 			for (const server in providers) {
@@ -1416,7 +1417,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				this._onProviderIdChanged.fire(this._providerId);
 
 				await this.shutdownActiveSession();
-				let manager = this.getExecuteManager(providerId);
+				let manager = this.executeManager;
 				if (manager) {
 					await this.startSession(manager, displayName, false, kernelAlias);
 				} else {

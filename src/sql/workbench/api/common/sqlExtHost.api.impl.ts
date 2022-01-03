@@ -48,22 +48,18 @@ export interface IExtensionApiFactory {
 
 export interface IAdsExtensionApiFactory {
 	azdata: IAzdataExtensionApiFactory;
+	extHostNotebook: ExtHostNotebook;
 }
 
 /**
  * This method instantiates and returns the extension API surface
  */
 export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): IExtensionApiFactory {
-	const { azdata } = createAdsApiFactory(accessor);
+	const { azdata, extHostNotebook } = createAdsApiFactory(accessor);
 	return {
 		azdata,
-		vscode: vsApiFactory(accessor)
+		vscode: vsApiFactory(accessor, extHostNotebook)
 	};
-}
-
-
-export interface IAdsExtensionApiFactory {
-	azdata: IAzdataExtensionApiFactory;
 }
 
 /**
@@ -634,6 +630,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				TextType: sqlExtHostTypes.TextType,
 				designers: designers
 			};
-		}
+		},
+		extHostNotebook: extHostNotebook
 	};
 }
