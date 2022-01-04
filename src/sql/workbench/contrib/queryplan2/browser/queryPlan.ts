@@ -37,48 +37,48 @@ export class QueryPlan2Tab implements IPanelTab {
 }
 
 export class QueryPlan2View implements IPanelView {
-	private qps?: QueryPlan2[] = [];
-	private graphs?: azdata.QueryPlanGraph[] = [];
-	private container = DOM.$('.qp2-container');
+	private _qps?: QueryPlan2[] = [];
+	private _graphs?: azdata.QueryPlanGraph[] = [];
+	private _container = DOM.$('.qp2-container');
 
 	public render(container: HTMLElement): void {
-		container.appendChild(this.container);
-		this.container.style.overflow = 'scroll';
+		container.appendChild(this._container);
+		this._container.style.overflow = 'scroll';
 	}
 
 	dispose() {
-		this.container.remove();
-		delete this.qps;
-		delete this.graphs;
+		this._container.remove();
+		delete this._qps;
+		delete this._graphs;
 	}
 
 	public layout(dimension: DOM.Dimension): void {
-		this.container.style.width = dimension.width + 'px';
-		this.container.style.height = dimension.height + 'px';
+		this._container.style.width = dimension.width + 'px';
+		this._container.style.height = dimension.height + 'px';
 	}
 
 	public clear() {
-		this.qps = [];
-		this.graphs = [];
-		DOM.clearNode(this.container);
+		this._qps = [];
+		this._graphs = [];
+		DOM.clearNode(this._container);
 	}
 
 	public addGraphs(newGraphs: azdata.QueryPlanGraph[]) {
 		newGraphs.forEach(g => {
-			const qp2 = new QueryPlan2(this.container, this.qps.length + 1);
+			const qp2 = new QueryPlan2(this._container, this._qps.length + 1);
 			qp2.graph = g;
-			this.qps.push(qp2);
-			this.graphs.push(g);
+			this._qps.push(qp2);
+			this._graphs.push(g);
 			this.updateRelativeCosts();
 		});
 	}
 
 	private updateRelativeCosts() {
-		const sum = this.graphs.reduce((prevCost: number, cg) => {
+		const sum = this._graphs.reduce((prevCost: number, cg) => {
 			return prevCost += cg.root.subTreeCost + cg.root.cost;
 		}, 0);
 
-		this.qps.forEach(qp => {
+		this._qps.forEach(qp => {
 			qp.relativeCost = ((qp.graph.root.subTreeCost + qp.graph.root.cost) / sum) * 100;
 		});
 	}
@@ -87,28 +87,28 @@ export class QueryPlan2View implements IPanelView {
 export class QueryPlan2 {
 	private _graph?: azdata.QueryPlanGraph;
 	private _relativeCost?: globalThis.Text;
-	private actionBar: ActionBar;
+	private _actionBar: ActionBar;
 	private _table: Slick.Grid<any>;
-	public propContainer: HTMLElement;
-	private dataView: Slick.Data.DataView<any>;
-	private container: HTMLElement;
-	private actionBarContainer: HTMLElement;
-	private data: any[];
+	private _dataView: Slick.Data.DataView<any>;
+	private _container: HTMLElement;
+	private _actionBarContainer: HTMLElement;
+	private _data: any[];
 	private _iconMap: any = new Object();
-
 	private _iconPaths: any = new Object();
+
+	public propContainer: HTMLElement;
 
 	constructor(
 		parent: HTMLElement,
-		private graphIndex: number,
+		private _graphIndex: number,
 
 	) {
-		this.container = DOM.$('.query-plan2-container');
-		parent.appendChild(this.container);
+		this._container = DOM.$('.query-plan2-container');
+		parent.appendChild(this._container);
 
 
-		this.actionBarContainer = DOM.$('.actionbar-container');
-		this.actionBar = new ActionBar(this.actionBarContainer, {
+		this._actionBarContainer = DOM.$('.actionbar-container');
+		this._actionBar = new ActionBar(this._actionBarContainer, {
 			orientation: ActionsOrientation.VERTICAL, context: this
 		});
 
@@ -120,14 +120,14 @@ export class QueryPlan2 {
 
 		this.propContainer.style.visibility = 'hidden';
 
-		this.dataView = new Slick.Data.DataView({ inlineFilters: false });
+		this._dataView = new Slick.Data.DataView({ inlineFilters: false });
 		let self = this;
-		this.data = [];
+		this._data = [];
 		const TaskNameFormatter = function (row, cell, value, columnDef, dataContext) {
 			value = value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 			const spacer = '<span style="display:inline-block;height:1px;width' + (15 * dataContext['indent']) + 'px"></span>';
-			const idx = self.dataView.getIdxById(dataContext.id);
-			if (self.data[idx + 1] && self.data[idx + 1].indent > self.data[idx].indent) {
+			const idx = self._dataView.getIdxById(dataContext.id);
+			if (self._data[idx + 1] && self._data[idx + 1].indent > self._data[idx].indent) {
 				if (dataContext._collapsed) {
 					return spacer + '<span class="toggle expand"></span>&nbsp;' + value;
 				} else {
@@ -169,11 +169,11 @@ export class QueryPlan2 {
 		tableContainer.style.height = '500px';
 		tableContainer.style.width = '490px';
 		this.propContainer.appendChild(tableContainer);
-		this._table = new Slick.Grid(tableContainer, this.dataView, columns, options);
+		this._table = new Slick.Grid(tableContainer, this._dataView, columns, options);
 
 		this._table.onClick.subscribe((e: any, args) => {
 
-			const item = this.dataView.getItem(args.row);
+			const item = this._dataView.getItem(args.row);
 			if (item) {
 				if (!item._collapsed) {
 					item._collapsed = true;
@@ -181,21 +181,21 @@ export class QueryPlan2 {
 					item._collapsed = false;
 				}
 
-				this.dataView.updateItem(item.id, item);
+				this._dataView.updateItem(item.id, item);
 			}
 			e.stopImmediatePropagation();
 
 		});
 
-		this.dataView.setFilter((item) => {
+		this._dataView.setFilter((item) => {
 			if (item.parent !== null) {
-				let parent = this.data[item.parent];
+				let parent = this._data[item.parent];
 				while (parent) {
 					if (parent._collapsed) {
 						return false;
 					}
 
-					parent = this.data[parent.parent];
+					parent = this._data[parent.parent];
 				}
 			}
 			return true;
@@ -203,12 +203,12 @@ export class QueryPlan2 {
 
 
 		// wire up model events to drive the grid
-		this.dataView.onRowCountChanged.subscribe((e, args) => {
+		this._dataView.onRowCountChanged.subscribe((e, args) => {
 			this._table.updateRowCount();
 			this._table.render();
 		});
 
-		this.dataView.onRowsChanged.subscribe((e, args) => {
+		this._dataView.onRowsChanged.subscribe((e, args) => {
 			this._table.invalidateRows(args.rows);
 			this._table.render();
 		});
@@ -216,7 +216,7 @@ export class QueryPlan2 {
 		const actions = [
 			new PropertiesAction()
 		];
-		this.actionBar.push(actions, { icon: true, label: false });
+		this._actionBar.push(actions, { icon: true, label: false });
 
 		// new Operation("ClusteredUpdate",        SR.Keys.ClusteredUpdate,        SR.Keys.ClusteredUpdateDescription,         "Clustered_update_32x.ico"),
 		// new Operation("Collapse",               SR.Keys.Collapse,               SR.Keys.CollapseDescription,                "Collapse_32x.ico"),
@@ -671,19 +671,20 @@ export class QueryPlan2 {
 			/**
 			 * Create a show plan graph here.
 			 */
-			this.container.appendChild(document.createTextNode(`Query ${this.graphIndex}: `));
+			this._container.appendChild(document.createTextNode(`Query ${this._graphIndex}: `));
 			this._relativeCost = document.createTextNode('(relative to the script):');
-			this.container.appendChild(this._relativeCost);
-			this.container.appendChild(document.createElement('br'));
-			this.container.appendChild(document.createTextNode(`${graph.query}`));
+			this._container.appendChild(this._relativeCost);
+			this._container.appendChild(document.createElement('br'));
+			this._container.appendChild(document.createTextNode(`${graph.query}`));
 			let diagramContainer = document.createElement('div');
 			this.createPlanDiagram(diagramContainer);
-			this.container.appendChild(diagramContainer);
+			this._container.appendChild(diagramContainer);
 
-			this.container.appendChild(document.createElement('br'));
-			this.container.appendChild(this.propContainer);
+			this._container.appendChild(document.createTextNode('Need to add graph control here'));
+			this._container.appendChild(document.createElement('br'));
+			this._container.appendChild(this.propContainer);
 			this.setData(this._graph.root.properties);
-			this.container.appendChild(this.actionBarContainer);
+			this._container.appendChild(this._actionBarContainer);
 		}
 	}
 
@@ -696,21 +697,19 @@ export class QueryPlan2 {
 	}
 
 	public setData(props: azdata.QueryPlanGraphElementProperty[]): void {
-		this.data = [];
+		this._data = [];
 		props.forEach((p, i) => {
-			this.data.push({
+			this._data.push({
 				id: p.name,
 				name: p.name,
 				propValue: p.formattedValue,
-				//parent: i % 2 === 0 ? undefined : i - 1,
-				//indent: i % 2 === 0 ? 0 : 2,
 				_collapsed: true
 			});
 		});
-		this.dataView.beginUpdate();
-		this.dataView.setItems(this.data);
-		this.dataView.endUpdate();
-		this.dataView.refresh();
+		this._dataView.beginUpdate();
+		this._dataView.setItems(this._data);
+		this._dataView.endUpdate();
+		this._dataView.refresh();
 		this._table.autosizeColumns();
 		this._table.updateRowCount();
 		this._table.resizeCanvas();
