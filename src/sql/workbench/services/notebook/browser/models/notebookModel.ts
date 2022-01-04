@@ -877,17 +877,21 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 		for (const edit of edits) {
 			const startCell = this.cells[edit.range.start];
-			if (!startCell) {
-				this.logService.warn(`Did not receive a valid starting cell when processing edit type ${edit.type}`);
-				continue;
-			}
 			switch (edit.type) {
 				case NotebookEditOperationType.UpdateCell:
+					if (!startCell) {
+						this.logService.warn(`Did not receive a valid starting cell when processing edit type ${edit.type}`);
+						continue;
+					}
 					startCell.processEdits([
 						new CellOutputEdit(edit.cell.outputs ?? [], !!edit.append)
 					]);
 					break;
 				case NotebookEditOperationType.UpdateCellOutput:
+					if (!startCell) {
+						this.logService.warn(`Did not receive a valid starting cell when processing edit type ${edit.type}`);
+						continue;
+					}
 					const cellEdits: ICellEdit[] = [];
 					edit.cell.outputs?.forEach(o => {
 						const targetOutput = startCell.outputs.find(o2 => o.id === o2.id);

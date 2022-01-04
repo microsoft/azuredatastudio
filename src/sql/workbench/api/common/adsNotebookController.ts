@@ -206,17 +206,17 @@ class ADSNotebookCellExecution implements vscode.NotebookCellExecution {
 
 	public async appendOutput(out: vscode.NotebookCellOutput | vscode.NotebookCellOutput[], cell?: vscode.NotebookCell): Promise<void> {
 		this.verifyStateForOutput();
-		this.updateOutputs(out, cell, true);
+		return this.updateOutputs(out, cell, true);
 	}
 
 	public async replaceOutputItems(items: vscode.NotebookCellOutputItem | vscode.NotebookCellOutputItem[], output: vscode.NotebookCellOutput): Promise<void> {
 		this.verifyStateForOutput();
-		this.updateOutputItems(items, output, false);
+		return this.updateOutputItems(items, output, false);
 	}
 
 	public async appendOutputItems(items: vscode.NotebookCellOutputItem | vscode.NotebookCellOutputItem[], output: vscode.NotebookCellOutput): Promise<void> {
 		this.verifyStateForOutput();
-		this.updateOutputItems(items, output, true);
+		return this.updateOutputItems(items, output, true);
 	}
 
 	private async updateOutputs(outputs: vscode.NotebookCellOutput | vscode.NotebookCellOutput[], cell: vscode.NotebookCell | number | undefined, append: boolean): Promise<void> {
