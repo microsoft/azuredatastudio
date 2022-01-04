@@ -228,16 +228,7 @@ actionRegistry.registerWorkbenchAction(
 	'Change Language Flavor'
 );
 
-// Register Send Results To File Action
-actionRegistry.registerWorkbenchAction(
-	SyncActionDescriptor.create(
-		QueryResultsToFileAction,
-		QueryResultsToFileAction.ID,
-		QueryResultsToFileAction.LABEL
-	),
-	'Query Results to File'
-);
-
+// Query Result writer actions
 actionRegistry.registerWorkbenchAction(
 	SyncActionDescriptor.create(
 		QueryResultsToGridAction,
@@ -245,6 +236,15 @@ actionRegistry.registerWorkbenchAction(
 		QueryResultsToGridAction.LABEL
 	),
 	'Query Results to Grid'
+);
+
+actionRegistry.registerWorkbenchAction(
+	SyncActionDescriptor.create(
+		QueryResultsToFileAction,
+		QueryResultsToFileAction.ID,
+		QueryResultsToFileAction.LABEL
+	),
+	'Query Results to File'
 );
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({

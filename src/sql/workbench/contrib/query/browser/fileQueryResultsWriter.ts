@@ -5,7 +5,7 @@
 
 import { hyperLinkFormatter, textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
-import { IQueryRunnerCallbackHandlerStrategy } from 'sql/workbench/contrib/query/browser/IQueryRunnerCallbackHandlerStrategy';
+import { IQueryResultsWriter } from 'sql/workbench/contrib/query/browser/IQueryResultsWriter';
 import { IGridDataProvider } from 'sql/workbench/services/query/common/gridDataProvider';
 import { IQueryMessage, ResultSetSummary } from 'sql/workbench/services/query/common/query';
 import QueryRunner, { QueryGridDataProvider } from 'sql/workbench/services/query/common/queryRunner';
@@ -21,11 +21,11 @@ import { Progress } from 'vs/platform/progress/common/progress';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 
-export class ToFileQueryRunnerCallbackHandler implements IQueryRunnerCallbackHandlerStrategy {
+export class FileQueryResultsWriter implements IQueryResultsWriter {
 	private messages: Array<IQueryMessage> = [];
 	private formattedQueryResults: Array<string> = [];
 	private tables: Array<Table<any>> = [];
-	private resultSetCount: number = 0;
+	private numQueriesToFormat: number = 0;
 	private queryContainsError: boolean = false;
 	private closingMessageIncluded: boolean = false;
 	private hasCreatedResultsFile: boolean = false;
@@ -47,7 +47,7 @@ export class ToFileQueryRunnerCallbackHandler implements IQueryRunnerCallbackHan
 	}
 
 	public onResultSet(resultSet: ResultSetSummary | ResultSetSummary[]) {
-		this.resultSetCount++;
+		this.numQueriesToFormat++;
 		let resultsToAdd: ResultSetSummary[];
 		if (!Array.isArray(resultSet)) {
 			resultsToAdd = [resultSet];
@@ -66,26 +66,26 @@ export class ToFileQueryRunnerCallbackHandler implements IQueryRunnerCallbackHan
 	}
 
 	public async updateResultSet(resultSet: ResultSetSummary | ResultSetSummary[]) {
-		let resultsToUpdate: ResultSetSummary[];
+		let resultSetSummaries: ResultSetSummary[];
 		if (!Array.isArray(resultSet)) {
-			resultsToUpdate = [resultSet];
+			resultSetSummaries = [resultSet];
 		} else {
-			resultsToUpdate = resultSet.splice(0);
+			resultSetSummaries = resultSet.splice(0);
 		}
 
 		if (this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.streaming) {
-			for (let set of resultsToUpdate) {
-				let table = this.tables.find(t => t.resultSet.batchId === set.batchId && t.resultSet.id === set.id);
+			for (let resultSetSummary of resultSetSummaries) {
+				let table = this.tables.find(t => t.resultSet.batchId === resultSetSummary.batchId && t.resultSet.id === resultSetSummary.id);
 				if (table) {
-					await table.updateResult(set);
+					await table.updateResult(resultSetSummary);
 				} else {
 					this.logService.warn('Got result set update request for non-existant table');
 				}
 			}
 		} else {
-			resultsToUpdate = resultsToUpdate.filter(e => e.complete);
-			if (resultsToUpdate.length > 0) {
-				this.addResultSet(resultsToUpdate);
+			resultSetSummaries = resultSetSummaries.filter(e => e.complete);
+			if (resultSetSummaries.length > 0) {
+				this.addResultSet(resultSetSummaries);
 			}
 		}
 	}
@@ -109,12 +109,10 @@ export class ToFileQueryRunnerCallbackHandler implements IQueryRunnerCallbackHan
 			});
 		}
 		else {
-			if (this.messages.findIndex(m => m.message === incomingMessage.message) < 0) {
-				this.messages.push(incomingMessage);
-			}
+			this.messages.push(incomingMessage);
 		}
 
-		if (!this.hasCreatedResultsFile && this.closingMessageIncluded && (this.queryContainsError || this.resultSetCount === 0)) {
+		if (!this.hasCreatedResultsFile && this.closingMessageIncluded && this.queryContainsError && this.numQueriesToFormat === 0) {
 			await this.createResultsFile();
 		}
 	}
@@ -123,56 +121,41 @@ export class ToFileQueryRunnerCallbackHandler implements IQueryRunnerCallbackHan
 		this.messages = [];
 		this.formattedQueryResults = [];
 		this.tables = [];
-		this.resultSetCount = 0;
+		this.numQueriesToFormat = 0;
 		this.queryContainsError = false;
 		this.closingMessageIncluded = false;
 		this.hasCreatedResultsFile = false;
 	}
 
-	private addResultSet(resultSet: ResultSetSummary[]) {
+	private addResultSet(resultSetSummaries: ResultSetSummary[]) {
 		const tables: Array<Table<any>> = [];
 
-		for (const set of resultSet) {
-			// ensure we aren't adding a resultSet that is already visible
-			if (this.tables.find(t => t.resultSet.batchId === set.batchId && t.resultSet.id === set.id)) {
+		for (const resultSetSummary of resultSetSummaries) {
+			// ensure we aren't adding a resultSet that has already been added
+			if (this.tables.find(t => t.resultSet.batchId === resultSetSummary.batchId && t.resultSet.id === resultSetSummary.id)) {
 				continue;
 			}
 
-			const table = this.instantiationService.createInstance(Table, this.runner, set, this);
-
+			const table = this.instantiationService.createInstance(Table, this.runner, resultSetSummary, this);
 			tables.push(table);
 		}
 
 		this.tables = this.tables.concat(tables);
-
-		// turn-off special-case process when only a single table is being displayed
-		if (this.tables.length > 1) {
-			for (let i = 0; i < this.tables.length; ++i) {
-				this.tables[i].isOnlyTable = false;
-			}
-		}
 	}
 
-	public async sendResultsToFile(results: string) {
-		this.resultSetCount--;
+	public async aggregateQueryResults(results: string) {
+		this.numQueriesToFormat--;
 		this.formattedQueryResults.push(results);
 
-		if (this.resultSetCount === 0) {
+		if (this.numQueriesToFormat === 0) {
 			await this.createResultsFile();
 		}
 	}
 
 	public async createResultsFile() {
-		let combinedContents: string[];
-		if (!this.queryContainsError) {
-			combinedContents = this.mergeResultsWithMessages();
-		}
-		else {
-			combinedContents = this.messages.map(m => m.message);
-		}
+		let fileContent = this.mergeQueryResultsWithMessages();
 
-
-		let content = combinedContents.map(m => {
+		let fileData = fileContent.map(m => {
 			if (m.includes('rows affected') || m.includes('row affected')) {
 				return '\r\n' + m + '\r\n';
 			}
@@ -183,7 +166,7 @@ export class ToFileQueryRunnerCallbackHandler implements IQueryRunnerCallbackHan
 			return m;
 		}).join('\r\n');
 
-		const input = this.untitledEditorService.create({ initialValue: content });
+		const input = this.untitledEditorService.create({ initialValue: fileData });
 		await input.resolve();
 		input.setDirty(false);
 		await this.instantiationService.invokeFunction(formatDocumentWithSelectedProvider, input.textEditorModel, FormattingMode.Explicit, Progress.None, CancellationToken.None);
@@ -192,7 +175,7 @@ export class ToFileQueryRunnerCallbackHandler implements IQueryRunnerCallbackHan
 		return this.editorService.openEditor(input);
 	}
 
-	private mergeResultsWithMessages() {
+	private mergeQueryResultsWithMessages() {
 		let content: Array<string> = [];
 		let extractedMessages = this.messages.map(m => m.message);
 
@@ -205,8 +188,8 @@ export class ToFileQueryRunnerCallbackHandler implements IQueryRunnerCallbackHan
 			content.push(extractedMessages.shift());
 		}
 
-		// append remaining messages or query results
-		return [...content, ...extractedMessages, ...this.formattedQueryResults];
+		// append any remaining query results and messages.
+		return [...content, ...this.formattedQueryResults, ...extractedMessages];
 	}
 }
 
@@ -218,22 +201,22 @@ export class Table<T> extends Disposable {
 	constructor(
 		private runner: QueryRunner,
 		public resultSet: ResultSetSummary,
-		private queryRunnerCallbackHandler: ToFileQueryRunnerCallbackHandler,
+		private fileQueryResultsWriter: FileQueryResultsWriter,
 		@IInstantiationService private readonly instantiationService: IInstantiationService
 	) {
 		super();
 
-		this.columns = this.resultSet.columnInfo.map((c, i) => {
-			let isLinked = c.isXml || c.isJson;
+		this.columns = this.resultSet.columnInfo.map((col, index) => {
+			let isLinked = col.isXml || col.isJson;
 
 			return <Slick.Column<T>>{
-				id: i.toString(),
-				name: c.columnName === 'Microsoft SQL Server 2005 XML Showplan'
+				id: index.toString(),
+				name: col.columnName === 'Microsoft SQL Server 2005 XML Showplan'
 					? localize('xmlShowplan', "XML Showplan")
-					: escape(c.columnName),
-				field: i.toString(),
+					: escape(col.columnName),
+				field: index.toString(),
 				formatter: isLinked ? hyperLinkFormatter : textFormatter,
-				width: c.columnSize
+				width: col.columnSize
 			};
 		});
 
@@ -255,57 +238,66 @@ export class Table<T> extends Disposable {
 			return;
 		}
 
-		let rawData = response.rows.map(row => {
+		let unformattedData = response.rows.map(row => {
 			let dataWithSchema = {};
 
 			let numColumns = this.resultSet.columnInfo.length;
-			for (let col = 0; col < numColumns; col++) {
-				dataWithSchema[this.columns[col].field] = {
-					displayValue: row[col].displayValue,
-					ariaLabel: escape(row[col].displayValue),
-					isNull: row[col].isNull,
-					invariantCultureDisplayValue: row[col].invariantCultureDisplayValue
+			for (let curCol = 0; curCol < numColumns; curCol++) {
+				dataWithSchema[this.columns[curCol].field] = {
+					displayValue: row[curCol].displayValue,
+					ariaLabel: escape(row[curCol].displayValue),
+					isNull: row[curCol].isNull,
+					invariantCultureDisplayValue: row[curCol].invariantCultureDisplayValue
 				};
 			}
 			return dataWithSchema as T;
 		});
 
-		let formattedResults = this.formatQueryResults(rawData);
-		await this.queryRunnerCallbackHandler.sendResultsToFile(formattedResults);
+		let formattedResults = this.formatQueryResults(unformattedData);
+		await this.fileQueryResultsWriter.aggregateQueryResults(formattedResults);
+	}
+
+	private formatQueryResults(unformattedData: any[]): string {
+		let columnWidths = this.calculateColumnWidths();
+		let formattedTable = this.formatTableHeader(columnWidths);
+		formattedTable = formattedTable.concat(this.formatData(unformattedData, columnWidths));
+
+		return formattedTable.join('\r\n');
 	}
 
 	private calculateColumnWidths(): number[] {
-		let columnSizes: number[] = [];
+		let columnWidths: number[] = [];
 
 		for (const column of this.columns) {
-			let colSize = column.width;
-			if (column.name.length > colSize) {
-				colSize = column.name.length;
+			let colWidth = column.width;
+			if (column.name && column.name.length > colWidth) {
+				colWidth = column.name.length;
 			}
 
-			columnSizes.push(colSize);
+			columnWidths.push(colWidth);
 		}
 
-		return columnSizes;
+		return columnWidths;
 	}
 
-	private buildHeader(columnSizes: number[]): string[] {
+	private formatTableHeader(columnWidths: number[]): string[] {
 		let tableHeader: string[] = [];
 
 		let columnNames = '';
-		for (let i = 0; i < this.columns.length; ++i) {
-			columnNames += (this.columns[i].name !== undefined) ? this.columns[i].name : '';
+		for (let curCol = 0; curCol < this.columns.length; curCol++) {
+			columnNames += (this.columns[curCol].name !== undefined) ? this.columns[curCol].name : '';
 
-			if (i < this.columns.length - 1) {
-				columnNames += ' '.repeat(columnSizes[i] - this.columns[i].name.length).concat(' ');
+			// Padding every column name before the last one to fill it's width and including extra space to separate each column.
+			if (curCol < this.columns.length - 1) {
+				columnNames += ' '.repeat((columnWidths[curCol] - this.columns[curCol].name.length) + 1);
 			}
 		}
 		tableHeader.push(columnNames);
 
-		let headingDivider = columnSizes.map((size, i) => {
-			let columnUnderline = '-'.repeat(size);
+		let headingDivider = columnWidths.map((colWidth, index) => {
+			let columnUnderline = '-'.repeat(colWidth);
 
-			if (i < this.columns.length - 1) {
+			if (index < this.columns.length - 1) {
 				columnUnderline += ' ';
 			}
 
@@ -316,18 +308,16 @@ export class Table<T> extends Disposable {
 		return tableHeader;
 	}
 
-	private formatData(dataRows: any[], columnSizes: number[]): string[] {
+	private formatData(unformattedRows: IRow[], columnSizes: number[]): string[] {
 		let formattedRows: string[] = [];
 
-		let rows: IRow[] = dataRows;
-		rows.forEach(r => {
+		unformattedRows.forEach(r => {
 			let row = '';
+			for (let curCol = 0; curCol < this.columns.length; curCol++) {
+				row += r[curCol].displayValue;
 
-			for (let i = 0; i < this.columns.length; ++i) {
-				row += r[i].displayValue;
-
-				if (i < this.columns.length - 1) {
-					row += ' '.repeat(columnSizes[i] - r[i].displayValue.length).concat(' ');
+				if (curCol < this.columns.length - 1) {
+					row += ' '.repeat((columnSizes[curCol] - r[curCol].displayValue.length) + 1);
 				}
 			}
 
@@ -335,14 +325,6 @@ export class Table<T> extends Disposable {
 		});
 
 		return formattedRows;
-	}
-
-	private formatQueryResults(dataRows: any[]): string {
-		let columnWidths = this.calculateColumnWidths();
-		let formattedTable = this.buildHeader(columnWidths);
-		formattedTable = formattedTable.concat(this.formatData(dataRows, columnWidths));
-
-		return formattedTable.join('\r\n');
 	}
 }
 

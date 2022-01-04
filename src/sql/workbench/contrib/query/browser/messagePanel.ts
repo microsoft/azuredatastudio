@@ -34,10 +34,10 @@ import { IDataTreeViewState } from 'vs/base/browser/ui/tree/dataTree';
 import { IRange } from 'vs/editor/common/core/range';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
-import { MessagesPanelQueryRunnerCallbackHandler } from 'sql/workbench/contrib/query/browser/messagesPanelQueryRunnerCallbackHandler';
-import { IQueryRunnerCallbackHandlerStrategy } from 'sql/workbench/contrib/query/browser/IQueryRunnerCallbackHandlerStrategy';
-import { QueryResultsDisplayMode, QueryResultsDisplayStatus } from 'sql/workbench/contrib/query/common/queryResultsDisplayStatus';
-import { ToFileQueryRunnerCallbackHandler } from 'sql/workbench/contrib/query/browser/toFileQueryRunnerCallbackHandler';
+import { MessagesPanelQueryResultsWriter } from 'sql/workbench/contrib/query/browser/messagesPanelQueryResultsWriter';
+import { IQueryResultsWriter } from 'sql/workbench/contrib/query/browser/IQueryResultsWriter';
+import { QueryResultsWriterStatus } from 'sql/workbench/contrib/query/common/queryResultsDisplayStatus';
+import { FileQueryResultsWriter } from 'sql/workbench/contrib/query/browser/fileQueryResultsWriter';
 
 export interface IResultMessageIntern {
 	id?: string;
@@ -102,7 +102,8 @@ export class MessagePanel extends Disposable {
 
 	private tree: WorkbenchDataTree<Model, IResultMessageIntern, FuzzyScore>;
 	private runner: QueryRunner;
-	private runnerCallbackHandler: IQueryRunnerCallbackHandlerStrategy;
+	private queryResultsWriterStatus: QueryResultsWriterStatus;
+	private queryResultsWriter: IQueryResultsWriter;
 
 	constructor(
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
@@ -141,8 +142,8 @@ export class MessagePanel extends Disposable {
 		this._register(attachListStyler(this.tree, this.themeService));
 		this._register(this.themeService.onDidColorThemeChange(this.applyStyles, this));
 		this.applyStyles(this.themeService.getColorTheme());
-
-		this.runnerCallbackHandler = new MessagesPanelQueryRunnerCallbackHandler(this.model, this.tree, this._treeStates, this.currenturi);
+		this.queryResultsWriterStatus = QueryResultsWriterStatus.getInstance();
+		this.queryResultsWriter = new MessagesPanelQueryResultsWriter(this.model, this.tree, this._treeStates, this.currenturi);
 	}
 
 	private onContextMenu(event: ITreeContextMenuEvent<IResultMessageIntern>): void {
@@ -210,22 +211,22 @@ export class MessagePanel extends Disposable {
 		this.queryRunnerDisposables.add(runner.onResultSet(this.onResultSet, this));
 		this.queryRunnerDisposables.add(runner.onResultSetUpdate(this.updateResultSet, this));
 
-		if (QueryResultsDisplayStatus.getInstance().mode === QueryResultsDisplayMode.ResultsToGrid) {
+		if (this.queryResultsWriterStatus.isWritingToGrid()) {
 			this.onMessage(runner.messages, true);
 		}
 	}
 
-	public changeQueryRunnerCallbackHandler(queryResultsDisplayMode: QueryResultsDisplayMode) {
-		if (queryResultsDisplayMode === QueryResultsDisplayMode.ResultsToGrid) {
-			this.runnerCallbackHandler = new MessagesPanelQueryRunnerCallbackHandler(this.model, this.tree, this._treeStates, this.currenturi);
+	public changeQueryResultsWriter() {
+		if (this.queryResultsWriterStatus.isWritingToGrid()) {
+			this.queryResultsWriter = new MessagesPanelQueryResultsWriter(this.model, this.tree, this._treeStates, this.currenturi);
 		}
 		else {
-			this.runnerCallbackHandler = this.instantiationService.createInstance(ToFileQueryRunnerCallbackHandler, this.runner);
+			this.queryResultsWriter = this.instantiationService.createInstance(FileQueryResultsWriter, this.runner);
 		}
 	}
 
 	private onQueryStart() {
-		this.runnerCallbackHandler.onQueryStart();
+		this.queryResultsWriter.onQueryStart();
 
 		this.model.messages = [];
 		this.model.totalExecuteMessage = undefined;
@@ -233,15 +234,15 @@ export class MessagePanel extends Disposable {
 	}
 
 	private onMessage(message: IQueryMessage | IQueryMessage[], setInput: boolean = false) {
-		this.runnerCallbackHandler.onMessage(message, setInput);
+		this.queryResultsWriter.onMessage(message, setInput);
 	}
 
 	private onResultSet(resultSet: ResultSetSummary | ResultSetSummary[]) {
-		this.runnerCallbackHandler.onResultSet(resultSet);
+		this.queryResultsWriter.onResultSet(resultSet);
 	}
 
 	private updateResultSet(resultSet: ResultSetSummary | ResultSetSummary[]) {
-		this.runnerCallbackHandler.updateResultSet(resultSet);
+		this.queryResultsWriter.updateResultSet(resultSet);
 	}
 
 	private applyStyles(theme: IColorTheme): void {
@@ -258,7 +259,7 @@ export class MessagePanel extends Disposable {
 	}
 
 	private reset() {
-		this.runnerCallbackHandler.reset();
+		this.queryResultsWriter.reset();
 	}
 
 	public clear() {

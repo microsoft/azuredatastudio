@@ -4,14 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IResultMessageIntern, Model } from 'sql/workbench/contrib/query/browser/messagePanel';
-import { IQueryRunnerCallbackHandlerStrategy } from 'sql/workbench/contrib/query/browser/IQueryRunnerCallbackHandlerStrategy';
+import { IQueryResultsWriter } from 'sql/workbench/contrib/query/browser/IQueryResultsWriter';
 import { IQueryMessage } from 'sql/workbench/services/query/common/query';
 import { IDataTreeViewState } from 'vs/base/browser/ui/tree/dataTree';
 import { FuzzyScore } from 'vs/base/common/filters';
 import { isArray } from 'vs/base/common/types';
 import { WorkbenchDataTree } from 'vs/platform/list/browser/listService';
 
-export class MessagesPanelQueryRunnerCallbackHandler implements IQueryRunnerCallbackHandlerStrategy {
+export class MessagesPanelQueryResultsWriter implements IQueryResultsWriter {
 	private model: Model;
 	private tree: WorkbenchDataTree<Model, IResultMessageIntern, FuzzyScore>;
 	private treeStates: Map<string, IDataTreeViewState>;
@@ -28,19 +28,19 @@ export class MessagesPanelQueryRunnerCallbackHandler implements IQueryRunnerCall
 		this.currenturi = currenturi;
 	}
 
-	public onQueryStart() {
+	public onQueryStart(): void {
 		this.reset();
 	}
 
-	public onResultSet() {
+	public onResultSet(): void {
 		// intentionally made no-op
 	}
 
-	public updateResultSet() {
+	public updateResultSet(): void {
 		// intentionally made no-op
 	}
 
-	public onMessage(incomingMessage: IQueryMessage | IQueryMessage[], setInput: boolean = false) {
+	public onMessage(incomingMessage: IQueryMessage | IQueryMessage[], setInput: boolean = false): void {
 		if (isArray(incomingMessage)) {
 			this.model.messages.push(...incomingMessage);
 		} else {
@@ -53,7 +53,7 @@ export class MessagesPanelQueryRunnerCallbackHandler implements IQueryRunnerCall
 		}
 	}
 
-	public reset() {
+	public reset(): void {
 		this.model.messages = [];
 		this.model.totalExecuteMessage = undefined;
 		this.tree.updateChildren();

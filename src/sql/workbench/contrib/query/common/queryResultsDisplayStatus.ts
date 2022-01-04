@@ -6,38 +6,42 @@
 import { Disposable } from 'vs/base/common/lifecycle';
 import { Emitter, Event } from 'vs/base/common/event';
 
-export enum QueryResultsDisplayMode {
-	ResultsToGrid,
-	ResultsToFile,
+export enum QueryResultsWriterMode {
+	ToGrid,
+	ToFile,
 }
 
-export class QueryResultsDisplayStatus extends Disposable {
-	public static instance: QueryResultsDisplayStatus = undefined;
+export class QueryResultsWriterStatus extends Disposable {
+	public static instance: QueryResultsWriterStatus = undefined;
 
-	private displayMode: QueryResultsDisplayMode;
+	private writerMode: QueryResultsWriterMode;
 
 	private readonly _onStatusChanged = this._register(new Emitter<void>());
 	public readonly onStatusChanged: Event<void> = this._onStatusChanged.event;
 
-	public static getInstance() {
+	public static getInstance(): QueryResultsWriterStatus {
 		if (this.instance === undefined) {
-			this.instance = new QueryResultsDisplayStatus();
+			this.instance = new QueryResultsWriterStatus();
 		}
 
 		return this.instance;
 	}
 
-	private constructor(resultsRenderMode: QueryResultsDisplayMode = QueryResultsDisplayMode.ResultsToGrid) {
+	private constructor(mode: QueryResultsWriterMode = QueryResultsWriterMode.ToGrid) {
 		super();
-		this.displayMode = resultsRenderMode;
+		this.writerMode = mode;
 	}
 
-	public set mode(resultsRenderMode: QueryResultsDisplayMode) {
-		this.displayMode = resultsRenderMode;
+	public set mode(mode: QueryResultsWriterMode) {
+		this.writerMode = mode;
 		this._onStatusChanged.fire();
 	}
 
 	public get mode() {
-		return this.displayMode;
+		return this.writerMode;
+	}
+
+	public isWritingToGrid(): boolean {
+		return this.writerMode === QueryResultsWriterMode.ToGrid;
 	}
 }

@@ -5,10 +5,10 @@
 
 import { IQueryMessage, ResultSetSummary } from 'sql/workbench/services/query/common/query';
 
-export interface IQueryRunnerCallbackHandlerStrategy {
-	onQueryStart();
-	onResultSet(resultSet: ResultSetSummary | ResultSetSummary[]);
-	updateResultSet(resultSet: ResultSetSummary | ResultSetSummary[]);
-	onMessage(incomingMessage: IQueryMessage | IQueryMessage[], setInput?: boolean);
-	reset();
+export interface IQueryResultsWriter {
+	onQueryStart(): void | Promise<void>;
+	onResultSet(resultSet: ResultSetSummary | ResultSetSummary[]): void | Promise<void>;
+	updateResultSet(resultSet: ResultSetSummary | ResultSetSummary[]): void | Promise<void>;
+	onMessage(incomingMessage: IQueryMessage | IQueryMessage[], setInput?: boolean): void | Promise<void>;
+	reset(): void;
 }
