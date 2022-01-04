@@ -43,7 +43,7 @@ import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { UndoRedoService } from 'vs/platform/undoRedo/common/undoRedoService';
 import { SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
-import { NBFORMAT } from 'sql/workbench/common/constants';
+import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
 
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -67,7 +67,7 @@ let expectedNotebookContent: nb.INotebookContents = {
 		}
 	},
 	nbformat: NBFORMAT,
-	nbformat_minor: 5
+	nbformat_minor: NBFORMAT_MINOR
 };
 
 let expectedNotebookContentOneCell: nb.INotebookContents = {
@@ -85,7 +85,7 @@ let expectedNotebookContentOneCell: nb.INotebookContents = {
 		}
 	},
 	nbformat: NBFORMAT,
-	nbformat_minor: 5
+	nbformat_minor: NBFORMAT_MINOR
 };
 
 let expectedKernelAliasNotebookContentOneCell: nb.INotebookContents = {
@@ -106,7 +106,7 @@ let expectedKernelAliasNotebookContentOneCell: nb.INotebookContents = {
 		}
 	},
 	nbformat: NBFORMAT,
-	nbformat_minor: 5
+	nbformat_minor: NBFORMAT_MINOR
 };
 
 let expectedParameterizedNotebookContent: nb.INotebookContents = {
@@ -129,7 +129,7 @@ let expectedParameterizedNotebookContent: nb.INotebookContents = {
 		}
 	},
 	nbformat: NBFORMAT,
-	nbformat_minor: 5
+	nbformat_minor: NBFORMAT_MINOR
 };
 
 let defaultUri = URI.file('/some/path.ipynb');
@@ -211,7 +211,7 @@ suite('notebook model', function (): void {
 				}
 			},
 			nbformat: NBFORMAT,
-			nbformat_minor: 5
+			nbformat_minor: NBFORMAT_MINOR
 		};
 
 		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
@@ -630,7 +630,7 @@ suite('notebook model', function (): void {
 				}
 			},
 			nbformat: NBFORMAT,
-			nbformat_minor: 5
+			nbformat_minor: NBFORMAT_MINOR
 		};
 		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContentSplitCells));
@@ -909,7 +909,7 @@ suite('notebook model', function (): void {
 				connection_name: connectionName
 			},
 			nbformat: NBFORMAT,
-			nbformat_minor: 5
+			nbformat_minor: NBFORMAT_MINOR
 		};
 		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(notebook));
@@ -959,7 +959,7 @@ suite('notebook model', function (): void {
 				multi_connection_mode: true
 			},
 			nbformat: NBFORMAT,
-			nbformat_minor: 5
+			nbformat_minor: NBFORMAT_MINOR
 		};
 		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(notebook));

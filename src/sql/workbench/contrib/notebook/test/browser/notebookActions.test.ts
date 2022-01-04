@@ -31,7 +31,7 @@ import { Separator } from 'vs/base/common/actions';
 import { INotebookView, INotebookViews } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
-import { NBFORMAT } from 'sql/workbench/common/constants';
+import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
 
 class TestClientSession extends ClientSessionStub {
 	private _errorState: boolean = false;
@@ -282,7 +282,7 @@ suite('Notebook Actions', function (): void {
 				}
 			},
 			nbformat: NBFORMAT,
-			nbformat_minor: 5
+			nbformat_minor: NBFORMAT_MINOR
 		};
 
 		let mockNotification = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService);
@@ -326,7 +326,7 @@ suite('Notebook Actions', function (): void {
 				}
 			},
 			nbformat: NBFORMAT,
-			nbformat_minor: 5
+			nbformat_minor: NBFORMAT_MINOR
 		};
 		let expectedMsg: string = noParameterCell;
 
@@ -367,7 +367,7 @@ suite('Notebook Actions', function (): void {
 				}
 			},
 			nbformat: NBFORMAT,
-			nbformat_minor: 5
+			nbformat_minor: NBFORMAT_MINOR
 		};
 		let expectedMsg: string = noParametersInCell;
 
@@ -412,7 +412,7 @@ suite('Notebook Actions', function (): void {
 				}
 			},
 			nbformat: NBFORMAT,
-			nbformat_minor: 5
+			nbformat_minor: NBFORMAT_MINOR
 		};
 		let expectedMsg: string = noParametersInCell;
 
@@ -458,7 +458,7 @@ suite('Notebook Actions', function (): void {
 				}
 			},
 			nbformat: NBFORMAT,
-			nbformat_minor: 5
+			nbformat_minor: NBFORMAT_MINOR
 		};
 		let expectedMsg: string = noParametersInCell;
 
@@ -507,7 +507,7 @@ suite('Notebook Actions', function (): void {
 				}
 			},
 			nbformat: NBFORMAT,
-			nbformat_minor: 5
+			nbformat_minor: NBFORMAT_MINOR
 		};
 		let expectedMsg: string = kernelNotSupported;
 

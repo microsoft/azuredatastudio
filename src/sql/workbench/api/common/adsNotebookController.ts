@@ -20,6 +20,9 @@ type MessageReceivedEvent = { editor: vscode.NotebookEditor, message: any; };
 type ExecutionHandler = (cells: vscode.NotebookCell[], notebook: vscode.NotebookDocument, controller: vscode.NotebookController) => void | Thenable<void>;
 type InterruptHandler = (notebook: vscode.NotebookDocument) => void | Promise<void>;
 
+/**
+ * A VS Code Notebook Controller that is used as part of converting VS Code notebook extension APIs into ADS equivalents.
+ */
 export class ADSNotebookController implements vscode.NotebookController {
 	private readonly _kernelData: INotebookKernelDto2;
 	private _interruptHandler: (notebook: vscode.NotebookDocument) => void | Promise<void>;

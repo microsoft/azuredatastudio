@@ -134,6 +134,9 @@ class VSCodeSerializationManager implements azdata.nb.SerializationManager {
 	}
 }
 
+/**
+ * A Notebook Serialization Provider that is used to convert VS Code notebook extension APIs into ADS equivalents.
+ */
 export class VSCodeSerializationProvider implements azdata.nb.NotebookSerializationProvider {
 	private _manager: VSCodeSerializationManager;
 

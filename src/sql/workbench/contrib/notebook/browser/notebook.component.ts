@@ -55,11 +55,10 @@ import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/
 import { MaskedLabeledMenuItemActionItem } from 'sql/platform/actions/browser/menuEntryActionViewItem';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Emitter } from 'vs/base/common/event';
-import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { KeyCode } from 'vs/base/common/keyCodes';
+import { RedoCommand, UndoCommand } from 'vs/editor/browser/editorExtensions';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
-
+const PRIORITY = 105;
 @Component({
 	selector: NOTEBOOK_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('./notebook.component.html'))
@@ -120,18 +119,19 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
 			this.doubleClickEditEnabled = this._configurationService.getValue('notebook.enableDoubleClickEdit');
 		}));
-		this._register(DOM.addDisposableListener(window, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
+		this._register(RedoCommand.addImplementation(PRIORITY, 'notebook-cells-undo-redo', () => {
 			// Prevent the undo/redo from happening in other notebooks and to prevent the execution of undo/redo in the cell.
-			if (this.isActive() && this.activeCellId === '') {
-				let event = new StandardKeyboardEvent(e);
-				if ((event.metaKey && event.shiftKey && event.keyCode === KeyCode.KEY_Z) || event.ctrlKey && event.keyCode === KeyCode.KEY_Y) {
-					DOM.EventHelper.stop(event, true);
-					this._model.redo();
-				} else if ((event.ctrlKey || event.metaKey) && event.keyCode === KeyCode.KEY_Z) {
-					DOM.EventHelper.stop(event, true);
-					this._model.undo();
-				}
+			if (this.isActive() && this.activeCellId === '' && this._model) {
+				this._model.redo();
 			}
+			return false;
+		}));
+		this._register(UndoCommand.addImplementation(PRIORITY, 'notebook-cells-undo-redo', () => {
+			// Prevent the undo/redo from happening in other notebooks and to prevent the execution of undo/redo in the cell.
+			if (this.isActive() && this.activeCellId === '' && this._model) {
+				this._model.undo();
+			}
+			return false;
 		}));
 	}
 
@@ -182,15 +182,23 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	public deltaDecorations(newDecorationsRange: NotebookRange | NotebookRange[], oldDecorationsRange: NotebookRange | NotebookRange[]): void {
 		if (oldDecorationsRange) {
 			if (Array.isArray(oldDecorationsRange)) {
+				// markdown cells
 				let cells = [...new Set(oldDecorationsRange.map(item => item.cell))].filter(c => c.cellType === 'markdown');
 				cells.forEach(cell => {
 					let cellOldDecorations = oldDecorationsRange.filter(r => r.cell === cell);
 					let cellEditor = this.cellEditors.find(c => c.cellGuid() === cell.cellGuid);
 					cellEditor.deltaDecorations(undefined, cellOldDecorations);
 				});
+				// code cell outputs
+				let codeCells = [...new Set(oldDecorationsRange.map(item => item.cell))].filter(c => c.cellType === 'code');
+				codeCells.forEach(cell => {
+					let cellOldDecorations = oldDecorationsRange.filter(r => r.outputComponentIndex >= 0 && cell.cellGuid === r.cell.cellGuid);
+					let cellEditors = this.cellEditors.filter(c => c.cellGuid() === cell.cellGuid && c.isCellOutput);
+					cellEditors.forEach(cellEditor => cellEditor.deltaDecorations(undefined, cellOldDecorations));
+				});
 			} else {
-				if (oldDecorationsRange.cell.cellType === 'markdown') {
-					let cell = this.cellEditors.find(c => c.cellGuid() === oldDecorationsRange.cell.cellGuid);
+				if (oldDecorationsRange.cell.cellType === 'markdown' || oldDecorationsRange.outputComponentIndex >= 0) {
+					let cell = oldDecorationsRange.outputComponentIndex >= 0 ? this.cellEditors.filter(c => c.cellGuid() === oldDecorationsRange.cell.cellGuid && c.isCellOutput)[oldDecorationsRange.outputComponentIndex] : this.cellEditors.find(c => c.cellGuid() === oldDecorationsRange.cell.cellGuid);
 					cell.deltaDecorations(undefined, oldDecorationsRange);
 				}
 			}
@@ -203,9 +211,16 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 					let cellEditor = this.cellEditors.find(c => c.cellGuid() === cell.cellGuid);
 					cellEditor.deltaDecorations(cellNewDecorations, undefined);
 				});
+				// code cell outputs
+				let codeCells = [...new Set(newDecorationsRange.map(item => item.cell))].filter(c => c.cellType === 'code');
+				codeCells.forEach(cell => {
+					let cellNewDecorations = newDecorationsRange.filter(r => r.outputComponentIndex >= 0 && cell.cellGuid === r.cell.cellGuid);
+					let cellEditors = this.cellEditors.filter(c => c.cellGuid() === cell.cellGuid && c.isCellOutput);
+					cellEditors.forEach(cellEditor => cellEditor.deltaDecorations(cellNewDecorations, undefined));
+				});
 			} else {
-				if (newDecorationsRange.cell.cellType === 'markdown') {
-					let cell = this.cellEditors.find(c => c.cellGuid() === newDecorationsRange.cell.cellGuid);
+				if (newDecorationsRange.cell.cellType === 'markdown' || newDecorationsRange.outputComponentIndex >= 0) {
+					let cell = newDecorationsRange.outputComponentIndex >= 0 ? this.cellEditors.filter(c => c.cellGuid() === newDecorationsRange.cell.cellGuid && c.isCellOutput)[newDecorationsRange.outputComponentIndex] : this.cellEditors.find(c => c.cellGuid() === newDecorationsRange.cell.cellGuid);
 					cell.deltaDecorations(newDecorationsRange, undefined);
 				}
 			}

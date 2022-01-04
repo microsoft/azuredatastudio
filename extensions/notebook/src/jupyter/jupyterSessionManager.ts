@@ -323,6 +323,7 @@ export class JupyterSession implements nb.ISession {
 					}
 				} else {
 					clusterController = await getClusterController(controllerEndpoint.endpoint, 'integrated');
+
 				}
 
 				let gatewayEndpoint: bdc.IEndpointModel = endpoints?.find(ep => ep.name.toLowerCase() === KNOX_ENDPOINT_GATEWAY);
@@ -340,6 +341,7 @@ export class JupyterSession implements nb.ISession {
 				Logger.log(`Parsed knox host and port ${JSON.stringify(gatewayHostAndPort)}`);
 				connectionProfile.options[KNOX_ENDPOINT_SERVER] = gatewayHostAndPort.host;
 				connectionProfile.options[KNOX_ENDPOINT_PORT] = gatewayHostAndPort.port;
+
 			}
 			else {
 				throw new Error(providerNotValidError);
