@@ -208,5 +208,33 @@ class ADSNotebookCellExecution implements vscode.NotebookCellExecution {
 }
 
 export function convertToVSCodeNotebookDocument(notebook: azdata.nb.NotebookDocument): vscode.NotebookDocument {
+	return {
+		get uri() { return notebook.uri; },
+		get version() { return undefined; },
+		get notebookType() { return notebook.providerId; },
+		get isDirty() { return notebook.isDirty; },
+		get isUntitled() { return notebook.isUntitled; },
+		get isClosed() { return notebook.isClosed; },
+		get metadata() { return {}; },
+		get cellCount() { return notebook.cells?.length; },
+		cellAt(index) {
+			if (index > 0 && index < notebook.cells?.length) {
+				return convertToVSCodeNotebookCell(notebook.cells[index]);
+			}
+			return undefined;
+		},
+		getCells(range) {
+			if (range && !range.isEmpty && notebook.cells?.length > 0) {
+				return notebook.cells.slice(range.start, range.end).map(cell => convertToVSCodeNotebookCell(cell));
+			}
+			return undefined;
+		},
+		save() {
+			return notebook.save();
+		}
+	};
+}
+
+function convertToVSCodeNotebookCell(cell: azdata.nb.NotebookCell): vscode.NotebookCell {
 	throw new Error('Method not implemented.');
 }
