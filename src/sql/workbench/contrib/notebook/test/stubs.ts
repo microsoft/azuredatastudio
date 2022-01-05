@@ -23,7 +23,7 @@ import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/
 import { INotebookView, INotebookViewCell, INotebookViewMetadata, INotebookViews } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
-import { INotebookEditOperation } from 'sql/workbench/api/common/extHostNotebookEditor';
+import { INotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export class NotebookModelStub implements INotebookModel {
 	constructor(private _languageInfo?: nb.ILanguageInfo, private _cells?: ICellModel[], private _testContents?: nb.INotebookContents) {
