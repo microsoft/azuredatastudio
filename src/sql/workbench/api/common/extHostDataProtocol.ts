@@ -900,16 +900,16 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).processTableEdit(table, edit);
 	}
 
-	public override $saveTable(handle: number, table: azdata.designers.TableInfo): Thenable<void> {
-		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).saveTable(table);
+	public override $publishTableDesignerChanges(handle: number, table: azdata.designers.TableInfo): Thenable<void> {
+		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).publishChanges(table);
 	}
 
 	public override $generateScriptForTableDesigner(handle: number, table: azdata.designers.TableInfo): Thenable<string> {
 		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).generateScript(table);
 	}
 
-	public override $generateReportForTableDesigner(handle: number, table: azdata.designers.TableInfo): Thenable<string> {
-		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).generateReport(table);
+	public override $generatePreviewReportForTableDesigner(handle: number, table: azdata.designers.TableInfo): Thenable<string> {
+		return this._resolveProvider<azdata.designers.TableDesignerProvider>(handle).generatePreviewReport(table);
 	}
 
 	public override $disposeTableDesigner(handle: number, table: azdata.designers.TableInfo): Thenable<void> {

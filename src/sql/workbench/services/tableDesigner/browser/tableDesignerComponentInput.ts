@@ -103,7 +103,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		}
 	}
 
-	async saveChanges(): Promise<void> {
+	async publishChanges(): Promise<void> {
 		const saveNotificationHandle = this._notificationService.notify({
 			severity: Severity.Info,
 			message: localize('tableDesigner.savingChanges', "Saving table designer changes..."),
@@ -111,33 +111,33 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		});
 		try {
 			this.updateState(this.valid, this.dirty, 'save');
-			await this._provider.saveTable(this._tableInfo);
+			await this._provider.publishChanges(this._tableInfo);
 			this._originalViewModel = this._viewModel;
 			this.updateState(true, false);
-			saveNotificationHandle.updateMessage(localize('tableDesigner.savedChangeSuccess', "The changes have been successfully saved."));
+			saveNotificationHandle.updateMessage(localize('tableDesigner.publishChangeSuccess', "The changes have been successfully published."));
 		} catch (error) {
 			saveNotificationHandle.updateSeverity(Severity.Error);
-			saveNotificationHandle.updateMessage(localize('tableDesigner.saveChangeError', "An error occured while saving changes: {0}", error?.message ?? error));
+			saveNotificationHandle.updateMessage(localize('tableDesigner.publishChangeError', "An error occured while publishing changes: {0}", error?.message ?? error));
 			this.updateState(this.valid, this.dirty);
 		}
 	}
 
-	async openReportDialog(): Promise<void> {
+	async openPublishDialog(): Promise<void> {
 		const reportNotificationHandle = this._notificationService.notify({
 			severity: Severity.Info,
-			message: localize('tableDesigner.generatingReport', "Generating report..."),
+			message: localize('tableDesigner.generatingPreviewReport', "Generating preview report..."),
 			sticky: true
 		});
 
 		let report;
 		try {
 			this.updateState(this.valid, this.dirty, 'generateReport');
-			report = await this._provider.generateReport(this._tableInfo);
+			report = await this._provider.generatePreviewReport(this._tableInfo);
 			reportNotificationHandle.close();
 			this.updateState(this.valid, this.dirty);
 		} catch (error) {
 			reportNotificationHandle.updateSeverity(Severity.Error);
-			reportNotificationHandle.updateMessage(localize('tableDesigner.generateReportError', "An error occured while generating report: {0}", error?.message ?? error));
+			reportNotificationHandle.updateMessage(localize('tableDesigner.generatePreviewReportError', "An error occured while generating preview report: {0}", error?.message ?? error));
 			this.updateState(this.valid, this.dirty);
 			return;
 		}
@@ -146,7 +146,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		if (result === TableDesignerPublishDialogResult.GenerateScript) {
 			await this.generateScript();
 		} else if (result === TableDesignerPublishDialogResult.UpdateDatabase) {
-			await this.saveChanges();
+			await this.publishChanges();
 		}
 	}
 

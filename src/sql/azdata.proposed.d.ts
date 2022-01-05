@@ -1008,10 +1008,10 @@ declare module 'azdata' {
 			processTableEdit(table: TableInfo, tableChangeInfo: DesignerEdit): Thenable<DesignerEditResult>;
 
 			/**
-			 * Save the table
+			 * Publish the changes.
 			 * @param table the table information
 			 */
-			saveTable(table: TableInfo): Thenable<void>;
+			publishChanges(table: TableInfo): Thenable<void>;
 
 			/**
 			 * Generate script for the changes.
@@ -1020,10 +1020,10 @@ declare module 'azdata' {
 			generateScript(table: TableInfo): Thenable<string>;
 
 			/**
-			 * Generate report for the changes.
+			 * Generate preview report for the changes.
 			 * @param table the table information
 			 */
-			generateReport(table: TableInfo): Thenable<string>;
+			generatePreviewReport(table: TableInfo): Thenable<string>;
 
 			/**
 			 * Notify the provider that the table designer has been closed.

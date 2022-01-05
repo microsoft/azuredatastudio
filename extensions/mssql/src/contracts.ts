@@ -1055,7 +1055,7 @@ export namespace ProcessTableDesignerEditRequest {
 	export const type = new RequestType<TableDesignerEditRequestParams, azdata.designers.DesignerEditResult, void, void>('tabledesigner/processedit');
 }
 
-export namespace SaveTableDesignerChangesRequest {
+export namespace PublishTableDesignerChangesRequest {
 	export const type = new RequestType<azdata.designers.TableInfo, void, void, void>('tabledesigner/save');
 }
 
@@ -1063,7 +1063,7 @@ export namespace TableDesignerGenerateScriptRequest {
 	export const type = new RequestType<azdata.designers.TableInfo, string, void, void>('tabledesigner/script');
 }
 
-export namespace TableDesignerGenerateReportRequest {
+export namespace TableDesignerGenerateChangePreviewReportRequest {
 	export const type = new RequestType<azdata.designers.TableInfo, string, void, void>('tabledesigner/report');
 }
 export namespace DisposeTableDesignerRequest {

@@ -9,7 +9,7 @@ import { Codicon } from 'vs/base/common/codicons';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { localize } from 'vs/nls';
 
-export abstract class SaveTableChangesActionBase extends Action {
+export abstract class TableChangesActionBase extends Action {
 	protected _input: TableDesignerComponentInput;
 	private _onStateChangeDisposable: IDisposable;
 
@@ -36,19 +36,19 @@ export abstract class SaveTableChangesActionBase extends Action {
 	}
 }
 
-export class SaveTableChangesAction extends SaveTableChangesActionBase {
-	public static ID = 'tableDesigner.saveTableChanges';
-	public static LABEL = localize('tableDesigner.saveTableChanges', "Save Changes...");
+export class PublishTableChangesAction extends TableChangesActionBase {
+	public static ID = 'tableDesigner.publishTableChanges';
+	public static LABEL = localize('tableDesigner.publishTableChanges', "Publish Changes...");
 	constructor() {
-		super(SaveTableChangesAction.ID, SaveTableChangesAction.LABEL, Codicon.save.classNames);
+		super(PublishTableChangesAction.ID, PublishTableChangesAction.LABEL, Codicon.repoPush.classNames);
 	}
 
 	public override async run(): Promise<void> {
-		await this._input.openReportDialog();
+		await this._input.openPublishDialog();
 	}
 }
 
-export class GenerateTableChangeScriptAction extends SaveTableChangesActionBase {
+export class GenerateTableChangeScriptAction extends TableChangesActionBase {
 	public static ID = 'tableDesigner.generateScript';
 	public static LABEL = localize('tableDesigner.generateScript', "Generate Script");
 

@@ -1131,12 +1131,12 @@ export class TableDesignerFeature extends SqlOpsFeature<undefined> {
 			}
 		};
 
-		const saveTable = (tableInfo: azdata.designers.TableInfo): Thenable<void> => {
+		const publishChanges = (tableInfo: azdata.designers.TableInfo): Thenable<void> => {
 			try {
-				return client.sendRequest(contracts.SaveTableDesignerChangesRequest.type, tableInfo);
+				return client.sendRequest(contracts.PublishTableDesignerChangesRequest.type, tableInfo);
 			}
 			catch (e) {
-				client.logFailedRequest(contracts.SaveTableDesignerChangesRequest.type, e);
+				client.logFailedRequest(contracts.PublishTableDesignerChangesRequest.type, e);
 				return Promise.reject(e);
 			}
 		};
@@ -1151,12 +1151,12 @@ export class TableDesignerFeature extends SqlOpsFeature<undefined> {
 			}
 		};
 
-		const generateReport = (tableInfo: azdata.designers.TableInfo): Thenable<string> => {
+		const generatePreviewReport = (tableInfo: azdata.designers.TableInfo): Thenable<string> => {
 			try {
-				return client.sendRequest(contracts.TableDesignerGenerateReportRequest.type, tableInfo);
+				return client.sendRequest(contracts.TableDesignerGenerateChangePreviewReportRequest.type, tableInfo);
 			}
 			catch (e) {
-				client.logFailedRequest(contracts.TableDesignerGenerateReportRequest.type, e);
+				client.logFailedRequest(contracts.TableDesignerGenerateChangePreviewReportRequest.type, e);
 				return Promise.reject(e);
 			}
 		};
@@ -1175,9 +1175,9 @@ export class TableDesignerFeature extends SqlOpsFeature<undefined> {
 			providerId: client.providerId,
 			initializeTableDesigner,
 			processTableEdit,
-			saveTable,
+			publishChanges,
 			generateScript,
-			generateReport,
+			generatePreviewReport,
 			disposeTableDesigner
 		});
 	}

@@ -538,9 +538,9 @@ export abstract class ExtHostDataProtocolShape {
 	$processTableDesignerEdit(handle: number, table: azdata.designers.TableInfo, edit: azdata.designers.DesignerEdit): Thenable<azdata.designers.DesignerEditResult> { throw ni(); }
 
 	/**
-	 * Save the changes.
+	 * Publish the table designer changes.
 	 */
-	$saveTable(handle: number, table: azdata.designers.TableInfo): Thenable<void> { throw ni(); }
+	$publishTableDesignerChanges(handle: number, table: azdata.designers.TableInfo): Thenable<void> { throw ni(); }
 
 	/**
 	 * Generate scripts.
@@ -548,9 +548,9 @@ export abstract class ExtHostDataProtocolShape {
 	$generateScriptForTableDesigner(handle: number, table: azdata.designers.TableInfo): Thenable<string> { throw ni(); }
 
 	/**
-	 * Generate report.
+	 * Generate preview report.
 	 */
-	$generateReportForTableDesigner(handle: number, table: azdata.designers.TableInfo): Thenable<string> { throw ni(); }
+	$generatePreviewReportForTableDesigner(handle: number, table: azdata.designers.TableInfo): Thenable<string> { throw ni(); }
 
 	/**
 	 * Dispose the table designer.
