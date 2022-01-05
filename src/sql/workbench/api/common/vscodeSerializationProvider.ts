@@ -8,28 +8,11 @@ import type * as azdata from 'azdata';
 import { VSBuffer } from 'vs/base/common/buffer';
 import { NotebookCellKind } from 'vs/workbench/api/common/extHostTypes';
 import { CancellationTokenSource } from 'vs/base/common/cancellation';
-import { OutputTypes } from 'sql/workbench/services/notebook/common/contracts';
-import { asArray } from 'vs/base/common/arrays';
 import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
+import { convertToADSCellOutput, convertToVSCodeCellOutput } from 'sql/workbench/api/common/notebookUtils';
 
 export class VSCodeContentManager implements azdata.nb.ContentManager {
 	constructor(private readonly _serializer: vscode.NotebookSerializer) {
-	}
-
-	public static convertToADSCellOutput(outputs: vscode.NotebookCellOutput | vscode.NotebookCellOutput[], executionOrder?: number): azdata.nb.IDisplayResult[] {
-		return asArray(outputs).map(output => {
-			let outputData = {};
-			for (let item of output.items) {
-				outputData[item.mime] = VSBuffer.wrap(item.data).toString();
-			}
-			return {
-				output_type: 'execute_result',
-				data: outputData,
-				execution_count: executionOrder,
-				metadata: output.metadata,
-				id: output.id
-			};
-		});
 	}
 
 	public async deserializeNotebook(contents: string): Promise<azdata.nb.INotebookContents> {
@@ -45,7 +28,7 @@ export class VSCodeContentManager implements azdata.nb.ContentManager {
 						language: cell.languageId
 					},
 					execution_count: executionOrder,
-					outputs: cell.outputs ? VSCodeContentManager.convertToADSCellOutput(cell.outputs, executionOrder) : undefined
+					outputs: cell.outputs ? convertToADSCellOutput(cell.outputs, executionOrder) : undefined
 				};
 			}),
 			metadata: notebookData.metadata ?? {},
@@ -59,43 +42,6 @@ export class VSCodeContentManager implements azdata.nb.ContentManager {
 		return result;
 	}
 
-	public static convertToVSCodeCellOutput(output: azdata.nb.ICellOutput): vscode.NotebookCellOutput {
-		let convertedOutputItems: vscode.NotebookCellOutputItem[];
-		switch (output.output_type) {
-			case OutputTypes.ExecuteResult:
-			case OutputTypes.DisplayData:
-			case OutputTypes.UpdateDisplayData:
-				let displayOutput = output as azdata.nb.IDisplayResult;
-				convertedOutputItems = Object.keys(displayOutput.data).map<vscode.NotebookCellOutputItem>(key => {
-					return {
-						mime: key,
-						data: VSBuffer.fromString(displayOutput.data[key]).buffer
-					};
-				});
-				break;
-			case OutputTypes.Stream:
-				let streamOutput = output as azdata.nb.IStreamResult;
-				convertedOutputItems = [{
-					mime: 'text/html',
-					data: VSBuffer.fromString(Array.isArray(streamOutput.text) ? streamOutput.text.join('') : streamOutput.text).buffer
-				}];
-				break;
-			case OutputTypes.Error:
-				let errorOutput = output as azdata.nb.IErrorResult;
-				let errorString = errorOutput.ename + ': ' + errorOutput.evalue + (errorOutput.traceback ? '\n' + errorOutput.traceback?.join('\n') : '');
-				convertedOutputItems = [{
-					mime: 'text/html',
-					data: VSBuffer.fromString(errorString).buffer
-				}];
-				break;
-		}
-		return {
-			items: convertedOutputItems,
-			metadata: output.metadata,
-			id: output.id
-		};
-	}
-
 	public async serializeNotebook(notebook: azdata.nb.INotebookContents): Promise<string> {
 		let notebookData: vscode.NotebookData = {
 			cells: notebook.cells?.map<vscode.NotebookCellData>(cell => {
@@ -103,7 +49,7 @@ export class VSCodeContentManager implements azdata.nb.ContentManager {
 					kind: cell.cell_type === 'code' ? NotebookCellKind.Code : NotebookCellKind.Markup,
 					value: Array.isArray(cell.source) ? cell.source.join('\n') : cell.source,
 					languageId: cell.metadata?.language,
-					outputs: cell.outputs?.map<vscode.NotebookCellOutput>(output => VSCodeContentManager.convertToVSCodeCellOutput(output)),
+					outputs: cell.outputs?.map<vscode.NotebookCellOutput>(output => convertToVSCodeCellOutput(output)),
 					executionSummary: {
 						executionOrder: cell.execution_count
 					}

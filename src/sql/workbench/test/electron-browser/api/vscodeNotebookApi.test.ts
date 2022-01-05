@@ -12,6 +12,7 @@ import { VSBuffer } from 'vs/base/common/buffer';
 import * as assert from 'assert';
 import { OutputTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
+import { convertToADSCellOutput, convertToVSCodeCellOutput } from 'sql/workbench/api/common/notebookUtils';
 
 class MockNotebookSerializer implements vscode.NotebookSerializer {
 	deserializeNotebook(content: Uint8Array, token: vscode.CancellationToken): vscode.NotebookData | Thenable<vscode.NotebookData> {
@@ -235,7 +236,7 @@ suite('Notebook Serializer', () => {
 			}
 		];
 
-		let actualOutput = VSCodeContentManager.convertToADSCellOutput(cellOutput, 1);
+		let actualOutput = convertToADSCellOutput(cellOutput, 1);
 		assert.deepStrictEqual(actualOutput, expectedADSOutput);
 	});
 
@@ -260,7 +261,7 @@ suite('Notebook Serializer', () => {
 			id: 'testId',
 			metadata: undefined
 		};
-		let actualOutput = VSCodeContentManager.convertToVSCodeCellOutput(cellOutput);
+		let actualOutput = convertToVSCodeCellOutput(cellOutput);
 		assert.deepStrictEqual(actualOutput, expectedVSCodeOutput);
 	});
 
@@ -281,7 +282,7 @@ suite('Notebook Serializer', () => {
 			id: 'testId',
 			metadata: undefined
 		};
-		let actualOutput = VSCodeContentManager.convertToVSCodeCellOutput(cellOutput);
+		let actualOutput = convertToVSCodeCellOutput(cellOutput);
 		assert.deepStrictEqual(actualOutput, expectedVSCodeOutput);
 	});
 
@@ -301,7 +302,7 @@ suite('Notebook Serializer', () => {
 			id: 'testId',
 			metadata: undefined
 		};
-		let actualOutput = VSCodeContentManager.convertToVSCodeCellOutput(cellOutput);
+		let actualOutput = convertToVSCodeCellOutput(cellOutput);
 		assert.deepStrictEqual(actualOutput, expectedVSCodeOutput);
 	});
 
@@ -320,7 +321,7 @@ suite('Notebook Serializer', () => {
 			id: 'testId',
 			metadata: undefined
 		};
-		let actualOutput = VSCodeContentManager.convertToVSCodeCellOutput(cellOutput);
+		let actualOutput = convertToVSCodeCellOutput(cellOutput);
 		assert.deepStrictEqual(actualOutput, expectedVSCodeOutput);
 	});
 

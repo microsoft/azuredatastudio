@@ -93,7 +93,7 @@ import { matchesScheme } from 'vs/platform/opener/common/opener';
 import { ExtHostNotebook } from 'sql/workbench/api/common/extHostNotebook';
 import { functionalityNotSupportedError } from 'sql/base/common/locConstants';
 import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/common/extHostNotebookDocumentsAndEditors';
-import { convertToVSCodeNotebookDocument } from 'sql/workbench/api/common/adsNotebookController';
+import { convertToVSCodeNotebookDocument } from 'sql/workbench/api/common/notebookUtils';
 
 export interface IExtensionApiFactory {
 	(extension: IExtensionDescription, registry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): typeof vscode;

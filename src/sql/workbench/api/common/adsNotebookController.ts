@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import type * as azdata from 'azdata';
 import type * as vscode from 'vscode';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { INotebookKernelDto2 } from 'vs/workbench/api/common/extHost.protocol';
@@ -12,9 +11,9 @@ import * as extHostTypeConverters from 'vs/workbench/api/common/extHostTypeConve
 import { Deferred } from 'sql/base/common/promise';
 import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/common/extHostNotebookDocumentsAndEditors';
 import { URI } from 'vs/base/common/uri';
-import { VSCodeContentManager } from 'sql/workbench/api/common/vscodeSerializationProvider';
 import { NotebookCellExecutionTaskState } from 'vs/workbench/api/common/extHostNotebookKernels';
 import { asArray } from 'vs/base/common/arrays';
+import { convertToADSCellOutput } from 'sql/workbench/api/common/notebookUtils';
 
 type SelectionChangedEvent = { selected: boolean, notebook: vscode.NotebookDocument; };
 type MessageReceivedEvent = { editor: vscode.NotebookEditor, message: any; };
@@ -225,7 +224,7 @@ class ADSNotebookCellExecution implements vscode.NotebookCellExecution {
 		const targetCell = typeof cell === 'number' ? this._cell.notebook.cellAt(cell) : (cell ?? this._cell);
 		const editor = this._extHostNotebookDocumentsAndEditors.getEditor(URI.from(targetCell.notebook.uri).toString());
 		await editor.edit(builder => {
-			const adsOutputs = VSCodeContentManager.convertToADSCellOutput(outputs);
+			const adsOutputs = convertToADSCellOutput(outputs);
 			builder.updateCell(targetCell.index, { outputs: adsOutputs }, append);
 		});
 	}
@@ -234,7 +233,7 @@ class ADSNotebookCellExecution implements vscode.NotebookCellExecution {
 		this.verifyStateForOutput();
 		const editor = this._extHostNotebookDocumentsAndEditors.getEditor(URI.from(this._cell.notebook.uri).toString());
 		await editor.edit(builder => {
-			const adsOutput = VSCodeContentManager.convertToADSCellOutput({ id: output.id, items: asArray(items) }, undefined);
+			const adsOutput = convertToADSCellOutput({ id: output.id, items: asArray(items) }, undefined);
 			builder.updateCellOutput(this._cell.index, { outputs: adsOutput }, append);
 		});
 	}
@@ -251,54 +250,4 @@ class ADSNotebookCellExecution implements vscode.NotebookCellExecution {
 			throw new Error('Cannot modify cell output after calling end');
 		}
 	}
-}
-
-export function convertToVSCodeNotebookDocument(notebook: azdata.nb.NotebookDocument): vscode.NotebookDocument {
-	return {
-		get uri() { return notebook.uri; },
-		get version() { return undefined; },
-		get notebookType() { return notebook.providerId; },
-		get isDirty() { return notebook.isDirty; },
-		get isUntitled() { return notebook.isUntitled; },
-		get isClosed() { return notebook.isClosed; },
-		get metadata() { return {}; },
-		get cellCount() { return notebook.cells?.length; },
-		cellAt(index) {
-			if (notebook.cells) {
-				if (index < 0) {
-					index = 0;
-				} else if (index >= notebook.cells.length) {
-					index = notebook.cells.length - 1;
-				}
-				return convertToVSCodeNotebookCell(notebook.cells[index], index, notebook.uri, notebook.kernelSpec.language);
-			}
-			return undefined;
-		},
-		getCells(range) {
-			let cells: azdata.nb.NotebookCell[] = [];
-			if (range) {
-				cells = notebook.cells?.slice(range.start, range.end);
-			} else {
-				cells = notebook.cells;
-			}
-			return cells?.map((cell, index) => convertToVSCodeNotebookCell(cell, index, notebook.uri, notebook.kernelSpec.language));
-		},
-		save() {
-			return notebook.save();
-		}
-	};
-}
-
-function convertToVSCodeNotebookCell(cell: azdata.nb.NotebookCell, index: number, uri: URI, language: string): vscode.NotebookCell {
-	return <vscode.NotebookCell>{
-		index: index,
-		document: <vscode.TextDocument>{
-			uri: uri,
-			languageId: language,
-			getText: () => Array.isArray(cell.contents.source) ? cell.contents.source.join('') : cell.contents.source,
-		},
-		notebook: <vscode.NotebookDocument>{
-			uri: uri
-		}
-	};
 }

@@ -7,6 +7,7 @@ import type * as vscode from 'vscode';
 import type * as azdata from 'azdata';
 import { ADSNotebookController } from 'sql/workbench/api/common/adsNotebookController';
 import * as nls from 'vs/nls';
+import { convertToVSCodeNotebookCell } from 'sql/workbench/api/common/notebookUtils';
 
 class VSCodeFuture implements azdata.nb.IFuture {
 	private _inProgress = true;
@@ -129,18 +130,7 @@ class VSCodeKernel implements azdata.nb.IKernel {
 	requestExecute(content: azdata.nb.IExecuteRequest, disposeOnDone?: boolean): azdata.nb.IFuture {
 		let executePromise: Promise<void>;
 		if (this._controller.executeHandler) {
-			let cell = <vscode.NotebookCell>{
-				index: content.cellIndex,
-				document: <vscode.TextDocument>{
-					uri: content.notebookUri,
-					languageId: this._kernelSpec.language,
-					getText: () => Array.isArray(content.code) ? content.code.join('') : content.code,
-				},
-				notebook: <vscode.NotebookDocument>{
-					uri: content.notebookUri
-				}
-			};
-
+			let cell = convertToVSCodeNotebookCell(content.code, content.cellIndex, content.notebookUri, this._kernelSpec.language);
 			executePromise = Promise.resolve(this._controller.executeHandler([cell], cell.notebook, this._controller));
 		}
 		else {
