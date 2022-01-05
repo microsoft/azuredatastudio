@@ -130,7 +130,7 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 
 		// now that the internal state is complete, fire events
 		if (removedDocuments) {
-			// TODO add doc close event
+			removedDocuments.forEach(d => this._onDidCloseNotebook.fire(d.document));
 		}
 		if (addedDocuments) {
 			addedDocuments.forEach(d => this._onDidOpenNotebook.fire(d.document));
