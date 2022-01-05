@@ -294,6 +294,31 @@
 				"group": "5_samples"
 			},
 			"timeout": 30000
+		},
+		{
+			"name": "Run Sample Notebook Provider Extension",
+			"type": "sqlopsExtensionHost",
+			"request": "launch",
+			"windows": {
+				"runtimeExecutable": "${workspaceFolder}/scripts/sql.bat"
+			},
+			"osx": {
+				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
+			},
+			"linux": {
+				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
+			},
+			"args": [
+				"--extensionDevelopmentPath=${workspaceRoot}/samples/sample-notebook-provider"
+			],
+			"outFiles": [
+				"${workspaceRoot}/samples/sample-notebook-provider/out/**/*.js"
+			],
+			"preLaunchTask": "Watch sample-notebook-provider",
+			"presentation": {
+				"group": "5_samples"
+			},
+			"timeout": 30000
 		}
 	],
 	"compounds": [

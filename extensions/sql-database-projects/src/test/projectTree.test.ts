@@ -108,11 +108,10 @@ describe('Project Tree tests', function (): void {
 			'/TestProj/Database References',
 			'/TestProj/someFolder1']);
 
-		// Why are we only matching names - https://github.com/microsoft/azuredatastudio/issues/11026
-		should(tree.children.find(x => x.projectUri.path === '/TestProj/someFolder1')?.children.map(y => path.basename(y.projectUri.path))).deepEqual([
-			'MyNestedFolder1',
-			'MyNestedFolder2',
-			'MyFile2.sql']);
+		should(tree.children.find(x => x.projectUri.path === '/TestProj/someFolder1')?.children.map(y => y.projectUri.path)).deepEqual([
+				'/TestProj/someFolder1/MyNestedFolder1',
+				'/TestProj/someFolder1/MyNestedFolder2',
+				'/TestProj/someFolder1/MyFile2.sql']);
 	});
 
 	it('Should be able to parse and include relative paths outside project folder', function (): void {
