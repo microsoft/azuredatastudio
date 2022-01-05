@@ -270,7 +270,7 @@ export function convertToVSCodeNotebookDocument(notebook: azdata.nb.NotebookDocu
 				} else if (index >= notebook.cells.length) {
 					index = notebook.cells.length - 1;
 				}
-				return convertToVSCodeNotebookCell(notebook.cells[index]);
+				return convertToVSCodeNotebookCell(notebook.cells[index], index, notebook.uri, notebook.kernelSpec.language);
 			}
 			return undefined;
 		},
@@ -281,7 +281,7 @@ export function convertToVSCodeNotebookDocument(notebook: azdata.nb.NotebookDocu
 			} else {
 				cells = notebook.cells;
 			}
-			return cells?.map(cell => convertToVSCodeNotebookCell(cell));
+			return cells?.map((cell, index) => convertToVSCodeNotebookCell(cell, index, notebook.uri, notebook.kernelSpec.language));
 		},
 		save() {
 			return notebook.save();
@@ -289,6 +289,16 @@ export function convertToVSCodeNotebookDocument(notebook: azdata.nb.NotebookDocu
 	};
 }
 
-function convertToVSCodeNotebookCell(cell: azdata.nb.NotebookCell): vscode.NotebookCell {
-	throw new Error('Method not implemented.');
+function convertToVSCodeNotebookCell(cell: azdata.nb.NotebookCell, index: number, uri: URI, language: string): vscode.NotebookCell {
+	return <vscode.NotebookCell>{
+		index: index,
+		document: <vscode.TextDocument>{
+			uri: uri,
+			languageId: language,
+			getText: () => Array.isArray(cell.contents.source) ? cell.contents.source.join('') : cell.contents.source,
+		},
+		notebook: <vscode.NotebookDocument>{
+			uri: uri
+		}
+	};
 }
