@@ -92,6 +92,8 @@ import { matchesScheme } from 'vs/platform/opener/common/opener';
 // import { ExtHostNotebookDocuments } from 'vs/workbench/api/common/extHostNotebookDocuments'; {{SQL CARBON EDIT}} Disable VS Code notebooks
 import { ExtHostNotebook } from 'sql/workbench/api/common/extHostNotebook';
 import { functionalityNotSupportedError } from 'sql/base/common/locConstants';
+import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/common/extHostNotebookDocumentsAndEditors';
+import { convertToVSCodeNotebookDocument } from 'sql/workbench/api/common/adsNotebookController';
 
 export interface IExtensionApiFactory {
 	(extension: IExtensionDescription, registry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): typeof vscode;
@@ -100,7 +102,7 @@ export interface IExtensionApiFactory {
 /**
  * This method instantiates and returns the extension API surface
  */
-export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, extHostNotebook: ExtHostNotebook): IExtensionApiFactory { // {{SQL CARBON EDIT}} Add ExtHostNotebook
+export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, extHostNotebook: ExtHostNotebook, extHostNotebookDocumentsAndEditors: ExtHostNotebookDocumentsAndEditors): IExtensionApiFactory { // {{SQL CARBON EDIT}} Add ExtHostNotebook
 
 	// services
 	const initData = accessor.get(IExtHostInitDataService);
@@ -202,6 +204,16 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 
 	// Register API-ish commands
 	ExtHostApiCommands.register(extHostCommands);
+
+	// {{SQL CARBON EDIT}} Notebook events for handling conversion between VS Code and ADS data types
+	const onDidOpenNotebook = new Emitter<vscode.NotebookDocument>();
+	extHostNotebookDocumentsAndEditors.onDidOpenNotebookDocument(notebook => {
+		onDidOpenNotebook.fire(convertToVSCodeNotebookDocument(notebook));
+	});
+	const onDidCloseNotebook = new Emitter<vscode.NotebookDocument>();
+	extHostNotebookDocumentsAndEditors.onDidCloseNotebookDocument(notebook => {
+		onDidCloseNotebook.fire(convertToVSCodeNotebookDocument(notebook));
+	});
 
 	return function (extension: IExtensionDescription, extensionRegistry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): typeof vscode {
 
@@ -916,16 +928,15 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 				// return extHostNotebook.getNotebookDocument(uri).apiNotebook;
 			},
 			get onDidOpenNotebookDocument(): Event<vscode.NotebookDocument> {
-				// {{SQL CARBON EDIT}} Disable VS Code notebooks
-				throw new Error(functionalityNotSupportedError);
-				// return extHostNotebook.onDidOpenNotebookDocument;
+				// {{SQL CARBON EDIT}} Use our own notebooks
+				return onDidOpenNotebook.event;
 			},
 			get onDidCloseNotebookDocument(): Event<vscode.NotebookDocument> {
-				// {{SQL CARBON EDIT}} Disable VS Code notebooks
-				throw new Error(functionalityNotSupportedError);
-				// return extHostNotebook.onDidCloseNotebookDocument;
+				// {{SQL CARBON EDIT}} Use our own notebooks
+				return onDidCloseNotebook.event;
 			},
 			registerNotebookSerializer(viewType: string, serializer: vscode.NotebookSerializer, options?: vscode.NotebookDocumentContentOptions, registration?: vscode.NotebookRegistrationData) {
+				// {{SQL CARBON EDIT}} Use our own notebooks
 				return extHostNotebook.registerNotebookSerializer(viewType, serializer, options, extension.enableProposedApi ? registration : undefined);
 			},
 			registerNotebookContentProvider: (viewType: string, provider: vscode.NotebookContentProvider, options?: vscode.NotebookDocumentContentOptions, registration?: vscode.NotebookRegistrationData) => {
@@ -1145,6 +1156,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 		// namespace: notebook
 		const notebooks: typeof vscode.notebooks = {
 			createNotebookController(id: string, notebookType: string, label: string, handler?, rendererScripts?: vscode.NotebookRendererScript[]) {
+				// {{SQL CARBON EDIT}} Use our own notebooks
 				return extHostNotebook.createNotebookController(extension, id, notebookType, label, handler, extension.enableProposedApi ? rendererScripts : undefined);
 			},
 			registerNotebookCellStatusBarItemProvider: (notebookType: string, provider: vscode.NotebookCellStatusBarItemProvider) => {

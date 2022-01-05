@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import type * as azdata from 'azdata';
 import type * as vscode from 'vscode';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { INotebookKernelDto2 } from 'vs/workbench/api/common/extHost.protocol';
@@ -204,4 +205,8 @@ class ADSNotebookCellExecution implements vscode.NotebookCellExecution {
 	public async appendOutputItems(items: vscode.NotebookCellOutputItem | vscode.NotebookCellOutputItem[], output: vscode.NotebookCellOutput): Promise<void> {
 		// No-op
 	}
+}
+
+export function convertToVSCodeNotebookDocument(notebook: azdata.nb.NotebookDocument): vscode.NotebookDocument {
+	throw new Error('Method not implemented.');
 }

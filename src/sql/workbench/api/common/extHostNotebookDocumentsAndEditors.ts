@@ -39,11 +39,13 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 	private readonly _onDidChangeVisibleNotebookEditors = new Emitter<ExtHostNotebookEditor[]>();
 	private readonly _onDidChangeActiveNotebookEditor = new Emitter<ExtHostNotebookEditor>();
 	private _onDidOpenNotebook = new Emitter<azdata.nb.NotebookDocument>();
+	private _onDidCloseNotebook = new Emitter<azdata.nb.NotebookDocument>();
 	private _onDidChangeNotebookCell = new Emitter<azdata.nb.NotebookCellChangeEvent>();
 
 	readonly onDidChangeVisibleNotebookEditors: Event<ExtHostNotebookEditor[]> = this._onDidChangeVisibleNotebookEditors.event;
 	readonly onDidChangeActiveNotebookEditor: Event<ExtHostNotebookEditor> = this._onDidChangeActiveNotebookEditor.event;
 	readonly onDidOpenNotebookDocument: Event<azdata.nb.NotebookDocument> = this._onDidOpenNotebook.event;
+	readonly onDidCloseNotebookDocument: Event<azdata.nb.NotebookDocument> = this._onDidCloseNotebook.event;
 	readonly onDidChangeNotebookCell: Event<azdata.nb.NotebookCellChangeEvent> = this._onDidChangeNotebookCell.event;
 
 
