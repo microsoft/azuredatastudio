@@ -107,7 +107,7 @@ export class QueryPlan2 {
 		parent.appendChild(this._container);
 
 
-		this._actionBarContainer = DOM.$('.actionbar-container');
+		this._actionBarContainer = DOM.$('.qp2-actionbar-container');
 		this._actionBar = new ActionBar(this._actionBarContainer, {
 			orientation: ActionsOrientation.VERTICAL, context: this
 		});
