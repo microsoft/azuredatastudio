@@ -1012,7 +1012,6 @@ declare module 'azdata' {
 	export interface QueryExecuteResultSetNotificationParams {
 		resultSetSummary: ResultSetSummary;
 		ownerUri: string;
-		executionPlans: QueryPlanGraph[];
 	}
 
 	export interface QueryExecuteMessageParams {

@@ -890,6 +890,10 @@ declare module 'azdata' {
 		action: ActionOnCellCheckboxCheck;
 	}
 
+	export interface QueryExecuteResultSetNotificationParams {
+		executionPlans: QueryPlanGraph[];
+	}
+
 	export interface ResultSetSummary {
 		/**
 		 * The visualization options for the result set.
