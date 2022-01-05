@@ -387,7 +387,7 @@ export default class QueryRunner extends Disposable {
 		}
 	}
 
-	public handleQueryPlan2Available(queryPlans: azdata.QueryPlanGraph[]) {
+	public handleQueryPlan2Available(queryPlans: azdata.QueryPlanGraph[] | undefined) {
 		if (queryPlans) {
 			this._onQueryPlan2Available.fire({
 				providerId: mssqlProviderName,
