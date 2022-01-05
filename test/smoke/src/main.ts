@@ -13,7 +13,7 @@ import * as mkdirp from 'mkdirp';
 import { ncp } from 'ncp';
 import * as vscodetest from 'vscode-test';
 import fetch from 'node-fetch';
-import { Quality, ApplicationOptions, MultiLogger, Logger, ConsoleLogger, FileLogger } from '../../automation';
+import { Quality, ApplicationOptions, MultiLogger, Logger, ConsoleLogger, FileLogger, Application } from '../../automation';
 
 import { main as sqlMain, setup as sqlSetup } from './sql/main'; // {{SQL CARBON EDIT}}
 /*import { setup as setupDataMigrationTests } from './areas/workbench/data-migration.test';
@@ -367,7 +367,7 @@ if (screenshotsPath) {
 		if (this.currentTest!.state !== 'failed') {
 			return;
 		}
-		const app = this.app as ApplicationOptions;
+		const app = this.app as Application;
 		const name = this.currentTest!.fullTitle().replace(/[^a-z0-9\-]/ig, '_');
 
 		await app.captureScreenshot(name);
