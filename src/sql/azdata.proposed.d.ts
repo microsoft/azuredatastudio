@@ -895,6 +895,10 @@ declare module 'azdata' {
 		 * The visualization options for the result set.
 		 */
 		visualization?: VisualizationOptions;
+		/**
+		 * Generic query plan graph to be displayed in the results view.
+		 */
+		showplangraph?: QueryPlanGraph;
 	}
 
 	/**

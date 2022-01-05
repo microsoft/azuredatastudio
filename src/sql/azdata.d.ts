@@ -942,7 +942,6 @@ declare module 'azdata' {
 		rowCount: number;
 		columnInfo: IDbColumn[];
 		complete: boolean;
-		showplangraph?: QueryPlanGraph;
 	}
 
 	export interface BatchSummary {
