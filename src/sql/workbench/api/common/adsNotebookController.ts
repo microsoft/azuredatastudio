@@ -264,16 +264,24 @@ export function convertToVSCodeNotebookDocument(notebook: azdata.nb.NotebookDocu
 		get metadata() { return {}; },
 		get cellCount() { return notebook.cells?.length; },
 		cellAt(index) {
-			if (index > 0 && index < notebook.cells?.length) {
+			if (notebook.cells) {
+				if (index < 0) {
+					index = 0;
+				} else if (index >= notebook.cells.length) {
+					index = notebook.cells.length - 1;
+				}
 				return convertToVSCodeNotebookCell(notebook.cells[index]);
 			}
 			return undefined;
 		},
 		getCells(range) {
-			if (range && !range.isEmpty && notebook.cells?.length > 0) {
-				return notebook.cells.slice(range.start, range.end).map(cell => convertToVSCodeNotebookCell(cell));
+			let cells: azdata.nb.NotebookCell[] = [];
+			if (range) {
+				cells = notebook.cells?.slice(range.start, range.end);
+			} else {
+				cells = notebook.cells;
 			}
-			return undefined;
+			return cells?.map(cell => convertToVSCodeNotebookCell(cell));
 		},
 		save() {
 			return notebook.save();
