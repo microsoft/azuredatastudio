@@ -105,7 +105,22 @@ export const mockDacFxOptionsResult: mssql.DacFxOptionsResult = {
 		dropObjectsNotInSource: false,
 		ignoreColumnOrder: false,
 		doNotDropObjectTypes: [],
-		excludeObjectTypes: []
+		excludeObjectTypes: [],
+		ignoreTablePartitionOptions: false,
+		doNotEvaluateSqlCmdVariables: false,
+		disableParallelismForEnablingIndexes: false,
+		disableIndexesForDataPhase: false,
+		restoreSequenceCurrentValue: false,
+		rebuildIndexesOfflineForDataPhase: false,
+		isAlwaysEncryptedParameterizationEnabled: false,
+		preserveIdentityLastValues: false,
+		allowExternalLibraryPaths: false,
+		allowExternalLanguagePaths: false,
+		hashObjectNamesInLogs: false,
+		doNotDropWorkloadClassifiers: false,
+		ignoreWorkloadClassifiers: false,
+		ignoreDatabaseWorkloadGroups: false,
+		doNotDropDatabaseWorkloadGroups: false,
 	}
 };
 

@@ -9,7 +9,7 @@ import * as constants from '../../common/constants';
 export class DeployOptionsModel {
 	public deploymentOptions: mssql.DeploymentOptions;
 
-	public optionsLookup = {};
+	public optionsLookup: any = {};
 
 	constructor(defaultOptions: mssql.DeploymentOptions) {
 		this.deploymentOptions = defaultOptions;
@@ -92,10 +92,25 @@ export class DeployOptionsModel {
 		constants.DropPermissionsNotInSource,
 		constants.DropObjectsNotInSource,
 		constants.IgnoreColumnOrder,
+		constants.IgnoreTablePartitionOptions,
+		constants.DoNotEvaluateSqlCmdVariables,
+		constants.DisableParallelismForEnablingIndexes,
+		constants.DisableIndexesForDataPhase,
+		constants.RestoreSequenceCurrentValue,
+		constants.RebuildIndexesOfflineForDataPhase,
+		constants.PreserveIdentityLastValues,
+		constants.IsAlwaysEncryptedParameterizationEnabled,
+		constants.AllowExternalLibraryPaths,
+		constants.AllowExternalLanguagePaths,
+		constants.HashObjectNamesInLogs,
+		constants.DoNotDropWorkloadClassifiers,
+		constants.IgnoreWorkloadClassifiers,
+		constants.IgnoreDatabaseWorkloadGroups,
+		constants.DoNotDropDatabaseWorkloadGroups,
 	].sort();
 
 	public getOptionsData(): string[][] {
-		let data = [];
+		let data: any = [];
 		this.optionsLookup = {};
 		this.optionsLabels.forEach(l => {
 			let checked: boolean = this.getDeployOptionUtil(l);
@@ -341,10 +356,55 @@ export class DeployOptionsModel {
 			case constants.IgnoreColumnOrder:
 				this.deploymentOptions.ignoreColumnOrder = value;
 				break;
+			case constants.IgnoreTablePartitionOptions:
+				this.deploymentOptions.ignoreTablePartitionOptions = value;
+				break;
+			case constants.DoNotEvaluateSqlCmdVariables:
+				this.deploymentOptions.doNotEvaluateSqlCmdVariables = value;
+				break;
+			case constants.DisableParallelismForEnablingIndexes:
+				this.deploymentOptions.disableParallelismForEnablingIndexes = value;
+				break;
+			case constants.DisableIndexesForDataPhase:
+				this.deploymentOptions.disableIndexesForDataPhase = value;
+				break;
+			case constants.RestoreSequenceCurrentValue:
+				this.deploymentOptions.restoreSequenceCurrentValue = value;
+				break;
+			case constants.RebuildIndexesOfflineForDataPhase:
+				this.deploymentOptions.rebuildIndexesOfflineForDataPhase = value;
+				break;
+			case constants.PreserveIdentityLastValues:
+				this.deploymentOptions.preserveIdentityLastValues = value;
+				break;
+			case constants.IsAlwaysEncryptedParameterizationEnabled:
+				this.deploymentOptions.isAlwaysEncryptedParameterizationEnabled = value;
+				break;
+			case constants.AllowExternalLibraryPaths:
+				this.deploymentOptions.allowExternalLibraryPaths = value;
+				break;
+			case constants.AllowExternalLanguagePaths:
+				this.deploymentOptions.allowExternalLanguagePaths = value;
+				break;
+			case constants.HashObjectNamesInLogs:
+				this.deploymentOptions.hashObjectNamesInLogs = value;
+				break;
+			case constants.DoNotDropWorkloadClassifiers:
+				this.deploymentOptions.doNotDropWorkloadClassifiers = value;
+				break;
+			case constants.IgnoreWorkloadClassifiers:
+				this.deploymentOptions.ignoreWorkloadClassifiers = value;
+				break;
+			case constants.IgnoreDatabaseWorkloadGroups:
+				this.deploymentOptions.ignoreDatabaseWorkloadGroups = value;
+				break;
+			case constants.DoNotDropDatabaseWorkloadGroups:
+				this.deploymentOptions.doNotDropDatabaseWorkloadGroups = value;
+				break;
 		}
 	}
 
-	public getDeployOptionUtil(label): boolean {
+	public getDeployOptionUtil(label: string): boolean {
 		switch (label) {
 			case constants.IgnoreTableOptions:
 				return this.deploymentOptions.ignoreTableOptions;
@@ -573,6 +633,51 @@ export class DeployOptionsModel {
 
 			case constants.IgnoreColumnOrder:
 				return this.deploymentOptions.ignoreColumnOrder;
+
+			case constants.IgnoreTablePartitionOptions:
+				return this.deploymentOptions.ignoreTablePartitionOptions;
+
+			case constants.DoNotEvaluateSqlCmdVariables:
+				return this.deploymentOptions.doNotEvaluateSqlCmdVariables;
+
+			case constants.DisableParallelismForEnablingIndexes:
+				return this.deploymentOptions.disableParallelismForEnablingIndexes;
+
+			case constants.DisableIndexesForDataPhase:
+				return this.deploymentOptions.disableIndexesForDataPhase;
+
+			case constants.RestoreSequenceCurrentValue:
+				return this.deploymentOptions.restoreSequenceCurrentValue;
+
+			case constants.RebuildIndexesOfflineForDataPhase:
+				return this.deploymentOptions.rebuildIndexesOfflineForDataPhase;
+
+			case constants.PreserveIdentityLastValues:
+				return this.deploymentOptions.preserveIdentityLastValues;
+
+			case constants.IsAlwaysEncryptedParameterizationEnabled:
+				return this.deploymentOptions.isAlwaysEncryptedParameterizationEnabled;
+
+			case constants.AllowExternalLibraryPaths:
+				return this.deploymentOptions.allowExternalLibraryPaths;
+
+			case constants.AllowExternalLanguagePaths:
+				return this.deploymentOptions.allowExternalLanguagePaths;
+
+			case constants.HashObjectNamesInLogs:
+				return this.deploymentOptions.hashObjectNamesInLogs;
+
+			case constants.DoNotDropWorkloadClassifiers:
+				return this.deploymentOptions.doNotDropWorkloadClassifiers;
+
+			case constants.IgnoreWorkloadClassifiers:
+				return this.deploymentOptions.ignoreWorkloadClassifiers;
+
+			case constants.IgnoreDatabaseWorkloadGroups:
+				return this.deploymentOptions.ignoreDatabaseWorkloadGroups;
+
+			case constants.DoNotDropDatabaseWorkloadGroups:
+				return this.deploymentOptions.doNotDropDatabaseWorkloadGroups;
 		}
 		return false;
 	}
@@ -806,6 +911,51 @@ export class DeployOptionsModel {
 
 			case constants.IgnoreColumnOrder:
 				return constants.descriptionIgnoreColumnOrder;
+
+			case constants.IgnoreTablePartitionOptions:
+				return constants.descriptionIgnoreTablePartitionOptions;
+
+			case constants.DoNotEvaluateSqlCmdVariables:
+				return constants.descriptionDoNotEvaluateSqlCmdVariables;
+
+			case constants.DisableParallelismForEnablingIndexes:
+				return constants.descriptionDisableParallelismForEnablingIndexes;
+
+			case constants.DisableIndexesForDataPhase:
+				return constants.descriptionDisableIndexesForDataPhase;
+
+			case constants.RestoreSequenceCurrentValue:
+				return constants.descriptionRestoreSequenceCurrentValue;
+
+			case constants.RebuildIndexesOfflineForDataPhase:
+				return constants.descriptionRebuildIndexesOfflineForDataPhase;
+
+			case constants.PreserveIdentityLastValues:
+				return constants.descriptionPreserveIdentityLastValues;
+
+			case constants.IsAlwaysEncryptedParameterizationEnabled:
+				return constants.descriptionIsAlwaysEncryptedParameterizationEnabled;
+
+			case constants.AllowExternalLibraryPaths:
+				return constants.descriptionAllowExternalLibraryPaths;
+
+			case constants.AllowExternalLanguagePaths:
+				return constants.descriptionAllowExternalLanguagePaths;
+
+			case constants.HashObjectNamesInLogs:
+				return constants.descriptionHashObjectNamesInLogs;
+
+			case constants.DoNotDropWorkloadClassifiers:
+				return constants.descriptionDoNotDropWorkloadClassifiers;
+
+			case constants.IgnoreWorkloadClassifiers:
+				return constants.descriptionIgnoreWorkloadClassifiers;
+
+			case constants.IgnoreDatabaseWorkloadGroups:
+				return constants.descriptionIgnoreDatabaseWorkloadGroups;
+
+			case constants.DoNotDropDatabaseWorkloadGroups:
+				return constants.descriptionDoNotDropDatabaseWorkloadGroups;
 		}
 		return '';
 	}

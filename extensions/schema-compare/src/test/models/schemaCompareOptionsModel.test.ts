@@ -5,7 +5,7 @@
 
 import * as should from 'should';
 import * as mssql from '../../../../mssql/src/mssql';
-import {SchemaCompareOptionsModel} from '../../models/schemaCompareOptionsModel';
+import { SchemaCompareOptionsModel } from '../../models/schemaCompareOptionsModel';
 
 describe('Schema Compare Options Model', () => {
 	it('Should create model and set options successfully', function (): void {
@@ -39,7 +39,7 @@ describe('Schema Compare Options Model', () => {
 	});
 });
 
-const defaultOptions: mssql.DeploymentOptions =  {
+const defaultOptions: mssql.DeploymentOptions = {
 	ignoreTableOptions: false,
 	ignoreSemicolonBetweenStatements: false,
 	ignoreRouteLifetime: false,
@@ -117,5 +117,20 @@ const defaultOptions: mssql.DeploymentOptions =  {
 	dropObjectsNotInSource: false,
 	ignoreColumnOrder: false,
 	doNotDropObjectTypes: [],
-	excludeObjectTypes: [mssql.SchemaObjectType.Tables]
+	excludeObjectTypes: [mssql.SchemaObjectType.Tables],
+	ignoreTablePartitionOptions: false,
+	doNotEvaluateSqlCmdVariables: false,
+	disableParallelismForEnablingIndexes: false,
+	disableIndexesForDataPhase: false,
+	restoreSequenceCurrentValue: false,
+	rebuildIndexesOfflineForDataPhase: false,
+	isAlwaysEncryptedParameterizationEnabled: false,
+	preserveIdentityLastValues: false,
+	allowExternalLibraryPaths: false,
+	allowExternalLanguagePaths: false,
+	hashObjectNamesInLogs: false,
+	doNotDropWorkloadClassifiers: false,
+	ignoreWorkloadClassifiers: false,
+	ignoreDatabaseWorkloadGroups: false,
+	doNotDropDatabaseWorkloadGroups: false,
 };

@@ -231,6 +231,21 @@ export interface DeploymentOptions {
 	ignoreColumnOrder: boolean;
 	doNotDropObjectTypes: SchemaObjectType[];
 	excludeObjectTypes: SchemaObjectType[];
+	ignoreTablePartitionOptions: boolean;
+	doNotEvaluateSqlCmdVariables: boolean;
+	disableParallelismForEnablingIndexes: boolean;
+	disableIndexesForDataPhase: boolean;
+	restoreSequenceCurrentValue: boolean;
+	rebuildIndexesOfflineForDataPhase: boolean;
+	isAlwaysEncryptedParameterizationEnabled: boolean;
+	preserveIdentityLastValues: boolean;
+	allowExternalLibraryPaths: boolean;
+	allowExternalLanguagePaths: boolean;
+	hashObjectNamesInLogs: boolean;
+	doNotDropWorkloadClassifiers: boolean;
+	ignoreWorkloadClassifiers: boolean;
+	ignoreDatabaseWorkloadGroups: boolean;
+	doNotDropDatabaseWorkloadGroups: boolean;
 }
 
 /**

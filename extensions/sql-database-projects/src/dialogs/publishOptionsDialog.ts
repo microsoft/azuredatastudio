@@ -9,13 +9,11 @@ import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
 import { PublishDatabaseDialog } from './publishDatabaseDialog';
 import { DeployOptionsModel } from '../models/options/deployOptionsModel';
-import * as utils from '../common/utils';
-import { DeploymentOptions } from '../models/IDeploySettings';
 
 export class PublishOptionsDialog {
 
 	public dialog!: azdata.window.Dialog;
-	private optionsTab: azdata.window.Dialog | undefined;
+	private optionsTab: azdata.window.DialogTab | undefined;
 	private disposableListeners: vscode.Disposable[] = [];
 	private descriptionHeading!: azdata.TableComponent;
 	private descriptionText!: azdata.TextComponent;
@@ -54,7 +52,7 @@ export class PublishOptionsDialog {
 	}
 
 	private intializeDeploymentOptionsDialogTab(): void {
-		this.optionsTab.registerContent(async view => {
+		this.optionsTab?.registerContent(async view => {
 
 			this.descriptionHeading = view.modelBuilder.table().withProps({
 				data: [],
@@ -77,7 +75,7 @@ export class PublishOptionsDialog {
 
 			// Get the description of the selected option
 			this.disposableListeners.push(this.optionsTable.onRowSelected(async () => {
-				let row = this.optionsTable.selectedRows[0];
+				let row = this.optionsTable.selectedRows![0];
 				let label = this.optionsModel.optionsLabels[row];
 				await this.descriptionText.updateProperties({
 					value: this.optionsModel.getDescription(label)
@@ -85,7 +83,7 @@ export class PublishOptionsDialog {
 			}));
 
 			// Update deploy options value on checkbox onchange
-			this.disposableListeners.push(this.optionsTable.onCellAction((rowState) => {
+			this.disposableListeners.push(this.optionsTable.onCellAction!((rowState) => {
 				let checkboxState = <azdata.ICheckboxCellActionEventArgs>rowState;
 				if (checkboxState && checkboxState.row !== undefined) {
 					let label = this.optionsModel.optionsLabels[checkboxState.row];
@@ -146,7 +144,7 @@ export class PublishOptionsDialog {
 
 	// Reset button click, resets all the options selection
 	private async reset(): Promise<void> {
-		let result = this.publish.getDefaultDeploymentOptions();
+		let result = await this.publish.getDefaultDeploymentOptions();
 		this.optionsModel.deploymentOptions = result;
 
 		await this.updateOptionsTable();
