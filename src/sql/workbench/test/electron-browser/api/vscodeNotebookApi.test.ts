@@ -222,16 +222,18 @@ suite('Notebook Serializer', () => {
 			metadata: {},
 			id: '1'
 		};
-		let expectedADSOutput: azdata.nb.IExecuteResult = {
-			id: '1',
-			output_type: 'execute_result',
-			data: {
-				'text/plain': '2',
-				'text/html': '<i>2</i>'
-			},
-			metadata: {},
-			execution_count: 1
-		};
+		let expectedADSOutput: azdata.nb.IExecuteResult[] = [
+			{
+				id: '1',
+				output_type: 'execute_result',
+				data: {
+					'text/plain': '2',
+					'text/html': '<i>2</i>'
+				},
+				metadata: {},
+				execution_count: 1
+			}
+		];
 
 		let actualOutput = VSCodeContentManager.convertToADSCellOutput(cellOutput, 1);
 		assert.deepStrictEqual(actualOutput, expectedADSOutput);

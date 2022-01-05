@@ -9,27 +9,27 @@ import { VSBuffer } from 'vs/base/common/buffer';
 import { NotebookCellKind } from 'vs/workbench/api/common/extHostTypes';
 import { CancellationTokenSource } from 'vs/base/common/cancellation';
 import { OutputTypes } from 'sql/workbench/services/notebook/common/contracts';
+import { asArray } from 'vs/base/common/arrays';
 import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
 
-/**
- * A Notebook Content Manager that is used as part of converting VS Code notebook extension APIs into ADS equivalents.
- */
 export class VSCodeContentManager implements azdata.nb.ContentManager {
 	constructor(private readonly _serializer: vscode.NotebookSerializer) {
 	}
 
-	public static convertToADSCellOutput(output: vscode.NotebookCellOutput, executionOrder?: number): azdata.nb.IExecuteResult {
-		let outputData = {};
-		for (let item of output.items) {
-			outputData[item.mime] = VSBuffer.wrap(item.data).toString();
-		}
-		return {
-			output_type: 'execute_result',
-			data: outputData,
-			execution_count: executionOrder,
-			metadata: output.metadata,
-			id: output.id
-		};
+	public static convertToADSCellOutput(outputs: vscode.NotebookCellOutput | vscode.NotebookCellOutput[], executionOrder?: number): azdata.nb.IDisplayResult[] {
+		return asArray(outputs).map(output => {
+			let outputData = {};
+			for (let item of output.items) {
+				outputData[item.mime] = VSBuffer.wrap(item.data).toString();
+			}
+			return {
+				output_type: 'execute_result',
+				data: outputData,
+				execution_count: executionOrder,
+				metadata: output.metadata,
+				id: output.id
+			};
+		});
 	}
 
 	public async deserializeNotebook(contents: string): Promise<azdata.nb.INotebookContents> {
@@ -45,7 +45,7 @@ export class VSCodeContentManager implements azdata.nb.ContentManager {
 						language: cell.languageId
 					},
 					execution_count: executionOrder,
-					outputs: cell.outputs?.map<azdata.nb.IExecuteResult>(output => VSCodeContentManager.convertToADSCellOutput(output, executionOrder))
+					outputs: cell.outputs ? VSCodeContentManager.convertToADSCellOutput(cell.outputs, executionOrder) : undefined
 				};
 			}),
 			metadata: notebookData.metadata ?? {},
