@@ -121,7 +121,7 @@
     "yauzl": "^2.9.2",
     "yazl": "^2.4.3",
     "zone.js": "^0.8.4",
-    "azdataGraph": "git://github.com/microsoft/azdataGraph.git#0.0.5"
+    "azdataGraph": "github:Microsoft/azdataGraph#0.0.5"
   },
   "devDependencies": {
     "7zip": "0.0.6",
