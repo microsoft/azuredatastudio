@@ -1842,6 +1842,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/base/common/locConstants.sql.watcherExclude" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Configure glob patterns of file paths to exclude from file watching. Patterns must match on absolute paths (i.e. prefix with ** or the full path to match properly). Changing this setting requires a restart. When you experience Azure Data Studio consuming lots of CPU time on startup, you can exclude large folders to reduce the initial load.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[파일 감시에서 제외할 파일 경로의 GLOB 패턴을 구성하세요. 패턴은 절대 경로에서 일치해야 합니다(즉, 올바른 일치를 위해서는 ** 접두사가 있는 경로 또는 전체 경로여야 함). 이 설정을 변경하려면 다시 시작해야 합니다. 시작 시 Azure Data Studio에서 CPU 시간을 많이 차지하면 대용량 폴더를 제외하여 초기 로드를 줄일 수 있습니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/base/common/locConstants.uninstallExtensionComplete" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Please reload Azure Data Studio to complete the uninstallation of the extension {0}.]]></Val>
@@ -1856,6 +1865,15 @@
           <Val><![CDATA[Would you like to change Azure Data Studio's UI language to {0} and restart?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Azure Data Studio의 UI 언어를 {0}(으)로 변경하고 다시 시작하시겠습니까?]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/base/common/locConstants.vscodeFunctionalityNotSupportedError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[This VS Code functionality is not supported in Azure Data Studio.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[이 VS Code 기능은 Azure Data Studio에서 지원되지 않습니다.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2864,6 +2882,15 @@
           <Val><![CDATA[A NavigationProvider with valid providerId must be passed to this method]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[유효한 providerId가 있는 NavigationProvider가 이 메서드에 전달되어야 합니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/api/common/vscodeExecuteProvider.errorStartBeforeReady" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Cannot start a session, the manager is not yet initialized]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[세션을 시작할 수 없습니다. 관리자가 아직 초기화되지 않았습니다.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -14532,6 +14559,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/services/notebook/browser/models/cellEdit.convertCellTypeEdit" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Convert Cell Type]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[셀 유형 변환]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/services/notebook/browser/models/cellEdit.deleteCellEdit" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Delete Cell]]></Val>
@@ -14555,6 +14591,15 @@
           <Val><![CDATA[Split Cell]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[셀 분할]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/notebook/browser/models/clientSession.NoExecuteManager" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Server could not start because a provider was not defined for this notebook file type.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[이 전자 필기장 파일 형식에 대해 공급자가 정의되지 않았기 때문에 서버를 시작할 수 없습니다.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -14685,6 +14730,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/services/notebook/browser/notebookServiceImpl.executeProviderTimeout" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Waiting for Execute Provider availability timed out for notebook provider '{0}']]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[전자 필기장 공급자자 '{0}'에 대한 실행 공급자 가용성 대기 시간이 초과되었습니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/services/notebook/browser/notebookServiceImpl.notebookServiceNoProvider" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Notebook provider does not exist]]></Val>
@@ -14699,6 +14753,24 @@
           <Val><![CDATA[No URI was passed when creating a notebook manager]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Notebook 관리자를 만들 때 URI가 전달되지 않았습니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/notebook/browser/notebookServiceImpl.serializationProviderTimeout" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Waiting for Serialization Provider availability timed out for notebook provider '{0}']]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[전자 필기장 공급자 '{0}'에 대한 serialization 공급자 가용성 대기 시간이 초과되었습니다.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/notebook/browser/notebookServiceImpl.standardKernelsTimeout" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Waiting for Standard Kernels availability timed out for notebook provider '{0}']]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[전자 필기장 공급자 '{0}'에 대한 표준 커널 가용성 대기 시간이 초과되었습니다.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -14888,6 +14960,15 @@
           <Val><![CDATA[What kernels should be standard with this notebook provider]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[이 Notebook 공급자에서 표준이어야 하는 커널]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/notebook/common/notebookRegistry.providerNotInRegistryError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The specified provider '{0}' is not present in the notebook registry.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[지정된 공급자 '{0}'이(가) 전자 필기장 레지스트리에 없습니다.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

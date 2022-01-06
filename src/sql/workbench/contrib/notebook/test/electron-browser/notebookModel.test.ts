@@ -15,7 +15,7 @@ import { TestDialogService } from 'vs/platform/dialogs/test/common/testDialogSer
 import { URI } from 'vs/base/common/uri';
 
 import { ExecuteManagerStub, SerializationManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
-import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
+import { NotebookModel, SplitCell } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
 import { IClientSession, INotebookModelOptions, NotebookContentChange, IClientSessionOptions, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { ClientSession } from 'sql/workbench/services/notebook/browser/models/clientSession';
@@ -42,6 +42,8 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { UndoRedoService } from 'vs/platform/undoRedo/common/undoRedoService';
+import { SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
+import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
 
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -64,8 +66,8 @@ let expectedNotebookContent: nb.INotebookContents = {
 			name: 'sql'
 		}
 	},
-	nbformat: 4,
-	nbformat_minor: 5
+	nbformat: NBFORMAT,
+	nbformat_minor: NBFORMAT_MINOR
 };
 
 let expectedNotebookContentOneCell: nb.INotebookContents = {
@@ -82,8 +84,8 @@ let expectedNotebookContentOneCell: nb.INotebookContents = {
 			display_name: 'SQL'
 		}
 	},
-	nbformat: 4,
-	nbformat_minor: 5
+	nbformat: NBFORMAT,
+	nbformat_minor: NBFORMAT_MINOR
 };
 
 let expectedKernelAliasNotebookContentOneCell: nb.INotebookContents = {
@@ -103,8 +105,8 @@ let expectedKernelAliasNotebookContentOneCell: nb.INotebookContents = {
 			version: ''
 		}
 	},
-	nbformat: 4,
-	nbformat_minor: 5
+	nbformat: NBFORMAT,
+	nbformat_minor: NBFORMAT_MINOR
 };
 
 let expectedParameterizedNotebookContent: nb.INotebookContents = {
@@ -126,8 +128,8 @@ let expectedParameterizedNotebookContent: nb.INotebookContents = {
 			display_name: 'Python 3'
 		}
 	},
-	nbformat: 4,
-	nbformat_minor: 5
+	nbformat: NBFORMAT,
+	nbformat_minor: NBFORMAT_MINOR
 };
 
 let defaultUri = URI.file('/some/path.ipynb');
@@ -154,6 +156,7 @@ suite('notebook model', function (): void {
 	const logService = new NullLogService();
 	setup(() => {
 		mockSessionManager = TypeMoq.Mock.ofType(SessionManager);
+		executeManagers[0].providerId = SQL_NOTEBOOK_PROVIDER;
 		executeManagers[0].sessionManager = mockSessionManager.object;
 		sessionReady = new Deferred<void>();
 		notificationService = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService, TypeMoq.MockBehavior.Loose);
@@ -207,8 +210,8 @@ suite('notebook model', function (): void {
 					display_name: 'SQL'
 				}
 			},
-			nbformat: 4,
-			nbformat_minor: 5
+			nbformat: NBFORMAT,
+			nbformat_minor: NBFORMAT_MINOR
 		};
 
 		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
@@ -307,9 +310,9 @@ suite('notebook model', function (): void {
 
 		// Check that the getters return  the correct values
 		assert.strictEqual(model.executeManagers.length, 2, 'There should be 2 notebook managers');
-		assert(!isUndefinedOrNull(model.getExecuteManager('SQL')), 'SQL notebook manager is not defined');
-		assert(!isUndefinedOrNull(model.getExecuteManager('jupyter')), 'Jupyter notebook manager is not defined');
-		assert(isUndefinedOrNull(model.getExecuteManager('foo')), 'foo notebook manager is incorrectly defined');
+		assert(model.executeManagers.some(m => m.providerId === 'SQL'), 'SQL notebook manager should be defined');
+		assert(model.executeManagers.some(m => m.providerId === 'jupyter'), 'Jupyter notebook manager should be defined');
+		assert(model.executeManagers.every(m => m.providerId !== 'foo'), 'foo notebook manager should not be defined');
 
 		// Check other properties to ensure that they're returning as expected
 		// No server manager was passed into the notebook manager stub, so expect hasServerManager to return false
@@ -605,6 +608,49 @@ suite('notebook model', function (): void {
 		assert.strictEqual(model.cells.indexOf(secondCell), 0, 'Failed to redo');
 	});
 
+	test('Should merge when undoing split cells', async function (): Promise<void> {
+		let expectedNotebookContentSplitCells: nb.INotebookContents = {
+			cells: [{
+				cell_type: CellTypes.Code,
+				source: ['foobar '],
+				execution_count: 1
+			}, {
+				cell_type: CellTypes.Code,
+				source: ['    hello'],
+				execution_count: 1
+			}],
+			metadata: {
+				kernelspec: {
+					name: 'mssql',
+					language: 'sql',
+					display_name: 'SQL'
+				},
+				language_info: {
+					name: 'sql'
+				}
+			},
+			nbformat: NBFORMAT,
+			nbformat_minor: NBFORMAT_MINOR
+		};
+		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
+		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContentSplitCells));
+		defaultModelOptions.contentLoader = mockContentManager.object;
+
+		// When I initialize the model
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService, undoRedoService);
+		await model.loadContents();
+
+		let splitCells: SplitCell[] = [
+			{ cell: model.cells[0], prefix: undefined },
+			{ cell: model.cells[1], prefix: '\n' }
+		];
+
+		// Merge cells
+		model.mergeCells(splitCells);
+		assert.strictEqual(model.cells.length, 1, 'Cells not deleted after merging');
+		assert.notStrictEqual(model.cells[0].source, ['foobar ', '\n', '    hello'], 'Cell source is not copied correctly');
+	});
+
 	test('Should notify cell on metadata change', async function (): Promise<void> {
 		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(expectedNotebookContent));
@@ -862,8 +908,8 @@ suite('notebook model', function (): void {
 			metadata: {
 				connection_name: connectionName
 			},
-			nbformat: 4,
-			nbformat_minor: 5
+			nbformat: NBFORMAT,
+			nbformat_minor: NBFORMAT_MINOR
 		};
 		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(notebook));
@@ -912,8 +958,8 @@ suite('notebook model', function (): void {
 			metadata: {
 				multi_connection_mode: true
 			},
-			nbformat: 4,
-			nbformat_minor: 5
+			nbformat: NBFORMAT,
+			nbformat_minor: NBFORMAT_MINOR
 		};
 		let mockContentManager = TypeMoq.Mock.ofType(NotebookEditorContentLoader);
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(notebook));

@@ -1842,6 +1842,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/base/common/locConstants.sql.watcherExclude" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Configure glob patterns of file paths to exclude from file watching. Patterns must match on absolute paths (i.e. prefix with ** or the full path to match properly). Changing this setting requires a restart. When you experience Azure Data Studio consuming lots of CPU time on startup, you can exclude large folders to reduce the initial load.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Konfigurieren Sie glob-Muster von Dateipfaden, die von der Dateiüberwachung ausgeschlossen werden sollen. Muster müssen in absoluten Pfaden übereinstimmen (d. h. für eine korrekte Überstimmung muss das Präfix ** oder der vollständige Pfad verwendet werden). Das Ändern dieser Einstellung erfordert einen Neustart. Wenn Ihr Azure Data Studio beim Start viel CPU-Zeit beansprucht, können Sie große Ordner ausschließen, um die anfängliche Last zu verringern.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/base/common/locConstants.uninstallExtensionComplete" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Please reload Azure Data Studio to complete the uninstallation of the extension {0}.]]></Val>
@@ -1856,6 +1865,15 @@
           <Val><![CDATA[Would you like to change Azure Data Studio's UI language to {0} and restart?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Möchten Sie die Sprache der Benutzeroberfläche von Azure Data Studio in {0} ändern und einen Neustart durchführen?]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/base/common/locConstants.vscodeFunctionalityNotSupportedError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[This VS Code functionality is not supported in Azure Data Studio.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Diese VS Code-Funktionalität wird in Azure Data Studio nicht unterstützt.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2864,6 +2882,15 @@
           <Val><![CDATA[A NavigationProvider with valid providerId must be passed to this method]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Ein NavigationProvider mit gültiger Provider-ID muss an diese Methode übergeben werden]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/api/common/vscodeExecuteProvider.errorStartBeforeReady" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Cannot start a session, the manager is not yet initialized]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Eine Sitzung kann nicht gestartet werden, der Manager wurde noch nicht initialisiert.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -14532,6 +14559,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/services/notebook/browser/models/cellEdit.convertCellTypeEdit" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Convert Cell Type]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Zellentyp konvertieren]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/services/notebook/browser/models/cellEdit.deleteCellEdit" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Delete Cell]]></Val>
@@ -14555,6 +14591,15 @@
           <Val><![CDATA[Split Cell]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Zelle teilen]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/notebook/browser/models/clientSession.NoExecuteManager" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Server could not start because a provider was not defined for this notebook file type.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Der Server konnte nicht gestartet werden, da für diesen Dateityp des Notebooks kein Anbieter definiert wurde.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -14685,6 +14730,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/services/notebook/browser/notebookServiceImpl.executeProviderTimeout" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Waiting for Execute Provider availability timed out for notebook provider '{0}']]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Timeout beim Warten auf die Verfügbarkeit des Ausführungsanbieters für Notebookanbieter „{0}“]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/services/notebook/browser/notebookServiceImpl.notebookServiceNoProvider" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Notebook provider does not exist]]></Val>
@@ -14699,6 +14753,24 @@
           <Val><![CDATA[No URI was passed when creating a notebook manager]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Bei der Erstellung eines Notebook-Managers wurde kein URI übergeben.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/notebook/browser/notebookServiceImpl.serializationProviderTimeout" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Waiting for Serialization Provider availability timed out for notebook provider '{0}']]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Timeout beim Warten auf die Verfügbarkeit des Serialisierungsanbieters für Notebookanbieter „{0}“]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/notebook/browser/notebookServiceImpl.standardKernelsTimeout" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Waiting for Standard Kernels availability timed out for notebook provider '{0}']]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Timeout beim Warten auf die Verfügbarkeit von Standard-Kernels für Notebookanbieter „{0}“]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -14888,6 +14960,15 @@
           <Val><![CDATA[What kernels should be standard with this notebook provider]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Gibt an, welche Kernel für diesen Notebook-Anbieter als Standard festgelegt werden sollen.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/notebook/common/notebookRegistry.providerNotInRegistryError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The specified provider '{0}' is not present in the notebook registry.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Der angegebene Anbieter „{0}“ ist in der Notebookregistrierung nicht vorhanden.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

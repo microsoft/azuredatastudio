@@ -1842,6 +1842,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/base/common/locConstants.sql.watcherExclude" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Configure glob patterns of file paths to exclude from file watching. Patterns must match on absolute paths (i.e. prefix with ** or the full path to match properly). Changing this setting requires a restart. When you experience Azure Data Studio consuming lots of CPU time on startup, you can exclude large folders to reduce the initial load.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[設定要從檔案監看排除的檔案路徑的 Glob 模式。模式必須符合絕對路徑 (例如首碼使用 ** 或完整路徑以正確比對)。必須先重新啟動，才能變更此設定。若是遇到 Azure Data Studio 在啟動時取用大量 CPU 時間的情況，您可以排除大型資料夾以減少初始負載。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/base/common/locConstants.uninstallExtensionComplete" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Please reload Azure Data Studio to complete the uninstallation of the extension {0}.]]></Val>
@@ -1856,6 +1865,15 @@
           <Val><![CDATA[Would you like to change Azure Data Studio's UI language to {0} and restart?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[您想要變更 Azure Data Studio 的 UI 語言為 {0} 並重新啟動嗎?]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/base/common/locConstants.vscodeFunctionalityNotSupportedError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[This VS Code functionality is not supported in Azure Data Studio.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Data Studio 不支持此 VS Code 功能。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2864,6 +2882,15 @@
           <Val><![CDATA[A NavigationProvider with valid providerId must be passed to this method]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[必須將具有有效 providerId 的 NavigationProvider 傳遞給此方法]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/api/common/vscodeExecuteProvider.errorStartBeforeReady" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Cannot start a session, the manager is not yet initialized]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[無法啟動工作階段，管理員尚未初始化]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -14532,6 +14559,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/services/notebook/browser/models/cellEdit.convertCellTypeEdit" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Convert Cell Type]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[轉換儲存格類型]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/services/notebook/browser/models/cellEdit.deleteCellEdit" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Delete Cell]]></Val>
@@ -14555,6 +14591,15 @@
           <Val><![CDATA[Split Cell]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[分割儲存格]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/notebook/browser/models/clientSession.NoExecuteManager" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Server could not start because a provider was not defined for this notebook file type.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[伺服器無法啟動，因為未為此筆記本檔案類型定義提供者。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -14685,6 +14730,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";src/sql/workbench/services/notebook/browser/notebookServiceImpl.executeProviderTimeout" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Waiting for Execute Provider availability timed out for notebook provider '{0}']]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[正在等候筆記本提供者 '{0}' 之執行提供者顯示狀態的逾時]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";src/sql/workbench/services/notebook/browser/notebookServiceImpl.notebookServiceNoProvider" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Notebook provider does not exist]]></Val>
@@ -14699,6 +14753,24 @@
           <Val><![CDATA[No URI was passed when creating a notebook manager]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[建立筆記本管理員時未傳遞任何 URI]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/notebook/browser/notebookServiceImpl.serializationProviderTimeout" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Waiting for Serialization Provider availability timed out for notebook provider '{0}']]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[正在等候筆記本提供者 '{0}' 之序列化提供者顯示狀態的逾時]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/notebook/browser/notebookServiceImpl.standardKernelsTimeout" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Waiting for Standard Kernels availability timed out for notebook provider '{0}']]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[正在等候筆記本提供者 '{0}' 之標準核心顯示狀態的逾時]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -14888,6 +14960,15 @@
           <Val><![CDATA[What kernels should be standard with this notebook provider]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[應為此筆記本提供者之標準的核心]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/services/notebook/common/notebookRegistry.providerNotInRegistryError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[The specified provider '{0}' is not present in the notebook registry.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[指定的提供者 '{0}' 不存在於筆記本登錄中。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

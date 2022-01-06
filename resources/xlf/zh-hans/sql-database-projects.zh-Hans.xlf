@@ -70,6 +70,10 @@
         <source xml:lang="en">To use SQL bindings, ensure your Azure Functions project has a reference to {0}</source>
         <target state="translated">若要使用 SQL 绑定，请确保 Azure Functions 项目具有对 {0} 的引用</target>
       </trans-unit>
+      <trans-unit id="addSqlBindingPackageError">
+        <source xml:lang="en">Error adding Sql Binding extension package to project</source>
+        <target state="translated">将 SQL 绑定扩展包添加到项目时出错</target>
+      </trans-unit>
       <trans-unit id="appSettingPrompt">
         <source xml:lang="en">Would you like to update Azure Function local.settings.json with the new connection string?</source>
         <target state="translated">是否要使用新的连接字符串更新 Azure 函数 local.settings.json?</target>
@@ -77,6 +81,14 @@
       <trans-unit id="at">
         <source xml:lang="en">at</source>
         <target state="translated">位于</target>
+      </trans-unit>
+      <trans-unit id="autorestProjectName">
+        <source xml:lang="en">New SQL project name</source>
+        <target state="translated">新 SQL 项目名称</target>
+      </trans-unit>
+      <trans-unit id="baseDockerImage">
+        <source xml:lang="en">Base SQL Server Docker image</source>
+        <target state="translated">基本 SQL Server Docker 映像</target>
       </trans-unit>
       <trans-unit id="browseButtonText">
         <source xml:lang="en">Browse folder</source>
@@ -93,6 +105,10 @@
       <trans-unit id="buildAction">
         <source xml:lang="en">Build</source>
         <target state="translated">生成</target>
+      </trans-unit>
+      <trans-unit id="buildElements">
+        <source xml:lang="en">Build Elements</source>
+        <target state="translated">生成元素</target>
       </trans-unit>
       <trans-unit id="buildFailedCannotStartSchemaCompare">
         <source xml:lang="en">Schema compare could not start because build failed</source>
@@ -136,6 +152,10 @@
       </trans-unit>
       <trans-unit id="confirmPassword">
         <source xml:lang="en">Confirm SQL server admin password</source>
+        <target state="translated">确认 SQL Server 管理员密码</target>
+      </trans-unit>
+      <trans-unit id="confirmServerPassword">
+        <source xml:lang="en">Confirm SQL Server admin password</source>
         <target state="translated">确认 SQL Server 管理员密码</target>
       </trans-unit>
       <trans-unit id="connectingToSqlServerOnDockerMessage">
@@ -201,6 +221,10 @@
       <trans-unit id="dacpacNotOnSameDrive">
         <source xml:lang="en">Dacpac references need to be located on the same drive as the project file. The project file is located at {0}</source>
         <target state="translated">Dacpac 引用需要位于项目文件所在的同一驱动器上。项目文件位于 {0}</target>
+      </trans-unit>
+      <trans-unit id="dacpacReferenceElement">
+        <source xml:lang="en">Dacpac reference</source>
+        <target state="translated">Dacpac 引用</target>
       </trans-unit>
       <trans-unit id="dacpacText">
         <source xml:lang="en">Data-tier application (.dacpac)</source>
@@ -336,11 +360,19 @@
       </trans-unit>
       <trans-unit id="dockerContainerFailedToRunErrorMessage">
         <source xml:lang="en">Failed to run the docker container</source>
-        <target state="translated">无法运行 docker 容器</target>
+        <target state="translated">无法运行 Docker 容器</target>
       </trans-unit>
       <trans-unit id="dockerContainerNotRunningErrorMessage">
         <source xml:lang="en">Docker container is not running</source>
         <target state="translated">Docker 容器未运行</target>
+      </trans-unit>
+      <trans-unit id="dockerImageEulaMessage">
+        <source xml:lang="en">License Agreement:</source>
+        <target state="translated">许可协议:</target>
+      </trans-unit>
+      <trans-unit id="dockerImageMessage">
+        <source xml:lang="en">Docker Image:</source>
+        <target state="translated">Docker 映像:</target>
       </trans-unit>
       <trans-unit id="dockerLogMessage">
         <source xml:lang="en">Docker logs: '{0}'</source>
@@ -357,6 +389,10 @@
       <trans-unit id="dontUseProfile">
         <source xml:lang="en">Don't use profile</source>
         <target state="translated">不使用配置文件</target>
+      </trans-unit>
+      <trans-unit id="edgeEulaAgreementTitle">
+        <source xml:lang="en">Microsoft Azure SQL Edge License Agreement</source>
+        <target state="translated">Microsoft Azure SQL Edge 许可协议</target>
       </trans-unit>
       <trans-unit id="edgeProjectTypeDescription">
         <source xml:lang="en">Start with the core pieces to develop and publish schemas for SQL Edge</source>
@@ -422,6 +458,24 @@
         <source xml:lang="en">Error finding build files location: {0}</source>
         <target state="translated">查找生成文件位置时出错: {0}</target>
       </trans-unit>
+      <trans-unit id="errorReadingProjectGuid">
+        <source xml:lang="en">Error trying to read {0} of project '{1}'</source>
+        <target state="translated">尝试读取项目“{1}”的 {0} 时出错</target>
+      </trans-unit>
+      <trans-unit id="eulaAgreementTemplate">
+        <source xml:lang="en">I accept the {0}.</source>
+        <note>The placeholders are contents of the line and should not be translated.</note>
+        <target state="translated">我接受 {0}。</target>
+      </trans-unit>
+      <trans-unit id="eulaAgreementText">
+        <source xml:lang="en">I accept the {0}.</source>
+        <note>The placeholders are contents of the line and should not be translated.</note>
+        <target state="translated">我接受 {0}。</target>
+      </trans-unit>
+      <trans-unit id="eulaAgreementTitle">
+        <source xml:lang="en">Microsoft SQL Server License Agreement</source>
+        <target state="translated">Microsoft SQL Server 许可协议</target>
+      </trans-unit>
       <trans-unit id="exampleUsage">
         <source xml:lang="en">Example Usage</source>
         <target state="translated">示例用法</target>
@@ -482,6 +536,10 @@
         <source xml:lang="en">A folder with the name '{0}' already exists on disk at this location. Please choose another location.</source>
         <target state="translated">此位置的磁盘上已经存在名为 "{0}" 的文件夹。请选择其他名称。</target>
       </trans-unit>
+      <trans-unit id="folderElements">
+        <source xml:lang="en">Folder Elements</source>
+        <target state="translated">文件夹元素</target>
+      </trans-unit>
       <trans-unit id="folderFriendlyName">
         <source xml:lang="en">Folder</source>
         <target state="translated">文件夹</target>
@@ -499,16 +557,28 @@
         <target state="translated">生成脚本</target>
       </trans-unit>
       <trans-unit id="generatingProjectFailed">
-        <source xml:lang="en">Generating project via AutoRest failed: {0}</source>
-        <target state="translated">通过 AutoRest 生成项目失败: {0}</target>
+        <source xml:lang="en">Generating project via AutoRest failed.  Check output pane for more details. Error: {0}</source>
+        <target state="translated">通过 AutoRest 生成项目失败。有关更多详细信息，请查看输出窗格。错误: {0}</target>
+      </trans-unit>
+      <trans-unit id="generatingProjectFromAutorest">
+        <source xml:lang="en">Generating new SQL project from {0}...  Check output window for details.</source>
+        <target state="translated">正在从 {0} 生成新的 SQL 项目...  检查输出窗口以了解详细信息。</target>
       </trans-unit>
       <trans-unit id="hr">
         <source xml:lang="en">hr</source>
         <target state="translated">小时</target>
       </trans-unit>
+      <trans-unit id="importElements">
+        <source xml:lang="en">Import Elements</source>
+        <target state="translated">导入元素</target>
+      </trans-unit>
       <trans-unit id="input">
         <source xml:lang="en">Input</source>
         <target state="translated">输入</target>
+      </trans-unit>
+      <trans-unit id="installGlobally">
+        <source xml:lang="en">Install globally</source>
+        <target state="translated">全局安装</target>
       </trans-unit>
       <trans-unit id="invalidDataSchemaProvider">
         <source xml:lang="en">Invalid DSP in .sqlproj file</source>
@@ -614,6 +684,10 @@
         <source xml:lang="en">File {0} doesn't exist</source>
         <target state="translated">文件 {0} 不存在</target>
       </trans-unit>
+      <trans-unit id="noSqlFilesGenerated">
+        <source xml:lang="en">No .sql files were generated by Autorest. Please confirm that your spec contains model definitions, or check the output log for details.</source>
+        <target state="translated">Autorest 未生成任何 .sql 文件。请确认规范包含模型定义，或查看输出日志以了解详细信息。</target>
+      </trans-unit>
       <trans-unit id="noSqlProjFilesSelected">
         <source xml:lang="en">No .sqlproj file selected; please select one.</source>
         <target state="translated">未选择任何 .sqlproj 文件；请选择一个。</target>
@@ -627,12 +701,20 @@
         <target state="translated">无(默认)</target>
       </trans-unit>
       <trans-unit id="nodeButNotAutorestFound">
-        <source xml:lang="en">Autorest tool not found in system path, but found Node.js.  Running via npx.  Please execute 'npm install autorest -g' to install permanently.</source>
-        <target state="translated">在系统路径中找不到 Autorest 工具，但找到 Node.js。正在通过 npx 运行。请执行“npm install autorest -g”以永久安装。</target>
+        <source xml:lang="en">Autorest tool not found in system path, but found Node.js.  Prompting user for how to proceed.  Execute 'npm install autorest -g' to install permanently and avoid this message.</source>
+        <target state="translated">在系统路径中找不到 Autorest 工具，但发现Node.js。提示用户如何继续。执行“npm install autorest -g”，永久安装并避免此消息。</target>
+      </trans-unit>
+      <trans-unit id="nodeButNotAutorestFoundPrompt">
+        <source xml:lang="en">Autorest is not installed. To proceed, choose whether to run Autorest from a temporary location via 'npx' or install Autorest globally then run.</source>
+        <target state="translated">未安装 Autorest。若要继续，请选择是通过 “npx” 从临时位置运行 Autorest，还是全局安装 Autorest，然后运行。</target>
       </trans-unit>
       <trans-unit id="nodeNotFound">
-        <source xml:lang="en">Neither autorest nor Node.js (npx) found in system path.  Please install Node.js for autorest generation to work.</source>
-        <target state="translated">在系统路径中找不到 autorest 和 Node.js (npx)。请安装 Node.js 以使自动生成正常工作。</target>
+        <source xml:lang="en">Neither Autorest nor Node.js (npx) found in system path.  Please install Node.js for Autorest generation to work.</source>
+        <target state="translated">在系统路径中找不到 autorest 和 Node.js (npx)。请安装 Node.js 以使 Autorest 生成正常工作。</target>
+      </trans-unit>
+      <trans-unit id="noneElements">
+        <source xml:lang="en">None Elements</source>
+        <target state="translated">无元素</target>
       </trans-unit>
       <trans-unit id="notValidVariableName">
         <source xml:lang="en">The variable name '{0}' is not valid.</source>
@@ -645,6 +727,10 @@
       <trans-unit id="okString">
         <source xml:lang="en">Ok</source>
         <target state="translated">确定</target>
+      </trans-unit>
+      <trans-unit id="openEulaString">
+        <source xml:lang="en">Open License Agreement</source>
+        <target state="translated">打开许可协议</target>
       </trans-unit>
       <trans-unit id="output">
         <source xml:lang="en">Output</source>
@@ -666,9 +752,17 @@
         <source xml:lang="en">Port must a be number</source>
         <target state="translated">端口必须是数字</target>
       </trans-unit>
+      <trans-unit id="postDeployElements">
+        <source xml:lang="en">PostDeploy Elements</source>
+        <target state="translated">PostDeploy 元素</target>
+      </trans-unit>
       <trans-unit id="postDeployScriptFriendlyName">
         <source xml:lang="en">Script.PostDeployment</source>
         <target state="translated">Script.PostDeployment</target>
+      </trans-unit>
+      <trans-unit id="preDeployElements">
+        <source xml:lang="en">PreDeploy Elements</source>
+        <target state="translated">PreDeploy 元素</target>
       </trans-unit>
       <trans-unit id="preDeployScriptFriendlyName">
         <source xml:lang="en">Script.PreDeployment</source>
@@ -714,6 +808,14 @@
         <source xml:lang="en">Enter project name</source>
         <target state="translated">输入项目名</target>
       </trans-unit>
+      <trans-unit id="projectReferenceElement">
+        <source xml:lang="en">Project reference</source>
+        <target state="translated">项目引用</target>
+      </trans-unit>
+      <trans-unit id="projectReferenceNameElement">
+        <source xml:lang="en">Project reference name element</source>
+        <target state="translated">项目引用名称元素</target>
+      </trans-unit>
       <trans-unit id="publish">
         <source xml:lang="en">Publish</source>
         <target state="translated">发布</target>
@@ -733,6 +835,10 @@
       <trans-unit id="publishSettingsFiles">
         <source xml:lang="en">Publish Settings File</source>
         <target state="translated">发布设置文件</target>
+      </trans-unit>
+      <trans-unit id="publishTo">
+        <source xml:lang="en">Publish Target</source>
+        <target state="translated">发布目标</target>
       </trans-unit>
       <trans-unit id="publishToContainerFailed">
         <source xml:lang="en">Failed to publish to container. {0}</source>
@@ -790,9 +896,13 @@
         <source xml:lang="en">Waiting for {0} seconds before another attempt for operation '{1}'</source>
         <target state="translated">正在等待 {0} 秒，然后再次尝试执行操作 "{1}"</target>
       </trans-unit>
+      <trans-unit id="runViaNpx">
+        <source xml:lang="en">Run via npx</source>
+        <target state="translated">通过 npx 运行</target>
+      </trans-unit>
       <trans-unit id="runningDockerMessage">
         <source xml:lang="en">Building and running the docker container ...</source>
-        <target state="translated">正在生成并运行 docker 容器...</target>
+        <target state="translated">正在生成并运行 Docker 容器...</target>
       </trans-unit>
       <trans-unit id="sameDatabase">
         <source xml:lang="en">Same database</source>
@@ -898,6 +1008,14 @@
         <source xml:lang="en">Server name</source>
         <target state="translated">服务器名</target>
       </trans-unit>
+      <trans-unit id="serverPassword">
+        <source xml:lang="en">SQL Server admin password</source>
+        <target state="translated">服务器管理员密码</target>
+      </trans-unit>
+      <trans-unit id="serverPortNumber">
+        <source xml:lang="en">SQL server port number</source>
+        <target state="translated">SQL Server 商品号</target>
+      </trans-unit>
       <trans-unit id="serverVariable">
         <source xml:lang="en">Server variable</source>
         <target state="translated">服务器变量</target>
@@ -926,19 +1044,19 @@
         <source xml:lang="en">SQL connection string</source>
         <target state="translated">SQL 连接字符串</target>
       </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.DotnetInstallationConfirmation">
+        <source xml:lang="en">The .NET SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or higher or update the .NET SDK location in settings if already installed.</source>
+        <target state="translated">找不到 .NET SDK。项目生成将不起作用。请安装 .NET Core SDK 版本 3.1 或更高版本，或在设置中更新 .Net SDK 位置(如果已安装)。</target>
+      </trans-unit>
       <trans-unit id="sqlDatabaseProjects.Install">
         <source xml:lang="en">Install</source>
         <target state="translated">安装</target>
       </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.NetCoreInstallationConfirmation">
-        <source xml:lang="en">The .NET Core SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK location in settings if already installed.</source>
-        <target state="translated">找不到 .NET Core SDK。项目生成将不起作用。请安装 .NET Core SDK 版本 3.1 或在设置中更新 .Net Core SDK 位置(如果已安装)。</target>
-      </trans-unit>
       <trans-unit id="sqlDatabaseProjects.NetCoreSupportedVersionInstallationConfirmation">
-        <source xml:lang="en">Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK supported version location in settings if already installed.</source>
-        <target state="translated">当前安装的 .NET Core SDK 版本为 {0}，这是不受支持的。项目生成将不起作用。请安装 .NET Core SDK 版本 3.1，或在设置中更新 .NET Core SDK 支持的版本位置(如果已安装)。</target>
+        <source xml:lang="en">Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or higher or update the .NET SDK supported version location in settings if already installed.</source>
+        <target state="translated">当前安装的 .NET Core SDK 版本为 {0}，这是不受支持的。项目生成将不起作用。请安装 .NET Core SDK 版本 3.1 或更高版本，或在设置中更新 .NET SDK 支持的版本位置(如果已安装)。</target>
       </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.UpdateNetCoreLocation">
+      <trans-unit id="sqlDatabaseProjects.UpdateDotnetLocation">
         <source xml:lang="en">Update Location</source>
         <target state="translated">更新位置</target>
       </trans-unit>
@@ -1023,12 +1141,24 @@
         <target state="translated">无法识别的版本: </target>
       </trans-unit>
       <trans-unit id="updateProjectDatabaseReferencesForRoundTrip">
-        <source xml:lang="en">The system database references need to be updated to build this project. If the project is created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
-        <target state="translated">需要更新系统数据库引用才能生成此项目。如果项目是在 SSDT 中创建的，它将继续在这两个工具中工作。是否要更新项目?</target>
+        <source xml:lang="en">The system database references need to be updated to build the project '{0}'. If the project was created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
+        <target state="translated">需要更新系统数据库引用才能生成此项目“{0}”。如果项目是在 SSDT 中创建的，它将继续在这两个工具中工作。是否要更新项目?</target>
       </trans-unit>
       <trans-unit id="updateProjectForRoundTrip">
-        <source xml:lang="en">The targets, references, and system database references need to be updated to build this project. If the project is created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
-        <target state="translated">需要更新目标、引用、系统数据库引用才能生成此项目。如果项目是在 SSDT 中创建的，它将继续在这两个工具中工作。是否要更新项目?</target>
+        <source xml:lang="en">The targets, references, and system database references need to be updated to build the project '{0}'. If the project was created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
+        <target state="translated">需要更新目标、引用、系统数据库引用才能生成此项目“{0}”。如果项目是在 SSDT 中创建的，它将继续在这两个工具中工作。是否要更新项目?</target>
+      </trans-unit>
+      <trans-unit id="userSelectionCancelled">
+        <source xml:lang="en">User has cancelled selection for how to run autorest.</source>
+        <target state="translated">用户已取消选择的 autorest 运行方式。</target>
+      </trans-unit>
+      <trans-unit id="userSelectionInstallGlobally">
+        <source xml:lang="en">User selected to install autorest gloablly.  Installing now...</source>
+        <target state="translated">用户已选择全局安装 autorest。正在安装...</target>
+      </trans-unit>
+      <trans-unit id="userSelectionRunNpx">
+        <source xml:lang="en">User selected to run via npx.</source>
+        <target state="translated">用户已选择通过 npx 运行。</target>
       </trans-unit>
       <trans-unit id="valueCannotBeEmpty">
         <source xml:lang="en">Value cannot be empty</source>
@@ -1087,8 +1217,8 @@
         <target state="translated">添加数据库引用</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.addSqlBinding">
-        <source xml:lang="en">Add SQL Binding</source>
-        <target state="translated">添加 SQL 绑定</target>
+        <source xml:lang="en">Add SQL Binding (preview)</source>
+        <target state="translated">添加 SQL 绑定(预览)</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.autorestSqlVersion">
         <source xml:lang="en">Which version of Autorest.Sql to use from NPM.  Latest will be used if not set.</source>
@@ -1122,6 +1252,10 @@
         <source xml:lang="en">Database Projects</source>
         <target state="translated">数据库项目</target>
       </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.dotnetInstallLocation">
+        <source xml:lang="en">Full path to .NET SDK on the machine.</source>
+        <target state="translated">计算机上到 .NET SDK 的完整路径。</target>
+      </trans-unit>
       <trans-unit id="sqlDatabaseProjects.editProjectFile">
         <source xml:lang="en">Edit .sqlproj File</source>
         <target state="translated">编辑 .sqlproj 文件</target>
@@ -1137,10 +1271,6 @@
       <trans-unit id="sqlDatabaseProjects.netCoreDoNotAsk">
         <source xml:lang="en">Whether to prompt the user to install .NET Core when not detected.</source>
         <target state="translated">未检测到时是否提示用户安装 .NET Core。</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.netCoreInstallLocation">
-        <source xml:lang="en">Full path to .NET Core SDK on the machine.</source>
-        <target state="translated">计算机上到 .NET Core SDK 的完整路径。</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.new">
         <source xml:lang="en">New Database Project</source>

@@ -70,6 +70,10 @@
         <source xml:lang="en">To use SQL bindings, ensure your Azure Functions project has a reference to {0}</source>
         <target state="translated">SQL バインドを使用するには、Azure Functions プロジェクトに {0} への参照があることを確認します</target>
       </trans-unit>
+      <trans-unit id="addSqlBindingPackageError">
+        <source xml:lang="en">Error adding Sql Binding extension package to project</source>
+        <target state="translated">SQL バインド拡張機能パッケージをプロジェクトに追加中にエラーが発生しました</target>
+      </trans-unit>
       <trans-unit id="appSettingPrompt">
         <source xml:lang="en">Would you like to update Azure Function local.settings.json with the new connection string?</source>
         <target state="translated">Azure Function local.settings.json を新しい接続文字列で更新しますか?</target>
@@ -77,6 +81,14 @@
       <trans-unit id="at">
         <source xml:lang="en">at</source>
         <target state="translated">場所</target>
+      </trans-unit>
+      <trans-unit id="autorestProjectName">
+        <source xml:lang="en">New SQL project name</source>
+        <target state="translated">新しい SQL プロジェクト名</target>
+      </trans-unit>
+      <trans-unit id="baseDockerImage">
+        <source xml:lang="en">Base SQL Server Docker image</source>
+        <target state="translated">基本 SQL Server Docker のイメージ</target>
       </trans-unit>
       <trans-unit id="browseButtonText">
         <source xml:lang="en">Browse folder</source>
@@ -93,6 +105,10 @@
       <trans-unit id="buildAction">
         <source xml:lang="en">Build</source>
         <target state="translated">ビルド</target>
+      </trans-unit>
+      <trans-unit id="buildElements">
+        <source xml:lang="en">Build Elements</source>
+        <target state="translated">要素のビルド</target>
       </trans-unit>
       <trans-unit id="buildFailedCannotStartSchemaCompare">
         <source xml:lang="en">Schema compare could not start because build failed</source>
@@ -136,6 +152,10 @@
       </trans-unit>
       <trans-unit id="confirmPassword">
         <source xml:lang="en">Confirm SQL server admin password</source>
+        <target state="translated">SQL サーバー管理者パスワードを確認する</target>
+      </trans-unit>
+      <trans-unit id="confirmServerPassword">
+        <source xml:lang="en">Confirm SQL Server admin password</source>
         <target state="translated">SQL サーバー管理者パスワードを確認する</target>
       </trans-unit>
       <trans-unit id="connectingToSqlServerOnDockerMessage">
@@ -201,6 +221,10 @@
       <trans-unit id="dacpacNotOnSameDrive">
         <source xml:lang="en">Dacpac references need to be located on the same drive as the project file. The project file is located at {0}</source>
         <target state="translated">DACPAC 参照は、プロジェクト ファイルと同じドライブに配置されている必要があります。プロジェクト ファイルは {0} に配置されています</target>
+      </trans-unit>
+      <trans-unit id="dacpacReferenceElement">
+        <source xml:lang="en">Dacpac reference</source>
+        <target state="translated">Dacpac 参照</target>
       </trans-unit>
       <trans-unit id="dacpacText">
         <source xml:lang="en">Data-tier application (.dacpac)</source>
@@ -342,6 +366,14 @@
         <source xml:lang="en">Docker container is not running</source>
         <target state="translated">Docker コンテナーが実行されていません</target>
       </trans-unit>
+      <trans-unit id="dockerImageEulaMessage">
+        <source xml:lang="en">License Agreement:</source>
+        <target state="translated">ライセンス契約:</target>
+      </trans-unit>
+      <trans-unit id="dockerImageMessage">
+        <source xml:lang="en">Docker Image:</source>
+        <target state="translated">Docker イメージ</target>
+      </trans-unit>
       <trans-unit id="dockerLogMessage">
         <source xml:lang="en">Docker logs: '{0}'</source>
         <target state="translated">Docker ログ: '{0}'</target>
@@ -357,6 +389,10 @@
       <trans-unit id="dontUseProfile">
         <source xml:lang="en">Don't use profile</source>
         <target state="translated">プロファイルを使用しません</target>
+      </trans-unit>
+      <trans-unit id="edgeEulaAgreementTitle">
+        <source xml:lang="en">Microsoft Azure SQL Edge License Agreement</source>
+        <target state="translated">Microsoft Azure SQL Edge License Agreement</target>
       </trans-unit>
       <trans-unit id="edgeProjectTypeDescription">
         <source xml:lang="en">Start with the core pieces to develop and publish schemas for SQL Edge</source>
@@ -422,6 +458,24 @@
         <source xml:lang="en">Error finding build files location: {0}</source>
         <target state="translated">ビルド ファイルの場所の検索中にエラーが発生しました: {0}</target>
       </trans-unit>
+      <trans-unit id="errorReadingProjectGuid">
+        <source xml:lang="en">Error trying to read {0} of project '{1}'</source>
+        <target state="translated">プロジェクト '{0}' の {1} を読み込もうとしてエラーが発生しました</target>
+      </trans-unit>
+      <trans-unit id="eulaAgreementTemplate">
+        <source xml:lang="en">I accept the {0}.</source>
+        <note>The placeholders are contents of the line and should not be translated.</note>
+        <target state="translated">{0} に同意します。</target>
+      </trans-unit>
+      <trans-unit id="eulaAgreementText">
+        <source xml:lang="en">I accept the {0}.</source>
+        <note>The placeholders are contents of the line and should not be translated.</note>
+        <target state="translated">{0} に同意します。</target>
+      </trans-unit>
+      <trans-unit id="eulaAgreementTitle">
+        <source xml:lang="en">Microsoft SQL Server License Agreement</source>
+        <target state="translated">Microsoft SQL Server ライセンス契約</target>
+      </trans-unit>
       <trans-unit id="exampleUsage">
         <source xml:lang="en">Example Usage</source>
         <target state="translated">使用例</target>
@@ -482,6 +536,10 @@
         <source xml:lang="en">A folder with the name '{0}' already exists on disk at this location. Please choose another location.</source>
         <target state="translated">"{0}" という名前のフォルダーが、ディスク上のこの場所に既に存在します。別の場所を選択してください。</target>
       </trans-unit>
+      <trans-unit id="folderElements">
+        <source xml:lang="en">Folder Elements</source>
+        <target state="translated">フォルダー要素</target>
+      </trans-unit>
       <trans-unit id="folderFriendlyName">
         <source xml:lang="en">Folder</source>
         <target state="translated">フォルダー</target>
@@ -499,16 +557,28 @@
         <target state="translated">スクリプトの生成</target>
       </trans-unit>
       <trans-unit id="generatingProjectFailed">
-        <source xml:lang="en">Generating project via AutoRest failed: {0}</source>
-        <target state="translated">AutoRest を介したプロジェクトの生成に失敗しました: {0}</target>
+        <source xml:lang="en">Generating project via AutoRest failed.  Check output pane for more details. Error: {0}</source>
+        <target state="translated">AutoRest を介したプロジェクトの生成に失敗しました。詳細については、出力ウィンドウを確認してください。エラー: {0}</target>
+      </trans-unit>
+      <trans-unit id="generatingProjectFromAutorest">
+        <source xml:lang="en">Generating new SQL project from {0}...  Check output window for details.</source>
+        <target state="translated">{0} から新しい SQL プロジェクトを生成しています... 詳細については、出力ウィンドウを確認してください。</target>
       </trans-unit>
       <trans-unit id="hr">
         <source xml:lang="en">hr</source>
         <target state="translated">時間</target>
       </trans-unit>
+      <trans-unit id="importElements">
+        <source xml:lang="en">Import Elements</source>
+        <target state="translated">要素のインポート</target>
+      </trans-unit>
       <trans-unit id="input">
         <source xml:lang="en">Input</source>
         <target state="translated">入力</target>
+      </trans-unit>
+      <trans-unit id="installGlobally">
+        <source xml:lang="en">Install globally</source>
+        <target state="translated">グローバルにインストールする</target>
       </trans-unit>
       <trans-unit id="invalidDataSchemaProvider">
         <source xml:lang="en">Invalid DSP in .sqlproj file</source>
@@ -614,6 +684,10 @@
         <source xml:lang="en">File {0} doesn't exist</source>
         <target state="translated">{0} ファイルは存在しません</target>
       </trans-unit>
+      <trans-unit id="noSqlFilesGenerated">
+        <source xml:lang="en">No .sql files were generated by Autorest. Please confirm that your spec contains model definitions, or check the output log for details.</source>
+        <target state="translated">Autorest で生成された .sql ファイルはありません。仕様にモデル定義が含まれていることを確認するか、または出力ログで詳細を確認してください。</target>
+      </trans-unit>
       <trans-unit id="noSqlProjFilesSelected">
         <source xml:lang="en">No .sqlproj file selected; please select one.</source>
         <target state="translated">.sqlproj ファイルが選択されていません。1 つ選択してください。</target>
@@ -627,12 +701,20 @@
         <target state="translated">いいえ (既定値)</target>
       </trans-unit>
       <trans-unit id="nodeButNotAutorestFound">
-        <source xml:lang="en">Autorest tool not found in system path, but found Node.js.  Running via npx.  Please execute 'npm install autorest -g' to install permanently.</source>
-        <target state="translated">AutoRest ツールはシステム パスで見つかりませんでしたが、Node.js が見つかりました。NPX を介して実行しています。完全にインストールするには、'npm install autorest -g' を実行してください。</target>
+        <source xml:lang="en">Autorest tool not found in system path, but found Node.js.  Prompting user for how to proceed.  Execute 'npm install autorest -g' to install permanently and avoid this message.</source>
+        <target state="translated">Autorest ツールはシステム パスで見つかりませんでしたが、Node.js が見つかりました。 続行する方法をユーザーに確認しています。完全にインストールしてこのメッセージを回避するには、'npm install autorest -g' を実行します。</target>
+      </trans-unit>
+      <trans-unit id="nodeButNotAutorestFoundPrompt">
+        <source xml:lang="en">Autorest is not installed. To proceed, choose whether to run Autorest from a temporary location via 'npx' or install Autorest globally then run.</source>
+        <target state="translated">Autorest がインストールされていません。続行するには、'npx' を介した一時的な場所で Autorest を実行するか、Autorest をグローバルにインストールしてから実行するかを選択します。</target>
       </trans-unit>
       <trans-unit id="nodeNotFound">
-        <source xml:lang="en">Neither autorest nor Node.js (npx) found in system path.  Please install Node.js for autorest generation to work.</source>
+        <source xml:lang="en">Neither Autorest nor Node.js (npx) found in system path.  Please install Node.js for Autorest generation to work.</source>
         <target state="translated">システム パスで AutoRest と Node.js (npx) のいずれも見つかりませんでした。AutoRest の生成を機能させるには、Node.js をインストールしてください。</target>
+      </trans-unit>
+      <trans-unit id="noneElements">
+        <source xml:lang="en">None Elements</source>
+        <target state="translated">要素なし</target>
       </trans-unit>
       <trans-unit id="notValidVariableName">
         <source xml:lang="en">The variable name '{0}' is not valid.</source>
@@ -645,6 +727,10 @@
       <trans-unit id="okString">
         <source xml:lang="en">Ok</source>
         <target state="translated">OK</target>
+      </trans-unit>
+      <trans-unit id="openEulaString">
+        <source xml:lang="en">Open License Agreement</source>
+        <target state="translated">ライセンス契約を開く</target>
       </trans-unit>
       <trans-unit id="output">
         <source xml:lang="en">Output</source>
@@ -666,9 +752,17 @@
         <source xml:lang="en">Port must a be number</source>
         <target state="translated">ポートは数値である必要があります</target>
       </trans-unit>
+      <trans-unit id="postDeployElements">
+        <source xml:lang="en">PostDeploy Elements</source>
+        <target state="translated">PostDeploy 要素</target>
+      </trans-unit>
       <trans-unit id="postDeployScriptFriendlyName">
         <source xml:lang="en">Script.PostDeployment</source>
         <target state="translated">Script.PostDeployment</target>
+      </trans-unit>
+      <trans-unit id="preDeployElements">
+        <source xml:lang="en">PreDeploy Elements</source>
+        <target state="translated">PreDeploy 要素</target>
       </trans-unit>
       <trans-unit id="preDeployScriptFriendlyName">
         <source xml:lang="en">Script.PreDeployment</source>
@@ -714,6 +808,14 @@
         <source xml:lang="en">Enter project name</source>
         <target state="translated">プロジェクト名を入力してください</target>
       </trans-unit>
+      <trans-unit id="projectReferenceElement">
+        <source xml:lang="en">Project reference</source>
+        <target state="translated">プロジェクト参照</target>
+      </trans-unit>
+      <trans-unit id="projectReferenceNameElement">
+        <source xml:lang="en">Project reference name element</source>
+        <target state="translated">プロジェクト参照名の要素</target>
+      </trans-unit>
       <trans-unit id="publish">
         <source xml:lang="en">Publish</source>
         <target state="translated">公開</target>
@@ -733,6 +835,10 @@
       <trans-unit id="publishSettingsFiles">
         <source xml:lang="en">Publish Settings File</source>
         <target state="translated">公開の設定ファイル</target>
+      </trans-unit>
+      <trans-unit id="publishTo">
+        <source xml:lang="en">Publish Target</source>
+        <target state="translated">ターゲットの公開</target>
       </trans-unit>
       <trans-unit id="publishToContainerFailed">
         <source xml:lang="en">Failed to publish to container. {0}</source>
@@ -789,6 +895,10 @@
       <trans-unit id="retryWaitMessage">
         <source xml:lang="en">Waiting for {0} seconds before another attempt for operation '{1}'</source>
         <target state="translated">操作 '{1}' をもう一度実行する前に、{0}秒間待機しています</target>
+      </trans-unit>
+      <trans-unit id="runViaNpx">
+        <source xml:lang="en">Run via npx</source>
+        <target state="translated">npx を介して実行する</target>
       </trans-unit>
       <trans-unit id="runningDockerMessage">
         <source xml:lang="en">Building and running the docker container ...</source>
@@ -898,6 +1008,14 @@
         <source xml:lang="en">Server name</source>
         <target state="translated">サーバー名</target>
       </trans-unit>
+      <trans-unit id="serverPassword">
+        <source xml:lang="en">SQL Server admin password</source>
+        <target state="translated">SQL Server 管理者パスワード</target>
+      </trans-unit>
+      <trans-unit id="serverPortNumber">
+        <source xml:lang="en">SQL server port number</source>
+        <target state="translated">SQL Server のポート番号</target>
+      </trans-unit>
       <trans-unit id="serverVariable">
         <source xml:lang="en">Server variable</source>
         <target state="translated">サーバー変数</target>
@@ -926,19 +1044,19 @@
         <source xml:lang="en">SQL connection string</source>
         <target state="translated">SQL 接続文字列</target>
       </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.DotnetInstallationConfirmation">
+        <source xml:lang="en">The .NET SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or higher or update the .NET SDK location in settings if already installed.</source>
+        <target state="translated">.NET SDK が見つかりません。プロジェクトのビルドは機能しません。バージョン 3.1 以降の .NET Core SDK をインストールするか、既にインストールされている場合は、設定で .NET SDK の場所を更新してください。</target>
+      </trans-unit>
       <trans-unit id="sqlDatabaseProjects.Install">
         <source xml:lang="en">Install</source>
         <target state="translated">インストール</target>
       </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.NetCoreInstallationConfirmation">
-        <source xml:lang="en">The .NET Core SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK location in settings if already installed.</source>
-        <target state="translated">.NET Core SDK が見つかりません。プロジェクトのビルドは機能しません。.NET Core SDK バージョン 3.1 をインストールするか、既にインストールされている場合は [設定] で .NET Core SDK の場所を更新してください。</target>
-      </trans-unit>
       <trans-unit id="sqlDatabaseProjects.NetCoreSupportedVersionInstallationConfirmation">
-        <source xml:lang="en">Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK supported version location in settings if already installed.</source>
-        <target state="translated">現在インストール済みの .NET Core SDK バージョンは {0} であり、サポートされていません。プロジェクトのビルドは機能しません。.NET Core SDK バージョン 3.1 をインストールするか、既にインストールされている場合は [設定] で .Net Core SDK のサポートされたバージョンの場所を更新してください。</target>
+        <source xml:lang="en">Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or higher or update the .NET SDK supported version location in settings if already installed.</source>
+        <target state="translated">現在インストールされている .NET Core SDK バージョンは {0} ですが、これはサポートされていません。プロジェクトのビルドは機能しません。バージョン 3.1 以降の .NET Core SDK をインストールするか、すでにインストールされている場合には、設定で .NET SDK でサポートされているバージョンの場所を更新してください。</target>
       </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.UpdateNetCoreLocation">
+      <trans-unit id="sqlDatabaseProjects.UpdateDotnetLocation">
         <source xml:lang="en">Update Location</source>
         <target state="translated">場所の更新</target>
       </trans-unit>
@@ -1023,12 +1141,24 @@
         <target state="translated">認識されていないバージョン:</target>
       </trans-unit>
       <trans-unit id="updateProjectDatabaseReferencesForRoundTrip">
-        <source xml:lang="en">The system database references need to be updated to build this project. If the project is created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
-        <target state="translated">このプロジェクトをビルドするには、システム データベース参照を更新する必要があります。SSDTにプロジェクトが作成される場合、それは両方のツール上で引き続き機能します。プロジェクトを更新しますか?</target>
+        <source xml:lang="en">The system database references need to be updated to build the project '{0}'. If the project was created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
+        <target state="translated">プロジェクト '{0}' をビルドするには、システム データベース参照を更新する必要があります。SSDT にプロジェクトが作成された場合、それは両方のツール上で引き続き機能します。プロジェクトを更新しますか?</target>
       </trans-unit>
       <trans-unit id="updateProjectForRoundTrip">
-        <source xml:lang="en">The targets, references, and system database references need to be updated to build this project. If the project is created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
-        <target state="translated">このプロジェクトをビルドするには、ターゲット、参照、そしてシステム データベース参照を更新する必要があります。SSDTにプロジェクトが作成される場合、それは両方のツール上で引き続き機能します。プロジェクトを更新しますか?</target>
+        <source xml:lang="en">The targets, references, and system database references need to be updated to build the project '{0}'. If the project was created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
+        <target state="translated">プロジェクト '{0}' をビルドするには、ターゲット、参照、そしてシステム データベース参照を更新する必要があります。SSDT にプロジェクトが作成された場合、それは両方のツール上で引き続き機能します。プロジェクトを更新しますか?</target>
+      </trans-unit>
+      <trans-unit id="userSelectionCancelled">
+        <source xml:lang="en">User has cancelled selection for how to run autorest.</source>
+        <target state="translated">autorest の実行方法の選択がユーザーによって取り消されました。</target>
+      </trans-unit>
+      <trans-unit id="userSelectionInstallGlobally">
+        <source xml:lang="en">User selected to install autorest gloablly.  Installing now...</source>
+        <target state="translated">ユーザーは autorest のグローバル インストールを選択しました。今すぐインストールしています...</target>
+      </trans-unit>
+      <trans-unit id="userSelectionRunNpx">
+        <source xml:lang="en">User selected to run via npx.</source>
+        <target state="translated">ユーザーは、npx 経由での実行を選択しました。</target>
       </trans-unit>
       <trans-unit id="valueCannotBeEmpty">
         <source xml:lang="en">Value cannot be empty</source>
@@ -1087,8 +1217,8 @@
         <target state="translated">データベース参照の追加</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.addSqlBinding">
-        <source xml:lang="en">Add SQL Binding</source>
-        <target state="translated">SQL バインドの追加</target>
+        <source xml:lang="en">Add SQL Binding (preview)</source>
+        <target state="translated">SQL バインドの追加 (プレビュー)</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.autorestSqlVersion">
         <source xml:lang="en">Which version of Autorest.Sql to use from NPM.  Latest will be used if not set.</source>
@@ -1122,6 +1252,10 @@
         <source xml:lang="en">Database Projects</source>
         <target state="translated">データベース プロジェクト</target>
       </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.dotnetInstallLocation">
+        <source xml:lang="en">Full path to .NET SDK on the machine.</source>
+        <target state="translated">コンピューター上の .NET SDK への完全なパス。</target>
+      </trans-unit>
       <trans-unit id="sqlDatabaseProjects.editProjectFile">
         <source xml:lang="en">Edit .sqlproj File</source>
         <target state="translated">.sqlproj ファイルの編集</target>
@@ -1137,10 +1271,6 @@
       <trans-unit id="sqlDatabaseProjects.netCoreDoNotAsk">
         <source xml:lang="en">Whether to prompt the user to install .NET Core when not detected.</source>
         <target state="translated">検出されなかった場合に、ユーザーに .NET Core をインストールを求めるかどうか。</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.netCoreInstallLocation">
-        <source xml:lang="en">Full path to .NET Core SDK on the machine.</source>
-        <target state="translated">マシン上の .NET Core SDK への完全なパス。</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.new">
         <source xml:lang="en">New Database Project</source>

@@ -25,6 +25,9 @@
     <trans-unit id="sql.migration.active.backup.files.multiple.items">
       <source xml:lang="en">Active backup files ({0} items)</source>
     </trans-unit>
+    <trans-unit id="sql.migration.all.backups.restored">
+      <source xml:lang="en">All backups restored</source>
+    </trans-unit>
     <trans-unit id="sql.migration.all.fields.required">
       <source xml:lang="en">All fields are required.</source>
     </trans-unit>
@@ -197,6 +200,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.creating.rg.loading">
       <source xml:lang="en">Creating resource group</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.currently.restoring.file">
+      <source xml:lang="en">Currently restoring file</source>
     </trans-unit>
     <trans-unit id="sql.migration.cutover">
       <source xml:lang="en">Migration cutover</source>
@@ -595,10 +601,13 @@ This may take some time.</source>
       <source xml:lang="en">Enter password.</source>
     </trans-unit>
     <trans-unit id="sql.migration.network.share.path">
+      <source xml:lang="en">Network share path</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.network.share.path.format">
       <source xml:lang="en">\\Servername.domainname.com\Backupfolder</source>
     </trans-unit>
     <trans-unit id="sql.migration.network.share.storage.table.help">
-      <source xml:lang="en">Enter target database name for the selected source databases.</source>
+      <source xml:lang="en">Enter target database name and network share path information for the selected source databases.</source>
     </trans-unit>
     <trans-unit id="sql.migration.network.share.windows.user.info">
       <source xml:lang="en">Windows user account with read access to the network share location.</source>

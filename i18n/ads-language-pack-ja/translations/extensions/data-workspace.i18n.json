@@ -60,10 +60,8 @@
 		},
 		"package": {
 			"close-workspace-command": "ワークスペースを閉じる",
-			"data-workspace-view-container-name": "プロジェクト",
-			"extension-description": "データ ワークスペース",
-			"extension-displayName": "データ ワークスペース",
-			"main-view-name": "プロジェクト",
+			"data-workspace-view-container-name": "データベース プロジェクト",
+			"main-view-name": "データベース プロジェクト",
 			"manage-project-command": "管理",
 			"new-command": "新規",
 			"open-existing-command": "既存のものを開く",

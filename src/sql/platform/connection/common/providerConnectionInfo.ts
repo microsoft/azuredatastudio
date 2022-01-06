@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Disposable, dispose, IDisposable } from 'vs/base/common/lifecycle';
+import { Disposable } from 'vs/base/common/lifecycle';
 import { isString } from 'vs/base/common/types';
 
 import * as azdata from 'azdata';
@@ -18,8 +18,6 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	options: { [name: string]: any } = {};
 
 	private _providerName?: string;
-	private _onCapabilitiesRegisteredDisposable?: IDisposable;
-	protected _serverCapabilities?: ConnectionProviderProperties;
 	private static readonly SqlAuthentication = 'SqlLogin';
 	public static readonly ProviderPropertyName = 'providerName';
 
@@ -33,8 +31,8 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 			this.providerName = isString(model) ? model : model.providerName;
 
 			if (!isString(model)) {
-				if (model.options && this._serverCapabilities) {
-					this._serverCapabilities.connectionOptions.forEach(option => {
+				if (model.options && this.serverCapabilities) {
+					this.serverCapabilities.connectionOptions.forEach(option => {
 						let value = model.options[option.name];
 						this.options[option.name] = value;
 					});
@@ -69,26 +67,13 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 
 	public set providerName(name: string) {
 		this._providerName = name;
-		if (!this._serverCapabilities && this.capabilitiesService) {
-			let capabilities = this.capabilitiesService.getCapabilities(this.providerName);
-			if (capabilities) {
-				this._serverCapabilities = capabilities.connection;
-			}
-			if (this._onCapabilitiesRegisteredDisposable) {
-				dispose(this._onCapabilitiesRegisteredDisposable);
-			}
-			this._onCapabilitiesRegisteredDisposable = this.capabilitiesService.onCapabilitiesRegistered(e => {
-				if (e.id === this.providerName) {
-					this._serverCapabilities = e.features.connection;
-				}
-			});
-		}
 	}
 
 	public override dispose(): void {
-		if (this._onCapabilitiesRegisteredDisposable) {
-			dispose(this._onCapabilitiesRegisteredDisposable);
-		}
+		// Notes:
+		// 1. It is not recommended to add disposables to this class considering the way we create and use the connection objects,
+		//    there are places that the connection objects are not being disposed properly.
+		// 2. Remember to dispose the listeners added to this class.
 		super.dispose();
 	}
 
@@ -99,7 +84,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	}
 
 	public get serverCapabilities(): ConnectionProviderProperties | undefined {
-		return this._serverCapabilities;
+		return this.capabilitiesService?.getCapabilities(this.providerName)?.connection;
 	}
 
 	public get connectionName(): string {
@@ -196,11 +181,11 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 
 	public isPasswordRequired(): boolean {
 		// if there is no provider capabilities metadata assume a password is not required
-		if (!this._serverCapabilities) {
+		if (!this.serverCapabilities) {
 			return false;
 		}
 
-		let optionMetadata = this._serverCapabilities.connectionOptions.find(
+		let optionMetadata = this.serverCapabilities.connectionOptions.find(
 			option => option.specialValueType === ConnectionOptionSpecialType.password)!; // i guess we are going to assume there is a password field
 		let isPasswordRequired = optionMetadata.isRequired;
 		if (this.providerName === Constants.mssqlProviderName) {
@@ -224,8 +209,8 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	 */
 	public getOptionsKey(): string {
 		let idNames = [];
-		if (this._serverCapabilities) {
-			idNames = this._serverCapabilities.connectionOptions.map(o => {
+		if (this.serverCapabilities) {
+			idNames = this.serverCapabilities.connectionOptions.map(o => {
 				if ((o.specialValueType || o.isIdentity)
 					&& o.specialValueType !== ConnectionOptionSpecialType.password
 					&& o.specialValueType !== ConnectionOptionSpecialType.connectionName) {
@@ -270,8 +255,8 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	}
 
 	public getSpecialTypeOptionName(type: string): string | undefined {
-		if (this._serverCapabilities) {
-			let optionMetadata = this._serverCapabilities.connectionOptions.find(o => o.specialValueType === type);
+		if (this.serverCapabilities) {
+			let optionMetadata = this.serverCapabilities.connectionOptions.find(o => o.specialValueType === type);
 			return !!optionMetadata ? optionMetadata.name : undefined;
 		} else {
 			return type.toString();
@@ -286,7 +271,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	}
 
 	public get authenticationTypeDisplayName(): string {
-		let optionMetadata = this._serverCapabilities ? this._serverCapabilities.connectionOptions.find(o => o.specialValueType === ConnectionOptionSpecialType.authType) : undefined;
+		let optionMetadata = this.serverCapabilities ? this.serverCapabilities.connectionOptions.find(o => o.specialValueType === ConnectionOptionSpecialType.authType) : undefined;
 		let authType = this.authenticationType;
 		let displayName: string = authType;
 
@@ -301,7 +286,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	}
 
 	public getProviderOptions(): azdata.ConnectionOption[] | undefined {
-		return this._serverCapabilities?.connectionOptions;
+		return this.serverCapabilities?.connectionOptions;
 	}
 
 	public static get idSeparator(): string {
@@ -319,8 +304,8 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 		parts.push(this.databaseName);
 		parts.push(this.authenticationTypeDisplayName);
 
-		if (this._serverCapabilities) {
-			this._serverCapabilities.connectionOptions.forEach(element => {
+		if (this.serverCapabilities) {
+			this.serverCapabilities.connectionOptions.forEach(element => {
 				if (element.specialValueType !== ConnectionOptionSpecialType.serverName &&
 					element.specialValueType !== ConnectionOptionSpecialType.databaseName &&
 					element.specialValueType !== ConnectionOptionSpecialType.authType &&

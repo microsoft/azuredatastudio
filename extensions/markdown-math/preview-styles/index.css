@@ -3,6 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+<<<<<<< HEAD:extensions/markdown-math/preview-styles/index.css
 .katex-error {
 	color: var(--vscode-editorError-foreground);
 }
+=======
+export const flatTestItemDelimiter = ' › ';
+>>>>>>> cb7b7da0a4bb2b45f0b6092e42fd1ca385938f09:src/vs/workbench/contrib/testing/browser/explorerProjections/display.ts

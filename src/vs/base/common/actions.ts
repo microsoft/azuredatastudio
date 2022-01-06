@@ -3,9 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { Emitter, Event } from 'vs/base/common/event';
+import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import * as nls from 'vs/nls';
-import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
-import { Event, Emitter } from 'vs/base/common/event';
 
 export interface ITelemetryData {
 	readonly from?: string;
@@ -30,15 +30,15 @@ export interface IAction extends IDisposable {
 	class: string | undefined;
 	enabled: boolean;
 	checked: boolean;
-	expanded: boolean | undefined; // {{SQL CARBON EDIT}}
-	run(event?: unknown): Promise<unknown>; // {{SQL CARBON EDIT}} Add promise
+	expanded?: boolean | undefined; // {{SQL CARBON EDIT}}
+	run(event?: unknown): unknown;
 }
 
 export interface IActionRunner extends IDisposable {
 	readonly onDidRun: Event<IRunEvent>;
 	readonly onBeforeRun: Event<IRunEvent>;
 
-	run(action: IAction, context?: unknown): Promise<unknown>; // {{SQL CARBON EDIT}} Add promise
+	run(action: IAction, context?: unknown): unknown;
 }
 
 export interface IActionChangeEvent {
@@ -62,9 +62,9 @@ export class Action extends Disposable implements IAction {
 	protected _enabled: boolean = true;
 	protected _checked: boolean = false;
 	protected _expanded: boolean = false; // {{SQL CARBON EDIT}}
-	protected readonly _actionCallback?: (event?: unknown) => Promise<unknown>; // {{SQL CARBON EDIT}} Add promise
+	protected readonly _actionCallback?: (event?: unknown) => unknown;
 
-	constructor(id: string, label: string = '', cssClass: string = '', enabled: boolean = true, actionCallback?: (event?: unknown) => Promise<unknown>) { // {{SQL CARBON EDIT}} Add promise
+	constructor(id: string, label: string = '', cssClass: string = '', enabled: boolean = true, actionCallback?: (event?: unknown) => unknown) {
 		super();
 		this._id = id;
 		this._label = label;
@@ -275,7 +275,6 @@ export class SubmenuAction implements IAction {
 	}
 	protected _setExpanded(value: boolean): void {
 	}
-	// {{SQL CARBON EDIT}} - End
 }
 
 export class EmptySubmenuAction extends Action {
