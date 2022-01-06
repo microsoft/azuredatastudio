@@ -11,7 +11,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { MainThreadNotebookDocuments } from 'vs/workbench/api/browser/mainThreadNotebookDocuments';
 import { NotebookDto } from 'vs/workbench/api/browser/mainThreadNotebookDto';
 import { MainThreadNotebookEditors } from 'vs/workbench/api/browser/mainThreadNotebookEditors';
-import { extHostCustomer } from 'vs/workbench/api/common/extHostCustomers';
+// import { extHostCustomer } from 'vs/workbench/api/common/extHostCustomers'; {{SQL CARBON EDIT}} Disable VS Code notebooks
 import { editorGroupToColumn } from 'vs/workbench/services/editor/common/editorGroupColumn';
 import { getNotebookEditorFromEditorPane, IActiveNotebookEditor, INotebookEditor } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
 import { INotebookEditorService } from 'vs/workbench/contrib/notebook/browser/notebookEditorService';
@@ -70,7 +70,7 @@ class NotebookAndEditorState {
 	}
 }
 
-@extHostCustomer
+// @extHostCustomer {{SQL CARBON EDIT}} Disable VS Code notebooks
 export class MainThreadNotebooksAndEditors {
 
 	private readonly _onDidAddNotebooks = new Emitter<NotebookTextModel[]>();

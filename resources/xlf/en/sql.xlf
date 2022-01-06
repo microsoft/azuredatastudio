@@ -222,6 +222,9 @@
     <trans-unit id="updateLocale">
       <source xml:lang="en">Would you like to change Azure Data Studio's UI language to {0} and restart?</source>
     </trans-unit>
+    <trans-unit id="vscodeFunctionalityNotSupportedError">
+      <source xml:lang="en">This VS Code functionality is not supported in Azure Data Studio.</source>
+    </trans-unit>
     <trans-unit id="watermark.newNotebook">
       <source xml:lang="en">New Notebook</source>
     </trans-unit>
@@ -591,6 +594,11 @@
   <file original="src/sql/workbench/api/common/extHostNotebookDocumentsAndEditors" source-language="en" datatype="plaintext"><body>
     <trans-unit id="navigationProviderRequired">
       <source xml:lang="en">A NavigationProvider with valid providerId must be passed to this method</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/api/common/vscodeExecuteProvider" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="errorStartBeforeReady">
+      <source xml:lang="en">Cannot start a session, the manager is not yet initialized</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/browser/actions" source-language="en" datatype="plaintext"><body>
@@ -5229,6 +5237,9 @@ Error: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/notebook/browser/models/clientSession" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="NoExecuteManager">
+      <source xml:lang="en">Server could not start because a provider was not defined for this notebook file type.</source>
+    </trans-unit>
     <trans-unit id="ServerNotStarted">
       <source xml:lang="en">Server did not start for unknown reason</source>
     </trans-unit>
@@ -5278,11 +5289,20 @@ Error: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/notebook/browser/notebookServiceImpl" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="executeProviderTimeout">
+      <source xml:lang="en">Waiting for Execute Provider availability timed out for notebook provider '{0}'</source>
+    </trans-unit>
     <trans-unit id="notebookServiceNoProvider">
       <source xml:lang="en">Notebook provider does not exist</source>
     </trans-unit>
     <trans-unit id="notebookUriNotDefined">
       <source xml:lang="en">No URI was passed when creating a notebook manager</source>
+    </trans-unit>
+    <trans-unit id="serializationProviderTimeout">
+      <source xml:lang="en">Waiting for Serialization Provider availability timed out for notebook provider '{0}'</source>
+    </trans-unit>
+    <trans-unit id="standardKernelsTimeout">
+      <source xml:lang="en">Waiting for Standard Kernels availability timed out for notebook provider '{0}'</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/notebook/browser/notebookViews/notebookViewModel" source-language="en" datatype="plaintext"><body>
@@ -5358,6 +5378,9 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="carbon.extension.contributes.notebook.standardKernels">
       <source xml:lang="en">What kernels should be standard with this notebook provider</source>
+    </trans-unit>
+    <trans-unit id="providerNotInRegistryError">
+      <source xml:lang="en">The specified provider '{0}' is not present in the notebook registry.</source>
     </trans-unit>
     <trans-unit id="vscode.extension.contributes.notebook.languagemagics">
       <source xml:lang="en">Contributes notebook language.</source>

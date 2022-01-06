@@ -36,12 +36,12 @@ suite('Notebook Input', function (): void {
 	const mockNotebookService = TypeMoq.Mock.ofType<INotebookService>(NotebookServiceStub);
 	mockNotebookService.setup(s => s.getProvidersForFileType(TypeMoq.It.isAny())).returns(() => [testProvider]);
 	mockNotebookService.setup(s => s.getStandardKernelsForProvider(TypeMoq.It.isAny())).returns(() => {
-		return [{
+		return Promise.resolve([{
 			name: 'TestName',
 			displayName: 'TestDisplayName',
 			connectionProviderIds: ['TestId'],
 			notebookProvider: testProvider
-		}];
+		}]);
 	});
 	let testManager: ISerializationManager = {
 		providerId: testProvider,

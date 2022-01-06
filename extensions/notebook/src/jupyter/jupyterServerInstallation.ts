@@ -885,8 +885,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 					name: 'python3'
 				}
 			},
-			nbformat: 4,
-			nbformat_minor: 5
+			nbformat: constants.NBFORMAT,
+			nbformat_minor: constants.NBFORMAT_MINOR
 		};
 
 		await vscode.commands.executeCommand('_notebook.command.new', {
