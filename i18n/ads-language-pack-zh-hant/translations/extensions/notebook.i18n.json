@@ -31,7 +31,7 @@
 			"contentFolder": "內容資料夾",
 			"contentFolderOptional": "內容資料夾 (選擇性)",
 			"create": "建立",
-			"duplicateFileError": "檔案 {0} 已存在於目的地資料夾 {1} 中 \r\n 檔案已重新命名為 {2}，以避免資料遺失。",
+			"duplicateFileError": "檔案 {0} 已存在於目的地資料夾 {1} 中\r\n 檔案已重新命名為 {2}，以避免資料遺失。",
 			"editBookError": "編輯 Jupyter 書籍 {0} 時發生錯誤: {1}",
 			"fileExtension": "副檔名",
 			"fileName": "檔案名稱",

@@ -17,6 +17,7 @@
 			"fileDirname": "O nome do diretório do arquivo aberto no momento",
 			"fileExtname": "A extensão do arquivo aberto no momento",
 			"lineNumber": "O número de linha selecionado no momento no arquivo ativo",
+			"pathSeparator": "O caractere usado pelo sistema operacional para separar componentes em caminhos de arquivo",
 			"relativeFile": "O arquivo aberto no momento em relação a ${workspaceFolder}",
 			"relativeFileDirname": "O nome do diretório do arquivo aberto no momento em relação a ${workspaceFolder}",
 			"selectedText": "O texto selecionado no momento no arquivo ativo",
