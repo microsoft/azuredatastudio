@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { MigrationMode, MigrationStateModel, MigrationTargetType, NetworkContainerType, NetworkShare, Page, StateChangeEvent } from '../models/stateMachine';
+import { MigrationMode, MigrationStateModel, MigrationTargetType, NetworkContainerType, Page, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import { createHeadingTextComponent, createInformationRow, createLabelTextComponent } from './wizardController';
 import { getResourceGroupFromId, Subscription } from '../api/azure';
@@ -49,7 +49,7 @@ export class SummaryPage extends MigrationWizardPage {
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.Summary) {
 			this.migrationStateModel._databaseBackup.networkContainerType = <NetworkContainerType>this.migrationStateModel.savedInfo.networkContainerType;
-			this.migrationStateModel._databaseBackup.networkShare = <NetworkShare>this.migrationStateModel.savedInfo.networkShare;
+			this.migrationStateModel._databaseBackup.networkShares = this.migrationStateModel.savedInfo.networkShares;
 			this.migrationStateModel._databaseBackup.subscription = <Subscription>this.migrationStateModel.savedInfo.targetSubscription;
 			this.migrationStateModel._databaseBackup.blobs = this.migrationStateModel.savedInfo.blobs;
 			this.migrationStateModel._targetDatabaseNames = this.migrationStateModel.savedInfo.targetDatabaseNames;
@@ -158,13 +158,12 @@ export class SummaryPage extends MigrationWizardPage {
 				flexContainer.addItems(
 					[
 						createInformationRow(this._view, constants.BACKUP_LOCATION, constants.NETWORK_SHARE),
-						createInformationRow(this._view, constants.NETWORK_SHARE, this.migrationStateModel._databaseBackup.networkShare.networkShareLocation),
-						createInformationRow(this._view, constants.USER_ACCOUNT, this.migrationStateModel._databaseBackup.networkShare.windowsUser),
+						createInformationRow(this._view, constants.USER_ACCOUNT, this.migrationStateModel._databaseBackup.networkShares[0].windowsUser),
 						await createHeadingTextComponent(this._view, constants.AZURE_STORAGE_ACCOUNT_TO_UPLOAD_BACKUPS),
 						createInformationRow(this._view, constants.SUBSCRIPTION, this.migrationStateModel._databaseBackup.subscription.name),
-						createInformationRow(this._view, constants.LOCATION, this.migrationStateModel._databaseBackup.networkShare.storageAccount.location),
-						createInformationRow(this._view, constants.RESOURCE_GROUP, this.migrationStateModel._databaseBackup.networkShare.storageAccount.resourceGroup!),
-						createInformationRow(this._view, constants.STORAGE_ACCOUNT, this.migrationStateModel._databaseBackup.networkShare.storageAccount.name!),
+						createInformationRow(this._view, constants.LOCATION, this.migrationStateModel._databaseBackup.networkShares[0].storageAccount?.location),
+						createInformationRow(this._view, constants.RESOURCE_GROUP, this.migrationStateModel._databaseBackup.networkShares[0].storageAccount?.resourceGroup!),
+						createInformationRow(this._view, constants.STORAGE_ACCOUNT, this.migrationStateModel._databaseBackup.networkShares[0].storageAccount?.name!),
 					]
 				);
 				break;

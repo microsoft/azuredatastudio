@@ -31,6 +31,12 @@ import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { TestDialogService } from 'vs/platform/dialogs/test/common/testDialogService';
+import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { UndoRedoService } from 'vs/platform/undoRedo/common/undoRedoService';
+import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
+import { SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
+import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
 
 let initialNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -50,15 +56,17 @@ let initialNotebookContent: nb.INotebookContents = {
 			language: 'sql'
 		},
 	},
-	nbformat: 4,
-	nbformat_minor: 5
+	nbformat: NBFORMAT,
+	nbformat_minor: NBFORMAT_MINOR
 };
 
 let defaultUri = URI.file('/some/path.ipynb');
 let notificationService: TypeMoq.Mock<INotificationService>;
 let capabilitiesService: TypeMoq.Mock<ICapabilitiesService>;
+let dialogService: TypeMoq.Mock<IDialogService>;
 let instantiationService: IInstantiationService;
 let configurationService: IConfigurationService;
+let undoRedoService: IUndoRedoService;
 
 suite('NotebookViews', function (): void {
 	let defaultViewName = 'Default New View';
@@ -145,9 +153,12 @@ suite('NotebookViews', function (): void {
 
 	function setupServices() {
 		mockSessionManager = TypeMoq.Mock.ofType(SessionManager);
+		executeManagers[0].providerId = SQL_NOTEBOOK_PROVIDER;
 		executeManagers[0].sessionManager = mockSessionManager.object;
 		notificationService = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService, TypeMoq.MockBehavior.Loose);
 		capabilitiesService = TypeMoq.Mock.ofType<ICapabilitiesService>(TestCapabilitiesService);
+		dialogService = TypeMoq.Mock.ofType<IDialogService>(TestDialogService, TypeMoq.MockBehavior.Loose);
+		undoRedoService = new UndoRedoService(dialogService.object, notificationService.object);
 		memento = TypeMoq.Mock.ofType(Memento, TypeMoq.MockBehavior.Loose, '');
 		memento.setup(x => x.getMemento(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => void 0);
 		queryConnectionService = TypeMoq.Mock.ofType(TestConnectionManagementService, TypeMoq.MockBehavior.Loose, memento.object, undefined, new TestStorageService());
@@ -176,7 +187,7 @@ suite('NotebookViews', function (): void {
 		mockContentManager.setup(c => c.loadContent()).returns(() => Promise.resolve(initialNotebookContent));
 		defaultModelOptions.contentLoader = mockContentManager.object;
 
-		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService, undefined);
+		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService, undoRedoService, undefined);
 		await model.loadContents();
 		await model.requestModelLoad();
 

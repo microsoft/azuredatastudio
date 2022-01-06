@@ -41,13 +41,13 @@ suite('notebookUtils', function (): void {
 
 		// getStandardKernelsForProvider
 		let returnHandler = (provider) => {
+			let result = undefined;
 			if (provider === testProvider) {
-				return [testKernel];
+				result = [testKernel];
 			} else if (provider === SQL_NOTEBOOK_PROVIDER) {
-				return [sqlStandardKernel];
-			} else {
-				return undefined;
+				result = [sqlStandardKernel];
 			}
+			return Promise.resolve(result);
 		};
 		mockNotebookService.setup(n => n.getStandardKernelsForProvider(TypeMoq.It.isAnyString())).returns(returnHandler);
 		mockNotebookService.setup(n => n.getStandardKernelsForProvider(TypeMoq.It.isAnyString())).returns(returnHandler);
@@ -91,19 +91,19 @@ suite('notebookUtils', function (): void {
 	test('getStandardKernelsForProvider Test', async function (): Promise<void> {
 		setupMockNotebookService();
 
-		let result = getStandardKernelsForProvider(undefined, undefined);
+		let result = await getStandardKernelsForProvider(undefined, undefined);
 		assert.deepStrictEqual(result, []);
 
-		result = getStandardKernelsForProvider(undefined, mockNotebookService.object);
+		result = await getStandardKernelsForProvider(undefined, mockNotebookService.object);
 		assert.deepStrictEqual(result, []);
 
-		result = getStandardKernelsForProvider('testProvider', undefined);
+		result = await getStandardKernelsForProvider('testProvider', undefined);
 		assert.deepStrictEqual(result, []);
 
-		result = getStandardKernelsForProvider('NotARealProvider', mockNotebookService.object);
+		result = await getStandardKernelsForProvider('NotARealProvider', mockNotebookService.object);
 		assert.deepStrictEqual(result, [Object.assign({ notebookProvider: 'NotARealProvider' }, sqlStandardKernel)]);
 
-		result = getStandardKernelsForProvider('testProvider', mockNotebookService.object);
+		result = await getStandardKernelsForProvider('testProvider', mockNotebookService.object);
 		assert.deepStrictEqual(result, [<IStandardKernelWithProvider>{
 			name: 'testName',
 			displayName: 'testDisplayName',

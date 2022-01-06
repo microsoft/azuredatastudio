@@ -131,6 +131,11 @@ export class DeployService {
 			}
 
 			await this.verifyDocker();
+			this.logToOutput(constants.dockerImageMessage);
+			this.logToOutput(profile.localDbSetting.dockerBaseImage);
+
+			this.logToOutput(constants.dockerImageEulaMessage);
+			this.logToOutput(profile.localDbSetting.dockerBaseImageEula);
 
 			const imageSpec = this.getDockerImageSpec(project.projectFileName, profile.localDbSetting.dockerBaseImage);
 
