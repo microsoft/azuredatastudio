@@ -98,7 +98,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			notificationHandle.updateMessage(localize('tableDesigner.generatingScriptCompleted', "Script generated."));
 		} catch (error) {
 			notificationHandle.updateSeverity(Severity.Error);
-			notificationHandle.updateMessage(localize('tableDesigner.generateScriptError', "An error occured while generating script: {0}", error?.message ?? error));
+			notificationHandle.updateMessage(localize('tableDesigner.generateScriptError', "An error occured while generating the script: {0}", error?.message ?? error));
 			this.updateState(this.valid, this.dirty);
 		}
 	}

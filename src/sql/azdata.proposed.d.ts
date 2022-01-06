@@ -1020,7 +1020,7 @@ declare module 'azdata' {
 			generateScript(table: TableInfo): Thenable<string>;
 
 			/**
-			 * Generate preview report for the changes.
+			 * Generate preview report describing the changes to be made.
 			 * @param table the table information
 			 */
 			generatePreviewReport(table: TableInfo): Thenable<string>;

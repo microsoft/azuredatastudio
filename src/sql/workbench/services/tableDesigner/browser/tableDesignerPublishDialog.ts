@@ -72,7 +72,7 @@ export class TableDesignerPublishDialog extends Modal {
 	}
 
 	protected renderBody(container: HTMLElement) {
-		const body = DOM.append(container, DOM.$('.table-designer-confirmation-dialog'));
+		const body = DOM.append(container, DOM.$('.table-designer-publish-dialog'));
 		body.innerText = this._report;
 	}
 
