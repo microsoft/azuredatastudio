@@ -74,6 +74,10 @@ declare module 'vscode-mssql' {
          */
         getDatabaseNameFromTreeNode(node: ITreeNodeInfo): string;
 
+		/**
+         * Get the connection string for the provided connection ID
+       	 */
+		getConnectionString(connectionUri: string, includePassword: boolean): Promise<string>;
     }
 
     /**

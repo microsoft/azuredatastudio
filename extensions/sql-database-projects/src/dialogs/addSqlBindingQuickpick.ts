@@ -10,6 +10,8 @@ import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/t
 export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, packageHelper: PackageHelper): Promise<void> {
 	TelemetryReporter.sendActionEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.startAddSqlBinding);
 
+	const vscodeMssqlApi = await utils.getVscodeMssqlApi();
+
 	if (!uri) {
 		// this command only shows in the command palette when the active editor is a .cs file, so we can safely assume that's the scenario
 		// when this is called without a uri
@@ -146,28 +148,30 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 					continue;
 				}
 
-				const newConnectionStringValue = await vscode.window.showInputBox(
-					{
-						title: constants.enterConnectionString,
-						ignoreFocusOut: true,
-						value: 'Server=localhost;Initial Catalog={db_name};User ID=sa;Password={your_password};Persist Security Info=False',
-						validateInput: input => input ? undefined : constants.valueMustNotBeEmpty
-					}
-				) ?? '';
-
-				if (!newConnectionStringValue) {
-					// go back to select setting quickpick if user escapes from inputting the value in case they changed their mind
-					continue;
+				// get connection string for sql server
+				let connectionString: string = '';
+				const connectionInfo = await vscodeMssqlApi.promptForConnection(true);
+				if (!connectionInfo) {
+					// User cancelled
+					return;
 				}
-
+				const connectionUri = await vscodeMssqlApi.connect(connectionInfo);
 				try {
-					const success = await azureFunctionsUtils.setLocalAppSetting(path.dirname(projectUri.fsPath), newConnectionStringSettingName, newConnectionStringValue);
-					if (success) {
-						connectionStringSettingName = newConnectionStringSettingName;
+					connectionString = await vscodeMssqlApi.getConnectionString(connectionUri, false);
+					try {
+						const success = await azureFunctionsUtils.setLocalAppSetting(path.dirname(projectUri.fsPath), newConnectionStringSettingName, connectionString);
+						if (success) {
+							connectionStringSettingName = newConnectionStringSettingName;
+						}
+					} catch (e) {
+						// display error message and show select setting quickpick again
+						void vscode.window.showErrorMessage(utils.getErrorMessage(e));
 					}
+
 				} catch (e) {
-					// display error message and show select setting quickpick again
-					void vscode.window.showErrorMessage(utils.getErrorMessage(e));
+					// go back to select setting quickpick if user escapes from inputting the value in case they changed their mind
+					console.warn(e);
+					continue;
 				}
 				// If user cancels out of this or doesn't want to overwrite an existing setting
 				// just return them to the select setting quickpick in case they changed their mind
