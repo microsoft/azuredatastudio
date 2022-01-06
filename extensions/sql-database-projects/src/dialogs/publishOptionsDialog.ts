@@ -18,7 +18,7 @@ export class PublishOptionsDialog {
 	private descriptionHeading!: azdata.TableComponent;
 	private descriptionText!: azdata.TextComponent;
 	private optionsTable!: azdata.TableComponent;
-	private optionsModel!: DeployOptionsModel;
+	private optionsModel: DeployOptionsModel;
 	private optionsFlexBuilder!: azdata.FlexContainer;
 
 
