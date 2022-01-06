@@ -4,11 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { DisposableStore } from 'vs/base/common/lifecycle';
-import { ExtHostContext, ExtHostInteractiveShape, IExtHostContext, MainContext, MainThreadInteractiveShape } from 'vs/workbench/api/common/extHost.protocol';
-import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
+import { ExtHostContext, ExtHostInteractiveShape, IExtHostContext, MainThreadInteractiveShape } from 'vs/workbench/api/common/extHost.protocol'; // {{SQL CARBON EDIT}} Disable unused
+// import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers'; {{SQL CARBON EDIT}} Disable unused
 import { IInteractiveDocumentService } from 'vs/workbench/contrib/interactive/browser/interactiveDocumentService';
 
-@extHostNamedCustomer(MainContext.MainThreadInteractive)
+// @extHostNamedCustomer(MainContext.MainThreadInteractive)
 export class MainThreadInteractive implements MainThreadInteractiveShape {
 	private readonly _proxy: ExtHostInteractiveShape;
 

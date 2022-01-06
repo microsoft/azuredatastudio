@@ -188,7 +188,8 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 		ExtHostContext.ExtHostNotebookDocuments,
 		ExtHostContext.ExtHostNotebookEditors,
 		ExtHostContext.ExtHostNotebookKernels,
-		ExtHostContext.ExtHostNotebookRenderers
+		ExtHostContext.ExtHostNotebookRenderers,
+		ExtHostContext.ExtHostInteractive
 	]);
 	const expected: ProxyIdentifier<any>[] = values(ExtHostContext).filter(v => !filteredProxies.has(v));
 

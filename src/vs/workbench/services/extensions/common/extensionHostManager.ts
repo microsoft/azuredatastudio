@@ -245,7 +245,8 @@ class ExtensionHostManager extends Disposable implements IExtensionHostManager {
 			MainContext.MainThreadNotebookDocuments,
 			MainContext.MainThreadNotebookEditors,
 			MainContext.MainThreadNotebookKernels,
-			MainContext.MainThreadNotebookRenderers
+			MainContext.MainThreadNotebookRenderers,
+			MainContext.MainThreadInteractive
 		];
 		const expected: ProxyIdentifier<any>[] = Object.keys(MainContext).map((key) => (<any>MainContext)[key]).filter(v => !filtered.some(x => x === v));
 		this._rpcProtocol.assertRegistered(expected);
