@@ -12,7 +12,7 @@ import { asArray } from 'vs/base/common/arrays';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { isArray } from 'vs/base/common/types';
-import { isWindows } from 'vs/base/common/platform';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { formatDocumentWithSelectedProvider, FormattingMode } from 'vs/editor/contrib/format/format';
 import * as nls from 'vs/nls';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -35,7 +35,7 @@ export class FileQueryResultsWriter implements IQueryResultsWriter {
 	private readonly totalExecutionTimeMessage: string;
 	private readonly rowAffectedMessage: string;
 	private readonly rowsAffectedMessage: string;
-	private readonly newLineEscapeSequence: string;
+	private readonly newLineEscapeSequence: string = this.textResourcePropertiesService.getEOL(undefined);
 
 	constructor(
 		private runner: QueryRunner,
@@ -43,13 +43,13 @@ export class FileQueryResultsWriter implements IQueryResultsWriter {
 		@IUntitledTextEditorService private readonly untitledEditorService: IUntitledTextEditorService,
 		@IEditorService private readonly editorService: IEditorService,
 		@ILogService private readonly logService: ILogService,
-		@IConfigurationService private configurationService: IConfigurationService
+		@IConfigurationService private configurationService: IConfigurationService,
+		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService
 	) {
 		this.startedExecutingQueryMessage = nls.localize('query.message.startingExecutionQuery', 'Started executing query');
 		this.totalExecutionTimeMessage = nls.localize('query.message.totalExecutionTime', 'Total execution time');
 		this.rowAffectedMessage = nls.localize('query.message.rowAffected', 'row affected');
 		this.rowsAffectedMessage = nls.localize('query.message.rowsAffected', 'rows affected');
-		this.newLineEscapeSequence = isWindows ? '\r\n' : '\n';
 	}
 
 	public onQueryStart() {
@@ -58,12 +58,7 @@ export class FileQueryResultsWriter implements IQueryResultsWriter {
 
 	public onResultSet(resultSet: ResultSetSummary | ResultSetSummary[]) {
 		this.numQueriesToFormat++;
-		let resultsToAdd: ResultSetSummary[];
-		if (!Array.isArray(resultSet)) {
-			resultsToAdd = [resultSet];
-		} else {
-			resultsToAdd = asArray(resultSet);
-		}
+		let resultsToAdd = asArray(resultSet);
 
 		if (this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.streaming) {
 			this.addResultSet(resultsToAdd);
@@ -76,12 +71,7 @@ export class FileQueryResultsWriter implements IQueryResultsWriter {
 	}
 
 	public async updateResultSet(resultSet: ResultSetSummary | ResultSetSummary[]) {
-		let resultSetSummaries: ResultSetSummary[];
-		if (!Array.isArray(resultSet)) {
-			resultSetSummaries = [resultSet];
-		} else {
-			resultSetSummaries = resultSet.splice(0);
-		}
+		let resultSetSummaries = asArray(resultSet);
 
 		if (this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.streaming) {
 			for (let resultSetSummary of resultSetSummaries) {
@@ -144,7 +134,7 @@ export class FileQueryResultsWriter implements IQueryResultsWriter {
 				continue;
 			}
 
-			const table = this.instantiationService.createInstance(Table, this.runner, resultSetSummary, this);
+			const table = this.instantiationService.createInstance(Table, this.runner, resultSetSummary, this.textResourcePropertiesService, this);
 			this.tables.push(table);
 		}
 	}
@@ -206,6 +196,7 @@ class Table<T> extends Disposable {
 	constructor(
 		private runner: QueryRunner,
 		public resultSet: ResultSetSummary,
+		private readonly textResourcePropertiesService: ITextResourcePropertiesService,
 		private fileQueryResultsWriter: FileQueryResultsWriter,
 		@IInstantiationService private readonly instantiationService: IInstantiationService
 	) {
@@ -267,7 +258,7 @@ class Table<T> extends Disposable {
 		let formattedTable = this.formatTableHeader(columnWidths);
 		formattedTable = formattedTable.concat(this.formatData(unformattedData, columnWidths));
 
-		return formattedTable.join(isWindows ? '\r\n' : '\n');
+		return formattedTable.join(this.textResourcePropertiesService.getEOL(undefined));
 	}
 
 	private calculateColumnWidths(): number[] {
