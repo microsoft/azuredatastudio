@@ -5,15 +5,16 @@
 
 import { hyperLinkFormatter, textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
-import { IQueryResultsWriter } from 'sql/workbench/contrib/query/browser/IQueryResultsWriter';
 import { IGridDataProvider } from 'sql/workbench/services/query/common/gridDataProvider';
-import { IQueryMessage, ResultSetSummary } from 'sql/workbench/services/query/common/query';
+import { IQueryMessage, ResultSetSummary, IQueryResultsWriter } from 'sql/workbench/services/query/common/query';
 import QueryRunner, { QueryGridDataProvider } from 'sql/workbench/services/query/common/queryRunner';
+import { asArray } from 'vs/base/common/arrays';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { isArray } from 'vs/base/common/types';
+import { isWindows } from 'vs/base/common/platform';
 import { formatDocumentWithSelectedProvider, FormattingMode } from 'vs/editor/contrib/format/format';
-import { localize } from 'vs/nls';
+import * as nls from 'vs/nls';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -29,17 +30,26 @@ export class FileQueryResultsWriter implements IQueryResultsWriter {
 	private queryContainsError: boolean = false;
 	private closingMessageIncluded: boolean = false;
 	private hasCreatedResultsFile: boolean = false;
-	private runner: QueryRunner;
+
+	private readonly startedExecutingQueryMessage: string;
+	private readonly totalExecutionTimeMessage: string;
+	private readonly rowAffectedMessage: string;
+	private readonly rowsAffectedMessage: string;
+	private readonly newLineEscapeSequence: string;
 
 	constructor(
-		runner: QueryRunner,
+		private runner: QueryRunner,
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@IUntitledTextEditorService private readonly untitledEditorService: IUntitledTextEditorService,
 		@IEditorService private readonly editorService: IEditorService,
 		@ILogService private readonly logService: ILogService,
 		@IConfigurationService private configurationService: IConfigurationService
 	) {
-		this.runner = runner;
+		this.startedExecutingQueryMessage = nls.localize('query.message.startingExecutionQuery', 'Started executing query');
+		this.totalExecutionTimeMessage = nls.localize('query.message.totalExecutionTime', 'Total execution time');
+		this.rowAffectedMessage = nls.localize('query.message.rowAffected', 'row affected');
+		this.rowsAffectedMessage = nls.localize('query.message.rowsAffected', 'rows affected');
+		this.newLineEscapeSequence = isWindows ? '\r\n' : '\n';
 	}
 
 	public onQueryStart() {
@@ -52,7 +62,7 @@ export class FileQueryResultsWriter implements IQueryResultsWriter {
 		if (!Array.isArray(resultSet)) {
 			resultsToAdd = [resultSet];
 		} else {
-			resultsToAdd = resultSet.splice(0);
+			resultsToAdd = asArray(resultSet);
 		}
 
 		if (this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.streaming) {
@@ -93,7 +103,7 @@ export class FileQueryResultsWriter implements IQueryResultsWriter {
 	public async onMessage(incomingMessage: IQueryMessage | IQueryMessage[]) {
 		if (isArray(incomingMessage)) {
 			incomingMessage.forEach(m => {
-				if (m.message.includes('Started executing query')) {
+				if (m.message.includes(this.startedExecutingQueryMessage)) {
 					return;
 				}
 
@@ -101,7 +111,7 @@ export class FileQueryResultsWriter implements IQueryResultsWriter {
 					this.queryContainsError = true;
 				}
 
-				if (m.message.includes('Total execution time')) {
+				if (m.message.includes(this.totalExecutionTimeMessage)) {
 					this.closingMessageIncluded = true;
 				}
 
@@ -128,8 +138,6 @@ export class FileQueryResultsWriter implements IQueryResultsWriter {
 	}
 
 	private addResultSet(resultSetSummaries: ResultSetSummary[]) {
-		const tables: Array<Table<any>> = [];
-
 		for (const resultSetSummary of resultSetSummaries) {
 			// ensure we aren't adding a resultSet that has already been added
 			if (this.tables.find(t => t.resultSet.batchId === resultSetSummary.batchId && t.resultSet.id === resultSetSummary.id)) {
@@ -137,34 +145,32 @@ export class FileQueryResultsWriter implements IQueryResultsWriter {
 			}
 
 			const table = this.instantiationService.createInstance(Table, this.runner, resultSetSummary, this);
-			tables.push(table);
+			this.tables.push(table);
 		}
-
-		this.tables = this.tables.concat(tables);
 	}
 
 	public async aggregateQueryResults(results: string) {
 		this.numQueriesToFormat--;
 		this.formattedQueryResults.push(results);
 
-		if (this.numQueriesToFormat === 0) {
+		if (this.numQueriesToFormat === 0 && !this.hasCreatedResultsFile) {
 			await this.createResultsFile();
 		}
 	}
 
-	public async createResultsFile() {
+	private async createResultsFile() {
 		let fileContent = this.mergeQueryResultsWithMessages();
 
 		let fileData = fileContent.map(m => {
-			if (m.includes('rows affected') || m.includes('row affected')) {
-				return '\r\n' + m + '\r\n';
+			if (m.includes(this.rowsAffectedMessage) || m.includes(this.rowAffectedMessage)) {
+				return this.newLineEscapeSequence + m + this.newLineEscapeSequence;
 			}
-			else if (m.includes('Total execution time:')) {
-				return '\r\n' + m;
+			else if (m.includes(this.totalExecutionTimeMessage)) {
+				return this.newLineEscapeSequence + m;
 			}
 
 			return m;
-		}).join('\r\n');
+		}).join(this.newLineEscapeSequence);
 
 		const input = this.untitledEditorService.create({ initialValue: fileData });
 		await input.resolve();
@@ -181,8 +187,8 @@ export class FileQueryResultsWriter implements IQueryResultsWriter {
 
 		// Merges query result set before respective '# row(s) affected' message
 		while (extractedMessages.length > 0 && this.formattedQueryResults.length > 0) {
-			if (extractedMessages[0]?.includes('rows affected') || extractedMessages[0]?.includes('row affected')) {
-				content.push('\r\n' + this.formattedQueryResults.shift());
+			if (extractedMessages[0]?.includes(this.rowsAffectedMessage) || extractedMessages[0]?.includes(this.rowAffectedMessage)) {
+				content.push(this.newLineEscapeSequence + this.formattedQueryResults.shift());
 			}
 
 			content.push(extractedMessages.shift());
@@ -193,10 +199,9 @@ export class FileQueryResultsWriter implements IQueryResultsWriter {
 	}
 }
 
-export class Table<T> extends Disposable {
-	public isOnlyTable: boolean = true;
-	public gridDataProvider: IGridDataProvider;
-	public columns: Slick.Column<T>[];
+class Table<T> extends Disposable {
+	private gridDataProvider: IGridDataProvider;
+	private columns: Slick.Column<T>[];
 
 	constructor(
 		private runner: QueryRunner,
@@ -212,7 +217,7 @@ export class Table<T> extends Disposable {
 			return <Slick.Column<T>>{
 				id: index.toString(),
 				name: col.columnName === 'Microsoft SQL Server 2005 XML Showplan'
-					? localize('xmlShowplan', "XML Showplan")
+					? nls.localize('xmlShowplanColumnName', "XML Showplan")
 					: escape(col.columnName),
 				field: index.toString(),
 				formatter: isLinked ? hyperLinkFormatter : textFormatter,
@@ -262,7 +267,7 @@ export class Table<T> extends Disposable {
 		let formattedTable = this.formatTableHeader(columnWidths);
 		formattedTable = formattedTable.concat(this.formatData(unformattedData, columnWidths));
 
-		return formattedTable.join('\r\n');
+		return formattedTable.join(isWindows ? '\r\n' : '\n');
 	}
 
 	private calculateColumnWidths(): number[] {

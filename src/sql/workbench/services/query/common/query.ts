@@ -76,3 +76,11 @@ export interface ICellValue {
 	isNull?: boolean;
 	invariantCultureDisplayValue?: string;
 }
+
+export interface IQueryResultsWriter {
+	onQueryStart(): void | Promise<void>;
+	onResultSet(resultSet: ResultSetSummary | ResultSetSummary[]): void | Promise<void>;
+	updateResultSet(resultSet: ResultSetSummary | ResultSetSummary[]): void | Promise<void>;
+	onMessage(incomingMessage: IQueryMessage | IQueryMessage[], setInput?: boolean): void | Promise<void>;
+	reset(): void;
+}

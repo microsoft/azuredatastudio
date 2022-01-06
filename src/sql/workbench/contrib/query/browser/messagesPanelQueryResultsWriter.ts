@@ -4,8 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IResultMessageIntern, Model } from 'sql/workbench/contrib/query/browser/messagePanel';
-import { IQueryResultsWriter } from 'sql/workbench/contrib/query/browser/IQueryResultsWriter';
-import { IQueryMessage } from 'sql/workbench/services/query/common/query';
+import { IQueryMessage, IQueryResultsWriter } from 'sql/workbench/services/query/common/query';
 import { IDataTreeViewState } from 'vs/base/browser/ui/tree/dataTree';
 import { FuzzyScore } from 'vs/base/common/filters';
 import { isArray } from 'vs/base/common/types';

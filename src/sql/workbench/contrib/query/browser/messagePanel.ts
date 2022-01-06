@@ -5,7 +5,7 @@
 
 import 'vs/css!./media/messagePanel';
 import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
-import { IQueryMessage, ResultSetSummary } from 'sql/workbench/services/query/common/query';
+import { IQueryMessage, ResultSetSummary, IQueryResultsWriter } from 'sql/workbench/services/query/common/query';
 
 import { ITreeRenderer, IDataSource, ITreeNode, ITreeContextMenuEvent } from 'vs/base/browser/ui/tree/tree';
 import { generateUuid } from 'vs/base/common/uuid';
@@ -35,7 +35,6 @@ import { IRange } from 'vs/editor/common/core/range';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 import { MessagesPanelQueryResultsWriter } from 'sql/workbench/contrib/query/browser/messagesPanelQueryResultsWriter';
-import { IQueryResultsWriter } from 'sql/workbench/contrib/query/browser/IQueryResultsWriter';
 import { QueryResultsWriterStatus } from 'sql/workbench/contrib/query/common/queryResultsDisplayStatus';
 import { FileQueryResultsWriter } from 'sql/workbench/contrib/query/browser/fileQueryResultsWriter';
 
