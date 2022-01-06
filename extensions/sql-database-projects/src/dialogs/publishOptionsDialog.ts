@@ -38,10 +38,10 @@ export class PublishOptionsDialog {
 		this.initializeDialog();
 
 		this.dialog.okButton.label = constants.OkButtonText;
-		this.dialog.okButton.onClick(async () => await this.execute());
+		this.dialog.okButton.onClick(async () => this.execute());
 
 		this.dialog.cancelButton.label = constants.CancelButtonText;
-		this.dialog.cancelButton.onClick(async () => await this.cancel());
+		this.dialog.cancelButton.onClick(async () => this.cancel());
 
 		let resetButton = azdata.window.createButton(constants.ResetButtonText);
 		resetButton.onClick(async () => await this.reset());
