@@ -891,6 +891,9 @@ declare module 'azdata' {
 	}
 
 	export interface QueryExecuteResultSetNotificationParams {
+		/**
+		 * Contains query plans returned by the database in ResultSets.
+		 */
 		executionPlans: QueryPlanGraph[];
 	}
 
