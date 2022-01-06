@@ -438,7 +438,6 @@ export class QueryResultsView extends Disposable {
 				this._panelView.pushTab(this.qp2Tab);
 			}
 			this._panelView.showTab(this.qp2Tab.identifier);
-
 		}
 	}
 
@@ -458,7 +457,6 @@ export class QueryResultsView extends Disposable {
 			this._panelView.removeTab(this.qp2Tab.identifier);
 		}
 	}
-
 
 	public hideDynamicViewModelTabs() {
 		this.dynamicModelViewTabs.forEach(tab => {

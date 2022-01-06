@@ -11,7 +11,7 @@ import { localize } from 'vs/nls';
 
 export class PropertiesAction extends Action {
 	public static ID = 'qp.propertiesAction';
-	public static LABEL = localize('selectAll', "Properties");
+	public static LABEL = localize('queryPlanPropertiesActionLabel', "Properties");
 
 	constructor() {
 		super(PropertiesAction.ID, PropertiesAction.LABEL, Codicon.listUnordered.classNames);
