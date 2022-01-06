@@ -173,8 +173,6 @@ suite('Notebook Input', function (): void {
 	});
 
 	test('Matches other input', async function (): Promise<void> {
-		assert.strictEqual(untitledNotebookInput.matches(undefined), false, 'Input should not match undefined.');
-
 		assert.ok(untitledNotebookInput.matches(untitledNotebookInput), 'Input should match itself.');
 
 		let otherTestUri = URI.from({ scheme: Schemas.untitled, path: 'OtherTestPath' });
