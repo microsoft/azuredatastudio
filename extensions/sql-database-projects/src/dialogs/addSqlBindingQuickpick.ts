@@ -172,7 +172,6 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 						// display error message and show select setting quickpick again
 						void vscode.window.showErrorMessage(utils.getErrorMessage(e));
 					}
-
 				} catch (e) {
 					// go back to select setting quickpick if user escapes from inputting the value in case they changed their mind
 					console.warn(e);
