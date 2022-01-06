@@ -11,6 +11,7 @@ import { VSBuffer } from 'vs/base/common/buffer';
 import { asArray } from 'vs/base/common/arrays';
 
 export function convertToVSCodeNotebookDocument(notebook: azdata.nb.NotebookDocument): vscode.NotebookDocument {
+	let convertedCells = notebook.cells?.map((cell, index) => convertToVSCodeNotebookCell(cell.contents.source, index, notebook.uri, notebook.kernelSpec.language));
 	return {
 		get uri() { return notebook.uri; },
 		get version() { return undefined; },
@@ -25,20 +26,20 @@ export function convertToVSCodeNotebookDocument(notebook: azdata.nb.NotebookDocu
 				if (index < 0) {
 					index = 0;
 				} else if (index >= notebook.cells.length) {
-					index = notebook.cells.length - 1;
+					index = convertedCells.length - 1;
 				}
-				return convertToVSCodeNotebookCell(notebook.cells[index].contents.source, index, notebook.uri, notebook.kernelSpec.language);
+				return convertedCells[index];
 			}
 			return undefined;
 		},
 		getCells(range) {
-			let cells: azdata.nb.NotebookCell[] = [];
+			let cells: vscode.NotebookCell[] = [];
 			if (range) {
-				cells = notebook.cells?.slice(range.start, range.end);
+				cells = convertedCells?.slice(range.start, range.end);
 			} else {
-				cells = notebook.cells;
+				cells = convertedCells;
 			}
-			return cells?.map((cell, index) => convertToVSCodeNotebookCell(cell.contents.source, index, notebook.uri, notebook.kernelSpec.language));
+			return cells;
 		},
 		save() {
 			return notebook.save();
