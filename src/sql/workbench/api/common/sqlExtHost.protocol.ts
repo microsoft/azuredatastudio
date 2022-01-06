@@ -11,15 +11,15 @@ import { URI, UriComponents } from 'vs/base/common/uri';
 
 import { IDisposable } from 'vs/base/common/lifecycle';
 
-import * as azdata from 'azdata';
-import * as vscode from 'vscode';
+import type * as azdata from 'azdata';
+import type * as vscode from 'vscode';
 
 import { ITreeComponentItem } from 'sql/workbench/common/views';
 import { ITaskHandlerDescription } from 'sql/workbench/services/tasks/common/tasks';
 import {
 	IItemConfig, IComponentShape, IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails,
 	IModelViewWizardDetails, IModelViewWizardPageDetails, IExecuteManagerDetails, INotebookSessionDetails,
-	INotebookKernelDetails, INotebookFutureDetails, FutureMessageType, INotebookFutureDone, ISingleNotebookEditOperation,
+	INotebookKernelDetails, INotebookFutureDetails, FutureMessageType, INotebookFutureDone, INotebookEditOperation,
 	NotebookChangeKind,
 	ISerializationManagerDetails
 } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -887,7 +887,6 @@ export interface MainThreadQueryEditorShape extends IDisposable {
 }
 
 export interface ExtHostNotebookShape {
-
 	/**
 	 * Looks up a notebook manager for a given notebook URI
 	 * @returns handle of the manager to be used when sending
@@ -935,6 +934,7 @@ export interface MainThreadNotebookShape extends IDisposable {
 	$unregisterExecuteProvider(handle: number): void;
 	$onFutureMessage(futureId: number, type: FutureMessageType, payload: azdata.nb.IMessage): void;
 	$onFutureDone(futureId: number, done: INotebookFutureDone): void;
+	$updateProviderDescriptionLanguages(providerId: string, languages: string[]): void;
 }
 
 export interface INotebookDocumentsAndEditorsDelta {
@@ -990,7 +990,7 @@ export interface MainThreadNotebookDocumentsAndEditorsShape extends IDisposable 
 	$trySetTrusted(_uri: UriComponents, isTrusted: boolean): Thenable<boolean>;
 	$trySaveDocument(uri: UriComponents): Thenable<boolean>;
 	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): Promise<string>;
-	$tryApplyEdits(id: string, modelVersionId: number, edits: ISingleNotebookEditOperation[], opts: IUndoStopOptions): Promise<boolean>;
+	$tryApplyEdits(id: string, modelVersionId: number, edits: INotebookEditOperation[], opts: IUndoStopOptions): Promise<boolean>;
 	$runCell(id: string, cellUri: UriComponents): Promise<boolean>;
 	$runAllCells(id: string, startCellUri?: UriComponents, endCellUri?: UriComponents): Promise<boolean>;
 	$clearOutput(id: string, cellUri: UriComponents): Promise<boolean>;

@@ -21,6 +21,12 @@ const configLogFilesRemovalLimit = 'logFilesRemovalLimit';
 const extensionConfigSectionName = 'mssql';
 const configLogDebugInfo = 'logDebugInfo';
 
+/**
+ *
+ * @returns Whether the current OS is linux or not
+ */
+export const isLinux = os.platform() === 'linux';
+
 // The function is a duplicate of \src\paths.js. IT would be better to import path.js but it doesn't
 // work for now because the extension is running in different process.
 export function getAppDataPath() {
@@ -64,8 +70,7 @@ export function getConfigLogFilesRemovalLimit(): number {
 	let config = getConfiguration();
 	if (config) {
 		return Number((config[configLogFilesRemovalLimit]).toFixed(0));
-	}
-	else {
+	} else {
 		return undefined;
 	}
 }
@@ -74,8 +79,7 @@ export function getConfigLogRetentionSeconds(): number {
 	let config = getConfiguration();
 	if (config) {
 		return Number((config[configLogRetentionMinutes] * 60).toFixed(0));
-	}
-	else {
+	} else {
 		return undefined;
 	}
 }
@@ -84,8 +88,7 @@ export function getConfigTracingLevel(): string {
 	let config = getConfiguration();
 	if (config) {
 		return config[configTracingLevel];
-	}
-	else {
+	} else {
 		return undefined;
 	}
 }

@@ -203,20 +203,12 @@
         <target state="translated">Fechar espaço de trabalho</target>
       </trans-unit>
       <trans-unit id="data-workspace-view-container-name">
-        <source xml:lang="en">Projects</source>
-        <target state="translated">Projetos</target>
-      </trans-unit>
-      <trans-unit id="extension-description">
-        <source xml:lang="en">Data workspace</source>
-        <target state="translated">Espaço de trabalho de dados</target>
-      </trans-unit>
-      <trans-unit id="extension-displayName">
-        <source xml:lang="en">Data workspace</source>
-        <target state="translated">Espaço de trabalho de dados</target>
+        <source xml:lang="en">Database Projects</source>
+        <target state="translated">Projetos de Banco de Dados</target>
       </trans-unit>
       <trans-unit id="main-view-name">
-        <source xml:lang="en">Projects</source>
-        <target state="translated">Projetos</target>
+        <source xml:lang="en">Database Projects</source>
+        <target state="translated">Projetos de Banco de Dados</target>
       </trans-unit>
       <trans-unit id="manage-project-command">
         <source xml:lang="en">Manage</source>

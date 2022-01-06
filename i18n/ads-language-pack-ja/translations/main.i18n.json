@@ -9808,7 +9808,9 @@
 			"uninstallExtensionComplete": "拡張機能 {0}のアンインストールを完了するには、Azure Data Studio を再度読み込んでください。",
 			"updateLocale": "Azure Data Studio の UI 言語を {0} に変更して再起動しますか?",
 			"watermark.newNotebook": "新しいノートブック",
-			"watermark.newSqlFile": "新しい SQL ファイル"
+			"watermark.newSqlFile": "新しい SQL ファイル",
+			"workspace.trust.description": "Azure Data Studio 内でワークスペースの信頼を有効にするかどうかを制御します。",
+			"workspace.trust.emptyWindow.description": "空のウィンドウを Azure Data Studio 内で既定で信頼するかどうかを制御します。'#{0}#' と共に使用すると、空のウィンドウでプロンプトを表示せずに、Azure Data Studio のすべての機能を有効にすることができます。"
 		},
 		"sql/base/parts/editableDropdown/browser/dropdown": {
 			"editableDropdown.errorValidate": "一覧からオプションを選択する必要があります",
@@ -9853,12 +9855,14 @@
 			"calloutDialogHeaderFooterBackground": "吹き出しダイアログのヘッダーとフッターの背景。",
 			"calloutDialogInteriorBorder": "要素を区切るために使用される吹き出しダイアログの内側の境界線。",
 			"calloutDialogShadowColor": "吹き出しダイアログ ボックスの影の色。",
+			"designer.paneSeparator": "ウィンドウ区切り記号の色。",
 			"extensionPackGradientColorOne": "拡張機能パックのグラデーションの上部の色",
 			"extensionPackGradientColorTwo": "拡張機能パックのグラデーションの下部の色",
 			"extensionPackHeaderShadow": "拡張機能パックのヘッダー テキストの shadowcolor",
 			"gradientBackground": "バナー画像のグラデーションの背景色",
 			"gradientOne": "バナー画像のグラデーションの上部の色",
 			"gradientTwo": "バナー画像のグラデーションの下部の色",
+			"groupHeaderBackground": "グループ ヘッダーの背景色。",
 			"infoBox.errorBackground": "InfoBox: 通知の種類がエラーの場合の背景色。",
 			"infoBox.infomationBackground": "InfoBox: 通知の種類が情報の場合の背景色。",
 			"infoBox.successBackground": "InfoBox: 通知の種類が成功の場合の背景色。",
@@ -10805,26 +10809,24 @@
 			"expandCellContents": "コード セルの内容の展開"
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component": {
-			"buttonBold": "太字",
-			"buttonCode": "コード",
-			"buttonHighlight": "強調表示",
-			"buttonImage": "イメージ",
-			"buttonItalic": "斜体",
-			"buttonLink": "リンク",
-			"buttonList": "リスト",
-			"buttonOrderedList": "順序指定済みリスト",
+			"bold": "太字",
 			"buttonPreview": "マークダウン プレビューの切り替え - オフ",
-			"buttonUnderline": "下線を付ける",
-			"callout.insertImageHeading": "画像の挿入",
-			"callout.insertLinkHeading": "リンクの挿入",
 			"dropdownHeading": "見出し",
+			"highlight": "強調表示",
+			"insertCode": "コードの挿入",
+			"insertImage": "画像の挿入",
+			"insertLink": "リンクの挿入",
+			"insertList": "リストの挿入",
+			"insertOrderedList": "順序指定されたリストの挿入",
+			"italic": "斜体",
 			"markdownViewButton": "マークダウン ビュー",
 			"optionHeading1": "見出し 1",
 			"optionHeading2": "見出し 2",
 			"optionHeading3": "見出し 3",
 			"optionParagraph": "段落",
 			"richTextViewButton": "リッチ テキスト ビュー",
-			"splitViewButton": "分割ビュー"
+			"splitViewButton": "分割ビュー",
+			"underline": "下線を付ける"
 		},
 		"sql/workbench/contrib/notebook/browser/cellViews/output.component": {
 			"componentRenderError": "コンポーネントのレンダリング エラー: {0}",
@@ -11072,7 +11074,8 @@
 			"data": "データ",
 			"notebook": "ノートブック",
 			"profiler": "Profiler",
-			"queryEditor": "クエリ エディター"
+			"queryEditor": "クエリ エディター",
+			"tableDesigner": "テーブル デザイナー"
 		},
 		"sql/workbench/contrib/profiler/browser/profiler.contribution": {
 			"profiler.settings.Filters": "Profiler フィルター",
@@ -11984,15 +11987,6 @@
 			"queryManagement.noQueryRunnerForUri": "URI のクエリ ランナーが見つかりませんでした:{0}",
 			"queryManagement.uriAlreadyHasQueryRunner": "URI: {0}には予期しないクエリ ランナーが既に存在します。"
 		},
-		"sql/base/browser/ui/designer/designer": {
-			"designer.newRowText": "新規追加",
-			"designer.removeRowText": "削除",
-			"tableDesigner.unknownComponentType": "コンポーネントの種類: {0} はサポートされていません"
-		},
-		"sql/base/browser/ui/designer/designerPropertiesPane": {
-			"tableDesigner.propertiesPaneTitle": "プロパティ",
-			"tableDesigner.propertiesPaneTitleWithContext": "プロパティ - {0} {1}"
-		},
 		"sql/workbench/browser/editor/tableDesigner/tableDesignerInput": {
 			"tableDesigner.newTable": "新しいテーブル"
 		},
@@ -12000,22 +11994,91 @@
 			"tableDesigner.saveTableChanges": "変更内容を保存"
 		},
 		"sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput": {
-			"tableDesigner.advancedTab": "詳細設定",
+			"designer.checkConstraint.description.expression": "CHECK 制約を定義する式です。",
+			"designer.checkConstraint.description.name": "CHECK 制約の名前。",
+			"designer.column.description.allowNulls": "列が NULL 値を持つことができるかどうかを指定します。",
+			"designer.column.description.dataType": "列のデータ型名を表示します",
+			"designer.column.description.defaultValueBinding": "列またはバインドの定義済みのグローバルな既定値です。",
+			"designer.column.description.length": "このデータベース オブジェクトに格納できる最大長 (文字数) です。",
+			"designer.column.description.name": "列オブジェクトの名前です。",
+			"designer.column.description.precision": "数値データの場合、このデータベース オブジェクトに格納できる 10 進数の最大桁数です。",
+			"designer.column.description.primaryKey": "列がテーブルの主キーに含まれるかどうかを指定します。",
+			"designer.column.description.scale": "数値データの場合、この小数点の右側にあるデータベース オブジェクトに格納できる小数点以下の最大桁数です。",
+			"designer.foreignkey.description.columnMapping": "外部キー列と主キー列の間のマッピング。",
+			"designer.foreignkey.description.name": "外部キーの名前です。",
+			"designer.foreignkey.description.onDeleteAction": "外部キー リレーションシップに含まれるデータのある行をユーザーが削除しようとしたときの動作です。",
+			"designer.foreignkey.description.onUpdateAction": "外部キー リレーションシップに含まれるデータのある行をユーザーが更新しようとしたときの動作です。",
+			"designer.foreignkey.description.primaryKeyTable": "主キー列または一意キー列を含むテーブルです。",
+			"designer.table.description.description": "テーブルの説明です。",
+			"designer.table.description.name": "テーブル オブジェクトの名前です。",
+			"designer.table.description.schema": "テーブルを含むスキーマです。",
+			"tableDesigner.ForeignKeyTypeName": "外部キー",
+			"tableDesigner.PrimaryKeyTableName": "主キー テーブル",
+			"tableDesigner.checkConstraintExpressionTitle": "式",
+			"tableDesigner.checkConstraintNameTitle": "名前",
+			"tableDesigner.checkConstraintTypeName": "制約のチェック",
+			"tableDesigner.checkConstraintsTabTitle": "チェック制約",
 			"tableDesigner.columnAllowNullTitle": "Null を許容",
 			"tableDesigner.columnDefaultValueTitle": "既定値",
 			"tableDesigner.columnIsPrimaryKeyTitle": "主キー",
 			"tableDesigner.columnLengthTitle": "長さ",
 			"tableDesigner.columnNameTitle": "名前",
+			"tableDesigner.columnPrecisionTitle": "有効桁数",
+			"tableDesigner.columnScaleTitle": "倍率",
 			"tableDesigner.columnTypeName": "列",
 			"tableDesigner.columnTypeTitle": "種類",
 			"tableDesigner.columnsTabTitle": "列",
 			"tableDesigner.descriptionTitle": "説明",
+			"tableDesigner.errorInitializingTableDesigner": "テーブル デザイナーの初期化中にエラーが発生しました: {0}",
+			"tableDesigner.errorProcessingEdit": "変更の処理中にエラーが発生しました: {0}",
+			"tableDesigner.foreignKeyColumn": "外部キー列",
+			"tableDesigner.foreignKeyColumns": "列マッピング",
+			"tableDesigner.foreignKeyNameTitle": "名前",
+			"tableDesigner.foreignKeyOnDeleteAction": "削除アクション時に",
+			"tableDesigner.foreignKeyOnUpdateAction": "更新アクション時に",
+			"tableDesigner.foreignKeysTabTitle": "外部キー",
+			"tableDesigner.generalTab": "全般",
 			"tableDesigner.nameTitle": "テーブル名",
+			"tableDesigner.primaryKeyColumn": "主キー列",
 			"tableDesigner.saveChangeError": "変更の保存中にエラーが発生しました: {0}",
 			"tableDesigner.savedChangeSuccess": "変更が正常に保存されました。",
 			"tableDesigner.savingChanges": "テーブル デザイナーの変更を保存しています...",
 			"tableDesigner.schemaTitle": "スキーマ",
 			"tableDesigner.tableObjectType": "テーブル"
+		},
+		"sql/base/browser/ui/loadingSpinner/loadingSpinner": {
+			"loadingCompletedMessage": "読み込みが完了しました",
+			"loadingMessage": "読み込んでいます"
+		},
+		"sql/workbench/browser/designer/designer": {
+			"designer.generalGroupName": "全般",
+			"designer.loadingDesigner": "デザイナーの読み込み中...",
+			"designer.loadingDesignerCompleted": "デザイナーが読み込まれます",
+			"designer.newRowText": "新規追加",
+			"designer.processingChanges": "変更の処理中...",
+			"designer.processingChangesCompleted": "変更が処理されました",
+			"designer.removeRowText": "削除",
+			"designer.savingChanges": "変更を保存しています...",
+			"designer.savingChangesCompleted": "変更が保存されました。",
+			"tableDesigner.unknownComponentType": "コンポーネントの種類: {0} はサポートされていません"
+		},
+		"sql/workbench/browser/designer/designerPropertiesPane": {
+			"tableDesigner.propertiesPaneTitle": "プロパティ",
+			"tableDesigner.propertiesPaneTitleWithContext": "{0} のプロパティ"
+		},
+		"sql/workbench/browser/designer/designerScriptEditor": {
+			"designer.textEditorAriaLabel": "デザイナー テキスト エディター。"
+		},
+		"sql/workbench/contrib/tableDesigner/browser/tableDesigner.contribution": {
+			"tableDesigner.configTitle": "テーブル デザイナー",
+			"tableDesigner.featureEnabledDescription": "テーブル デザイナー機能を有効にするかどうかを制御します。既定値は false です。"
+		},
+		"sql/workbench/services/notebook/browser/models/cellEdit": {
+			"addCellEdit": "セルの追加",
+			"convertCellTypeEdit": "セルの種類の変換",
+			"deleteCellEdit": "セルの削除",
+			"moveCellEdit": "セルの移動",
+			"splitCellEdit": "セルの分割"
 		}
 	}
 }
