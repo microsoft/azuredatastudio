@@ -17,6 +17,7 @@
 			"fileDirname": "現在開いているファイルのディレクトリ名",
 			"fileExtname": "現在開いているファイルの拡張子",
 			"lineNumber": "アクティブなファイル内で選択している行の番号",
+			"pathSeparator": "オペレーティング システムがファイル パス内のコンポーネントを分離するために使用する文字",
 			"relativeFile": "${workspaceFolder} に相対的な現在開いているファイル",
 			"relativeFileDirname": "現在開いているファイルの、${workspaceFolder} からの相対 dirname",
 			"selectedText": "アクティブなファイル内で選択しているテキスト",

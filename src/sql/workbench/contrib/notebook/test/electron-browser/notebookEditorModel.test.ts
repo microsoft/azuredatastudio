@@ -8,6 +8,7 @@ import * as os from 'os';
 import * as assert from 'assert';
 
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
+import { TestDialogService } from 'vs/platform/dialogs/test/common/testDialogService';
 import { ConnectionManagementService } from 'sql/workbench/services/connection/browser/connectionManagementService';
 import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
 import { CellTypes, NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
@@ -39,6 +40,8 @@ import { IStorageService } from 'vs/platform/storage/common/storage';
 import { TestStorageService, TestTextResourcePropertiesService } from 'vs/workbench/test/common/workbenchTestServices';
 import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 import { IProductService } from 'vs/platform/product/common/productService';
+import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { UndoRedoService } from 'vs/platform/undoRedo/common/undoRedoService';
 
 
 class ServiceAccessor {
@@ -74,6 +77,8 @@ suite('Notebook Editor Model', function (): void {
 	let defaultModelOptions: INotebookModelOptions;
 	const logService = new NullLogService();
 	const notificationService = TypeMoq.Mock.ofType(TestNotificationService, TypeMoq.MockBehavior.Loose);
+	const dialogService = TypeMoq.Mock.ofType<IDialogService>(TestDialogService, TypeMoq.MockBehavior.Loose);
+	const undoRedoService = new UndoRedoService(dialogService.object, notificationService.object);
 	let memento = TypeMoq.Mock.ofType(Memento, TypeMoq.MockBehavior.Loose, '');
 	memento.setup(x => x.getMemento(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => void 0);
 	let testinstantiationService = new TestInstantiationService();
@@ -978,7 +983,7 @@ suite('Notebook Editor Model', function (): void {
 		let options: INotebookModelOptions = Object.assign({}, defaultModelOptions, <Partial<INotebookModelOptions>><unknown>{
 			factory: mockModelFactory.object
 		});
-		notebookModel = new NotebookModel(options, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService, undefined);
+		notebookModel = new NotebookModel(options, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService, undoRedoService, undefined);
 		await notebookModel.loadContents();
 	}
 

@@ -1,7 +1,7 @@
-// /*---------------------------------------------------------------------------------------------
-//  *  Copyright (c) Microsoft Corporation. All rights reserved.
-//  *  Licensed under the Source EULA. See License.txt in the project root for license information.
-//  *--------------------------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
@@ -216,10 +216,10 @@ export class SqlMigrationServiceDetailsDialog {
 	}
 
 	private async _updateTableCell(table: azdata.DeclarativeTableComponent, row: number, col: number, value: string, keyName: string): Promise<void> {
-		const dataValues = table.dataValues;
+		const dataValues = table.dataValues!;
 		dataValues![row][col].value = value;
-		table.dataValues = [];
-		table.dataValues = dataValues;
+		await table.setDataValues([]);
+		await table.setDataValues(dataValues);
 		await vscode.window.showInformationMessage(constants.AUTH_KEY_REFRESHED(keyName));
 	}
 

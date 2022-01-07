@@ -6,7 +6,7 @@
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IStringDictionary } from 'vs/base/common/collections';
 import { Event } from 'vs/base/common/event';
-import { IExtensionRecommendation } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
+import { IExtensionRecommendation } from 'sql/workbench/services/extensionManagement/common/extensionManagement'; // {{SQL CARBON EDIT}} Custom extension recommendation
 
 export type DynamicRecommendation = 'dynamic';
 export type ConfigRecommendation = 'config';

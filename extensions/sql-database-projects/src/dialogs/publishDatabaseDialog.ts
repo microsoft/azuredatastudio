@@ -181,8 +181,6 @@ export class PublishDatabaseDialog {
 
 			let formModel = this.formBuilder.component();
 			await view.initializeModel(formModel);
-
-			await this.loadProfileTextBox!.focus();
 		});
 	}
 
@@ -311,7 +309,9 @@ export class PublishDatabaseDialog {
 		this.targetDatabaseDropDown!.values?.push(<any>value);
 		this.targetDatabaseDropDown!.value = value;
 
-		this.targetDatabaseTextBox!.value = value;
+		if (this.targetDatabaseTextBox) {
+			this.targetDatabaseTextBox!.value = value;
+		}
 	}
 
 	public getBaseDockerImageName(): string {
@@ -368,7 +368,8 @@ export class PublishDatabaseDialog {
 
 	private createPublishTypeRadioButtons(view: azdataType.ModelView): azdataType.Component {
 		const publishToLabel = view.modelBuilder.text().withProps({
-			value: constants.publishTo
+			value: constants.publishTo,
+			width: cssStyles.publishDialogLabelWidth
 		}).component();
 		this.existingServerRadioButton = view.modelBuilder.radioButton()
 			.withProps({
@@ -391,10 +392,15 @@ export class PublishDatabaseDialog {
 			this.onPublishTypeChange(!checked, view);
 		});
 
-		let flexRadioButtonsModel: azdataType.FlexContainer = view.modelBuilder.flexContainer()
+		const radioButtonContainer = view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
-			.withItems([publishToLabel, this.existingServerRadioButton, this.dockerServerRadioButton])
+			.withItems([this.existingServerRadioButton, this.dockerServerRadioButton])
 			.withProps({ ariaRole: 'radiogroup' })
+			.component();
+
+		let flexRadioButtonsModel: azdataType.FlexContainer = view.modelBuilder.flexContainer()
+			.withLayout({ flexFlow: 'row', alignItems: 'baseline' })
+			.withItems([publishToLabel, radioButtonContainer], { CSSStyles: { flex: '0 0 auto', 'margin-right': '10px' } })
 			.component();
 
 		return flexRadioButtonsModel;
