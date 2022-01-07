@@ -251,10 +251,11 @@ export default class QueryRunner extends Disposable {
 		let timeStamp = Utils.parseNumAsTimeString(this._totalElapsedMilliseconds);
 		// We're done with this query so shut down any waiting mechanisms
 
-		let message = {
+		let message: IQueryMessage = {
 			message: nls.localize('query.message.executionTime', "Total execution time: {0}", timeStamp),
 			isError: false,
-			time: undefined
+			time: undefined,
+			isQueryEnd: true
 		};
 		this._messages.push(message);
 
@@ -281,7 +282,8 @@ export default class QueryRunner extends Disposable {
 			message: batch.range ? nls.localize('query.message.startQueryWithRange', "Started executing query at Line {0}", batch.range.startLineNumber) : nls.localize('query.message.startQuery', "Started executing batch {0}", batch.id),
 			time: batch.executionStart,
 			range: batch.range,
-			isError: false
+			isError: false,
+			isQueryStart: true
 		};
 		this._messages.push(message);
 		this._onMessage.fire([message]);

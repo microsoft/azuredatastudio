@@ -31,10 +31,6 @@ export class FileQueryResultsWriter implements IQueryResultsWriter {
 	private closingMessageIncluded: boolean = false;
 	private hasCreatedResultsFile: boolean = false;
 
-	private readonly startedExecutingQueryMessage: string;
-	private readonly totalExecutionTimeMessage: string;
-	private readonly rowAffectedMessage: string;
-	private readonly rowsAffectedMessage: string;
 	private readonly newLineEscapeSequence: string = this.textResourcePropertiesService.getEOL(undefined);
 
 	constructor(
@@ -45,12 +41,7 @@ export class FileQueryResultsWriter implements IQueryResultsWriter {
 		@ILogService private readonly logService: ILogService,
 		@IConfigurationService private configurationService: IConfigurationService,
 		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService
-	) {
-		this.startedExecutingQueryMessage = nls.localize('query.message.startingExecutionQuery', 'Started executing query');
-		this.totalExecutionTimeMessage = nls.localize('query.message.totalExecutionTime', 'Total execution time');
-		this.rowAffectedMessage = nls.localize('query.message.rowAffected', 'row affected');
-		this.rowsAffectedMessage = nls.localize('query.message.rowsAffected', 'rows affected');
-	}
+	) { }
 
 	public onQueryStart() {
 		this.reset();
@@ -93,15 +84,11 @@ export class FileQueryResultsWriter implements IQueryResultsWriter {
 	public async onMessage(incomingMessage: IQueryMessage | IQueryMessage[]) {
 		if (isArray(incomingMessage)) {
 			incomingMessage.forEach(m => {
-				if (m.message.includes(this.startedExecutingQueryMessage)) {
-					return;
-				}
-
 				if (m.isError) {
 					this.queryContainsError = true;
 				}
 
-				if (m.message.includes(this.totalExecutionTimeMessage)) {
+				if (m?.isQueryEnd) {
 					this.closingMessageIncluded = true;
 				}
 
@@ -149,18 +136,17 @@ export class FileQueryResultsWriter implements IQueryResultsWriter {
 	}
 
 	private async createResultsFile() {
-		let fileContent = this.mergeQueryResultsWithMessages();
-
-		let fileData = fileContent.map(m => {
-			if (m.includes(this.rowsAffectedMessage) || m.includes(this.rowAffectedMessage)) {
-				return this.newLineEscapeSequence + m + this.newLineEscapeSequence;
+		this.messages = this.messages.filter(m => m?.isQueryStart !== true);
+		this.messages.forEach(m => {
+			if (m?.hasRowCount) {
+				m.message = this.newLineEscapeSequence + m.message + this.newLineEscapeSequence;
 			}
-			else if (m.includes(this.totalExecutionTimeMessage)) {
-				return this.newLineEscapeSequence + m;
+			else if (m?.isQueryEnd) {
+				m.message = this.newLineEscapeSequence + m.message;
 			}
+		});
 
-			return m;
-		}).join(this.newLineEscapeSequence);
+		let fileData = this.mergeQueryResultsWithMessages().join(this.newLineEscapeSequence);
 
 		const input = this.untitledEditorService.create({ initialValue: fileData });
 		await input.resolve();
@@ -171,21 +157,22 @@ export class FileQueryResultsWriter implements IQueryResultsWriter {
 		return this.editorService.openEditor(input);
 	}
 
-	private mergeQueryResultsWithMessages() {
+	private mergeQueryResultsWithMessages(): string[] {
 		let content: Array<string> = [];
-		let extractedMessages = this.messages.map(m => m.message);
 
 		// Merges query result set before respective '# row(s) affected' message
-		while (extractedMessages.length > 0 && this.formattedQueryResults.length > 0) {
-			if (extractedMessages[0]?.includes(this.rowsAffectedMessage) || extractedMessages[0]?.includes(this.rowAffectedMessage)) {
+		while (this.messages.length > 0 && this.formattedQueryResults.length > 0) {
+			if (this.messages[0]?.hasRowCount) {
 				content.push(this.newLineEscapeSequence + this.formattedQueryResults.shift());
 			}
 
-			content.push(extractedMessages.shift());
+			let queryMessage = this.messages.shift();
+			content.push(queryMessage.message);
 		}
 
+		let remainingMessages = this.messages.map(m => m.message);
 		// append any remaining query results and messages.
-		return [...content, ...this.formattedQueryResults, ...extractedMessages];
+		return [...content, ...this.formattedQueryResults, ...remainingMessages];
 	}
 }
 

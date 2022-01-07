@@ -927,6 +927,7 @@ declare module 'azdata' {
 		isError: boolean;
 		time?: string | undefined;
 		message: string;
+		hasRowCount?: boolean;
 	}
 
 	export interface ISelectionData {

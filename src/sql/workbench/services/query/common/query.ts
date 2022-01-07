@@ -49,6 +49,9 @@ export interface IQueryMessage {
 	time?: string;
 	message: string;
 	range?: IRange;
+	hasRowCount?: boolean;
+	isQueryStart?: boolean;
+	isQueryEnd?: boolean;
 }
 
 export interface IResultMessage {
@@ -56,6 +59,7 @@ export interface IResultMessage {
 	isError: boolean;
 	time?: string;
 	message: string;
+	hasRowCount?: boolean;
 }
 
 export interface QueryExecuteSubsetParams {
