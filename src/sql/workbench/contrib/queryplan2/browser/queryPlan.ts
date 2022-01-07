@@ -16,6 +16,7 @@ import * as DOM from 'vs/base/browser/dom';
 import { PropertiesAction } from 'sql/workbench/contrib/queryplan2/browser/actions/propertiesAction';
 
 import * as azdataGraphModule from 'azdataGraph';
+import { escape } from 'sql/base/common/strings';
 let azdataGraph = azdataGraphModule();
 
 export class QueryPlan2Tab implements IPanelTab {
@@ -124,17 +125,17 @@ export class QueryPlan2 {
 		let self = this;
 		this._data = [];
 		const TaskNameFormatter = function (row, cell, value, columnDef, dataContext) {
-			value = value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+			value = escape(value);
 			const spacer = '<span style="display:inline-block;height:1px;width' + (15 * dataContext['indent']) + 'px"></span>';
 			const idx = self._dataView.getIdxById(dataContext.id);
 			if (self._data[idx + 1] && self._data[idx + 1].indent > self._data[idx].indent) {
 				if (dataContext._collapsed) {
-					return spacer + '<span class="toggle expand"></span>&nbsp;' + value;
+					return spacer + '<span class="qp-properties-toggle expand"></span>&nbsp;' + value;
 				} else {
-					return spacer + '<span class="toggle collapse"></span>&nbsp;' + value;
+					return spacer + '<span class="qp-properties-toggle collapse"></span>&nbsp;' + value;
 				}
 			} else {
-				return spacer + '<span class="toggle"></span>&nbsp;' + value;
+				return spacer + '<span class="qp-properties-toggle"></span>&nbsp;' + value;
 			}
 		};
 

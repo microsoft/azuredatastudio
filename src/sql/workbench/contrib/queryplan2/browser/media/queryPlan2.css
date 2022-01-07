@@ -39,17 +39,17 @@
 	padding: 5px;
 }
 
-.toggle {
+.qp-properties-toggle {
 	height: 9px;
 	width: 9px;
 	display: inline-block;
 }
 
-.toggle.expand {
+.qp-properties-toggle.expand {
 	background: url(../images/expand.gif) no-repeat center center;
 }
 
-.toggle.collapse {
+.qp-properties-toggle.collapse {
 	background: url(../images/collapse.gif) no-repeat center center;
 }
 
