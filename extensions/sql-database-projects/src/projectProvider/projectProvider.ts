@@ -170,16 +170,16 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	}
 
 	/**
- * Gets the list of .sql scripts contained in a project
- * @param projectFilePath
- */
+	 * Gets the list of .sql scripts contained in a project
+	 * @param projectFilePath
+	 */
 	async getProjectScriptFiles(projectFilePath: string): Promise<string[]> {
 		return await this.projectController.getProjectScriptFiles(projectFilePath);
 	}
 
 	/**
- * Gets the Database Schema Provider version for a SQL project
- */
+	 * Gets the Database Schema Provider version for a SQL project
+	 */
 	async getProjectDatabaseSchemaProvider(projectFilePath: string): Promise<string> {
 		return await this.projectController.getProjectDatabaseSchemaProvider(projectFilePath);
 	}

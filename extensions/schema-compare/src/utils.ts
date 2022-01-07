@@ -185,7 +185,6 @@ export function getAzdataApi(): typeof azdataType | undefined {
 }
 
 export function getDataWorkspaceExtensionApi(): dataworkspace.IExtension {
-	const dataworkspaceExtName = getAzdataApi() ? dataworkspace.extension.name : dataworkspace.extension.vscodeName;
-	const extension = vscode.extensions.getExtension(dataworkspaceExtName)!;
+	const extension = vscode.extensions.getExtension(dataworkspace.extension.name)!;
 	return extension.exports;
 }

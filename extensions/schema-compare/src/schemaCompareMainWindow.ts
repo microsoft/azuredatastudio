@@ -130,7 +130,7 @@ export class SchemaCompareMainWindow {
 				connectionName: profile.connectionName,
 				projectFilePath: '',
 				targetScripts: [],
-				dataSchemaProvider: '',
+				databaseSchemaProvider: '',
 				folderStructure: ''
 			};
 		} else if (sourceDacpac) {
@@ -144,7 +144,7 @@ export class SchemaCompareMainWindow {
 				connectionDetails: undefined,
 				projectFilePath: '',
 				targetScripts: [],
-				dataSchemaProvider: '',
+				databaseSchemaProvider: '',
 				folderStructure: ''
 			};
 		} else if (sourceProject) {
@@ -158,7 +158,7 @@ export class SchemaCompareMainWindow {
 				connectionDetails: undefined,
 				projectFilePath: sourceProject,
 				targetScripts: [],
-				dataSchemaProvider: undefined,
+				databaseSchemaProvider: undefined,
 				folderStructure: ''
 			};
 		}
@@ -873,7 +873,8 @@ export class SchemaCompareMainWindow {
 				TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareApplyStarted')
 					.withAdditionalProperties({
 						'startTime': Date.now().toString(),
-						'operationId': this.comparisonResult.operationId
+						'operationId': this.comparisonResult.operationId,
+						'targetType': getSchemaCompareEndpointString(this.targetEndpointInfo.endpointType)
 					}).send();
 
 				// disable apply and generate script buttons because the results are no longer valid after applying the changes
@@ -901,7 +902,8 @@ export class SchemaCompareMainWindow {
 
 					TelemetryReporter.createErrorEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareApplyFailed', undefined, getTelemetryErrorType(result?.errorMessage))
 						.withAdditionalProperties({
-							'operationId': this.comparisonResult.operationId
+							'operationId': this.comparisonResult.operationId,
+							'targetType': getSchemaCompareEndpointString(this.targetEndpointInfo.endpointType)
 						}).send();
 					vscode.window.showErrorMessage(loc.applyErrorMessage(result?.errorMessage));
 
@@ -915,7 +917,8 @@ export class SchemaCompareMainWindow {
 				TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareApplyEnded')
 					.withAdditionalProperties({
 						'endTime': Date.now().toString(),
-						'operationId': this.comparisonResult.operationId
+						'operationId': this.comparisonResult.operationId,
+						'targetType': getSchemaCompareEndpointString(this.targetEndpointInfo.endpointType)
 					}).send();
 
 				if (this.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Project) {

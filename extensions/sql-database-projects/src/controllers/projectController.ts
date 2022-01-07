@@ -507,7 +507,7 @@ export class ProjectsController {
 	}
 
 	public async schemaComparePublishProjectChanges(operationId: string, projectFilePath: string, folderStructure: string): Promise<mssql.SchemaComparePublishProjectResult> {
-		let ext = vscode.extensions.getExtension(mssql.extension.name)!;
+		const ext = vscode.extensions.getExtension(mssql.extension.name)!;
 		const service = (await ext.activate() as mssql.IExtension).schemaCompare;
 
 		const projectPath = path.dirname(projectFilePath);

@@ -140,7 +140,7 @@ export interface SchemaCompareEndpointInfo {
 	projectFilePath: string;
 	targetScripts: string[];
 	folderStructure: string;
-	dataSchemaProvider: string;
+	databaseSchemaProvider: string;
 }
 
 export interface SchemaCompareObjectId {
