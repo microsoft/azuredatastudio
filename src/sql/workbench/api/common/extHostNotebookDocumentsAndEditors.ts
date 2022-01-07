@@ -21,6 +21,7 @@ import {
 } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { ExtHostNotebookDocumentData } from 'sql/workbench/api/common/extHostNotebookDocumentData';
 import { ExtHostNotebookEditor } from 'sql/workbench/api/common/extHostNotebookEditor';
+import { VSCodeNotebookDocument } from 'sql/workbench/api/common/vscodeNotebookDocument';
 
 type Adapter = azdata.nb.NavigationProvider;
 
@@ -48,6 +49,10 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 	readonly onDidCloseNotebookDocument: Event<azdata.nb.NotebookDocument> = this._onDidCloseNotebook.event;
 	readonly onDidChangeNotebookCell: Event<azdata.nb.NotebookCellChangeEvent> = this._onDidChangeNotebookCell.event;
 
+	private _onDidOpenVSCodeNotebook = new Emitter<vscode.NotebookDocument>();
+	private _onDidCloseVSCodeNotebook = new Emitter<vscode.NotebookDocument>();
+	readonly onDidOpenVSCodeNotebookDocument: Event<vscode.NotebookDocument> = this._onDidOpenVSCodeNotebook.event;
+	readonly onDidCloseVSCodeNotebookDocument: Event<vscode.NotebookDocument> = this._onDidCloseVSCodeNotebook.event;
 
 	constructor(
 		private readonly _mainContext: IMainContext,
@@ -55,6 +60,9 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 		if (this._mainContext) {
 			this._proxy = this._mainContext.getProxy(SqlMainContext.MainThreadNotebookDocumentsAndEditors);
 		}
+
+		this.onDidOpenNotebookDocument(notebook => this._onDidOpenVSCodeNotebook.fire(new VSCodeNotebookDocument(notebook)));
+		this.onDidCloseNotebookDocument(notebook => this._onDidOpenVSCodeNotebook.fire(new VSCodeNotebookDocument(notebook)));
 	}
 
 	dispose() {

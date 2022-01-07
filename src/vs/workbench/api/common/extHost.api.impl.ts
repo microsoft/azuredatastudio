@@ -94,7 +94,6 @@ import { matchesScheme } from 'vs/platform/opener/common/opener';
 import { ExtHostNotebook } from 'sql/workbench/api/common/extHostNotebook';
 import { functionalityNotSupportedError } from 'sql/base/common/locConstants';
 import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/common/extHostNotebookDocumentsAndEditors';
-import { convertToVSCodeNotebookDocument } from 'sql/workbench/api/common/notebookUtils';
 
 export interface IExtensionApiFactory {
 	(extension: IExtensionDescription, registry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): typeof vscode;
@@ -207,16 +206,6 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 
 	// Register API-ish commands
 	ExtHostApiCommands.register(extHostCommands);
-
-	// {{SQL CARBON EDIT}} Notebook events for handling conversion between VS Code and ADS data types
-	const onDidOpenNotebook = new Emitter<vscode.NotebookDocument>();
-	extHostNotebookDocumentsAndEditors.onDidOpenNotebookDocument(notebook => {
-		onDidOpenNotebook.fire(convertToVSCodeNotebookDocument(notebook));
-	});
-	const onDidCloseNotebook = new Emitter<vscode.NotebookDocument>();
-	extHostNotebookDocumentsAndEditors.onDidCloseNotebookDocument(notebook => {
-		onDidCloseNotebook.fire(convertToVSCodeNotebookDocument(notebook));
-	});
 
 	return function (extension: IExtensionDescription, extensionRegistry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): typeof vscode {
 
@@ -915,11 +904,11 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 			},
 			get onDidOpenNotebookDocument(): Event<vscode.NotebookDocument> {
 				// {{SQL CARBON EDIT}} Use our own notebooks
-				return onDidOpenNotebook.event;
+				return extHostNotebookDocumentsAndEditors.onDidOpenVSCodeNotebookDocument;
 			},
 			get onDidCloseNotebookDocument(): Event<vscode.NotebookDocument> {
 				// {{SQL CARBON EDIT}} Use our own notebooks
-				return onDidCloseNotebook.event;
+				return extHostNotebookDocumentsAndEditors.onDidCloseVSCodeNotebookDocument;
 			},
 			registerNotebookSerializer(viewType: string, serializer: vscode.NotebookSerializer, options?: vscode.NotebookDocumentContentOptions, registration?: vscode.NotebookRegistrationData) {
 				// {{SQL CARBON EDIT}} Use our own notebooks

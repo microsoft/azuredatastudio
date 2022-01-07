@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { VSCodeContentManager } from 'sql/workbench/api/common/vscodeSerializationProvider';
+import { convertToVSCodeCellOutput, VSCodeContentManager, convertToADSCellOutput } from 'sql/workbench/api/common/vscodeSerializationProvider';
 import type * as vscode from 'vscode';
 import type * as azdata from 'azdata';
 import * as sinon from 'sinon';
@@ -12,8 +12,9 @@ import { VSBuffer } from 'vs/base/common/buffer';
 import * as assert from 'assert';
 import { OutputTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
-import { convertToADSCellOutput, convertToVSCodeCellOutput, convertToVSCodeNotebookCell, convertToVSCodeNotebookDocument } from 'sql/workbench/api/common/notebookUtils';
+import { convertToVSCodeNotebookCell } from 'sql/workbench/api/common/vscodeExecuteProvider';
 import { URI } from 'vs/workbench/workbench.web.api';
+import { VSCodeNotebookDocument } from 'sql/workbench/api/common/vscodeNotebookDocument';
 
 class MockNotebookSerializer implements vscode.NotebookSerializer {
 	deserializeNotebook(content: Uint8Array, token: vscode.CancellationToken): vscode.NotebookData | Thenable<vscode.NotebookData> {
@@ -380,7 +381,7 @@ suite('Notebook Serializer', () => {
 			save: () => undefined
 		};
 
-		let actualDoc = convertToVSCodeNotebookDocument(testDoc);
+		let actualDoc = new VSCodeNotebookDocument(testDoc);
 		assert.deepStrictEqual(actualDoc.uri, expectedDoc.uri);
 		assert.strictEqual(actualDoc.notebookType, expectedDoc.notebookType);
 		assert.strictEqual(actualDoc.version, expectedDoc.version);
@@ -408,7 +409,7 @@ suite('Notebook Serializer', () => {
 
 	test('Retrieve range of cells from VS Code NotebookDocument', async () => {
 		let expectedCells: vscode.NotebookCell[] = testDoc.cells.map((cell, index) => convertToVSCodeNotebookCell(cell.contents.source, index, testDoc.uri, testDoc.kernelSpec.language));
-		let vsDoc = convertToVSCodeNotebookDocument(testDoc);
+		let vsDoc = new VSCodeNotebookDocument(testDoc);
 
 		let actualCells = vsDoc.getCells();
 		validateCellsMatch(actualCells, expectedCells);
@@ -425,7 +426,7 @@ suite('Notebook Serializer', () => {
 
 	test('Retrieve specific cell from VS Code NotebookDocument', async () => {
 		let expectedCells: vscode.NotebookCell[] = testDoc.cells.map((cell, index) => convertToVSCodeNotebookCell(cell.contents.source, index, testDoc.uri, testDoc.kernelSpec.language));
-		let vsDoc = convertToVSCodeNotebookDocument(testDoc);
+		let vsDoc = new VSCodeNotebookDocument(testDoc);
 
 		let firstCell = vsDoc.cellAt(0);
 		validateCellMatches(firstCell, expectedCells[0]);

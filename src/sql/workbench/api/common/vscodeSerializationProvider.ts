@@ -9,7 +9,8 @@ import { VSBuffer } from 'vs/base/common/buffer';
 import { NotebookCellKind } from 'vs/workbench/api/common/extHostTypes';
 import { CancellationTokenSource } from 'vs/base/common/cancellation';
 import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
-import { convertToADSCellOutput, convertToVSCodeCellOutput } from 'sql/workbench/api/common/notebookUtils';
+import { OutputTypes } from 'sql/workbench/services/notebook/common/contracts';
+import { asArray } from 'vs/base/common/arrays';
 
 export class VSCodeContentManager implements azdata.nb.ContentManager {
 	constructor(private readonly _serializer: vscode.NotebookSerializer) {
@@ -93,4 +94,57 @@ export class VSCodeSerializationProvider implements azdata.nb.NotebookSerializat
 	public getSerializationManager(notebookUri: vscode.Uri): Thenable<azdata.nb.SerializationManager> {
 		return Promise.resolve(this._manager);
 	}
+}
+
+export function convertToADSCellOutput(outputs: vscode.NotebookCellOutput | vscode.NotebookCellOutput[], executionOrder?: number): azdata.nb.IDisplayResult[] {
+	return asArray(outputs).map(output => {
+		let outputData = {};
+		for (let item of output.items) {
+			outputData[item.mime] = VSBuffer.wrap(item.data).toString();
+		}
+		return {
+			output_type: 'execute_result',
+			data: outputData,
+			execution_count: executionOrder,
+			metadata: output.metadata,
+			id: output.id
+		};
+	});
+}
+
+export function convertToVSCodeCellOutput(output: azdata.nb.ICellOutput): vscode.NotebookCellOutput {
+	let convertedOutputItems: vscode.NotebookCellOutputItem[];
+	switch (output.output_type) {
+		case OutputTypes.ExecuteResult:
+		case OutputTypes.DisplayData:
+		case OutputTypes.UpdateDisplayData:
+			let displayOutput = output as azdata.nb.IDisplayResult;
+			convertedOutputItems = Object.keys(displayOutput.data).map<vscode.NotebookCellOutputItem>(key => {
+				return {
+					mime: key,
+					data: VSBuffer.fromString(displayOutput.data[key]).buffer
+				};
+			});
+			break;
+		case OutputTypes.Stream:
+			let streamOutput = output as azdata.nb.IStreamResult;
+			convertedOutputItems = [{
+				mime: 'text/html',
+				data: VSBuffer.fromString(Array.isArray(streamOutput.text) ? streamOutput.text.join('') : streamOutput.text).buffer
+			}];
+			break;
+		case OutputTypes.Error:
+			let errorOutput = output as azdata.nb.IErrorResult;
+			let errorString = errorOutput.ename + ': ' + errorOutput.evalue + (errorOutput.traceback ? '\n' + errorOutput.traceback?.join('\n') : '');
+			convertedOutputItems = [{
+				mime: 'text/html',
+				data: VSBuffer.fromString(errorString).buffer
+			}];
+			break;
+	}
+	return {
+		items: convertedOutputItems,
+		metadata: output.metadata,
+		id: output.id
+	};
 }
