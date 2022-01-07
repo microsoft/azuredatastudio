@@ -376,6 +376,7 @@ export const True = 'True';
 export const False = 'False';
 export const Private = 'Private';
 export const ProjectGuid = 'ProjectGuid';
+export const PropertyGroup = 'PropertyGroup';
 export const Type = 'Type';
 export const ExternalStreamingJob: string = 'ExternalStreamingJob';
 export const Sdk: string = 'Sdk';
