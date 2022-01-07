@@ -13,8 +13,8 @@ import * as assert from 'assert';
 import { OutputTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
 import { convertToVSCodeNotebookCell } from 'sql/workbench/api/common/vscodeExecuteProvider';
-import { URI } from 'vs/workbench/workbench.web.api';
 import { VSCodeNotebookDocument } from 'sql/workbench/api/common/vscodeNotebookDocument';
+import { URI } from 'vs/base/common/uri';
 
 class MockNotebookSerializer implements vscode.NotebookSerializer {
 	deserializeNotebook(content: Uint8Array, token: vscode.CancellationToken): vscode.NotebookData | Thenable<vscode.NotebookData> {
