@@ -26,7 +26,8 @@ export const enum ModalDialogName {
 	AutoOAuth = 'AutoOAuth',
 	AddNewDashboardTab = 'AddNewDashboardTab',
 	ProfilerFilter = 'ProfilerFilter',
-	CalloutDialog = 'CalloutDialog'
+	CalloutDialog = 'CalloutDialog',
+	TableDesignerPublishDialog = 'TableDesignerPublishDialog'
 }
 
 export const enum TelemetryView {

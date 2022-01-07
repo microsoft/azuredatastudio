@@ -11,7 +11,7 @@ import { URI, UriComponents } from 'vs/base/common/uri';
 import { RenderMimeRegistry } from 'sql/workbench/services/notebook/browser/outputs/registry';
 import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { INotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ICellModel, INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType, CellType } from 'sql/workbench/services/notebook/common/contracts';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
@@ -221,7 +221,7 @@ export interface INotebookEditor {
 	isDirty(): boolean;
 	isActive(): boolean;
 	isVisible(): boolean;
-	executeEdits(edits: ISingleNotebookEditOperation[]): boolean;
+	executeEdits(edits: INotebookEditOperation[]): boolean;
 	runCell(cell: ICellModel): Promise<boolean>;
 	runAllCells(startCell?: ICellModel, endCell?: ICellModel): Promise<boolean>;
 	clearOutput(cell: ICellModel): Promise<boolean>;

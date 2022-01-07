@@ -39,7 +39,10 @@ declare module 'azdata' {
 		}
 
 		export interface ICellOutput {
-			id?: string; // Unique identifier for this cell output
+			/**
+			 * Unique identifier for this cell output.
+			 */
+			id?: string;
 		}
 
 		export interface IExecuteResult {
@@ -53,7 +56,14 @@ declare module 'azdata' {
 		}
 
 		export interface IExecuteRequest {
-			notebookUri?: vscode.Uri; // URI of the notebook document that is sending this execute request
+			/**
+			 * URI of the notebook document that is sending this execute request.
+			 */
+			notebookUri?: vscode.Uri;
+			/**
+			 * The index of the cell which the code being executed is from.
+			 */
+			cellIndex: number;
 		}
 
 		export interface INotebookMetadata {
@@ -1003,24 +1013,35 @@ declare module 'azdata' {
 		 */
 		export interface TableDesignerProvider extends DataProvider {
 			/**
-			 * Gets the table designer information for the specified table.
+			 * Initialize the table designer for the specified table.
 			 * @param table the table information.
 			 */
-			getTableDesignerInfo(table: TableInfo): Thenable<TableDesignerInfo>;
+			initializeTableDesigner(table: TableInfo): Thenable<TableDesignerInfo>;
+
 			/**
 			 * Process the table change.
 			 * @param table the table information
-			 * @param viewModel the object contains the state of the table designer
 			 * @param tableChangeInfo the information about the change user made through the UI.
 			 */
-			processTableEdit(table: TableInfo, viewModel: DesignerViewModel, tableChangeInfo: DesignerEdit): Thenable<DesignerEditResult>;
+			processTableEdit(table: TableInfo, tableChangeInfo: DesignerEdit): Thenable<DesignerEditResult>;
 
 			/**
-			 * Save the table
+			 * Publish the changes.
 			 * @param table the table information
-			 * @param viewModel the object contains the state of the table designer
 			 */
-			saveTable(table: TableInfo, viewModel: DesignerViewModel): Thenable<void>;
+			publishChanges(table: TableInfo): Thenable<void>;
+
+			/**
+			 * Generate script for the changes.
+			 * @param table the table information
+			 */
+			generateScript(table: TableInfo): Thenable<string>;
+
+			/**
+			 * Generate preview report describing the changes to be made.
+			 * @param table the table information
+			 */
+			generatePreviewReport(table: TableInfo): Thenable<string>;
 
 			/**
 			 * Notify the provider that the table designer has been closed.

@@ -14,8 +14,8 @@
 		},
 		"dist/githubServer": {
 			"signingIn": "$(mark-github) 正在登入 github.com...",
-			"signingInEnterprise": "$(mark-github) 正在登入 {0}...",
-			"status.git.signIn.name": "GitHub 登入"
+			"status.git.signIn.name": "GitHub 登入",
+			"validUri": "請從 GitHub 登入頁面輸入有效的 URI。"
 		},
 		"package": {
 			"description": "GitHub 驗證提供者",

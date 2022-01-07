@@ -19,7 +19,7 @@ import { ITaskHandlerDescription } from 'sql/workbench/services/tasks/common/tas
 import {
 	IItemConfig, IComponentShape, IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails,
 	IModelViewWizardDetails, IModelViewWizardPageDetails, IExecuteManagerDetails, INotebookSessionDetails,
-	INotebookKernelDetails, INotebookFutureDetails, FutureMessageType, INotebookFutureDone, ISingleNotebookEditOperation,
+	INotebookKernelDetails, INotebookFutureDetails, FutureMessageType, INotebookFutureDone, INotebookEditOperation,
 	NotebookChangeKind,
 	ISerializationManagerDetails
 } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -530,17 +530,27 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Gets the table designer info for the specified table
 	 */
-	$getTableDesignerInfo(handle: number, table: azdata.designers.TableInfo): Thenable<azdata.designers.TableDesignerInfo> { throw ni(); }
+	$initializeTableDesigner(handle: number, table: azdata.designers.TableInfo): Thenable<azdata.designers.TableDesignerInfo> { throw ni(); }
 
 	/**
 	 * Process the table edit.
 	 */
-	$processTableDesignerEdit(handle: number, table: azdata.designers.TableInfo, data: azdata.designers.DesignerViewModel, edit: azdata.designers.DesignerEdit): Thenable<azdata.designers.DesignerEditResult> { throw ni(); }
+	$processTableDesignerEdit(handle: number, table: azdata.designers.TableInfo, edit: azdata.designers.DesignerEdit): Thenable<azdata.designers.DesignerEditResult> { throw ni(); }
 
 	/**
-	 * Process the table edit.
+	 * Publish the table designer changes.
 	 */
-	$saveTable(handle: number, table: azdata.designers.TableInfo, data: azdata.designers.DesignerViewModel): Thenable<void> { throw ni(); }
+	$publishTableDesignerChanges(handle: number, table: azdata.designers.TableInfo): Thenable<void> { throw ni(); }
+
+	/**
+	 * Generate scripts.
+	 */
+	$generateScriptForTableDesigner(handle: number, table: azdata.designers.TableInfo): Thenable<string> { throw ni(); }
+
+	/**
+	 * Generate preview report.
+	 */
+	$generatePreviewReportForTableDesigner(handle: number, table: azdata.designers.TableInfo): Thenable<string> { throw ni(); }
 
 	/**
 	 * Dispose the table designer.
@@ -990,7 +1000,7 @@ export interface MainThreadNotebookDocumentsAndEditorsShape extends IDisposable 
 	$trySetTrusted(_uri: UriComponents, isTrusted: boolean): Thenable<boolean>;
 	$trySaveDocument(uri: UriComponents): Thenable<boolean>;
 	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): Promise<string>;
-	$tryApplyEdits(id: string, modelVersionId: number, edits: ISingleNotebookEditOperation[], opts: IUndoStopOptions): Promise<boolean>;
+	$tryApplyEdits(id: string, modelVersionId: number, edits: INotebookEditOperation[], opts: IUndoStopOptions): Promise<boolean>;
 	$runCell(id: string, cellUri: UriComponents): Promise<boolean>;
 	$runAllCells(id: string, startCellUri?: UriComponents, endCellUri?: UriComponents): Promise<boolean>;
 	$clearOutput(id: string, cellUri: UriComponents): Promise<boolean>;

@@ -26,7 +26,7 @@ import { QueryResultId } from 'sql/workbench/services/notebook/browser/models/ce
 import { IPosition } from 'vs/editor/common/core/position';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
-import { INotebookEditOperation } from 'sql/workbench/api/common/extHostNotebookEditor';
+import { INotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 
 export enum ViewMode {
@@ -554,6 +554,20 @@ export interface ICellModel {
 	addAttachment(mimeType: string, base64Encoding: string, name: string): string;
 	richTextCursorPosition: ICaretPosition;
 	markdownCursorPosition: IPosition;
+	/**
+	 * Processes a list of edits for the cell
+	 * @param edits List of edits to apply to the cell
+	 */
+	processEdits(edits: ICellEdit[]): void;
+}
+
+export const enum CellEditType {
+	Output,
+	OutputData
+}
+
+export interface ICellEdit {
+	readonly type: CellEditType
 }
 
 export interface ICaretPosition {

@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { EditorDescriptor, IEditorRegistry } from 'vs/workbench/browser/editor';
+import { EditorPaneDescriptor, IEditorPaneRegistry } from 'vs/workbench/browser/editor';
 import { EditorExtensions } from 'vs/workbench/common/editor';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { Registry } from 'vs/platform/registry/common/platform';
@@ -15,14 +15,14 @@ import { ProfilerInput } from 'sql/workbench/browser/editor/profiler/profilerInp
 import { ProfilerEditor } from 'sql/workbench/contrib/profiler/browser/profilerEditor';
 import { PROFILER_VIEW_TEMPLATE_SETTINGS, PROFILER_SESSION_TEMPLATE_SETTINGS, IProfilerViewTemplate, IProfilerSessionTemplate, EngineType, PROFILER_FILTER_SETTINGS } from 'sql/workbench/services/profiler/browser/interfaces';
 
-const profilerDescriptor = EditorDescriptor.create(
+const profilerDescriptor = EditorPaneDescriptor.create(
 	ProfilerEditor,
 	ProfilerEditor.ID,
 	'ProfilerEditor'
 );
 
-Registry.as<IEditorRegistry>(EditorExtensions.Editors)
-	.registerEditor(profilerDescriptor, [new SyncDescriptor(ProfilerInput)]);
+Registry.as<IEditorPaneRegistry>(EditorExtensions.EditorPane)
+	.registerEditorPane(profilerDescriptor, [new SyncDescriptor(ProfilerInput)]);
 
 const profilerViewTemplateSchema: IJSONSchema = {
 	description: nls.localize('profiler.settings.viewTemplates', "Specifies view templates"),

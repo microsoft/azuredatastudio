@@ -178,11 +178,12 @@
 			"downloadgit": "Descargar Git",
 			"git20": "Parece que tiene instalado GIT {0}. El código funciona mejor con GIT >= 2",
 			"git2526": "La instancia {0} de GIT instalada tiene problemas conocidos. Actualice a GIT >= 2.27 para que las características de este funcionen correctamente.",
-			"looking": "Buscando git en: {0}",
 			"neverShowAgain": "No mostrar de nuevo",
 			"notfound": "Git no encontrado. Instálalo o configúralo usando la configuración 'git.path'.",
+			"skipped": "Se omitió git encontrado en: {0}",
 			"updateGit": "Actualizar GIT",
-			"using git": "Usando GIT {0} desde {1}"
+			"using git": "Usando GIT {0} desde {1}",
+			"validating": "La validación encontró Git en: {0}"
 		},
 		"dist/model": {
 			"no repositories": "No hay repositorios disponibles",
@@ -394,7 +395,7 @@
 			"config.checkoutType.tags": "Etiquetas",
 			"config.confirmEmptyCommits": "Confirme siempre la creación de confirmaciones vacías para el comando \"Git: Commit Empty\".",
 			"config.confirmForcePush": "Controla si va a solicitar confirmación antes de forzar envío de cambios.",
-			"config.confirmNoVerifyCommit": "Controla si se debe pedir confirmación antes de confirmar sin verificación.",
+			"config.confirmNoVerifyCommit": "Controla si se debe pedir confirmación antes de ejecutar sin comprobación.",
 			"config.confirmSync": "Confirmar antes de sincronizar repositorios GIT.",
 			"config.countBadge": "Controla la insignia de recuento de Git.",
 			"config.countBadge.all": "Recuento de todos los cambios.",
