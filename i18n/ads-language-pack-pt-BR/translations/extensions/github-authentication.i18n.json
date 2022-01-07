@@ -14,8 +14,8 @@
 		},
 		"dist/githubServer": {
 			"signingIn": "$(mark-github) Entrando no github.com...",
-			"signingInEnterprise": "$(mark-github) Entrando no {0}...",
-			"status.git.signIn.name": "Entrada do GitHub"
+			"status.git.signIn.name": "Entrada do GitHub",
+			"validUri": "Inserir um Uri válido na página de login do GitHub."
 		},
 		"package": {
 			"description": "Provedor de Autenticação do GitHub",

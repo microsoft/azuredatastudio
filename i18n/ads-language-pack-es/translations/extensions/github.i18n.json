@@ -34,7 +34,7 @@
 		},
 		"package": {
 			"config.gitAuthentication": "Controla si se debe habilitar la autenticación automática de GitHub para los comandos GIT dentro de VS Code.",
-			"description": "GitHub",
+			"description": "Características de GitHub para VS Code",
 			"displayName": "GitHub",
 			"welcome.publishFolder": "También puede publicar directamente esta carpeta en un repositorio de GitHub. Una vez publicada, tendrá acceso a las características de control de código fuente con tecnología de git y GitHub.\r\n[$(github) Publicar en GitHub](command:github.publish)",
 			"welcome.publishWorkspaceFolder": "También puede publicar directamente una carpeta del área de trabajo en un repositorio de GitHub. Una vez publicada, tendrá acceso a las características de control de código fuente con tecnología de git y GitHub.\r\n[$(github) Publicar en GitHub](command:github.publish)"

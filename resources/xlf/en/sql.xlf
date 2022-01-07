@@ -214,7 +214,7 @@
       <source xml:lang="en">Show Release Notes after an update. The Release Notes are opened in a new web browser window.</source>
     </trans-unit>
     <trans-unit id="sql.watcherExclude">
-      <source xml:lang="en">Configure glob patterns of file paths to exclude from file watching. Patterns must match on absolute paths (i.e. prefix with ** or the full path to match properly). Changing this setting requires a restart. When you experience Azure Data Studio consuming lots of CPU time on startup, you can exclude large folders to reduce the initial load.</source>
+      <source xml:lang="en">Configure glob patterns of file paths to exclude from file watching. Patterns must match on absolute paths, i.e. prefix with `**/` or the full path to match properly and suffix with `/**` to match files within a path (for example `**/build/output/**` or `/Users/name/workspaces/project/build/output/**`). Changing this setting requires a restart. When you experience Azure Data Studio consuming lots of CPU time on startup, you can exclude large folders to reduce the initial load.</source>
     </trans-unit>
     <trans-unit id="uninstallExtensionComplete">
       <source xml:lang="en">Please reload Azure Data Studio to complete the uninstallation of the extension {0}.</source>
@@ -645,20 +645,26 @@
     <trans-unit id="designer.newRowText">
       <source xml:lang="en">Add New</source>
     </trans-unit>
+    <trans-unit id="designer.processing">
+      <source xml:lang="en">Processing...</source>
+    </trans-unit>
     <trans-unit id="designer.processingChanges">
       <source xml:lang="en">Processing changes...</source>
     </trans-unit>
     <trans-unit id="designer.processingChangesCompleted">
       <source xml:lang="en">Changes have been processed</source>
     </trans-unit>
+    <trans-unit id="designer.processingCompleted">
+      <source xml:lang="en">Processing completed</source>
+    </trans-unit>
+    <trans-unit id="designer.publishChangesCompleted">
+      <source xml:lang="en">Changes have been published</source>
+    </trans-unit>
+    <trans-unit id="designer.publishingChanges">
+      <source xml:lang="en">Publishing changes...</source>
+    </trans-unit>
     <trans-unit id="designer.removeRowText">
       <source xml:lang="en">Remove</source>
-    </trans-unit>
-    <trans-unit id="designer.savingChanges">
-      <source xml:lang="en">Saving changes...</source>
-    </trans-unit>
-    <trans-unit id="designer.savingChangesCompleted">
-      <source xml:lang="en">Changes have been saved</source>
     </trans-unit>
     <trans-unit id="tableDesigner.unknownComponentType">
       <source xml:lang="en">The component type: {0} is not supported</source>
@@ -4199,8 +4205,11 @@ Error: {1}</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/tableDesigner/browser/actions" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="tableDesigner.saveTableChanges">
-      <source xml:lang="en">Save Changes</source>
+    <trans-unit id="tableDesigner.generateScript">
+      <source xml:lang="en">Generate Script</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.publishTableChanges">
+      <source xml:lang="en">Publish Changes...</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/contrib/tableDesigner/browser/tableDesigner.contribution" source-language="en" datatype="plaintext"><body>
@@ -5924,17 +5933,32 @@ Error: {1}</source>
     <trans-unit id="tableDesigner.generalTab">
       <source xml:lang="en">General</source>
     </trans-unit>
+    <trans-unit id="tableDesigner.generatePreviewReportError">
+      <source xml:lang="en">An error occured while generating preview report: {0}</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.generateScriptError">
+      <source xml:lang="en">An error occured while generating the script: {0}</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.generatingPreviewReport">
+      <source xml:lang="en">Generating preview report...</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.generatingScript">
+      <source xml:lang="en">Generating script...</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.generatingScriptCompleted">
+      <source xml:lang="en">Script generated.</source>
+    </trans-unit>
     <trans-unit id="tableDesigner.nameTitle">
       <source xml:lang="en">Table name</source>
     </trans-unit>
     <trans-unit id="tableDesigner.primaryKeyColumn">
       <source xml:lang="en">Primary Key Column</source>
     </trans-unit>
-    <trans-unit id="tableDesigner.saveChangeError">
-      <source xml:lang="en">An error occured while saving changes: {0}</source>
+    <trans-unit id="tableDesigner.publishChangeError">
+      <source xml:lang="en">An error occured while publishing changes: {0}</source>
     </trans-unit>
-    <trans-unit id="tableDesigner.savedChangeSuccess">
-      <source xml:lang="en">The changes have been successfully saved.</source>
+    <trans-unit id="tableDesigner.publishChangeSuccess">
+      <source xml:lang="en">The changes have been successfully published.</source>
     </trans-unit>
     <trans-unit id="tableDesigner.savingChanges">
       <source xml:lang="en">Saving table designer changes...</source>
@@ -5944,6 +5968,20 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="tableDesigner.tableObjectType">
       <source xml:lang="en">Table</source>
+    </trans-unit>
+</body></file>
+  <file original="src/sql/workbench/services/tableDesigner/browser/tableDesignerPublishDialog" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="tableDesigner.UpdateDatabase">
+      <source xml:lang="en">Update Database</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.cancel">
+      <source xml:lang="en">Cancel</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.generateScript">
+      <source xml:lang="en">Generate Script</source>
+    </trans-unit>
+    <trans-unit id="tableDesigner.previewDatabaseUpdates">
+      <source xml:lang="en">Preview Database Updates</source>
     </trans-unit>
 </body></file>
   <file original="src/sql/workbench/services/tasks/common/tasksService" source-language="en" datatype="plaintext"><body>

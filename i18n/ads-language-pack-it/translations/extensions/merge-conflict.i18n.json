@@ -8,24 +8,6 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"dist/codelensProvider": {
-			"acceptBothChanges": "Accetta entrambe le modifiche",
-			"acceptCurrentChange": "Accetta modifica corrente",
-			"acceptIncomingChange": "Accetta modifica in ingresso",
-			"compareChanges": "Confronta le modifiche"
-		},
-		"dist/commandHandler": {
-			"compareChangesTitle": "{0}: modifiche correnti ⟷ modifiche in ingresso",
-			"cursorNotInConflict": "Il cursore dell'editor non si trova all'interno di un conflitto merge",
-			"cursorOnCommonAncestorsRange": "Il cursore dell'editor si trova all'interno del blocco di predecessori comuni. Spostarlo nel blocco \"corrente\" o \"in arrivo\"",
-			"cursorOnSplitterRange": "Il cursore dell'editor si trova all'interno della barra di divisione dei conflitti di merge. Spostarlo nel blocco \"corrente\" o \"in arrivo\"",
-			"noConflicts": "Conflitti merge non trovati in questo file",
-			"noOtherConflictsInThisFile": "Nessun altro conflitto merge trovato in questo file"
-		},
-		"dist/mergeDecorator": {
-			"currentChange": "(modifica corrente)",
-			"incomingChange": "(modifica in ingresso)"
-		},
 		"package": {
 			"command.accept.all-both": "Accetta tutte in entrambe",
 			"command.accept.all-current": "Accetta tutte le modifiche correnti",
