@@ -218,7 +218,6 @@ export class QueryPlan2 {
 		];
 		this._actionBar.push(actions, { icon: true, label: false });
 
-
 		this._iconMap['Adaptive_Join_32x.ico'] = 'adaptiveJoin';
 		this._iconMap['Assert_32x.ico'] = 'assert';
 		this._iconMap['Bitmap_32x.ico'] = 'bitmap';
@@ -242,8 +241,6 @@ export class QueryPlan2 {
 		this._iconMap['Result_32x.ico'] = 'result';
 		this._iconMap['Table_spool_32x.ico'] = 'tableSpool';
 		this._iconMap['Top_32x.ico'] = 'top';
-
-
 		let imageBasePath = decodeURI(require.toUrl('./images/icons/'));
 		this._iconPaths =
 		{
@@ -524,11 +521,8 @@ export class QueryPlan2 {
 	public set graph(graph: azdata.QueryPlanGraph | undefined) {
 		this._graph = graph;
 		if (this._graph) {
-			/**
-			 * Create a show plan graph here.
-			 */
-			this._container.appendChild(document.createTextNode(`Query ${this._graphIndex}: `));
-			this._relativeCost = document.createTextNode('(relative to the script):');
+			this._container.appendChild(document.createTextNode(localize('queryIndex', "Query {n}: ", this._graphIndex)));
+			this._relativeCost = document.createTextNode(localize('relativeToTheScript', "(relative to the script):"));
 			this._container.appendChild(this._relativeCost);
 			this._container.appendChild(document.createElement('br'));
 			this._container.appendChild(document.createTextNode(`${graph.query}`));
@@ -536,8 +530,6 @@ export class QueryPlan2 {
 			this.createPlanDiagram(diagramContainer);
 			this._container.appendChild(diagramContainer);
 
-			this._container.appendChild(document.createTextNode('Need to add graph control here'));
-			this._container.appendChild(document.createElement('br'));
 			this._container.appendChild(this.propContainer);
 			this.setData(this._graph.root.properties);
 			this._container.appendChild(this._actionBarContainer);
