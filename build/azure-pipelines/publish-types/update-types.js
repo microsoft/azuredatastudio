@@ -13,7 +13,7 @@ try {
         .execSync('git describe --tags `git rev-list --tags --max-count=1`')
         .toString()
         .trim();
-    const dtsUri = `https://raw.githubusercontent.com/microsoft/azuredatastudio/${tag}/src/sql/azdata.d.ts`; // {{SQL CARBON EDIT}} Use our typings
+    const dtsUri = `https://raw.githubusercontent.com/microsoft/azuredatastudio/alanren/update-publish-types/src/sql/azdata.d.ts`; // {{SQL CARBON EDIT}} Use our typings
     const outPath = path.resolve(process.cwd(), 'DefinitelyTyped/types/azdata/index.d.ts'); // {{SQL CARBON EDIT}} Use our typings
     cp.execSync(`curl ${dtsUri} --output ${outPath}`);
     updateDTSFile(outPath, tag);
