@@ -178,11 +178,12 @@
 			"downloadgit": "Baixar Git",
 			"git20": "Parece que você tem o git {0} instalado. O código funciona melhor com a versão 2 ou posterior do git",
 			"git2526": "Há problemas conhecidos com o Git {0} instalado. Atualize para o Git versão 2.27 ou posterior para que os recursos funcionem corretamente.",
-			"looking": "Procurando pelo git em: {0}",
 			"neverShowAgain": "Não Mostrar Novamente",
 			"notfound": "Git não encontrado. Instale-o ou configure-o usando a configuração 'git.path'.",
+			"skipped": "Git localizado ignorado em: {0}",
 			"updateGit": "Atualizar Git",
-			"using git": "Usando git {0} de {1}"
+			"using git": "Usando git {0} de {1}",
+			"validating": "Validando git localizado em: {0}"
 		},
 		"dist/model": {
 			"no repositories": "Não há repositórios disponíveis",

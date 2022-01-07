@@ -34,7 +34,7 @@
 		},
 		"package": {
 			"config.gitAuthentication": "Управляет тем, следует ли включить автоматическую проверку подлинности GitHub для команд Git в VS Code.",
-			"description": "GitHub",
+			"description": "Возможности GitHub для VS Code",
 			"displayName": "GitHub",
 			"welcome.publishFolder": "Вы также можете напрямую опубликовать эту папку в репозитории GitHub. После публикации вы получите доступ к возможностям системы управления версиями на платформе Git и GitHub.\r\n[$(github) Опубликовать в GitHub](command:github.publish)",
 			"welcome.publishWorkspaceFolder": "Вы также можете напрямую опубликовать папку рабочей области в репозитории GitHub. После публикации вы получите доступ к возможностям системы управления версиями на платформе Git и GitHub.\r\n[$(github) Опубликовать в GitHub](command:github.publish)"

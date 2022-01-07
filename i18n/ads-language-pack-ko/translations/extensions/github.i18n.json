@@ -34,7 +34,7 @@
 		},
 		"package": {
 			"config.gitAuthentication": "VS Code 내에서 Git 명령에 대해 자동 GitHub 인증을 사용하도록 설정할지 여부를 제어합니다.",
-			"description": "GitHub",
+			"description": "VS Code용 GitHub 기능",
 			"displayName": "GitHub",
 			"welcome.publishFolder": "이 폴더를 GitHub 리포지토리에 직접 게시할 수도 있습니다. 게시된 후에는 Git 및 GitHub에서 제공하는 소스 제어 기능에 액세스할 수 있습니다.\r\n[$(github) GitHub에 게시](command:github.publish)",
 			"welcome.publishWorkspaceFolder": "작업 영역 폴더를 GitHub 리포지토리에 직접 게시할 수도 있습니다. 게시된 후에는 Git 및 GitHub에서 제공하는 소스 제어 기능에 액세스할 수 있습니다.\r\n[$(github) GitHub에 게시](command:github.publish)"

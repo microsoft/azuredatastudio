@@ -305,7 +305,7 @@
 			"arc.workerOneNodeValidationMessage": "不支援 1 的值。",
 			"arc.yes": "是",
 			"button.label": "選取",
-			"clusterContextConfigNoLongerValid": "組態檔所指定的叢集內容資訊: {0} 和叢集內容: {1} 不再有效。錯誤為: \r\n\t{2}\r\n 您要更新此資訊嗎?",
+			"clusterContextConfigNoLongerValid": "組態檔所指定的叢集內容資訊: {0} 和叢集內容: {1} 不再有效。錯誤為:\r\n\t{2}\r\n 您要更新此資訊嗎?",
 			"clusterContextNotFound": "在 Kube 組態檔中找不到名稱為: {0} 的叢集內容",
 			"filePicker.browse": "瀏覽",
 			"getIsPassword.unknownVariableName": "嘗試取得未知變數 {0} 的 isPassword",
