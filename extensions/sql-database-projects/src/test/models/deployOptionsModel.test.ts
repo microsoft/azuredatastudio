@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as should from 'should';
-import * as testUtils from '../../test/testUtils';
+import * as testUtils from '../../test/testContext';
 import { DeployOptionsModel } from '../../models/options/deployOptionsModel';
 
 
@@ -15,7 +15,7 @@ describe('Publish Dialog Deploy Options Model', () => {
 
 		should.doesNotThrow(() => model.setDeploymentOptions());
 
-		should(model.getDeployOptionUtil('')).be.false('should return false if invalid options is passed in');
+		should(model.getDeployOptionUtil('')).equal(undefined, 'should return false if invalid options is passed in');
 
 	});
 
@@ -26,9 +26,9 @@ describe('Publish Dialog Deploy Options Model', () => {
 		});
 	});
 
-	it('Should get null description', function (): void {
+	it('Should be undefined for null description', function (): void {
 		const model = new DeployOptionsModel(testUtils.getDeploymentOptions());
-		should(model.getDescription('')).equal('');
+		should(model.getDescription('')).equal(undefined);
 	});
 });
 

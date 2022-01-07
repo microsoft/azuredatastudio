@@ -61,11 +61,10 @@ export const at = localize('at', "at");
 
 // commands
 export const revealFileInOsCommand = 'revealFileInOS';
-export const schemaCompareStartCommand = 'SchemaCompare.start';
+export const schemaCompareStartCommand = 'schemaCompare.start';
 export const vscodeOpenCommand = 'vscode.open';
 
 // UI Strings
-
 export const dataSourcesNodeName = localize('dataSourcesNodeName', "Data Sources");
 export const databaseReferencesNodeName = localize('databaseReferencesNodeName', "Database References");
 export const sqlConnectionStringFriendly = localize('sqlConnectionStringFriendly', "SQL connection string");
@@ -93,7 +92,6 @@ export function selectTargetPlatform(currentTargetPlatform: string) { return loc
 export function currentTargetPlatform(projectName: string, currentTargetPlatform: string) { return localize('currentTargetPlatform', "Target platform of the project {0} is now {1}", projectName, currentTargetPlatform); }
 
 // Publish dialog strings
-
 export const publishDialogName = localize('publishDialogName', "Publish project");
 export const publish = localize('publish', "Publish");
 export const cancelButtonText = localize('cancelButtonText', "Cancel");
@@ -130,12 +128,15 @@ export const done = localize('done', "Done");
 export const nameMustNotBeEmpty = localize('nameMustNotBeEmpty', "Name must not be empty");
 
 // Publish Dialog options
-export const publishOptionsLabel = localize('publishDisplayOptionsLabel', 'Publish Options');
+export const publishOptions = localize('publishOptions', 'Publish Options');
 export const configureOptions = localize('configureOptions', 'Configure Options');
-export const GeneralOptionsLabel: string = localize('publishOperation.GeneralOptionsLabel', "General Options");
-export const OkButtonText: string = localize('publishOperation.OkButtonText', "Ok");
-export const CancelButtonText: string = localize('publishOperation.CancelButtonText', "Cancel");
-export const ResetButtonText: string = localize('publishOperation.ResetButtonText', "Reset");
+export const GeneralOptions: string = localize('generalOptions', "General Options");
+export const OkButton: string = localize('ok', "Ok");
+export const CancelButton: string = localize('cancel', "Cancel");
+export const ResetButton: string = localize('reset', "Reset");
+export const OptionDescription: string = localize('optionDescription', "Option Description");
+export const OptionName: string = localize('optionName', "Option Name");
+export const OptionInclude: string = localize('Include', "Include");
 
 
 // Deploy
@@ -242,7 +243,6 @@ export const dacpacNotOnSameDrive = (projectLocation: string): string => { retur
 export const referenceType = localize('referenceType', "Reference type");
 
 // Create Project From Database dialog strings
-
 export const createProjectFromDatabaseDialogName = localize('createProjectFromDatabaseDialogName', "Create project from database");
 export const createProjectDialogOkButtonText = localize('createProjectDialogOkButtonText', "Create");
 export const sourceDatabase = localize('sourceDatabase', "Source database");
@@ -546,7 +546,7 @@ export const moreInformation = localize('moreInformation', "More Information");
 export const addPackageReferenceMessage = localize('addPackageReferenceMessage', 'To use SQL bindings, ensure your Azure Functions project has a reference to {0}', sqlExtensionPackageName);
 export const addSqlBindingPackageError = localize('addSqlBindingPackageError', 'Error adding Sql Binding extension package to project');
 
-// publish tab deploy options
+// publish tab deploy options: Display names should match the dacfx property names
 export const IgnoreTableOptions: string = localize('DeployOptions.IgnoreTableOptions', "Ignore Table Options");
 export const IgnoreSemicolonBetweenStatements: string = localize('DeployOptions.IgnoreSemicolonBetweenStatements', "Ignore Semicolon Between Statements");
 export const IgnoreRouteLifetime: string = localize('DeployOptions.IgnoreRouteLifetime', "Ignore Route Lifetime");
@@ -638,96 +638,3 @@ export const DoNotDropWorkloadClassifiers: string = localize('DeployOptions.DoNo
 export const IgnoreWorkloadClassifiers: string = localize('DeployOptions.IgnoreWorkloadClassifiers', "Ignore Workload Classifiers");
 export const IgnoreDatabaseWorkloadGroups: string = localize('DeployOptions.IgnoreDatabaseWorkloadGroups', "Ignore Database Workload Groups");
 export const DoNotDropDatabaseWorkloadGroups: string = localize('DeployOptions.DoNotDropDatabaseWorkloadGroups', "Do Not Drop Database Workload Groups");
-
-// publish tab deploy options descriptions
-export const descriptionIgnoreTableOptions: string = localize('DeployOptions.Description.IgnoreTableOptions', "Specifies whether differences in the table options will be ignored or updated when you publish to a database.");
-export const descriptionIgnoreSemicolonBetweenStatements: string = localize('DeployOptions.Description.IgnoreSemicolonBetweenStatements', "Specifies whether differences in the semi-colons between T-SQL statements will be ignored or updated when you publish to a database.");
-export const descriptionIgnoreRouteLifetime: string = localize('DeployOptions.Description.IgnoreRouteLifetime', "Specifies whether differences in the amount of time that SQL Server retains the route in the routing table should be ignored or updated when you publish to a database.");
-export const descriptionIgnoreRoleMembership: string = localize('DeployOptions.Description.IgnoreRoleMembership', "Specifies whether differences in the role membership of logins should be ignored or updated when you publish to a database.");
-export const descriptionIgnoreQuotedIdentifiers: string = localize('DeployOptions.Description.IgnoreQuotedIdentifiers', "Specifies whether differences in the quoted identifiers setting should be ignored or updated when you publish to a database.");
-export const descriptionIgnorePermissions: string = localize('DeployOptions.Description.IgnorePermissions', "Specifies whether permissions should be ignored.");
-export const descriptionIgnorePartitionSchemes: string = localize('DeployOptions.Description.IgnorePartitionSchemes', "Specifies whether differences in partition schemes and functions should be ignored or updated when you publish to a database.");
-export const descriptionIgnoreObjectPlacementOnPartitionScheme: string = localize('DeployOptions.Description.IgnoreObjectPlacementOnPartitionScheme', "Specifies whether an object\'s placement on a partition scheme should be ignored or updated when you publish to a database.");
-export const descriptionIgnoreNotForReplication: string = localize('DeployOptions.Description.IgnoreNotForReplication', "Specifies whether the not for replication settings should be ignored or updated when you publish to a database.");
-export const descriptionIgnoreLoginSids: string = localize('DeployOptions.Description.IgnoreLoginSids', "Specifies whether differences in the security identification number (SID) should be ignored or updated when you publish to a database.");
-export const descriptionIgnoreLockHintsOnIndexes: string = localize('DeployOptions.Description.IgnoreLockHintsOnIndexes', "Specifies whether differences in the lock hints on indexes should be ignored or updated when you publish to a database.");
-export const descriptionIgnoreKeywordCasing: string = localize('DeployOptions.Description.IgnoreKeywordCasing', "Specifies whether differences in the casing of keywords should be ignored or updated when you publish to a database.");
-export const descriptionIgnoreIndexPadding: string = localize('DeployOptions.Description.IgnoreIndexPadding', "Specifies whether differences in the index padding should be ignored or updated when you publish to a database.");
-export const descriptionIgnoreIndexOptions: string = localize('DeployOptions.Description.IgnoreIndexOptions', "Specifies whether differences in the index options should be ignored or updated when you publish to a database.");
-export const descriptionIgnoreIncrement: string = localize('DeployOptions.Description.IgnoreIncrement', "Specifies whether differences in the increment for an identity column should be ignored or updated when you publish to a database.");
-export const descriptionIgnoreIdentitySeed: string = localize('DeployOptions.Description.IgnoreIdentitySeed', "Specifies whether differences in the seed for an identity column should be ignored or updated when you publish updates to a database.");
-export const descriptionIgnoreUserSettingsObjects: string = localize('DeployOptions.Description.IgnoreUserSettingsObjects', "Specifies whether differences in the user settings objects will be ignored or updated when you publish to a database.");
-export const descriptionIgnoreFullTextCatalogFilePath: string = localize('DeployOptions.Description.IgnoreFullTextCatalogFilePath', "Specifies whether differences in the file path for the full-text catalog should be ignored or whether a warning should be issued when you publish to a database.");
-export const descriptionIgnoreWhitespace: string = localize('DeployOptions.Description.IgnoreWhitespace', "Specifies whether differences in white space will be ignored or updated when you publish to a database.");
-export const descriptionIgnoreWithNocheckOnForeignKeys: string = localize('DeployOptions.Description.IgnoreWithNocheckOnForeignKeys', "Specifies whether differences in the value of the WITH NOCHECK clause for foreign keys will be ignored or updated when you publish to a database.");
-export const descriptionVerifyCollationCompatibility: string = localize('DeployOptions.Description.VerifyCollationCompatibility', "Specifies whether collation compatibility is verified.");
-export const descriptionUnmodifiableObjectWarnings: string = localize('DeployOptions.Description.UnmodifiableObjectWarnings', "Specifies whether warnings should be generated when differences are found in objects that cannot be modified, for example, if the file size or file paths were different for a file.");
-export const descriptionTreatVerificationErrorsAsWarnings: string = localize('DeployOptions.Description.TreatVerificationErrorsAsWarnings', "Specifies whether errors encountered during publish verification should be treated as warnings. The check is performed against the generated deployment plan before the plan is executed against your target database. Plan verification detects problems such as the loss of target-only objects (such as indexes) that must be dropped to make a change. Verification will also detect situations where dependencies (such as a table or view) exist because of a reference to a composite project, but do not exist in the target database. You might choose to do this to get a complete list of all issues, instead of having the publish action stop on the first error.");
-export const descriptionScriptRefreshModule: string = localize('DeployOptions.Description.ScriptRefreshModule', "Include refresh statements at the end of the publish script.");
-export const descriptionScriptNewConstraintValidation: string = localize('DeployOptions.Description.ScriptNewConstraintValidation', "At the end of publish all of the constraints will be verified as one set, avoiding data errors caused by a check or foreign key constraint in the middle of publish. If set to False, your constraints will be published without checking the corresponding data.");
-export const descriptionScriptFileSize: string = localize('DeployOptions.Description.ScriptFileSize', "Controls whether size is specified when adding a file to a filegroup.");
-export const descriptionScriptDeployStateChecks: string = localize('DeployOptions.Description.ScriptDeployStateChecks', "Specifies whether statements are generated in the publish script to verify that the database name and server name match the names specified in the database project.");
-export const descriptionScriptDatabaseOptions: string = localize('DeployOptions.Description.ScriptDatabaseOptions', "Specifies whether target database properties should be set or updated as part of the publish action.");
-export const descriptionScriptDatabaseCompatibility: string = localize('DeployOptions.Description.ScriptDatabaseCompatibility', "Specifies whether differences in the database compatibility should be ignored or updated when you publish to a database.");
-export const descriptionScriptDatabaseCollation: string = localize('DeployOptions.Description.ScriptDatabaseCollation', "Specifies whether differences in the database collation should be ignored or updated when you publish to a database.");
-export const descriptionRunDeploymentPlanExecutors: string = localize('DeployOptions.Description.RunDeploymentPlanExecutors', "Specifies whether DeploymentPlanExecutor contributors should be run when other operations are executed.");
-export const descriptionRegisterDataTierApplication: string = localize('DeployOptions.Description.RegisterDataTierApplication', "Specifies whether the schema is registered with the database server.");
-export const descriptionPopulateFilesOnFileGroups: string = localize('DeployOptions.Description.PopulateFilesOnFileGroups', "Specifies whether a new file is also created when a new FileGroup is created in the target database.");
-export const descriptionNoAlterStatementsToChangeClrTypes: string = localize('DeployOptions.Description.NoAlterStatementsToChangeClrTypes', "Specifies that publish should always drop and re-create an assembly if there is a difference instead of issuing an ALTER ASSEMBLY statement");
-export const descriptionIncludeTransactionalScripts: string = localize('DeployOptions.Description.IncludeTransactionalScripts', "Specifies whether transactional statements should be used where possible when you publish to a database.");
-export const descriptionIncludeCompositeObjects: string = localize('DeployOptions.Description.IncludeCompositeObjects', "Include all composite elements as part of a single publish operation.");
-export const descriptionAllowUnsafeRowLevelSecurityDataMovement: string = localize('DeployOptions.Description.AllowUnsafeRowLevelSecurityDataMovement', "Do not block data motion on a table which has Row Level Security if this property is set to true. Default is false.");
-export const descriptionIgnoreWithNocheckOnCheckConstraints: string = localize('DeployOptions.Description.IgnoreWithNocheckOnCheckConstraints', "Specifies whether differences in the value of the WITH NOCHECK clause for check constraints will be ignored or updated when you publish to a database.");
-export const descriptionIgnoreFillFactor: string = localize('DeployOptions.Description.IgnoreFillFactor', "Specifies whether differences in the fill factor for index storage should be ignored or whether a warning should be issued when you publish to a database.");
-export const descriptionIgnoreFileSize: string = localize('DeployOptions.Description.IgnoreFileSize', "Specifies whether differences in the file sizes should be ignored or whether a warning should be issued when you publish to a database.");
-export const descriptionIgnoreFilegroupPlacement: string = localize('DeployOptions.Description.IgnoreFilegroupPlacement', "Specifies whether differences in the placement of objects in FILEGROUPs should be ignored or updated when you publish to a database.");
-export const descriptionDoNotAlterReplicatedObjects: string = localize('DeployOptions.Description.DoNotAlterReplicatedObjects', "Specifies whether objects that are replicated are identified during verification.");
-export const descriptionDoNotAlterChangeDataCaptureObjects: string = localize('DeployOptions.Description.DoNotAlterChangeDataCaptureObjects', "If true, Change Data Capture objects are not altered.");
-export const descriptionDisableAndReenableDdlTriggers: string = localize('DeployOptions.Description.DisableAndReenableDdlTriggers', "Specifies whether Data Definition Language (DDL) triggers are disabled at the beginning of the publish process and re-enabled at the end of the publish action.");
-export const descriptionDeployDatabaseInSingleUserMode: string = localize('DeployOptions.Description.DeployDatabaseInSingleUserMode', "If true, the database is set to Single User Mode before deploying.");
-export const descriptionCreateNewDatabase: string = localize('DeployOptions.Description.CreateNewDatabase', "Specifies whether the target database should be updated or whether it should be dropped and re-created when you publish to a database.");
-export const descriptionCompareUsingTargetCollation: string = localize('DeployOptions.Description.CompareUsingTargetCollation', "This setting dictates how the database\'s collation is handled during deployment; by default the target database\'s collation will be updated if it does not match the collation specified by the source.  When this option is set, the target database\'s (or server\'s) collation should be used.");
-export const descriptionCommentOutSetVarDeclarations: string = localize('DeployOptions.Description.CommentOutSetVarDeclarations', "Specifies whether the declaration of SETVAR variables should be commented out in the generated publish script. You might choose to do this if you plan to specify the values on the command line when you publish by using a tool such as SQLCMD.EXE.");
-export const descriptionBlockWhenDriftDetected: string = localize('DeployOptions.Description.BlockWhenDriftDetected', "Specifies whether to block updating a database whose schema no longer matches its registration or is unregistered.");
-export const descriptionBlockOnPossibleDataLoss: string = localize('DeployOptions.Description.BlockOnPossibleDataLoss', "Specifies that the publish episode should be terminated if there is a possibility of data loss resulting from the publish operation.");
-export const descriptionBackupDatabaseBeforeChanges: string = localize('DeployOptions.Description.BackupDatabaseBeforeChanges', "Backups the database before deploying any changes.");
-export const descriptionAllowIncompatiblePlatform: string = localize('DeployOptions.Description.AllowIncompatiblePlatform', "Specifies whether to attempt the action despite incompatible SQL Server platforms.");
-export const descriptionAllowDropBlockingAssemblies: string = localize('DeployOptions.Description.AllowDropBlockingAssemblies', "This property is used by SqlClr deployment to cause any blocking assemblies to be dropped as part of the deployment plan. By default, any blocking/referencing assemblies will block an assembly update if the referencing assembly needs to be dropped.");
-export const descriptionDropConstraintsNotInSource: string = localize('DeployOptions.Description.DropConstraintsNotInSource', "Specifies whether constraints that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.");
-export const descriptionDropDmlTriggersNotInSource: string = localize('DeployOptions.Description.DropDmlTriggersNotInSource', "Specifies whether DML triggers that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.");
-export const descriptionDropExtendedPropertiesNotInSource: string = localize('DeployOptions.Description.DropExtendedPropertiesNotInSource', "Specifies whether extended properties that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.");
-export const descriptionDropIndexesNotInSource: string = localize('DeployOptions.Description.DropIndexesNotInSource', "Specifies whether indexes that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.");
-export const descriptionIgnoreFileAndLogFilePath: string = localize('DeployOptions.Description.IgnoreFileAndLogFilePath', "Specifies whether differences in the paths for files and log files should be ignored or updated when you publish to a database.");
-export const descriptionIgnoreExtendedProperties: string = localize('DeployOptions.Description.IgnoreExtendedProperties', "Specifies whether extended properties should be ignored.");
-export const descriptionIgnoreDmlTriggerState: string = localize('DeployOptions.Description.IgnoreDmlTriggerState', "Specifies whether differences in the enabled or disabled state of DML triggers should be ignored or updated when you publish to a database.");
-export const descriptionIgnoreDmlTriggerOrder: string = localize('DeployOptions.Description.IgnoreDmlTriggerOrder', "Specifies whether differences in the order of Data Manipulation Language (DML) triggers should be ignored or updated when you publish to a database.");
-export const descriptionIgnoreDefaultSchema: string = localize('DeployOptions.Description.IgnoreDefaultSchema', "Specifies whether differences in the default schema should be ignored or updated when you publish to a database.");
-export const descriptionIgnoreDdlTriggerState: string = localize('DeployOptions.Description.IgnoreDdlTriggerState', "Specifies whether differences in the enabled or disabled state of Data Definition Language (DDL) triggers should be ignored or updated when you publish to a database.");
-export const descriptionIgnoreDdlTriggerOrder: string = localize('DeployOptions.Description.IgnoreDdlTriggerOrder', "Specifies whether differences in the order of Data Definition Language (DDL) triggers should be ignored or updated when you publish to a database or server.");
-export const descriptionIgnoreCryptographicProviderFilePath: string = localize('DeployOptions.Description.IgnoreCryptographicProviderFilePath', "Specifies whether differences in the file path for the cryptographic provider should be ignored or updated when you publish to a database.");
-export const descriptionVerifyDeployment: string = localize('DeployOptions.Description.VerifyDeployment', "Specifies whether checks should be performed before publishing that will stop the publish action if issues are present that might block successful publishing. For example, your publish action might stop if you have foreign keys on the target database that do not exist in the database project, and that will cause errors when you publish.");
-export const descriptionIgnoreComments: string = localize('DeployOptions.Description.IgnoreComments', "Specifies whether differences in the comments should be ignored or updated when you publish to a database.");
-export const descriptionIgnoreColumnCollation: string = localize('DeployOptions.Description.IgnoreColumnCollation', "Specifies whether differences in the column collations should be ignored or updated when you publish to a database.");
-export const descriptionIgnoreAuthorizer: string = localize('DeployOptions.Description.IgnoreAuthorizer', "Specifies whether differences in the Authorizer should be ignored or updated when you publish to a database.");
-export const descriptionIgnoreAnsiNulls: string = localize('DeployOptions.Description.IgnoreAnsiNulls', "Specifies whether differences in the ANSI NULLS setting should be ignored or updated when you publish to a database.");
-export const descriptionGenerateSmartDefaults: string = localize('DeployOptions.Description.GenerateSmartDefaults', "Automatically provides a default value when updating a table that contains data with a column that does not allow null values.");
-export const descriptionDropStatisticsNotInSource: string = localize('DeployOptions.Description.DropStatisticsNotInSource', "Specifies whether statistics that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.");
-export const descriptionDropRoleMembersNotInSource: string = localize('DeployOptions.Description.DropRoleMembersNotInSource', "Specifies whether role members that are not defined in the database snapshot (.dacpac) file will be dropped from the target database when you publish updates to a database.</");
-export const descriptionDropPermissionsNotInSource: string = localize('DeployOptions.Description.DropPermissionsNotInSource', "Specifies whether permissions that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish updates to a database.");
-export const descriptionDropObjectsNotInSource: string = localize('DeployOptions.Description.DropObjectsNotInSource', "Specifies whether objects that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.  This value takes precedence over DropExtendedProperties.");
-export const descriptionIgnoreColumnOrder: string = localize('DeployOptions.Description.IgnoreColumnOrder', "Specifies whether differences in table column order should be ignored or updated when you publish to a database.");
-export const descriptionIgnoreTablePartitionOptions: string = localize('DeployOptions.Description.IgnoreTablePartitionOptions', "Specifies whether differences in the table partition options will be ignored or updated when you publish to a database. This option applies only to Azure Synapse Analytics dedicated SQL pool databases.");
-export const descriptionDoNotEvaluateSqlCmdVariables: string = localize('DeployOptions.Description.DoNotEvaluateSqlCmdVariables', "Specifies whether SQLCMD variables to not replace with values");
-export const descriptionDisableParallelismForEnablingIndexes: string = localize('DeployOptions.Description.DisableParallelismForEnablingIndexes', "Not using parallelism when rebuilding indexes while importing data into SQL Server.");
-export const descriptionDisableIndexesForDataPhase: string = localize('DeployOptions.Description.DisableIndexesForDataPhase', "Disable indexes before importing data into SQL Server.");
-export const descriptionRestoreSequenceCurrentValue: string = localize('DeployOptions.Description.RestoreSequenceCurrentValue', "Specifies whether sequence object current value should be deployed with dacpac file, the default value is True.");
-export const descriptionRebuildIndexesOfflineForDataPhase: string = localize('DeployOptions.Description.RebuildIndexesOfflineForDataPhase', "Rebuild indexes offline after importing data.");
-export const descriptionIsAlwaysEncryptedParameterizationEnabled: string = localize('DeployOptions.Description.IsAlwaysEncryptedParameterizationEnabled', "Enables variable parameterization on Always Encrypted columns in pre/post deployment scripts.");
-export const descriptionPreserveIdentityLastValues: string = localize('DeployOptions.Description.PreserveIdentityLastValues', "Specifies whether last values for identity columns should be preserved during deployment.");
-export const descriptionAllowExternalLibraryPaths: string = localize('DeployOptions.Description.AllowExternalLibraryPaths', "Allows file paths, if available, to be used to generate external library statements.");
-export const descriptionAllowExternalLanguagePaths: string = localize('DeployOptions.Description.AllowExternalLanguagePaths', "Allows file paths, if available, to be used to generate external language statements.");
-export const descriptionHashObjectNamesInLogs: string = localize('DeployOptions.Description.HashObjectNamesInLogs', "To replace all object names in logs with a random hash value.");
-export const descriptionDoNotDropWorkloadClassifiers: string = localize('DeployOptions.Description.DoNotDropWorkloadClassifiers', "When false, WorkloadClassifiers in the target database that are not defined in the source will be dropped during deployment.");
-export const descriptionIgnoreWorkloadClassifiers: string = localize('DeployOptions.Description.IgnoreWorkloadClassifiers', "Specifies whether to exclude workload classifiers that exist on the target during deployment.");
-export const descriptionIgnoreDatabaseWorkloadGroups: string = localize('DeployOptions.Description.IgnoreDatabaseWorkloadGroups', "Specifies whether to exclude workload groups that exist on the target during deployment.");
-export const descriptionDoNotDropDatabaseWorkloadGroups: string = localize('DeployOptions.Description.DoNotDropDatabaseWorkloadGroups', "When false, Database WorkloadGroups in the target database that are not defined in the source will be dropped during deployment.");

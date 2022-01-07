@@ -21,29 +21,28 @@ export class PublishOptionsDialog {
 	private optionsModel: DeployOptionsModel;
 	private optionsFlexBuilder!: azdata.FlexContainer;
 
-
 	constructor(defaultOptions: mssql.DeploymentOptions, private publish: PublishDatabaseDialog) {
 		this.optionsModel = new DeployOptionsModel(defaultOptions);
 	}
 
 	protected initializeDialog(): void {
-		this.optionsTab = azdata.window.createTab(constants.GeneralOptionsLabel);
+		this.optionsTab = azdata.window.createTab(constants.GeneralOptions);
 		this.intializeDeploymentOptionsDialogTab();
 		this.dialog.content = [this.optionsTab];
 	}
 
 	public openDialog(): void {
-		this.dialog = azdata.window.createModelViewDialog(constants.GeneralOptionsLabel);
+		this.dialog = azdata.window.createModelViewDialog(constants.GeneralOptions);
 
 		this.initializeDialog();
 
-		this.dialog.okButton.label = constants.OkButtonText;
+		this.dialog.okButton.label = constants.OkButton;
 		this.dialog.okButton.onClick(async () => this.execute());
 
-		this.dialog.cancelButton.label = constants.CancelButtonText;
+		this.dialog.cancelButton.label = constants.CancelButton;
 		this.dialog.cancelButton.onClick(async () => this.cancel());
 
-		let resetButton = azdata.window.createButton(constants.ResetButtonText);
+		let resetButton = azdata.window.createButton(constants.ResetButton);
 		resetButton.onClick(async () => await this.reset());
 		this.dialog.customButtons = [];
 		this.dialog.customButtons.push(resetButton);
@@ -53,14 +52,13 @@ export class PublishOptionsDialog {
 
 	private intializeDeploymentOptionsDialogTab(): void {
 		this.optionsTab?.registerContent(async view => {
-
 			this.descriptionHeading = view.modelBuilder.table().withProps({
 				data: [],
 				columns: [
 					{
-						value: 'Option Description',
+						value: constants.OptionDescription,
 						headerCssClass: 'no-borders',
-						toolTip: 'Option Description'
+						toolTip: constants.OptionDescription
 					}
 				]
 			}).component();
@@ -68,7 +66,6 @@ export class PublishOptionsDialog {
 			this.descriptionText = view.modelBuilder.text().withProps({
 				value: ' '
 			}).component();
-
 
 			this.optionsTable = view.modelBuilder.table().component();
 			await this.updateOptionsTable();
@@ -104,7 +101,9 @@ export class PublishOptionsDialog {
 		});
 	}
 
-	// Update the default options to the options table area
+	/*
+	* Update the default options to the options table area
+	*/
 	private async updateOptionsTable(): Promise<void> {
 		let data = this.optionsModel.getOptionsData();
 		await this.optionsTable.updateProperties({
@@ -112,7 +111,7 @@ export class PublishOptionsDialog {
 			columns: [
 				<azdata.CheckboxColumn>
 				{
-					value: 'Include',
+					value: constants.OptionInclude,
 					type: azdata.ColumnType.checkBox,
 					action: azdata.ActionOnCellCheckboxCheck.customAction,
 					headerCssClass: 'display-none',
@@ -120,7 +119,7 @@ export class PublishOptionsDialog {
 					width: 50
 				},
 				{
-					value: 'Option Name',
+					value: constants.OptionName,
 					headerCssClass: 'display-none',
 					cssClass: 'no-borders align-with-header',
 					width: 50
@@ -130,19 +129,25 @@ export class PublishOptionsDialog {
 		});
 	}
 
-	// Ok button click, will update the deployment options with selections
+	/*
+	* Ok button click, will update the deployment options with selections
+	*/
 	protected execute(): void {
 		this.optionsModel.setDeploymentOptions();
 		this.publish.setDeploymentOptions(this.optionsModel.deploymentOptions);
 		this.disposeListeners();
 	}
 
-	// Cancels the deploy options table
+	/*
+	* Cancels the deploy options table dialog and its changes will be disposed
+	*/
 	protected cancel(): void {
 		this.disposeListeners();
 	}
 
-	// Reset button click, resets all the options selection
+	/*
+	* Reset button click, resets all the options selection
+	*/
 	private async reset(): Promise<void> {
 		let result = await this.publish.getDefaultDeploymentOptions();
 		this.optionsModel.deploymentOptions = result;
@@ -153,9 +158,6 @@ export class PublishOptionsDialog {
 	}
 
 	private disposeListeners(): void {
-		if (this.disposableListeners) {
-			this.disposableListeners.forEach(x => x.dispose());
-		}
+		this.disposableListeners.forEach(x => x.dispose());
 	}
-
 }

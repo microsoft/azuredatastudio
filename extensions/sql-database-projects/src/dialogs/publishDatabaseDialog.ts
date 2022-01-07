@@ -58,7 +58,7 @@ export class PublishDatabaseDialog {
 	private profileUsed: boolean = false;
 	private serverName: string | undefined;
 	protected optionsButton!: azdataType.ButtonComponent;
-	private publishOptionDialog!: PublishOptionsDialog;
+	private publishOptionsDialog!: PublishOptionsDialog;
 
 	private completionPromise: Deferred = new Deferred();
 
@@ -899,10 +899,12 @@ export class PublishDatabaseDialog {
 	}
 
 	//#region Deploy Display Options
-	// Creates Display options container with hyperlink options
+	/*
+	 * Creates Display options container with hyperlink options
+	 */
 	private createOptionsButton(view: azdataType.ModelView) {
 		const optionslabel = view.modelBuilder.text().withProps({
-			value: constants.publishOptionsLabel,
+			value: constants.publishOptions,
 			width: cssStyles.publishDialogLabelWidth
 		}).component();
 
@@ -917,17 +919,23 @@ export class PublishDatabaseDialog {
 		this.optionsButton.onDidClick(async () => {
 			TelemetryReporter.sendActionEvent(TelemetryViews.SqlProjectPublishDialog, 'PublishOptionsClicked');
 			// create fresh every time
-			this.publishOptionDialog = new PublishOptionsDialog(this.deploymentOptions, this);
-			this.publishOptionDialog.openDialog();
+			this.publishOptionsDialog = new PublishOptionsDialog(this.deploymentOptions, this);
+			this.publishOptionsDialog.openDialog();
 		});
 
 		return optionsRow;
 	}
 
+	/*
+	* Gets the default deployment options from the dacfx service
+	*/
 	public async getDefaultDeploymentOptions(): Promise<DeploymentOptions> {
 		return await utils.getDefaultPublishDeploymentOptions(this.project) as DeploymentOptions;
 	}
 
+	/*
+	* Sets the default deployment options to deployment options model object
+	*/
 	public setDeploymentOptions(deploymentOptions: DeploymentOptions): void {
 		this.deploymentOptions = deploymentOptions;
 	}

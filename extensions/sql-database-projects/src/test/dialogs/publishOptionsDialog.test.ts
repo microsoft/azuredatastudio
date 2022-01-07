@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as should from 'should';
-import * as testUtils from '../../test/testUtils';
+import * as testUtils from '../../test/testContext';
 
 import { PublishOptionsDialog } from '../../dialogs/publishOptionsDialog';
 import { PublishDatabaseDialog } from '../../dialogs/publishDatabaseDialog';
@@ -14,7 +14,7 @@ describe('Publish Database Options Dialog', () => {
 	it('Should open dialog successfully ', async function (): Promise<void> {
 		const publishDatabaseDialog = new PublishDatabaseDialog(new Project(''));
 		const optionsDialog = new PublishOptionsDialog(testUtils.getDeploymentOptions(), publishDatabaseDialog);
-		await optionsDialog.openDialog();
+		optionsDialog.openDialog();
 		should.notEqual(optionsDialog.dialog, undefined);
 	});
 });
