@@ -176,16 +176,10 @@ export class QueryPlan2 {
 
 			const item = this._dataView.getItem(args.row);
 			if (item) {
-				if (!item._collapsed) {
-					item._collapsed = true;
-				} else {
-					item._collapsed = false;
-				}
-
+				item._collapsed = !item._collapsed;
 				this._dataView.updateItem(item.id, item);
 			}
 			e.stopImmediatePropagation();
-
 		});
 
 		this._dataView.setFilter((item) => {
