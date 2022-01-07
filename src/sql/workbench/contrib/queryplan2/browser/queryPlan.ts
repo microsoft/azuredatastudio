@@ -113,7 +113,7 @@ export class QueryPlan2 {
 			orientation: ActionsOrientation.VERTICAL, context: this
 		});
 
-		this.propContainer = DOM.$('.properties-container');
+		this.propContainer = DOM.$('.qp-properties-container');
 		const propHeader = document.createElement('div');
 		propHeader.className = 'properties-header';
 		propHeader.innerText = 'Properties';
