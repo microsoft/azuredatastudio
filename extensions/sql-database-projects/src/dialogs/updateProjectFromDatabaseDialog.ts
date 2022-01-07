@@ -534,7 +534,7 @@ export class UpdateProjectFromDatabaseDialog {
 			projectFilePath: '',
 			folderStructure: '',
 			targetScripts: [],
-			dataSchemaProvider: '',
+			databaseSchemaProvider: '',
 			packageFilePath: '',
 			connectionName: serverDropdownValue.connection.options.connectionName
 		};
@@ -544,7 +544,7 @@ export class UpdateProjectFromDatabaseDialog {
 			projectFilePath: this.projectFileTextBox!.value!,
 			folderStructure: this.folderStructureDropDown!.value as string,
 			targetScripts: [],
-			dataSchemaProvider: '',
+			databaseSchemaProvider: '',
 			connectionDetails: connectionDetails,
 			databaseName: '',
 			serverDisplayName: '',

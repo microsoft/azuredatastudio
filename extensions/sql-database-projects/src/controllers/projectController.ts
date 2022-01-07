@@ -1385,7 +1385,7 @@ export class ProjectsController {
 		const operationId = UUID.generateUuid();
 
 		target.targetScripts = await this.getProjectScriptFiles(target.projectFilePath);
-		target.dataSchemaProvider = await this.getProjectDatabaseSchemaProvider(target.projectFilePath);
+		target.databaseSchemaProvider = await this.getProjectDatabaseSchemaProvider(target.projectFilePath);
 
 		TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, 'SchemaComparisonStarted');
 
