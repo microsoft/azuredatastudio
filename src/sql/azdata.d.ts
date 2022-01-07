@@ -6,6 +6,7 @@
 declare module 'azdata' {
 	import * as vscode from 'vscode';
 
+	//test test test
 	/**
 	 * The version of the application.
 	 */
