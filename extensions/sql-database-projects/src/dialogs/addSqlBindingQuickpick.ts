@@ -155,12 +155,19 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 
 				// get connection string for sql server
 				let connectionString: string = '';
+				let connectionUri: string = '';
 				const connectionInfo = await vscodeMssqlApi.promptForConnection(true);
 				if (!connectionInfo) {
 					// User cancelled
 					return;
 				}
-				const connectionUri = await vscodeMssqlApi.connect(connectionInfo);
+				try {
+					// TO DO: https://github.com/microsoft/azuredatastudio/issues/18012
+					connectionUri = await vscodeMssqlApi.connect(connectionInfo);
+				} catch (e) {
+					console.warn(e);
+					void vscode.window.showErrorMessage(utils.getErrorMessage(e));
+				}
 				try {
 					connectionString = await vscodeMssqlApi.getConnectionString(connectionUri, false);
 					try {
@@ -175,6 +182,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 				} catch (e) {
 					// go back to select setting quickpick if user escapes from inputting the value in case they changed their mind
 					console.warn(e);
+					void vscode.window.showErrorMessage(constants.failedToGetConnectionString);
 					continue;
 				}
 				// If user cancels out of this or doesn't want to overwrite an existing setting
