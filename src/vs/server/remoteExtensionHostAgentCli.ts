@@ -3,7 +3,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
-import { /*getLogLevel,*/ ILogService, NullLogService } from 'vs/platform/log/common/log';
+import { getLogLevel, ILogService, LogService } from 'vs/platform/log/common/log';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { ConfigurationService } from 'vs/platform/configuration/common/configurationService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -23,8 +23,9 @@ import { DiskFileSystemProvider } from 'vs/platform/files/node/diskFileSystemPro
 import { Schemas } from 'vs/base/common/network';
 import { IFileService } from 'vs/platform/files/common/files';
 import { IProductService } from 'vs/platform/product/common/productService';
-// import { RemoteExtensionLogFileName } from 'vs/workbench/services/remote/common/remoteAgentService';
-import { ServerEnvironmentService, ServerParsedArgs } from 'vs/server/serverEnvironmentService';
+import { SpdLogLogger } from 'vs/platform/log/node/spdlogLog';
+import { RemoteExtensionLogFileName } from 'vs/workbench/services/remote/common/remoteAgentService';
+import { IServerEnvironmentService, ServerEnvironmentService, ServerParsedArgs } from 'vs/server/serverEnvironmentService';
 import { ExtensionManagementCLIService } from 'vs/platform/extensionManagement/common/extensionManagementCLIService';
 import { ILocalizationsService } from 'vs/platform/localizations/common/localizations';
 import { LocalizationsService } from 'vs/platform/localizations/node/localizations';
@@ -68,8 +69,8 @@ class CliMain extends Disposable {
 		services.set(IProductService, productService);
 
 		const environmentService = new ServerEnvironmentService(this.args, productService);
-		// services.set(IServerEnvironmentService, environmentService);
-		const logService: ILogService = new NullLogService();
+		services.set(IServerEnvironmentService, environmentService);
+		const logService: ILogService = new LogService(new SpdLogLogger(RemoteExtensionLogFileName, join(environmentService.logsPath, `${RemoteExtensionLogFileName}.log`), true, getLogLevel(environmentService)));
 		services.set(ILogService, logService);
 		logService.trace(`Remote configuration data at ${this.remoteDataFolder}`);
 		logService.trace('process arguments:', this.args);

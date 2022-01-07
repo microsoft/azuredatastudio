@@ -7,8 +7,8 @@ import * as fs from 'fs';
 import * as http from 'http';
 import * as net from 'net';
 import * as url from 'url';
-import * as path from 'path';
-import * as cookie from 'cookie';
+import * as path from 'path'; // {{SQL CARBON EDIT}}
+import * as cookie from 'cookie'; // {{SQL CARBON EDIT}}
 import { release, hostname } from 'os';
 import * as perf from 'vs/base/common/performance';
 import { performance } from 'perf_hooks';
@@ -75,7 +75,7 @@ import { LoaderStats } from 'vs/base/common/amd';
 import { RemoteExtensionLogFileName } from 'vs/workbench/services/remote/common/remoteAgentService';
 import { ExtensionManagementCLIService } from 'vs/platform/extensionManagement/common/extensionManagementCLIService';
 import { SpdLogLogger } from 'vs/platform/log/node/spdlogLog';
-import { IPtyService } from 'vs/platform/terminal/common/terminal';
+import { IPtyService, TerminalSettingId } from 'vs/platform/terminal/common/terminal';
 import { PtyHostService } from 'vs/platform/terminal/node/ptyHostService';
 
 const SHUTDOWN_TIMEOUT = 5 * 60 * 1000;
@@ -267,7 +267,8 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 		services.set(IFileService, fileService);
 		fileService.registerProvider(Schemas.file, this._register(new DiskFileSystemProvider(this._logService)));
 
-		services.set(IConfigurationService, new SyncDescriptor(ConfigurationService, [this._environmentService.machineSettingsResource, fileService]));
+		const configurationService = new ConfigurationService(this._environmentService.machineSettingsResource, fileService);
+		services.set(IConfigurationService, configurationService);
 		services.set(IRequestService, new SyncDescriptor(RequestService));
 
 		let appInsightsAppender: ITelemetryAppender = NullAppender;
@@ -306,7 +307,9 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 			PtyHostService,
 			{
 				GraceTime: ProtocolConstants.ReconnectionGraceTime,
-				ShortGraceTime: ProtocolConstants.ReconnectionShortGraceTime
+				ShortGraceTime: ProtocolConstants.ReconnectionShortGraceTime,
+				scrollback: configurationService.getValue<number>(TerminalSettingId.PersistentSessionScrollback) ?? 100,
+				useExperimentalSerialization: configurationService.getValue<boolean>(TerminalSettingId.PersistentSessionExperimentalSerializer) ?? true,
 			}
 		);
 		services.set(IPtyService, ptyService);
@@ -488,7 +491,7 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 
 		// See https://tools.ietf.org/html/rfc7692#page-12
 		let permessageDeflate = false;
-		if (!skipWebSocketFrames && req.headers['sec-websocket-extensions']) {
+		if (!skipWebSocketFrames && !this._environmentService.args['disable-websocket-compression'] && req.headers['sec-websocket-extensions']) {
 			const websocketExtensionOptions = Array.isArray(req.headers['sec-websocket-extensions']) ? req.headers['sec-websocket-extensions'] : [req.headers['sec-websocket-extensions']];
 			for (const websocketExtensionOption of websocketExtensionOptions) {
 				if (/\b((server_max_window_bits)|(server_no_context_takeover)|(client_no_context_takeover))\b/.test(websocketExtensionOption)) {

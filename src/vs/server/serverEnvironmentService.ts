@@ -5,8 +5,8 @@
 import * as nls from 'vs/nls';
 import { NativeEnvironmentService } from 'vs/platform/environment/node/environmentService';
 import { OPTIONS, OptionDescriptions } from 'vs/platform/environment/node/argv';
-// import { refineServiceDecorator } from 'vs/platform/instantiation/common/instantiation';
-import { /*IEnvironmentService,*/ INativeEnvironmentService } from 'vs/platform/environment/common/environment';
+import { refineServiceDecorator } from 'vs/platform/instantiation/common/instantiation';
+import { IEnvironmentService, INativeEnvironmentService } from 'vs/platform/environment/common/environment';
 
 export const serverOptions: OptionDescriptions<ServerParsedArgs> = {
 	'port': { type: 'string' },
@@ -18,6 +18,7 @@ export const serverOptions: OptionDescriptions<ServerParsedArgs> = {
 	'start-server': { type: 'boolean' },
 	'print-startup-performance': { type: 'boolean' },
 	'print-ip-address': { type: 'boolean' },
+	'disable-websocket-compression': { type: 'boolean' },
 
 	'fileWatcherPolling': { type: 'string' },
 
@@ -49,6 +50,7 @@ export const serverOptions: OptionDescriptions<ServerParsedArgs> = {
 	'enable-sync': { type: 'boolean' },
 	'github-auth': { type: 'string' },
 	'log': { type: 'string' },
+	'logsPath': { type: 'string' },
 
 	_: OPTIONS['_']
 };
@@ -71,6 +73,7 @@ export interface ServerParsedArgs {
 	driver?: string;
 	'print-startup-performance'?: boolean;
 	'print-ip-address'?: boolean;
+	'disable-websocket-compression'?: boolean;
 	'disable-telemetry'?: boolean;
 	fileWatcherPolling?: string;
 	'start-server'?: boolean;
@@ -106,25 +109,17 @@ export interface ServerParsedArgs {
 	'enable-sync'?: boolean;
 	'github-auth'?: string;
 	'log'?: string;
+	'logsPath'?: string;
 
 	_: string[];
 }
 
-export class ServerEnvironmentService extends NativeEnvironmentService {
-	override get args(): ServerParsedArgs { return super.args as ServerParsedArgs; }
-}
+export const IServerEnvironmentService = refineServiceDecorator<IEnvironmentService, IServerEnvironmentService>(IEnvironmentService);
 
 export interface IServerEnvironmentService extends INativeEnvironmentService {
 	readonly args: ServerParsedArgs;
 }
 
-
-// export const IServerEnvironmentService = refineServiceDecorator<IEnvironmentService, IServerEnvironmentService>(IEnvironmentService);
-
-// export interface IServerEnvironmentService extends INativeEnvironmentService {
-// 	readonly args: ServerParsedArgs;
-// }
-
-// export class ServerEnvironmentService extends NativeEnvironmentService implements IServerEnvironmentService {
-// 	/*override*/ get args(): ServerParsedArgs { return super.args as ServerParsedArgs; }
-// }
+export class ServerEnvironmentService extends NativeEnvironmentService implements IServerEnvironmentService {
+	override get args(): ServerParsedArgs { return super.args as ServerParsedArgs; }
+}

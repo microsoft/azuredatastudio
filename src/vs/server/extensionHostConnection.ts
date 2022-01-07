@@ -24,7 +24,7 @@ export async function buildUserEnvironment(startParamsEnv: { [key: string]: stri
 	const userShellEnv = await resolveShellEnv(logService, environmentService.args, process.env);
 	const binFolder = environmentService.isBuilt ? join(environmentService.appRoot, 'bin') : join(environmentService.appRoot, 'resources', 'server', 'bin-dev');
 	const processEnv = process.env;
-	let PATH = startParamsEnv['PATH'] || userShellEnv['PATH'] || processEnv['PATH'];
+	let PATH = startParamsEnv['PATH'] || (userShellEnv ? userShellEnv['PATH'] : undefined) || processEnv['PATH'];
 	if (PATH) {
 		PATH = binFolder + delimiter + PATH;
 	} else {
