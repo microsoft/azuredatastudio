@@ -536,7 +536,7 @@ export class QueryPlan2 {
 	}
 
 	public set relativeCost(newCost: number) {
-		this._relativeCost.nodeValue = `(relative to the script): ${newCost.toFixed(2)}%`;
+		this._relativeCost.nodeValue = localize('relativeToTheScriptWithCost', "(relative to the script): {0}%", newCost.toFixed(2));
 	}
 
 	public setData(props: azdata.QueryPlanGraphElementProperty[]): void {
