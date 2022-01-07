@@ -205,10 +205,25 @@ export class MessagePanel extends Disposable {
 		this.reset();
 		this.currenturi = runner.uri;
 
-		this.queryRunnerDisposables.add(runner.onQueryStart(this.onQueryStart, this));
-		this.queryRunnerDisposables.add(runner.onMessage(this.onMessage, this));
-		this.queryRunnerDisposables.add(runner.onResultSet(this.onResultSet, this));
-		this.queryRunnerDisposables.add(runner.onResultSetUpdate(this.updateResultSet, this));
+		this.queryRunnerDisposables.add(runner.onQueryStart(() => {
+			this.model.messages = [];
+			this.model.totalExecuteMessage = undefined;
+			this.tree.updateChildren();
+
+			this.queryResultsWriter.onQueryStart();
+		}));
+
+		this.queryRunnerDisposables.add(runner.onMessage((message) => {
+			this.queryResultsWriter.onMessage(message);
+		}));
+
+		this.queryRunnerDisposables.add(runner.onResultSet((resultSet) => {
+			this.queryResultsWriter.onResultSet(resultSet);
+		}));
+
+		this.queryRunnerDisposables.add(runner.onResultSetUpdate((resultSet) => {
+			this.queryResultsWriter.updateResultSet(resultSet);
+		}));
 
 		if (this.queryResultsWriterStatus.isWritingToGrid()) {
 			this.onMessage(runner.messages, true);
@@ -224,24 +239,8 @@ export class MessagePanel extends Disposable {
 		}
 	}
 
-	private onQueryStart() {
-		this.queryResultsWriter.onQueryStart();
-
-		this.model.messages = [];
-		this.model.totalExecuteMessage = undefined;
-		this.tree.updateChildren();
-	}
-
 	private onMessage(message: IQueryMessage | IQueryMessage[], setInput: boolean = false) {
 		this.queryResultsWriter.onMessage(message, setInput);
-	}
-
-	private onResultSet(resultSet: ResultSetSummary | ResultSetSummary[]) {
-		this.queryResultsWriter.onResultSet(resultSet);
-	}
-
-	private updateResultSet(resultSet: ResultSetSummary | ResultSetSummary[]) {
-		this.queryResultsWriter.updateResultSet(resultSet);
 	}
 
 	private applyStyles(theme: IColorTheme): void {
