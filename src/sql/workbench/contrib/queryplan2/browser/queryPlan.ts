@@ -79,9 +79,11 @@ export class QueryPlan2View implements IPanelView {
 			return prevCost += cg.root.subTreeCost + cg.root.cost;
 		}, 0);
 
-		this._qps.forEach(qp => {
-			qp.relativeCost = ((qp.graph.root.subTreeCost + qp.graph.root.cost) / sum) * 100;
-		});
+		if (sum > 0) {
+			this._qps.forEach(qp => {
+				qp.relativeCost = ((qp.graph.root.subTreeCost + qp.graph.root.cost) / sum) * 100;
+			});
+		}
 	}
 }
 
