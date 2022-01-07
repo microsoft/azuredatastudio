@@ -8,9 +8,9 @@ import type * as azdata from 'azdata';
 import { VSBuffer } from 'vs/base/common/buffer';
 import { NotebookCellKind } from 'vs/workbench/api/common/extHostTypes';
 import { CancellationTokenSource } from 'vs/base/common/cancellation';
-import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
 import { OutputTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { asArray } from 'vs/base/common/arrays';
+import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
 
 export class VSCodeContentManager implements azdata.nb.ContentManager {
 	constructor(private readonly _serializer: vscode.NotebookSerializer) {
