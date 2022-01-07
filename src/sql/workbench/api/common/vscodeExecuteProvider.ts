@@ -7,6 +7,7 @@ import type * as vscode from 'vscode';
 import type * as azdata from 'azdata';
 import { ADSNotebookController } from 'sql/workbench/api/common/adsNotebookController';
 import * as nls from 'vs/nls';
+import { URI } from 'vs/base/common/uri';
 
 class VSCodeFuture implements azdata.nb.IFuture {
 	private _inProgress = true;
@@ -129,18 +130,7 @@ class VSCodeKernel implements azdata.nb.IKernel {
 	requestExecute(content: azdata.nb.IExecuteRequest, disposeOnDone?: boolean): azdata.nb.IFuture {
 		let executePromise: Promise<void>;
 		if (this._controller.executeHandler) {
-			let cell = <vscode.NotebookCell>{
-				index: content.cellIndex,
-				document: <vscode.TextDocument>{
-					uri: content.notebookUri,
-					languageId: this._kernelSpec.language,
-					getText: () => Array.isArray(content.code) ? content.code.join('') : content.code,
-				},
-				notebook: <vscode.NotebookDocument>{
-					uri: content.notebookUri
-				}
-			};
-
+			let cell = convertToVSCodeNotebookCell(content.code, content.cellIndex, content.notebookUri, this._kernelSpec.language);
 			executePromise = Promise.resolve(this._controller.executeHandler([cell], cell.notebook, this._controller));
 		}
 		else {
@@ -314,4 +304,18 @@ export class VSCodeExecuteProvider implements azdata.nb.NotebookExecuteProvider 
 	public handleNotebookClosed(notebookUri: vscode.Uri): void {
 		// No-op
 	}
+}
+
+export function convertToVSCodeNotebookCell(cellSource: string | string[], index: number, uri: URI, language: string): vscode.NotebookCell {
+	return <vscode.NotebookCell>{
+		index: index,
+		document: <vscode.TextDocument>{
+			uri: uri,
+			languageId: language,
+			getText: () => Array.isArray(cellSource) ? cellSource.join('') : cellSource,
+		},
+		notebook: <vscode.NotebookDocument>{
+			uri: uri
+		}
+	};
 }
