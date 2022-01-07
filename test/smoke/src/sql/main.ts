@@ -15,19 +15,20 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { request } from 'https';
 import * as mkdirp from 'mkdirp';
+import * as minimist from 'minimist';
 
-export function main(isWeb: boolean = false): void {
-	if (isWeb) {
-		setupQueryEditorWebTests();
-		setupNotebookViewTests();
-		setupAddRemoteBookDialogTests();
+export function main(opts: minimist.ParsedArgs): void {
+	if (opts.web) {
+		setupQueryEditorWebTests(opts);
+		setupNotebookViewTests(opts);
+		setupAddRemoteBookDialogTests(opts);
 	} else {
-		setupQueryEditorTests();
-		setupNotebookTests();
-		setupNotebookViewTests();
-		setupCreateBookDialogTests();
-		setupAddRemoteBookDialogTests();
-		setupImportTests();
+		setupQueryEditorTests(opts);
+		setupNotebookTests(opts);
+		setupNotebookViewTests(opts);
+		setupCreateBookDialogTests(opts);
+		setupAddRemoteBookDialogTests(opts);
+		setupImportTests(opts);
 	}
 }
 
