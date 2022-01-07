@@ -11,7 +11,7 @@ export class VSCodeNotebookDocument implements vscode.NotebookDocument {
 	private readonly _convertedCells: vscode.NotebookCell[];
 
 	constructor(private readonly _notebookDoc: azdata.nb.NotebookDocument) {
-		this._convertedCells = this._notebookDoc.cells?.map((cell, index) => convertToVSCodeNotebookCell(cell.contents.source, index, this._notebookDoc.uri, this._notebookDoc.kernelSpec.language));
+		this._convertedCells = this._notebookDoc.cells?.map((cell, index) => convertToVSCodeNotebookCell(cell.contents.source, index, this._notebookDoc.uri, this._notebookDoc.kernelSpec?.language));
 	}
 
 	public get uri() { return this._notebookDoc.uri; }
