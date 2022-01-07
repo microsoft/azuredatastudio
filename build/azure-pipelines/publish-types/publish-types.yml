@@ -53,6 +53,7 @@ steps:
       git push --force
 
       # Update the type
+      cd ..
       node build/azure-pipelines/publish-types/update-types.js
 
       TAG_VERSION=$(git describe --tags `git rev-list --tags --max-count=1`)
