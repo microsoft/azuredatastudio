@@ -197,8 +197,10 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 						// TO DO: https://github.com/microsoft/azuredatastudio/issues/18012
 						connectionUri = await vscodeMssqlApi.connect(connectionInfo);
 					} catch (e) {
+						// give an error if unable to connect to selected connection and go back to select setting quickpick
 						console.warn(e);
 						void vscode.window.showErrorMessage(utils.getErrorMessage(e));
+						continue;
 					}
 					try {
 						connectionString = await vscodeMssqlApi.getConnectionString(connectionUri, false);
