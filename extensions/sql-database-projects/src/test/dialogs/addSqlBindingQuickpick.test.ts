@@ -29,6 +29,7 @@ describe('Add SQL Binding quick pick', () => {
 
 	it('Should show error if the file contains no Azure Functions', async function (): Promise<void> {
 		sinon.stub(utils, 'getAzureFunctionService').resolves(testContext.azureFunctionService.object);
+		sinon.stub(utils, 'getVscodeMssqlApi').resolves(testContext.vscodeMssqlIExtension.object);
 		const spy = sinon.spy(vscode.window, 'showErrorMessage');
 		testContext.azureFunctionService.setup(x => x.getAzureFunctions(TypeMoq.It.isAny())).returns(async () => {
 			return Promise.resolve({
@@ -46,6 +47,7 @@ describe('Add SQL Binding quick pick', () => {
 
 	it('Should show error if adding SQL binding was not successful', async function (): Promise<void> {
 		sinon.stub(utils, 'getAzureFunctionService').resolves(testContext.azureFunctionService.object);
+		sinon.stub(utils, 'getVscodeMssqlApi').resolves(testContext.vscodeMssqlIExtension.object);
 		const spy = sinon.spy(vscode.window, 'showErrorMessage');
 		testContext.azureFunctionService.setup(x => x.getAzureFunctions(TypeMoq.It.isAny())).returns(async () => {
 			return Promise.resolve({

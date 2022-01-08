@@ -152,38 +152,71 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 					// go back to select setting quickpick if user escapes from inputting the setting name in case they changed their mind
 					continue;
 				}
-
-				// get connection string for sql server
-				let connectionString: string = '';
-				let connectionUri: string = '';
-				const connectionInfo = await vscodeMssqlApi.promptForConnection(true);
-				if (!connectionInfo) {
+				let connectionStringOptions: vscode.QuickPickItem[] = [
+					{
+						label: constants.connectionProfile
+					},
+					{
+						label: constants.userConnectionString
+					}
+				];
+				const selectedConnectionString = await vscode.window.showQuickPick(connectionStringOptions, {
+					canPickMany: false,
+					title: constants.selectConnectionString,
+					ignoreFocusOut: true
+				});
+				if (!selectedConnectionString) {
 					// User cancelled
 					return;
 				}
-				try {
-					// TO DO: https://github.com/microsoft/azuredatastudio/issues/18012
-					connectionUri = await vscodeMssqlApi.connect(connectionInfo);
-				} catch (e) {
-					console.warn(e);
-					void vscode.window.showErrorMessage(utils.getErrorMessage(e));
-				}
-				try {
-					connectionString = await vscodeMssqlApi.getConnectionString(connectionUri, false);
-					try {
-						const success = await azureFunctionsUtils.setLocalAppSetting(path.dirname(projectUri.fsPath), newConnectionStringSettingName, connectionString);
-						if (success) {
-							connectionStringSettingName = newConnectionStringSettingName;
+				if (selectedConnectionString.label === constants.userConnectionString) {
+					const newConnectionStringValue = await vscode.window.showInputBox(
+						{
+							title: constants.enterConnectionString,
+							ignoreFocusOut: true,
+							value: 'Server=localhost;Initial Catalog={db_name};User ID=sa;Password={your_password};Persist Security Info=False',
+							validateInput: input => input ? undefined : constants.valueMustNotBeEmpty
 						}
+					) ?? '';
+					if (!newConnectionStringValue) {
+						// go back to select setting quickpick if user escapes from inputting the value in case they changed their mind
+						continue;
+					} else {
+						continue;
+					}
+				} else {
+					// get connection string for sql server
+					let connectionString: string = '';
+					let connectionUri: string = '';
+					const connectionInfo = await vscodeMssqlApi.promptForConnection(true);
+					if (!connectionInfo) {
+						// User cancelled
+						return;
+					}
+					try {
+						// TO DO: https://github.com/microsoft/azuredatastudio/issues/18012
+						connectionUri = await vscodeMssqlApi.connect(connectionInfo);
 					} catch (e) {
-						// display error message and show select setting quickpick again
+						console.warn(e);
 						void vscode.window.showErrorMessage(utils.getErrorMessage(e));
 					}
-				} catch (e) {
-					// go back to select setting quickpick if user escapes from inputting the value in case they changed their mind
-					console.warn(e);
-					void vscode.window.showErrorMessage(constants.failedToGetConnectionString);
-					continue;
+					try {
+						connectionString = await vscodeMssqlApi.getConnectionString(connectionUri, false);
+						try {
+							const success = await azureFunctionsUtils.setLocalAppSetting(path.dirname(projectUri.fsPath), newConnectionStringSettingName, connectionString);
+							if (success) {
+								connectionStringSettingName = newConnectionStringSettingName;
+							}
+						} catch (e) {
+							// display error message and show select setting quickpick again
+							void vscode.window.showErrorMessage(utils.getErrorMessage(e));
+						}
+					} catch (e) {
+						// go back to select setting quickpick if user escapes from inputting the value in case they changed their mind
+						console.warn(e);
+						void vscode.window.showErrorMessage(constants.failedToGetConnectionString);
+						continue;
+					}
 				}
 				// If user cancels out of this or doesn't want to overwrite an existing setting
 				// just return them to the select setting quickpick in case they changed their mind
