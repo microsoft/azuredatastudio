@@ -360,7 +360,7 @@ after(async function () {
 	await new Promise((c, e) => rimraf(testDataPath, { maxBusyTries: 10 }, err => err ? e(err) : c(undefined)));
 });
 
-sqlMain(opts.web);
+sqlMain(opts);
 
 if (screenshotsPath) {
 	afterEach(async function () {
