@@ -1097,7 +1097,6 @@ describe('Project: sdk style project content operations', function (): void {
 		should(projFileText.includes('<Build Remove="folder1\\nestedFolder\\**" />')).equal(false, projFileText);
 	});
 
-
 	it('Should handle excluding nested glob included folders', async function (): Promise<void> {
 		const testFolderPath = await testUtils.generateTestFolderPath();
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectBaseline, testFolderPath);
@@ -1343,6 +1342,21 @@ describe('Project: sdk style project content operations', function (): void {
 
 		should(projFileText.includes('<Build Remove="folder1\\**" />')).equal(false, projFileText);
 		should(projFileText.includes('<Build Remove="folder2\\**" />')).equal(false, projFileText);
+	});
+
+	it('Should add a project guid if there is not one in the sqlproj', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openSdkStyleSqlProjectNoProjectGuidBaseline);
+		let projFileText = (await fs.readFile(projFilePath)).toString();
+
+		// verify no project guid
+		should(projFileText.includes(constants.ProjectGuid)).equal(false);
+
+		const project: Project = await Project.openProject(projFilePath);
+
+		// verify project guid was added
+		projFileText = (await fs.readFile(projFilePath)).toString();
+		should(project.projectGuid).not.equal(undefined);
+		should(projFileText.includes(constants.ProjectGuid)).equal(true);
 	});
 });
 
