@@ -120,7 +120,7 @@ export class SchemaCompareDialog {
 				targetScripts: [],
 				folderStructure: '',
 				packageFilePath: '',
-				databaseSchemaProvider: '',
+				dataSchemaProvider: '',
 				connectionDetails: undefined,
 				connectionName: sourceServerDropdownValue.connection.options.connectionName
 			};
@@ -134,7 +134,7 @@ export class SchemaCompareDialog {
 				projectFilePath: '',
 				targetScripts: [],
 				folderStructure: '',
-				databaseSchemaProvider: '',
+				dataSchemaProvider: '',
 				packageFilePath: this.sourceTextBox.value,
 				connectionDetails: undefined
 			};
@@ -143,7 +143,7 @@ export class SchemaCompareDialog {
 				endpointType: mssql.SchemaCompareEndpointType.Project,
 				projectFilePath: this.sourceTextBox.value,
 				targetScripts: await this.getProjectScriptFiles(this.sourceTextBox.value),
-				databaseSchemaProvider: await this.getDatabaseSchemaProvider(this.sourceTextBox.value),
+				dataSchemaProvider: await this.getDatabaseSchemaProvider(this.sourceTextBox.value),
 				folderStructure: '',
 				serverDisplayName: '',
 				serverName: '',
@@ -168,7 +168,7 @@ export class SchemaCompareDialog {
 				folderStructure: '',
 				targetScripts: [],
 				packageFilePath: '',
-				databaseSchemaProvider: '',
+				dataSchemaProvider: '',
 				connectionDetails: undefined,
 				connectionName: targetServerDropdownValue.connection.options.connectionName
 			};
@@ -182,7 +182,7 @@ export class SchemaCompareDialog {
 				projectFilePath: '',
 				folderStructure: '',
 				targetScripts: [],
-				databaseSchemaProvider: '',
+				dataSchemaProvider: '',
 				packageFilePath: this.targetTextBox.value,
 				connectionDetails: undefined
 			};
@@ -192,7 +192,7 @@ export class SchemaCompareDialog {
 				projectFilePath: this.targetTextBox.value,
 				folderStructure: this.targetStructureDropdown!.value as string,
 				targetScripts: await this.getProjectScriptFiles(this.targetTextBox.value),
-				databaseSchemaProvider: await this.getDatabaseSchemaProvider(this.targetTextBox.value),
+				dataSchemaProvider: await this.getDatabaseSchemaProvider(this.targetTextBox.value),
 				serverDisplayName: '',
 				serverName: '',
 				databaseName: '',
