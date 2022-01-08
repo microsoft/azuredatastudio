@@ -5,21 +5,25 @@
 
 import type * as vscode from 'vscode';
 import type * as azdata from 'azdata';
+import { VSCodeNotebookDocument } from 'sql/workbench/api/common/vscodeNotebookDocument';
 
 export class VSCodeNotebookEditor implements vscode.NotebookEditor {
+	private readonly _document: vscode.NotebookDocument;
+
 	constructor(editor: azdata.nb.NotebookEditor) {
+		this._document = new VSCodeNotebookDocument(editor.document);
 	}
 
 	public get document(): vscode.NotebookDocument {
-		return undefined;
+		return this._document;
 	}
 
 	public get selections(): vscode.NotebookRange[] {
-		return undefined;
+		return [];
 	}
 
 	public get visibleRanges(): vscode.NotebookRange[] {
-		return undefined;
+		return [];
 	}
 
 	public get viewColumn(): vscode.ViewColumn | undefined {
@@ -27,14 +31,14 @@ export class VSCodeNotebookEditor implements vscode.NotebookEditor {
 	}
 
 	public revealRange(range: vscode.NotebookRange, revealType?: vscode.NotebookEditorRevealType): void {
-		throw new Error('Method not implemented.');
+		return; // No-op
 	}
 
 	public edit(callback: (editBuilder: vscode.NotebookEditorEdit) => void): Thenable<boolean> {
-		throw new Error('Method not implemented.');
+		return Promise.resolve(false);
 	}
 
 	public setDecorations(decorationType: vscode.NotebookEditorDecorationType, range: vscode.NotebookRange): void {
-		throw new Error('Method not implemented.');
+		return; // No-op
 	}
 }
