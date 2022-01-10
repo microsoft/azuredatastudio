@@ -485,9 +485,11 @@ export class UpdateProjectFromDatabaseDialog {
 
 	// only enable Update button if all fields are filled
 	public tryEnableUpdateButton(): void {
-		if (this.serverDropdown!.value && this.databaseDropdown!.value &&
-			this.projectFileTextBox!.value && this.folderStructureDropDown!.value &&
-			this.action !== undefined) {
+		if (this.serverDropdown?.value !== undefined
+			&& this.databaseDropdown?.value !== undefined
+			&& this.projectFileTextBox?.value !== undefined
+			&& this.folderStructureDropDown?.value !== undefined
+			&& this.action !== undefined) {
 			this.dialog.okButton.enabled = true;
 		} else {
 			this.dialog.okButton.enabled = false;
