@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-/* eslint-disable @typescript-eslint/no-floating-promises */
-
 import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
 import * as azdata from 'azdata';
@@ -91,7 +89,7 @@ export class UpdateProjectFromDatabaseDialog {
 
 			const connectionRow = this.createServerRow(view);
 			const databaseRow = this.createDatabaseRow(view);
-			this.populateServerDropdown();
+			await this.populateServerDropdown();
 
 			const sourceDatabaseFormSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 			sourceDatabaseFormSection.addItems([connectionRow, databaseRow]);
@@ -142,7 +140,7 @@ export class UpdateProjectFromDatabaseDialog {
 
 			let formModel = this.formBuilder.component();
 			await view.initializeModel(formModel);
-			this.connectionButton?.focus();
+			await this.connectionButton?.focus();
 			this.initDialogPromise.resolve();
 		});
 	}
@@ -355,7 +353,7 @@ export class UpdateProjectFromDatabaseDialog {
 		let connection = await azdata.connection.openConnectionDialog();
 		if (connection) {
 			this.connectionId = connection.connectionId;
-			this.populateServerDropdown();
+			await this.populateServerDropdown();
 		}
 	}
 
@@ -371,8 +369,8 @@ export class UpdateProjectFromDatabaseDialog {
 			width: cssStyles.updateProjectFromDatabaseTextboxWidth
 		}).component();
 
-		this.projectFileTextBox.onTextChanged(() => {
-			this.projectFileTextBox!.updateProperty('title', this.projectFileTextBox!.value);
+		this.projectFileTextBox.onTextChanged(async () => {
+			await this.projectFileTextBox!.updateProperty('title', this.projectFileTextBox!.value);
 			this.tryEnableUpdateButton();
 		});
 
@@ -413,7 +411,7 @@ export class UpdateProjectFromDatabaseDialog {
 			}
 
 			this.projectFileTextBox!.value = fileUris[0].fsPath;
-			this.projectFileTextBox!.updateProperty('title', fileUris[0].fsPath);
+			await this.projectFileTextBox!.updateProperty('title', fileUris[0].fsPath);
 		});
 
 		return browseFolderButton;
@@ -455,7 +453,7 @@ export class UpdateProjectFromDatabaseDialog {
 			label: constants.updateActionRadioButtonLabel
 		}).component();
 
-		this.compareActionRadioButton.updateProperties({ checked: true });
+		await this.compareActionRadioButton.updateProperties({ checked: true });
 		this.action = UpdateProjectAction.Compare;
 
 		this.compareActionRadioButton.onDidClick(async () => {

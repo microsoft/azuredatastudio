@@ -272,10 +272,6 @@
           "when": "false"
         },
         {
-          "command": "sqlDatabaseProjects.getProjectDatabaseSchemaProvider",
-          "when": "false"
-        },
-        {
           "command": "sqlDatabaseProjects.addDatabaseReference",
           "when": "false"
         },

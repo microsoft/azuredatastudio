@@ -173,7 +173,7 @@ export class SchemaCompareMainWindow {
 	 * @param runComparison whether to immediately run the schema comparison.  Requires both source and target to be specified.  Cannot be true when comparisonResult is set.
 	 * @param comparisonResult a pre-computed schema comparison result to display.  Cannot be set when runComparison is true.
 	 */
-	public async launch(source: mssql.SchemaCompareEndpointInfo | undefined, target: mssql.SchemaCompareEndpointInfo | undefined, runComparison: boolean = false, comparisonResult: mssql.SchemaCompareResult | undefined) {
+	public async launch(source: mssql.SchemaCompareEndpointInfo | undefined, target: mssql.SchemaCompareEndpointInfo | undefined, runComparison: boolean = false, comparisonResult: mssql.SchemaCompareResult | undefined): Promise<void> {
 		if (runComparison && comparisonResult) {
 			throw new Error('Cannot both pass a comparison result and request a new comparison be run.');
 		}
