@@ -1298,6 +1298,9 @@
         <Item ItemId=";(...) rror" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[An error occured while generating preview report: {0}]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Произошла ошибка при создании предварительного просмотра отчета: {0}]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1307,6 +1310,9 @@
         <Item ItemId=";(...) ted" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Script generated.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Сценарий создан.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1863,8 +1869,8 @@
       <Item ItemId=";src/sql/base/common/locConstants.sql.watcherExclude" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Configure glob patterns of file paths to exclude from file watching. Patterns must match on absolute paths, i.e. prefix with `**/` or the full path to match properly and suffix with `/**` to match files within a path (for example `**/build/output/**` or `/Users/name/workspaces/project/build/output/**`). Changing this setting requires a restart. When you experience Azure Data Studio consuming lots of CPU time on startup, you can exclude large folders to reduce the initial load.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Настройте стандартные шаблоны путей файлов, которые следует исключить из списка отслеживаемых файлов. Шаблоны должны соответствовать полным путям (т.е. необходимо указывать префикс ** или полный путь). После изменения этого параметра требуется перезапуск. Если при запуске возрастает нагрузка Azure Data Studio на ЦП, можно исключить крупные папки, чтобы снизить начальную нагрузку.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Настройте стандартные маски путей файлов, которые следует исключить из списка отслеживаемых файлов. Шаблоны должны соответствовать абсолютным путям, т. е. необходимо указывать префикс "**/" или полный путь для правильного сопоставления и суффикс "/**" для сопоставления файлов в пути (например, "**/build/output/**" или "/Users/name/workspaces/project/build/output/**"). После изменения этого параметра потребуется перезагрузка. Если отображается сообщение "Azure Data Studio потребляет большое количество времени ЦП при запуске", можно исключить большие папки, чтобы уменьшить начальную нагрузку.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Configure glob patterns of file paths to exclude from file watching. Patterns must match on absolute paths (i.e. prefix with ** or the full path to match properly). Changing this setting requires a restart. When you experience Azure Data Studio consuming lots of CPU time on startup, you can exclude large folders to reduce the initial load.]]></Val>
@@ -3037,7 +3043,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Processing...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Идет обработка...]]></Val>
+            <Val><![CDATA[Обработка…]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3082,7 +3088,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Publishing changes...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Публикация изменений...]]></Val>
+            <Val><![CDATA[Публикация изменений…]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -11877,6 +11883,9 @@
       <Item ItemId=";src/sql/workbench/contrib/tableDesigner/browser/actions.tableDesigner.publishTableChanges" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Publish Changes...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Опубликовать изменения…]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -16371,12 +16380,18 @@
       <Item ItemId=";src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput.tableDesigner.generateScriptError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[An error occured while generating the script: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Произошла ошибка при создании сценария: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput.tableDesigner.generatingPreviewReport" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Generating preview report...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Создание предварительного просмотра отчета…]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -16384,7 +16399,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Generating script...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Выполняется создание скрипта...]]></Val>
+            <Val><![CDATA[Создание сценария…]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -16410,12 +16425,18 @@
       <Item ItemId=";src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput.tableDesigner.publishChangeError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[An error occured while publishing changes: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Произошла ошибка при публикации изменений: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/services/tableDesigner/browser/tableDesignerComponentInput.tableDesigner.publishChangeSuccess" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The changes have been successfully published.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Изменения опубликованы.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
