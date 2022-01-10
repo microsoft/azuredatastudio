@@ -99,7 +99,7 @@ export class UpdateProjectFromDatabaseDialog {
 			const targetProjectFormSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 			targetProjectFormSection.addItems([projectLocationRow, folderStructureRow]);
 
-			const actionRow = this.createActionRow(view);
+			const actionRow = await this.createActionRow(view);
 			const actionFormSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 			actionFormSection.addItems([actionRow]);
 
@@ -441,7 +441,7 @@ export class UpdateProjectFromDatabaseDialog {
 		return folderStructureRow;
 	}
 
-	private createActionRow(view: azdata.ModelView): azdata.FlexContainer {
+	private async createActionRow(view: azdata.ModelView): Promise<azdata.FlexContainer> {
 		this.compareActionRadioButton = view.modelBuilder.radioButton().withProps({
 			name: 'action',
 			label: constants.compareActionRadioButtonLabel,
