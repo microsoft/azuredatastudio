@@ -10,7 +10,7 @@ export class DeployOptionsModel {
 	public deploymentOptions: mssql.DeploymentOptions;
 
 	public optionsLookup: Record<string, boolean> = {};
-	public optionsMapTable: Record<string, mssql.DacDeployOptionsBoolean> = {};
+	public optionsMapTable: Record<string, mssql.DacDeployOptionPropertyBoolean> = {};
 
 	constructor(defaultOptions: mssql.DeploymentOptions) {
 		this.deploymentOptions = defaultOptions;
