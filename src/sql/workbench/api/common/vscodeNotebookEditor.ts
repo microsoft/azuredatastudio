@@ -6,6 +6,7 @@
 import type * as vscode from 'vscode';
 import type * as azdata from 'azdata';
 import { VSCodeNotebookDocument } from 'sql/workbench/api/common/vscodeNotebookDocument';
+import { functionalityNotSupportedError } from 'sql/base/common/locConstants';
 
 export class VSCodeNotebookEditor implements vscode.NotebookEditor {
 	private readonly _document: vscode.NotebookDocument;
@@ -19,26 +20,26 @@ export class VSCodeNotebookEditor implements vscode.NotebookEditor {
 	}
 
 	public get selections(): vscode.NotebookRange[] {
-		return [];
+		throw new Error(functionalityNotSupportedError);
 	}
 
 	public get visibleRanges(): vscode.NotebookRange[] {
-		return [];
+		throw new Error(functionalityNotSupportedError);
 	}
 
 	public get viewColumn(): vscode.ViewColumn | undefined {
-		return undefined;
+		throw new Error(functionalityNotSupportedError);
 	}
 
 	public revealRange(range: vscode.NotebookRange, revealType?: vscode.NotebookEditorRevealType): void {
-		return; // No-op
+		throw new Error(functionalityNotSupportedError);
 	}
 
-	public edit(callback: (editBuilder: vscode.NotebookEditorEdit) => void): Thenable<boolean> {
-		return Promise.resolve(false);
+	public edit(callback: (editBuilder: vscode.NotebookEditorEdit) => void): Promise<boolean> {
+		return Promise.reject(functionalityNotSupportedError);
 	}
 
 	public setDecorations(decorationType: vscode.NotebookEditorDecorationType, range: vscode.NotebookRange): void {
-		return; // No-op
+		throw new Error(functionalityNotSupportedError);
 	}
 }

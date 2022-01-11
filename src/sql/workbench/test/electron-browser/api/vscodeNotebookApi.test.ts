@@ -455,11 +455,12 @@ suite('Notebook Serializer', () => {
 
 		// We only need the document field for VSCodeNotebookEditor, so the other
 		// fields should be non-functional
-		assert.deepStrictEqual(vscodeEditor.selections, []);
-		assert.deepStrictEqual(vscodeEditor.visibleRanges, []);
-		assert.deepStrictEqual(vscodeEditor.viewColumn, undefined);
-		let editStatus = await vscodeEditor.edit(() => undefined);
-		assert.strictEqual(editStatus, false, 'Edit promise should have returned false.');
+		assert.throws(() => vscodeEditor.selections);
+		assert.throws(() => vscodeEditor.visibleRanges);
+		assert.throws(() => vscodeEditor.viewColumn);
+		assert.throws(() => vscodeEditor.revealRange(undefined));
+		assert.throws(() => vscodeEditor.setDecorations(undefined, undefined));
+		await assert.rejects(() => vscodeEditor.edit(() => undefined));
 	});
 });
 
