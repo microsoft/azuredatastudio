@@ -751,11 +751,19 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 				// checkProposedApiEnabled(extension);
 				// return extHostNotebookEditors.onDidChangeNotebookEditorVisibleRanges(listener, thisArgs, disposables);
 			},
-			showNotebookDocument(uriOrDocument, options?) {
-				// {{SQL CARBON EDIT}} Disable VS Code notebooks
-				throw new Error(functionalityNotSupportedError);
-				// checkProposedApiEnabled(extension);
-				// return extHostNotebook.showNotebookDocument(uriOrDocument, options);
+			showNotebookDocument(uriOrDocument: URI | vscode.NotebookDocument, options?: vscode.NotebookDocumentShowOptions): Thenable<vscode.NotebookEditor> {
+				// {{SQL CARBON EDIT}} Use our own notebooks
+				let targetUri: URI;
+				if (URI.isUri(uriOrDocument)) {
+					targetUri = uriOrDocument;
+				} else {
+					targetUri = uriOrDocument.uri;
+				}
+				return extHostNotebookDocumentsAndEditors.showNotebookDocument(targetUri, {
+					viewColumn: options?.viewColumn,
+					preserveFocus: options?.preserveFocus,
+					preview: options?.preview
+				}).then(editor => new VSCodeNotebookEditor(editor));
 			},
 			registerExternalUriOpener(id: string, opener: vscode.ExternalUriOpener, metadata: vscode.ExternalUriOpenerMetadata) {
 				checkProposedApiEnabled(extension);
