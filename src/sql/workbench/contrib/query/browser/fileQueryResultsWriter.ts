@@ -179,6 +179,7 @@ export class FileQueryResultsWriter implements IQueryResultsWriter {
 class Table<T> extends Disposable {
 	private gridDataProvider: IGridDataProvider;
 	private columns: Slick.Column<T>[];
+	private readonly maxColWidthForJsonOrXml = 257;
 
 	constructor(
 		private runner: QueryRunner,
@@ -253,7 +254,10 @@ class Table<T> extends Disposable {
 
 		for (const column of this.columns) {
 			let colWidth = column.width;
-			if (column.name && column.name.length > colWidth) {
+			if (column?.formatter?.name === 'hyperLinkFormatter') {
+				colWidth = this.maxColWidthForJsonOrXml;
+			}
+			else if (column.name && column.name.length > colWidth) {
 				colWidth = column.name.length;
 			}
 
@@ -297,7 +301,12 @@ class Table<T> extends Disposable {
 		unformattedRows.forEach(r => {
 			let row = '';
 			for (let curCol = 0; curCol < this.columns.length; curCol++) {
-				row += r[curCol].displayValue;
+				if (this.columns[curCol]?.formatter?.name === 'hyperLinkFormatter') {
+					row += r[curCol].displayValue.substring(0, this.maxColWidthForJsonOrXml);
+				}
+				else {
+					row += r[curCol].displayValue;
+				}
 
 				if (curCol < this.columns.length - 1) {
 					row += ' '.repeat((columnSizes[curCol] - r[curCol].displayValue.length) + 1);
