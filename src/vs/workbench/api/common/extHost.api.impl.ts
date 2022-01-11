@@ -96,6 +96,7 @@ import { functionalityNotSupportedError } from 'sql/base/common/locConstants';
 import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/common/extHostNotebookDocumentsAndEditors';
 import { VSCodeNotebookDocument } from 'sql/workbench/api/common/notebooks/vscodeNotebookDocument';
 import { VSCodeNotebookEditor } from 'sql/workbench/api/common/notebooks/vscodeNotebookEditor';
+import { convertToADSNotebookContents } from 'sql/workbench/api/common/notebooks/notebookUtils';
 
 export interface IExtensionApiFactory {
 	(extension: IExtensionDescription, registry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): typeof vscode;
@@ -897,17 +898,17 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 			},
 			async openNotebookDocument(uriOrType?: URI | string, content?: vscode.NotebookData): Promise<vscode.NotebookDocument> {
 				// {{SQL CARBON EDIT}} Use our own notebooks
-				return undefined;
-				// let uri: URI;
-				// if (URI.isUri(uriOrType)) {
-				// 	uri = uriOrType;
-				// } else if (typeof uriOrType === 'string') {
-				// 	uri = URI.revive(await extHostNotebook.createNotebookDocument(uriOrType, content));
-				// } else {
-				// 	throw new Error('Invalid arguments');
-				// }
-				// let doc = await extHostNotebookDocumentsAndEditors.showNotebookDocument(uri, {});
-				// return extHostNotebook.getNotebookDocument(uri).apiNotebook;
+				let uri: URI;
+				if (URI.isUri(uriOrType)) {
+					uri = uriOrType;
+				} else if (typeof uriOrType === 'string') {
+					let convertedContents = convertToADSNotebookContents(content);
+					uri = URI.revive(await extHostNotebook.createNotebookDocument(uriOrType, convertedContents));
+				} else {
+					throw new Error('Invalid arguments');
+				}
+				let editor = await extHostNotebookDocumentsAndEditors.showNotebookDocument(uri, {});
+				return new VSCodeNotebookDocument(editor.document);
 			},
 			get onDidOpenNotebookDocument(): Event<vscode.NotebookDocument> {
 				// {{SQL CARBON EDIT}} Use our own notebooks
