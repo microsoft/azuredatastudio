@@ -152,62 +152,69 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 					// go back to select setting quickpick if user escapes from inputting the setting name in case they changed their mind
 					continue;
 				}
+				// show the connection string methods (user input and connection profile options)
 				const listOfConnectionStringMethods = [constants.connectionProfile, constants.userConnectionString];
-				const selectedConnectionStringMethod = await vscode.window.showQuickPick(listOfConnectionStringMethods, {
-					canPickMany: false,
-					title: constants.selectConnectionString,
-					ignoreFocusOut: true
-				});
-				if (!selectedConnectionStringMethod) {
-					// User cancelled
-					return;
-				}
-				let connectionString: string = '';
-				// User chooses to enter connection string manually
-				if (selectedConnectionStringMethod === constants.userConnectionString) {
-					connectionString = await vscode.window.showInputBox(
-						{
-							title: constants.enterConnectionString,
-							ignoreFocusOut: true,
-							value: 'Server=localhost;Initial Catalog={db_name};User ID=sa;Password={your_password};Persist Security Info=False',
-							validateInput: input => input ? undefined : constants.valueMustNotBeEmpty
+				let connectionStringInfo;
+				while (!connectionStringInfo) {
+					const selectedConnectionStringMethod = await vscode.window.showQuickPick(listOfConnectionStringMethods, {
+						canPickMany: false,
+						title: constants.selectConnectionString,
+						ignoreFocusOut: true
+					});
+					if (!selectedConnectionStringMethod) {
+						// User cancelled
+						return;
+					}
+
+					let connectionString: string = '';
+					// User chooses to enter connection string manually
+					if (selectedConnectionStringMethod === constants.userConnectionString) {
+						connectionString = await vscode.window.showInputBox(
+							{
+								title: constants.enterConnectionString,
+								ignoreFocusOut: true,
+								value: 'Server=localhost;Initial Catalog={db_name};User ID=sa;Password={your_password};Persist Security Info=False',
+								validateInput: input => input ? undefined : constants.valueMustNotBeEmpty
+							}
+						) ?? '';
+					} else {
+						// Let user choose from existing connections to create connection string from
+						let connectionUri: string = '';
+						const connectionInfo = await vscodeMssqlApi.promptForConnection(true);
+						if (!connectionInfo) {
+							// User cancelled return to selectedConnectionStringMethod prompt
+							continue;
 						}
-					) ?? '';
-				} else {
-					// Let user choose from existing connections to create connection string from
-					let connectionUri: string = '';
-					const connectionInfo = await vscodeMssqlApi.promptForConnection(true);
-					if (!connectionInfo) {
-						// User cancelled prompt
-						continue;
-					}
-					try {
-						// TO DO: https://github.com/microsoft/azuredatastudio/issues/18012
-						connectionUri = await vscodeMssqlApi.connect(connectionInfo);
-					} catch (e) {
-						// give an error if unable to connect to selected connection and go back to select setting quickpick
-						console.warn(e);
-						continue;
-					}
-					try {
-						connectionString = await vscodeMssqlApi.getConnectionString(connectionUri, false);
-					} catch (e) {
-						// go back to select setting quickpick if user escapes from inputting the value in case they changed their mind
-						console.warn(e);
-						void vscode.window.showErrorMessage(constants.failedToGetConnectionString);
-						continue;
-					}
-				}
-				if (connectionString) {
-					try {
-						const success = await azureFunctionsUtils.setLocalAppSetting(path.dirname(projectUri.fsPath), newConnectionStringSettingName, connectionString);
-						if (success) {
-							connectionStringSettingName = newConnectionStringSettingName;
+						try {
+							// TO DO: https://github.com/microsoft/azuredatastudio/issues/18012
+							connectionUri = await vscodeMssqlApi.connect(connectionInfo);
+							connectionStringInfo = connectionUri;
+						} catch (e) {
+							// give an error if unable to connect to selected connection and return to selectedConnectionStringMethod prompt
+							console.warn(e);
+							continue;
 						}
-					} catch (e) {
-						// display error message and show select setting quickpick again
-						void vscode.window.showErrorMessage('Failed to set connection string app setting: ' + utils.getErrorMessage(e));
-						continue;
+						try {
+							connectionString = await vscodeMssqlApi.getConnectionString(connectionUri, false);
+						} catch (e) {
+							// go back to select setting quickpick if user escapes from inputting the value in case they changed their mind
+							console.warn(e);
+							void vscode.window.showErrorMessage(constants.failedToGetConnectionString);
+							continue;
+						}
+					}
+					if (connectionString) {
+						try {
+							const success = await azureFunctionsUtils.setLocalAppSetting(path.dirname(projectUri.fsPath), newConnectionStringSettingName, connectionString);
+							if (success) {
+								// exit both loops and insert binding
+								connectionStringSettingName = connectionStringInfo = newConnectionStringSettingName;
+							}
+						} catch (e) {
+							// display error message and show select setting quickpick again
+							void vscode.window.showErrorMessage('Failed to set connection string app setting: ' + utils.getErrorMessage(e));
+							continue;
+						}
 					}
 				}
 				// If user cancels out of this or doesn't want to overwrite an existing setting
@@ -216,7 +223,6 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 				connectionStringSettingName = selectedSetting.label;
 			}
 		}
-
 	} else {
 		// if no AF project was found or there's more than one AF functions project in the workspace,
 		// ask for the user to input the setting name
