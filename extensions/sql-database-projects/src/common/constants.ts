@@ -540,5 +540,5 @@ export const failedToGetConnectionString = localize('failedToGetConnectionString
 export const connectionProfile = localize('connectionProfile', 'Select a connection profile');
 export const userConnectionString = localize('userConnectionString', 'Enter connection string');
 export const selectConnectionString = localize('selectConnectionString', 'Select SQL connection string method');
-export const selectConnectionError = localize('selectConnectionError', 'Failed to set connection string app setting: ');
+export const selectConnectionError = (err?: any) => err ? localize('selectConnectionError', "Failed to set connection string app setting: {0}", utils.getErrorMessage(err)) : localize('unableToSetConnectionString', "Failed to set connection string app setting");
 

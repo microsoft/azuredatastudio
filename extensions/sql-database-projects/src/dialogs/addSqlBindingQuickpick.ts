@@ -209,10 +209,12 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 								// exit both loops and insert binding
 								connectionStringSettingName = newConnectionStringSettingName;
 								break;
+							} else {
+								void vscode.window.showErrorMessage(constants.selectConnectionError());
 							}
 						} catch (e) {
 							// display error message and show select setting quickpick again
-							void vscode.window.showErrorMessage(constants.selectConnectionError + utils.getErrorMessage(e));
+							void vscode.window.showErrorMessage(constants.selectConnectionError(utils.getErrorMessage(e)));
 							continue;
 						}
 					}
