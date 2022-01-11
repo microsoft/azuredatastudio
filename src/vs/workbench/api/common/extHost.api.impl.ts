@@ -895,18 +895,17 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 				// {{SQL CARBON EDIT}} Use our own notebooks
 				return extHostNotebookDocumentsAndEditors.getAllDocuments().map(doc => new VSCodeNotebookDocument(doc.document));
 			},
-			async openNotebookDocument(uriOrType?: URI | string, content?: vscode.NotebookData) {
-				// {{SQL CARBON EDIT}} Disable VS Code notebooks
-				throw new Error(functionalityNotSupportedError);
+			async openNotebookDocument(uriOrType?: URI | string, content?: vscode.NotebookData): Promise<vscode.NotebookDocument> {
+				// {{SQL CARBON EDIT}} Use our own notebooks
 				// let uri: URI;
 				// if (URI.isUri(uriOrType)) {
 				// 	uri = uriOrType;
-				// 	await extHostNotebook.openNotebookDocument(uriOrType);
 				// } else if (typeof uriOrType === 'string') {
-				// 	uri = URI.revive(await extHostNotebook.createNotebookDocument({ viewType: uriOrType, content }));
+				// 	uri = URI.revive(await extHostNotebook.createNotebookDocument(uriOrType, content));
 				// } else {
 				// 	throw new Error('Invalid arguments');
 				// }
+				// let doc = await extHostNotebookDocumentsAndEditors.showNotebookDocument(uri, {});
 				// return extHostNotebook.getNotebookDocument(uri).apiNotebook;
 			},
 			get onDidOpenNotebookDocument(): Event<vscode.NotebookDocument> {
