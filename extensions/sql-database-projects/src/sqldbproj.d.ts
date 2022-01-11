@@ -37,6 +37,28 @@ declare module 'sqldbproj' {
 		openSqlNewProjectDialog(allowedTargetPlatforms?: SqlTargetPlatform[]): Promise<vscode.Uri | undefined>;
 	}
 
+	/**
+	 * Options to use when generating a project from an OpenAPI spec
+	 */
+	export type GenerateProjectFromOpenApiSpecOptions = {
+		/**
+		 * The OpenAPI spec file to use instead of having the user select it
+		 */
+		openApiSpecFile?: vscode.Uri,
+		/**
+		 * The default name to give the generated project in the name input prompt
+		 */
+		defaultProjectName?: string,
+		/**
+		 * The default location to show when the user is selecting the output location of the project
+		 */
+		defaultOutputLocation?: vscode.Uri,
+		/**
+		 * If true then the project will not be opened in the workspace after being created
+		 */
+		doNotOpenInWorkspace?: boolean
+	};
+
 	export interface ISqlProject {
 		/**
 		 * Reads the project setting and contents from the file

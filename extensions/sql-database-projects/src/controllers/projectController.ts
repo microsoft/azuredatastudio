@@ -38,7 +38,7 @@ import { DashboardData, PublishData, Status } from '../models/dashboardData/dash
 import { getPublishDatabaseSettings, launchPublishTargetOption } from '../dialogs/publishDatabaseQuickpick';
 import { launchPublishToDockerContainerQuickpick } from '../dialogs/deployDatabaseQuickpick';
 import { DeployService } from '../models/deploy/deployService';
-import { SqlTargetPlatform } from 'sqldbproj';
+import { GenerateProjectFromOpenApiSpecOptions, SqlTargetPlatform } from 'sqldbproj';
 import { AutorestHelper } from '../tools/autorestHelper';
 import { createNewProjectFromDatabaseWithQuickpick } from '../dialogs/createProjectFromDatabaseQuickpick';
 import { addDatabaseReferenceQuickpick } from '../dialogs/addDatabaseReferenceQuickpick';
@@ -901,25 +901,34 @@ export class ProjectsController {
 	 * 			outputFolder: 'C:\Source',
 	 * 			projectName: 'MyProject'}
 	 */
-	public async selectAutorestProjectLocation(projectName: string): Promise<{ newProjectFolder: string, outputFolder: string, projectName: string } | undefined> {
-		let valid = false;
-		let newProjectFolder: string = '';
-		let outputFolder: string = '';
+	public async selectAutorestProjectLocation(projectName: string, defaultOutputLocation: vscode.Uri | undefined): Promise<{ newProjectFolder: string, outputFolder: string, projectName: string } | undefined> {
+		let newProjectFolder = defaultOutputLocation ? path.join(defaultOutputLocation.fsPath, projectName) : '';
+		let outputFolder = defaultOutputLocation?.fsPath || '';
+		while (true) {
+			let quickPickTitle = '';
+			if (newProjectFolder && await utils.exists(newProjectFolder)) {
+				// Folder already exists at target location, prompt for new location
+				quickPickTitle = constants.folderAlreadyExistsChooseNewLocation(newProjectFolder);
+			}
+			else if (!newProjectFolder) {
+				// No target location yet
+				quickPickTitle = constants.selectProjectLocation;
+			}
+			else {
+				// Folder doesn't exist at target location so we're done
+				break;
+			}
+			const quickpickSelection = await vscode.window.showQuickPick([constants.browseEllipsisWithIcon], { title: quickPickTitle, ignoreFocusOut: true });
+			if (!quickpickSelection) {
+				return;
+			}
 
-		let quickpickSelection = await vscode.window.showQuickPick(
-			[constants.browseEllipsisWithIcon],
-			{ title: constants.selectProjectLocation, ignoreFocusOut: true });
-		if (!quickpickSelection) {
-			return;
-		}
-
-		while (!valid) {
 			const folders = await vscode.window.showOpenDialog({
 				canSelectFiles: false,
 				canSelectFolders: true,
 				canSelectMany: false,
 				openLabel: constants.selectString,
-				defaultUri: vscode.workspace.workspaceFolders?.[0]?.uri,
+				defaultUri: defaultOutputLocation ?? vscode.workspace.workspaceFolders?.[0]?.uri,
 				title: constants.selectProjectLocation
 			});
 
@@ -930,18 +939,6 @@ export class ProjectsController {
 			outputFolder = folders[0].fsPath;
 
 			newProjectFolder = path.join(outputFolder, projectName);
-
-			if (await utils.exists(newProjectFolder)) {
-
-				quickpickSelection = await vscode.window.showQuickPick(
-					[constants.browseEllipsisWithIcon],
-					{ title: constants.folderAlreadyExistsChooseNewLocation(newProjectFolder), ignoreFocusOut: true });
-				if (!quickpickSelection) {
-					return;
-				}
-			} else {
-				valid = true;
-			}
 		}
 
 		return { newProjectFolder, outputFolder, projectName };
@@ -987,22 +984,22 @@ export class ProjectsController {
 		return name;
 	}
 
-	public async generateProjectFromOpenApiSpec(): Promise<Project | undefined> {
+	public async generateProjectFromOpenApiSpec(options?: GenerateProjectFromOpenApiSpecOptions): Promise<Project | undefined> {
 		try {
 			// 1. select spec file
-			const specPath: string | undefined = await this.selectAutorestSpecFile();
+			const specPath: string | undefined = options?.openApiSpecFile?.fsPath || await this.selectAutorestSpecFile();
 			if (!specPath) {
 				return;
 			}
 
 			// 2. prompt for project name
-			const projectName = await this.promptForAutorestProjectName(path.basename(specPath, path.extname(specPath)));
+			const projectName = await this.promptForAutorestProjectName(options?.defaultProjectName || path.basename(specPath, path.extname(specPath)));
 			if (!projectName) {
 				return;
 			}
 
 			// 3. select location, make new folder
-			const projectInfo = await this.selectAutorestProjectLocation(projectName!);
+			const projectInfo = await this.selectAutorestProjectLocation(projectName!, options?.defaultOutputLocation);
 			if (!projectInfo) {
 				return;
 			}
@@ -1039,8 +1036,10 @@ export class ProjectsController {
 				await project.addScriptItem(path.relative(project.projectFolderPath, postDeploymentScript.fsPath), undefined, templates.postDeployScript);
 			}
 
-			// 7. add project to workspace and open
-			await this.openProjectInWorkspace(newProjFilePath);
+			if (options?.doNotOpenInWorkspace !== true) {
+				// 7. add project to workspace and open
+				await this.openProjectInWorkspace(newProjFilePath);
+			}
 
 			return project;
 		} catch (err) {

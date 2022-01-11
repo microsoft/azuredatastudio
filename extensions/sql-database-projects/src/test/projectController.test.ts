@@ -693,7 +693,7 @@ describe('ProjectsController', function (): void {
 			projController.callBase = true;
 
 			projController.setup(x => x.selectAutorestSpecFile()).returns(async () => specName);
-			projController.setup(x => x.selectAutorestProjectLocation(TypeMoq.It.isAny())).returns(async () => {
+			projController.setup(x => x.selectAutorestProjectLocation(TypeMoq.It.isAny(), undefined)).returns(async () => {
 				await fs.mkdir(newProjFolder);
 
 				return {
