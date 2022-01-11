@@ -152,25 +152,20 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 					// go back to select setting quickpick if user escapes from inputting the setting name in case they changed their mind
 					continue;
 				}
-				let connectionStringOptions: vscode.QuickPickItem[] = [
-					{
-						label: constants.connectionProfile
-					},
-					{
-						label: constants.userConnectionString
-					}
-				];
-				const selectedConnectionString = await vscode.window.showQuickPick(connectionStringOptions, {
+				const listOfConnectionStringMethods = [constants.connectionProfile, constants.userConnectionString];
+				const selectedConnectionStringMethod = await vscode.window.showQuickPick(listOfConnectionStringMethods, {
 					canPickMany: false,
 					title: constants.selectConnectionString,
 					ignoreFocusOut: true
 				});
-				if (!selectedConnectionString) {
+				if (!selectedConnectionStringMethod) {
 					// User cancelled
 					return;
 				}
-				if (selectedConnectionString.label === constants.userConnectionString) {
-					const newConnectionStringValue = await vscode.window.showInputBox(
+				let connectionString: string = '';
+				// User chooses to enter connection string manually
+				if (selectedConnectionStringMethod === constants.userConnectionString) {
+					connectionString = await vscode.window.showInputBox(
 						{
 							title: constants.enterConnectionString,
 							ignoreFocusOut: true,
@@ -178,20 +173,13 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 							validateInput: input => input ? undefined : constants.valueMustNotBeEmpty
 						}
 					) ?? '';
-					if (!newConnectionStringValue) {
-						// go back to select setting quickpick if user escapes from inputting the value in case they changed their mind
-						continue;
-					} else {
-						continue;
-					}
 				} else {
-					// get connection string for sql server
-					let connectionString: string = '';
+					// Let user choose from existing connections to create connection string from
 					let connectionUri: string = '';
 					const connectionInfo = await vscodeMssqlApi.promptForConnection(true);
 					if (!connectionInfo) {
-						// User cancelled
-						return;
+						// User cancelled prompt
+						continue;
 					}
 					try {
 						// TO DO: https://github.com/microsoft/azuredatastudio/issues/18012
@@ -199,24 +187,26 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 					} catch (e) {
 						// give an error if unable to connect to selected connection and go back to select setting quickpick
 						console.warn(e);
-						void vscode.window.showErrorMessage(utils.getErrorMessage(e));
 						continue;
 					}
 					try {
 						connectionString = await vscodeMssqlApi.getConnectionString(connectionUri, false);
-						try {
-							const success = await azureFunctionsUtils.setLocalAppSetting(path.dirname(projectUri.fsPath), newConnectionStringSettingName, connectionString);
-							if (success) {
-								connectionStringSettingName = newConnectionStringSettingName;
-							}
-						} catch (e) {
-							// display error message and show select setting quickpick again
-							void vscode.window.showErrorMessage(utils.getErrorMessage(e));
-						}
 					} catch (e) {
 						// go back to select setting quickpick if user escapes from inputting the value in case they changed their mind
 						console.warn(e);
 						void vscode.window.showErrorMessage(constants.failedToGetConnectionString);
+						continue;
+					}
+				}
+				if (connectionString) {
+					try {
+						const success = await azureFunctionsUtils.setLocalAppSetting(path.dirname(projectUri.fsPath), newConnectionStringSettingName, connectionString);
+						if (success) {
+							connectionStringSettingName = newConnectionStringSettingName;
+						}
+					} catch (e) {
+						// display error message and show select setting quickpick again
+						void vscode.window.showErrorMessage('Failed to set connection string app setting: ' + utils.getErrorMessage(e));
 						continue;
 					}
 				}
