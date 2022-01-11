@@ -5,7 +5,7 @@
 
 import type * as vscode from 'vscode';
 import type * as azdata from 'azdata';
-import { ADSNotebookController } from 'sql/workbench/api/common/adsNotebookController';
+import { ADSNotebookController } from 'sql/workbench/api/common/notebooks/adsNotebookController';
 import * as nls from 'vs/nls';
 import { URI } from 'vs/base/common/uri';
 
