@@ -23,6 +23,9 @@ export class ConfigurePythonDialog extends Dialog {
 	}
 
 	async waitForPageOneLoaded(): Promise<void> {
+		const pageOne = 'div.wizardNavigation-container a[title="Configure Python Runtime"]';
+		await this.code.waitAndClick(pageOne);
+
 		// Wait up to 1 minute for the python install location to be loaded.
 		const pythonInstallLocationDropdownValue = `${ConfigurePythonDialog.dialogPageInView} option[value*="/azuredatastudio-python (Default)"]`;
 		try {
