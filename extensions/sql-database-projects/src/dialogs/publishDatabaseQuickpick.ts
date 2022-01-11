@@ -110,7 +110,7 @@ export async function getPublishDatabaseSettings(project: Project, promptForConn
 	dbQuickpicks.unshift({ label: `$(add) ${constants.createNew}`, isCreateNew: true });
 
 	// if a publish profile was loaded and had a database name, use that instead of the project file name
-	const dbName = publishProfile?.databaseName ?? project.projectFileName;
+	const dbName = publishProfile?.databaseName && publishProfile?.databaseName !== '' ? publishProfile?.databaseName : project.projectFileName;
 
 	// Ensure the project name or name specified in the publish profile is an option, either adding it if it
 	// doesn't already exist or moving it to the top if it does
