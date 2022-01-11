@@ -489,7 +489,7 @@ export class UpdateProjectFromDatabaseDialog {
 			&& this.databaseDropdown?.value
 			&& this.projectFileTextBox?.value
 			&& this.folderStructureDropDown?.value
-			&& this.action) {
+			&& this.action !== undefined) {
 			this.dialog.okButton.enabled = true;
 		} else {
 			this.dialog.okButton.enabled = false;
