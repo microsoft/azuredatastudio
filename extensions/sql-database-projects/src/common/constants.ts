@@ -539,5 +539,6 @@ export const addSqlBindingPackageError = localize('addSqlBindingPackageError', '
 export const failedToGetConnectionString = localize('failedToGetConnectionString', 'An error occurred generating the connection string for the selected connection');
 export const connectionProfile = localize('connectionProfile', 'Select a connection profile');
 export const userConnectionString = localize('userConnectionString', 'Enter connection string');
-export const selectConnectionString = localize('selectConnectionString', "Select SQL connection string method");
+export const selectConnectionString = localize('selectConnectionString', 'Select SQL connection string method');
+export const selectConnectionError = localize('selectConnectionError', 'Failed to set connection string app setting: ');
 

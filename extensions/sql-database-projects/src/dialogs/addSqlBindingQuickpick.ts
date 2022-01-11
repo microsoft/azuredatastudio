@@ -152,10 +152,10 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 					// go back to select setting quickpick if user escapes from inputting the setting name in case they changed their mind
 					continue;
 				}
+
 				// show the connection string methods (user input and connection profile options)
 				const listOfConnectionStringMethods = [constants.connectionProfile, constants.userConnectionString];
-				let connectionStringInfo;
-				while (!connectionStringInfo) {
+				while (true) {
 					const selectedConnectionStringMethod = await vscode.window.showQuickPick(listOfConnectionStringMethods, {
 						canPickMany: false,
 						title: constants.selectConnectionString,
@@ -167,8 +167,8 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 					}
 
 					let connectionString: string = '';
-					// User chooses to enter connection string manually
 					if (selectedConnectionStringMethod === constants.userConnectionString) {
+						// User chooses to enter connection string manually
 						connectionString = await vscode.window.showInputBox(
 							{
 								title: constants.enterConnectionString,
@@ -188,7 +188,6 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 						try {
 							// TO DO: https://github.com/microsoft/azuredatastudio/issues/18012
 							connectionUri = await vscodeMssqlApi.connect(connectionInfo);
-							connectionStringInfo = connectionUri;
 						} catch (e) {
 							// give an error if unable to connect to selected connection and return to selectedConnectionStringMethod prompt
 							console.warn(e);
@@ -208,18 +207,19 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 							const success = await azureFunctionsUtils.setLocalAppSetting(path.dirname(projectUri.fsPath), newConnectionStringSettingName, connectionString);
 							if (success) {
 								// exit both loops and insert binding
-								connectionStringSettingName = connectionStringInfo = newConnectionStringSettingName;
+								connectionStringSettingName = newConnectionStringSettingName;
+								break;
 							}
 						} catch (e) {
 							// display error message and show select setting quickpick again
-							void vscode.window.showErrorMessage('Failed to set connection string app setting: ' + utils.getErrorMessage(e));
+							void vscode.window.showErrorMessage(constants.selectConnectionError + utils.getErrorMessage(e));
 							continue;
 						}
 					}
 				}
+			} else {
 				// If user cancels out of this or doesn't want to overwrite an existing setting
 				// just return them to the select setting quickpick in case they changed their mind
-			} else {
 				connectionStringSettingName = selectedSetting.label;
 			}
 		}
