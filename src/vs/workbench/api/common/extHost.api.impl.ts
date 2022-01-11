@@ -94,8 +94,8 @@ import { matchesScheme } from 'vs/platform/opener/common/opener';
 import { ExtHostNotebook } from 'sql/workbench/api/common/extHostNotebook';
 import { functionalityNotSupportedError } from 'sql/base/common/locConstants';
 import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/common/extHostNotebookDocumentsAndEditors';
-import { VSCodeNotebookDocument } from 'sql/workbench/api/common/vscodeNotebookDocument';
-import { VSCodeNotebookEditor } from 'sql/workbench/api/common/vscodeNotebookEditor';
+import { VSCodeNotebookDocument } from 'sql/workbench/api/common/notebooks/vscodeNotebookDocument';
+import { VSCodeNotebookEditor } from 'sql/workbench/api/common/notebooks/vscodeNotebookEditor';
 
 export interface IExtensionApiFactory {
 	(extension: IExtensionDescription, registry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): typeof vscode;
@@ -897,6 +897,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 			},
 			async openNotebookDocument(uriOrType?: URI | string, content?: vscode.NotebookData): Promise<vscode.NotebookDocument> {
 				// {{SQL CARBON EDIT}} Use our own notebooks
+				return undefined;
 				// let uri: URI;
 				// if (URI.isUri(uriOrType)) {
 				// 	uri = uriOrType;
