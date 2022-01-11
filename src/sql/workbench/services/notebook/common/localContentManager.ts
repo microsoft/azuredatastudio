@@ -14,6 +14,7 @@ import { JSONObject } from 'sql/workbench/services/notebook/common/jsonext';
 import { OutputTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { nbversion } from 'sql/workbench/services/notebook/common/notebookConstants';
 import { nbformat } from 'sql/workbench/services/notebook/common/nbformat';
+import { NBFORMAT } from 'sql/workbench/common/constants';
 
 type MimeBundle = { [key: string]: string | string[] | undefined };
 
@@ -65,7 +66,7 @@ namespace v4 {
 		let notebook: nb.INotebookContents = {
 			cells: [],
 			metadata: contents.metadata,
-			nbformat: 4,
+			nbformat: NBFORMAT,
 			nbformat_minor: contents.nbformat_minor
 		};
 
@@ -206,7 +207,7 @@ namespace v3 {
 			cells: [],
 			metadata: contents.metadata,
 			// Note: upgrading to v4 as we're converting to our codebase
-			nbformat: 4,
+			nbformat: NBFORMAT,
 			nbformat_minor: nbversion.MINOR_VERSION
 		};
 

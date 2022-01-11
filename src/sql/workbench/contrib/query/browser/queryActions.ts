@@ -5,7 +5,7 @@
 
 import 'vs/css!./media/queryActions';
 import * as nls from 'vs/nls';
-import { Action, IActionRunner } from 'vs/base/common/actions';
+import { Action, IAction, IActionRunner } from 'vs/base/common/actions';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -583,6 +583,7 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 	// CONSTRUCTOR /////////////////////////////////////////////////////////
 	constructor(
 		private _editor: QueryEditor,
+		public action: IAction,
 		@IContextViewService contextViewProvider: IContextViewService,
 		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
 		@INotificationService private readonly notificationService: INotificationService,

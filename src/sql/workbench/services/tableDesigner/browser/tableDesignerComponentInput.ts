@@ -11,6 +11,9 @@ import { designers } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { Emitter, Event } from 'vs/base/common/event';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { deepClone, equals } from 'vs/base/common/objects';
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { TableDesignerPublishDialogResult, TableDesignerPublishDialog } from 'sql/workbench/services/tableDesigner/browser/tableDesignerPublishDialog';
 
 export class TableDesignerComponentInput implements DesignerComponentInput {
 
@@ -30,7 +33,9 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 
 	constructor(private readonly _provider: TableDesignerProvider,
 		private _tableInfo: azdata.designers.TableInfo,
-		@INotificationService private readonly _notificationService: INotificationService) {
+		@INotificationService private readonly _notificationService: INotificationService,
+		@IQueryEditorService private readonly _queryEditorService: IQueryEditorService,
+		@IInstantiationService private readonly _instantiationService: IInstantiationService) {
 	}
 
 	get valid(): boolean {
@@ -59,7 +64,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 
 	processEdit(edit: DesignerEdit): void {
 		this.updateState(this.valid, this.dirty, 'processEdit');
-		this._provider.processTableEdit(this._tableInfo, this._viewModel!, edit).then(
+		this._provider.processTableEdit(this._tableInfo, edit).then(
 			result => {
 				this._viewModel = result.viewModel;
 				this.updateState(result.isValid, !equals(this._viewModel, this._originalViewModel), undefined);
@@ -79,21 +84,69 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		);
 	}
 
-	async save(): Promise<void> {
+	async generateScript(): Promise<void> {
 		const notificationHandle = this._notificationService.notify({
 			severity: Severity.Info,
-			message: localize('tableDesigner.savingChanges', "Saving table designer changes...")
+			message: localize('tableDesigner.generatingScript', "Generating script..."),
+			sticky: true
+		});
+		try {
+			this.updateState(this.valid, this.dirty, 'generateScript');
+			const script = await this._provider.generateScript(this._tableInfo);
+			this._queryEditorService.newSqlEditor({ initalContent: script });
+			this.updateState(this.valid, this.dirty);
+			notificationHandle.updateMessage(localize('tableDesigner.generatingScriptCompleted', "Script generated."));
+		} catch (error) {
+			notificationHandle.updateSeverity(Severity.Error);
+			notificationHandle.updateMessage(localize('tableDesigner.generateScriptError', "An error occured while generating the script: {0}", error?.message ?? error));
+			this.updateState(this.valid, this.dirty);
+		}
+	}
+
+	async publishChanges(): Promise<void> {
+		const saveNotificationHandle = this._notificationService.notify({
+			severity: Severity.Info,
+			message: localize('tableDesigner.savingChanges', "Saving table designer changes..."),
+			sticky: true
 		});
 		try {
 			this.updateState(this.valid, this.dirty, 'save');
-			await this._provider.saveTable(this._tableInfo, this._viewModel);
+			await this._provider.publishChanges(this._tableInfo);
 			this._originalViewModel = this._viewModel;
 			this.updateState(true, false);
-			notificationHandle.updateMessage(localize('tableDesigner.savedChangeSuccess', "The changes have been successfully saved."));
+			saveNotificationHandle.updateMessage(localize('tableDesigner.publishChangeSuccess', "The changes have been successfully published."));
 		} catch (error) {
-			notificationHandle.updateSeverity(Severity.Error);
-			notificationHandle.updateMessage(localize('tableDesigner.saveChangeError', "An error occured while saving changes: {0}", error?.message ?? error));
+			saveNotificationHandle.updateSeverity(Severity.Error);
+			saveNotificationHandle.updateMessage(localize('tableDesigner.publishChangeError', "An error occured while publishing changes: {0}", error?.message ?? error));
 			this.updateState(this.valid, this.dirty);
+		}
+	}
+
+	async openPublishDialog(): Promise<void> {
+		const reportNotificationHandle = this._notificationService.notify({
+			severity: Severity.Info,
+			message: localize('tableDesigner.generatingPreviewReport', "Generating preview report..."),
+			sticky: true
+		});
+
+		let report;
+		try {
+			this.updateState(this.valid, this.dirty, 'generateReport');
+			report = await this._provider.generatePreviewReport(this._tableInfo);
+			reportNotificationHandle.close();
+			this.updateState(this.valid, this.dirty);
+		} catch (error) {
+			reportNotificationHandle.updateSeverity(Severity.Error);
+			reportNotificationHandle.updateMessage(localize('tableDesigner.generatePreviewReportError', "An error occured while generating preview report: {0}", error?.message ?? error));
+			this.updateState(this.valid, this.dirty);
+			return;
+		}
+		const dialog = this._instantiationService.createInstance(TableDesignerPublishDialog);
+		const result = await dialog.open(report);
+		if (result === TableDesignerPublishDialogResult.GenerateScript) {
+			await this.generateScript();
+		} else if (result === TableDesignerPublishDialogResult.UpdateDatabase) {
+			await this.publishChanges();
 		}
 	}
 
@@ -131,7 +184,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		}
 
 		this.updateState(this.valid, this.dirty, 'initialize');
-		this._provider.getTableDesignerInfo(this._tableInfo).then(result => {
+		this._provider.initializeTableDesigner(this._tableInfo).then(result => {
 			this.doInitialization(result);
 			this._onInitialized.fire();
 		}, error => {
@@ -147,16 +200,16 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 
 		const tabs = [];
 
-		if (designerInfo.view.showColumnsTab) {
-			tabs.push(this.getColumnsTab(designerInfo));
+		if (designerInfo.view.columnTableOptions?.showTable) {
+			tabs.push(this.getColumnsTab(designerInfo.view.columnTableOptions, designerInfo.columnTypes));
 		}
 
-		if (designerInfo.view.showForeignKeysTab) {
-			tabs.push(this.getForeignKeysTab(designerInfo));
+		if (designerInfo.view.foreignKeyTableOptions?.showTable) {
+			tabs.push(this.getForeignKeysTab(designerInfo.view.foreignKeyTableOptions));
 		}
 
-		if (designerInfo.view.showCheckConstraintsTab) {
-			tabs.push(this.getCheckConstraintsTab(designerInfo));
+		if (designerInfo.view.checkConstraintTableOptions?.showTable) {
+			tabs.push(this.getCheckConstraintsTab(designerInfo.view.checkConstraintTableOptions));
 		}
 
 		if (designerInfo.view.additionalTabs) {
@@ -209,7 +262,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		};
 	}
 
-	private getColumnsTab(designerInfo: azdata.designers.TableDesignerInfo): DesignerTab {
+	private getColumnsTab(options: azdata.designers.TableDesignerBuiltInTableViewOptions, columnTypes: string[]): DesignerTab {
 
 		const columnProperties: DesignerDataPropertyInfo[] = [
 			{
@@ -227,7 +280,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				componentProperties: {
 					title: localize('tableDesigner.columnTypeTitle', "Type"),
 					width: 100,
-					values: designerInfo.columnTypes
+					values: columnTypes
 				}
 			}, {
 				componentType: 'input',
@@ -278,11 +331,11 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			}
 		];
 
-		if (designerInfo.view.additionalTableColumnProperties) {
-			columnProperties.push(...designerInfo.view.additionalTableColumnProperties);
+		if (options.additionalProperties) {
+			columnProperties.push(...options.additionalProperties);
 		}
 
-		const columnsTableProperties = designerInfo.view.columnsTableProperties?.length > 0 ? designerInfo.view.columnsTableProperties : [
+		const displayProperties = options.propertiesToDisplay?.length > 0 ? options.propertiesToDisplay : [
 			designers.TableColumnProperty.Name,
 			designers.TableColumnProperty.Type,
 			designers.TableColumnProperty.Length,
@@ -302,18 +355,18 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 					showInPropertiesView: false,
 					componentProperties: <DesignerTableProperties>{
 						ariaLabel: localize('tableDesigner.columnsTabTitle', "Columns"),
-						columns: columnsTableProperties,
+						columns: displayProperties,
 						itemProperties: columnProperties,
 						objectTypeDisplayName: localize('tableDesigner.columnTypeName', "Column"),
-						canAddRows: designerInfo.view.canAddColumns,
-						canRemoveRows: designerInfo.view.canRemoveColumns
+						canAddRows: options.canAddRows,
+						canRemoveRows: options.canRemoveRows
 					}
 				}
 			]
 		};
 	}
 
-	private getForeignKeysTab(designerInfo: azdata.designers.TableDesignerInfo): DesignerTab {
+	private getForeignKeysTab(options: azdata.designers.TableDesignerBuiltInTableViewOptions): DesignerTab {
 
 		const foreignKeyColumnMappingProperties: DesignerDataPropertyInfo[] = [
 			{
@@ -381,19 +434,19 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 					columns: [designers.ForeignKeyColumnMappingProperty.ForeignKeyColumn, designers.ForeignKeyColumnMappingProperty.PrimaryKeyColumn],
 					itemProperties: foreignKeyColumnMappingProperties,
 					objectTypeDisplayName: '',
-					canAddRows: designerInfo.view.canAddForeignKeys,
-					canRemoveRows: designerInfo.view.canRemoveColumns,
+					canAddRows: options.canAddRows,
+					canRemoveRows: options.canRemoveRows
 				}
 			},
 		];
 
-		if (designerInfo.view.additionalForeignKeyProperties) {
-			foreignKeyProperties.push(...designerInfo.view.additionalForeignKeyProperties);
+		if (options.additionalProperties) {
+			foreignKeyProperties.push(...options.additionalProperties);
 		}
 
-		const foreignKeysTableProperties = designerInfo.view.foreignKeysTableProperties?.length > 0 ? designerInfo.view.foreignKeysTableProperties : [
+		const displayProperties = options.propertiesToDisplay?.length > 0 ? options.propertiesToDisplay : [
 			designers.TableForeignKeyProperty.Name,
-			designers.TableForeignKeyProperty.PrimaryKeyTable,
+			designers.TableForeignKeyProperty.PrimaryKeyTable
 		];
 
 		return <DesignerTab>{
@@ -405,18 +458,18 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 					showInPropertiesView: false,
 					componentProperties: <DesignerTableProperties>{
 						ariaLabel: localize('tableDesigner.foreignKeysTabTitle', "Foreign Keys"),
-						columns: foreignKeysTableProperties,
+						columns: displayProperties,
 						itemProperties: foreignKeyProperties,
 						objectTypeDisplayName: localize('tableDesigner.ForeignKeyTypeName', "Foreign Key"),
-						canAddRows: designerInfo.view.canAddForeignKeys,
-						canRemoveRows: designerInfo.view.canRemoveForeignKeys
+						canAddRows: options.canAddRows,
+						canRemoveRows: options.canRemoveRows
 					}
 				}
 			]
 		};
 	}
 
-	private getCheckConstraintsTab(designerInfo: azdata.designers.TableDesignerInfo): DesignerTab {
+	private getCheckConstraintsTab(options: azdata.designers.TableDesignerBuiltInTableViewOptions): DesignerTab {
 		const checkConstraintProperties: DesignerDataPropertyInfo[] = [
 			{
 				componentType: 'input',
@@ -437,9 +490,11 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			}
 		];
 
-		if (designerInfo.view.additionalCheckConstraintProperties) {
-			checkConstraintProperties.push(...designerInfo.view.additionalCheckConstraintProperties);
+		if (options.additionalProperties) {
+			checkConstraintProperties.push(...options.additionalProperties);
 		}
+
+		const displayProperties = options.propertiesToDisplay?.length > 0 ? options.propertiesToDisplay : [designers.TableCheckConstraintProperty.Name, designers.TableCheckConstraintProperty.Expression];
 
 		return <DesignerTab>{
 			title: localize('tableDesigner.checkConstraintsTabTitle', "Check Constraints"),
@@ -450,11 +505,11 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 					showInPropertiesView: false,
 					componentProperties: <DesignerTableProperties>{
 						ariaLabel: localize('tableDesigner.checkConstraintsTabTitle', "Check Constraints"),
-						columns: [designers.TableCheckConstraintProperty.Name, designers.TableCheckConstraintProperty.Expression],
+						columns: displayProperties,
 						itemProperties: checkConstraintProperties,
 						objectTypeDisplayName: localize('tableDesigner.checkConstraintTypeName', "Check Constraint"),
-						canAddRows: designerInfo.view.canAddCheckConstraints,
-						canRemoveRows: designerInfo.view.canRemoveCheckConstraints
+						canAddRows: options.canAddRows,
+						canRemoveRows: options.canRemoveRows
 					}
 				}
 			]

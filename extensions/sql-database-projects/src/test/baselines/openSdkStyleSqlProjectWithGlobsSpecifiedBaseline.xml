@@ -17,7 +17,15 @@
     <Build Include="..\other\folder1\file*.sql" />
     <Build Include="..\other\folder1\test?.sql" />
     <Build Include="..\other\folder2\*.sql" />
+    <Build Include="..\other\file1.sql" />
     <Build Include="folder1\*.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <PreDeploy Include="..\other\folder2\Script.PreDeployment1.sql" />
+  </ItemGroup>
+   <ItemGroup>
+    <PostDeploy Include="..\other\folder2\Script.PostDeployment1.sql" />
+    <None Include="..\other\folder2\Script.PostDeployment2.sql" />
   </ItemGroup>
   <ItemGroup>
     <ArtifactReference Condition="'$(NetCoreBuild)' == 'true'" Include="$(NETCoreTargetsPath)\SystemDacpacs\150\master.dacpac">

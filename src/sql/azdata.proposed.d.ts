@@ -38,6 +38,13 @@ declare module 'azdata' {
 			nbKernelAlias?: string
 		}
 
+		export interface ICellOutput {
+			/**
+			 * Unique identifier for this cell output.
+			 */
+			id?: string;
+		}
+
 		export interface IExecuteResult {
 			data: any;
 		}
@@ -46,6 +53,17 @@ declare module 'azdata' {
 			output_type: string;
 			resultSet: ResultSetSummary;
 			data: any;
+		}
+
+		export interface IExecuteRequest {
+			/**
+			 * URI of the notebook document that is sending this execute request.
+			 */
+			notebookUri?: vscode.Uri;
+			/**
+			 * The index of the cell which the code being executed is from.
+			 */
+			cellIndex: number;
 		}
 
 		export interface INotebookMetadata {
@@ -74,6 +92,11 @@ declare module 'azdata' {
 			 */
 			dispose(): void;
 		}
+
+		/**
+		 * An event that is emitted when a [notebook document](#NotebookDocument) is closed.
+		 */
+		export const onDidCloseNotebookDocument: vscode.Event<NotebookDocument>;
 	}
 
 	export type SqlDbType = 'BigInt' | 'Binary' | 'Bit' | 'Char' | 'DateTime' | 'Decimal'
@@ -995,24 +1018,35 @@ declare module 'azdata' {
 		 */
 		export interface TableDesignerProvider extends DataProvider {
 			/**
-			 * Gets the table designer information for the specified table.
+			 * Initialize the table designer for the specified table.
 			 * @param table the table information.
 			 */
-			getTableDesignerInfo(table: TableInfo): Thenable<TableDesignerInfo>;
+			initializeTableDesigner(table: TableInfo): Thenable<TableDesignerInfo>;
+
 			/**
 			 * Process the table change.
 			 * @param table the table information
-			 * @param viewModel the object contains the state of the table designer
 			 * @param tableChangeInfo the information about the change user made through the UI.
 			 */
-			processTableEdit(table: TableInfo, viewModel: DesignerViewModel, tableChangeInfo: DesignerEdit): Thenable<DesignerEditResult>;
+			processTableEdit(table: TableInfo, tableChangeInfo: DesignerEdit): Thenable<DesignerEditResult>;
 
 			/**
-			 * Save the table
+			 * Publish the changes.
 			 * @param table the table information
-			 * @param viewModel the object contains the state of the table designer
 			 */
-			saveTable(table: TableInfo, viewModel: DesignerViewModel): Thenable<void>;
+			publishChanges(table: TableInfo): Thenable<void>;
+
+			/**
+			 * Generate script for the changes.
+			 * @param table the table information
+			 */
+			generateScript(table: TableInfo): Thenable<string>;
+
+			/**
+			 * Generate preview report describing the changes to be made.
+			 * @param table the table information
+			 */
+			generatePreviewReport(table: TableInfo): Thenable<string>;
 
 			/**
 			 * Notify the provider that the table designer has been closed.
@@ -1143,65 +1177,50 @@ declare module 'azdata' {
 			 */
 			additionalTableProperties?: DesignerDataPropertyInfo[];
 			/**
-			 * Whether to show columns tab. The default value is false.
-			 */
-			showColumnsTab?: boolean;
-			/**
-			 * Additional table column properties. Common table columns properties are handled by Azure Data Studio. see {@link TableColumnProperty}
-			 */
-			additionalTableColumnProperties?: DesignerDataPropertyInfo[];
-			/**
-			 * The properties to be displayed in the columns table. Default values are: Name, Type, Length, Precision, Scale, IsPrimaryKey, AllowNulls, DefaultValue.
-			 */
-			columnsTableProperties?: string[];
-			/**
-			 * Whether user can add columns. The default value is false.
-			 */
-			canAddColumns?: boolean;
-			/**
-			 * Whether user can remove columns. The default value is false.
-			 */
-			canRemoveColumns?: boolean;
-			/**
-			 * Whether to show foreign keys tab. The default value is false.
-			 */
-			showForeignKeysTab?: boolean;
-			/**
-			 * Additional foreign key properties. Common foreign key properties are handled by Azure Data Studio. see {@link TableForeignKeyProperty}
-			 */
-			additionalForeignKeyProperties?: DesignerDataPropertyInfo[];
-			/**
-			 * The properties to be displayed in the foreign keys table. Default values are: Name, PrimaryKeyTable.
-			 */
-			foreignKeysTableProperties?: string[];
-			/**
-			 * Whether user can add foreign keys. The default value is false.
-			 */
-			canAddForeignKeys?: boolean;
-			/**
-			 * Whether user can remove foreign keys. The default value is false.
-			 */
-			canRemoveForeignKeys?: boolean;
-			/**
-			 * Whether to show check constraints tab. The default value is false.
-			 */
-			showCheckConstraintsTab?: boolean;
-			/**
-			 * Additional check constraint properties. Common check constraint properties are handled by Azure Data Studio. see {@link TableCheckConstraintProperty}
-			 */
-			additionalCheckConstraintProperties?: DesignerDataPropertyInfo[];
-			/**
-			 * Whether user can add check constraints keys. The default value is false.
-			 */
-			canAddCheckConstraints?: boolean;
-			/**
-			 * Whether user can remove check constraints. The default value is false.
-			 */
-			canRemoveCheckConstraints?: boolean;
-			/**
 			 * Additional tabs.
 			 */
 			additionalTabs?: DesignerTab[];
+			/**
+			 * Columns table options.
+			 * Common table columns properties are handled by Azure Data Studio. see {@link TableColumnProperty}.
+			 * Default columns to display values are: Name, Type, Length, Precision, Scale, IsPrimaryKey, AllowNulls, DefaultValue.
+			 */
+			columnTableOptions?: TableDesignerBuiltInTableViewOptions;
+			/**
+			 * Foreign keys table options.
+			 * Common foreign key properties are handled by Azure Data Studio. see {@link TableForeignKeyProperty}.
+			 * Default columns to display values are: Name, PrimaryKeyTable.
+			 */
+			foreignKeyTableOptions?: TableDesignerBuiltInTableViewOptions;
+			/**
+			 * Check constraints table options.
+			 * Common check constraint properties are handled by Azure Data Studio. see {@link TableCheckConstraintProperty}
+			 * Default columns to display values are: Name, Expression.
+			 */
+			checkConstraintTableOptions?: TableDesignerBuiltInTableViewOptions;
+		}
+
+		export interface TableDesignerBuiltInTableViewOptions {
+			/**
+			 * Whether to show the table. Default value is false.
+			 */
+			showTable?: boolean;
+			/**
+			 * Properties to be displayed in the table, other properties can be accessed in the properties view.
+			 */
+			propertiesToDisplay?: string[];
+			/**
+			 * Whether adding new rows is supported.
+			 */
+			canAddRows?: boolean;
+			/**
+			 * Whether removing rows is supported.
+			 */
+			canRemoveRows?: boolean;
+			/**
+			 * Additional properties for the entity.
+			 */
+			additionalProperties?: DesignerDataPropertyInfo[];
 		}
 
 		/**

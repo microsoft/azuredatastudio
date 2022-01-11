@@ -11,7 +11,7 @@ import { URI, UriComponents } from 'vs/base/common/uri';
 import { RenderMimeRegistry } from 'sql/workbench/services/notebook/browser/outputs/registry';
 import { ModelFactory } from 'sql/workbench/services/notebook/browser/models/modelFactory';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { INotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ICellModel, INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType, CellType } from 'sql/workbench/services/notebook/common/contracts';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
@@ -26,7 +26,7 @@ export const SERVICE_ID = 'sqlNotebookService';
 export const INotebookService = createDecorator<INotebookService>(SERVICE_ID);
 
 export const DEFAULT_NOTEBOOK_PROVIDER = 'builtin';
-export const DEFAULT_NOTEBOOK_FILETYPE = 'IPYNB';
+export const DEFAULT_NOTEBOOK_FILETYPE = '.ipynb';
 export const SQL_NOTEBOOK_PROVIDER = 'sql';
 export const OVERRIDE_EDITOR_THEMING_SETTING = 'notebook.overrideEditorTheming';
 
@@ -74,7 +74,7 @@ export interface INotebookService {
 
 	getProvidersForFileType(fileType: string): string[] | undefined;
 
-	getStandardKernelsForProvider(provider: string): azdata.nb.IStandardKernel[] | undefined;
+	getStandardKernelsForProvider(provider: string): Promise<azdata.nb.IStandardKernel[] | undefined>;
 
 	getOrCreateSerializationManager(providerId: string, uri: URI): Promise<ISerializationManager>;
 
@@ -188,6 +188,7 @@ export interface INotebookSection {
 
 export interface ICellEditorProvider {
 	hasEditor(): boolean;
+	isCellOutput: boolean;
 	cellGuid(): string;
 	getEditor(): BaseTextEditor;
 	deltaDecorations(newDecorationsRange: NotebookRange | NotebookRange[], oldDecorationsRange: NotebookRange | NotebookRange[]): void;
@@ -199,11 +200,13 @@ export class NotebookRange extends Range {
 	}
 	cell: ICellModel;
 	isMarkdownSourceCell: boolean;
+	outputComponentIndex: number;
 
-	constructor(cell: ICellModel, startLineNumber: number, startColumn: number, endLineNumber: number, endColumn: number, markdownEditMode?: boolean) {
+	constructor(cell: ICellModel, startLineNumber: number, startColumn: number, endLineNumber: number, endColumn: number, markdownEditMode?: boolean, outputIndex?: number) {
 		super(startLineNumber, startColumn, endLineNumber, endColumn);
 		this.updateActiveCell(cell);
 		this.isMarkdownSourceCell = markdownEditMode ? markdownEditMode : false;
+		this.outputComponentIndex = outputIndex >= 0 ? outputIndex : -1;
 	}
 }
 
@@ -218,7 +221,7 @@ export interface INotebookEditor {
 	isDirty(): boolean;
 	isActive(): boolean;
 	isVisible(): boolean;
-	executeEdits(edits: ISingleNotebookEditOperation[]): boolean;
+	executeEdits(edits: INotebookEditOperation[]): boolean;
 	runCell(cell: ICellModel): Promise<boolean>;
 	runAllCells(startCell?: ICellModel, endCell?: ICellModel): Promise<boolean>;
 	clearOutput(cell: ICellModel): Promise<boolean>;

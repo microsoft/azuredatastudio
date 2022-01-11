@@ -47,8 +47,8 @@ export class PackageHelper {
 			commandTitle: constants.addPackage,
 			argument: this.constructAddPackageArguments(projectUri, packageName, packageVersion)
 		};
-
-		await this.netCoreTool.runDotnetCommand(addOptions);
+		// Add package can be done with any version of .NET so skip the supported version check
+		await this.netCoreTool.runDotnetCommand(addOptions, true);
 	}
 
 	/**

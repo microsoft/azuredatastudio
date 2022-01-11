@@ -491,7 +491,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			(offset, count) => { return this.loadData(offset, count); },
 			undefined,
 			undefined,
-			(data: ICellValue) => { return data?.displayValue; },
+			(data: ICellValue) => { return data.isNull ? undefined : data?.displayValue; },
 			{
 				inMemoryDataProcessing: this.options.inMemoryDataProcessing,
 				inMemoryDataCountThreshold: this.options.inMemoryDataCountThreshold

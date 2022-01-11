@@ -37,6 +37,13 @@ declare module 'sqldbproj' {
 		openSqlNewProjectDialog(allowedTargetPlatforms?: SqlTargetPlatform[]): Promise<vscode.Uri | undefined>;
 	}
 
+	export type GenerateProjectFromOpenApiSpecOptions = {
+		openApiSpecFile: vscode.Uri,
+		defaultProjectName: string,
+		defaultOutputLocation: vscode.Uri,
+		doNotOpenInWorkspace: boolean
+	};
+	
 	export interface ISqlProject {
 		/**
 		 * Reads the project setting and contents from the file

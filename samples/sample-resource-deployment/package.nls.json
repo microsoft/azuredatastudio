@@ -19,6 +19,7 @@
 	"option-sample-type": "Sample Type",
 	"option-wizard": "Wizard",
 	"option-value-provider": "Value Provider",
+	"option-options": "Options",
 
 	"resource.type.sample.display.name": "Sample Deployment Types",
 	"resource.type.sample.description": "Provides samples of various deployment types and their options",
@@ -33,6 +34,17 @@
 	"sample.value-provider.trigger-place.label": "Trigger field (place)",
 	"sample.value-provider.multiple.title": "Multiple Trigger Value Provider Sample",
 	"sample.value-provider.multiple.field.label": "Field using multiple trigger fields",
+
+	"sample.options.title": "Options Samples",
+	"sample.options.stringarray.title": "Sample string array options",
+	"sample.options.categoryvalue.title": "Sample CategoryValue array options",
+	"sample.options.stringarray.label": "Option list provided by static string array",
+	"sample.options.stringarray.description": "Note that you can use localized values if you want. (Including mixing both localized and unlocalized values but that isn't recommended)",
+	"sample.options.categoryvalue.label": "Option list provided by static azdata.CategoryValue array",
+	"sample.options.categoryvalue.description": "The variable will store the name property of the currently selected option",
+	"sample.options.value1.displayname": "Value 1 Display Name",
+	"sample.options.value2.displayname": "Value 2 Display Name",
+	"sample.options.value3.displayname": "Value 3 Display Name",
 
 	"wizard.new.wizard.title": "Create Test controller",
 	"wizard.cluster.environment.title": "What is your target existing Kubernetes cluster environment?",

@@ -178,11 +178,12 @@
 			"downloadgit": "Git herunterladen",
 			"git20": "Sie haben anscheinend Git {0} installiert. Der Code funktioniert am besten mit Git >= 2",
 			"git2526": "Bei der installierten Git-Version {0} sind bekannte Issues aufgetreten. Aktualisieren Sie auf eine Git-Version >= 2.27, damit die Git-Features ordnungsgemäß funktionieren.",
-			"looking": "Suchen nach Git in: {0}",
 			"neverShowAgain": "Nicht mehr anzeigen",
 			"notfound": "Git nicht gefunden. Installieren Sie es, oder konfigurieren Sie es mithilfe der Einstellung \"git.path\".",
+			"skipped": "Gefundenes Git wurde übersprungen in: {0}",
 			"updateGit": "Git aktualisieren",
-			"using git": "Verwenden von Git {0} von {1}"
+			"using git": "Verwenden von Git {0} von {1}",
+			"validating": "Gefundenes Git wurde überprüft in: {0}"
 		},
 		"dist/model": {
 			"no repositories": "Es sind keine verfügbaren Repositorys vorhanden.",
@@ -247,7 +248,7 @@
 			"push n": "{0} Commits per Push nach {1}/{2} übertragen",
 			"push success": "Push wurde erfolgreich ausgeführt.",
 			"staged changes": "Gestagete Änderungen",
-			"sync changes": "6Änderungen synchronisieren",
+			"sync changes": "Änderungen synchronisieren",
 			"sync is unpredictable": "Synchronisierung wird durchgeführt. Das Abbrechen des Vorgangs kann zu schweren Schäden am Repository führen.",
 			"untracked": "Nicht verfolgt",
 			"untracked changes": "Nicht nachverfolgte Änderungen",
@@ -394,7 +395,7 @@
 			"config.checkoutType.tags": "Tags",
 			"config.confirmEmptyCommits": "Bestätigen Sie die Erstellung leerer Commits für den Befehl \"Git: Commit Empty\" immer.",
 			"config.confirmForcePush": "Steuert, ob der Benutzer vor einem erzwungenen Push zur Bestätigung aufgefordert wird.",
-			"config.confirmNoVerifyCommit": "Hiermit wird gesteuert, ob ein Commit ohne Überprüfung bestätigt werden muss.",
+			"config.confirmNoVerifyCommit": "Steuert, ob vor dem Committen eine Bestätigung ohne Überprüfung angefragt werden soll.",
 			"config.confirmSync": "Vor dem Synchronisieren von Git-Repositorys bestätigen.",
 			"config.countBadge": "Steuert den Git-Anzahlbadge.",
 			"config.countBadge.all": "Alle Änderungen zählen.",

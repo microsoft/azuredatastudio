@@ -87,9 +87,9 @@
         <target state="translated">Créer</target>
       </trans-unit>
       <trans-unit id="duplicateFileError">
-        <source xml:lang="en">File {0} already exists in the destination folder {1} 
+        <source xml:lang="en">File {0} already exists in the destination folder {1}
  The file has been renamed to {2} to prevent data loss.</source>
-        <target state="translated">Le fichier {0} existe déjà dans le dossier de destination {1} 
+        <target state="translated">Le fichier {0} existe déjà dans le dossier de destination {1}
  Le fichier a été renommé en {2} pour éviter toute perte de données.</target>
       </trans-unit>
       <trans-unit id="editBookError">
@@ -911,6 +911,10 @@
       <trans-unit id="notebook.command.codeBlock">
         <source xml:lang="en">Add Code Block</source>
         <target state="translated">Ajouter un bloc de code</target>
+      </trans-unit>
+      <trans-unit id="notebook.command.highlightText">
+        <source xml:lang="en">Highlight Markdown Text</source>
+        <target state="translated">Mettre en surbrillance le texte Markdown</target>
       </trans-unit>
       <trans-unit id="notebook.command.italicizeText">
         <source xml:lang="en">Italicize Markdown Text</source>

@@ -9,14 +9,15 @@ import * as vscodeMssql from 'vscode-mssql';
 import * as templates from '../templates/templates';
 import * as path from 'path';
 
-import { GenerateProjectFromOpenApiSpecOptions, ProjectsController } from './projectController';
-import { NetCoreTool } from '../tools/netcoreTool';
+import { ProjectsController } from './projectController';
+import { DBProjectConfigurationKey, DotnetInstallLocationKey, NetCoreInstallLocationKey, NetCoreTool } from '../tools/netcoreTool';
 import { IconPathHelper } from '../common/iconHelper';
 import { WorkspaceTreeItem } from 'dataworkspace';
 import * as constants from '../common/constants';
 import { SqlDatabaseProjectProvider } from '../projectProvider/projectProvider';
 import { launchAddSqlBindingQuickpick } from '../dialogs/addSqlBindingQuickpick';
 import { PackageHelper } from '../tools/packageHelper';
+import { GenerateProjectFromOpenApiSpecOptions } from 'sqldbproj';
 
 /**
  * The main controller class that initializes the extension
@@ -45,6 +46,13 @@ export default class MainController implements vscode.Disposable {
 	}
 
 	public async activate(): Promise<SqlDatabaseProjectProvider> {
+		// upgrade path from former netCoreSDKLocation setting to dotnetSDK Location setting
+		// copy old setting's value to new setting
+		const oldNetCoreInstallSetting = vscode.workspace.getConfiguration(DBProjectConfigurationKey)[NetCoreInstallLocationKey];
+		if (oldNetCoreInstallSetting && !vscode.workspace.getConfiguration(DBProjectConfigurationKey)[DotnetInstallLocationKey]) {
+			await vscode.workspace.getConfiguration(DBProjectConfigurationKey).update(DotnetInstallLocationKey, oldNetCoreInstallSetting, true);
+		}
+
 		await this.initializeDatabaseProjects();
 		return new SqlDatabaseProjectProvider(this.projectsController);
 	}

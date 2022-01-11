@@ -327,7 +327,7 @@ export class ResultSerializer {
 		} else {
 			this._notificationService.prompt(
 				Severity.Info,
-				nls.localize('msgSaveSucceeded', "Successfully saved results to {0}", filePath.path),
+				nls.localize('msgSaveSucceeded', "Successfully saved results to {0}", filePath.fsPath),
 				[{
 					label: nls.localize('openFile', "Open file"),
 					run: () => {

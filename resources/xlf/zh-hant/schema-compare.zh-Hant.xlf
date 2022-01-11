@@ -902,6 +902,22 @@
         <source xml:lang="en">Reset</source>
         <target state="translated">重設</target>
       </trans-unit>
+      <trans-unit id="file">
+        <source xml:lang="en">File</source>
+        <target state="translated">FILE</target>
+      </trans-unit>
+      <trans-unit id="flat">
+        <source xml:lang="en">Flat</source>
+        <target state="translated">一般</target>
+      </trans-unit>
+      <trans-unit id="objectType">
+        <source xml:lang="en">Object Type</source>
+        <target state="translated">物件類型</target>
+      </trans-unit>
+      <trans-unit id="schema">
+        <source xml:lang="en">Schema</source>
+        <target state="translated">結構描述</target>
+      </trans-unit>
       <trans-unit id="schemaCompare.ApplyConfirmation">
         <source xml:lang="en">Are you sure you want to update the target?</source>
         <target state="translated">確定要更新目標嗎?</target>
@@ -927,16 +943,24 @@
         <target state="translated">新增</target>
       </trans-unit>
       <trans-unit id="schemaCompare.applyButtonDisabledTitle">
-        <source xml:lang="en">Apply is enabled when the target is a database</source>
-        <target state="translated">當目標為資料庫時會啟用套用</target>
+        <source xml:lang="en">Apply is enabled when the target is a database or database project</source>
+        <target state="translated">當目標為資料庫或資料庫專案時，會啟用套用</target>
       </trans-unit>
       <trans-unit id="schemaCompare.applyButtonEnabledTitle">
         <source xml:lang="en">Apply changes to target</source>
         <target state="translated">將變更套用至目標</target>
       </trans-unit>
+      <trans-unit id="schemaCompare.applyError">
+        <source xml:lang="en">There was an error updating the project</source>
+        <target state="translated">更新專案時發生錯誤</target>
+      </trans-unit>
       <trans-unit id="schemaCompare.applyNoChanges">
         <source xml:lang="en">No changes to apply</source>
         <target state="translated">沒有任何要套用的變更</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.applySuccess">
+        <source xml:lang="en">Project was successfully updated</source>
+        <target state="translated">已成功更新專案</target>
       </trans-unit>
       <trans-unit id="schemaCompare.cancelCompareButton">
         <source xml:lang="en">Stop</source>
@@ -1045,6 +1069,10 @@
       <trans-unit id="schemaCompare.optionsButton">
         <source xml:lang="en">Options</source>
         <target state="translated">選項</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.projectButtonLabel">
+        <source xml:lang="en">Database Project</source>
+        <target state="translated">資料庫專案</target>
       </trans-unit>
       <trans-unit id="schemaCompare.radioButtonsLabel">
         <source xml:lang="en">Type</source>
@@ -1162,9 +1190,25 @@
         <source xml:lang="en">A different target schema has been selected. Compare to see the comparison?</source>
         <target state="translated">已選取其他目標結構描述。要比較以查看比較結果嗎?</target>
       </trans-unit>
+      <trans-unit id="schemaCompareDialog.dspErrorSource">
+        <source xml:lang="en">The source .sqlproj file does not specify a database schema component</source>
+        <target state="translated">來源 .sqlproj 檔案未指定資料庫結構描述元件</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.dspErrorTarget">
+        <source xml:lang="en">The target .sqlproj file does not specify a database schema component</source>
+        <target state="translated">目標 .sqlproj 檔案未指定資料庫結構描述元件</target>
+      </trans-unit>
       <trans-unit id="schemaCompareDialog.fileTextBoxLabel">
         <source xml:lang="en">File</source>
         <target state="translated">FILE</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.noProjectExtension">
+        <source xml:lang="en">The sql-database-projects extension is required to perform schema comparison with database projects</source>
+        <target state="translated">需要 sql-database-projects 延伸模組，才能與資料庫專案進行結構描述比較</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.noProjectExtensionApply">
+        <source xml:lang="en">The sql-database-projects extension is required to apply changes to a project</source>
+        <target state="translated">需要 sql-database-projects 延伸模組，才能將變更套用至專案</target>
       </trans-unit>
       <trans-unit id="schemaCompareDialog.ok">
         <source xml:lang="en">OK</source>
@@ -1186,6 +1230,10 @@
         <source xml:lang="en">Source file</source>
         <target state="translated">原始程式檔</target>
       </trans-unit>
+      <trans-unit id="schemaCompareDialog.structureDropdownLabel">
+        <source xml:lang="en">Folder Structure</source>
+        <target state="translated">資料夾結構</target>
+      </trans-unit>
       <trans-unit id="schemaCompareDialog.targetDatabaseDropdown">
         <source xml:lang="en">Target Database</source>
         <target state="translated">目標資料庫</target>
@@ -1201,6 +1249,14 @@
       <trans-unit id="schemaCompareOptions.RecompareMessage">
         <source xml:lang="en">Options have changed. Recompare to see the comparison?</source>
         <target state="translated">選項已變更。要重新比較以查看比較嗎?</target>
+      </trans-unit>
+      <trans-unit id="schemaObjectType">
+        <source xml:lang="en">Schema/Object Type</source>
+        <target state="translated">結構描述/物件類型</target>
+      </trans-unit>
+      <trans-unit id="targetStructure">
+        <source xml:lang="en">Target Folder Structure</source>
+        <target state="translated">目的檔案夾結構</target>
       </trans-unit>
     </body>
   </file>

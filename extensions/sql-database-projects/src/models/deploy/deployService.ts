@@ -131,6 +131,11 @@ export class DeployService {
 			}
 
 			await this.verifyDocker();
+			this.logToOutput(constants.dockerImageMessage);
+			this.logToOutput(profile.localDbSetting.dockerBaseImage);
+
+			this.logToOutput(constants.dockerImageEulaMessage);
+			this.logToOutput(profile.localDbSetting.dockerBaseImageEula);
 
 			const imageSpec = this.getDockerImageSpec(project.projectFileName, profile.localDbSetting.dockerBaseImage);
 
@@ -245,7 +250,7 @@ export class DeployService {
 				options: [],
 				authenticationType: 'SqlLogin'
 			};
-			return await getAzdataApi.connection.connect(connectionProfile, false, false);
+			return await getAzdataApi.connection.connect(connectionProfile, saveConnectionAndPassword, false);
 		} else if (vscodeMssqlApi) {
 			const connectionProfile = {
 				password: profile.password,

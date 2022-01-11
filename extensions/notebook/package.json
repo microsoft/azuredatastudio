@@ -425,6 +425,10 @@
           "when": "false"
         },
         {
+          "command": "notebook.command.addSection",
+          "when": "false"
+        },
+        {
           "command": "notebook.command.addMarkdown",
           "when": "false"
         },
@@ -690,7 +694,7 @@
       {
         "provider": "jupyter",
         "fileExtensions": [
-          "IPYNB"
+          ".ipynb"
         ],
         "standardKernels": [
           {

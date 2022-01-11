@@ -21,8 +21,7 @@ export function getProvidersForFileName(fileName: string, notebookService: INote
 	let fileExt = path.extname(fileName);
 	let providers: string[];
 	// First try to get provider for actual file type
-	if (fileExt && fileExt.startsWith('.')) {
-		fileExt = fileExt.slice(1, fileExt.length);
+	if (fileExt) {
 		providers = notebookService.getProvidersForFileType(fileExt);
 	}
 	// Fallback to provider for default file type (assume this is a global handler)
@@ -36,14 +35,14 @@ export function getProvidersForFileName(fileName: string, notebookService: INote
 	return providers;
 }
 
-export function getStandardKernelsForProvider(providerId: string, notebookService: INotebookService): IStandardKernelWithProvider[] {
+export async function getStandardKernelsForProvider(providerId: string, notebookService: INotebookService): Promise<IStandardKernelWithProvider[]> {
 	if (!providerId || !notebookService) {
 		return [];
 	}
-	let standardKernels = notebookService.getStandardKernelsForProvider(providerId);
+	let standardKernels = await notebookService.getStandardKernelsForProvider(providerId);
 	if (!standardKernels || standardKernels.length === 0) {
 		// Fall back to using SQL provider instead
-		standardKernels = notebookService.getStandardKernelsForProvider(SQL_NOTEBOOK_PROVIDER) ?? [];
+		standardKernels = await notebookService.getStandardKernelsForProvider(SQL_NOTEBOOK_PROVIDER) ?? [];
 	}
 	standardKernels.forEach(kernel => {
 		Object.assign(<IStandardKernelWithProvider>kernel, {

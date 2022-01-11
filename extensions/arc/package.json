@@ -2,7 +2,7 @@
   "name": "arc",
   "displayName": "%arc.displayName%",
   "description": "%arc.description%",
-  "version": "0.9.7",
+  "version": "0.11.0",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
@@ -262,6 +262,20 @@
                           "labelWidth": "600px"
                         },
                         {
+                          "type": "options",
+                          "label": "%arc.data.controller.connectivity.mode%",
+                          "required": true,
+                          "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
+                          "options": {
+                            "values": [
+                              "Indirect",
+                              "Direct"
+                            ],
+                            "defaultValue": "Indirect",
+                            "optionsType": "radio"
+                          }
+                        },
+                        {
                           "type": "text",
                           "label": "%arc.data.controller.namespace%",
                           "validations": [
@@ -273,7 +287,11 @@
                           ],
                           "defaultValue": "arc",
                           "required": true,
-                          "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAMESPACE"
+                          "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAMESPACE",
+                          "enabled": {
+                            "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
+                            "value": "Indirect"
+                          }
                         },
                         {
                           "type": "text",
@@ -310,27 +328,62 @@
                             "onpremises",
                             "other"
                           ]
+                        },
+                        {
+                          "type": "text",
+                          "label": "%arc.data.controller.custom.location%",
+                          "description": "%arc.data.controller.custom.location.description%",
+                          "required": true,
+                          "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CUSTOM_LOCATION",
+                          "enabled": {
+                            "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
+                            "value": "Direct"
+                          }
+                        },
+                        {
+                          "type": "checkbox",
+                          "label": "%arc.data.controller.auto.upload.metrics%",
+                          "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_AUTO_UPLOAD_METRICS",
+                          "description": "%arc.data.controller.auto.upload.metrics.description%",
+                          "defaultValue": false,
+                          "enabled": {
+                            "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
+                            "value": "Direct"
+                          }
+                        },
+                        {
+                          "type": "checkbox",
+                          "label": "%arc.data.controller.auto.upload.logs%",
+                          "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_AUTO_UPLOAD_LOGS",
+                          "description": "%arc.data.controller.auto.upload.logs.description%",
+                          "defaultValue": false,
+                          "enabled": {
+                            "target": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTIVITY_MODE",
+                            "value": "Direct"
+                          }
                         }
                       ]
                     },
                     {
-                      "title": "%arc.data.controller.admin.account.title%",
+                      "title": "%arc.data.controller.metrics.and.logs.dashboard.credentials.title%",
                       "fields": [
                         {
-                          "label": "%arc.data.controller.admin.account.name%",
+                          "label": "%arc.data.controller.metrics.and.logs.dashboard.credentials.username%",
+                          "description": "%arc.data.controller.metrics.and.logs.dashboard.credentials.username.description%",
                           "variableName": "AZDATA_NB_VAR_ARC_ADMIN_USERNAME",
                           "type": "text",
                           "required": true,
-                          "defaultValue": "arcadmin",
+                          "defaultValue": "",
                           "enabled": true
                         },
                         {
-                          "label": "%arc.data.controller.admin.account.password%",
+                          "label": "%arc.data.controller.metrics.and.logs.dashboard.credentials.password%",
+                          "description": "%arc.data.controller.metrics.and.logs.dashboard.credentials.password.description%",
                           "variableName": "AZDATA_NB_VAR_ARC_ADMIN_PASSWORD",
                           "type": "sql_password",
                           "userName": "arcadmin",
                           "confirmationRequired": true,
-                          "confirmationLabel": "%arc.data.controller.admin.account.confirm.password%",
+                          "confirmationLabel": "%arc.data.controller.metrics.and.logs.dashboard.credentials.confirm.password%",
                           "defaultValue": "",
                           "required": true
                         }
@@ -939,7 +992,11 @@
                             "variableNames": {
                               "namespace": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAMESPACE",
                               "kubeConfig": "AZDATA_NB_VAR_CONTROLLER_KUBECONFIG",
-                              "clusterContext": "AZDATA_NB_VAR_CONTROLLER_KUBECTL_CONTEXT"
+                              "clusterContext": "AZDATA_NB_VAR_CONTROLLER_KUBECTL_CONTEXT",
+                              "resourceGroup": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_RESOURCE_GROUP",
+                              "connectionMode": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CONNECTION_MODE",
+                              "location": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_LOCATION",
+                              "customLocation": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_CUSTOM_LOCATION"
                             }
                           },
                           "optionsType": "dropdown"
@@ -1270,6 +1327,33 @@
                             "AZDATA_NB_VAR_SQL_LICENSE_TYPE"
                           ]
                         }
+                      }
+                    ]
+                  },
+                  {
+                    "title": "%arc.sql.instance.retention.policy.title%",
+                    "fields": [
+                      {
+                        "type": "readonly_text",
+                        "label": "%arc.sql.pitr.retention.description%",
+                        "labelWidth": "600px",
+                        "enabled": true,
+                        "fieldHeight": "10px",
+                        "links": [
+                          {
+                            "text": "%arc.agreement.sql.help.text.learn.more%",
+                            "url": "https://docs.microsoft.com/azure/azure-arc/data/point-in-time-restore"
+                          }
+                        ]
+                      },
+                      {
+                        "label": "%arc.sql.retention.days.label%",
+                        "description": "%arc.sql.retention.days.description%",
+                        "variableName": "AZDATA_NB_VAR_SQL_RETENTION_DAYS",
+                        "type": "number",
+                        "min": 1,
+                        "max": 35,
+                        "required": false
                       }
                     ]
                   }

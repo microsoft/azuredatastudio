@@ -1,7 +1,7 @@
 steps:
   - task: NodeTool@0
     inputs:
-      versionSpec: "12.13.0"
+      versionSpec: "14.x"
 
   - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
     inputs:
@@ -57,6 +57,7 @@ steps:
       path: .build/node_modules_cache
       cacheHitVar: NODE_MODULES_RESTORED
     displayName: Restore Cache - Node Modules
+    continueOnError: true
 
   - powershell: |
       . build/azure-pipelines/win32/exec.ps1

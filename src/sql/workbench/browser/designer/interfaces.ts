@@ -74,7 +74,7 @@ export interface DesignerUIState {
 	activeTabId: PanelTabIdentifier;
 }
 
-export type DesignerAction = 'save' | 'initialize' | 'processEdit';
+export type DesignerAction = 'save' | 'initialize' | 'processEdit' | 'generateScript' | 'generateReport';
 
 export interface DesignerEditProcessedEventArgs {
 	result: DesignerEditResult;
