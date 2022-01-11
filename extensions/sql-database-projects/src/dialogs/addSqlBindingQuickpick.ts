@@ -214,7 +214,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 							}
 						} catch (e) {
 							// display error message and show select setting quickpick again
-							void vscode.window.showErrorMessage(constants.selectConnectionError(utils.getErrorMessage(e)));
+							void vscode.window.showErrorMessage(constants.selectConnectionError(e));
 							continue;
 						}
 					}
