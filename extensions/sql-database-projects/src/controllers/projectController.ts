@@ -987,7 +987,7 @@ export class ProjectsController {
 	public async generateProjectFromOpenApiSpec(options?: GenerateProjectFromOpenApiSpecOptions): Promise<Project | undefined> {
 		try {
 			// 1. select spec file
-			const specPath: string | undefined = options?.openApiSpecFile.fsPath || await this.selectAutorestSpecFile();
+			const specPath: string | undefined = options?.openApiSpecFile?.fsPath || await this.selectAutorestSpecFile();
 			if (!specPath) {
 				return;
 			}
