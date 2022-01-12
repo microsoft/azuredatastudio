@@ -9,6 +9,7 @@ import * as vscode from 'vscode';
 import * as mssql from '../../mssql';
 import * as os from 'os';
 import * as loc from './localizedConstants';
+import * as dataworkspace from 'dataworkspace';
 import { promises as fs } from 'fs';
 
 export interface IPackageInfo {
@@ -181,4 +182,9 @@ try {
  */
 export function getAzdataApi(): typeof azdataType | undefined {
 	return azdataApi;
+}
+
+export function getDataWorkspaceExtensionApi(): dataworkspace.IExtension {
+	const extension = vscode.extensions.getExtension(dataworkspace.extension.name)!;
+	return extension.exports;
 }
