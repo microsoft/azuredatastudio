@@ -92,7 +92,7 @@ import { matchesScheme } from 'vs/platform/opener/common/opener';
 // import { ExtHostNotebookDocuments } from 'vs/workbench/api/common/extHostNotebookDocuments'; {{SQL CARBON EDIT}} Disable VS Code notebooks
 // import { ExtHostInteractive } from 'vs/workbench/api/common/extHostInteractive'; {{SQL CARBON EDIT}} Remove until we need it
 import { ExtHostNotebook } from 'sql/workbench/api/common/extHostNotebook';
-import { functionalityNotSupportedError } from 'sql/base/common/locConstants';
+import { functionalityNotSupportedError, invalidArgumentsError } from 'sql/base/common/locConstants';
 import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/common/extHostNotebookDocumentsAndEditors';
 import { VSCodeNotebookDocument } from 'sql/workbench/api/common/notebooks/vscodeNotebookDocument';
 import { VSCodeNotebookEditor } from 'sql/workbench/api/common/notebooks/vscodeNotebookEditor';
@@ -905,7 +905,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 					let convertedContents = convertToADSNotebookContents(content);
 					uri = URI.revive(await extHostNotebook.createNotebookDocument(uriOrType, convertedContents));
 				} else {
-					throw new Error('Invalid arguments');
+					throw new Error(invalidArgumentsError);
 				}
 				let editor = await extHostNotebookDocumentsAndEditors.showNotebookDocument(uri, {});
 				return new VSCodeNotebookDocument(editor.document);
