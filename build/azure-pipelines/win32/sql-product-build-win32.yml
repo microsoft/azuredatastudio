@@ -287,6 +287,16 @@ steps:
       archiveType: tar
       archiveFile: '$(Build.BinariesDirectory)/source.tar.gz'
 
+  - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+    displayName: 'SBOM Generation Task'
+    inputs:
+      BuildDropPath: '$(Build.BinariesDirectory)/'
+
+  - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+    displayName: 'SBOM Generation Task .build'
+    inputs:
+      BuildDropPath: '$(Build.SourcesDirectory)/.build'
+
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: build scripts source'
     inputs:
