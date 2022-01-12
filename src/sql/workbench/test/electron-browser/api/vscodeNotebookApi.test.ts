@@ -15,6 +15,7 @@ import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
 import { convertToVSCodeNotebookCell } from 'sql/workbench/api/common/vscodeExecuteProvider';
 import { VSCodeNotebookDocument } from 'sql/workbench/api/common/vscodeNotebookDocument';
 import { URI } from 'vs/base/common/uri';
+import { VSCodeNotebookEditor } from 'sql/workbench/api/common/vscodeNotebookEditor';
 
 class MockNotebookSerializer implements vscode.NotebookSerializer {
 	deserializeNotebook(content: Uint8Array, token: vscode.CancellationToken): vscode.NotebookData | Thenable<vscode.NotebookData> {
@@ -366,6 +367,17 @@ suite('Notebook Serializer', () => {
 		validateCellRange: () => undefined
 	};
 
+	function validateDocsMatch(actualDoc: vscode.NotebookDocument, expectedDoc: vscode.NotebookDocument): void {
+		assert.deepStrictEqual(actualDoc.uri, expectedDoc.uri);
+		assert.strictEqual(actualDoc.notebookType, expectedDoc.notebookType);
+		assert.strictEqual(actualDoc.version, expectedDoc.version);
+		assert.strictEqual(actualDoc.isDirty, expectedDoc.isDirty);
+		assert.strictEqual(actualDoc.isUntitled, expectedDoc.isUntitled);
+		assert.strictEqual(actualDoc.isClosed, expectedDoc.isClosed);
+		assert.deepStrictEqual(actualDoc.metadata, expectedDoc.metadata);
+		assert.strictEqual(actualDoc.cellCount, expectedDoc.cellCount);
+	}
+
 	test('Convert ADS NotebookDocument into VS Code NotebookDocument', async () => {
 		let expectedDoc: vscode.NotebookDocument = {
 			get uri() { return testDoc.uri; },
@@ -382,14 +394,7 @@ suite('Notebook Serializer', () => {
 		};
 
 		let actualDoc = new VSCodeNotebookDocument(testDoc);
-		assert.deepStrictEqual(actualDoc.uri, expectedDoc.uri);
-		assert.strictEqual(actualDoc.notebookType, expectedDoc.notebookType);
-		assert.strictEqual(actualDoc.version, expectedDoc.version);
-		assert.strictEqual(actualDoc.isDirty, expectedDoc.isDirty);
-		assert.strictEqual(actualDoc.isUntitled, expectedDoc.isUntitled);
-		assert.strictEqual(actualDoc.isClosed, expectedDoc.isClosed);
-		assert.deepStrictEqual(actualDoc.metadata, expectedDoc.metadata);
-		assert.strictEqual(actualDoc.cellCount, expectedDoc.cellCount);
+		validateDocsMatch(actualDoc, expectedDoc);
 	});
 
 	// Have to validate cell fields manually since one of the NotebookCell fields is a function pointer,
@@ -439,6 +444,23 @@ suite('Notebook Serializer', () => {
 
 		secondCell = vsDoc.cellAt(10);
 		validateCellMatches(secondCell, expectedCells[1]);
+	});
+
+	test('VS Code NotebookEditor functionality', async () => {
+		let editor = <azdata.nb.NotebookEditor>{ document: testDoc };
+		let vscodeEditor = new VSCodeNotebookEditor(editor);
+		let expectedDoc = new VSCodeNotebookDocument(testDoc);
+
+		validateDocsMatch(vscodeEditor.document, expectedDoc);
+
+		// We only need the document field for VSCodeNotebookEditor, so the other
+		// fields should be non-functional
+		assert.throws(() => vscodeEditor.selections);
+		assert.throws(() => vscodeEditor.visibleRanges);
+		assert.throws(() => vscodeEditor.viewColumn);
+		assert.throws(() => vscodeEditor.revealRange(undefined));
+		assert.throws(() => vscodeEditor.setDecorations(undefined, undefined));
+		await assert.rejects(() => vscodeEditor.edit(() => undefined));
 	});
 });
 

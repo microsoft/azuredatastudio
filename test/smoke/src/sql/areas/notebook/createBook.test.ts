@@ -9,13 +9,16 @@ import * as rimraf from 'rimraf';
 import * as path from 'path';
 import { assert } from 'console';
 import * as tmp from 'tmp';
+import * as minimist from 'minimist';
+import { afterSuite, beforeSuite } from '../../../utils';
 
 const CreateBookCommand = 'Jupyter Books: Create Jupyter Book';
 const bookName = 'my-book';
 
-export function setup() {
-
+export function setup(opts: minimist.ParsedArgs) {
 	describe('CreateBookDialog', () => {
+		beforeSuite(opts);
+		afterSuite(opts);
 
 		let tmpDir = '';
 		it('can create new book with default content folder', async function () {
