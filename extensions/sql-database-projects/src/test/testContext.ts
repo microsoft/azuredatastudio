@@ -241,7 +241,6 @@ export class MockSchemaCompareService implements vscodeMssql.ISchemaCompareServi
 	schemaCompareGetDefaultOptions(): Thenable<vscodeMssql.SchemaCompareOptionsResult> {
 		throw new Error('Method not implemented.');
 	}
-
 }
 
 export class MockVscodeMssqlIExtension implements vscodeMssql.IExtension {

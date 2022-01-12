@@ -79,5 +79,43 @@ describe('Add SQL Binding quick pick', () => {
 		should(spy.calledOnce).be.true('showErrorMessage should have been called exactly once');
 		should(spy.calledWith(errormsg)).be.true(`showErrorMessage not called with expected message '${errormsg}' Actual '${spy.getCall(0).args[0]}'`);
 	});
+
+	it('Should show error connection profile does not connect', async function (): Promise<void> {
+		sinon.stub(utils, 'getAzureFunctionService').resolves(testContext.azureFunctionService.object);
+		sinon.stub(utils, 'getVscodeMssqlApi').resolves(testContext.vscodeMssqlIExtension.object);
+		const spy = sinon.spy(vscode.window, 'showErrorMessage');
+		testContext.azureFunctionService.setup(x => x.getAzureFunctions(TypeMoq.It.isAny())).returns(async () => {
+			return Promise.resolve({
+				success: true,
+				errorMessage: '',
+				azureFunctions: ['af1']
+			});
+		});
+		sinon.stub(azureFunctionUtils, 'getAFProjectContainingFile').resolves(undefined);
+		const errormsg = 'Error connecting to selected connection';
+		testContext.azureFunctionService.setup(x => x.addSqlBinding(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(async () => {
+			return Promise.resolve({
+				success: false,
+				errorMessage: errormsg
+			});
+		});
+
+		// select Azure function
+		let quickpickStub = sinon.stub(vscode.window, 'showQuickPick').onFirstCall().resolves({ label: 'af1' });
+		// select input or output binding
+		quickpickStub.onSecondCall().resolves({ label: constants.input });
+		// give object name
+		let inputBoxStub = sinon.stub(vscode.window, 'showInputBox').onFirstCall().resolves('dbo.table1');
+		// give connection string setting name
+		inputBoxStub.onSecondCall().resolves('SqlConnectionString');
+		// select connection profile
+		quickpickStub.onFirstCall().resolves({ label: constants.createNewLocalAppSettingWithIcon });
+		quickpickStub.onSecondCall().resolves({ label: constants.connectionProfile });
+
+		await launchAddSqlBindingQuickpick(vscode.Uri.file('testUri'), packageHelper);
+
+		should(spy.calledOnce).be.true('showErrorMessage should have been called exactly once');
+		should(spy.calledWith(errormsg)).be.true(`showErrorMessage not called with expected message '${errormsg}' Actual '${spy.getCall(0).args[0]}'`);
+	});
 });
 
