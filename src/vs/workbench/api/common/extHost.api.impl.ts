@@ -50,6 +50,7 @@ import { throwProposedApiError, checkProposedApiEnabled } from 'vs/workbench/ser
 import { ProxyIdentifier } from 'vs/workbench/services/extensions/common/proxyIdentifier';
 import { ExtensionDescriptionRegistry } from 'vs/workbench/services/extensions/common/extensionDescriptionRegistry';
 import type * as vscode from 'vscode';
+import type * as azdata from 'azdata';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { values } from 'vs/base/common/collections';
 import { ExtHostEditorInsets } from 'vs/workbench/api/common/extHostCodeInsets';
@@ -898,17 +899,17 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 			},
 			async openNotebookDocument(uriOrType?: URI | string, content?: vscode.NotebookData): Promise<vscode.NotebookDocument> {
 				// {{SQL CARBON EDIT}} Use our own notebooks
-				let uri: URI;
+				let doc: azdata.nb.NotebookDocument;
 				if (URI.isUri(uriOrType)) {
-					uri = uriOrType;
+					let editor = await extHostNotebookDocumentsAndEditors.showNotebookDocument(uriOrType, {});
+					doc = editor.document;
 				} else if (typeof uriOrType === 'string') {
 					let convertedContents = convertToADSNotebookContents(content);
-					uri = URI.revive(await extHostNotebook.createNotebookDocument(uriOrType, convertedContents));
+					doc = await extHostNotebookDocumentsAndEditors.createNotebookDocument(uriOrType, convertedContents);
 				} else {
 					throw new Error(invalidArgumentsError);
 				}
-				let editor = await extHostNotebookDocumentsAndEditors.showNotebookDocument(uri, {});
-				return new VSCodeNotebookDocument(editor.document);
+				return new VSCodeNotebookDocument(doc);
 			},
 			get onDidOpenNotebookDocument(): Event<vscode.NotebookDocument> {
 				// {{SQL CARBON EDIT}} Use our own notebooks

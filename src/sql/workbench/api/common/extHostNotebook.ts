@@ -270,10 +270,6 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		this.registerExecuteProvider(executeProvider);
 		return controller;
 	}
-
-	createNotebookDocument(providerId: string, contents: azdata.nb.INotebookContents): URI {
-		return undefined;
-	}
 	//#endregion
 
 	//#region private methods
