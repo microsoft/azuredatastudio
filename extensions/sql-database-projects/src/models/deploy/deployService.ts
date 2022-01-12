@@ -285,7 +285,8 @@ export class DeployService {
 				trustServerCertificate: undefined,
 				typeSystemVersion: undefined,
 				workstationId: undefined,
-				profileName: profile.profileName
+				profileName: profile.profileName,
+				expiresOn: undefined
 			};
 			let connectionUrl = await vscodeMssqlApi.connect(connectionProfile, saveConnectionAndPassword);
 			return connectionUrl;

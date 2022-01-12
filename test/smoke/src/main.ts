@@ -13,7 +13,7 @@ import * as mkdirp from 'mkdirp';
 import { ncp } from 'ncp';
 import * as vscodetest from 'vscode-test';
 import fetch from 'node-fetch';
-import { Quality, ApplicationOptions, MultiLogger, Logger, ConsoleLogger, FileLogger, Application } from '../../automation';
+import { Quality, ApplicationOptions, MultiLogger, Logger, ConsoleLogger, FileLogger } from '../../automation';
 
 import { main as sqlMain, setup as sqlSetup } from './sql/main'; // {{SQL CARBON EDIT}}
 /*import { setup as setupDataMigrationTests } from './areas/workbench/data-migration.test';
@@ -360,19 +360,7 @@ after(async function () {
 	await new Promise((c, e) => rimraf(testDataPath, { maxBusyTries: 10 }, err => err ? e(err) : c(undefined)));
 });
 
-sqlMain(opts.web);
-
-if (screenshotsPath) {
-	afterEach(async function () {
-		if (this.currentTest!.state !== 'failed') {
-			return;
-		}
-		const app = this.app as Application;
-		const name = this.currentTest!.fullTitle().replace(/[^a-z0-9\-]/ig, '_');
-
-		await app.captureScreenshot(name);
-	});
-}
+sqlMain(opts);
 
 if (!opts.web && opts['build'] && !opts['remote']) {
 	describe(`Stable vs Insiders Smoke Tests: This test MUST run before releasing`, () => {

@@ -8,24 +8,6 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"dist/codelensProvider": {
-			"acceptBothChanges": "接受兩者變更",
-			"acceptCurrentChange": "接受目前變更",
-			"acceptIncomingChange": "接受來源變更",
-			"compareChanges": "比較變更"
-		},
-		"dist/commandHandler": {
-			"compareChangesTitle": "{0}: 目前變更⟷ 即將到來的變更",
-			"cursorNotInConflict": "編輯器游標不在衝突合併範圍之內",
-			"cursorOnCommonAncestorsRange": "編輯器游標在共同上階區塊內，請移動至「當前項目」或「來源項目」區塊",
-			"cursorOnSplitterRange": "編輯器游標在衝突合併工具範圍內,請移動至\"當前項目\"或來源項目\"區塊",
-			"noConflicts": "檔案內找不到需要合併衝突項目",
-			"noOtherConflictsInThisFile": "此檔案內沒有其他的衝突合併項目"
-		},
-		"dist/mergeDecorator": {
-			"currentChange": "(目前變更)",
-			"incomingChange": "(來源變更)"
-		},
 		"package": {
 			"command.accept.all-both": "接受兩者所有項目",
 			"command.accept.all-current": "接受所有當前項目",

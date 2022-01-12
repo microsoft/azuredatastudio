@@ -17,6 +17,7 @@
 			"fileDirname": "目前已開啟檔案的 dirname",
 			"fileExtname": "目前已開啟檔案的副檔名",
 			"lineNumber": "在使用中的檔案內目前已選取的行數",
+			"pathSeparator": "作業系統用來分隔檔案路徑中元件的字元",
 			"relativeFile": "目前已開啟與 ${workspaceFolder} 相關的檔案",
 			"relativeFileDirname": "相對於 ${workspaceFolder} 的目前已開啟檔案 dirname",
 			"selectedText": "在使用中的檔案內目前已選取的文字",

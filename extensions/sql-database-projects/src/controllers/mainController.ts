@@ -6,6 +6,7 @@
 import type * as azdataType from 'azdata';
 import * as vscode from 'vscode';
 import * as vscodeMssql from 'vscode-mssql';
+import * as mssql from '../../../mssql';
 import * as templates from '../templates/templates';
 import * as path from 'path';
 
@@ -17,6 +18,7 @@ import * as constants from '../common/constants';
 import { SqlDatabaseProjectProvider } from '../projectProvider/projectProvider';
 import { launchAddSqlBindingQuickpick } from '../dialogs/addSqlBindingQuickpick';
 import { PackageHelper } from '../tools/packageHelper';
+import { GenerateProjectFromOpenApiSpecOptions } from 'sqldbproj';
 
 /**
  * The main controller class that initializes the extension
@@ -63,8 +65,10 @@ export default class MainController implements vscode.Disposable {
 		vscode.commands.registerCommand('sqlDatabaseProjects.build', async (node: WorkspaceTreeItem) => { return this.projectsController.buildProject(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.publish', async (node: WorkspaceTreeItem) => { return this.projectsController.publishProject(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.schemaCompare', async (node: WorkspaceTreeItem) => { return this.projectsController.schemaCompare(node); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.schemaComparePublishProjectChanges', async (operationId: string, projectFilePath: string, folderStructure: string): Promise<mssql.SchemaComparePublishProjectResult> => { return await this.projectsController.schemaComparePublishProjectChanges(operationId, projectFilePath, folderStructure); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.updateProjectFromDatabase', async (node: azdataType.IConnectionProfile | vscodeMssql.ITreeNodeInfo | WorkspaceTreeItem) => { await this.projectsController.updateProjectFromDatabase(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.createProjectFromDatabase', async (context: azdataType.IConnectionProfile | vscodeMssql.ITreeNodeInfo | undefined) => { return this.projectsController.createProjectFromDatabase(context); });
-		vscode.commands.registerCommand('sqlDatabaseProjects.generateProjectFromOpenApiSpec', async () => { return this.projectsController.generateProjectFromOpenApiSpec(); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.generateProjectFromOpenApiSpec', async (options?: GenerateProjectFromOpenApiSpecOptions) => { return this.projectsController.generateProjectFromOpenApiSpec(options); });
 
 		vscode.commands.registerCommand('sqlDatabaseProjects.newScript', async (node: WorkspaceTreeItem) => { return this.projectsController.addItemPromptFromNode(node, templates.script); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.newPreDeploymentScript', async (node: WorkspaceTreeItem) => { return this.projectsController.addItemPromptFromNode(node, templates.preDeployScript); });

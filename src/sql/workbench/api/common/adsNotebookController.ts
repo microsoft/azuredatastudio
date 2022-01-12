@@ -11,9 +11,9 @@ import * as extHostTypeConverters from 'vs/workbench/api/common/extHostTypeConve
 import { Deferred } from 'sql/base/common/promise';
 import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/common/extHostNotebookDocumentsAndEditors';
 import { URI } from 'vs/base/common/uri';
-import { VSCodeContentManager } from 'sql/workbench/api/common/vscodeSerializationProvider';
 import { NotebookCellExecutionTaskState } from 'vs/workbench/api/common/extHostNotebookKernels';
 import { asArray } from 'vs/base/common/arrays';
+import { convertToADSCellOutput } from 'sql/workbench/api/common/vscodeSerializationProvider';
 
 type SelectionChangedEvent = { selected: boolean, notebook: vscode.NotebookDocument; };
 type MessageReceivedEvent = { editor: vscode.NotebookEditor, message: any; };
@@ -224,7 +224,7 @@ class ADSNotebookCellExecution implements vscode.NotebookCellExecution {
 		const targetCell = typeof cell === 'number' ? this._cell.notebook.cellAt(cell) : (cell ?? this._cell);
 		const editor = this._extHostNotebookDocumentsAndEditors.getEditor(URI.from(targetCell.notebook.uri).toString());
 		await editor.edit(builder => {
-			const adsOutputs = VSCodeContentManager.convertToADSCellOutput(outputs);
+			const adsOutputs = convertToADSCellOutput(outputs);
 			builder.updateCell(targetCell.index, { outputs: adsOutputs }, append);
 		});
 	}
@@ -233,7 +233,7 @@ class ADSNotebookCellExecution implements vscode.NotebookCellExecution {
 		this.verifyStateForOutput();
 		const editor = this._extHostNotebookDocumentsAndEditors.getEditor(URI.from(this._cell.notebook.uri).toString());
 		await editor.edit(builder => {
-			const adsOutput = VSCodeContentManager.convertToADSCellOutput({ id: output.id, items: asArray(items) }, undefined);
+			const adsOutput = convertToADSCellOutput({ id: output.id, items: asArray(items) }, undefined);
 			builder.updateCellOutput(this._cell.index, { outputs: adsOutput }, append);
 		});
 	}

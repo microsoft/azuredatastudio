@@ -38,6 +38,10 @@
           "light": "./images/light_icon.svg",
           "dark": "./images/dark_icon.svg"
         }
+      },
+      {
+        "command": "schemaCompare.runComparison",
+        "title": "%schemaCompare.runComparison%"
       }
     ],
     "languages": [
@@ -83,6 +87,10 @@
         {
           "command": "schemaCompare.start",
           "when": "mssql:engineedition != 11"
+        },
+        {
+          "command": "schemaCompare.runComparison",
+          "when": "false"
         }
       ]
     }
