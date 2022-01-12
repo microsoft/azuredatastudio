@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { TreeItemCollapsibleState, ExtensionContext } from 'vscode';
-// import * as nls from 'vscode-nls';
-// const localize = nls.loadMessageBundle();
+import * as nls from 'vscode-nls';
+const localize = nls.loadMessageBundle();
 
 import { AzureResourceItemType } from '../../../constants';
 import { generateGuid } from '../../../utils';
@@ -16,7 +16,7 @@ import * as azdata from 'azdata';
 
 export class CosmosDbMongoTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabaseServer> {
 	private static readonly containerId = 'azure.resource.providers.databaseServer.treeDataProvider.cosmosDbMongoContainer';
-	private static readonly containerLabel = 'CosmosDB for Mongo'; // localize('azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel', "Azure Database for PostgreSQL server");
+	private static readonly containerLabel = localize('azure.resource.providers.databaseServer.treeDataProvider.cosmosDbMongoContainerLabel', "CosmosDB for Mongo");
 
 	public constructor(
 		databaseServerService: IAzureResourceService<azureResource.AzureResourceDatabaseServer>,
@@ -43,8 +43,8 @@ export class CosmosDbMongoTreeDataProvider extends ResourceTreeDataProviderBase<
 				password: '',
 				authenticationType: 'AzureMFA',
 				savePassword: true,
-				// groupFullName: 'CosmosDB Mongo',
-				// groupId: 'cosmosdbmongo',
+				groupFullName: '',
+				groupId: '',
 				providerName: 'COSMOSDB_MONGO',
 				saveProfile: false,
 				options: {},
@@ -71,7 +71,7 @@ export class CosmosDbMongoTreeDataProvider extends ResourceTreeDataProviderBase<
 					light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')
 				},
 				collapsibleState: TreeItemCollapsibleState.Collapsed,
-				// contextValue: AzureResourceItemType.databaseServerContainer
+				contextValue: AzureResourceItemType.databaseServerContainer
 			}
 		};
 	}
