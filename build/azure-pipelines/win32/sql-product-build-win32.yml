@@ -287,18 +287,18 @@ steps:
       archiveType: tar
       archiveFile: '$(Build.BinariesDirectory)/source.tar.gz'
 
+  # - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+  #   displayName: 'SBOM Generation Task'
+  #   inputs:
+  #     BuildDropPath: '$(Build.BinariesDirectory)'
+  #     PackageName: 'Azure Data Studio'
+  #     PackageVersion: '1.34.0'
+
   - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
     displayName: 'SBOM Generation Task'
     inputs:
-      BuildDropPath: '$(Build.BinariesDirectory)'
-      PackageName: 'Azure Data Studio'
-      PackageVersion: '1.34.0'
-
-  - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
-    displayName: 'SBOM Generation Task 2'
-    inputs:
       BuildDropPath: '$(Build.ArtifactStagingDirectory)'
-      PackageName: 'Azure Data Studio 2'
+      PackageName: 'Azure Data Studio'
       PackageVersion: '1.34.0'
 
   - task: PublishBuildArtifacts@1
