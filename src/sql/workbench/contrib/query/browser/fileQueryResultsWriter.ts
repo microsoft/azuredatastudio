@@ -6,7 +6,7 @@
 import { hyperLinkFormatter, textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 import { IGridDataProvider } from 'sql/workbench/services/query/common/gridDataProvider';
-import { IQueryMessage, ResultSetSummary, IQueryResultsWriter } from 'sql/workbench/services/query/common/query';
+import { IQueryMessage, ResultSetSummary, IQueryResultsWriter, MessageType } from 'sql/workbench/services/query/common/query';
 import QueryRunner, { QueryGridDataProvider } from 'sql/workbench/services/query/common/queryRunner';
 import { asArray } from 'vs/base/common/arrays';
 import { CancellationToken } from 'vs/base/common/cancellation';
@@ -88,7 +88,7 @@ export class FileQueryResultsWriter implements IQueryResultsWriter {
 					this.queryContainsError = true;
 				}
 
-				if (m?.isQueryEnd) {
+				if (m?.messageType === MessageType.queryEnd) {
 					this.closingMessageIncluded = true;
 				}
 
@@ -136,12 +136,12 @@ export class FileQueryResultsWriter implements IQueryResultsWriter {
 	}
 
 	private async createResultsFile() {
-		this.messages = this.messages.filter(m => m?.isQueryStart !== true);
+		this.messages = this.messages.filter(m => m?.messageType !== MessageType.queryStart);
 		this.messages.forEach(m => {
 			if (m?.hasRowCount) {
 				m.message = this.newLineEscapeSequence + m.message + this.newLineEscapeSequence;
 			}
-			else if (m?.isQueryEnd) {
+			else if (m?.messageType === MessageType.queryEnd) {
 				m.message = this.newLineEscapeSequence + m.message;
 			}
 		});

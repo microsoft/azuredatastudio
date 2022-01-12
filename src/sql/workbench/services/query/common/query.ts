@@ -50,8 +50,13 @@ export interface IQueryMessage {
 	message: string;
 	range?: IRange;
 	hasRowCount?: boolean;
-	isQueryStart?: boolean;
-	isQueryEnd?: boolean;
+	messageType?: MessageType;
+}
+
+export enum MessageType {
+	normal,
+	queryStart,
+	queryEnd,
 }
 
 export interface IResultMessage {

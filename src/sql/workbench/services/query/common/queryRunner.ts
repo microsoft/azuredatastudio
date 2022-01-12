@@ -24,7 +24,7 @@ import { IGridDataProvider, getResultsString } from 'sql/workbench/services/quer
 import { getErrorMessage } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IRange, Range } from 'vs/editor/common/core/range';
-import { BatchSummary, IQueryMessage, ResultSetSummary, QueryExecuteSubsetParams, CompleteBatchSummary, IResultMessage, ResultSetSubset, BatchStartSummary } from './query';
+import { BatchSummary, IQueryMessage, ResultSetSummary, QueryExecuteSubsetParams, CompleteBatchSummary, IResultMessage, ResultSetSubset, BatchStartSummary, MessageType } from './query';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 import { IDisposableDataProvider } from 'sql/base/common/dataProvider';
 
@@ -255,7 +255,7 @@ export default class QueryRunner extends Disposable {
 			message: nls.localize('query.message.executionTime', "Total execution time: {0}", timeStamp),
 			isError: false,
 			time: undefined,
-			isQueryEnd: true
+			messageType: MessageType.queryEnd
 		};
 		this._messages.push(message);
 
@@ -283,7 +283,7 @@ export default class QueryRunner extends Disposable {
 			time: batch.executionStart,
 			range: batch.range,
 			isError: false,
-			isQueryStart: true
+			messageType: MessageType.queryStart
 		};
 		this._messages.push(message);
 		this._onMessage.fire([message]);

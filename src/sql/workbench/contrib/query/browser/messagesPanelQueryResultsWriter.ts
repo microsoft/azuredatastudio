@@ -11,21 +11,12 @@ import { isArray } from 'vs/base/common/types';
 import { WorkbenchDataTree } from 'vs/platform/list/browser/listService';
 
 export class MessagesPanelQueryResultsWriter implements IQueryResultsWriter {
-	private model: Model;
-	private tree: WorkbenchDataTree<Model, IResultMessageIntern, FuzzyScore>;
-	private treeStates: Map<string, IDataTreeViewState>;
-	private currenturi: string;
 
-	constructor(model: Model,
-		tree: WorkbenchDataTree<Model, IResultMessageIntern, FuzzyScore>,
-		treeStates: Map<string, IDataTreeViewState>,
-		currenturi: string
-	) {
-		this.model = model;
-		this.tree = tree;
-		this.treeStates = treeStates;
-		this.currenturi = currenturi;
-	}
+	constructor(private readonly model: Model,
+		private readonly tree: WorkbenchDataTree<Model, IResultMessageIntern, FuzzyScore>,
+		private readonly treeStates: Map<string, IDataTreeViewState>,
+		private readonly currentUri: string
+	) { }
 
 	public onQueryStart(): void {
 		this.reset();
@@ -46,7 +37,7 @@ export class MessagesPanelQueryResultsWriter implements IQueryResultsWriter {
 			this.model.messages.push(incomingMessage);
 		}
 		if (setInput) {
-			this.tree.setInput(this.model, this.treeStates.get(this.currenturi));
+			this.tree.setInput(this.model, this.treeStates.get(this.currentUri));
 		} else {
 			this.tree.updateChildren();
 		}
