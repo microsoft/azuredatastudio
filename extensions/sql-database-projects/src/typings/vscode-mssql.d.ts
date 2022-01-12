@@ -291,11 +291,13 @@ declare module 'vscode-mssql' {
 	export interface DacDeployOptionPropertyBoolean {
 		value: boolean;
 		description: string;
+		displayName: string;
 	}
 
 	export interface DacDeployOptionPropertyObject {
 		value: SchemaObjectType[];
 		description: string;
+		displayName: string;
 	}
 
 	export interface DeploymentOptions {
