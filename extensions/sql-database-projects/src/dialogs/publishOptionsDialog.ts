@@ -152,6 +152,9 @@ export class PublishOptionsDialog {
 		let result = await this.publish.getDefaultDeploymentOptions();
 		this.optionsModel.deploymentOptions = result;
 
+		// This will update the Map table with default values
+		this.optionsModel.InitializeUpdateOptionsMapTable();
+
 		await this.updateOptionsTable();
 		this.optionsFlexBuilder.removeItem(this.optionsTable);
 		this.optionsFlexBuilder.insertItem(this.optionsTable, 0, { CSSStyles: { 'overflow': 'scroll', 'height': '65vh' } });

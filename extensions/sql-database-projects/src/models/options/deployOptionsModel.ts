@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as mssql from '../../../../mssql/src/mssql';
-import * as constants from '../../common/constants';
 
 export class DeployOptionsModel {
 	public deploymentOptions: mssql.DeploymentOptions;
@@ -14,201 +13,210 @@ export class DeployOptionsModel {
 
 	constructor(defaultOptions: mssql.DeploymentOptions) {
 		this.deploymentOptions = defaultOptions;
-		this.InitializeMapTable();
+		this.InitializeUpdateOptionsMapTable();
+		this.InitializeOptionsLabels();
 	}
 
 	/*
 	* Initialize the options mapping table
 	* This will map the key:Option_DisplayName to the value:DacFx_OptionsValue
 	*/
-	public InitializeMapTable() {
-		this.optionsMapTable[constants.IgnoreTableOptions] = this.deploymentOptions.ignoreTableOptions;
-		this.optionsMapTable[constants.IgnoreSemicolonBetweenStatements] = this.deploymentOptions.ignoreSemicolonBetweenStatements;
-		this.optionsMapTable[constants.IgnoreRouteLifetime] = this.deploymentOptions.ignoreRouteLifetime;
-		this.optionsMapTable[constants.IgnoreRoleMembership] = this.deploymentOptions.ignoreRoleMembership;
-		this.optionsMapTable[constants.IgnoreQuotedIdentifiers] = this.deploymentOptions.ignoreQuotedIdentifiers;
-		this.optionsMapTable[constants.IgnorePermissions] = this.deploymentOptions.ignorePermissions;
-		this.optionsMapTable[constants.IgnorePartitionSchemes] = this.deploymentOptions.ignorePartitionSchemes;
-		this.optionsMapTable[constants.IgnoreObjectPlacementOnPartitionScheme] = this.deploymentOptions.ignoreObjectPlacementOnPartitionScheme;
-		this.optionsMapTable[constants.IgnoreNotForReplication] = this.deploymentOptions.ignoreNotForReplication;
-		this.optionsMapTable[constants.IgnoreLoginSids] = this.deploymentOptions.ignoreLoginSids;
-		this.optionsMapTable[constants.IgnoreLockHintsOnIndexes] = this.deploymentOptions.ignoreLockHintsOnIndexes;
-		this.optionsMapTable[constants.IgnoreKeywordCasing] = this.deploymentOptions.ignoreKeywordCasing;
-		this.optionsMapTable[constants.IgnoreIndexPadding] = this.deploymentOptions.ignoreIndexPadding;
-		this.optionsMapTable[constants.IgnoreIndexOptions] = this.deploymentOptions.ignoreIndexOptions;
-		this.optionsMapTable[constants.IgnoreIncrement] = this.deploymentOptions.ignoreIncrement;
-		this.optionsMapTable[constants.IgnoreIdentitySeed] = this.deploymentOptions.ignoreIdentitySeed;
-		this.optionsMapTable[constants.IgnoreUserSettingsObjects] = this.deploymentOptions.ignoreUserSettingsObjects;
-		this.optionsMapTable[constants.IgnoreFullTextCatalogFilePath] = this.deploymentOptions.ignoreFullTextCatalogFilePath;
-		this.optionsMapTable[constants.IgnoreWhitespace] = this.deploymentOptions.ignoreWhitespace;
-		this.optionsMapTable[constants.IgnoreWithNocheckOnForeignKeys] = this.deploymentOptions.ignoreWithNocheckOnForeignKeys;
-		this.optionsMapTable[constants.VerifyCollationCompatibility] = this.deploymentOptions.verifyCollationCompatibility;
-		this.optionsMapTable[constants.UnmodifiableObjectWarnings] = this.deploymentOptions.unmodifiableObjectWarnings;
-		this.optionsMapTable[constants.TreatVerificationErrorsAsWarnings] = this.deploymentOptions.treatVerificationErrorsAsWarnings;
-		this.optionsMapTable[constants.ScriptRefreshModule] = this.deploymentOptions.scriptRefreshModule;
-		this.optionsMapTable[constants.ScriptNewConstraintValidation] = this.deploymentOptions.scriptNewConstraintValidation;
-		this.optionsMapTable[constants.ScriptFileSize] = this.deploymentOptions.scriptFileSize;
-		this.optionsMapTable[constants.ScriptDeployStateChecks] = this.deploymentOptions.scriptDeployStateChecks;
-		this.optionsMapTable[constants.ScriptDatabaseOptions] = this.deploymentOptions.scriptDatabaseOptions;
-		this.optionsMapTable[constants.ScriptDatabaseCompatibility] = this.deploymentOptions.scriptDatabaseCompatibility;
-		this.optionsMapTable[constants.ScriptDatabaseCollation] = this.deploymentOptions.scriptDatabaseCollation;
-		this.optionsMapTable[constants.RunDeploymentPlanExecutors] = this.deploymentOptions.runDeploymentPlanExecutors;
-		this.optionsMapTable[constants.RegisterDataTierApplication] = this.deploymentOptions.registerDataTierApplication;
-		this.optionsMapTable[constants.PopulateFilesOnFileGroups] = this.deploymentOptions.populateFilesOnFileGroups;
-		this.optionsMapTable[constants.NoAlterStatementsToChangeClrTypes] = this.deploymentOptions.noAlterStatementsToChangeClrTypes;
-		this.optionsMapTable[constants.IncludeTransactionalScripts] = this.deploymentOptions.includeTransactionalScripts;
-		this.optionsMapTable[constants.IncludeCompositeObjects] = this.deploymentOptions.includeCompositeObjects;
-		this.optionsMapTable[constants.AllowUnsafeRowLevelSecurityDataMovement] = this.deploymentOptions.allowUnsafeRowLevelSecurityDataMovement;
-		this.optionsMapTable[constants.IgnoreWithNocheckOnCheckConstraints] = this.deploymentOptions.ignoreWithNocheckOnCheckConstraints;
-		this.optionsMapTable[constants.IgnoreFillFactor] = this.deploymentOptions.ignoreFillFactor;
-		this.optionsMapTable[constants.IgnoreFileSize] = this.deploymentOptions.ignoreFileSize;
-		this.optionsMapTable[constants.IgnoreFilegroupPlacement] = this.deploymentOptions.ignoreFilegroupPlacement;
-		this.optionsMapTable[constants.DoNotAlterReplicatedObjects] = this.deploymentOptions.doNotAlterReplicatedObjects;
-		this.optionsMapTable[constants.DoNotAlterChangeDataCaptureObjects] = this.deploymentOptions.doNotAlterChangeDataCaptureObjects;
-		this.optionsMapTable[constants.DisableAndReenableDdlTriggers] = this.deploymentOptions.disableAndReenableDdlTriggers;
-		this.optionsMapTable[constants.DeployDatabaseInSingleUserMode] = this.deploymentOptions.deployDatabaseInSingleUserMode;
-		this.optionsMapTable[constants.CreateNewDatabase] = this.deploymentOptions.createNewDatabase;
-		this.optionsMapTable[constants.CompareUsingTargetCollation] = this.deploymentOptions.compareUsingTargetCollation;
-		this.optionsMapTable[constants.CommentOutSetVarDeclarations] = this.deploymentOptions.commentOutSetVarDeclarations;
-		this.optionsMapTable[constants.BlockWhenDriftDetected] = this.deploymentOptions.blockWhenDriftDetected;
-		this.optionsMapTable[constants.BlockOnPossibleDataLoss] = this.deploymentOptions.blockOnPossibleDataLoss;
-		this.optionsMapTable[constants.BackupDatabaseBeforeChanges] = this.deploymentOptions.backupDatabaseBeforeChanges;
-		this.optionsMapTable[constants.AllowIncompatiblePlatform] = this.deploymentOptions.allowIncompatiblePlatform;
-		this.optionsMapTable[constants.AllowDropBlockingAssemblies] = this.deploymentOptions.allowDropBlockingAssemblies;
-		this.optionsMapTable[constants.DropConstraintsNotInSource] = this.deploymentOptions.dropConstraintsNotInSource;
-		this.optionsMapTable[constants.DropDmlTriggersNotInSource] = this.deploymentOptions.dropDmlTriggersNotInSource;
-		this.optionsMapTable[constants.DropExtendedPropertiesNotInSource] = this.deploymentOptions.dropExtendedPropertiesNotInSource;
-		this.optionsMapTable[constants.DropIndexesNotInSource] = this.deploymentOptions.dropIndexesNotInSource;
-		this.optionsMapTable[constants.IgnoreFileAndLogFilePath] = this.deploymentOptions.ignoreFileAndLogFilePath;
-		this.optionsMapTable[constants.IgnoreExtendedProperties] = this.deploymentOptions.ignoreExtendedProperties;
-		this.optionsMapTable[constants.IgnoreDmlTriggerState] = this.deploymentOptions.ignoreDmlTriggerState;
-		this.optionsMapTable[constants.IgnoreDmlTriggerOrder] = this.deploymentOptions.ignoreDmlTriggerOrder;
-		this.optionsMapTable[constants.IgnoreDefaultSchema] = this.deploymentOptions.ignoreDefaultSchema;
-		this.optionsMapTable[constants.IgnoreDdlTriggerState] = this.deploymentOptions.ignoreDdlTriggerState;
-		this.optionsMapTable[constants.IgnoreDdlTriggerOrder] = this.deploymentOptions.ignoreDdlTriggerOrder;
-		this.optionsMapTable[constants.IgnoreCryptographicProviderFilePath] = this.deploymentOptions.ignoreCryptographicProviderFilePath;
-		this.optionsMapTable[constants.VerifyDeployment] = this.deploymentOptions.verifyDeployment;
-		this.optionsMapTable[constants.IgnoreComments] = this.deploymentOptions.ignoreComments;
-		this.optionsMapTable[constants.IgnoreColumnCollation] = this.deploymentOptions.ignoreColumnCollation;
-		this.optionsMapTable[constants.IgnoreAuthorizer] = this.deploymentOptions.ignoreAuthorizer;
-		this.optionsMapTable[constants.IgnoreAnsiNulls] = this.deploymentOptions.ignoreAnsiNulls;
-		this.optionsMapTable[constants.GenerateSmartDefaults] = this.deploymentOptions.generateSmartDefaults;
-		this.optionsMapTable[constants.DropStatisticsNotInSource] = this.deploymentOptions.dropStatisticsNotInSource;
-		this.optionsMapTable[constants.DropRoleMembersNotInSource] = this.deploymentOptions.dropRoleMembersNotInSource;
-		this.optionsMapTable[constants.DropPermissionsNotInSource] = this.deploymentOptions.dropPermissionsNotInSource;
-		this.optionsMapTable[constants.DropObjectsNotInSource] = this.deploymentOptions.dropObjectsNotInSource;
-		this.optionsMapTable[constants.IgnoreColumnOrder] = this.deploymentOptions.ignoreColumnOrder;
-		this.optionsMapTable[constants.IgnoreTablePartitionOptions] = this.deploymentOptions.ignoreTablePartitionOptions;
-		this.optionsMapTable[constants.DoNotEvaluateSqlCmdVariables] = this.deploymentOptions.doNotEvaluateSqlCmdVariables;
-		this.optionsMapTable[constants.DisableParallelismForEnablingIndexes] = this.deploymentOptions.disableParallelismForEnablingIndexes;
-		this.optionsMapTable[constants.DisableIndexesForDataPhase] = this.deploymentOptions.disableIndexesForDataPhase;
-		this.optionsMapTable[constants.RestoreSequenceCurrentValue] = this.deploymentOptions.restoreSequenceCurrentValue;
-		this.optionsMapTable[constants.RebuildIndexesOfflineForDataPhase] = this.deploymentOptions.rebuildIndexesOfflineForDataPhase;
-		this.optionsMapTable[constants.PreserveIdentityLastValues] = this.deploymentOptions.preserveIdentityLastValues;
-		this.optionsMapTable[constants.IsAlwaysEncryptedParameterizationEnabled] = this.deploymentOptions.isAlwaysEncryptedParameterizationEnabled;
-		this.optionsMapTable[constants.AllowExternalLibraryPaths] = this.deploymentOptions.allowExternalLibraryPaths;
-		this.optionsMapTable[constants.AllowExternalLanguagePaths] = this.deploymentOptions.allowExternalLanguagePaths;
-		this.optionsMapTable[constants.HashObjectNamesInLogs] = this.deploymentOptions.hashObjectNamesInLogs;
-		this.optionsMapTable[constants.DoNotDropWorkloadClassifiers] = this.deploymentOptions.doNotDropWorkloadClassifiers;
-		this.optionsMapTable[constants.IgnoreWorkloadClassifiers] = this.deploymentOptions.ignoreWorkloadClassifiers;
-		this.optionsMapTable[constants.IgnoreDatabaseWorkloadGroups] = this.deploymentOptions.ignoreDatabaseWorkloadGroups;
-		this.optionsMapTable[constants.DoNotDropDatabaseWorkloadGroups] = this.deploymentOptions.doNotDropDatabaseWorkloadGroups;
+	public InitializeUpdateOptionsMapTable() {
+		this.optionsMapTable[this.deploymentOptions.ignoreTableOptions.displayName] = this.deploymentOptions.ignoreTableOptions;
+		this.optionsMapTable[this.deploymentOptions.ignoreSemicolonBetweenStatements.displayName] = this.deploymentOptions.ignoreSemicolonBetweenStatements;
+		this.optionsMapTable[this.deploymentOptions.ignoreRouteLifetime.displayName] = this.deploymentOptions.ignoreRouteLifetime;
+		this.optionsMapTable[this.deploymentOptions.ignoreRoleMembership.displayName] = this.deploymentOptions.ignoreRoleMembership;
+		this.optionsMapTable[this.deploymentOptions.ignoreQuotedIdentifiers.displayName] = this.deploymentOptions.ignoreQuotedIdentifiers;
+		this.optionsMapTable[this.deploymentOptions.ignorePermissions.displayName] = this.deploymentOptions.ignorePermissions;
+		this.optionsMapTable[this.deploymentOptions.ignorePartitionSchemes.displayName] = this.deploymentOptions.ignorePartitionSchemes;
+		this.optionsMapTable[this.deploymentOptions.ignoreObjectPlacementOnPartitionScheme.displayName] = this.deploymentOptions.ignoreObjectPlacementOnPartitionScheme;
+		this.optionsMapTable[this.deploymentOptions.ignoreNotForReplication.displayName] = this.deploymentOptions.ignoreNotForReplication;
+		this.optionsMapTable[this.deploymentOptions.ignoreLoginSids.displayName] = this.deploymentOptions.ignoreLoginSids;
+		this.optionsMapTable[this.deploymentOptions.ignoreLockHintsOnIndexes.displayName] = this.deploymentOptions.ignoreLockHintsOnIndexes;
+		this.optionsMapTable[this.deploymentOptions.ignoreKeywordCasing.displayName] = this.deploymentOptions.ignoreKeywordCasing;
+		this.optionsMapTable[this.deploymentOptions.ignoreIndexPadding.displayName] = this.deploymentOptions.ignoreIndexPadding;
+		this.optionsMapTable[this.deploymentOptions.ignoreIndexOptions.displayName] = this.deploymentOptions.ignoreIndexOptions;
+		this.optionsMapTable[this.deploymentOptions.ignoreIncrement.displayName] = this.deploymentOptions.ignoreIncrement;
+		this.optionsMapTable[this.deploymentOptions.ignoreIdentitySeed.displayName] = this.deploymentOptions.ignoreIdentitySeed;
+		this.optionsMapTable[this.deploymentOptions.ignoreUserSettingsObjects.displayName] = this.deploymentOptions.ignoreUserSettingsObjects;
+		this.optionsMapTable[this.deploymentOptions.ignoreFullTextCatalogFilePath.displayName] = this.deploymentOptions.ignoreFullTextCatalogFilePath;
+		this.optionsMapTable[this.deploymentOptions.ignoreWhitespace.displayName] = this.deploymentOptions.ignoreWhitespace;
+		this.optionsMapTable[this.deploymentOptions.ignoreWithNocheckOnForeignKeys.displayName] = this.deploymentOptions.ignoreWithNocheckOnForeignKeys;
+		this.optionsMapTable[this.deploymentOptions.verifyCollationCompatibility.displayName] = this.deploymentOptions.verifyCollationCompatibility;
+		this.optionsMapTable[this.deploymentOptions.unmodifiableObjectWarnings.displayName] = this.deploymentOptions.unmodifiableObjectWarnings;
+		this.optionsMapTable[this.deploymentOptions.treatVerificationErrorsAsWarnings.displayName] = this.deploymentOptions.treatVerificationErrorsAsWarnings;
+		this.optionsMapTable[this.deploymentOptions.scriptRefreshModule.displayName] = this.deploymentOptions.scriptRefreshModule;
+		this.optionsMapTable[this.deploymentOptions.scriptNewConstraintValidation.displayName] = this.deploymentOptions.scriptNewConstraintValidation;
+		this.optionsMapTable[this.deploymentOptions.scriptFileSize.displayName] = this.deploymentOptions.scriptFileSize;
+		this.optionsMapTable[this.deploymentOptions.scriptDeployStateChecks.displayName] = this.deploymentOptions.scriptDeployStateChecks;
+		this.optionsMapTable[this.deploymentOptions.scriptDatabaseOptions.displayName] = this.deploymentOptions.scriptDatabaseOptions;
+		this.optionsMapTable[this.deploymentOptions.scriptDatabaseCompatibility.displayName] = this.deploymentOptions.scriptDatabaseCompatibility;
+		this.optionsMapTable[this.deploymentOptions.scriptDatabaseCollation.displayName] = this.deploymentOptions.scriptDatabaseCollation;
+		this.optionsMapTable[this.deploymentOptions.runDeploymentPlanExecutors.displayName] = this.deploymentOptions.runDeploymentPlanExecutors;
+		this.optionsMapTable[this.deploymentOptions.registerDataTierApplication.displayName] = this.deploymentOptions.registerDataTierApplication;
+		this.optionsMapTable[this.deploymentOptions.populateFilesOnFileGroups.displayName] = this.deploymentOptions.populateFilesOnFileGroups;
+		this.optionsMapTable[this.deploymentOptions.noAlterStatementsToChangeClrTypes.displayName] = this.deploymentOptions.noAlterStatementsToChangeClrTypes;
+		this.optionsMapTable[this.deploymentOptions.includeTransactionalScripts.displayName] = this.deploymentOptions.includeTransactionalScripts;
+		this.optionsMapTable[this.deploymentOptions.includeCompositeObjects.displayName] = this.deploymentOptions.includeCompositeObjects;
+		this.optionsMapTable[this.deploymentOptions.allowUnsafeRowLevelSecurityDataMovement.displayName] = this.deploymentOptions.allowUnsafeRowLevelSecurityDataMovement;
+		this.optionsMapTable[this.deploymentOptions.ignoreWithNocheckOnCheckConstraints.displayName] = this.deploymentOptions.ignoreWithNocheckOnCheckConstraints;
+		this.optionsMapTable[this.deploymentOptions.ignoreFillFactor.displayName] = this.deploymentOptions.ignoreFillFactor;
+		this.optionsMapTable[this.deploymentOptions.ignoreFileSize.displayName] = this.deploymentOptions.ignoreFileSize;
+		this.optionsMapTable[this.deploymentOptions.ignoreFilegroupPlacement.displayName] = this.deploymentOptions.ignoreFilegroupPlacement;
+		this.optionsMapTable[this.deploymentOptions.doNotAlterReplicatedObjects.displayName] = this.deploymentOptions.doNotAlterReplicatedObjects;
+		this.optionsMapTable[this.deploymentOptions.doNotAlterChangeDataCaptureObjects.displayName] = this.deploymentOptions.doNotAlterChangeDataCaptureObjects;
+		this.optionsMapTable[this.deploymentOptions.disableAndReenableDdlTriggers.displayName] = this.deploymentOptions.disableAndReenableDdlTriggers;
+		this.optionsMapTable[this.deploymentOptions.deployDatabaseInSingleUserMode.displayName] = this.deploymentOptions.deployDatabaseInSingleUserMode;
+		this.optionsMapTable[this.deploymentOptions.createNewDatabase.displayName] = this.deploymentOptions.createNewDatabase;
+		this.optionsMapTable[this.deploymentOptions.compareUsingTargetCollation.displayName] = this.deploymentOptions.compareUsingTargetCollation;
+		this.optionsMapTable[this.deploymentOptions.commentOutSetVarDeclarations.displayName] = this.deploymentOptions.commentOutSetVarDeclarations;
+		this.optionsMapTable[this.deploymentOptions.blockWhenDriftDetected.displayName] = this.deploymentOptions.blockWhenDriftDetected;
+		this.optionsMapTable[this.deploymentOptions.blockOnPossibleDataLoss.displayName] = this.deploymentOptions.blockOnPossibleDataLoss;
+		this.optionsMapTable[this.deploymentOptions.backupDatabaseBeforeChanges.displayName] = this.deploymentOptions.backupDatabaseBeforeChanges;
+		this.optionsMapTable[this.deploymentOptions.allowIncompatiblePlatform.displayName] = this.deploymentOptions.allowIncompatiblePlatform;
+		this.optionsMapTable[this.deploymentOptions.allowDropBlockingAssemblies.displayName] = this.deploymentOptions.allowDropBlockingAssemblies;
+		this.optionsMapTable[this.deploymentOptions.dropConstraintsNotInSource.displayName] = this.deploymentOptions.dropConstraintsNotInSource;
+		this.optionsMapTable[this.deploymentOptions.dropDmlTriggersNotInSource.displayName] = this.deploymentOptions.dropDmlTriggersNotInSource;
+		this.optionsMapTable[this.deploymentOptions.dropExtendedPropertiesNotInSource.displayName] = this.deploymentOptions.dropExtendedPropertiesNotInSource;
+		this.optionsMapTable[this.deploymentOptions.dropIndexesNotInSource.displayName] = this.deploymentOptions.dropIndexesNotInSource;
+		this.optionsMapTable[this.deploymentOptions.ignoreFileAndLogFilePath.displayName] = this.deploymentOptions.ignoreFileAndLogFilePath;
+		this.optionsMapTable[this.deploymentOptions.ignoreExtendedProperties.displayName] = this.deploymentOptions.ignoreExtendedProperties;
+		this.optionsMapTable[this.deploymentOptions.ignoreDmlTriggerState.displayName] = this.deploymentOptions.ignoreDmlTriggerState;
+		this.optionsMapTable[this.deploymentOptions.ignoreDmlTriggerOrder.displayName] = this.deploymentOptions.ignoreDmlTriggerOrder;
+		this.optionsMapTable[this.deploymentOptions.ignoreDefaultSchema.displayName] = this.deploymentOptions.ignoreDefaultSchema;
+		this.optionsMapTable[this.deploymentOptions.ignoreDdlTriggerState.displayName] = this.deploymentOptions.ignoreDdlTriggerState;
+		this.optionsMapTable[this.deploymentOptions.ignoreDdlTriggerOrder.displayName] = this.deploymentOptions.ignoreDdlTriggerOrder;
+		this.optionsMapTable[this.deploymentOptions.ignoreCryptographicProviderFilePath.displayName] = this.deploymentOptions.ignoreCryptographicProviderFilePath;
+		this.optionsMapTable[this.deploymentOptions.verifyDeployment.displayName] = this.deploymentOptions.verifyDeployment;
+		this.optionsMapTable[this.deploymentOptions.ignoreComments.displayName] = this.deploymentOptions.ignoreComments;
+		this.optionsMapTable[this.deploymentOptions.ignoreColumnCollation.displayName] = this.deploymentOptions.ignoreColumnCollation;
+		this.optionsMapTable[this.deploymentOptions.ignoreAuthorizer.displayName] = this.deploymentOptions.ignoreAuthorizer;
+		this.optionsMapTable[this.deploymentOptions.ignoreAnsiNulls.displayName] = this.deploymentOptions.ignoreAnsiNulls;
+		this.optionsMapTable[this.deploymentOptions.generateSmartDefaults.displayName] = this.deploymentOptions.generateSmartDefaults;
+		this.optionsMapTable[this.deploymentOptions.dropStatisticsNotInSource.displayName] = this.deploymentOptions.dropStatisticsNotInSource;
+		this.optionsMapTable[this.deploymentOptions.dropRoleMembersNotInSource.displayName] = this.deploymentOptions.dropRoleMembersNotInSource;
+		this.optionsMapTable[this.deploymentOptions.dropPermissionsNotInSource.displayName] = this.deploymentOptions.dropPermissionsNotInSource;
+		this.optionsMapTable[this.deploymentOptions.dropObjectsNotInSource.displayName] = this.deploymentOptions.dropObjectsNotInSource;
+		this.optionsMapTable[this.deploymentOptions.ignoreColumnOrder.displayName] = this.deploymentOptions.ignoreColumnOrder;
+		this.optionsMapTable[this.deploymentOptions.ignoreTablePartitionOptions.displayName] = this.deploymentOptions.ignoreTablePartitionOptions;
+		this.optionsMapTable[this.deploymentOptions.doNotEvaluateSqlCmdVariables.displayName] = this.deploymentOptions.doNotEvaluateSqlCmdVariables;
+		this.optionsMapTable[this.deploymentOptions.disableParallelismForEnablingIndexes.displayName] = this.deploymentOptions.disableParallelismForEnablingIndexes;
+		this.optionsMapTable[this.deploymentOptions.disableIndexesForDataPhase.displayName] = this.deploymentOptions.disableIndexesForDataPhase;
+		this.optionsMapTable[this.deploymentOptions.restoreSequenceCurrentValue.displayName] = this.deploymentOptions.restoreSequenceCurrentValue;
+		this.optionsMapTable[this.deploymentOptions.rebuildIndexesOfflineForDataPhase.displayName] = this.deploymentOptions.rebuildIndexesOfflineForDataPhase;
+		this.optionsMapTable[this.deploymentOptions.preserveIdentityLastValues.displayName] = this.deploymentOptions.preserveIdentityLastValues;
+		this.optionsMapTable[this.deploymentOptions.isAlwaysEncryptedParameterizationEnabled.displayName] = this.deploymentOptions.isAlwaysEncryptedParameterizationEnabled;
+		this.optionsMapTable[this.deploymentOptions.allowExternalLibraryPaths.displayName] = this.deploymentOptions.allowExternalLibraryPaths;
+		this.optionsMapTable[this.deploymentOptions.allowExternalLanguagePaths.displayName] = this.deploymentOptions.allowExternalLanguagePaths;
+		this.optionsMapTable[this.deploymentOptions.hashObjectNamesInLogs.displayName] = this.deploymentOptions.hashObjectNamesInLogs;
+		this.optionsMapTable[this.deploymentOptions.doNotDropWorkloadClassifiers.displayName] = this.deploymentOptions.doNotDropWorkloadClassifiers;
+		this.optionsMapTable[this.deploymentOptions.ignoreWorkloadClassifiers.displayName] = this.deploymentOptions.ignoreWorkloadClassifiers;
+		this.optionsMapTable[this.deploymentOptions.ignoreDatabaseWorkloadGroups.displayName] = this.deploymentOptions.ignoreDatabaseWorkloadGroups;
+		this.optionsMapTable[this.deploymentOptions.doNotDropDatabaseWorkloadGroups.displayName] = this.deploymentOptions.doNotDropDatabaseWorkloadGroups;
 	}
 
-	public optionsLabels: string[] = [
-		constants.IgnoreTableOptions,
-		constants.IgnoreSemicolonBetweenStatements,
-		constants.IgnoreRouteLifetime,
-		constants.IgnoreRoleMembership,
-		constants.IgnoreQuotedIdentifiers,
-		constants.IgnorePermissions,
-		constants.IgnorePartitionSchemes,
-		constants.IgnoreObjectPlacementOnPartitionScheme,
-		constants.IgnoreNotForReplication,
-		constants.IgnoreLoginSids,
-		constants.IgnoreLockHintsOnIndexes,
-		constants.IgnoreKeywordCasing,
-		constants.IgnoreIndexPadding,
-		constants.IgnoreIndexOptions,
-		constants.IgnoreIncrement,
-		constants.IgnoreIdentitySeed,
-		constants.IgnoreUserSettingsObjects,
-		constants.IgnoreFullTextCatalogFilePath,
-		constants.IgnoreWhitespace,
-		constants.IgnoreWithNocheckOnForeignKeys,
-		constants.VerifyCollationCompatibility,
-		constants.UnmodifiableObjectWarnings,
-		constants.TreatVerificationErrorsAsWarnings,
-		constants.ScriptRefreshModule,
-		constants.ScriptNewConstraintValidation,
-		constants.ScriptFileSize,
-		constants.ScriptDeployStateChecks,
-		constants.ScriptDatabaseOptions,
-		constants.ScriptDatabaseCompatibility,
-		constants.ScriptDatabaseCollation,
-		constants.RunDeploymentPlanExecutors,
-		constants.RegisterDataTierApplication,
-		constants.PopulateFilesOnFileGroups,
-		constants.NoAlterStatementsToChangeClrTypes,
-		constants.IncludeTransactionalScripts,
-		constants.IncludeCompositeObjects,
-		constants.AllowUnsafeRowLevelSecurityDataMovement,
-		constants.IgnoreWithNocheckOnCheckConstraints,
-		constants.IgnoreFillFactor,
-		constants.IgnoreFileSize,
-		constants.IgnoreFilegroupPlacement,
-		constants.DoNotAlterReplicatedObjects,
-		constants.DoNotAlterChangeDataCaptureObjects,
-		constants.DisableAndReenableDdlTriggers,
-		constants.DeployDatabaseInSingleUserMode,
-		constants.CreateNewDatabase,
-		constants.CompareUsingTargetCollation,
-		constants.CommentOutSetVarDeclarations,
-		constants.BlockWhenDriftDetected,
-		constants.BlockOnPossibleDataLoss,
-		constants.BackupDatabaseBeforeChanges,
-		constants.AllowIncompatiblePlatform,
-		constants.AllowDropBlockingAssemblies,
-		constants.DropConstraintsNotInSource,
-		constants.DropDmlTriggersNotInSource,
-		constants.DropExtendedPropertiesNotInSource,
-		constants.DropIndexesNotInSource,
-		constants.IgnoreFileAndLogFilePath,
-		constants.IgnoreExtendedProperties,
-		constants.IgnoreDmlTriggerState,
-		constants.IgnoreDmlTriggerOrder,
-		constants.IgnoreDefaultSchema,
-		constants.IgnoreDdlTriggerState,
-		constants.IgnoreDdlTriggerOrder,
-		constants.IgnoreCryptographicProviderFilePath,
-		constants.VerifyDeployment,
-		constants.IgnoreComments,
-		constants.IgnoreColumnCollation,
-		constants.IgnoreAuthorizer,
-		constants.IgnoreAnsiNulls,
-		constants.GenerateSmartDefaults,
-		constants.DropStatisticsNotInSource,
-		constants.DropRoleMembersNotInSource,
-		constants.DropPermissionsNotInSource,
-		constants.DropObjectsNotInSource,
-		constants.IgnoreColumnOrder,
-		constants.IgnoreTablePartitionOptions,
-		constants.DoNotEvaluateSqlCmdVariables,
-		constants.DisableParallelismForEnablingIndexes,
-		constants.DisableIndexesForDataPhase,
-		constants.RestoreSequenceCurrentValue,
-		constants.RebuildIndexesOfflineForDataPhase,
-		constants.PreserveIdentityLastValues,
-		constants.IsAlwaysEncryptedParameterizationEnabled,
-		constants.AllowExternalLibraryPaths,
-		constants.AllowExternalLanguagePaths,
-		constants.HashObjectNamesInLogs,
-		constants.DoNotDropWorkloadClassifiers,
-		constants.IgnoreWorkloadClassifiers,
-		constants.IgnoreDatabaseWorkloadGroups,
-		constants.DoNotDropDatabaseWorkloadGroups,
-	].sort();
+	/*
+	* List of Dac Deploy options to display
+	*/
+	public optionsLabels: string[] = [];
+	public InitializeOptionsLabels() {
+		this.optionsLabels = [this.deploymentOptions.ignoreTableOptions.displayName
+			, this.deploymentOptions.ignoreSemicolonBetweenStatements.displayName
+			, this.deploymentOptions.ignoreRouteLifetime.displayName
+			, this.deploymentOptions.ignoreRoleMembership.displayName
+			, this.deploymentOptions.ignoreQuotedIdentifiers.displayName
+			, this.deploymentOptions.ignorePermissions.displayName
+			, this.deploymentOptions.ignorePartitionSchemes.displayName
+			, this.deploymentOptions.ignoreObjectPlacementOnPartitionScheme.displayName
+			, this.deploymentOptions.ignoreNotForReplication.displayName
+			, this.deploymentOptions.ignoreLoginSids.displayName
+			, this.deploymentOptions.ignoreLockHintsOnIndexes.displayName
+			, this.deploymentOptions.ignoreKeywordCasing.displayName
+			, this.deploymentOptions.ignoreIndexPadding.displayName
+			, this.deploymentOptions.ignoreIndexOptions.displayName
+			, this.deploymentOptions.ignoreIncrement.displayName
+			, this.deploymentOptions.ignoreIdentitySeed.displayName
+			, this.deploymentOptions.ignoreUserSettingsObjects.displayName
+			, this.deploymentOptions.ignoreFullTextCatalogFilePath.displayName
+			, this.deploymentOptions.ignoreWhitespace.displayName
+			, this.deploymentOptions.ignoreWithNocheckOnForeignKeys.displayName
+			, this.deploymentOptions.verifyCollationCompatibility.displayName
+			, this.deploymentOptions.unmodifiableObjectWarnings.displayName
+			, this.deploymentOptions.treatVerificationErrorsAsWarnings.displayName
+			, this.deploymentOptions.scriptRefreshModule.displayName
+			, this.deploymentOptions.scriptNewConstraintValidation.displayName
+			, this.deploymentOptions.scriptFileSize.displayName
+			, this.deploymentOptions.scriptDeployStateChecks.displayName
+			, this.deploymentOptions.scriptDatabaseOptions.displayName
+			, this.deploymentOptions.scriptDatabaseCompatibility.displayName
+			, this.deploymentOptions.scriptDatabaseCollation.displayName
+			, this.deploymentOptions.runDeploymentPlanExecutors.displayName
+			, this.deploymentOptions.registerDataTierApplication.displayName
+			, this.deploymentOptions.populateFilesOnFileGroups.displayName
+			, this.deploymentOptions.noAlterStatementsToChangeClrTypes.displayName
+			, this.deploymentOptions.includeTransactionalScripts.displayName
+			, this.deploymentOptions.includeCompositeObjects.displayName
+			, this.deploymentOptions.allowUnsafeRowLevelSecurityDataMovement.displayName
+			, this.deploymentOptions.ignoreWithNocheckOnCheckConstraints.displayName
+			, this.deploymentOptions.ignoreFillFactor.displayName
+			, this.deploymentOptions.ignoreFileSize.displayName
+			, this.deploymentOptions.ignoreFilegroupPlacement.displayName
+			, this.deploymentOptions.doNotAlterReplicatedObjects.displayName
+			, this.deploymentOptions.doNotAlterChangeDataCaptureObjects.displayName
+			, this.deploymentOptions.disableAndReenableDdlTriggers.displayName
+			, this.deploymentOptions.deployDatabaseInSingleUserMode.displayName
+			, this.deploymentOptions.createNewDatabase.displayName
+			, this.deploymentOptions.compareUsingTargetCollation.displayName
+			, this.deploymentOptions.commentOutSetVarDeclarations.displayName
+			, this.deploymentOptions.blockWhenDriftDetected.displayName
+			, this.deploymentOptions.blockOnPossibleDataLoss.displayName
+			, this.deploymentOptions.backupDatabaseBeforeChanges.displayName
+			, this.deploymentOptions.allowIncompatiblePlatform.displayName
+			, this.deploymentOptions.allowDropBlockingAssemblies.displayName
+			, this.deploymentOptions.dropConstraintsNotInSource.displayName
+			, this.deploymentOptions.dropDmlTriggersNotInSource.displayName
+			, this.deploymentOptions.dropExtendedPropertiesNotInSource.displayName
+			, this.deploymentOptions.dropIndexesNotInSource.displayName
+			, this.deploymentOptions.ignoreFileAndLogFilePath.displayName
+			, this.deploymentOptions.ignoreExtendedProperties.displayName
+			, this.deploymentOptions.ignoreDmlTriggerState.displayName
+			, this.deploymentOptions.ignoreDmlTriggerOrder.displayName
+			, this.deploymentOptions.ignoreDefaultSchema.displayName
+			, this.deploymentOptions.ignoreDdlTriggerState.displayName
+			, this.deploymentOptions.ignoreDdlTriggerOrder.displayName
+			, this.deploymentOptions.ignoreCryptographicProviderFilePath.displayName
+			, this.deploymentOptions.verifyDeployment.displayName
+			, this.deploymentOptions.ignoreComments.displayName
+			, this.deploymentOptions.ignoreColumnCollation.displayName
+			, this.deploymentOptions.ignoreAuthorizer.displayName
+			, this.deploymentOptions.ignoreAnsiNulls.displayName
+			, this.deploymentOptions.generateSmartDefaults.displayName
+			, this.deploymentOptions.dropStatisticsNotInSource.displayName
+			, this.deploymentOptions.dropRoleMembersNotInSource.displayName
+			, this.deploymentOptions.dropPermissionsNotInSource.displayName
+			, this.deploymentOptions.dropObjectsNotInSource.displayName
+			, this.deploymentOptions.ignoreColumnOrder.displayName
+			, this.deploymentOptions.ignoreTablePartitionOptions.displayName
+			, this.deploymentOptions.doNotEvaluateSqlCmdVariables.displayName
+			, this.deploymentOptions.disableParallelismForEnablingIndexes.displayName
+			, this.deploymentOptions.disableIndexesForDataPhase.displayName
+			, this.deploymentOptions.restoreSequenceCurrentValue.displayName
+			, this.deploymentOptions.rebuildIndexesOfflineForDataPhase.displayName
+			, this.deploymentOptions.preserveIdentityLastValues.displayName
+			, this.deploymentOptions.isAlwaysEncryptedParameterizationEnabled.displayName
+			, this.deploymentOptions.allowExternalLibraryPaths.displayName
+			, this.deploymentOptions.allowExternalLanguagePaths.displayName
+			, this.deploymentOptions.hashObjectNamesInLogs.displayName
+			, this.deploymentOptions.doNotDropWorkloadClassifiers.displayName
+			, this.deploymentOptions.ignoreWorkloadClassifiers.displayName
+			, this.deploymentOptions.ignoreDatabaseWorkloadGroups.displayName
+			, this.deploymentOptions.doNotDropDatabaseWorkloadGroups.displayName].sort();
+	}
 
+	/**
+	 * Gets the options checkbox check value
+	 * @returns string[][]
+	 */
 	public getOptionsData(): string[][] {
 		let data: any = [];
 		this.optionsLookup = {};
