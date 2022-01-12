@@ -922,14 +922,6 @@ declare module 'azdata' {
 		numberOfRows: number;
 	}
 
-	export interface IResultMessage {
-		batchId?: number | undefined;
-		isError: boolean;
-		time?: string | undefined;
-		message: string;
-		hasRowCount?: boolean;
-	}
-
 	export interface ISelectionData {
 		startLine: number;
 		startColumn: number;
