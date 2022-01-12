@@ -290,12 +290,16 @@ steps:
   - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
     displayName: 'SBOM Generation Task'
     inputs:
-      BuildDropPath: '$(Build.BinariesDirectory)/'
+      BuildDropPath: '$(Build.BinariesDirectory)'
+      PackageName: 'Azure Data Studio'
+      PackageVersion: '1.34.0'
 
   - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
-    displayName: 'SBOM Generation Task .build'
+    displayName: 'SBOM Generation Task 2'
     inputs:
-      BuildDropPath: '$(Build.SourcesDirectory)/.build'
+      BuildDropPath: '$(Build.ArtifactStagingDirectory)'
+      PackageName: 'Azure Data Studio 2'
+      PackageVersion: '1.34.0'
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: build scripts source'
