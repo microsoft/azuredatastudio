@@ -716,7 +716,8 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 	$createNotebookDocument(providerId: string, contents: azdata.nb.INotebookContents): Promise<azdata.nb.NotebookDocument> {
 		return this._commandService.executeCommand(NewNotebookAction.INTERNAL_NEW_NOTEBOOK_CMD_ID, {
 			providerId: providerId,
-			initialContent: contents
+			initialContent: contents,
+			initialDirtyState: false
 		});
 	}
 }
