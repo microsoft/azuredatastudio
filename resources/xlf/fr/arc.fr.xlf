@@ -2,13 +2,17 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file original="extensions/arc/dist/localizedConstants" source-language="en" datatype="plaintext" target-language="fr">
     <body>
+      <trans-unit id="arc.USD">
+        <source xml:lang="en">USD</source>
+        <target state="translated">USD</target>
+      </trans-unit>
       <trans-unit id="arc.addingWorkerNodes">
         <source xml:lang="en">adding worker nodes</source>
         <target state="translated">ajout de nœuds Worker</target>
       </trans-unit>
       <trans-unit id="arc.apply">
         <source xml:lang="en">Apply</source>
-        <target state="new">Apply</target>
+        <target state="translated">Appliquer</target>
       </trans-unit>
       <trans-unit id="arc.arcDeploymentDeprecation">
         <source xml:lang="en">The Arc Deployment extension has been replaced by the Arc extension and has been uninstalled.</source>
@@ -28,11 +32,15 @@
       </trans-unit>
       <trans-unit id="arc.backups">
         <source xml:lang="en">Backups</source>
-        <target state="new">Backups</target>
+        <target state="translated">Sauvegardes</target>
       </trans-unit>
       <trans-unit id="arc.backupsStorage">
         <source xml:lang="en">{0} backups</source>
         <target state="translated">{0} sauvegardes</target>
+      </trans-unit>
+      <trans-unit id="arc.businessCriticalLabel">
+        <source xml:lang="en">BusinessCritical</source>
+        <target state="translated">BusinessCritical</target>
       </trans-unit>
       <trans-unit id="arc.cancel">
         <source xml:lang="en">Cancel</source>
@@ -84,11 +92,11 @@
       </trans-unit>
       <trans-unit id="arc.configureRP">
         <source xml:lang="en">Configure retention policy</source>
-        <target state="new">Configure retention policy</target>
+        <target state="translated">Configurer la stratégie de rétention</target>
       </trans-unit>
       <trans-unit id="arc.configureRetentionPolicyButton">
         <source xml:lang="en">Configure Retention Policy</source>
-        <target state="new">Configure Retention Policy</target>
+        <target state="translated">Configurer la stratégie de rétention</target>
       </trans-unit>
       <trans-unit id="arc.confirmNewPassword">
         <source xml:lang="en">Confirm the new password</source>
@@ -275,7 +283,7 @@
       </trans-unit>
       <trans-unit id="arc.database">
         <source xml:lang="en">Database</source>
-        <target state="new">Database</target>
+        <target state="translated">Base de données</target>
       </trans-unit>
       <trans-unit id="arc.databaseCreated">
         <source xml:lang="en">Database {0} created</source>
@@ -286,12 +294,12 @@
         <target state="translated">Échec de la création de la base de données {0}. {1}</target>
       </trans-unit>
       <trans-unit id="arc.databaseDetails">
-        <source xml:lang="en">Database Details</source>
-        <target state="new">Database Details</target>
+        <source xml:lang="en">Destination Details</source>
+        <target state="translated">Détails de la destination</target>
       </trans-unit>
       <trans-unit id="arc.databaseDetailsText">
-        <source xml:lang="en">Enter the required settings for this database, including a name and a target managed instance. By default, the source instance is selected.</source>
-        <target state="new">Enter the required settings for this database, including a name and a target managed instance. By default, the source instance is selected.</target>
+        <source xml:lang="en">Enter the required settings for target database name and SQL managed instance. By default, the source managed instance is selected.</source>
+        <target state="translated">Saisissez les paramètres requis pour le nom de la base de données cible et l'instance gérée SQL. Par défaut, l'instance gérée source est sélectionnée.</target>
       </trans-unit>
       <trans-unit id="arc.databaseName">
         <source xml:lang="en">Database name</source>
@@ -342,8 +350,8 @@
         <target state="translated">Suppression en cours d’une autre extension, réessayez une fois celle-ci terminée.</target>
       </trans-unit>
       <trans-unit id="arc.earliestPitrRestorePoint">
-        <source xml:lang="en">Earliest PITR restore point</source>
-        <target state="new">Earliest PITR restore point</target>
+        <source xml:lang="en">Earliest point in time</source>
+        <target state="translated">Point le plus tôt dans le temps</target>
       </trans-unit>
       <trans-unit id="arc.emergency">
         <source xml:lang="en">Emergency</source>
@@ -465,6 +473,10 @@
         <source xml:lang="en">Fully qualified domain</source>
         <target state="translated">Domaine complet</target>
       </trans-unit>
+      <trans-unit id="arc.generalPurposeLabel">
+        <source xml:lang="en">GeneralPurpose</source>
+        <target state="translated">GeneralPurpose</target>
+      </trans-unit>
       <trans-unit id="arc.grafanaDashboard">
         <source xml:lang="en">Grafana Dashboard</source>
         <target state="translated">Tableau de bord Grafana</target>
@@ -483,7 +495,7 @@
       </trans-unit>
       <trans-unit id="arc.instance">
         <source xml:lang="en">Instance</source>
-        <target state="new">Instance</target>
+        <target state="translated">Instance</target>
       </trans-unit>
       <trans-unit id="arc.instanceDeleted">
         <source xml:lang="en">Instance '{0}' deleted</source>
@@ -530,8 +542,8 @@
         <target state="translated">Dernière transition</target>
       </trans-unit>
       <trans-unit id="arc.latestpitrRestorePoint">
-        <source xml:lang="en">Latest PITR restore point</source>
-        <target state="new">Latest PITR restore point</target>
+        <source xml:lang="en">Latest point in time</source>
+        <target state="translated">Dernier moment dans le temps</target>
       </trans-unit>
       <trans-unit id="arc.learnAboutNodeParameters">
         <source xml:lang="en">Learn more about database engine settings for Azure Arc-enabled PostgreSQL Hyperscale</source>
@@ -583,7 +595,7 @@
       </trans-unit>
       <trans-unit id="arc.miaaBackupsDatabasesDescription">
         <source xml:lang="en">Databases with available backups are displayed below. Restore databases to this instance or any other instance within the same custom location.</source>
-        <target state="new">Databases with available backups are displayed below. Restore databases to this instance or any other instance within the same custom location.</target>
+        <target state="translated">Les bases de données avec des sauvegardes disponibles sont affichées ci-dessous. Restaurez des bases de données sur cette instance ou toute autre instance au sein du même emplacement personnalisé.</target>
       </trans-unit>
       <trans-unit id="arc.miaaComputeAndStorageDescriptionPartOne">
         <source xml:lang="en">You can scale your Azure SQL managed instance - Azure Arc by</source>
@@ -766,12 +778,12 @@
         <target state="translated">PostgreSQL Hyperscale – Azure Arc</target>
       </trans-unit>
       <trans-unit id="arc.pitr">
-        <source xml:lang="en">Point-in-time restore (PITR)</source>
-        <target state="new">Point-in-time restore (PITR)</target>
+        <source xml:lang="en">Point in time restore</source>
+        <target state="translated">Limite de restauration dans le temps</target>
       </trans-unit>
       <trans-unit id="arc.pitrInfo">
         <source xml:lang="en">Specify how long you want to keep your point-in-time backups. Customize this for backup availability.</source>
-        <target state="new">Specify how long you want to keep your point-in-time backups. Customize this for backup availability.</target>
+        <target state="translated">Spécifiez la durée pendant laquelle vous voulez conserver vos sauvegardes à un instant dans le temps. Personnalisez ceci pour la disponibilité de la sauvegarde.</target>
       </trans-unit>
       <trans-unit id="arc.podConditionsTable">
         <source xml:lang="en">Pod conditions table</source>
@@ -847,11 +859,11 @@
       </trans-unit>
       <trans-unit id="arc.projectDetails">
         <source xml:lang="en">Project Details</source>
-        <target state="new">Project Details</target>
+        <target state="translated">Détails du projet</target>
       </trans-unit>
       <trans-unit id="arc.projectDetailsText">
         <source xml:lang="en">Select the subscription to manage deployed resources. Use resource groups like folders to organize and manage all your resources.</source>
-        <target state="new">Select the subscription to manage deployed resources. Use resource groups like folders to organize and manage all your resources.</target>
+        <target state="translated">Sélectionnez l'abonnement pour gérer les ressources déployées. Utilisez des groupes de ressources comme des dossiers pour organiser et gérer toutes vos ressources.</target>
       </trans-unit>
       <trans-unit id="arc.properties">
         <source xml:lang="en">Properties</source>
@@ -897,6 +909,18 @@
         <source xml:lang="en">Remember Password</source>
         <target state="translated">Se souvenir du mot de passe</target>
       </trans-unit>
+      <trans-unit id="arc.replicaOne">
+        <source xml:lang="en">1</source>
+        <target state="translated">1</target>
+      </trans-unit>
+      <trans-unit id="arc.replicaThree">
+        <source xml:lang="en">3</source>
+        <target state="translated">3</target>
+      </trans-unit>
+      <trans-unit id="arc.replicaTwo">
+        <source xml:lang="en">2</source>
+        <target state="translated">2</target>
+      </trans-unit>
       <trans-unit id="arc.resetAllToDefault">
         <source xml:lang="en">Reset all to default</source>
         <target state="translated">Rétablir toutes les valeurs par défaut</target>
@@ -927,19 +951,35 @@
       </trans-unit>
       <trans-unit id="arc.restore">
         <source xml:lang="en">Restore</source>
-        <target state="new">Restore</target>
+        <target state="translated">Restaurer</target>
       </trans-unit>
       <trans-unit id="arc.restoreDatabase">
         <source xml:lang="en">Restore Database</source>
-        <target state="new">Restore Database</target>
+        <target state="translated">Restaurer la base de données</target>
       </trans-unit>
       <trans-unit id="arc.restoreInfo">
-        <source xml:lang="en">Restore a database to an Azure Arc enabled SQL Managed Instance of your choice.</source>
-        <target state="new">Restore a database to an Azure Arc enabled SQL Managed Instance of your choice.</target>
+        <source xml:lang="en">Restore a database to an Azure Arc enabled SQL Managed Instance.</source>
+        <target state="translated">Restaurez une base de données sur une SQL Managed Instance avec Azure Arc.</target>
       </trans-unit>
       <trans-unit id="arc.restorePoint">
-        <source xml:lang="en">Restore point (UTC)</source>
-        <target state="new">Restore point (UTC)</target>
+        <source xml:lang="en">Restore point (UTC), in a time format: 'YYYY-MM-DDTHH:MM:SSZ</source>
+        <target state="translated">Point de restauration (UTC), dans un format d'heure : 'AAAA-MM-JJTHH:MM:SSZ</target>
+      </trans-unit>
+      <trans-unit id="arc.restorePointDetails">
+        <source xml:lang="en">Restore Point Details</source>
+        <target state="translated">Détails du point de restauration</target>
+      </trans-unit>
+      <trans-unit id="arc.restorePointErrorrMessage">
+        <source xml:lang="en">Provide time in correct format and within range: {0} to {1}</source>
+        <target state="translated">Fournissez l'heure au format correct et dans les limites : {0} à {1}</target>
+      </trans-unit>
+      <trans-unit id="arc.restorePointText">
+        <source xml:lang="en">Enter a restore point in the specified time format within given range of earliest and latest restore time.</source>
+        <target state="translated">Entrez un point de restauration au format d'heure spécifié dans une plage donnée d'heure de restauration la plus ancienne et la plus récente.</target>
+      </trans-unit>
+      <trans-unit id="arc.restoreTimeWindowUpdateFailed">
+        <source xml:lang="en">Point in time restore time window update failed. {0}</source>
+        <target state="translated">Échec de la mise à jour de la fenêtre de temps de restauration à un moment donné. {0}</target>
       </trans-unit>
       <trans-unit id="arc.restoring">
         <source xml:lang="en">Restoring</source>
@@ -947,7 +987,7 @@
       </trans-unit>
       <trans-unit id="arc.retentionDays">
         <source xml:lang="en">Point-In-Time Recovery retention (days)</source>
-        <target state="new">Point-In-Time Recovery retention (days)</target>
+        <target state="translated">Conservation de la récupération dans le temps (jours)</target>
       </trans-unit>
       <trans-unit id="arc.running">
         <source xml:lang="en">Running</source>
@@ -999,15 +1039,15 @@
       </trans-unit>
       <trans-unit id="arc.sourceDatabase">
         <source xml:lang="en">Source database</source>
-        <target state="new">Source database</target>
+        <target state="translated">Base de données source</target>
       </trans-unit>
       <trans-unit id="arc.sourceDetails">
         <source xml:lang="en">Source Details</source>
-        <target state="new">Source Details</target>
+        <target state="translated">Détails de la source</target>
       </trans-unit>
       <trans-unit id="arc.sourceDetailsText">
-        <source xml:lang="en">Select a backup source and provide details. Additional settings will be defaulted where possible based on the selected backup.</source>
-        <target state="new">Select a backup source and provide details. Additional settings will be defaulted where possible based on the selected backup.</target>
+        <source xml:lang="en">Select a backup source and provide details. Additional settings will be defaulted where possible based on the selected database.</source>
+        <target state="translated">Sélectionnez une source de sauvegarde et fournissez des détails. Des paramètres supplémentaires seront définis par défaut dans la mesure du possible en fonction de la base de données sélectionnée.</target>
       </trans-unit>
       <trans-unit id="arc.state">
         <source xml:lang="en">State</source>
@@ -1023,7 +1063,7 @@
       </trans-unit>
       <trans-unit id="arc.subscription">
         <source xml:lang="en">Subscription</source>
-        <target state="new">Subscription</target>
+        <target state="translated">Abonnement</target>
       </trans-unit>
       <trans-unit id="arc.subscriptionId">
         <source xml:lang="en">Subscription ID</source>
@@ -1289,6 +1329,22 @@
         <source xml:lang="en">I accept {0} and {1}.</source>
         <target state="translated">J'accepte {0} et {1}.</target>
       </trans-unit>
+      <trans-unit id="arc.data.controller.auto.upload.logs">
+        <source xml:lang="en">Auto-upload Logs</source>
+        <target state="translated">Charger automatiquement les journaux</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.auto.upload.logs.description">
+        <source xml:lang="en">Enable the automatic upload of logs. Direct mode only.</source>
+        <target state="translated">Activez le chargement automatique des journaux. Mode direct uniquement.</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.auto.upload.metrics">
+        <source xml:lang="en">Auto-upload Metrics</source>
+        <target state="translated">Charger automatiquement les métriques</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.auto.upload.metrics.description">
+        <source xml:lang="en">Enable the automatic upload of metrics. Direct mode only.</source>
+        <target state="translated">Activez le chargement automatique des métriques. Mode direct uniquement.</target>
+      </trans-unit>
       <trans-unit id="arc.data.controller.cluster.config.profile">
         <source xml:lang="en">Config profile</source>
         <target state="translated">Profil de configuration</target>
@@ -1309,6 +1365,10 @@
         <source xml:lang="en">What is your target existing Kubernetes cluster environment?</source>
         <target state="translated">Quel est votre environnement de cluster Kubernetes existant cible ?</target>
       </trans-unit>
+      <trans-unit id="arc.data.controller.connectivity.mode">
+        <source xml:lang="en">Connectivity mode</source>
+        <target state="translated">Mode de connectivité</target>
+      </trans-unit>
       <trans-unit id="arc.data.controller.create.azureconfig.title">
         <source xml:lang="en">Azure Configuration</source>
         <target state="translated">Configuration Azure</target>
@@ -1321,9 +1381,17 @@
         <source xml:lang="en">Review your configuration</source>
         <target state="translated">Vérifier votre configuration</target>
       </trans-unit>
+      <trans-unit id="arc.data.controller.custom.location">
+        <source xml:lang="en">Custom Location</source>
+        <target state="translated">Localisation personnalisée</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.custom.location.description">
+        <source xml:lang="en">The name of the custom location. Direct mode only.</source>
+        <target state="translated">Nom de l’emplacement personnalisé. Mode direct uniquement.</target>
+      </trans-unit>
       <trans-unit id="arc.data.controller.details.description">
-        <source xml:lang="en">Provide a namespace, name and storage class for your Azure Arc data controller. This name will be used to identify your Arc instance for remote management and monitoring.</source>
-        <target state="translated">Fournissez un espace de noms, un nom et une classe de stockage pour votre contrôleur de données Azure Arc. Ce nom sera utilisé pour identifier votre instance Arc à des fins de gestion et de surveillance à distance.</target>
+        <source xml:lang="en">For indirect mode, provide a namespace, name and storage class for your Azure Arc data controller. This name will be used to identify your Arc instance for remote management and monitoring. For direct mode you do not need to provide a namespace, but please provide the custom location name.</source>
+        <target state="translated">Pour le mode indirect, fournissez un espace de noms, un nom et une classe de stockage pour votre contrôleur de données Azure Arc. Ce nom permet d’identifier votre instance Arc pour la gestion et la supervision à distance. Pour le mode direct, vous n’avez pas besoin de fournir d’espace de noms, mais fournissez le nom d’emplacement personnalisé.</target>
       </trans-unit>
       <trans-unit id="arc.data.controller.details.title">
         <source xml:lang="en">Data controller details</source>
@@ -1352,6 +1420,10 @@
       <trans-unit id="arc.data.controller.namespace">
         <source xml:lang="en">Data controller namespace</source>
         <target state="translated">Espace de noms du contrôleur de données</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.namespace.description">
+        <source xml:lang="en">Indirect mode only.</source>
+        <target state="translated">Mode indirect uniquement.</target>
       </trans-unit>
       <trans-unit id="arc.data.controller.namespace.validation.description">
         <source xml:lang="en">Namespace must consist of lower case alphanumeric characters or '-', start/end with an alphanumeric character, and be 63 characters or fewer in length.</source>
@@ -1661,6 +1733,98 @@
         <source xml:lang="en">The request for cores of the managed instance as an integer.</source>
         <target state="translated">Demande de cœurs de l’instance gérée en tant qu’entier.</target>
       </trans-unit>
+      <trans-unit id="arc.sql.cost.summary">
+        <source xml:lang="en">Cost Summary</source>
+        <target state="translated">Résumé des coûts</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.cost.summary.additional.charge">
+        <source xml:lang="en">Additional charge per usage. See {0} for more detail.</source>
+        <target state="translated">Supplément par utilisation. Voir {0} pour plus de détails.</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.cost.summary.admin.account">
+        <source xml:lang="en">Administrator account</source>
+        <target state="translated">Compte administrateur</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.cost.summary.azure.hybrid.benefit.discount">
+        <source xml:lang="en">Azure Hybrid Benefit discount (in USD)</source>
+        <target state="translated">Remise Azure Hybrid Benefit (en USD)</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.cost.summary.basics">
+        <source xml:lang="en">Basics</source>
+        <target state="translated">Informations de base</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.cost.summary.business.critical">
+        <source xml:lang="en">Business Critical</source>
+        <target state="translated">Critique pour l'entreprise</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.cost.summary.cost.vcore">
+        <source xml:lang="en">Cost per vCore (in USD)</source>
+        <target state="translated">Coût par vCore (en USD)</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.cost.summary.custom.location">
+        <source xml:lang="en">Custom location</source>
+        <target state="translated">Emplacement personnalisé</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.cost.summary.estimated.cost.per.month">
+        <source xml:lang="en">Estimated cost per month</source>
+        <target state="translated">Coût estimé par mois</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.cost.summary.general.purpose">
+        <source xml:lang="en">General Purpose</source>
+        <target state="translated">Usage général</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.cost.summary.instance.name">
+        <source xml:lang="en">Instance name</source>
+        <target state="translated">Nom de l'instance</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.cost.summary.managed.instance.admin.login">
+        <source xml:lang="en">Managed Instance admin login</source>
+        <target state="translated">Connexion administrateur de l'instance gérée</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.cost.summary.pricing.details">
+        <source xml:lang="en">pricing details</source>
+        <target state="translated">détails des prix</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.cost.summary.resource.group">
+        <source xml:lang="en">Resource group</source>
+        <target state="translated">Groupe de ressources</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.cost.summary.service.tier">
+        <source xml:lang="en">Service Tier</source>
+        <target state="translated">Niveau de service</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.cost.summary.service.tier.learn.more.description">
+        <source xml:lang="en">Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical. {0}</source>
+        <target state="translated">Sélectionnez les niveaux de service vCore les plus récents pour SQL Managed Instance - Azure Arc, notamment Usage général et Critique pour l'entreprise.{0}</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.cost.summary.service.tier.learn.more.text">
+        <source xml:lang="en">Learn more</source>
+        <target state="translated">En savoir plus</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.cost.summary.sql.connection.info">
+        <source xml:lang="en">SQL Connection Information</source>
+        <target state="translated">Informations de connexion SQL</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.cost.summary.sql.instance.settings">
+        <source xml:lang="en">SQL Instance Settings</source>
+        <target state="translated">Paramètres d'instance SQL</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.cost.summary.sql.miaa">
+        <source xml:lang="en">SQL managed instance - Azure Arc</source>
+        <target state="translated">Instance managée SQL - Azure Arc</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.cost.summary.sql.miaa.cost.summary">
+        <source xml:lang="en">SQL Managed Instance - Azure Arc Cost Summary</source>
+        <target state="translated">Instance gérée SQL – Résumé des coûts Azure Arc</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.cost.summary.subscription">
+        <source xml:lang="en">Subscription</source>
+        <target state="translated">Abonnement</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.cost.summary.vcore.limit">
+        <source xml:lang="en">CPU vCores Limit</source>
+        <target state="translated">Limite de processeurs vCores</target>
+      </trans-unit>
       <trans-unit id="arc.sql.dev.use.description">
         <source xml:lang="en">Check the box to indicate this instance will be used for development or testing purposes only. This instance will not be billed.</source>
         <target state="translated">Activez la case à cocher pour indiquer que cette instance sera utilisée uniquement à des fins de développement ou de test. Cette instance ne sera pas facturée.</target>
@@ -1670,12 +1834,8 @@
         <target state="translated">Pour une utilisation de développement uniquement</target>
       </trans-unit>
       <trans-unit id="arc.sql.high.availability.description">
-        <source xml:lang="en">Enable additional replicas for high availabilty. The compute and storage configuration selected below will be applied to all replicas.</source>
-        <target state="translated">Activez des réplicas supplémentaires pour une haute disponibilité. La configuration de calcul et de stockage sélectionnée ci-dessous sera appliquée à tous les réplicas.</target>
-      </trans-unit>
-      <trans-unit id="arc.sql.high.availability.label">
-        <source xml:lang="en">High Availability</source>
-        <target state="translated">Haute disponibilité</target>
+        <source xml:lang="en">Enable additional replicas for high availabilty. The compute and storage configuration selected below will be applied to all replicas. Choose from: General Purpose (Up to 24 vCores and 128 Gi of RAM, standard high availability) or [PREVIEW] Business Critical (Unlimited vCores and RAM, advanced high availability).</source>
+        <target state="translated">Activez des réplicas supplémentaires pour une haute disponibilité. La configuration de calcul et de stockage sélectionnée ci-dessous sera appliquée à tous les réplicas. Choisissez parmi : Usage général (jusqu'à 24 vCores et 128 Gi de RAM, haute disponibilité standard) ou [PREVIEW] Business Critical (vCores et RAM illimités, haute disponibilité avancée).</target>
       </trans-unit>
       <trans-unit id="arc.sql.instance.name">
         <source xml:lang="en">Instance name</source>
@@ -1697,6 +1857,14 @@
         <source xml:lang="en">sa username is disabled, please choose another username</source>
         <target state="translated">le nom d’utilisateur sa est désactivé, choisissez un autre nom d’utilisateur</target>
       </trans-unit>
+      <trans-unit id="arc.sql.license.type.description">
+        <source xml:lang="en">Apply the Azure Hybrid Benefit if you already own a SQL Server License</source>
+        <target state="translated">Appliquez Azure Hybrid Benefit si vous possédez déjà une licence SQL Server</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.license.type.label">
+        <source xml:lang="en">I already have a SQL Server License</source>
+        <target state="translated">J'ai déjà une licence SQL Server</target>
+      </trans-unit>
       <trans-unit id="arc.sql.memory-limit.description">
         <source xml:lang="en">The limit of the capacity of the managed instance as an integer.</source>
         <target state="translated">Limite de la capacité de l’instance managée en tant qu’entier.</target>
@@ -1706,8 +1874,8 @@
         <target state="translated">Demande de la capacité de l’instance managée en tant que quantité entière de mémoire en Go.</target>
       </trans-unit>
       <trans-unit id="arc.sql.one.replica">
-        <source xml:lang="en">1 replica</source>
-        <target state="translated">1 replica</target>
+        <source xml:lang="en">1</source>
+        <target state="translated">1</target>
       </trans-unit>
       <trans-unit id="arc.sql.pitr.description">
         <source xml:lang="en">Point in time restore</source>
@@ -1717,25 +1885,29 @@
         <source xml:lang="en">Configure retention for point-in-time backups. {0}</source>
         <target state="translated">Configurez la rétention pour les sauvegardes ponctuelles. {0}</target>
       </trans-unit>
+      <trans-unit id="arc.sql.replicas">
+        <source xml:lang="en">Replicas</source>
+        <target state="translated">Répliques</target>
+      </trans-unit>
       <trans-unit id="arc.sql.retention.days.description">
         <source xml:lang="en">Specify how long you want to keep your point-in-time backups.</source>
         <target state="translated">Spécifiez la durée pendant laquelle vous voulez conserver vos sauvegardes d'un instant dans le passé.</target>
       </trans-unit>
       <trans-unit id="arc.sql.retention.days.label">
-        <source xml:lang="en">PITR retention (days)</source>
-        <target state="translated">Rétention PITR (jours)</target>
+        <source xml:lang="en">Point in time retention (days)</source>
+        <target state="translated">Rétention ponctuelle (jours)</target>
       </trans-unit>
       <trans-unit id="arc.sql.service.tier.business.critical">
-        <source xml:lang="en">[PREVIEW] Business Critical (Unlimited vCores and RAM, advanced high availability)</source>
-        <target state="translated">[PRÉVERSION] critique pour l’entreprise (nombre illimité de vCores et de RAM, haute disponibilité avancée)</target>
+        <source xml:lang="en">BusinessCritical</source>
+        <target state="translated">BusinessCritical</target>
       </trans-unit>
       <trans-unit id="arc.sql.service.tier.description">
         <source xml:lang="en">Select from the latest vCore service tiers available for SQL Managed Instance - Azure Arc including General Purpose and Business Critical. {0}</source>
         <target state="translated">Sélectionnez les niveaux de service vCore les plus récents pour SQL Managed Instance - Azure Arc, notamment Usage général et Critique pour l'entreprise.{0}</target>
       </trans-unit>
       <trans-unit id="arc.sql.service.tier.general.purpose">
-        <source xml:lang="en">General Purpose (Up to 24 vCores and 128 Gi of RAM, standard high availability)</source>
-        <target state="translated">Usage général (jusqu’à 24 vCores et 128 GI de RAM, haute disponibilité standard)</target>
+        <source xml:lang="en">GeneralPurpose</source>
+        <target state="translated">GeneralPurpose</target>
       </trans-unit>
       <trans-unit id="arc.sql.service.tier.label">
         <source xml:lang="en">Service Tier</source>
@@ -1761,13 +1933,17 @@
         <source xml:lang="en">The storage class to be used for logs (/var/log). If no value is specified, the default storage class will be used.</source>
         <target state="translated">Classe de stockage à utiliser pour les journaux (/var/log). Si aucune valeur n’est spécifiée, la classe de stockage par défaut est utilisée.</target>
       </trans-unit>
+      <trans-unit id="arc.sql.summary.arc.by.microsoft">
+        <source xml:lang="en">by Microsoft</source>
+        <target state="translated">par Microsoft</target>
+      </trans-unit>
       <trans-unit id="arc.sql.three.replicas">
-        <source xml:lang="en">3 replicas</source>
-        <target state="translated">3 réplicas</target>
+        <source xml:lang="en">3</source>
+        <target state="translated">3</target>
       </trans-unit>
       <trans-unit id="arc.sql.two.replicas">
-        <source xml:lang="en">2 replicas</source>
-        <target state="translated">2 réplicas</target>
+        <source xml:lang="en">2</source>
+        <target state="translated">2</target>
       </trans-unit>
       <trans-unit id="arc.sql.username">
         <source xml:lang="en">Username</source>
@@ -1858,6 +2034,10 @@
       <trans-unit id="command.editConnection.title">
         <source xml:lang="en">Edit Connection</source>
         <target state="translated">Modifier la connexion</target>
+      </trans-unit>
+      <trans-unit id="command.estimateCostSqlMiaa.title">
+        <source xml:lang="en">Estimate Cost of SQL Managed Instance - Azure Arc</source>
+        <target state="translated">Estimer le coût d'une instance gérée SQL – Azure Arc</target>
       </trans-unit>
       <trans-unit id="command.refresh.title">
         <source xml:lang="en">Refresh</source>

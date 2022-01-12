@@ -17,6 +17,7 @@
 			"fileDirname": "Der Verzeichnisname der aktuellen geöffneten Datei",
 			"fileExtname": "Die Erweiterung der aktuellen geöffneten Datei",
 			"lineNumber": "Die aktuelle ausgewählte Zeilennummer in der aktiven Datei",
+			"pathSeparator": "Das Zeichen, das vom Betriebssystem verwendet wird, um Komponenten in Dateipfaden zu trennen.",
 			"relativeFile": "Die aktuelle geöffnete Datei bezogen auf ${WorkspaceFolder}",
 			"relativeFileDirname": "Der DirName-Wert der aktuell geöffneten Datei relativ zu \"${workspaceFolder}\"",
 			"selectedText": "Der aktuelle ausgewählte Text in der aktiven Datei",

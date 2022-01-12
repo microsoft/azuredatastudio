@@ -464,7 +464,7 @@ export class ProfilerEditor extends EditorPane {
 		let savedViewState = this._savedTableViewStates.get(input);
 
 		this._profilerEditorContextKey.set(true);
-		if (input instanceof ProfilerInput && input.matches(this.input)) {
+		if (input instanceof ProfilerInput && this.input !== undefined && input.matches(this.input)) {
 			if (savedViewState) {
 				this._profilerTableEditor.restoreViewState(savedViewState);
 			}
@@ -518,7 +518,8 @@ export class ProfilerEditor extends EditorPane {
 					shouldFocus: FindStartFocusAction.FocusFindInput,
 					shouldAnimate: true,
 					updateSearchScope: false,
-					loop: true
+					loop: true,
+					seedSearchStringFromNonEmptySelection: false
 				});
 			}
 		} else {

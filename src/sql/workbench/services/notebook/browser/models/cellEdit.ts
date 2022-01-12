@@ -3,10 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import type * as azdata from 'azdata';
 import { IResourceUndoRedoElement, UndoRedoElementType } from 'vs/platform/undoRedo/common/undoRedo';
-import { ICellModel, MoveDirection } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { CellEditType, ICellEdit, ICellModel, MoveDirection } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel, SplitCell } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { deepClone } from 'vs/base/common/objects';
 import { localize } from 'vs/nls';
 
 export class MoveCellEdit implements IResourceUndoRedoElement {
@@ -35,8 +37,10 @@ export class SplitCellEdit implements IResourceUndoRedoElement {
 	label: string = localize('splitCellEdit', "Split Cell");
 	resource = this.model.notebookUri;
 	private readonly cellOperation = { cell_operation: 'split_cell' };
+	private firstCellOriginalSource: string[] | string;
 
 	constructor(private model: NotebookModel, private cells: SplitCell[]) {
+		this.firstCellOriginalSource = deepClone(cells[0].cell.source);
 	}
 
 	undo(): void {
@@ -45,7 +49,8 @@ export class SplitCellEdit implements IResourceUndoRedoElement {
 	}
 
 	redo(): void {
-		// no-op currently, will add support on next release
+		this.model.splitCells(this.cells, this.firstCellOriginalSource);
+		this.model.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.RedoCell, this.cellOperation);
 	}
 }
 
@@ -107,4 +112,20 @@ export class ConvertCellTypeEdit implements IResourceUndoRedoElement {
 		this.model.convertCellType(this.cell, false);
 		this.model.sendNotebookTelemetryActionEvent(TelemetryKeys.NbTelemetryAction.RedoCell, this.cellOperation);
 	}
+}
+
+/**
+ * Edit for modifying the outputs of a cell.
+ */
+export class CellOutputEdit implements ICellEdit {
+	type = CellEditType.Output;
+	public constructor(public readonly outputs: azdata.nb.ICellOutput[], public readonly append: boolean) { }
+}
+
+/**
+ * Edit for modifying the data of a specific output of a cell.
+ */
+export class CellOutputDataEdit implements ICellEdit {
+	type = CellEditType.OutputData;
+	public constructor(public readonly outputId: string, public readonly data: azdata.nb.DisplayResultData, public readonly append: boolean) { }
 }

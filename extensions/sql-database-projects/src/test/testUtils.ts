@@ -125,6 +125,9 @@ export async function createDummyFileStructure(createList?: boolean, list?: Uri[
  * 			-file4.sql
  * 			-file5.sql
  * 			-Script.PostDeployment2.sql
+ * 			- nestedFolder
+ * 				-otherFile1.sql
+ * 				-otherFile2.sql
  *	 	- folder2
  * 			-file1.sql
  * 			-file2.sql
@@ -159,6 +162,14 @@ export async function createDummyFileStructureWithPrePostDeployScripts(createLis
 	const postdeployscript2 = path.join(testFolderPath, 'folder1', 'Script.PostDeployment2.sql');
 	await fs.writeFile(postdeployscript2, '');
 
+
+	// add nested files
+	await fs.mkdir(path.join(testFolderPath, 'folder1', 'nestedFolder'));
+	const otherfile1 = path.join(testFolderPath, 'folder1', 'nestedFolder', 'otherFile1.sql');
+	await fs.writeFile(otherfile1, '');
+	const otherfile2 = path.join(testFolderPath, 'folder1', 'nestedFolder', 'otherFile2.sql');
+	await fs.writeFile(otherfile2, '');
+
 	if (createList) {
 		list?.push(Uri.file(postdeployscript1));
 		list?.push(Uri.file(postdeployscript2));
@@ -187,6 +198,9 @@ export async function createListOfFiles(filePath?: string): Promise<Uri[]> {
  *	 	- folder2
  * 			-file1.sql
  * 			-file2.sql
+ * 			- Script.PreDeployment1.sql
+ * 			- Script.PostDeployment1.sql
+ * 			- Script.PostDeployment2.sql
  *
  */
 export async function createOtherDummyFiles(testFolderPath: string): Promise<string> {
@@ -210,5 +224,13 @@ export async function createOtherDummyFiles(testFolderPath: string): Promise<str
 	const testLongerName = path.join(testFolderPath, 'folder1', 'testLongerName.sql');
 	await fs.writeFile(testLongerName, '');
 
+	const preDeploymentScript = path.join(testFolderPath, 'folder2', 'Script.PreDeployment1.sql');
+	await fs.writeFile(preDeploymentScript, '');
+
+	const postDeploymentScript1 = path.join(testFolderPath, 'folder2', 'Script.PostDeployment1.sql');
+	await fs.writeFile(postDeploymentScript1, '');
+
+	const postDeploymentScript2 = path.join(testFolderPath, 'folder2', 'Script.PostDeployment2.sql');
+	await fs.writeFile(postDeploymentScript2, '');
 	return testFolderPath;
 }

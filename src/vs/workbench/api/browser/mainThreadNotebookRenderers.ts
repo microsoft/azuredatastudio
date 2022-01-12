@@ -4,11 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Disposable } from 'vs/base/common/lifecycle';
-import { ExtHostContext, ExtHostNotebookRenderersShape, IExtHostContext, MainContext, MainThreadNotebookRenderersShape } from 'vs/workbench/api/common/extHost.protocol';
-import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
+import { ExtHostContext, ExtHostNotebookRenderersShape, IExtHostContext, MainThreadNotebookRenderersShape } from 'vs/workbench/api/common/extHost.protocol'; // {{SQL CARBON EDIT}} Remove MainContext
+// import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers'; {{SQL CARBON EDIT}}
 import { INotebookRendererMessagingService } from 'vs/workbench/contrib/notebook/common/notebookRendererMessagingService';
 
-@extHostNamedCustomer(MainContext.MainThreadNotebookRenderers)
+// @extHostNamedCustomer(MainContext.MainThreadNotebookRenderers) {{SQL CARBON EDIT}}
 export class MainThreadNotebookRenderers extends Disposable implements MainThreadNotebookRenderersShape {
 	private readonly proxy: ExtHostNotebookRenderersShape;
 
@@ -23,7 +23,7 @@ export class MainThreadNotebookRenderers extends Disposable implements MainThrea
 		}));
 	}
 
-	$postMessage(editorId: string, rendererId: string, message: unknown): void {
-		this.messaging.fireDidReceiveMessage(editorId, rendererId, message);
+	$postMessage(editorId: string | undefined, rendererId: string, message: unknown): Promise<boolean> {
+		return this.messaging.receiveMessage(editorId, rendererId, message);
 	}
 }

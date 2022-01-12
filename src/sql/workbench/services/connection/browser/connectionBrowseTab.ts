@@ -156,7 +156,7 @@ export class ConnectionBrowserView extends Disposable implements IPanelView {
 		this.treeMenus = this.instantiationService.createInstance(ConnectionBrowseTreeMenuProvider);
 		const actionViewItemProvider = (action: IAction) => {
 			if (action instanceof MenuItemAction) {
-				return this.instantiationService.createInstance(MenuEntryActionViewItem, action);
+				return this.instantiationService.createInstance(MenuEntryActionViewItem, action, undefined);
 			}
 			return undefined;
 		};

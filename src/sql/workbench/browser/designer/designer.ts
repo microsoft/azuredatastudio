@@ -331,7 +331,7 @@ export class Designer extends Disposable implements IThemable {
 		let timeout;
 		switch (action) {
 			case 'save':
-				message = showLoading ? localize('designer.savingChanges', "Saving changes...") : localize('designer.savingChangesCompleted', "Changes have been saved");
+				message = showLoading ? localize('designer.publishingChanges', "Publishing changes...") : localize('designer.publishChangesCompleted', "Changes have been published");
 				timeout = 0;
 				break;
 			case 'initialize':
@@ -344,7 +344,9 @@ export class Designer extends Disposable implements IThemable {
 				timeout = 500;
 				break;
 			default:
-				return;
+				message = showLoading ? localize('designer.processing', "Processing...") : localize('designer.processingCompleted', "Processing completed");
+				timeout = 0;
+				break;
 		}
 		if (showLoading) {
 			this.startLoading(message, useDelay ? timeout : 0);
