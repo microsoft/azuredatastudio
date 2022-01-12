@@ -22,6 +22,14 @@ declare module 'azdata' {
 		export function openQueryDocument(options?: { content?: string; }, providerId?: string): Thenable<QueryDocument>;
 	}
 
+	/**
+	 * Interface that represents a Result Message. Interface features a flag to indicate if the message
+	 * contains a row count, so it may be formatted correctly when writing query results to a file.
+	 */
+	export interface IResultMessage {
+		hasRowCount?: boolean;
+	}
+
 	export namespace nb {
 		export interface NotebookDocument {
 			/**
