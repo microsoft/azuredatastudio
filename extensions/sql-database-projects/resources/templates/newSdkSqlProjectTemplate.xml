@@ -5,8 +5,6 @@
     <Name>@@PROJECT_NAME@@</Name>
     <ProjectGuid>{@@PROJECT_GUID@@}</ProjectGuid>
     <DSP>Microsoft.Data.Tools.Schema.Sql.Sql@@PROJECT_DSP@@DatabaseSchemaProvider</DSP>
-    <RootNamespace>@@PROJECT_NAME@@</RootNamespace>
-    <AssemblyName>@@PROJECT_NAME@@</AssemblyName>
     <ModelCollation>1033, CI</ModelCollation>
   </PropertyGroup>
   <Target Name="BeforeBuild">
