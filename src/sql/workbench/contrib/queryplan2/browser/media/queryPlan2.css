@@ -3,24 +3,22 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.qp2-actionbar-container {
-	height: 100%;
-	width: 30px;
-	position: absolute;
-	top: 0px;
-	right: 0px;
-}
-
-.qp2-container {}
-
-.query-plan2-container {
+.qp-container .query-plan {
 	width: 100%;
 	height: 500px;
 	position: relative;
 	border-top: 1px solid;
 }
 
-.qp-properties-container {
+.qp-container .query-plan .actionbar-container {
+height: 100%;
+width: 30px;
+position: absolute;
+top: 0px;
+right: 0px;
+}
+
+.qp-container .query-plan .properties-container {
 	position: absolute;
 	top: 0px;
 	right: 32px;
@@ -30,30 +28,30 @@
 	width: 510px;
 }
 
-.prop-table-header {
+.qp-container .prop-table-header {
 	font-weight: bold;
 }
 
-.properties-header {
+.qp-container .properties-header {
 	font-weight: bold;
 	padding: 5px;
 }
 
-.qp-properties-toggle {
+.qp-container .properties-toggle {
 	height: 9px;
 	width: 9px;
 	display: inline-block;
 }
 
-.qp-properties-toggle.expand {
+.qp-container .properties-toggle .expand {
 	background: url(../images/expand.gif) no-repeat center center;
 }
 
-.qp-properties-toggle.collapse {
+.qp-container .properties-toggle .collapse {
 	background: url(../images/collapse.gif) no-repeat center center;
 }
 
-.mxTooltip {
+.qp-container .mxTooltip {
 	-webkit-box-shadow: 3px 3px 12px #C0C0C0;
 	-moz-box-shadow: 3px 3px 12px #C0C0C0;
 	box-shadow: 3px 3px 12px #C0C0C0;

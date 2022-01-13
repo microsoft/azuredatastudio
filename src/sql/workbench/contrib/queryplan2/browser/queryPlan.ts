@@ -6,7 +6,7 @@
 import 'vs/css!./media/queryPlan2';
 import type * as azdata from 'azdata';
 import { IPanelView, IPanelTab } from 'sql/base/browser/ui/panel/panel';
-
+import { URI } from 'vs/base/common/uri';
 import { localize } from 'vs/nls';
 import { dispose } from 'vs/base/common/lifecycle';
 import { IConfigurationRegistry, Extensions as ConfigExtensions } from 'vs/platform/configuration/common/configurationRegistry';
@@ -14,7 +14,6 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import * as DOM from 'vs/base/browser/dom';
 import { PropertiesAction } from 'sql/workbench/contrib/queryplan2/browser/actions/propertiesAction';
-
 import * as azdataGraphModule from 'azdataGraph';
 import { escape } from 'sql/base/common/strings';
 let azdataGraph = azdataGraphModule();
@@ -40,7 +39,7 @@ export class QueryPlan2Tab implements IPanelTab {
 export class QueryPlan2View implements IPanelView {
 	private _qps?: QueryPlan2[] = [];
 	private _graphs?: azdata.QueryPlanGraph[] = [];
-	private _container = DOM.$('.qp2-container');
+	private _container = DOM.$('.qp-container');
 
 	public render(container: HTMLElement): void {
 		container.appendChild(this._container);
@@ -106,16 +105,16 @@ export class QueryPlan2 {
 		private _graphIndex: number,
 
 	) {
-		this._container = DOM.$('.query-plan2-container');
+		this._container = DOM.$('.query-plan');
 		parent.appendChild(this._container);
 
 
-		this._actionBarContainer = DOM.$('.qp2-actionbar-container');
+		this._actionBarContainer = DOM.$('.actionbar-container');
 		this._actionBar = new ActionBar(this._actionBarContainer, {
 			orientation: ActionsOrientation.VERTICAL, context: this
 		});
 
-		this.propContainer = DOM.$('.qp-properties-container');
+		this.propContainer = DOM.$('.properties-container');
 		const propHeader = document.createElement('div');
 		propHeader.className = 'properties-header';
 		propHeader.innerText = 'Properties';
@@ -132,12 +131,12 @@ export class QueryPlan2 {
 			const idx = self._dataView.getIdxById(dataContext.id);
 			if (self._data[idx + 1] && self._data[idx + 1].indent > self._data[idx].indent) {
 				if (dataContext._collapsed) {
-					return spacer + '<span class="qp-properties-toggle expand"></span>&nbsp;' + value;
+					return spacer + '<span class="properties-toggle expand"></span>&nbsp;' + value;
 				} else {
-					return spacer + '<span class="qp-properties-toggle collapse"></span>&nbsp;' + value;
+					return spacer + '<span class="properties-toggle collapse"></span>&nbsp;' + value;
 				}
 			} else {
-				return spacer + '<span class="qp-properties-toggle"></span>&nbsp;' + value;
+				return spacer + '<span class="properties-toggle"></span>&nbsp;' + value;
 			}
 		};
 
@@ -238,7 +237,7 @@ export class QueryPlan2 {
 		this._iconMap['Result_32x.ico'] = 'result';
 		this._iconMap['Table_spool_32x.ico'] = 'tableSpool';
 		this._iconMap['Top_32x.ico'] = 'top';
-		let imageBasePath = decodeURI(require.toUrl('./images/icons/'));
+		let imageBasePath = URI.parse(decodeURI(require.toUrl('./images/icons/'))).fsPath;
 		this._iconPaths =
 		{
 			// generic icons
