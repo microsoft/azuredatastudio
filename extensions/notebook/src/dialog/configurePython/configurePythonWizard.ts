@@ -119,6 +119,7 @@ export class ConfigurePythonWizard {
 			return true;
 		});
 
+		this._wizard.nextButton.enabled = false;
 		this._wizard.generateScriptButton.hidden = true;
 		this._wizard.pages = [page0, page1];
 		await this._wizard.open();
