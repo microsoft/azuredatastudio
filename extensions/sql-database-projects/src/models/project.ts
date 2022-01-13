@@ -681,6 +681,36 @@ export class Project implements ISqlProject {
 		return fileEntry;
 	}
 
+	/**
+	 * Adds a file to the project, and saves the project file
+	 *
+	 * @param filePath Absolute path of the file
+	 */
+	public async addExistingItem(filePath: string): Promise<FileProjectEntry> {
+		const exists = await utils.exists(filePath);
+		if (!exists) {
+			throw new Error(constants.noFileExist(filePath));
+		}
+
+		// Check if file already has been added to sqlproj
+		const normalizedRelativeFilePath = utils.convertSlashesForSqlProj(path.relative(this.projectFolderPath, filePath));
+		const existingEntry = this.files.find(f => f.relativePath.toUpperCase() === normalizedRelativeFilePath.toUpperCase());
+		if (existingEntry) {
+			return existingEntry;
+		}
+
+		// Ensure that parent folder item exist in the project for the corresponding file path
+		await this.ensureFolderItems(path.relative(this.projectFolderPath, path.dirname(filePath)));
+
+		// Update sqlproj XML
+		const fileEntry = this.createFileProjectEntry(normalizedRelativeFilePath, EntryType.File);
+		const xmlTag = path.extname(filePath) === constants.sqlFileExtension ? constants.Build : constants.None;
+		await this.addToProjFile(fileEntry, xmlTag);
+		this._files.push(fileEntry);
+
+		return fileEntry;
+	}
+
 	public async exclude(entry: FileProjectEntry): Promise<void> {
 		const toExclude: FileProjectEntry[] = this._files.concat(this._preDeployScripts).concat(this._postDeployScripts).concat(this._noneDeployScripts).filter(x => x.fsUri.fsPath.startsWith(entry.fsUri.fsPath));
 		await this.removeFromProjFile(toExclude);
@@ -912,6 +942,10 @@ export class Project implements ISqlProject {
 	}
 
 	private async addFileToProjFile(filePath: string, xmlTag: string, attributes?: Map<string, string>): Promise<void> {
+
+		// determine if the file has been previously excluded
+		await this.undoExcludeFileFromProjFile(xmlTag, filePath);
+
 		let itemGroup;
 
 		if (xmlTag === constants.PreDeploy || xmlTag === constants.PostDeploy) {
@@ -942,7 +976,7 @@ export class Project implements ISqlProject {
 
 			// don't need to add an entry if it's already included by a glob pattern
 			// unless it has an attribute that needs to be added, like external streaming job which needs it so it can be determined if validation can run on it
-			if (attributes?.size === 0 && currentFiles.find(f => f.relativePath === utils.convertSlashesForSqlProj(filePath))) {
+			if ((!attributes || attributes.size === 0) && currentFiles.find(f => f.relativePath === utils.convertSlashesForSqlProj(filePath))) {
 				return;
 			}
 
@@ -1027,6 +1061,33 @@ export class Project implements ISqlProject {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Delete a Remove node from the sqlproj, ex: <Build Remove="Table1.sql" />
+	 * @param xmlTag The XML tag of the node (Build, None, PreDeploy, PostDeploy)
+	 * @param relativePath The relative path of the previously excluded file
+	 */
+	private async undoExcludeFileFromProjFile(xmlTag: string, relativePath: string): Promise<void> {
+		const nodes = this.projFileXmlDoc!.documentElement.getElementsByTagName(xmlTag);
+		for (let i = 0; i < nodes.length; i++) {
+			const parent = nodes[i].parentNode;
+			if (parent && nodes[i].getAttribute(constants.Remove) === utils.convertSlashesForSqlProj(relativePath)) {
+				parent.removeChild(nodes[i]);
+
+				// delete ItemGroup if this was the only entry
+				// only want element nodes, not text nodes
+				const otherChildren = Array.from(parent.childNodes).filter((c: any) => c.childNodes);
+
+				if (otherChildren.length === 0) {
+					parent.parentNode?.removeChild(parent);
+				}
+
+				await this.serializeToProjFile(this.projFileXmlDoc);
+
+				return;
+			}
+		}
 	}
 
 	private async addFolderToProjFile(folderPath: string): Promise<void> {
