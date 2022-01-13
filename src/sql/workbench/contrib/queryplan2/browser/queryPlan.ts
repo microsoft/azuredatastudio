@@ -518,7 +518,7 @@ export class QueryPlan2 {
 	public set graph(graph: azdata.QueryPlanGraph | undefined) {
 		this._graph = graph;
 		if (this._graph) {
-			this._container.appendChild(document.createTextNode(localize('queryIndex', "Query {n}: ", this._graphIndex)));
+			this._container.appendChild(document.createTextNode(localize('queryIndex', "Query {0}: ", this._graphIndex)));
 			this._relativeCost = document.createTextNode(localize('relativeToTheScript', "(relative to the script):"));
 			this._container.appendChild(this._relativeCost);
 			this._container.appendChild(document.createElement('br'));
