@@ -115,16 +115,16 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 			return;
 		}
 
-		let existingSettings: (vscode.QuickPickItem & { isCreateNew?: boolean })[] = [];
+		let existingSettings: (vscode.QuickPickItem)[] = [];
 		if (settings?.Values) {
 			existingSettings = Object.keys(settings.Values).map(setting => {
 				return {
 					label: setting
-				} as vscode.QuickPickItem & { isCreateNew?: boolean };
+				} as vscode.QuickPickItem;
 			});
 		}
 
-		existingSettings.unshift({ label: constants.createNewLocalAppSettingWithIcon, isCreateNew: true });
+		existingSettings.unshift({ label: constants.createNewLocalAppSettingWithIcon });
 		let sqlConnectionStringSettingExists = existingSettings.find(s => s.label === constants.sqlConnectionStringSetting);
 
 		while (!connectionStringSettingName) {
@@ -138,7 +138,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 				return;
 			}
 
-			if (selectedSetting.isCreateNew) {
+			if (selectedSetting.label === constants.createNewLocalAppSettingWithIcon) {
 				const newConnectionStringSettingName = await vscode.window.showInputBox(
 					{
 						title: constants.enterConnectionStringSettingName,
@@ -189,14 +189,14 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 							// TO DO: https://github.com/microsoft/azuredatastudio/issues/18012
 							connectionUri = await vscodeMssqlApi.connect(connectionInfo);
 						} catch (e) {
-							// give an error if unable to connect to selected connection and return to selectedConnectionStringMethod prompt
+							// display an mssql error due to connection request failing and go back to prompt for connection string methods
 							console.warn(e);
 							continue;
 						}
 						try {
 							connectionString = await vscodeMssqlApi.getConnectionString(connectionUri, false);
 						} catch (e) {
-							// go back to select setting quickpick if user escapes from inputting the value in case they changed their mind
+							// failed to get connection string for selected connection and will go back to prompt for connection string methods
 							console.warn(e);
 							void vscode.window.showErrorMessage(constants.failedToGetConnectionString);
 							continue;

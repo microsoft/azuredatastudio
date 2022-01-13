@@ -342,3 +342,41 @@ export const mockConnectionProfile: azdata.IConnectionProfile = {
 		connectionName: 'My Connection Name'
 	}
 };
+
+export function createTestCredentials(): vscodeMssql.IConnectionInfo {
+	const creds: vscodeMssql.IConnectionInfo = {
+		server: 'my-server',
+		database: 'my_db',
+		user: 'sa',
+		password: '12345678',
+		email: 'test-email',
+		accountId: 'test-account-id',
+		port: 1234,
+		authenticationType: 'test',
+		azureAccountToken: '',
+		expiresOn: 0,
+		encrypt: false,
+		trustServerCertificate: false,
+		persistSecurityInfo: false,
+		connectTimeout: 15,
+		connectRetryCount: 0,
+		connectRetryInterval: 0,
+		applicationName: 'vscode-mssql',
+		workstationId: 'test',
+		applicationIntent: '',
+		currentLanguage: '',
+		pooling: true,
+		maxPoolSize: 15,
+		minPoolSize: 0,
+		loadBalanceTimeout: 0,
+		replication: false,
+		attachDbFilename: '',
+		failoverPartner: '',
+		multiSubnetFailover: false,
+		multipleActiveResultSets: false,
+		packetSize: 8192,
+		typeSystemVersion: 'Latest',
+		connectionString: ''
+	};
+	return creds;
+}
