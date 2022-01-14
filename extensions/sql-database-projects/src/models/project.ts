@@ -889,8 +889,6 @@ export class Project implements ISqlProject {
 	 * @returns Array of all database source values, regardless of if value is 'well-know'
 	 */
 	public getDatabaseSourceValues(): string[] {
-		// TODO: Support should be added for values that contain ';'
-
 		const databaseSource = this.evaluateProjectPropertyValue(constants.DatabaseSource);
 		if (databaseSource === undefined) {
 			return [];
@@ -1492,15 +1490,16 @@ export class Project implements ISqlProject {
 		if (propertyValueToSet === undefined) {
 			propertyValueToSet = valueToAdd;
 		} else { // Property already exists, append to existing value
-			const propertyValue = caseSensitive ? propertyValueToSet : propertyValueToSet.toLocaleLowerCase();
-			valueToAdd = caseSensitive ? valueToAdd : valueToAdd.toLocaleLowerCase();
+			// Determine if comparison should be case sensitive
+			const propertyValue = caseSensitive ? propertyValueToSet : propertyValueToSet.toLowerCase();
+			const valueToCompare = caseSensitive ? valueToAdd : valueToAdd.toLowerCase();
 			// If value is already present, exit function
-			if ((propertyValue.length > valueToAdd.length
-				&& (propertyValue.startsWith(`${valueToAdd};`)
-					|| propertyValue.endsWith(`;${valueToAdd}`)
-					|| propertyValue.indexOf(`;${valueToAdd};`) >= 0))
-				|| (propertyValue.length === valueToAdd.length
-					&& propertyValue === valueToAdd)) {
+			if ((propertyValue.length > valueToCompare.length
+				&& (propertyValue.startsWith(`${valueToCompare};`)
+					|| propertyValue.endsWith(`;${valueToCompare}`)
+					|| propertyValue.indexOf(`;${valueToCompare};`) >= 0))
+				|| (propertyValue.length === valueToCompare.length
+					&& propertyValue === valueToCompare)) {
 				return;
 			}
 
@@ -1526,17 +1525,19 @@ export class Project implements ISqlProject {
 			return;
 		}
 
+		// Determine if comparison should be case sensitive
 		const propertyValue = caseSensitive ? propertyValueToSet : propertyValueToSet.toLowerCase();
 		valueToRemove = caseSensitive ? valueToRemove : valueToRemove.toLowerCase();
 
 		if (propertyValue.length > valueToRemove.length) {
 			let valueToRemovePosition: number;
 
-			if (propertyValue.startsWith(`${valueToRemove};`)) {
+			if (propertyValue.startsWith(`${valueToRemove};`)) { // Check if value is at beginning of project property
 				propertyValueToSet = propertyValueToSet.substring(valueToRemove.length + 1);
-			} else if (propertyValue.endsWith(`;${valueToRemove}`)) {
+			} else if (propertyValue.endsWith(`;${valueToRemove}`)) { // Check if value is at end of project property
 				propertyValueToSet = propertyValueToSet.substring(0, propertyValue.length - valueToRemove.length - 1);
 			} else if ((valueToRemovePosition = propertyValue.indexOf(`;${valueToRemove};`)) >= 0) {
+				// Check if value is in middle of project property
 				propertyValueToSet = propertyValueToSet.substring(0, valueToRemovePosition + 1) +
 					propertyValueToSet.substring(valueToRemovePosition + valueToRemove.length + 2);
 			} else {
@@ -1657,7 +1658,11 @@ export class Project implements ISqlProject {
 	 * @param propertyTag Tag to remove
 	 */
 	private removeProjectPropertyTag(propertyTag: string) {
-		const propertyGroups = this.projFileXmlDoc!.getElementsByTagName(constants.PropertyGroup);
+		if (this.projFileXmlDoc === undefined) {
+			return;
+		}
+
+		const propertyGroups = this.projFileXmlDoc.getElementsByTagName(constants.PropertyGroup);
 
 		for (let propertyGroupIndex in propertyGroups) {
 			let propertiesWithTagName = propertyGroups[propertyGroupIndex].getElementsByTagName(propertyTag);

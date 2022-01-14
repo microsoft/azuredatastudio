@@ -639,9 +639,9 @@ export function getWellKnownDatabaseSourceValue(value: string): string | undefin
 }
 
 /**
- * Get string containing all well-known database sources, separated by semicolon
+ * Get array containing all well-known database sources
  * @param databaseSourceValues Array of database source values
- * @returns Well-known database sources, separated by semicolon
+ * @returns Array of well-known database sources
  */
 export function getWellKnownDatabaseSourceString(databaseSourceValues: string[]): string[] {
 	const databaseSourceSet = new Set<string>();
