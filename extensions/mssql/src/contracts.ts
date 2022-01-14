@@ -1026,13 +1026,12 @@ export namespace GetSqlMigrationAssessmentItemsRequest {
 export interface SqlMigrationSkuRecommendationsParams {
 	dataFolder: string;
 	perfQueryIntervalInSec: number;
-	targetPlatforms: string[];
+	targetPlatform: string;
 	targetSqlInstance: string;
 	targetPercentile: number;
 	scalingFactor: number;
 	startTime: string;
 	endTime: string;
-	elasticStrategy: boolean;
 	databaseAllowList: string[];
 }
 
@@ -1050,6 +1049,14 @@ export interface SqlMigrationStartPerfDataCollectionParams {
 
 export namespace SqlMigrationStartPerfDataCollectionRequest {
 	export const type = new RequestType<SqlMigrationStartPerfDataCollectionParams, number, void, void>('migration/startperfdatacollection');
+}
+
+export interface SqlMigrationStopPerfDataCollectionParams {
+	processId: number
+}
+
+export namespace SqlMigrationStopPerfDataCollectionRequest {
+	export const type = new RequestType<SqlMigrationStopPerfDataCollectionParams, number, void, void>('migration/stopperfdatacollection');
 }
 
 // ------------------------------- <Sql Migration> -----------------------------

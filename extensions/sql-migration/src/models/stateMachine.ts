@@ -183,6 +183,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _runAssessments: boolean = true;
 	private _assessmentApiResponse!: mssql.AssessmentResult;
 	private _skuRecommendationApiResponse!: mssql.SkuRecommendationResult;
+	private _perfDataCollectionProcessId!: number;
 	public mementoString: string;
 
 	public _vmDbs: string[] = [];
@@ -297,13 +298,11 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public async getSkuRecommendations(
 		dataFolder: string,
 		perfQueryIntervalInSec: number,
-		targetPlatforms: MigrationTargetType[],
-		targetSqlInstance: string,
+		targetPlatform: MigrationTargetType,
 		targetPercentile: number,
 		scalingFactor: number,
 		startTime: string,
 		endTime: string,
-		elasticStrategy: boolean,
 		databaseAllowList: string[]): Promise<SkuRecommendation> {
 		try {
 			console.log('starting sku rec');
@@ -314,34 +313,29 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			const response = (await this.migrationService.getSkuRecommendations(
 				dataFolder,
 				perfQueryIntervalInSec,
-				targetPlatforms.map(p => p.toString()),
+				targetPlatform.toString(),
 				machineName,
 				targetPercentile,
 				scalingFactor,
 				startTime,
 				endTime,
-				elasticStrategy,
 				databaseAllowList))!;
 			this._skuRecommendationApiResponse = response;
 
 			console.log('_skuRecommendationApiResponse:');
 			console.log(this._skuRecommendationApiResponse);
 
-			if (response?.sqlDbRecommendationResults || response?.sqlMiRecommendationResults || response?.sqlVmRecommendationResults) {
+			if (response?.results) {
 				this._skuRecommendationResults = {
 					recommendations: {
-						sqlDbRecommendationResults: response?.sqlDbRecommendationResults ?? [],
-						sqlMiRecommendationResults: response?.sqlMiRecommendationResults ?? [],
-						sqlVmRecommendationResults: response?.sqlVmRecommendationResults ?? []
+						results: response?.results ?? [],
 					},
 					// recommendationError:
 				};
 			} else {
 				this._skuRecommendationResults = {
 					recommendations: {
-						sqlDbRecommendationResults: [],
-						sqlMiRecommendationResults: [],
-						sqlVmRecommendationResults: []
+						results: [],
 					},
 					// recommendationError:
 				};
@@ -353,20 +347,14 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 			this._skuRecommendationResults = {
 				recommendations: {
-					sqlDbRecommendationResults: this._skuRecommendationApiResponse?.sqlDbRecommendationResults ?? [],
-					sqlMiRecommendationResults: this._skuRecommendationApiResponse?.sqlMiRecommendationResults ?? [],
-					sqlVmRecommendationResults: this._skuRecommendationApiResponse?.sqlVmRecommendationResults ?? []
+					results: this._skuRecommendationApiResponse?.results ?? [],
 				},
 				recommendationError: error
 			};
 		}
 
-		console.log('_skuRecommendationResults.recommendations.sqlDbRecommendationResults: ');
-		console.log(this._skuRecommendationResults.recommendations.sqlDbRecommendationResults);
-		console.log('_skuRecommendationResults.recommendations.sqlMiRecommendationResults: ');
-		console.log(this._skuRecommendationResults.recommendations.sqlMiRecommendationResults);
-		console.log('_skuRecommendationResults.recommendations.sqlVmRecommendationResults: ');
-		console.log(this._skuRecommendationResults.recommendations.sqlVmRecommendationResults);
+		console.log('_skuRecommendationResults.recommendations.results: ');
+		console.log(this._skuRecommendationResults.recommendations.results);
 		console.log('_skuRecommendationResults.recommendationError: ');
 		console.log(this._skuRecommendationResults.recommendationError);
 
@@ -385,7 +373,22 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			const ownerUri = await azdata.connection.getUriForConnection(this.sourceConnectionId);
 			const response = await this.migrationService.startPerfDataCollection(ownerUri, dataFolder, perfQueryIntervalInSec, staticQueryIntervalInSec, numberOfIterations);
 			console.log('process ID: ' + response);
+			this._perfDataCollectionProcessId = response!;
+		}
+		catch (error) {
+			console.log('error:');
+			console.log(error);
+		}
 
+		return true;
+	}
+
+	public async stopPerfDataCollection(): Promise<boolean> {
+		try {
+			console.log('stateMachine.stopPerfDataCollection starting: process ID ' + this._perfDataCollectionProcessId);
+
+			const response = await this.migrationService.stopPerfDataCollection(this._perfDataCollectionProcessId);
+			console.log('response: ' + response);
 		}
 		catch (error) {
 			console.log('error:');

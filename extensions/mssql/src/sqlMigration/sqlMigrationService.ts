@@ -98,4 +98,20 @@ export class SqlMigrationService implements mssql.ISqlMigrationService {
 
 		return undefined;
 	}
+
+	async stopPerfDataCollection(
+		processId: number) : Promise<number | undefined> {
+		let params: contracts.SqlMigrationStopPerfDataCollectionParams = {
+			processId
+		};
+
+		try {
+			return this.client.sendRequest(contracts.SqlMigrationStopPerfDataCollectionRequest.type, params);
+		}
+		catch (e) {
+			this.client.logFailedRequest(contracts.SqlMigrationStopPerfDataCollectionRequest.type, e);
+		}
+
+		return undefined;
+	}
 }

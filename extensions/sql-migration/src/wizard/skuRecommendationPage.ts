@@ -549,25 +549,25 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 				// placeholder get SKU recommendation entry point
 				// TO-DO: read these preferences from the UI
-				const dataFolder = '';	// specify, or leave blank to read from NuGet default %localappdata%\Microsoft\SqlAssessment location
+				const dataFolder = 'C:\\Users\\ratruong\\AppData\\Local\\Microsoft\\SqlAssessment';	// specify, or leave blank to read from NuGet default %localappdata%\Microsoft\SqlAssessment location
 				const perfQueryIntervalInSec = 30;
 				const targetPlatforms = [MigrationTargetType.SQLDB, MigrationTargetType.SQLMI, MigrationTargetType.SQLVM];
 				const targetPercentile = 95;
 				const scalingFactor = 100;
 				const startTime = '1900-01-01 00:00:00';
 				const endTime = '2200-01-01 00:00:00';
-				const elasticStrategy = false;
+				// const elasticStrategy = false;
+
+				await this.migrationStateModel.stopPerfDataCollection();
 
 				await this.migrationStateModel.getSkuRecommendations(
 					dataFolder,
 					perfQueryIntervalInSec,
-					targetPlatforms,
-					serverName,
+					targetPlatforms[0],
 					targetPercentile,
 					scalingFactor,
 					startTime,
 					endTime,
-					elasticStrategy,
 					this.migrationStateModel._databaseAssessment);
 
 				console.log('results - this.migrationStateModel._skuRecommendationResults:');
