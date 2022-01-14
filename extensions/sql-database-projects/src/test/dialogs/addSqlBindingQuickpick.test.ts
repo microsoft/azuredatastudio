@@ -89,7 +89,7 @@ describe('Add SQL Binding quick pick', () => {
 		sinon.stub(azureFunctionUtils, 'getAFProjectContainingFile').resolves(vscode.Uri.file('testUri'));
 		testContext.azureFunctionService.setup(x => x.getAzureFunctions(TypeMoq.It.isAny())).returns(async () => {
 			return Promise.resolve({
-				success: false,
+				success: true,
 				errorMessage: '',
 				azureFunctions: ['af1']
 			});
@@ -101,9 +101,10 @@ describe('Add SQL Binding quick pick', () => {
 
 		// Mocks promptForConnection
 		testContext.vscodeMssqlIExtension.setup(x => x.promptForConnection(true)).returns(() => Promise.resolve(connectionCreds));
+		let quickpickStub = sinon.stub(vscode.window, 'showQuickPick')
 
 		// select Azure function
-		let quickpickStub = sinon.stub(vscode.window, 'showQuickPick').onFirstCall().resolves({ label: 'af1' });
+		quickpickStub.onFirstCall().resolves({ label: 'af1' });
 		// select input or output binding
 		quickpickStub.onSecondCall().resolves({ label: constants.input });
 
@@ -111,7 +112,7 @@ describe('Add SQL Binding quick pick', () => {
 		let inputBoxStub = sinon.stub(vscode.window, 'showInputBox').onFirstCall().resolves('dbo.table1');
 
 		// select connection profile
-		let selectedSetting = quickpickStub.onThirdCall().resolves({ label: constants.createNewLocalAppSettingWithIcon });
+		quickpickStub.onThirdCall().resolves({ label: constants.createNewLocalAppSettingWithIcon });
 
 		// give connection string setting name
 		inputBoxStub.onSecondCall().resolves('SqlConnectionString');
@@ -122,6 +123,6 @@ describe('Add SQL Binding quick pick', () => {
 		await launchAddSqlBindingQuickpick(vscode.Uri.file('testUri'), packageHelper);
 
 		// should go back to the select connection string methods
-		should(selectedSetting);
+		should(quickpickStub.callCount === 5);
 	});
 });
