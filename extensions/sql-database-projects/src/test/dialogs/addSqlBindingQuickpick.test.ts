@@ -101,8 +101,7 @@ describe('Add SQL Binding quick pick', () => {
 
 		// Mocks promptForConnection
 		testContext.vscodeMssqlIExtension.setup(x => x.promptForConnection(true)).returns(() => Promise.resolve(connectionCreds));
-		let quickpickStub = sinon.stub(vscode.window, 'showQuickPick')
-
+		let quickpickStub = sinon.stub(vscode.window, 'showQuickPick');
 		// select Azure function
 		quickpickStub.onFirstCall().resolves({ label: 'af1' });
 		// select input or output binding
@@ -124,5 +123,12 @@ describe('Add SQL Binding quick pick', () => {
 
 		// should go back to the select connection string methods
 		should(quickpickStub.callCount === 5);
+		should(quickpickStub.getCall(4).args).deepEqual([
+			[constants.connectionProfile, constants.userConnectionString],
+			{
+				canPickMany: false,
+				ignoreFocusOut: true,
+				title: constants.selectConnectionString
+			}]);
 	});
 });
