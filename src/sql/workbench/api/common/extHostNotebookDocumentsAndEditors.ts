@@ -51,9 +51,11 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 	readonly onDidChangeNotebookCell: Event<azdata.nb.NotebookCellChangeEvent> = this._onDidChangeNotebookCell.event;
 
 	private readonly _onDidChangeVisibleVSCodeEditors = new Emitter<vscode.NotebookEditor[]>();
+	private readonly _onDidChangeActiveVSCodeEditor = new Emitter<vscode.NotebookEditor>();
 	private readonly _onDidOpenVSCodeNotebook = new Emitter<vscode.NotebookDocument>();
 	private readonly _onDidCloseVSCodeNotebook = new Emitter<vscode.NotebookDocument>();
 	readonly onDidChangeVisibleVSCodeEditors: Event<vscode.NotebookEditor[]> = this._onDidChangeVisibleVSCodeEditors.event;
+	readonly onDidChangeActiveVSCodeEditor: Event<vscode.NotebookEditor> = this._onDidChangeActiveVSCodeEditor.event;
 	readonly onDidOpenVSCodeNotebookDocument: Event<vscode.NotebookDocument> = this._onDidOpenVSCodeNotebook.event;
 	readonly onDidCloseVSCodeNotebookDocument: Event<vscode.NotebookDocument> = this._onDidCloseVSCodeNotebook.event;
 
@@ -65,6 +67,7 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 		}
 
 		this.onDidChangeVisibleNotebookEditors(editors => this._onDidChangeVisibleVSCodeEditors.fire(editors.map(editor => new VSCodeNotebookEditor(editor))));
+		this.onDidChangeActiveNotebookEditor(editor => this._onDidChangeActiveVSCodeEditor.fire(new VSCodeNotebookEditor(editor)));
 		this.onDidOpenNotebookDocument(notebook => this._onDidOpenVSCodeNotebook.fire(new VSCodeNotebookDocument(notebook)));
 		this.onDidCloseNotebookDocument(notebook => this._onDidCloseVSCodeNotebook.fire(new VSCodeNotebookDocument(notebook)));
 	}

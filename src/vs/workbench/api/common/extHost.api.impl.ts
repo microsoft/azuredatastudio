@@ -724,10 +724,8 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 				return new VSCodeNotebookEditor(extHostNotebookDocumentsAndEditors.getActiveEditor());
 			},
 			onDidChangeActiveNotebookEditor(listener, thisArgs?, disposables?) {
-				// {{SQL CARBON EDIT}} Disable VS Code notebooks
-				throw new Error(functionalityNotSupportedError);
-				// checkProposedApiEnabled(extension);
-				// return extHostNotebook.onDidChangeActiveNotebookEditor(listener, thisArgs, disposables);
+				// {{SQL CARBON EDIT}} Use our own notebooks
+				return extHostNotebookDocumentsAndEditors.onDidChangeActiveVSCodeEditor(listener, thisArgs, disposables);
 			},
 			get visibleNotebookEditors() {
 				// {{SQL CARBON EDIT}} Use our own notebooks
