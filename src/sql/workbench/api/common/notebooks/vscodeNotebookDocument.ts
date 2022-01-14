@@ -5,7 +5,7 @@
 
 import type * as vscode from 'vscode';
 import type * as azdata from 'azdata';
-import { convertToVSCodeNotebookCell } from 'sql/workbench/api/common/vscodeExecuteProvider';
+import { convertToVSCodeNotebookCell } from 'sql/workbench/api/common/notebooks/notebookUtils';
 
 export class VSCodeNotebookDocument implements vscode.NotebookDocument {
 	private readonly _convertedCells: vscode.NotebookCell[];

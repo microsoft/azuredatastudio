@@ -5,7 +5,7 @@
 
 import type * as vscode from 'vscode';
 import type * as azdata from 'azdata';
-import { VSCodeNotebookDocument } from 'sql/workbench/api/common/vscodeNotebookDocument';
+import { VSCodeNotebookDocument } from 'sql/workbench/api/common/notebooks/vscodeNotebookDocument';
 import { functionalityNotSupportedError } from 'sql/base/common/locConstants';
 
 export class VSCodeNotebookEditor implements vscode.NotebookEditor {

@@ -13,7 +13,7 @@ import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/common/ext
 import { URI } from 'vs/base/common/uri';
 import { NotebookCellExecutionTaskState } from 'vs/workbench/api/common/extHostNotebookKernels';
 import { asArray } from 'vs/base/common/arrays';
-import { convertToADSCellOutput } from 'sql/workbench/api/common/vscodeSerializationProvider';
+import { convertToADSCellOutput } from 'sql/workbench/api/common/notebooks/notebookUtils';
 
 type SelectionChangedEvent = { selected: boolean, notebook: vscode.NotebookDocument; };
 type MessageReceivedEvent = { editor: vscode.NotebookEditor, message: any; };

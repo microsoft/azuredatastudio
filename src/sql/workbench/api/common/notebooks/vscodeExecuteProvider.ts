@@ -5,9 +5,9 @@
 
 import type * as vscode from 'vscode';
 import type * as azdata from 'azdata';
-import { ADSNotebookController } from 'sql/workbench/api/common/adsNotebookController';
+import { ADSNotebookController } from 'sql/workbench/api/common/notebooks/adsNotebookController';
 import * as nls from 'vs/nls';
-import { URI } from 'vs/base/common/uri';
+import { convertToVSCodeNotebookCell } from 'sql/workbench/api/common/notebooks/notebookUtils';
 
 class VSCodeFuture implements azdata.nb.IFuture {
 	private _inProgress = true;
@@ -304,18 +304,4 @@ export class VSCodeExecuteProvider implements azdata.nb.NotebookExecuteProvider 
 	public handleNotebookClosed(notebookUri: vscode.Uri): void {
 		// No-op
 	}
-}
-
-export function convertToVSCodeNotebookCell(cellSource: string | string[], index: number, uri: URI, language: string): vscode.NotebookCell {
-	return <vscode.NotebookCell>{
-		index: index,
-		document: <vscode.TextDocument>{
-			uri: uri,
-			languageId: language,
-			getText: () => Array.isArray(cellSource) ? cellSource.join('') : cellSource,
-		},
-		notebook: <vscode.NotebookDocument>{
-			uri: uri
-		}
-	};
 }
