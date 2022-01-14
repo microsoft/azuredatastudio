@@ -1610,13 +1610,13 @@ export class Project implements ISqlProject {
 		}
 
 		const propertyGroups = this.projFileXmlDoc.getElementsByTagName(constants.PropertyGroup);
-		let projectPropertyGroup = propertyGroups.length > 0 ? propertyGroups[0] : null;
-		if (projectPropertyGroup === null) {
-			projectPropertyGroup = this.projFileXmlDoc.createElement(constants.PropertyGroup);
-			this.projFileXmlDoc.documentElement?.appendChild(projectPropertyGroup);
+		let propertyGroup = propertyGroups.length > 0 ? propertyGroups[0] : null;
+		if (propertyGroup === null) {
+			propertyGroup = this.projFileXmlDoc.createElement(constants.PropertyGroup);
+			this.projFileXmlDoc.documentElement?.appendChild(propertyGroup);
 		}
 
-		const propertyElements = projectPropertyGroup.getElementsByTagName(propertyName);
+		const propertyElements = propertyGroup.getElementsByTagName(propertyName);
 		let propertyElement: Element | undefined;
 		if (propertyElements.length === 0) {
 			propertyElement = this.addProjectPropertyTag(propertyName);
@@ -1642,14 +1642,14 @@ export class Project implements ISqlProject {
 		}
 
 		const propertyGroups = this.projFileXmlDoc.getElementsByTagName(constants.PropertyGroup);
-		let tagPropertyGroup = propertyGroups.length > 0 ? propertyGroups[0] : null;
-		if (tagPropertyGroup === null) {
-			tagPropertyGroup = this.projFileXmlDoc.createElement(constants.PropertyGroup);
-			this.projFileXmlDoc.documentElement?.appendChild(tagPropertyGroup);
+		let propertyGroup = propertyGroups.length > 0 ? propertyGroups[0] : null;
+		if (propertyGroup === null) {
+			propertyGroup = this.projFileXmlDoc.createElement(constants.PropertyGroup);
+			this.projFileXmlDoc.documentElement?.appendChild(propertyGroup);
 		}
 
 		const propertyElement = this.projFileXmlDoc.createElement(propertyTag);
-		tagPropertyGroup.appendChild(propertyElement);
+		propertyGroup.appendChild(propertyElement);
 		return propertyElement;
 	}
 
