@@ -248,6 +248,9 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 		this._providersLoaded = this.assignProviders();
 		this._notebookEditorOpenedTimestamp = Date.now();
 		if (this._textInput) {
+			if (this._textInput instanceof UntitledTextEditorInput) {
+				this._textInput.setMode('notebook');
+			}
 			this.hookDirtyListener(this._textInput.onDidChangeDirty, () => this._onDidChangeDirty.fire());
 		}
 	}
