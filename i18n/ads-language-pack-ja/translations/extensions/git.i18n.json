@@ -455,7 +455,7 @@
 			"config.smartCommitChanges.tracked": "自動的にステージングされた変更箇所のみ。",
 			"config.suggestSmartCommit": "スマート コミットを有効にすることを推奨します (ステージング済み変更がない場合、すべての変更をコミットします)。",
 			"config.supportCancellation": "ユーザーが操作を中止できる同期アクションの実行時に通知が表示されるかどうかを制御します。",
-			"config.terminalAuthentication": "統合ターミナルで生成される Git プロセスの認証ハンドラーとして VS Code を有効にするかどうかを制御します。注意: この設定の変更を反映させるには、ターミナルを再起動する必要があります。",
+			"config.terminalAuthentication": "統合ターミナルで生成される Git プロセスの認証ハンドラーとして Azure Data Studio を有効にするかどうかを制御します。注意: この設定の変更を反映させるには、ターミナルを再起動する必要があります。",
 			"config.timeline.date": "タイムライン ビューでアイテムに使用する日付を制御します。",
 			"config.timeline.date.authored": "作成日を使用する",
 			"config.timeline.date.committed": "コミットされた日付を使用する",
@@ -479,13 +479,13 @@
 			"submenu.stash": "一時退避",
 			"submenu.tags": "タグ",
 			"view.workbench.cloneRepository": "リポジトリをローカルに複製できます。\r\n[リポジトリの複製](command:git.clone 'Git 拡張機能がアクティブ化されたらリポジトリを複製する')",
-			"view.workbench.learnMore": "VS Code で Git とソース管理を使用する方法の詳細については、[ドキュメントをご覧ください](https://aka.ms/vscode-scm)。",
-			"view.workbench.scm.disabled": "git 機能を使用する場合、[設定](command:workbench.action.openSettings?%5B%22git.enabled%22%5D)で git を有効にしてください。\r\nGit とソース コントロールを VS Code で使用する方法の詳細については、[ドキュメントをご覧ください](https://aka.ms/vscode-scm)。",
-			"view.workbench.scm.empty": "Git 機能を使用するために、Git リポジトリを含むフォルダーを開くか、URL からクローンを作成することができます。\r\n[フォルダーを開く](command:vscode.openFolder)\r\n[リポジトリのクローン](command:git.clone)\r\nVS Code で Git とソース管理を使用する方法の詳細については、[ドキュメントをご覧ください](https://aka.ms/vscode-scm)。",
-			"view.workbench.scm.emptyWorkspace": "現在開いているワークスペースには、Git リポジトリを含むフォルダーがありません。\r\n[ワークスペースにフォルダーを追加します](command:workbench.action.addRootFolder)\r\nVS Code で Git とソース管理を使用する方法の詳細については、[ドキュメントをご覧ください](https://aka.ms/vscode-scm)。",
-			"view.workbench.scm.folder": "現在開いているフォルダーには Git リポジトリがありません。Git を利用したソース管理機能を有効にするリポジトリを初期化できます。\r\n[リポジトリを初期化する](command:git.init?%5Btrue%5D)\r\nVS Code で Git とソース管理を使用する方法の詳細については、[ドキュメントをご覧ください](https://aka.ms/vscode-scm)。",
-			"view.workbench.scm.missing": "有効な git インストールが検出されませんでした。詳細については、[git 出力](command:git.showOutput)をご確認ください。\r\n [git をインストール](https://git-scm.com/)するか、Git およびソース コントロールを VS Code で使用する方法の詳細について[ドキュメント](https://aka.ms/vscode-scm)を参照してください。別のバージョン管理システムを使用している場合は、追加の拡張機能を[マーケットプレイスで検索](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22)できます。",
-			"view.workbench.scm.workspace": "現在開いているワークスペースには、Git リポジトリを含むフォルダーはありません。フォルダーにあるリポジトリを初期化して、Git を利用したソース管理機能を有効にすることができます。\r\n[リポジトリの初期化](command:git.init)\r\nVS Code で Git とソース管理を使用する方法の詳細については、[ドキュメントをご覧ください](https://aka.ms/vscode-scm)。"
+			"view.workbench.learnMore": "Azure Data Studio で Git とソース管理を使用する方法の詳細については、[ドキュメントをご覧ください](https://aka.ms/vscode-scm)。",
+			"view.workbench.scm.disabled": "git 機能を使用する場合、[設定](command:workbench.action.openSettings?%5B%22git.enabled%22%5D)で git を有効にしてください。\r\nGit とソース コントロールを Azure Data Studio で使用する方法の詳細については、[ドキュメントをご覧ください](https://aka.ms/vscode-scm)。",
+			"view.workbench.scm.empty": "Git 機能を使用するために、Git リポジトリを含むフォルダーを開くか、URL からクローンを作成することができます。\r\n[フォルダーを開く](command:vscode.openFolder)\r\n[リポジトリのクローン](command:git.clone)\r\nAzure Data Studio で Git とソース管理を使用する方法の詳細については、[ドキュメントをご覧ください](https://aka.ms/vscode-scm)。",
+			"view.workbench.scm.emptyWorkspace": "現在開いているワークスペースには、Git リポジトリを含むフォルダーがありません。\r\n[ワークスペースにフォルダーを追加します](command:workbench.action.addRootFolder)\r\nAzure Data Studio で Git とソース管理を使用する方法の詳細については、[ドキュメントをご覧ください](https://aka.ms/vscode-scm)。",
+			"view.workbench.scm.folder": "現在開いているフォルダーには Git リポジトリがありません。Git を利用したソース管理機能を有効にするリポジトリを初期化できます。\r\n[リポジトリを初期化する](command:git.init?%5Btrue%5D)\r\nAzure Data Studio で Git とソース管理を使用する方法の詳細については、[ドキュメントをご覧ください](https://aka.ms/vscode-scm)。",
+			"view.workbench.scm.missing": "有効な git インストールが検出されませんでした。詳細については、[git 出力](command:git.showOutput)をご確認ください。\r\n [git をインストール](https://git-scm.com/)するか、Git およびソース コントロールを Azure Data Studio で使用する方法の詳細について[ドキュメント](https://aka.ms/vscode-scm)を参照してください。別のバージョン管理システムを使用している場合は、追加の拡張機能を[マーケットプレイスで検索](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22)できます。",
+			"view.workbench.scm.workspace": "現在開いているワークスペースには、Git リポジトリを含むフォルダーはありません。フォルダーにあるリポジトリを初期化して、Git を利用したソース管理機能を有効にすることができます。\r\n[リポジトリの初期化](command:git.init)\r\nAzure Data Studio で Git とソース管理を使用する方法の詳細については、[ドキュメントをご覧ください](https://aka.ms/vscode-scm)。"
 		}
 	}
 }
