@@ -9,7 +9,7 @@ import * as minimist from 'minimist';
 import { afterSuite, beforeSuite } from '../../../utils';
 
 export function setup(opts: minimist.ParsedArgs) {
-	describe('NotebookView', () => {
+	describe('NotebookTreeView', () => {
 		beforeSuite(opts);
 		afterSuite(opts);
 
@@ -17,7 +17,7 @@ export function setup(opts: minimist.ParsedArgs) {
 			const app = this.app as Application;
 			await app.workbench.sqlNotebook.view.focusNotebooksView();
 			await app.workbench.sqlNotebook.view.pinNotebook();
-			await app.workbench.sqlNotebook.view.waitForPinnedNotebookView();
+			await app.workbench.sqlNotebook.view.waitForPinnedNotebookTreeView();
 		});
 
 		it('Unpin Notebook', async function () {
