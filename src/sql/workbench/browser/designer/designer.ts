@@ -639,7 +639,7 @@ export class Designer extends Disposable implements IThemable {
 					autoEdit: true,
 					dataItemColumnValueExtractor: (data: any, column: Slick.Column<Slick.SlickData>): string => {
 						if (column.field) {
-							return data[column.field].value;
+							return data[column.field]?.value;
 						} else {
 							return undefined;
 						}
