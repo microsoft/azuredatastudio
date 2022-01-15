@@ -380,7 +380,8 @@ export class NotebookView {
 	 */
 	async pinNotebook(): Promise<void> {
 		const notebookIds = await this.getNotebookTreeItemIds();
-		await this.code.waitAndDoubleClick(`${NotebookView.notebookTreeItem}[id="${notebookIds[0]}"]`);
+		// Pinning SQL notebook to prevent the Configure Python Wizard from showing, since Python is no longer set up when the NotebookView test suite starts
+		await this.code.waitAndDoubleClick(`${NotebookView.notebookTreeItem}[id="${notebookIds[1]}"]`);
 		await this.code.waitAndClick(`${NotebookView.notebookTreeItem}${NotebookView.selectedItem} .codicon-pinned`);
 	}
 
