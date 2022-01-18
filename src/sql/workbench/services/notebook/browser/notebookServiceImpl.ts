@@ -692,7 +692,9 @@ export class NotebookService extends Disposable implements INotebookService {
 		let promises: Promise<ISerializationProvider | undefined>[] = [
 			providerDescriptor.instanceReady,
 			new Promise<ISerializationProvider | undefined>((resolve, reject) => setTimeout(() => {
-				onUnexpectedError(localize('serializationProviderTimeout', 'Waiting for Serialization Provider availability timed out for notebook provider \'{0}\'', providerDescriptor.providerId));
+				if (!providerDescriptor.instance) {
+					onUnexpectedError(localize('serializationProviderTimeout', 'Waiting for Serialization Provider availability timed out for notebook provider \'{0}\'', providerDescriptor.providerId));
+				}
 				resolve(undefined);
 			}, timeout))
 		];
@@ -705,7 +707,9 @@ export class NotebookService extends Disposable implements INotebookService {
 		let promises: Promise<IExecuteProvider | undefined>[] = [
 			providerDescriptor.instanceReady,
 			new Promise<IExecuteProvider | undefined>((resolve, reject) => setTimeout(() => {
-				onUnexpectedError(localize('executeProviderTimeout', 'Waiting for Execute Provider availability timed out for notebook provider \'{0}\'', providerDescriptor.providerId));
+				if (!providerDescriptor.instance) {
+					onUnexpectedError(localize('executeProviderTimeout', 'Waiting for Execute Provider availability timed out for notebook provider \'{0}\'', providerDescriptor.providerId));
+				}
 				resolve(undefined);
 			}, timeout))
 		];
@@ -718,7 +722,9 @@ export class NotebookService extends Disposable implements INotebookService {
 		let promises: Promise<nb.IStandardKernel[] | undefined>[] = [
 			kernelsDescriptor.instanceReady,
 			new Promise<nb.IStandardKernel[] | undefined>((resolve, reject) => setTimeout(() => {
-				onUnexpectedError(localize('standardKernelsTimeout', 'Waiting for Standard Kernels availability timed out for notebook provider \'{0}\'', kernelsDescriptor.providerId));
+				if (!kernelsDescriptor.instance) {
+					onUnexpectedError(localize('standardKernelsTimeout', 'Waiting for Standard Kernels availability timed out for notebook provider \'{0}\'', kernelsDescriptor.providerId));
+				}
 				resolve(undefined);
 			}, timeout))
 		];
