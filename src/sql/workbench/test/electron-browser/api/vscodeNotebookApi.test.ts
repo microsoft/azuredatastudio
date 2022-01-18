@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { convertToVSCodeCellOutput, VSCodeContentManager, convertToADSCellOutput } from 'sql/workbench/api/common/vscodeSerializationProvider';
+import { VSCodeContentManager } from 'sql/workbench/api/common/notebooks/vscodeSerializationProvider';
 import type * as vscode from 'vscode';
 import type * as azdata from 'azdata';
 import * as sinon from 'sinon';
@@ -12,10 +12,10 @@ import { VSBuffer } from 'vs/base/common/buffer';
 import * as assert from 'assert';
 import { OutputTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
-import { convertToVSCodeNotebookCell } from 'sql/workbench/api/common/vscodeExecuteProvider';
-import { VSCodeNotebookDocument } from 'sql/workbench/api/common/vscodeNotebookDocument';
+import { convertToVSCodeNotebookCell, convertToVSCodeCellOutput, convertToADSCellOutput } from 'sql/workbench/api/common/notebooks/notebookUtils';
+import { VSCodeNotebookDocument } from 'sql/workbench/api/common/notebooks/vscodeNotebookDocument';
 import { URI } from 'vs/base/common/uri';
-import { VSCodeNotebookEditor } from 'sql/workbench/api/common/vscodeNotebookEditor';
+import { VSCodeNotebookEditor } from 'sql/workbench/api/common/notebooks/vscodeNotebookEditor';
 
 class MockNotebookSerializer implements vscode.NotebookSerializer {
 	deserializeNotebook(content: Uint8Array, token: vscode.CancellationToken): vscode.NotebookData | Thenable<vscode.NotebookData> {

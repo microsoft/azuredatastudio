@@ -455,7 +455,7 @@
 			"config.smartCommitChanges.tracked": "추적된 변경 사항만 자동으로 스테이징했습니다.",
 			"config.suggestSmartCommit": "스마트 커밋을 사용하도록 제안합니다(스테이징된 변경 사항이 없는 경우 모든 변경 사항 커밋).",
 			"config.supportCancellation": "동기화 작업을 실행할 때 사용자가 작업을 취소할 수 있도록 알림이 표시되는지 여부를 제어합니다.",
-			"config.terminalAuthentication": "통합 터미널에서 생성된 git 프로세스의 인증 처리기로 VS Code를 사용할지 여부를 제어합니다. 참고: 이 설정의 변경 내용을 적용하려면 터미널을 다시 시작해야 합니다.",
+			"config.terminalAuthentication": "통합 터미널에서 생성된 git 프로세스의 인증 처리기로 Azure Data Studio를 사용할지 여부를 제어합니다. 참고: 이 설정의 변경 내용을 적용하려면 터미널을 다시 시작해야 합니다.",
 			"config.timeline.date": "타임라인 보기에서 항목에 사용할 날짜를 제어합니다.",
 			"config.timeline.date.authored": "작성 날짜 사용",
 			"config.timeline.date.committed": "커밋된 날짜 사용",
@@ -479,13 +479,13 @@
 			"submenu.stash": "스태시",
 			"submenu.tags": "태그",
 			"view.workbench.cloneRepository": "리포지토리를 로컬에서 복제할 수 있습니다.\r\n[리포지토리 복제](command:git.clone 'Git 확장이 활성화되면 리포지토리 복제')",
-			"view.workbench.learnMore": "VS Code에서 Git 및 소스 제어를 사용하는 방법에 대해 자세히 알아보려면 [Microsoft Docs](https://aka.ms/vscode-scm)를 참조하세요.",
-			"view.workbench.scm.disabled": "git 기능을 사용하려면 [설정]에서 git을 사용하도록 설정하세요(command:workbench.action.openSettings?%5B%22git.enabled%22%5D).\r\nVS Code에서 Git 및 소스 제어를 사용하는 방법에 대해 자세히 알아보려면 [Microsoft Docs](https://aka.ms/vscode-scm)를 참조하세요.",
-			"view.workbench.scm.empty": "Git 기능을 사용하려면 Git 리포지토리가 포함된 폴더를 열거나 URL에서 복제할 수 있습니다.\r\n[폴더 열기](command:vscode.openFolder)\r\n[리포지토리 복제](command:git.clone)\r\nVS Code에서 Git 및 소스 제어를 사용하는 방법에 대해 자세히 알아보려면 [관련 문서를 참조](https://aka.ms/vscode-scm)하세요.",
-			"view.workbench.scm.emptyWorkspace": "현재 열려 있는 작업 영역에 Git 리포지토리를 포함하는 폴더가 없습니다.\r\n[작업 영역에 폴더 추가](command:workbench.action.addRootFolder)\r\nVS Code에서 Git 및 소스 제어를 사용하는 방법에 대해 자세히 알아보려면 [관련 문서를 참조](https://aka.ms/vscode-scm)하세요.",
-			"view.workbench.scm.folder": "현재 열린 폴더에 Git 리포지토리가 없습니다. Git에서 제공하는 소스 제어 기능을 사용하도록 설정할 리포지토리를 초기화할 수 있습니다.\r\n[리포지토리 초기화](command:git.init?%5Btrue%5D)\r\nVS Code에서 Git 및 소스 제어를 사용하는 방법에 대해 자세히 알아보려면 [Microsoft Docs](https://aka.ms/vscode-scm)를 읽어보세요.",
-			"view.workbench.scm.missing": "유효한 git 설치가 검색되지 않았습니다. [git 출력](command:git.showOutput)에서 자세한 내용을 확인할 수 있습니다.\r\n[git을 설치하거나](https://git-scm.com/) [Microsoft Docs](https://aka.ms/vscode-scm)에서 VS Code에서 Git 및 소스 제어를 사용하는 방법에 대해 자세히 알아보세요.\r\n다른 버전의 제어 시스템을 사용하는 경우 추가 확장에 대해 [Marketplace를 검색](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22)할 수 있습니다.",
-			"view.workbench.scm.workspace": "현재 열린 작업 영역에 Git 리포지토리가 포함된 폴더가 없습니다. Git에서 제공하는 소스 제어 기능을 사용하도록 설정할 폴더의 리포지토리를 초기화할 수 있습니다.\r\n[리포지토리 초기화](command:git.init)\r\nVS Code에서 Git 및 소스 제어를 사용하는 방법에 대해 자세히 알아보려면 [Microsoft Docs](https://aka.ms/vscode-scm)를 읽어보세요."
+			"view.workbench.learnMore": "Azure Data Studio에서 Git 및 소스 제어를 사용하는 방법에 대해 자세히 알아보려면 [Microsoft Docs](https://aka.ms/vscode-scm)를 참조하세요.",
+			"view.workbench.scm.disabled": "git 기능을 사용하려면 [설정]에서 git을 사용하도록 설정하세요(command:workbench.action.openSettings?%5B%22git.enabled%22%5D).\r\nAzure Data Studio에서 Git 및 소스 제어를 사용하는 방법에 대해 자세히 알아보려면 [Microsoft Docs](https://aka.ms/vscode-scm)를 참조하세요.",
+			"view.workbench.scm.empty": "Git 기능을 사용하려면 Git 리포지토리가 포함된 폴더를 열거나 URL에서 복제할 수 있습니다.\r\n[폴더 열기](command:vscode.openFolder)\r\n[리포지토리 복제](command:git.clone)\r\nAzure Data Studio에서 Git 및 소스 제어를 사용하는 방법에 대해 자세히 알아보려면 [관련 문서를 참조](https://aka.ms/vscode-scm)하세요.",
+			"view.workbench.scm.emptyWorkspace": "현재 열려 있는 작업 영역에 Git 리포지토리를 포함하는 폴더가 없습니다.\r\n[작업 영역에 폴더 추가](command:workbench.action.addRootFolder)\r\nAzure Data Studio에서 Git 및 소스 제어를 사용하는 방법에 대해 자세히 알아보려면 [관련 문서를 참조](https://aka.ms/vscode-scm)하세요.",
+			"view.workbench.scm.folder": "현재 열린 폴더에 Git 리포지토리가 없습니다. Git에서 제공하는 소스 제어 기능을 사용하도록 설정할 리포지토리를 초기화할 수 있습니다.\r\n[리포지토리 초기화](command:git.init?%5Btrue%5D)\r\nAzure Data Studio에서 Git 및 소스 제어를 사용하는 방법에 대해 자세히 알아보려면 [Microsoft Docs](https://aka.ms/vscode-scm)를 읽어보세요.",
+			"view.workbench.scm.missing": "유효한 git 설치가 검색되지 않았습니다. [git 출력](command:git.showOutput)에서 자세한 내용을 확인할 수 있습니다.\r\n[git을 설치하거나](https://git-scm.com/) [Microsoft Docs](https://aka.ms/vscode-scm)에서 Azure Data Studio에서 Git 및 소스 제어를 사용하는 방법에 대해 자세히 알아보세요.\r\n다른 버전의 제어 시스템을 사용하는 경우 추가 확장에 대해 [Marketplace를 검색](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22)할 수 있습니다.",
+			"view.workbench.scm.workspace": "현재 열린 작업 영역에 Git 리포지토리가 포함된 폴더가 없습니다. Git에서 제공하는 소스 제어 기능을 사용하도록 설정할 폴더의 리포지토리를 초기화할 수 있습니다.\r\n[리포지토리 초기화](command:git.init)\r\nAzure Data Studio에서 Git 및 소스 제어를 사용하는 방법에 대해 자세히 알아보려면 [Microsoft Docs](https://aka.ms/vscode-scm)를 읽어보세요."
 		}
 	}
 }
