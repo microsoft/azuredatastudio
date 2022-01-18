@@ -75,8 +75,8 @@ export const ASSESSMENT_FAILED = (serverName: string): string => {
 export function ASSESSMENT_TILE(serverName: string): string {
 	return localize('sql.migration.assessment', "Assessment results for '{0}'", serverName);
 }
-export function CAN_BE_MIGRATED(eligibleDbs: number, totalDbs: number): string {
-	return localize('sql.migration.can.be.migrated', "{0} out of {1} databases can be migrated", eligibleDbs, totalDbs);
+export function CAN_BE_MIGRATED(eligibleDbs: number, totalDbs: number, recommendedSku: string): string {
+	return localize('sql.migration.can.be.migrated', "{0} out of {1} databases can be migrated. {2}", eligibleDbs, totalDbs, recommendedSku);		// TO-DO: revert
 }
 export const ASSESSMENT_MIGRATION_WARNING = localize('sql.migration.assessment.migration.warning', "Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines.");
 export const DATABASES_TABLE_TILE = localize('sql.migration.databases.table.title', "Databases");

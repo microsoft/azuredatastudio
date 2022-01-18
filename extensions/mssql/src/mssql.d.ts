@@ -616,6 +616,74 @@ export interface AssessmentResult {
 	errors: ErrorModel[];
 }
 
+export interface AzureSqlSkuCategory
+{
+	sqlTargetPlatform: number;
+	computeTier: number;
+	sqlPurchasingModel: number;
+	sqlServiceTier: number;
+	hardwareType: number;
+}
+
+export interface AzureManagedDiskSku
+{
+	tier: string;
+	size: string;
+	caching: string;
+}
+
+export interface AzureVirtualMachineSku
+{
+	virtualMachineFamily: string;
+	sizeName: string;
+	computeSize: number;
+	azureSkuName: string;
+	vCPUsAvailable: number;
+}
+
+export interface AzureSqlSku
+{
+	// AzureSqlSku
+	category: AzureSqlSkuCategory;
+	computeSize: number;
+	predictedDataSizeInMb: number;
+	predictedLogSizeInMb: number;
+
+	// AzureSqlPaaSSku (a PaaS-specific AzureSqlSku)
+	storageMaxSizeInMb: number;
+
+	// AzureSqlIaaSSku (an IaaS-specific AzureSqlSku)
+	virtualMachineSize: AzureVirtualMachineSku;
+    dataDiskSizes: AzureManagedDiskSku[];
+    logDiskSizes: AzureManagedDiskSku[];
+    tempDbDiskSizes: AzureManagedDiskSku[];
+}
+
+export interface AzureSqlSkuMonthlyCost
+{
+	computeCost: number;
+	storageCost: number;
+	totalCost: number;
+}
+
+export interface SkuRecommendationResultItem
+{
+	sqlInstanceName: string;
+	databaseName: string;
+	targetSku: AzureSqlSku;
+	monthlyCost: AzureSqlSkuMonthlyCost;
+	ranking: number;
+	positiveJustifications: string[];
+	negativeJustifications: string[];
+}
+
+export interface SkuRecommendationResult {
+	sqlDbRecommendationResults: SkuRecommendationResultItem[];
+	sqlMiRecommendationResults: SkuRecommendationResultItem[];
+	sqlVmRecommendationResults: SkuRecommendationResultItem[];
+}
+
 export interface ISqlMigrationService {
 	getAssessments(ownerUri: string, databases: string[]): Promise<AssessmentResult | undefined>;
+	getSkuRecommendations(dataFolder: string, perfQueryIntervalInSec: number, targetPlatforms: string[], targetSqlInstance: string, targetPercentile: number, scalingFactor: number, startTime: string, endTime: string, databaseAllowList: string[]): Promise<SkuRecommendationResult | undefined>;
 }

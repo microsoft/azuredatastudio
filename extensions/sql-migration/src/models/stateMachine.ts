@@ -176,11 +176,14 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	private _currentState: State;
 	private _gatheringInformationError: string | undefined;
 
-	private _skuRecommendations: SKURecommendations | undefined;
+	private _skuRecommendations: SKURecommendations | undefined;		// TO-DO: old, can this be removed?
 	public _assessmentResults!: ServerAssessment;
 	public _runAssessments: boolean = true;
 	private _assessmentApiResponse!: mssql.AssessmentResult;
 	public mementoString: string;
+
+	public _skuRecommendationResults!: SkuRecommendation;
+	private _skuRecommendationApiResponse!: mssql.SkuRecommendationResult;
 
 	public _vmDbs: string[] = [];
 	public _miDbs: string[] = [];
@@ -289,6 +292,69 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		// Generating all the telemetry asynchronously as we don't need to block the user for it.
 		this.generateAssessmentTelemetry().catch(e => console.error(e));
 		return this._assessmentResults;
+	}
+
+	public async getSkuRecommendations(
+		dataFolder: string,
+		perfQueryIntervalInSec: number,
+		targetPlatforms: MigrationTargetType[],
+		targetPercentile: number,
+		scalingFactor: number,
+		startTime: string,
+		endTime: string,
+		databaseAllowList: string[]): Promise<SkuRecommendation> {
+		try {
+			const serverInfo = await azdata.connection.getServerInfo(this.sourceConnectionId);
+			const machineName = (<any>serverInfo)['machineName'];		// get actual machine name instead of whatever the user entered as the server name (e.g. DESKTOP-xxx instead of localhost)
+
+			const response = (await this.migrationService.getSkuRecommendations(
+				dataFolder,
+				perfQueryIntervalInSec,
+				targetPlatforms.map(p => p.toString()),
+				machineName,
+				targetPercentile,
+				scalingFactor,
+				startTime,
+				endTime,
+				databaseAllowList))!;
+			this._skuRecommendationApiResponse = response;
+
+			if (response?.sqlDbRecommendationResults || response?.sqlMiRecommendationResults || response?.sqlVmRecommendationResults) {
+				this._skuRecommendationResults = {
+					recommendations: {
+						sqlDbRecommendationResults: response?.sqlDbRecommendationResults ?? [],
+						sqlMiRecommendationResults: response?.sqlMiRecommendationResults ?? [],
+						sqlVmRecommendationResults: response?.sqlVmRecommendationResults ?? []
+					},
+					// recommendationError:
+				};
+			} else {
+				this._skuRecommendationResults = {
+					recommendations: {
+						sqlDbRecommendationResults: [],
+						sqlMiRecommendationResults: [],
+						sqlVmRecommendationResults: []
+					},
+					// recommendationError:
+				};
+			}
+
+		} catch (error) {
+			console.log('error:');
+			console.log(error);
+
+			this._skuRecommendationResults = {
+				recommendations: {
+					sqlDbRecommendationResults: this._skuRecommendationApiResponse?.sqlDbRecommendationResults ?? [],
+					sqlMiRecommendationResults: this._skuRecommendationApiResponse?.sqlMiRecommendationResults ?? [],
+					sqlVmRecommendationResults: this._skuRecommendationApiResponse?.sqlVmRecommendationResults ?? []
+				},
+				recommendationError: error
+			};
+		}
+
+		// this.generateAssessmentTelemetry().catch(e => console.error(e));
+		return this._skuRecommendationResults;
 	}
 
 	private async generateAssessmentTelemetry(): Promise<void> {
@@ -1112,4 +1178,9 @@ export interface ServerAssessment {
 	}[];
 	errors?: mssql.ErrorModel[];
 	assessmentError?: Error;
+}
+
+export interface SkuRecommendation {
+	recommendations: mssql.SkuRecommendationResult;
+	recommendationError?: Error;
 }

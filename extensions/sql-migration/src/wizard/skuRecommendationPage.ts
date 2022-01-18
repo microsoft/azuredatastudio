@@ -546,6 +546,29 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				this.migrationStateModel._assessmentResults = <ServerAssessment>this.migrationStateModel.savedInfo.serverAssessment;
 			} else {
 				await this.migrationStateModel.getDatabaseAssessments(MigrationTargetType.SQLMI);
+
+				// placeholder get SKU recommendation entry point
+				// TO-DO: read these preferences from the UI
+				const dataFolder = 'C:\\Users\\ratruong\\AppData\\Local\\Microsoft\\SqlAssessment';	// specify, or leave blank to read from NuGet default %localappdata%\Microsoft\SqlAssessment location
+				const perfQueryIntervalInSec = 30;
+				const targetPlatforms = [MigrationTargetType.SQLDB, MigrationTargetType.SQLMI, MigrationTargetType.SQLVM];
+				const targetPercentile = 95;
+				const scalingFactor = 100;
+				const startTime = '1900-01-01 00:00:00';
+				const endTime = '2200-01-01 00:00:00';
+
+				await this.migrationStateModel.getSkuRecommendations(
+					dataFolder,
+					perfQueryIntervalInSec,
+					targetPlatforms,
+					targetPercentile,
+					scalingFactor,
+					startTime,
+					endTime,
+					this.migrationStateModel._databaseAssessment);
+
+				console.log('results - this.migrationStateModel._skuRecommendationResults:');
+				console.log(this.migrationStateModel._skuRecommendationResults);
 			}
 
 			const assessmentError = this.migrationStateModel._assessmentResults?.assessmentError;
@@ -555,6 +578,11 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			if (this.migrationStateModel?._assessmentResults?.errors?.length! > 0) {
 				errors.push(...this.migrationStateModel._assessmentResults?.errors?.map(
 					e => `message: ${e.message}${EOL}errorSummary: ${e.errorSummary}${EOL}possibleCauses: ${e.possibleCauses}${EOL}guidance: ${e.guidance}${EOL}errorId: ${e.errorId}`)!);
+			}
+
+			const skuRecommendationError = this.migrationStateModel._skuRecommendationResults?.recommendationError;
+			if (skuRecommendationError) {
+				errors.push(`message: ${skuRecommendationError.message}${EOL}stack: ${skuRecommendationError.stack}`);
 			}
 
 		} catch (e) {
@@ -792,8 +820,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		if (this.migrationStateModel._assessmentResults) {
 			const dbCount = this.migrationStateModel._assessmentResults?.databaseAssessments?.length;
 			const dbWithoutIssuesCount = this.migrationStateModel._assessmentResults?.databaseAssessments?.filter(db => db.issues?.length === 0).length;
-			this._rbg.cards[0].descriptions[1].textValue = constants.CAN_BE_MIGRATED(dbWithoutIssuesCount, dbCount);
-			this._rbg.cards[1].descriptions[1].textValue = constants.CAN_BE_MIGRATED(dbCount, dbCount);
+			this._rbg.cards[0].descriptions[1].textValue = constants.CAN_BE_MIGRATED(dbWithoutIssuesCount, dbCount, this.getSkuRecommendationText(this.migrationStateModel, 'PaaS')); 	// TO-DO: revert
+			this._rbg.cards[1].descriptions[1].textValue = constants.CAN_BE_MIGRATED(dbCount, dbCount, this.getSkuRecommendationText(this.migrationStateModel, 'IaaS'));				// TO-DO: revert
 
 			await this._rbg.updateProperties({ cards: this._rbg.cards });
 		} else {
@@ -845,6 +873,48 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 	private hasSavedInfo(): boolean {
 		return this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.SKURecommendation);
+	}
+
+	// TO-DO: this is a helper function to display SKU recommendation results in a card until we have a real UI
+	private getSkuRecommendationText(stateModel: MigrationStateModel, platform: string): string {
+		let text = '';
+
+		if (platform === 'PaaS') {
+			if (stateModel._skuRecommendationResults.recommendations.sqlDbRecommendationResults.length > 0) {
+				text += 'Recommended SQL DB SKUs: ';
+				stateModel._skuRecommendationResults.recommendations.sqlDbRecommendationResults.forEach(rec => {
+					text += rec.databaseName + ': ';
+					text += rec.targetSku.computeSize + ' vCore ';
+					text += rec.targetSku.category.computeTier === 0 ? 'General Purpose ' : 'Business Critical ';
+					text += rec.targetSku.storageMaxSizeInMb + ' GB';
+					text += ' / ';
+				});
+			}
+
+			if (stateModel._skuRecommendationResults.recommendations.sqlMiRecommendationResults.length > 0) {
+				text += 'Recommended SQL MI SKU: ';
+				let rec = stateModel._skuRecommendationResults.recommendations.sqlMiRecommendationResults[0];
+				text += rec.targetSku.computeSize + ' vCore ';
+				text += rec.targetSku.category.computeTier === 0 ? 'General Purpose ' : 'Business Critical ';
+				text += rec.targetSku.storageMaxSizeInMb + ' GB';
+			}
+		}
+		else if (platform === 'IaaS') {
+			if (stateModel._skuRecommendationResults.recommendations.sqlVmRecommendationResults.length > 0) {
+				text += 'Recommended SQL VM SKU: ';
+				let rec = stateModel._skuRecommendationResults.recommendations.sqlVmRecommendationResults[0];
+				text += rec.targetSku.virtualMachineSize.vCPUsAvailable + ' vCore ';
+				text += rec.targetSku.virtualMachineSize.sizeName;
+				text += ' / Data: ';
+				text += rec.targetSku.dataDiskSizes.length + 'x ' + rec.targetSku.dataDiskSizes[0].size;
+				text += ' / Log: ';
+				text += rec.targetSku.logDiskSizes.length + 'x ' + rec.targetSku.logDiskSizes[0].size;
+				text += ' / TempDB: ';
+				text += rec.targetSku.tempDbDiskSizes.length > 0 ? rec.targetSku.logDiskSizes.length + 'x ' + rec.targetSku.logDiskSizes[0].size : 'dedicated disk';
+			}
+		}
+
+		return text;
 	}
 }
 
