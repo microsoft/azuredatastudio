@@ -454,6 +454,12 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.connectionProfile" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Select a connection profile]]></Val>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.connectionRadioButtonLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Connections]]></Val>
@@ -1219,6 +1225,12 @@
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[必须提供用于提取的目标信息才能创建数据库项目。]]></Val>
           </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.failedToGetConnectionString" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[An error occurred generating the connection string for the selected connection]]></Val>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2311,6 +2323,18 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.selectConnectionError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Failed to set connection string app setting: {0}]]></Val>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.selectConnectionString" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Select SQL connection string method]]></Val>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.selectDacpac" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select .dacpac]]></Val>
@@ -2692,6 +2716,12 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.unableToSetConnectionString" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Failed to set connection string app setting]]></Val>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.unexpectedProjectContext" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Unable to establish project context.  Command invoked from unexpected location: {0}]]></Val>
@@ -2784,6 +2814,15 @@
           <Val><![CDATA[Updating {0} from {1}...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[正在从 {1} 更新 {0}...]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.userConnectionString" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Enter connection string]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[输入连接字符串]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
