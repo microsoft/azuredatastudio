@@ -105,7 +105,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 					loginComplete.reject(ex);
 					Logger.error(ex);
 				} else {
-					void vscode.window.showErrorMessage(ex.displayableErrorMessage);
+					void vscode.window.showErrorMessage(ex.message);
 					Logger.error(ex.originalMessageAndException);
 				}
 			}
@@ -140,7 +140,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			return await this.hydrateAccount(tokenResult, this.getTokenClaims(tokenResult.token));
 		} catch (ex) {
 			if (ex instanceof AzureAuthError) {
-				void vscode.window.showErrorMessage(ex.displayableErrorMessage);
+				void vscode.window.showErrorMessage(ex.message);
 				Logger.error(ex.originalMessageAndException);
 			} else {
 				Logger.error(ex);
