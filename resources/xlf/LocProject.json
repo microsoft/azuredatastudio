@@ -63,7 +63,7 @@
           "CopyOption": "LangIDOnPath",
           "OutputPath": "resources\\xlf"
         },
-    {
+		{
           "SourceFile": "resources\\xlf\\en\\git.xlf",
           "LclFile": "resources\\localization\\LCL\\{Lang}\\git.xlf.lcl",
           "CopyOption": "LangIDOnPath",
