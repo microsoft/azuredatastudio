@@ -21,7 +21,7 @@ import {
 } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { ExtHostNotebookDocumentData } from 'sql/workbench/api/common/extHostNotebookDocumentData';
 import { ExtHostNotebookEditor } from 'sql/workbench/api/common/extHostNotebookEditor';
-import { VSCodeNotebookDocument } from 'sql/workbench/api/common/vscodeNotebookDocument';
+import { VSCodeNotebookDocument } from 'sql/workbench/api/common/notebooks/vscodeNotebookDocument';
 
 type Adapter = azdata.nb.NavigationProvider;
 
@@ -266,5 +266,8 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 		});
 	}
 
+	createNotebookDocument(providerId: string, contents: azdata.nb.INotebookContents): Promise<azdata.nb.NotebookDocument> {
+		return this._proxy.$createNotebookDocument(providerId, contents);
+	}
 	//#endregion
 }

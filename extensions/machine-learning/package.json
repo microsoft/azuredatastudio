@@ -156,9 +156,6 @@
     "typemoq": "^2.1.0",
     "vscodetestcover": "^1.1.0"
   },
-  "resolutions": {
-    "json-schema": "0.4.0"
-  },
   "__metadata": {
     "id": "65",
     "publisherDisplayName": "Microsoft",
