@@ -3,19 +3,25 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as nls from 'vscode-nls';
+const localize = nls.loadMessageBundle();
+
 export class AzureAuthError extends Error {
-	private readonly _originalMessage: string;
-
-	constructor(localizedMessage: string, _originalMessage: string, private readonly originalException: any) {
+	constructor(localizedMessage: string, public readonly originalMessage: string, private readonly originalException: any) {
 		super(localizedMessage);
-
 	}
 
-	get originalMessage(): string {
-		return this._originalMessage;
+	/**
+	 * Localized message to display to the user describing this error.
+	 */
+	public get displayableErrorMessage(): string {
+		return localize('azureAuthError.fullErrorMessage', '{0} ({1})', this.message, this.originalMessage);
 	}
 
-	getPrintableString(): string {
+	/**
+	 * The original message and exception for displaying extra information
+	 */
+	public get originalMessageAndException(): string {
 		return JSON.stringify({
 			originalMessage: this.originalMessage,
 			originalException: this.originalException
