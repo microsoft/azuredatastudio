@@ -16,14 +16,17 @@ export function setup(opts: minimist.ParsedArgs) {
 		it('Pin a notebook', async function () {
 			const app = this.app as Application;
 			await app.workbench.sqlNotebook.view.focusNotebooksView();
-			await app.workbench.sqlNotebook.view.pinNotebook();
+			const notebookIds = await app.workbench.sqlNotebook.view.getNotebookTreeItemIds();
+			// Pinning SQL notebook to prevent the Configure Python Wizard from showing, since Python is no longer set up when the NotebookTreeView test suite starts
+			await app.workbench.sqlNotebook.view.pinNotebook(notebookIds[1]);
 			await app.workbench.sqlNotebook.view.waitForPinnedNotebookTreeView();
 		});
 
 		it('Unpin Notebook', async function () {
 			const app = this.app as Application;
 			await app.workbench.sqlNotebook.view.focusPinnedNotebooksView();
-			await app.workbench.sqlNotebook.view.unpinNotebook();
+			const notebookIds = await app.workbench.sqlNotebook.view.getNotebookTreeItemIds();
+			await app.workbench.sqlNotebook.view.unpinNotebook(notebookIds[0]);
 		});
 
 		it('No search results if search query is empty', async function () {
