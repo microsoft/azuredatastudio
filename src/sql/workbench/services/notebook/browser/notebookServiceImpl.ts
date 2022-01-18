@@ -661,6 +661,7 @@ export class NotebookService extends Disposable implements INotebookService {
 					instance = await this.waitOnExecuteProviderAvailability(providerDescriptor, timeout);
 				}
 
+				// Even if we have an execute provider, we still need standard kernels to be able to use it
 				if (instance && !kernelDescriptor.instance) {
 					let kernels = await this.waitOnStandardKernelsAvailability(kernelDescriptor, timeout);
 					if (!kernels) {
