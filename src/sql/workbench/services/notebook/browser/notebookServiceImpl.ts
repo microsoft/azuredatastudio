@@ -353,8 +353,10 @@ export class NotebookService extends Disposable implements INotebookService {
 			this.addStandardKernels(registration);
 		} else {
 			// Standard kernels might get registered later for VSCode notebooks, so add a descriptor to wait on
-			let descriptor = new StandardKernelsDescriptor(p.id);
-			this._providerToStandardKernels.set(p.id.toUpperCase(), descriptor);
+			if (!this._providerToStandardKernels.has(p.id)) {
+				let descriptor = new StandardKernelsDescriptor(p.id);
+				this._providerToStandardKernels.set(p.id.toUpperCase(), descriptor);
+			}
 		}
 
 		// Emit activation event if the provider is not one of the default options
@@ -460,10 +462,15 @@ export class NotebookService extends Disposable implements INotebookService {
 
 	public async getStandardKernelsForProvider(provider: string): Promise<nb.IStandardKernel[] | undefined> {
 		let descriptor = this._providerToStandardKernels.get(provider.toUpperCase());
+		let kernels: nb.IStandardKernel[] = undefined;
 		if (descriptor) {
-			return this.waitOnStandardKernelsAvailability(descriptor);
+			if (descriptor.instance) {
+				kernels = descriptor.instance;
+			} else {
+				kernels = await this.waitOnStandardKernelsAvailability(descriptor);
+			}
 		}
-		return undefined;
+		return kernels;
 	}
 
 	private shutdown(): void {
@@ -647,8 +654,14 @@ export class NotebookService extends Disposable implements INotebookService {
 				} catch (error) {
 					this._logService.error(error);
 				}
-				instance = await this.waitOnExecuteProviderAvailability(providerDescriptor, timeout);
-				if (instance) {
+
+				if (providerDescriptor.instance) {
+					instance = providerDescriptor.instance;
+				} else {
+					instance = await this.waitOnExecuteProviderAvailability(providerDescriptor, timeout);
+				}
+
+				if (instance && !kernelDescriptor.instance) {
 					let kernels = await this.waitOnStandardKernelsAvailability(kernelDescriptor, timeout);
 					if (!kernels) {
 						instance = undefined;
