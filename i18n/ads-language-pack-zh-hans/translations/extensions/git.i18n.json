@@ -455,7 +455,7 @@
 			"config.smartCommitChanges.tracked": "仅自动暂存跟踪的更改。",
 			"config.suggestSmartCommit": "建议启用智能提交(在无暂存更改时提交所有更改)。",
 			"config.supportCancellation": "控制在运行同步操作时是否出现通知，允许用户取消操作。",
-			"config.terminalAuthentication": "控制是否使 VS Code 成为集成终端中产生的 git 进程的身份验证处理程序。请注意: 需要重启终端才能选择此设置中的更改。",
+			"config.terminalAuthentication": "控制是否使 Azure Data Studio 成为集成终端中产生的 git 进程的身份验证处理程序。请注意: 需要重启终端才能选择此设置中的更改。",
 			"config.timeline.date": "控制在日程表视图中项目使用的日期。",
 			"config.timeline.date.authored": "使用创作日期",
 			"config.timeline.date.committed": "使用提交日期",
@@ -479,13 +479,13 @@
 			"submenu.stash": "存储",
 			"submenu.tags": "标记",
 			"view.workbench.cloneRepository": "可以在本地克隆存储库。\r\n[克隆存储库](command:git.clone '启用 git 扩展后立即克隆存储库')",
-			"view.workbench.learnMore": "要详细了解如何在 VS Code 中使用 Git 和源代码管理，[请阅读我们的文档](https://aka.ms/vscode-scm)。",
-			"view.workbench.scm.disabled": "如果要使用 git 功能，请在[设置](command:workbench.action.openSettings?%5B%22git.enabled%22%5D)中启用 git。\r\n要了解有关如何在 VS Code 中使用 Git 和源代码管理的更多信息，[请阅读我们的文档](https://aka.ms/vscode-scm)。",
-			"view.workbench.scm.empty": "为了使用 git 功能，可打开包含 git 存储库的文件夹或从 URL 克隆。\r\n[打开文件夹](command:vscode.openFolder)\r\n[克隆存储库](command:git.clone)\r\n要详细了解如何在 VS Code 中使用 Git 和源代码管理，[请阅读我们的文档](https://aka.ms/vscode-scm)。",
-			"view.workbench.scm.emptyWorkspace": "当前打开的工作区没有任何包含 git 存储库的文件夹。\r\n[将文件夹添加到工作区](command:workbench.action.addRootFolder)\r\n要详细了解如何在 VS Code 中使用 Git 和源代码管理，[请阅读我们的文档](https://aka.ms/vscode-scm)。",
-			"view.workbench.scm.folder": "当前打开的文件夹中没有 Git 存储库。可初始化一个存储库，它将实现 Git 提供支持的源代码管理功能。\r\n[初始化存储库](command:git.init?%5Btrue%5D)\r\n要详细了解如何在 VS Code 中使用 Git 和源代码管理，[请阅读我们的文档](https://aka.ms/vscode-scm)。",
-			"view.workbench.scm.missing": "未检测到有效的 git 安装，可在 [git 输出](command:git.showOutput)中找到更多详细信息。\r\n请[安装 git](https://git-scm.com/)，或在[我们的文档](https://aka.ms/vscode-scm)中详细了解如何在 VS Code中使用 Git 和源代码管理。\r\n如果您使用的是其他版本的控制系统，则可[搜索市场](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22)以获取其他扩展。",
-			"view.workbench.scm.workspace": "当前打开的工作区中没有任何包含 Git 存储库的文件夹。可初始化某文件夹上的一个存储库，该存储库将实现 Git 提供支持的源代码管理功能。\r\n[初始化存储库](command:git.init)\r\n要详细了解如何在 VS Code 中使用 Git 和源代码管理，[请阅读我们的文档](https://aka.ms/vscode-scm)。"
+			"view.workbench.learnMore": "要详细了解如何在 Azure Data Studio 中使用 Git 和源代码管理，[请阅读我们的文档](https://aka.ms/vscode-scm)。",
+			"view.workbench.scm.disabled": "如果要使用 git 功能，请在[设置](command:workbench.action.openSettings?%5B%22git.enabled%22%5D)中启用 git。\r\n要了解有关如何在 Azure Data Studio 中使用 Git 和源代码管理的更多信息，[请阅读我们的文档](https://aka.ms/vscode-scm)。",
+			"view.workbench.scm.empty": "为了使用 git 功能，可打开包含 git 存储库的文件夹或从 URL 克隆。\r\n[打开文件夹](command:vscode.openFolder)\r\n[克隆存储库](command:git.clone)\r\n要详细了解如何在 Azure Data Studio 中使用 Git 和源代码管理，[请阅读我们的文档](https://aka.ms/vscode-scm)。",
+			"view.workbench.scm.emptyWorkspace": "当前打开的工作区没有任何包含 git 存储库的文件夹。\r\n[将文件夹添加到工作区](command:workbench.action.addRootFolder)\r\n要详细了解如何在 Azure Data Studio 中使用 Git 和源代码管理，[请阅读我们的文档](https://aka.ms/vscode-scm)。",
+			"view.workbench.scm.folder": "当前打开的文件夹中没有 Git 存储库。可初始化一个存储库，它将实现 Git 提供支持的源代码管理功能。\r\n[初始化存储库](command:git.init?%5Btrue%5D)\r\n要详细了解如何在 Azure Data Studio 中使用 Git 和源代码管理，[请阅读我们的文档](https://aka.ms/vscode-scm)。",
+			"view.workbench.scm.missing": "未检测到有效的 git 安装，可在 [git 输出](command:git.showOutput)中找到更多详细信息。\r\n请[安装 git](https://git-scm.com/)，或在[我们的文档](https://aka.ms/vscode-scm)中详细了解如何在 Azure Data Studio中使用 Git 和源代码管理。\r\n如果您使用的是其他版本的控制系统，则可[搜索市场](command:workbench.extensions.search?%22%40category%3A%5C%22scm%20providers%5C%22%22)以获取其他扩展。",
+			"view.workbench.scm.workspace": "当前打开的工作区中没有任何包含 Git 存储库的文件夹。可初始化某文件夹上的一个存储库，该存储库将实现 Git 提供支持的源代码管理功能。\r\n[初始化存储库](command:git.init)\r\n要详细了解如何在 Azure Data Studio 中使用 Git 和源代码管理，[请阅读我们的文档](https://aka.ms/vscode-scm)。"
 		}
 	}
 }

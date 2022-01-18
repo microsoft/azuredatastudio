@@ -13,10 +13,10 @@ import { URI, UriComponents } from 'vs/base/common/uri';
 
 import { ExtHostNotebookShape, MainThreadNotebookShape, SqlMainContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IExecuteManagerDetails, INotebookSessionDetails, INotebookKernelDetails, INotebookFutureDetails, FutureMessageType, ISerializationManagerDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { VSCodeSerializationProvider } from 'sql/workbench/api/common/vscodeSerializationProvider';
+import { VSCodeSerializationProvider } from 'sql/workbench/api/common/notebooks/vscodeSerializationProvider';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
-import { ADSNotebookController } from 'sql/workbench/api/common/adsNotebookController';
-import { VSCodeExecuteProvider } from 'sql/workbench/api/common/vscodeExecuteProvider';
+import { ADSNotebookController } from 'sql/workbench/api/common/notebooks/adsNotebookController';
+import { VSCodeExecuteProvider } from 'sql/workbench/api/common/notebooks/vscodeExecuteProvider';
 import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/common/extHostNotebookDocumentsAndEditors';
 
 type Adapter = azdata.nb.NotebookSerializationProvider | azdata.nb.SerializationManager | azdata.nb.NotebookExecuteProvider | azdata.nb.ExecuteManager | azdata.nb.ISession | azdata.nb.IKernel | azdata.nb.IFuture;
