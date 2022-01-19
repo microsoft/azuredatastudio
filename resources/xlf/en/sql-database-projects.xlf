@@ -322,6 +322,12 @@
     <trans-unit id="emptyProjectTypeDisplayName">
       <source xml:lang="en">SQL Database</source>
     </trans-unit>
+    <trans-unit id="emptySdkProjectTypeDescription">
+      <source xml:lang="en">Develop and publish schemas for SQL databases with Microsoft.Build.Sql (preview), starting from an empty SDK-style project.</source>
+    </trans-unit>
+    <trans-unit id="emptySdkProjectTypeDisplayName">
+      <source xml:lang="en">SQL Database (SDK)</source>
+    </trans-unit>
     <trans-unit id="enterConnStringTemplateDescription">
       <source xml:lang="en">Enter a template for SQL connection string</source>
     </trans-unit>
@@ -485,6 +491,9 @@
     </trans-unit>
     <trans-unit id="jsonParseError">
       <source xml:lang="en">{0} near line "{1}", column "{2}"</source>
+    </trans-unit>
+    <trans-unit id="learnMore">
+      <source xml:lang="en">Learn More</source>
     </trans-unit>
     <trans-unit id="loadProfilePlaceholderText">
       <source xml:lang="en">Load profile...</source>
