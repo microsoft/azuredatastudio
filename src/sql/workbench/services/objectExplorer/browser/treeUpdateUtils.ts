@@ -128,7 +128,7 @@ export class TreeUpdateUtils {
 				const originalInput = tree.getInput();
 				if (treeInput !== originalInput) {
 					return tree.setInput(treeInput).then(async () => {
-						if (isDisposable(originalInput)) {
+						if (originalInput && isDisposable(originalInput)) {
 							originalInput.dispose();
 						}
 						// Make sure to expand all folders that where expanded in the previous session

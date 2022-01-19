@@ -8,24 +8,6 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"dist/codelensProvider": {
-			"acceptBothChanges": "Принять оба изменения",
-			"acceptCurrentChange": "Принять текущее изменение",
-			"acceptIncomingChange": "Принять входящее изменение",
-			"compareChanges": "Сравнить изменения"
-		},
-		"dist/commandHandler": {
-			"compareChangesTitle": "{0}: текущие изменения ⟷ входящие изменения",
-			"cursorNotInConflict": "Курсор не находится на конфликте объединения",
-			"cursorOnCommonAncestorsRange": "Курсор редактора находится в блоке общих предков. Переместите его в блок \"Текущее\" или \"Входящее\"",
-			"cursorOnSplitterRange": "Курсор редактора находится на разделителе блока объединения конфликтов. Переместите его в блок \"Текущее\" или \"Входящее\"",
-			"noConflicts": "Конфликтов объединения в этом файле не обнаружено",
-			"noOtherConflictsInThisFile": "Других конфликтов объединения в этом файле не обнаружено"
-		},
-		"dist/mergeDecorator": {
-			"currentChange": "(текущее изменение)",
-			"incomingChange": "(входящее изменение)"
-		},
 		"package": {
 			"command.accept.all-both": "Принять все входящие и текущие",
 			"command.accept.all-current": "Принять все текущие",

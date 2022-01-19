@@ -1,3 +1,8 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import * as assert from 'assert';
 
 import { TestFileDialogService, TestLayoutService, TestPathService } from 'vs/workbench/test/browser/workbenchTestServices';

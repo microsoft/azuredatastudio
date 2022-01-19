@@ -1157,9 +1157,12 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	/**
-	 * Replaces connection info uri with new uri.
+	 * Replaces connection info uri with new uri. No-op if the URI does not currently have an associated connection.
 	 */
 	public changeConnectionUri(newUri: string, oldUri: string): void {
+		if (!this._connectionStatusManager.hasConnection(oldUri)) {
+			return;
+		}
 		this._connectionStatusManager.changeConnectionUri(newUri, oldUri);
 		if (!this._uriToProvider[oldUri]) {
 			this._logService.error(`No provider found for old URI : '${oldUri}'`);

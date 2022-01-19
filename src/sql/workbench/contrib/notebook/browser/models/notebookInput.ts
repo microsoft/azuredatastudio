@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IRevertOptions, GroupIdentifier, IEditorInput, EditorInputCapabilities } from 'vs/workbench/common/editor';
+import { IRevertOptions, GroupIdentifier, IEditorInput, EditorInputCapabilities, IUntypedEditorInput } from 'vs/workbench/common/editor';
 import { Emitter, Event } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import * as resources from 'vs/base/common/resources';
@@ -444,10 +444,10 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 			this._providerId = providerIds.filter(provider => provider !== DEFAULT_NOTEBOOK_PROVIDER)[0];
 			this._providers = providerIds;
 			this._standardKernels = [];
-			this._providers.forEach(provider => {
-				let standardKernels = getStandardKernelsForProvider(provider, this.notebookService);
+			for (let provider of this._providers) {
+				let standardKernels = await getStandardKernelsForProvider(provider, this.notebookService);
 				this._standardKernels.push(...standardKernels);
-			});
+			}
 			let serializationProvider = await this.notebookService.getOrCreateSerializationManager(this._providerId, this._resource);
 			this._contentLoader = this.instantiationService.createInstance(NotebookEditorContentLoader, this, serializationProvider.contentManager);
 		}
@@ -513,7 +513,7 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 		return this._model.updateModel();
 	}
 
-	public override matches(otherInput: any): boolean {
+	public override matches(otherInput: IEditorInput | IUntypedEditorInput): boolean {
 		if (otherInput instanceof NotebookInput) {
 			return this.textInput.matches(otherInput.textInput);
 		} else {

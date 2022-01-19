@@ -7,11 +7,12 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as os from 'os';
 import * as path from 'path';
+import * as sqldbproj from 'sqldbproj';
 import * as mssql from '../../mssql';
 import * as loc from './localizedConstants';
 import { SchemaCompareOptionsDialog } from './dialogs/schemaCompareOptionsDialog';
 import { TelemetryReporter, TelemetryViews } from './telemetry';
-import { getTelemetryErrorType, getEndpointName, verifyConnectionAndGetOwnerUri, getRootPath, getSchemaCompareEndpointString } from './utils';
+import { getTelemetryErrorType, getEndpointName, verifyConnectionAndGetOwnerUri, getRootPath, getSchemaCompareEndpointString, getDataWorkspaceExtensionApi } from './utils';
 import { SchemaCompareDialog } from './dialogs/schemaCompareDialog';
 import { isNullOrUndefined } from 'util';
 
@@ -87,6 +88,9 @@ export class SchemaCompareMainWindow {
 	// 3. dacpac
 	// 4. project
 	public async start(sourceContext: any, targetContext: mssql.SchemaCompareEndpointInfo = undefined, comparisonResult: mssql.SchemaCompareResult = undefined): Promise<void> {
+		let source: mssql.SchemaCompareEndpointInfo;
+		let target: mssql.SchemaCompareEndpointInfo;
+
 		const targetIsSetAsProject: boolean = targetContext && targetContext.endpointType === mssql.SchemaCompareEndpointType.Project;
 
 		// if schema compare was launched from a db or a connection profile, set that as the source
@@ -94,7 +98,7 @@ export class SchemaCompareMainWindow {
 
 		if (targetIsSetAsProject) {
 			profile = sourceContext;
-			this.targetEndpointInfo = targetContext;
+			target = targetContext;
 		} else {
 			profile = sourceContext ? <azdata.IConnectionProfile>sourceContext.connectionProfile : undefined;
 		}
@@ -115,7 +119,7 @@ export class SchemaCompareMainWindow {
 				usr = loc.defaultText;
 			}
 
-			this.sourceEndpointInfo = {
+			source = {
 				endpointType: mssql.SchemaCompareEndpointType.Database,
 				serverDisplayName: `${profile.serverName} (${usr})`,
 				serverName: profile.serverName,
@@ -130,7 +134,7 @@ export class SchemaCompareMainWindow {
 				folderStructure: ''
 			};
 		} else if (sourceDacpac) {
-			this.sourceEndpointInfo = {
+			source = {
 				endpointType: mssql.SchemaCompareEndpointType.Dacpac,
 				serverDisplayName: '',
 				serverName: '',
@@ -144,7 +148,7 @@ export class SchemaCompareMainWindow {
 				folderStructure: ''
 			};
 		} else if (sourceProject) {
-			this.sourceEndpointInfo = {
+			source = {
 				endpointType: mssql.SchemaCompareEndpointType.Project,
 				packageFilePath: '',
 				serverDisplayName: '',
@@ -159,14 +163,38 @@ export class SchemaCompareMainWindow {
 			};
 		}
 
+		await this.launch(source, target, false, comparisonResult);
+	}
+
+	/**
+	 * Primary functional entrypoint for opening the schema comparison window, and optionally running it.
+	 * @param source
+	 * @param target
+	 * @param runComparison whether to immediately run the schema comparison.  Requires both source and target to be specified.  Cannot be true when comparisonResult is set.
+	 * @param comparisonResult a pre-computed schema comparison result to display.  Cannot be set when runComparison is true.
+	 */
+	public async launch(source: mssql.SchemaCompareEndpointInfo | undefined, target: mssql.SchemaCompareEndpointInfo | undefined, runComparison: boolean = false, comparisonResult: mssql.SchemaCompareResult | undefined): Promise<void> {
+		if (runComparison && comparisonResult) {
+			throw new Error('Cannot both pass a comparison result and request a new comparison be run.');
+		}
+
+		this.sourceEndpointInfo = source;
+		this.targetEndpointInfo = target;
+
 		await this.GetDefaultDeploymentOptions();
 		await Promise.all([
 			this.registerContent(),
 			this.editor.openEditor()
 		]);
 
-		if (targetIsSetAsProject) {
+		if (comparisonResult) {
 			await this.execute(comparisonResult);
+		} else if (runComparison) {
+			if (!source || !target) {
+				throw new Error('source and target must both be set when runComparison is true.');
+			}
+
+			await this.startCompare();
 		}
 	}
 
@@ -321,6 +349,18 @@ export class SchemaCompareMainWindow {
 		this.deploymentOptions = deploymentOptions;
 	}
 
+	private async populateProjectScripts(endpointInfo: mssql.SchemaCompareEndpointInfo): Promise<void> {
+		if (endpointInfo.endpointType !== mssql.SchemaCompareEndpointType.Project) {
+			return;
+		}
+
+		const databaseProjectsExtension = vscode.extensions.getExtension(loc.sqlDatabaseProjectExtensionId);
+
+		if (databaseProjectsExtension) {
+			endpointInfo.targetScripts = await (await databaseProjectsExtension.activate() as sqldbproj.IExtension).getProjectScriptFiles(endpointInfo.projectFilePath);
+		}
+	}
+
 	public async execute(comparisonResult: mssql.SchemaCompareCompletionResult = undefined) {
 		const service = await this.getService();
 
@@ -335,6 +375,8 @@ export class SchemaCompareMainWindow {
 				// create once per page
 				this.operationId = generateGuid();
 			}
+
+			await Promise.all([this.populateProjectScripts(this.sourceEndpointInfo), this.populateProjectScripts(this.targetEndpointInfo)]);
 
 			this.comparisonResult = await service.schemaCompare(this.operationId, this.sourceEndpointInfo, this.targetEndpointInfo, azdata.TaskExecutionMode.execute, this.deploymentOptions);
 
@@ -831,7 +873,8 @@ export class SchemaCompareMainWindow {
 				TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareApplyStarted')
 					.withAdditionalProperties({
 						'startTime': Date.now().toString(),
-						'operationId': this.comparisonResult.operationId
+						'operationId': this.comparisonResult.operationId,
+						'targetType': getSchemaCompareEndpointString(this.targetEndpointInfo.endpointType)
 					}).send();
 
 				// disable apply and generate script buttons because the results are no longer valid after applying the changes
@@ -844,7 +887,12 @@ export class SchemaCompareMainWindow {
 					case mssql.SchemaCompareEndpointType.Database:
 						result = await service.schemaComparePublishDatabaseChanges(this.comparisonResult.operationId, this.targetEndpointInfo.serverName, this.targetEndpointInfo.databaseName, azdata.TaskExecutionMode.execute);
 						break;
-					case mssql.SchemaCompareEndpointType.Project: // Project apply needs sql-database-projects updates in (circular dependency; coming next) // TODO: re-add this and show project logic below
+					case mssql.SchemaCompareEndpointType.Project:
+						result = await vscode.commands.executeCommand(loc.sqlDatabaseProjectsPublishChanges, this.comparisonResult.operationId, this.targetEndpointInfo.projectFilePath, this.targetEndpointInfo.folderStructure);
+						if (!result.success) {
+							void vscode.window.showErrorMessage(loc.applyError);
+						}
+						break;
 					case mssql.SchemaCompareEndpointType.Dacpac: // Dacpac is an invalid publish target
 					default:
 						throw new Error(`Unsupported SchemaCompareEndpointType: ${getSchemaCompareEndpointString(this.targetEndpointInfo.endpointType)}`);
@@ -854,7 +902,8 @@ export class SchemaCompareMainWindow {
 
 					TelemetryReporter.createErrorEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareApplyFailed', undefined, getTelemetryErrorType(result?.errorMessage))
 						.withAdditionalProperties({
-							'operationId': this.comparisonResult.operationId
+							'operationId': this.comparisonResult.operationId,
+							'targetType': getSchemaCompareEndpointString(this.targetEndpointInfo.endpointType)
 						}).send();
 					vscode.window.showErrorMessage(loc.applyErrorMessage(result?.errorMessage));
 
@@ -868,8 +917,16 @@ export class SchemaCompareMainWindow {
 				TelemetryReporter.createActionEvent(TelemetryViews.SchemaCompareMainWindow, 'SchemaCompareApplyEnded')
 					.withAdditionalProperties({
 						'endTime': Date.now().toString(),
-						'operationId': this.comparisonResult.operationId
+						'operationId': this.comparisonResult.operationId,
+						'targetType': getSchemaCompareEndpointString(this.targetEndpointInfo.endpointType)
 					}).send();
+
+				if (this.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Project) {
+					const workspaceApi = getDataWorkspaceExtensionApi();
+					workspaceApi.showProjectsView();
+
+					void vscode.window.showInformationMessage(loc.applySuccess);
+				}
 			}
 		});
 	}

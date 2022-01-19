@@ -8,17 +8,24 @@ import { HoverAnchor, HoverAnchorType, HoverForeignElementAnchor, IEditorHover, 
 import { ICodeEditor, IEditorMouseEvent, MouseTargetType } from 'vs/editor/browser/editorBrowser';
 import { Range } from 'vs/editor/common/core/range';
 import { IModelDecoration } from 'vs/editor/common/model';
-import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
+import { DisposableStore, IDisposable } from 'vs/base/common/lifecycle';
 import { commitInlineSuggestionAction, GhostTextController, ShowNextInlineSuggestionAction, ShowPreviousInlineSuggestionAction } from 'vs/editor/contrib/inlineCompletions/ghostTextController';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IMenuService, MenuId, MenuItemAction } from 'vs/platform/actions/common/actions';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ITextContentData, IViewZoneData } from 'vs/editor/browser/controller/mouseTarget';
+import * as dom from 'vs/base/browser/dom';
+import { MarkdownRenderer } from 'vs/editor/browser/core/markdownRenderer';
+import { MarkdownString } from 'vs/base/common/htmlContent';
+import { IModeService } from 'vs/editor/common/services/modeService';
+import { IOpenerService } from 'vs/platform/opener/common/opener';
+import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 
 export class InlineCompletionsHover implements IHoverPart {
 	constructor(
 		public readonly owner: IEditorHoverParticipant<InlineCompletionsHover>,
-		public readonly range: Range
+		public readonly range: Range,
+		public readonly controller: GhostTextController
 	) { }
 
 	public isValidForHoverAnchor(anchor: HoverAnchor): boolean {
@@ -28,15 +35,22 @@ export class InlineCompletionsHover implements IHoverPart {
 			&& this.range.endColumn >= anchor.range.endColumn
 		);
 	}
+
+	public hasMultipleSuggestions(): Promise<boolean> {
+		return this.controller.hasMultipleInlineCompletions();
+	}
 }
 
 export class InlineCompletionsHoverParticipant implements IEditorHoverParticipant<InlineCompletionsHover> {
 	constructor(
 		private readonly _editor: ICodeEditor,
-		hover: IEditorHover,
+		private readonly _hover: IEditorHover,
 		@ICommandService private readonly _commandService: ICommandService,
 		@IMenuService private readonly _menuService: IMenuService,
 		@IContextKeyService private readonly _contextKeyService: IContextKeyService,
+		@IModeService private readonly _modeService: IModeService,
+		@IOpenerService private readonly _openerService: IOpenerService,
+		@IAccessibilityService private readonly accessibilityService: IAccessibilityService,
 	) { }
 
 	suggestHoverAnchor(mouseEvent: IEditorMouseEvent): HoverAnchor | null {
@@ -70,23 +84,30 @@ export class InlineCompletionsHoverParticipant implements IEditorHoverParticipan
 	computeSync(anchor: HoverAnchor, lineDecorations: IModelDecoration[]): InlineCompletionsHover[] {
 		const controller = GhostTextController.get(this._editor);
 		if (controller && controller.shouldShowHoverAt(anchor.range)) {
-			return [new InlineCompletionsHover(this, anchor.range)];
+			return [new InlineCompletionsHover(this, anchor.range, controller)];
 		}
 		return [];
 	}
 
 	renderHoverParts(hoverParts: InlineCompletionsHover[], fragment: DocumentFragment, statusBar: IEditorHoverStatusBar): IDisposable {
-		const menu = this._menuService.createMenu(
+		const disposableStore = new DisposableStore();
+		const part = hoverParts[0];
+
+		if (this.accessibilityService.isScreenReaderOptimized()) {
+			this.renderScreenReaderText(part, fragment, disposableStore);
+		}
+
+		const menu = disposableStore.add(this._menuService.createMenu(
 			MenuId.InlineCompletionsActions,
 			this._contextKeyService
-		);
+		));
 
-		statusBar.addAction({
+		const previousAction = statusBar.addAction({
 			label: nls.localize('showNextInlineSuggestion', "Next"),
 			commandId: ShowNextInlineSuggestionAction.ID,
 			run: () => this._commandService.executeCommand(ShowNextInlineSuggestionAction.ID)
 		});
-		statusBar.addAction({
+		const nextAction = statusBar.addAction({
 			label: nls.localize('showPreviousInlineSuggestion', "Previous"),
 			commandId: ShowPreviousInlineSuggestionAction.ID,
 			run: () => this._commandService.executeCommand(ShowPreviousInlineSuggestionAction.ID)
@@ -95,6 +116,16 @@ export class InlineCompletionsHoverParticipant implements IEditorHoverParticipan
 			label: nls.localize('acceptInlineSuggestion', "Accept"),
 			commandId: commitInlineSuggestionAction.id,
 			run: () => this._commandService.executeCommand(commitInlineSuggestionAction.id)
+		});
+
+		const actions = [previousAction, nextAction];
+		for (const action of actions) {
+			action.setEnabled(false);
+		}
+		part.hasMultipleSuggestions().then(hasMore => {
+			for (const action of actions) {
+				action.setEnabled(hasMore);
+			}
 		});
 
 		for (const [_, group] of menu.getActions()) {
@@ -109,6 +140,30 @@ export class InlineCompletionsHoverParticipant implements IEditorHoverParticipan
 			}
 		}
 
-		return Disposable.None;
+		return disposableStore;
+	}
+
+	private renderScreenReaderText(part: InlineCompletionsHover, fragment: DocumentFragment, disposableStore: DisposableStore) {
+		const $ = dom.$;
+		const markdownHoverElement = $('div.hover-row.markdown-hover');
+		const hoverContentsElement = dom.append(markdownHoverElement, $('div.hover-contents'));
+		const renderer = disposableStore.add(new MarkdownRenderer({ editor: this._editor }, this._modeService, this._openerService));
+		const render = (code: string) => {
+			disposableStore.add(renderer.onDidRenderAsync(() => {
+				hoverContentsElement.className = 'hover-contents code-hover-contents';
+				this._hover.onContentsChanged();
+			}));
+
+			const inlineSuggestionAvailable = nls.localize('inlineSuggestionFollows', "Suggestion:");
+			const renderedContents = disposableStore.add(renderer.render(new MarkdownString().appendText(inlineSuggestionAvailable).appendCodeblock('text', code)));
+			hoverContentsElement.replaceChildren(renderedContents.element);
+		};
+
+		const ghostText = part.controller.activeModel?.inlineCompletionsModel?.ghostText;
+		if (ghostText) {
+			const lineText = this._editor.getModel()!.getLineContent(ghostText.lineNumber);
+			render(ghostText.renderForScreenReader(lineText));
+		}
+		fragment.appendChild(markdownHoverElement);
 	}
 }

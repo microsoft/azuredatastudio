@@ -33,6 +33,8 @@ import { TestConfigurationService } from 'sql/platform/connection/test/common/te
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { NotebookViewModel } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewModel';
 import { isUndefinedOrNull } from 'vs/base/common/types';
+import { SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
+import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
 
 let initialNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -52,8 +54,8 @@ let initialNotebookContent: nb.INotebookContents = {
 			language: 'sql'
 		},
 	},
-	nbformat: 4,
-	nbformat_minor: 5
+	nbformat: NBFORMAT,
+	nbformat_minor: NBFORMAT_MINOR
 };
 
 let notebookContentWithoutMeta: nb.INotebookContents = {
@@ -67,8 +69,8 @@ let notebookContentWithoutMeta: nb.INotebookContents = {
 		execution_count: 1
 	}],
 	metadata: {},
-	nbformat: 4,
-	nbformat_minor: 5
+	nbformat: NBFORMAT,
+	nbformat_minor: NBFORMAT_MINOR
 };
 
 let defaultUri = URI.file('/some/path.ipynb');
@@ -240,6 +242,7 @@ suite('NotebookViewModel', function (): void {
 
 	function setupServices() {
 		mockSessionManager = TypeMoq.Mock.ofType(SessionManager);
+		executeManagers[0].providerId = SQL_NOTEBOOK_PROVIDER;
 		executeManagers[0].sessionManager = mockSessionManager.object;
 		notificationService = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService, TypeMoq.MockBehavior.Loose);
 		capabilitiesService = TypeMoq.Mock.ofType<ICapabilitiesService>(TestCapabilitiesService);

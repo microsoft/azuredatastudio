@@ -11,15 +11,15 @@ import { URI, UriComponents } from 'vs/base/common/uri';
 
 import { IDisposable } from 'vs/base/common/lifecycle';
 
-import * as azdata from 'azdata';
-import * as vscode from 'vscode';
+import type * as azdata from 'azdata';
+import type * as vscode from 'vscode';
 
 import { ITreeComponentItem } from 'sql/workbench/common/views';
 import { ITaskHandlerDescription } from 'sql/workbench/services/tasks/common/tasks';
 import {
 	IItemConfig, IComponentShape, IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails,
 	IModelViewWizardDetails, IModelViewWizardPageDetails, IExecuteManagerDetails, INotebookSessionDetails,
-	INotebookKernelDetails, INotebookFutureDetails, FutureMessageType, INotebookFutureDone, ISingleNotebookEditOperation,
+	INotebookKernelDetails, INotebookFutureDetails, FutureMessageType, INotebookFutureDone, INotebookEditOperation,
 	NotebookChangeKind,
 	ISerializationManagerDetails
 } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -530,17 +530,27 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Gets the table designer info for the specified table
 	 */
-	$getTableDesignerInfo(handle: number, table: azdata.designers.TableInfo): Thenable<azdata.designers.TableDesignerInfo> { throw ni(); }
+	$initializeTableDesigner(handle: number, table: azdata.designers.TableInfo): Thenable<azdata.designers.TableDesignerInfo> { throw ni(); }
 
 	/**
 	 * Process the table edit.
 	 */
-	$processTableDesignerEdit(handle: number, table: azdata.designers.TableInfo, data: azdata.designers.DesignerViewModel, edit: azdata.designers.DesignerEdit): Thenable<azdata.designers.DesignerEditResult> { throw ni(); }
+	$processTableDesignerEdit(handle: number, table: azdata.designers.TableInfo, edit: azdata.designers.DesignerEdit): Thenable<azdata.designers.DesignerEditResult> { throw ni(); }
 
 	/**
-	 * Process the table edit.
+	 * Publish the table designer changes.
 	 */
-	$saveTable(handle: number, table: azdata.designers.TableInfo, data: azdata.designers.DesignerViewModel): Thenable<void> { throw ni(); }
+	$publishTableDesignerChanges(handle: number, table: azdata.designers.TableInfo): Thenable<void> { throw ni(); }
+
+	/**
+	 * Generate scripts.
+	 */
+	$generateScriptForTableDesigner(handle: number, table: azdata.designers.TableInfo): Thenable<string> { throw ni(); }
+
+	/**
+	 * Generate preview report.
+	 */
+	$generatePreviewReportForTableDesigner(handle: number, table: azdata.designers.TableInfo): Thenable<string> { throw ni(); }
 
 	/**
 	 * Dispose the table designer.
@@ -887,7 +897,6 @@ export interface MainThreadQueryEditorShape extends IDisposable {
 }
 
 export interface ExtHostNotebookShape {
-
 	/**
 	 * Looks up a notebook manager for a given notebook URI
 	 * @returns handle of the manager to be used when sending
@@ -935,6 +944,7 @@ export interface MainThreadNotebookShape extends IDisposable {
 	$unregisterExecuteProvider(handle: number): void;
 	$onFutureMessage(futureId: number, type: FutureMessageType, payload: azdata.nb.IMessage): void;
 	$onFutureDone(futureId: number, done: INotebookFutureDone): void;
+	$updateProviderDescriptionLanguages(providerId: string, languages: string[]): void;
 }
 
 export interface INotebookDocumentsAndEditorsDelta {
@@ -990,13 +1000,14 @@ export interface MainThreadNotebookDocumentsAndEditorsShape extends IDisposable 
 	$trySetTrusted(_uri: UriComponents, isTrusted: boolean): Thenable<boolean>;
 	$trySaveDocument(uri: UriComponents): Thenable<boolean>;
 	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): Promise<string>;
-	$tryApplyEdits(id: string, modelVersionId: number, edits: ISingleNotebookEditOperation[], opts: IUndoStopOptions): Promise<boolean>;
+	$tryApplyEdits(id: string, modelVersionId: number, edits: INotebookEditOperation[], opts: IUndoStopOptions): Promise<boolean>;
 	$runCell(id: string, cellUri: UriComponents): Promise<boolean>;
 	$runAllCells(id: string, startCellUri?: UriComponents, endCellUri?: UriComponents): Promise<boolean>;
 	$clearOutput(id: string, cellUri: UriComponents): Promise<boolean>;
 	$clearAllOutputs(id: string): Promise<boolean>;
 	$changeKernel(id: string, kernel: azdata.nb.IKernelSpec): Promise<boolean>;
 	$registerNavigationProvider(providerId: string, handle: number);
+	$createNotebookDocument(providerId: string, contents: azdata.nb.INotebookContents): Promise<azdata.nb.NotebookDocument>;
 }
 
 export interface ExtHostExtensionManagementShape {

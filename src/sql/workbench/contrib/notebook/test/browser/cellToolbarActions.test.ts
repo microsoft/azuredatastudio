@@ -34,6 +34,7 @@ import { ServiceCollection } from 'vs/platform/instantiation/common/serviceColle
 import { ExecuteManagerStub, SerializationManagerStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { UndoRedoService } from 'vs/platform/undoRedo/common/undoRedoService';
+import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
 
 suite('CellToolbarActions', function (): void {
 	suite('removeDuplicatedAndStartingSeparators', function (): void {
@@ -211,8 +212,8 @@ export async function createandLoadNotebookModel(codeContent?: nb.INotebookConte
 				display_name: 'Python 3'
 			}
 		},
-		nbformat: 4,
-		nbformat_minor: 5
+		nbformat: NBFORMAT,
+		nbformat_minor: NBFORMAT_MINOR
 	};
 
 	let serviceCollection = new ServiceCollection();

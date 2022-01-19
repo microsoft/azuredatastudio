@@ -32,6 +32,10 @@ export const edgeSqlDatabaseProjectTypeId = 'SqlDbEdgeProj';
 export const edgeProjectTypeDisplayName = localize('edgeProjectTypeDisplayName', "SQL Edge");
 export const edgeProjectTypeDescription = localize('edgeProjectTypeDescription', "Start with the core pieces to develop and publish schemas for SQL Edge");
 
+export const emptySqlDatabaseSdkProjectTypeId = 'EmptySqlDbSdkProj';
+export const emptySdkProjectTypeDisplayName = localize('emptySdkProjectTypeDisplayName', "SQL Database (SDK)");
+export const emptySdkProjectTypeDescription = localize('emptySdkProjectTypeDescription', "Develop and publish schemas for SQL databases with Microsoft.Build.Sql (preview), starting from an empty SDK-style project.");
+
 // Dashboard
 export const addItemAction = localize('addItemAction', "Add Item");
 export const schemaCompareAction = localize('schemaCompareAction', "Schema Compare");
@@ -62,7 +66,9 @@ export const at = localize('at', "at");
 // commands
 export const revealFileInOsCommand = 'revealFileInOS';
 export const schemaCompareStartCommand = 'schemaCompare.start';
+export const schemaCompareRunComparisonCommand = 'schemaCompare.runComparison';
 export const vscodeOpenCommand = 'vscode.open';
+export const refreshDataWorkspaceCommand = 'dataworkspace.refresh';
 
 // UI Strings
 
@@ -85,6 +91,7 @@ export const schemaObjectType = localize('schemaObjectType', "Schema/Object Type
 export const defaultProjectNameStarter = localize('defaultProjectNameStarter', "DatabaseProject");
 export const location = localize('location', "Location");
 export const reloadProject = localize('reloadProject', "Would you like to reload your database project?");
+export const learnMore = localize('learnMore', "Learn More");
 export function newObjectNamePrompt(objectType: string) { return localize('newObjectNamePrompt', 'New {0} name:', objectType); }
 export function deleteConfirmation(toDelete: string) { return localize('deleteConfirmation', "Are you sure you want to delete {0}?", toDelete); }
 export function deleteConfirmationContents(toDelete: string) { return localize('deleteConfirmationContents', "Are you sure you want to delete {0} and all of its contents?", toDelete); }
@@ -241,6 +248,7 @@ export const targetProject = localize('targetProject', "Target project");
 export const createProjectSettings = localize('createProjectSettings', "Settings");
 export const projectNameLabel = localize('projectNameLabel', "Name");
 export const projectNamePlaceholderText = localize('projectNamePlaceholderText', "Enter project name");
+export const projectLocationLabel = localize('projectLocationLabel', "Location");
 export const projectLocationPlaceholderText = localize('projectLocationPlaceholderText', "Select location to create project");
 export const browseButtonText = localize('browseButtonText', "Browse folder");
 export const selectFolderStructure = localize('selectFolderStructure', "Select folder structure");
@@ -251,9 +259,28 @@ export const selectProjectLocation = localize('selectProjectLocation', "Select p
 export const ProjectParentDirectoryNotExistError = (location: string): string => { return localize('dataworkspace.projectParentDirectoryNotExistError', "The selected project location '{0}' does not exist or is not a directory.", location); };
 export const ProjectDirectoryAlreadyExistError = (projectName: string, location: string): string => { return localize('dataworkspace.projectDirectoryAlreadyExistError', "There is already a directory named '{0}' in the selected location: '{1}'.", projectName, location); };
 
+// Update Project From Database dialog strings
+
+export const updateProjectFromDatabaseDialogName = localize('updateProjectFromDatabaseDialogName', "Update project from database");
+export const updateText = localize('updateText', "Update");
+export const noSqlProjFile = localize('noSqlProjFile', "The selected project file does not exist");
+export const noSchemaCompareExtension = localize('noSchemaCompareExtension', "The Schema Compare extension must be installed to a update a project from a database.");
+export const projectToUpdatePlaceholderText = localize('projectToUpdatePlaceholderText', "Select project file");
+export const updateAction = localize('updateAction', "Update action");
+export const compareActionRadioButtonLabel = localize('compareActionRadiButtonLabel', "View changes in Schema Compare");
+export const updateActionRadioButtonLabel = localize('updateActionRadiButtonLabel', "Apply all changes");
+export const actionLabel = localize('actionLabel', "Action");
+
+// Update project from database
+
+export const applySuccess = localize('applySuccess', "Project was successfully updated.");
+export const equalComparison = localize('equalComparison', "The project is already up to date with the database.");
+export function applyError(errorMessage: string): string { return localize('applyError', "There was an error updating the project: {0}", errorMessage); }
+export function updatingProjectFromDatabase(projectName: string, databaseName: string): string { return localize('updatingProjectFromDatabase', "Updating {0} from {1}...", projectName, databaseName); }
 
 // Error messages
 
+export function compareErrorMessage(errorMessage: string): string { return localize('schemaCompare.compareErrorMessage', "Schema Compare failed: {0}", errorMessage ? errorMessage : 'Unknown'); }
 export const multipleSqlProjFiles = localize('multipleSqlProjFilesSelected', "Multiple .sqlproj files selected; please select only one.");
 export const noSqlProjFiles = localize('noSqlProjFilesSelected', "No .sqlproj file selected; please select one.");
 export const noDataSourcesFile = localize('noDataSourcesFile', "No {0} found", dataSourcesFileName);
@@ -376,6 +403,7 @@ export const True = 'True';
 export const False = 'False';
 export const Private = 'Private';
 export const ProjectGuid = 'ProjectGuid';
+export const PropertyGroup = 'PropertyGroup';
 export const Type = 'Type';
 export const ExternalStreamingJob: string = 'ExternalStreamingJob';
 export const Sdk: string = 'Sdk';
@@ -536,3 +564,9 @@ export function jsonParseError(error: string, line: number, column: number) { re
 export const moreInformation = localize('moreInformation', "More Information");
 export const addPackageReferenceMessage = localize('addPackageReferenceMessage', 'To use SQL bindings, ensure your Azure Functions project has a reference to {0}', sqlExtensionPackageName);
 export const addSqlBindingPackageError = localize('addSqlBindingPackageError', 'Error adding Sql Binding extension package to project');
+export const failedToGetConnectionString = localize('failedToGetConnectionString', 'An error occurred generating the connection string for the selected connection');
+export const connectionProfile = localize('connectionProfile', 'Select a connection profile');
+export const userConnectionString = localize('userConnectionString', 'Enter connection string');
+export const selectConnectionString = localize('selectConnectionString', 'Select SQL connection string method');
+export const selectConnectionError = (err?: any) => err ? localize('selectConnectionError', "Failed to set connection string app setting: {0}", utils.getErrorMessage(err)) : localize('unableToSetConnectionString', "Failed to set connection string app setting");
+

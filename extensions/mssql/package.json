@@ -1298,7 +1298,7 @@
     "stream-meter": "^1.0.4",
     "through2": "^3.0.1",
     "tough-cookie": "^3.0.1",
-    "vscode-extension-telemetry": "0.1.0",
+    "vscode-extension-telemetry": "0.4.2",
     "vscode-languageclient": "5.2.1",
     "vscode-nls": "^4.0.0"
   },
@@ -1315,8 +1315,5 @@
     "should": "^13.2.3",
     "typemoq": "^2.1.0",
     "vscodetestcover": "^1.1.0"
-  },
-  "resolutions": {
-    "json-schema": "0.4.0"
   }
 }

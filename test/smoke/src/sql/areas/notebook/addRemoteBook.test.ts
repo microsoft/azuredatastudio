@@ -7,14 +7,17 @@ import { Application } from '../../../../../automation';
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import { assert } from 'console';
+import * as minimist from 'minimist';
+import { afterSuite, beforeSuite } from '../../../utils';
 
 const AddRemoteBookCommand = 'Jupyter Books: Add Remote Jupyter Book';
 const JUPYTER_BOOK = 'CU';
 const VERSION = '1.0';
 const LANGUAGE = 'EN';
-export function setup() {
-
+export function setup(opts: minimist.ParsedArgs) {
 	describe('AddRemoteBookDialog', () => {
+		beforeSuite(opts);
+		afterSuite(opts);
 
 		it.skip('can open remote book', async function () { // Skip until the rate limit issue can be fixed
 			const app = this.app as Application;

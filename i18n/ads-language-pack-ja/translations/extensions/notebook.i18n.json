@@ -31,7 +31,7 @@
 			"contentFolder": "コンテンツ フォルダー",
 			"contentFolderOptional": "コンテンツ フォルダー (省略可能)",
 			"create": "作成",
-			"duplicateFileError": "ファイル {0} は、ターゲット フォルダー {1} に既に存在しています \r\n データの損失を防ぐために、ファイルの名前が {2} に変更されました。",
+			"duplicateFileError": "ファイル {0} は、ターゲット フォルダー {1} に既に存在しています\r\n データの損失を防ぐために、ファイルの名前が {2} に変更されました。",
 			"editBookError": "Jupyter ブック {0} の編集中にエラーが発生しました: {1}",
 			"fileExtension": "ファイル拡張子",
 			"fileName": "ファイル名",

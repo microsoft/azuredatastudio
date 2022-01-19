@@ -15,12 +15,12 @@ export class Notebook {
 
 	public readonly notebookToolbar: NotebookToolbar;
 	public readonly textCellToolbar: TextCellToolbar;
-	public readonly view: NotebookView;
+	public readonly view: NotebookTreeView;
 
 	constructor(private code: Code, private quickAccess: QuickAccess, private quickInput: QuickInput, private editors: Editors) {
 		this.notebookToolbar = new NotebookToolbar(code);
 		this.textCellToolbar = new TextCellToolbar(code);
-		this.view = new NotebookView(code, quickAccess);
+		this.view = new NotebookTreeView(code, quickAccess);
 	}
 
 	async openFile(fileName: string): Promise<void> {
@@ -331,7 +331,7 @@ export class NotebookToolbar {
 	}
 }
 
-export class NotebookView {
+export class NotebookTreeView {
 	private static readonly inputBox = '.notebookExplorer-viewlet .search-widget .input-box';
 	private static searchResult = '.search-view .result-messages';
 	private static notebookTreeItem = '.split-view-view .tree-explorer-viewlet-tree-view .monaco-list-row';
@@ -355,7 +355,7 @@ export class NotebookView {
 	async searchInNotebook(expr: string): Promise<IElement> {
 		await this.waitForSetSearchValue(expr);
 		await this.code.dispatchKeybinding('enter');
-		let selector = NotebookView.searchResult;
+		let selector = NotebookTreeView.searchResult;
 		if (expr) {
 			selector += ' .message';
 		}
@@ -363,40 +363,44 @@ export class NotebookView {
 	}
 
 	async waitForSetSearchValue(text: string): Promise<void> {
-		const textArea = `${NotebookView.inputBox} textarea`;
+		const textArea = `${NotebookTreeView.inputBox} textarea`;
 		await this.code.waitForTypeInEditor(textArea, text);
 	}
 
 	/**
-	 * Helper function
-	 * @returns tree item ids from Notebooks View
+	 * Gets tree items from Notebooks Tree View
+	 * @returns tree item from Notebooks View
 	 */
-	async getNotebookTreeItemIds(): Promise<string[]> {
-		return (await this.code.waitForElements(NotebookView.notebookTreeItem, false)).map(item => item.attributes['id']);
+	async getNotebookTreeItems(): Promise<IElement[]> {
+		return this.code.waitForElements(NotebookTreeView.notebookTreeItem, false);
 	}
 
 	/**
-	 * Pin the first notebook in the Notebooks View
+	 * Gets tree items from Pinned Notebooks View
+	 * @returns tree item from Pinned Notebooks View
 	 */
-	async pinNotebook(): Promise<void> {
-		const notebookIds = await this.getNotebookTreeItemIds();
-		await this.code.waitAndDoubleClick(`${NotebookView.notebookTreeItem}[id="${notebookIds[0]}"]`);
-		await this.code.waitAndClick(`${NotebookView.notebookTreeItem}${NotebookView.selectedItem} .codicon-pinned`);
+	async getPinnedNotebookTreeItems(): Promise<IElement[]> {
+		return this.code.waitForElements(NotebookTreeView.pinnedNotebooksSelector, false);
 	}
 
-	/**
-	 * Unpin the only pinned notebook.
-	 * Previously pinned by the pinNotebook method.
-	 */
-	async unpinNotebook(): Promise<void> {
-		await this.code.waitAndClick(NotebookView.pinnedNotebooksSelector);
-		await this.code.waitAndClick(`${NotebookView.pinnedNotebooksSelector} .actions a[title="Unpin Notebook"]`);
+	async pinNotebook(notebookId: string): Promise<void> {
+		await this.code.waitAndDoubleClick(`${NotebookTreeView.notebookTreeItem}[id="${notebookId}"]`);
+		await this.code.waitAndClick(`${NotebookTreeView.notebookTreeItem}${NotebookTreeView.selectedItem} .codicon-pinned`);
+	}
+
+	async unpinNotebook(notebookId: string): Promise<void> {
+		await this.code.waitAndClick(NotebookTreeView.pinnedNotebooksSelector);
+		await this.code.waitAndClick(`${NotebookTreeView.pinnedNotebooksSelector}[id="${notebookId}"] .actions a[title="Unpin Notebook"]`);
 	}
 
 	/**
 	 * When pinning a notebook, the pinned notebook view will show.
 	 */
-	async waitForPinnedNotebookView(): Promise<void> {
-		await this.code.waitForElement(NotebookView.pinnedNotebooksSelector);
+	async waitForPinnedNotebookTreeView(): Promise<void> {
+		await this.code.waitForElement(NotebookTreeView.pinnedNotebooksSelector);
+	}
+
+	async waitForPinnedNotebookTreeViewGone(): Promise<void> {
+		await this.code.waitForElementGone(NotebookTreeView.pinnedNotebooksSelector);
 	}
 }

@@ -36,6 +36,17 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	 */
 	get supportedProjectTypes(): dataworkspace.IProjectType[] {
 		return [{
+			id: constants.emptySqlDatabaseSdkProjectTypeId,
+			projectFileExtension: constants.sqlprojExtension.replace(/\./g, ''),
+			displayName: constants.emptySdkProjectTypeDisplayName,
+			description: constants.emptySdkProjectTypeDescription,
+			icon: IconPathHelper.colorfulSqlProject,
+			targetPlatforms: Array.from(constants.targetPlatformToVersion.keys()),
+			defaultTargetPlatform: constants.defaultTargetPlatform,
+			linkDisplayValue: constants.learnMore,
+			linkLocation: 'https://github.com/microsoft/DacFx/tree/main/src/Microsoft.Build.Sql'
+		},
+		{
 			id: constants.emptySqlDatabaseProjectTypeId,
 			projectFileExtension: constants.sqlprojExtension.replace(/\./g, ''),
 			displayName: constants.emptyProjectTypeDisplayName,
@@ -167,5 +178,20 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 
 		const projectUri = getDataWorkspaceExtensionApi().openSpecificProjectNewProjectDialog(projectType);
 		return projectUri;
+	}
+
+	/**
+	 * Gets the list of .sql scripts contained in a project
+	 * @param projectFilePath
+	 */
+	async getProjectScriptFiles(projectFilePath: string): Promise<string[]> {
+		return await this.projectController.getProjectScriptFiles(projectFilePath);
+	}
+
+	/**
+	 * Gets the Database Schema Provider version for a SQL project
+	 */
+	async getProjectDatabaseSchemaProvider(projectFilePath: string): Promise<string> {
+		return await this.projectController.getProjectDatabaseSchemaProvider(projectFilePath);
 	}
 }

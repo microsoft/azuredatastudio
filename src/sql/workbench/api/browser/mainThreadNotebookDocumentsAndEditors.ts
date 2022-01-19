@@ -19,7 +19,7 @@ import {
 } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { INotebookService, INotebookEditor } from 'sql/workbench/services/notebook/browser/notebookService';
-import { ISingleNotebookEditOperation, NotebookChangeKind } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { INotebookEditOperation, NotebookChangeKind } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { disposed } from 'vs/base/common/errors';
 import { ICellModel, NotebookContentChange, INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType, CellTypes } from 'sql/workbench/services/notebook/common/contracts';
@@ -27,6 +27,8 @@ import { localize } from 'vs/nls';
 import { IFileService } from 'vs/platform/files/common/files';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { NotebookEditor } from 'sql/workbench/contrib/notebook/browser/notebookEditor';
+import { ICommandService } from 'vs/platform/commands/common/commands';
+import { NewNotebookAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
@@ -94,7 +96,7 @@ class MainThreadNotebookEditor extends Disposable {
 		return input.notebookUri.toString() === this.editor.notebookParams.input.notebookUri.toString();
 	}
 
-	public applyEdits(versionIdCheck: number, edits: ISingleNotebookEditOperation[], opts: IUndoStopOptions): boolean {
+	public applyEdits(versionIdCheck: number, edits: INotebookEditOperation[], opts: IUndoStopOptions): boolean {
 		// TODO Handle version tracking
 		// if (this._model.getVersionId() !== versionIdCheck) {
 		// 	// throw new Error('Model has changed in the meantime!');
@@ -320,7 +322,8 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@INotebookService private readonly _notebookService: INotebookService,
 		@IFileService private readonly _fileService: IFileService,
-		@ITextFileService private readonly _textFileService: ITextFileService
+		@ITextFileService private readonly _textFileService: ITextFileService,
+		@ICommandService private readonly _commandService: ICommandService
 	) {
 		super();
 		if (extHostContext) {
@@ -351,7 +354,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		return this._notebookService.setTrusted(uri, isTrusted);
 	}
 
-	$tryApplyEdits(id: string, modelVersionId: number, edits: ISingleNotebookEditOperation[], opts: IUndoStopOptions): Promise<boolean> {
+	$tryApplyEdits(id: string, modelVersionId: number, edits: INotebookEditOperation[], opts: IUndoStopOptions): Promise<boolean> {
 		let editor = this.getEditor(id);
 		if (!editor) {
 			return Promise.reject(disposed(`TextEditor(${id})`));
@@ -707,6 +710,14 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 					}
 				}
 			}
+		});
+	}
+
+	$createNotebookDocument(providerId: string, contents: azdata.nb.INotebookContents): Promise<azdata.nb.NotebookDocument> {
+		return this._commandService.executeCommand(NewNotebookAction.INTERNAL_NEW_NOTEBOOK_CMD_ID, {
+			providerId: providerId,
+			initialContent: contents,
+			initialDirtyState: false
 		});
 	}
 }
