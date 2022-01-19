@@ -5586,9 +5586,6 @@ Error: {1}</source>
     <trans-unit id="msgCancelQueryFailed">
       <source xml:lang="en">Canceling the query failed: {0}</source>
     </trans-unit>
-    <trans-unit id="queryModelService.noQueryFoundForUri">
-      <source xml:lang="en">No Query found for {0}</source>
-    </trans-unit>
     <trans-unit id="queryModelService.uriAlreadyHasQuery">
       <source xml:lang="en">{0} already has an existing query</source>
     </trans-unit>
