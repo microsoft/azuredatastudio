@@ -55,8 +55,9 @@ async function rollupModule(options: IRollupOptions) {
 		result.code = result.code + '\n//# sourceMappingURL=' + path.basename(outputMapName);
 
 		await fs.promises.writeFile(outputFilePath, result.code.toString());
-		await fs.promises.writeFile(outputMapPath,
-			result.map ? result.map.toString() : '');
+		if (result.map) {
+			await fs.promises.writeFile(outputMapPath, result.map.toString());
+		}
 
 		return {
 			name: moduleName,
