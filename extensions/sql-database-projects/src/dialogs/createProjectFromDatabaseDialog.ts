@@ -26,6 +26,8 @@ export class CreateProjectFromDatabaseDialog {
 	public projectNameTextBox: azdataType.InputBoxComponent | undefined;
 	public projectLocationTextBox: azdataType.InputBoxComponent | undefined;
 	public folderStructureDropDown: azdataType.DropDownComponent | undefined;
+	public SdkStyleProjectRadioButton: azdataType.RadioButtonComponent | undefined;
+	public legacyStyleProjectRadioButton: azdataType.RadioButtonComponent | undefined;
 	private formBuilder: azdataType.FormBuilder | undefined;
 	private connectionId: string | undefined;
 	private toDispose: vscode.Disposable[] = [];
@@ -85,6 +87,8 @@ export class CreateProjectFromDatabaseDialog {
 			const createProjectSettingsFormSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 			createProjectSettingsFormSection.addItems([folderStructureRow]);
 
+			const projectTypeRadioButtonsFlexModel = this.createProjectTypeRadioButtons(view);
+
 			this.formBuilder = <azdataType.FormBuilder>view.modelBuilder.formContainer()
 				.withFormItems([
 					{
@@ -108,6 +112,9 @@ export class CreateProjectFromDatabaseDialog {
 						components: [
 							{
 								component: createProjectSettingsFormSection,
+							},
+							{
+								component: projectTypeRadioButtonsFlexModel
 							}
 						]
 					}
@@ -341,6 +348,40 @@ export class CreateProjectFromDatabaseDialog {
 		return folderStructureRow;
 	}
 
+	private createProjectTypeRadioButtons(view: azdataType.ModelView): azdataType.Component {
+		const sqlprojFormat = view.modelBuilder.text().withProps({
+			value: constants.sqlprojFormat,
+			width: '100px'
+		}).component();
+
+		this.SdkStyleProjectRadioButton = view.modelBuilder.radioButton()
+			.withProps({
+				name: 'projectType',
+				label: constants.sdk
+			}).component();
+
+		this.SdkStyleProjectRadioButton.checked = true;
+
+		this.legacyStyleProjectRadioButton = view.modelBuilder.radioButton()
+			.withProps({
+				name: 'projectType',
+				label: constants.legacy
+			}).component();
+
+		const radioButtonContainer = view.modelBuilder.flexContainer()
+			.withLayout({ flexFlow: 'row' })
+			.withItems([this.SdkStyleProjectRadioButton, this.legacyStyleProjectRadioButton])
+			.withProps({ ariaRole: 'radiogroup' })
+			.component();
+
+		let flexRadioButtonsModel: azdataType.FlexContainer = view.modelBuilder.flexContainer()
+			.withLayout({ alignItems: 'baseline' })
+			.withItems([sqlprojFormat, radioButtonContainer])
+			.component();
+
+		return flexRadioButtonsModel;
+	}
+
 	// only enable Create button if all fields are filled
 	public tryEnableCreateButton(): void {
 		if (this.sourceConnectionTextBox!.value && this.sourceDatabaseDropDown!.value
@@ -360,7 +401,8 @@ export class CreateProjectFromDatabaseDialog {
 			projName: this.projectNameTextBox!.value!,
 			filePath: this.projectLocationTextBox!.value!,
 			version: '1.0.0.0',
-			extractTarget: mapExtractTargetEnum(<string>this.folderStructureDropDown!.value)
+			extractTarget: mapExtractTargetEnum(<string>this.folderStructureDropDown!.value),
+			sdkStyle: this.SdkStyleProjectRadioButton?.checked
 		};
 
 		azdataApi!.window.closeDialog(this.dialog);

@@ -256,6 +256,9 @@ export const folderStructureLabel = localize('folderStructureLabel', "Folder str
 export const WorkspaceFileExtension = '.code-workspace';
 export const browseEllipsisWithIcon = `$(folder) ${localize('browseEllipsis', "Browse...")}`;
 export const selectProjectLocation = localize('selectProjectLocation', "Select project location");
+export const sqlprojFormat = localize('sqlprojFormat', '.sqlproj format');
+export const sdk = localize('sdk', 'SDK');
+export const legacy = localize('legacy', 'Legacy');
 export const ProjectParentDirectoryNotExistError = (location: string): string => { return localize('dataworkspace.projectParentDirectoryNotExistError', "The selected project location '{0}' does not exist or is not a directory.", location); };
 export const ProjectDirectoryAlreadyExistError = (projectName: string, location: string): string => { return localize('dataworkspace.projectDirectoryAlreadyExistError', "There is already a directory named '{0}' in the selected location: '{1}'.", projectName, location); };
 
