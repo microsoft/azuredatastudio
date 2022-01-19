@@ -28,6 +28,12 @@
           "OutputPath": "resources\\xlf"
         },
 		{
+          "SourceFile": "resources\\xlf\\en\\azcli.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\azcli.xlf.lcl",
+          "CopyOption": "LangIDOnPath",
+          "OutputPath": "resources\\xlf"
+        },
+		{
           "SourceFile": "resources\\xlf\\en\\azurecore.xlf",
           "LclFile": "resources\\localization\\LCL\\{Lang}\\azurecore.xlf.lcl",
           "CopyOption": "LangIDOnPath",
