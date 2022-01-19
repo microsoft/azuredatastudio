@@ -13,20 +13,29 @@ export function setup(opts: minimist.ParsedArgs) {
 		beforeSuite(opts);
 		afterSuite(opts);
 
-		it('Pin a notebook', async function () {
+		it('Pin notebook', async function () {
 			const app = this.app as Application;
 			await app.workbench.sqlNotebook.view.focusNotebooksView();
-			const notebookIds = await app.workbench.sqlNotebook.view.getNotebookTreeItemIds();
+			const sqlNotebook = (await app.workbench.sqlNotebook.view.getNotebookTreeItems()).filter(n => n.textContent === 'collapsed');
 			// Pinning SQL notebook to prevent the Configure Python Wizard from showing, since Python is no longer set up when the NotebookTreeView test suite starts
-			await app.workbench.sqlNotebook.view.pinNotebook(notebookIds[1]);
+			await app.workbench.sqlNotebook.view.pinNotebook(sqlNotebook[0].attributes.id);
 			await app.workbench.sqlNotebook.view.waitForPinnedNotebookTreeView();
 		});
 
 		it('Unpin Notebook', async function () {
 			const app = this.app as Application;
 			await app.workbench.sqlNotebook.view.focusPinnedNotebooksView();
-			const notebookIds = await app.workbench.sqlNotebook.view.getNotebookTreeItemIds();
-			await app.workbench.sqlNotebook.view.unpinNotebook(notebookIds[0]);
+			let pinnedNotebooks = await app.workbench.sqlNotebook.view.getPinnedNotebookTreeItems();
+			const sqlNotebook = (pinnedNotebooks).filter(n => n.textContent === 'collapsed')[0];
+			await app.workbench.sqlNotebook.view.unpinNotebook(sqlNotebook.attributes.id);
+			pinnedNotebooks = await app.workbench.sqlNotebook.view.getPinnedNotebookTreeItems();
+			if (pinnedNotebooks.length > 0) {
+				// if theres multiple pinned notebooks check that the "collapsed" notebook is no longer in the Pinned Notebooks View
+				assert((await app.workbench.sqlNotebook.view.getPinnedNotebookTreeItems()).find(n => n.textContent === 'collapsed') === undefined);
+			} else {
+				// check that the Pinned Notebook View is gone
+				await app.workbench.sqlNotebook.view.waitForPinnedNotebookTreeViewGone();
+			}
 		});
 
 		it('No search results if search query is empty', async function () {

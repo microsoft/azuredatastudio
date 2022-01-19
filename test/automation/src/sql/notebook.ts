@@ -368,33 +368,26 @@ export class NotebookTreeView {
 	}
 
 	/**
-	 * Helper function
-	 * @returns tree item ids from Notebooks View
+	 * Gets tree items from Notebooks Tree View
+	 * @returns tree item from Notebooks View
 	 */
-	async getNotebookTreeItemIds(): Promise<string[]> {
-		return (await this.code.waitForElements(NotebookTreeView.notebookTreeItem, false)).map(item => item.attributes['id']);
+	async getNotebookTreeItems(): Promise<IElement[]> {
+		return this.code.waitForElements(NotebookTreeView.notebookTreeItem, false);
 	}
 
 	/**
-	 * Helper function
-	 * @returns tree item ids from Pinned Notebooks View
+	 * Gets tree items from Pinned Notebooks View
+	 * @returns tree item from Pinned Notebooks View
 	 */
-	async getPinnedNotebookTreeItemIds(): Promise<string[]> {
-		return (await this.code.waitForElements(NotebookTreeView.pinnedNotebooksSelector, false)).map(item => item.attributes['id']);
+	async getPinnedNotebookTreeItems(): Promise<IElement[]> {
+		return this.code.waitForElements(NotebookTreeView.pinnedNotebooksSelector, false);
 	}
 
-	/**
-	 * Pin the first notebook in the Notebooks View
-	 */
 	async pinNotebook(notebookId: string): Promise<void> {
 		await this.code.waitAndDoubleClick(`${NotebookTreeView.notebookTreeItem}[id="${notebookId}"]`);
 		await this.code.waitAndClick(`${NotebookTreeView.notebookTreeItem}${NotebookTreeView.selectedItem} .codicon-pinned`);
 	}
 
-	/**
-	 * Unpin the only pinned notebook.
-	 * Previously pinned by the pinNotebook method.
-	 */
 	async unpinNotebook(notebookId: string): Promise<void> {
 		await this.code.waitAndClick(NotebookTreeView.pinnedNotebooksSelector);
 		await this.code.waitAndClick(`${NotebookTreeView.pinnedNotebooksSelector}[id="${notebookId}"] .actions a[title="Unpin Notebook"]`);
@@ -405,5 +398,9 @@ export class NotebookTreeView {
 	 */
 	async waitForPinnedNotebookTreeView(): Promise<void> {
 		await this.code.waitForElement(NotebookTreeView.pinnedNotebooksSelector);
+	}
+
+	async waitForPinnedNotebookTreeViewGone(): Promise<void> {
+		await this.code.waitForElementGone(NotebookTreeView.pinnedNotebooksSelector);
 	}
 }
