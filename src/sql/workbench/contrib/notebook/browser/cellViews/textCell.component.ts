@@ -57,9 +57,13 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	handleKeyboardEvent() {
 		if (this.isEditMode) {
 			this.toggleEditMode(false);
+		} else {
+			if (this.cellModel.active) {
+				this._model.updateActiveCell(undefined);
+			} else {
+				this.cellModel.active = false;
+			}
 		}
-		this.cellModel.active = false;
-		this._model.updateActiveCell(undefined);
 	}
 
 	// Double click to edit text cell in notebook
