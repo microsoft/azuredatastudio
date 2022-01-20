@@ -6,19 +6,32 @@
 import * as vscode from 'vscode';
 import * as loc from '../localizedConstants';
 
+export enum LogLevel {
+	'All',
+	'Off',
+	'Critical',
+	'Error',
+	'Warning',
+	'Information',
+	'Verbose',
+}
+
 export class Logger {
 
+
 	public static channel: vscode.OutputChannel = vscode.window.createOutputChannel(loc.extensionName);
-
 	private static _piiLogging: boolean = false;
+	public static config = vscode.workspace.getConfiguration('mssql');
 
-	static log(msg: any, ...vals: any[]) {
-		const fullMessage = `${msg} - ${vals.map(v => JSON.stringify(v)).join(' - ')}`;
-		this.channel.appendLine(fullMessage);
+	static log(logLevel: LogLevel, msg: any, ...vals: any[]) {
+		if (logLevel === this.config.tracingLevel) {
+			const fullMessage = `[${logLevel}]: ${msg} - ${vals.map(v => JSON.stringify(v)).join(' - ')}`;
+			this.channel.appendLine(fullMessage);
+		}
 	}
 
 	static error(msg: any, ...vals: any[]) {
-		const fullMessage = `${msg} - ${vals.map(v => JSON.stringify(v)).join(' - ')}`;
+		const fullMessage = `[error]: ${msg} - ${vals.map(v => JSON.stringify(v)).join(' - ')}`;
 		this.channel.appendLine(fullMessage);
 	}
 
