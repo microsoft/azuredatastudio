@@ -26,6 +26,7 @@ export class UntitledNotebookInput extends NotebookInput {
 		@IExtensionService extensionService: IExtensionService
 	) {
 		super(title, resource, textInput, true, textModelService, instantiationService, notebookService, extensionService);
+		this.setMode('notebook');
 	}
 
 	public override get textInput(): UntitledTextEditorInput {
