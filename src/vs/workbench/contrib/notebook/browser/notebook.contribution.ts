@@ -659,6 +659,7 @@ configurationRegistry.registerConfiguration({
 	title: nls.localize('notebookConfigurationTitle', "Notebook"),
 	type: 'object',
 	properties: {
+		// {{SQL CARBON EDIT}} Remove unused VS Code Notebook configurations
 		// [DisplayOrderKey]: {
 		// 	description: nls.localize('notebook.displayOrder.description', "Priority list for output mime types"),
 		// 	type: ['array'],
@@ -680,6 +681,7 @@ configurationRegistry.registerConfiguration({
 			},
 			tags: ['notebookLayout']
 		},
+		// {{SQL CARBON EDIT}} Remove unused VS Code Notebook configurations
 		// [ShowCellStatusBar]: {
 		// 	description: nls.localize('notebook.showCellStatusbar.description', "Whether the cell status bar should be shown."),
 		// 	type: 'string',
