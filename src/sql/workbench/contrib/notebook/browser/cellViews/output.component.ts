@@ -6,6 +6,7 @@ import 'vs/css!./code';
 import 'vs/css!./media/output';
 
 import { OnInit, Component, Input, Inject, ElementRef, ViewChild, SimpleChange, AfterViewInit, forwardRef, ChangeDetectorRef, ComponentRef, ComponentFactoryResolver } from '@angular/core';
+import * as Mark from 'mark.js';
 import { Event } from 'vs/base/common/event';
 import { nb } from 'azdata';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
@@ -19,11 +20,13 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { localize } from 'vs/nls';
 import * as types from 'vs/base/common/types';
 import { getErrorMessage } from 'vs/base/common/errors';
-import { CellView } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
+import { CellView, findHighlightClass, findRangeSpecificClass } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
+import { INotebookService, NotebookRange } from 'sql/workbench/services/notebook/browser/notebookService';
+import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 
 export const OUTPUT_SELECTOR: string = 'output-component';
 const USER_SELECT_CLASS = 'actionselect';
-
+const GRID_CLASS = '[class="grid-canvas"]';
 const componentRegistry = <IMimeComponentRegistry>Registry.as(Extensions.MimeComponentContribution);
 
 @Component({
@@ -31,7 +34,7 @@ const componentRegistry = <IMimeComponentRegistry>Registry.as(Extensions.MimeCom
 	templateUrl: decodeURI(require.toUrl('./output.component.html'))
 })
 export class OutputComponent extends CellView implements OnInit, AfterViewInit {
-	@ViewChild('output', { read: ElementRef }) private outputElement: ElementRef;
+	@ViewChild('output', { read: ElementRef }) override output: ElementRef;
 	@ViewChild(ComponentHostDirective) componentHost: ComponentHostDirective;
 	@Input() cellOutput: nb.ICellOutput;
 	@Input() cellModel: ICellModel;
@@ -46,7 +49,8 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 		@Inject(IThemeService) private _themeService: IThemeService,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeref: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _ref: ElementRef,
-		@Inject(forwardRef(() => ComponentFactoryResolver)) private _componentFactoryResolver: ComponentFactoryResolver
+		@Inject(forwardRef(() => ComponentFactoryResolver)) private _componentFactoryResolver: ComponentFactoryResolver,
+		@Inject(INotebookService) override notebookService: INotebookService
 	) {
 		super();
 	}
@@ -84,7 +88,7 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 	}
 
 	private get nativeOutputElement() {
-		return this.outputElement ? this.outputElement.nativeElement : undefined;
+		return this.output ? this.output.nativeElement : undefined;
 	}
 
 	public layout(): void {
@@ -187,4 +191,117 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 	public cellGuid(): string {
 		return this.cellModel.cellGuid;
 	}
+
+	override isCellOutput = true;
+
+	getCellModel(): ICellModel {
+		return this.cellModel;
+	}
+
+	protected override addDecoration(range?: NotebookRange): void {
+		range = range ?? this.highlightRange;
+		if (this.output && this.output.nativeElement) {
+			this.highlightAllMatches();
+			if (range) {
+				let elements = this.getHtmlElements();
+				if (elements.length === 1 && elements[0].nodeName === 'MIME-OUTPUT') {
+					let markCurrent = new Mark(elements[0]);
+					markCurrent.markRanges([{
+						start: range.startColumn - 1, //subtracting 1 since markdown html is 0 indexed.
+						length: range.endColumn - range.startColumn
+					}], {
+						className: findRangeSpecificClass,
+						each: function (node, range) {
+							// node is the marked DOM element
+							node.scrollIntoView({ behavior: 'smooth', block: 'center' });
+						}
+					});
+				} else if (elements?.length >= range.startLineNumber) {
+					let elementContainingText = elements[range.startLineNumber - 1];
+					let markCurrent = new Mark(elementContainingText); // to highlight the current item of them all.
+					if (elementContainingText.children.length > 0) {
+						markCurrent = new Mark(elementContainingText.children[range.startColumn]);
+						markCurrent?.mark(this.searchTerm, {
+							className: findRangeSpecificClass,
+							each: function (node, range) {
+								// node is the marked DOM element
+								node.scrollIntoView({ behavior: 'smooth', block: 'center' });
+							}
+						});
+					}
+				}
+			}
+		}
+	}
+
+	protected override highlightAllMatches(): void {
+		if (this.output && this.output.nativeElement) {
+			let markAllOccurances = new Mark(this.output.nativeElement); // to highlight all occurances in the element.
+			if (!this._model) {
+				this._model = this.getCellModel().notebookModel;
+			}
+			let editor = this.notebookService.findNotebookEditor(this._model?.notebookUri);
+			if (editor) {
+				let findModel = (editor.notebookParams.input as NotebookInput).notebookFindModel;
+				if (findModel?.findMatches?.length > 0) {
+					this.searchTerm = findModel.findExpression;
+					markAllOccurances.mark(this.searchTerm, {
+						className: findHighlightClass,
+						separateWordSearch: true,
+					});
+					// if there are grids
+					let grids = document.querySelectorAll(GRID_CLASS);
+					grids?.forEach(g => {
+						markAllOccurances = new Mark(g);
+						markAllOccurances.mark(this.searchTerm, {
+							className: findHighlightClass
+						});
+					});
+				}
+			}
+		}
+	}
+
+	protected override removeDecoration(range?: NotebookRange): void {
+		if (this.output && this.output.nativeElement) {
+			if (range) {
+				let elements = this.getHtmlElements();
+				let elementContainingText = elements[range.startLineNumber - 1];
+				if (elements.length === 1 && elements[0].nodeName === 'MIME-OUTPUT') {
+					elementContainingText = elements[0];
+				}
+				let markCurrent = new Mark(elementContainingText);
+				markCurrent.unmark({ acrossElements: true, className: findRangeSpecificClass });
+			} else {
+				let markAllOccurances = new Mark(this.output.nativeElement);
+				markAllOccurances.unmark({ acrossElements: true, className: findHighlightClass });
+				markAllOccurances.unmark({ acrossElements: true, className: findRangeSpecificClass });
+				this.highlightRange = undefined;
+				// if there is a grid
+				let grids = document.querySelectorAll(GRID_CLASS);
+				grids?.forEach(g => {
+					markAllOccurances = new Mark(g);
+					markAllOccurances.unmark({ acrossElements: true, className: findHighlightClass });
+					markAllOccurances.unmark({ acrossElements: true, className: findRangeSpecificClass });
+				});
+			}
+		}
+	}
+
+	protected override getHtmlElements(): any[] {
+		let children = [];
+		let slickGrids = this.output.nativeElement.querySelectorAll(GRID_CLASS);
+		if (slickGrids.length > 0) {
+			slickGrids.forEach(grid => {
+				children.push(...grid.children);
+			});
+		} else {
+			// if the decoration range belongs to code cell output and output is a stream of data
+			// it's in <mime-output> tag of the output.
+			let outputMessages = this.output.nativeElement.querySelectorAll('mime-output');
+			children.push(...outputMessages);
+		}
+		return children;
+	}
+
 }

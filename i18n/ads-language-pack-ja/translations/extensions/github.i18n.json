@@ -34,7 +34,7 @@
 		},
 		"package": {
 			"config.gitAuthentication": "VS Code 内で Git コマンドの自動 GitHub 認証を有効にするかどうかを制御します。",
-			"description": "GitHub",
+			"description": "VS Code 用 GitHub 機能",
 			"displayName": "GitHub",
 			"welcome.publishFolder": "このフォルダーを GitHub リポジトリに直接公開することもできます。公開後、Git と GitHub を利用したソース管理機能にアクセスできるようになります。\r\n[$(github) GitHub に公開](command:github.publish)",
 			"welcome.publishWorkspaceFolder": "ワークスペース フォルダーを GitHub リポジトリに直接公開することもできます。公開後、Git と GitHub を利用したソース管理機能にアクセスできるようになります。\r\n[$(github) GitHub に公開](command:github.publish)"

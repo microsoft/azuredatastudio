@@ -60,10 +60,8 @@
 		},
 		"package": {
 			"close-workspace-command": "关闭工作区",
-			"data-workspace-view-container-name": "项目",
-			"extension-description": "数据工作区",
-			"extension-displayName": "数据工作区",
-			"main-view-name": "项目",
+			"data-workspace-view-container-name": "数据库项目",
+			"main-view-name": "数据库项目",
 			"manage-project-command": "管理",
 			"new-command": "新建",
 			"open-existing-command": "打开现有",

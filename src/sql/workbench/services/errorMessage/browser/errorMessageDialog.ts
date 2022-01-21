@@ -98,7 +98,7 @@ export class ErrorMessageDialog extends Modal {
 		this.ok();
 		// Run the action if possible
 		if (this._actions && index < this._actions.length) {
-			this._actions[index].run().catch(err => onUnexpectedError(err));
+			this._actions[index].run();
 		}
 	}
 

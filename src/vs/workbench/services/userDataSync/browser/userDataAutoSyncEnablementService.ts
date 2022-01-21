@@ -26,7 +26,7 @@ export class WebUserDataAutoSyncEnablementService extends UserDataAutoSyncEnable
 			this.enabled = this.workbenchEnvironmentService.options?.settingsSyncOptions?.enabled;
 		}
 		if (this.enabled === undefined) {
-			this.enabled = super.isEnabled(this.workbenchEnvironmentService.options?.enableSyncByDefault);
+			this.enabled = super.isEnabled();
 		}
 		return this.enabled;
 		*/

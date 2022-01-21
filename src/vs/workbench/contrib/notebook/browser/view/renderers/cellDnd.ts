@@ -3,11 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-
 import * as DOM from 'vs/base/browser/dom';
-import { domEvent } from 'vs/base/browser/event';
 import { Delayer } from 'vs/base/common/async';
-import { Disposable } from 'vs/base/common/lifecycle';
+import { Disposable, MutableDisposable } from 'vs/base/common/lifecycle';
 import * as platform from 'vs/base/common/platform';
 import { BaseCellRenderTemplate, expandCellRangesWithHiddenCells, ICellViewModel, INotebookCellList, INotebookEditor } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
 import { cloneNotebookCellTextModel } from 'vs/workbench/contrib/notebook/common/model/notebookCellTextModel';
@@ -39,7 +37,9 @@ export class CellDragAndDropController extends Disposable {
 	private list!: INotebookCellList;
 
 	private isScrolling = false;
-	private scrollingDelayer: Delayer<void>;
+	private readonly scrollingDelayer: Delayer<void>;
+
+	private readonly listOnWillScrollListener = this._register(new MutableDisposable());
 
 	constructor(
 		private readonly notebookEditor: INotebookEditor,
@@ -49,8 +49,8 @@ export class CellDragAndDropController extends Disposable {
 
 		this.listInsertionIndicator = DOM.append(insertionIndicatorContainer, $('.cell-list-insertion-indicator'));
 
-		this._register(domEvent(document.body, DOM.EventType.DRAG_START, true)(this.onGlobalDragStart.bind(this)));
-		this._register(domEvent(document.body, DOM.EventType.DRAG_END, true)(this.onGlobalDragEnd.bind(this)));
+		this._register(DOM.addDisposableListener(document.body, DOM.EventType.DRAG_START, this.onGlobalDragStart.bind(this), true));
+		this._register(DOM.addDisposableListener(document.body, DOM.EventType.DRAG_END, this.onGlobalDragEnd.bind(this), true));
 
 		const addCellDragListener = (eventType: string, handler: (e: CellDragEvent) => void) => {
 			this._register(DOM.addDisposableListener(
@@ -77,13 +77,13 @@ export class CellDragAndDropController extends Disposable {
 			this.onCellDragLeave(event);
 		});
 
-		this.scrollingDelayer = new Delayer(200);
+		this.scrollingDelayer = this._register(new Delayer(200));
 	}
 
 	setList(value: INotebookCellList) {
 		this.list = value;
 
-		this.list.onWillScroll(e => {
+		this.listOnWillScrollListener.value = this.list.onWillScroll(e => {
 			if (!e.scrollTopChanged) {
 				return;
 			}
@@ -156,7 +156,7 @@ export class CellDragAndDropController extends Disposable {
 	}
 
 	private updateInsertIndicator(dropDirection: string, insertionIndicatorAbsolutePos: number) {
-		const { bottomToolbarGap } = this.notebookEditor.notebookOptions.computeBottomToolbarDimensions(this.notebookEditor.viewModel?.viewType);
+		const { bottomToolbarGap } = this.notebookEditor.notebookOptions.computeBottomToolbarDimensions(this.notebookEditor.textModel?.viewType);
 		const insertionIndicatorTop = insertionIndicatorAbsolutePos - this.list.scrollTop + bottomToolbarGap / 2;
 		if (insertionIndicatorTop >= 0) {
 			this.listInsertionIndicator.style.top = `${insertionIndicatorTop}px`;
@@ -195,11 +195,11 @@ export class CellDragAndDropController extends Disposable {
 		}
 	}
 
-	private _dropImpl(draggedCell: ICellViewModel, dropDirection: 'above' | 'below', ctx: { ctrlKey: boolean, altKey: boolean }, draggedOverCell: ICellViewModel) {
+	private _dropImpl(draggedCell: ICellViewModel, dropDirection: 'above' | 'below', ctx: { ctrlKey: boolean, altKey: boolean; }, draggedOverCell: ICellViewModel) {
 		const cellTop = this.list.getAbsoluteTopOfElement(draggedOverCell);
 		const cellHeight = this.list.elementHeight(draggedOverCell);
 		const insertionIndicatorAbsolutePos = dropDirection === 'above' ? cellTop : cellTop + cellHeight;
-		const { bottomToolbarGap } = this.notebookEditor.notebookOptions.computeBottomToolbarDimensions(this.notebookEditor.viewModel?.viewType);
+		const { bottomToolbarGap } = this.notebookEditor.notebookOptions.computeBottomToolbarDimensions(this.notebookEditor.textModel?.viewType);
 		const insertionIndicatorTop = insertionIndicatorAbsolutePos - this.list.scrollTop + bottomToolbarGap / 2;
 		const editorHeight = this.notebookEditor.getDomNode().getBoundingClientRect().height;
 		if (insertionIndicatorTop < 0 || insertionIndicatorTop > editorHeight) {
@@ -300,8 +300,8 @@ export class CellDragAndDropController extends Disposable {
 		const container = templateData.container;
 		dragHandle.setAttribute('draggable', 'true');
 
-		templateData.disposables.add(domEvent(dragHandle, DOM.EventType.DRAG_END)(() => {
-			if (!this.notebookEditor.notebookOptions.getLayoutConfiguration().dragAndDropEnabled) {
+		templateData.disposables.add(DOM.addDisposableListener(dragHandle, DOM.EventType.DRAG_END, () => {
+			if (!this.notebookEditor.notebookOptions.getLayoutConfiguration().dragAndDropEnabled || !!this.notebookEditor.viewModel?.options.isReadOnly) {
 				return;
 			}
 
@@ -310,12 +310,12 @@ export class CellDragAndDropController extends Disposable {
 			this.dragCleanup();
 		}));
 
-		templateData.disposables.add(domEvent(dragHandle, DOM.EventType.DRAG_START)(event => {
+		templateData.disposables.add(DOM.addDisposableListener(dragHandle, DOM.EventType.DRAG_START, event => {
 			if (!event.dataTransfer) {
 				return;
 			}
 
-			if (!this.notebookEditor.notebookOptions.getLayoutConfiguration().dragAndDropEnabled) {
+			if (!this.notebookEditor.notebookOptions.getLayoutConfiguration().dragAndDropEnabled || !!this.notebookEditor.viewModel?.options.isReadOnly) {
 				return;
 			}
 
@@ -332,7 +332,7 @@ export class CellDragAndDropController extends Disposable {
 	}
 
 	public startExplicitDrag(cell: ICellViewModel, _dragOffsetY: number) {
-		if (!this.notebookEditor.notebookOptions.getLayoutConfiguration().dragAndDropEnabled) {
+		if (!this.notebookEditor.notebookOptions.getLayoutConfiguration().dragAndDropEnabled || !!this.notebookEditor.viewModel?.options.isReadOnly) {
 			return;
 		}
 
@@ -341,7 +341,7 @@ export class CellDragAndDropController extends Disposable {
 	}
 
 	public explicitDrag(cell: ICellViewModel, dragOffsetY: number) {
-		if (!this.notebookEditor.notebookOptions.getLayoutConfiguration().dragAndDropEnabled) {
+		if (!this.notebookEditor.notebookOptions.getLayoutConfiguration().dragAndDropEnabled || !!this.notebookEditor.viewModel?.options.isReadOnly) {
 			return;
 		}
 
@@ -380,7 +380,7 @@ export class CellDragAndDropController extends Disposable {
 		this.setInsertIndicatorVisibility(false);
 	}
 
-	public explicitDrop(cell: ICellViewModel, ctx: { dragOffsetY: number, ctrlKey: boolean, altKey: boolean }) {
+	public explicitDrop(cell: ICellViewModel, ctx: { dragOffsetY: number, ctrlKey: boolean, altKey: boolean; }) {
 		this.currentDraggedCell = undefined;
 		this.setInsertIndicatorVisibility(false);
 

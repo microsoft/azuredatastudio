@@ -14,8 +14,8 @@
 		},
 		"dist/githubServer": {
 			"signingIn": "$(mark-github) Connexion à github.com...",
-			"signingInEnterprise": "$(mark-github) Connexion à {0} en cours...",
-			"status.git.signIn.name": "Connexion à GitHub"
+			"status.git.signIn.name": "Connexion à GitHub",
+			"validUri": "Entrez un URI valide à partir de la page Web de connexion GitHub."
 		},
 		"package": {
 			"description": "Fournisseur d'authentification GitHub",
