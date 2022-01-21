@@ -98,6 +98,7 @@ import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/common/ext
 import { VSCodeNotebookDocument } from 'sql/workbench/api/common/notebooks/vscodeNotebookDocument';
 import { VSCodeNotebookEditor } from 'sql/workbench/api/common/notebooks/vscodeNotebookEditor';
 import { convertToADSNotebookContents } from 'sql/workbench/api/common/notebooks/notebookUtils';
+import { IdGenerator } from 'vs/base/common/idGenerator';
 
 export interface IExtensionApiFactory {
 	(extension: IExtensionDescription, registry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): typeof vscode;
@@ -210,6 +211,9 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 
 	// Register API-ish commands
 	ExtHostApiCommands.register(extHostCommands);
+
+	// {{SQL CARBON EDIT}} Used for creating stubbed out DecorationTypes for compatibility purposes
+	const DecorationTypeKeys = new IdGenerator('VSCodeNotebookEditorDecorationType');
 
 	return function (extension: IExtensionDescription, extensionRegistry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): typeof vscode {
 
@@ -1168,10 +1172,12 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 				return extHostNotebookDocumentsAndEditors.onDidSaveVSCodeNotebookDocument;
 			},
 			createNotebookEditorDecorationType(options: vscode.NotebookDecorationRenderOptions): vscode.NotebookEditorDecorationType {
-				// {{SQL CARBON EDIT}} Disable VS Code notebooks
-				throw new Error(functionalityNotSupportedError);
-				// checkProposedApiEnabled(extension);
-				// return extHostNotebookEditors.createNotebookEditorDecorationType(options);
+				// {{SQL CARBON EDIT}} Use our own notebooks
+				// Returning this stub class for now, since we don't support renderer contributions yet
+				return {
+					key: DecorationTypeKeys.nextId(),
+					dispose: () => undefined
+				};
 			},
 			createRendererMessaging(rendererId) {
 				// {{SQL CARBON EDIT}} Use our own notebooks

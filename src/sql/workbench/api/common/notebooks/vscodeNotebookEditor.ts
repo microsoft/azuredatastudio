@@ -40,6 +40,6 @@ export class VSCodeNotebookEditor implements vscode.NotebookEditor {
 	}
 
 	public setDecorations(decorationType: vscode.NotebookEditorDecorationType, range: vscode.NotebookRange): void {
-		throw new Error(functionalityNotSupportedError);
+		// No-op
 	}
 }
