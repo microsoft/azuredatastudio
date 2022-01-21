@@ -740,16 +740,12 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 				return extHostNotebookDocumentsAndEditors.onDidChangeVisibleVSCodeEditors;
 			},
 			onDidChangeNotebookEditorSelection(listener, thisArgs?, disposables?) {
-				// {{SQL CARBON EDIT}} Disable VS Code notebooks
-				throw new Error(functionalityNotSupportedError);
-				// checkProposedApiEnabled(extension);
-				// return extHostNotebookEditors.onDidChangeNotebookEditorSelection(listener, thisArgs, disposables);
+				// {{SQL CARBON EDIT}} Use our own notebooks
+				return extHostNotebookDocumentsAndEditors.onDidChangeVSCodeEditorSelection(listener, thisArgs, disposables);
 			},
 			onDidChangeNotebookEditorVisibleRanges(listener, thisArgs?, disposables?) {
-				// {{SQL CARBON EDIT}} Disable VS Code notebooks
-				throw new Error(functionalityNotSupportedError);
-				// checkProposedApiEnabled(extension);
-				// return extHostNotebookEditors.onDidChangeNotebookEditorVisibleRanges(listener, thisArgs, disposables);
+				// {{SQL CARBON EDIT}} Use our own notebooks
+				return extHostNotebookDocumentsAndEditors.onDidChangeVSCodeEditorRanges(listener, thisArgs, disposables);
 			},
 			showNotebookDocument(uriOrDocument: URI | vscode.NotebookDocument, options?: vscode.NotebookDocumentShowOptions): Thenable<vscode.NotebookEditor> {
 				// {{SQL CARBON EDIT}} Use our own notebooks
