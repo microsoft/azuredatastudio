@@ -425,6 +425,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 
 		if (shouldReveal || this._bookViewer?.visible) {
+			// CAVEAT: findAndExpandParentNode assumes that the file structure defined in the toc
+			// follows the location on disk, it can fail otherwise.
 			bookItem = notebookPath ? await this.findAndExpandParentNode(notebookPath, shouldFocus) : undefined;
 			// Select + focus item in viewlet if books viewlet is already open, or if we pass in variable
 			if (bookItem?.contextValue && bookItem.contextValue !== 'pinnedNotebook') {
@@ -482,6 +484,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				if (!bookItemToExpand || expandedBookItems.includes(bookItemToExpand)) {
 					break;
 				}
+				// Since we don't have the same structure defined in the toc on disk,
+				// Check to see if the files are in the same level as the parent ->
 				// increment to reset the depth since parent is in the same level
 				depthOfNotebookInBook++;
 			}
