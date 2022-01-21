@@ -54,6 +54,7 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 	private readonly _onDidChangeActiveVSCodeEditor = new Emitter<vscode.NotebookEditor>();
 	private readonly _onDidOpenVSCodeNotebook = new Emitter<vscode.NotebookDocument>();
 	private readonly _onDidCloseVSCodeNotebook = new Emitter<vscode.NotebookDocument>();
+	private readonly _onDidSaveVSCodeNotebook = new Emitter<vscode.NotebookDocument>();
 	private readonly _onDidChangeVSCodeCellMetadata = new Emitter<vscode.NotebookCellMetadataChangeEvent>();
 	private readonly _onDidChangeVSCodeDocumentMetadata = new Emitter<vscode.NotebookDocumentMetadataChangeEvent>();
 	private readonly _onDidChangeVSCodeCellOutputs = new Emitter<vscode.NotebookCellOutputsChangeEvent>();
@@ -64,6 +65,7 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 	readonly onDidChangeActiveVSCodeEditor: Event<vscode.NotebookEditor> = this._onDidChangeActiveVSCodeEditor.event;
 	readonly onDidOpenVSCodeNotebookDocument: Event<vscode.NotebookDocument> = this._onDidOpenVSCodeNotebook.event;
 	readonly onDidCloseVSCodeNotebookDocument: Event<vscode.NotebookDocument> = this._onDidCloseVSCodeNotebook.event;
+	readonly onDidSaveVSCodeNotebookDocument: Event<vscode.NotebookDocument> = this._onDidSaveVSCodeNotebook.event;
 	readonly onDidChangeVSCodeCellMetadata: Event<vscode.NotebookCellMetadataChangeEvent> = this._onDidChangeVSCodeCellMetadata.event;
 	readonly onDidChangeVSCodeDocumentMetadata: Event<vscode.NotebookDocumentMetadataChangeEvent> = this._onDidChangeVSCodeDocumentMetadata.event;
 	readonly onDidChangeVSCodeCellOutputs: Event<vscode.NotebookCellOutputsChangeEvent> = this._onDidChangeVSCodeCellOutputs.event;

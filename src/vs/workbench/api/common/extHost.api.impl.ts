@@ -1164,10 +1164,8 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 				// return extHostNotebook.registerNotebookCellStatusBarItemProvider(extension, notebookType, provider);
 			},
 			get onDidSaveNotebookDocument(): Event<vscode.NotebookDocument> {
-				// {{SQL CARBON EDIT}} Disable VS Code notebooks
-				throw new Error(functionalityNotSupportedError);
-				// checkProposedApiEnabled(extension);
-				// return extHostNotebookDocuments.onDidSaveNotebookDocument;
+				// {{SQL CARBON EDIT}} Use our own notebooks
+				return extHostNotebookDocumentsAndEditors.onDidSaveVSCodeNotebookDocument;
 			},
 			createNotebookEditorDecorationType(options: vscode.NotebookDecorationRenderOptions): vscode.NotebookEditorDecorationType {
 				// {{SQL CARBON EDIT}} Disable VS Code notebooks
@@ -1176,10 +1174,14 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 				// return extHostNotebookEditors.createNotebookEditorDecorationType(options);
 			},
 			createRendererMessaging(rendererId) {
-				// {{SQL CARBON EDIT}} Disable VS Code notebooks
-				throw new Error(functionalityNotSupportedError);
-				// checkProposedApiEnabled(extension);
-				// return extHostNotebookRenderers.createRendererMessaging(extension, rendererId);
+				// {{SQL CARBON EDIT}} Use our own notebooks
+				// Returning this stub class for now, since we don't support renderer contributions yet
+				let receivedMessage = new Emitter<{ editor: vscode.NotebookEditor, message: any }>();
+				let rendererMessaging: vscode.NotebookRendererMessaging = {
+					onDidReceiveMessage: (listener, thisArg, disposables) => receivedMessage.event(listener, thisArg, disposables),
+					postMessage: () => Promise.resolve(false)
+				};
+				return rendererMessaging;
 			},
 			onDidChangeNotebookDocumentMetadata(listener, thisArgs?, disposables?) {
 				// {{SQL CARBON EDIT}} Use our own notebooks
