@@ -2,7 +2,7 @@
   "name": "data-workspace",
   "displayName": "Data Workspace",
   "description": "Additional common functionality for database projects",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
