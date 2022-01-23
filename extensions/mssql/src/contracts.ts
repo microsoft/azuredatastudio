@@ -1038,6 +1038,22 @@ export namespace GetSqlMigrationAssessmentItemsRequest {
 	export const type = new RequestType<SqlMigrationAssessmentParams, mssql.AssessmentResult, void, void>('migration/getassessments');
 }
 
+export interface SqlMigrationSkuRecommendationsParams {
+	dataFolder: string;
+	perfQueryIntervalInSec: number;
+	targetPlatforms: string[];
+	targetSqlInstance: string;
+	targetPercentile: number;
+	scalingFactor: number;
+	startTime: string;
+	endTime: string;
+	databaseAllowList: string[];
+}
+
+export namespace GetSqlMigrationSkuRecommendationsRequest {
+	export const type = new RequestType<SqlMigrationSkuRecommendationsParams, mssql.SkuRecommendationResult, void, void>('migration/getskurecommendations');
+}
+
 // ------------------------------- <Sql Migration> -----------------------------
 
 // ------------------------------- < Table Designer > ------------------------------------
@@ -1056,7 +1072,7 @@ export namespace ProcessTableDesignerEditRequest {
 }
 
 export namespace PublishTableDesignerChangesRequest {
-	export const type = new RequestType<azdata.designers.TableInfo, void, void, void>('tabledesigner/save');
+	export const type = new RequestType<azdata.designers.TableInfo, void, void, void>('tabledesigner/publish');
 }
 
 export namespace TableDesignerGenerateScriptRequest {
@@ -1064,7 +1080,7 @@ export namespace TableDesignerGenerateScriptRequest {
 }
 
 export namespace TableDesignerGenerateChangePreviewReportRequest {
-	export const type = new RequestType<azdata.designers.TableInfo, string, void, void>('tabledesigner/report');
+	export const type = new RequestType<azdata.designers.TableInfo, string, void, void>('tabledesigner/generatepreviewreport');
 }
 export namespace DisposeTableDesignerRequest {
 	export const type = new RequestType<azdata.designers.TableInfo, void, void, void>('tabledesigner/dispose');

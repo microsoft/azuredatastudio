@@ -913,11 +913,22 @@ declare module 'azdata' {
 		action: ActionOnCellCheckboxCheck;
 	}
 
+	export interface QueryExecuteResultSetNotificationParams {
+		/**
+		 * Contains query plans returned by the database in ResultSets.
+		 */
+		executionPlans: QueryPlanGraph[];
+	}
+
 	export interface ResultSetSummary {
 		/**
 		 * The visualization options for the result set.
 		 */
 		visualization?: VisualizationOptions;
+		/**
+		 * Generic query plan graph to be displayed in the results view.
+		 */
+		showplangraph?: QueryPlanGraph;
 	}
 
 	/**
@@ -1123,6 +1134,7 @@ declare module 'azdata' {
 			Script = 'script',
 			ForeignKeys = 'foreignKeys',
 			CheckConstraints = 'checkConstraints',
+			Indexes = 'indexes'
 		}
 		/**
 		 * Name of the common table column properties.
@@ -1169,6 +1181,22 @@ declare module 'azdata' {
 		}
 
 		/**
+		 * Name of the common index properties.
+		 * Extensions can use the name to access the designer view model.
+		 */
+		export enum TableIndexProperty {
+			Name = 'name',
+			Columns = 'columns'
+		}
+
+		/**
+		 * Name of the common properties of table index column specification.
+		 */
+		export enum TableIndexColumnSpecificationProperty {
+			Column = 'column'
+		}
+
+		/**
 		 * The table designer view definition.
 		 */
 		export interface TableDesignerView {
@@ -1198,6 +1226,19 @@ declare module 'azdata' {
 			 * Default columns to display values are: Name, Expression.
 			 */
 			checkConstraintTableOptions?: TableDesignerBuiltInTableViewOptions;
+			/**
+			 * Indexes table options.
+			 * Common index properties are handled by Azure Data Studio. see {@link TableIndexProperty}
+			 * Default columns to display values are: Name.
+			 */
+			indexTableOptions?: TableDesignerBuiltInTableViewOptions;
+
+			/**
+			* Index column specification table options.
+			* Common index properties are handled by Azure Data Studio. see {@link TableIndexColumnSpecificationProperty}
+			* Default columns to display values are: Column.
+			*/
+			indexColumnSpecificationTableOptions?: TableDesignerBuiltInTableViewOptions;
 		}
 
 		export interface TableDesignerBuiltInTableViewOptions {
@@ -1391,5 +1432,101 @@ declare module 'azdata' {
 			 */
 			errors?: { message: string, property?: DesignerEditPath }[];
 		}
+	}
+
+	export interface QueryPlanGraph {
+		/**
+		 * Root of the query plan tree
+		 */
+		root: QueryPlanGraphNode;
+		/**
+		 * Underlying query for the query plan graph.
+		 */
+		query: string;
+	}
+
+	export interface QueryPlanGraphNode {
+		/**
+		 * Type of the node. This property determines the icon that is displayed for it
+		 */
+		type: string;
+		/**
+		 * Cost associated with the node
+		 */
+		cost: number;
+		/**
+		 * Cost of the node subtree
+		 */
+		subTreeCost: number;
+		/**
+		 * Relative cost of the node compared to its siblings.
+		 */
+		relativeCost: number;
+		/**
+		 * Time take by the node operation in milliseconds
+		 */
+		elapsedTimeInMs: number;
+		/**
+		 * Node properties to be shown in the tooltip
+		 */
+		properties: QueryPlanGraphElementProperty[];
+		/**
+		 * Display name for the node
+		 */
+		name: string;
+		/**
+		 * Description associated with the node.
+		 */
+		description: string;
+		/**
+		 * Subtext displayed under the node name
+		 */
+		subtext: string[];
+		/**
+		 * Direct children of the nodes.
+		 */
+		children: QueryPlanGraphNode[];
+		/**
+		 * Edges corresponding to the children.
+		 */
+		edges: QueryGraphEdge[];
+	}
+
+	export interface QueryGraphEdge {
+		/**
+		 * Count of the rows returned by the subtree of the edge.
+		 */
+		rowCount: number;
+		/**
+		 * Size of the rows returned by the subtree of the edge.
+		 */
+		rowSize: number;
+		/**
+		 * Edge properties to be shown in the tooltip.
+		 */
+		properties: QueryPlanGraphElementProperty[]
+	}
+
+	export interface QueryPlanGraphElementProperty {
+		/**
+		 * Name of the property
+		 */
+		name: string;
+		/**
+		 * Formatted value for the property
+		 */
+		formattedValue: string;
+		/**
+		 * Flag to show/hide props in tooltip
+		 */
+		showInToolTip: boolean;
+		/**
+		 * Display order of property
+		 */
+		displayOrder: number;
+		/**
+		 *  Flag to indicate if the property has a longer value so that it will be shown at the bottom of the tooltip
+		 */
+		isLongString: boolean;
 	}
 }

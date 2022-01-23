@@ -14,6 +14,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { Schemas } from 'sql/base/common/schemas';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 
 const NewTable: string = localize('tableDesigner.newTable', "New Table");
 
@@ -27,7 +28,8 @@ export class TableDesignerInput extends EditorInput {
 		private _provider: TableDesignerProvider,
 		private _tableInfo: azdata.designers.TableInfo,
 		@IInstantiationService private readonly _instantiationService: IInstantiationService,
-		@IEditorService editorService: IEditorService) {
+		@IEditorService editorService: IEditorService,
+		@INotificationService private readonly _notificationService: INotificationService) {
 		super();
 		this._designerComponentInput = this._instantiationService.createInstance(TableDesignerComponentInput, this._provider, this._tableInfo);
 		this._register(this._designerComponentInput.onStateChange((e) => {
@@ -81,7 +83,11 @@ export class TableDesignerInput extends EditorInput {
 	}
 
 	override async save(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
-		await this._designerComponentInput.openPublishDialog();
+		if (this._designerComponentInput.pendingAction) {
+			this._notificationService.warn(localize('tableDesigner.OperationInProgressWarning', "The operation cannot be performed while another operation is in progress."));
+		} else {
+			await this._designerComponentInput.openPublishDialog();
+		}
 		return this;
 	}
 

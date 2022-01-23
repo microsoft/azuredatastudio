@@ -32,6 +32,10 @@ export const edgeSqlDatabaseProjectTypeId = 'SqlDbEdgeProj';
 export const edgeProjectTypeDisplayName = localize('edgeProjectTypeDisplayName', "SQL Edge");
 export const edgeProjectTypeDescription = localize('edgeProjectTypeDescription', "Start with the core pieces to develop and publish schemas for SQL Edge");
 
+export const emptySqlDatabaseSdkProjectTypeId = 'EmptySqlDbSdkProj';
+export const emptySdkProjectTypeDisplayName = localize('emptySdkProjectTypeDisplayName', "SQL Database (SDK)");
+export const emptySdkProjectTypeDescription = localize('emptySdkProjectTypeDescription', "Develop and publish schemas for SQL databases with Microsoft.Build.Sql (preview), starting from an empty SDK-style project.");
+
 // Dashboard
 export const addItemAction = localize('addItemAction', "Add Item");
 export const schemaCompareAction = localize('schemaCompareAction', "Schema Compare");
@@ -87,6 +91,7 @@ export const schemaObjectType = localize('schemaObjectType', "Schema/Object Type
 export const defaultProjectNameStarter = localize('defaultProjectNameStarter', "DatabaseProject");
 export const location = localize('location', "Location");
 export const reloadProject = localize('reloadProject', "Would you like to reload your database project?");
+export const learnMore = localize('learnMore', "Learn More");
 export function newObjectNamePrompt(objectType: string) { return localize('newObjectNamePrompt', 'New {0} name:', objectType); }
 export function deleteConfirmation(toDelete: string) { return localize('deleteConfirmation', "Are you sure you want to delete {0}?", toDelete); }
 export function deleteConfirmationContents(toDelete: string) { return localize('deleteConfirmationContents', "Are you sure you want to delete {0} and all of its contents?", toDelete); }
@@ -190,7 +195,7 @@ export const dockerContainerNotRunningErrorMessage = localize('dockerContainerNo
 export const dockerContainerFailedToRunErrorMessage = localize('dockerContainerFailedToRunErrorMessage', "Failed to run the docker container");
 export const connectingToSqlServerOnDockerMessage = localize('connectingToSqlServerOnDockerMessage', "Connecting to SQL Server on Docker");
 export const deployProjectFailedMessage = localize('deployProjectFailedMessage', "Failed to open a connection to the deployed database'");
-export const containerAlreadyExistForProject = localize('containerAlreadyExistForProject', "Other servers on container already exist for the project. Do you want to delete them?");
+export const containerAlreadyExistForProject = localize('containerAlreadyExistForProject', "Containers already exist for this project. Do you want to delete them before deploying a new one?");
 export const checkoutOutputMessage = localize('checkoutOutputMessage', "Check output pane for more details");
 export function taskFailedError(taskName: string, err: string): string { return localize('taskFailedError.error', "Failed to complete task '{0}'. Error: {1}", taskName, err); }
 export function publishToContainerFailed(errorMessage: string) { return localize('publishToContainerFailed', "Failed to publish to container. {0}", errorMessage); }
@@ -559,3 +564,9 @@ export function jsonParseError(error: string, line: number, column: number) { re
 export const moreInformation = localize('moreInformation', "More Information");
 export const addPackageReferenceMessage = localize('addPackageReferenceMessage', 'To use SQL bindings, ensure your Azure Functions project has a reference to {0}', sqlExtensionPackageName);
 export const addSqlBindingPackageError = localize('addSqlBindingPackageError', 'Error adding Sql Binding extension package to project');
+export const failedToGetConnectionString = localize('failedToGetConnectionString', 'An error occurred generating the connection string for the selected connection');
+export const connectionProfile = localize('connectionProfile', 'Select a connection profile');
+export const userConnectionString = localize('userConnectionString', 'Enter connection string');
+export const selectConnectionString = localize('selectConnectionString', 'Select SQL connection string method');
+export const selectConnectionError = (err?: any) => err ? localize('selectConnectionError', "Failed to set connection string app setting: {0}", utils.getErrorMessage(err)) : localize('unableToSetConnectionString', "Failed to set connection string app setting");
+

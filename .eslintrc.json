@@ -761,7 +761,8 @@
 					"vscode-textmate",
 					"vscode-oniguruma",
 					"iconv-lite-umd",
-					"jschardet"
+					"jschardet",
+					"azdataGraph"
 				]
 			},
 			{
