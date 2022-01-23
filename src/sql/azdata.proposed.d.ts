@@ -1134,6 +1134,7 @@ declare module 'azdata' {
 			Script = 'script',
 			ForeignKeys = 'foreignKeys',
 			CheckConstraints = 'checkConstraints',
+			Indexes = 'indexes'
 		}
 		/**
 		 * Name of the common table column properties.
@@ -1180,6 +1181,22 @@ declare module 'azdata' {
 		}
 
 		/**
+		 * Name of the common index properties.
+		 * Extensions can use the name to access the designer view model.
+		 */
+		export enum TableIndexProperty {
+			Name = 'name',
+			Columns = 'columns'
+		}
+
+		/**
+		 * Name of the common properties of table index column specification.
+		 */
+		export enum TableIndexColumnSpecificationProperty {
+			Column = 'column'
+		}
+
+		/**
 		 * The table designer view definition.
 		 */
 		export interface TableDesignerView {
@@ -1209,6 +1226,19 @@ declare module 'azdata' {
 			 * Default columns to display values are: Name, Expression.
 			 */
 			checkConstraintTableOptions?: TableDesignerBuiltInTableViewOptions;
+			/**
+			 * Indexes table options.
+			 * Common index properties are handled by Azure Data Studio. see {@link TableIndexProperty}
+			 * Default columns to display values are: Name.
+			 */
+			indexTableOptions?: TableDesignerBuiltInTableViewOptions;
+
+			/**
+			* Index column specification table options.
+			* Common index properties are handled by Azure Data Studio. see {@link TableIndexColumnSpecificationProperty}
+			* Default columns to display values are: Column.
+			*/
+			indexColumnSpecificationTableOptions?: TableDesignerBuiltInTableViewOptions;
 		}
 
 		export interface TableDesignerBuiltInTableViewOptions {

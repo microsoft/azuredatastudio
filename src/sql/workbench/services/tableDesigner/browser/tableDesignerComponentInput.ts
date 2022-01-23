@@ -212,6 +212,10 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			tabs.push(this.getCheckConstraintsTab(designerInfo.view.checkConstraintTableOptions));
 		}
 
+		if (designerInfo.view.indexTableOptions?.showTable) {
+			tabs.push(this.getIndexesTab(designerInfo.view.indexTableOptions, designerInfo.view.indexColumnSpecificationTableOptions));
+		}
+
 		if (designerInfo.view.additionalTabs) {
 			tabs.push(...designerInfo.view.additionalTabs);
 		}
@@ -331,11 +335,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			}
 		];
 
-		if (options.additionalProperties) {
-			columnProperties.push(...options.additionalProperties);
-		}
-
-		const displayProperties = options.propertiesToDisplay?.length > 0 ? options.propertiesToDisplay : [
+		const displayProperties = this.getTableDisplayProperties(options, [
 			designers.TableColumnProperty.Name,
 			designers.TableColumnProperty.Type,
 			designers.TableColumnProperty.Length,
@@ -344,7 +344,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			designers.TableColumnProperty.IsPrimaryKey,
 			designers.TableColumnProperty.AllowNulls,
 			designers.TableColumnProperty.DefaultValue,
-		];
+		]);
 
 		return <DesignerTab>{
 			title: localize('tableDesigner.columnsTabTitle', "Columns"),
@@ -356,7 +356,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 					componentProperties: <DesignerTableProperties>{
 						ariaLabel: localize('tableDesigner.columnsTabTitle', "Columns"),
 						columns: displayProperties,
-						itemProperties: columnProperties,
+						itemProperties: this.addAdditionalTableProperties(options, columnProperties),
 						objectTypeDisplayName: localize('tableDesigner.columnTypeName', "Column"),
 						canAddRows: options.canAddRows,
 						canRemoveRows: options.canRemoveRows
@@ -437,16 +437,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 					canAddRows: options.canAddRows,
 					canRemoveRows: options.canRemoveRows
 				}
-			},
-		];
-
-		if (options.additionalProperties) {
-			foreignKeyProperties.push(...options.additionalProperties);
-		}
-
-		const displayProperties = options.propertiesToDisplay?.length > 0 ? options.propertiesToDisplay : [
-			designers.TableForeignKeyProperty.Name,
-			designers.TableForeignKeyProperty.PrimaryKeyTable
+			}
 		];
 
 		return <DesignerTab>{
@@ -458,8 +449,8 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 					showInPropertiesView: false,
 					componentProperties: <DesignerTableProperties>{
 						ariaLabel: localize('tableDesigner.foreignKeysTabTitle', "Foreign Keys"),
-						columns: displayProperties,
-						itemProperties: foreignKeyProperties,
+						columns: this.getTableDisplayProperties(options, [designers.TableForeignKeyProperty.Name, designers.TableForeignKeyProperty.PrimaryKeyTable]),
+						itemProperties: this.addAdditionalTableProperties(options, foreignKeyProperties),
 						objectTypeDisplayName: localize('tableDesigner.ForeignKeyTypeName', "Foreign Key"),
 						canAddRows: options.canAddRows,
 						canRemoveRows: options.canRemoveRows
@@ -490,12 +481,6 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			}
 		];
 
-		if (options.additionalProperties) {
-			checkConstraintProperties.push(...options.additionalProperties);
-		}
-
-		const displayProperties = options.propertiesToDisplay?.length > 0 ? options.propertiesToDisplay : [designers.TableCheckConstraintProperty.Name, designers.TableCheckConstraintProperty.Expression];
-
 		return <DesignerTab>{
 			title: localize('tableDesigner.checkConstraintsTabTitle', "Check Constraints"),
 			components: [
@@ -505,8 +490,8 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 					showInPropertiesView: false,
 					componentProperties: <DesignerTableProperties>{
 						ariaLabel: localize('tableDesigner.checkConstraintsTabTitle', "Check Constraints"),
-						columns: displayProperties,
-						itemProperties: checkConstraintProperties,
+						columns: this.getTableDisplayProperties(options, [designers.TableCheckConstraintProperty.Name, designers.TableCheckConstraintProperty.Expression]),
+						itemProperties: this.addAdditionalTableProperties(options, checkConstraintProperties),
 						objectTypeDisplayName: localize('tableDesigner.checkConstraintTypeName', "Check Constraint"),
 						canAddRows: options.canAddRows,
 						canRemoveRows: options.canRemoveRows
@@ -515,6 +500,74 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			]
 		};
 	}
+
+	private getIndexesTab(options: azdata.designers.TableDesignerBuiltInTableViewOptions, columnSpecTableOptions: azdata.designers.TableDesignerBuiltInTableViewOptions): DesignerTab {
+		const columnSpecProperties: DesignerDataPropertyInfo[] = [
+			{
+				componentType: 'dropdown',
+				propertyName: designers.TableIndexColumnSpecificationProperty.Column,
+				description: localize('designer.index.column.description.name', "The name of the column."),
+				componentProperties: {
+					title: localize('tableDesigner.index.column.name', "Column"),
+					width: 100
+				}
+			}];
+		const indexProperties: DesignerDataPropertyInfo[] = [
+			{
+				componentType: 'input',
+				propertyName: designers.TableIndexProperty.Name,
+				description: localize('designer.index.description.name', "The name of the index."),
+				componentProperties: {
+					title: localize('tableDesigner.indexName', "Name"),
+					width: 200
+				}
+			}, {
+				componentType: 'table',
+				propertyName: designers.TableIndexProperty.Columns,
+				description: localize('designer.index.description.columns', "The columns of the index."),
+				group: localize('tableDesigner.indexColumns', "Columns"),
+				componentProperties: <DesignerTableProperties>{
+					ariaLabel: localize('tableDesigner.indexColumns', "Columns"),
+					columns: this.getTableDisplayProperties(columnSpecTableOptions, [designers.TableIndexColumnSpecificationProperty.Column]),
+					itemProperties: this.addAdditionalTableProperties(columnSpecTableOptions, columnSpecProperties),
+					objectTypeDisplayName: '',
+					canAddRows: columnSpecTableOptions.canAddRows,
+					canRemoveRows: columnSpecTableOptions.canRemoveRows
+				}
+			}
+		];
+
+		return <DesignerTab>{
+			title: localize('tableDesigner.indexesTabTitle', "Indexes"),
+			components: [
+				{
+					componentType: 'table',
+					propertyName: designers.TableProperty.Indexes,
+					showInPropertiesView: false,
+					componentProperties: <DesignerTableProperties>{
+						ariaLabel: localize('tableDesigner.indexesTabTitle', "Indexes"),
+						columns: this.getTableDisplayProperties(options, [designers.TableIndexProperty.Name]),
+						itemProperties: this.addAdditionalTableProperties(options, indexProperties),
+						objectTypeDisplayName: localize('tableDesigner.IndexTypeName', "Index"),
+						canAddRows: options.canAddRows,
+						canRemoveRows: options.canRemoveRows
+					}
+				}
+			]
+		};
+	}
+
+	private getTableDisplayProperties(options: azdata.designers.TableDesignerBuiltInTableViewOptions, defaultProperties: string[]): string[] {
+		return options.propertiesToDisplay?.length > 0 ? options.propertiesToDisplay : defaultProperties;
+	}
+
+	private addAdditionalTableProperties(options: azdata.designers.TableDesignerBuiltInTableViewOptions, properties: DesignerDataPropertyInfo[]): DesignerDataPropertyInfo[] {
+		if (options.additionalProperties) {
+			properties.push(...options.additionalProperties);
+		}
+		return properties;
+	}
+
 	private setDefaultData(): void {
 		const properties = Object.keys(this._viewModel);
 		this.setDefaultInputData(properties, designers.TableProperty.Name);

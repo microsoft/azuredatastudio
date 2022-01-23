@@ -435,8 +435,8 @@ export class QueryModelService implements IQueryModelService {
 		// Get existing query runner
 		let queryRunner = this.internalGetQueryRunner(oldUri);
 		if (!queryRunner) {
-			this._logService.error(`A Query and QueryRunner was not found for '${oldUri}'`);
-			throw new Error(nls.localize('queryModelService.noQueryFoundForUri', 'No Query found for {0}', oldUri));
+			// Nothing to do if we don't have a query runner currently (no connection)
+			return;
 		}
 		else if (this._queryInfoMap.has(newUri)) {
 			this._logService.error(`New URI '${newUri}' already has query info associated with it.`);
