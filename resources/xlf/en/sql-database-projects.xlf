@@ -149,7 +149,7 @@
       <source xml:lang="en">Connection string setting specified in "local.settings.json"</source>
     </trans-unit>
     <trans-unit id="containerAlreadyExistForProject">
-      <source xml:lang="en">Other servers on container already exist for the project. Do you want to delete them?</source>
+      <source xml:lang="en">Containers already exist for this project. Do you want to delete them before deploying a new one?</source>
     </trans-unit>
     <trans-unit id="createNew">
       <source xml:lang="en">Create New</source>
