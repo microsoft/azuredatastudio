@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Disposable } from 'vs/base/common/lifecycle';
-import { Emitter, Event } from 'vs/base/common/event';
 
 export enum QueryResultsWriterMode {
 	ToGrid,
@@ -16,25 +15,13 @@ export class QueryResultsWriterStatus extends Disposable {
 
 	private writerMode: QueryResultsWriterMode;
 
-	private readonly _onStatusChanged = this._register(new Emitter<void>());
-	public readonly onStatusChanged: Event<void> = this._onStatusChanged.event;
-
-	public static getInstance(): QueryResultsWriterStatus {
-		if (this.instance === undefined) {
-			this.instance = new QueryResultsWriterStatus();
-		}
-
-		return this.instance;
-	}
-
-	private constructor(mode: QueryResultsWriterMode = QueryResultsWriterMode.ToGrid) {
+	constructor(mode: QueryResultsWriterMode = QueryResultsWriterMode.ToGrid) {
 		super();
 		this.writerMode = mode;
 	}
 
 	public set mode(mode: QueryResultsWriterMode) {
 		this.writerMode = mode;
-		this._onStatusChanged.fire();
 	}
 
 	public get mode() {
@@ -43,5 +30,9 @@ export class QueryResultsWriterStatus extends Disposable {
 
 	public isWritingToGrid(): boolean {
 		return this.writerMode === QueryResultsWriterMode.ToGrid;
+	}
+
+	public isWritingToFIle(): boolean {
+		return this.writerMode === QueryResultsWriterMode.ToFile;
 	}
 }

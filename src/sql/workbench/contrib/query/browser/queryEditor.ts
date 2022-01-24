@@ -44,6 +44,7 @@ import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IEditorOptions } from 'vs/platform/editor/common/editor';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionOptionSpecialType } from 'sql/platform/connection/common/interfaces';
+import { QueryResultsWriterMode, QueryResultsWriterStatus } from 'sql/workbench/contrib/query/common/queryResultsDisplayStatus';
 
 const QUERY_EDITOR_VIEW_STATE_PREFERENCE_KEY = 'queryEditorViewState';
 
@@ -85,6 +86,8 @@ export class QueryEditor extends EditorPane {
 
 	private editorMemento: IEditorMemento<IQueryEditorViewState>;
 
+	private resultsWriterStatus: QueryResultsWriterStatus;
+
 	//actions
 	private _runQueryAction: actions.RunQueryAction;
 	private _cancelQueryAction: actions.CancelQueryAction;
@@ -116,6 +119,8 @@ export class QueryEditor extends EditorPane {
 		this.editorMemento = this.getEditorMemento<IQueryEditorViewState>(editorGroupService, QUERY_EDITOR_VIEW_STATE_PREFERENCE_KEY, 100);
 
 		this.queryEditorVisible = queryContext.QueryEditorVisibleContext.bindTo(contextKeyService);
+
+		this.resultsWriterStatus = new QueryResultsWriterStatus();
 
 		// Clear view state for deleted files
 		this._register(fileService.onDidFilesChange(e => this.onFilesChanged(e)));
@@ -653,5 +658,13 @@ export class QueryEditor extends EditorPane {
 
 	public chart(dataId: { batchId: number, resultId: number }): void {
 		this.resultsEditor.chart(dataId);
+	}
+
+	public get queryResultsWriterStatus() {
+		return this.resultsWriterStatus;
+	}
+
+	public set queryResultsWriterMode(mode: QueryResultsWriterMode) {
+		this.resultsWriterStatus.mode = mode;
 	}
 }
