@@ -51,7 +51,7 @@ import { IQueryModelService } from 'sql/workbench/services/query/common/queryMod
 import { FilterButtonWidth, HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { HybridDataProvider } from 'sql/base/browser/ui/table/hybridDataProvider';
 import { INotificationService } from 'vs/platform/notification/common/notification';
-import { QueryResultsWriterStatus } from 'sql/workbench/contrib/query/common/queryResultsDisplayStatus';
+import { QueryEditor } from 'sql/workbench/contrib/query/browser/queryEditor';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -72,9 +72,9 @@ export class GridPanel extends Disposable {
 	private tables: Array<GridTable<any>> = [];
 	private tableDisposable = this._register(new DisposableStore());
 	private queryRunnerDisposables = this._register(new DisposableStore());
-	private queryResultsWriterStatus: QueryResultsWriterStatus;
 
 	private runner: QueryRunner;
+	private isWritingResultsToGrid: boolean;
 
 	private maximizedGrid: GridTable<any>;
 	private _state: GridPanelState | undefined;
@@ -84,6 +84,7 @@ export class GridPanel extends Disposable {
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@ILogService private readonly logService: ILogService,
 		@IThemeService private readonly themeService: IThemeService,
+		@IEditorService private readonly editorService: IEditorService
 	) {
 		super();
 		this.scrollableView = new ScrollableView(this.container);
@@ -92,8 +93,6 @@ export class GridPanel extends Disposable {
 				this.state.scrollPosition = e.scrollTop;
 			}
 		});
-
-		this.queryResultsWriterStatus = QueryResultsWriterStatus.getInstance();
 	}
 
 	public render(container: HTMLElement): void {
@@ -108,6 +107,10 @@ export class GridPanel extends Disposable {
 	}
 
 	public focus(): void {
+		if (!this.isWritingResultsToGrid) {
+			return;
+		}
+
 		// will need to add logic to save the focused grid and focus that
 		this.tables[0].focus();
 	}
@@ -119,6 +122,9 @@ export class GridPanel extends Disposable {
 		this.queryRunnerDisposables.add(this.runner.onResultSet(this.onResultSet, this));
 		this.queryRunnerDisposables.add(this.runner.onResultSetUpdate(this.updateResultSet, this));
 		this.queryRunnerDisposables.add(this.runner.onQueryStart(() => {
+			let editor = this.editorService.activeEditorPane as QueryEditor;
+			this.isWritingResultsToGrid = editor.queryResultsWriterStatus.isWritingToGrid();
+
 			if (this.state) {
 				this.state.tableStates = [];
 			}
@@ -144,7 +150,7 @@ export class GridPanel extends Disposable {
 
 	private onResultSet(resultSet: ResultSetSummary | ResultSetSummary[]) {
 		// Can exit early if not displaying results in the grid.
-		if (!this.queryResultsWriterStatus.isWritingToGrid()) {
+		if (!this.isWritingResultsToGrid) {
 			return;
 		}
 
@@ -178,7 +184,7 @@ export class GridPanel extends Disposable {
 
 	private updateResultSet(resultSet: ResultSetSummary | ResultSetSummary[]) {
 		// Can exit early if not displaying results in the grid.
-		if (!this.queryResultsWriterStatus.isWritingToGrid()) {
+		if (!this.isWritingResultsToGrid) {
 			return;
 		}
 

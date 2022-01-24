@@ -25,21 +25,15 @@ import { URI } from 'vs/base/common/uri';
 import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { ILogService } from 'vs/platform/log/common/log';
-import { QueryResultsWriterStatus } from 'sql/workbench/contrib/query/common/queryResultsDisplayStatus';
 
 class MessagesView extends Disposable implements IPanelView {
 	private messagePanel: MessagePanel;
 	private container = document.createElement('div');
-	private disposableStore = this._register(new DisposableStore);
-	private queryResultsWriterStatus: QueryResultsWriterStatus;
 
 	constructor(private instantiationService: IInstantiationService) {
 		super();
 		this.messagePanel = this._register(this.instantiationService.createInstance(MessagePanel));
 		this.messagePanel.render(this.container);
-
-		this.queryResultsWriterStatus = QueryResultsWriterStatus.getInstance();
-		this.disposableStore.add(this.queryResultsWriterStatus.onStatusChanged(this.onResultsWriterStatusChanged, this));
 	}
 
 	render(container: HTMLElement): void {
@@ -62,10 +56,6 @@ class MessagesView extends Disposable implements IPanelView {
 
 	public set queryRunner(runner: QueryRunner) {
 		this.messagePanel.queryRunner = runner;
-	}
-
-	private onResultsWriterStatusChanged() {
-		this.messagePanel.changeQueryResultsWriter();
 	}
 }
 
@@ -176,7 +166,6 @@ export class QueryResultsView extends Disposable {
 	private qpTab: QueryPlanTab;
 	private topOperationsTab: TopOperationsTab;
 	private dynamicModelViewTabs: QueryModelViewTab[] = [];
-	private queryResultsWriterStatus: QueryResultsWriterStatus;
 
 	private runnerDisposables = new DisposableStore();
 
@@ -189,7 +178,6 @@ export class QueryResultsView extends Disposable {
 		@ILogService private logService: ILogService
 	) {
 		super();
-		this.queryResultsWriterStatus = QueryResultsWriterStatus.getInstance();
 		this.resultsTab = this._register(new ResultsTab(instantiationService));
 		this.messagesTab = this._register(new MessagesTab(instantiationService));
 		this.chartTab = this._register(new ChartTab(instantiationService));
@@ -395,11 +383,6 @@ export class QueryResultsView extends Disposable {
 	}
 
 	public showResults() {
-		// Don't need to show the results tab when the user has chosen not to send results to the grid.
-		if (!this.queryResultsWriterStatus.isWritingToGrid()) {
-			return;
-		}
-
 		if (!this._panelView.contains(this.resultsTab)) {
 			this._panelView.pushTab(this.resultsTab, 0);
 		}

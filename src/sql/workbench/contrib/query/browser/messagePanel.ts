@@ -35,7 +35,6 @@ import { IRange } from 'vs/editor/common/core/range';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 import { MessagesPanelQueryResultsWriter } from 'sql/workbench/contrib/query/browser/messagesPanelQueryResultsWriter';
-import { QueryResultsWriterStatus } from 'sql/workbench/contrib/query/common/queryResultsDisplayStatus';
 import { FileQueryResultsWriter } from 'sql/workbench/contrib/query/browser/fileQueryResultsWriter';
 
 export interface IResultMessageIntern {
@@ -97,11 +96,10 @@ export class MessagePanel extends Disposable {
 
 	private queryRunnerDisposables = this._register(new DisposableStore());
 	private _treeStates = new Map<string, IDataTreeViewState>();
-	private currenturi: string;
+	private currentUri: string;
 
 	private tree: WorkbenchDataTree<Model, IResultMessageIntern, FuzzyScore>;
 	private runner: QueryRunner;
-	private queryResultsWriterStatus: QueryResultsWriterStatus;
 	private queryResultsWriter: IQueryResultsWriter;
 
 	constructor(
@@ -110,7 +108,8 @@ export class MessagePanel extends Disposable {
 		@IContextMenuService private readonly contextMenuService: IContextMenuService,
 		@IClipboardService private readonly clipboardService: IClipboardService,
 		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService,
-		@IConfigurationService private configurationService: IConfigurationService
+		@IConfigurationService private configurationService: IConfigurationService,
+		@IEditorService private readonly editorService: IEditorService
 	) {
 		super();
 		const wordWrap = this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').messages.wordwrap;
@@ -141,8 +140,7 @@ export class MessagePanel extends Disposable {
 		this._register(attachListStyler(this.tree, this.themeService));
 		this._register(this.themeService.onDidColorThemeChange(this.applyStyles, this));
 		this.applyStyles(this.themeService.getColorTheme());
-		this.queryResultsWriterStatus = QueryResultsWriterStatus.getInstance();
-		this.queryResultsWriter = new MessagesPanelQueryResultsWriter(this.model, this.tree, this._treeStates, this.currenturi);
+		this.queryResultsWriter = new MessagesPanelQueryResultsWriter(this.model, this.tree, this._treeStates, this.currentUri);
 	}
 
 	private onContextMenu(event: ITreeContextMenuEvent<IResultMessageIntern>): void {
@@ -198,18 +196,16 @@ export class MessagePanel extends Disposable {
 	public set queryRunner(runner: QueryRunner) {
 		this.runner = runner;
 
-		if (this.currenturi) {
-			this._treeStates.set(this.currenturi, this.tree.getViewState());
+		if (this.currentUri) {
+			this._treeStates.set(this.currentUri, this.tree.getViewState());
 		}
 		this.queryRunnerDisposables.clear();
 		this.reset();
-		this.currenturi = runner.uri;
+		this.currentUri = runner.uri;
 
 		this.queryRunnerDisposables.add(runner.onQueryStart(() => {
-			this.model.messages = [];
-			this.model.totalExecuteMessage = undefined;
-			this.tree.updateChildren();
-
+			this.queryResultsWriter.reset();
+			this.setSelectedQueryResultsWriter();
 			this.queryResultsWriter.onQueryStart();
 		}));
 
@@ -225,14 +221,16 @@ export class MessagePanel extends Disposable {
 			this.queryResultsWriter.updateResultSet(resultSet);
 		}));
 
-		if (this.queryResultsWriterStatus.isWritingToGrid()) {
+		let editor = this.editorService.activeEditorPane as QueryEditor;
+		if (editor.queryResultsWriterStatus.isWritingToGrid()) {
 			this.onMessage(runner.messages, true);
 		}
 	}
 
-	public changeQueryResultsWriter() {
-		if (this.queryResultsWriterStatus.isWritingToGrid()) {
-			this.queryResultsWriter = new MessagesPanelQueryResultsWriter(this.model, this.tree, this._treeStates, this.currenturi);
+	private setSelectedQueryResultsWriter() {
+		let editor = this.editorService.activeEditorPane as QueryEditor;
+		if (editor.queryResultsWriterStatus.isWritingToGrid()) {
+			this.queryResultsWriter = new MessagesPanelQueryResultsWriter(this.model, this.tree, this._treeStates, this.currentUri);
 		}
 		else {
 			this.queryResultsWriter = this.instantiationService.createInstance(FileQueryResultsWriter, this.runner);
