@@ -256,7 +256,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		Logger.write(LogLevel.Verbose, 'Fetching token');
 		const tokenUrl = `${this.loginEndpointUrl}${tenant.id}/oauth2/token`;
 		const response = await this.makePostRequest(tokenUrl, postData);
-
+		Logger.write(LogLevel.Verbose, `Token: ${response}`);
 		if (response.data.error === 'interaction_required') {
 			return this.handleInteractionRequired(tenant, resource);
 		}
@@ -342,6 +342,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			Logger.write(LogLevel.Verbose, 'Fetching tenants', tenantUri);
 			const tenantResponse = await this.makeGetRequest(tenantUri, token.token);
 			const tenants: Tenant[] = tenantResponse.data.value.map((tenantInfo: TenantResponse) => {
+				Logger.write(LogLevel.Verbose, `Tenant: ${tenantInfo.displayName}`);
 				return {
 					id: tenantInfo.tenantId,
 					displayName: tenantInfo.displayName ? tenantInfo.displayName : localize('azureWorkAccountDisplayName', "Work or school account"),
@@ -373,8 +374,9 @@ export abstract class AzureAuth implements vscode.Disposable {
 			throw new AzureAuthError(msg, 'Adding account to cache failed', undefined);
 		}
 		try {
-			Logger.write(LogLevel.Verbose, 'Saving token');
+			Logger.write(LogLevel.Verbose, `Saving access token: ${accessToken}`);
 			await this.tokenCache.saveCredential(`${accountKey.accountId}_access_${resource.id}_${tenant.id}`, JSON.stringify(accessToken));
+			Logger.write(LogLevel.Verbose, `Saving refresh token: ${refreshToken}`);
 			await this.tokenCache.saveCredential(`${accountKey.accountId}_refresh_${resource.id}_${tenant.id}`, JSON.stringify(refreshToken));
 			this.memdb.set(`${accountKey.accountId}_${tenant.id}_${resource.id}`, expiresOn);
 		} catch (ex) {
