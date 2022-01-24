@@ -3,50 +3,18 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/commands';
-import { KeyMod, KeyCode, KeyChord } from 'vs/base/common/keyCodes';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IWorkbenchActionRegistry, Extensions as WorkbenchActionExtensions } from 'vs/workbench/common/actions';
 import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
 import { ExtensionsLabel, IExtensionGalleryService, IGalleryExtension } from 'vs/platform/extensionManagement/common/extensionManagement';
-import { OpenExtensionAuthoringDocsAction, HideActivityBarViewContainers, HideSettings, HidePanel } from 'sql/workbench/contrib/extensions/browser/extensionsActions';
+import { OpenExtensionAuthoringDocsAction } from 'sql/workbench/contrib/extensions/browser/extensionsActions';
 import { localize } from 'vs/nls';
 import { deepClone } from 'vs/base/common/objects';
-import { IWorkbenchContribution, Extensions as WorkbenchExtensions, IWorkbenchContributionsRegistry } from 'vs/workbench/common/contributions';
-import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
-import product from 'vs/platform/product/common/product';
 
 // Global Actions
 const actionRegistry = Registry.as<IWorkbenchActionRegistry>(WorkbenchActionExtensions.WorkbenchActions);
 actionRegistry.registerWorkbenchAction(SyncActionDescriptor.from(OpenExtensionAuthoringDocsAction), 'Extensions: Author an Extension...', ExtensionsLabel);
-
-actionRegistry.registerWorkbenchAction(
-	SyncActionDescriptor.create(
-		HideActivityBarViewContainers,
-		HideActivityBarViewContainers.ID,
-		HideActivityBarViewContainers.LABEL,
-		{ primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyMod.CtrlCmd | KeyCode.KEY_V) }
-	),
-	HideActivityBarViewContainers.LABEL
-);
-actionRegistry.registerWorkbenchAction(
-	SyncActionDescriptor.create(
-		HideSettings,
-		HideSettings.ID,
-		HideSettings.LABEL,
-		{ primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyMod.CtrlCmd | KeyCode.KEY_V) }
-	),
-	HideSettings.LABEL
-);
-actionRegistry.registerWorkbenchAction(
-	SyncActionDescriptor.create(
-		HidePanel,
-		HidePanel.ID,
-		HidePanel.LABEL,
-		{ primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyMod.CtrlCmd | KeyCode.KEY_V) }
-	),
-	HidePanel.LABEL
-);
 
 // Register Commands
 CommandsRegistry.registerCommand('azdata.extension.open', (accessor: ServicesAccessor, extension: { id: string }) => {
@@ -81,24 +49,3 @@ CommandsRegistry.registerCommand({
 		}
 	}
 });
-export class ADSWebLite implements IWorkbenchContribution {
-	constructor(
-		@ICommandService private commandService: ICommandService,
-	) {
-		this.registerEditorOverride();
-	}
-
-	private async registerEditorOverride(): Promise<void> {
-		if (product.quality === 'tsgops-image') {
-			await this.commandService.executeCommand('workbench.extensions.action.hideSettings');
-			await this.commandService.executeCommand('workbench.extensions.action.hidePanel');
-			let array = ['workbench.view.search', 'workbench.view.explorer', 'workbench.view.scm', 'workbench.view.extensions'];
-			for (let j = 0; j < array.length; j++) {
-				await this.commandService.executeCommand('workbench.extensions.action.hideActivityBarViewContainers', array[j]);
-			}
-		}
-	}
-}
-
-Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
-	.registerWorkbenchContribution(ADSWebLite, LifecyclePhase.Restored);

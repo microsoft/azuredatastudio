@@ -30,7 +30,7 @@ export interface IActivityBarService {
 	/**
 	 * Hides View container.
 	 */
-	hideViewContainer(string): void;
+	hideViewContainer(string): void;	// {{SQL CARBON EDIT}}
 
 	/**
 	 * Focuses the activity bar.

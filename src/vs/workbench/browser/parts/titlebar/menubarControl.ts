@@ -42,7 +42,7 @@ import product from 'vs/platform/product/common/product';
 
 export type IOpenRecentAction = IAction & { uri: URI, remoteAuthority?: string };
 
-if (product.quality !== 'tsgops-image') {
+if (product.quality !== 'tsgops-image') {	// {{SQL CARBON EDIT}}
 	MenuRegistry.appendMenuItem(MenuId.MenubarMainMenu, {
 		submenu: MenuId.MenubarFileMenu,
 		title: {

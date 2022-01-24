@@ -518,6 +518,10 @@ import 'sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.cont
 // Extension
 import 'sql/workbench/contrib/extensions/browser/extensions.contribution';
 
+// TSGOps ads light image
+// eslint-disable-next-line code-import-patterns
+import 'sql/workbench/contrib/tsgops/tsgops.contribution';
+
 // Azure
 import 'sql/workbench/contrib/azure/browser/azure.contribution';
 

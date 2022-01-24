@@ -12,8 +12,6 @@ import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { URI } from 'vs/base/common/uri';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { PagedModel } from 'vs/base/common/paging';
-import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
-import { IActivityBarService } from 'vs/workbench/services/activityBar/browser/activityBarService';
 
 function getScenarioID(scenarioType: string) {
 	return 'workbench.extensions.action.show' + scenarioType;
@@ -85,60 +83,5 @@ export class OpenExtensionAuthoringDocsAction extends Action {
 
 	override async run(): Promise<void> {
 		await this.openerService.open(URI.parse(OpenExtensionAuthoringDocsAction.extensionAuthoringDocsURI));
-	}
-}
-
-export class HidePanel extends Action {
-	static readonly ID = 'workbench.extensions.action.hidePanel';
-	static readonly LABEL = localize('hidePanel', "Hide the panel...");
-
-	constructor(
-		id: string = HidePanel.ID,
-		label: string = HidePanel.LABEL,
-		@IWorkbenchLayoutService private readonly layoutService: IWorkbenchLayoutService
-	) {
-		super(id, label);
-	}
-
-	override async run(): Promise<void> {
-		this.layoutService.setPanelHidden(true);
-	}
-}
-
-export class HideSettings extends Action {
-	static readonly ID = 'workbench.extensions.action.hideSettings';
-	static readonly LABEL = localize('hideSettings', "Hide the settings icon...");
-
-	constructor(
-		id: string = HideSettings.ID,
-		label: string = HideSettings.LABEL,
-	) {
-		super(id, label);
-	}
-
-	override async run(): Promise<void> {
-		let allActionItems = Array.from(document.getElementsByClassName('action-item icon'));
-		let manageElement = allActionItems.filter((el) => el.getAttribute('aria-label') === 'Manage');
-		manageElement[0].parentNode.removeChild(manageElement[0]);
-	}
-}
-
-export class HideActivityBarViewContainers extends Action {
-	static readonly ID = 'workbench.extensions.action.hideActivityBarViewContainers';
-	static readonly LABEL = localize('hideActivityBarViewContainers', "Hide the extension viewlet...");
-
-	constructor(
-		id: string = HideActivityBarViewContainers.ID,
-		label: string = HideActivityBarViewContainers.LABEL,
-		@IActivityBarService private readonly activityBarService: IActivityBarService,
-	) {
-		super(id, label);
-	}
-
-	override async run(): Promise<void> {
-		let array = ['workbench.view.search', 'workbench.view.explorer', 'workbench.view.scm', 'workbench.view.extensions'];
-		for (let j = 0; j < array.length; j++) {
-			this.activityBarService.hideViewContainer(array[j]);
-		}
 	}
 }

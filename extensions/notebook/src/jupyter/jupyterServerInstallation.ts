@@ -146,15 +146,13 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		if (this._runningOnSAW) {
 			this._pythonInstallationPath = `${vscode.env.appRoot}\\ads-python`;
 			this._usingExistingPython = true;
-		} else {
-			if (this._tsgops) {
-				this._pythonInstallationPath = `/usr`;
-				this._usingExistingPython = true;
-			}
-			else {
-				this._pythonInstallationPath = JupyterServerInstallation.getPythonInstallPath();
-				this._usingExistingPython = JupyterServerInstallation.getExistingPythonSetting();
-			}
+		} else if (this._tsgops) {
+			this._pythonInstallationPath = `/usr`;
+			this._usingExistingPython = true;
+		}
+		else {
+			this._pythonInstallationPath = JupyterServerInstallation.getPythonInstallPath();
+			this._usingExistingPython = JupyterServerInstallation.getExistingPythonSetting();
 		}
 		this._usingConda = false;
 		this._installInProgress = false;

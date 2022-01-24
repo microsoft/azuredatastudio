@@ -754,7 +754,7 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 			.map(v => v.id);
 	}
 
-	hideViewContainer(id: string): void {
+	hideViewContainer(id: string): void {	// {{SQL CARBON EDIT}}
 		this.compositeBar.unpin(id);
 	}
 
