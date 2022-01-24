@@ -6,7 +6,7 @@
 import type * as vscode from 'vscode';
 import type * as azdata from 'azdata';
 import { VSBuffer } from 'vs/base/common/buffer';
-import { CancellationTokenSource } from 'vs/base/common/cancellation';
+import { CancellationToken } from 'vs/base/common/cancellation';
 import { convertToADSNotebookContents, convertToVSCodeNotebookData } from 'sql/workbench/api/common/notebooks/notebookUtils';
 
 export class VSCodeContentManager implements azdata.nb.ContentManager {
@@ -15,13 +15,13 @@ export class VSCodeContentManager implements azdata.nb.ContentManager {
 
 	public async deserializeNotebook(contents: string): Promise<azdata.nb.INotebookContents> {
 		let buffer = VSBuffer.fromString(contents);
-		let notebookData = await this._serializer.deserializeNotebook(buffer.buffer, new CancellationTokenSource().token);
+		let notebookData = await this._serializer.deserializeNotebook(buffer.buffer, CancellationToken.None);
 		return convertToADSNotebookContents(notebookData);
 	}
 
 	public async serializeNotebook(notebook: azdata.nb.INotebookContents): Promise<string> {
 		let notebookData = convertToVSCodeNotebookData(notebook);
-		let bytes = await this._serializer.serializeNotebook(notebookData, new CancellationTokenSource().token);
+		let bytes = await this._serializer.serializeNotebook(notebookData, CancellationToken.None);
 		let buffer = VSBuffer.wrap(bytes);
 		return buffer.toString();
 	}
