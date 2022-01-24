@@ -27,7 +27,7 @@ export class UntitledNotebookInput extends NotebookInput {
 	) {
 		super(title, resource, textInput, true, textModelService, instantiationService, notebookService, extensionService);
 		// Set the mode explicitly so that the auto language detection doesn't run and mark the model as being JSON
-		this.textInput?.resolve().then(() => this.setMode('notebook'));
+		this.textInput.resolve().then(() => this.setMode('notebook'));
 	}
 
 	public override get textInput(): UntitledTextEditorInput {
