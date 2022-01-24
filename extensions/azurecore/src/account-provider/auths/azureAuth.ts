@@ -104,8 +104,10 @@ export abstract class AzureAuth implements vscode.Disposable {
 			if (ex instanceof AzureAuthError) {
 				if (loginComplete) {
 					loginComplete.reject(ex);
+					Logger.error(ex);
 				} else {
-					void vscode.window.showErrorMessage(ex.getPrintableString());
+					void vscode.window.showErrorMessage(ex.message);
+					Logger.error(ex.originalMessageAndException);
 				}
 			}
 			Logger.write(LogLevel.Error, ex);
@@ -140,7 +142,10 @@ export abstract class AzureAuth implements vscode.Disposable {
 			return await this.hydrateAccount(tokenResult, this.getTokenClaims(tokenResult.token));
 		} catch (ex) {
 			if (ex instanceof AzureAuthError) {
-				void vscode.window.showErrorMessage(ex.getPrintableString());
+				void vscode.window.showErrorMessage(ex.message);
+				Logger.error(ex.originalMessageAndException);
+			} else {
+				Logger.error(ex);
 			}
 			Logger.write(LogLevel.Error, ex);
 			account.isStale = true;
@@ -263,7 +268,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		if (response.data.error) {
 			Logger.write(LogLevel.Error, 'Response error!', response.data);
-			throw new AzureAuthError(localize('azure.responseError', "Token retrieval failed with an error. Open developer tools to view the error"), 'Token retrieval failed', undefined);
+			throw new AzureAuthError(localize('azure.responseError', "Token retrieval failed with an error. [Open developer tools]({0}) for more details.", 'command:workbench.action.toggleDevTools'), 'Token retrieval failed', undefined);
 		}
 
 		const accessTokenString = response.data.access_token;

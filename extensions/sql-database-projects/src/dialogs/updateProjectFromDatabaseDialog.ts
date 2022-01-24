@@ -5,7 +5,7 @@
 
 import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
-import * as azdata from 'azdata';
+import type * as azdata from 'azdata';
 import * as constants from '../common/constants';
 import * as newProjectTool from '../tools/newProjectTool';
 import type * as mssqlVscode from 'vscode-mssql';
@@ -56,7 +56,7 @@ export class UpdateProjectFromDatabaseDialog {
 	}
 
 	public async openDialog(): Promise<void> {
-		let connection = await azdata.connection.getCurrentConnection();
+		let connection = await getAzdataApi()!.connection.getCurrentConnection();
 		if (connection) {
 			this.connectionId = connection.connectionId;
 		}
@@ -251,7 +251,7 @@ export class UpdateProjectFromDatabaseDialog {
 	}
 
 	private async getServerValues() {
-		let cons = await azdata.connection.getConnections(/* activeConnectionsOnly */ true);
+		let cons = await getAzdataApi()!.connection.getConnections(/* activeConnectionsOnly */ true);
 
 		// This user has no active connections
 		if (!cons || cons.length === 0) {
@@ -316,7 +316,7 @@ export class UpdateProjectFromDatabaseDialog {
 		let idx = -1;
 		let count = -1;
 
-		let values = (await azdata.connection.listDatabases(connectionId)).sort((a, b) => a.localeCompare(b)).map(db => {
+		let values = (await getAzdataApi()!.connection.listDatabases(connectionId)).sort((a, b) => a.localeCompare(b)).map(db => {
 			count++;
 
 			// put currently selected db at the top of the dropdown if there is one
@@ -350,7 +350,7 @@ export class UpdateProjectFromDatabaseDialog {
 	}
 
 	private async connectionButtonClick() {
-		let connection = await azdata.connection.openConnectionDialog();
+		let connection = await getAzdataApi()!.connection.openConnectionDialog();
 		if (connection) {
 			this.connectionId = connection.connectionId;
 			await this.populateServerDropdown();
@@ -498,12 +498,12 @@ export class UpdateProjectFromDatabaseDialog {
 
 	public async handleUpdateButtonClick(): Promise<void> {
 		const serverDropdownValue = this.serverDropdown!.value! as azdata.CategoryValue as ConnectionDropdownValue;
-		const ownerUri = await azdata.connection.getUriForConnection(serverDropdownValue.connection.connectionId);
+		const ownerUri = await getAzdataApi()!.connection.getUriForConnection(serverDropdownValue.connection.connectionId);
 
-		let connection = (await azdata.connection.getConnections(true)).filter(con => con.connectionId === serverDropdownValue.connection.connectionId)[0];
+		let connection = (await getAzdataApi()!.connection.getConnections(true)).filter(con => con.connectionId === serverDropdownValue.connection.connectionId)[0];
 		connection.databaseName = this.databaseDropdown!.value! as string;
 
-		const credentials = await azdata.connection.getCredentials(connection.connectionId);
+		const credentials = await getAzdataApi()!.connection.getCredentials(connection.connectionId);
 		if (credentials.hasOwnProperty('password')) {
 			connection.password = connection.options.password = credentials.password;
 		}
