@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 import { localize } from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
-
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { IExtensionsWorkbenchService, VIEWLET_ID, IExtensionsViewPaneContainer } from 'vs/workbench/contrib/extensions/common/extensions';
 import { IExtensionRecommendation } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
