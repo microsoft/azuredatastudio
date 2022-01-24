@@ -23,10 +23,30 @@ export class Logger {
 	private static _piiLogging: boolean = false;
 	public static config = vscode.workspace.getConfiguration('mssql');
 
-	static log(logLevel: LogLevel, msg: any, ...vals: any[]) {
-		if (logLevel === this.config.tracingLevel) {
-			const fullMessage = `[${logLevel}]: ${msg} - ${vals.map(v => JSON.stringify(v)).join(' - ')}`;
-			this.channel.appendLine(fullMessage);
+	static write(logLevel: LogLevel, msg: any, ...vals: any[]) {
+		switch (logLevel) {
+			case LogLevel.Error:
+				if (LogLevel[logLevel] === this.config.tracingLevel || this.config.tracingLevel === 'Verbose') {
+					const fullMessage = `[${LogLevel[logLevel]}]: ${msg} - ${vals.map(v => JSON.stringify(v)).join(' - ')}`;
+					this.channel.appendLine(fullMessage);
+				}
+				break;
+			case LogLevel.Critical:
+				if (LogLevel[logLevel] === this.config.tracingLevel || this.config.tracingLevel === 'Verbose') {
+					const fullMessage = `[${LogLevel[logLevel]}]: ${msg} - ${vals.map(v => JSON.stringify(v)).join(' - ')}`;
+					this.channel.appendLine(fullMessage);
+				}
+				break;
+			case LogLevel.All:
+			case LogLevel.Off:
+			case LogLevel.Warning:
+			case LogLevel.Information:
+			case LogLevel.Verbose:
+				if (LogLevel[logLevel] === this.config.tracingLevel || this.config.tracingLevel === 'Verbose') {
+					const fullMessage = `[${LogLevel[logLevel]}]: ${msg} - ${vals.map(v => JSON.stringify(v)).join(' - ')}`;
+					this.channel.appendLine(fullMessage);
+				}
+				break;
 		}
 	}
 
@@ -49,7 +69,7 @@ export class Logger {
 				...objsToSanitize.map(obj => `${obj.name}=${sanitize(obj.objOrArray)}`),
 				...stringsToShorten.map(str => `${str.name}=${shorten(str.value)}`)
 			].join(' ');
-			Logger.log(msg, vals);
+			Logger.write(msg, vals);
 		}
 	}
 

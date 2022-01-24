@@ -16,7 +16,7 @@ import { AzureResourceContainerTreeNodeBase } from './baseTreeNodes';
 import { AzureResourceErrorMessageUtil, equals } from '../utils';
 import { IAzureResourceTreeChangeHandler } from './treeChangeHandler';
 import { FlatAccountTreeNode } from './flatAccountTreeNode';
-import { Logger } from '../../utils/Logger';
+import { Logger, LogLevel } from '../../utils/Logger';
 import { AzureAccount } from 'azurecore';
 
 export class ConnectionDialogTreeProvider implements vscode.TreeDataProvider<TreeNode>, IAzureResourceTreeChangeHandler {
@@ -91,7 +91,7 @@ export class ConnectionDialogTreeProvider implements vscode.TreeDataProvider<Tre
 			this._onDidChangeTreeData.fire(undefined);
 		} catch (err) {
 			// Skip for now, we can assume that the accounts changed event will eventually notify instead
-			Logger.error('loadAccounts failed with the following error: {0}', err.message ?? err);
+			Logger.write(LogLevel.Error, 'loadAccounts failed with the following error: {0}', err.message ?? err);
 			this.isSystemInitialized = false;
 		}
 	}

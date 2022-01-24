@@ -88,11 +88,11 @@ export abstract class AzureAuth implements vscode.Disposable {
 	public async startLogin(): Promise<AzureAccount | azdata.PromptFailedResult> {
 		let loginComplete: Deferred<void, Error>;
 		try {
-			Logger.log(LogLevel.Verbose, 'Starting login');
+			Logger.write(LogLevel.Verbose, 'Starting login');
 			const result = await this.login(this.commonTenant, this.metadata.settings.microsoftResource);
 			loginComplete = result.authComplete;
 			if (!result?.response) {
-				Logger.error('Authentication failed');
+				Logger.write(LogLevel.Error, 'Authentication failed');
 				return {
 					canceled: false
 				};
@@ -108,7 +108,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 					void vscode.window.showErrorMessage(ex.getPrintableString());
 				}
 			}
-			Logger.error(ex);
+			Logger.write(LogLevel.Error, ex);
 			return {
 				canceled: false
 			};
@@ -142,7 +142,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			if (ex instanceof AzureAuthError) {
 				void vscode.window.showErrorMessage(ex.getPrintableString());
 			}
-			Logger.error(ex);
+			Logger.write(LogLevel.Error, ex);
 			account.isStale = true;
 			return account;
 		}
@@ -156,13 +156,13 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 	public async getAccountSecurityToken(account: AzureAccount, tenantId: string, azureResource: azdata.AzureResource): Promise<Token | undefined> {
 		if (account.isStale === true) {
-			Logger.log(LogLevel.Error, 'Account was stale. No tokens being fetched.');
+			Logger.write(LogLevel.Error, 'Account was stale. No tokens being fetched.');
 			return undefined;
 		}
 
 		const resource = this.resources.find(s => s.azureResourceId === azureResource);
 		if (!resource) {
-			Logger.log(LogLevel.Error, 'Invalid resource, not fetching', azureResource);
+			Logger.write(LogLevel.Error, 'Invalid resource, not fetching', azureResource);
 
 			return undefined;
 		}
@@ -179,7 +179,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		if (cachedTokens?.accessToken) {
 			let expiry = Number(cachedTokens.expiresOn);
 			if (Number.isNaN(expiry)) {
-				Logger.log(LogLevel.Error, 'Expiration time was not defined. This is expected on first launch');
+				Logger.write(LogLevel.Error, 'Expiration time was not defined. This is expected on first launch');
 				expiry = 0;
 			}
 			const currentTime = new Date().getTime() / 1000;
@@ -208,7 +208,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		// For most users we can use the refresh token from the general microsoft resource to an access token of basically any type of resource we want.
 		const baseTokens = await this.getSavedToken(this.commonTenant, this.metadata.settings.microsoftResource, account.key);
 		if (!baseTokens) {
-			Logger.error('User had no base tokens for the basic resource registered. This should not happen and indicates something went wrong with the authentication cycle');
+			Logger.write(LogLevel.Error, 'User had no base tokens for the basic resource registered. This should not happen and indicates something went wrong with the authentication cycle');
 			const msg = localize('azure.noBaseToken', 'Something failed with the authentication, or your tokens have been deleted from the system. Please try adding your account to Azure Data Studio again.');
 			account.isStale = true;
 			throw new AzureAuthError(msg, 'No base token found', undefined);
@@ -253,7 +253,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	}
 
 	public async getToken(tenant: Tenant, resource: Resource, postData: AuthorizationCodePostData | TokenPostData | RefreshTokenPostData): Promise<OAuthTokenResponse> {
-		Logger.log(LogLevel.Verbose, 'Fetching token');
+		Logger.write(LogLevel.Verbose, 'Fetching token');
 		const tokenUrl = `${this.loginEndpointUrl}${tenant.id}/oauth2/token`;
 		const response = await this.makePostRequest(tokenUrl, postData);
 
@@ -262,7 +262,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		}
 
 		if (response.data.error) {
-			Logger.error('Response error!', response.data);
+			Logger.write(LogLevel.Error, 'Response error!', response.data);
 			throw new AzureAuthError(localize('azure.responseError', "Token retrieval failed with an error. Open developer tools to view the error"), 'Token retrieval failed', undefined);
 		}
 
@@ -339,7 +339,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		const tenantUri = url.resolve(this.metadata.settings.armResource.endpoint, 'tenants?api-version=2019-11-01');
 		try {
-			Logger.log(LogLevel.Verbose, 'Fetching tenants', tenantUri);
+			Logger.write(LogLevel.Verbose, 'Fetching tenants', tenantUri);
 			const tenantResponse = await this.makeGetRequest(tenantUri, token.token);
 			const tenants: Tenant[] = tenantResponse.data.value.map((tenantInfo: TenantResponse) => {
 				return {
@@ -358,7 +358,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 			return tenants;
 		} catch (ex) {
-			Logger.log(LogLevel.Error, ex);
+			Logger.write(LogLevel.Error, ex);
 			throw new Error('Error retrieving tenant information');
 		}
 	}
@@ -373,12 +373,12 @@ export abstract class AzureAuth implements vscode.Disposable {
 			throw new AzureAuthError(msg, 'Adding account to cache failed', undefined);
 		}
 		try {
-			Logger.log(LogLevel.Verbose, 'Saving token');
+			Logger.write(LogLevel.Verbose, 'Saving token');
 			await this.tokenCache.saveCredential(`${accountKey.accountId}_access_${resource.id}_${tenant.id}`, JSON.stringify(accessToken));
 			await this.tokenCache.saveCredential(`${accountKey.accountId}_refresh_${resource.id}_${tenant.id}`, JSON.stringify(refreshToken));
 			this.memdb.set(`${accountKey.accountId}_${tenant.id}_${resource.id}`, expiresOn);
 		} catch (ex) {
-			Logger.error(ex);
+			Logger.write(LogLevel.Error, ex);
 			throw new AzureAuthError(msg, 'Adding account to cache failed', ex);
 		}
 	}
@@ -396,18 +396,18 @@ export abstract class AzureAuth implements vscode.Disposable {
 		let refreshTokenString: string;
 		let expiresOn: string;
 		try {
-			Logger.log(LogLevel.Information, 'Fetching saved token');
+			Logger.write(LogLevel.Information, 'Fetching saved token');
 			accessTokenString = await this.tokenCache.getCredential(`${accountKey.accountId}_access_${resource.id}_${tenant.id}`);
 			refreshTokenString = await this.tokenCache.getCredential(`${accountKey.accountId}_refresh_${resource.id}_${tenant.id}`);
 			expiresOn = this.memdb.get(`${accountKey.accountId}_${tenant.id}_${resource.id}`);
 		} catch (ex) {
-			Logger.error(ex);
+			Logger.write(LogLevel.Error, ex);
 			throw new AzureAuthError(getMsg, 'Getting account from cache failed', ex);
 		}
 
 		try {
 			if (!accessTokenString) {
-				Logger.log(LogLevel.Error, 'No access token found');
+				Logger.write(LogLevel.Error, 'No access token found');
 				return undefined;
 			}
 			const accessToken: AccessToken = JSON.parse(accessTokenString);
@@ -420,7 +420,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 				accessToken, refreshToken, expiresOn
 			};
 		} catch (ex) {
-			Logger.error(ex);
+			Logger.write(LogLevel.Error, ex);
 			throw new AzureAuthError(parseMsg, 'Parsing account from cache failed', ex);
 		}
 	}
@@ -626,7 +626,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		} catch (ex) {
 			const msg = localize('azure.cacheErrrorRemove', "Error when removing your account from the cache.");
 			void vscode.window.showErrorMessage(msg);
-			Logger.error('Error when removing tokens.', ex);
+			Logger.write(LogLevel.Error, 'Error when removing tokens.', ex);
 		}
 	}
 

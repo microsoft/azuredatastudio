@@ -11,7 +11,7 @@ import * as crypto from 'crypto';
 import { SimpleTokenCache } from '../simpleTokenCache';
 import { SimpleWebServer } from '../utils/simpleWebServer';
 import { AzureAuthError } from './azureAuthError';
-import { Logger } from '../../utils/Logger';
+import { Logger, LogLevel } from '../../utils/Logger';
 import * as nls from 'vscode-nls';
 import * as path from 'path';
 import * as http from 'http';
@@ -188,7 +188,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 			try {
 				fileContents = await fs.readFile(filePath);
 			} catch (ex) {
-				Logger.error(ex);
+				Logger.write(LogLevel.Error, ex);
 				res.writeHead(400);
 				res.end();
 				return;
@@ -218,7 +218,7 @@ export class AzureAuthCodeGrant extends AzureAuth {
 				res.writeHead(400, { 'content-type': 'text/html' });
 				res.write(localize('azureAuth.nonceError', 'Authentication failed due to a nonce mismatch, please close Azure Data Studio and try again.'));
 				res.end();
-				Logger.error('nonce no match', receivedNonce, nonce);
+				Logger.write(LogLevel.Error, 'nonce no match', receivedNonce, nonce);
 				return;
 			}
 			res.writeHead(302, { Location: loginUrl });
