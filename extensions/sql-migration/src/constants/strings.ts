@@ -125,7 +125,6 @@ export function STORAGE_GB(storage: number): string {
 export const RECOMMENDED_STORAGE_CONFIGURATION = localize('sql.migration.sku.targetStorageConfiguration.recommendedStorageConfiguration', "Recommended storage configuration");
 export const CACHE = localize('sql.migration.sku.targetStorageConfiguration.cache', "Cache");
 
-
 // Azure SQL Target
 export const AZURE_SQL_TARGET_PAGE_TITLE = localize('sql.migration.wizard.target.title', "Azure SQL target");
 export function AZURE_SQL_TARGET_PAGE_DESCRIPTION(targetInstance: string = 'instance'): string {
