@@ -110,7 +110,7 @@ export function convertToVSCodeNotebookData(notebook: azdata.nb.INotebookContent
 			return {
 				kind: cell.cell_type === 'code' ? NotebookCellKind.Code : NotebookCellKind.Markup,
 				value: Array.isArray(cell.source) ? cell.source.join('\n') : cell.source,
-				languageId: cell.metadata?.language,
+				languageId: cell.metadata?.language ?? notebook.metadata.language_info?.name,
 				outputs: cell.outputs?.map<vscode.NotebookCellOutput>(output => convertToVSCodeCellOutput(output)),
 				executionSummary: {
 					executionOrder: cell.execution_count
