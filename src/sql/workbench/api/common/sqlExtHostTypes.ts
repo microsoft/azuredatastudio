@@ -969,15 +969,15 @@ export namespace designers {
 
 	export enum TableForeignKeyProperty {
 		Name = 'name',
-		PrimaryKeyTable = 'primaryKeyTable',
+		ForeignTable = 'foreignTable',
 		OnDeleteAction = 'onDeleteAction',
 		OnUpdateAction = 'onUpdateAction',
 		Columns = 'columns'
 	}
 
 	export enum ForeignKeyColumnMappingProperty {
-		PrimaryKeyColumn = 'primaryKeyColumn',
-		ForeignKeyColumn = 'foreignKeyColumn'
+		column = 'column',
+		foreignColumn = 'foreignColumn'
 	}
 
 	export enum TableCheckConstraintProperty {

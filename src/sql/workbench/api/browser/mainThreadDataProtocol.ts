@@ -519,7 +519,7 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 			processTableEdit(table, edit): Thenable<azdata.designers.DesignerEditResult> {
 				return self._proxy.$processTableDesignerEdit(handle, table, edit);
 			},
-			publishChanges(tableInfo: azdata.designers.TableInfo): Thenable<void> {
+			publishChanges(tableInfo: azdata.designers.TableInfo): Thenable<azdata.designers.PublishChangesResult> {
 				return self._proxy.$publishTableDesignerChanges(handle, tableInfo);
 			},
 			generateScript(tableInfo: azdata.designers.TableInfo): Thenable<string> {

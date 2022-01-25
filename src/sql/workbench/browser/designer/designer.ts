@@ -53,7 +53,7 @@ export type DesignerUIComponent = InputBox | Checkbox | Table<Slick.SlickData> |
 export type CreateComponentsFunc = (container: HTMLElement, components: DesignerDataPropertyInfo[], parentPath: DesignerEditPath) => DesignerUIComponent[];
 export type SetComponentValueFunc = (definition: DesignerDataPropertyInfo, component: DesignerUIComponent, data: DesignerViewModel) => void;
 
-const TableRowHeight = 23;
+const TableRowHeight = 25;
 const TableHeaderRowHeight = 28;
 
 type DesignerUIArea = 'PropertiesView' | 'ScriptView' | 'TopContentView' | 'TabsView';
@@ -304,10 +304,16 @@ export class Designer extends Disposable implements IThemable {
 						const tableData = this._input.viewModel[propertyName] as DesignerTableProperties;
 						const table = this._componentMap.get(propertyName).component as Table<Slick.SlickData>;
 						table.setActiveCell(tableData.data.length - 1, 0);
+					} else {
+						this.updatePropertiesPane(this._propertiesPane.objectPath);
 					}
 				} else if (edit.type === DesignerEditType.Update) {
 					// for edit, update the properties pane with new values of current object.
 					this.updatePropertiesPane(this._propertiesPane.objectPath);
+				} else {
+					if (edit.path.length === 4) {
+						this.updatePropertiesPane(this._propertiesPane.objectPath);
+					}
 				}
 			} catch (err) {
 				this._notificationService.error(err);
@@ -330,7 +336,7 @@ export class Designer extends Disposable implements IThemable {
 		let message;
 		let timeout;
 		switch (action) {
-			case 'save':
+			case 'publish':
 				message = showLoading ? localize('designer.publishingChanges', "Publishing changes...") : localize('designer.publishChangesCompleted', "Changes have been published");
 				timeout = 0;
 				break;

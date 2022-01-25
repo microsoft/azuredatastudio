@@ -1045,7 +1045,7 @@ declare module 'azdata' {
 			 * Publish the changes.
 			 * @param table the table information
 			 */
-			publishChanges(table: TableInfo): Thenable<void>;
+			publishChanges(table: TableInfo): Thenable<PublishChangesResult>;
 
 			/**
 			 * Generate script for the changes.
@@ -1157,7 +1157,7 @@ declare module 'azdata' {
 		 */
 		export enum TableForeignKeyProperty {
 			Name = 'name',
-			PrimaryKeyTable = 'primaryKeyTable',
+			ForeignTable = 'foreignTable',
 			OnDeleteAction = 'onDeleteAction',
 			OnUpdateAction = 'onUpdateAction',
 			Columns = 'columns'
@@ -1167,8 +1167,8 @@ declare module 'azdata' {
 		 * Name of the columns mapping properties for foreign key.
 		 */
 		export enum ForeignKeyColumnMappingProperty {
-			PrimaryKeyColumn = 'primaryKeyColumn',
-			ForeignKeyColumn = 'foreignKeyColumn'
+			column = 'column',
+			foreignColumn = 'foreignColumn'
 		}
 
 		/**
@@ -1431,6 +1431,16 @@ declare module 'azdata' {
 			 * Error messages of current state, and the property the caused the error.
 			 */
 			errors?: { message: string, property?: DesignerEditPath }[];
+		}
+
+		/**
+		 * The result returned by the table designer provider after handling the publish changes request.
+		 */
+		export interface PublishChangesResult {
+			/**
+			 * When the table is a new table, the table info will change after publishing changes.
+			 */
+			newTableInfo?: TableInfo;
 		}
 	}
 
