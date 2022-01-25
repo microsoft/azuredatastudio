@@ -15,7 +15,6 @@ import { EOL } from 'os';
 import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import * as styles from '../constants/styles';
-import { recommendationsJSON } from '../dialog/skuRecommendationResults/skuRecommendationExample';
 
 export interface Product {
 	type: MigrationTargetType;
