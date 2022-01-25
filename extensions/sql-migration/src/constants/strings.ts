@@ -90,6 +90,19 @@ export function RECOMMENDATIONS_TITLE(targetType: string): string {
 	return localize('sql.migration.sku.recommendations.title', "{0} Recommendations", targetType);
 }
 export const RECOMMENDED_CONFIGURATION = localize('sql.migration.sku.recommendedConfiguration', "Recommended configuration");
+export const GET_AZURE_RECOMMENDATION = localize('sql.migration.sku.getAzureRecommendation', "Get Azure recommendation");
+export const AZURE_RECOMMENDATION_NOT_ENABLED = localize('sql.migration.sku.azureRecommendation.notEnabled', "Azure recommendation is not enabled");
+export const AZURE_RECOMMENDATION_START = localize('sql.migration.sku.azureRecommendation.start', "Start");
+export const AZURE_RECOMMENDATION_DESCRIPTION = localize('sql.migration.sku.azureRecommendation.description', "Azure recommendation requires performance data of SQL server instance to provide target recommendation. Enable performance data collection to receive the target recommendation for the databases you want to migrate. The longer this will be enabled the better the recommendation. You can disable performance data collection at any time.");
+export const AZURE_RECOMMENDATION_DESCRIPTION2 = localize('sql.migration.sku.azureRecommendation.description2', "You can also choose to select this data from an existing folder, if you have already collected it using Data Migration Assistant or Azure Migrate.");
+export const AZURE_RECOMMENDATION_CHOOSE_METHOD = localize('sql.migration.sku.azureRecommendation.chooseMethod.instructions', "Choose how you want to provide performance data");
+export const AZURE_RECOMMENDATION_COLLECT_DATA = localize('sql.migration.sku.azureRecommendation.collectData.method', "Collect performance data");
+export const AZURE_RECOMMENDATION_OPEN_EXISTING = localize('sql.migration.sku.azureRecommendation.openExisting.method', "Open from existing folder");
+export const AZURE_RECOMMENDATION_SELECT_FOLDER = localize('sql.migration.sku.azureRecommendation.selectFolder.instructions', "Select a folder on your local drive where performance data will be saved");
+export const FOLDER_NAME = localize('sql.migration.azureRecommendation.folder.name', "Folder name");
+export const BROWSE = localize('sql.migration.azureRecommendation.browse', "Browse");
+export const OPEN = localize('sql.migration.azureRecommendation.open', "Open");
+
 export const VIEW_DETAILS = localize('sql.migration.sku.viewDetails', "View details");
 export function ASSESSED_DBS(totalDbs: number): string {
 	return localize('sql.migration.assessed.databases', "(for {0} assessed databases)", totalDbs);
