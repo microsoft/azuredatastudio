@@ -25,7 +25,7 @@ import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/commo
 export class FileQueryResultsWriter implements IQueryResultsWriter {
 	private messages: Array<IQueryMessage> = [];
 	private formattedQueryResults: Array<string> = [];
-	private tables: Array<Table<any>> = [];
+	private tables: Array<Table> = [];
 	private numQueriesToFormat: number = 0;
 	private queryContainsError: boolean = false;
 	private closingMessageIncluded: boolean = false;
@@ -176,9 +176,9 @@ export class FileQueryResultsWriter implements IQueryResultsWriter {
 	}
 }
 
-class Table<T> extends Disposable {
+class Table extends Disposable {
 	private gridDataProvider: IGridDataProvider;
-	private columns: Slick.Column<T>[];
+	private columns: IColumn[];
 	private readonly maxColWidthForJsonOrXml = 257;
 
 	constructor(
@@ -193,14 +193,15 @@ class Table<T> extends Disposable {
 		this.columns = this.resultSet.columnInfo.map((col, index) => {
 			let isLinked = col.isXml || col.isJson;
 
-			return <Slick.Column<T>>{
+			return <IColumn>{
 				id: index.toString(),
 				name: col.columnName === 'Microsoft SQL Server 2005 XML Showplan'
 					? nls.localize('xmlShowplanColumnName', "XML Showplan")
 					: escape(col.columnName),
 				field: index.toString(),
 				formatter: isLinked ? hyperLinkFormatter : textFormatter,
-				width: col.columnSize
+				width: col.columnSize,
+				dataTypeName: col.dataTypeName
 			};
 		});
 
@@ -234,7 +235,7 @@ class Table<T> extends Disposable {
 					invariantCultureDisplayValue: row[curCol].invariantCultureDisplayValue
 				};
 			}
-			return dataWithSchema as T;
+			return dataWithSchema;
 		});
 
 		let formattedResults = this.formatQueryResults(unformattedData);
@@ -253,18 +254,88 @@ class Table<T> extends Disposable {
 		let columnWidths: number[] = [];
 
 		for (const column of this.columns) {
-			let colWidth = column.width;
+			let colWidth = this.calculateColumnWidth(column);
+
 			if (column?.formatter?.name === 'hyperLinkFormatter') {
 				colWidth = this.maxColWidthForJsonOrXml;
-			}
-			else if (column.name && column.name.length > colWidth) {
-				colWidth = column.name.length;
 			}
 
 			columnWidths.push(colWidth);
 		}
 
 		return columnWidths;
+	}
+
+	private calculateColumnWidth(column: IColumn): number {
+		let columnWidth = 0;
+		let nameLength = column?.name ? column.name.length : 0;
+
+		switch (column.dataTypeName.toUpperCase()) {
+			case 'BIT':
+				columnWidth = Math.max(1, nameLength);
+				break;
+			case 'TINYINT':
+				columnWidth = Math.max(3, nameLength);
+				break;
+			case 'SMALLINT':
+				columnWidth = Math.max(6, nameLength);
+				break;
+			case 'INT':
+				columnWidth = Math.max(11, nameLength);
+				break;
+			case 'BIGINT':
+				columnWidth = Math.max(21, nameLength);
+				break;
+			case 'REAL':
+				columnWidth = Math.max(14, nameLength);
+				break;
+			case 'FLOAT':
+				columnWidth = Math.max(24, nameLength);
+				break;
+			case 'DECIMAL':
+				columnWidth = Math.max(26, nameLength, column.width);
+			case 'DATE':
+				columnWidth = Math.max(16, nameLength);
+				break;
+			case 'DATETIME':
+				columnWidth = Math.max(23, nameLength);
+				break;
+			case 'SMALLDATETIME':
+				columnWidth = Math.max(19, nameLength);
+				break;
+			case 'DATETIME2':
+				columnWidth = Math.max(38, nameLength);
+				break;
+			case 'DATETIMEOFFSET':
+				columnWidth = Math.max(45, nameLength);
+				break;
+			case 'UNIQUEIDENTIFIER':
+				columnWidth = Math.max(36, nameLength);
+				break;
+			case 'VARCHAR':
+			case 'NVARCHAR':
+				columnWidth = Math.max(column.width, nameLength);
+				break;
+			case 'VARBINARY':
+				columnWidth = Math.max(column.width, nameLength);
+				break;
+			case 'CHAR':
+			case 'NCHAR':
+			case 'VARIANT':
+				columnWidth = Math.max(column.width, nameLength);
+				break;
+			case 'XML':
+			case 'TEXT':
+			case 'NTEXT':
+			case 'IMAGE':
+			case 'BINARY':
+				columnWidth = Math.max(column.width, nameLength);
+				break;
+			default:
+				columnWidth = Math.max(column.width, nameLength);
+		}
+
+		return columnWidth;
 	}
 
 	private formatTableHeader(columnWidths: number[]): string[] {
@@ -325,4 +396,13 @@ interface IRow {
 	ariaLabel: string;
 	isNull: boolean;
 	invariantCultureDisplayValue: string;
+}
+
+interface IColumn {
+	id: string,
+	name: string,
+	field: string,
+	formatter: (row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined) => string,
+	width: number,
+	dataTypeName: string
 }

@@ -199,9 +199,11 @@ export class MessagePanel extends Disposable {
 		if (this.currentUri) {
 			this._treeStates.set(this.currentUri, this.tree.getViewState());
 		}
+
 		this.queryRunnerDisposables.clear();
 		this.reset();
 		this.currentUri = runner.uri;
+		this.setSelectedQueryResultsWriter();
 
 		this.queryRunnerDisposables.add(runner.onQueryStart(() => {
 			this.queryResultsWriter.reset();
