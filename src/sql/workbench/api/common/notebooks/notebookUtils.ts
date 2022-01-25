@@ -93,7 +93,7 @@ export function convertToADSNotebookContents(notebookData: vscode.NotebookData):
 				outputs: cell.outputs ? convertToADSCellOutput(cell.outputs, executionOrder) : undefined
 			};
 		}),
-		metadata: notebookData.metadata ?? {},
+		metadata: notebookData.metadata?.custom?.metadata ?? {},
 		nbformat: notebookData.metadata?.custom?.nbformat ?? NBFORMAT,
 		nbformat_minor: notebookData.metadata?.custom?.nbformat_minor ?? NBFORMAT_MINOR
 	};
