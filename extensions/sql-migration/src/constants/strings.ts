@@ -57,6 +57,7 @@ export const SKU_RECOMMENDATION_CHOOSE_A_TARGET = localize('sql.migration.wizard
 
 
 export const SKU_RECOMMENDATION_MI_CARD_TEXT = localize('sql.migration.sku.mi.card.title', "Azure SQL Managed Instance (PaaS)");
+export const SKU_RECOMMENDATION_DB_CARD_TEXT = localize('sql.migration.sku.db.card.title', "Azure SQL Database (PaaS)");
 export const SKU_RECOMMENDATION_VM_CARD_TEXT = localize('sql.migration.sku.vm.card.title', "SQL Server on Azure Virtual Machine (IaaS)");
 export const SELECT_AZURE_MI = localize('sql.migration.select.azure.mi', "Select your target Azure subscription and your target Azure SQL Managed Instance.");
 export const SELECT_AZURE_VM = localize('sql.migration.select.azure.vm', "Select your target Azure Subscription and your target SQL Server on Azure Virtual Machine for your target.");
@@ -77,12 +78,52 @@ export const ASSESSMENT_FAILED = (serverName: string): string => {
 export function ASSESSMENT_TILE(serverName: string): string {
 	return localize('sql.migration.assessment', "Assessment results for '{0}'", serverName);
 }
-export function CAN_BE_MIGRATED(eligibleDbs: number, totalDbs: number, recommendedSku: string): string {
-	return localize('sql.migration.can.be.migrated', "{0} out of {1} databases can be migrated. {2}", eligibleDbs, totalDbs, recommendedSku);		// TO-DO: revert
+export function CAN_BE_MIGRATED(eligibleDbs: number, totalDbs: number): string {
+	return localize('sql.migration.can.be.migrated', "{0} out of {1} databases can be migrated", eligibleDbs, totalDbs);
 }
 export const ASSESSMENT_MIGRATION_WARNING = localize('sql.migration.assessment.migration.warning', "Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines.");
 export const DATABASES_TABLE_TILE = localize('sql.migration.databases.table.title', "Databases");
 export const SQL_SERVER_INSTANCE = localize('sql.migration.sql.server.instance', "SQL Server instance");
+
+// SKU
+export function RECOMMENDATIONS_TITLE(targetType: string): string {
+	return localize('sql.migration.sku.recommendations.title', "{0} Recommendations", targetType);
+}
+export const RECOMMENDED_CONFIGURATION = localize('sql.migration.sku.recommendedConfiguration', "Recommended configuration");
+export const VIEW_DETAILS = localize('sql.migration.sku.viewDetails', "View details");
+export function ASSESSED_DBS(totalDbs: number): string {
+	return localize('sql.migration.assessed.databases', "(for {0} assessed databases)", totalDbs);
+}
+export function RECOMMENDATIONS_AVAILABLE(totalDbs: number): string {
+	return localize('sql.migration.sku.available.recommendations', "{0} recommendations available", totalDbs);
+}
+export const RECOMMENDATIONS = localize('sql.migration.sku.recommendations', "Recommendations");
+export const TARGET_DEPLOYMENT_TYPE = localize('sql.migration.sku.targetDeploymentType', "Target deployment type");
+export const AZURE_CONFIGURATION = localize('sql.migration.sku.azureConfiguration', "Azure configuration");
+export function VM_CONFIGURATION(vmSize: string, vCPU: number): string {
+	return localize('sql.migration.sku.azureConfiguration.vm', "{0} ({1} vCPU)", vmSize, vCPU);
+}
+export function PAAS_CONFIGURATION(computeTier: string, vCore: number): string {
+	return localize('sql.migration.sku.azureConfiguration.paas', "{0} - {1} vCore", computeTier, vCore);
+}
+export const GENERAL_PURPOSE = localize('sql.migration.sku.azureConfiguration.generalPurpose', "General purpose");
+export const BUSINESS_CRITICAL = localize('sql.migration.sku.azureConfiguration.businessCritical', "Business critical");
+
+export const RECOMMENDATION_REASON = localize('sql.migration.sku.recommendationReason', "Recommendation reason");
+export const SOURCE_PROPERTIES = localize('sql.migration.sku.sourceProperties', "Source properties");
+
+export const SQL_TEMP = localize('sql.migration.sku.sql.temp', "SQL temp");
+export const SQL_DATA_DISK = localize('sql.migration.sku.sql.dataDisk', "SQL Data disk");
+export const SQL_LOG_DISK = localize('sql.migration.sku.sql.logDisk', "SQL Log disk");
+
+export const RECOMMENDED_TARGET_STORAGE_CONFIGURATION = localize('sql.migration.sku.targetStorageConfiguration', "Recommendation target storage configuration");
+export const RECOMMENDED_TARGET_STORAGE_CONFIGURATION_INFO = localize('sql.migration.sku.targetStorageConfiguration.info', "Below is the target storage configuration required to meet your storage performance needs.");
+export const STORAGE_HEADER = localize('sql.migration.sku.targetStorageConfiguration.storage', "Storage");
+export function STORAGE_GB(storage: number): string {
+	return localize('sql.migration.sku.storageGB', "{0} GB", storage);
+}
+export const RECOMMENDED_STORAGE_CONFIGURATION = localize('sql.migration.sku.targetStorageConfiguration.recommendedStorageConfiguration', "Recommended storage configuration");
+export const CACHE = localize('sql.migration.sku.targetStorageConfiguration.cache', "Cache");
 
 // Azure SQL Target
 export const AZURE_SQL_TARGET_PAGE_TITLE = localize('sql.migration.wizard.target.title', "Azure SQL target");
@@ -97,8 +138,12 @@ export const INVALID_MANAGED_INSTANCE_ERROR = localize('sql.migration.invalid.ma
 
 // Virtual Machine
 export const AZURE_SQL_DATABASE_VIRTUAL_MACHINE = localize('sql.migration.azure.sql.database.virtual.machine', "SQL Server on Azure Virtual Machines");
+export const AZURE_SQL_DATABASE_VIRTUAL_MACHINE_SHORT = localize('sql.migration.azure.sql.database.virtual.machine.short', "SQL Server on Azure VM");
 export const NO_VIRTUAL_MACHINE_FOUND = localize('sql.migration.no.virtualMachine.found', "No virtual machine found.");
 export const INVALID_VIRTUAL_MACHINE_ERROR = localize('sql.migration.invalid.virtualMachine.error', "To continue, select a valid virtual machine.");
+
+// Azure SQL Database
+export const AZURE_SQL_DATABASE = localize('sql.migration.azure.sql.database', "Azure SQL Database");
 
 // Target info tooltip
 export const TARGET_SUBSCRIPTION_INFO = localize('sql.migration.sku.subscription', "Subscription name for your Azure SQL target");
