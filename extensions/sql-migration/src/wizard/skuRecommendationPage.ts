@@ -307,10 +307,10 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				]
 			});
 
-			let dialog = new SkuRecommendationResultsDialog(this.migrationStateModel, product.type, recommendationsJSON);
+			let dialog = new SkuRecommendationResultsDialog(this.migrationStateModel, product.type);
 			this._disposables.push(this._rbg.onLinkClick(async (e: azdata.RadioCardLinkClickEvent) => {
 				if (e.cardId === dialog._targetType) {
-					await dialog.openDialog(e.cardId);
+					await dialog.openDialog(e.cardId, this.migrationStateModel._skuRecommendationResults.recommendations);
 				}
 			}));
 		});
@@ -439,7 +439,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			} else {
 				await this.migrationStateModel.getDatabaseAssessments(MigrationTargetType.SQLMI);
 
-				/*
 				// placeholder get SKU recommendation entry point
 				// TO-DO: read these preferences from the UI
 				const dataFolder = 'C:\\Users\\ratruong\\AppData\\Local\\Microsoft\\SqlAssessment';	// specify, or leave blank to read from NuGet default %localappdata%\Microsoft\SqlAssessment location
@@ -462,10 +461,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 				console.log('results - this.migrationStateModel._skuRecommendationResults:');
 				console.log(this.migrationStateModel._skuRecommendationResults);
-				*/
 			}
-
-			// this.migrationStateModel._skuRecommendationResults.recommendations = <mssql.SkuRecommendationResult>recommendationsJSON;
 
 			const assessmentError = this.migrationStateModel._assessmentResults?.assessmentError;
 			if (assessmentError) {
@@ -608,7 +604,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				switch (product.type) {
 					case MigrationTargetType.SQLMI:
 						this._rbg.cards[index].descriptions[2].textValue = constants.CAN_BE_MIGRATED(dbWithoutIssuesCount, dbCount);
-						recommendation = recommendationsJSON.sqlMiRecommendationResults[0];
+						recommendation = this.migrationStateModel._skuRecommendationResults.recommendations.sqlMiRecommendationResults[0];
 						const computeTier = recommendation.targetSku.category?.computeTier === 0
 							? constants.GENERAL_PURPOSE
 							: constants.BUSINESS_CRITICAL;
@@ -618,7 +614,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 					case MigrationTargetType.SQLVM:
 						this._rbg.cards[index].descriptions[2].textValue = constants.CAN_BE_MIGRATED(dbCount, dbCount);
 
-						recommendation = recommendationsJSON.sqlVmRecommendationResults[0];
+						recommendation = this.migrationStateModel._skuRecommendationResults.recommendations.sqlVmRecommendationResults[0];
 						this._rbg.cards[index].descriptions[6 - 1].textValue = constants.VM_CONFIGURATION(recommendation.targetSku.virtualMachineSize!.sizeName, recommendation.targetSku.virtualMachineSize!.vCPUsAvailable);
 						break;
 

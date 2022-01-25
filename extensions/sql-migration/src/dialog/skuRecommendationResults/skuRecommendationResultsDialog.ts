@@ -26,30 +26,13 @@ export class SkuRecommendationResultsDialog {
 	// Dialog Name for Telemetry
 	public dialogName: string | undefined;
 	private _disposables: vscode.Disposable[] = [];
-	public title: string;
-	public targetName: string;
+	public title?: string;
+	public targetName?: string;
 
-	public targetRecommendations: mssql.SkuRecommendationResultItem[];
+	public targetRecommendations?: mssql.SkuRecommendationResultItem[];
 
-	constructor(public model: MigrationStateModel, public _targetType: MigrationTargetType, public recommendations: mssql.SkuRecommendationResult) {
-		switch (this._targetType) {
-			case MigrationTargetType.SQLMI:
-				this.targetName = constants.AZURE_SQL_DATABASE_MANAGED_INSTANCE;
-				this.targetRecommendations = recommendations.sqlMiRecommendationResults;
-				break;
+	constructor(public model: MigrationStateModel, public _targetType: MigrationTargetType) {
 
-			case MigrationTargetType.SQLVM:
-				this.targetName = constants.AZURE_SQL_DATABASE_VIRTUAL_MACHINE; // AZURE_SQL_DATABASE_VIRTUAL_MACHINE_SHORT
-				this.targetRecommendations = recommendations.sqlVmRecommendationResults;
-				break;
-
-			case MigrationTargetType.SQLDB:
-				this.targetName = constants.AZURE_SQL_DATABASE;
-				this.targetRecommendations = recommendations.sqlDbRecommendationResults;
-				break;
-		}
-
-		this.title = constants.RECOMMENDATIONS_TITLE(this.targetName);
 	}
 
 	private async initializeDialog(dialog: azdata.window.Dialog): Promise<void> {
@@ -80,7 +63,7 @@ export class SkuRecommendationResultsDialog {
 			}
 		}).component();
 
-		this.targetRecommendations.forEach(recommendation => {
+		this.targetRecommendations?.forEach(recommendation => {
 			container.addItem(this.createRecommendation(_view, recommendation));
 		});
 		return container;
@@ -334,8 +317,28 @@ export class SkuRecommendationResultsDialog {
 		return container;
 	}
 
-	public async openDialog(dialogName?: string) {
+	public async openDialog(dialogName?: string, recommendations?: mssql.SkuRecommendationResult) {
 		if (!this._isOpen) {
+			switch (this._targetType) {
+				case MigrationTargetType.SQLMI:
+					this.targetName = constants.AZURE_SQL_DATABASE_MANAGED_INSTANCE;
+					this.targetRecommendations = recommendations?.sqlMiRecommendationResults;
+					break;
+
+				case MigrationTargetType.SQLVM:
+					this.targetName = constants.AZURE_SQL_DATABASE_VIRTUAL_MACHINE; // AZURE_SQL_DATABASE_VIRTUAL_MACHINE_SHORT
+					this.targetRecommendations = recommendations?.sqlVmRecommendationResults;
+					break;
+
+				case MigrationTargetType.SQLDB:
+					this.targetName = constants.AZURE_SQL_DATABASE;
+					this.targetRecommendations = recommendations?.sqlDbRecommendationResults;
+					break;
+			}
+
+			this.title = constants.RECOMMENDATIONS_TITLE(this.targetName);
+
+
 			this._isOpen = true;
 			this.dialog = azdata.window.createModelViewDialog(this.title!, 'SkuRecommendationResultsDialog', 'medium');
 
