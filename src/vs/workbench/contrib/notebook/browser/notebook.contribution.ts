@@ -93,6 +93,7 @@ import { NotebookExecutionService } from 'vs/workbench/contrib/notebook/browser/
 import { INotebookExecutionService } from 'vs/workbench/contrib/notebook/common/notebookExecutionService';
 import { INotebookKeymapService } from 'vs/workbench/contrib/notebook/common/notebookKeymapService';
 import { NotebookKeymapService } from 'vs/workbench/contrib/notebook/browser/notebookKeymapServiceImpl';
+import { cellToolbarCompatibilityMessage } from 'sql/base/common/locConstants';
 
 /*--------------------------------------------------------------------------------------------- */
 
@@ -669,7 +670,7 @@ configurationRegistry.registerConfiguration({
 		// 	default: []
 		// },
 		[CellToolbarLocation]: {
-			description: nls.localize('notebook.cellToolbarLocation.description', "Where the cell toolbar should be shown, or whether it should be hidden."),
+			description: cellToolbarCompatibilityMessage, // {{SQL CARBON EDIT}}
 			type: 'object',
 			additionalProperties: {
 				markdownDescription: nls.localize('notebook.cellToolbarLocation.viewType', "Configure the cell toolbar position for for specific file types"),
