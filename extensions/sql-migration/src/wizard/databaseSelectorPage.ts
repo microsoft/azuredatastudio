@@ -86,6 +86,20 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			}
 			return true;
 		});
+
+		// placeholder start perf data collection entry point
+		// TO-DO: read these preferences from the UI
+		const dataFolder = 'C:\\Output\\ads';					// specify, or leave blank to write to NuGet default %localappdata%\Microsoft\SqlAssessment location
+		const perfQueryIntervalInSec = 3;		// TO-DO: what should we use? default in DMA/AzMigrate is 30
+		const staticQueryIntervalInSec = 30;	// TO-DO: what should we use? default in DMA/AzMigrate is 60
+		const numberOfIterations = 5;			// TO-DO: what should we use? default in DMA/AzMigrate is 20, but that would mean data wouldn't be saved (and therefore can't proceed) until 30 * 20 = 10 mins have passed
+
+		await this.migrationStateModel.startPerfDataCollection(
+			dataFolder,
+			perfQueryIntervalInSec,
+			staticQueryIntervalInSec,
+			numberOfIterations
+		);
 	}
 	public async onPageLeave(): Promise<void> {
 		const assessedDatabases = this.migrationStateModel._databaseAssessment ?? [];

@@ -357,6 +357,43 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return this._skuRecommendationResults;
 	}
 
+	public async startPerfDataCollection(
+		dataFolder: string,
+		perfQueryIntervalInSec: number,
+		staticQueryIntervalInSec: number,
+		numberOfIterations: number): Promise<boolean> {
+		try {
+			console.log('stateMachine.startPerfDataCollection starting');
+
+			const ownerUri = await azdata.connection.getUriForConnection(this.sourceConnectionId);
+			const response = await this.migrationService.startPerfDataCollection(ownerUri, dataFolder, perfQueryIntervalInSec, staticQueryIntervalInSec, numberOfIterations);
+			console.log('date: ' + response?.dateTimeStarted.toString());
+			// this._perfDataCollectionProcessId = response!;
+		}
+		catch (error) {
+			console.log('error:');
+			console.log(error);
+		}
+
+		return true;
+	}
+
+	public async stopPerfDataCollection(): Promise<boolean> {
+		try {
+			console.log('stateMachine.stopPerfDataCollection starting');
+
+			const response = await this.migrationService.stopPerfDataCollection();
+			console.log('date: ' + response?.dateTimeStopped.toString());
+		}
+		catch (error) {
+			console.log('error:');
+			console.log(error);
+		}
+
+		return true;
+	}
+
+
 	private async generateAssessmentTelemetry(): Promise<void> {
 		try {
 

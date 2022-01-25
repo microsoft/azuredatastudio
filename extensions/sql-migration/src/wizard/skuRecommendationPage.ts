@@ -545,6 +545,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage) {
 				this.migrationStateModel._assessmentResults = <ServerAssessment>this.migrationStateModel.savedInfo.serverAssessment;
 			} else {
+				// stop data collection
+				await this.migrationStateModel.stopPerfDataCollection();
+
 				await this.migrationStateModel.getDatabaseAssessments(MigrationTargetType.SQLMI);
 
 				// placeholder get SKU recommendation entry point

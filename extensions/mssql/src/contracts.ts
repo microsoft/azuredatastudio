@@ -1054,6 +1054,25 @@ export namespace GetSqlMigrationSkuRecommendationsRequest {
 	export const type = new RequestType<SqlMigrationSkuRecommendationsParams, mssql.SkuRecommendationResult, void, void>('migration/getskurecommendations');
 }
 
+export interface SqlMigrationStartPerfDataCollectionParams {
+	ownerUri: string,
+	dataFolder: string,
+	perfQueryIntervalInSec: number,
+	staticQueryIntervalInSec: number,
+	numberOfIterations: number
+}
+
+export namespace SqlMigrationStartPerfDataCollectionRequest {
+	export const type = new RequestType<SqlMigrationStartPerfDataCollectionParams, mssql.StartPerfDataCollectionResult, void, void>('migration/startperfdatacollection');
+}
+
+export interface SqlMigrationStopPerfDataCollectionParams {
+}
+
+export namespace SqlMigrationStopPerfDataCollectionRequest {
+	export const type = new RequestType<SqlMigrationStopPerfDataCollectionParams, mssql.StopPerfDataCollectionResult, void, void>('migration/stopperfdatacollection');
+}
+
 // ------------------------------- <Sql Migration> -----------------------------
 
 // ------------------------------- < Table Designer > ------------------------------------
