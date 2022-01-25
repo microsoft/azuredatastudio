@@ -55,7 +55,7 @@ export class Logger {
 				...objsToSanitize.map(obj => `${obj.name}=${sanitize(obj.objOrArray)}`),
 				...stringsToShorten.map(str => `${str.name}=${shorten(str.value)}`)
 			].join(' ');
-			Logger.write(msg, vals);
+			Logger.write(LogLevel.Verbose, msg, vals);
 		}
 	}
 
