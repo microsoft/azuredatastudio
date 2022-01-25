@@ -262,7 +262,6 @@ export abstract class AzureAuth implements vscode.Disposable {
 		const tokenUrl = `${this.loginEndpointUrl}${tenant.id}/oauth2/token`;
 		const response = await this.makePostRequest(tokenUrl, postData);
 		Logger.pii(`Token: `, [response.data], []);
-		Logger.write(LogLevel.Verbose, `Token: ${response}`);
 		if (response.data.error === 'interaction_required') {
 			return this.handleInteractionRequired(tenant, resource);
 		}
@@ -380,9 +379,9 @@ export abstract class AzureAuth implements vscode.Disposable {
 			throw new AzureAuthError(msg, 'Adding account to cache failed', undefined);
 		}
 		try {
-			Logger.write(LogLevel.Verbose, `Saving access token: ${accessToken}`);
+			Logger.pii(`Saving access token`, [{ name: 'access', objOrArray: accessToken }], []);
 			await this.tokenCache.saveCredential(`${accountKey.accountId}_access_${resource.id}_${tenant.id}`, JSON.stringify(accessToken));
-			Logger.write(LogLevel.Verbose, `Saving refresh token: ${refreshToken}`);
+			Logger.pii(`Saving refresh token`, [{ name: 'refresh', objOrArray: refreshToken }], []);
 			await this.tokenCache.saveCredential(`${accountKey.accountId}_refresh_${resource.id}_${tenant.id}`, JSON.stringify(refreshToken));
 			this.memdb.set(`${accountKey.accountId}_${tenant.id}_${resource.id}`, expiresOn);
 		} catch (ex) {
@@ -512,7 +511,8 @@ export abstract class AzureAuth implements vscode.Disposable {
 	//#region data modeling
 
 	public createAccount(tokenClaims: TokenClaims, key: string, tenants: Tenant[]): AzureAccount {
-		//TODO: add logging here
+		Logger.write(LogLevel.Verbose, `Token Claims: ${tokenClaims}`);
+		Logger.write(LogLevel.Verbose, `Tenants: ${tenants}`);
 		// Determine if this is a microsoft account
 		let accountIssuer = 'unknown';
 
