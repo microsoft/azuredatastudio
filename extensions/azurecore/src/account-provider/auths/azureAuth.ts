@@ -261,6 +261,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		Logger.write(LogLevel.Verbose, 'Fetching token');
 		const tokenUrl = `${this.loginEndpointUrl}${tenant.id}/oauth2/token`;
 		const response = await this.makePostRequest(tokenUrl, postData);
+		Logger.pii(`Token: `, [response.data], []);
 		Logger.write(LogLevel.Verbose, `Token: ${response}`);
 		if (response.data.error === 'interaction_required') {
 			return this.handleInteractionRequired(tenant, resource);
@@ -364,7 +365,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 			return tenants;
 		} catch (ex) {
-			Logger.write(LogLevel.Error, ex);
+			Logger.write(LogLevel.Error, `Error fetching tenants :${ex}`);
 			throw new Error('Error retrieving tenant information');
 		}
 	}
@@ -511,6 +512,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	//#region data modeling
 
 	public createAccount(tokenClaims: TokenClaims, key: string, tenants: Tenant[]): AzureAccount {
+		//TODO: add logging here
 		// Determine if this is a microsoft account
 		let accountIssuer = 'unknown';
 

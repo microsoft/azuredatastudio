@@ -87,7 +87,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 		await config.update('deviceCode', true, vscode.ConfigurationTarget.Global);
 	}
 
-	await getConfigTracingLevel(extensionContext);
 	updatePiiLoggingLevel();
 
 	// Create the provider service and activate
@@ -281,11 +280,3 @@ function updatePiiLoggingLevel() {
 	Logger.piiLogging = piiLogging;
 }
 
-async function getConfigTracingLevel(extensionContext: vscode.ExtensionContext): Promise<void> {
-	const configTracingLevel = 'tracingLevel';
-	const extensionConfigSectionName = 'mssql';
-	let config = vscode.workspace.getConfiguration(extensionConfigSectionName);
-	if (config) {
-		await extensionContext.globalState.update(configTracingLevel, config.tracingLevel);
-	}
-}

@@ -7,13 +7,13 @@ import * as vscode from 'vscode';
 import * as loc from '../localizedConstants';
 
 export enum LogLevel {
-	'All',
 	'Off',
 	'Critical',
 	'Error',
 	'Warning',
 	'Information',
 	'Verbose',
+	'All',
 }
 
 export class Logger {
@@ -21,32 +21,16 @@ export class Logger {
 
 	public static channel: vscode.OutputChannel = vscode.window.createOutputChannel(loc.extensionName);
 	private static _piiLogging: boolean = false;
-	public static config = vscode.workspace.getConfiguration('mssql');
+	public static config = vscode.workspace.getConfiguration('azure');
+
+	public static shouldLog(logLevel: LogLevel): Boolean {
+		return logLevel <= Logger.config.loggingLevel;
+	}
 
 	static write(logLevel: LogLevel, msg: any, ...vals: any[]) {
-		switch (logLevel) {
-			case LogLevel.Error:
-				if (LogLevel[logLevel] === this.config.tracingLevel || this.config.tracingLevel === 'Verbose') {
-					const fullMessage = `[${LogLevel[logLevel]}]: ${msg} - ${vals.map(v => JSON.stringify(v)).join(' - ')}`;
-					this.channel.appendLine(fullMessage);
-				}
-				break;
-			case LogLevel.Critical:
-				if (LogLevel[logLevel] === this.config.tracingLevel || this.config.tracingLevel === 'Verbose') {
-					const fullMessage = `[${LogLevel[logLevel]}]: ${msg} - ${vals.map(v => JSON.stringify(v)).join(' - ')}`;
-					this.channel.appendLine(fullMessage);
-				}
-				break;
-			case LogLevel.All:
-			case LogLevel.Off:
-			case LogLevel.Warning:
-			case LogLevel.Information:
-			case LogLevel.Verbose:
-				if (LogLevel[logLevel] === this.config.tracingLevel || this.config.tracingLevel === 'Verbose') {
-					const fullMessage = `[${LogLevel[logLevel]}]: ${msg} - ${vals.map(v => JSON.stringify(v)).join(' - ')}`;
-					this.channel.appendLine(fullMessage);
-				}
-				break;
+		if (this.shouldLog(logLevel)) {
+			const fullMessage = `[${LogLevel[logLevel]}]: ${msg} - ${vals.map(v => JSON.stringify(v)).join(' - ')}`;
+			this.channel.appendLine(fullMessage);
 		}
 	}
 
@@ -54,6 +38,8 @@ export class Logger {
 		const fullMessage = `[error]: ${msg} - ${vals.map(v => JSON.stringify(v)).join(' - ')}`;
 		this.channel.appendLine(fullMessage);
 	}
+
+
 
 	/**
 	 * Logs a message containing PII (when enabled). Provides the ability to sanitize or shorten values to hide information or reduce the amount logged.
