@@ -22,6 +22,7 @@ import {
 import { ExtHostNotebookDocumentData } from 'sql/workbench/api/common/extHostNotebookDocumentData';
 import { ExtHostNotebookEditor } from 'sql/workbench/api/common/extHostNotebookEditor';
 import { VSCodeNotebookDocument } from 'sql/workbench/api/common/notebooks/vscodeNotebookDocument';
+import { VSCodeNotebookEditor } from 'sql/workbench/api/common/notebooks/vscodeNotebookEditor';
 
 type Adapter = azdata.nb.NavigationProvider;
 
@@ -49,8 +50,12 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 	readonly onDidCloseNotebookDocument: Event<azdata.nb.NotebookDocument> = this._onDidCloseNotebook.event;
 	readonly onDidChangeNotebookCell: Event<azdata.nb.NotebookCellChangeEvent> = this._onDidChangeNotebookCell.event;
 
-	private _onDidOpenVSCodeNotebook = new Emitter<vscode.NotebookDocument>();
-	private _onDidCloseVSCodeNotebook = new Emitter<vscode.NotebookDocument>();
+	private readonly _onDidChangeVisibleVSCodeEditors = new Emitter<vscode.NotebookEditor[]>();
+	private readonly _onDidChangeActiveVSCodeEditor = new Emitter<vscode.NotebookEditor>();
+	private readonly _onDidOpenVSCodeNotebook = new Emitter<vscode.NotebookDocument>();
+	private readonly _onDidCloseVSCodeNotebook = new Emitter<vscode.NotebookDocument>();
+	readonly onDidChangeVisibleVSCodeEditors: Event<vscode.NotebookEditor[]> = this._onDidChangeVisibleVSCodeEditors.event;
+	readonly onDidChangeActiveVSCodeEditor: Event<vscode.NotebookEditor> = this._onDidChangeActiveVSCodeEditor.event;
 	readonly onDidOpenVSCodeNotebookDocument: Event<vscode.NotebookDocument> = this._onDidOpenVSCodeNotebook.event;
 	readonly onDidCloseVSCodeNotebookDocument: Event<vscode.NotebookDocument> = this._onDidCloseVSCodeNotebook.event;
 
@@ -61,6 +66,8 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 			this._proxy = this._mainContext.getProxy(SqlMainContext.MainThreadNotebookDocumentsAndEditors);
 		}
 
+		this.onDidChangeVisibleNotebookEditors(editors => this._onDidChangeVisibleVSCodeEditors.fire(editors.map(editor => new VSCodeNotebookEditor(editor))));
+		this.onDidChangeActiveNotebookEditor(editor => this._onDidChangeActiveVSCodeEditor.fire(new VSCodeNotebookEditor(editor)));
 		this.onDidOpenNotebookDocument(notebook => this._onDidOpenVSCodeNotebook.fire(new VSCodeNotebookDocument(notebook)));
 		this.onDidCloseNotebookDocument(notebook => this._onDidCloseVSCodeNotebook.fire(new VSCodeNotebookDocument(notebook)));
 	}

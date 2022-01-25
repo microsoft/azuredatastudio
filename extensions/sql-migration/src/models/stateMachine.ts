@@ -59,9 +59,9 @@ export enum NetworkContainerType {
 }
 
 export enum Page {
-	AzureAccount,
 	DatabaseSelector,
 	SKURecommendation,
+	TargetSelection,
 	MigrationMode,
 	DatabaseBackup,
 	IntegrationRuntime,
@@ -1184,23 +1184,27 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				saveInfo.targetSubscription = this._databaseBackup.subscription;
 				saveInfo.blobs = this._databaseBackup.blobs;
 				saveInfo.targetDatabaseNames = this._targetDatabaseNames;
+
 			case Page.MigrationMode:
 				saveInfo.migrationMode = this._databaseBackup.migrationMode;
+
+			case Page.TargetSelection:
+				saveInfo.azureAccount = deepClone(this._azureAccount);
+				saveInfo.azureTenant = deepClone(this._azureTenant);
+				saveInfo.subscription = this._targetSubscription;
+				saveInfo.location = this._location;
+				saveInfo.resourceGroup = this._resourceGroup;
+				saveInfo.targetServerInstance = this._targetServerInstance;
+
 			case Page.SKURecommendation:
 				saveInfo.migrationTargetType = this._targetType;
 				saveInfo.databaseAssessment = this._databaseAssessment;
 				saveInfo.serverAssessment = this._assessmentResults;
 				saveInfo.migrationDatabases = this._databaseSelection;
 				saveInfo.databaseList = this._migrationDbs;
-				saveInfo.subscription = this._targetSubscription;
-				saveInfo.location = this._location;
-				saveInfo.resourceGroup = this._resourceGroup;
-				saveInfo.targetServerInstance = this._targetServerInstance;
+
 			case Page.DatabaseSelector:
 				saveInfo.selectedDatabases = this.databaseSelectorTableValues;
-			case Page.AzureAccount:
-				saveInfo.azureAccount = deepClone(this._azureAccount);
-				saveInfo.azureTenant = deepClone(this._azureTenant);
 				await this.extensionContext.globalState.update(`${this.mementoString}.${serverName}`, saveInfo);
 		}
 	}

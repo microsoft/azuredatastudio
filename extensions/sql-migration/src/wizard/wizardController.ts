@@ -5,12 +5,12 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
-import { MigrationStateModel, NetworkContainerType, Page } from '../models/stateMachine';
+import { MigrationStateModel, Page } from '../models/stateMachine';
 import * as loc from '../constants/strings';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { SKURecommendationPage } from './skuRecommendationPage';
 import { DatabaseBackupPage } from './databaseBackupPage';
-import { AccountsSelectionPage } from './accountsSelectionPage';
+import { TargetSelectionPage } from './targetSelectionPage';
 import { IntergrationRuntimePage } from './integrationRuntimePage';
 import { SummaryPage } from './summaryPage';
 import { MigrationModePage } from './migrationModePage';
@@ -41,18 +41,18 @@ export class WizardController {
 		this._wizardObject.generateScriptButton.hidden = true;
 		const saveAndCloseButton = azdata.window.createButton(loc.SAVE_AND_CLOSE);
 		this._wizardObject.customButtons = [saveAndCloseButton];
-		const skuRecommendationPage = new SKURecommendationPage(this._wizardObject, stateModel);
-		const migrationModePage = new MigrationModePage(this._wizardObject, stateModel);
 		const databaseSelectorPage = new DatabaseSelectorPage(this._wizardObject, stateModel);
-		const azureAccountsPage = new AccountsSelectionPage(this._wizardObject, stateModel);
+		const skuRecommendationPage = new SKURecommendationPage(this._wizardObject, stateModel);
+		const targetSelectionPage = new TargetSelectionPage(this._wizardObject, stateModel);
+		const migrationModePage = new MigrationModePage(this._wizardObject, stateModel);
 		const databaseBackupPage = new DatabaseBackupPage(this._wizardObject, stateModel);
 		const integrationRuntimePage = new IntergrationRuntimePage(this._wizardObject, stateModel);
 		const summaryPage = new SummaryPage(this._wizardObject, stateModel);
 
 		const pages: MigrationWizardPage[] = [
-			azureAccountsPage,
 			databaseSelectorPage,
 			skuRecommendationPage,
+			targetSelectionPage,
 			migrationModePage,
 			databaseBackupPage,
 			integrationRuntimePage,
@@ -67,13 +67,6 @@ export class WizardController {
 		if (this._model.retryMigration || this._model.resumeAssessment) {
 			if (this._model.savedInfo.closedPage >= Page.MigrationMode) {
 				this._model.refreshDatabaseBackupPage = true;
-			}
-			// if the user selected network share and selected save & close afterwards, it should always return to the database backup page so that
-			// the user can input their password again
-			if (this._model.savedInfo.closedPage >= Page.DatabaseBackup && this._model.savedInfo.networkContainerType === NetworkContainerType.NETWORK_SHARE) {
-				wizardSetupPromises.push(this._wizardObject.setCurrentPage(Page.DatabaseBackup));
-			} else {
-				wizardSetupPromises.push(this._wizardObject.setCurrentPage(this._model.savedInfo.closedPage));
 			}
 		}
 
