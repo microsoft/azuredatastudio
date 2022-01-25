@@ -24,7 +24,7 @@ export class Logger {
 	public static config = vscode.workspace.getConfiguration('azure');
 
 	public static shouldLog(logLevel: LogLevel): Boolean {
-		return logLevel <= Logger.config.loggingLevel;
+		return logLevel <= LogLevel[Logger.config.loggingLevel as keyof typeof LogLevel];
 	}
 
 	static write(logLevel: LogLevel, msg: any, ...vals: any[]) {
