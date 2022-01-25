@@ -616,71 +616,83 @@ export interface AssessmentResult {
 	errors: ErrorModel[];
 }
 
-export interface AzureSqlSkuCategory
-{
+export interface AzureSqlSkuCategory {
 	sqlTargetPlatform: number;
 	computeTier: number;
+}
+
+export interface AzureSqlPaaSSkuCategory extends AzureSqlSkuCategory{
 	sqlPurchasingModel: number;
 	sqlServiceTier: number;
 	hardwareType: number;
 }
 
-export interface AzureManagedDiskSku
-{
+export interface AzureSqlIaaSSkuCategory extends AzureSqlSkuCategory{
+	virtualMachineFamilyType: number;
+}
+
+export interface AzureManagedDiskSku {
 	tier: string;
 	size: string;
 	caching: string;
 }
 
-export interface AzureVirtualMachineSku
-{
-	virtualMachineFamily: string;
+export interface AzureVirtualMachineSku {
+	virtualMachineFamily: string | number;
 	sizeName: string;
 	computeSize: number;
 	azureSkuName: string;
 	vCPUsAvailable: number;
+	maxNetworkInterfaces: number;
 }
-
-export interface AzureSqlSku
-{
-	// AzureSqlSku
-	category: AzureSqlSkuCategory;
-	computeSize: number;
-	predictedDataSizeInMb: number;
-	predictedLogSizeInMb: number;
-
-	// AzureSqlPaaSSku (a PaaS-specific AzureSqlSku)
-	storageMaxSizeInMb: number;
-
-	// AzureSqlIaaSSku (an IaaS-specific AzureSqlSku)
-	virtualMachineSize: AzureVirtualMachineSku;
-    dataDiskSizes: AzureManagedDiskSku[];
-    logDiskSizes: AzureManagedDiskSku[];
-    tempDbDiskSizes: AzureManagedDiskSku[];
-}
-
-export interface AzureSqlSkuMonthlyCost
-{
+export interface AzureSqlSkuMonthlyCost {
 	computeCost: number;
 	storageCost: number;
 	totalCost: number;
 }
 
-export interface SkuRecommendationResultItem
-{
+export interface AzureSqlSku {
+	category: AzureSqlPaaSSkuCategory | AzureSqlIaaSSkuCategory;
+	computeSize: number;
+	predictedDataSizeInMb: number;
+	predictedLogSizeInMb: number;
+}
+
+export interface AzureSqlPaaSSku extends AzureSqlSku {
+	category: AzureSqlPaaSSkuCategory;
+	storageMaxSizeInMb: number;
+}
+
+export interface AzureIaaSSku extends AzureSqlSku {
+	category: AzureSqlIaaSSkuCategory;
+	virtualMachineSize: AzureVirtualMachineSku;
+	dataDiskSizes: AzureManagedDiskSku[];
+	logDiskSizes: AzureManagedDiskSku[];
+	tempDbDiskSizes: AzureManagedDiskSku[];
+}
+
+export interface SkuRecommendationResultItem {
 	sqlInstanceName: string;
 	databaseName: string;
-	targetSku: AzureSqlSku;
+	targetSku: AzureIaaSSku | AzureSqlPaaSSku;
 	monthlyCost: AzureSqlSkuMonthlyCost;
 	ranking: number;
 	positiveJustifications: string[];
 	negativeJustifications: string[];
 }
 
+export interface PaaSSkuRecommendationResultItem extends SkuRecommendationResultItem {
+	targetSku: AzureSqlPaaSSku;
+}
+
+export interface IaaSSkuRecommendationResultItem extends SkuRecommendationResultItem {
+	targetSku: AzureIaaSSku;
+}
+
 export interface SkuRecommendationResult {
-	sqlDbRecommendationResults: SkuRecommendationResultItem[];
-	sqlMiRecommendationResults: SkuRecommendationResultItem[];
-	sqlVmRecommendationResults: SkuRecommendationResultItem[];
+	sqlDbRecommendationResults: PaaSSkuRecommendationResultItem[];
+	sqlMiRecommendationResults: PaaSSkuRecommendationResultItem[];
+	sqlVmRecommendationResults: IaaSSkuRecommendationResultItem[];
 }
 
 export interface ISqlMigrationService {
