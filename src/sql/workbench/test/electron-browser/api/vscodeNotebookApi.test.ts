@@ -181,21 +181,23 @@ suite('Notebook Serializer', () => {
 			}
 		}],
 		metadata: {
-			kernelspec: {
-				name: 'python3',
-				display_name: 'Python 3',
-				language: 'python'
-			},
-			language_info: {
-				name: 'python',
-				version: '3.8.10',
-				mimetype: 'text/x-python',
-				codemirror_mode: {
-					name: 'ipython',
-					version: '3'
-				}
-			},
 			custom: {
+				metadata: {
+					kernelspec: {
+						name: 'python3',
+						display_name: 'Python 3',
+						language: 'python'
+					},
+					language_info: {
+						name: 'python',
+						version: '3.8.10',
+						mimetype: 'text/x-python',
+						codemirror_mode: {
+							name: 'ipython',
+							version: '3'
+						}
+					}
+				},
 				nbformat: NBFORMAT,
 				nbformat_minor: NBFORMAT_MINOR
 			}

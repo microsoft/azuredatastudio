@@ -97,10 +97,6 @@ export function convertToADSNotebookContents(notebookData: vscode.NotebookData):
 		nbformat: notebookData.metadata?.custom?.nbformat ?? NBFORMAT,
 		nbformat_minor: notebookData.metadata?.custom?.nbformat_minor ?? NBFORMAT_MINOR
 	};
-
-	// Clear out extra lingering vscode custom metadata
-	delete result.metadata.custom;
-
 	return result;
 }
 
@@ -117,11 +113,13 @@ export function convertToVSCodeNotebookData(notebook: azdata.nb.INotebookContent
 				}
 			};
 		}),
-		metadata: notebook.metadata
-	};
-	result.metadata.custom = {
-		nbformat: notebook.nbformat,
-		nbformat_minor: notebook.nbformat_minor
+		metadata: {
+			custom: {
+				metadata: notebook.metadata,
+				nbformat: notebook.nbformat,
+				nbformat_minor: notebook.nbformat_minor
+			}
+		}
 	};
 	return result;
 }
