@@ -179,7 +179,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	private _onNotebookEditorRename = new Emitter<INotebookEditor>();
 	private _editors = new Map<string, INotebookEditor>();
 	private _fileToProviderDescriptions = new Map<string, ProviderDescriptionRegistration[]>();
-	private _providerToStandardKernels = new Map<string, StandardKernelsDescriptor>();
+	private _providerToStandardKernels = new Map<string, StandardKernelsDescriptor>(); // Note: providerId key here should be in upper case
 	private _registrationComplete = new Deferred<void>();
 	private _isRegistrationComplete = false;
 	private _trustedCacheQueue: URI[] = [];
@@ -693,6 +693,7 @@ export class NotebookService extends Disposable implements INotebookService {
 			providerDescriptor.instanceReady,
 			new Promise<ISerializationProvider | undefined>((resolve, reject) => setTimeout(() => {
 				if (!providerDescriptor.instance) {
+					this._serializationProviders.delete(providerDescriptor.providerId); // Remove waiting descriptor so we don't timeout again
 					onUnexpectedError(localize('serializationProviderTimeout', 'Waiting for Serialization Provider availability timed out for notebook provider \'{0}\'', providerDescriptor.providerId));
 				}
 				resolve(undefined);
@@ -708,6 +709,7 @@ export class NotebookService extends Disposable implements INotebookService {
 			providerDescriptor.instanceReady,
 			new Promise<IExecuteProvider | undefined>((resolve, reject) => setTimeout(() => {
 				if (!providerDescriptor.instance) {
+					this._executeProviders.delete(providerDescriptor.providerId); // Remove waiting descriptor so we don't timeout again
 					onUnexpectedError(localize('executeProviderTimeout', 'Waiting for Execute Provider availability timed out for notebook provider \'{0}\'', providerDescriptor.providerId));
 				}
 				resolve(undefined);
@@ -723,6 +725,7 @@ export class NotebookService extends Disposable implements INotebookService {
 			kernelsDescriptor.instanceReady,
 			new Promise<nb.IStandardKernel[] | undefined>((resolve, reject) => setTimeout(() => {
 				if (!kernelsDescriptor.instance) {
+					this._providerToStandardKernels.delete(kernelsDescriptor.providerId.toUpperCase()); // Remove waiting descriptor so we don't timeout again
 					onUnexpectedError(localize('standardKernelsTimeout', 'Waiting for Standard Kernels availability timed out for notebook provider \'{0}\'', kernelsDescriptor.providerId));
 				}
 				resolve(undefined);
