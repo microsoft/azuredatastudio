@@ -39,7 +39,6 @@ export class ADSNotebookController implements vscode.NotebookController {
 		private _id: string,
 		private _viewType: string,
 		private _label: string,
-		private _addLanguagesHandler: (providerId, languages) => void,
 		private _extHostNotebookDocumentsAndEditors: ExtHostNotebookDocumentsAndEditors,
 		private _handler?: ExecutionHandler,
 		preloads?: vscode.NotebookRendererScript[]
@@ -107,7 +106,6 @@ export class ADSNotebookController implements vscode.NotebookController {
 
 	public set supportedLanguages(value: string[]) {
 		this._kernelData.supportedLanguages = value;
-		this._addLanguagesHandler(this._viewType, value);
 		this._languagesAdded.resolve();
 	}
 

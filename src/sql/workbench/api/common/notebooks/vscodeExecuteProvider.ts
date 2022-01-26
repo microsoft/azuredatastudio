@@ -213,24 +213,22 @@ class VSCodeSessionManager implements azdata.nb.SessionManager {
 	}
 
 	public get isReady(): boolean {
-		return this._controller.supportedLanguages?.length > 0 && this._controller.executeHandler !== undefined;
+		return this._controller.executeHandler !== undefined;
 	}
 
 	public get ready(): Thenable<void> {
-		return Promise.all([this._controller.languagesAdded, this._controller.executionHandlerAdded]).then();
+		return this._controller.executionHandlerAdded;
 	}
 
 	public get specs(): azdata.nb.IAllKernels {
-		let languages = this._controller.supportedLanguages?.length > 0 ? this._controller.supportedLanguages : [this._controller.label];
+		let kernel: azdata.nb.IStandardKernel = {
+			name: this._controller.notebookType,
+			displayName: this._controller.label,
+			connectionProviderIds: []
+		};
 		return {
-			defaultKernel: languages[0],
-			kernels: languages.map<azdata.nb.IKernelSpec>(language => {
-				return {
-					name: language,
-					language: language,
-					display_name: language
-				};
-			})
+			defaultKernel: kernel.name,
+			kernels: [kernel]
 		};
 	}
 
