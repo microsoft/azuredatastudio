@@ -115,7 +115,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _connectionUrisToDispose: string[] = [];
 	private _textCellsLoading: number = 0;
 	private _standardKernels: notebookUtils.IStandardKernelWithProvider[] = [];
-	private _kernelAliases: string[] = [];
+	private _sqlKernelAliases: string[] = [];
 	private _currentKernelAlias: string | undefined;
 	private _selectedKernelDisplayName: string | undefined;
 	private _multiConnectionMode: boolean = false;
@@ -298,8 +298,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._providerId;
 	}
 
-	public get kernelAliases(): string[] {
-		return this._kernelAliases;
+	public get sqlKernelAliases(): string[] {
+		return this._sqlKernelAliases;
 	}
 
 	public get currentKernelAlias(): string | undefined {
@@ -1009,13 +1009,13 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			}
 		}
 
-		if (this._capabilitiesService?.providers) {
+		if (this._capabilitiesService?.providers && this.executeManager.providerId === SQL_NOTEBOOK_PROVIDER) {
 			let providers = this._capabilitiesService.providers;
 			for (const server in providers) {
 				let alias = providers[server].connection.notebookKernelAlias;
 				// Add Notebook Kernel Alias to kernelAliases
-				if (alias && this._kernelAliases.indexOf(alias) === -1) {
-					this._kernelAliases.push(providers[server].connection.notebookKernelAlias);
+				if (alias && this._sqlKernelAliases.indexOf(alias) === -1) {
+					this._sqlKernelAliases.push(providers[server].connection.notebookKernelAlias);
 					this._kernelDisplayNameToConnectionProviderIds.set(alias, [providers[server].connection.providerId]);
 				}
 			}
@@ -1150,7 +1150,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	public changeKernel(displayName: string): void {
 		this._selectedKernelDisplayName = displayName;
 		this._currentKernelAlias = this.context?.serverCapabilities?.notebookKernelAlias;
-		if (this._currentKernelAlias && this.kernelAliases.includes(this._currentKernelAlias) && displayName === this._currentKernelAlias) {
+		if (this._currentKernelAlias && this.sqlKernelAliases.includes(this._currentKernelAlias) && displayName === this._currentKernelAlias) {
 			this.doChangeKernel(displayName, true).catch(e => this.logService.error(e));
 		} else {
 			this._currentKernelAlias = undefined;
@@ -1166,7 +1166,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 		let oldDisplayName = this._activeClientSession && this._activeClientSession.kernel ? this._activeClientSession.kernel.name : undefined;
 		let nbKernelAlias: string | undefined;
-		if (this.kernelAliases.includes(displayName)) {
+		if (this.sqlKernelAliases.includes(displayName)) {
 			this._currentKernelAlias = displayName;
 			displayName = 'SQL';
 			nbKernelAlias = this._currentKernelAlias;
@@ -1217,7 +1217,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	private async updateKernelInfoOnKernelChange(kernel: nb.IKernel, kernelAlias?: string) {
 		await this.updateKernelInfo(kernel);
-		kernelAlias = this.kernelAliases.find(kernel => this._defaultLanguageInfo?.name === kernel.toLowerCase()) ?? kernelAlias;
+		kernelAlias = this.sqlKernelAliases.find(kernel => this._defaultLanguageInfo?.name === kernel.toLowerCase()) ?? kernelAlias;
 		// In order to change from kernel alias to other kernel, set kernelAlias to undefined in order to update to new kernel language info
 		if (this._selectedKernelDisplayName !== kernelAlias && this._selectedKernelDisplayName) {
 			kernelAlias = undefined;

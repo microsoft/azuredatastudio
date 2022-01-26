@@ -586,9 +586,9 @@ export class KernelsDropdown extends SelectBox {
 	public updateKernel(kernel: azdata.nb.IKernel, nbKernelAlias?: string) {
 		let kernels: string[] = this._showAllKernels ? [...new Set(this.model.specs.kernels.map(a => a.display_name).concat(this.model.standardKernelsDisplayName()))]
 			: this.model.standardKernelsDisplayName();
-		if (this.model.kernelAliases?.length) {
-			for (let x in this.model.kernelAliases) {
-				kernels.splice(1, 0, this.model.kernelAliases[x]);
+		if (this.model.sqlKernelAliases?.length) {
+			for (let x in this.model.sqlKernelAliases) {
+				kernels.splice(1, 0, this.model.sqlKernelAliases[x]);
 			}
 		}
 		if (kernel && kernel.isReady) {
@@ -688,7 +688,7 @@ export class AttachToDropdown extends SelectBox {
 			let currentKernelSpec = this.model.specs.kernels.find(kernel => kernel.name && kernel.name.toLowerCase() === currentKernelName);
 			if (currentKernelSpec) {
 				//KernelDisplayName should be Kusto when connecting to Kusto connection
-				if ((this.model.context?.serverCapabilities.notebookKernelAlias && this.model.currentKernelAlias === this.model.context?.serverCapabilities.notebookKernelAlias) || (this.model.kernelAliases.includes(this.model.selectedKernelDisplayName) && this.model.selectedKernelDisplayName)) {
+				if ((this.model.context?.serverCapabilities.notebookKernelAlias && this.model.currentKernelAlias === this.model.context?.serverCapabilities.notebookKernelAlias) || (this.model.sqlKernelAliases.includes(this.model.selectedKernelDisplayName) && this.model.selectedKernelDisplayName)) {
 					kernelDisplayName = this.model.context?.serverCapabilities.notebookKernelAlias || this.model.selectedKernelDisplayName;
 				} else {
 					kernelDisplayName = currentKernelSpec.display_name;
@@ -718,7 +718,7 @@ export class AttachToDropdown extends SelectBox {
 			this.setOptions(connections, 0);
 			this.enable();
 
-			if (this.model.kernelAliases.includes(currentKernel) && this.model.selectedKernelDisplayName !== currentKernel) {
+			if (this.model.sqlKernelAliases.includes(currentKernel) && this.model.selectedKernelDisplayName !== currentKernel) {
 				this.model.changeKernel(currentKernel);
 			}
 		}
@@ -747,10 +747,10 @@ export class AttachToDropdown extends SelectBox {
 			// Spark kernels are unable to get providers from above, therefore ensure that we get the
 			// correct providers for the selected kernel and load the proper connections for the connection dialog
 			// Example Scenario: Spark Kernels should only have MSSQL connections in connection dialog
-			if (!this.model.kernelAliases.includes(this.model.selectedKernelDisplayName) && this.model.clientSession.kernel.name !== 'SQL') {
+			if (!this.model.sqlKernelAliases.includes(this.model.selectedKernelDisplayName) && this.model.clientSession.kernel.name !== 'SQL') {
 				providers = providers.concat(this.model.getApplicableConnectionProviderIds(this.model.selectedKernelDisplayName));
 			} else {
-				for (let alias of this.model.kernelAliases) {
+				for (let alias of this.model.sqlKernelAliases) {
 					providers = providers.concat(this.model.getApplicableConnectionProviderIds(alias));
 				}
 			}
@@ -797,7 +797,7 @@ export class AttachToDropdown extends SelectBox {
 			this.doChangeContext(connectionProfile);
 
 			//Changes kernel based on connection attached to
-			if (this.model.kernelAliases.includes(connectionProfile.serverCapabilities.notebookKernelAlias)) {
+			if (this.model.sqlKernelAliases.includes(connectionProfile.serverCapabilities.notebookKernelAlias)) {
 				this.model.changeKernel(connectionProfile.serverCapabilities.notebookKernelAlias);
 			} else if (this.model.clientSession.kernel.name === 'SQL') {
 				this.model.changeKernel('SQL');
