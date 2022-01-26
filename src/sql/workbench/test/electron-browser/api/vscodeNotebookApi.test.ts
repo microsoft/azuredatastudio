@@ -417,7 +417,7 @@ suite('Notebook Serializer', () => {
 	}
 
 	test('Retrieve range of cells from VS Code NotebookDocument', async () => {
-		let expectedCells: vscode.NotebookCell[] = testDoc.cells.map((cell, index) => convertToVSCodeNotebookCell(cell.contents.source, index, testDoc.uri, testDoc.kernelSpec.language));
+		let expectedCells: vscode.NotebookCell[] = testDoc.cells.map((cell, index) => convertToVSCodeNotebookCell(cell.contents.source, cell.contents.cell_type, index, testDoc.uri, cell.contents.metadata?.language));
 		let vsDoc = new VSCodeNotebookDocument(testDoc);
 
 		let actualCells = vsDoc.getCells();
@@ -434,7 +434,7 @@ suite('Notebook Serializer', () => {
 	});
 
 	test('Retrieve specific cell from VS Code NotebookDocument', async () => {
-		let expectedCells: vscode.NotebookCell[] = testDoc.cells.map((cell, index) => convertToVSCodeNotebookCell(cell.contents.source, index, testDoc.uri, testDoc.kernelSpec.language));
+		let expectedCells: vscode.NotebookCell[] = testDoc.cells.map((cell, index) => convertToVSCodeNotebookCell(cell.contents.source, cell.contents.cell_type, index, testDoc.uri, cell.contents.metadata?.language));
 		let vsDoc = new VSCodeNotebookDocument(testDoc);
 
 		let firstCell = vsDoc.cellAt(0);
