@@ -14,15 +14,18 @@ import { NotebookCellKind } from 'vs/workbench/api/common/extHostTypes';
 
 export function convertToVSCodeNotebookCell(cellSource: string | string[], cellKind: azdata.nb.CellType, cellIndex: number, docUri: URI, cellLanguage: string): vscode.NotebookCell {
 	return <vscode.NotebookCell>{
+		kind: cellKind === 'code' ? NotebookCellKind.Code : NotebookCellKind.Markup,
 		index: cellIndex,
 		document: <vscode.TextDocument>{
 			languageId: cellLanguage ?? '',
-			getText: () => Array.isArray(cellSource) ? cellSource.join('') : cellSource,
+			getText: () => Array.isArray(cellSource) ? cellSource.join('') : (cellSource ?? ''),
 		},
 		notebook: <vscode.NotebookDocument>{
 			uri: docUri
 		},
-		kind: cellKind === 'code' ? NotebookCellKind.Code : NotebookCellKind.Markup
+		outputs: [],
+		metadata: {},
+		mime: undefined
 	};
 }
 
