@@ -260,20 +260,21 @@ export class GetAzureRecommendationDialog {
 	}
 
 	public async openDialog(dialogName?: string) {
-		if (!this._isOpen) {
-			this._isOpen = true;
-			this.dialog = azdata.window.createModelViewDialog(constants.GET_AZURE_RECOMMENDATION, 'GetAzureRecommendationsDialog', 'narrow');
+		// TODO: fix _isOpen logic?
+		// if (!this._isOpen) {
+		this._isOpen = true;
+		this.dialog = azdata.window.createModelViewDialog(constants.GET_AZURE_RECOMMENDATION, 'GetAzureRecommendationsDialog', 'narrow');
 
-			this.dialog.okButton.label = GetAzureRecommendationDialog.StartButtonText;
-			this._disposables.push(this.dialog.okButton.onClick(async () => await this.execute()));
+		this.dialog.okButton.label = GetAzureRecommendationDialog.StartButtonText;
+		this._disposables.push(this.dialog.okButton.onClick(async () => await this.execute()));
 
-			this.dialog.cancelButton.hidden = true;
+		this.dialog.cancelButton.hidden = true;
 
-			const dialogSetupPromises: Thenable<void>[] = [];
-			dialogSetupPromises.push(this.initializeDialog(this.dialog));
-			azdata.window.openDialog(this.dialog);
-			await Promise.all(dialogSetupPromises);
-		}
+		const dialogSetupPromises: Thenable<void>[] = [];
+		dialogSetupPromises.push(this.initializeDialog(this.dialog));
+		azdata.window.openDialog(this.dialog);
+		await Promise.all(dialogSetupPromises);
+		// }
 	}
 
 	protected async execute() {

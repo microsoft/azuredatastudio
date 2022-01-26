@@ -605,33 +605,30 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			this._supportedProducts.forEach((product, index) => {
 				// this._rbg.cards[index].descriptions[5].textValue = constants.ASSESSED_DBS(dbCount);
 
-				// if (!this.migrationStateModel._skuRecommendationResults.recommendations) {
-				// 	console.log("0-- no recommendations");
+				if (!this.hasRecommendations()) {
+					console.log('0-- no recommendations');
+					this._rbg.cards[index].descriptions[7 - 1].linkDisplayValue = constants.GET_AZURE_RECOMMENDATION;
+				} else {
+					console.log('1-- has recommendations');
+					this._rbg.cards[index].descriptions[7 - 1].linkDisplayValue = constants.VIEW_DETAILS;
+				}
 
-				// } else {
-				// 	console.log("1-- has recommendations");
 				let recommendation;
 				switch (product.type) {
 					case MigrationTargetType.SQLMI:
 						this._rbg.cards[index].descriptions[2].textValue = constants.CAN_BE_MIGRATED(dbWithoutIssuesCount, dbCount);
 
-						if (!this.hasRecommendations()) {
-							console.log('0-- no recommendations');
-							this._rbg.cards[index].descriptions[7 - 1].linkDisplayValue = constants.GET_AZURE_RECOMMENDATION;
-						} else {
-							recommendation = this.migrationStateModel._skuRecommendationResults.recommendations.sqlMiRecommendationResults[0];
-							const serviceTier = recommendation.targetSku.category?.sqlServiceTier === mssql.AzureSqlPaaSServiceTier.GeneralPurpose
-								? constants.GENERAL_PURPOSE
-								: constants.BUSINESS_CRITICAL;
-							const hardwareType = recommendation.targetSku.category?.hardwareType === mssql.AzureSqlPaaSHardwareType.Gen5
-								? constants.GEN5
-								: recommendation.targetSku.category?.hardwareType === mssql.AzureSqlPaaSHardwareType.PremiumSeries
-									? constants.PREMIUM_SERIES
-									: constants.PREMIUM_SERIES_MEMORY_OPTIMIZED;
-							this._rbg.cards[index].descriptions[6 - 1].textValue = constants.MI_CONFIGURATION(hardwareType, serviceTier, recommendation.targetSku.computeSize!);
-							// TO-DO: add storage configuration here
-							this._rbg.cards[index].descriptions[7 - 1].linkDisplayValue = constants.VIEW_DETAILS;
-						}
+						recommendation = this.migrationStateModel._skuRecommendationResults.recommendations.sqlMiRecommendationResults[0];
+						const serviceTier = recommendation.targetSku.category?.sqlServiceTier === mssql.AzureSqlPaaSServiceTier.GeneralPurpose
+							? constants.GENERAL_PURPOSE
+							: constants.BUSINESS_CRITICAL;
+						const hardwareType = recommendation.targetSku.category?.hardwareType === mssql.AzureSqlPaaSHardwareType.Gen5
+							? constants.GEN5
+							: recommendation.targetSku.category?.hardwareType === mssql.AzureSqlPaaSHardwareType.PremiumSeries
+								? constants.PREMIUM_SERIES
+								: constants.PREMIUM_SERIES_MEMORY_OPTIMIZED;
+						this._rbg.cards[index].descriptions[6 - 1].textValue = constants.MI_CONFIGURATION(hardwareType, serviceTier, recommendation.targetSku.computeSize!);
+						// TO-DO: add storage configuration here
 						break;
 
 					case MigrationTargetType.SQLVM:
