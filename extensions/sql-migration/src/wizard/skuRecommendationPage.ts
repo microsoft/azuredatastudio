@@ -605,12 +605,10 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			this._supportedProducts.forEach((product, index) => {
 				// this._rbg.cards[index].descriptions[5].textValue = constants.ASSESSED_DBS(dbCount);
 
-				if (!this.hasRecommendations()) {
-					console.log('0-- no recommendations');
-					this._rbg.cards[index].descriptions[7 - 1].linkDisplayValue = constants.GET_AZURE_RECOMMENDATION;
-				} else {
-					console.log('1-- has recommendations');
+				if (this.hasRecommendations()) {
 					this._rbg.cards[index].descriptions[7 - 1].linkDisplayValue = constants.VIEW_DETAILS;
+				} else {
+					this._rbg.cards[index].descriptions[7 - 1].linkDisplayValue = constants.GET_AZURE_RECOMMENDATION;
 				}
 
 				let recommendation;
@@ -618,30 +616,37 @@ export class SKURecommendationPage extends MigrationWizardPage {
 					case MigrationTargetType.SQLMI:
 						this._rbg.cards[index].descriptions[2].textValue = constants.CAN_BE_MIGRATED(dbWithoutIssuesCount, dbCount);
 
-						recommendation = this.migrationStateModel._skuRecommendationResults.recommendations.sqlMiRecommendationResults[0];
-						const serviceTier = recommendation.targetSku.category?.sqlServiceTier === mssql.AzureSqlPaaSServiceTier.GeneralPurpose
-							? constants.GENERAL_PURPOSE
-							: constants.BUSINESS_CRITICAL;
-						const hardwareType = recommendation.targetSku.category?.hardwareType === mssql.AzureSqlPaaSHardwareType.Gen5
-							? constants.GEN5
-							: recommendation.targetSku.category?.hardwareType === mssql.AzureSqlPaaSHardwareType.PremiumSeries
-								? constants.PREMIUM_SERIES
-								: constants.PREMIUM_SERIES_MEMORY_OPTIMIZED;
-						this._rbg.cards[index].descriptions[6 - 1].textValue = constants.MI_CONFIGURATION(hardwareType, serviceTier, recommendation.targetSku.computeSize!);
-						// TO-DO: add storage configuration here
+						if (this.hasRecommendations()) {
+							recommendation = this.migrationStateModel._skuRecommendationResults.recommendations.sqlMiRecommendationResults[0];
+							const serviceTier = recommendation.targetSku.category?.sqlServiceTier === mssql.AzureSqlPaaSServiceTier.GeneralPurpose
+								? constants.GENERAL_PURPOSE
+								: constants.BUSINESS_CRITICAL;
+							const hardwareType = recommendation.targetSku.category?.hardwareType === mssql.AzureSqlPaaSHardwareType.Gen5
+								? constants.GEN5
+								: recommendation.targetSku.category?.hardwareType === mssql.AzureSqlPaaSHardwareType.PremiumSeries
+									? constants.PREMIUM_SERIES
+									: constants.PREMIUM_SERIES_MEMORY_OPTIMIZED;
+							this._rbg.cards[index].descriptions[6 - 1].textValue = constants.MI_CONFIGURATION(hardwareType, serviceTier, recommendation.targetSku.computeSize!);
+							// TO-DO: add storage configuration here
+						}
 						break;
 
 					case MigrationTargetType.SQLVM:
 						this._rbg.cards[index].descriptions[2].textValue = constants.CAN_BE_MIGRATED(dbCount, dbCount);
 
-						recommendation = this.migrationStateModel._skuRecommendationResults.recommendations.sqlVmRecommendationResults[0];
-						this._rbg.cards[index].descriptions[6 - 1].textValue = constants.VM_CONFIGURATION(recommendation.targetSku.virtualMachineSize!.sizeName, recommendation.targetSku.virtualMachineSize!.vCPUsAvailable);
-						// TO-DO: add storage configuration here
+						if (this.hasRecommendations()) {
+							recommendation = this.migrationStateModel._skuRecommendationResults.recommendations.sqlVmRecommendationResults[0];
+							this._rbg.cards[index].descriptions[6 - 1].textValue = constants.VM_CONFIGURATION(recommendation.targetSku.virtualMachineSize!.sizeName, recommendation.targetSku.virtualMachineSize!.vCPUsAvailable);
+							// TO-DO: add storage configuration here
+						}
 						break;
 
 					case MigrationTargetType.SQLDB:
 						this._rbg.cards[index].descriptions[2].textValue = constants.CAN_BE_MIGRATED(dbWithoutIssuesCount, dbCount);
-						this._rbg.cards[index].descriptions[6 - 1].textValue = constants.RECOMMENDATIONS_AVAILABLE(dbCount);
+
+						if (this.hasRecommendations()) {
+							this._rbg.cards[index].descriptions[6 - 1].textValue = constants.RECOMMENDATIONS_AVAILABLE(dbCount);
+						}
 						break;
 				}
 				// }
