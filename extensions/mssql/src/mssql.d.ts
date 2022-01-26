@@ -616,35 +616,36 @@ export interface AssessmentResult {
 	errors: ErrorModel[];
 }
 
+// SKU recommendation interfaces, mirrored from Microsoft.SqlServer.Migration.SkuRecommendation
 export interface AzureSqlSkuCategory {
-	sqlTargetPlatform: number;
-	computeTier: number;
+	sqlTargetPlatform: AzureSqlTargetPlatform;
+	computeTier: ComputeTier;
 }
 
-export interface AzureSqlPaaSSkuCategory extends AzureSqlSkuCategory{
-	sqlPurchasingModel: number;
-	sqlServiceTier: number;
-	hardwareType: number;
+export interface AzureSqlSkuPaaSCategory extends AzureSqlSkuCategory{
+	sqlPurchasingModel: AzureSqlPurchasingModel;
+	sqlServiceTier: AzureSqlPaaSServiceTier;
+	hardwareType: AzureSqlPaaSHardwareType;
 }
 
-export interface AzureSqlIaaSSkuCategory extends AzureSqlSkuCategory{
-	virtualMachineFamilyType: number;
+export interface AzureSqlSkuIaaSCategory extends AzureSqlSkuCategory{
+	virtualMachineFamilyType: VirtualMachineFamilyType;
 }
 
 export interface AzureManagedDiskSku {
-	tier: string;
+	tier: AzureManagedDiskTier;
 	size: string;
-	caching: string;
+	caching: AzureManagedDiskCaching;
 }
 
 export interface AzureVirtualMachineSku {
-	virtualMachineFamily: string | number;
+	virtualMachineFamily: VirtualMachineFamily;
 	sizeName: string;
 	computeSize: number;
 	azureSkuName: string;
 	vCPUsAvailable: number;
-	maxNetworkInterfaces: number;
 }
+
 export interface AzureSqlSkuMonthlyCost {
 	computeCost: number;
 	storageCost: number;
@@ -652,19 +653,19 @@ export interface AzureSqlSkuMonthlyCost {
 }
 
 export interface AzureSqlSku {
-	category: AzureSqlPaaSSkuCategory | AzureSqlIaaSSkuCategory;
+	category: AzureSqlSkuPaaSCategory | AzureSqlSkuIaaSCategory;
 	computeSize: number;
 	predictedDataSizeInMb: number;
 	predictedLogSizeInMb: number;
 }
 
 export interface AzureSqlPaaSSku extends AzureSqlSku {
-	category: AzureSqlPaaSSkuCategory;
+	category: AzureSqlSkuPaaSCategory;
 	storageMaxSizeInMb: number;
 }
 
-export interface AzureIaaSSku extends AzureSqlSku {
-	category: AzureSqlIaaSSkuCategory;
+export interface AzureSqlIaaSSku extends AzureSqlSku {
+	category: AzureSqlSkuIaaSCategory;
 	virtualMachineSize: AzureVirtualMachineSku;
 	dataDiskSizes: AzureManagedDiskSku[];
 	logDiskSizes: AzureManagedDiskSku[];
@@ -674,7 +675,7 @@ export interface AzureIaaSSku extends AzureSqlSku {
 export interface SkuRecommendationResultItem {
 	sqlInstanceName: string;
 	databaseName: string;
-	targetSku: AzureIaaSSku | AzureSqlPaaSSku;
+	targetSku: AzureSqlIaaSSku | AzureSqlPaaSSku;
 	monthlyCost: AzureSqlSkuMonthlyCost;
 	ranking: number;
 	positiveJustifications: string[];
@@ -686,13 +687,118 @@ export interface PaaSSkuRecommendationResultItem extends SkuRecommendationResult
 }
 
 export interface IaaSSkuRecommendationResultItem extends SkuRecommendationResultItem {
-	targetSku: AzureIaaSSku;
+	targetSku: AzureSqlIaaSSku;
 }
 
 export interface SkuRecommendationResult {
 	sqlDbRecommendationResults: PaaSSkuRecommendationResultItem[];
 	sqlMiRecommendationResults: PaaSSkuRecommendationResultItem[];
 	sqlVmRecommendationResults: IaaSSkuRecommendationResultItem[];
+}
+
+// SKU recommendation enums, mirrored from Microsoft.SqlServer.Migration.SkuRecommendation
+export const enum AzureSqlTargetPlatform {
+	AzureSqlDatabase = 0,
+	AzureSqlManagedInstance = 1,
+	AzureSqlVirtualMachine = 2
+}
+
+export const enum ComputeTier {
+	Provisioned = 0,
+	ServerLess = 1
+}
+
+export const enum AzureManagedDiskTier {
+	Standard = 0,
+	Premium = 1,
+	Ultra = 2
+}
+
+export const enum AzureManagedDiskCaching {
+	NotApplicable = 0,
+	None = 1,
+	ReadOnly = 2,
+	ReadWrite = 3
+}
+
+export const enum AzureSqlPurchasingModel {
+	vCore = 0,
+}
+
+export const enum AzureSqlPaaSServiceTier {
+	GeneralPurpose = 0,
+	BusinessCritical,
+	HyperScale,
+}
+
+export const enum AzureSqlPaaSHardwareType {
+	Gen5 = 0,
+	PremiumSeries,
+	PremiumSeriesMemoryOptimized
+}
+
+export const enum VirtualMachineFamilyType {
+	GeneralPurpose,
+	ComputeOptimized,
+	MemoryOptimized,
+	StorageOptimized,
+	GPU,
+	HighPerformanceCompute
+}
+
+export const enum VirtualMachineFamily {
+	basicAFamily,
+	standardA0_A7Family,
+	standardA8_A11Family,
+	standardAv2Family,
+	standardBSFamily,
+	standardDASv4Family,
+	standardDAv4Family,
+	standardDCSv2Family,
+	standardDDSv4Family,
+	standardDDv4Family,
+	standardDFamily,
+	standardDSFamily,
+	standardDSv2Family,
+	standardDSv2PromoFamily,
+	standardDSv3Family,
+	standardDSv4Family,
+	standardDv2Family,
+	standardDv2PromoFamily,
+	standardDv3Family,
+	standardDv4Family,
+	standardEASv4Family,
+	standardEAv4Family,
+	standardEDSv4Family,
+	standardEDv4Family,
+	standardEISv3Family,
+	standardEIv3Family,
+	standardESv3Family,
+	standardESv4Family,
+	standardEv3Family,
+	standardEv4Family,
+	standardFFamily,
+	standardFSFamily,
+	standardFSv2Family,
+	standardGFamily,
+	standardGSFamily,
+	standardHFamily,
+	standardHPromoFamily,
+	standardLSFamily,
+	standardLSv2Family,
+	standardMSFamily,
+	standardMSv2Family,
+	standardNCSv3Family,
+	standardNVSv2Family,
+	standardNVSv3Family,
+	standardXEIDSv4Family,
+	standardXEISv4Family,
+	standardMSmallv2Family,
+	standardMISmallv2Family,
+	standardMIDSmallv2Family,
+	standardNVSv4Family,
+	standardMDSmallv2Family,
+	standardNCASv3_T4Family
 }
 
 export interface ISqlMigrationService {

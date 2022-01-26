@@ -26,26 +26,23 @@ export class SkuRecommendationResultsDialog {
 	// Dialog Name for Telemetry
 	public dialogName: string | undefined;
 	private _disposables: vscode.Disposable[] = [];
-	public title: string;
-	public targetName: string;
+	public title?: string;
+	public targetName?: string;
 
-	public targetRecommendations: mssql.SkuRecommendationResultItem[];
+	public targetRecommendations?: mssql.SkuRecommendationResultItem[];
 
-	constructor(public model: MigrationStateModel, public _targetType: MigrationTargetType, public recommendations: mssql.SkuRecommendationResult) {
+	constructor(public model: MigrationStateModel, public _targetType: MigrationTargetType) {
 		switch (this._targetType) {
 			case MigrationTargetType.SQLMI:
 				this.targetName = constants.AZURE_SQL_DATABASE_MANAGED_INSTANCE;
-				this.targetRecommendations = recommendations.sqlMiRecommendationResults;
 				break;
 
 			case MigrationTargetType.SQLVM:
 				this.targetName = constants.AZURE_SQL_DATABASE_VIRTUAL_MACHINE; // AZURE_SQL_DATABASE_VIRTUAL_MACHINE_SHORT
-				this.targetRecommendations = recommendations.sqlVmRecommendationResults;
 				break;
 
 			case MigrationTargetType.SQLDB:
 				this.targetName = constants.AZURE_SQL_DATABASE;
-				this.targetRecommendations = recommendations.sqlDbRecommendationResults;
 				break;
 		}
 
@@ -80,7 +77,7 @@ export class SkuRecommendationResultsDialog {
 			}
 		}).component();
 
-		this.targetRecommendations.forEach(recommendation => {
+		this.targetRecommendations?.forEach(recommendation => {
 			container.addItem(this.createRecommendation(_view, recommendation));
 		});
 		return container;
@@ -105,10 +102,19 @@ export class SkuRecommendationResultsDialog {
 			case MigrationTargetType.SQLDB:
 				recommendation = <mssql.PaaSSkuRecommendationResultItem>recommendationItem;
 
-				const computeTier = recommendation.targetSku.category?.computeTier === 0
+				const serviceTier = recommendation.targetSku.category?.sqlServiceTier === mssql.AzureSqlPaaSServiceTier.GeneralPurpose
 					? constants.GENERAL_PURPOSE
 					: constants.BUSINESS_CRITICAL;
-				configuration = constants.PAAS_CONFIGURATION(computeTier, recommendation.targetSku.computeSize!);
+
+				const hardwareType = recommendation.targetSku.category?.hardwareType === mssql.AzureSqlPaaSHardwareType.Gen5
+					? constants.GEN5
+					: recommendation.targetSku.category?.hardwareType === mssql.AzureSqlPaaSHardwareType.PremiumSeries
+						? constants.PREMIUM_SERIES
+						: constants.PREMIUM_SERIES_MEMORY_OPTIMIZED;
+
+				configuration = this._targetType === MigrationTargetType.SQLDB
+					? constants.DB_CONFIGURATION(serviceTier, recommendation.targetSku.computeSize!)
+					: constants.MI_CONFIGURATION(hardwareType, serviceTier, recommendation.targetSku.computeSize!);
 
 				const storageLabel = _view.modelBuilder.text().withProps({
 					value: constants.STORAGE_HEADER,
@@ -117,7 +123,7 @@ export class SkuRecommendationResultsDialog {
 					}
 				}).component();
 				const storageValue = _view.modelBuilder.text().withProps({
-					value: constants.STORAGE_GB(recommendation.targetSku.storageMaxSizeInMb!),
+					value: constants.STORAGE_GB(recommendation.targetSku.storageMaxSizeInMb! / 1024),
 					CSSStyles: {
 						...styles.BODY_CSS,
 					}
@@ -280,7 +286,7 @@ export class SkuRecommendationResultsDialog {
 			},
 			{
 				valueType: azdata.DeclarativeDataType.string,
-				displayName: constants.CACHE,
+				displayName: constants.CACHING,
 				isReadOnly: true,
 				width: columnWidth,
 				rowCssStyles: rowCssStyle,
@@ -289,26 +295,29 @@ export class SkuRecommendationResultsDialog {
 		];
 
 		const tempTableRow: azdata.DeclarativeTableCellValue[] = [
-			{ value: constants.SQL_TEMP },
+			{ value: constants.SQL_TEMPDB },
 			{
 				value: recommendation.targetSku.tempDbDiskSizes!.length > 0
 					? recommendation.targetSku.logDiskSizes!.length + ' x ' + recommendation.targetSku.logDiskSizes![0].size
-					: 'dedicated disk'
-				// no dedicated disk
+					: constants.EPHEMERAL_TEMPDB
 			},
-			{ value: 'N/A' }
+			{
+				value: recommendation.targetSku.tempDbDiskSizes!.length > 0
+					? this.getCachingText(recommendation.targetSku.logDiskSizes![0].caching)
+					: constants.CACHING_NA
+			}
 		];
 
 		const dataDiskTableRow: azdata.DeclarativeTableCellValue[] = [
-			{ value: constants.SQL_DATA_DISK },
+			{ value: constants.SQL_DATA_FILES },
 			{ value: recommendation.targetSku.dataDiskSizes!.length + ' x ' + recommendation.targetSku.dataDiskSizes![0].size },
-			{ value: 'Read only' }
+			{ value: this.getCachingText(recommendation.targetSku.dataDiskSizes![0].caching) }
 		];
 
 		const logDiskTableRow: azdata.DeclarativeTableCellValue[] = [
-			{ value: constants.SQL_LOG_DISK },
+			{ value: constants.SQL_LOG_FILES },
 			{ value: recommendation.targetSku.logDiskSizes!.length + ' x ' + recommendation.targetSku.logDiskSizes![0].size },
-			{ value: 'None' }
+			{ value: this.getCachingText(recommendation.targetSku.logDiskSizes![0].caching) }
 		];
 
 		let storageConfigurationTableRows: azdata.DeclarativeTableCellValue[][] = [
@@ -334,8 +343,45 @@ export class SkuRecommendationResultsDialog {
 		return container;
 	}
 
-	public async openDialog(dialogName?: string) {
+	private getCachingText(caching: mssql.AzureManagedDiskCaching): string {
+		let text;
+		switch (caching) {
+			case mssql.AzureManagedDiskCaching.NotApplicable:
+				text = constants.CACHING_NA;
+				break;
+
+			case mssql.AzureManagedDiskCaching.None:
+				text = constants.CACHING_NONE;
+				break;
+
+			case mssql.AzureManagedDiskCaching.ReadOnly:
+				text = constants.CACHING_READ_ONLY;
+				break;
+
+			case mssql.AzureManagedDiskCaching.ReadWrite:
+				text = constants.CACHING_READ_WRITE;
+				break;
+		}
+
+		return text;
+	}
+
+	public async openDialog(dialogName?: string, recommendations?: mssql.SkuRecommendationResult) {
 		if (!this._isOpen) {
+			switch (this._targetType) {
+				case MigrationTargetType.SQLMI:
+					this.targetRecommendations = recommendations?.sqlMiRecommendationResults;
+					break;
+
+				case MigrationTargetType.SQLVM:
+					this.targetRecommendations = recommendations?.sqlVmRecommendationResults;
+					break;
+
+				case MigrationTargetType.SQLDB:
+					this.targetRecommendations = recommendations?.sqlDbRecommendationResults;
+					break;
+			}
+
 			this._isOpen = true;
 			this.dialog = azdata.window.createModelViewDialog(this.title!, 'SkuRecommendationResultsDialog', 'medium');
 
