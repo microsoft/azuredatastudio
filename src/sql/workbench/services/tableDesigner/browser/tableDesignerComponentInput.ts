@@ -114,9 +114,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			const result = await this._provider.publishChanges(this.tableInfo);
 			this._originalViewModel = this._viewModel;
 			saveNotificationHandle.updateMessage(localize('tableDesigner.publishChangeSuccess', "The changes have been successfully published."));
-			if (this.tableInfo.isNewTable) {
-				this.tableInfo = result.newTableInfo;
-			}
+			this.tableInfo = result.newTableInfo;
 			this.updateState(true, false);
 		} catch (error) {
 			saveNotificationHandle.updateSeverity(Severity.Error);

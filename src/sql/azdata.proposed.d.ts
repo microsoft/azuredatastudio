@@ -1438,9 +1438,9 @@ declare module 'azdata' {
 		 */
 		export interface PublishChangesResult {
 			/**
-			 * When the table is a new table, the table info will change after publishing changes.
+			 * The new table information after the changes are published.
 			 */
-			newTableInfo?: TableInfo;
+			newTableInfo: TableInfo;
 		}
 	}
 
