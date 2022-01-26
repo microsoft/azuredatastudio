@@ -57,6 +57,7 @@ export const SKU_RECOMMENDATION_CHOOSE_A_TARGET = localize('sql.migration.wizard
 
 
 export const SKU_RECOMMENDATION_MI_CARD_TEXT = localize('sql.migration.sku.mi.card.title', "Azure SQL Managed Instance (PaaS)");
+export const SKU_RECOMMENDATION_DB_CARD_TEXT = localize('sql.migration.sku.db.card.title', "Azure SQL Database (PaaS)");
 export const SKU_RECOMMENDATION_VM_CARD_TEXT = localize('sql.migration.sku.vm.card.title', "SQL Server on Azure Virtual Machine (IaaS)");
 export const SELECT_AZURE_MI = localize('sql.migration.select.azure.mi', "Select your target Azure subscription and your target Azure SQL Managed Instance.");
 export const SELECT_AZURE_VM = localize('sql.migration.select.azure.vm', "Select your target Azure Subscription and your target SQL Server on Azure Virtual Machine for your target.");
@@ -77,12 +78,65 @@ export const ASSESSMENT_FAILED = (serverName: string): string => {
 export function ASSESSMENT_TILE(serverName: string): string {
 	return localize('sql.migration.assessment', "Assessment results for '{0}'", serverName);
 }
-export function CAN_BE_MIGRATED(eligibleDbs: number, totalDbs: number, recommendedSku: string): string {
-	return localize('sql.migration.can.be.migrated', "{0} out of {1} databases can be migrated. {2}", eligibleDbs, totalDbs, recommendedSku);		// TO-DO: revert
+export function CAN_BE_MIGRATED(eligibleDbs: number, totalDbs: number): string {
+	return localize('sql.migration.can.be.migrated', "{0} out of {1} databases can be migrated", eligibleDbs, totalDbs);
 }
 export const ASSESSMENT_MIGRATION_WARNING = localize('sql.migration.assessment.migration.warning', "Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines.");
 export const DATABASES_TABLE_TILE = localize('sql.migration.databases.table.title', "Databases");
 export const SQL_SERVER_INSTANCE = localize('sql.migration.sql.server.instance', "SQL Server instance");
+
+// SKU
+export function RECOMMENDATIONS_TITLE(targetType: string): string {
+	return localize('sql.migration.sku.recommendations.title', "{0} Recommendations", targetType);
+}
+export const RECOMMENDED_CONFIGURATION = localize('sql.migration.sku.recommendedConfiguration', "Recommended configuration");
+export const VIEW_DETAILS = localize('sql.migration.sku.viewDetails', "View details");
+export function ASSESSED_DBS(totalDbs: number): string {
+	return localize('sql.migration.assessed.databases', "(for {0} assessed databases)", totalDbs);
+}
+export function RECOMMENDATIONS_AVAILABLE(totalDbs: number): string {
+	return localize('sql.migration.sku.available.recommendations', "{0} recommendations available", totalDbs);
+}
+export const RECOMMENDATIONS = localize('sql.migration.sku.recommendations', "Recommendations");
+export const TARGET_DEPLOYMENT_TYPE = localize('sql.migration.sku.targetDeploymentType', "Target deployment type");
+export const AZURE_CONFIGURATION = localize('sql.migration.sku.azureConfiguration', "Azure configuration");
+export function VM_CONFIGURATION(vmSize: string, vCPU: number): string {
+	return localize('sql.migration.sku.azureConfiguration.vm', "{0} ({1} vCPU)", vmSize, vCPU);
+}
+export function DB_CONFIGURATION(computeTier: string, vCore: number): string {
+	return localize('sql.migration.sku.azureConfiguration.db', "{0} - {1} vCore", computeTier, vCore);
+}
+export function MI_CONFIGURATION(hardwareType: string, computeTier: string, vCore: number): string {
+	return localize('sql.migration.sku.azureConfiguration.mi', "{0} - {1} - {2} vCore", hardwareType, computeTier, vCore);
+}
+export const GENERAL_PURPOSE = localize('sql.migration.sku.azureConfiguration.generalPurpose', "General purpose");
+export const BUSINESS_CRITICAL = localize('sql.migration.sku.azureConfiguration.businessCritical', "Business critical");
+export const GEN5 = localize('sql.migration.sku.azureConfiguration.gen5', "Gen5");
+export const PREMIUM_SERIES = localize('sql.migration.sku.azureConfiguration.premiumSeries', "Premium-series");
+export const PREMIUM_SERIES_MEMORY_OPTIMIZED = localize('sql.migration.sku.azureConfiguration.premiumSeriesMemoryOptimized', "Memory optimized premium-series");
+
+export const RECOMMENDATION_REASON = localize('sql.migration.sku.recommendationReason', "Recommendation reason");
+export const SOURCE_PROPERTIES = localize('sql.migration.sku.sourceProperties', "Source properties");
+
+export const SQL_TEMPDB = localize('sql.migration.sku.sql.temp', "SQL tempdb");
+export const SQL_DATA_FILES = localize('sql.migration.sku.sql.dataDisk', "SQL data files");
+export const SQL_LOG_FILES = localize('sql.migration.sku.sql.logDisk', "SQL log files");
+
+export const RECOMMENDED_TARGET_STORAGE_CONFIGURATION = localize('sql.migration.sku.targetStorageConfiguration', "Recommendation target storage configuration");
+export const RECOMMENDED_TARGET_STORAGE_CONFIGURATION_INFO = localize('sql.migration.sku.targetStorageConfiguration.info', "Below is the target storage configuration required to meet your storage performance needs.");
+export const STORAGE_HEADER = localize('sql.migration.sku.targetStorageConfiguration.storage', "Storage");
+export function STORAGE_GB(storage: number): string {
+	return localize('sql.migration.sku.storageGB', "{0} GB", storage);
+}
+export const RECOMMENDED_STORAGE_CONFIGURATION = localize('sql.migration.sku.targetStorageConfiguration.recommendedStorageConfiguration', "Recommended storage configuration");
+export const EPHEMERAL_TEMPDB = localize('sql.migration.sku.targetStorageConfiguration.ephemeralTempdb', "Place tempdb on the local ephemeral SSD (default D:\\) drive");
+export const CACHING = localize('sql.migration.sku.targetStorageConfiguration.caching', "Host caching");
+export const CACHING_NA = localize('sql.migration.sku.targetStorageConfiguration.caching.na', "Not applicable");
+export const CACHING_NONE = localize('sql.migration.sku.targetStorageConfiguration.caching.none', "None");
+export const CACHING_READ_ONLY = localize('sql.migration.sku.targetStorageConfiguration.caching.readOnly', "Read-only");
+export const CACHING_READ_WRITE = localize('sql.migration.sku.targetStorageConfiguration.caching.readWrite', "Read/write");
+
+
 
 // Azure SQL Target
 export const AZURE_SQL_TARGET_PAGE_TITLE = localize('sql.migration.wizard.target.title', "Azure SQL target");
@@ -97,8 +151,12 @@ export const INVALID_MANAGED_INSTANCE_ERROR = localize('sql.migration.invalid.ma
 
 // Virtual Machine
 export const AZURE_SQL_DATABASE_VIRTUAL_MACHINE = localize('sql.migration.azure.sql.database.virtual.machine', "SQL Server on Azure Virtual Machines");
+export const AZURE_SQL_DATABASE_VIRTUAL_MACHINE_SHORT = localize('sql.migration.azure.sql.database.virtual.machine.short', "SQL Server on Azure VM");
 export const NO_VIRTUAL_MACHINE_FOUND = localize('sql.migration.no.virtualMachine.found', "No virtual machine found.");
 export const INVALID_VIRTUAL_MACHINE_ERROR = localize('sql.migration.invalid.virtualMachine.error', "To continue, select a valid virtual machine.");
+
+// Azure SQL Database
+export const AZURE_SQL_DATABASE = localize('sql.migration.azure.sql.database', "Azure SQL Database");
 
 // Target info tooltip
 export const TARGET_SUBSCRIPTION_INFO = localize('sql.migration.sku.subscription', "Subscription name for your Azure SQL target");
@@ -196,7 +254,7 @@ export function SQL_SOURCE_DETAILS(authMethod: MigrationSourceAuthenticationType
 		case MigrationSourceAuthenticationType.Integrated:
 			return localize('sql.migration.source.details.windowAuth', "Enter the Windows Authentication credentials used to connect to SQL Server instance {0}. These credentials will be used to connect to the SQL Server instance and identify valid backup files.", serverName);
 		case MigrationSourceAuthenticationType.Sql:
-			return localize('sql.migration.source.details.sqlAuth', "Enter the SQL Authentication credentials used to connect to SQL Server instance {0}. ​These credentials will be used to connect to the SQL Server instance and identify valid backup files.", serverName);
+			return localize('sql.migration.source.details.sqlAuth', "Enter the SQL Authentication credentials used to connect to SQL Server instance {0}. These credentials will be used to connect to the SQL Server instance and identify valid backup files.", serverName);
 	}
 }
 export const SELECT_RESOURCE_GROUP_PROMPT = localize('sql.migration.blob.resourceGroup.select.prompt', "Select a resource group value first.");
@@ -400,7 +458,7 @@ export const COMPLETING_CUTOVER_WARNING = localize('sql.migration.completing.cut
 export const BUSINESS_CRITICAL_INFO = localize('sql.migration.bc.info', "A SQL Managed Instance migration cutover to the Business Critical service tier can take significantly longer than General Purpose because three secondary replicas have to be seeded for Always On High Availability group. The duration of the operation depends on the size of the data. Seeding speed in 90% of cases is 220 GB/hour or higher.");
 export const CUTOVER_HELP_MAIN = localize('sql.migration.cutover.help.main', "Perform the following steps before you complete cutover.");
 export const CUTOVER_HELP_STEP1 = localize('sql.migration.cutover.step.1', "1. Stop all incoming transactions to the source database.");
-export const CUTOVER_HELP_STEP2_NETWORK_SHARE = localize('sql.migration.cutover.step.2.network.share', "2. ​​Create a final transaction log backup and store it on the network share.");
+export const CUTOVER_HELP_STEP2_NETWORK_SHARE = localize('sql.migration.cutover.step.2.network.share', "2. Create a final transaction log backup and store it on the network share.");
 export const CUTOVER_HELP_STEP2_BLOB_CONTAINER = localize('sql.migration.cutover.step.2.blob', "2. Create a final transaction log differential or backup and store it in the Azure Storage Blob Container.");
 export const CUTOVER_HELP_STEP3_NETWORK_SHARE = localize('sql.migration.cutover.step.3.network.share', "3. Verify that all log backups have been restored on the target database. The \"Log backups pending restore\" value should be zero.");
 export const CUTOVER_HELP_STEP3_BLOB_CONTAINER = localize('sql.migration.cutover.step.3.blob', "3. Verify that all backups have been restored on the target database. The \"Log backups pending restore\" value should be zero.");

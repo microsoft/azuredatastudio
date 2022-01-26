@@ -616,71 +616,189 @@ export interface AssessmentResult {
 	errors: ErrorModel[];
 }
 
-export interface AzureSqlSkuCategory
-{
-	sqlTargetPlatform: number;
-	computeTier: number;
-	sqlPurchasingModel: number;
-	sqlServiceTier: number;
-	hardwareType: number;
+// SKU recommendation interfaces, mirrored from Microsoft.SqlServer.Migration.SkuRecommendation
+export interface AzureSqlSkuCategory {
+	sqlTargetPlatform: AzureSqlTargetPlatform;
+	computeTier: ComputeTier;
 }
 
-export interface AzureManagedDiskSku
-{
-	tier: string;
+export interface AzureSqlSkuPaaSCategory extends AzureSqlSkuCategory{
+	sqlPurchasingModel: AzureSqlPurchasingModel;
+	sqlServiceTier: AzureSqlPaaSServiceTier;
+	hardwareType: AzureSqlPaaSHardwareType;
+}
+
+export interface AzureSqlSkuIaaSCategory extends AzureSqlSkuCategory{
+	virtualMachineFamilyType: VirtualMachineFamilyType;
+}
+
+export interface AzureManagedDiskSku {
+	tier: AzureManagedDiskTier;
 	size: string;
-	caching: string;
+	caching: AzureManagedDiskCaching;
 }
 
-export interface AzureVirtualMachineSku
-{
-	virtualMachineFamily: string;
+export interface AzureVirtualMachineSku {
+	virtualMachineFamily: VirtualMachineFamily;
 	sizeName: string;
 	computeSize: number;
 	azureSkuName: string;
 	vCPUsAvailable: number;
 }
 
-export interface AzureSqlSku
-{
-	// AzureSqlSku
-	category: AzureSqlSkuCategory;
-	computeSize: number;
-	predictedDataSizeInMb: number;
-	predictedLogSizeInMb: number;
-
-	// AzureSqlPaaSSku (a PaaS-specific AzureSqlSku)
-	storageMaxSizeInMb: number;
-
-	// AzureSqlIaaSSku (an IaaS-specific AzureSqlSku)
-	virtualMachineSize: AzureVirtualMachineSku;
-    dataDiskSizes: AzureManagedDiskSku[];
-    logDiskSizes: AzureManagedDiskSku[];
-    tempDbDiskSizes: AzureManagedDiskSku[];
-}
-
-export interface AzureSqlSkuMonthlyCost
-{
+export interface AzureSqlSkuMonthlyCost {
 	computeCost: number;
 	storageCost: number;
 	totalCost: number;
 }
 
-export interface SkuRecommendationResultItem
-{
+export interface AzureSqlSku {
+	category: AzureSqlSkuPaaSCategory | AzureSqlSkuIaaSCategory;
+	computeSize: number;
+	predictedDataSizeInMb: number;
+	predictedLogSizeInMb: number;
+}
+
+export interface AzureSqlPaaSSku extends AzureSqlSku {
+	category: AzureSqlSkuPaaSCategory;
+	storageMaxSizeInMb: number;
+}
+
+export interface AzureSqlIaaSSku extends AzureSqlSku {
+	category: AzureSqlSkuIaaSCategory;
+	virtualMachineSize: AzureVirtualMachineSku;
+	dataDiskSizes: AzureManagedDiskSku[];
+	logDiskSizes: AzureManagedDiskSku[];
+	tempDbDiskSizes: AzureManagedDiskSku[];
+}
+
+export interface SkuRecommendationResultItem {
 	sqlInstanceName: string;
 	databaseName: string;
-	targetSku: AzureSqlSku;
+	targetSku: AzureSqlIaaSSku | AzureSqlPaaSSku;
 	monthlyCost: AzureSqlSkuMonthlyCost;
 	ranking: number;
 	positiveJustifications: string[];
 	negativeJustifications: string[];
 }
 
+export interface PaaSSkuRecommendationResultItem extends SkuRecommendationResultItem {
+	targetSku: AzureSqlPaaSSku;
+}
+
+export interface IaaSSkuRecommendationResultItem extends SkuRecommendationResultItem {
+	targetSku: AzureSqlIaaSSku;
+}
+
 export interface SkuRecommendationResult {
-	sqlDbRecommendationResults: SkuRecommendationResultItem[];
-	sqlMiRecommendationResults: SkuRecommendationResultItem[];
-	sqlVmRecommendationResults: SkuRecommendationResultItem[];
+	sqlDbRecommendationResults: PaaSSkuRecommendationResultItem[];
+	sqlMiRecommendationResults: PaaSSkuRecommendationResultItem[];
+	sqlVmRecommendationResults: IaaSSkuRecommendationResultItem[];
+}
+
+// SKU recommendation enums, mirrored from Microsoft.SqlServer.Migration.SkuRecommendation
+export const enum AzureSqlTargetPlatform {
+	AzureSqlDatabase = 0,
+	AzureSqlManagedInstance = 1,
+	AzureSqlVirtualMachine = 2
+}
+
+export const enum ComputeTier {
+	Provisioned = 0,
+	ServerLess = 1
+}
+
+export const enum AzureManagedDiskTier {
+	Standard = 0,
+	Premium = 1,
+	Ultra = 2
+}
+
+export const enum AzureManagedDiskCaching {
+	NotApplicable = 0,
+	None = 1,
+	ReadOnly = 2,
+	ReadWrite = 3
+}
+
+export const enum AzureSqlPurchasingModel {
+	vCore = 0,
+}
+
+export const enum AzureSqlPaaSServiceTier {
+	GeneralPurpose = 0,
+	BusinessCritical,
+	HyperScale,
+}
+
+export const enum AzureSqlPaaSHardwareType {
+	Gen5 = 0,
+	PremiumSeries,
+	PremiumSeriesMemoryOptimized
+}
+
+export const enum VirtualMachineFamilyType {
+	GeneralPurpose,
+	ComputeOptimized,
+	MemoryOptimized,
+	StorageOptimized,
+	GPU,
+	HighPerformanceCompute
+}
+
+export const enum VirtualMachineFamily {
+	basicAFamily,
+	standardA0_A7Family,
+	standardA8_A11Family,
+	standardAv2Family,
+	standardBSFamily,
+	standardDASv4Family,
+	standardDAv4Family,
+	standardDCSv2Family,
+	standardDDSv4Family,
+	standardDDv4Family,
+	standardDFamily,
+	standardDSFamily,
+	standardDSv2Family,
+	standardDSv2PromoFamily,
+	standardDSv3Family,
+	standardDSv4Family,
+	standardDv2Family,
+	standardDv2PromoFamily,
+	standardDv3Family,
+	standardDv4Family,
+	standardEASv4Family,
+	standardEAv4Family,
+	standardEDSv4Family,
+	standardEDv4Family,
+	standardEISv3Family,
+	standardEIv3Family,
+	standardESv3Family,
+	standardESv4Family,
+	standardEv3Family,
+	standardEv4Family,
+	standardFFamily,
+	standardFSFamily,
+	standardFSv2Family,
+	standardGFamily,
+	standardGSFamily,
+	standardHFamily,
+	standardHPromoFamily,
+	standardLSFamily,
+	standardLSv2Family,
+	standardMSFamily,
+	standardMSv2Family,
+	standardNCSv3Family,
+	standardNVSv2Family,
+	standardNVSv3Family,
+	standardXEIDSv4Family,
+	standardXEISv4Family,
+	standardMSmallv2Family,
+	standardMISmallv2Family,
+	standardMIDSmallv2Family,
+	standardNVSv4Family,
+	standardMDSmallv2Family,
+	standardNCASv3_T4Family
 }
 
 export interface StartPerfDataCollectionResult {
