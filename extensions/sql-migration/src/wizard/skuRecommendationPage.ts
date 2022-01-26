@@ -5,6 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import * as mssql from '../../../mssql';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationStateModel, MigrationTargetType, Page, ServerAssessment, StateChangeEvent } from '../models/stateMachine';
 import { AssessmentResultsDialog } from '../dialog/assessmentResults/assessmentResultsDialog';
@@ -15,7 +16,6 @@ import { EOL } from 'os';
 import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import * as styles from '../constants/styles';
-import { recommendationsJSON } from '../dialog/skuRecommendationResults/skuRecommendationExample';
 
 export interface Product {
 	type: MigrationTargetType;
@@ -307,10 +307,10 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				]
 			});
 
-			let dialog = new SkuRecommendationResultsDialog(this.migrationStateModel, product.type, recommendationsJSON);
+			let dialog = new SkuRecommendationResultsDialog(this.migrationStateModel, product.type);
 			this._disposables.push(this._rbg.onLinkClick(async (e: azdata.RadioCardLinkClickEvent) => {
 				if (e.cardId === dialog._targetType) {
-					await dialog.openDialog(e.cardId);
+					await dialog.openDialog(e.cardId, this.migrationStateModel._skuRecommendationResults.recommendations);
 				}
 			}));
 		});
@@ -439,10 +439,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			} else {
 				await this.migrationStateModel.getDatabaseAssessments(MigrationTargetType.SQLMI);
 
-				/*
-				// placeholder get SKU recommendation entry point
 				// TO-DO: read these preferences from the UI
-				const dataFolder = 'C:\\Users\\ratruong\\AppData\\Local\\Microsoft\\SqlAssessment';	// specify, or leave blank to read from NuGet default %localappdata%\Microsoft\SqlAssessment location
+				const dataFolder = 'C:\\Users\\ratruong\\AppData\\Local\\Microsoft\\SqlAssessment';
 				const perfQueryIntervalInSec = 30;
 				const targetPlatforms = [MigrationTargetType.SQLDB, MigrationTargetType.SQLMI, MigrationTargetType.SQLVM];
 				const targetPercentile = 95;
@@ -462,10 +460,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 				console.log('results - this.migrationStateModel._skuRecommendationResults:');
 				console.log(this.migrationStateModel._skuRecommendationResults);
-				*/
 			}
-
-			// this.migrationStateModel._skuRecommendationResults.recommendations = <mssql.SkuRecommendationResult>recommendationsJSON;
 
 			const assessmentError = this.migrationStateModel._assessmentResults?.assessmentError;
 			if (assessmentError) {
@@ -608,18 +603,25 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				switch (product.type) {
 					case MigrationTargetType.SQLMI:
 						this._rbg.cards[index].descriptions[2].textValue = constants.CAN_BE_MIGRATED(dbWithoutIssuesCount, dbCount);
-						recommendation = recommendationsJSON.sqlMiRecommendationResults[0];
-						const computeTier = recommendation.targetSku.category?.computeTier === 0
+						recommendation = this.migrationStateModel._skuRecommendationResults.recommendations.sqlMiRecommendationResults[0];
+						const serviceTier = recommendation.targetSku.category?.sqlServiceTier === mssql.AzureSqlPaaSServiceTier.GeneralPurpose
 							? constants.GENERAL_PURPOSE
 							: constants.BUSINESS_CRITICAL;
-						this._rbg.cards[index].descriptions[6 - 1].textValue = constants.PAAS_CONFIGURATION(computeTier, recommendation.targetSku.computeSize!);
+						const hardwareType = recommendation.targetSku.category?.hardwareType === mssql.AzureSqlPaaSHardwareType.Gen5
+							? constants.GEN5
+							: recommendation.targetSku.category?.hardwareType === mssql.AzureSqlPaaSHardwareType.PremiumSeries
+								? constants.PREMIUM_SERIES
+								: constants.PREMIUM_SERIES_MEMORY_OPTIMIZED;
+						this._rbg.cards[index].descriptions[6 - 1].textValue = constants.MI_CONFIGURATION(hardwareType, serviceTier, recommendation.targetSku.computeSize!);
+						// TO-DO: add storage configuration here
 						break;
 
 					case MigrationTargetType.SQLVM:
 						this._rbg.cards[index].descriptions[2].textValue = constants.CAN_BE_MIGRATED(dbCount, dbCount);
 
-						recommendation = recommendationsJSON.sqlVmRecommendationResults[0];
+						recommendation = this.migrationStateModel._skuRecommendationResults.recommendations.sqlVmRecommendationResults[0];
 						this._rbg.cards[index].descriptions[6 - 1].textValue = constants.VM_CONFIGURATION(recommendation.targetSku.virtualMachineSize!.sizeName, recommendation.targetSku.virtualMachineSize!.vCPUsAvailable);
+						// TO-DO: add storage configuration here
 						break;
 
 					case MigrationTargetType.SQLDB:
@@ -680,50 +682,6 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private hasSavedInfo(): boolean {
 		return this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.SKURecommendation);
 	}
-
-	/*
-	// TO-DO: this is a helper function to display SKU recommendation results in a card until we have a real UI
-	private getSkuRecommendationText(recommendations: mssql.SkuRecommendationResult, platform: string): string {
-		let text = '';
-
-		if (platform === 'PaaS') {
-			if (recommendations.sqlDbRecommendationResults.length > 0) {
-				text += 'Recommended SQL DB SKUs: ';
-				recommendations.sqlDbRecommendationResults.forEach(rec => {
-					text += rec.databaseName + ': ';
-					text += rec.targetSku.computeSize + ' vCore ';
-					text += rec.targetSku.category!.computeTier === 0 ? 'General Purpose ' : 'Business Critical ';
-					text += rec.targetSku.storageMaxSizeInMb + ' GB';
-					text += ' / ';
-				});
-			}
-
-			if (recommendations.sqlMiRecommendationResults.length > 0) {
-				text += 'Recommended SQL MI SKU: ';
-				let rec = recommendations.sqlMiRecommendationResults[0];
-				text += rec.targetSku.computeSize + ' vCore ';
-				text += rec.targetSku.category!.computeTier === 0 ? 'General Purpose ' : 'Business Critical ';
-				text += rec.targetSku.storageMaxSizeInMb + ' GB';
-			}
-		}
-		else if (platform === 'IaaS') {
-			if (recommendations.sqlVmRecommendationResults.length > 0) {
-				text += 'Recommended SQL VM SKU: ';
-				let rec = recommendations.sqlVmRecommendationResults[0];
-				text += rec.targetSku.virtualMachineSize!.vCPUsAvailable + ' vCore ';
-				text += rec.targetSku.virtualMachineSize!.sizeName;
-				text += ' / Data: ';
-				text += rec.targetSku.dataDiskSizes!.length + 'x ' + rec.targetSku.dataDiskSizes![0].size;
-				text += ' / Log: ';
-				text += rec.targetSku.logDiskSizes!.length + 'x ' + rec.targetSku.logDiskSizes![0].size;
-				text += ' / TempDB: ';
-				text += rec.targetSku.tempDbDiskSizes!.length > 0 ? rec.targetSku.logDiskSizes!.length + 'x ' + rec.targetSku.logDiskSizes![0].size : 'dedicated disk';
-			}
-		}
-
-		return text;
-	}
-	*/
 }
 
 
