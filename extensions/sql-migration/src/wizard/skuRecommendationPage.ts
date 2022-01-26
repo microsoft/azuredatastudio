@@ -10,7 +10,7 @@ import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationStateModel, MigrationTargetType, Page, ServerAssessment, StateChangeEvent } from '../models/stateMachine';
 import { AssessmentResultsDialog } from '../dialog/assessmentResults/assessmentResultsDialog';
 import { SkuRecommendationResultsDialog } from '../dialog/skuRecommendationResults/skuRecommendationResultsDialog';
-
+import { GetAzureRecommendationDialog } from '../dialog/skuRecommendationResults/getAzureRecommendationDialog';
 import * as constants from '../constants/strings';
 import { EOL } from 'os';
 import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
@@ -245,6 +245,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 		}).component();
 
+		const getAzureRecommendationDialog = new GetAzureRecommendationDialog(this.migrationStateModel);
 		this._supportedProducts.forEach((product) => {
 			this._rbg.cards.push({
 				id: product.type,
@@ -290,7 +291,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 					// 	}
 					// },
 					{
-						textValue: 'Collecting data...',
+						// textValue: 'Collecting data...',
+						textValue: constants.AZURE_RECOMMENDATION_NOT_ENABLED,
 						textStyles: {
 							...styles.BODY_CSS,
 							'font-weight': '600px'
@@ -298,7 +300,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 					},
 					{
 						textValue: '',
-						linkDisplayValue: 'View Details',
+						linkDisplayValue: constants.GET_AZURE_RECOMMENDATION,
 						linkStyles: {
 							...styles.BODY_CSS,
 							'text-decoration': 'none',
@@ -307,10 +309,14 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				]
 			});
 
-			let dialog = new SkuRecommendationResultsDialog(this.migrationStateModel, product.type);
+			let skuRecommendationResultsDialog = new SkuRecommendationResultsDialog(this.migrationStateModel, product.type);
 			this._disposables.push(this._rbg.onLinkClick(async (e: azdata.RadioCardLinkClickEvent) => {
-				if (e.cardId === dialog._targetType) {
-					await dialog.openDialog(e.cardId, this.migrationStateModel._skuRecommendationResults.recommendations);
+				if (this.hasRecommendations()) {
+					if (e.cardId === skuRecommendationResultsDialog._targetType) {
+						await skuRecommendationResultsDialog.openDialog(e.cardId, this.migrationStateModel._skuRecommendationResults.recommendations);
+					}
+				} else {
+					await getAzureRecommendationDialog.openDialog();
 				}
 			}));
 		});
@@ -602,10 +608,19 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			this._supportedProducts.forEach((product, index) => {
 				// this._rbg.cards[index].descriptions[5].textValue = constants.ASSESSED_DBS(dbCount);
 
+				if (!this.hasRecommendations()) {
+					console.log('0-- no recommendations');
+					this._rbg.cards[index].descriptions[7 - 1].linkDisplayValue = constants.GET_AZURE_RECOMMENDATION;
+				} else {
+					console.log('1-- has recommendations');
+					this._rbg.cards[index].descriptions[7 - 1].linkDisplayValue = constants.VIEW_DETAILS;
+				}
+
 				let recommendation;
 				switch (product.type) {
 					case MigrationTargetType.SQLMI:
 						this._rbg.cards[index].descriptions[2].textValue = constants.CAN_BE_MIGRATED(dbWithoutIssuesCount, dbCount);
+
 						recommendation = this.migrationStateModel._skuRecommendationResults.recommendations.sqlMiRecommendationResults[0];
 						const serviceTier = recommendation.targetSku.category?.sqlServiceTier === mssql.AzureSqlPaaSServiceTier.GeneralPurpose
 							? constants.GENERAL_PURPOSE
@@ -632,6 +647,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 						this._rbg.cards[index].descriptions[6 - 1].textValue = constants.RECOMMENDATIONS_AVAILABLE(dbCount);
 						break;
 				}
+				// }
 			});
 
 			await this._rbg.updateProperties({ cards: this._rbg.cards });
@@ -685,6 +701,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private hasSavedInfo(): boolean {
 		return this.migrationStateModel.retryMigration || (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= Page.SKURecommendation);
 	}
+
+	private hasRecommendations(): boolean {
+		return this.migrationStateModel._skuRecommendationResults?.recommendations ? true : false;
+	}
 }
-
-
