@@ -433,7 +433,6 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			this._editor.focus();
 			if (isEditMode) {
 				this._editor.getContainer().contentEditable = 'false';
-				this._editor.getContainer().blur();
 				this._editor.toggleEditorSelected(true);
 			} else {
 				this._editor.getContainer().contentEditable = 'true';
