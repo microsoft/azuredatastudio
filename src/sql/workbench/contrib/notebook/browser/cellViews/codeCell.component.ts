@@ -37,21 +37,17 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 	@HostListener('document:keydown', ['$event'])
 	handleKeyboardEvent(e) {
 		let event = new StandardKeyboardEvent(e);
-		if (this.cellModel.cellType === CellTypes.Code) {
+		if (this.cellModel.cellType === CellTypes.Code && this.cellModel.active) {
 			if (event.keyCode === KeyCode.Escape) {
 				if (this.isEditMode) {
 					this.toggleEditMode(false);
-				} else if (this.cellModel.active) {
-					this.cellModel.active = false;
-					this._model.updateActiveCell(undefined);
-				} else {
-					this.cellModel.active = false;
+					e.stopImmediatePropagation();
 				}
-			} else if (event.keyCode === KeyCode.Enter) {
+			}
+			if (event.keyCode === KeyCode.Enter) {
 				this.toggleEditMode(true);
 				this.cellModel.active = true;
 				this._model.updateActiveCell(this.cellModel);
-				e.stopPropagation();
 			}
 		}
 	}
