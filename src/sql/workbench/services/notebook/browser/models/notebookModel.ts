@@ -281,16 +281,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public standardKernelsDisplayName(): string[] {
-		// Skip duplicate display names for the same provider ID, since some may be language aliases
-		let idSet = new Set<string>();
-		let displayNames: string[] = [];
-		for (let [name, id] of this._kernelDisplayNameToNotebookProviderIds.entries()) {
-			if (!idSet.has(id)) {
-				displayNames.push(name);
-				idSet.add(id);
-			}
-		}
-		return displayNames;
+		return Array.from(this._kernelDisplayNameToNotebookProviderIds.keys());
 	}
 
 	public get inErrorState(): boolean {
