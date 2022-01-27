@@ -125,11 +125,14 @@ suite('NotebookMarkdownRenderer', () => {
 		test('file', () => {
 			const filePath = URI.parse(__filename).fsPath;
 			const result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `![](${filePath})` });
-			assert.strictEqual(result.innerHTML, `<p><img src="vscode-file://vscode-app/${filePath.replace(/\\/g, '/')}"></p>`, 'file links should have vscode-file schema added');
+			let renderedPath = filePath.replace(/\\/g, '/');
+			// Unix filesystems start with / which is deduplicated in the final src URI - so just remove that now if it exists
+			renderedPath = renderedPath.startsWith('/') ? renderedPath.slice(1) : renderedPath;
+			assert.strictEqual(result.innerHTML, `<p><img src="vscode-file://vscode-app/${renderedPath}"></p>`, 'file links should have vscode-file schema added');
 		});
 		test('unknown', () => {
 			const result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `![](unknown://some/path)` });
-			assert.strictEqual(result.innerHTML, `<p><img src="vscode-file://vscode-app/unknown://some/path"></p>`, 'vscode-file schema link should not be modified');
+			assert.strictEqual(result.innerHTML, `<p><img src="vscode-file://vscode-app/unknown://some/path"></p>`, 'unknown schema should be treated like a path and have vscode-file schema added');
 		});
 	});
 
