@@ -231,7 +231,6 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		this._register(this._editorInput);
 		this._register(this._editorModel.onDidChangeContent(e => {
 			this.cellModel.modelContentChangedEvent = e;
-
 			let originalSourceLength = this.cellModel.source.length;
 			this.cellModel.source = this._editorModel.getValue();
 			if (this._cellModel.isCollapsed && originalSourceLength !== this.cellModel.source.length) {
@@ -269,6 +268,12 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			}
 			this._layoutEmitter.fire();
 		}));
+		this._register(this.cellModel.onCellModeChanged((state) => {
+			if (this.cellModel.cellType === CellTypes.Code) {
+				this.onCellSelected(this.cellModel.isEditMode);
+			}
+		}));
+
 		this.layout();
 
 		if (this._cellModel.isCollapsed) {
@@ -420,5 +425,20 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			editorWidget.setHiddenAreas([]);
 		}
 		this._editor.setHeightToScrollHeight(false, isCollapsed);
+	}
+
+	private onCellSelected(isEditMode: boolean): void {
+		let ownerDocument = this._editor.getContainer().ownerDocument;
+		if (this.cellModel.id === this._activeCellId && this._editor.getContainer().offsetParent && ownerDocument && ownerDocument.hasFocus()) {
+			this._editor.focus();
+			if (isEditMode) {
+				this._editor.getContainer().contentEditable = 'false';
+				// _editor.getContainer().style.caretColor = 'transparent !important';
+				this._editor.getContainer().blur();
+				this._editor.toggleEditorSelected(true);
+			} else {
+				this._editor.getContainer().contentEditable = 'true';
+			}
+		}
 	}
 }

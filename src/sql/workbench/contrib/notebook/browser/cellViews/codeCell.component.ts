@@ -12,7 +12,9 @@ import { Deferred } from 'sql/base/common/promise';
 import { ICellEditorProvider } from 'sql/workbench/services/notebook/browser/notebookService';
 import { CodeComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/code.component';
 import { OutputAreaComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/outputArea.component';
-
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
+import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 
 export const CODE_SELECTOR: string = 'code-cell-component';
 
@@ -32,13 +34,30 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 		this._activeCellId = value;
 	}
 
-	@HostListener('document:keydown.escape', ['$event'])
-	handleKeyboardEvent() {
-		this.cellModel.active = false;
-		this._model.updateActiveCell(undefined);
+	@HostListener('document:keydown', ['$event'])
+	handleKeyboardEvent(e) {
+		let event = new StandardKeyboardEvent(e);
+		if (this.cellModel.cellType === CellTypes.Code) {
+			if (event.keyCode === KeyCode.Escape) {
+				if (this.isEditMode) {
+					this.toggleEditMode(false);
+				} else if (this.cellModel.active) {
+					this.cellModel.active = false;
+					this._model.updateActiveCell(undefined);
+				} else {
+					this.cellModel.active = false;
+				}
+			} else if (event.keyCode === KeyCode.Enter) {
+				this.toggleEditMode(true);
+				this.cellModel.active = true;
+				this._model.updateActiveCell(this.cellModel);
+				e.stopPropagation();
+			}
+		}
 	}
 
 	private _activeCellId: string;
+	private isEditMode: boolean;
 
 	public inputDeferred: Deferred<string>;
 	public stdIn: nb.IStdinMessage;
@@ -58,6 +77,12 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 				this._changeRef.detectChanges();
 			}));
 			this._register(this.cellModel.onOutputsChanged(() => {
+				this._changeRef.detectChanges();
+			}));
+			this._register(this.cellModel.onCellModeChanged(mode => {
+				if (mode !== this.isEditMode) {
+					this.toggleEditMode(mode);
+				}
 				this._changeRef.detectChanges();
 			}));
 			// Register request handler, cleanup on dispose of this component
@@ -97,6 +122,12 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 
 	public layout() {
 
+	}
+
+	public toggleEditMode(editMode?: boolean): void {
+		this.isEditMode = editMode !== undefined ? editMode : !this.isEditMode;
+		this.cellModel.isEditMode = this.isEditMode;
+		this._changeRef.detectChanges();
 	}
 
 	handleStdIn(msg: nb.IStdinMessage): void | Thenable<void> {

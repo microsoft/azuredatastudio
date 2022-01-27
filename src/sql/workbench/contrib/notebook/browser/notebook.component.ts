@@ -136,7 +136,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._register(DOM.addDisposableListener(window, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
 			if (this.isActive() && this.model.activeCell) {
 				let event = new StandardKeyboardEvent(e);
-				if (event.keyCode === KeyCode.DownArrow) {
+				if (event.keyCode === KeyCode.DownArrow && !this.model.activeCell.isEditMode) {
 					let next = (this.findCellIndex(this.model.activeCell) + 1) % this.cells.length;
 					this.selectCell(this.cells[next]);
 				} else if (event.keyCode === KeyCode.UpArrow) {
@@ -145,9 +145,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 						index = this.cells.length;
 					}
 					this.selectCell(this.cells[--index]);
-				} else if (event.keyCode === KeyCode.Enter && !this.model.activeCell.isEditMode) {
-					DOM.EventHelper.stop(event, true);
-					this.model.activeCell.isEditMode = true;
 				}
 			}
 		}));

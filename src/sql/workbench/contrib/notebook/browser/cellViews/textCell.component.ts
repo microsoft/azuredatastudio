@@ -53,18 +53,25 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this._activeCellId = value;
 	}
 
-	@HostListener('document:keydown.escape', ['$event'])
-	handleKeyboardEvent() {
-		if (this.isEditMode) {
-			this.toggleEditMode(false);
-		} else {
-			if (this.cellModel.active) {
-				this._model.updateActiveCell(undefined);
-			} else {
-				this.cellModel.active = false;
-			}
-		}
-	}
+	// @HostListener('document:keydown', ['$event'])
+	// handleKeyboardEvent(e) {
+	// 	let event = new StandardKeyboardEvent(e);
+	// 	if (event.keyCode === KeyCode.Escape) {
+	// 		if (this.isEditMode) {
+	// 			this.toggleEditMode(false);
+	// 		} else {
+	// 			if (this.cellModel.active) {
+	// 				this._model.updateActiveCell(undefined);
+	// 			} else {
+	// 				this.cellModel.active = false;
+	// 			}
+	// 		}
+	// 	} else if (event.keyCode === KeyCode.Enter) {
+	// 		this.toggleEditMode(true);
+	// 		this.cellModel.active = true;
+	// 		this._model.updateActiveCell(this.cellModel);
+	// 	}
+	// }
 
 	// Double click to edit text cell in notebook
 	@HostListener('dblclick', ['$event']) onDblClick() {
@@ -73,9 +80,27 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	@HostListener('document:keydown', ['$event'])
 	onkeydown(e: KeyboardEvent) {
+		const keyEvent = new StandardKeyboardEvent(e);
+		if (this.cellModel?.currentMode !== CellEditModes.CODE) {
+			if (keyEvent.keyCode === KeyCode.Escape) {
+				if (this.isEditMode) {
+					this.toggleEditMode(false);
+				} else if (this.cellModel.active) {
+					this.cellModel.active = false;
+					this._model.updateActiveCell(undefined);
+				} else {
+					this.cellModel.active = false;
+				}
+			} else if (keyEvent.keyCode === KeyCode.Enter) {
+				this.toggleEditMode(true);
+				this.cellModel.active = true;
+				this._model.updateActiveCell(this.cellModel);
+				e.stopPropagation();
+			}
+		}
+
 		if (DOM.getActiveElement() === this.output?.nativeElement && this.isActive() && this.cellModel?.currentMode === CellEditModes.WYSIWYG) {
 			// Select all text
-			const keyEvent = new StandardKeyboardEvent(e);
 			if ((keyEvent.ctrlKey || keyEvent.metaKey) && keyEvent.keyCode === KeyCode.KEY_A) {
 				preventDefaultAndExecCommand(e, 'selectAll');
 			} else if ((keyEvent.metaKey && keyEvent.shiftKey && keyEvent.keyCode === KeyCode.KEY_Z) || (keyEvent.ctrlKey && keyEvent.keyCode === KeyCode.KEY_Y) && !this.markdownMode) {
