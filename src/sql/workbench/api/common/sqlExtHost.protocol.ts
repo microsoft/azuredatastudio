@@ -944,7 +944,7 @@ export interface MainThreadNotebookShape extends IDisposable {
 	$unregisterExecuteProvider(handle: number): void;
 	$onFutureMessage(futureId: number, type: FutureMessageType, payload: azdata.nb.IMessage): void;
 	$onFutureDone(futureId: number, done: INotebookFutureDone): void;
-	$updateProviderDescriptionLanguages(providerId: string, languages: string[]): void;
+	$updateProviderKernels(providerId: string, languages: azdata.nb.IStandardKernel[])
 }
 
 export interface INotebookDocumentsAndEditorsDelta {

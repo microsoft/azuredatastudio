@@ -17,10 +17,10 @@ import { LocalContentManager } from 'sql/workbench/services/notebook/common/loca
 import { Deferred } from 'sql/base/common/promise';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import type { FutureInternal } from 'sql/workbench/services/notebook/browser/interfaces';
-// import { Registry } from 'vs/platform/registry/common/platform';
-// import { INotebookProviderRegistry, NotebookProviderRegistryId } from 'sql/workbench/services/notebook/common/notebookRegistry';
+import { Registry } from 'vs/platform/registry/common/platform';
+import { INotebookProviderRegistry, NotebookProviderRegistryId } from 'sql/workbench/services/notebook/common/notebookRegistry';
 
-// const notebookRegistry = Registry.as<INotebookProviderRegistry>(NotebookProviderRegistryId);
+const notebookRegistry = Registry.as<INotebookProviderRegistry>(NotebookProviderRegistryId);
 
 @extHostNamedCustomer(SqlMainContext.MainThreadNotebook)
 export class MainThreadNotebook extends Disposable implements MainThreadNotebookShape {
@@ -102,8 +102,8 @@ export class MainThreadNotebook extends Disposable implements MainThreadNotebook
 		}
 	}
 
-	public $updateProviderDescriptionLanguages(providerId: string, languages: string[]): void {
-		// notebookRegistry.updateProviderDescriptionLanguages(providerId, languages);
+	public $updateProviderKernels(providerId: string, languages: azdata.nb.IStandardKernel[]): void {
+		notebookRegistry.updateProviderKernels(providerId, languages);
 	}
 	//#endregion
 }

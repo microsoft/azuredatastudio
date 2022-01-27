@@ -112,7 +112,7 @@ export interface INotebookProviderRegistry {
 
 	readonly onNewDescriptionRegistration: Event<{ id: string, registration: ProviderDescriptionRegistration }>;
 
-	updateProviderDescriptionLanguages(providerId: string, languages: string[]): void;
+	updateProviderKernels(providerId: string, kernels: azdata.nb.IStandardKernel[]): void;
 	registerProviderDescription(provider: ProviderDescriptionRegistration): void;
 	registerNotebookLanguageMagic(magic: NotebookLanguageMagicRegistration): void;
 }
@@ -124,18 +124,11 @@ class NotebookProviderRegistry implements INotebookProviderRegistry {
 	private _onNewDescriptionRegistration = new Emitter<{ id: string, registration: ProviderDescriptionRegistration }>();
 	public readonly onNewDescriptionRegistration: Event<{ id: string, registration: ProviderDescriptionRegistration }> = this._onNewDescriptionRegistration.event;
 
-	updateProviderDescriptionLanguages(providerId: string, languages: string[]): void {
+	updateProviderKernels(providerId: string, kernels: azdata.nb.IStandardKernel[]): void {
 		let registration = this._providerDescriptionRegistration.get(providerId);
 		if (!registration) {
 			throw new Error(localize('providerNotInRegistryError', "The specified provider '{0}' is not present in the notebook registry.", providerId));
 		}
-		let kernels = languages.map<azdata.nb.IStandardKernel>(language => {
-			return {
-				name: language,
-				displayName: language,
-				connectionProviderIds: []
-			};
-		});
 		registration.standardKernels = kernels;
 
 		// Update provider description with new info

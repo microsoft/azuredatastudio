@@ -205,11 +205,7 @@ notebooksExtensionPoint.setHandler(extensions => {
 			let adsProvider: ProviderDescriptionRegistration = {
 				provider: notebookContribution.type,
 				fileExtensions: extensions ?? [],
-				standardKernels: [{
-					name: notebookContribution.type,
-					displayName: notebookContribution.displayName,
-					connectionProviderIds: []
-				}]
+				standardKernels: [] // The actual Kernels are NotebookControllers that are contributed later
 			};
 			adsNotebookRegistry.registerProviderDescription(adsProvider);
 		}
