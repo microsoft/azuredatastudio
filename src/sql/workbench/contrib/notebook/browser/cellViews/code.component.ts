@@ -110,28 +110,6 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		this._register({ dispose: () => this.updateConnectionState(false) });
 	}
 
-	// @HostListener('document:keydown', ['$event'])
-	// handleKeyboardEvent(e) {
-	// 	let event = new StandardKeyboardEvent(e);
-	// 	if (this.cellModel.cellType === CellTypes.Code) {
-	// 		if (event.keyCode === KeyCode.Escape) {
-	// 			if (this.isEditMode) {
-	// 				this.toggleEditMode(false);
-	// 			} else if (this.cellModel.active) {
-	// 				this.cellModel.active = false;
-	// 				this._model.updateActiveCell(undefined);
-	// 			} else {
-	// 				this.cellModel.active = false;
-	// 			}
-	// 		} else if (event.keyCode === KeyCode.Enter) {
-	// 			this.toggleEditMode(true);
-	// 			this.cellModel.active = true;
-	// 			this._model.updateActiveCell(this.cellModel);
-	// 			e.stopPropagation();
-	// 		}
-	// 	}
-	// }
-
 	ngOnInit() {
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());

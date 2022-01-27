@@ -53,26 +53,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this._activeCellId = value;
 	}
 
-	// @HostListener('document:keydown', ['$event'])
-	// handleKeyboardEvent(e) {
-	// 	let event = new StandardKeyboardEvent(e);
-	// 	if (event.keyCode === KeyCode.Escape) {
-	// 		if (this.isEditMode) {
-	// 			this.toggleEditMode(false);
-	// 		} else {
-	// 			if (this.cellModel.active) {
-	// 				this._model.updateActiveCell(undefined);
-	// 			} else {
-	// 				this.cellModel.active = false;
-	// 			}
-	// 		}
-	// 	} else if (event.keyCode === KeyCode.Enter) {
-	// 		this.toggleEditMode(true);
-	// 		this.cellModel.active = true;
-	// 		this._model.updateActiveCell(this.cellModel);
-	// 	}
-	// }
-
 	// Double click to edit text cell in notebook
 	@HostListener('dblclick', ['$event']) onDblClick() {
 		this.enableActiveCellEditOnDoubleClick();
