@@ -281,7 +281,16 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public standardKernelsDisplayName(): string[] {
-		return Array.from(this._kernelDisplayNameToNotebookProviderIds.keys());
+		// Skip duplicate display names for the same provider ID, since some may be language aliases
+		let idSet = new Set<string>();
+		let displayNames: string[] = [];
+		for (let [name, id] of this._kernelDisplayNameToNotebookProviderIds.entries()) {
+			if (!idSet.has(id)) {
+				displayNames.push(name);
+				idSet.add(id);
+			}
+		}
+		return displayNames;
 	}
 
 	public get inErrorState(): boolean {
@@ -1535,20 +1544,17 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	 */
 	private setKernelDisplayNameMapsWithStandardKernels(): void {
 		this._standardKernels.forEach(kernel => {
-			// Check for language aliases for this kernel
-			let kernelNames: string[] = [];
-			if (this._modeService) {
-				let language = this._modeService.getLanguageName(kernel.name);
-				if (language) {
-					kernelNames.push(language);
-				}
-			}
-
 			let displayName = kernel.displayName;
 			if (!displayName) {
 				displayName = kernel.name;
 			}
-			kernelNames.unshift(displayName);
+			let kernelNames = [displayName];
+
+			// Check for language aliases for this kernel
+			let language = this._modeService?.getLanguageName(kernel.name);
+			if (language) {
+				kernelNames.push(language);
+			}
 
 			kernelNames.forEach(lang => {
 				this._kernelDisplayNameToConnectionProviderIds.set(lang, kernel.connectionProviderIds);
