@@ -39,10 +39,11 @@ import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegis
 import { IsMacNativeContext, IsWebContext } from 'vs/platform/contextkey/common/contextkeys';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import product from 'vs/platform/product/common/product';
+import { TSGOPS_WEB_QUALITY } from 'sql/workbench/common/constants';
 
 export type IOpenRecentAction = IAction & { uri: URI, remoteAuthority?: string };
 
-if (product.quality !== 'tsgops-image') {	// {{SQL CARBON EDIT}}
+if (product.quality !== TSGOPS_WEB_QUALITY) {	// {{SQL CARBON EDIT}}
 	MenuRegistry.appendMenuItem(MenuId.MenubarMainMenu, {
 		submenu: MenuId.MenubarFileMenu,
 		title: {

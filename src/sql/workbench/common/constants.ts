@@ -36,6 +36,7 @@ export const FILE_QUERY_EDITOR_TYPEID = 'workbench.editorInput.fileQueryInput';
 export const RESOURCE_VIEWER_TYPEID = 'workbench.editorInput.resourceViewerInput';
 
 export const JUPYTER_PROVIDER_ID = 'jupyter';
+export const TSGOPS_WEB_QUALITY = 'tsgops-image';
 
 // The version of the notebook file format that we support
 export const NBFORMAT = 4;
