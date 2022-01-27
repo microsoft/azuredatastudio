@@ -29,7 +29,6 @@ import { INotebookView } from 'sql/workbench/services/notebook/browser/notebookV
 import { Deferred } from 'sql/base/common/promise';
 import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
-import { IModeService } from 'vs/editor/common/services/modeService';
 
 export const NOTEBOOKEDITOR_SELECTOR: string = 'notebookeditor-component';
 
@@ -64,7 +63,6 @@ export class NotebookEditorComponent extends AngularDisposable {
 		@Inject(IConfigurationService) private _configurationService: IConfigurationService,
 		@Inject(IConnectionManagementService) private connectionManagementService: IConnectionManagementService,
 		@Inject(IUndoRedoService) private _undoService: IUndoRedoService,
-		@Inject(IModeService) private _modeService: IModeService,
 	) {
 		super();
 		this.updateProfile();
@@ -120,7 +118,7 @@ export class NotebookEditorComponent extends AngularDisposable {
 			layoutChanged: this._notebookParams.input.layoutChanged,
 			capabilitiesService: this.capabilitiesService,
 			editorLoadedTimestamp: this._notebookParams.input.editorOpenedTimestamp
-		}, this.profile, this.logService, this.notificationService, this.adstelemetryService, this.connectionManagementService, this._configurationService, this._undoService, this.capabilitiesService, this._modeService);
+		}, this.profile, this.logService, this.notificationService, this.adstelemetryService, this.connectionManagementService, this._configurationService, this._undoService, this.capabilitiesService);
 
 		let trusted = await this.notebookService.isNotebookTrustCached(this._notebookParams.notebookUri, this.isDirty());
 		this.model = this._register(model);

@@ -38,7 +38,6 @@ import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
 import { AddCellEdit, CellOutputEdit, ConvertCellTypeEdit, DeleteCellEdit, MoveCellEdit, CellOutputDataEdit, SplitCellEdit } from 'sql/workbench/services/notebook/browser/models/cellEdit';
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
 import { deepClone } from 'vs/base/common/objects';
-import { IModeService } from 'vs/editor/common/services/modeService';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -133,8 +132,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
 		@IConfigurationService private configurationService: IConfigurationService,
 		@IUndoRedoService private undoService: IUndoRedoService,
-		@ICapabilitiesService private _capabilitiesService?: ICapabilitiesService,
-		@IModeService private _modeService?: IModeService
+		@ICapabilitiesService private _capabilitiesService?: ICapabilitiesService
 	) {
 		super();
 		if (!_notebookOptions || !_notebookOptions.notebookUri || !_notebookOptions.executeManagers) {
@@ -1539,19 +1537,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			if (!displayName) {
 				displayName = kernel.name;
 			}
-			let kernelNames = [displayName];
-
-			// Check for language aliases for this kernel
-			let language = this._modeService?.getLanguageName(kernel.name);
-			if (language) {
-				kernelNames.push(language);
-			}
-
-			kernelNames.forEach(lang => {
-				this._kernelDisplayNameToConnectionProviderIds.set(lang, kernel.connectionProviderIds);
-				this._kernelDisplayNameToNotebookProviderIds.set(lang, kernel.notebookProvider);
-			});
-
+			this._kernelDisplayNameToConnectionProviderIds.set(displayName, kernel.connectionProviderIds);
+			this._kernelDisplayNameToNotebookProviderIds.set(displayName, kernel.notebookProvider);
 		});
 	}
 
