@@ -221,10 +221,10 @@ class VSCodeSessionManager implements azdata.nb.SessionManager {
 	}
 
 	public get specs(): azdata.nb.IAllKernels {
-		let kernel: azdata.nb.IStandardKernel = {
+		let kernel: azdata.nb.IKernelSpec = {
 			name: this._controller.notebookType,
-			displayName: this._controller.label,
-			connectionProviderIds: []
+			language: this._controller.notebookType,
+			display_name: this._controller.label
 		};
 		return {
 			defaultKernel: kernel.name,
