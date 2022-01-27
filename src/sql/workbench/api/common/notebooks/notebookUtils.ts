@@ -12,11 +12,12 @@ import { OutputTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { NBFORMAT, NBFORMAT_MINOR } from 'sql/workbench/common/constants';
 import { NotebookCellKind } from 'vs/workbench/api/common/extHostTypes';
 
-export function convertToVSCodeNotebookCell(cellSource: string | string[], cellKind: azdata.nb.CellType, cellIndex: number, docUri: URI, cellLanguage: string): vscode.NotebookCell {
+export function convertToVSCodeNotebookCell(cellSource: string | string[], cellKind: azdata.nb.CellType, cellIndex: number, cellUri: URI, docUri: URI, cellLanguage: string): vscode.NotebookCell {
 	return <vscode.NotebookCell>{
 		kind: cellKind === 'code' ? NotebookCellKind.Code : NotebookCellKind.Markup,
 		index: cellIndex,
 		document: <vscode.TextDocument>{
+			uri: cellUri,
 			languageId: cellLanguage ?? '',
 			getText: () => Array.isArray(cellSource) ? cellSource.join('') : (cellSource ?? ''),
 		},

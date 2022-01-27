@@ -616,7 +616,8 @@ export class CellModel extends Disposable implements ICellModel {
 							code: content,
 							cellIndex: this.notebookModel.findCellIndex(this),
 							stop_on_error: true,
-							notebookUri: this.notebookModel.notebookUri
+							notebookUri: this.notebookModel.notebookUri,
+							cellUri: this.cellUri
 						}, false);
 						this.setFuture(future as FutureInternal);
 						this.fireExecutionStateChanged();

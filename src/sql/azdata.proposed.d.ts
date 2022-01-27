@@ -61,6 +61,10 @@ declare module 'azdata' {
 			 */
 			notebookUri?: vscode.Uri;
 			/**
+			 * URI of the notebook cell that is sending this execute request.
+			 */
+			cellUri?: vscode.Uri;
+			/**
 			 * The index of the cell which the code being executed is from.
 			 */
 			cellIndex: number;
