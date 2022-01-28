@@ -20,7 +20,7 @@ export class PlanHeader {
 	private _query: string;
 	private _queryContainer: HTMLElement; // container that holds query text
 
-	private _recommendations: azdata.QueryPlanRecommendation[];
+	private _recommendations: azdata.ExecutionPlanRecommendations[];
 	private _recommendationsContainer: HTMLElement; // container that holds graph recommendations
 
 	public constructor(
@@ -59,7 +59,7 @@ export class PlanHeader {
 		this.renderQueryText();
 	}
 
-	public set recommendations(recommendations: azdata.QueryPlanRecommendation[]) {
+	public set recommendations(recommendations: azdata.ExecutionPlanRecommendations[]) {
 		recommendations.forEach(r => {
 			r.displayString = r.displayString.replace(/(\r\n|\n|\r)/gm, '');
 		});
@@ -110,5 +110,5 @@ export interface PlanHeaderData {
 	planIndex?: number;
 	relativeCost?: number;
 	query?: string;
-	recommendations?: azdata.QueryPlanRecommendation[];
+	recommendations?: azdata.ExecutionPlanRecommendations[];
 }

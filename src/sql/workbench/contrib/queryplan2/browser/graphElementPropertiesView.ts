@@ -44,11 +44,11 @@ export class GraphElementPropertiesView {
 	private _tableWidth = 485;
 	private _tableHeight = 420;
 
-	public constructor(private _parentContainer: HTMLElement, private _themeService: IThemeService, private _model?: GraphElementPropertyViewData) {
-		if (!this._model) {
-			this._model = <GraphElementPropertyViewData>{};
-		}
-
+	public constructor(
+		private _parentContainer: HTMLElement,
+		private _themeService: IThemeService,
+		private _model: GraphElementPropertyViewData = <GraphElementPropertyViewData>{}
+	) {
 		this._parentContainer.style.display = 'none';
 
 		this._propertiesTitle = DOM.$('.title');

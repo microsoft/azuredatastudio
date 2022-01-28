@@ -915,7 +915,7 @@ declare module 'azdata' {
 
 	export interface QueryExecuteResultSetNotificationParams {
 		/**
-		 * Contains query plans returned by the database in ResultSets.
+		 * Contains execution plans returned by the database in ResultSets.
 		 */
 		executionPlans: ExecutionPlanGraph[];
 	}
@@ -926,7 +926,7 @@ declare module 'azdata' {
 		 */
 		visualization?: VisualizationOptions;
 		/**
-		 * Generic query plan graph to be displayed in the results view.
+		 * Generic execution plan graph to be displayed in the results view.
 		 */
 		showplangraph?: ExecutionPlanGraph;
 	}
@@ -1436,21 +1436,21 @@ declare module 'azdata' {
 
 	export interface ExecutionPlanGraph {
 		/**
-		 * Root of the query plan tree
+		 * Root of the execution plan tree
 		 */
 		root: ExecutionPlanNode;
 		/**
-		 * Underlying query for the query plan graph.
+		 * Underlying query for the execution plan graph.
 		 */
 		query: string;
 		/**
-		 * Raw string representation of graph
+		 * String representation of graph
 		 */
 		graphFile: ExecutionPlanGraphFile;
 		/**
 		 * Query recommendations for optimizing performance
 		 */
-		recommendations: QueryPlanRecommendation[];
+		recommendations: ExecutionPlanRecommendations[];
 	}
 
 	export interface ExecutionPlanNode {
@@ -1521,7 +1521,7 @@ declare module 'azdata' {
 		 */
 		name: string;
 		/**
-		 * Formatted value for the property
+		 * value for the property
 		 */
 		value: string | ExecutionPlanGraphElementProperty[];
 		/**
@@ -1538,13 +1538,13 @@ declare module 'azdata' {
 		isLongString: boolean;
 	}
 
-	export interface QueryPlanRecommendation {
+	export interface ExecutionPlanRecommendations {
 		/**
 		 * Text displayed in the show plan graph control description
 		 */
 		displayString: string;
 		/**
-		 * Raw query that is recommended to the user
+		 * Query that is recommended to the user
 		 */
 		queryText: string;
 		/**

@@ -24,7 +24,7 @@ import { openNewQuery } from 'sql/workbench/contrib/query/browser/queryActions';
 import { RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { IColorTheme, ICssStyleCollector, IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { editorBackground } from 'vs/platform/theme/common/colorRegistry';
+import { editorBackground, textLinkForeground } from 'vs/platform/theme/common/colorRegistry';
 import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { ISashEvent, ISashLayoutProvider, Orientation, Sash } from 'vs/base/browser/ui/sash/sash';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -134,7 +134,7 @@ export class QueryPlan2 implements ISashLayoutProvider {
 		@IInstantiationService public readonly _instantiationService: IInstantiationService,
 		@IThemeService private readonly _themeService: IThemeService,
 		@IContextViewService public readonly contextViewService: IContextViewService,
-		@IUntitledTextEditorService private readonly untitledEditorService: IUntitledTextEditorService,
+		@IUntitledTextEditorService private readonly _untitledEditorService: IUntitledTextEditorService,
 		@IEditorService private readonly editorService: IEditorService
 	) {
 		// parent container for query plan.
@@ -223,7 +223,13 @@ export class QueryPlan2 implements ISashLayoutProvider {
 	private populate(node: azdata.ExecutionPlanNode, diagramNode: any): any {
 		diagramNode.label = node.name;
 		if (node.properties && node.properties.length > 0) {
-			diagramNode.metrics = node.properties.filter(e => isString(e.value)).map(e => { return { name: e.name, value: e.value.toString().substring(0, 75) }; });
+			diagramNode.metrics = node.properties.filter(e => isString(e.value))
+				.map(e => {
+					return {
+						name: e.name,
+						value: e.value.toString().substring(0, 75)
+					};
+				});
 		}
 
 		if (node.type) {
@@ -273,7 +279,7 @@ export class QueryPlan2 implements ISashLayoutProvider {
 	}
 
 	public async openGraphFile() {
-		const input = this.untitledEditorService.create({ mode: this.graph.graphFile.graphFileType, initialValue: this.graph.graphFile.graphFileContent });
+		const input = this._untitledEditorService.create({ mode: this.graph.graphFile.graphFileType, initialValue: this.graph.graphFile.graphFileContent });
 		await input.resolve();
 		await this._instantiationService.invokeFunction(formatDocumentWithSelectedProvider, input.textEditorModel, FormattingMode.Explicit, Progress.None, CancellationToken.None);
 		input.setDirty(false);
@@ -399,6 +405,14 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 		collector.addRule(`
 		.qps-container .query-plan .plan .plan-action-container .child {
 			background-color: ${menuBackgroundColor};
+		}
+		`);
+	}
+	const recommendationsColor = theme.getColor(textLinkForeground);
+	if (recommendationsColor) {
+		collector.addRule(`
+		.qps-container .query-plan .plan .header .recommendations {
+			color: ${recommendationsColor};
 		}
 		`);
 	}
