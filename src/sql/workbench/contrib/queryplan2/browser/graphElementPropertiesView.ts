@@ -140,8 +140,10 @@ export class GraphElementPropertiesView {
 	}
 
 	public set tableHeight(value: number) {
-		this._tableHeight = value;
-		this.renderView();
+		if (this.tableHeight !== value) {
+			this._tableHeight = value;
+			this.renderView();
+		}
 	}
 
 	public get tableHeight(): number {
@@ -149,8 +151,10 @@ export class GraphElementPropertiesView {
 	}
 
 	public set tableWidth(value: number) {
-		this._tableWidth = value;
-		this.renderView();
+		if (this._tableWidth !== value) {
+			this._tableWidth = value;
+			this.renderView();
+		}
 	}
 
 	public get tableWidth(): number {
