@@ -1125,22 +1125,20 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				}
 			}
 			if (!language) {
-				if (languageInfo.supportedLanguages?.length > 0) {
-					language = languageInfo.supportedLanguages[0];
-				} else {
+				if (languageInfo.name) {
 					language = languageInfo.name;
-				}
-				if (languageInfo.mimetype) {
+				} else if (languageInfo.mimetype) {
 					language = languageInfo.mimetype;
+					let mimeTypePrefix = 'x-';
+					if (language.indexOf(mimeTypePrefix) > -1) {
+						language = language.replace(mimeTypePrefix, '');
+					}
 				}
 			}
 		}
 
 		if (language) {
-			let mimeTypePrefix = 'x-';
-			if (language.indexOf(mimeTypePrefix) > -1) {
-				language = language.replace(mimeTypePrefix, '');
-			} else if (language.toLowerCase() === 'ipython') {
+			if (language.toLowerCase() === 'ipython') {
 				// Special case ipython because in many cases this is defined as the code mirror mode for python notebooks
 				language = KernelsLanguage.Python;
 			} else if (language.toLowerCase() === 'c#') {
@@ -1239,7 +1237,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	private async updateKernelInfoOnKernelChange(kernel: nb.IKernel, kernelAlias?: string) {
 		await this.updateKernelInfo(kernel);
-		kernelAlias = this.sqlKernelAliases.find(kernel => this._defaultLanguageInfo?.name === kernel.toLowerCase()) ?? kernelAlias;
+		kernelAlias = this.sqlKernelAliases.find(kernelName => kernel.name === kernelName.toLowerCase()) ?? kernelAlias;
 		// In order to change from kernel alias to other kernel, set kernelAlias to undefined in order to update to new kernel language info
 		if (this._selectedKernelDisplayName !== kernelAlias && this._selectedKernelDisplayName) {
 			kernelAlias = undefined;
