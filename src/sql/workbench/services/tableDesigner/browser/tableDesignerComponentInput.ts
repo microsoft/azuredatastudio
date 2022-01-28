@@ -14,7 +14,7 @@ import { deepClone, equals } from 'vs/base/common/objects';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { TableDesignerPublishDialogResult, TableDesignerPublishDialog } from 'sql/workbench/services/tableDesigner/browser/tableDesignerPublishDialog';
-import { IAdsTelemetryService, ITelemetryEvent } from 'sql/platform/telemetry/common/telemetry';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { TelemetryAction, TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
 
 export class TableDesignerComponentInput implements DesignerComponentInput {
@@ -67,7 +67,11 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 	}
 
 	processEdit(edit: DesignerEdit): void {
-		const editEvent = this.createEditActionEvent(edit);
+		const editAction = this._adsTelemetryService.createActionEvent(TelemetryView.TableDesigner, edit.type).withAdditionalProperties({
+			objectType: edit.path[0],
+			provider: this._provider.providerId,
+			isNewTable: this._tableInfo.isNewTable
+		}).withServerInfo(this._serverInfo);
 		const startTime = new Date().getTime();
 		this.updateState(this.valid, this.dirty, 'processEdit');
 		this._provider.processTableEdit(this._tableInfo, edit).then(
@@ -82,8 +86,8 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 						errors: result.errors
 					}
 				});
-				editEvent.withAdditionalMeasurements({
-					'elapsedTime': new Date().getTime() - startTime
+				editAction.withAdditionalMeasurements({
+					'elapsedTimeMs': new Date().getTime() - startTime
 				}).send();
 			},
 			error => {
@@ -116,7 +120,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			this.updateState(this.valid, this.dirty);
 			notificationHandle.updateMessage(localize('tableDesigner.generatingScriptCompleted', "Script generated."));
 			saveEvent.withAdditionalMeasurements({
-				'elapsedTime': new Date().getTime() - startTime
+				'elapsedTimeMs': new Date().getTime() - startTime
 			}).send();
 		} catch (error) {
 			notificationHandle.updateSeverity(Severity.Error);
@@ -606,14 +610,5 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		if (allProperties.indexOf(property) === -1) {
 			this._viewModel[property] = {};
 		}
-	}
-
-	private createEditActionEvent(edit: DesignerEdit): ITelemetryEvent {
-		const editAction = this._adsTelemetryService.createActionEvent(TelemetryView.TableDesigner, edit.type).withAdditionalProperties({
-			objectType: edit.path[0],
-			provider: this._provider.providerId,
-			isNewTable: this._tableInfo.isNewTable
-		}).withServerInfo(this._serverInfo);
-		return editAction;
 	}
 }
