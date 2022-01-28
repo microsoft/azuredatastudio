@@ -126,7 +126,7 @@ export class QueryPlan2 implements ISashLayoutProvider {
 	private _planHeaderContainer: HTMLElement;
 
 	public propertiesView: GraphElementPropertiesView;
-	private propContainer: HTMLElement;
+	private _propContainer: HTMLElement;
 
 	constructor(
 		parent: HTMLElement,
@@ -182,9 +182,9 @@ export class QueryPlan2 implements ISashLayoutProvider {
 		});
 
 		// container properties
-		this.propContainer = DOM.$('.properties');
-		this._container.appendChild(this.propContainer);
-		this.propertiesView = new GraphElementPropertiesView(this.propContainer, this._themeService);
+		this._propContainer = DOM.$('.properties');
+		this._container.appendChild(this._propContainer);
+		this.propertiesView = new GraphElementPropertiesView(this._propContainer, this._themeService);
 
 		// container that holds actionbar icons
 		this._actionBarContainer = DOM.$('.action-bar-container');
