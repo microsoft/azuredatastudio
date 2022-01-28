@@ -7,7 +7,7 @@
  * Currently vscode automatically adds vscode-file://vscode-app/c:/src/azuredatastudio/out/vs/code/electron-browser/workbench/
  * to all the icons fetched by the azdatagraph library. This is the relative path to the icons from that dir.
  */
-let imageBasePath = '../../../../sql/workbench/contrib/queryplan2/browser/images/icons/'; //TODO: Make this an absolute path
+let imageBasePath = '../../../../sql/workbench/contrib/queryplan2/browser/images/icons/';
 export let queryPlanNodeIconPaths =
 {
 	// generic icons

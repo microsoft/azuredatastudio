@@ -89,11 +89,6 @@ However we always want it to be the width of the container it is resizing.
 	font-size: 13px;
 }
 
-/* query plan recommendations shown in header */
-.qps-container .query-plan .plan .header .recommendations {
-	color: rgb(59, 180, 74);
-}
-
 /* each link in query plan recommendations */
 .qps-container .query-plan .plan .header .recommendations .recommendation-btn {
 	cursor: pointer;
