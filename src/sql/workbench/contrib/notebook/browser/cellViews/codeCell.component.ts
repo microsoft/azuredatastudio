@@ -34,6 +34,11 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 		this._activeCellId = value;
 	}
 
+	// Onclick to edit text cell in notebook
+	@HostListener('click', ['$event']) onDblClick() {
+		this.toggleEditMode(true);
+	}
+
 	@HostListener('document:keydown', ['$event'])
 	handleKeyboardEvent(e) {
 		let event = new StandardKeyboardEvent(e);
