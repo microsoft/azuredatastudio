@@ -305,7 +305,12 @@ export class Designer extends Disposable implements IThemable {
 						const propertyName = edit.path[0] as string;
 						const tableData = this._input.viewModel[propertyName] as DesignerTableProperties;
 						const table = this._componentMap.get(propertyName).component as Table<Slick.SlickData>;
-						table.setActiveCell(tableData.data.length - 1, 0);
+						try {
+							table.setActiveCell(tableData.data.length - 1, 0);
+						}
+						catch {
+							// Ignore the slick grid error when setting active cell.
+						}
 					} else {
 						this.updatePropertiesPane(this._propertiesPane.objectPath);
 					}
