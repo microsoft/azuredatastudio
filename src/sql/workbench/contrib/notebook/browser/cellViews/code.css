@@ -116,7 +116,6 @@ code-component .hide-component-button {
 
 code-component .cellLanguage {
 	padding: 2px 15px;
-	justify-self: end;
 	display: inline-block;
 	text-align: center;
 	font-size: 16px;
