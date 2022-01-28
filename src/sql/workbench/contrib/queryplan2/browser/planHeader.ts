@@ -55,23 +55,26 @@ export class PlanHeader {
 		this.renderGraphIndexAndCost();
 	}
 	public set query(query: string) {
-		this._query = query;
+		this._query = query.replace(/(\r\n|\n|\r)/gm, '');
 		this.renderQueryText();
 	}
 
 	public set recommendations(recommendations: azdata.QueryPlanRecommendation[]) {
+		recommendations.forEach(r => {
+			r.displayString = r.displayString.replace(/(\r\n|\n|\r)/gm, '');
+		});
 		this._recommendations = recommendations;
 		this.renderRecommendations();
 	}
 
 	private renderGraphIndexAndCost() {
 		if (this._graphIndex && this._relativeCost) {
-			this._graphIndexAndCostContainer.innerHTML = localize('planHeaderIndexAndCost', "Query {0}: Query cost (relative to the script): {1}%", this._graphIndex, this._relativeCost.toFixed(2));
+			this._graphIndexAndCostContainer.innerText = localize('planHeaderIndexAndCost', "Query {0}: Query cost (relative to the script): {1}%", this._graphIndex, this._relativeCost.toFixed(2));
 		}
 	}
 
 	private renderQueryText() {
-		this._queryContainer.innerHTML = this._query;
+		this._queryContainer.innerText = this._query;
 	}
 
 	private renderRecommendations() {
@@ -82,7 +85,7 @@ export class PlanHeader {
 			const link = DOM.$('.recommendation-btn');
 			link.tabIndex = 0;
 			link.ariaLabel = 'button';
-			link.innerText = r.displayString.replace('\r\n', '');
+			link.innerText = r.displayString;
 
 			//Enabling on click action for recommendations. It will open the recommendation File
 			link.onclick = (e) => {
