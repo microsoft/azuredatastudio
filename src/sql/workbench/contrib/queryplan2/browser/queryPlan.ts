@@ -268,7 +268,7 @@ export class QueryPlan2 implements ISashLayoutProvider {
 		return this._graph;
 	}
 
-	public async openQuery() {
+	public openQuery() {
 		return this._instantiationService.invokeFunction(openNewQuery, undefined, this.graph.query, RunQueryOnConnectionMode.none).then();
 	}
 
@@ -389,7 +389,7 @@ class OpenGraphFile extends Action {
 	}
 
 	public override async run(context: QueryPlan2): Promise<void> {
-		context.openGraphFile();
+		await context.openGraphFile();
 	}
 }
 
