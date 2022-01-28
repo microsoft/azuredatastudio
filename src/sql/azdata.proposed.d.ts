@@ -925,10 +925,6 @@ declare module 'azdata' {
 		 * The visualization options for the result set.
 		 */
 		visualization?: VisualizationOptions;
-		/**
-		 * Generic execution plan graph to be displayed in the results view.
-		 */
-		showplangraph?: ExecutionPlanGraph;
 	}
 
 	/**
