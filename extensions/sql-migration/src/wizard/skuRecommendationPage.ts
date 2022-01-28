@@ -128,6 +128,14 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		}).component();
 
 		this._disposables.push(refreshAssessmentButton.onDidClick(async () => {
+			// placeholder stop perf data collection entry point
+			// TO-DO: remove
+			if (this.migrationStateModel._perfDataCollectionStartDate) {
+				await this.migrationStateModel.stopPerfDataCollection();
+				const durationMins = Math.abs(new Date(this.migrationStateModel._perfDataCollectionStopDate).getTime() - new Date(this.migrationStateModel._perfDataCollectionStartDate).getTime()) / 60000;
+				console.log('data collected for ' + durationMins + ' minutes');
+			}
+
 			await this.constructDetails();
 		}));
 
@@ -245,7 +253,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 		}).component();
 
-		const getAzureRecommendationDialog = new GetAzureRecommendationDialog(this.migrationStateModel);
+		const getAzureRecommendationDialog = new GetAzureRecommendationDialog(this, this.migrationStateModel);
 		this._supportedProducts.forEach((product) => {
 			this._rbg.cards.push({
 				id: product.type,
@@ -443,32 +451,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage) {
 				this.migrationStateModel._assessmentResults = <ServerAssessment>this.migrationStateModel.savedInfo.serverAssessment;
 			} else {
-				// stop data collection
-				await this.migrationStateModel.stopPerfDataCollection();
-
 				await this.migrationStateModel.getDatabaseAssessments(MigrationTargetType.SQLMI);
-
-				// TO-DO: read these preferences from the UI
-				const dataFolder = 'C:\\Users\\ratruong\\AppData\\Local\\Microsoft\\SqlAssessment';
-				const perfQueryIntervalInSec = 30;
-				const targetPlatforms = [MigrationTargetType.SQLDB, MigrationTargetType.SQLMI, MigrationTargetType.SQLVM];
-				const targetPercentile = 95;
-				const scalingFactor = 100;
-				const startTime = '1900-01-01 00:00:00';
-				const endTime = '2200-01-01 00:00:00';
-
-				await this.migrationStateModel.getSkuRecommendations(
-					dataFolder,
-					perfQueryIntervalInSec,
-					targetPlatforms,
-					targetPercentile,
-					scalingFactor,
-					startTime,
-					endTime,
-					this.migrationStateModel._databaseAssessment);
-
-				console.log('results - this.migrationStateModel._skuRecommendationResults:');
-				console.log(this.migrationStateModel._skuRecommendationResults);
 			}
 
 			const assessmentError = this.migrationStateModel._assessmentResults?.assessmentError;

@@ -190,6 +190,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	private _skuRecommendationApiResponse!: mssql.SkuRecommendationResult;
 	public _skuRecommendationPerformanceLocation!: string;
 	public _skuRecommendationPerformanceDataSource!: PerformanceDataSourceOptions;
+	private _startPerfDataCollectionApiResponse!: mssql.StartPerfDataCollectionResult;
+	private _stopPerfDataCollectionApiResponse!: mssql.StopPerfDataCollectionResult;
+	public _perfDataCollectionStopDate!: Date;
+	public _perfDataCollectionStartDate!: Date;
 
 	public _vmDbs: string[] = [];
 	public _miDbs: string[] = [];
@@ -374,7 +378,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			const ownerUri = await azdata.connection.getUriForConnection(this.sourceConnectionId);
 			const response = await this.migrationService.startPerfDataCollection(ownerUri, dataFolder, perfQueryIntervalInSec, staticQueryIntervalInSec, numberOfIterations);
 			console.log('date: ' + response?.dateTimeStarted.toString());
-			// this._perfDataCollectionProcessId = response!;
+
+			this._startPerfDataCollectionApiResponse = response!;
+			this._perfDataCollectionStartDate = this._startPerfDataCollectionApiResponse.dateTimeStarted;
 		}
 		catch (error) {
 			console.log('error:');
@@ -390,6 +396,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 			const response = await this.migrationService.stopPerfDataCollection();
 			console.log('date: ' + response?.dateTimeStopped.toString());
+
+			this._stopPerfDataCollectionApiResponse = response!;
+			this._perfDataCollectionStopDate = this._stopPerfDataCollectionApiResponse.dateTimeStopped;
 		}
 		catch (error) {
 			console.log('error:');
