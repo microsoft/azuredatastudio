@@ -55,6 +55,12 @@ let providerDescriptionType: IJSONSchema = {
 						items: {
 							type: 'string'
 						}
+					},
+					supportedLanguages: {
+						type: 'array',
+						items: {
+							type: 'string'
+						}
 					}
 				}
 			}
@@ -113,6 +119,7 @@ export interface INotebookProviderRegistry {
 	readonly onNewDescriptionRegistration: Event<{ id: string, registration: ProviderDescriptionRegistration }>;
 
 	updateProviderKernels(providerId: string, kernels: azdata.nb.IStandardKernel[]): void;
+	updateKernelLanguages(providerId: string, kernelName: string, languages: string[]): void;
 	registerProviderDescription(provider: ProviderDescriptionRegistration): void;
 	registerNotebookLanguageMagic(magic: NotebookLanguageMagicRegistration): void;
 }
@@ -130,6 +137,20 @@ class NotebookProviderRegistry implements INotebookProviderRegistry {
 			throw new Error(localize('providerNotInRegistryError', "The specified provider '{0}' is not present in the notebook registry.", providerId));
 		}
 		registration.standardKernels = kernels;
+
+		// Update provider description with new info
+		this.registerProviderDescription(registration);
+	}
+
+	updateKernelLanguages(providerId: string, kernelName: string, languages: string[]): void {
+		let registration = this._providerDescriptionRegistration.get(providerId);
+		if (!registration) {
+			throw new Error(localize('providerNotInRegistryError', "The specified provider '{0}' is not present in the notebook registry.", providerId));
+		}
+		let kernel = registration.standardKernels?.find(kernel => kernel.name === kernelName);
+		if (kernel) {
+			kernel.supportedLanguages = languages;
+		}
 
 		// Update provider description with new info
 		this.registerProviderDescription(registration);

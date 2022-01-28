@@ -321,7 +321,8 @@ export class NotebookService extends Disposable implements INotebookService {
 				let descriptor = new StandardKernelsDescriptor(notebookConstants.SQL, [{
 					name: notebookConstants.SQL,
 					displayName: notebookConstants.SQL,
-					connectionProviderIds: sqlConnectionTypes
+					connectionProviderIds: sqlConnectionTypes,
+					supportedLanguages: [notebookConstants.sqlKernelSpec.language]
 				}]);
 				this._providerToStandardKernels.set(notebookConstants.SQL, descriptor);
 			}
@@ -785,7 +786,12 @@ export class NotebookService extends Disposable implements INotebookService {
 		notebookRegistry.registerProviderDescription({
 			provider: serializationProvider.providerId,
 			fileExtensions: [DEFAULT_NOTEBOOK_FILETYPE],
-			standardKernels: [{ name: notebookConstants.SQL, displayName: notebookConstants.SQL, connectionProviderIds: [notebookConstants.SQL_CONNECTION_PROVIDER] }]
+			standardKernels: [{
+				name: notebookConstants.SQL,
+				displayName: notebookConstants.SQL,
+				connectionProviderIds: [notebookConstants.SQL_CONNECTION_PROVIDER],
+				supportedLanguages: [notebookConstants.sqlKernelSpec.language]
+			}]
 		});
 	}
 

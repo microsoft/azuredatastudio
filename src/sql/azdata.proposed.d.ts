@@ -31,6 +31,7 @@ declare module 'azdata' {
 		}
 
 		export interface IStandardKernel {
+			supportedLanguages: string[];
 			readonly blockedOnSAW?: boolean;
 		}
 
