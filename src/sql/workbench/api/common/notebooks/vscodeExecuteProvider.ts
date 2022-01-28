@@ -131,7 +131,7 @@ class VSCodeKernel implements azdata.nb.IKernel {
 	requestExecute(content: azdata.nb.IExecuteRequest, disposeOnDone?: boolean): azdata.nb.IFuture {
 		let executePromise: Promise<void>;
 		if (this._controller.executeHandler) {
-			let cell = convertToVSCodeNotebookCell(content.code, 'code', content.cellIndex, content.cellUri, content.notebookUri, this._info.language_info.name);
+			let cell = convertToVSCodeNotebookCell(content.code, 'code', content.cellIndex, content.cellUri, content.notebookUri, content.language ?? this._info.language_info.name);
 			executePromise = Promise.resolve(this._controller.executeHandler([cell], cell.notebook, this._controller));
 		} else {
 			executePromise = Promise.resolve();
