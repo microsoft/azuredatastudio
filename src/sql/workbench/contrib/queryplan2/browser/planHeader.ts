@@ -9,6 +9,7 @@ import { localize } from 'vs/nls';
 import { openNewQuery } from 'sql/workbench/contrib/query/browser/queryActions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
+import { Button } from 'sql/base/browser/ui/button/button';
 
 export class PlanHeader {
 
@@ -82,25 +83,18 @@ export class PlanHeader {
 			this._recommendationsContainer.removeChild(this._recommendationsContainer.firstChild);
 		}
 		this._recommendations.forEach(r => {
-			const link = DOM.$('.recommendation-btn');
-			link.tabIndex = 0;
-			link.ariaLabel = 'button';
-			link.innerText = r.displayString;
+
+			const link = new Button(this._recommendationsContainer, {
+				title: r.displayString,
+				secondary: true,
+			});
+
+			link.label = r.displayString;
 
 			//Enabling on click action for recommendations. It will open the recommendation File
-			link.onclick = (e) => {
-				return this._instantiationService.invokeFunction(openNewQuery, undefined, r.queryWithDescription, RunQueryOnConnectionMode.none);
-			};
-			//Mapping enter and space key to on click action
-			link.onkeydown = (e) => {
-				if (e.key === 'Enter' || e.key === ' ') {
-					// Cancel the default action, if needed
-					e.preventDefault();
-					link.click();
-				}
-				return;
-			};
-			this._recommendationsContainer.appendChild(link);
+			link.onDidClick(e => {
+				this._instantiationService.invokeFunction(openNewQuery, undefined, r.queryWithDescription, RunQueryOnConnectionMode.none);
+			});
 		});
 
 	}

@@ -90,8 +90,10 @@ However we always want it to be the width of the container it is resizing.
 }
 
 /* each link in query plan recommendations */
-.qps-container .query-plan .plan .header .recommendations .recommendation-btn {
-	cursor: pointer;
+.qps-container .query-plan .plan .header .recommendations > a {
+	width: fit-content;
+	align-items: left;
+	text-align: left;
 }
 
 /* graph diagram in query plan */
