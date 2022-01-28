@@ -53,6 +53,7 @@ import { INotebookShowOptions } from 'sql/workbench/api/common/sqlExtHost.protoc
 import { JUPYTER_PROVIDER_ID, NotebookLanguage } from 'sql/workbench/common/constants';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { SqlSerializationProvider } from 'sql/workbench/services/notebook/browser/sql/sqlSerializationProvider';
+import { asArray } from 'vs/base/common/arrays';
 
 const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
 
@@ -322,7 +323,7 @@ export class NotebookService extends Disposable implements INotebookService {
 					name: notebookConstants.SQL,
 					displayName: notebookConstants.SQL,
 					connectionProviderIds: sqlConnectionTypes,
-					supportedLanguages: [notebookConstants.sqlKernelSpec.language]
+					supportedLanguages: notebookConstants.sqlKernelSpec.language ? asArray(notebookConstants.sqlKernelSpec.language) : []
 				}]);
 				this._providerToStandardKernels.set(notebookConstants.SQL, descriptor);
 			}
@@ -790,7 +791,7 @@ export class NotebookService extends Disposable implements INotebookService {
 				name: notebookConstants.SQL,
 				displayName: notebookConstants.SQL,
 				connectionProviderIds: [notebookConstants.SQL_CONNECTION_PROVIDER],
-				supportedLanguages: [notebookConstants.sqlKernelSpec.language]
+				supportedLanguages: notebookConstants.sqlKernelSpec.language ? asArray(notebookConstants.sqlKernelSpec.language) : []
 			}]
 		});
 	}

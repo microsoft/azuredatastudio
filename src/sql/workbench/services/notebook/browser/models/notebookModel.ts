@@ -38,6 +38,7 @@ import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
 import { AddCellEdit, CellOutputEdit, ConvertCellTypeEdit, DeleteCellEdit, MoveCellEdit, CellOutputDataEdit, SplitCellEdit } from 'sql/workbench/services/notebook/browser/models/cellEdit';
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
 import { deepClone } from 'vs/base/common/objects';
+import { asArray } from 'vs/base/common/arrays';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -1051,7 +1052,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 		// update default language
 		this._defaultLanguageInfo = {
-			name: this._defaultKernel.language,
+			name: this._defaultKernel.name,
+			supportedLanguages: asArray(this._defaultKernel.language),
 			version: ''
 		};
 	}
