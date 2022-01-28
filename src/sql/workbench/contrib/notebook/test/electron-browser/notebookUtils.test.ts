@@ -110,7 +110,8 @@ suite('notebookUtils', function (): void {
 			name: 'testName',
 			displayName: 'testDisplayName',
 			connectionProviderIds: ['testId1', 'testId2'],
-			notebookProvider: 'testProvider'
+			notebookProvider: 'testProvider',
+			supportedLanguages: ['python']
 		}]);
 	});
 
