@@ -123,7 +123,7 @@ export class GraphElementPropertiesView {
 		this.renderView();
 	}
 
-	public sortPropertiesByAlphabets() {
+	public sortPropertiesAlphabetically() {
 		this._model.graphElement.properties = this._model.graphElement.properties.sort((a, b) => {
 			if (a.name < b.name) { return -1; }
 			if (a.name > b.name) { return 1; }
@@ -223,7 +223,7 @@ export class SortPropertiesAlphabeticallyAction extends Action {
 	}
 
 	public override async run(context: GraphElementPropertiesView): Promise<void> {
-		context.sortPropertiesByAlphabets();
+		context.sortPropertiesAlphabetically();
 	}
 }
 
