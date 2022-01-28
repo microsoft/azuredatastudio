@@ -70,7 +70,7 @@ However we always want it to be the width of the container it is resizing.
 	height: 100%;
 }
 
-/* Custom zoon action view */
+/* Custom zoom action view */
 .qps-container .query-plan .plan .plan-action-container .custom-zoom-view {
 	display: flex;
 	flex-direction: row;
