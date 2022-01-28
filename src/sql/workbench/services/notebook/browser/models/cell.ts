@@ -729,7 +729,7 @@ export class CellModel extends Disposable implements ICellModel {
 		this._future = future;
 		future.setReplyHandler({ handle: (msg) => this.handleReply(msg) });
 		future.setIOPubHandler({ handle: (msg) => this.handleIOPub(msg) });
-		future.setStdInHandler({ handle: (msg) => this.handleSdtIn(msg) });
+		future.setStdInHandler({ handle: (msg) => this.handleStdIn(msg) });
 	}
 	/**
 	 * Clear outputs can be done as part of the "Clear Outputs" action on a cell or as part of running a cell
@@ -934,7 +934,7 @@ export class CellModel extends Disposable implements ICellModel {
 	 * components. If one is registered the cell will call and wait on it, if not
 	 * it will immediately return to unblock error handling
 	 */
-	private handleSdtIn(msg: nb.IStdinMessage): void | Thenable<void> {
+	private handleStdIn(msg: nb.IStdinMessage): void | Thenable<void> {
 		let handler = async () => {
 			if (!this._stdInHandler) {
 				// No-op
