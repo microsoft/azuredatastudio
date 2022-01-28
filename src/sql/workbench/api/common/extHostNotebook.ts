@@ -270,7 +270,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 			name: viewType,
 			displayName: controller.label,
 			connectionProviderIds: [],
-			supportedLanguages: [viewType] // Use kernel name as the default until the actual supported languages get added later
+			supportedLanguages: [] // These will get set later from the controller
 		};
 		this._proxy.$updateProviderKernels(viewType, [newKernel]);
 
