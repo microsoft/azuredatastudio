@@ -917,7 +917,7 @@ declare module 'azdata' {
 		/**
 		 * Contains query plans returned by the database in ResultSets.
 		 */
-		executionPlans: QueryPlanGraph[];
+		executionPlans: ExecutionPlanGraph[];
 	}
 
 	export interface ResultSetSummary {
@@ -928,7 +928,7 @@ declare module 'azdata' {
 		/**
 		 * Generic query plan graph to be displayed in the results view.
 		 */
-		showplangraph?: QueryPlanGraph;
+		showplangraph?: ExecutionPlanGraph;
 	}
 
 	/**
@@ -1434,18 +1434,26 @@ declare module 'azdata' {
 		}
 	}
 
-	export interface QueryPlanGraph {
+	export interface ExecutionPlanGraph {
 		/**
 		 * Root of the query plan tree
 		 */
-		root: QueryPlanGraphNode;
+		root: ExecutionPlanNode;
 		/**
 		 * Underlying query for the query plan graph.
 		 */
 		query: string;
+		/**
+		 * Raw string representation of graph
+		 */
+		graphFile: ExecutionPlanGraphFile;
+		/**
+		 * Query recommendations for optimizing performance
+		 */
+		recommendations: QueryPlanRecommendation[];
 	}
 
-	export interface QueryPlanGraphNode {
+	export interface ExecutionPlanNode {
 		/**
 		 * Type of the node. This property determines the icon that is displayed for it
 		 */
@@ -1469,7 +1477,7 @@ declare module 'azdata' {
 		/**
 		 * Node properties to be shown in the tooltip
 		 */
-		properties: QueryPlanGraphElementProperty[];
+		properties: ExecutionPlanGraphElementProperty[];
 		/**
 		 * Display name for the node
 		 */
@@ -1485,14 +1493,14 @@ declare module 'azdata' {
 		/**
 		 * Direct children of the nodes.
 		 */
-		children: QueryPlanGraphNode[];
+		children: ExecutionPlanNode[];
 		/**
 		 * Edges corresponding to the children.
 		 */
-		edges: QueryGraphEdge[];
+		edges: ExecutionPlanEdge[];
 	}
 
-	export interface QueryGraphEdge {
+	export interface ExecutionPlanEdge {
 		/**
 		 * Count of the rows returned by the subtree of the edge.
 		 */
@@ -1504,10 +1512,10 @@ declare module 'azdata' {
 		/**
 		 * Edge properties to be shown in the tooltip.
 		 */
-		properties: QueryPlanGraphElementProperty[]
+		properties: ExecutionPlanGraphElementProperty[]
 	}
 
-	export interface QueryPlanGraphElementProperty {
+	export interface ExecutionPlanGraphElementProperty {
 		/**
 		 * Name of the property
 		 */
@@ -1515,7 +1523,7 @@ declare module 'azdata' {
 		/**
 		 * Formatted value for the property
 		 */
-		formattedValue: string;
+		value: string | ExecutionPlanGraphElementProperty[];
 		/**
 		 * Flag to show/hide props in tooltip
 		 */
@@ -1528,5 +1536,31 @@ declare module 'azdata' {
 		 *  Flag to indicate if the property has a longer value so that it will be shown at the bottom of the tooltip
 		 */
 		isLongString: boolean;
+	}
+
+	export interface QueryPlanRecommendation {
+		/**
+		 * Text displayed in the show plan graph control description
+		 */
+		displayString: string;
+		/**
+		 * Raw query that is recommended to the user
+		 */
+		queryText: string;
+		/**
+		 * Query that will be opened in a new file once the user click on the recommendation
+		 */
+		queryWithDescription: string;
+	}
+
+	export interface ExecutionPlanGraphFile {
+		/**
+		 * File contents
+		 */
+		graphFileContent: string;
+		/**
+		 * File type for execution plan. This will be the file type of the editor when the user opens the graph file
+		 */
+		graphFileType: string;
 	}
 }
