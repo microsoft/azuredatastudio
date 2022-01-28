@@ -14,7 +14,6 @@ import { CodeComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/
 import { OutputAreaComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/outputArea.component';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
-import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 
 export const CODE_SELECTOR: string = 'code-cell-component';
 
@@ -42,14 +41,14 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 	@HostListener('document:keydown', ['$event'])
 	handleKeyboardEvent(e) {
 		let event = new StandardKeyboardEvent(e);
-		if (this.cellModel.cellType === CellTypes.Code && this.cellModel.active) {
+		if (this.cellModel.active) {
 			if (event.keyCode === KeyCode.Escape) {
 				if (this.isEditMode) {
 					this.toggleEditMode(false);
 					e.stopImmediatePropagation();
 				}
 			}
-			if (event.keyCode === KeyCode.Enter) {
+			else if (event.keyCode === KeyCode.Enter) {
 				this.toggleEditMode(true);
 				this.cellModel.active = true;
 				this._model.updateActiveCell(this.cellModel);

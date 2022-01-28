@@ -61,7 +61,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	@HostListener('document:keydown', ['$event'])
 	onkeydown(e: KeyboardEvent) {
 		const keyEvent = new StandardKeyboardEvent(e);
-		if (this.cellModel?.currentMode !== CellEditModes.CODE && this.cellModel.active) {
+		if (this.cellModel.active) {
 			if (keyEvent.keyCode === KeyCode.Escape) {
 				if (this.isEditMode) {
 					this.toggleEditMode(false);
