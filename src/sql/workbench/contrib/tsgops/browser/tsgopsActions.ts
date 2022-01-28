@@ -10,7 +10,7 @@ import { IActivityBarService } from 'vs/workbench/services/activityBar/browser/a
 
 export class HidePanel extends Action {
 	static readonly ID = 'workbench.action.hidePanel';
-	static readonly LABEL = localize('hidePanel', "Hide the panel...");
+	static readonly LABEL = localize('hidePanel', "Hide the panel");
 
 	constructor(
 		id: string = HidePanel.ID,
@@ -27,7 +27,7 @@ export class HidePanel extends Action {
 
 export class HideSettings extends Action {
 	static readonly ID = 'workbench.action.hideSettings';
-	static readonly LABEL = localize('hideSettings', "Hide the settings icon...");
+	static readonly LABEL = localize('hideSettings', "Hide the settings icon");
 
 	constructor(
 		id: string = HideSettings.ID,
@@ -45,7 +45,7 @@ export class HideSettings extends Action {
 
 export class HideActivityBarViewContainers extends Action {
 	static readonly ID = 'workbench.action.hideActivityBarViewContainers';
-	static readonly LABEL = localize('hideActivityBarViewContainers', "Hide the extension viewlet...");
+	static readonly LABEL = localize('hideActivityBarViewContainers', "Hide the extension viewlet");
 
 	constructor(
 		id: string = HideActivityBarViewContainers.ID,
