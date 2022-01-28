@@ -1051,9 +1051,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 
 		// update default language
+		let languages = this._defaultKernel.language ? asArray(this._defaultKernel.language) : [this.defaultKernel.name];
 		this._defaultLanguageInfo = {
-			name: this._defaultKernel.name,
-			supportedLanguages: asArray(this._defaultKernel.language),
+			name: languages[0],
+			supportedLanguages: languages,
 			version: ''
 		};
 	}
@@ -1123,11 +1124,15 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					language = codeMirrorMode.name;
 				}
 			}
-			if (!language && languageInfo.name) {
-				language = languageInfo.name;
-			}
-			if (!language && languageInfo.mimetype) {
-				language = languageInfo.mimetype;
+			if (!language) {
+				if (languageInfo.supportedLanguages?.length > 0) {
+					language = languageInfo.supportedLanguages[0];
+				} else {
+					language = languageInfo.name;
+				}
+				if (languageInfo.mimetype) {
+					language = languageInfo.mimetype;
+				}
 			}
 		}
 
@@ -1145,8 +1150,23 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			language = KernelsLanguage.Python;
 		}
 
+		// Update cell language if it was using the previous default.
+		// Skip updating the cell if it was using a more specific language besides that.
+		let oldLanguage = this._language;
 		this._language = language.toLowerCase();
-		this._cells?.forEach(cell => cell.setOverrideLanguage(this._language));
+		this._cells?.forEach(cell => {
+			let oldLangNotSupported = false;
+			if (this._savedKernelInfo?.language) {
+				if (Array.isArray(this._savedKernelInfo.language)) {
+					oldLangNotSupported = !this._savedKernelInfo.language.includes(oldLanguage);
+				} else {
+					oldLangNotSupported = this._savedKernelInfo.language !== oldLanguage;
+				}
+			}
+			if (!cell.language || cell.language === oldLanguage || oldLangNotSupported) {
+				cell.setOverrideLanguage(this._language);
+			}
+		});
 	}
 
 	public changeKernel(displayName: string): void {

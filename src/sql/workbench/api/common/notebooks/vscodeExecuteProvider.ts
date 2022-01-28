@@ -81,6 +81,7 @@ class VSCodeKernel implements azdata.nb.IKernel {
 			implementation_version: '',
 			language_info: {
 				name: languages[0],
+				supportedLanguages: languages,
 				version: '',
 			},
 			banner: '',
