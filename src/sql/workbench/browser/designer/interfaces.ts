@@ -154,22 +154,18 @@ export interface DesignerTableProperties extends ComponentProperties {
 	 * the name of the properties to be displayed, properties not in this list will be accessible in details view.
 	 */
 	columns?: string[];
-
 	/**
 	 * The display name of the object type.
 	 */
 	objectTypeDisplayName: string;
-
 	/**
 	 * The properties of the table data item.
 	 */
 	itemProperties?: DesignerDataPropertyInfo[];
-
 	/**
 	 * The data to be displayed.
 	 */
 	data?: DesignerTableComponentRowData[];
-
 	/**
 	 * Whether user can add new rows to the table. The default value is true.
 	 */
@@ -179,6 +175,14 @@ export interface DesignerTableProperties extends ComponentProperties {
 	 * Whether user can remove rows from the table. The default value is true.
 	 */
 	canRemoveRows?: boolean;
+	/**
+	 * Whether to show confirmation when user removes a row.
+	 */
+	showRemoveRowConfirmation?: boolean;
+	/**
+	 * The confirmation message to be displayed when user removes a row.
+	 */
+	removeRowConfirmationMessage?: string;
 }
 
 export interface DesignerTableComponentRowData {

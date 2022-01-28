@@ -36,6 +36,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { DesignerScriptEditor } from 'sql/workbench/browser/designer/designerScriptEditor';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 
 export interface IDesignerStyle {
 	tabbedPanelStyles?: ITabbedPanelStyles;
@@ -85,7 +86,8 @@ export class Designer extends Disposable implements IThemable {
 	constructor(private readonly _container: HTMLElement,
 		@IInstantiationService private readonly _instantiationService: IInstantiationService,
 		@IContextViewService private readonly _contextViewProvider: IContextViewService,
-		@INotificationService private readonly _notificationService: INotificationService) {
+		@INotificationService private readonly _notificationService: INotificationService,
+		@IDialogService private readonly _dialogService: IDialogService) {
 		super();
 		this._tableCellEditorFactory = new TableCellEditorFactory(
 			{
@@ -699,7 +701,16 @@ export class Designer extends Disposable implements IThemable {
 						resizable: false,
 						isFontIcon: true
 					});
-					deleteRowColumn.onClick((e) => {
+					deleteRowColumn.onClick(async (e) => {
+						if (tableProperties.showRemoveRowConfirmation && tableProperties.removeRowConfirmationMessage) {
+							const result = await this._dialogService.confirm({
+								type: 'question',
+								message: tableProperties.removeRowConfirmationMessage
+							});
+							if (!result.confirmed) {
+								return;
+							}
+						}
 						this.handleEdit({
 							type: DesignerEditType.Remove,
 							path: [...propertyPath, e.row]

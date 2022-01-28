@@ -1241,7 +1241,7 @@ declare module 'azdata' {
 			indexColumnSpecificationTableOptions?: TableDesignerBuiltInTableViewOptions;
 		}
 
-		export interface TableDesignerBuiltInTableViewOptions {
+		export interface TableDesignerBuiltInTableViewOptions extends DesignerTablePropertiesBase {
 			/**
 			 * Whether to show the table. Default value is false.
 			 */
@@ -1250,14 +1250,6 @@ declare module 'azdata' {
 			 * Properties to be displayed in the table, other properties can be accessed in the properties view.
 			 */
 			propertiesToDisplay?: string[];
-			/**
-			 * Whether adding new rows is supported.
-			 */
-			canAddRows?: boolean;
-			/**
-			 * Whether removing rows is supported.
-			 */
-			canRemoveRows?: boolean;
 			/**
 			 * Additional properties for the entity.
 			 */
@@ -1320,39 +1312,45 @@ declare module 'azdata' {
 		 */
 		export type DesignerComponentTypeName = 'input' | 'checkbox' | 'dropdown' | 'table';
 
-		/**
-		 * The properties for the table component in the designer.
-		 */
-		export interface DesignerTableProperties extends ComponentProperties {
-			/**
-			 * the name of the properties to be displayed, properties not in this list will be accessible in properties pane.
-			 */
-			columns?: string[];
-
-			/**
-			 * The display name of the object type.
-			 */
-			objectTypeDisplayName: string;
-
-			/**
-			 * the properties of the table data item.
-			 */
-			itemProperties?: DesignerDataPropertyInfo[];
-
-			/**
-			 * The data to be displayed.
-			 */
-			data?: DesignerTableComponentDataItem[];
-
+		export interface DesignerTablePropertiesBase {
 			/**
 			 * Whether user can add new rows to the table. The default value is true.
 			 */
 			canAddRows?: boolean;
-
 			/**
 			 * Whether user can remove rows from the table. The default value is true.
 			 */
 			canRemoveRows?: boolean;
+			/**
+			 * Whether to show confirmation when user removes a row.
+			 */
+			showRemoveRowConfirmation?: boolean;
+			/**
+			 * The confirmation message to be displayed when user removes a row.
+			 */
+			removeRowConfirmationMessage?: string;
+		}
+
+		/**
+		 * The properties for the table component in the designer.
+		 */
+		export interface DesignerTableProperties extends ComponentProperties, DesignerTablePropertiesBase {
+			/**
+			 * the name of the properties to be displayed, properties not in this list will be accessible in properties pane.
+			 */
+			columns?: string[];
+			/**
+			 * The display name of the object type.
+			 */
+			objectTypeDisplayName: string;
+			/**
+			 * the properties of the table data item.
+			 */
+			itemProperties?: DesignerDataPropertyInfo[];
+			/**
+			 * The data to be displayed.
+			 */
+			data?: DesignerTableComponentDataItem[];
 		}
 
 		/**

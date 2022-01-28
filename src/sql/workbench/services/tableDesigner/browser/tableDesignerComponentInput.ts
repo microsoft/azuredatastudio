@@ -360,7 +360,9 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 						itemProperties: this.addAdditionalTableProperties(options, columnProperties),
 						objectTypeDisplayName: localize('tableDesigner.columnTypeName', "Column"),
 						canAddRows: options.canAddRows,
-						canRemoveRows: options.canRemoveRows
+						canRemoveRows: options.canRemoveRows,
+						removeRowConfirmationMessage: options.removeRowConfirmationMessage,
+						showRemoveRowConfirmation: options.showRemoveRowConfirmation
 					}
 				}
 			]
@@ -436,7 +438,9 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 					itemProperties: foreignKeyColumnMappingProperties,
 					objectTypeDisplayName: '',
 					canAddRows: options.canAddRows,
-					canRemoveRows: options.canRemoveRows
+					canRemoveRows: options.canRemoveRows,
+					removeRowConfirmationMessage: options.removeRowConfirmationMessage,
+					showRemoveRowConfirmation: options.showRemoveRowConfirmation
 				}
 			}
 		];
@@ -454,7 +458,9 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 						itemProperties: this.addAdditionalTableProperties(options, foreignKeyProperties),
 						objectTypeDisplayName: localize('tableDesigner.ForeignKeyTypeName', "Foreign Key"),
 						canAddRows: options.canAddRows,
-						canRemoveRows: options.canRemoveRows
+						canRemoveRows: options.canRemoveRows,
+						removeRowConfirmationMessage: options.removeRowConfirmationMessage,
+						showRemoveRowConfirmation: options.showRemoveRowConfirmation
 					}
 				}
 			]
@@ -495,7 +501,9 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 						itemProperties: this.addAdditionalTableProperties(options, checkConstraintProperties),
 						objectTypeDisplayName: localize('tableDesigner.checkConstraintTypeName', "Check Constraint"),
 						canAddRows: options.canAddRows,
-						canRemoveRows: options.canRemoveRows
+						canRemoveRows: options.canRemoveRows,
+						removeRowConfirmationMessage: options.removeRowConfirmationMessage,
+						showRemoveRowConfirmation: options.showRemoveRowConfirmation
 					}
 				}
 			]
@@ -533,7 +541,9 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 					itemProperties: this.addAdditionalTableProperties(columnSpecTableOptions, columnSpecProperties),
 					objectTypeDisplayName: '',
 					canAddRows: columnSpecTableOptions.canAddRows,
-					canRemoveRows: columnSpecTableOptions.canRemoveRows
+					canRemoveRows: columnSpecTableOptions.canRemoveRows,
+					removeRowConfirmationMessage: options.removeRowConfirmationMessage,
+					showRemoveRowConfirmation: options.showRemoveRowConfirmation
 				}
 			}
 		];
@@ -551,7 +561,9 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 						itemProperties: this.addAdditionalTableProperties(options, indexProperties),
 						objectTypeDisplayName: localize('tableDesigner.IndexTypeName', "Index"),
 						canAddRows: options.canAddRows,
-						canRemoveRows: options.canRemoveRows
+						canRemoveRows: options.canRemoveRows,
+						removeRowConfirmationMessage: options.removeRowConfirmationMessage,
+						showRemoveRowConfirmation: options.showRemoveRowConfirmation
 					}
 				}
 			]
