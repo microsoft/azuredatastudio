@@ -351,7 +351,8 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 				connectionProviderIds: kernel.connectionProviderIds,
 				name: kernel.name,
 				displayName: kernel.displayName,
-				notebookProvider: kernel.notebookProvider
+				notebookProvider: kernel.notebookProvider,
+				supportedLanguages: kernel.supportedLanguages
 			});
 		});
 	}
