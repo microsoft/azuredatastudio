@@ -1048,13 +1048,12 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._defaultKernel = notebookConstants.sqlKernelSpec;
 			this._providerId = SQL_NOTEBOOK_PROVIDER;
 		}
-		if (!this._defaultLanguageInfo?.name) {
-			// update default language
-			this._defaultLanguageInfo = {
-				name: this._providerId === SQL_NOTEBOOK_PROVIDER ? 'sql' : 'python',
-				version: ''
-			};
-		}
+
+		// update default language
+		this._defaultLanguageInfo = {
+			name: this._defaultKernel.language,
+			version: ''
+		};
 	}
 
 	private isValidConnection(profile: IConnectionProfile | connection.Connection) {
