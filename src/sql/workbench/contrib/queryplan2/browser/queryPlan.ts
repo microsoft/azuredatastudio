@@ -381,8 +381,8 @@ class SearchNodeAction extends Action {
 }
 
 class OpenGraphFile extends Action {
-	public static ID = 'qp.openRawString';
-	public static Label = localize('queryPlanOpenRawString', "Open Raw Graph");
+	public static ID = 'qp.openGraphFile';
+	public static Label = localize('queryPlanOpenGraphFile', "Open Graph File");
 
 	constructor() {
 		super(OpenGraphFile.ID, OpenGraphFile.Label, Codicon.output.classNames);
