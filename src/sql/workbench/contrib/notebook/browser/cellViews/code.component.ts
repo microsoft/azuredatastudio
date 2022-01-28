@@ -48,6 +48,7 @@ const DEFAULT_OR_LOCAL_CONTEXT_ID = '-1';
 export class CodeComponent extends CellView implements OnInit, OnChanges {
 	@ViewChild('toolbar', { read: ElementRef }) private toolbarElement: ElementRef;
 	@ViewChild('editor', { read: ElementRef }) private codeElement: ElementRef;
+	@ViewChild('cellLanguage', { read: ElementRef }) private languageElement: ElementRef;
 
 	public get cellModel(): ICellModel {
 		return this._cellModel;
@@ -258,6 +259,10 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 				this.setFocusAndScroll();
 			}
 		}));
+		this._register(this.cellModel.onLanguageChanged(language => {
+			let nativeElement = <HTMLElement>this.languageElement.nativeElement;
+			nativeElement.innerText = language;
+		}));
 		this._register(this.cellModel.onCollapseStateChanged(isCollapsed => {
 			this.onCellCollapse(isCollapsed);
 		}));
@@ -368,8 +373,6 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 						this.cellModel.setOverrideLanguage(magic.language);
 						this.updateLanguageMode();
 					}
-				} else {
-					this.cellModel.setOverrideLanguage(undefined);
 				}
 			}
 		} catch (err) {

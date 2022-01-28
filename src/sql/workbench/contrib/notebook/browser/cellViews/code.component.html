@@ -15,7 +15,7 @@
 		<div style="display: flex; flex-flow: row">
 			<collapse-component *ngIf="cellModel.cellType === 'code' && cellModel.source && cellModel.source.length > 1" [cellModel]="cellModel" [activeCellId]="activeCellId"></collapse-component>
 			<div #cellLanguage class="cellLanguage" *ngIf="cellModel.cellType === 'code' && cellModel.language">
-				<span>{{cellModel.language}}</span>
+				{{cellModel.language}}
 			</div>
 		</div>
 		<div #parameter class="parameter" *ngIf="cellModel.cellType === 'code' && cellModel.isParameter">

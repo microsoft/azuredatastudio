@@ -72,6 +72,7 @@ export class CellModel extends Disposable implements ICellModel {
 	private _stdInVisible: boolean;
 	private _metadata: nb.ICellMetadata;
 	private _isCollapsed: boolean;
+	private _onLanguageChanged = new Emitter<string>();
 	private _onCollapseStateChanged = new Emitter<boolean>();
 	private _modelContentChangedEvent: IModelContentChangedEvent;
 	private _isCommandExecutionSettingEnabled: boolean = false;
@@ -122,6 +123,10 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public equals(other: ICellModel) {
 		return other !== undefined && other.id === this.id;
+	}
+
+	public get onLanguageChanged(): Event<string> {
+		return this._onLanguageChanged.event;
 	}
 
 	public get onCollapseStateChanged(): Event<boolean> {
@@ -395,6 +400,7 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public setOverrideLanguage(newLanguage: string) {
 		this._language = newLanguage;
+		this._onLanguageChanged.fire(newLanguage);
 	}
 
 	public get onExecutionStateChange(): Event<CellExecutionState> {

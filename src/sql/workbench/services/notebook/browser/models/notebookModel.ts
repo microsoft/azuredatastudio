@@ -1145,6 +1145,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 
 		this._language = language.toLowerCase();
+		this._cells?.forEach(cell => cell.setOverrideLanguage(this._language));
 	}
 
 	public changeKernel(displayName: string): void {

@@ -530,6 +530,7 @@ export interface ICellModel {
 	isCollapsed: boolean;
 	isParameter: boolean;
 	isInjectedParameter: boolean;
+	readonly onLanguageChanged: Event<string>;
 	readonly onCollapseStateChanged: Event<boolean>;
 	readonly onParameterStateChanged: Event<boolean>;
 	readonly onCellModeChanged: Event<boolean>;
