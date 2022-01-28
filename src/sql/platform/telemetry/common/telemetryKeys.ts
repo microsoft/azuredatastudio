@@ -91,8 +91,7 @@ export const enum TelemetryAction {
 	StopAgentJob = 'StopAgentJob',
 	WizardPagesNavigation = 'WizardPagesNavigation',
 	SearchStarted = 'SearchStarted',
-	SearchCompleted = 'SearchCompleted',
-	SaveTableDesigner = 'SaveTableDesigner'
+	SearchCompleted = 'SearchCompleted'
 }
 
 export const enum NbTelemetryAction {

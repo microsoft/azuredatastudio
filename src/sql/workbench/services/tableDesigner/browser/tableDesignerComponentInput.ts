@@ -104,7 +104,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			message: localize('tableDesigner.generatingScript', "Generating script..."),
 			sticky: true
 		});
-		const saveEvent = this._adsTelemetryService.createActionEvent(TelemetryView.TableDesigner, TelemetryAction.SaveTableDesigner).withAdditionalProperties({
+		const saveEvent = this._adsTelemetryService.createActionEvent(TelemetryView.TableDesigner, TelemetryAction.GenerateScript).withAdditionalProperties({
 			provider: this._provider.providerId,
 			isNewTable: this._tableInfo.isNewTable,
 		}).withServerInfo(this._serverInfo);
@@ -122,7 +122,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			notificationHandle.updateSeverity(Severity.Error);
 			notificationHandle.updateMessage(localize('tableDesigner.generateScriptError', "An error occured while generating the script: {0}", error?.message ?? error));
 			this.updateState(this.valid, this.dirty);
-			this._adsTelemetryService.createErrorEvent(TelemetryView.TableDesigner, TelemetryAction.SaveTableDesigner,
+			this._adsTelemetryService.createErrorEvent(TelemetryView.TableDesigner, TelemetryAction.GenerateScript,
 				error?.code, error?.message).withAdditionalProperties({
 					provider: this._provider.providerId,
 					isNewTable: this._tableInfo.isNewTable,
