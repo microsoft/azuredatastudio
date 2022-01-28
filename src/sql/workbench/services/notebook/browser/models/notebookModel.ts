@@ -38,7 +38,6 @@ import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
 import { AddCellEdit, CellOutputEdit, ConvertCellTypeEdit, DeleteCellEdit, MoveCellEdit, CellOutputDataEdit, SplitCellEdit } from 'sql/workbench/services/notebook/browser/models/cellEdit';
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
 import { deepClone } from 'vs/base/common/objects';
-import { asArray } from 'vs/base/common/arrays';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -116,7 +115,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _connectionUrisToDispose: string[] = [];
 	private _textCellsLoading: number = 0;
 	private _standardKernels: notebookUtils.IStandardKernelWithProvider[] = [];
-	private _sqlKernelAliases: string[] = [];
+	private _kernelAliases: string[] = [];
 	private _currentKernelAlias: string | undefined;
 	private _selectedKernelDisplayName: string | undefined;
 	private _multiConnectionMode: boolean = false;
@@ -133,7 +132,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
 		@IConfigurationService private configurationService: IConfigurationService,
 		@IUndoRedoService private undoService: IUndoRedoService,
-		@ICapabilitiesService private _capabilitiesService?: ICapabilitiesService
+		@ICapabilitiesService private _capabilitiesService?: ICapabilitiesService,
 	) {
 		super();
 		if (!_notebookOptions || !_notebookOptions.notebookUri || !_notebookOptions.executeManagers) {
@@ -299,8 +298,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._providerId;
 	}
 
-	public get sqlKernelAliases(): string[] {
-		return this._sqlKernelAliases;
+	public get kernelAliases(): string[] {
+		return this._kernelAliases;
 	}
 
 	public get currentKernelAlias(): string | undefined {
@@ -1015,8 +1014,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			for (const server in providers) {
 				let alias = providers[server].connection.notebookKernelAlias;
 				// Add Notebook Kernel Alias to kernelAliases
-				if (alias && this._sqlKernelAliases.indexOf(alias) === -1) {
-					this._sqlKernelAliases.push(providers[server].connection.notebookKernelAlias);
+				if (alias && this._kernelAliases.indexOf(alias) === -1) {
+					this._kernelAliases.push(providers[server].connection.notebookKernelAlias);
 					this._kernelDisplayNameToConnectionProviderIds.set(alias, [providers[server].connection.providerId]);
 				}
 			}
@@ -1051,12 +1050,13 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 
 		// update default language
-		let languages = this._defaultKernel.language ? asArray(this._defaultKernel.language) : [this.defaultKernel.name];
-		this._defaultLanguageInfo = {
-			name: languages[0],
-			supportedLanguages: languages,
-			version: ''
-		};
+		if (!this._defaultLanguageInfo?.name) {
+			// update default language
+			this._defaultLanguageInfo = {
+				name: this._providerId === SQL_NOTEBOOK_PROVIDER ? 'sql' : 'python',
+				version: ''
+			};
+		}
 	}
 
 	private isValidConnection(profile: IConnectionProfile | connection.Connection) {
@@ -1170,7 +1170,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	public changeKernel(displayName: string): void {
 		this._selectedKernelDisplayName = displayName;
 		this._currentKernelAlias = this.context?.serverCapabilities?.notebookKernelAlias;
-		if (this._currentKernelAlias && this.sqlKernelAliases.includes(this._currentKernelAlias) && displayName === this._currentKernelAlias) {
+		if (this._currentKernelAlias && this.kernelAliases.includes(this._currentKernelAlias) && displayName === this._currentKernelAlias) {
 			this.doChangeKernel(displayName, true).catch(e => this.logService.error(e));
 		} else {
 			this._currentKernelAlias = undefined;
@@ -1186,7 +1186,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 		let oldDisplayName = this._activeClientSession && this._activeClientSession.kernel ? this._activeClientSession.kernel.name : undefined;
 		let nbKernelAlias: string | undefined;
-		if (this.sqlKernelAliases.includes(displayName)) {
+		if (this.kernelAliases.includes(displayName)) {
 			this._currentKernelAlias = displayName;
 			displayName = 'SQL';
 			nbKernelAlias = this._currentKernelAlias;
@@ -1237,7 +1237,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	private async updateKernelInfoOnKernelChange(kernel: nb.IKernel, kernelAlias?: string) {
 		await this.updateKernelInfo(kernel);
-		kernelAlias = this.sqlKernelAliases.find(kernelName => kernel.name === kernelName.toLowerCase()) ?? kernelAlias;
+		kernelAlias = this.kernelAliases.find(kernel => this._defaultLanguageInfo?.name === kernel.toLowerCase()) ?? kernelAlias;
 		// In order to change from kernel alias to other kernel, set kernelAlias to undefined in order to update to new kernel language info
 		if (this._selectedKernelDisplayName !== kernelAlias && this._selectedKernelDisplayName) {
 			kernelAlias = undefined;

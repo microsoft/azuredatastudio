@@ -821,9 +821,9 @@ suite('notebook model', function (): void {
 		await changeContextWithFakeConnectionProfile(model);
 
 		//Check to see if Alias is added to kernelAliases
-		assert(!isUndefinedOrNull(model.sqlKernelAliases));
+		assert(!isUndefinedOrNull(model.kernelAliases));
 		let expectedAlias = ['fakeAlias'];
-		let kernelAliases = model.sqlKernelAliases;
+		let kernelAliases = model.kernelAliases;
 
 		assert.strictEqual(kernelAliases.length, 1);
 		assert(kernelAliases.includes(expectedAlias[0]));
@@ -853,7 +853,7 @@ suite('notebook model', function (): void {
 		model.changeKernel(notebookKernelAlias);
 		assert.strictEqual(model.selectedKernelDisplayName, notebookKernelAlias);
 		assert.strictEqual(model.currentKernelAlias, notebookKernelAlias);
-		sinon.assert.calledWith(doChangeKernelStub, model.sqlKernelAliases[0]);
+		sinon.assert.calledWith(doChangeKernelStub, model.kernelAliases[0]);
 		doChangeKernelStub.restore();
 
 		// After closing the notebook
