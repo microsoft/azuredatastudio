@@ -646,8 +646,8 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 	}
 
 	// Table Designer
-	public $openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo): void {
-		this._tableDesignerService.openTableDesigner(providerId, tableInfo);
+	public $openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, serverInfo: azdata.ServerInfo): void {
+		this._tableDesignerService.openTableDesigner(providerId, tableInfo, serverInfo);
 	}
 
 	public $unregisterProvider(handle: number): Promise<any> {

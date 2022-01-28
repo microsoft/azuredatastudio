@@ -14,6 +14,8 @@ import { deepClone, equals } from 'vs/base/common/objects';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { TableDesignerPublishDialogResult, TableDesignerPublishDialog } from 'sql/workbench/services/tableDesigner/browser/tableDesignerPublishDialog';
+import { IAdsTelemetryService, ITelemetryEvent } from 'sql/platform/telemetry/common/telemetry';
+import { TelemetryAction, TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
 
 export class TableDesignerComponentInput implements DesignerComponentInput {
 
@@ -33,7 +35,9 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 
 	constructor(private readonly _provider: TableDesignerProvider,
 		private _tableInfo: azdata.designers.TableInfo,
+		private _serverInfo: azdata.ServerInfo,
 		@INotificationService private readonly _notificationService: INotificationService,
+		@IAdsTelemetryService readonly _adsTelemetryService: IAdsTelemetryService,
 		@IQueryEditorService private readonly _queryEditorService: IQueryEditorService,
 		@IInstantiationService private readonly _instantiationService: IInstantiationService) {
 	}
@@ -63,6 +67,8 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 	}
 
 	processEdit(edit: DesignerEdit): void {
+		const editEvent = this.createEditActionEvent(edit);
+		const startTime = new Date().getTime();
 		this.updateState(this.valid, this.dirty, 'processEdit');
 		this._provider.processTableEdit(this._tableInfo, edit).then(
 			result => {
@@ -76,10 +82,18 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 						errors: result.errors
 					}
 				});
+				editEvent.withAdditionalMeasurements({
+					'elapsedTime': new Date().getTime() - startTime
+				}).send();
 			},
 			error => {
 				this._notificationService.error(localize('tableDesigner.errorProcessingEdit', "An error occured while processing the change: {0}", error?.message ?? error));
 				this.updateState(this.valid, this.dirty);
+				this._adsTelemetryService.createErrorEvent(TelemetryView.TableDesigner, edit.type, error?.code, error?.message).withAdditionalProperties({
+					objectType: edit.path[0],
+					provider: this._provider.providerId,
+					isNewTable: this._tableInfo.isNewTable
+				}).withServerInfo(this._serverInfo).send();
 			}
 		);
 	}
@@ -90,16 +104,29 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			message: localize('tableDesigner.generatingScript', "Generating script..."),
 			sticky: true
 		});
+		const saveEvent = this._adsTelemetryService.createActionEvent(TelemetryView.TableDesigner, TelemetryAction.SaveTableDesigner).withAdditionalProperties({
+			provider: this._provider.providerId,
+			isNewTable: this._tableInfo.isNewTable,
+		}).withServerInfo(this._serverInfo);
+		const startTime = new Date().getTime();
 		try {
 			this.updateState(this.valid, this.dirty, 'generateScript');
 			const script = await this._provider.generateScript(this._tableInfo);
 			this._queryEditorService.newSqlEditor({ initalContent: script });
 			this.updateState(this.valid, this.dirty);
 			notificationHandle.updateMessage(localize('tableDesigner.generatingScriptCompleted', "Script generated."));
+			saveEvent.withAdditionalMeasurements({
+				'elapsedTime': new Date().getTime() - startTime
+			}).send();
 		} catch (error) {
 			notificationHandle.updateSeverity(Severity.Error);
 			notificationHandle.updateMessage(localize('tableDesigner.generateScriptError', "An error occured while generating the script: {0}", error?.message ?? error));
 			this.updateState(this.valid, this.dirty);
+			this._adsTelemetryService.createErrorEvent(TelemetryView.TableDesigner, TelemetryAction.SaveTableDesigner,
+				error?.code, error?.message).withAdditionalProperties({
+					provider: this._provider.providerId,
+					isNewTable: this._tableInfo.isNewTable,
+				}).withServerInfo(this._serverInfo).send();
 		}
 	}
 
@@ -579,5 +606,14 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		if (allProperties.indexOf(property) === -1) {
 			this._viewModel[property] = {};
 		}
+	}
+
+	private createEditActionEvent(edit: DesignerEdit): ITelemetryEvent {
+		const editAction = this._adsTelemetryService.createActionEvent(TelemetryView.TableDesigner, edit.type).withAdditionalProperties({
+			objectType: edit.path[0],
+			provider: this._provider.providerId,
+			isNewTable: this._tableInfo.isNewTable
+		}).withServerInfo(this._serverInfo);
+		return editAction;
 	}
 }

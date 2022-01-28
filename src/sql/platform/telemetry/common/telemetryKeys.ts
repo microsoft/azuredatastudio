@@ -52,6 +52,7 @@ export const enum TelemetryError {
 }
 
 export const enum TelemetryAction {
+	AddColumn = 'AddColumn',
 	AddServerGroup = 'AddServerGroup',
 	adsCommandExecuted = 'adsCommandExecuted',
 	ConnectToServer = 'ConnectToServer',
@@ -70,6 +71,7 @@ export const enum TelemetryAction {
 	ChartCreated = 'ChartCreated',
 	Click = 'Click',
 	FirewallRuleRequested = 'FirewallRuleCreated',
+	GenerateScript = 'GenerateScript',
 	GetDataGridItems = 'GetDataGridItems',
 	GetDataGridColumns = 'GetDataGridColumns',
 	ModelViewDashboardOpened = 'ModelViewDashboardOpened',
@@ -89,7 +91,8 @@ export const enum TelemetryAction {
 	StopAgentJob = 'StopAgentJob',
 	WizardPagesNavigation = 'WizardPagesNavigation',
 	SearchStarted = 'SearchStarted',
-	SearchCompleted = 'SearchCompleted'
+	SearchCompleted = 'SearchCompleted',
+	SaveTableDesigner = 'SaveTableDesigner'
 }
 
 export const enum NbTelemetryAction {

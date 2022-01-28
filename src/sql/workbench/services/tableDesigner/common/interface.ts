@@ -36,5 +36,5 @@ export interface ITableDesignerService {
 	 * @param providerId The provider id
 	 * @param tableInfo The table information
 	 */
-	openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo): Promise<void>;
+	openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, serverInfo: azdata.ServerInfo): Promise<void>;
 }

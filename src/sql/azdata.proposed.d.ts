@@ -1022,7 +1022,7 @@ declare module 'azdata' {
 		 * @param providerId The table designer provider Id.
 		 * @param tableInfo The table information. The object will be passed back to the table designer provider as the unique identifier for the table.
 		 */
-		export function openTableDesigner(providerId: string, tableInfo: TableInfo): Thenable<void>;
+		export function openTableDesigner(providerId: string, tableInfo: TableInfo, serverInfo: ServerInfo): Thenable<void>;
 
 		/**
 		 * Definition for the table designer provider.

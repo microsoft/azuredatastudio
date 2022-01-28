@@ -29,6 +29,8 @@ import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editor
 import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
 import { ITextEditorOptions } from 'vs/platform/editor/common/editor';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { TelemetryAction, TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
 
 class DesignerCodeEditor extends CodeEditorWidget {
 }
@@ -48,6 +50,7 @@ export class DesignerScriptEditor extends BaseTextEditor implements DesignerText
 	constructor(
 		private _container: HTMLElement,
 		@IModelService private _modelService: IModelService,
+		@IAdsTelemetryService private _adsTelemetryService: IAdsTelemetryService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IStorageService storageService: IStorageService,
@@ -110,9 +113,14 @@ export class DesignerScriptEditor extends BaseTextEditor implements DesignerText
 	}
 
 	set content(val: string) {
+		const scriptEvent = this._adsTelemetryService.createActionEvent(TelemetryView.TableDesigner, TelemetryAction.GenerateScript);
+		const startTime = new Date().getTime();
 		this._content = val;
 		this._modelService.updateModel(this._editorModel, this._content);
 		this._untitledTextEditorModel.setDirty(false);
 		this.layout(new DOM.Dimension(this._container.clientWidth, this._container.clientHeight));
+		scriptEvent.withAdditionalMeasurements({
+			'elapsedTime': new Date().getTime() - startTime
+		}).send();
 	}
 }
