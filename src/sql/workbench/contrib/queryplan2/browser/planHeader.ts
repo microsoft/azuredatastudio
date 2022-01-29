@@ -10,6 +10,7 @@ import { openNewQuery } from 'sql/workbench/contrib/query/browser/queryActions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { Button } from 'sql/base/browser/ui/button/button';
+import { removeLineBreaks } from 'sql/workbench/contrib/queryplan2/browser/utils';
 
 export class PlanHeader {
 
@@ -56,13 +57,13 @@ export class PlanHeader {
 		this.renderGraphIndexAndCost();
 	}
 	public set query(query: string) {
-		this._query = query.replace(/(\r\n|\n|\r)/gm, '');
+		this._query = removeLineBreaks(query);
 		this.renderQueryText();
 	}
 
 	public set recommendations(recommendations: azdata.ExecutionPlanRecommendations[]) {
 		recommendations.forEach(r => {
-			r.displayString = r.displayString.replace(/(\r\n|\n|\r)/gm, '');
+			r.displayString = removeLineBreaks(r.displayString);
 		});
 		this._recommendations = recommendations;
 		this.renderRecommendations();
