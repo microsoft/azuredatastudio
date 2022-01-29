@@ -33,6 +33,7 @@ import { IInsightOptions } from 'sql/workbench/common/editor/query/chartState';
 import { IPosition } from 'vs/editor/common/core/position';
 import { CellOutputEdit, CellOutputDataEdit } from 'sql/workbench/services/notebook/browser/models/cellEdit';
 import { ILogService } from 'vs/platform/log/common/log';
+import { IModeService } from 'vs/editor/common/services/modeService';
 
 let modelId = 0;
 const ads_execute_command = 'ads_execute_command';
@@ -96,7 +97,8 @@ export class CellModel extends Disposable implements ICellModel {
 		@optional(INotebookService) private _notebookService?: INotebookService,
 		@optional(ICommandService) private _commandService?: ICommandService,
 		@optional(IConfigurationService) private _configurationService?: IConfigurationService,
-		@optional(ILogService) private _logService?: ILogService
+		@optional(ILogService) private _logService?: ILogService,
+		@optional(IModeService) private _modeService?: IModeService
 	) {
 		super();
 		this.id = `${modelId++}`;
@@ -388,6 +390,19 @@ export class CellModel extends Disposable implements ICellModel {
 			return this._language;
 		}
 		return this._options.notebook.language;
+	}
+
+	public get displayLanguage(): string {
+		let result: string;
+		if (this._cellType === CellTypes.Markdown) {
+			result = 'Markdown';
+		} else if (this._modeService) {
+			let language = this._modeService.getLanguageName(this.language);
+			result = language ?? this.language;
+		} else {
+			result = this.language;
+		}
+		return result;
 	}
 
 	public get savedConnectionName(): string | undefined {

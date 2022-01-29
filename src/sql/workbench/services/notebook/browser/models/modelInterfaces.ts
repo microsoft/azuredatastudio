@@ -501,6 +501,7 @@ export interface ICellModel {
 	cellUri: URI;
 	id: string;
 	readonly language: string;
+	readonly displayLanguage: string;
 	readonly cellGuid: string;
 	source: string | string[];
 	cellType: CellType;
