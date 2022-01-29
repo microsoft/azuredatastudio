@@ -167,9 +167,8 @@ export class GraphElementPropertiesView {
 			this._operationName.innerText = nodeName ?? localize('queryPlanPropertiesEdgeOperationName', "Edge"); //since edges do not have names like node, we set the operation name to 'Edge'
 		}
 		this._tableContainer.scrollTo(0, 0);
-		this._data = [];
 		this._dataView.clear();
-		this.parseProperties(this._model.graphElement.properties, -1, 0);
+		this._data = this.convertPropertiesToTableRows(this._model.graphElement.properties, -1, 0);
 		this._dataView.push(this._data);
 		this._table.setData(this._dataView);
 		this._table.autosizeColumns();
@@ -178,21 +177,23 @@ export class GraphElementPropertiesView {
 		this._table.resizeCanvas();
 	}
 
-	private parseProperties(props: azdata.ExecutionPlanGraphElementProperty[], parentRow: number, indent: number) {
+	private convertPropertiesToTableRows(props: azdata.ExecutionPlanGraphElementProperty[], parentRow: number, indent: number): { [key: string]: string }[] {
+		let rows: { [key: string]: string }[] = [];
 		props.forEach((p, i) => {
 			if (!isString(p.value)) {
 				let row = {};
 				row['name'] = '\t'.repeat(indent) + p.name;
 				row['value'] = '';
-				this._data.push(row);
-				this.parseProperties(p.value, this._data.length - 1, indent + 2);
+				rows.push(row);
+				this.convertPropertiesToTableRows(p.value, this._data.length - 1, indent + 2);
 			} else {
 				let row = {};
 				row['name'] = '\t'.repeat(indent) + p.name;
 				row['value'] = p.value;
-				this._data.push(row);
+				rows.push(row);
 			}
 		});
+		return rows;
 	}
 
 	public toggleVisibility() {
