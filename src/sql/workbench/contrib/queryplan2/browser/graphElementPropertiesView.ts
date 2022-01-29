@@ -124,18 +124,16 @@ export class GraphElementPropertiesView {
 	}
 
 	public sortPropertiesAlphabetically(): void {
-		this._model.graphElement.properties = this._model.graphElement.properties.sort((a, b) => {
-			if (a.name < b.name) { return -1; }
-			if (a.name > b.name) { return 1; }
-			return 0;
-		});
+		this._model.graphElement.properties = this._model.graphElement.properties.sort((a, b) =>
+			a.name.localeCompare(b.name)
+		);
 		this.renderView();
 	}
 
 	public sortPropertiesByImportance(): void {
-		this._model.graphElement.properties = this._model.graphElement.properties.sort((a, b) => {
-			return a.displayOrder - b.displayOrder;
-		});
+		this._model.graphElement.properties = this._model.graphElement.properties.sort((a, b) =>
+			a.displayOrder - b.displayOrder
+		);
 		this.renderView();
 	}
 
