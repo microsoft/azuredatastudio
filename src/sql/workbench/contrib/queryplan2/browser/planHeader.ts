@@ -68,17 +68,17 @@ export class PlanHeader {
 		this.renderRecommendations();
 	}
 
-	private renderGraphIndexAndCost() {
+	private renderGraphIndexAndCost(): void {
 		if (this._graphIndex && this._relativeCost) {
 			this._graphIndexAndCostContainer.innerText = localize('planHeaderIndexAndCost', "Query {0}: Query cost (relative to the script): {1}%", this._graphIndex, this._relativeCost.toFixed(2));
 		}
 	}
 
-	private renderQueryText() {
+	private renderQueryText(): void {
 		this._queryContainer.innerText = this._query;
 	}
 
-	private renderRecommendations() {
+	private renderRecommendations(): void {
 		while (this._recommendationsContainer.firstChild) {
 			this._recommendationsContainer.removeChild(this._recommendationsContainer.firstChild);
 		}

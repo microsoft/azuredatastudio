@@ -123,7 +123,7 @@ export class GraphElementPropertiesView {
 		this.renderView();
 	}
 
-	public sortPropertiesAlphabetically() {
+	public sortPropertiesAlphabetically(): void {
 		this._model.graphElement.properties = this._model.graphElement.properties.sort((a, b) => {
 			if (a.name < b.name) { return -1; }
 			if (a.name > b.name) { return 1; }
@@ -132,7 +132,7 @@ export class GraphElementPropertiesView {
 		this.renderView();
 	}
 
-	public sortPropertiesByImportance() {
+	public sortPropertiesByImportance(): void {
 		this._model.graphElement.properties = this._model.graphElement.properties.sort((a, b) => {
 			return a.displayOrder - b.displayOrder;
 		});
@@ -161,7 +161,7 @@ export class GraphElementPropertiesView {
 		return this._tableWidth;
 	}
 
-	private renderView() {
+	private renderView(): void {
 		if (this._model.graphElement) {
 			const nodeName = (<azdata.ExecutionPlanNode>this._model.graphElement).name;
 			this._operationName.innerText = nodeName ?? localize('queryPlanPropertiesEdgeOperationName', "Edge"); //since edges do not have names like node, we set the operation name to 'Edge'
@@ -196,7 +196,7 @@ export class GraphElementPropertiesView {
 		return rows;
 	}
 
-	public toggleVisibility() {
+	public toggleVisibility(): void {
 		this._parentContainer.style.display = this._parentContainer.style.display === 'none' ? 'block' : 'none';
 		this.renderView();
 	}
