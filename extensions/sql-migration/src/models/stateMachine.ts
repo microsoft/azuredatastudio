@@ -74,6 +74,10 @@ export enum WizardEntryPoint {
 	RetryMigration = 'RetryMigration',
 }
 
+export enum PerformanceDataSourceOptions {
+	CollectData = 'CollectData',
+	OpenExisting = 'OpenExisting',
+}
 export interface DatabaseBackupModel {
 	migrationMode: MigrationMode;
 	networkContainerType: NetworkContainerType;
@@ -184,6 +188,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public _skuRecommendationResults!: SkuRecommendation;
 	private _skuRecommendationApiResponse!: mssql.SkuRecommendationResult;
+	public _skuRecommendationPerformanceLocation!: string;
+	public _skuRecommendationPerformanceDataSource!: PerformanceDataSourceOptions;
 
 	public _vmDbs: string[] = [];
 	public _miDbs: string[] = [];
