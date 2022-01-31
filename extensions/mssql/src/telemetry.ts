@@ -11,6 +11,7 @@ import * as Utils from './utils';
 import * as Constants from './constants';
 import * as nls from 'vscode-nls';
 import { ServerInfo } from 'azdata';
+import { TableType } from './mssql';
 
 const localize = nls.loadMessageBundle();
 const packageJson = require('../package.json');
@@ -127,6 +128,7 @@ export class Telemetry {
 		telemetryInfo['serverMajorVersion'] = serverInfo?.serverMajorVersion.toString();
 		telemetryInfo['serverMinorVersion'] = serverInfo?.serverMinorVersion.toString();
 		telemetryInfo['isCloud'] = serverInfo?.isCloud.toString();
+		telemetryInfo['tableType'] = TableType.Basic;
 		return telemetryInfo;
 	}
 }

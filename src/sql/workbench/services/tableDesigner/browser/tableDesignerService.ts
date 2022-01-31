@@ -49,7 +49,7 @@ export class TableDesignerService implements ITableDesignerService {
 			newTable: tableInfo.isNewTable
 		}).send();
 		const provider = this.getProvider(providerId);
-		const tableDesignerInput = this._instantiationService.createInstance(TableDesignerInput, provider, tableInfo, propertyBag);
+		const tableDesignerInput = this._instantiationService.createInstance(TableDesignerInput, provider, tableInfo, telemetryInfo);
 		await this._editorService.openEditor(tableDesignerInput, { pinned: true }, ACTIVE_GROUP);
 	}
 }

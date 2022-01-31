@@ -8,22 +8,20 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { sqlProviderName } from '../constants';
 import { generateUuid } from 'vscode-languageclient/lib/utils/uuid';
-import { Telemetry } from '../telemetry';
-import { TableType } from '../mssql';
+import { ITelemetryEventProperties, Telemetry } from '../telemetry';
 
 export function registerTableDesignerCommands(appContext: AppContext) {
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.newTable', async (context: azdata.ObjectExplorerContext) => {
 		const connectionString = await azdata.connection.getConnectionString(context.connectionProfile.id, true);
 		const serverInfo = await azdata.connection.getServerInfo(context.connectionProfile.id);
-		let telemetryInfo = {};
+		let telemetryInfo: ITelemetryEventProperties = {};
 		telemetryInfo = Telemetry.fillServerInfo(telemetryInfo, serverInfo);
 		await azdata.designers.openTableDesigner(sqlProviderName, {
 			server: context.connectionProfile.serverName,
 			database: context.connectionProfile.databaseName,
 			isNewTable: true,
 			id: generateUuid(),
-			connectionString: connectionString,
-			type: TableType.Basic
+			connectionString: connectionString
 		}, telemetryInfo);
 	}));
 
@@ -35,7 +33,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 		const connectionString = await azdata.connection.getConnectionString(context.connectionProfile.id, true);
 		const connectionUri = await azdata.connection.getUriForConnection(context.connectionProfile.id);
 		const serverInfo = await azdata.connection.getServerInfo(context.connectionProfile.id);
-		let telemetryInfo = {};
+		let telemetryInfo: ITelemetryEventProperties = {};
 		telemetryInfo = Telemetry.fillServerInfo(telemetryInfo, serverInfo);
 		await azdata.designers.openTableDesigner(sqlProviderName, {
 			server: server,
@@ -44,8 +42,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 			name: name,
 			schema: schema,
 			id: `${connectionUri}|${database}|${schema}|${name}`,
-			connectionString: connectionString,
-			type: TableType.Basic
+			connectionString: connectionString
 		}, telemetryInfo);
 	}));
 }
