@@ -899,7 +899,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 					doc = editor.document;
 				} else if (typeof uriOrType === 'string') {
 					let convertedContents = convertToADSNotebookContents(content);
-					doc = await extHostNotebookDocumentsAndEditors.createNotebookDocument(uriOrType, convertedContents);
+					doc = await extHostNotebookDocumentsAndEditors.openNotebookDocument(uriOrType, convertedContents);
 				} else {
 					throw new Error(invalidArgumentsError);
 				}

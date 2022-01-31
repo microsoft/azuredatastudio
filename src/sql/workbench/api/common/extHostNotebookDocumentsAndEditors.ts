@@ -290,8 +290,8 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 		});
 	}
 
-	createNotebookDocument(providerId: string, contents: azdata.nb.INotebookContents): Promise<azdata.nb.NotebookDocument> {
-		return this._proxy.$createNotebookDocument(providerId, contents);
+	openNotebookDocument(providerId: string, contents: azdata.nb.INotebookContents): Promise<azdata.nb.NotebookDocument> {
+		return this._proxy.$openNotebookDocument(providerId, contents);
 	}
 	//#endregion
 }
