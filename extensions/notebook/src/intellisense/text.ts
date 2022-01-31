@@ -45,8 +45,6 @@ export function jsIndexToCharIndex(jsIdx: number, text: string): number {
 /**
  * Get the diff between pure character count and JS-based count with 2 chars per surrogate pair.
  *
- * @param charIdx - The index in unicode characters
- *
  * @param text - The text in which the offset is calculated
  *
  * @returns The js-native index
