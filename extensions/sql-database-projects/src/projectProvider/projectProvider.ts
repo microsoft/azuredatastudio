@@ -65,12 +65,14 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	}
 
 	/**
-	 * Create a project
-	 * @param name name of the project
-	 * @param location the parent directory
-	 * @param projectTypeId the ID of the project/template
-	 * @returns Uri of the newly created project file
-	 */
+ * Create a project
+ *
+ * @param name name of the project
+ * @param location the parent directory
+ * @param projectTypeId the ID of the project/template
+ * @param targetPlatform
+ * @returns Uri of the newly created project file
+ */
 	async createProject(name: string, location: vscode.Uri, projectTypeId: string, targetPlatform?: sqldbproj.SqlTargetPlatform): Promise<vscode.Uri> {
 		const projectFile = await this.projectController.createNewProject({
 			newProjName: name,
@@ -83,8 +85,10 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	}
 
 	/**
-	 * Opens and loads a .sqlproj file
-	 */
+ * Opens and loads a .sqlproj file
+ *
+ * @param projectFilePath
+ */
 	openProject(projectFilePath: string): Promise<sqldbproj.ISqlProject> {
 		return Project.openProject(projectFilePath);
 	}
@@ -129,8 +133,10 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	}
 
 	/**
-	 * Gets the data to be displayed in the project dashboard
-	 */
+ * Gets the data to be displayed in the project dashboard
+ *
+ * @param projectFile
+ */
 	getDashboardComponents(projectFile: string): dataworkspace.IDashboardTable[] {
 		const width = 200;
 		const publishInfo: dataworkspace.IDashboardTable = {
@@ -189,8 +195,10 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	}
 
 	/**
-	 * Gets the Database Schema Provider version for a SQL project
-	 */
+ * Gets the Database Schema Provider version for a SQL project
+ *
+ * @param projectFilePath
+ */
 	async getProjectDatabaseSchemaProvider(projectFilePath: string): Promise<string> {
 		return await this.projectController.getProjectDatabaseSchemaProvider(projectFilePath);
 	}

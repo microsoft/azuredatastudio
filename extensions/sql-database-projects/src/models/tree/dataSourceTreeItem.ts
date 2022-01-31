@@ -77,6 +77,9 @@ export class SqlConnectionDataSourceTreeItem extends DataSourceTreeItem {
 
 /**
  * Constructs a new TreeItem for the specific given DataSource type
+ *
+ * @param dataSource
+ * @param dataSourcesNode
  */
 export function constructDataSourceTreeItem(dataSource: DataSource, dataSourcesNode: DataSourcesTreeItem): DataSourceTreeItem {
 	switch (dataSource.type) {

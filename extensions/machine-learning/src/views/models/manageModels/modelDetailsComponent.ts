@@ -23,8 +23,12 @@ export class ModelDetailsComponent extends ModelViewBase implements IDataCompone
 	private _frameworkComponent: azdata.Component | undefined;
 	private _frameworkVersionComponent: azdata.Component | undefined;
 	/**
-	 * Creates a new view
-	 */
+ * Creates a new view
+ *
+ * @param apiWrapper
+ * @param parent
+ * @param _model
+ */
 	constructor(apiWrapper: ApiWrapper, parent: ModelViewBase, private _model: ImportedModel) {
 		super(apiWrapper, parent.root, parent);
 	}

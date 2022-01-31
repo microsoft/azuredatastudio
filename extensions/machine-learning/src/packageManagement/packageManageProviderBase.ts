@@ -16,8 +16,10 @@ export enum ScriptMode {
 export abstract class SqlPackageManageProviderBase {
 
 	/**
-	 * Base class for all SQL package managers
-	 */
+ * Base class for all SQL package managers
+ *
+ * @param _apiWrapper
+ */
 	constructor(protected _apiWrapper: ApiWrapper) {
 	}
 
@@ -48,10 +50,12 @@ export abstract class SqlPackageManageProviderBase {
 	}
 
 	/**
-	 * Installs given packages
-	 * @param packages Packages to install
-	 * @param useMinVersion minimum version
-	 */
+ * Installs given packages
+ *
+ * @param packages Packages to install
+ * @param useMinVersion minimum version
+ * @param databaseName
+ */
 	public async installPackages(packages: nbExtensionApis.IPackageDetails[], useMinVersion: boolean, databaseName: string): Promise<void> {
 
 		if (packages) {
@@ -74,9 +78,11 @@ export abstract class SqlPackageManageProviderBase {
 	}
 
 	/**
-	 * Uninstalls given packages
-	 * @param packages Packages to uninstall
-	 */
+ * Uninstalls given packages
+ *
+ * @param packages Packages to uninstall
+ * @param databaseName
+ */
 	public async uninstallPackages(packages: nbExtensionApis.IPackageDetails[], databaseName: string): Promise<void> {
 		let allPackages = await this.listPackages(databaseName);
 
@@ -105,8 +111,10 @@ export abstract class SqlPackageManageProviderBase {
 	}
 
 	/**
-	 * Returns list of packages
-	 */
+ * Returns list of packages
+ *
+ * @param databaseName
+ */
 	public async listPackages(databaseName: string): Promise<nbExtensionApis.IPackageDetails[]> {
 		let packages = await this.fetchPackages(databaseName);
 		if (packages) {

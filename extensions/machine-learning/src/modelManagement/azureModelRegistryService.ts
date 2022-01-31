@@ -32,8 +32,13 @@ export class AzureModelRegistryService {
 	private _amlClient: AzureMachineLearningWorkspaces | undefined;
 	private _modelClient: WorkspaceModels | undefined;
 	/**
-	 * Creates new service
-	 */
+ * Creates new service
+ *
+ * @param _apiWrapper
+ * @param _config
+ * @param _httpClient
+ * @param _outputChannel
+ */
 	constructor(
 		private _apiWrapper: ApiWrapper,
 		private _config: Config,
@@ -140,8 +145,10 @@ export class AzureModelRegistryService {
 	}
 
 	/**
-	 * Execute the background task to download the artifact
-	 */
+ * Execute the background task to download the artifact
+ *
+ * @param downloadUrl
+ */
 	private async execDownloadArtifactTask(downloadUrl: string): Promise<string> {
 		let results = await utils.executeTasks(this._apiWrapper, constants.downloadModelMsgTaskName, [this.downloadArtifact(downloadUrl)], true);
 		return results && results.length > 0 ? results[0] : constants.noResultError;

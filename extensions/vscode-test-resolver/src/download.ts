@@ -69,6 +69,11 @@ async function downloadVSCodeServerArchive(updateUrl: string, commit: string, qu
 
 /**
  * Unzip a .zip or .tar.gz VS Code archive
+ *
+ * @param vscodeArchivePath
+ * @param extractDir
+ * @param destDir
+ * @param log
  */
 function unzipVSCodeServer(vscodeArchivePath: string, extractDir: string, destDir: string, log: (messsage: string) => void) {
 	log(`Extracting ${vscodeArchivePath}`);

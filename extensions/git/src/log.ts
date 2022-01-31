@@ -30,8 +30,10 @@ export const Log = {
 	},
 
 	/**
-	 * Current logging level.
-	 */
+ * Current logging level.
+ *
+ * @param logLevel
+ */
 	set logLevel(logLevel: LogLevel) {
 		if (_logLevel === logLevel) {
 			return;

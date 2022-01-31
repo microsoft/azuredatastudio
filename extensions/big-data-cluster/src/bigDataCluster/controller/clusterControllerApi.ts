@@ -377,6 +377,8 @@ export class ClusterController implements IClusterController {
 
 /**
  * Fixes missing protocol and wrong character for port entered by user
+ *
+ * @param url
  */
 function adjustUrl(url: string): string {
 	if (!url) {

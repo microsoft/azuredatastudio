@@ -26,6 +26,8 @@ export interface ITelemetryEventMeasures {
 
 /**
  * Filters error paths to only include source files. Exported to support testing
+ *
+ * @param line
  */
 export function FilterErrorPath(line: string): string | undefined {
 	if (line) {
@@ -68,8 +70,12 @@ export class Telemetry {
 	}
 
 	/**
-	 * Send a telemetry event for an exception
-	 */
+ * Send a telemetry event for an exception
+ *
+ * @param err
+ * @param methodName
+ * @param _extensionConfigName
+ */
 	public static sendTelemetryEventForException(
 		err: any, methodName: string, _extensionConfigName: string): void {
 		let stackArray: string[];
@@ -87,8 +93,12 @@ export class Telemetry {
 	}
 
 	/**
-	 * Send a telemetry event using application insights
-	 */
+ * Send a telemetry event using application insights
+ *
+ * @param eventName
+ * @param properties
+ * @param measures
+ */
 	public static sendTelemetryEvent(
 		eventName: string,
 		properties?: ITelemetryEventProperties,
@@ -138,10 +148,13 @@ export class LanguageClientErrorHandler implements ErrorHandler {
 	}
 
 	/**
-	 * Callback for language service client error
-	 *
-	 * @memberOf LanguageClientErrorHandler
-	 */
+ * Callback for language service client error
+ *
+ * @memberOf LanguageClientErrorHandler
+ * @param _error
+ * @param _message
+ * @param _count
+ */
 	error(_error: Error, _message: Message, _count: number): ErrorAction {
 		this.showOnErrorPrompt();
 

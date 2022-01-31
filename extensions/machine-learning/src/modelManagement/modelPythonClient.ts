@@ -21,8 +21,14 @@ import { ModelParameters } from './interfaces';
 export class ModelPythonClient {
 
 	/**
-	 * Creates new instance
-	 */
+ * Creates new instance
+ *
+ * @param _outputChannel
+ * @param _apiWrapper
+ * @param _processService
+ * @param _config
+ * @param _packageManager
+ */
 	constructor(private _outputChannel: vscode.OutputChannel, private _apiWrapper: ApiWrapper, private _processService: ProcessService, private _config: Config, private _packageManager: PackageManager) {
 	}
 

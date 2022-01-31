@@ -20,8 +20,12 @@ export class LanguageContentView extends LanguageViewBase {
 	private _isLocalPath: boolean = true;
 
 	/**
-	 *
-	 */
+ * @param apiWrapper
+ * @param parent
+ * @param _modelBuilder
+ * @param _formBuilder
+ * @param _languageContent
+ */
 	constructor(
 		apiWrapper: ApiWrapper,
 		parent: LanguageViewBase,

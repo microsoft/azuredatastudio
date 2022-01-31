@@ -14,8 +14,10 @@ export class LanguagesTable extends LanguageViewBase {
 	private _table: azdata.DeclarativeTableComponent;
 
 	/**
-	 *
-	 */
+ * @param apiWrapper
+ * @param _modelBuilder
+ * @param parent
+ */
 	constructor(apiWrapper: ApiWrapper, private _modelBuilder: azdata.ModelBuilder, parent: LanguageViewBase) {
 		super(apiWrapper, parent.root, parent);
 		this._table = _modelBuilder.declarativeTable()

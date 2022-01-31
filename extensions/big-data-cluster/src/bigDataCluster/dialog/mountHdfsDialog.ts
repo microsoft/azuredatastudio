@@ -11,7 +11,9 @@ import * as loc from '../localizedConstants';
 
 /**
  * Converts a comma-delimited set of key value pair credentials to a JSON object.
- * This code is taken from the azdata implementation written in Python
+* This code is taken from the azdata implementation written in Python
+ *
+ * @param creds
  */
 function convertCredsToJson(creds: string): { credentials: {} } {
 	if (!creds) {

@@ -123,9 +123,11 @@ export class HdfsModel {
 	}
 
 	/**
-	 * Applies the current set of Permissions/ACLs to the specified path
-	 * @param path The path to apply the changes to
-	 */
+ * Applies the current set of Permissions/ACLs to the specified path
+ *
+ * @param path The path to apply the changes to
+ * @param fileType
+ */
 	private async applyAclChanges(path: string, fileType: FileType | undefined): Promise<any> {
 		// HDFS won't remove existing default ACLs even if you call setAcl with no default ACLs specified. You
 		// need to call removeDefaultAcl specifically to remove them.

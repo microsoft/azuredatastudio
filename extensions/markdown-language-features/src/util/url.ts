@@ -7,8 +7,11 @@ import * as vscode from 'vscode';
 
 /**
  * Tries to convert an url into a vscode uri and returns undefined if this is not possible.
- * `url` can be absolute or relative.
-*/
+* `url` can be absolute or relative.
+ *
+ * @param url
+ * @param base
+ */
 export function urlToUri(url: string, base: vscode.Uri): vscode.Uri | undefined {
 	try {
 		// `vscode.Uri.joinPath` cannot be used, since it understands

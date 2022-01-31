@@ -420,7 +420,9 @@ export function getDropdownValue(dropdown: azdata.DropDownComponent): string {
 
 /**
  * Creates a random token per https://nodejs.org/api/crypto.html#crypto_crypto_randombytes_size_callback.
- * Defaults to 24 bytes, which creates a 48-char hex string
+* Defaults to 24 bytes, which creates a 48-char hex string
+ *
+ * @param size
  */
 export async function getRandomToken(size: number = 24): Promise<string> {
 	return new Promise((resolve, reject) => {

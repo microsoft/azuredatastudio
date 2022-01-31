@@ -34,8 +34,14 @@ import { EditModelDialog } from './manageModels/editModelDialog';
 export class ModelManagementController extends ControllerBase {
 
 	/**
-	 * Creates new instance
-	 */
+ * Creates new instance
+ *
+ * @param apiWrapper
+ * @param _root
+ * @param _amlService
+ * @param _deployedModelService
+ * @param _predictService
+ */
 	constructor(
 		apiWrapper: ApiWrapper,
 		private _root: string,
@@ -74,8 +80,14 @@ export class ModelManagementController extends ControllerBase {
 	}
 
 	/**
-	 * Opens the dialog to edit model
-	 */
+ * Opens the dialog to edit model
+ *
+ * @param model
+ * @param parent
+ * @param controller
+ * @param apiWrapper
+ * @param root
+ */
 	public async editModel(model: ImportedModel, parent?: ModelViewBase, controller?: ModelManagementController, apiWrapper?: ApiWrapper, root?: string): Promise<ModelViewBase> {
 		controller = controller || this;
 		apiWrapper = apiWrapper || this._apiWrapper;
@@ -92,8 +104,14 @@ export class ModelManagementController extends ControllerBase {
 	}
 
 	/**
-	 * Opens the wizard for prediction
-	 */
+ * Opens the wizard for prediction
+ *
+ * @param models
+ * @param parent
+ * @param controller
+ * @param apiWrapper
+ * @param root
+ */
 	public async predictModel(models?: ImportedModel[] | undefined, parent?: ModelViewBase, controller?: ModelManagementController, apiWrapper?: ApiWrapper, root?: string): Promise<ModelViewBase | undefined> {
 
 		controller = controller || this;
@@ -238,8 +256,10 @@ export class ModelManagementController extends ControllerBase {
 	}
 
 	/**
-	 * Opens the dialog for model management
-	 */
+ * Opens the dialog for model management
+ *
+ * @param importTable
+ */
 	public async manageRegisteredModels(importTable?: DatabaseTable): Promise<ModelViewBase> {
 		let view = new ManageModelsDialog(this._apiWrapper, this._root);
 

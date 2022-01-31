@@ -13,8 +13,11 @@ import * as nbExtensionApis from '../typings/notebookServices';
 export class PackageManagementService {
 
 	/**
-	 * Creates a new instance of ServerConfigManager
-	 */
+ * Creates a new instance of ServerConfigManager
+ *
+ * @param _apiWrapper
+ * @param _queryRunner
+ */
 	constructor(
 		private _apiWrapper: ApiWrapper,
 		private _queryRunner: QueryRunner,
@@ -22,22 +25,28 @@ export class PackageManagementService {
 	}
 
 	/**
-	 * Returns true if mls is installed in the give SQL server instance
-	 */
+ * Returns true if mls is installed in the give SQL server instance
+ *
+ * @param connection
+ */
 	public async isMachineLearningServiceEnabled(connection: azdata.connection.ConnectionProfile): Promise<boolean> {
 		return this._queryRunner.isMachineLearningServiceEnabled(connection);
 	}
 
 	/**
-	 * Returns true if R installed in the give SQL server instance
-	 */
+ * Returns true if R installed in the give SQL server instance
+ *
+ * @param connection
+ */
 	public async isRInstalled(connection: azdata.connection.ConnectionProfile): Promise<boolean> {
 		return this._queryRunner.isRInstalled(connection);
 	}
 
 	/**
-	 * Returns true if python installed in the give SQL server instance
-	 */
+ * Returns true if python installed in the give SQL server instance
+ *
+ * @param connection
+ */
 	public async isPythonInstalled(connection: azdata.connection.ConnectionProfile): Promise<boolean> {
 		return this._queryRunner.isPythonInstalled(connection);
 	}
@@ -70,17 +79,21 @@ export class PackageManagementService {
 	}
 
 	/**
-	 * Returns python packages installed in SQL server instance
-	 * @param connection SQL Connection
-	 */
+ * Returns python packages installed in SQL server instance
+ *
+ * @param connection SQL Connection
+ * @param databaseName
+ */
 	public async getPythonPackages(connection: azdata.connection.ConnectionProfile, databaseName: string): Promise<nbExtensionApis.IPackageDetails[]> {
 		return this._queryRunner.getPythonPackages(connection, databaseName);
 	}
 
 	/**
-	 * Returns python packages installed in SQL server instance
-	 * @param connection SQL Connection
-	 */
+ * Returns python packages installed in SQL server instance
+ *
+ * @param connection SQL Connection
+ * @param databaseName
+ */
 	public async getRPackages(connection: azdata.connection.ConnectionProfile, databaseName: string): Promise<nbExtensionApis.IPackageDetails[]> {
 		return this._queryRunner.getRPackages(connection, databaseName);
 	}

@@ -45,8 +45,12 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 	public readonly onSelectedChanged: vscode.Event<void> = this._onSelectedChanged.event;
 
 	/**
-	 * Creates a new view
-	 */
+ * Creates a new view
+ *
+ * @param apiWrapper
+ * @param parent
+ * @param _settings
+ */
 	constructor(apiWrapper: ApiWrapper, parent: ModelViewBase, private _settings: ITableSelectionSettings) {
 		super(apiWrapper, parent.root, parent);
 	}

@@ -23,8 +23,13 @@ export class AzureModelsTable extends ModelViewBase implements IDataComponent<Wo
 	public readonly onModelSelectionChanged: vscode.Event<void> = this._onModelSelectionChanged.event;
 
 	/**
-	 * Creates a view to render azure models in a table
-	 */
+ * Creates a view to render azure models in a table
+ *
+ * @param apiWrapper
+ * @param _modelBuilder
+ * @param parent
+ * @param _multiSelect
+ */
 	constructor(apiWrapper: ApiWrapper, private _modelBuilder: azdata.ModelBuilder, parent: ModelViewBase, private _multiSelect: boolean = true) {
 		super(apiWrapper, parent.root, parent);
 		this._table = this.registerComponent(this._modelBuilder);

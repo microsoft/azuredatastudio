@@ -18,8 +18,10 @@ export class AzToolService {
 	}
 
 	/**
-	* Sets the localAz object to be used for az operations
-	*/
+ * Sets the localAz object to be used for az operations
+ *
+ * @param az
+ */
 	set localAz(az: IAzTool | undefined) {
 		this._localAz = az;
 	}

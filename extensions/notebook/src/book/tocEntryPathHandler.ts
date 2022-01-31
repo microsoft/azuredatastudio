@@ -12,9 +12,13 @@ export class TocEntryPathHandler {
 	public readonly fileExtension: FileExtension;
 
 	/**
-	 * Creates an object that contains the specific format for title and file entries in a Jupyter Book table of contents
-	 * that is compatible on Windows and Mac.
-	*/
+ * Creates an object that contains the specific format for title and file entries in a Jupyter Book table of contents
+* that is compatible on Windows and Mac.
+ *
+ * @param filePath
+ * @param bookRoot
+ * @param title
+ */
 	constructor(public readonly filePath: string, public readonly bookRoot: string, title?: string) {
 		//To keep consistency how the file entries are in Jupyter Book toc on Windows and Mac.
 		const tocRelativePath = path.posix.join(path.posix.sep, path.posix.relative(bookRoot, filePath));

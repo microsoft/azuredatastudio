@@ -15,6 +15,8 @@ import * as fse from 'fs-extra';
 
 /**
  * Create flow for Deploying a database using only VS Code-native APIs such as QuickPick
+ *
+ * @param project
  */
 export async function launchDeployAppIntegrationQuickpick(project: Project): Promise<IDeployAppIntegrationProfile | undefined> {
 	let envVarName: string | undefined = '';
@@ -116,6 +118,8 @@ async function launchEulaQuickPick(baseImage: string): Promise<boolean> {
 
 /**
  * Create flow for publishing a database to docker container using only VS Code-native APIs such as QuickPick
+ *
+ * @param project
  */
 export async function launchPublishToDockerContainerQuickpick(project: Project): Promise<IDeployProfile | undefined> {
 

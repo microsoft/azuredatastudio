@@ -25,8 +25,15 @@ export class SqlRPackageManageProvider extends SqlPackageManageProviderBase impl
 	public static ProviderId = 'sql_R';
 
 	/**
-	 * Creates new a instance
-	 */
+ * Creates new a instance
+ *
+ * @param _outputChannel
+ * @param apiWrapper
+ * @param _service
+ * @param _processService
+ * @param _config
+ * @param _httpClient
+ */
 	constructor(
 		private _outputChannel: vscode.OutputChannel,
 		apiWrapper: ApiWrapper,
@@ -52,8 +59,10 @@ export class SqlRPackageManageProvider extends SqlPackageManageProviderBase impl
 	}
 
 	/**
-	 * Returns list of packages
-	 */
+ * Returns list of packages
+ *
+ * @param databaseName
+ */
 	protected async fetchPackages(databaseName: string): Promise<nbExtensionApis.IPackageDetails[]> {
 		return await this._service.getRPackages(await this.getCurrentConnection(), databaseName);
 	}

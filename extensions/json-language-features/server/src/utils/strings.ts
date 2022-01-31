@@ -5,6 +5,9 @@
 
 /**
  * Determines if haystack ends with needle.
+ *
+ * @param haystack
+ * @param needle
  */
 export function endsWith(haystack: string, needle: string): boolean {
 	let diff = haystack.length - needle.length;

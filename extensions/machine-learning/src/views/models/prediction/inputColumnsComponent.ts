@@ -25,8 +25,11 @@ export class InputColumnsComponent extends ModelViewBase implements IDataCompone
 	private _tableLoadingPromise: Promise<void> | undefined;
 
 	/**
-	 * Creates a new view
-	 */
+ * Creates a new view
+ *
+ * @param apiWrapper
+ * @param parent
+ */
 	constructor(apiWrapper: ApiWrapper, parent: ModelViewBase) {
 		super(apiWrapper, parent.root, parent);
 	}

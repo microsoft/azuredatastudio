@@ -20,8 +20,13 @@ export class ShellExecutionHelper {
 	}
 
 	/**
-	 * spawns the shell command with arguments and redirects the error and output to ADS output channel
-	 */
+ * spawns the shell command with arguments and redirects the error and output to ADS output channel
+ *
+ * @param command
+ * @param options
+ * @param sensitiveData
+ * @param timeout
+ */
 	public async runStreamedCommand(command: string, options?: ShellCommandOptions, sensitiveData: string[] = [], timeout: number = 5 * 60 * 1000): Promise<string> {
 		const stdoutData: string[] = [];
 

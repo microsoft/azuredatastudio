@@ -11,8 +11,11 @@ import * as utils from '../../../common/utils';
 export class ModelArtifact {
 
 	/**
-	 * Creates new model artifact
-	 */
+ * Creates new model artifact
+ *
+ * @param _filePath
+ * @param _deleteAtClose
+ */
 	constructor(private _filePath: string, private _deleteAtClose: boolean = true) {
 	}
 

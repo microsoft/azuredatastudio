@@ -29,6 +29,8 @@ export class NoDataSourcesFileError extends Error {
 
 /**
  * parses the specified file to load DataSource objects
+ *
+ * @param dataSourcesFilePath
  */
 export async function load(dataSourcesFilePath: string): Promise<DataSource[]> {
 	let fileContents;

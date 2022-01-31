@@ -279,8 +279,11 @@ export class ResourceTypeService implements IResourceTypeService {
 	}
 
 	/**
-	 * Get the provider based on the selected options
-	 */
+ * Get the provider based on the selected options
+ *
+ * @param resourceType
+ * @param selectedOptions
+ */
 	private getProvider(resourceType: ResourceType, selectedOptions: { option: string, value: string }[]): DeploymentProvider | undefined {
 		for (let i = 0; i < resourceType.providers.length; i++) {
 			const provider = resourceType.providers[i];
@@ -292,8 +295,11 @@ export class ResourceTypeService implements IResourceTypeService {
 	}
 
 	/**
-	 * Get the ok button text based on the selected options
-	 */
+ * Get the ok button text based on the selected options
+ *
+ * @param resourceType
+ * @param selectedOptions
+ */
 	private getOkButtonText(resourceType: ResourceType, selectedOptions: { option: string, value: string }[]): string | undefined {
 		if (resourceType.okButtonText) {
 			for (const possibleOption of resourceType.okButtonText) {
@@ -394,11 +400,14 @@ async function exists(path: string): Promise<boolean> {
 
 /**
  * processWhenClause takes in a when clause (either the word 'true' or a series of clauses in the format:
- * '<type_name>=<value_name>' joined by '&&').
- * If the when clause is true or undefined, return true as there is no clause to check.
- * It evaluates each individual when clause by comparing the equivalent selected options (sorted in alphabetical order and formatted to match).
- * If there is any selected option that doesn't match, return false.
- * Return true if all clauses match.
+* '<type_name>=<value_name>' joined by '&&').
+* If the when clause is true or undefined, return true as there is no clause to check.
+* It evaluates each individual when clause by comparing the equivalent selected options (sorted in alphabetical order and formatted to match).
+* If there is any selected option that doesn't match, return false.
+* Return true if all clauses match.
+ *
+ * @param when
+ * @param selectedOptions
  */
 export function processWhenClause(when: string | undefined, selectedOptions: { option: string, value: string }[]): boolean {
 	if (when === undefined || when.toString().toLowerCase() === 'true') {

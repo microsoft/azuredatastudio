@@ -494,8 +494,10 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	}
 
 	/**
-	 * Opens a dialog for configuring the installation path for the Notebook Python dependencies.
-	 */
+ * Opens a dialog for configuring the installation path for the Notebook Python dependencies.
+ *
+ * @param kernelDisplayName
+ */
 	public async promptForPythonInstall(kernelDisplayName: string): Promise<void> {
 		if (this._runningOnSAW) {
 			return Promise.resolve();

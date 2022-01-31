@@ -15,8 +15,10 @@ import * as constants from '../../common/constants';
 export class LanguageController {
 
 	/**
-	 *
-	 */
+ * @param _apiWrapper
+ * @param _root
+ * @param _service
+ */
 	constructor(
 		private _apiWrapper: ApiWrapper,
 		private _root: string,

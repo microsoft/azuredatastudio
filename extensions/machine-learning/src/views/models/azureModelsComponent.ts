@@ -26,8 +26,12 @@ export class AzureModelsComponent extends ModelViewBase implements IDataComponen
 	private _emptyModelsComponent: DataInfoComponent | undefined;
 
 	/**
-	 * Component to render a view to pick an azure model
-	 */
+ * Component to render a view to pick an azure model
+ *
+ * @param apiWrapper
+ * @param parent
+ * @param _multiSelect
+ */
 	constructor(apiWrapper: ApiWrapper, parent: ModelViewBase, private _multiSelect: boolean = true) {
 		super(apiWrapper, parent.root, parent);
 	}

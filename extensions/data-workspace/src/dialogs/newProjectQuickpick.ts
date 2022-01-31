@@ -12,6 +12,8 @@ import { WorkspaceService } from '../services/workspaceService';
 
 /**
  * Create flow for a New Project using only VS Code-native APIs such as QuickPick
+ *
+ * @param workspaceService
  */
 export async function createNewProjectWithQuickpick(workspaceService: WorkspaceService): Promise<void> {
 	// Refresh list of project types

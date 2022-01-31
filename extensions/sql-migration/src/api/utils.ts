@@ -67,7 +67,10 @@ export function getPackageInfo(packageJson: any): IPackageInfo | undefined {
 
 /**
  * Generates a wordy time difference between start and end time.
+ *
  * @returns stringified duration like '10.0 days', '12.0 hrs', '1.0 min'
+ * @param startTime
+ * @param endTime
  */
 export function convertTimeDifferenceToDuration(startTime: Date, endTime: Date): string {
 	const time = endTime.getTime() - startTime.getTime();

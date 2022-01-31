@@ -15,8 +15,10 @@ export class DialogView extends MainViewBase {
 	private _dialog: azdata.window.Dialog | undefined;
 
 	/**
-	 * Creates new instance
-	 */
+ * Creates new instance
+ *
+ * @param apiWrapper
+ */
 	constructor(apiWrapper: ApiWrapper) {
 		super(apiWrapper);
 	}

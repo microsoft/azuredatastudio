@@ -101,8 +101,10 @@ export class Project implements ISqlProject {
 	}
 
 	/**
-	 * Open and load a .sqlproj file
-	 */
+ * Open and load a .sqlproj file
+ *
+ * @param projectFilePath
+ */
 	public static async openProject(projectFilePath: string): Promise<Project> {
 		const proj = new Project(projectFilePath);
 		await proj.readProjFile();
@@ -776,8 +778,10 @@ export class Project implements ISqlProject {
 	}
 
 	/**
-	 * Adds reference to the appropriate system database dacpac to the project
-	 */
+ * Adds reference to the appropriate system database dacpac to the project
+ *
+ * @param settings
+ */
 	public async addSystemDatabaseReference(settings: ISystemDatabaseReferenceSettings): Promise<void> {
 		let uri: Uri;
 		let ssdtUri: Uri;
@@ -862,8 +866,10 @@ export class Project implements ISqlProject {
 	}
 
 	/**
-	 * Adds reference to a dacpac to the project
-	 */
+ * Adds reference to a dacpac to the project
+ *
+ * @param settings
+ */
 	public async addDatabaseReference(settings: IDacpacReferenceSettings): Promise<void> {
 		const databaseReferenceEntry = new DacpacReferenceProjectEntry(settings);
 
@@ -876,8 +882,10 @@ export class Project implements ISqlProject {
 	}
 
 	/**
-	 * Adds reference to a another project in the workspace
-	 */
+ * Adds reference to a another project in the workspace
+ *
+ * @param settings
+ */
 	public async addProjectReference(settings: IProjectReferenceSettings): Promise<void> {
 		const projectReferenceEntry = new SqlProjectReferenceProjectEntry(settings);
 

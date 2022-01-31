@@ -36,25 +36,31 @@ export class LocalPipPackageManageProvider implements IPackageManageProvider {
 	}
 
 	/**
-	 * Returns list of packages
-	 */
+ * Returns list of packages
+ *
+ * @param location
+ */
 	public async listPackages(location?: string): Promise<IPackageDetails[]> {
 		return await this.jupyterInstallation.getInstalledPipPackages();
 	}
 
 	/**
-	 * Installs given packages
-	 * @param packages Packages to install
-	 * @param useMinVersion minimum version
-	 */
+ * Installs given packages
+ *
+ * @param packages Packages to install
+ * @param useMinVersion minimum version
+ * @param location
+ */
 	installPackages(packages: IPackageDetails[], useMinVersion: boolean, location?: string): Promise<void> {
 		return this.jupyterInstallation.installPipPackages(packages, useMinVersion);
 	}
 
 	/**
-	 * Uninstalls given packages
-	 * @param packages Packages to uninstall
-	 */
+ * Uninstalls given packages
+ *
+ * @param packages Packages to uninstall
+ * @param location
+ */
 	uninstallPackages(packages: IPackageDetails[], location?: string): Promise<void> {
 		return this.jupyterInstallation.uninstallPipPackages(packages);
 	}

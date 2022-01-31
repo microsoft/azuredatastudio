@@ -131,9 +131,11 @@ describe('az', function () {
 		});
 
 		/**
-		 * Verifies that the specified args were included in the call to executeCommand
-		 * @param args The args to check were included in the execute command call
-		 */
+ * Verifies that the specified args were included in the call to executeCommand
+ *
+ * @param args The args to check were included in the execute command call
+ * @param callIndex
+ */
 		function verifyExecuteCommandCalledWithArgs(args: string[], callIndex = 0): void {
 			const commandArgs = executeCommandStub.args[callIndex][1] as string[];
 			args.forEach(arg => should(commandArgs).containEql(arg));

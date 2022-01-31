@@ -23,8 +23,11 @@ export class OutputColumnsComponent extends ModelViewBase implements IDataCompon
 	private _modelParameters: ModelParameters | undefined;
 
 	/**
-	 * Creates a new view
-	 */
+ * Creates a new view
+ *
+ * @param apiWrapper
+ * @param parent
+ */
 	constructor(apiWrapper: ApiWrapper, parent: ModelViewBase) {
 		super(apiWrapper, parent.root, parent);
 	}

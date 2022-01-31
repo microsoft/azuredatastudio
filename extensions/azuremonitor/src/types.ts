@@ -6,6 +6,7 @@
 
 /**
  * @returns whether the provided parameter is undefined or null.
+ * @param obj
  */
 export function isUndefinedOrNull(obj: any): boolean {
 	// Intentional ==

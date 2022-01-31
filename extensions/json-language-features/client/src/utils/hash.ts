@@ -5,6 +5,9 @@
 
 /**
  * Return a hash value for an object.
+ *
+ * @param obj
+ * @param hashVal
  */
 export function hash(obj: any, hashVal = 0): number {
 	switch (typeof obj) {

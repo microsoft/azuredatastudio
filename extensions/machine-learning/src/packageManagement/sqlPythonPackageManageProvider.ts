@@ -22,8 +22,15 @@ export class SqlPythonPackageManageProvider extends SqlPackageManageProviderBase
 	public static ProviderId = 'sql_Python';
 
 	/**
-	 * Creates new a instance
-	 */
+ * Creates new a instance
+ *
+ * @param _outputChannel
+ * @param apiWrapper
+ * @param _service
+ * @param _processService
+ * @param _config
+ * @param _httpClient
+ */
 	constructor(
 		private _outputChannel: vscode.OutputChannel,
 		apiWrapper: ApiWrapper,
@@ -49,8 +56,10 @@ export class SqlPythonPackageManageProvider extends SqlPackageManageProviderBase
 	}
 
 	/**
-	 * Returns list of packages
-	 */
+ * Returns list of packages
+ *
+ * @param databaseName
+ */
 	protected async fetchPackages(databaseName: string): Promise<nbExtensionApis.IPackageDetails[]> {
 		return await this._service.getPythonPackages(await this.getCurrentConnection(), databaseName);
 	}

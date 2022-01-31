@@ -67,11 +67,13 @@ export class WebHDFS {
 	}
 
 	/**
-	 * Generate WebHDFS REST API endpoint URL for given operation
-	 *
-	 * @param operation WebHDFS operation name
-	 * @returns WebHDFS REST API endpoint URL
-	 */
+ * Generate WebHDFS REST API endpoint URL for given operation
+ *
+ * @param operation WebHDFS operation name
+ * @param path
+ * @param params
+ * @returns WebHDFS REST API endpoint URL
+ */
 	private getOperationEndpoint(operation: string, path: string, params?: object): string {
 		let endpoint = this._url;
 		endpoint.pathname = encodeURI(this._opts.path + path);
@@ -207,13 +209,14 @@ export class WebHDFS {
 	}
 
 	/**
-	 * Send a request to WebHDFS REST API
-	 *
-	 * @param method HTTP method
-	 * @param urlValue
-	 * @param opts Options for request
-	 * @returns void
-	 */
+ * Send a request to WebHDFS REST API
+ *
+ * @param method HTTP method
+ * @param urlValue
+ * @param opts Options for request
+ * @param callback
+ * @returns void
+ */
 	private sendRequest(method: string, urlValue: string, opts: object, callback: (error: HdfsError, response: request.Response) => void): void {
 		if (!callback) {
 			return;
@@ -259,10 +262,13 @@ export class WebHDFS {
 	}
 
 	/**
-	 * Authenticates using kerberos as part of a request, and saves cookie if successful.
-	 * Ideally would use request's built-in cookie functionality but this isn't working with non-public domains.
-	 * Instead, save the cookie in this module and reuse if not expired
-	 */
+ * Authenticates using kerberos as part of a request, and saves cookie if successful.
+* Ideally would use request's built-in cookie functionality but this isn't working with non-public domains.
+* Instead, save the cookie in this module and reuse if not expired
+ *
+ * @param requestParams
+ * @param callback
+ */
 	private requestWithKerberosSync(requestParams: any, callback: (error: HdfsError, response: request.Response) => void) {
 		this.setKerberosAuthOnParams(requestParams).then(() => {
 			this.doSendRequest(requestParams, (error, response) => {
@@ -303,9 +309,13 @@ export class WebHDFS {
 	}
 
 	/**
-	 * Change file permissions
-	 * @returns void
-	 */
+ * Change file permissions
+ *
+ * @returns void
+ * @param path
+ * @param mode
+ * @param callback
+ */
 	public chmod(path: string, mode: string, callback: (error: HdfsError) => void): void {
 		this.checkArgDefined('path', path);
 		this.checkArgDefined('mode', mode);
@@ -343,10 +353,12 @@ export class WebHDFS {
 	}
 
 	/**
-	 * List the status of a path
-	 *
-	 * @returns void
-	 */
+ * List the status of a path
+ *
+ * @returns void
+ * @param path
+ * @param callback
+ */
 	public listStatus(path: string, callback: (error: HdfsError, files: FileStatus[]) => void): void {
 		this.checkArgDefined('path', path);
 
@@ -382,9 +394,13 @@ export class WebHDFS {
 	}
 
 	/**
-	 * Make new directory
-	 * @returns void
-	 */
+ * Make new directory
+ *
+ * @returns void
+ * @param path
+ * @param permission
+ * @param callback
+ */
 	public mkdir(path: string, permission: string = '0755', callback: (error: HdfsError) => void): void {
 		this.checkArgDefined('path', path);
 
@@ -400,9 +416,13 @@ export class WebHDFS {
 	}
 
 	/**
-	 * Rename path
-	 * @returns void
-	 */
+ * Rename path
+ *
+ * @returns void
+ * @param path
+ * @param destination
+ * @param callback
+ */
 	public rename(path: string, destination: string, callback: (error: HdfsError) => void): void {
 		this.checkArgDefined('path', path);
 		this.checkArgDefined('destination', destination);
@@ -576,12 +596,14 @@ export class WebHDFS {
 	}
 
 	/**
-	 * Check file existence
-	 * Wraps stat method
-	 *
-	 * @see WebHDFS.stat
-	 * @returns void
-	 */
+ * Check file existence
+* Wraps stat method
+ *
+ * @see WebHDFS.stat
+ * @returns void
+ * @param path
+ * @param callback
+ */
 	public exists(path: string, callback: (error: HdfsError, exists: boolean) => void): void {
 		this.checkArgDefined('path', path);
 
@@ -625,21 +647,27 @@ export class WebHDFS {
 	}
 
 	/**
-	 * Append data to the file
-	 *
-	 * @see writeFile
-	 */
+ * Append data to the file
+ *
+ * @see writeFile
+ * @param path
+ * @param data
+ * @param opts
+ * @param callback
+ */
 	public appendFile(path: string, data: string | Buffer, opts: object, callback: (error: HdfsError) => void): fs.WriteStream {
 		return this.writeFile(path, data, true, opts, callback);
 	}
 
 	/**
-	 * Read data from the file
-	 *
-	 * @fires Request#data
-	 * @fires WebHDFS#finish
-	 * @returns void
-	 */
+ * Read data from the file
+ *
+ * @fires Request#data
+ * @fires WebHDFS#finish
+ * @returns void
+ * @param path
+ * @param callback
+ */
 	public readFile(path: string, callback: (error: HdfsError, buffer: Buffer) => void): void {
 		this.checkArgDefined('path', path);
 
@@ -813,28 +841,29 @@ export class WebHDFS {
 	}
 
 	/**
-	 * Create readable stream for given path
-	 *
-	 * @fires Request#data
-	 * @fires WebHDFS#finish
-	 *
-	 * @example
-	 * let hdfs = WebHDFS.createClient();
-	 *
-	 * let remoteFileStream = hdfs.createReadStream('/path/to/remote/file');
-	 *
-	 * remoteFileStream.on('error', (err) => {
-	 *  // Do something with the error
-	 * });
-	 *
-	 * remoteFileStream.on('data', (dataChunk) => {
-	 *  // Do something with the data chunk
-	 * });
-	 *
-	 * remoteFileStream.on('finish', () => {
-	 *  // Upload is done
-	 * });
-	 */
+ * Create readable stream for given path
+ *
+ * @fires Request#data
+ * @fires WebHDFS#finish
+ * @example 
+ * let hdfs = WebHDFS.createClient();
+ * 
+ * let remoteFileStream = hdfs.createReadStream('/path/to/remote/file');
+ * 
+ * remoteFileStream.on('error', (err) => {
+ * // Do something with the error
+ * });
+ * 
+ * remoteFileStream.on('data', (dataChunk) => {
+ * // Do something with the data chunk
+ * });
+ * 
+ * remoteFileStream.on('finish', () => {
+ * // Upload is done
+ * });
+ * @param path
+ * @param opts
+ */
 	public createReadStream(path: string, opts?: object): fs.ReadStream {
 		this.checkArgDefined('path', path);
 
@@ -924,10 +953,14 @@ export class WebHDFS {
 	}
 
 	/**
-	 * Create symbolic link to the destination path
-	 *
-	 * @returns void
-	 */
+ * Create symbolic link to the destination path
+ *
+ * @returns void
+ * @param src
+ * @param destination
+ * @param createParent
+ * @param callback
+ */
 	public symlink(src: string, destination: string, createParent: boolean = false, callback: (error: HdfsError) => void): void {
 		this.checkArgDefined('src', src);
 		this.checkArgDefined('destination', destination);
@@ -945,10 +978,13 @@ export class WebHDFS {
 	}
 
 	/**
-	 * Unlink path
-	 *
-	 * @returns void
-	 */
+ * Unlink path
+ *
+ * @returns void
+ * @param path
+ * @param recursive
+ * @param callback
+ */
 	public unlink(path: string, recursive: boolean = false, callback: (error: HdfsError) => void): void {
 		this.checkArgDefined('path', path);
 
@@ -961,9 +997,12 @@ export class WebHDFS {
 	}
 
 	/**
-	 * @alias WebHDFS.unlink
-	 * @returns void
-	 */
+ * @alias WebHDFS.unlink
+ * @returns void
+ * @param path
+ * @param recursive
+ * @param callback
+ */
 	public rmdir(path: string, recursive: boolean = false, callback: (error: HdfsError) => void): void {
 		this.unlink(path, recursive, callback);
 	}

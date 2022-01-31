@@ -74,9 +74,11 @@ export class TopmostLineMonitor extends Disposable {
 
 /**
  * Get the top-most visible range of `editor`.
+* 
+* Returns a fractional line number based the visible character within the line.
+* Floor to get real line number
  *
- * Returns a fractional line number based the visible character within the line.
- * Floor to get real line number
+ * @param editor
  */
 export function getVisibleLine(
 	editor: vscode.TextEditor

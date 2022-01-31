@@ -22,8 +22,14 @@ import { ModelConfigRecent } from './modelConfigRecent';
 export class DeployedModelService {
 
 	/**
-	 * Creates new instance
-	 */
+ * Creates new instance
+ *
+ * @param _apiWrapper
+ * @param _config
+ * @param _queryRunner
+ * @param _modelClient
+ * @param _recentModelService
+ */
 	constructor(
 		private _apiWrapper: ApiWrapper,
 		private _config: Config,
@@ -33,8 +39,10 @@ export class DeployedModelService {
 	}
 
 	/**
-	 * Returns deployed models
-	 */
+ * Returns deployed models
+ *
+ * @param table
+ */
 	public async getDeployedModels(table: DatabaseTable): Promise<ImportedModel[]> {
 		let connection = await this.getCurrentConnection();
 		let list: ImportedModel[] = [];
@@ -83,17 +91,21 @@ export class DeployedModelService {
 	}
 
 	/**
-	 * Loads model parameters
-	 */
+ * Loads model parameters
+ *
+ * @param filePath
+ */
 	public async loadModelParameters(filePath: string): Promise<ModelParameters> {
 		return await this._modelClient.loadModelParameters(filePath);
 	}
 
 	/**
-	 * Deploys local model
-	 * @param filePath model file path
-	 * @param details model details
-	 */
+ * Deploys local model
+ *
+ * @param filePath model file path
+ * @param details model details
+ * @param table
+ */
 	public async deployLocalModel(filePath: string, details: ImportedModelDetails | undefined, table: DatabaseTable) {
 		let connection = await this.getCurrentConnection();
 		if (connection && table.databaseName) {
@@ -119,8 +131,10 @@ export class DeployedModelService {
 	}
 
 	/**
-	 * Updates a model
-	 */
+ * Updates a model
+ *
+ * @param model
+ */
 	public async updateModel(model: ImportedModel) {
 		let connection = await this.getCurrentConnection();
 		if (connection && model && model.table && model.table.databaseName) {
@@ -131,8 +145,10 @@ export class DeployedModelService {
 	}
 
 	/**
-	 * Updates a model
-	 */
+ * Updates a model
+ *
+ * @param model
+ */
 	public async deleteModel(model: ImportedModel) {
 		let connection = await this.getCurrentConnection();
 		if (connection && model && model.table && model.table.databaseName) {

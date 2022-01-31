@@ -28,8 +28,12 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 	public modelCounts: number = 0;
 
 	/**
-	 * Creates new view
-	 */
+ * Creates new view
+ *
+ * @param apiWrapper
+ * @param parent
+ * @param _settings
+ */
 	constructor(apiWrapper: ApiWrapper, parent: ModelViewBase, private _settings: IComponentSettings) {
 		super(apiWrapper, parent.root, parent);
 	}

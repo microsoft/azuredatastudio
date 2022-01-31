@@ -801,6 +801,9 @@ export class DynamicMarkdownPreview extends Disposable implements ManagedMarkdow
 
 /**
  * Change the top-most visible line of `editor` to be at `line`
+ *
+ * @param line
+ * @param editor
  */
 export function scrollEditorToLine(
 	line: number,

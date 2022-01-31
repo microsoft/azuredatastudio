@@ -25,8 +25,16 @@ export class PackageManager {
 	public dependenciesInstalled: boolean = false;
 
 	/**
-	 * Creates a new instance of PackageManager
-	 */
+ * Creates a new instance of PackageManager
+ *
+ * @param _outputChannel
+ * @param _rootFolder
+ * @param _apiWrapper
+ * @param _service
+ * @param _processService
+ * @param _config
+ * @param _httpClient
+ */
 	constructor(
 		private _outputChannel: vscode.OutputChannel,
 		private _rootFolder: string,
@@ -161,8 +169,10 @@ export class PackageManager {
 	}
 
 	/**
-	 * Installs required python packages
-	 */
+ * Installs required python packages
+ *
+ * @param requiredPackages
+ */
 	public async installRequiredPythonPackages(requiredPackages: PackageConfigModel[]): Promise<void> {
 		if (!this._config.pythonEnabled) {
 			return;

@@ -98,8 +98,10 @@ export class ProjectRootTreeItem extends BaseProjectTreeItem {
 	}
 
 	/**
-	 * Gets the immediate parent tree node for an entry in a project file
-	 */
+ * Gets the immediate parent tree node for an entry in a project file
+ *
+ * @param entry
+ */
 	private getEntryParentNode(entry: FileProjectEntry): fileTree.FolderNode | ProjectRootTreeItem {
 		const relativePathParts = utils.trimChars(utils.trimUri(vscode.Uri.file(this.project.projectFilePath), entry.fsUri), '/').split('/').slice(0, -1); // remove the last part because we only care about the parent
 

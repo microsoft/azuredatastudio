@@ -36,6 +36,9 @@ export async function readPublishProfile(profileUri: vscode.Uri): Promise<Publis
 
 /**
  * parses the specified file to load publish settings
+ *
+ * @param profileUri
+ * @param dacfxService
  */
 export async function load(profileUri: vscode.Uri, dacfxService: utils.IDacFxService): Promise<PublishProfile> {
 	const profileText = await fs.readFile(profileUri.fsPath);

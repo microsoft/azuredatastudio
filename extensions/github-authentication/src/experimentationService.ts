@@ -36,8 +36,11 @@ export class ExperimentationTelemetry implements IExperimentationTelemetry {
 	}
 
 	/**
-	 * @returns A promise that you shouldn't need to await because this is just telemetry.
-	 */
+ * @returns A promise that you shouldn't need to await because this is just telemetry.
+ * @param eventName
+ * @param properties
+ * @param measurements
+ */
 	async sendTelemetryEvent(eventName: string, properties?: Record<string, string>, measurements?: Record<string, number>) {
 		if (!this.experimentationServicePromise) {
 			this.experimentationServicePromise = this.createExperimentationService();
@@ -55,8 +58,11 @@ export class ExperimentationTelemetry implements IExperimentationTelemetry {
 	}
 
 	/**
-	 * @returns A promise that you shouldn't need to await because this is just telemetry.
-	 */
+ * @returns A promise that you shouldn't need to await because this is just telemetry.
+ * @param eventName
+ * @param properties
+ * @param _measurements
+ */
 	async sendTelemetryErrorEvent(
 		eventName: string,
 		properties?: Record<string, string>,

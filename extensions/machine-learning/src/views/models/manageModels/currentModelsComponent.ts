@@ -31,10 +31,10 @@ export class CurrentModelsComponent extends ModelViewBase implements IPageView {
 	private _formBuilder: azdata.FormBuilder | undefined;
 
 	/**
-	 *
-	 * @param apiWrapper Creates new view
-	 * @param parent page parent
-	 */
+ * @param apiWrapper Creates new view
+ * @param parent page parent
+ * @param _settings
+ */
 	constructor(apiWrapper: ApiWrapper, parent: ModelViewBase, private _settings: IComponentSettings) {
 		super(apiWrapper, parent.root, parent);
 	}

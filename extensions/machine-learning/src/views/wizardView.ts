@@ -15,8 +15,8 @@ export class WizardView extends MainViewBase {
 	private _wizard: azdata.window.Wizard | undefined;
 
 	/**
-	 *
-	 */
+ * @param apiWrapper
+ */
 	constructor(apiWrapper: ApiWrapper) {
 		super(apiWrapper);
 	}

@@ -328,8 +328,10 @@ export class ProjectsController {
 	}
 
 	/**
-	* Create flow for Publishing a database using only VS Code-native APIs such as QuickPick
-	*/
+ * Create flow for Publishing a database using only VS Code-native APIs such as QuickPick
+ *
+ * @param project
+ */
 	private async publishDatabase(project: Project): Promise<void> {
 		const publishTarget = await launchPublishTargetOption();
 
@@ -961,10 +963,12 @@ export class ProjectsController {
 	}
 
 	/**
-	 * @returns \{ newProjectFolder: 'C:\Source\MyProject',
-	 * 			outputFolder: 'C:\Source',
-	 * 			projectName: 'MyProject'}
-	 */
+ * @returns \{ newProjectFolder: 'C:\Source\MyProject',
+ * outputFolder: 'C:\Source',
+ * projectName: 'MyProject'}
+ * @param projectName
+ * @param defaultOutputLocation
+ */
 	public async selectAutorestProjectLocation(projectName: string, defaultOutputLocation: vscode.Uri | undefined): Promise<{ newProjectFolder: string, outputFolder: string, projectName: string } | undefined> {
 		let newProjectFolder = defaultOutputLocation ? path.join(defaultOutputLocation.fsPath, projectName) : '';
 		let outputFolder = defaultOutputLocation?.fsPath || '';
@@ -1219,9 +1223,11 @@ export class ProjectsController {
 	}
 
 	/**
-	 * Creates a new SQL database project from the existing database,
-	 * prompting the user for a name, file path location and extract target
-	 */
+ * Creates a new SQL database project from the existing database,
+* prompting the user for a name, file path location and extract target
+ *
+ * @param context
+ */
 	public async createProjectFromDatabase(context: azdataType.IConnectionProfile | mssqlVscode.ITreeNodeInfo | undefined): Promise<CreateProjectFromDatabaseDialog | undefined> {
 		const profile = this.getConnectionProfileFromContext(context);
 		if (utils.getAzdataApi()) {
@@ -1311,8 +1317,10 @@ export class ProjectsController {
 	}
 
 	/**
-	 * Display dialog for user to configure existing SQL Project with the changes/differences from a database
-	 */
+ * Display dialog for user to configure existing SQL Project with the changes/differences from a database
+ *
+ * @param context
+ */
 	public async updateProjectFromDatabase(context: azdataType.IConnectionProfile | mssqlVscode.ITreeNodeInfo | dataworkspace.WorkspaceTreeItem): Promise<UpdateProjectFromDatabaseDialog> {
 		let connection: azdataType.IConnectionProfile | mssqlVscode.IConnectionInfo | undefined;
 		let project: Project | undefined;
@@ -1351,8 +1359,10 @@ export class ProjectsController {
 	}
 
 	/**
-	 * Uses the DacFx service to update an existing SQL Project with the changes/differences from a database
-	 */
+ * Uses the DacFx service to update an existing SQL Project with the changes/differences from a database
+ *
+ * @param model
+ */
 	public async updateProjectFromDatabaseApiCall(model: UpdateProjectDataModel): Promise<void> {
 		if (model.action === UpdateProjectAction.Compare) {
 			await vscode.commands.executeCommand(constants.schemaCompareRunComparisonCommand, model.sourceEndpointInfo, model.targetEndpointInfo, true, undefined);
@@ -1423,8 +1433,10 @@ export class ProjectsController {
 	}
 
 	/**
-	 * Generate a flat list of all files and folder under a folder.
-	 */
+ * Generate a flat list of all files and folder under a folder.
+ *
+ * @param absolutePath
+ */
 	public async generateList(absolutePath: string): Promise<vscode.Uri[]> {
 		let fileFolderList: vscode.Uri[] = [];
 

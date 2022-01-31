@@ -121,16 +121,20 @@ export abstract class ModelViewBase extends ViewBase {
 	}
 
 	/**
-	 * list azure models
-	 */
+ * list azure models
+ *
+ * @param workspaceResource
+ */
 	public async listAzureModels(workspaceResource: AzureWorkspaceResource): Promise<WorkspaceModel[]> {
 		const args: AzureResourceEventArgs = workspaceResource;
 		return await this.sendDataRequest(ListAzureModelsEventName, args);
 	}
 
 	/**
-	 * list registered models
-	 */
+ * list registered models
+ *
+ * @param table
+ */
 	public async listModels(table: DatabaseTable): Promise<ImportedModel[]> {
 		return await this.sendDataRequest(ListModelsEventName, table);
 	}
@@ -150,15 +154,19 @@ export abstract class ModelViewBase extends ViewBase {
 	}
 
 	/**
-	 * lists table names
-	 */
+ * lists table names
+ *
+ * @param dbName
+ */
 	public async listTableNames(dbName: string): Promise<DatabaseTable[]> {
 		return await this.sendDataRequest(ListTableNamesEventName, dbName);
 	}
 
 	/**
-	 * lists column names
-	 */
+ * lists column names
+ *
+ * @param table
+ */
 	public async listColumnNames(table: DatabaseTable): Promise<TableColumn[]> {
 		return await this.sendDataRequest(ListColumnNamesEventName, table);
 	}
@@ -221,8 +229,10 @@ export abstract class ModelViewBase extends ViewBase {
 	}
 
 	/**
-	 * Verifies if table is valid to import models to
-	 */
+ * Verifies if table is valid to import models to
+ *
+ * @param table
+ */
 	public async verifyImportConfigTable(table: DatabaseTable): Promise<boolean> {
 		return await this.sendDataRequest(VerifyImportTableEventName, table);
 	}
@@ -256,8 +266,10 @@ export abstract class ModelViewBase extends ViewBase {
 	}
 
 	/**
-	 * Sets model action type
-	 */
+ * Sets model action type
+ *
+ * @param value
+ */
 	public set modelActionType(value: ModelActionType) {
 		if (this.parent) {
 			this.parent.modelActionType = value;
@@ -278,8 +290,10 @@ export abstract class ModelViewBase extends ViewBase {
 	}
 
 	/**
-	 * Sets model source type
-	 */
+ * Sets model source type
+ *
+ * @param value
+ */
 	public set modelSourceType(value: ModelSourceType) {
 		if (this.parent) {
 			this.parent.modelSourceType = value;
@@ -300,8 +314,10 @@ export abstract class ModelViewBase extends ViewBase {
 	}
 
 	/**
-	 * Sets model data
-	 */
+ * Sets model data
+ *
+ * @param value
+ */
 	public set modelsViewData(value: ModelViewData[]) {
 		if (this.parent) {
 			this.parent.modelsViewData = value;
@@ -322,8 +338,10 @@ export abstract class ModelViewBase extends ViewBase {
 	}
 
 	/**
-	 * Sets import table
-	 */
+ * Sets import table
+ *
+ * @param value
+ */
 	public set importTable(value: DatabaseTable | undefined) {
 		if (this.parent) {
 			this.parent.importTable = value;

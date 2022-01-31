@@ -1198,8 +1198,10 @@ export class SchemaCompareMainWindow {
 	}
 
 	/**
-	 * Converts excluded diff entries into object ids which are needed to save them in an scmp
-	*/
+ * Converts excluded diff entries into object ids which are needed to save them in an scmp
+ *
+ * @param excludedDiffEntries
+ */
 	private convertExcludesToObjectIds(excludedDiffEntries: Map<string, mssql.DiffEntry>): mssql.SchemaCompareObjectId[] {
 		let result = [];
 		excludedDiffEntries.forEach((value: mssql.DiffEntry) => {

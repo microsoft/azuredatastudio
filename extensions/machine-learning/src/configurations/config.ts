@@ -56,8 +56,10 @@ export class Config {
 	}
 
 	/**
-	 * Returns python path from user settings
-	 */
+ * Returns python path from user settings
+ *
+ * @param verify
+ */
 	public async getPythonExecutable(verify: boolean): Promise<string> {
 		let executable: string = this.config.get(constants.pythonPathConfigKey) || defaultPythonExecutable;
 		if (!executable) {
@@ -141,8 +143,10 @@ export class Config {
 	}
 
 	/**
-	 * Returns r path from user settings
-	 */
+ * Returns r path from user settings
+ *
+ * @param verify
+ */
 	public async getRExecutable(verify: boolean): Promise<string> {
 		let executable: string = this.config.get(constants.rPathConfigKey) || defaultRExecutable;
 		let checkExist = executable && executable.toLocaleUpperCase() !== 'R';

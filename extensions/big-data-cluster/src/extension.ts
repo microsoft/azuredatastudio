@@ -201,7 +201,10 @@ async function removeControllerInternal(treeDataProvider: ControllerTreeDataProv
 
 /**
  * Throttles actions to avoid bug where on clicking in tree, action gets called twice
- * instead of once. Any right-click action is safe, just the default on-click action in a tree
+* instead of once. Any right-click action is safe, just the default on-click action in a tree
+ *
+ * @param id
+ * @param action
  */
 function runThrottledAction(id: string, action: () => void) {
 	let timer = throttleTimers[id];

@@ -49,8 +49,10 @@ export class BdcServiceStatusPage extends BdcDashboardPage {
 	}
 
 	/**
-	 * Update the resource tab pages, creating any new ones as necessary
-	 */
+ * Update the resource tab pages, creating any new ones as necessary
+ *
+ * @param resources
+ */
 	private updateResourcePages(resources: ResourceStatusModel[]): void {
 		resources.forEach(resource => {
 			const existingTab = this.createdResourceTabs.get(resource.resourceName);

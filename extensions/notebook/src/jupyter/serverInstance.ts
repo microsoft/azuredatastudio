@@ -25,6 +25,8 @@ type ErrorListener = (err: any) => void;
 
 /**
  * Helper function ensures server instance process stops
+ *
+ * @param childProcess
  */
 export function ensureProcessEnded(childProcess: ChildProcess): void {
 	if (!childProcess) {

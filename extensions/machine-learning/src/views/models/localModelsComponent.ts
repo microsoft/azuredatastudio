@@ -22,8 +22,12 @@ export class LocalModelsComponent extends ModelViewBase implements IDataComponen
 	private _localBrowse: azdata.ButtonComponent | undefined;
 
 	/**
-	 * Creates new view
-	 */
+ * Creates new view
+ *
+ * @param apiWrapper
+ * @param parent
+ * @param _multiSelect
+ */
 	constructor(apiWrapper: ApiWrapper, parent: ModelViewBase, private _multiSelect: boolean = true) {
 		super(apiWrapper, parent.root, parent);
 	}

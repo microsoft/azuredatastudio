@@ -14,6 +14,9 @@ import { IDeploySettings } from '../models/IDeploySettings';
 
 /**
  * Create flow for Publishing a database using only VS Code-native APIs such as QuickPick
+ *
+ * @param project
+ * @param promptForConnection
  */
 export async function getPublishDatabaseSettings(project: Project, promptForConnection: boolean = true): Promise<IDeploySettings | undefined> {
 

@@ -31,8 +31,12 @@ export class AzureResourceFilterComponent extends ModelViewBase implements IData
 	public readonly onWorkspacesSelectedChanged: vscode.Event<void> = this._onWorkspacesSelectedChanged.event;
 
 	/**
-	 * Creates a new view
-	 */
+ * Creates a new view
+ *
+ * @param apiWrapper
+ * @param _modelBuilder
+ * @param parent
+ */
 	constructor(apiWrapper: ApiWrapper, private _modelBuilder: azdata.ModelBuilder, parent: ModelViewBase) {
 		super(apiWrapper, parent.root, parent);
 		this._accounts = this._modelBuilder.dropDown().withProps({

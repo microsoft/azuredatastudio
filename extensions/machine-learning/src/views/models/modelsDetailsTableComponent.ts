@@ -16,8 +16,12 @@ export class ModelsDetailsTableComponent extends ModelViewBase implements IDataC
 	private _table: azdata.DeclarativeTableComponent | undefined;
 
 	/**
-	 * Creates new view
-	 */
+ * Creates new view
+ *
+ * @param apiWrapper
+ * @param _modelBuilder
+ * @param parent
+ */
 	constructor(apiWrapper: ApiWrapper, private _modelBuilder: azdata.ModelBuilder, parent: ModelViewBase) {
 		super(apiWrapper, parent.root, parent);
 	}

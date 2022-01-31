@@ -11,8 +11,8 @@ const TableConfigName = 'MLS_ModelTableConfigName';
 
 export class ModelConfigRecent {
 	/**
-	 *
-	 */
+ * @param _memento
+ */
 	constructor(private _memento: vscode.Memento) {
 	}
 

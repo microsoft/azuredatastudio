@@ -14,14 +14,22 @@ import { ApiWrapper } from '../common/apiWrapper';
 export abstract class ControllerBase {
 
 	/**
-	 * creates new instance
-	 */
+ * creates new instance
+ *
+ * @param _apiWrapper
+ */
 	constructor(protected _apiWrapper: ApiWrapper) {
 	}
 
 	/**
-	 * Executes an action and sends back callback event to the view
-	 */
+ * Executes an action and sends back callback event to the view
+ *
+ * @param dialog
+ * @param eventName
+ * @param inputArgs
+ * @param func
+ * @param args
+ */
 	public async executeAction<T extends ViewBase>(dialog: T, eventName: string, inputArgs: any, func: (...args: any[]) => Promise<any>, ...args: any[]): Promise<void> {
 		const callbackEvent = ViewBase.getCallbackEventName(eventName);
 		try {
@@ -44,9 +52,11 @@ export abstract class ControllerBase {
 	}
 
 	/**
-	 * Returns local file path picked by the user
-	 * @param apiWrapper apiWrapper
-	 */
+ * Returns local file path picked by the user
+ *
+ * @param apiWrapper apiWrapper
+ * @param options
+ */
 	public async getLocalPaths(apiWrapper: ApiWrapper, options: vscode.OpenDialogOptions): Promise<string[]> {
 		let result = await apiWrapper.showOpenDialog(options);
 		return result ? result?.map(x => x.fsPath) : [];

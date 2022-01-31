@@ -47,9 +47,11 @@ const getCodeLineElements = (() => {
 
 /**
  * Find the html elements that map to a specific target line in the editor.
+* 
+* If an exact match, returns a single element. If the line is between elements,
+* returns the element prior to and the element after the given line.
  *
- * If an exact match, returns a single element. If the line is between elements,
- * returns the element prior to and the element after the given line.
+ * @param targetLine
  */
 export function getElementsForSourceLine(targetLine: number): { previous: CodeLineElement; next?: CodeLineElement; } {
 	const lineNumber = Math.floor(targetLine);
@@ -68,6 +70,8 @@ export function getElementsForSourceLine(targetLine: number): { previous: CodeLi
 
 /**
  * Find the html elements that are at a specific pixel offset on the page.
+ *
+ * @param offset
  */
 export function getLineElementsAtPageOffset(offset: number): { previous: CodeLineElement; next?: CodeLineElement; } {
 	const lines = getCodeLineElements();
@@ -116,6 +120,8 @@ function getElementBounds({ element }: CodeLineElement): { top: number, height: 
 
 /**
  * Attempt to reveal the element for a source line in the editor.
+ *
+ * @param line
  */
 export function scrollToRevealSourceLine(line: number) {
 	if (!getSettings().scrollPreviewWithEditor) {
@@ -167,6 +173,8 @@ export function getEditorLineNumberForPageOffset(offset: number) {
 
 /**
  * Try to find the html element by using a fragment id
+ *
+ * @param fragment
  */
 export function getLineElementForFragment(fragment: string): CodeLineElement | undefined {
 	return getCodeLineElements().find((element) => {

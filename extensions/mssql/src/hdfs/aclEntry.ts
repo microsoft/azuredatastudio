@@ -183,26 +183,30 @@ export class AclEntry {
 	}
 
 	/**
-	 * Gets the octal number representing the permission for the specified scope of
-	 * this entry. This will either be a number between 0 and 7 inclusive (which is
-	 * a bitwise OR the permission flags rwx) or undefined if the scope doesn't exist
-	 * for this entry.
-	 */
+ * Gets the octal number representing the permission for the specified scope of
+* this entry. This will either be a number between 0 and 7 inclusive (which is
+* a bitwise OR the permission flags rwx) or undefined if the scope doesn't exist
+* for this entry.
+ *
+ * @param scope
+ */
 	public getPermissionDigit(scope: AclEntryScope): number | undefined {
 		return this.permissions.has(scope) ? this.permissions.get(scope).permissionDigit : undefined;
 	}
 
 	/**
-	 * Returns the string representation of each ACL Entry in the form [SCOPE:]TYPE:NAME:PERMISSION.
-	 * Note that SCOPE is only displayed if it's default - access is implied if there is no scope
-	 * specified.
-	 * The name is optional and so may be empty.
-	 * Example strings :
-	 *		user:bob:rwx
-	 *		default:user:bob:rwx
-	 *		user::r-x
-	 *		default:group::r--
-	 */
+ * Returns the string representation of each ACL Entry in the form [SCOPE:]TYPE:NAME:PERMISSION.
+* Note that SCOPE is only displayed if it's default - access is implied if there is no scope
+* specified.
+* The name is optional and so may be empty.
+* Example strings :
+* user:bob:rwx
+* default:user:bob:rwx
+* user::r-x
+* default:group::r--
+ *
+ * @param includeDefaults
+ */
 	toAclStrings(includeDefaults: boolean = true): string[] {
 		return Array.from(this.permissions.entries()).filter((entry: [AclEntryScope, AclEntryPermission]) => includeDefaults || entry[0] !== AclEntryScope.default).map((entry: [AclEntryScope, AclEntryPermission]) => {
 			return `${entry[0] === AclEntryScope.default ? 'default:' : ''}${getAclEntryType(this.type)}:${this.name}:${entry[1].toString()}`;

@@ -42,10 +42,13 @@ export class LanguageClientErrorHandler {
 	}
 
 	/**
-	 * Callback for language service client error
-	 *
-	 * @memberOf LanguageClientErrorHandler
-	 */
+ * Callback for language service client error
+ *
+ * @memberOf LanguageClientErrorHandler
+ * @param error
+ * @param message
+ * @param count
+ */
 	error(error: Error, message: IMessage, count: number): ErrorAction {
 		this.showOnErrorPrompt();
 
@@ -97,8 +100,12 @@ export class Telemetry {
 	}
 
 	/**
-	 * Send a telemetry event using application insights
-	 */
+ * Send a telemetry event using application insights
+ *
+ * @param eventName
+ * @param properties
+ * @param measures
+ */
 	public static sendTelemetryEvent(
 		eventName: string,
 		properties?: ITelemetryEventProperties,

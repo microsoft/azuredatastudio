@@ -303,6 +303,8 @@ export function convertToGibibyteString(value: string): string {
 
 /**
  * Used to confirm if object is an azdata CheckBoxComponent
+ *
+ * @param object
  */
 export function instanceOfCheckBox(object: any): object is azdata.CheckBoxComponent {
 	return 'checked' in object;

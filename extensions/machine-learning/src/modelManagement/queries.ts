@@ -82,6 +82,8 @@ export function getConfigTableVerificationQuery(table: DatabaseTable): string {
 
 /**
  * Creates the import table if doesn't exist
+ *
+ * @param table
  */
 export function getConfigureTableQuery(table: DatabaseTable): string {
 	let tableName = table.tableName;

@@ -15,6 +15,8 @@ interface Deferred<T> {
 
 /**
  * Asserts that the argument passed in is neither undefined nor null.
+ *
+ * @param arg
  */
 function assertIsDefined<T>(arg: T | null | undefined): T {
 	if (typeof (arg) === 'undefined' || arg === null) {

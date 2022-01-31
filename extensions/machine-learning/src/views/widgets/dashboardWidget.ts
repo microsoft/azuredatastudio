@@ -23,8 +23,12 @@ const headerMaxHeight = 234;
 export class DashboardWidget {
 
 	/**
-	 * Creates new instance of dashboard
-	 */
+ * Creates new instance of dashboard
+ *
+ * @param _apiWrapper
+ * @param _root
+ * @param _predictService
+ */
 	constructor(private _apiWrapper: ApiWrapper, private _root: string, private _predictService: PredictService) {
 	}
 

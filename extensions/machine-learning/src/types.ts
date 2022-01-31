@@ -9,6 +9,7 @@ const _typeof = {
 
 /**
  * @returns whether the provided parameter is undefined or null.
+ * @param obj
  */
 export function isUndefinedOrNull(obj: any): boolean {
 	return isUndefined(obj) || obj === null;
@@ -16,6 +17,7 @@ export function isUndefinedOrNull(obj: any): boolean {
 
 /**
  * @returns whether the provided parameter is undefined.
+ * @param obj
  */
 export function isUndefined(obj: any): boolean {
 	return typeof (obj) === _typeof.undefined;

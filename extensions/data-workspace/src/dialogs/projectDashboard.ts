@@ -141,8 +141,11 @@ export class ProjectDashboard {
 	}
 
 	/**
-	 * Create header with title, location and background
-	 */
+ * Create header with title, location and background
+ *
+ * @param title
+ * @param location
+ */
 	private createHeader(title: string, location: string): azdataType.Component {
 		const headerContainer = this.modelView!.modelBuilder.flexContainer().withLayout(
 			{
@@ -186,8 +189,10 @@ export class ProjectDashboard {
 	}
 
 	/**
-	 * Adds all the tables to the container
-	 */
+ * Adds all the tables to the container
+ *
+ * @param projectFile
+ */
 	private createTables(projectFile: string): azdataType.Component {
 		const dashboardData: IDashboardTable[] = this.projectProvider!.getDashboardComponents(projectFile);
 

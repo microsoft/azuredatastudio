@@ -74,8 +74,10 @@ export class BdcDashboard extends InitializingComponent {
 	}
 
 	/**
-	 * Update the service tab pages, creating any new ones as necessary
-	 */
+ * Update the service tab pages, creating any new ones as necessary
+ *
+ * @param services
+ */
 	private updateServicePages(services?: ServiceStatusModel[]): void {
 		if (services) {
 			// Create a service page for each new service. We currently don't support services being removed.

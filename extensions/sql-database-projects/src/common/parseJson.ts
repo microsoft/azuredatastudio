@@ -10,7 +10,9 @@ import * as constants from './constants';
 
 /**
  * Parses and returns JSON
- * Has extra logic to remove a BOM character if it exists and handle comments
+* Has extra logic to remove a BOM character if it exists and handle comments
+ *
+ * @param data
  */
 export function parseJson<T extends object>(data: string): T {
 	if (data.charCodeAt(0) === 0xFEFF) {

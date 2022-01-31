@@ -8,7 +8,9 @@ import { AgreementInfo, DockerImageInfo } from '../models/deploy/deployProfile';
 
 /**
  * Gets connection name from connection object if there is one,
- * otherwise set connection name in format that shows in OE
+* otherwise set connection name in format that shows in OE
+ *
+ * @param connection
  */
 export function getConnectionName(connection: any): string {
 	let connectionName: string;

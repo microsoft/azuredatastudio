@@ -18,8 +18,11 @@ import * as queries from './queries';
 export class PredictService {
 
 	/**
-	 * Creates new instance
-	 */
+ * Creates new instance
+ *
+ * @param _apiWrapper
+ * @param _queryRunner
+ */
 	constructor(
 		private _apiWrapper: ApiWrapper,
 		private _queryRunner: QueryRunner) {
@@ -56,10 +59,12 @@ export class PredictService {
 	}
 
 	/**
-	 * Generates prediction script given model info and predict parameters
-	 * @param predictParams predict parameters
-	 * @param registeredModel model parameters
-	 */
+ * Generates prediction script given model info and predict parameters
+ *
+ * @param predictParams predict parameters
+ * @param registeredModel model parameters
+ * @param filePath
+ */
 	public async generatePredictScript(
 		predictParams: PredictParameters,
 		registeredModel: ImportedModel | undefined,

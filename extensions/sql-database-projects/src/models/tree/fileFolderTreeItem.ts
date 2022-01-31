@@ -97,6 +97,10 @@ export function sortFileFolderNodes(a: (FolderNode | FileNode), b: (FolderNode |
 
 /**
  * Converts a full filesystem URI to a project-relative URI that's compatible with the project tree
+ *
+ * @param fileSystemUri
+ * @param projectNode
+ * @param isFile
  */
 function fsPathToProjectUri(fileSystemUri: vscode.Uri, projectNode: ProjectRootTreeItem, isFile?: boolean): vscode.Uri {
 	const projBaseDir = projectNode.project.projectFolderPath;

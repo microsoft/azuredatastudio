@@ -31,11 +31,14 @@ export async function activate(context: vscode.ExtensionContext): Promise<rd.IEx
 	const uriHandlerService = new UriHandlerService(resourceTypeService);
 	vscode.window.registerUriHandler(uriHandlerService);
 	/**
-	 * Opens a new ResourceTypePickerDialog
-	 * @param defaultResourceTypeName The resource type name to have selected by default
-	 * @param resourceTypeNameFilters Optional filters to apply to the resource types displayed. If undefined all
-	 * resource types will be displayed
-	 */
+ * Opens a new ResourceTypePickerDialog
+ *
+ * @param defaultResourceTypeName The resource type name to have selected by default
+ * @param resourceTypeNameFilters Optional filters to apply to the resource types displayed. If undefined all
+ * resource types will be displayed
+ * @param optionValuesFilter
+ * @param initialVariableValues
+ */
 	const openDialog = (defaultResourceTypeName: string, resourceTypeNameFilters?: string[], optionValuesFilter?: OptionValuesFilter, initialVariableValues?: InitialVariableValues) => {
 		const defaultResourceType = resourceTypeService.getResourceTypes().find(resourceType => resourceType.name === defaultResourceTypeName);
 		if (!defaultResourceType) {

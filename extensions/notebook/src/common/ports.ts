@@ -16,8 +16,10 @@ export class StrictPortFindOptions {
 
 /**
  * Searches for a free port with additional retries and a function to search in a much larger range if initial
- * attempt to find a port fails. By skipping to a random port after the first time failing, this should help
- * reduce the likelihood that no free port can be found.
+* attempt to find a port fails. By skipping to a random port after the first time failing, this should help
+* reduce the likelihood that no free port can be found.
+ *
+ * @param options
  */
 export async function strictFindFreePort(options: StrictPortFindOptions): Promise<number> {
 	let totalRetries = options.totalRetryLoops;
@@ -44,7 +46,11 @@ function getRandomInt(min: number, max: number): number {
 
 /**
  * Given a start point and a max number of retries, will find a port that
- * is openable. Will return 0 in case no free port can be found.
+* is openable. Will return 0 in case no free port can be found.
+ *
+ * @param startPort
+ * @param giveUpAfter
+ * @param timeout
  */
 export function findFreePort(startPort: number, giveUpAfter: number, timeout: number): Thenable<number> {
 	let done = false;

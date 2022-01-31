@@ -14,8 +14,8 @@ export class MainViewBase {
 	protected _pages: IPageView[] = [];
 
 	/**
-	 *
-	 */
+ * @param _apiWrapper
+ */
 	constructor(protected _apiWrapper: ApiWrapper) {
 	}
 

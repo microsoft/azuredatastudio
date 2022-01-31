@@ -24,6 +24,8 @@ export interface ValidationResult {
 
 /**
  * Consolidates on the error message string
+ *
+ * @param error
  */
 export function getErrorMessage(error: any): string {
 	return (error instanceof Error)
@@ -63,6 +65,9 @@ export function trimUri(innerUri: vscode.Uri, outerUri: vscode.Uri): string {
 
 /**
  * Trims any character contained in @param chars from both the beginning and end of @param input
+ *
+ * @param input
+ * @param chars
  */
 export function trimChars(input: string, chars: string): string {
 	let output = input;
@@ -92,7 +97,9 @@ export function ensureTrailingSlash(path: string, slashCharacter: string = const
 
 /**
  * Checks if the folder or file exists @param path path of the folder/file
-*/
+ *
+ * @param path
+ */
 export async function exists(path: string): Promise<boolean> {
 	try {
 		await fs.access(path);
@@ -114,6 +121,8 @@ export function getQuotedPath(filePath: string): string {
 
 /**
  * ensure that path with spaces are handles correctly (return quoted path)
+ *
+ * @param filePath
  */
 function getQuotedWindowsPath(filePath: string): string {
 	filePath = filePath.split('\\').join('\\\\').split('"').join('');
@@ -122,6 +131,8 @@ function getQuotedWindowsPath(filePath: string): string {
 
 /**
  * ensure that path with spaces are handles correctly (return quoted path)
+ *
+ * @param filePath
  */
 function getQuotedNonWindowsPath(filePath: string): string {
 	filePath = filePath.split('\\').join('/').split('"').join('');
@@ -460,6 +471,8 @@ export async function retry<T>(
 
 /**
  * Detects whether the specified command-line command is available on the current machine
+ *
+ * @param command
  */
 export async function detectCommandInstallation(command: string): Promise<boolean> {
 	try {

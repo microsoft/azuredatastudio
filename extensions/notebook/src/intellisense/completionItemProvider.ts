@@ -158,12 +158,15 @@ export class NotebookCompletionItemProvider implements vscode.CompletionItemProv
 	}
 
 	/**
-	 * Convert from a line+character position to a cursor position based on the whole string length
-	 * Note: this is somewhat inefficient especially for large arrays. However we've done
-	 * this for other intellisense libraries that are index based. The ideal would be to at
-	 * least do caching of the contents in an efficient lookup structure so we don't have to recalculate
-	 * and throw away each time.
-	 */
+ * Convert from a line+character position to a cursor position based on the whole string length
+* Note: this is somewhat inefficient especially for large arrays. However we've done
+* this for other intellisense libraries that are index based. The ideal would be to at
+* least do caching of the contents in an efficient lookup structure so we don't have to recalculate
+* and throw away each time.
+ *
+ * @param position
+ * @param source
+ */
 	private toCursorPosition(position: vscode.Position, source: string): IRelativePosition {
 		let lines = source.split('\n');
 		let characterPosition = 0;

@@ -69,17 +69,21 @@ export class QueryRunner {
 	}
 
 	/**
-	 * Returns python packages installed in SQL server instance
-	 * @param connection SQL Connection
-	 */
+ * Returns python packages installed in SQL server instance
+ *
+ * @param connection SQL Connection
+ * @param databaseName
+ */
 	public async getPythonPackages(connection: azdata.connection.ConnectionProfile, databaseName: string): Promise<nbExtensionApis.IPackageDetails[]> {
 		return this.getPackages(connection, databaseName, listPythonPackagesQuery);
 	}
 
 	/**
-	 * Returns python packages installed in SQL server instance
-	 * @param connection SQL Connection
-	 */
+ * Returns python packages installed in SQL server instance
+ *
+ * @param connection SQL Connection
+ * @param databaseName
+ */
 	public async getRPackages(connection: azdata.connection.ConnectionProfile, databaseName: string): Promise<nbExtensionApis.IPackageDetails[]> {
 		return this.getPackages(connection, databaseName, listRPackagesQuery);
 	}
@@ -121,22 +125,29 @@ export class QueryRunner {
 	}
 
 	/**
-	 * Returns true if python installed in the give SQL server instance
-	 */
+ * Returns true if python installed in the give SQL server instance
+ *
+ * @param connection
+ */
 	public async isPythonInstalled(connection: azdata.connection.ConnectionProfile): Promise<boolean> {
 		return this.isLanguageInstalled(connection, constants.pythonLanguageName);
 	}
 
 	/**
-	 * Returns true if R installed in the give SQL server instance
-	 */
+ * Returns true if R installed in the give SQL server instance
+ *
+ * @param connection
+ */
 	public async isRInstalled(connection: azdata.connection.ConnectionProfile): Promise<boolean> {
 		return this.isLanguageInstalled(connection, constants.rLanguageName);
 	}
 
 	/**
-	 * Returns true if language installed in the give SQL server instance
-	 */
+ * Returns true if language installed in the give SQL server instance
+ *
+ * @param connection
+ * @param language
+ */
 	private async isLanguageInstalled(connection: azdata.connection.ConnectionProfile, language: string): Promise<boolean> {
 		let result = await this.runQuery(connection, checkLanguageInstalledQuery.replace('#LANGUAGE#', language));
 		let isInstalled = false;
@@ -147,8 +158,10 @@ export class QueryRunner {
 	}
 
 	/**
-	 * Returns true if mls is installed in the give SQL server instance
-	 */
+ * Returns true if mls is installed in the give SQL server instance
+ *
+ * @param connection
+ */
 	public async isMachineLearningServiceEnabled(connection: azdata.connection.ConnectionProfile): Promise<boolean> {
 		let result = await this.runQuery(connection, checkMlInstalledQuery);
 		let isEnabled = false;
@@ -189,10 +202,12 @@ export class QueryRunner {
 	}
 
 	/**
-	 * Executes the query but doesn't fail it is fails
-	 * @param connection SQL connection
-	 * @param query query to run
-	 */
+ * Executes the query but doesn't fail it is fails
+ *
+ * @param connection SQL connection
+ * @param query query to run
+ * @param queryDb
+ */
 	public async runWithDatabaseChange(connection: azdata.connection.ConnectionProfile, query: string, queryDb: string): Promise<azdata.SimpleExecuteResult | undefined> {
 		if (connection) {
 			try {

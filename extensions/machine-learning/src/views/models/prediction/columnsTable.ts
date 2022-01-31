@@ -25,8 +25,13 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 	private _loader: azdata.LoadingComponent;
 
 	/**
-	 * Creates a view to render azure models in a table
-	 */
+ * Creates a view to render azure models in a table
+ *
+ * @param apiWrapper
+ * @param _modelBuilder
+ * @param parent
+ * @param _forInput
+ */
 	constructor(apiWrapper: ApiWrapper, private _modelBuilder: azdata.ModelBuilder, parent: ModelViewBase, private _forInput: boolean = true) {
 		super(apiWrapper, parent.root, parent);
 		this._loader = this.registerComponent(this._modelBuilder);

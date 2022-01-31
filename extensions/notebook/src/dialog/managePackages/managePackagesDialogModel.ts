@@ -165,8 +165,10 @@ export class ManagePackagesDialogModel {
 	}
 
 	/**
-	 * Returns a map of providerId to package types for given location
-	 */
+ * Returns a map of providerId to package types for given location
+ *
+ * @param targetLocation
+ */
 	public getPackageTypes(targetLocation?: string): ProviderPackageType[] {
 		targetLocation = targetLocation || this.defaultLocation;
 		if (!this._packageTypes.has(targetLocation)) {
@@ -199,8 +201,10 @@ export class ManagePackagesDialogModel {
 	}
 
 	/**
-	 * Changes the current provider
-	 */
+ * Changes the current provider
+ *
+ * @param providerId
+ */
 	public changeProvider(providerId: string): void {
 		if (this._packageManageProviders.has(providerId)) {
 			this._currentProvider = providerId;
@@ -210,8 +214,10 @@ export class ManagePackagesDialogModel {
 	}
 
 	/**
-	 * Changes the current location
-	 */
+ * Changes the current location
+ *
+ * @param location
+ */
 	public changeLocation(location: string): void {
 		if (location) {
 			this._currentLocation = location;

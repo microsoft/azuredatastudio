@@ -60,23 +60,24 @@ export async function createTestFile(contents: string, fileName: string, folderP
 
 /**
  * TestFolder directory structure
- * 		- file1.sql
- * 		- folder1
- * 			-file1.sql
- * 			-file2.sql
- * 			-file3.sql
- * 			-file4.sql
- * 			-file5.sql
- *	 	- folder2
- * 			-file1.sql
- * 			-file2.sql
- * 			-file3.sql
- * 			-file4.sql
- * 			-file5.sql
- * 		- file2.txt
+* - file1.sql
+* - folder1
+* -file1.sql
+* -file2.sql
+* -file3.sql
+* -file4.sql
+* -file5.sql
+* - folder2
+* -file1.sql
+* -file2.sql
+* -file3.sql
+* -file4.sql
+* -file5.sql
+* - file2.txt
  *
  * @param createList Boolean specifying to create a list of the files and folders been created
  * @param list List of files and folders that are been created
+ * @param testFolderPath
  */
 export async function createDummyFileStructure(createList?: boolean, list?: Uri[], testFolderPath?: string): Promise<string> {
 	testFolderPath = testFolderPath ?? await generateTestFolderPath();
@@ -117,30 +118,31 @@ export async function createDummyFileStructure(createList?: boolean, list?: Uri[
 
 /**
  * TestFolder directory structure
- * 		- file1.sql
- * 		- folder1
- * 			-file1.sql
- * 			-file2.sql
- * 			-file3.sql
- * 			-file4.sql
- * 			-file5.sql
- * 			-Script.PostDeployment2.sql
- * 			- nestedFolder
- * 				-otherFile1.sql
- * 				-otherFile2.sql
- *	 	- folder2
- * 			-file1.sql
- * 			-file2.sql
- * 			-file3.sql
- * 			-file4.sql
- * 			-file5.sql
- * 		- file2.txt
- * 		- Script.PreDeployment1.sql
- * 		- Script.PreDeployment2.sql
- * 		- Script.PostDeployment1.sql
+* - file1.sql
+* - folder1
+* -file1.sql
+* -file2.sql
+* -file3.sql
+* -file4.sql
+* -file5.sql
+* -Script.PostDeployment2.sql
+* - nestedFolder
+* -otherFile1.sql
+* -otherFile2.sql
+* - folder2
+* -file1.sql
+* -file2.sql
+* -file3.sql
+* -file4.sql
+* -file5.sql
+* - file2.txt
+* - Script.PreDeployment1.sql
+* - Script.PreDeployment2.sql
+* - Script.PostDeployment1.sql
  *
  * @param createList Boolean specifying to create a list of the files and folders been created
  * @param list List of files and folders that are been created
+ * @param testFolderPath
  */
 export async function createDummyFileStructureWithPrePostDeployScripts(createList?: boolean, list?: Uri[], testFolderPath?: string): Promise<string> {
 	testFolderPath = await createDummyFileStructure(createList, list, testFolderPath);
@@ -188,20 +190,21 @@ export async function createListOfFiles(filePath?: string): Promise<Uri[]> {
 
 /**
  * TestFolder directory structure
- * 		- file1.sql
- * 		- folder1
- * 			-file1.sql
- * 			-file2.sql
- * 			-test1.sql
- * 			-test2.sql
- * 			-testLongerName.sql
- *	 	- folder2
- * 			-file1.sql
- * 			-file2.sql
- * 			- Script.PreDeployment1.sql
- * 			- Script.PostDeployment1.sql
- * 			- Script.PostDeployment2.sql
+* - file1.sql
+* - folder1
+* -file1.sql
+* -file2.sql
+* -test1.sql
+* -test2.sql
+* -testLongerName.sql
+* - folder2
+* -file1.sql
+* -file2.sql
+* - Script.PreDeployment1.sql
+* - Script.PostDeployment1.sql
+* - Script.PostDeployment2.sql
  *
+ * @param testFolderPath
  */
 export async function createOtherDummyFiles(testFolderPath: string): Promise<string> {
 	let filePath = path.join(testFolderPath, 'file1.sql');

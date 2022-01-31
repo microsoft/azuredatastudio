@@ -141,6 +141,11 @@ export function doubleEscapeSingleBrackets(value: string | undefined): string {
 
 /**
  * Installs dependencies for the extension
+ *
+ * @param apiWrapper
+ * @param taskName
+ * @param dependencies
+ * @param parallel
  */
 export async function executeTasks<T>(apiWrapper: ApiWrapper, taskName: string, dependencies: PromiseLike<T>[], parallel: boolean): Promise<T[]> {
 	return new Promise<T[]>((resolve, reject) => {

@@ -18,8 +18,12 @@ export class AzureSignInComponent extends ModelViewBase {
 	private _signInButton: azdata.ButtonComponent;
 
 	/**
-	 * Creates a new view
-	 */
+ * Creates a new view
+ *
+ * @param apiWrapper
+ * @param _modelBuilder
+ * @param parent
+ */
 	constructor(apiWrapper: ApiWrapper, private _modelBuilder: azdata.ModelBuilder, parent: ModelViewBase) {
 		super(apiWrapper, parent.root, parent);
 		this._signInButton = this._modelBuilder.button().withProps({
