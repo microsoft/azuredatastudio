@@ -1022,7 +1022,7 @@ declare module 'azdata' {
 		 * @param providerId The table designer provider Id.
 		 * @param tableInfo The table information. The object will be passed back to the table designer provider as the unique identifier for the table.
 		 */
-		export function openTableDesigner(providerId: string, tableInfo: TableInfo, serverInfo: ServerInfo): Thenable<void>;
+		export function openTableDesigner(providerId: string, tableInfo: TableInfo, propertyBag?: { [key: string]: string }): Thenable<void>;
 
 		/**
 		 * Definition for the table designer provider.
@@ -1098,6 +1098,10 @@ declare module 'azdata' {
 			 * Extension can store additional information that the provider needs to uniquely identify a table.
 			 */
 			[key: string]: any;
+			/**
+			 * Gives the table type.
+			 */
+			type?: TableType;
 		}
 
 		/**
@@ -1120,6 +1124,13 @@ declare module 'azdata' {
 			 * The list of schemas in the database.
 			 */
 			schemas: string[];
+		}
+
+		/**
+		 * Type of the table. More will be added later.
+		 */
+		export enum TableType {
+			Basic = 'basic'
 		}
 
 		/**

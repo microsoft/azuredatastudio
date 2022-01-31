@@ -35,7 +35,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 
 	constructor(private readonly _provider: TableDesignerProvider,
 		private _tableInfo: azdata.designers.TableInfo,
-		private _serverInfo: azdata.ServerInfo,
+		private _propertyBag: { [key: string]: string },
 		@INotificationService private readonly _notificationService: INotificationService,
 		@IAdsTelemetryService readonly _adsTelemetryService: IAdsTelemetryService,
 		@IQueryEditorService private readonly _queryEditorService: IQueryEditorService,
@@ -71,7 +71,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			objectType: edit.path[0],
 			provider: this._provider.providerId,
 			isNewTable: this._tableInfo.isNewTable
-		}).withServerInfo(this._serverInfo);
+		});
 		const startTime = new Date().getTime();
 		this.updateState(this.valid, this.dirty, 'processEdit');
 		this._provider.processTableEdit(this._tableInfo, edit).then(
@@ -97,7 +97,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 					objectType: edit.path[0],
 					provider: this._provider.providerId,
 					isNewTable: this._tableInfo.isNewTable
-				}).withServerInfo(this._serverInfo).send();
+				}).send();
 			}
 		);
 	}
@@ -111,7 +111,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		const saveEvent = this._adsTelemetryService.createActionEvent(TelemetryView.TableDesigner, TelemetryAction.GenerateScript).withAdditionalProperties({
 			provider: this._provider.providerId,
 			isNewTable: this._tableInfo.isNewTable,
-		}).withServerInfo(this._serverInfo);
+		});
 		const startTime = new Date().getTime();
 		try {
 			this.updateState(this.valid, this.dirty, 'generateScript');
@@ -130,7 +130,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 				error?.code, error?.message).withAdditionalProperties({
 					provider: this._provider.providerId,
 					isNewTable: this._tableInfo.isNewTable,
-				}).withServerInfo(this._serverInfo).send();
+				}).send();
 		}
 	}
 

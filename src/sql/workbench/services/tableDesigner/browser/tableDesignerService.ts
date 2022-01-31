@@ -43,13 +43,13 @@ export class TableDesignerService implements ITableDesignerService {
 		throw invalidProvider(providerId);
 	}
 
-	public async openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, serverInfo: azdata.ServerInfo): Promise<void> {
+	public async openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, propertyBag?: { [key: string]: string }): Promise<void> {
 		this._adsTelemetryService.createActionEvent(TelemetryView.TableDesigner, TelemetryAction.Open).withAdditionalProperties({
 			provider: providerId,
 			newTable: tableInfo.isNewTable
-		}).withServerInfo(serverInfo).send();
+		}).send();
 		const provider = this.getProvider(providerId);
-		const tableDesignerInput = this._instantiationService.createInstance(TableDesignerInput, provider, tableInfo, serverInfo);
+		const tableDesignerInput = this._instantiationService.createInstance(TableDesignerInput, provider, tableInfo, propertyBag);
 		await this._editorService.openEditor(tableDesignerInput, { pinned: true }, ACTIVE_GROUP);
 	}
 }

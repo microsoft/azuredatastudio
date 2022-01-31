@@ -999,4 +999,8 @@ export namespace designers {
 		Remove = 1,
 		Update = 2
 	}
+
+	export enum TableType {
+		Basic = 'basic'
+	}
 }

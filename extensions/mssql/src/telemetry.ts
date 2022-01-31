@@ -10,6 +10,7 @@ import { ErrorAction, ErrorHandler, Message, CloseAction } from 'vscode-language
 import * as Utils from './utils';
 import * as Constants from './constants';
 import * as nls from 'vscode-nls';
+import { ServerInfo } from 'azdata';
 
 const localize = nls.loadMessageBundle();
 const packageJson = require('../package.json');
@@ -113,6 +114,20 @@ export class Telemetry {
 			console.error('Failed to send telemetry event. error: ' + telemetryErr);
 		}
 
+	}
+
+	/**
+	 * Collects server information from ServerInfo to put into a
+	 * property bag
+	 */
+	public static fillServerInfo(propertyBag: { [key: string]: string }, serverInfo: ServerInfo): { [key: string]: string } {
+		propertyBag['osVersion'] = serverInfo?.osVersion;
+		propertyBag['serverEdition'] = serverInfo?.serverEdition;
+		propertyBag['serverLevel'] = serverInfo?.serverLevel;
+		propertyBag['serverMajorVersion'] = serverInfo?.serverMajorVersion.toString();
+		propertyBag['serverMinorVersion'] = serverInfo?.serverMinorVersion.toString();
+		propertyBag['isCloud'] = serverInfo?.isCloud.toString();
+		return propertyBag;
 	}
 }
 
