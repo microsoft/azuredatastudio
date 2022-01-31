@@ -35,8 +35,7 @@ export class Logger {
 	}
 
 	static error(msg: any, ...vals: any[]) {
-		const fullMessage = `[error]: ${msg} - ${vals.map(v => JSON.stringify(v)).join(' - ')}`;
-		this.channel.appendLine(fullMessage);
+		this.write(LogLevel.Error, msg, vals);
 	}
 
 
