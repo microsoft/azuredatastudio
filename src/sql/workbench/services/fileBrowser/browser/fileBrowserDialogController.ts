@@ -25,12 +25,13 @@ export class FileBrowserDialogController implements IFileBrowserDialogController
 		fileFilters: [{ label: string, filters: string[] }],
 		fileValidationServiceType: string,
 		isWide: boolean,
+		isRestoreDialog: boolean,
 		handleOnOk: (path: string) => void
 	): void {
-		if (!this._fileBrowserDialog) {
-			this._fileBrowserDialog = this._instantiationService.createInstance(FileBrowserDialog, localize('filebrowser.selectFile', "Select a file"));
-			this._fileBrowserDialog.render();
-		}
+		//if (!this._fileBrowserDialog) {
+		this._fileBrowserDialog = this._instantiationService.createInstance(FileBrowserDialog, localize('filebrowser.selectBlob', "Select a blob"), isRestoreDialog);
+		this._fileBrowserDialog.render();
+		//}
 
 		this._fileBrowserDialog.setWide(isWide);
 		this._fileBrowserDialog.onOk((filepath) => handleOnOk(filepath));
