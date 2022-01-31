@@ -17,8 +17,11 @@
 	width: 22px;
 }
 
+.browse-button {
+}
+
 .backup-dialog {
-	height: 100%
+	height: 100%;
 }
 
 .backup-dialog .advanced-main-header {
@@ -67,6 +70,6 @@
 	float: left;
 }
 
-.backup-dialog .warning-message{
+.backup-dialog .warning-message {
 	padding-left: 20px;
 }

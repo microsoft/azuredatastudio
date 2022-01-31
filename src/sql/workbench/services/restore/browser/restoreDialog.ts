@@ -55,6 +55,7 @@ interface FileListElement {
 }
 
 const LocalizedStrings = {
+	BACKURL: localize('backupUrl', "Backup URL"),
 	BACKFILEPATH: localize('backupFilePath', "Backup file path"),
 	TARGETDATABASE: localize('targetDatabase', "Target database")
 };
@@ -70,16 +71,20 @@ export class RestoreDialog extends Modal {
 	private _restoreTitle = localize('restoreDialog.restoreTitle', "Restore database");
 	private _databaseTitle = localize('restoreDialog.database', "Database");
 	private _backupFileTitle = localize('restoreDialog.backupFile', "Backup file");
+	private _urlTitle = localize('restoreDialog.url', "URL");
 	private _ownerUri?: string;
 	private _databaseDropdown?: Dropdown;
 	private _isBackupFileCheckboxChanged?: boolean;
 
 	// General options
 	private _filePathInputBox?: InputBox;
+	private _urlInputBox?: InputBox;
+	private _browseUrlButton?: Button;
 	private _browseFileButton?: Button;
 	private _destinationRestoreToInputBox?: InputBox;
 	private _restoreFromSelectBox?: SelectBox;
 	private _sourceDatabaseSelectBox?: SelectBox;
+	private _targetDatabaseInputBox: InputBox;
 
 	private _panel?: TabbedPanel;
 	private _generalTabId?: PanelTabIdentifier;
@@ -104,6 +109,11 @@ export class RestoreDialog extends Modal {
 	private readonly _closeExistingConnectionsOption = 'closeExistingConnections';
 
 	private _restoreFromBackupFileElement?: HTMLElement;
+	private _restoreFromUrlElement?: HTMLElement;
+	private _destinationRestoreToContainer?: HTMLElement;
+	private _sourceDatabasesElement?: HTMLElement;
+	private _targetDatabaseElement?: HTMLElement;
+	private _targetDatabaseInputElement?: HTMLElement;
 
 	private _fileListTable?: Table<FileListElement>;
 	private _fileListData?: TableDataView<FileListElement>;
@@ -170,7 +180,31 @@ export class RestoreDialog extends Modal {
 	protected renderBody(container: HTMLElement) {
 		const restoreFromElement = DOM.$('.restore-from');
 		this.createLabelElement(restoreFromElement, localize('source', "Source"), true);
-		this._restoreFromSelectBox = this.createSelectBoxHelper(restoreFromElement, localize('restoreFrom', "Restore from"), [this._databaseTitle, this._backupFileTitle], this._databaseTitle);
+		this._restoreFromSelectBox = this.createSelectBoxHelper(restoreFromElement, localize('restoreFrom', "Restore from"), [this._databaseTitle, this._backupFileTitle, this._urlTitle], this._databaseTitle);
+
+		this._restoreFromUrlElement = DOM.$('.backup-url');
+		DOM.hide(this._restoreFromUrlElement);
+		const urlErrorMessage = localize('missingBackupUrlError', "Backup url is required.");
+		const urlValidationOptions: IInputOptions = {
+			validationOptions: {
+				validation: (value: string) => !value ? ({ type: MessageType.ERROR, content: urlErrorMessage }) : null
+			},
+			placeholder: localize('enterBackupUrl', "Please enter URL"),
+			ariaLabel: LocalizedStrings.BACKURL
+		};
+		const urlInputContainer = DOM.append(this._restoreFromUrlElement, DOM.$('.dialog-input-section'));
+		DOM.append(urlInputContainer, DOM.$('.dialog-label')).innerText = LocalizedStrings.BACKURL;
+
+		this._urlInputBox = new InputBox(DOM.append(urlInputContainer, DOM.$('.dialog-input')), this._contextViewService, urlValidationOptions);
+
+		const urlBrowseContainer = DOM.append(this._restoreFromUrlElement, DOM.$('.dialog-input-section'));
+		DOM.append(urlBrowseContainer, DOM.$('.dialog-label')).innerText = '';
+
+		let browseLabel = localize('restoreDialog.browse', "Browse");
+		this._browseUrlButton = new Button(DOM.append(urlBrowseContainer, DOM.$('.file-browser')), { secondary: true });
+		this._browseUrlButton.label = browseLabel;
+		this._browseUrlButton.setWidth('50px');
+
 
 		this._restoreFromBackupFileElement = DOM.$('.backup-file-path');
 		DOM.hide(this._restoreFromBackupFileElement);
@@ -190,23 +224,25 @@ export class RestoreDialog extends Modal {
 		this._browseFileButton = new Button(DOM.append(filePathInputContainer, DOM.$('.file-browser')), { secondary: true });
 		this._browseFileButton.label = '...';
 
-		const sourceDatabasesElement = DOM.$('.source-database-list');
-		this._sourceDatabaseSelectBox = this.createSelectBoxHelper(sourceDatabasesElement, localize('database', "Database"), [], '');
+		this._sourceDatabasesElement = DOM.$('.source-database-list');
+		this._sourceDatabaseSelectBox = this.createSelectBoxHelper(this._sourceDatabasesElement, localize('database', "Database"), [], '');
 
 		// Source section
 		const sourceElement = DOM.$('.source-section.new-section');
 		sourceElement.append(restoreFromElement);
+		sourceElement.append(this._restoreFromUrlElement);
 		sourceElement.append(this._restoreFromBackupFileElement);
-		sourceElement.append(sourceDatabasesElement);
+		sourceElement.append(this._sourceDatabasesElement);
 
 		// Destination section
 		const destinationElement = DOM.$('.destination-section.new-section');
 		this.createLabelElement(destinationElement, localize('destination', "Destination"), true);
 
-		const destinationInputContainer = DOM.append(destinationElement, DOM.$('.dialog-input-section'));
-		DOM.append(destinationInputContainer, DOM.$('.dialog-label')).innerText = LocalizedStrings.TARGETDATABASE;
+		this._targetDatabaseElement = DOM.append(destinationElement, DOM.$('.dialog-input-section'));
+		DOM.append(this._targetDatabaseElement, DOM.$('.dialog-label')).innerText = LocalizedStrings.TARGETDATABASE;
 
-		const dropdownContainer = DOM.append(destinationInputContainer, DOM.$('.dialog-input'));
+
+		const dropdownContainer = DOM.append(this._targetDatabaseElement, DOM.$('.dialog-input'));
 
 		// Get the bootstrap params and perform the bootstrap
 		dropdownContainer.style.width = '100%';
@@ -232,7 +268,27 @@ export class RestoreDialog extends Modal {
 		this._databaseDropdown.value = this.viewModel.targetDatabaseName!;
 		attachEditableDropdownStyler(this._databaseDropdown, this._themeService);
 
-		this._destinationRestoreToInputBox = this.createInputBoxHelper(destinationElement, localize('restoreTo', "Restore to"));
+		this._targetDatabaseInputElement = DOM.append(destinationElement, DOM.$('.dialog-input-section'));
+		DOM.append(this._targetDatabaseInputElement, DOM.$('.dialog-label')).innerText = LocalizedStrings.TARGETDATABASE;
+		DOM.hide(this._targetDatabaseInputElement);
+
+		const inputTargetDatabaseContainer = DOM.append(this._targetDatabaseInputElement, DOM.$('.dialog-input'));
+
+		// Get the bootstrap params and perform the bootstrap
+		inputTargetDatabaseContainer.style.width = '100%';
+
+		this._targetDatabaseInputBox = new InputBox(inputTargetDatabaseContainer, this._contextViewService, {
+			ariaLabel: LocalizedStrings.TARGETDATABASE,
+			placeholder: localize('targetDatabaseTooltip', "Please enter database name")
+		});
+
+		const restoreToLabel = localize('restoreTo', "Restore to");
+		const destinationRestoreToAriaOptions = {
+			ariaLabel: restoreToLabel
+		};
+		this._destinationRestoreToContainer = DOM.append(destinationElement, DOM.$('.dialog-input-section'));
+		DOM.append(this._destinationRestoreToContainer, DOM.$('.dialog-label')).innerText = restoreToLabel;
+		this._destinationRestoreToInputBox = new InputBox(DOM.append(this._destinationRestoreToContainer, DOM.$('.dialog-input')), this._contextViewService, mixin(destinationRestoreToAriaOptions, null));
 
 		// Restore plan section
 		const restorePlanElement = DOM.$('.restore-plan-section.new-section');
@@ -566,11 +622,14 @@ export class RestoreDialog extends Modal {
 
 	private registerListeners(): void {
 		// Theme styler
+		this._register(attachInputBoxStyler(this._targetDatabaseInputBox, this._themeService));
+		this._register(attachInputBoxStyler(this._urlInputBox!, this._themeService));
 		this._register(attachInputBoxStyler(this._filePathInputBox!, this._themeService));
 		this._register(attachInputBoxStyler(this._destinationRestoreToInputBox!, this._themeService));
 		this._register(attachSelectBoxStyler(this._restoreFromSelectBox!, this._themeService));
 		this._register(attachSelectBoxStyler(this._sourceDatabaseSelectBox!, this._themeService));
 		this._register(attachButtonStyler(this._browseFileButton!, this._themeService));
+		this._register(attachButtonStyler(this._browseUrlButton!, this._themeService));
 		this._register(attachButtonStyler(this._scriptButton!, this._themeService));
 		this._register(attachButtonStyler(this._restoreButton!, this._themeService));
 		this._register(attachButtonStyler(this._closeButton!, this._themeService));
@@ -582,6 +641,10 @@ export class RestoreDialog extends Modal {
 		}));
 
 		this._browseFileButton!.onDidClick(() => {
+			this.onFileBrowserRequested();
+		});
+
+		this._browseUrlButton!.onDidClick(() => {
 			this.onFileBrowserRequested();
 		});
 
@@ -599,6 +662,7 @@ export class RestoreDialog extends Modal {
 			this.viewModel.defaultBackupFolder!,
 			fileFiltersSet,
 			FileValidationConstants.restore,
+			true,
 			true,
 			filepath => this.onFileBrowsed(filepath));
 	}
@@ -642,11 +706,27 @@ export class RestoreDialog extends Modal {
 	private onRestoreFromChanged(selectedRestoreFrom: string) {
 		this.removeErrorMessage();
 		if (selectedRestoreFrom === this._backupFileTitle) {
+			this._sourceDatabaseSelectBox.enable();
 			this.viewModel.onRestoreFromChanged(true);
 			DOM.show(this._restoreFromBackupFileElement!);
-		} else {
+			DOM.hide(this._restoreFromUrlElement);
+		} else if (selectedRestoreFrom === this._databaseTitle) {
+			this._sourceDatabaseSelectBox.enable();
 			this.viewModel.onRestoreFromChanged(false);
 			DOM.hide(this._restoreFromBackupFileElement!);
+			DOM.hide(this._restoreFromUrlElement);
+		} else if (selectedRestoreFrom === this._urlTitle) {
+			this.viewModel.onRestoreFromChanged(false);
+			DOM.hide(this._destinationRestoreToContainer!);
+			DOM.hide(this._sourceDatabasesElement!);
+			DOM.hide(this._restoreFromBackupFileElement!);
+			DOM.show(this._restoreFromUrlElement!);
+			DOM.hide(this._targetDatabaseElement!);
+			DOM.show(this._targetDatabaseInputElement!);
+			this._panel.removeTab('fileContent');
+			this._panel.removeTab('options');
+			this._restoreFromSelectBox.disable();
+			this._databaseDropdown.value = '';
 		}
 		this.resetRestoreContent();
 	}
