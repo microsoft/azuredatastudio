@@ -101,6 +101,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			loginComplete?.resolve();
 			return account;
 		} catch (ex) {
+			Logger.write(LogLevel.Error, 'Login failed');
 			if (ex instanceof AzureAuthError) {
 				if (loginComplete) {
 					loginComplete.reject(ex);
@@ -512,7 +513,11 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 	public createAccount(tokenClaims: TokenClaims, key: string, tenants: Tenant[]): AzureAccount {
 		Logger.write(LogLevel.Verbose, `Token Claims: ${tokenClaims}`);
-		Logger.write(LogLevel.Verbose, `Tenants: ${tenants}`);
+		tenants.forEach((tenant) => {
+			Logger.write(LogLevel.Verbose,
+				`Tenant ID: ${tenant.id}
+				Tenant Name: ${tenant.displayName}`);
+		});
 		// Determine if this is a microsoft account
 		let accountIssuer = 'unknown';
 
