@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as DOM from 'vs/base/browser/dom';
-import * as azdata from 'azdata';
+import type * as azdata from 'azdata';
 import { localize } from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
 import { Codicon } from 'vs/base/common/codicons';

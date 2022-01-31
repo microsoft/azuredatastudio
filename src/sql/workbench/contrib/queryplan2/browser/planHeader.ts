@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
+import type * as azdata from 'azdata';
 import * as DOM from 'vs/base/browser/dom';
 import { localize } from 'vs/nls';
 import { openNewQuery } from 'sql/workbench/contrib/query/browser/queryActions';

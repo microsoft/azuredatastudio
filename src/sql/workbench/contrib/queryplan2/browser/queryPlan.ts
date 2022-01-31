@@ -222,14 +222,9 @@ export class QueryPlan2 implements ISashLayoutProvider {
 
 	private populate(node: azdata.ExecutionPlanNode, diagramNode: any): any {
 		diagramNode.label = node.name;
+
 		if (node.properties && node.properties.length > 0) {
-			diagramNode.metrics = node.properties.filter(e => isString(e.value))
-				.map(e => {
-					return {
-						name: e.name,
-						value: e.value.toString().substring(0, 75)
-					};
-				});
+			diagramNode.metrics = this.populateProperties(node.properties);
 		}
 
 		if (node.type) {
@@ -242,14 +237,37 @@ export class QueryPlan2 implements ISashLayoutProvider {
 				diagramNode.children.push(this.populate(node.children[i], new Object()));
 			}
 		}
+
+		if (node.edges) {
+			diagramNode.edges = [];
+			for (let i = 0; i < node.edges.length; i++) {
+				diagramNode.edges.push(this.populateEdges(node.edges[i], new Object()));
+			}
+		}
 		return diagramNode;
+	}
+
+	private populateEdges(edge: azdata.ExecutionPlanEdge, diagramEdge: any) {
+		diagramEdge.label = '';
+		diagramEdge.metrics = this.populateProperties(edge.properties);
+		diagramEdge.weight = Math.max(0.5, Math.min(0.5 + 0.75 * Math.log10(edge.rowCount), 6));
+		return diagramEdge;
+	}
+
+	private populateProperties(props: azdata.ExecutionPlanGraphElementProperty[]) {
+		return props.filter(e => isString(e.value))
+			.map(e => {
+				return {
+					name: e.name,
+					value: e.value.toString().substring(0, 75)
+				};
+			});
 	}
 
 	private createPlanDiagram(container: HTMLElement): void {
 		let diagramRoot: any = new Object();
 		let graphRoot: azdata.ExecutionPlanNode = this._graph.root;
 		this.populate(graphRoot, diagramRoot);
-
 		new azdataGraph.azdataQueryPlan(container, diagramRoot, queryPlanNodeIconPaths);
 	}
 

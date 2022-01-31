@@ -3,10 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
+import type * as azdata from 'azdata';
+import { IDisposable } from 'vs/base/common/lifecycle';
 
-export class QueryPlan2State {
-	graphs?: azdata.ExecutionPlanGraph[] = [];
+export class QueryPlan2State implements IDisposable {
+	graphs: azdata.ExecutionPlanGraph[] = [];
 	dispose() {
 		this.graphs = [];
 	}
