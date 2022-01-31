@@ -578,9 +578,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				TableIndexProperty: sqlExtHostTypes.designers.TableIndexProperty,
 				TableIndexColumnSpecificationProperty: sqlExtHostTypes.designers.TableIndexColumnSpecificationProperty,
 				DesignerEditType: sqlExtHostTypes.designers.DesignerEditType,
-				TableType: sqlExtHostTypes.designers.TableType,
-				openTableDesigner(providerId, tableInfo: azdata.designers.TableInfo, propertyBag?: { [key: string]: string }): Promise<void> {
-					return extHostDataProvider.$openTableDesigner(providerId, tableInfo, propertyBag);
+				openTableDesigner(providerId, tableInfo: azdata.designers.TableInfo, telemetryInfo?: { [key: string]: string }): Promise<void> {
+					return extHostDataProvider.$openTableDesigner(providerId, tableInfo, telemetryInfo);
 				}
 			};
 

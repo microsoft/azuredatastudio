@@ -43,7 +43,7 @@ export class TableDesignerService implements ITableDesignerService {
 		throw invalidProvider(providerId);
 	}
 
-	public async openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, propertyBag?: { [key: string]: string }): Promise<void> {
+	public async openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, telemetryInfo?: { [key: string]: string }): Promise<void> {
 		this._adsTelemetryService.createActionEvent(TelemetryView.TableDesigner, TelemetryAction.Open).withAdditionalProperties({
 			provider: providerId,
 			newTable: tableInfo.isNewTable

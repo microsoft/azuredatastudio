@@ -120,14 +120,14 @@ export class Telemetry {
 	 * Collects server information from ServerInfo to put into a
 	 * property bag
 	 */
-	public static fillServerInfo(propertyBag: { [key: string]: string }, serverInfo: ServerInfo): { [key: string]: string } {
-		propertyBag['osVersion'] = serverInfo?.osVersion;
-		propertyBag['serverEdition'] = serverInfo?.serverEdition;
-		propertyBag['serverLevel'] = serverInfo?.serverLevel;
-		propertyBag['serverMajorVersion'] = serverInfo?.serverMajorVersion.toString();
-		propertyBag['serverMinorVersion'] = serverInfo?.serverMinorVersion.toString();
-		propertyBag['isCloud'] = serverInfo?.isCloud.toString();
-		return propertyBag;
+	public static fillServerInfo(telemetryInfo: { [key: string]: string }, serverInfo: ServerInfo): { [key: string]: string } {
+		telemetryInfo['osVersion'] = serverInfo?.osVersion;
+		telemetryInfo['serverEdition'] = serverInfo?.serverEdition;
+		telemetryInfo['serverLevel'] = serverInfo?.serverLevel;
+		telemetryInfo['serverMajorVersion'] = serverInfo?.serverMajorVersion.toString();
+		telemetryInfo['serverMinorVersion'] = serverInfo?.serverMinorVersion.toString();
+		telemetryInfo['isCloud'] = serverInfo?.isCloud.toString();
+		return telemetryInfo;
 	}
 }
 

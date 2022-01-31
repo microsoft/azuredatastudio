@@ -9,21 +9,22 @@ import * as vscode from 'vscode';
 import { sqlProviderName } from '../constants';
 import { generateUuid } from 'vscode-languageclient/lib/utils/uuid';
 import { Telemetry } from '../telemetry';
+import { TableType } from '../mssql';
 
 export function registerTableDesignerCommands(appContext: AppContext) {
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.newTable', async (context: azdata.ObjectExplorerContext) => {
 		const connectionString = await azdata.connection.getConnectionString(context.connectionProfile.id, true);
 		const serverInfo = await azdata.connection.getServerInfo(context.connectionProfile.id);
-		let propertyBag = {};
-		propertyBag = Telemetry.fillServerInfo(propertyBag, serverInfo);
+		let telemetryInfo = {};
+		telemetryInfo = Telemetry.fillServerInfo(telemetryInfo, serverInfo);
 		await azdata.designers.openTableDesigner(sqlProviderName, {
 			server: context.connectionProfile.serverName,
 			database: context.connectionProfile.databaseName,
 			isNewTable: true,
 			id: generateUuid(),
 			connectionString: connectionString,
-			type: azdata.designers.TableType.Basic
-		}, propertyBag);
+			type: TableType.Basic
+		}, telemetryInfo);
 	}));
 
 	appContext.extensionContext.subscriptions.push(vscode.commands.registerCommand('mssql.designTable', async (context: azdata.ObjectExplorerContext) => {
@@ -34,8 +35,8 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 		const connectionString = await azdata.connection.getConnectionString(context.connectionProfile.id, true);
 		const connectionUri = await azdata.connection.getUriForConnection(context.connectionProfile.id);
 		const serverInfo = await azdata.connection.getServerInfo(context.connectionProfile.id);
-		let propertyBag = {};
-		propertyBag = Telemetry.fillServerInfo(propertyBag, serverInfo);
+		let telemetryInfo = {};
+		telemetryInfo = Telemetry.fillServerInfo(telemetryInfo, serverInfo);
 		await azdata.designers.openTableDesigner(sqlProviderName, {
 			server: server,
 			database: database,
@@ -44,7 +45,7 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 			schema: schema,
 			id: `${connectionUri}|${database}|${schema}|${name}`,
 			connectionString: connectionString,
-			type: azdata.designers.TableType.Basic
-		}, propertyBag);
+			type: TableType.Basic
+		}, telemetryInfo);
 	}));
 }
