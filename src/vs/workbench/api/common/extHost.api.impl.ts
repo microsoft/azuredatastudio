@@ -50,7 +50,6 @@ import { throwProposedApiError, checkProposedApiEnabled } from 'vs/workbench/ser
 import { ProxyIdentifier } from 'vs/workbench/services/extensions/common/proxyIdentifier';
 import { ExtensionDescriptionRegistry } from 'vs/workbench/services/extensions/common/extensionDescriptionRegistry';
 import type * as vscode from 'vscode';
-import type * as azdata from 'azdata';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { values } from 'vs/base/common/collections';
 import { ExtHostEditorInsets } from 'vs/workbench/api/common/extHostCodeInsets';
@@ -93,11 +92,10 @@ import { matchesScheme } from 'vs/platform/opener/common/opener';
 // import { ExtHostNotebookDocuments } from 'vs/workbench/api/common/extHostNotebookDocuments'; {{SQL CARBON EDIT}} Disable VS Code notebooks
 // import { ExtHostInteractive } from 'vs/workbench/api/common/extHostInteractive'; {{SQL CARBON EDIT}} Remove until we need it
 import { ExtHostNotebook } from 'sql/workbench/api/common/extHostNotebook';
-import { functionalityNotSupportedError, invalidArgumentsError } from 'sql/base/common/locConstants';
+import { functionalityNotSupportedError } from 'sql/base/common/locConstants';
 import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/common/extHostNotebookDocumentsAndEditors';
 import { VSCodeNotebookDocument } from 'sql/workbench/api/common/notebooks/vscodeNotebookDocument';
 import { VSCodeNotebookEditor } from 'sql/workbench/api/common/notebooks/vscodeNotebookEditor';
-import { convertToADSNotebookContents } from 'sql/workbench/api/common/notebooks/notebookUtils';
 import { IdGenerator } from 'vs/base/common/idGenerator';
 
 export interface IExtensionApiFactory {
@@ -892,18 +890,18 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor, ex
 				return extHostNotebookDocumentsAndEditors.getAllDocuments().map(doc => new VSCodeNotebookDocument(doc.document));
 			},
 			async openNotebookDocument(uriOrType?: URI | string, content?: vscode.NotebookData): Promise<vscode.NotebookDocument> {
-				// {{SQL CARBON EDIT}} Use our own notebooks
-				let doc: azdata.nb.NotebookDocument;
-				if (URI.isUri(uriOrType)) {
-					let editor = await extHostNotebookDocumentsAndEditors.showNotebookDocument(uriOrType, {});
-					doc = editor.document;
-				} else if (typeof uriOrType === 'string') {
-					let convertedContents = convertToADSNotebookContents(content);
-					doc = await extHostNotebookDocumentsAndEditors.openNotebookDocument(uriOrType, convertedContents);
-				} else {
-					throw new Error(invalidArgumentsError);
-				}
-				return new VSCodeNotebookDocument(doc);
+				// {{SQL CARBON EDIT}} Disable VS Code notebooks
+				throw new Error(functionalityNotSupportedError);
+				// let uri: URI;
+				// if (URI.isUri(uriOrType)) {
+				// 	uri = uriOrType;
+				// 	await extHostNotebook.openNotebookDocument(uriOrType);
+				// } else if (typeof uriOrType === 'string') {
+				// 	uri = URI.revive(await extHostNotebook.createNotebookDocument({ viewType: uriOrType, content }));
+				// } else {
+				// 	throw new Error('Invalid arguments');
+				// }
+				// return extHostNotebook.getNotebookDocument(uri).apiNotebook;
 			},
 			get onDidOpenNotebookDocument(): Event<vscode.NotebookDocument> {
 				// {{SQL CARBON EDIT}} Use our own notebooks
