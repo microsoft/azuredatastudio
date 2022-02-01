@@ -35,13 +35,9 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 	//#region APIs called by main thread
 	async $getSerializationManagerDetails(providerHandle: number, notebookUri: UriComponents): Promise<ISerializationManagerDetails> {
 		let uri = URI.revive(notebookUri);
-		let uriString = uri.toString();
-		let adapter = this.findSerializationManagerForUri(uriString);
-		if (!adapter) {
-			adapter = await this._withSerializationProvider(providerHandle, (provider) => {
-				return this.getOrCreateSerializationManager(provider, uri);
-			});
-		}
+		let adapter = await this._withSerializationProvider(providerHandle, (provider) => {
+			return this.getOrCreateSerializationManager(provider, uri);
+		});
 
 		return {
 			handle: adapter.handle,
@@ -50,13 +46,9 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 	}
 	async $getExecuteManagerDetails(providerHandle: number, notebookUri: UriComponents): Promise<IExecuteManagerDetails> {
 		let uri = URI.revive(notebookUri);
-		let uriString = uri.toString();
-		let adapter = this.findExecuteManagerForUri(uriString);
-		if (!adapter) {
-			adapter = await this._withExecuteProvider(providerHandle, (provider) => {
-				return this.getOrCreateExecuteManager(provider, uri);
-			});
-		}
+		let adapter = await this._withExecuteProvider(providerHandle, (provider) => {
+			return this.getOrCreateExecuteManager(provider, uri);
+		});
 
 		return {
 			handle: adapter.handle,
@@ -66,11 +58,12 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 	$handleNotebookClosed(notebookUri: UriComponents): void {
 		let uri = URI.revive(notebookUri);
 		let uriString = uri.toString();
-		let manager = this.findExecuteManagerForUri(uriString);
-		if (manager) {
-			manager.provider.handleNotebookClosed(uri);
-			this._adapters.delete(manager.handle);
-		}
+		this.findExecuteManagersForUri(uriString).forEach(manager => {
+			if (manager) {
+				manager.provider.handleNotebookClosed(uri);
+				this._adapters.delete(manager.handle);
+			}
+		});
 	}
 
 	$doStartServer(managerHandle: number, kernelSpec: azdata.nb.IKernelSpec): Thenable<void> {
@@ -291,37 +284,35 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		return matchingAdapters;
 	}
 
-	private findSerializationManagerForUri(uriString: string): SerializationManagerAdapter {
-		for (let manager of this.getAdapters(SerializationManagerAdapter)) {
-			if (manager.uriString === uriString) {
-				return manager;
-			}
-		}
-		return undefined;
-	}
-
-	private findExecuteManagerForUri(uriString: string): ExecuteManagerAdapter {
+	private findExecuteManagersForUri(uriString: string): ExecuteManagerAdapter[] {
+		let managers = [];
 		for (let manager of this.getAdapters(ExecuteManagerAdapter)) {
 			if (manager.uriString === uriString) {
-				return manager;
+				managers.push(manager);
 			}
 		}
-		return undefined;
+		return managers;
 	}
 
 	private async getOrCreateSerializationManager(provider: azdata.nb.NotebookSerializationProvider, notebookUri: URI): Promise<SerializationManagerAdapter> {
-		let manager = await provider.getSerializationManager(notebookUri);
 		let uriString = notebookUri.toString();
-		let adapter = new SerializationManagerAdapter(provider, manager, uriString);
-		adapter.handle = this._addNewAdapter(adapter);
+		let adapter = this.getAdapters(SerializationManagerAdapter).find(executeAdapter => executeAdapter.uriString === uriString && executeAdapter.provider.providerId === provider.providerId);
+		if (!adapter) {
+			let manager = await provider.getSerializationManager(notebookUri);
+			adapter = new SerializationManagerAdapter(provider, manager, uriString);
+			adapter.handle = this._addNewAdapter(adapter);
+		}
 		return adapter;
 	}
 
 	private async getOrCreateExecuteManager(provider: azdata.nb.NotebookExecuteProvider, notebookUri: URI): Promise<ExecuteManagerAdapter> {
-		let manager = await provider.getExecuteManager(notebookUri);
 		let uriString = notebookUri.toString();
-		let adapter = new ExecuteManagerAdapter(provider, manager, uriString);
-		adapter.handle = this._addNewAdapter(adapter);
+		let adapter = this.getAdapters(ExecuteManagerAdapter).find(executeAdapter => executeAdapter.uriString === uriString && executeAdapter.provider.providerId === provider.providerId);
+		if (!adapter) {
+			let manager = await provider.getExecuteManager(notebookUri);
+			adapter = new ExecuteManagerAdapter(provider, manager, uriString);
+			adapter.handle = this._addNewAdapter(adapter);
+		}
 		return adapter;
 	}
 
