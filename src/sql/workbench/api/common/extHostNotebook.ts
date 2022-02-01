@@ -296,7 +296,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 
 	private async getOrCreateSerializationManager(provider: azdata.nb.NotebookSerializationProvider, notebookUri: URI): Promise<SerializationManagerAdapter> {
 		let uriString = notebookUri.toString();
-		let adapter = this.getAdapters(SerializationManagerAdapter).find(executeAdapter => executeAdapter.uriString === uriString && executeAdapter.provider.providerId === provider.providerId);
+		let adapter = this.getAdapters(SerializationManagerAdapter).find(a => a.uriString === uriString && a.provider.providerId === provider.providerId);
 		if (!adapter) {
 			let manager = await provider.getSerializationManager(notebookUri);
 			adapter = new SerializationManagerAdapter(provider, manager, uriString);
@@ -307,7 +307,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 
 	private async getOrCreateExecuteManager(provider: azdata.nb.NotebookExecuteProvider, notebookUri: URI): Promise<ExecuteManagerAdapter> {
 		let uriString = notebookUri.toString();
-		let adapter = this.getAdapters(ExecuteManagerAdapter).find(executeAdapter => executeAdapter.uriString === uriString && executeAdapter.provider.providerId === provider.providerId);
+		let adapter = this.getAdapters(ExecuteManagerAdapter).find(a => a.uriString === uriString && a.provider.providerId === provider.providerId);
 		if (!adapter) {
 			let manager = await provider.getExecuteManager(notebookUri);
 			adapter = new ExecuteManagerAdapter(provider, manager, uriString);
