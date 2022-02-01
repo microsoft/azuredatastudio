@@ -11,6 +11,7 @@ import { INotebookService } from 'sql/workbench/services/notebook/browser/notebo
 import { relative, resolve } from 'vs/base/common/path';
 import { IFileService } from 'vs/platform/files/common/files';
 import { isWeb } from 'vs/base/common/platform';
+import { FileAccess } from 'vs/base/common/network';
 
 const knownSchemes = new Set(['http', 'https', 'file', 'mailto', 'data', 'azuredatastudio', 'azuredatastudio-insiders', 'vscode', 'vscode-insiders', 'vscode-resource', 'onenote']);
 @Directive({
@@ -71,6 +72,9 @@ export class LinkHandlerDirective {
 				return;
 			}
 		}
+		// On Mac, the link href scheme is vscode-file. We want to convert the vscode-file URI to file URI
+		// so that notebooks get opened properly.
+		uri = FileAccess.asFileUri(uri);
 		if (uri && this.openerService && this.isSupportedLink(uri)) {
 			if (uri.fragment && uri.fragment.length > 0 && uri.fsPath === this.workbenchFilePath.fsPath) {
 				this.notebookService.navigateTo(this.notebookUri, uri.fragment);
