@@ -31,6 +31,6 @@
 	"config.azureDeviceCodeMethod": "Device Code Method",
 	"config.noSystemKeychain": "Disable system keychain integration. Credentials will be stored in a flat file in the user's home directory.",
 	"config.piiLogging": "Should Personally Identifiable Information (PII) be logged in the console view locally",
-	"config.loggingLevel": "[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs."
+	"config.loggingLevel": "[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs."
 
 }

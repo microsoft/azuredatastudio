@@ -110,8 +110,10 @@ export abstract class AzureAuth implements vscode.Disposable {
 					void vscode.window.showErrorMessage(ex.message);
 					Logger.error(ex.originalMessageAndException);
 				}
+			} else {
+				Logger.write(LogLevel.Error, ex);
+
 			}
-			Logger.write(LogLevel.Error, ex);
 			return {
 				canceled: false
 			};
