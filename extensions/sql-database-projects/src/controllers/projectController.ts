@@ -150,9 +150,7 @@ export class ProjectsController {
 
 	/**
 	 * Creates a new folder with the project name in the specified location, and places the new .sqlproj inside it
-	 * @param newProjName
-	 * @param folderUri
-	 * @param projectGuid
+	 * @param creationParams
 	 */
 	public async createNewProject(creationParams: NewProjectParams): Promise<string> {
 		TelemetryReporter.createActionEvent(TelemetryViews.ProjectController, TelemetryActions.createNewProject)
@@ -266,7 +264,8 @@ export class ProjectsController {
 
 	/**
 	 * Publishes a project to docker container
-	 * @param treeNode a treeItem in a project's hierarchy, to be used to obtain a Project
+	 * @param context a treeItem in a project's hierarchy, to be used to obtain a Project or the Project itself
+	 * @param deployProfile
 	 */
 	public async publishToDockerContainer(context: Project | dataworkspace.WorkspaceTreeItem, deployProfile: IDeployProfile): Promise<void> {
 		const project: Project = this.getProjectFromContext(context);
@@ -795,7 +794,7 @@ export class ProjectsController {
 
 	/**
 	 * Reloads the given project. Throws an error if given project is not a valid open project.
-	 * @param projectFileUri the uri of the project to be reloaded
+	 * @param context
 	 */
 	public async reloadProject(context: dataworkspace.WorkspaceTreeItem): Promise<void> {
 		const project = this.getProjectFromContext(context);

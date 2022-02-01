@@ -740,7 +740,7 @@ export class Project implements ISqlProject {
 
 	/**
 	 * Set the target platform of the project
-	 * @param newTargetPlatform compat level of project
+	 * @param compatLevel compat level of project
 	 */
 	public async changeTargetPlatform(compatLevel: string): Promise<void> {
 		if (this.getProjectTargetVersion() !== compatLevel) {
@@ -863,8 +863,6 @@ export class Project implements ISqlProject {
 
 	/**
 	 * Adds reference to a dacpac to the project
-	 * @param uri Uri of the dacpac
-	 * @param databaseName name of the database
 	 */
 	public async addDatabaseReference(settings: IDacpacReferenceSettings): Promise<void> {
 		const databaseReferenceEntry = new DacpacReferenceProjectEntry(settings);
@@ -879,8 +877,6 @@ export class Project implements ISqlProject {
 
 	/**
 	 * Adds reference to a another project in the workspace
-	 * @param uri Uri of the dacpac
-	 * @param databaseName name of the database
 	 */
 	public async addProjectReference(settings: IProjectReferenceSettings): Promise<void> {
 		const projectReferenceEntry = new SqlProjectReferenceProjectEntry(settings);

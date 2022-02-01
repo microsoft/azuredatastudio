@@ -93,7 +93,6 @@ export function initExtensionConfigs(configurations: WidgetConfig[]): Array<Widg
 
 /**
  * Add provider to the passed widgets and returns the new widgets
- * @param widgets Array of widgets to add provider onto
  */
 export function addProvider<T extends { connectionManagementService: SingleConnectionManagementService }>(config: WidgetConfig[], collection: T): Array<WidgetConfig> {
 	const provider = collection.connectionManagementService.connectionInfo.providerId;
@@ -107,7 +106,6 @@ export function addProvider<T extends { connectionManagementService: SingleConne
 
 /**
  * Adds the edition to the passed widgets and returns the new widgets
- * @param widgets Array of widgets to add edition onto
  */
 export function addEdition<T extends { connectionManagementService: SingleConnectionManagementService }>(config: WidgetConfig[], collection: T): Array<WidgetConfig> {
 	const connectionInfo: ConnectionManagementInfo = collection.connectionManagementService.connectionInfo;
@@ -126,7 +124,6 @@ export function addEdition<T extends { connectionManagementService: SingleConnec
 
 /**
  * Adds the context to the passed widgets and returns the new widgets
- * @param widgets Array of widgets to add context to
  */
 export function addContext(config: WidgetConfig[], collection: any, context: string): Array<WidgetConfig> {
 	return config.map((item) => {
