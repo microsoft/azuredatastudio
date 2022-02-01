@@ -33,6 +33,10 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 	public readonly onEditProcessed: Event<DesignerEditProcessedEventArgs> = this._onEditProcessed.event;
 	public readonly onStateChange: Event<DesignerStateChangedEventArgs> = this._onStateChange.event;
 
+	public readonly designerEditTypeDisplayValue: { [key: number]: string } = {
+		0: 'Add', 1: 'Remove', 2: 'Update'
+	};
+
 	constructor(private readonly _provider: TableDesignerProvider,
 		private _tableInfo: azdata.designers.TableInfo,
 		private _telemetryInfo: ITelemetryEventProperties,
@@ -67,13 +71,10 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 	}
 
 	processEdit(edit: DesignerEdit): void {
-		const telemetryInfo = {
-			objectType: edit.path[0],
-			provider: this._provider.providerId,
-			isNewTable: this._tableInfo.isNewTable
-		};
-		Object.assign(telemetryInfo, this._telemetryInfo);
-		const editAction = this._adsTelemetryService.createActionEvent(TelemetryView.TableDesigner, edit.type).withAdditionalProperties(telemetryInfo);
+		let telemetryInfo = this.createTelemetryInfo();
+		telemetryInfo.tableObjectType = ''; // todo get paths
+		const editAction = this._adsTelemetryService.createActionEvent(TelemetryView.TableDesigner,
+			this.designerEditTypeDisplayValue[edit.type]).withAdditionalProperties(telemetryInfo);
 		const startTime = new Date().getTime();
 		this.updateState(this.valid, this.dirty, 'processEdit');
 		this._provider.processTableEdit(this._tableInfo, edit).then(
@@ -95,8 +96,8 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			error => {
 				this._notificationService.error(localize('tableDesigner.errorProcessingEdit', "An error occured while processing the change: {0}", error?.message ?? error));
 				this.updateState(this.valid, this.dirty);
-				this._adsTelemetryService.createErrorEvent(TelemetryView.TableDesigner, edit.type, error?.code,
-					error?.message).withAdditionalProperties(telemetryInfo).send();
+				this._adsTelemetryService.createErrorEvent(TelemetryView.TableDesigner,
+					this.designerEditTypeDisplayValue[edit.type], error?.code, error?.message).withAdditionalProperties(telemetryInfo).send();
 			}
 		);
 	}
@@ -107,12 +108,8 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			message: localize('tableDesigner.generatingScript', "Generating script..."),
 			sticky: true
 		});
-		const telemetryInfo = {
-			provider: this._provider.providerId,
-			isNewTable: this._tableInfo.isNewTable,
-		};
-		Object.assign(telemetryInfo, this._telemetryInfo);
-		const saveEvent = this._adsTelemetryService.createActionEvent(TelemetryView.TableDesigner, TelemetryAction.GenerateScript).withAdditionalProperties(telemetryInfo);
+		const telemetryInfo = this.createTelemetryInfo();
+		const generateScriptEvent = this._adsTelemetryService.createActionEvent(TelemetryView.TableDesigner, TelemetryAction.GenerateScript).withAdditionalProperties(telemetryInfo);
 		const startTime = new Date().getTime();
 		try {
 			this.updateState(this.valid, this.dirty, 'generateScript');
@@ -120,7 +117,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 			this._queryEditorService.newSqlEditor({ initalContent: script });
 			this.updateState(this.valid, this.dirty);
 			notificationHandle.updateMessage(localize('tableDesigner.generatingScriptCompleted', "Script generated."));
-			saveEvent.withAdditionalMeasurements({
+			generateScriptEvent.withAdditionalMeasurements({
 				'elapsedTimeMs': new Date().getTime() - startTime
 			}).send();
 		} catch (error) {
@@ -133,21 +130,29 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 	}
 
 	async publishChanges(): Promise<void> {
+		const telemetryInfo = this.createTelemetryInfo();
+		const publishEvent = this._adsTelemetryService.createActionEvent(TelemetryView.TableDesigner, TelemetryAction.GenerateScript).withAdditionalProperties(telemetryInfo);
 		const saveNotificationHandle = this._notificationService.notify({
 			severity: Severity.Info,
 			message: localize('tableDesigner.savingChanges', "Saving table designer changes..."),
 			sticky: true
 		});
+		const startTime = new Date().getTime();
 		try {
 			this.updateState(this.valid, this.dirty, 'save');
 			await this._provider.publishChanges(this._tableInfo);
 			this._originalViewModel = this._viewModel;
 			this.updateState(true, false);
 			saveNotificationHandle.updateMessage(localize('tableDesigner.publishChangeSuccess', "The changes have been successfully published."));
+			publishEvent.withAdditionalMeasurements({
+				'elapsedTimeMs': new Date().getTime() - startTime
+			}).send();
 		} catch (error) {
 			saveNotificationHandle.updateSeverity(Severity.Error);
 			saveNotificationHandle.updateMessage(localize('tableDesigner.publishChangeError', "An error occured while publishing changes: {0}", error?.message ?? error));
 			this.updateState(this.valid, this.dirty);
+			this._adsTelemetryService.createErrorEvent(TelemetryView.TableDesigner, TelemetryAction.PublishChanges,
+				error?.code, error?.message).withAdditionalProperties(telemetryInfo).send();
 		}
 	}
 
@@ -608,5 +613,14 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		if (allProperties.indexOf(property) === -1) {
 			this._viewModel[property] = {};
 		}
+	}
+
+	private createTelemetryInfo(): ITelemetryEventProperties {
+		let telemetryInfo = {
+			provider: this._provider.providerId,
+			isNewTable: this._tableInfo.isNewTable,
+		};
+		Object.assign(telemetryInfo, this._telemetryInfo);
+		return telemetryInfo;
 	}
 }
