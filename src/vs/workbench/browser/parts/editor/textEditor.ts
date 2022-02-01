@@ -68,7 +68,7 @@ export abstract class BaseTextEditor extends EditorPane implements ITextEditorPa
 	) {
 		super(id, telemetryService, themeService, storageService);
 
-		this.editorMemento = this.getEditorMemento<IEditorViewState>(editorGroupService, BaseTextEditor.TEXT_EDITOR_VIEW_STATE_PREFERENCE_KEY, 100);
+		this.editorMemento = this.getEditorMemento<IEditorViewState>(editorGroupService, textResourceConfigurationService, BaseTextEditor.TEXT_EDITOR_VIEW_STATE_PREFERENCE_KEY, 100);
 
 		this._register(this.textResourceConfigurationService.onDidChangeConfiguration(() => {
 			const resource = this.getActiveResource();
@@ -284,10 +284,8 @@ export abstract class BaseTextEditor extends EditorPane implements ITextEditorPa
 		return this.editorMemento.moveEditorState(source, target, comparer);
 	}
 
-	protected clearTextEditorViewState(resources: URI[], group?: IEditorGroup): void {
-		for (const resource of resources) {
-			this.editorMemento.clearEditorState(resource, group);
-		}
+	protected clearTextEditorViewState(resource: URI, group?: IEditorGroup): void {
+		this.editorMemento.clearEditorState(resource, group);
 	}
 
 	private updateEditorConfiguration(configuration?: IEditorConfiguration): void {

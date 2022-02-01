@@ -31,7 +31,7 @@
 			"contentFolder": "Dossier de contenu",
 			"contentFolderOptional": "Dossier de contenu (facultatif)",
 			"create": "Créer",
-			"duplicateFileError": "Le fichier {0} existe déjà dans le dossier de destination {1} \r\n Le fichier a été renommé en {2} pour éviter toute perte de données.",
+			"duplicateFileError": "Le fichier {0} existe déjà dans le dossier de destination {1}\r\n Le fichier a été renommé en {2} pour éviter toute perte de données.",
 			"editBookError": "Erreur pendant la modification du Jupyter Book {0} : {1}",
 			"fileExtension": "Extension de fichier",
 			"fileName": "Nom de fichier",

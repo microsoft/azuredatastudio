@@ -373,8 +373,8 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 		//this.emit('cancel');
 	}
 
-	public override run(action: IAction, context?: any): Promise<any> {
-		return this._actionRunner.run(action, context);
+	public override async run(action: IAction, context?: any): Promise<void> {
+		this._actionRunner.run(action, context);
 	}
 
 	public override dispose(): void {

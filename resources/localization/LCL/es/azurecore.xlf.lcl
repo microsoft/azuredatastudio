@@ -281,12 +281,12 @@
       </Item>
       <Item ItemId=";extensions/azurecore/dist/account-provider/auths/azureAuth.azure.responseError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Token retrieval failed with an error. Open developer tools to view the error]]></Val>
+          <Val><![CDATA[Token retrieval failed with an error. [Open developer tools]5D;({0}) for more details.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Error al recuperar el token. Abra las herramientas de desarrollo para ver el error.]]></Val>
+            <Val><![CDATA[Error al recuperar el token. [Abra las herramientas de desarrollo]5D;({0}) para obtener más detalles.]]></Val>
           </Tgt>
           <Prev Cat="Text">
-            <Val><![CDATA[Token retrival failed with an error. Open developer tools to view the error]]></Val>
+            <Val><![CDATA[Token retrieval failed with an error. Open developer tools to view the error]]></Val>
           </Prev>
         </Str>
         <Disp Icon="Str" />

@@ -13,7 +13,7 @@ import { FileAccess, Schemas } from 'vs/base/common/network';
 import { IBaseTextResourceEditorInput } from 'vs/platform/editor/common/editor';
 import { DataTransfers, IDragAndDropData } from 'vs/base/browser/dnd';
 import { DragMouseEvent } from 'vs/base/browser/mouseEvent';
-import { MIME_BINARY } from 'vs/base/common/mime';
+import { Mimes } from 'vs/base/common/mime';
 import { isWindows } from 'vs/base/common/platform';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { isCodeEditor } from 'vs/editor/browser/editorBrowser';
@@ -29,6 +29,7 @@ import { Emitter } from 'vs/base/common/event';
 import { coalesce } from 'vs/base/common/arrays';
 import { parse, stringify } from 'vs/base/common/marshalling';
 import { ILabelService } from 'vs/platform/label/common/label';
+import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 
 //#region Editor / Resources DND
 
@@ -113,8 +114,20 @@ export function extractEditorsDropData(e: DragEvent, externalOnly?: boolean): Ar
 				// Invalid transfer
 			}
 		}
-	}
 
+		// Check for terminals transfer
+		const terminals = e.dataTransfer.getData(DataTransfers.TERMINALS);
+		if (terminals) {
+			try {
+				const terminalEditors: string[] = JSON.parse(terminals);
+				for (const terminalEditor of terminalEditors) {
+					editors.push({ resource: URI.parse(terminalEditor), isExternal: true });
+				}
+			} catch (error) {
+				// Invalid transfer
+			}
+		}
+	}
 	return editors;
 }
 
@@ -140,7 +153,8 @@ export class ResourcesDropHandler {
 		@IWorkspacesService private readonly workspacesService: IWorkspacesService,
 		@IEditorService private readonly editorService: IEditorService,
 		@IWorkspaceEditingService private readonly workspaceEditingService: IWorkspaceEditingService,
-		@IHostService private readonly hostService: IHostService
+		@IHostService private readonly hostService: IHostService,
+		@IWorkspaceContextService private readonly contextService: IWorkspaceContextService
 	) {
 	}
 
@@ -165,14 +179,19 @@ export class ResourcesDropHandler {
 		}
 
 		// Add external ones to recently open list unless dropped resource is a workspace
+		// and only for resources that are outside of the currently opened workspace
 		if (externalLocalFiles.length) {
-			this.workspacesService.addRecentlyOpened(externalLocalFiles.map(resource => ({ fileUri: resource })));
+			this.workspacesService.addRecentlyOpened(externalLocalFiles
+				.filter(resource => !this.contextService.isInsideWorkspace(resource))
+				.map(resource => ({ fileUri: resource }))
+			);
 		}
 
 		// Open in Editor
 		const targetGroup = resolveTargetGroup();
 		await this.editorService.openEditors(editors.map(editor => ({
 			...editor,
+			resource: editor.resource,
 			options: {
 				...editor.options,
 				pinned: true,
@@ -251,7 +270,7 @@ export function fillEditorsDragData(accessor: ServicesAccessor, resourcesOrEdito
 
 	// Extract resources from URIs or Editors that
 	// can be handled by the file service
-	const fileSystemResources = coalesce(resourcesOrEditors.map(resourceOrEditor => {
+	const resources = coalesce(resourcesOrEditors.map(resourceOrEditor => {
 		if (URI.isUri(resourceOrEditor)) {
 			return { resource: resourceOrEditor };
 		}
@@ -265,25 +284,36 @@ export function fillEditorsDragData(accessor: ServicesAccessor, resourcesOrEdito
 		}
 
 		return resourceOrEditor;
-	})).filter(({ resource }) => fileService.canHandleResource(resource));
+	}));
+	const fileSystemResources = resources.filter(({ resource }) => fileService.canHandleResource(resource));
 
 	// Text: allows to paste into text-capable areas
 	const lineDelimiter = isWindows ? '\r\n' : '\n';
 	event.dataTransfer.setData(DataTransfers.TEXT, fileSystemResources.map(({ resource }) => labelService.getUriLabel(resource, { noPrefix: true })).join(lineDelimiter));
 
-	// Download URL: enables support to drag a tab as file to desktop (only single file supported)
+	// Download URL: enables support to drag a tab as file to desktop
+	// Requirements:
+	// - Chrome/Edge only
+	// - only a single file is supported
+	// - only file:/ resources are supported
 	const firstFile = fileSystemResources.find(({ isDirectory }) => !isDirectory);
 	if (firstFile) {
-		// TODO@sandbox this will no longer work when `vscode-file`
-		// is enabled because we block loading resources that are not
-		// inside installation dir
-		event.dataTransfer.setData(DataTransfers.DOWNLOAD_URL, [MIME_BINARY, basename(firstFile.resource), FileAccess.asBrowserUri(firstFile.resource).toString()].join(':'));
+		const firstFileUri = FileAccess.asFileUri(firstFile.resource); // enforce `file:` URIs
+		if (firstFileUri.scheme === Schemas.file) {
+			event.dataTransfer.setData(DataTransfers.DOWNLOAD_URL, [Mimes.binary, basename(firstFile.resource), firstFileUri.toString()].join(':'));
+		}
 	}
 
 	// Resource URLs: allows to drop multiple file resources to a target in VS Code
 	const files = fileSystemResources.filter(({ isDirectory }) => !isDirectory);
 	if (files.length) {
 		event.dataTransfer.setData(DataTransfers.RESOURCES, JSON.stringify(files.map(({ resource }) => resource.toString())));
+	}
+
+	// Terminal URI
+	const terminalResources = resources.filter(({ resource }) => resource.scheme === Schemas.vscodeTerminal);
+	if (terminalResources.length) {
+		event.dataTransfer.setData(DataTransfers.TERMINALS, JSON.stringify(terminalResources.map(({ resource }) => resource.toString())));
 	}
 
 	// Editors: enables cross window DND of editors
@@ -295,7 +325,7 @@ export function fillEditorsDragData(accessor: ServicesAccessor, resourcesOrEdito
 		// Extract resource editor from provided object or URI
 		let editor: IDraggedResourceEditorInput | undefined = undefined;
 		if (isEditorIdentifier(resourceOrEditor)) {
-			editor = resourceOrEditor.editor.asResourceEditorInput(resourceOrEditor.groupId);
+			editor = resourceOrEditor.editor.toUntyped({ preserveViewState: resourceOrEditor.groupId });
 		} else if (URI.isUri(resourceOrEditor)) {
 			editor = { resource: resourceOrEditor };
 		} else if (!resourceOrEditor.isDirectory) {
@@ -309,7 +339,7 @@ export function fillEditorsDragData(accessor: ServicesAccessor, resourcesOrEdito
 		// Fill in some properties if they are not there already by accessing
 		// some well known things from the text file universe.
 		// This is not ideal for custom editors, but those have a chance to
-		// provide everything from the `asResourceEditorInput` method.
+		// provide everything from the `toUntyped` method.
 		{
 			const resource = editor.resource;
 			if (resource) {

@@ -173,6 +173,7 @@ export class MarkdownTextTransformer {
 	 * @param endRange range for end text that was inserted
 	 * @param type MarkdownButtonType
 	 * @param editorControl code editor widget
+	 * @param editorModel
 	 * @param noSelection controls whether there was no previous selection in the editor
 	 */
 	private setEndSelection(endRange: IRange, type: MarkdownButtonType, editorControl: CodeEditorWidget, editorModel: TextModel, noSelection: boolean, isUndo: boolean): void {

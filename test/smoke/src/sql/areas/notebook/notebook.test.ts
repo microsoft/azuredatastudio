@@ -4,9 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Application } from '../../../../../automation';
+import * as minimist from 'minimist';
+import { afterSuite, beforeSuite } from '../../../utils';
 
-export function setup() {
+export function setup(opts: minimist.ParsedArgs) {
 	describe('Notebook', () => {
+		beforeSuite(opts);
+		afterSuite(opts);
 
 		it('can perform basic text cell functionality', async function () {
 			const app = this.app as Application;

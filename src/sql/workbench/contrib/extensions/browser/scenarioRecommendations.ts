@@ -9,7 +9,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 import { localize } from 'vs/nls';
-import { IExtensionRecommendation } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
+import { IExtensionRecommendation } from 'sql/workbench/services/extensionManagement/common/extensionManagement';
 import { IExtensionManagementService } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { ExtensionType } from 'vs/platform/extensions/common/extensions';
 import { visualizerExtensions } from 'sql/workbench/contrib/extensions/common/constants';

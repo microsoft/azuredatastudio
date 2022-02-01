@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Action, IActionRunner } from 'vs/base/common/actions';
+import { Action, IAction, IActionRunner } from 'vs/base/common/actions';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
@@ -157,6 +157,7 @@ export class ChangeMaxRowsActionItem extends Disposable implements IActionViewIt
 
 	constructor(
 		private _editor: EditDataEditor,
+		public action: IAction,
 		@IContextViewService contextViewService: IContextViewService,
 		@IThemeService private _themeService: IThemeService) {
 		super();

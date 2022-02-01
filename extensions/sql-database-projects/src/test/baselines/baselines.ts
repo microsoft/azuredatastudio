@@ -34,6 +34,7 @@ export let openSdkStyleSqlProjectBaseline: string;
 export let openSdkStyleSqlProjectWithFilesSpecifiedBaseline: string;
 export let openSdkStyleSqlProjectWithGlobsSpecifiedBaseline: string;
 export let openSdkStyleSqlProjectWithBuildRemoveBaseline: string;
+export let openSdkStyleSqlProjectNoProjectGuidBaseline: string;
 
 const baselineFolderPath = __dirname;
 
@@ -65,6 +66,7 @@ export async function loadBaselines() {
 	openSdkStyleSqlProjectWithFilesSpecifiedBaseline = await loadBaseline(baselineFolderPath, 'openSdkStyleSqlProjectWithFilesSpecifiedBaseline.xml');
 	openSdkStyleSqlProjectWithGlobsSpecifiedBaseline = await loadBaseline(baselineFolderPath, 'openSdkStyleSqlProjectWithGlobsSpecifiedBaseline.xml');
 	openSdkStyleSqlProjectWithBuildRemoveBaseline = await loadBaseline(baselineFolderPath, 'openSdkStyleSqlProjectWithBuildRemoveBaseline.xml');
+	openSdkStyleSqlProjectNoProjectGuidBaseline = await loadBaseline(baselineFolderPath, 'openSdkStyleSqlProjectNoProjectGuidBaseline.xml');
 }
 
 async function loadBaseline(baselineFolderPath: string, fileName: string): Promise<string> {

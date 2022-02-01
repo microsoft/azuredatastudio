@@ -305,7 +305,7 @@
 			"arc.workerOneNodeValidationMessage": "不支持值为 1。",
 			"arc.yes": "是",
 			"button.label": "选择",
-			"clusterContextConfigNoLongerValid": "配置文件指定的群集上下文信息: {0} 和群集上下文: {1} 不再有效。错误为: \r\n>{2}\r\n 是否要更新此信息?",
+			"clusterContextConfigNoLongerValid": "配置文件指定的群集上下文信息: {0} 和群集上下文: {1} 不再有效。错误为:\r\n>{2}\r\n 是否要更新此信息?",
 			"clusterContextNotFound": "在 Kube 配置文件中未找到名为 {0} 的群集上下文",
 			"filePicker.browse": "浏览",
 			"getIsPassword.unknownVariableName": "尝试获取未知变量的 isPassword: {0}",

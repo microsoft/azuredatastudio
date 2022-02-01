@@ -1193,7 +1193,7 @@
         <source xml:lang="en">The cluster context information specified by config file: {0} and cluster context: {1} is no longer valid. Error is:
 	{2}
  Do you want to update this information?</source>
-        <target state="translated">配置文件指定的群集上下文信息: {0} 和群集上下文: {1} 不再有效。错误为: 
+        <target state="translated">配置文件指定的群集上下文信息: {0} 和群集上下文: {1} 不再有效。错误为:
 &gt;{2}
  是否要更新此信息?</target>
       </trans-unit>

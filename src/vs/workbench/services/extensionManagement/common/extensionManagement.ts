@@ -5,10 +5,10 @@
 
 import { Event } from 'vs/base/common/event';
 import { createDecorator, refineServiceDecorator } from 'vs/platform/instantiation/common/instantiation';
-import { IExtension, IScannedExtension, ExtensionType, ITranslatedScannedExtension, IExtensionManifest } from 'vs/platform/extensions/common/extensions';
-import { IExtensionManagementService, IGalleryExtension, IExtensionIdentifier, ILocalExtension, InstallOptions } from 'vs/platform/extensionManagement/common/extensionManagement';
+import { IExtension, ExtensionType, IExtensionManifest } from 'vs/platform/extensions/common/extensions';
+import { IExtensionManagementService, IGalleryExtension, IExtensionIdentifier, ILocalExtension, InstallOptions, InstallExtensionEvent, DidUninstallExtensionEvent, InstallExtensionResult } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { URI } from 'vs/base/common/uri';
-import { IWorkspace, IWorkspaceFolder } from 'vs/platform/workspace/common/workspace'; // {{SQL CARBON EDIT}}
+import { IStringDictionary } from 'vs/base/common/collections';
 
 export interface IExtensionManagementServer {
 	id: string;
@@ -25,9 +25,20 @@ export interface IExtensionManagementServerService {
 	getExtensionManagementServer(extension: IExtension): IExtensionManagementServer | null;
 }
 
+export type InstallExtensionOnServerEvent = InstallExtensionEvent & { server: IExtensionManagementServer };
+export type UninstallExtensionOnServerEvent = IExtensionIdentifier & { server: IExtensionManagementServer };
+export type DidUninstallExtensionOnServerEvent = DidUninstallExtensionEvent & { server: IExtensionManagementServer };
+
 export const IWorkbenchExtensionManagementService = refineServiceDecorator<IExtensionManagementService, IWorkbenchExtensionManagementService>(IExtensionManagementService);
 export interface IWorkbenchExtensionManagementService extends IExtensionManagementService {
 	readonly _serviceBrand: undefined;
+
+	onInstallExtension: Event<InstallExtensionOnServerEvent>;
+	onDidInstallExtensions: Event<readonly InstallExtensionResult[]>;
+	onUninstallExtension: Event<UninstallExtensionOnServerEvent>;
+	onDidUninstallExtension: Event<DidUninstallExtensionOnServerEvent>;
+
+	installWebExtension(location: URI): Promise<ILocalExtension>;
 	installExtensions(extensions: IGalleryExtension[], installOptions?: InstallOptions): Promise<ILocalExtension[]>;
 	updateFromGallery(gallery: IGalleryExtension, extension: ILocalExtension): Promise<ILocalExtension>;
 	getExtensionManagementServerToInstall(manifest: IExtensionManifest): IExtensionManagementServer | null
@@ -37,7 +48,9 @@ export const enum EnablementState {
 	DisabledByTrustRequirement,
 	DisabledByExtensionKind,
 	DisabledByEnvironment,
+	EnabledByEnvironment,
 	DisabledByVirtualWorkspace,
+	DisabledByExtensionDependency,
 	DisabledGlobally,
 	DisabledWorkspace,
 	EnabledGlobally,
@@ -60,6 +73,18 @@ export interface IWorkbenchExtensionEnablementService {
 	getEnablementState(extension: IExtension): EnablementState;
 
 	/**
+	 * Returns the enablement states for the given extensions
+	 * @param extensions list of extensions
+	 * @param workspaceTypeOverrides Workspace type overrides
+	 */
+	getEnablementStates(extensions: IExtension[], workspaceTypeOverrides?: { trusted?: boolean }): EnablementState[];
+
+	/**
+	 * Returns the enablement states for the dependencies of the given extension
+	 */
+	getDependenciesEnablementStates(extension: IExtension): [IExtension, EnablementState][];
+
+	/**
 	 * Returns `true` if the enablement can be changed.
 	 */
 	canChangeEnablement(extension: IExtension): boolean;
@@ -70,9 +95,14 @@ export interface IWorkbenchExtensionEnablementService {
 	canChangeWorkspaceEnablement(extension: IExtension): boolean;
 
 	/**
-	 * Returns `true` if the given extension identifier is enabled.
+	 * Returns `true` if the given extension is enabled.
 	 */
 	isEnabled(extension: IExtension): boolean;
+
+	/**
+	 * Returns `true` if the given enablement state is enabled enablement state.
+	 */
+	isEnabledEnablementState(enablementState: EnablementState): boolean;
 
 	/**
 	 * Returns `true` if the given extension identifier is disabled globally.
@@ -81,12 +111,6 @@ export interface IWorkbenchExtensionEnablementService {
 	 * This will
 	 */
 	isDisabledGlobally(extension: IExtension): boolean;
-
-	/**
-	 * Returns `true` if the given extension identifier is enabled by the user but it it
-	 * disabled due to the fact that the current window/folder/workspace is not trusted.
-	 */
-	isDisabledByWorkspaceTrust(extension: IExtension): boolean;
 
 	/**
 	 * Enable or disable the given extension.
@@ -100,38 +124,27 @@ export interface IWorkbenchExtensionEnablementService {
 	setEnablement(extensions: IExtension[], state: EnablementState): Promise<boolean[]>;
 
 	/**
-	 * Updates the enablement state of the extensions that require workspace trust when
-	 * workspace trust changes.
+	 * Updates the enablement state of the extensions when workspace trust changes.
 	 */
-	updateEnablementByWorkspaceTrustRequirement(): Promise<void>;
+	updateExtensionsEnablementsWhenWorkspaceTrustChanges(): Promise<void>;
 }
 
-// {{SQL CARBON EDIT}}
-export interface IExtensionsConfigContent {
-	recommendations: string[];
-	unwantedRecommendations: string[];
+export interface IScannedExtension extends IExtension {
+	readonly metadata?: IStringDictionary<any>;
 }
 
-export type DynamicRecommendation = 'dynamic';
-export type ConfigRecommendation = 'config';
-export type ExecutableRecommendation = 'executable';
-export type CachedRecommendation = 'cached';
-export type ApplicationRecommendation = 'application';
-export type ExperimentalRecommendation = 'experimental';
-export type ExtensionRecommendationSource = IWorkspace | IWorkspaceFolder | URI | DynamicRecommendation | ExecutableRecommendation | CachedRecommendation | ApplicationRecommendation | ExperimentalRecommendation | ConfigRecommendation;
-
-export interface IExtensionRecommendation {
-	extensionId: string;
-	sources: ExtensionRecommendationSource[];
-}
-// {{SQL CARBON EDIT}} - End
 export const IWebExtensionsScannerService = createDecorator<IWebExtensionsScannerService>('IWebExtensionsScannerService');
 export interface IWebExtensionsScannerService {
 	readonly _serviceBrand: undefined;
-	scanExtensions(type?: ExtensionType): Promise<IScannedExtension[]>;
-	scanAndTranslateExtensions(type?: ExtensionType): Promise<ITranslatedScannedExtension[]>;
-	scanAndTranslateSingleExtension(extensionLocation: URI, extensionType: ExtensionType): Promise<ITranslatedScannedExtension | null>;
-	canAddExtension(galleryExtension: IGalleryExtension): boolean;
-	addExtension(galleryExtension: IGalleryExtension): Promise<IScannedExtension>;
+
+	scanSystemExtensions(): Promise<IExtension[]>;
+	scanUserExtensions(): Promise<IScannedExtension[]>;
+	scanExtensionsUnderDevelopment(): Promise<IExtension[]>;
+	scanExistingExtension(extensionLocation: URI, extensionType: ExtensionType): Promise<IExtension | null>;
+
+	addExtension(location: URI, metadata?: IStringDictionary<any>): Promise<IExtension>;
+	addExtensionFromGallery(galleryExtension: IGalleryExtension, metadata?: IStringDictionary<any>): Promise<IExtension>;
 	removeExtension(identifier: IExtensionIdentifier, version?: string): Promise<void>;
+
+	scanExtensionManifest(extensionLocation: URI): Promise<IExtensionManifest | null>;
 }

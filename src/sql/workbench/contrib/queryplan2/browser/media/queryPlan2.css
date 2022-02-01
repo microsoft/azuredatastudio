@@ -1,0 +1,69 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.qp-container .query-plan {
+	width: 100%;
+	height: 500px;
+	position: relative;
+	border-top: 1px solid;
+}
+
+.qp-container .query-plan .actionbar-container {
+height: 100%;
+width: 30px;
+position: absolute;
+top: 0px;
+right: 0px;
+}
+
+.qp-container .query-plan .properties-container {
+	position: absolute;
+	top: 0px;
+	right: 32px;
+	height: 100%;
+	overflow-y: scroll;
+	background-color: #eeeeee;
+	width: 510px;
+}
+
+.qp-container .prop-table-header {
+	font-weight: bold;
+}
+
+.qp-container .properties-header {
+	font-weight: bold;
+	padding: 5px;
+}
+
+.qp-container .properties-toggle {
+	height: 9px;
+	width: 9px;
+	display: inline-block;
+}
+
+.qp-container .properties-toggle .expand {
+	background: url(../images/expand.gif) no-repeat center center;
+}
+
+.qp-container .properties-toggle .collapse {
+	background: url(../images/collapse.gif) no-repeat center center;
+}
+
+.qp-container .mxTooltip {
+	-webkit-box-shadow: 3px 3px 12px #C0C0C0;
+	-moz-box-shadow: 3px 3px 12px #C0C0C0;
+	box-shadow: 3px 3px 12px #C0C0C0;
+	background: #FFFFCC;
+	border-style: solid;
+	border-width: 1px;
+	border-color: black;
+	font-family: Arial;
+	font-size: 8pt;
+	position: absolute;
+	cursor: default;
+	padding: 4px;
+	color: black;
+	z-index: 3;
+}

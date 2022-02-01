@@ -63,7 +63,7 @@ export class TreeViewDataProvider extends vsTreeView.TreeViewDataProvider implem
 	 * @override
 	 * @param elements The elements to map
 	 */
-	protected override async postGetChildren(elements: ITreeComponentItem[]): Promise<ResolvableTreeComponentItem[]> {
+	protected override async postGetChildren(elements: ResolvableTreeItem[] | undefined): Promise<ResolvableTreeComponentItem[]> {
 		const result: ResolvableTreeComponentItem[] = [];
 		const hasResolve = await this.hasResolve;
 		if (elements) {

@@ -64,7 +64,7 @@
 			"markdown.showLockedPreviewToSide.title": "Gesperrte Vorschau an der Seite öffnen",
 			"markdown.showPreviewSecuritySelector.title": "Sicherheitseinstellungen für Vorschau ändern",
 			"markdown.showSource.title": "Quelle anzeigen",
-			"markdown.styles.dec": "Eine Liste von URLs oder lokalen Pfaden zu CSS (Cascading Stylesheets) aus der Markdown-Vorschau, die verwendet werden sollen. Relative Pfade werden relativ zu dem Ordner interpretiert, der im Explorer geöffnet ist. Wenn kein Ordner geöffnet ist, werden sie relativ zum Speicherort der Markdowndatei interpretiert. \"\\\" müssen grundsätzlich als \"\\\\\" geschrieben werden.",
+			"markdown.styles.dec": "Eine Liste von URLs oder lokalen Pfaden zu CSS-Stylesheets, die aus der Markdownvorschau verwendet werden sollen. Relative Pfade werden relativ zum im Explorer geöffneten Ordner interpretiert. Wenn kein geöffneter Ordner vorhanden ist, werden sie relativ zum Speicherort der Markdowndatei interpretiert. Alle \"\\\" müssen als \"\\\\\" geschrieben werden.",
 			"markdown.trace.desc": "Aktiviert die Debugprotokollierung für die Markdownerweiterung.",
 			"workspaceTrust": "Erforderlich, um Formatvorlagen zu laden, die im Arbeitsbereich konfiguriert sind."
 		}

@@ -14,8 +14,8 @@
 		},
 		"dist/githubServer": {
 			"signingIn": "$(mark-github) Выполняется вход в github.com...",
-			"signingInEnterprise": "$(mark-github) Выполняется вход в {0}...",
-			"status.git.signIn.name": "Вход в GitHub"
+			"status.git.signIn.name": "Вход в GitHub",
+			"validUri": "Введите допустимый URI со страницы входа в GitHub."
 		},
 		"package": {
 			"description": "Поставщик проверки подлинности GitHub",

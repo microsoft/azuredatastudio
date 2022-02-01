@@ -36,12 +36,12 @@ export interface IUntitledFileWorkingCopyModel extends IFileWorkingCopyModel {
 export interface IUntitledFileWorkingCopyModelContentChangedEvent {
 
 	/**
-	 * Flag that indicates that the content change
-	 * resulted in empty contents. A untitled file
-	 * working copy without contents may be marked
-	 * as non-dirty.
+	 * Flag that indicates that the content change should
+	 * clear the dirty flag, e.g. because the contents are
+	 * back to being empty or back to an initial state that
+	 * should not be considered as dirty.
 	 */
-	readonly isEmpty: boolean;
+	readonly isInitial: boolean;
 }
 
 export interface IUntitledFileWorkingCopy<M extends IUntitledFileWorkingCopyModel> extends IFileWorkingCopy<M> {
@@ -73,6 +73,23 @@ export interface IUntitledFileWorkingCopySaveDelegate<M extends IUntitledFileWor
 	(workingCopy: IUntitledFileWorkingCopy<M>, options?: ISaveOptions): Promise<boolean>;
 }
 
+export interface IUntitledFileWorkingCopyInitialContents {
+
+	/**
+	 * The initial contents of the untitled file working copy.
+	 */
+	value: VSBufferReadableStream;
+
+	/**
+	 * If not provided, the untitled file working copy will be marked
+	 * dirty by default given initial contents are provided.
+	 *
+	 * Note: if the untitled file working copy has an associated path
+	 * the dirty state will always be set.
+	 */
+	markDirty?: boolean;
+}
+
 export class UntitledFileWorkingCopy<M extends IUntitledFileWorkingCopyModel> extends Disposable implements IUntitledFileWorkingCopy<M>  {
 
 	readonly capabilities = WorkingCopyCapabilities.Untitled;
@@ -101,7 +118,7 @@ export class UntitledFileWorkingCopy<M extends IUntitledFileWorkingCopyModel> ex
 		readonly resource: URI,
 		readonly name: string,
 		readonly hasAssociatedFilePath: boolean,
-		private readonly initialValue: VSBufferReadableStream | undefined,
+		private readonly initialContents: IUntitledFileWorkingCopyInitialContents | undefined,
 		private readonly modelFactory: IUntitledFileWorkingCopyModelFactory<M>,
 		private readonly saveDelegate: IUntitledFileWorkingCopySaveDelegate<M>,
 		@IWorkingCopyService workingCopyService: IWorkingCopyService,
@@ -116,7 +133,7 @@ export class UntitledFileWorkingCopy<M extends IUntitledFileWorkingCopyModel> ex
 
 	//#region Dirty
 
-	private dirty = this.hasAssociatedFilePath || !!this.initialValue;
+	private dirty = this.hasAssociatedFilePath || Boolean(this.initialContents && this.initialContents.markDirty !== false);
 
 	isDirty(): boolean {
 		return this.dirty;
@@ -139,7 +156,7 @@ export class UntitledFileWorkingCopy<M extends IUntitledFileWorkingCopyModel> ex
 	async resolve(): Promise<void> {
 		this.trace('[untitled file working copy] resolve()');
 
-		if (this.isResolved()) {
+		if ((this as UntitledFileWorkingCopy<M>).isResolved()) { // {{SQL CARBON EDIT}} strict-nulls
 			this.trace('[untitled file working copy] resolve() - exit (already resolved)');
 
 			// return early if the untitled file working copy is already
@@ -151,32 +168,31 @@ export class UntitledFileWorkingCopy<M extends IUntitledFileWorkingCopyModel> ex
 		let untitledContents: VSBufferReadableStream;
 
 		// Check for backups or use initial value or empty
-		let specificThis = (this as UntitledFileWorkingCopy<M>); // {{SQL CARBON EDIT}} Fix type assertion error from predicate function
-		const backup = await specificThis.workingCopyBackupService.resolve(this);
+		const backup = await this.workingCopyBackupService.resolve(this);
 		if (backup) {
-			specificThis.trace('[untitled file working copy] resolve() - with backup');
+			this.trace('[untitled file working copy] resolve() - with backup');
 
 			untitledContents = backup.value;
-		} else if (specificThis.initialValue) {
-			specificThis.trace('[untitled file working copy] resolve() - with initial contents');
+		} else if (this.initialContents?.value) {
+			this.trace('[untitled file working copy] resolve() - with initial contents');
 
-			untitledContents = specificThis.initialValue;
+			untitledContents = this.initialContents.value;
 		} else {
-			specificThis.trace('[untitled file working copy] resolve() - empty');
+			this.trace('[untitled file working copy] resolve() - empty');
 
 			untitledContents = emptyStream();
 		}
 
 		// Create model
-		await specificThis.doCreateModel(untitledContents);
+		await this.doCreateModel(untitledContents);
 
 		// Untitled associated to file path are dirty right away as well as untitled with content
-		specificThis.setDirty(specificThis.hasAssociatedFilePath || !!backup || !!specificThis.initialValue);
+		this.setDirty(this.hasAssociatedFilePath || !!backup || Boolean(this.initialContents && this.initialContents.markDirty !== false));
 
 		// If we have initial contents, make sure to emit this
 		// as the appropiate events to the outside.
-		if (!!backup || specificThis.initialValue) {
-			specificThis._onDidChangeContent.fire();
+		if (!!backup || this.initialContents) {
+			this._onDidChangeContent.fire();
 		}
 	}
 
@@ -202,9 +218,9 @@ export class UntitledFileWorkingCopy<M extends IUntitledFileWorkingCopyModel> ex
 	private onModelContentChanged(e: IUntitledFileWorkingCopyModelContentChangedEvent): void {
 
 		// Mark the untitled file working copy as non-dirty once its
-		// content becomes empty and we do not have an associated
-		// path set. we never want dirty indicator in that case.
-		if (!this.hasAssociatedFilePath && e.isEmpty) {
+		// in case provided by the change event and in case we do not
+		// have an associated path set
+		if (!this.hasAssociatedFilePath && e.isInitial) {
 			this.setDirty(false);
 		}
 

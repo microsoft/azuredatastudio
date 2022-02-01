@@ -109,13 +109,17 @@ export async function getPublishDatabaseSettings(project: Project, promptForConn
 	// Add Create New at the top now so it'll show second to top below the suggested name of the current project
 	dbQuickpicks.unshift({ label: `$(add) ${constants.createNew}`, isCreateNew: true });
 
-	// Ensure the project name is an option, either adding it if it doesn't already exist or moving it to the top if it does
-	const projectNameIndex = dbs.findIndex(db => db === project.projectFileName);
+	// if a publish profile was loaded and had a database name, use that instead of the project file name
+	const dbName = publishProfile?.databaseName || project.projectFileName;
+
+	// Ensure the project name or name specified in the publish profile is an option, either adding it if it
+	// doesn't already exist or moving it to the top if it does
+	const projectNameIndex = dbs.findIndex(db => db === dbName);
 	if (projectNameIndex === -1) {
-		dbQuickpicks.unshift({ label: project.projectFileName, description: constants.newText });
+		dbQuickpicks.unshift({ label: dbName, description: constants.newText });
 	} else {
 		dbQuickpicks.splice(projectNameIndex, 1);
-		dbQuickpicks.unshift({ label: project.projectFileName });
+		dbQuickpicks.unshift({ label: dbName });
 	}
 
 	let databaseName: string | undefined = undefined;
@@ -196,7 +200,7 @@ export async function getPublishDatabaseSettings(project: Project, promptForConn
 		serverName: connectionProfile?.server || '',
 		connectionUri: connectionUri || '',
 		sqlCmdVariables: sqlCmdVariables,
-		deploymentOptions: await getDefaultPublishDeploymentOptions(project),
+		deploymentOptions: publishProfile?.options ?? await getDefaultPublishDeploymentOptions(project),
 		profileUsed: !!publishProfile
 	};
 	return settings;

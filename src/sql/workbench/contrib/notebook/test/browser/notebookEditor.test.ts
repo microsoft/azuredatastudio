@@ -33,7 +33,7 @@ import { FindReplaceStateChangedEvent, INewFindReplaceState } from 'vs/editor/co
 import { getRandomString } from 'vs/editor/test/common/model/linesTextBuffer/textBufferAutoTestUtils';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ContextViewService } from 'vs/platform/contextview/browser/contextViewService';
-import { DidInstallExtensionEvent, DidUninstallExtensionEvent, IExtensionManagementService, InstallExtensionEvent } from 'vs/platform/extensionManagement/common/extensionManagement';
+import { DidUninstallExtensionEvent, IExtensionManagementService, InstallExtensionEvent } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { IExtensionIdentifier } from 'vs/platform/extensions/common/extensions';
 import { IFileService } from 'vs/platform/files/common/files';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
@@ -672,7 +672,6 @@ async function findStateChangeSetup(instantiationService: TestInstantiationServi
 
 function setupServices(arg: { workbenchThemeService?: WorkbenchThemeService, instantiationService?: TestInstantiationService } = {}) {
 	const installEvent: Emitter<InstallExtensionEvent> = new Emitter<InstallExtensionEvent>();
-	const didInstallEvent = new Emitter<DidInstallExtensionEvent>();
 	const uninstallEvent = new Emitter<IExtensionIdentifier>();
 	const didUninstallEvent = new Emitter<DidUninstallExtensionEvent>();
 
@@ -684,7 +683,6 @@ function setupServices(arg: { workbenchThemeService?: WorkbenchThemeService, ins
 
 	instantiationService.stub(IExtensionManagementService, ExtensionManagementService);
 	instantiationService.stub(IExtensionManagementService, 'onInstallExtension', installEvent.event);
-	instantiationService.stub(IExtensionManagementService, 'onDidInstallExtension', didInstallEvent.event);
 	instantiationService.stub(IExtensionManagementService, 'onUninstallExtension', uninstallEvent.event);
 	instantiationService.stub(IExtensionManagementService, 'onDidUninstallExtension', didUninstallEvent.event);
 

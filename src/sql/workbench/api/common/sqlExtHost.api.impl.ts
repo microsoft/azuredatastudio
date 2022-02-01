@@ -49,16 +49,17 @@ export interface IExtensionApiFactory {
 export interface IAdsExtensionApiFactory {
 	azdata: IAzdataExtensionApiFactory;
 	extHostNotebook: ExtHostNotebook;
+	extHostNotebookDocumentsAndEditors: ExtHostNotebookDocumentsAndEditors;
 }
 
 /**
  * This method instantiates and returns the extension API surface
  */
 export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): IExtensionApiFactory {
-	const { azdata, extHostNotebook } = createAdsApiFactory(accessor);
+	const { azdata, extHostNotebook, extHostNotebookDocumentsAndEditors } = createAdsApiFactory(accessor);
 	return {
 		azdata,
-		vscode: vsApiFactory(accessor, extHostNotebook)
+		vscode: vsApiFactory(accessor, extHostNotebook, extHostNotebookDocumentsAndEditors)
 	};
 }
 
@@ -538,6 +539,9 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				get onDidOpenNotebookDocument() {
 					return extHostNotebookDocumentsAndEditors.onDidOpenNotebookDocument;
 				},
+				get onDidCloseNotebookDocument() {
+					return extHostNotebookDocumentsAndEditors.onDidCloseNotebookDocument;
+				},
 				get onDidChangeActiveNotebookEditor() {
 					return extHostNotebookDocumentsAndEditors.onDidChangeActiveNotebookEditor;
 				},
@@ -571,6 +575,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				TableForeignKeyProperty: sqlExtHostTypes.designers.TableForeignKeyProperty,
 				ForeignKeyColumnMappingProperty: sqlExtHostTypes.designers.ForeignKeyColumnMappingProperty,
 				TableCheckConstraintProperty: sqlExtHostTypes.designers.TableCheckConstraintProperty,
+				TableIndexProperty: sqlExtHostTypes.designers.TableIndexProperty,
+				TableIndexColumnSpecificationProperty: sqlExtHostTypes.designers.TableIndexColumnSpecificationProperty,
 				DesignerEditType: sqlExtHostTypes.designers.DesignerEditType,
 				openTableDesigner(providerId, tableInfo: azdata.designers.TableInfo): Promise<void> {
 					return extHostDataProvider.$openTableDesigner(providerId, tableInfo);
@@ -631,6 +637,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				designers: designers
 			};
 		},
-		extHostNotebook: extHostNotebook
+		extHostNotebook: extHostNotebook,
+		extHostNotebookDocumentsAndEditors: extHostNotebookDocumentsAndEditors
 	};
 }

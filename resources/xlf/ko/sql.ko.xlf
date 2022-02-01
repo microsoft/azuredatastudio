@@ -7166,7 +7166,7 @@ Error: {1}</source>
       <trans-unit id="insightsDidNotFindResolvedFile">
         <source xml:lang="en">Could not find query file at any of the following paths :
  {0}</source>
-        <target state="translated">다음 경로에서 쿼리 파일을 찾을 수 없습니다. 
+        <target state="translated">다음 경로에서 쿼리 파일을 찾을 수 없습니다.
  {0}</target>
       </trans-unit>
     </body>

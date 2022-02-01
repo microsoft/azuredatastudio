@@ -64,7 +64,7 @@
 			"markdown.showLockedPreviewToSide.title": "Abrir vista previa fija en el lateral",
 			"markdown.showPreviewSecuritySelector.title": "Cambiar configuración de seguridad de vista previa",
 			"markdown.showSource.title": "Mostrar origen",
-			"markdown.styles.dec": "Una lista de direcciones URL o rutas de acceso locales a hojas de estilo CSS que se van a usar desde la vista previa de Markdown. Las rutas de acceso relativas se interpretan en relación con la carpeta abierta en el explorador. Si no hay ninguna carpeta abierta, se interpretan en relación con la ubicación del archivo Markdown. Todas las instancias de \"\\\" deben escribirse como \"\\\\\".",
+			"markdown.styles.dec": "Lista de direcciones URL o rutas de acceso locales a hojas de estilo CSS que se van a usar desde la vista previa de Markdown. Las rutas de acceso relativas se interpretan en relación con la carpeta abierta en el Explorador. Si no hay ninguna carpeta abierta, se interpretan en relación con la ubicación del archivo Markdown. Todo \"\\\" debe escribirse como \"\\\\\".",
 			"markdown.trace.desc": "Habilita el registro de depuración para las extensiones de Markdown. ",
 			"workspaceTrust": "Necesario para cargar los estilos configurados en el área de trabajo."
 		}

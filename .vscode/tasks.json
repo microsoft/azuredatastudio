@@ -102,20 +102,6 @@
 		},
 		{
 			"type": "npm",
-			"script": "strict-vscode-watch",
-			"label": "TS - Strict VSCode",
-			"isBackground": true,
-			"presentation": {
-				"reveal": "never"
-			},
-			"problemMatcher": {
-				"base": "$tsc-watch",
-				"owner": "typescript-vscode",
-				"applyTo": "allDocuments"
-			}
-		},
-		{
-			"type": "npm",
 			"script": "watch-webd",
 			"label": "Web Ext - Build",
 			"group": "build",

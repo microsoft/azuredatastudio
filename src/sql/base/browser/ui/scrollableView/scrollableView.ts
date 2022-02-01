@@ -11,10 +11,10 @@ import { Scrollable, ScrollbarVisibility, INewScrollDimensions, ScrollEvent } fr
 import { getOrDefault } from 'vs/base/common/objects';
 import * as DOM from 'vs/base/browser/dom';
 import { Disposable, IDisposable, dispose } from 'vs/base/common/lifecycle';
-import { domEvent } from 'vs/base/browser/event';
 import { Event } from 'vs/base/common/event';
 import { Range, IRange } from 'vs/base/common/range';
 import { clamp } from 'vs/base/common/numbers';
+import { DomEmitter } from 'vs/base/browser/event';
 
 export interface IScrollableViewOptions {
 	useShadows?: boolean;
@@ -89,8 +89,8 @@ export class ScrollableView extends Disposable {
 
 		// Prevent the monaco-scrollable-element from scrolling
 		// https://github.com/Microsoft/vscode/issues/44181
-		this._register(domEvent(this.scrollableElement.getDomNode(), 'scroll')
-			(e => (e.target as HTMLElement).scrollTop = 0));
+		this._register(new DomEmitter(this.scrollableElement.getDomNode(), 'scroll')).event
+			(e => (e.target as HTMLElement).scrollTop = 0);
 	}
 
 	elementTop(index: number): number {

@@ -6,9 +6,10 @@
 import { IQueryManagementService, QueryCancelResult, ExecutionPlanOptions } from 'sql/workbench/services/query/common/queryManagement';
 import * as Utils from 'sql/platform/connection/common/utils';
 import { Deferred } from 'sql/base/common/promise';
-import { IQueryPlanInfo } from 'sql/workbench/services/query/common/queryModel';
+import { IQueryPlanInfo, IQueryPlan2Info } from 'sql/workbench/services/query/common/queryModel';
 import { ResultSerializer, SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
 
+import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import * as types from 'vs/base/common/types';
@@ -71,6 +72,9 @@ export default class QueryRunner extends Disposable {
 
 	private readonly _onQueryPlanAvailable = this._register(new Emitter<IQueryPlanInfo>());
 	public readonly onQueryPlanAvailable = this._onQueryPlanAvailable.event;
+
+	private readonly _onQueryPlan2Available = this._register(new Emitter<IQueryPlan2Info>());
+	public readonly onQueryPlan2Available = this._onQueryPlan2Available.event;
 
 	private readonly _onVisualize = this._register(new Emitter<ResultSetSummary>());
 	public readonly onVisualize = this._onVisualize.event;
@@ -380,6 +384,16 @@ export default class QueryRunner extends Disposable {
 				batchSet.resultSetSummaries[resultSet.id] = resultSet;
 				this._onResultSetUpdate.fire(resultSet);
 			}
+		}
+	}
+
+	public handleQueryPlan2Available(queryPlans: azdata.QueryPlanGraph[] | undefined) {
+		if (queryPlans) {
+			this._onQueryPlan2Available.fire({
+				providerId: mssqlProviderName,
+				fileUri: this.uri,
+				planGraphs: queryPlans
+			});
 		}
 	}
 

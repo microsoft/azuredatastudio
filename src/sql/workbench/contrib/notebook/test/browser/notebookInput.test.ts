@@ -84,7 +84,7 @@ suite('Notebook Input', function (): void {
 		// Input title
 		assert.strictEqual(untitledNotebookInput.getTitle(), testTitle);
 
-		let noTitleInput = instantiationService.createInstance(UntitledNotebookInput, undefined, untitledUri, undefined);
+		let noTitleInput = instantiationService.createInstance(UntitledNotebookInput, undefined, untitledUri, untitledTextInput);
 		assert.strictEqual(noTitleInput.getTitle(), basenameOrAuthority(untitledUri));
 
 		// Text Input
@@ -173,8 +173,6 @@ suite('Notebook Input', function (): void {
 	});
 
 	test('Matches other input', async function (): Promise<void> {
-		assert.strictEqual(untitledNotebookInput.matches(undefined), false, 'Input should not match undefined.');
-
 		assert.ok(untitledNotebookInput.matches(untitledNotebookInput), 'Input should match itself.');
 
 		let otherTestUri = URI.from({ scheme: Schemas.untitled, path: 'OtherTestPath' });

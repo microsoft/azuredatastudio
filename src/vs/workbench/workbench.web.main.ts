@@ -87,7 +87,9 @@ import { TitlebarPart } from 'vs/workbench/browser/parts/titlebar/titlebarPart';
 import { ITimerService, TimerService } from 'vs/workbench/services/timer/browser/timerService';
 import { IConfigurationResolverService } from 'vs/workbench/services/configurationResolver/common/configurationResolver';
 import { ConfigurationResolverService } from 'vs/workbench/services/configurationResolver/browser/configurationResolverService';
+import { IUserConfigurationFileService, UserConfigurationFileService } from 'vs/platform/configuration/common/userConfigurationFileService';
 
+registerSingleton(IUserConfigurationFileService, UserConfigurationFileService);
 registerSingleton(IWorkbenchExtensionManagementService, ExtensionManagementService);
 registerSingleton(IAccessibilityService, AccessibilityService, true);
 registerSingleton(IContextMenuService, ContextMenuService);
@@ -146,9 +148,6 @@ import 'vs/workbench/contrib/tasks/browser/taskService';
 
 // Tags
 import 'vs/workbench/contrib/tags/browser/workspaceTagsService';
-
-// Telemetry Opt Out
-import 'vs/workbench/contrib/welcome/telemetryOptOut/browser/telemetryOptOut.contribution';
 
 // Issues
 import 'vs/workbench/contrib/issue/browser/issue.web.contribution';

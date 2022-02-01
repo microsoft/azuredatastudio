@@ -14,8 +14,8 @@
 		},
 		"dist/githubServer": {
 			"signingIn": "$(mark-github) Iniciando sesión en github.com...",
-			"signingInEnterprise": "$(mark-github) Iniciando sesión en {0}...",
-			"status.git.signIn.name": "Inicio de sesión en GitHub"
+			"status.git.signIn.name": "Inicio de sesión en GitHub",
+			"validUri": "Escriba un URI válido de la página de inicio de sesión de GitHub."
 		},
 		"package": {
 			"description": "Proveedor de autenticación de GitHub",

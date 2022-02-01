@@ -42,7 +42,6 @@ export function getAppDataPath() {
 /**
  * Get a file name that is not already used in the target directory
  * @param filePath source notebook file name
- * @param fileExtension file type
  */
 export function findNextUntitledEditorName(filePath: string): string {
 	const fileExtension = path.extname(filePath);

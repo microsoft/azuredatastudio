@@ -1,7 +1,7 @@
 steps:
 - task: NodeTool@0
   inputs:
-    versionSpec: "12.13.0"
+    versionSpec: "14.x"
 
 - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
   inputs:
@@ -83,7 +83,6 @@ steps:
     yarn sqllint
     yarn extensions-lint
     yarn gulp hygiene
-    yarn strict-vscode
     yarn valid-layers-check
   displayName: Run hygiene, eslint
   condition: and(succeeded(), eq(variables['VSCODE_STEP_ON_IT'], 'false'))

@@ -284,6 +284,7 @@ suite.skip('FindController', async () => { // {{SQL CARBON EDIT}} Skip suite
 			await findController.start({
 				forceRevealReplace: false,
 				seedSearchStringFromSelection: 'none',
+				seedSearchStringFromNonEmptySelection: false,
 				seedSearchStringFromGlobalClipboard: false,
 				shouldFocus: FindStartFocusAction.FocusFindInput,
 				shouldAnimate: false,
@@ -310,6 +311,7 @@ suite.skip('FindController', async () => { // {{SQL CARBON EDIT}} Skip suite
 			await findController.start({
 				forceRevealReplace: false,
 				seedSearchStringFromSelection: 'none',
+				seedSearchStringFromNonEmptySelection: false,
 				seedSearchStringFromGlobalClipboard: false,
 				shouldFocus: FindStartFocusAction.NoFocusChange,
 				shouldAnimate: false,
@@ -591,6 +593,7 @@ suite.skip('FindController query options persistence', async () => { // {{SQL CA
 			const findConfig: IFindStartOptions = {
 				forceRevealReplace: false,
 				seedSearchStringFromSelection: 'none',
+				seedSearchStringFromNonEmptySelection: false,
 				seedSearchStringFromGlobalClipboard: false,
 				shouldFocus: FindStartFocusAction.NoFocusChange,
 				shouldAnimate: false,
@@ -623,6 +626,7 @@ suite.skip('FindController query options persistence', async () => { // {{SQL CA
 			await findController.start({
 				forceRevealReplace: false,
 				seedSearchStringFromSelection: 'none',
+				seedSearchStringFromNonEmptySelection: false,
 				seedSearchStringFromGlobalClipboard: false,
 				shouldFocus: FindStartFocusAction.NoFocusChange,
 				shouldAnimate: false,
@@ -647,6 +651,7 @@ suite.skip('FindController query options persistence', async () => { // {{SQL CA
 			await findController.start({
 				forceRevealReplace: false,
 				seedSearchStringFromSelection: 'none',
+				seedSearchStringFromNonEmptySelection: false,
 				seedSearchStringFromGlobalClipboard: false,
 				shouldFocus: FindStartFocusAction.NoFocusChange,
 				shouldAnimate: false,
@@ -672,6 +677,7 @@ suite.skip('FindController query options persistence', async () => { // {{SQL CA
 			await findController.start({
 				forceRevealReplace: false,
 				seedSearchStringFromSelection: 'none',
+				seedSearchStringFromNonEmptySelection: false,
 				seedSearchStringFromGlobalClipboard: false,
 				shouldFocus: FindStartFocusAction.NoFocusChange,
 				shouldAnimate: false,

@@ -7,7 +7,7 @@ import { DashboardEditor } from 'sql/workbench/contrib/dashboard/browser/dashboa
 import { DashboardInput } from 'sql/workbench/browser/editor/profiler/dashboardInput';
 
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
-import { EditorDescriptor, IEditorRegistry } from 'vs/workbench/browser/editor';
+import { EditorPaneDescriptor, IEditorPaneRegistry } from 'vs/workbench/browser/editor';
 import { EditorExtensions } from 'vs/workbench/common/editor';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { localize } from 'vs/nls';
@@ -58,11 +58,11 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 	when: ContextKeyExpr.or(ContextKeyExpr.and(TreeNodeContextKey.Status.notEqualsTo('Unavailable'), TreeNodeContextKey.NodeType.isEqualTo('Server')), ContextKeyExpr.and(TreeNodeContextKey.Status.notEqualsTo('Unavailable'), TreeNodeContextKey.NodeType.isEqualTo('Database')))
 });
 
-const dashboardEditorDescriptor = EditorDescriptor.create(
+const dashboardEditorDescriptor = EditorPaneDescriptor.create(
 	DashboardEditor,
 	DashboardEditor.ID,
 	localize('dashboard.editor.label', "Dashboard")
 );
 
-Registry.as<IEditorRegistry>(EditorExtensions.Editors)
-	.registerEditor(dashboardEditorDescriptor, [new SyncDescriptor(DashboardInput)]);
+Registry.as<IEditorPaneRegistry>(EditorExtensions.EditorPane)
+	.registerEditorPane(dashboardEditorDescriptor, [new SyncDescriptor(DashboardInput)]);

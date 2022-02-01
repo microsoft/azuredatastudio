@@ -3,9 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ClipboardData, IClipboardService } from 'vs/platform/clipboard/common/clipboardService';	// {{SQL CARBON EDIT}}
-import { URI } from 'vs/base/common/uri';
 import { $ } from 'vs/base/browser/dom';
+import { URI } from 'vs/base/common/uri';
+import { ClipboardData, IClipboardService } from 'vs/platform/clipboard/common/clipboardService';	// {{SQL CARBON EDIT}}
 
 export class BrowserClipboardService implements IClipboardService {
 

@@ -21,6 +21,8 @@ import {
 } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { ExtHostNotebookDocumentData } from 'sql/workbench/api/common/extHostNotebookDocumentData';
 import { ExtHostNotebookEditor } from 'sql/workbench/api/common/extHostNotebookEditor';
+import { VSCodeNotebookDocument } from 'sql/workbench/api/common/notebooks/vscodeNotebookDocument';
+import { VSCodeNotebookEditor } from 'sql/workbench/api/common/notebooks/vscodeNotebookEditor';
 
 type Adapter = azdata.nb.NavigationProvider;
 
@@ -39,13 +41,40 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 	private readonly _onDidChangeVisibleNotebookEditors = new Emitter<ExtHostNotebookEditor[]>();
 	private readonly _onDidChangeActiveNotebookEditor = new Emitter<ExtHostNotebookEditor>();
 	private _onDidOpenNotebook = new Emitter<azdata.nb.NotebookDocument>();
+	private _onDidCloseNotebook = new Emitter<azdata.nb.NotebookDocument>();
 	private _onDidChangeNotebookCell = new Emitter<azdata.nb.NotebookCellChangeEvent>();
 
 	readonly onDidChangeVisibleNotebookEditors: Event<ExtHostNotebookEditor[]> = this._onDidChangeVisibleNotebookEditors.event;
 	readonly onDidChangeActiveNotebookEditor: Event<ExtHostNotebookEditor> = this._onDidChangeActiveNotebookEditor.event;
 	readonly onDidOpenNotebookDocument: Event<azdata.nb.NotebookDocument> = this._onDidOpenNotebook.event;
+	readonly onDidCloseNotebookDocument: Event<azdata.nb.NotebookDocument> = this._onDidCloseNotebook.event;
 	readonly onDidChangeNotebookCell: Event<azdata.nb.NotebookCellChangeEvent> = this._onDidChangeNotebookCell.event;
 
+	private readonly _onDidChangeVisibleVSCodeEditors = new Emitter<vscode.NotebookEditor[]>();
+	private readonly _onDidChangeActiveVSCodeEditor = new Emitter<vscode.NotebookEditor>();
+	private readonly _onDidOpenVSCodeNotebook = new Emitter<vscode.NotebookDocument>();
+	private readonly _onDidCloseVSCodeNotebook = new Emitter<vscode.NotebookDocument>();
+	private readonly _onDidSaveVSCodeNotebook = new Emitter<vscode.NotebookDocument>();
+	private readonly _onDidChangeVSCodeCellMetadata = new Emitter<vscode.NotebookCellMetadataChangeEvent>();
+	private readonly _onDidChangeVSCodeDocumentMetadata = new Emitter<vscode.NotebookDocumentMetadataChangeEvent>();
+	private readonly _onDidChangeVSCodeCellOutputs = new Emitter<vscode.NotebookCellOutputsChangeEvent>();
+	private readonly _onDidChangeVSCodeNotebookCells = new Emitter<vscode.NotebookCellsChangeEvent>();
+	private readonly _onDidChangeVSCodeExecutionState = new Emitter<vscode.NotebookCellExecutionStateChangeEvent>();
+	private readonly _onDidChangeVSCodeEditorSelection = new Emitter<vscode.NotebookEditorSelectionChangeEvent>();
+	private readonly _onDidChangeVSCodeEditorRanges = new Emitter<vscode.NotebookEditorVisibleRangesChangeEvent>();
+
+	readonly onDidChangeVisibleVSCodeEditors: Event<vscode.NotebookEditor[]> = this._onDidChangeVisibleVSCodeEditors.event;
+	readonly onDidChangeActiveVSCodeEditor: Event<vscode.NotebookEditor> = this._onDidChangeActiveVSCodeEditor.event;
+	readonly onDidOpenVSCodeNotebookDocument: Event<vscode.NotebookDocument> = this._onDidOpenVSCodeNotebook.event;
+	readonly onDidCloseVSCodeNotebookDocument: Event<vscode.NotebookDocument> = this._onDidCloseVSCodeNotebook.event;
+	readonly onDidSaveVSCodeNotebookDocument: Event<vscode.NotebookDocument> = this._onDidSaveVSCodeNotebook.event;
+	readonly onDidChangeVSCodeCellMetadata: Event<vscode.NotebookCellMetadataChangeEvent> = this._onDidChangeVSCodeCellMetadata.event;
+	readonly onDidChangeVSCodeDocumentMetadata: Event<vscode.NotebookDocumentMetadataChangeEvent> = this._onDidChangeVSCodeDocumentMetadata.event;
+	readonly onDidChangeVSCodeCellOutputs: Event<vscode.NotebookCellOutputsChangeEvent> = this._onDidChangeVSCodeCellOutputs.event;
+	readonly onDidChangeVSCodeNotebookCells: Event<vscode.NotebookCellsChangeEvent> = this._onDidChangeVSCodeNotebookCells.event;
+	readonly onDidChangeVSCodeExecutionState: Event<vscode.NotebookCellExecutionStateChangeEvent> = this._onDidChangeVSCodeExecutionState.event;
+	readonly onDidChangeVSCodeEditorSelection: Event<vscode.NotebookEditorSelectionChangeEvent> = this._onDidChangeVSCodeEditorSelection.event;
+	readonly onDidChangeVSCodeEditorRanges: Event<vscode.NotebookEditorVisibleRangesChangeEvent> = this._onDidChangeVSCodeEditorRanges.event;
 
 	constructor(
 		private readonly _mainContext: IMainContext,
@@ -53,6 +82,11 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 		if (this._mainContext) {
 			this._proxy = this._mainContext.getProxy(SqlMainContext.MainThreadNotebookDocumentsAndEditors);
 		}
+
+		this.onDidChangeVisibleNotebookEditors(editors => this._onDidChangeVisibleVSCodeEditors.fire(editors.map(editor => new VSCodeNotebookEditor(editor))));
+		this.onDidChangeActiveNotebookEditor(editor => this._onDidChangeActiveVSCodeEditor.fire(new VSCodeNotebookEditor(editor)));
+		this.onDidOpenNotebookDocument(notebook => this._onDidOpenVSCodeNotebook.fire(new VSCodeNotebookDocument(notebook)));
+		this.onDidCloseNotebookDocument(notebook => this._onDidCloseVSCodeNotebook.fire(new VSCodeNotebookDocument(notebook)));
 	}
 
 	dispose() {
@@ -128,7 +162,7 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 
 		// now that the internal state is complete, fire events
 		if (removedDocuments) {
-			// TODO add doc close event
+			removedDocuments.forEach(d => this._onDidCloseNotebook.fire(d.document));
 		}
 		if (addedDocuments) {
 			addedDocuments.forEach(d => this._onDidOpenNotebook.fire(d.document));
@@ -256,5 +290,8 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 		});
 	}
 
+	createNotebookDocument(providerId: string, contents: azdata.nb.INotebookContents): Promise<azdata.nb.NotebookDocument> {
+		return this._proxy.$createNotebookDocument(providerId, contents);
+	}
 	//#endregion
 }

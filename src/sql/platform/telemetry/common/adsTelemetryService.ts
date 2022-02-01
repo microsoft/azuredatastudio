@@ -157,7 +157,8 @@ export class AdsTelemetryService implements IAdsTelemetryService {
 
 	/**
 	 * Sends a Metrics event. This is used to log measurements taken.
-	 * @param measurements The metrics to send
+	 * @param metrics The metrics to send
+	 * @param groupName The name of the group these metrics belong to
 	 */
 	public sendMetricsEvent(metrics: ITelemetryEventMeasures, groupName: string = ''): void {
 		this.createMetricsEvent(metrics, groupName).send();
@@ -169,7 +170,6 @@ export class AdsTelemetryService implements IAdsTelemetryService {
 	 * @param name The friendly name of the error
 	 * @param errorCode The error code returned
 	 * @param errorType The specific type of error
-	 * @param properties Optional additional properties
 	 */
 	public createErrorEvent(view: string, name: string, errorCode: string = '', errorType: string = ''): ITelemetryEvent {
 		return new TelemetryEventImpl(this.telemetryService, this.logService, EventName.Error, {

@@ -44,8 +44,5 @@
     "mocha-multi-reporters": "^1.1.7",
     "ms-rest-azure": "^2.6.0",
     "vscodetestcover": "^1.1.0"
-  },
-  "resolutions": {
-    "json-schema": "0.4.0"
   }
 }

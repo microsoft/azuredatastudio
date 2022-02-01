@@ -20,6 +20,9 @@ export namespace cssStyles {
 	export const createProjectFromDatabaseLabelWidth = '110px';
 	export const createProjectFromDatabaseTextboxWidth = '310px';
 
+	export const updateProjectFromDatabaseLabelWidth = '110px';
+	export const updateProjectFromDatabaseTextboxWidth = '310px';
+
 	// font-styles
 	export namespace fontStyle {
 		export const normal = 'normal';
