@@ -801,7 +801,17 @@ export const enum VirtualMachineFamily {
 	standardNCASv3_T4Family
 }
 
+export interface StartPerfDataCollectionResult {
+	dateTimeStarted: Date;
+}
+
+export interface StopPerfDataCollectionResult {
+	dateTimeStopped: Date;
+}
+
 export interface ISqlMigrationService {
 	getAssessments(ownerUri: string, databases: string[]): Promise<AssessmentResult | undefined>;
 	getSkuRecommendations(dataFolder: string, perfQueryIntervalInSec: number, targetPlatforms: string[], targetSqlInstance: string, targetPercentile: number, scalingFactor: number, startTime: string, endTime: string, databaseAllowList: string[]): Promise<SkuRecommendationResult | undefined>;
+	startPerfDataCollection(ownerUri: string, dataFolder: string, perfQueryIntervalInSec: number, staticQueryIntervalInSec: number, numberOfIterations: number) : Promise<StartPerfDataCollectionResult | undefined>;
+	stopPerfDataCollection() : Promise<StopPerfDataCollectionResult | undefined>;
 }

@@ -87,6 +87,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			return true;
 		});
 	}
+
 	public async onPageLeave(): Promise<void> {
 		const assessedDatabases = this.migrationStateModel._databaseAssessment ?? [];
 		const selectedDatabases = this.selectedDbs();

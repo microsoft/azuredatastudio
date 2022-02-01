@@ -5,9 +5,11 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { MigrationStateModel, PerformanceDataSourceOptions } from '../../models/stateMachine';
+import { MigrationStateModel, PerformanceDataSourceOptions, MigrationTargetType } from '../../models/stateMachine';
 import * as constants from '../../constants/strings';
 import * as styles from '../../constants/styles';
+import * as utils from '../../api/utils';
+import { SKURecommendationPage } from '../../wizard/skuRecommendationPage';
 
 
 export class GetAzureRecommendationDialog {
@@ -22,7 +24,7 @@ export class GetAzureRecommendationDialog {
 	private _openExistingContainer!: azdata.FlexContainer;
 
 
-	constructor(public migrationStateModel: MigrationStateModel) {
+	constructor(public skuRecommendationPage: SKURecommendationPage, public migrationStateModel: MigrationStateModel) {
 		console.log('constructor GetAzureRecommendationDialog');
 	}
 
@@ -158,7 +160,7 @@ export class GetAzureRecommendationDialog {
 		}).component();
 
 		const instructions = _view.modelBuilder.text().withProps({
-			value: constants.AZURE_RECOMMENDATION_SELECT_FOLDER,
+			value: constants.AZURE_RECOMMENDATION_COLLECT_DATA_FOLDER,
 			CSSStyles: {
 				...styles.LABEL_CSS,
 				'margin-bottom': '8px',
@@ -172,7 +174,10 @@ export class GetAzureRecommendationDialog {
 		}).component();
 
 		const folderNameInput = _view.modelBuilder.inputBox().withProps({
-			required: true,
+			// TO-DO: now that there are two input boxes, one for the start data collection workflow and one for the import existing data workflow,
+			// this needs to be updated so that the Start button in this dialog is greyed out only when *neither* of them has a value, but un-greyed
+			// when *either* one has a value
+			required: false,
 			placeHolder: constants.FOLDER_NAME,
 			// validationErrorMessage: "invalid location??",
 			width: '300px'
@@ -182,7 +187,6 @@ export class GetAzureRecommendationDialog {
 			// })
 			.component();
 		this._disposables.push(folderNameInput.onTextChanged(async (value) => {
-			// TODO: use the _skuRecommendationPerformanceLocation value
 			this.migrationStateModel._skuRecommendationPerformanceLocation = value.trim();
 			console.log('this.migrationStateModel._skuRecommendationPerformanceLocation', this.migrationStateModel._skuRecommendationPerformanceLocation);
 		}));
@@ -195,9 +199,10 @@ export class GetAzureRecommendationDialog {
 			}
 		}).component();
 		this._disposables.push(browseButton.onDidClick(async (e) => {
-			// TODO: browse folder on your local drive
-			// TODO: maybe look at what OpenFolderAction is doing at src\vs\workbench\browser\actions\workspaceActions.ts
 			console.log('on click BROWSE');
+
+			let folder = await this.handleBrowse();
+			folderNameInput.value = folder;			// update value of textbox, which in turn will update this.migrationStateModel._skuRecommendationPerformanceLocation via onTextChanged()
 		}));
 
 		selectFolderContainer.addItems([
@@ -216,18 +221,43 @@ export class GetAzureRecommendationDialog {
 		const container = _view.modelBuilder.flexContainer().withProps({
 			CSSStyles: {
 				'flex-direction': 'column',
-				'display': 'none',
+				'display': 'inline',
 			}
 		}).component();
 
 		const instructions = _view.modelBuilder.text().withProps({
-			value: 'insert some helper text', // TODO
+			value: constants.AZURE_RECOMMENDATION_OPEN_EXISTING_FOLDER,
 			CSSStyles: {
 				...styles.LABEL_CSS,
 				'margin-bottom': '8px',
 			}
 		}).component();
 
+		const selectFolderContainer = _view.modelBuilder.flexContainer().withProps({
+			CSSStyles: {
+				'flex-direction': 'row',
+			}
+		}).component();
+
+		const folderNameInput = _view.modelBuilder.inputBox().withProps({
+			// TO-DO: now that there are two input boxes, one for the start data collection workflow and one for the import existing data workflow,
+			// this needs to be updated so that the Start button in this dialog is greyed out only when *neither* of them has a value, but un-greyed
+			// when *either* one has a value
+			required: false,
+			placeHolder: constants.FOLDER_NAME,
+			// validationErrorMessage: "invalid location??",
+			width: '300px'
+		})
+			// .withValidation(c => {
+			// 	return true;
+			// })
+			.component();
+		this._disposables.push(folderNameInput.onTextChanged(async (value) => {
+			this.migrationStateModel._skuRecommendationPerformanceLocation = value.trim();
+			console.log('this.migrationStateModel._skuRecommendationPerformanceLocation', this.migrationStateModel._skuRecommendationPerformanceLocation);
+		}));
+
+		// TO-DO: for some reason the open button for the import workflow renders a few pixels lower than the open button for the start data collection workflow
 		const openButton = _view.modelBuilder.button().withProps({
 			label: constants.OPEN, // TODO: rename as import?
 			width: 100,
@@ -236,16 +266,19 @@ export class GetAzureRecommendationDialog {
 			}
 		}).component();
 		this._disposables.push(openButton.onDidClick(async (e) => {
-			// TODO: import file
 			console.log('on click OPEN/IMPORT');
+
+			let folder = await this.handleBrowse();
+			folderNameInput.value = folder;			// update value of textbox, which in turn will update this.migrationStateModel._skuRecommendationPerformanceLocation via onTextChanged()
 		}));
 
-		// TODO: parse import file and save as SkuRecommendation object
-		// this.migrationStateModel._skuRecommendationResults =
-
+		selectFolderContainer.addItems([
+			folderNameInput,
+			openButton,
+		]);
 		container.addItems([
 			instructions,
-			openButton,
+			selectFolderContainer,
 		]);
 		return container;
 	}
@@ -260,30 +293,91 @@ export class GetAzureRecommendationDialog {
 	}
 
 	public async openDialog(dialogName?: string) {
-		// TODO: fix _isOpen logic?
-		// if (!this._isOpen) {
-		this._isOpen = true;
-		this.dialog = azdata.window.createModelViewDialog(constants.GET_AZURE_RECOMMENDATION, 'GetAzureRecommendationsDialog', 'narrow');
+		if (!this._isOpen) {
+			this._isOpen = true;
+			this.dialog = azdata.window.createModelViewDialog(constants.GET_AZURE_RECOMMENDATION, 'GetAzureRecommendationsDialog', 'narrow');
 
-		this.dialog.okButton.label = GetAzureRecommendationDialog.StartButtonText;
-		this._disposables.push(this.dialog.okButton.onClick(async () => await this.execute()));
+			this.dialog.okButton.label = GetAzureRecommendationDialog.StartButtonText;
+			this._disposables.push(this.dialog.okButton.onClick(async () => await this.execute()));
 
-		this.dialog.cancelButton.hidden = true;
+			this.dialog.cancelButton.onClick(() => this._isOpen = false);
 
-		const dialogSetupPromises: Thenable<void>[] = [];
-		dialogSetupPromises.push(this.initializeDialog(this.dialog));
-		azdata.window.openDialog(this.dialog);
-		await Promise.all(dialogSetupPromises);
-		// }
+			const dialogSetupPromises: Thenable<void>[] = [];
+			dialogSetupPromises.push(this.initializeDialog(this.dialog));
+			azdata.window.openDialog(this.dialog);
+			await Promise.all(dialogSetupPromises);
+		}
 	}
 
 	protected async execute() {
 		this._isOpen = false;
-		// TODO: start perf collection
 		console.log('Start button');
+
+		switch (this.migrationStateModel._skuRecommendationPerformanceDataSource) {
+			case PerformanceDataSourceOptions.CollectData: {
+				// start data collection entry point
+				// TO-DO: expose the rest of these in the UI
+				const perfQueryIntervalInSec = 3;
+				const staticQueryIntervalInSec = 30;
+				const numberOfIterations = 5;
+
+				await this.migrationStateModel.startPerfDataCollection(
+					this.migrationStateModel._skuRecommendationPerformanceLocation,
+					perfQueryIntervalInSec,
+					staticQueryIntervalInSec,
+					numberOfIterations
+				);
+				break;
+			}
+			case PerformanceDataSourceOptions.OpenExisting: {
+				// get SKU recommendation entry point
+				// TO-DO: expose the rest of these in the UI
+				const perfQueryIntervalInSec = 30;
+				const targetPlatforms = [MigrationTargetType.SQLDB, MigrationTargetType.SQLMI, MigrationTargetType.SQLVM];
+				const targetPercentile = 95;
+				const scalingFactor = 100;
+				const startTime = '1900-01-01 00:00:00';
+				const endTime = '2200-01-01 00:00:00';
+
+				await this.migrationStateModel.getSkuRecommendations(
+					this.migrationStateModel._skuRecommendationPerformanceLocation,
+					perfQueryIntervalInSec,
+					targetPlatforms,
+					targetPercentile,
+					scalingFactor,
+					startTime,
+					endTime,
+					this.migrationStateModel._databaseAssessment);
+
+				console.log('results - this.migrationStateModel._skuRecommendationResults:');
+				console.log(this.migrationStateModel._skuRecommendationResults);
+				break;
+			}
+		}
+
+		await this.skuRecommendationPage.refreshCardText();
 	}
 
 	public get isOpen(): boolean {
 		return this._isOpen;
+	}
+
+	// TO-DO: add validation
+	private async handleBrowse(): Promise<string> {
+		let path = '';
+
+		let options: vscode.OpenDialogOptions = {
+			defaultUri: vscode.Uri.file(utils.getUserHome()!),
+			canSelectFiles: false,
+			canSelectFolders: true,
+			canSelectMany: false,
+		};
+
+		let fileUris = await vscode.window.showOpenDialog(options);
+		if (fileUris && fileUris?.length > 0 && fileUris[0]) {
+			path = fileUris[0].fsPath;
+		}
+
+		return path;
 	}
 }
