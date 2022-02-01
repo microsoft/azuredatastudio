@@ -21,7 +21,7 @@ import * as url from 'url';
 import { SimpleTokenCache } from '../simpleTokenCache';
 import { MemoryDatabase } from '../utils/memoryDatabase';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { Logger, LogLevel } from '../../utils/Logger';
+import { Logger } from '../../utils/Logger';
 import * as qs from 'qs';
 import { AzureAuthError } from './azureAuthError';
 
@@ -516,7 +516,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	public createAccount(tokenClaims: TokenClaims, key: string, tenants: Tenant[]): AzureAccount {
 		Logger.verbose(`Token Claims: ${tokenClaims.name}`);
 		tenants.forEach((tenant) => {
-			Logger.write(LogLevel.Verbose,
+			Logger.verbose(
 				`Tenant ID: ${tenant.id}
 				Tenant Name: ${tenant.displayName}`);
 		});

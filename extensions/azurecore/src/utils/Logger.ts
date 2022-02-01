@@ -28,22 +28,22 @@ export class Logger {
 		return logLevel <= LogLevel[Logger.config.loggingLevel as keyof typeof LogLevel];
 	}
 
-	static write(logLevel: LogLevel, msg: any, ...vals: any[]) {
+	private static write(logLevel: LogLevel, msg: any, ...vals: any[]) {
 		if (this.shouldLog(logLevel) || logLevel === LogLevel.Pii) {
 			const fullMessage = `[${LogLevel[logLevel]}]: ${msg} - ${vals.map(v => JSON.stringify(v)).join(' - ')}`;
 			this.channel.appendLine(fullMessage);
 		}
 	}
 
-	static error(msg: any, ...vals: any[]) {
+	public static error(msg: any, ...vals: any[]) {
 		this.write(LogLevel.Error, msg, vals);
 	}
 
-	static info(msg: any, ...vals: any[]) {
+	public static info(msg: any, ...vals: any[]) {
 		this.write(LogLevel.Information, msg, vals);
 	}
 
-	static verbose(msg: any, ...vals: any[]) {
+	public static verbose(msg: any, ...vals: any[]) {
 		this.write(LogLevel.Verbose, msg, vals);
 	}
 

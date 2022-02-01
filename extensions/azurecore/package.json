@@ -114,15 +114,15 @@
           "azure.loggingLevel": {
             "type": "string",
             "description": "%config.loggingLevel%",
-            "default": "Critical",
+            "default": "Error",
             "enum": [
-              "All",
               "Off",
               "Critical",
               "Error",
               "Warning",
               "Information",
-              "Verbose"
+              "Verbose",
+              "All"
             ]
           }
         }
