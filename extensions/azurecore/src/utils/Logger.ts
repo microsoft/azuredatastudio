@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 import * as loc from '../localizedConstants';
 
 export enum LogLevel {
+	'Pii',
 	'Off',
 	'Critical',
 	'Error',
@@ -28,7 +29,7 @@ export class Logger {
 	}
 
 	static write(logLevel: LogLevel, msg: any, ...vals: any[]) {
-		if (this.shouldLog(logLevel)) {
+		if (this.shouldLog(logLevel) || logLevel === LogLevel.Pii) {
 			const fullMessage = `[${LogLevel[logLevel]}]: ${msg} - ${vals.map(v => JSON.stringify(v)).join(' - ')}`;
 			this.channel.appendLine(fullMessage);
 		}
@@ -36,6 +37,14 @@ export class Logger {
 
 	static error(msg: any, ...vals: any[]) {
 		this.write(LogLevel.Error, msg, vals);
+	}
+
+	static info(msg: any, ...vals: any[]) {
+		this.write(LogLevel.Information, msg, vals);
+	}
+
+	static verbose(msg: any, ...vals: any[]) {
+		this.write(LogLevel.Verbose, msg, vals);
 	}
 
 
@@ -54,7 +63,7 @@ export class Logger {
 				...objsToSanitize.map(obj => `${obj.name}=${sanitize(obj.objOrArray)}`),
 				...stringsToShorten.map(str => `${str.name}=${shorten(str.value)}`)
 			].join(' ');
-			Logger.write(LogLevel.Verbose, msg, vals);
+			Logger.write(LogLevel.Pii, msg, vals);
 		}
 	}
 
