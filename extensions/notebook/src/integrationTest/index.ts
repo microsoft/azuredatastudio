@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 const path = require('path');
-const testRunner = require('vscodetestcover');
+import * as testRunner from '@microsoft/vscodetestcover';
 
 const suite = 'notebook Extension Integration Tests';
 
