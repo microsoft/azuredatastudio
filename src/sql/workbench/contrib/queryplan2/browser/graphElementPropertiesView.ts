@@ -175,20 +175,20 @@ export class GraphElementPropertiesView {
 		this._table.resizeCanvas();
 	}
 
-	private convertPropertiesToTableRows(props: azdata.ExecutionPlanGraphElementProperty[], parentRow: number, indent: number): { [key: string]: string }[] {
-		let rows: { [key: string]: string }[] = [];
+	private convertPropertiesToTableRows(props: azdata.ExecutionPlanGraphElementProperty[], parentIndex: number, indent: number, rows: { [key: string]: string }[] = []): { [key: string]: string }[] {
+		if (!props) {
+			return rows;
+		}
 		props.forEach((p, i) => {
+			let row = {};
+			row['name'] = '\t'.repeat(indent) + p.name;
+			row['parent'] = parentIndex;
+			rows.push(row);
 			if (!isString(p.value)) {
-				let row = {};
-				row['name'] = '\t'.repeat(indent) + p.name;
 				row['value'] = '';
-				rows.push(row);
-				this.convertPropertiesToTableRows(p.value, this._data.length - 1, indent + 2);
+				this.convertPropertiesToTableRows(p.value, rows.length - 1, indent + 2, rows);
 			} else {
-				let row = {};
-				row['name'] = '\t'.repeat(indent) + p.name;
 				row['value'] = p.value;
-				rows.push(row);
 			}
 		});
 		return rows;
