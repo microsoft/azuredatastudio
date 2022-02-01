@@ -9,7 +9,7 @@ import * as azdata from 'azdata';
 import { ACTIVE_GROUP, IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { TableDesignerInput } from 'sql/workbench/browser/editor/tableDesigner/tableDesignerInput';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { IAdsTelemetryService, ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 import { TelemetryAction, TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
 
 export class TableDesignerService implements ITableDesignerService {
@@ -43,7 +43,7 @@ export class TableDesignerService implements ITableDesignerService {
 		throw invalidProvider(providerId);
 	}
 
-	public async openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, telemetryInfo?: { [key: string]: string }): Promise<void> {
+	public async openTableDesigner(providerId: string, tableInfo: azdata.designers.TableInfo, telemetryInfo?: ITelemetryEventProperties): Promise<void> {
 		this._adsTelemetryService.createActionEvent(TelemetryView.TableDesigner, TelemetryAction.Open).withAdditionalProperties({
 			provider: providerId,
 			newTable: tableInfo.isNewTable
