@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { DesignerViewModel, DesignerEdit, DesignerComponentInput, DesignerView, DesignerTab, DesignerDataPropertyInfo, DropDownProperties, DesignerTableProperties, DesignerEditProcessedEventArgs, DesignerAction, DesignerStateChangedEventArgs } from 'sql/workbench/browser/designer/interfaces';
+import { DesignerViewModel, DesignerEdit, DesignerComponentInput, DesignerView, DesignerTab, DesignerDataPropertyInfo, DropDownProperties, DesignerTableProperties, DesignerEditProcessedEventArgs, DesignerAction, DesignerStateChangedEventArgs, DesignerEditPath } from 'sql/workbench/browser/designer/interfaces';
 import { TableDesignerProvider } from 'sql/workbench/services/tableDesigner/common/interface';
 import { localize } from 'vs/nls';
 import { designers } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -72,7 +72,7 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 
 	processEdit(edit: DesignerEdit): void {
 		let telemetryInfo = this.createTelemetryInfo();
-		telemetryInfo.tableObjectType = ''; // todo get paths
+		telemetryInfo.tableObjectType = this.getObjectTypeFromPath(edit.path);
 		const editAction = this._adsTelemetryService.createActionEvent(TelemetryView.TableDesigner,
 			this.designerEditTypeDisplayValue[edit.type]).withAdditionalProperties(telemetryInfo);
 		const startTime = new Date().getTime();
@@ -622,5 +622,27 @@ export class TableDesignerComponentInput implements DesignerComponentInput {
 		};
 		Object.assign(telemetryInfo, this._telemetryInfo);
 		return telemetryInfo;
+	}
+
+	/// 1. 'Add' scenario
+	///     a. ['propertyName1']. Example: add a column to the columns property: ['columns'].
+	///     b. ['propertyName1',index-1,'propertyName2']. Example: add a column mapping to the first foreign key: ['foreignKeys',0,'mappings'].
+	/// 2. 'Update' scenario
+	///     a. ['propertyName1']. Example: update the name of the table: ['name'].
+	///     b. ['propertyName1',index-1,'propertyName2']. Example: update the name of a column: ['columns',0,'name'].
+	///     c. ['propertyName1',index-1,'propertyName2',index-2,'propertyName3']. Example: update the source column of an entry in a foreign key's column mapping table: ['foreignKeys',0,'mappings',0,'source'].
+	/// 3. 'Remove' scenario
+	///     a. ['propertyName1',index-1]. Example: remove a column from the columns property: ['columns',0'].
+	///     b. ['propertyName1',index-1,'proper
+	/// The return values would be the propertyNames followed by slashes in level order. Eg.: propertyName1/propertyName2/...
+
+	private getObjectTypeFromPath(path: DesignerEditPath): string {
+		let typeArray = [];
+		for (let i = 0; i < path.length; i++) {
+			if (i % 2 === 0) {
+				typeArray.push(path[i]);
+			}
+		}
+		return typeArray.join('/');
 	}
 }
