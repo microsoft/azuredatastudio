@@ -71,7 +71,15 @@ export class PlanHeader {
 
 	private renderGraphIndexAndCost(): void {
 		if (this._graphIndex && this._relativeCost) {
-			this._graphIndexAndCostContainer.innerText = localize('planHeaderIndexAndCost', "Query {0}: Query cost (relative to the script): {1}%", this._graphIndex, this._relativeCost.toFixed(2));
+			this._graphIndexAndCostContainer.innerText = localize(
+				{
+					key: 'planHeaderIndexAndCost',
+					comment: [
+						'{0} is the index of the graph in the execution plan tab',
+						'{1} is the relative cost in percentage of the graph to the rest of the graphs in execution plan tab '
+					]
+				},
+				"Query {0}: Query cost (relative to the script): {1}%", this._graphIndex, this._relativeCost.toFixed(2));
 		}
 	}
 

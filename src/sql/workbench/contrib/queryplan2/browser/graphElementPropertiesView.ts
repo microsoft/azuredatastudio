@@ -124,16 +124,32 @@ export class GraphElementPropertiesView {
 	}
 
 	public sortPropertiesAlphabetically(): void {
-		this._model.graphElement.properties = this._model.graphElement.properties.sort((a, b) =>
-			a.name.localeCompare(b.name)
-		);
+		this._model.graphElement.properties = this._model.graphElement.properties.sort((a, b) => {
+			if (!a?.name && !b?.name) {
+				return 0;
+			} else if (!a?.name) {
+				return -1;
+			} else if (!b?.name) {
+				return 1;
+			} else {
+				return a.name.localeCompare(b.name);
+			}
+		});
 		this.renderView();
 	}
 
 	public sortPropertiesByImportance(): void {
-		this._model.graphElement.properties = this._model.graphElement.properties.sort((a, b) =>
-			a.displayOrder - b.displayOrder
-		);
+		this._model.graphElement.properties = this._model.graphElement.properties.sort((a, b) => {
+			if (!a?.displayOrder && !b?.displayOrder) {
+				return 0;
+			} else if (!a?.displayOrder) {
+				return -1;
+			} else if (!b?.displayOrder) {
+				return 1;
+			} else {
+				return a.displayOrder - b.displayOrder;
+			}
+		});
 		this.renderView();
 	}
 
