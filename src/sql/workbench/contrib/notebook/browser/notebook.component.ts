@@ -134,20 +134,27 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			return false;
 		}));
 		this._register(DOM.addDisposableListener(window, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
-			if (this.isActive() && this.model.activeCell && !this.model.activeCell?.isEditMode) {
+			if (this.isActive() && this.model.activeCell) {
 				let event = new StandardKeyboardEvent(e);
-				if (event.keyCode === KeyCode.DownArrow) {
-					let next = (this.findCellIndex(this.model.activeCell) + 1) % this.cells.length;
-					this.selectCell(this.cells[next]);
-				} else if (event.keyCode === KeyCode.UpArrow) {
-					let index = this.findCellIndex(this.model.activeCell);
-					if (index === 0) {
-						index = this.cells.length;
+				if (!this.model.activeCell?.isEditMode) {
+					if (event.keyCode === KeyCode.DownArrow) {
+						let next = (this.findCellIndex(this.model.activeCell) + 1) % this.cells.length;
+						this.selectCell(this.cells[next]);
+					} else if (event.keyCode === KeyCode.UpArrow) {
+						let index = this.findCellIndex(this.model.activeCell);
+						if (index === 0) {
+							index = this.cells.length;
+						}
+						this.selectCell(this.cells[--index]);
+					} else if (event.keyCode === KeyCode.Escape) {
+						this.enableActiveCellEditIcon(false);
 					}
-					this.selectCell(this.cells[--index]);
 				}
 				else if (event.keyCode === KeyCode.Escape) {
 					this.unselectActiveCell();
+				}
+				else if (event.keyCode === KeyCode.Enter) {
+					this.enableActiveCellEditIcon(true);
 				}
 			}
 		}));
@@ -282,14 +289,16 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	// Handles double click to edit icon change
 	// See textcell.component.ts for changing edit behavior
-	public enableActiveCellIconOnDoubleClick() {
+	public enableActiveCellEditIconOnDoubleClick() {
 		if (this.doubleClickEditEnabled) {
-			const toolbarComponent = (<CellToolbarComponent>this.cellToolbar.first);
-			const toolbarEditCellAction = toolbarComponent.getEditCellAction();
-			if (!toolbarEditCellAction.editMode) {
-				toolbarEditCellAction.editMode = !toolbarEditCellAction.editMode;
-			}
+			this.enableActiveCellEditIcon(true);
 		}
+	}
+
+	public enableActiveCellEditIcon(editMode: boolean) {
+		const toolbarComponent = (<CellToolbarComponent>this.cellToolbar.first);
+		const toolbarEditCellAction = toolbarComponent.getEditCellAction();
+		toolbarEditCellAction.editMode = editMode;
 	}
 
 	// Add cell based on cell type

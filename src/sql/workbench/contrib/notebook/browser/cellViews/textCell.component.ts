@@ -65,11 +65,12 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			if (keyEvent.keyCode === KeyCode.Escape) {
 				if (this.isEditMode) {
 					this.toggleEditMode(false);
-					e.stopImmediatePropagation();
 				}
 			} else if (keyEvent.keyCode === KeyCode.Enter) {
-				this.toggleEditMode(true);
-				this._model.updateActiveCell(this.cellModel);
+				if (!this.isEditMode) {
+					this.toggleEditMode(true);
+					this._model.updateActiveCell(this.cellModel);
+				}
 			}
 		}
 
@@ -560,7 +561,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		if (!this.isEditMode && this.doubleClickEditEnabled) {
 			this.toggleEditMode(true);
 		}
-		this.cellModel.active = true;
 		this._model.updateActiveCell(this.cellModel);
 	}
 }
