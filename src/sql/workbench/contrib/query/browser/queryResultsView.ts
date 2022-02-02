@@ -457,7 +457,7 @@ export class QueryResultsView extends Disposable {
 	public hidePlan2() {
 		if (this._panelView.contains(this.qp2Tab)) {
 			this.qp2Tab.clear();
-			this.input.state.queryPlan2State.dispose();
+			this.input.state.queryPlan2State.clearQueryPlan2State();
 			this._panelView.removeTab(this.qp2Tab.identifier);
 		}
 	}

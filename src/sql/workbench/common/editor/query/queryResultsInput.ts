@@ -29,7 +29,7 @@ export class ResultsViewState {
 		this.gridPanelState.dispose();
 		this.chartState.dispose();
 		this.queryPlanState.dispose();
-		this.queryPlan2State.dispose();
+		this.queryPlan2State.clearQueryPlan2State();
 		this.dynamicModelViewTabsState.forEach((state: QueryModelViewState, identifier: string) => {
 			state.dispose();
 		});

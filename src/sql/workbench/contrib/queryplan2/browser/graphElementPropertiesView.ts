@@ -34,7 +34,7 @@ export class GraphElementPropertiesView {
 	private _tableActionBar!: ActionBar;
 
 	// Properties table
-	private _table: Table<any>;
+	private _table: Table<Slick.SlickData>;
 	private _dataView: TableDataView<Slick.SlickData>;
 	private _data: { [key: string]: string }[];
 	private _tableContainer!: HTMLElement;
@@ -87,7 +87,7 @@ export class GraphElementPropertiesView {
 		this._dataView = new TableDataView();
 		this._data = [];
 
-		const columns: Slick.Column<any>[] = [
+		const columns: Slick.Column<Slick.SlickData>[] = [
 			{
 				id: 'name',
 				name: localize('nodePropertyViewNameNameColumnHeader', "Name"),

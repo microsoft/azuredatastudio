@@ -10,7 +10,7 @@ import { openNewQuery } from 'sql/workbench/contrib/query/browser/queryActions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { Button } from 'sql/base/browser/ui/button/button';
-import { removeLineBreaks } from 'sql/workbench/contrib/queryplan2/browser/utils';
+import { removeLineBreaks } from 'sql/base/common/strings';
 
 export class PlanHeader {
 

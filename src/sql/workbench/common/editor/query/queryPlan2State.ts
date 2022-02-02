@@ -4,11 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import type * as azdata from 'azdata';
-import { IDisposable } from 'vs/base/common/lifecycle';
 
-export class QueryPlan2State implements IDisposable {
+export class QueryPlan2State {
 	graphs: azdata.ExecutionPlanGraph[] = [];
-	dispose() {
+	clearQueryPlan2State() {
 		this.graphs = [];
 	}
 }
