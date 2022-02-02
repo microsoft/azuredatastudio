@@ -24,7 +24,7 @@ import { openNewQuery } from 'sql/workbench/contrib/query/browser/queryActions';
 import { RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { IColorTheme, ICssStyleCollector, IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { editorBackground, textLinkForeground } from 'vs/platform/theme/common/colorRegistry';
+import { editorBackground, foreground, textLinkForeground } from 'vs/platform/theme/common/colorRegistry';
 import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { ISashEvent, ISashLayoutProvider, Orientation, Sash } from 'vs/base/browser/ui/sash/sash';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -127,6 +127,8 @@ export class QueryPlan2 implements ISashLayoutProvider {
 
 	public propertiesView: GraphElementPropertiesView;
 	private _propContainer: HTMLElement;
+
+	private _azdataGraphDiagram: any;
 
 	constructor(
 		parent: HTMLElement,
@@ -268,7 +270,19 @@ export class QueryPlan2 implements ISashLayoutProvider {
 		let diagramRoot: any = new Object();
 		let graphRoot: azdata.ExecutionPlanNode = this._graph.root;
 		this.populate(graphRoot, diagramRoot);
-		new azdataGraph.azdataQueryPlan(container, diagramRoot, queryPlanNodeIconPaths);
+		this._azdataGraphDiagram = new azdataGraph.azdataQueryPlan(container, diagramRoot, queryPlanNodeIconPaths);
+
+		registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
+			const iconBackground = theme.getColor(editorBackground);
+			if (iconBackground) {
+				this._azdataGraphDiagram.setIconBackgroundColor(iconBackground);
+			}
+
+			const iconLabelColor = theme.getColor(foreground);
+			if (iconLabelColor) {
+				this._azdataGraphDiagram.setTextFontColor(iconLabelColor);
+			}
+		});
 	}
 
 
