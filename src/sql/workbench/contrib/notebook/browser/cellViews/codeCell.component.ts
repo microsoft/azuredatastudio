@@ -34,7 +34,7 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	// Onclick to edit text cell in notebook
-	@HostListener('click', ['$event']) onDblClick() {
+	@HostListener('click', ['$event']) onClick() {
 		this.toggleEditMode(true);
 	}
 
