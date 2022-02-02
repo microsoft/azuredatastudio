@@ -146,7 +146,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 					}
 					this.selectCell(this.cells[--index]);
 				}
-				if (event.keyCode === KeyCode.Escape) {
+				else if (event.keyCode === KeyCode.Escape) {
 					this.unselectActiveCell();
 				}
 			}

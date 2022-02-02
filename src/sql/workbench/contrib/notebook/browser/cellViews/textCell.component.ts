@@ -69,7 +69,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				}
 			} else if (keyEvent.keyCode === KeyCode.Enter) {
 				this.toggleEditMode(true);
-				this.cellModel.active = true;
 				this._model.updateActiveCell(this.cellModel);
 			}
 		}

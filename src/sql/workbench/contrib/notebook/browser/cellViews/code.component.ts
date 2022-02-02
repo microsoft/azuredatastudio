@@ -270,7 +270,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		}));
 		this._register(this.cellModel.onCellModeChanged((state) => {
 			if (this.cellModel.cellType === CellTypes.Code) {
-				this.onCellSelected(state);
+				this.onCellModeChanged(state);
 			}
 		}));
 
@@ -427,7 +427,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		this._editor.setHeightToScrollHeight(false, isCollapsed);
 	}
 
-	private onCellSelected(isEditMode: boolean): void {
+	private onCellModeChanged(isEditMode: boolean): void {
 		let ownerDocument = this._editor.getContainer().ownerDocument;
 		if (this.cellModel.id === this._activeCellId && this._editor.getContainer().offsetParent && ownerDocument && ownerDocument.hasFocus()) {
 			this._editor.focus();
