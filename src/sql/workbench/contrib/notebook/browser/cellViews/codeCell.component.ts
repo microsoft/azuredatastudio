@@ -45,12 +45,14 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 			if (event.keyCode === KeyCode.Escape) {
 				if (this.isEditMode) {
 					this.toggleEditMode(false);
-					e.stopImmediatePropagation();
 				}
 			}
 			else if (event.keyCode === KeyCode.Enter) {
-				this.toggleEditMode(true);
-				this._model.updateActiveCell(this.cellModel);
+				if (!this.isEditMode) {
+					e.preventDefault();
+					this.toggleEditMode(true);
+					this._model.updateActiveCell(this.cellModel);
+				}
 			}
 		}
 	}
